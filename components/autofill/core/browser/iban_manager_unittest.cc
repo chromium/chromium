@@ -534,7 +534,7 @@ TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
-  test_field.value = base::UTF8ToUTF16(std::string(test::kIbanValue));
+  test_field.value = std::u16string(test::kIbanValue16);
   // Set the field type to any type than "IBAN_VALUE".
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(
       test_field, CREDIT_CARD_VERIFICATION_CODE);

@@ -72,10 +72,10 @@ TEST_F(AddressSanitizerTests, TestAddressSanitizer) {
       CreateFile(temp_file_name.value().c_str(), GENERIC_WRITE,
                  FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE, &attrs,
                  OPEN_EXISTING, 0, nullptr));
-  EXPECT_TRUE(tmp_handle.IsValid());
+  EXPECT_TRUE(tmp_handle.is_valid());
 
   TestRunner runner;
-  ASSERT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetStderrHandle(tmp_handle.Get()));
+  ASSERT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetStderrHandle(tmp_handle.get()));
 
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));

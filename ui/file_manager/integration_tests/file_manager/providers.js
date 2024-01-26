@@ -45,6 +45,7 @@ async function setUpProvider(manifest) {
 /**
  * Clicks on the "Services" menu button.
  */
+// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
 async function showProvidersMenu(appId) {
   const providersMenuItem = '#gear-menu-providers:not([hidden])';
 
@@ -67,6 +68,8 @@ async function showProvidersMenu(appId) {
 /**
  * Confirms that a provided volume is mounted.
  */
+// @ts-ignore: error TS7006: Parameter 'ejectExpected' implicitly has an 'any'
+// type.
 async function confirmVolume(appId, ejectExpected) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectItemByType('provided');
@@ -181,12 +184,16 @@ async function requestMountNotInMenuInternal(manifest) {
   const submenu = await remoteCall.waitForElement(appId, selector);
 
   // Check the sub-menu do not contain the |manifest| provider.
+  // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
+  // 'ElementObject'.
   chrome.test.assertEq('SMB file share', submenu.innerText);
 }
 
 /**
  * Tests mounting a single mount point in the button menu.
  */
+// @ts-ignore: error TS4111: Property 'requestMount' comes from an index
+// signature, so it must be accessed with ['requestMount'].
 testcase.requestMount = () => {
   const multipleMounts = false;
   return requestMountInternal(multipleMounts, 'manifest.json');
@@ -195,6 +202,8 @@ testcase.requestMount = () => {
 /**
  * Tests mounting multiple mount points in the button menu.
  */
+// @ts-ignore: error TS4111: Property 'requestMountMultipleMounts' comes from an
+// index signature, so it must be accessed with ['requestMountMultipleMounts'].
 testcase.requestMountMultipleMounts = () => {
   const multipleMounts = true;
   return requestMountInternal(multipleMounts, 'manifest_multiple_mounts.json');
@@ -203,6 +212,8 @@ testcase.requestMountMultipleMounts = () => {
 /**
  * Tests mounting a device not present in the button menu.
  */
+// @ts-ignore: error TS4111: Property 'requestMountSourceDevice' comes from an
+// index signature, so it must be accessed with ['requestMountSourceDevice'].
 testcase.requestMountSourceDevice = () => {
   return requestMountNotInMenuInternal('manifest_source_device.json');
 };
@@ -210,6 +221,8 @@ testcase.requestMountSourceDevice = () => {
 /**
  * Tests mounting a file not present in the button menu.
  */
+// @ts-ignore: error TS4111: Property 'requestMountSourceFile' comes from an
+// index signature, so it must be accessed with ['requestMountSourceFile'].
 testcase.requestMountSourceFile = () => {
   return requestMountNotInMenuInternal('manifest_source_file.json');
 };
@@ -218,6 +231,8 @@ testcase.requestMountSourceFile = () => {
  * Tests that pressing the eject button on a FSP adds a message to screen
  * reader.
  */
+// @ts-ignore: error TS4111: Property 'providerEject' comes from an index
+// signature, so it must be accessed with ['providerEject'].
 testcase.providerEject = async () => {
   const manifest = 'manifest_source_file.json';
   const appId = await setUpProvider(manifest);
@@ -248,6 +263,9 @@ testcase.providerEject = async () => {
  * Tests mounting a file system provider emits only a single UMA when running
  * from either the SWA or Chrome app.
  */
+// @ts-ignore: error TS4111: Property
+// 'deduplicatedUmaMetricForFileSystemProviders' comes from an index signature,
+// so it must be accessed with ['deduplicatedUmaMetricForFileSystemProviders'].
 testcase.deduplicatedUmaMetricForFileSystemProviders = async () => {
   const umaMetricName = 'FileBrowser.FileSystemProviderMounted';
   const testProviderMetricEnumValue = 0;  // UNKNOWN = 0.

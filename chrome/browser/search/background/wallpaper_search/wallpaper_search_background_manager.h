@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -12,8 +13,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class PrefRegistrySimple;
@@ -41,21 +43,31 @@ class WallpaperSearchBackgroundManager {
   // data.
   virtual void SelectLocalBackgroundImage(const base::Token& id,
                                           const SkBitmap& bitmap,
+                                          bool is_inspiration_image,
                                           base::ElapsedTimer timer);
 
   // Saves the background to history if it is the current background.
   // Returns the backround's ID if successful.
-  virtual absl::optional<base::Token> SaveCurrentBackgroundToHistory(
+  virtual std::optional<base::Token> SaveCurrentBackgroundToHistory(
       const HistoryEntry& history_entry);
+
+  // Adds/Removes WallpaperSearchBackgroundManagerObserver observers.
+  virtual void AddObserver(WallpaperSearchBackgroundManagerObserver* observer);
+  void RemoveObserver(WallpaperSearchBackgroundManagerObserver* observer);
 
  private:
   void SetBackgroundToLocalResourceWithId(const base::Token& id,
                                           base::ElapsedTimer timer,
-                                          const SkBitmap& bitmap);
+                                          const SkBitmap& bitmap,
+                                          bool is_inspiration_image);
 
+  void NotifyAboutHistory();
+
+  PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  base::ObserverList<WallpaperSearchBackgroundManagerObserver> observers_;
 
   base::WeakPtrFactory<WallpaperSearchBackgroundManager> weak_ptr_factory_{
       this};

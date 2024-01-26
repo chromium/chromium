@@ -10,6 +10,7 @@
 #include <cstring>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -70,7 +71,7 @@ constexpr char kStopping[] = "stopping";
 // Helper to get the enum type of RetrievePolicyResponseType based on error
 // name.
 RetrievePolicyResponseType GetPolicyResponseTypeByError(
-    base::StringPiece error_name) {
+    std::string_view error_name) {
   if (error_name == login_manager::dbus_error::kNone) {
     return RetrievePolicyResponseType::SUCCESS;
   } else if (error_name == login_manager::dbus_error::kGetServiceFail ||
@@ -651,7 +652,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     // time, we will need to change the behavior to either listen to
     // LastSyncInfo event from tlsdated or communicate through signals with
     // session manager in this particular flow.
-    session_manager_proxy_->CallMethod(
+    session_manager_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
         base::BindOnce(&SessionManagerClientImpl::OnGetServerBackedStateKeys,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -1118,29 +1119,58 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   // Called when kSessionManagerGetServerBackedStateKeys method is complete.
   void OnGetServerBackedStateKeys(StateKeysCallback callback,
-                                  dbus::Response* response) {
-    std::vector<std::string> state_keys;
-    if (response) {
-      dbus::MessageReader reader(response);
-      dbus::MessageReader array_reader(nullptr);
-
-      if (!reader.PopArray(&array_reader)) {
-        LOG(ERROR) << "Bad response: " << response->ToString();
-      } else {
-        while (array_reader.HasMoreData()) {
-          const uint8_t* data = nullptr;
-          size_t size = 0;
-          if (!array_reader.PopArrayOfBytes(&data, &size)) {
-            LOG(ERROR) << "Bad response: " << response->ToString();
-            state_keys.clear();
-            break;
-          }
-          state_keys.emplace_back(reinterpret_cast<const char*>(data), size);
-        }
-      }
+                                  dbus::Response* response,
+                                  dbus::ErrorResponse* error_response) {
+    if (!response) {
+      // When the implementation returns an error, `error_response` is not null.
+      // However, session manager's implementation of state key retrieval does
+      // not support returning errors, hence we assume that it is null and
+      // report communication error.
+      std::move(callback).Run(
+          base::unexpected(StateKeyErrorType::kCommunicationError));
+      return;
     }
 
-    std::move(callback).Run(state_keys);
+    dbus::MessageReader reader(response);
+    dbus::MessageReader array_reader(nullptr);
+    if (!reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Bad response (not an array of keys): "
+                 << response->ToString();
+      std::move(callback).Run(
+          base::unexpected(StateKeyErrorType::kInvalidResponse));
+      return;
+    }
+
+    std::vector<std::string> state_keys;
+    while (array_reader.HasMoreData()) {
+      const uint8_t* data = nullptr;
+      size_t size = 0;
+      if (!array_reader.PopArrayOfBytes(&data, &size)) {
+        LOG(ERROR) << "Bad response (not an array of bytes): "
+                   << response->ToString();
+        std::move(callback).Run(
+            base::unexpected(StateKeyErrorType::kInvalidResponse));
+        return;
+      }
+      if (size == 0) {
+        LOG(ERROR) << "Bad response (empty array of bytes): "
+                   << response->ToString();
+        std::move(callback).Run(
+            base::unexpected(StateKeyErrorType::kInvalidResponse));
+        return;
+      }
+      state_keys.emplace_back(reinterpret_cast<const char*>(data), size);
+    }
+
+    if (state_keys.empty()) {
+      // TODO(b/318708647): Improve session manager's implementation to report
+      // an error via DBus rather than return empty list of keys. This will
+      // allow to differentiate between various types of missing identifiers.
+      std::move(callback).Run(
+          base::unexpected(StateKeyErrorType::kMissingIdentifiers));
+      return;
+    }
+    std::move(callback).Run(base::ok(std::move(state_keys)));
   }
 
   // Called when kSessionManagerGetPsmDeviceActiveSecret method is complete.

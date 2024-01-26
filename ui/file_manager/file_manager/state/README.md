@@ -9,6 +9,14 @@ whole Files app.
 
 **Disallowed:** This folder shouldn't depend on the UI layer, like `widgets/`.
 
+## Debug
+
+Run `fileManager.store_.setDebug(true)` in the DevTools console to enable store debugging,
+which will show verbose logs for each action dispatched and state change, it
+will also show each selector emitted.
+
+Run `fileManager.store_.setDebug(false)` to turn it off.
+
 ## Store
 
 The `Store` is central place to host the whole app state and to subscribe/listen

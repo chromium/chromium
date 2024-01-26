@@ -5,7 +5,9 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include <memory>
 #include <utility>
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -36,6 +38,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
   }
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
             prefs(), onboarding_service_.get(), /*is_incognito=*/false);
@@ -53,6 +56,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple prefs_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TrackingProtectionOnboarding> onboarding_service_;
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
 };

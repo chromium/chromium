@@ -72,6 +72,8 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveBrowserTest {
             feature_engagement::TrackerFactory::GetForBrowserContext(
                 browser()->profile()));
     ASSERT_TRUE(mock_tracker_);
+    EXPECT_CALL(*mock_tracker_, IsInitialized)
+        .WillRepeatedly(testing::Return(true));
 
     // Allow an unlimited number of calls to WouldTriggerHelpUI().
     EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI)

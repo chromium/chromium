@@ -14,16 +14,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "media/audio/apple/audio_io_stream_client.h"
+#include "media/audio/apple/audio_auhal.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_manager.h"
-#include "media/audio/mac/audio_auhal_mac.h"
 
 namespace media {
-
-class AUHALStream;
-class AUAudioInputStream;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
@@ -71,13 +67,6 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   std::string GetDefaultOutputDeviceID() override;
 
   // Used to track destruction of input and output streams.
-  void ReleaseOutputStream(AudioOutputStream* stream) override;
-  void ReleaseInputStream(AudioInputStream* stream) override;
-
-  // Implementation of AudioIOStreamClient.
-  void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                          AudioDeviceID device_id) override;
-  void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) override;
   bool MaybeChangeBufferSize(AudioDeviceID device_id,
                              AudioUnit audio_unit,
                              AudioUnitElement element,
@@ -129,12 +118,6 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
-
- private:
-  // Tracks all constructed input and output streams.
-  std::list<AudioInputStream*> basic_input_streams_;
-  std::list<AUAudioInputStream*> low_latency_input_streams_;
-  std::list<AUHALStream*> output_streams_;
 };
 
 }  // namespace media

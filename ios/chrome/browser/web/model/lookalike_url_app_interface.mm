@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/lookalike_url_app_interface.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/chrome/browser/web/model/lookalike_url_constants.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -13,7 +14,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
 
@@ -47,13 +48,11 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       safeReplacements.SetPathStr("echo");
       if (@available(iOS 15.1, *)) {
       } else {
-        if (@available(iOS 14.5, *)) {
-          // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
-          // breaks some back/forward navigations between pages that share a
-          // renderer process. Use 'localhost' instead of '127.0.0.1' for the
-          // safe URL to prevent sharing renderer processes with unsafe URLs.
-          safeReplacements.SetHostStr("localhost");
-        }
+        // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
+        // breaks some back/forward navigations between pages that share a
+        // renderer process. Use 'localhost' instead of '127.0.0.1' for the
+        // safe URL to prevent sharing renderer processes with unsafe URLs.
+        safeReplacements.SetHostStr("localhost");
       }
       lookalike_container->SetLookalikeUrlInfo(
           response_url.ReplaceComponents(safeReplacements), response_url,
@@ -75,7 +74,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
   WEB_STATE_USER_DATA_KEY_DECL();
 
  private:
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)

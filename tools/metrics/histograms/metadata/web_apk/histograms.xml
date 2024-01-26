@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Database.WriteResult" units="boolean"
+<histogram name="WebApk.Database.WriteResult" enum="Boolean"
     expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallEvent" enum="WebApkInstallEvent"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Notification.Permission.Status2" enum="ContentSetting"
-    expires_after="2024-02-25">
+    expires_after="2025-01-23">
   <owner>hartmanng@chromium.org</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Notification.PermissionRequestResult"
-    enum="ContentSetting" expires_after="2024-02-25">
+    enum="ContentSetting" expires_after="2025-01-23">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>

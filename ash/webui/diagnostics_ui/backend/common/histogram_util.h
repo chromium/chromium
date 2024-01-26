@@ -6,7 +6,9 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_COMMON_HISTOGRAM_UTIL_H_
 
 #include <stddef.h>
+
 #include <cstdint>
+#include <string_view>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -52,7 +54,7 @@ void EmitNetworkDataError(DataError error);
 // Tracks type and source struct of errors from calls to cros_healthd probe
 // service. `source_type` matches the `type_name` lookup in
 // cros_healthd_helpers.
-void EmitCrosHealthdProbeError(const base::StringPiece source_type,
+void EmitCrosHealthdProbeError(const std::string_view source_type,
                                cros_healthd::mojom::ErrorType error_type);
 
 void EmitKeyboardTesterRoutineDuration(

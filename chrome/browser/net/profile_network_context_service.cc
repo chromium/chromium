@@ -95,6 +95,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "net/cert/x509_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -158,9 +159,23 @@ cert_verifier::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const base::FilePath& storage_partition_path) {
   auto additional_certificates =
       cert_verifier::mojom::AdditionalCertificates::New();
+  net::CertificateList all_certificates;
+  net::CertificateList trust_anchors;
   policy_cert_service->GetPolicyCertificatesForStoragePartition(
-      storage_partition_path, &(additional_certificates->all_certificates),
-      &(additional_certificates->trust_anchors));
+      storage_partition_path, &all_certificates, &trust_anchors);
+
+  for (const auto& cert : all_certificates) {
+    base::span<const uint8_t> cert_bytes =
+        net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
+    additional_certificates->all_certificates.push_back(
+        std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end()));
+  }
+  for (const auto& cert : trust_anchors) {
+    base::span<const uint8_t> cert_bytes =
+        net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
+    additional_certificates->trust_anchors.push_back(
+        std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end()));
+  }
   return additional_certificates;
 }
 #endif  // defined (OS_CHROMEOS)
@@ -287,21 +302,17 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   // When any of the following Certificate preferences change, we schedule an
   // update to aggregate the actual update using a |cert_policy_update_timer_|.
-  pref_change_registrar_.Add(
-      prefs::kCACertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kCADistrustedCertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kCAHintCertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
+  base::RepeatingClosure schedule_update_cert_policy = base::BindRepeating(
+      &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
+      base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kCACertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCADistrustedCertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCAHintCertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCAPlatformIntegrationEnabled,
+                             schedule_update_cert_policy);
 #endif
 
   pref_change_registrar_.Add(
@@ -377,6 +388,8 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kCACertificates);
   registry->RegisterListPref(prefs::kCADistrustedCertificates);
   registry->RegisterListPref(prefs::kCAHintCertificates);
+  // Include user added platform certs by default.
+  registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
 }
 
@@ -530,43 +543,30 @@ void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
-  net::CertificateList additional_untrusted_certificates;
-  net::CertificateList additional_trust_anchors;
+  std::vector<std::vector<uint8_t>> additional_untrusted_certificates;
+  std::vector<std::vector<uint8_t>> additional_trust_anchors;
+  std::vector<std::vector<uint8_t>>
+      additional_trust_anchors_enforced_constraints;
   std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   auto* prefs = profile_->GetPrefs();
 
   for (const base::Value& cert_b64 :
        prefs->GetList(prefs::kCAHintCertificates)) {
-    std::string decoded;
-    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
-      continue;
-    }
+    absl::optional<std::vector<uint8_t>> decoded_opt =
+        base::Base64Decode(cert_b64.GetString());
 
-    scoped_refptr<net::X509Certificate> x509_cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(decoded)));
-
-    if (x509_cert) {
-      additional_untrusted_certificates.push_back(std::move(x509_cert));
+    if (decoded_opt.has_value()) {
+      additional_untrusted_certificates.push_back(std::move(*decoded_opt));
     }
   }
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
-    std::string decoded;
-    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
-      continue;
-    }
+    absl::optional<std::vector<uint8_t>> decoded_opt =
+        base::Base64Decode(cert_b64.GetString());
 
-    scoped_refptr<net::X509Certificate> x509_root =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(decoded)));
-
-    if (x509_root) {
-      // TODO(crbug.com/1477317): anchors added in this way don't have expiry or
-      // anchor constraints enforced. Figure out if we want these enforced or
-      // not. Note how we do this may impact ChromeOS as ChromeOS's current
-      // added anchors also don't have expiry or anchor constraints enforced.
-      additional_trust_anchors.push_back(std::move(x509_root));
+    if (decoded_opt.has_value()) {
+      additional_trust_anchors_enforced_constraints.push_back(
+          std::move(*decoded_opt));
     }
   }
 
@@ -584,10 +584,14 @@ ProfileNetworkContextService::GetCertificatePolicy() {
     }
   }
 
+  bool include_system_trust_store =
+      prefs->GetBoolean(prefs::kCAPlatformIntegrationEnabled);
+
   return cert_verifier::mojom::AdditionalCertificates::New(
       std::move(additional_untrusted_certificates),
       std::move(additional_trust_anchors),
-      std::move(additional_distrusted_spkis));
+      std::move(additional_trust_anchors_enforced_constraints),
+      std::move(additional_distrusted_spkis), include_system_trust_store);
 }
 
 void ProfileNetworkContextService::UpdateCertificatePolicy() {
@@ -948,6 +952,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     // network service.
     network_context_params->enable_locking_cookie_database =
         base::FeatureList::IsEnabled(features::kLockProfileCookieDatabase);
+
+    if (base::FeatureList::IsEnabled(
+            features::kUseOsCryptAsyncForCookieEncryption)) {
+      g_browser_process->system_network_context_manager()
+          ->AddCookieEncryptionManagerToNetworkContextParams(
+              network_context_params);
+    }
+
 #endif  // BUILDFLAG(IS_WIN)
     network_context_params->file_paths->trust_token_database_name =
         base::FilePath(chrome::kTrustTokenFilename);

@@ -7,7 +7,8 @@
  * braille content to the Panel on Chrome OS, or a content script on
  * other platforms.
  */
-import {LocalStorage} from '../../../common/local_storage.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';

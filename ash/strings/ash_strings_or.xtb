@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ର ପ୍ରତିଫଳନ</translation>
 <translation id="1885785240814121742">ଟିପଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନ୍ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)କୁ ପରିବର୍ତ୍ତନ କରାଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବାକୁ "ସୁନିଶ୍ଚିତ କରନ୍ତୁ"ରେ କ୍ଲିକ୍ କରନ୍ତୁ। <ph name="TIMEOUT_SECONDS" />ରେ ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
 <translation id="1908992311423394684">ଏହାକୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଚାଲୁ ଅଛି</translation>
 <translation id="2067602449040652523">କୀ'ବୋର୍ଡ ଉଜ୍ଜ୍ଵଳତା</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />କୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ଅଛି</translation>
-<translation id="2078034614700056995">ପରବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ଇମୋଜି ପିକର୍ ଖୋଲନ୍ତୁ</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2152895518047545149">କୌଣସି ଆସାଇନମେଣ୍ଟ ବାକି ନଥିବା ପରି ଲାଗୁଛି। ବଢ଼ିଆ କାମ!</translation>
 <translation id="2161132820593978283">କେମେରା ଫ୍ରେମିଂ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ଭିଡିଓ କଲରେ ସ୍କ୍ରିନର ମଝିରେ ରହିବେ। କ୍ୱିକ ସେଟିଂସରେ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="2170530631236737939">ଓଭରଭିଉରୁ ବାହାରିଯିବା ପାଇଁ ତିନୋଟି ଆଙ୍ଗୁଠିରେ ତଳକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2185166372312820725">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2185444992308415167">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2198625180564913276">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">ହଟସ୍ପଟ୍ ପ୍ରଦାନ କରିବାକୁ ଆପଣଙ୍କ ଫୋନରେ ନିଶ୍ଚିତ ରୂପେ ମୋବାଇଲ ଡାଟା ଥିବା ଆବଶ୍ୟକ</translation>
 <translation id="2727175239389218057">ପ୍ରତ୍ୟୁତ୍ତର ଦିଅନ୍ତୁ</translation>
 <translation id="2727977024730340865">କମ୍-ପାୱର୍‍ଯୁକ୍ତ ଚାର୍ଜର୍। ବ୍ୟାଟେରୀ ଚାର୍ଜିଂ ନିର୍ଭରଯୋଗ୍ୟ ହୋଇନପାରେ।</translation>
+<translation id="2744221223678373668">ସେୟାର କରାଯାଇଛି</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ଡିଲିଟ କରନ୍ତୁ"</translation>
 <translation id="2750941250130734256">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଅନଡକ କରାଯାଇଛି।</translation>
 <translation id="2761723519669354964">ସେଲ୍ଫରୁ ହାଇଲାଇଟ କରାଯାଇଥିବା ଆଇଟମ ଖୋଲନ୍ତୁ</translation>
+<translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ରୁ <ph name="KEY_TWO" /> ପର୍ଯ୍ୟନ୍ତ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3580650856351781466">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଉଛି</translation>
 <translation id="3585296979871889131">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ, ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
+<translation id="3590441166907930941">ସାଇଡ ବଟନ</translation>
 <translation id="3593039967545720377">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଦେଖିବାକୁ <ph name="SHORTCUT_KEY_NAME" /> + V ଦବାଇ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଇତିହାସକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ। ଆରମ୍ଭ କରିବାକୁ ଏକ ଆଇଟମ୍ କପି କରନ୍ତୁ।</translation>
 <translation id="3593646411856133110">ଖୋଲା ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖିବାକୁ ଉପରକୁ ଉଠାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">ଉତ୍ତର ଦିଅନ୍ତୁ</translation>
 <translation id="3990002060657467458">ୱାଇ-ଫାଇ, ବ୍ଲୁଟୁଥ ଏବଂ ଭଲ୍ୟୁମ ପରି ବାରମ୍ବାର ବ୍ୟବହାର କରାଯାଉଥିବା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ କୁଇକ ସେଟିଂସରେ ଅଛି। ସ୍କ୍ରିନସଟ ନେବା ପାଇଁ ଆପଣ ମଧ୍ୟ ଏଠାକୁ ଯାଇପାରିବେ।</translation>
 <translation id="3995138139523574647">USB-C ଡିଭାଇସ୍‌ (ଡାହାଣପଟ ପଛ ପୋର୍ଟ)</translation>
+<translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="40062176907008878">ହସ୍ତଲିଖନ</translation>
 <translation id="4011112806063830608">"ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ" ଚାଲୁ ଅଛି।</translation>
 <translation id="4017989525502048489">ଲେଜର୍ ପଏଣ୍ଟର୍</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">ବେଟେରୀ ହେଲ୍ଥ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ସାଇକେଲ ସଂଖ୍ୟା <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ଏକ ଟେମ୍ପଲେଟ ଭାବେ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
+<translation id="5168753792967365150">Google Tasksରେ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5176318573511391780">ଆଂଶିକ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="5187627942836026988">ହଟସ୍ପଟ ବିବରଣୀ ଦେଖାନ୍ତୁ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ହଟସ୍ପଟକୁ ବ୍ଲକ କରିଛନ୍ତି।</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">ଆପଣଙ୍କ ଇନଷ୍ଟଲ କରାଯାଇଥିବା ଆପ୍ସ</translation>
 <translation id="6173151025443907148">ଯଦି Lacros ସକ୍ଷମ କରାଯାଏ ତେବେ ଜଣେ ଦ୍ୱିତୀୟ ୟୁଜର ସାଇନ ଇନ କରିବା ସମର୍ଥିତ ନୁହେଁ। ଦୟାକରି ଏହା ପରିବର୍ତ୍ତେ Lacrosରେ ଏକ ଦ୍ୱିତୀୟ ବ୍ରାଉଜର ପ୍ରୋଫାଇଲ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା Lacrosକୁ ଅକ୍ଷମ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6179832488876878285">ଆପଣ ଆପଣଙ୍କର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଏଠାରେ ପିନ୍ କରିପାରିବେ। ଆରମ୍ଭ କରିବାକୁ Files ଆପ୍ ଖୋଲନ୍ତୁ।</translation>
+<translation id="6180193585172850042">'ପଛକୁ ଫେରନ୍ତୁ' ବଟନ</translation>
+<translation id="6180651297859206670">'ଫରୱାର୍ଡ କରନ୍ତୁ' ବଟନ</translation>
 <translation id="6182592640011875895">ଡେସ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="6185696379715117369">ଉପରର ପୃଷ୍ଠା</translation>
 <translation id="619335566042889110">ବର୍ତ୍ତମାନ ସମ୍ପୂର୍ଣ୍ଣ ଚାର୍ଜ କରନ୍ତୁ</translation>
@@ -1682,7 +1686,7 @@
 <translation id="7796735576426975947">ନୂଆ ବିଜ୍ଞପ୍ତି ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="7798302898096527229">ବାତିଲ୍‌ କରିବାକୁ Search କିମ୍ବା Shift ଦବାନ୍ତୁ।</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
-<translation id="7807067443225230855">ସନ୍ଧାନ ଏବଂ ସହାୟକ</translation>
+<translation id="7807067443225230855">ସର୍ଚ୍ଚ ଓ ଆସିଷ୍ଟାଣ୍ଟ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ଓ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ଶକ୍ତିଶାଳୀ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="7837740436429729974">ସମୟ ସମାପ୍ତ</translation>
@@ -1692,7 +1696,6 @@
 <translation id="7850320739366109486">ବିରକ୍ତ କରନାହିଁ</translation>
 <translation id="7851039877802112575">ପପ-ଅପ ଏବଂ ଡାଏଲଗଗୁଡ଼ିକୁ ଫୋକସ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="7851768487828137624">କାନାରି</translation>
-<translation id="7860671499921112077">ଓଭରଭିଉରେ ଏଣ୍ଟର୍ କରିବା ପାଇଁ ତିନୋଟି ଆଙ୍ଗୁଠିରେ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="7862292329216937261">ଅତିଥି ଭାବେ ଡିଭାଇସକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିବା ପରେ ସ୍କ୍ରିନ ତଳେ ଥିବା 'ଅତିଥି ଭାବେ ବ୍ରାଉଜ କରନ୍ତୁ'କୁ ଚୟନ କରିବାକୁ ହେବ।</translation>
 <translation id="7866482334467279021">ଚାଲୁ ଅଛି</translation>
 <translation id="7872786842639831132">ବନ୍ଦ ଅଛି</translation>
@@ -1803,7 +1806,6 @@
 <translation id="8262312463845990408">ପ୍ଲେବେକ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ଡିଭାଇସକୁ ଏକ ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="8277261673056602147">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଟେକ୍ସଟକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
-<translation id="8284362522226889623">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
 <translation id="8308637677604853869">ପୂର୍ବବର୍ତ୍ତୀ ମେନୁ</translation>

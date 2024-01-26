@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -93,7 +94,7 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   WKWebViewConfigurationProvider() = delete;
   CRWWebUISchemeHandler* scheme_handler_ = nil;
   WKWebViewConfiguration* configuration_ = nil;
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
   std::unique_ptr<WKContentRuleListProvider> content_rule_list_provider_;
 
   // A list of observers notified when WKWebViewConfiguration changes.

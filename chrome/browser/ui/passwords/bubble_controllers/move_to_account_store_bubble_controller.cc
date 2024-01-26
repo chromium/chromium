@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -55,7 +57,11 @@ void MoveToAccountStoreBubbleController::OnFaviconReady(
 }
 
 std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
-  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE);
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kButterOnDesktopFollowup)
+             ? l10n_util::GetStringUTF16(
+                   IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE)
+             : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE);
 }
 
 void MoveToAccountStoreBubbleController::AcceptMove() {
@@ -92,6 +98,21 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
   return profiles::GetSizedAvatarIcon(account_icon,
                                       /*width=*/size, /*height=*/size,
                                       profiles::SHAPE_CIRCLE);
+}
+
+std::u16string MoveToAccountStoreBubbleController::GetProfileEmail() const {
+  if (!GetProfile()) {
+    return std::u16string();
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  if (!identity_manager) {
+    return std::u16string();
+  }
+
+  return base::UTF8ToUTF16(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
 }
 
 void MoveToAccountStoreBubbleController::ReportInteractions() {

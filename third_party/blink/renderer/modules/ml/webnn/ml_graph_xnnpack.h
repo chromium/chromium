@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_XNNPACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_XNNPACK_H_
 
+#include "base/containers/heap_array.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -26,7 +28,9 @@ class XnnRuntimeWrapper;
 // Map the MLGraph's input or output name to the XNNPACK external Value ID.
 using ExternalValueIdMap = HashMap<String, uint32_t>;
 
-using DataBufferPtr = std::unique_ptr<uint8_t[]>;
+// Hold static or input tensor data for XNNPACK Runtime.
+using DataBuffer = base::HeapArray<uint8_t>;
+
 using XnnSubgraphPtr =
     std::unique_ptr<xnn_subgraph, decltype(&xnn_delete_subgraph)>;
 using XnnExternalValuesPtr = std::unique_ptr<Vector<xnn_external_value>>;
@@ -35,6 +39,10 @@ typedef Vector<std::pair<String, ArrayBufferViewInfo>>
     NamedArrayBufferViewsInfo;
 using NamedArrayBufferViewsInfoPtr = std::unique_ptr<NamedArrayBufferViewsInfo>;
 
+// XNNPACK requires the input tensor data to be padded with `XNN_EXTRA_BYTES`
+// bytes for performance reasons. For each compute, `MLGraphXnnpack` allocates
+// new input buffers with this many extra bytes, copies the input data from
+// input array buffers to the new input buffers and feeds them to XNNPACK.
 class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
  public:
   // Create and build an MLGraphXnnpack object. Resolve the promise with
@@ -112,7 +120,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
       ScopedMLTrace scoped_trace,
       XnnSubgraphPtr subgraph,
       scoped_refptr<SharedXnnpackContext> xnn_context,
-      Vector<DataBufferPtr> static_data_buffers,
+      Vector<DataBuffer> static_data_buffers,
       CrossThreadHandle<MLGraphXnnpack> graph,
       uint32_t num_threads,
       CrossThreadHandle<ScriptPromiseResolver> resolver,
@@ -147,15 +155,16 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
 
   // Invoking an XNNPACK Runtime object can be time-consuming. Calling this
   // method in a background thread avoids blocking the main thread. The
-  // ownership of `external_values`, `inputs_info` and `outputs_info` is
-  // transferred to the background thread that invokes the XNNPACK Runtime
-  // object with the input and output buffers. The GC objects wrapped by
-  // `CrossThreadHandle` must not be accessed by this method and should be
-  // passed forward to `OnDidCompute()` which is called on the thread
+  // ownership of `input_buffers`, `external_values`, `inputs_info` and
+  // `outputs_info` is transferred to the background thread that invokes the
+  // XNNPACK Runtime object with the input and output buffers. The GC objects
+  // wrapped by `CrossThreadHandle` must not be accessed by this method and
+  // should be passed forward to `OnDidCompute()` which is called on the thread
   // owning these GC objects.
   static void ComputeOnBackgroundThread(
       ScopedMLTrace scoped_trace,
       scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
+      Vector<DataBuffer> input_buffers,
       XnnExternalValuesPtr external_values,
       NamedArrayBufferViewsInfoPtr inputs_info,
       NamedArrayBufferViewsInfoPtr outputs_info,
@@ -192,16 +201,27 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // `named_outputs`.
   xnn_status CreateXnnSubgraph(const MLNamedOperands& named_outputs,
                                XnnSubgraphPtr& out_subgraph,
-                               Vector<DataBufferPtr>& out_static_data_buffers,
+                               Vector<DataBuffer>& out_static_data_buffers,
                                String& error_message);
 
   // This method creates the xnn_external_value vector from named input and
   // output array buffer views. The xnn_external_value vector is used to set
   // up the XNNPACK Runtime object. The returned vector is sorted by
   // `xnn_external_value::id`.
-  XnnExternalValuesPtr CreateExternalValues(
-      const MLNamedArrayBufferViews& inputs,
-      const MLNamedArrayBufferViews& outputs) const;
+  //
+  // XNNPACK requires input buffers to have additional `XNN_EXTRA_BYTES` bytes
+  // at the end (for performance reasons). To prevent out-of-bounds read, this
+  // method allocates the input buffers with `XNN_EXTRA_BYTES` extra bytes,
+  // copies the input data from array buffers into the newly allocated buffers
+  // and uses them to setup input `xnn_external_value::data`. The newly
+  // allocated input buffers should be kept alive until XNNPACK Runtime
+  // invocation completes.
+  //
+  // XNNPACK won't write beyond the end of output buffers, so the provided
+  // outputs are used as-is.
+  absl::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+  CreateExternalValues(const MLNamedArrayBufferViews& inputs,
+                       const MLNamedArrayBufferViews& outputs) const;
 
   // Task runner for running XNNPACK time-consuming operations, e.g. library
   // initialization, Runtime creation and invcation.

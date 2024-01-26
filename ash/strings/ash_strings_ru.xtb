@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
-<translation id="1888656773939766144">Экран "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Недавно установленное приложение</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2075520525463668108">Включить или отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2083190527011054446">Доброй ночи, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Открыть окно выбора эмодзи</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Перейти к предыдущему треку</translation>
 <translation id="2152895518047545149">Все задания выполнены. Отлично!</translation>
 <translation id="2161132820593978283">Используйте автомасштабирование, чтобы во время видеовстреч оставаться в центре экрана. Эту функцию можно включить в быстрых настройках.</translation>
-<translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
 <translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
+<translation id="2744221223678373668">Общедоступные</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Удалить"</translation>
 <translation id="2750941250130734256">Активное окно откреплено.</translation>
 <translation id="2761723519669354964">Открыть выделенный элемент на панели запуска</translation>
+<translation id="2762000892062317888">только что</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> клавиши от <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Поиcк + S</translation>
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
 <translation id="3580650856351781466">Скачивание файлов с записью речи</translation>
 <translation id="3585296979871889131">Просматривайте недавние фотографии, медиафайлы, уведомления и приложения с телефона.</translation>
+<translation id="3590441166907930941">Боковая кнопка</translation>
 <translation id="3593039967545720377">Чтобы посмотреть историю буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. Чтобы начать, скопируйте объект.</translation>
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Ответить</translation>
 <translation id="3990002060657467458">Часто используемые параметры, такие как Wi-Fi, Bluetooth и громкость, находятся в меню быстрых настроек. Там также есть функция для создания скриншотов.</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
+<translation id="4002066346123236978">Название</translation>
 <translation id="40062176907008878">Рукописный ввод</translation>
 <translation id="4011112806063830608">Сейчас он включен.</translation>
 <translation id="4017989525502048489">Лазерная указка</translation>
@@ -996,7 +997,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4981175556418720939">Изменено <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Рабочий стол 16</translation>
-<translation id="4989163558385430922">Показать все</translation>
+<translation id="4989163558385430922">Посмотреть все</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5004607513195820459">Сетью управляет администратор</translation>
 <translation id="5009463889040999939">Профиль переименовывается. Это может занять несколько минут.</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Количество циклов: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Сохранить рабочий стол как шаблон</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
+<translation id="5168753792967365150">Изменить в Google Задачах</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
 <translation id="5187627942836026988">Показать сведения о точке доступа. Точка доступа заблокирована администратором.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Установленные приложения</translation>
 <translation id="6173151025443907148">Во время работы Lacros не поддерживается вход в несколько аккаунтов. Вы можете использовать второй профиль браузера или закрыть Lacros и повторить попытку.</translation>
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
+<translation id="6180193585172850042">Кнопка "Назад"</translation>
+<translation id="6180651297859206670">Кнопка "Вперед"</translation>
 <translation id="6182592640011875895">Открыть рабочий стол</translation>
 <translation id="6185696379715117369">На страницу вверх</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>
@@ -1506,7 +1510,7 @@
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
-<translation id="7031303610220416229">Показать все задачи в Google Задачах</translation>
+<translation id="7031303610220416229">Посмотреть все задачи в Google Задачах</translation>
 <translation id="7032161822340700104">Максимальное количество шаблонов – 6. Удалите один из шаблонов, чтобы сохранить новый.</translation>
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">Не беспокоить</translation>
 <translation id="7851039877802112575">Перейти к всплывающим и диалоговым окнам</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Чтобы перейти в режим обзора, проведите тремя пальцами вверх.</translation>
 <translation id="7862292329216937261">Чтобы пользоваться устройством в гостевом режиме, выйдите из текущего аккаунта и выберите "Войти в гостевой режим" внизу экрана.</translation>
 <translation id="7866482334467279021">включена</translation>
 <translation id="7872786842639831132">Отключено</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">Воспроизвести/приостановить</translation>
 <translation id="8270450402312105425">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 часа}one{Вернитесь к предыдущей версии ОС в течение # часа}few{Вернитесь к предыдущей версии ОС в течение # часов}many{Вернитесь к предыдущей версии ОС в течение # часов}other{Вернитесь к предыдущей версии ОС в течение # часа}}</translation>
 <translation id="8277261673056602147">Выделите текст на экране</translation>
-<translation id="8284362522226889623">Чтобы перейти на предыдущий рабочий стол, проведите четырьмя пальцами влево.</translation>
 <translation id="828708037801473432">Отключено</translation>
 <translation id="8297006494302853456">Слабый</translation>
 <translation id="8308637677604853869">Предыдущее меню</translation>

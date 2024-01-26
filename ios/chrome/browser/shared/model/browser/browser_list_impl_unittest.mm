@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
@@ -25,7 +26,7 @@ class BrowserListImplTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
 };
 
 // Test main add/remove logic.

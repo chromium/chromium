@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -27,7 +28,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_rate_throttling.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"

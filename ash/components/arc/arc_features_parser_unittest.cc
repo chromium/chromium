@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/arc_features_parser.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -94,7 +96,7 @@ constexpr const char kInvalidJsonWithMissingFields[] =
 
 TEST_F(ArcFeaturesParserTest, ParseEmptyJson) {
   std::optional<ArcFeatures> arc_features =
-      ArcFeaturesParser::ParseFeaturesJsonForTesting(base::StringPiece());
+      ArcFeaturesParser::ParseFeaturesJsonForTesting(std::string_view());
   EXPECT_EQ(arc_features, std::nullopt);
 }
 

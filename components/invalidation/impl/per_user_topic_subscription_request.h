@@ -29,7 +29,7 @@ class PerUserTopicSubscriptionRequest {
   using CompletedCallback =
       base::OnceCallback<void(const Status& status,
                               const std::string& topic_name)>;
-  enum RequestType { SUBSCRIBE, UNSUBSCRIBE };
+  enum class RequestType { kSubscribe, kUnsubscribe };
 
   // Builds authenticated PerUserTopicSubscriptionRequests.
   class Builder {

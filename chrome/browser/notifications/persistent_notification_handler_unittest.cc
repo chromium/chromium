@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -118,7 +119,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
       std::make_unique<PersistentNotificationHandler>();
 
   handler->OnClick(&profile_, origin_, kExampleNotificationId,
-                   absl::nullopt /* action_index */, absl::nullopt /* reply */,
+                   std::nullopt /* action_index */, std::nullopt /* reply */,
                    base::DoNothing());
 }
 
@@ -152,7 +153,7 @@ TEST_F(PersistentNotificationHandlerTest,
 
     display_service_tester_.SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, kExampleNotificationId,
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
   }
 
   EXPECT_FALSE(display_service_tester_.GetNotification(kExampleNotificationId));
@@ -192,9 +193,14 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       std::make_unique<PersistentNotificationHandler>();
   handler->DisableNotifications(&profile_, origin_);
 
+#if BUILDFLAG(IS_ANDROID)
+  PermissionStatus kExpectedDisabledStatus = PermissionStatus::ASK;
+#else
+  PermissionStatus kExpectedDisabledStatus = PermissionStatus::DENIED;
+#endif
   ASSERT_EQ(permission_context
                 ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
                                       origin_)
                 .status,
-            PermissionStatus::DENIED);
+            kExpectedDisabledStatus);
 }

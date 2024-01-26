@@ -771,16 +771,6 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
                                     network::MetaCHType type,
                                     bool is_doc_preloader,
                                     bool is_sync_parser) {
-  switch (type) {
-    case network::MetaCHType::HttpEquivAcceptCH:
-      if (!RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled())
-        return;
-      break;
-    case network::MetaCHType::HttpEquivDelegateCH:
-      if (!RuntimeEnabledFeatures::ClientHintsMetaEquivDelegateCHEnabled())
-        return;
-      break;
-  }
 
   LocalFrame* frame = document.GetFrame();
   if (!frame)

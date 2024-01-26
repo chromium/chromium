@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
 #include "url/gurl.h"
@@ -49,6 +50,12 @@ struct SHELL_DIALOGS_EXPORT SelectedFileInfo {
   // storage::kFileSystemTypeExternal FileSystemURL), it should be used in
   // preference over `local_path` and `url`.
   absl::optional<base::FilePath> virtual_path;
+
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags;
+#endif
 
   // Constructs an empty object.
   SelectedFileInfo();

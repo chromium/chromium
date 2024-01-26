@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Internals>ContentCapture"
+}
+buganizer_public: {
+  component_id: 1456476
 }

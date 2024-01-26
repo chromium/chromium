@@ -8,6 +8,9 @@
 #import <utility>
 
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -25,6 +28,22 @@
 
 namespace {
 
+inline constexpr std::string_view kInfobarSaveDurationHistogramName =
+    "PasswordManager.iOS.InfoBar.SaveDuration";
+
+inline constexpr std::string_view kInfobarUpdateDurationHistogramName =
+    "PasswordManager.iOS.InfoBar.UpdateDuration";
+
+// Moment where the infobar is torn down.
+enum class InfobarTearDownMoment {
+  // Cover all moments.
+  kAll,
+  // After dismissing the infobar UI.
+  kOnDimiss,
+  // When deleting the infobar delegate.
+  kOnDeletion
+};
+
 // Records Presentation Metrics for the Infobar Delegate.
 // `current_password_saved` is true if the Infobar is on read-only mode after a
 // Save/Update action has occured.
@@ -37,6 +56,8 @@ void RecordPresentationMetrics(
     bool current_password_saved,
     bool update_infobar,
     bool automatic) {
+  // TODO(b/318820862): Consider removing this block as it is theoretically
+  // impossible to save the password (e.g., tap on "Accept") before presenting.
   if (current_password_saved) {
     // Password was already saved or updated.
     form_to_save->GetMetricsRecorder()->RecordPasswordBubbleShown(
@@ -114,6 +135,33 @@ bool IsUpdateInfobar(PasswordInfobarType infobar_type) {
   }
 }
 
+// Returns the infobar duration histogram name with the suffix that corresponds
+// to `is_update` and `moment`.
+std::string DurationHistogramName(bool is_update,
+                                  InfobarTearDownMoment moment) {
+  std::string_view base_name = is_update ? kInfobarUpdateDurationHistogramName
+                                         : kInfobarSaveDurationHistogramName;
+
+  switch (moment) {
+    case InfobarTearDownMoment::kAll:
+      return base::StrCat({base_name, ".All"});
+    case InfobarTearDownMoment::kOnDimiss:
+      return base::StrCat({base_name, ".OnDismiss"});
+    case InfobarTearDownMoment::kOnDeletion:
+      return base::StrCat({base_name, ".OnDeletion"});
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+// Records the infobar duration metric for a given `moment`.
+void RecordDurationAtMoment(bool is_update,
+                            InfobarTearDownMoment moment,
+                            base::TimeDelta duration) {
+  UmaHistogramCustomTimes(DurationHistogramName(is_update, moment), duration,
+                          base::Milliseconds(1), base::Seconds(25), 50);
+}
+
 }  // namespace
 
 using password_manager::PasswordFormManagerForUI;
@@ -135,12 +183,14 @@ IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
       password_update_(password_update) {}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
-  // If by any reason this delegate gets dealloc before the Infobar is
-  // dismissed, record the dismissal metrics.
-  if (infobar_presenting_) {
+  if (IsPresenting()) {
+    // If by any reason this delegate gets dealloc before the Infobar UI is
+    // dismissed, record the dismissal metrics, which happens when navigating
+    // away from the page presenting the infobar.
     RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
                            account_storage_user_state_,
                            IsUpdateInfobar(infobar_type_));
+    RecordInfobarDuration(/*on_dismiss=*/false);
   }
 }
 
@@ -238,26 +288,29 @@ void IOSChromeSavePasswordInfoBarDelegate::UpdateCredentials(
 }
 
 void IOSChromeSavePasswordInfoBarDelegate::InfobarPresenting(bool automatic) {
-  if (infobar_presenting_) {
+  if (IsPresenting()) {
     return;
   }
 
   RecordPresentationMetrics(form_to_save_.get(), current_password_saved_,
                             IsUpdateInfobar(infobar_type_), automatic);
-  infobar_presenting_ = YES;
+  start_timestamp_ = base::TimeTicks::Now();
 }
 
-void IOSChromeSavePasswordInfoBarDelegate::InfobarDismissed() {
-  if (!infobar_presenting_) {
+void IOSChromeSavePasswordInfoBarDelegate::InfobarGone() {
+  if (!IsPresenting()) {
     return;
   }
 
   RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
                          account_storage_user_state_,
                          IsUpdateInfobar(infobar_type_));
-  // After the metrics have been recorded we can reset the response.
+
+  RecordInfobarDuration(/*on_dismiss=*/true);
+
+  // Reset presentation state.
   infobar_response_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
-  infobar_presenting_ = NO;
+  start_timestamp_ = std::nullopt;
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::IsPasswordUpdate() const {
@@ -271,4 +324,28 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsCurrentPasswordSaved() const {
 infobars::InfoBarDelegate::InfoBarIdentifier
 IOSChromeSavePasswordInfoBarDelegate::GetIdentifier() const {
   return SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;
+}
+
+void IOSChromeSavePasswordInfoBarDelegate::RecordInfobarDuration(
+    bool on_dismiss) {
+  // Check that recording the infobar duration is only done when there is a
+  // start timestamp and the infobar had been presenting.
+  CHECK(start_timestamp_);
+
+  bool is_update = IsUpdateInfobar(infobar_type_);
+  base::TimeDelta duration = base::TimeTicks::Now() - *start_timestamp_;
+
+  RecordDurationAtMoment(is_update, InfobarTearDownMoment::kAll, duration);
+
+  if (on_dismiss) {
+    RecordDurationAtMoment(is_update, InfobarTearDownMoment::kOnDimiss,
+                           duration);
+  } else {
+    RecordDurationAtMoment(is_update, InfobarTearDownMoment::kOnDeletion,
+                           duration);
+  }
+}
+
+bool IOSChromeSavePasswordInfoBarDelegate::IsPresenting() const {
+  return start_timestamp_.has_value();
 }

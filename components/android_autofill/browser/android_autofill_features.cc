@@ -15,9 +15,9 @@ namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
-    &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
     &kAndroidAutofillSupportVisibilityChanges,
+    &kAndroidAutofillUsePwmPredictionsForOverrides,
 };
 
 }  // namespace
@@ -28,16 +28,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
 // the workaround in case any unexpected thing goes wrong.
 BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
              "AndroidAutofillBottomSheetWorkaround",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, form submissions are reported to Android Autofill iff the
-// `FormGlobalId` of the submitted form matches that of the current Autofill
-// session.
-// If disabled, a similarity check is used that requires most (see
-// `FormDataAndroid::SimilarAs` for details) members variables of the forms and
-// their fields to be identical.
-BASE_FEATURE(kAndroidAutofillFormSubmissionCheckById,
-             "AndroidAutofillFormSubmissionCheckById",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, prefill requests (i.e. calls to
@@ -57,6 +47,16 @@ BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
 // for more details on the API.
 BASE_FEATURE(kAndroidAutofillSupportVisibilityChanges,
              "AndroidAutofillSupportVisibilityChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, username and password field predictions are taken from
+// `password_manager::FormDataParser` and overwrite Autofill's native
+// predictions. Furthermore, similarity checks between cached forms and focused
+// forms that serve to decide whether to show a bottomsheet are performed using
+// these predictions: Two forms are considered similar iff they have the same
+// `FormDataParser` predictions.
+BASE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides,
+             "AndroidAutofillUsePwmPredictionsForOverrides",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {

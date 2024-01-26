@@ -40,6 +40,20 @@ void SetLayerTreeFrameSinkHolderFactory(SurfaceTreeHost* surface_tree_host) {
           }));
 }
 
+// Creates a closure which increments `release_buffer_call_count` and then calls
+// `closure` when called. This is used to wait for buffers to be released in
+// tests.
+base::RepeatingClosure CreateReleaseBufferClosure(
+    int* release_buffer_call_count,
+    base::RepeatingClosure closure);
+
+// Creates a closure which increments `release_call_count` and then calls
+// `closure` when called. This is used to wait for buffers to be released in
+// tests.
+base::OnceCallback<void(gfx::GpuFenceHandle)> CreateExplicitReleaseCallback(
+    int* release_call_count,
+    base::RepeatingClosure closure);
+
 }  // namespace exo::test
 
 #endif  // COMPONENTS_EXO_TEST_SURFACE_TREE_HOST_TEST_UTIL_H_

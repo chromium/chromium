@@ -556,6 +556,12 @@ ContentSettingsPattern ContentSettingsPattern::ToHostOnlyPattern(
   return builder->Build();
 }
 
+bool ContentSettingsPattern::CompareDomains::operator()(
+    const std::string_view& domain_a,
+    const std::string_view& domain_b) const {
+  return CompareDomainNames(domain_a, domain_b) > 0;
+}
+
 ContentSettingsPattern::ContentSettingsPattern() : is_valid_(false) {}
 
 ContentSettingsPattern::ContentSettingsPattern(PatternParts parts, bool valid)

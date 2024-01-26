@@ -136,10 +136,5 @@ void MockInputMethodManagerImpl::SetComponentExtensionIMEManager(
   comp_ime_manager_ = std::move(comp_ime_manager);
 }
 
-void MockInputMethodManagerImpl::set_application_locale(
-    const std::string& value) {
-  delegate_.set_active_locale(value);
-}
-
 }  // namespace input_method
 }  // namespace ash

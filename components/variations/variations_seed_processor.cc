@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -22,7 +23,6 @@
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_layers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -47,14 +47,14 @@ void RegisterExperimentParams(const Study& study,
 // Returns the IDCollectionKey with which |experiment| should be associated.
 // Returns nullopt when |experiment| doesn't have a Google web or Google web
 // trigger experiment ID.
-absl::optional<IDCollectionKey> GetKeyForWebExperiment(
+std::optional<IDCollectionKey> GetKeyForWebExperiment(
     const Study::Experiment& experiment) {
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
   bool has_web_trigger_experiment_id =
       experiment.has_google_web_trigger_experiment_id();
 
   if (!has_web_experiment_id && !has_web_trigger_experiment_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. This is enforced by the variations
@@ -83,7 +83,7 @@ void RegisterVariationIds(const Study::Experiment& experiment,
                                     variation_id);
   }
 
-  absl::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
+  std::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
   if (!key.has_value())
     return;
 

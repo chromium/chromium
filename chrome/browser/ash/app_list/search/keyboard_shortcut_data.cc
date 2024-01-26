@@ -30,7 +30,13 @@ KeyboardShortcutData::KeyboardShortcutData(
   }
 }
 
-KeyboardShortcutData::KeyboardShortcutData(const std::u16string description) {}
+KeyboardShortcutData::KeyboardShortcutData(const std::u16string description,
+                                           int description_message_id,
+                                           int shortcut_message_id) {
+  description_ = description;
+  description_message_id_ = description_message_id;
+  shortcut_message_id_ = shortcut_message_id;
+}
 
 KeyboardShortcutData::KeyboardShortcutData(const KeyboardShortcutData&) =
     default;

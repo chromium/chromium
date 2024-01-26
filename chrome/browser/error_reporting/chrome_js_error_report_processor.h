@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Process;
@@ -113,7 +113,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   struct PlatformInfo;
   using ParameterMap = std::map<std::string, std::string>;
 
-  absl::optional<JavaScriptErrorReport> CheckConsentAndRedact(
+  std::optional<JavaScriptErrorReport> CheckConsentAndRedact(
       JavaScriptErrorReport error_report);
 
   PlatformInfo GetPlatformInfo();
@@ -129,7 +129,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       base::TimeDelta browser_process_uptime,
       base::Time report_time,
-      absl::optional<JavaScriptErrorReport> error_report);
+      std::optional<JavaScriptErrorReport> error_report);
 
   // To avoid spamming the error collection system, do not send duplicate
   // error reports more than once per hour. Otherwise, if we get an error
@@ -144,7 +144,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
 
   void SendReport(
       ParameterMap params,
-      absl::optional<std::string> stack_trace,
+      std::optional<std::string> stack_trace,
       bool send_to_production_servers,
       base::ScopedClosureRunner callback_runner,
       base::Time report_time,
@@ -162,10 +162,10 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // value1:5:abcdevalue2:10:hellothere
   static std::string ParamsToCrashReporterString(
       const ParameterMap& params,
-      const absl::optional<std::string>& stack_trace);
+      const std::optional<std::string>& stack_trace);
 
   void SendReportViaCrashReporter(ParameterMap params,
-                                  absl::optional<std::string> stack_trace,
+                                  std::optional<std::string> stack_trace,
                                   base::ScopedClosureRunner callback_runner);
   void WaitForCrashReporter(base::Process process,
                             base::Time process_creation_time,

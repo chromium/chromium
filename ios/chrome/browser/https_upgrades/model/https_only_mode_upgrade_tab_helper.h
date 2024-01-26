@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -120,9 +121,9 @@ class HttpsOnlyModeUpgradeTabHelper
 
   base::OneShotTimer timer_;
 
-  PrefService* prefs_;
-  PrerenderService* prerender_service_;
-  HttpsUpgradeService* service_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrerenderService> prerender_service_;
+  raw_ptr<HttpsUpgradeService> service_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

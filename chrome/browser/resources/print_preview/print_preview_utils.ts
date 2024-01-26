@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {isRTL} from 'chrome://resources/js/util.js';
-import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import type {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {inDarkMode} from './dark_mode_mixin.js';
-import {LocalizedString} from './data/cdd.js';
+import type {LocalizedString} from './data/cdd.js';
 
 export interface Range {
   to: number;

@@ -48,7 +48,7 @@ class MediaStreamUI {
 
   // Called when Region Capture starts/stops, or when the cropped area changes.
   virtual void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) {}
+      const std::optional<gfx::Rect>& region_capture_rect) {}
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display

@@ -825,13 +825,17 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   [[maybe_unused]] base::GlobalDescriptors* g_fds =
       base::GlobalDescriptors::GetInstance();
 
-// On Android, the ipc_fd is passed through the Java service.
+// On Android, the shared descriptors are passed through the Java service,
+// which takes care of updating these mappings; otherwise, we need to update
+// the mappings explicitly.
 #if !BUILDFLAG(IS_ANDROID)
   g_fds->Set(kMojoIPCChannel,
              kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
-
   g_fds->Set(kFieldTrialDescriptor,
              kFieldTrialDescriptor + base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kHistogramSharedMemoryDescriptor,
+             kHistogramSharedMemoryDescriptor +
+                 base::GlobalDescriptors::kBaseDescriptor);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)

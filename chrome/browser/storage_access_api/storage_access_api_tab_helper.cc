@@ -35,7 +35,7 @@ void StorageAccessAPITabHelper::FrameReceivedUserActivation(
     return;
   }
 
-  absl::optional<base::TimeDelta> delta_to_expiration =
+  std::optional<base::TimeDelta> delta_to_expiration =
       service_->RenewPermissionGrant(
           rfh->GetLastCommittedOrigin(),
           rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());

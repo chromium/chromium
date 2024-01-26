@@ -48,23 +48,44 @@ enum PerformanceClass {
 // done on a server or on a device. This includes an ID that can be mapped to
 // the ModelExecutionService logs on the server.
 message ModelExecutionInfo {
-  string server_execution_id = 1;
+  reserved 1;
 
   // Information for how the on-device model execution was done.
   OnDeviceModelExecutionInfo on_device_model_execution_info = 2;
 
   // The error code returned by the model execution server, if any.
   ErrorResponse error_response = 3;
+
+  // The ID for the execution.
+  //
+  // If on-device, this will be prefixed with on-device:. Otherwise, this is the
+  // server-side id as received from the server response used for joining with
+  // ModelExecutionService logs when server-side execution is used.
+  string execution_id = 4;
 }
 
 message OnDeviceModelExecutionInfo {
-  // The configuration that specifies how the device should have fulfilled the
-  // request.
-  OnDeviceModelExecutionFeatureConfig feature_config = 1;
+  reserved 1;
 
   // List of internal requests/responses that were performed to fulfill the
   // on-device model execution request.
   repeated InternalOnDeviceModelExecutionInfo execution_infos = 2;
+
+  // Versions of the model being used for this execution.
+  OnDeviceModelVersions model_versions = 3;
+}
+
+message OnDeviceModelVersions {
+  // The model version for the on-device model.
+  OnDeviceModelServiceVersion on_device_model_service_version = 1;
+
+  // The model version for the text-safety model.
+  int64 text_safety_model_version = 2;
+}
+
+message OnDeviceModelServiceVersion {
+  // The version of the component used.
+  string component_version = 1;
 }
 
 // InternalOnDeviceModelExecutionInfo is a request/response pair from a call to
@@ -78,6 +99,8 @@ message InternalOnDeviceRequest {
   oneof request {
     // The request made to the on-device model service.
     OnDeviceModelServiceRequest on_device_model_service_request = 1;
+    // The request made to the text safety model.
+    TextSafetyModelRequest text_safety_model_request = 2;
   }
 }
 
@@ -85,6 +108,8 @@ message InternalOnDeviceResponse {
   oneof response {
     // The response returned from the on-device model service.
     OnDeviceModelServiceResponse on_device_model_service_response = 1;
+    // The response returned from the text safety model.
+    TextSafetyModelResponse text_safety_model_response = 2;
   }
 }
 
@@ -125,6 +150,9 @@ message OnDeviceModelServiceResponse {
 
   // The status of the completed response.
   OnDeviceModelServiceResponseStatus status = 4;
+
+  // Whether the response was stopped because of repeating text.
+  bool has_repeats = 5;
 }
 
 enum OnDeviceModelServiceResponseStatus {
@@ -133,4 +161,17 @@ enum OnDeviceModelServiceResponseStatus {
   ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS = 1;
   // The response is retracted by the service.
   ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED = 2;
+}
+
+message TextSafetyModelRequest {
+  // The text sent to the text safety model for evaluation.
+  string text = 1;
+}
+
+message TextSafetyModelResponse {
+  // The scores output by the model.
+  repeated float scores = 1;
+
+  // Whether the output was deemed unsafe.
+  bool is_unsafe = 2;
 }

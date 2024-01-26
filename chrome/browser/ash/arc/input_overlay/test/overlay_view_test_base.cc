@@ -41,7 +41,7 @@ void OverlayViewTestBase::PressAddButton() {
   if (!editing_list_) {
     return;
   }
-  LeftClickOn(editing_list_->add_button_);
+  LeftClickOn(editing_list_->GetAddButtonForTesting());
 }
 
 void OverlayViewTestBase::AddNewActionInCenter() {

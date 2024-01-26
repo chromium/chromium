@@ -38,9 +38,8 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
 
  private:
   mojom::blink::WebPrintingService* GetPrintingService();
-  void OnPrintersRetrieved(
-      ScriptPromiseResolver*,
-      WTF::Vector<mojom::blink::WebPrinterInfoPtr> printers);
+  void OnPrintersRetrieved(ScriptPromiseResolver*,
+                           mojom::blink::GetPrintersResultPtr result);
 
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;
 };

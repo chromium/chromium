@@ -88,7 +88,7 @@ bool IsShortcutCustomizationAppEnabled() {
 
 BASE_FEATURE(kShortcutCustomization,
              "ShortcutCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShortcutCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kShortcutCustomization);
@@ -253,8 +253,6 @@ BASE_FEATURE(kInputPaneOnScreenKeyboard,
 BASE_FEATURE(kPointerEventsForTouch,
              "PointerEventsForTouch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables using TSF (over IMM32) for IME.
-BASE_FEATURE(kTSFImeSupport, "TSFImeSupport", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUsingWMPointerForTouch() {
   return base::FeatureList::IsEnabled(kPointerEventsForTouch);

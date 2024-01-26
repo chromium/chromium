@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -291,23 +291,23 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1293942")
+    @Features.EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
     public void signinWhenChildAccountIsFirstAccount() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         final CoreAccountInfo childAccount = mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mSigninTestRule.addAccount("the.second.account@gmail.com");
 
-        mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     return childAccount.equals(
-                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
 
-        // The check should be done once at account addition and once at activity start-up.
+        // The check should be done twice at account addition and once during force sign-in.
         Assert.assertEquals(
-                2,
+                3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(

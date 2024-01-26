@@ -9,7 +9,9 @@
 #import "base/ios/ios_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -47,6 +49,9 @@ constexpr CGFloat kSectionHeaderHeight = 6;
 // Height of the section footer.
 constexpr CGFloat kSectionFooterHeight = 8;
 
+// Left inset of the table view's section separators.
+constexpr CGFloat kSectionSepatatorLeftInset = 16;
+
 }  // namespace
 
 @interface FallbackViewController ()
@@ -67,7 +72,9 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 - (instancetype)init {
-  self = [super initWithStyle:UITableViewStylePlain];
+  self = [super initWithStyle:IsKeyboardAccessoryUpgradeEnabled()
+                                  ? ChromeTableViewStyle()
+                                  : UITableViewStylePlain];
 
   if (self) {
     _loadingIndicatorStartingTime = base::Time::Min();
@@ -79,20 +86,26 @@ constexpr CGFloat kSectionFooterHeight = 8;
 - (void)viewDidLoad {
   // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
   // be set before.
-  self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.styler.tableViewBackgroundColor =
+      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled()
+                              ? kGroupedPrimaryBackgroundColor
+                              : kBackgroundColor];
 
   [super viewDidLoad];
 
   // Remove extra spacing on top of sections.
-  if (@available(iOS 15, *)) {
-    self.tableView.sectionHeaderTopPadding = 0;
-  }
+  self.tableView.sectionHeaderTopPadding = 0;
 
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.tableView.separatorInset =
+        UIEdgeInsetsMake(0, kSectionSepatatorLeftInset, 0, 0);
+  } else {
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+  }
   self.tableView.sectionHeaderHeight = kSectionHeaderHeight;
   self.tableView.sectionFooterHeight = kSectionFooterHeight;
   self.tableView.estimatedRowHeight = 1;
-  self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {

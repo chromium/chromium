@@ -119,11 +119,11 @@ class MockUserModifiableProvider
                     ContentSettingsType content_type,
                     const content_settings::PartitionKey& partition_key));
   MOCK_METHOD5(RenewContentSetting,
-               absl::optional<base::TimeDelta>(
+               std::optional<base::TimeDelta>(
                    const GURL& primary_url,
                    const GURL& secondary_url,
                    ContentSettingsType content_type,
-                   absl::optional<ContentSetting> setting_to_match,
+                   std::optional<ContentSetting> setting_to_match,
                    const content_settings::PartitionKey& partition_key));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
@@ -1404,7 +1404,7 @@ TEST_P(IndexedHostContentSettingsMapTest, AddContentSettingsObserver) {
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::COOKIES));
   host_content_settings_map->SetContentSettingDefaultScope(
-      host, GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+      host, GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 }
 
 // Guest profiles do not exist on Android, so don't run these tests there.
@@ -1870,11 +1870,11 @@ TEST_P(IndexedHostContentSettingsMapTest, GetPatternsFromScopingType) {
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT,
+      primary_url, secondary_url, ContentSettingsType::TPCD_TRIAL,
       CONTENT_SETTING_ALLOW);
 
   settings = host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::TPCD_SUPPORT);
+      ContentSettingsType::TPCD_TRIAL);
 
   EXPECT_EQ(settings[0].primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
@@ -1955,7 +1955,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsForContentSettingsType) {
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
   patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
-      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT);
+      primary_url, secondary_url, ContentSettingsType::TPCD_TRIAL);
 
   EXPECT_EQ(patterns.first,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
@@ -2153,7 +2153,7 @@ TEST_P(IndexedHostContentSettingsMapTest,
   ASSERT_EQ(3u, settings.size());
 
   // Validate that using no SessionModel functions the exact same way.
-  settings = map->GetSettingsForOneType(persistent_type, absl::nullopt);
+  settings = map->GetSettingsForOneType(persistent_type, std::nullopt);
   ASSERT_EQ(3u, settings.size());
 
   // Each one/type of settings we set should be retrievable by specifying the
@@ -2399,7 +2399,7 @@ TEST_P(IndexedHostContentSettingsMapTest, RenewContentSetting) {
   EXPECT_EQ(map->RenewContentSetting(primary_url, secondary_url,
                                      ContentSettingsType::STORAGE_ACCESS,
                                      ContentSetting::CONTENT_SETTING_ALLOW),
-            absl::make_optional(base::Hours(1)));
+            std::make_optional(base::Hours(1)));
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, Increments3pcSettingsMetrics) {

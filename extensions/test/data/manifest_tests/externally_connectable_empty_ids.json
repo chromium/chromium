@@ -1,0 +1,8 @@
+{
+  "name": "extensions_unittests --gtest_filter=ExternallyConnectableTest.WarningNothingSpecified",
+  "version": "1",
+  "manifest_version": 3,
+  "externally_connectable": {
+    "ids": []
+  }
+}

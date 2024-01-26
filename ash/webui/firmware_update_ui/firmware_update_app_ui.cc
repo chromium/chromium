@@ -77,7 +77,8 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"requestIdInsertUsbCable", IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE},
       {"requestIdPressUnlock", IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK},
       {"requestIdDoNotPowerOff", IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF},
-      {"requestIdReplugInstall", IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL}};
+      {"requestIdReplugInstall", IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL},
+      {"requestIdReplugPower", IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();

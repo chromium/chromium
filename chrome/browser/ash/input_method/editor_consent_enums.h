@@ -52,6 +52,36 @@ enum class EditorOpportunityMode {
   kWrite,
 };
 
+// Defines the reason why the editor is blocked.
+enum class EditorBlockedReason {
+  // Blocked because the consent status does not satisfy.
+  kBlockedByConsent,
+  // Blocked because the setting toggle is switched off.
+  kBlockedBySetting,
+  // Blocked because the text is too long.
+  kBlockedByTextLength,
+  // Blocked because the focused text input residing in a url found in the
+  // url denylist.
+  kBlockedByUrl,
+  // Blocked because the focused text input residing in an app found in the
+  // app denylist.
+  kBlockedByApp,
+  // Blocked because the current active input method is not supported.
+  kBlockedByInputMethod,
+  // Blocked because the current active input type is not allowed.
+  kBlockedByInputType,
+  // Blocked because the current app type is not supported.
+  kBlockedByAppType,
+  // Blocked because current form factor is not supported.
+  kBlockedByInvalidFormFactor,
+  // Blocked because user is not connected to internet.
+  kBlockedByNetworkStatus,
+  // Blocked because user is not in a supported country.
+  kBlockedByUnsupportedRegion,
+  // Blocked because user is using a managed device.
+  kBlockedByManagedStatus,
+};
+
 ConsentStatus GetConsentStatusFromInteger(int status_value);
 
 }  // namespace ash::input_method

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Bildiriş alın</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
+<translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4648718555153979859">Tablar burada qruplaşdırılır</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> rəy)}other{(<ph name="REVIEWS_COUNT_MANY" /> rəy)}}</translation>
 <translation id="4850886885716139402">Görünüş</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
+<translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_ONE" /> tab var}other{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
 <translation id="5339733443032484186">Son tab</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>

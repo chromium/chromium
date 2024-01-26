@@ -6,10 +6,11 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -76,7 +77,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<web::NavigationItem> pending_item_;
-  web::FakeNavigationManager* fake_navigation_manager_;
+  raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
   web::FakeWebState fake_web_state_;
 };
 

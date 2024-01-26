@@ -84,7 +84,7 @@ void AutomationManagerLacros::DispatchActionResult(
 
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   // Unsupported by Laros.
 }
 

@@ -529,7 +529,8 @@ class LoginLogoutReporterKioskFailedBrowserTest
     UserDataAuthClient::InitializeFake();
     FakeUserDataAuthClient::Get()->SetNextOperationError(
         FakeUserDataAuthClient::Operation::kStartAuthSession,
-        user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
+        cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
   }
 };
 

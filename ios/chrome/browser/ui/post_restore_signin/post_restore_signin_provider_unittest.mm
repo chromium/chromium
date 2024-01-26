@@ -6,14 +6,19 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/test/sync_user_settings_mock.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -32,8 +37,13 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  public:
   explicit PostRestoreSignInProviderTest() {
     SetFakePreRestoreAccountInfo();
-    provider_ = [[PostRestoreSignInProvider alloc]
-        initWithSyncUserSettings:&sync_user_settings_];
+    TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                       SyncServiceFactory::GetDefaultFactory());
+    browser_state_ = test_cbs_builder.Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    provider_ =
+        [[PostRestoreSignInProvider alloc] initForBrowser:browser_.get()];
   }
 
   void SetFakePreRestoreAccountInfo() {
@@ -51,8 +61,8 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     StorePreRestoreIdentity(local_state_.Get(), accountInfo,
                             /*history_sync_enabled=*/false);
     // Reinstantiate a provider so that it picks up the changes.
-    provider_ = [[PostRestoreSignInProvider alloc]
-        initWithSyncUserSettings:&sync_user_settings_];
+    provider_ =
+        [[PostRestoreSignInProvider alloc] initForBrowser:browser_.get()];
   }
 
   void SetupMockHandler() {
@@ -60,13 +70,13 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     provider_.handler = mock_handler_;
   }
 
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<Browser> browser_;
   PostRestoreSignInProvider* provider_;
-
- private:
-  testing::NiceMock<syncer::SyncUserSettingsMock> sync_user_settings_;
 };
 
 // Tests `hasIdentifierAlert` method.

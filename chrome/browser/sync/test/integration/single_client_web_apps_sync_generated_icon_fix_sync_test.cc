@@ -117,11 +117,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
   // Fields copied from chrome/test/data/web_apps/basic.json.
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   sync_pb::EntitySpecifics specifics;
   sync_pb::WebAppSpecifics& web_app_specifics = *specifics.mutable_web_app();
   web_app_specifics.set_start_url(start_url.spec());
-  web_app_specifics.set_user_display_mode(sync_pb::WebAppSpecifics::STANDALONE);
+  web_app_specifics.set_user_display_mode_non_cros(
+      sync_pb::WebAppSpecifics::STANDALONE);
   web_app_specifics.set_name("Basic web app");
   GetFakeServer()->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -159,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
       update_future.GetCallback());
   ASSERT_TRUE(AddTabAtIndexToBrowser(GetBrowser(0), 0, start_url,
                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
-  absl::optional<ManifestUpdateResult> update_result = update_future.Get<1>();
+  std::optional<ManifestUpdateResult> update_result = update_future.Get<1>();
 
   // Check icons fixed if flag enabled and in time window.
   bool expect_fix_applied =

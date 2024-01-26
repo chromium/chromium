@@ -10,6 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 // #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include <optional>
+
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -21,7 +23,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -93,7 +94,7 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">vooruit</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
+<translation id="1626590945318984973">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder de functie- en <ph name="META_KEY" />-toetsen te gebruiken.</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1643449475550628585">Achtergrondafbeelding dagelijks wijzigen</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Donkere modus uitzetten</translation>
 <translation id="1885577615937958993">media vooruitspoelen</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
-<translation id="1897672602657312171">Sneltoets zonder zoektoets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de zoektoets.</translation>
 <translation id="1904932688895783618">Een paar andere nuttige bronnen:</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157660087437850958">emoji-kiezer</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Je beheerder heeft ingesteld dat <ph name="APP_NAME_1" /> automatisch wordt gestart als je inlogt.}=2{Je beheerder heeft ingesteld dat <ph name="APP_NAME_1" /> en <ph name="APP_NAME_2" /> automatisch worden gestart als je inlogt.}=3{Je beheerder heeft ingesteld dat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> automatisch worden gestart als je inlogt.}other{Je beheerder heeft ingesteld dat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> en # andere apps automatisch worden gestart als je inlogt.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
 <translation id="215916044711630446">De knop APN toevoegen staat nu uit</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
 <translation id="2209788852729124853">Verkeerstellers resetten</translation>
 <translation id="2212733584906323460">Naamresolutie</translation>
+<translation id="2215920961700443347">Geen internet. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="2217935453350629363">Huidige snelheid</translation>
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="222447520299472966">Er moet minimaal één album uit de kunstgalerie worden geselecteerd</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Afbeelding <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">We zijn nu erg druk. Probeer het later opnieuw.</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
 <translation id="2491955442992294626">Toetsen worden niet getest als je een ander venster gebruikt</translation>
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2512979179176933762">vensters tonen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
-<translation id="2515109918609218604">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder de functie- en zoektoetsen te gebruiken.</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2521835766824839541">vorig nummer</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Je hebt nu toegang tot nieuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />achtergronden<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Donkere modus</translation>
 <translation id="4130035430755296270">Plaats de cursor voor meer lay-outopties.</translation>
+<translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is automatisch gestart}other{# apps zijn automatisch gestart}}</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4150201353443180367">Weergave</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">helderheid omlaag</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4176659219503619100">Dashboard</translation>
-<translation id="4185315616950253617">Sneltoets met toetsen op de bovenste rij moet de zoektoets bevatten.</translation>
 <translation id="420283545744377356">Screensaver uitzetten</translation>
 <translation id="4213104098953699324">USB-toetsenbord</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Uitzetten</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> wordt opnieuw opgestart</translation>
 <translation id="4395835743215824109">toetsenbord aanpassen</translation>
+<translation id="4403262788869804671">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets.</translation>
 <translation id="4415951057168511744">Huidige avatar</translation>
+<translation id="4417830657741848074">Je beheerder heeft ingesteld dat sommige apps automatisch worden gestart. Je kunt sommige van deze apps misschien niet sluiten.</translation>
 <translation id="4422041425070339732">pijl-omlaag</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> staat uit</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Screensaver Aardestroom</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
+<translation id="4500722292849917410">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfacekleur</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
 <translation id="4507392511610824664">helderheid omhoog</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
 <translation id="4839698083503556542">Je eigen film maken</translation>
+<translation id="48409034532829769">Je beheerder heeft ingesteld dat <ph name="APP_NAME" /> automatisch wordt gestart. Je kunt deze app misschien niet sluiten.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> geselecteerd, druk op Enter om <ph name="TOPIC_SOURCE" />-albums te selecteren</translation>
 <translation id="484790837831576105">(Android) DNS-omzetting</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Splitsen</translation>
 <translation id="4972592110715526173">modus wijzigen</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
+<translation id="4982627662315910959">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met Shift en nog 1 functietoets (Ctrl, Alt of <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagina's</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Planning voor donker thema</translation>
 <translation id="5229344016299762883">Volledig scherm sluiten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Je beheerder heeft ingesteld dat <ph name="APP_NAME" /> automatisch wordt gestart als je inlogt.}=2{Je beheerder heeft ingesteld dat <ph name="APP_NAME" /> en nog 1 app automatisch worden gestart als je inlogt.}other{Je beheerder heeft ingesteld dat <ph name="APP_NAME" /> en # andere apps automatisch worden gestart als je inlogt.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Modus voor lichte kleuren aanzetten</translation>
 <translation id="5264277876637023664">CPU-test doen</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="725133483556299729">E-mailadres selecteren</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
-<translation id="7273347807225967898">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift, Zoeken of Launcher).</translation>
+<translation id="7271932918253517778">Sneltoets met toetsen op de bovenste rij moet de <ph name="META_KEY" />-toets bevatten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Een koel briesje</translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Algemene bedieningselementen</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is automatisch gestart}other{# apps zijn automatisch gestart}}</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Snelkoppeling bewerkt</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8094062939584182041">Toestaan dat Google je e-mail stuurt over dit probleem</translation>
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
-<translation id="8111706652656628199">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met Shift en nog 1 functietoets (Ctrl, Alt, Zoeken of Launcher).</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>

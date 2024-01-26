@@ -313,7 +313,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS_BY_DSE, this::updateContent);
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            mRestoreTabId = FeedFeatures.getFeedTabIdToRestore();
+            mRestoreTabId = FeedFeatures.getFeedTabIdToRestore(mProfile);
         } else {
             mRestoreTabId = openingTabId;
         }
@@ -379,7 +379,7 @@ public class FeedSurfaceMediator
         // Proactively disable the unread content. Waiting for observers is too slow.
         headerList.get(headerIndex).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
 
-        FeedFeatures.setLastSeenFeedTabId(headerIndex);
+        FeedFeatures.setLastSeenFeedTabId(mProfile, headerIndex);
 
         Stream newStream = mTabToStreamMap.get(headerIndex);
         if (newStream.supportsOptions()) {
@@ -393,7 +393,7 @@ public class FeedSurfaceMediator
             logSwitchedFeeds(newStream);
             bindStream(newStream);
             if (newStream.getStreamKind() == StreamKind.FOLLOWING) {
-                FeedFeatures.updateFollowingFeedSeen();
+                FeedFeatures.updateFollowingFeedSeen(mProfile);
             }
         }
     }
@@ -422,7 +422,7 @@ public class FeedSurfaceMediator
                 .getView()
                 .addOnLayoutChangeListener(
                         (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                            mSnapScrollHelper.handleScroll();
+                            mCoordinator.getView().postOnAnimation(mSnapScrollHelper::handleScroll);
                             float pixelToDp = mContext.getResources().getDisplayMetrics().density;
                             int widthDp = (int) ((right - left) / pixelToDp);
                             updateLayout(widthDp < SMALL_WIDTH_DP);
@@ -434,7 +434,7 @@ public class FeedSurfaceMediator
         // See https://crbug.com/1498004.
         if (ApplicationStatus.isEveryActivityDestroyed()) return;
 
-        mFeedEnabled = FeedFeatures.isFeedEnabled();
+        mFeedEnabled = FeedFeatures.isFeedEnabled(mProfile);
         if (mFeedEnabled && !mTabToStreamMap.isEmpty()) {
             return;
         }
@@ -508,7 +508,7 @@ public class FeedSurfaceMediator
      */
     void setTabId(@FeedSurfaceCoordinator.StreamTabId int tabId) {
         if (tabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            tabId = FeedFeatures.getFeedTabIdToRestore();
+            tabId = FeedFeatures.getFeedTabIdToRestore(mProfile);
         }
         if (mTabToStreamMap.size() <= tabId) tabId = 0;
         mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);
@@ -578,12 +578,17 @@ public class FeedSurfaceMediator
 
                     @Override
                     public void onScrolled(RecyclerView v, int dx, int dy) {
-                        if (mSnapScrollHelper != null) {
-                            mSnapScrollHelper.handleScroll();
-                        }
-                        for (ScrollListener listener : mScrollListeners) {
-                            listener.onScrolled(dx, dy);
-                        }
+                        mCoordinator
+                                .getView()
+                                .postOnAnimation(
+                                        () -> {
+                                            if (mSnapScrollHelper != null) {
+                                                mSnapScrollHelper.handleScroll();
+                                            }
+                                            for (ScrollListener listener : mScrollListeners) {
+                                                listener.onScrolled(dx, dy);
+                                            }
+                                        });
                     }
                 };
         mCoordinator.getRecyclerView().addOnScrollListener(mStreamScrollListener);
@@ -656,7 +661,7 @@ public class FeedSurfaceMediator
             addHeaderAndStream(
                     mContext.getResources().getString(R.string.ntp_following),
                     mCoordinator.createFeedStream(StreamKind.FOLLOWING, new StreamsMediatorImpl()));
-            if (FeedFeatures.shouldUseNewIndicator()) {
+            if (FeedFeatures.shouldUseNewIndicator(mProfile)) {
                 PropertyModel followingHeaderModel =
                         mSectionHeaderModel
                                 .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
@@ -676,7 +681,7 @@ public class FeedSurfaceMediator
                                 if (feedContents.size() > mHeaderCount + 1) {
                                     followingHeaderModel.set(
                                             SectionHeaderProperties.ANIMATION_START_KEY, true);
-                                    FeedFeatures.updateNewIndicatorTimestamp();
+                                    FeedFeatures.updateNewIndicatorTimestamp(mProfile);
                                     mainFeedStream.removeOnContentChangedListener(this);
                                 }
                             }
@@ -1119,7 +1124,7 @@ public class FeedSurfaceMediator
     // TODO(carlosk): replace with FeedFeatures.getPrefService().
     private PrefService getPrefService() {
         if (sPrefServiceForTest != null) return sPrefServiceForTest;
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(mProfile);
     }
 
     // TouchEnabledDelegate interface.

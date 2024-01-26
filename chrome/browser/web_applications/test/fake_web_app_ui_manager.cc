@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -171,11 +171,12 @@ void FakeWebAppUiManager::MigrateLauncherState(
 }
 
 void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
-    const std::vector<std::string>& app_names,
+    const base::flat_map<webapps::AppId,
+                         WebAppUiManager::RoolNotificationBehavior>& apps,
     base::WeakPtr<Profile> profile) {
   // Still show the notification so it can be tested using the
   // NotificationDisplayServiceTester
-  web_app::DisplayRunOnOsLoginNotification(app_names, profile);
+  web_app::DisplayRunOnOsLoginNotification(apps, std::move(profile));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

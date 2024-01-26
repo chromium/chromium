@@ -142,8 +142,7 @@ TEST(SerializedScriptValueTest, UserSelectedFile) {
   ASSERT_EQ(file_path, original_file->GetPath());
 
   v8::Local<v8::Value> v8_original_file =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), original_file)
-          .ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), original_file);
   scoped_refptr<SerializedScriptValue> serialized_script_value =
       SerializedScriptValue::Serialize(
           scope.GetIsolate(), v8_original_file,
@@ -170,8 +169,7 @@ TEST(SerializedScriptValueTest, FileConstructorFile) {
   ASSERT_EQ("hello.txt", original_file->name());
 
   v8::Local<v8::Value> v8_original_file =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), original_file)
-          .ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), original_file);
   scoped_refptr<SerializedScriptValue> serialized_script_value =
       SerializedScriptValue::Serialize(
           scope.GetIsolate(), v8_original_file,

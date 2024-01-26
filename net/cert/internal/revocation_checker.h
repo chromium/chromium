@@ -5,7 +5,8 @@
 #ifndef NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 #define NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
@@ -114,7 +115,7 @@ NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
     const bssl::ParsedCertificateList& certs,
     const RevocationPolicy& policy,
     base::TimeTicks deadline,
-    base::StringPiece stapled_leaf_ocsp_response,
+    std::string_view stapled_leaf_ocsp_response,
     CertNetFetcher* net_fetcher,
     bssl::CertPathErrors* errors,
     bssl::OCSPVerifyResult* stapled_ocsp_verify_result);

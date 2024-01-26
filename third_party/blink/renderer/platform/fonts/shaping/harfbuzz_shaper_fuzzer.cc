@@ -47,13 +47,12 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   String string(reinterpret_cast<const UChar*>(data),
                 std::min(kMaxInputLength, size / sizeof(UChar)));
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   // BloberizeNG
-  scoped_refptr<ShapeResultView> result_view =
-      ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
-                                  result_view.get()};
+                                  result_view};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);

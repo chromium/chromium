@@ -55,9 +55,9 @@ class QueryManagerTest : public GpuServiceTest {
   }
 
   void TearDown() override {
-    decoder_.reset();
     manager_->Destroy(false);
     manager_.reset();
+    decoder_.reset();
     command_buffer_service_.reset();
     GpuServiceTest::TearDown();
   }

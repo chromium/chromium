@@ -1210,20 +1210,17 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
       skcms_PixelFormat_RGBA_ffff, skcms_AlphaFormat_Unpremul, nullptr, 4));
 
   Vector<float> expected_pixels = png_sample.expected_pixels;
-  bool test_succeed = true;
   const float decoding_tolerance = 0.001;
   for (int i = 0; i < 16; i++) {
     if (fabs(decoded_pixels_float_32[i] - expected_pixels[i]) >
         decoding_tolerance) {
-      DLOG(DCHECK) << "Pixel comparison failed. File: " << png_sample.filename
-                   << ", component index: " << i
-                   << ", actual: " << decoded_pixels_float_32[i]
-                   << ", expected: " << expected_pixels[i]
-                   << ", tolerance: " << decoding_tolerance;
-      test_succeed = false;
+      FAIL() << "Pixel comparison failed. File: " << png_sample.filename
+             << ", component index: " << i
+             << ", actual: " << decoded_pixels_float_32[i]
+             << ", expected: " << expected_pixels[i]
+             << ", tolerance: " << decoding_tolerance;
     }
   }
-  ASSERT_TRUE(test_succeed);
 }
 
 static void FillPNGSamplesSourcePixels(Vector<PNGSample>& png_samples) {

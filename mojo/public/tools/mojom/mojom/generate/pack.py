@@ -48,16 +48,13 @@ class PackedField:
   @classmethod
   def GetSizeForKind(cls, kind):
     if isinstance(kind, (mojom.Array, mojom.Map, mojom.Struct, mojom.Interface,
-                         mojom.AssociatedInterface, mojom.PendingRemote,
-                         mojom.PendingAssociatedRemote)):
+                         mojom.PendingRemote, mojom.PendingAssociatedRemote)):
       return 8
     if isinstance(kind, mojom.Union):
       return 16
-    if isinstance(kind, (mojom.InterfaceRequest, mojom.PendingReceiver)):
+    if isinstance(kind, mojom.PendingReceiver):
       kind = mojom.MSGPIPE
-    if isinstance(
-        kind,
-        (mojom.AssociatedInterfaceRequest, mojom.PendingAssociatedReceiver)):
+    if isinstance(kind, mojom.PendingAssociatedReceiver):
       return 4
     if isinstance(kind, mojom.Enum):
       # TODO(mpcomplete): what about big enums?
@@ -69,8 +66,9 @@ class PackedField:
 
   @classmethod
   def GetAlignmentForKind(cls, kind):
-    if isinstance(kind, (mojom.Interface, mojom.AssociatedInterface,
-                         mojom.PendingRemote, mojom.PendingAssociatedRemote)):
+    if isinstance(
+        kind,
+        (mojom.Interface, mojom.PendingRemote, mojom.PendingAssociatedRemote)):
       return 4
     if isinstance(kind, mojom.Union):
       return 8

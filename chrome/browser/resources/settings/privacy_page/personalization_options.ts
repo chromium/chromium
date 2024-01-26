@@ -21,23 +21,25 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 // </if>
 
-import {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {StatusAction, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {StatusAction} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
-import {FocusConfig} from '../focus_config.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrivacyPageVisibility} from '../page_visibility.js';
-import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
+import type {PrivacyPageVisibility} from '../page_visibility.js';
+import type {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {Router} from '../router.js';
 

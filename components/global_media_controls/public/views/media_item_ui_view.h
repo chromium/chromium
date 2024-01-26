@@ -15,7 +15,6 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
-#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/base/media_switches.h"
@@ -34,6 +33,7 @@ class SlideOutController;
 
 namespace global_media_controls {
 
+enum class MediaDisplayPage;
 class MediaItemUIObserver;
 
 // MediaItemUIView holds a media notification for display

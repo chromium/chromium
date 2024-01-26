@@ -21,8 +21,52 @@ namespace enterprise_connectors {
 
 namespace {
 
+struct CustomMessageTestCase {
+  TriggeredRule::Action action;
+  std::string message;
+};
+
 constexpr char kDmToken[] = "dm_token";
 constexpr char kTestUrl[] = "http://example.com/";
+constexpr char kTestInvalidUrl[] = "example.com";
+constexpr char kTestMessage[] = "test";
+constexpr char16_t kU16TestMessage[] = u"test";
+constexpr char kTestMessage2[] = "test2";
+constexpr char kGoogleServiceProvider[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_large_files": 1
+})";
+
+ContentAnalysisResponse CreateContentAnalysisResponse(
+    const std::vector<CustomMessageTestCase>& triggered_rules,
+    const std::string& url) {
+  ContentAnalysisResponse response;
+  auto* result = response.add_results();
+  result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  for (const auto& triggered_rule : triggered_rules) {
+    auto* rule = result->add_triggered_rules();
+    rule->set_action(triggered_rule.action);
+    if (!triggered_rule.message.empty()) {
+      ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+          custom_message;
+      auto* custom_segments = custom_message.add_message_segments();
+      custom_segments->set_text(triggered_rule.message);
+      custom_segments->set_link(url);
+      *rule->mutable_custom_rule_message() = custom_message;
+    }
+  }
+  return response;
+}
 
 class BaseTest : public testing::Test {
  public:
@@ -65,7 +109,7 @@ class EnterpriseConnectorsResultShouldAllowDataUseTest
   }
 
   AnalysisSettings settings() {
-    absl::optional<AnalysisSettings> settings =
+    std::optional<AnalysisSettings> settings =
         ConnectorsServiceFactory::GetForBrowserContext(profile())
             ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());
@@ -124,4 +168,101 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
                 safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE));
 }
 
+class ContentAnalysisResponseCustomMessageTest
+    : public BaseTest,
+      public testing::WithParamInterface<
+          std::tuple<std::vector<CustomMessageTestCase>, std::u16string>> {
+ public:
+  ContentAnalysisResponseCustomMessageTest() = default;
+
+  void SetUp() override {
+    BaseTest::SetUp();
+    EnableFeatures();
+
+    // Settings can't be returned if no DM token exists.
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
+  }
+
+  std::vector<CustomMessageTestCase> triggered_rules() const {
+    return std::get<0>(GetParam());
+  }
+  std::u16string expected_message() const { return std::get<1>(GetParam()); }
+
+  AnalysisSettings settings() {
+    absl::optional<AnalysisSettings> settings =
+        ConnectorsServiceFactory::GetForBrowserContext(profile())
+            ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
+    EXPECT_TRUE(settings.has_value());
+    return std::move(settings.value());
+  }
+};
+
+TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
+  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED,
+                             kGoogleServiceProvider);
+  ContentAnalysisResponse response =
+      CreateContentAnalysisResponse(triggered_rules(), kTestUrl);
+  RequestHandlerResult result = CalculateRequestHandlerResult(
+      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
+      response);
+  std::u16string custom_message =
+      GetCustomRuleString(result.custom_rule_message);
+  std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
+      GetCustomRuleStyles(result.custom_rule_message);
+
+  EXPECT_EQ(custom_message, expected_message());
+
+  if (custom_message.empty()) {
+    EXPECT_TRUE(custom_ranges.empty());
+  } else {
+    EXPECT_EQ(1u, custom_ranges.size());
+  }
+}
+
+TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
+  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED,
+                             kGoogleServiceProvider);
+  ContentAnalysisResponse response =
+      CreateContentAnalysisResponse(triggered_rules(), kTestInvalidUrl);
+  RequestHandlerResult result = CalculateRequestHandlerResult(
+      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
+      response);
+  std::u16string custom_message =
+      GetCustomRuleString(result.custom_rule_message);
+  std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
+      GetCustomRuleStyles(result.custom_rule_message);
+
+  EXPECT_EQ(custom_message, expected_message());
+  EXPECT_TRUE(custom_ranges.empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentAnalysisResponseCustomMessageTest,
+    testing::Values(
+        std::make_tuple(std::vector<CustomMessageTestCase>(),
+                        /*expected_message=*/std::u16string{}),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::WARN, .message = ""}},
+            /*expected_message=*/std::u16string{}),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::WARN, .message = kTestMessage}},
+            /*expected_message=*/kU16TestMessage),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::BLOCK, .message = ""},
+                {.action = TriggeredRule::WARN, .message = kTestMessage}},
+            /*expected_message=*/std::u16string{}),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::BLOCK, .message = ""},
+                {.action = TriggeredRule::BLOCK, .message = kTestMessage}},
+            /*expected_message=*/kU16TestMessage),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::BLOCK, .message = kTestMessage},
+                {.action = TriggeredRule::WARN, .message = kTestMessage2}},
+            /*expected_message=*/kU16TestMessage)));
 }  // namespace enterprise_connectors

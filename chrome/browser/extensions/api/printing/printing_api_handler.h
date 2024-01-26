@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,15 +56,15 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                            public crosapi::mojom::PrintJobObserver {
  public:
   using SubmitJobCallback = base::OnceCallback<void(
-      absl::optional<api::printing::SubmitJobStatus> status,
-      absl::optional<std::string> job_id,
-      absl::optional<std::string> error)>;
+      std::optional<api::printing::SubmitJobStatus> status,
+      std::optional<std::string> job_id,
+      std::optional<std::string> error)>;
   using GetPrintersCallback =
       base::OnceCallback<void(std::vector<api::printing::Printer>)>;
   using GetPrinterInfoCallback = base::OnceCallback<void(
-      absl::optional<base::Value> capabilities,
-      absl::optional<api::printing::PrinterStatus> status,
-      absl::optional<std::string> error)>;
+      std::optional<base::Value> capabilities,
+      std::optional<api::printing::PrinterStatus> status,
+      std::optional<std::string> error)>;
 
   static std::unique_ptr<PrintingAPIHandler> CreateForTesting(
       content::BrowserContext* browser_context,
@@ -98,9 +98,13 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
 
   // crosapi::mojom::PrintJobObserver:
+  void OnPrintJobUpdateDeprecated(
+      const std::string& printer_id,
+      unsigned int job_id,
+      crosapi::mojom::PrintJobStatus status) override;
   void OnPrintJobUpdate(const std::string& printer_id,
                         unsigned int job_id,
-                        crosapi::mojom::PrintJobStatus status) override;
+                        crosapi::mojom::PrintJobUpdatePtr update) override;
 
   // Register the printing API preference with the |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -112,12 +116,12 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // |native_window| is needed to show this dialog.
   void SubmitJob(gfx::NativeWindow native_window,
                  scoped_refptr<const extensions::Extension> extension,
-                 absl::optional<api::printing::SubmitJob::Params> params,
+                 std::optional<api::printing::SubmitJob::Params> params,
                  SubmitJobCallback callback);
 
   // Returns an error message if an error occurred.
-  absl::optional<std::string> CancelJob(const std::string& extension_id,
-                                        const std::string& job_id);
+  std::optional<std::string> CancelJob(const std::string& extension_id,
+                                       const std::string& job_id);
 
   void GetPrinters(GetPrintersCallback callback);
 

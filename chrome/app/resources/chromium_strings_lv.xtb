@@ -88,6 +88,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2583187216237139145">Darba profila administrators var noņemt šī profila lietošanas laikā ģenerētos Chromium datus (piemēram, grāmatzīmes, vēsturi, paroles un citus iestatījumus). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Turpināt lietot Chromium</translation>
 <translation id="259935314519650377">Lejupielādēto instalēšanas programmu neizdevās saglabāt kešatmiņā. Kļūda: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium darbojas ātrāk, un funkcijas, kurās tiek izmantota valoda JavaScript, darbojas paredzētajā veidā (ieteicams)</translation>
 <translation id="2648074677641340862">Instalācijas laikā radās operētājsistēmas kļūda. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="2661879430930417727">Ja ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chromium atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
 <translation id="268602741124540128">Laipni lūdzam pārlūkā Chromium, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
@@ -123,6 +124,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3258596308407688501">Chromium nevar nolasīt savu datu direktoriju un ierakstīt tajā:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 ir Chromium JavaScript un WebAssembly programma, kas tiek izmantota vietnes veiktspējas uzlabošanai</translation>
 <translation id="3283186697780795848">Ir instalēta Chromium versija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
 <translation id="328888136576916638">Trūkst Google API atslēgu. Tiks atspējotas dažas Chromium funkcijas.</translation>
@@ -140,7 +142,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3533435340678213462">Lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Varat arī noņemt intereses, ja nevēlaties, lai Chromium tās apsvērtu.</translation>
 <translation id="3567254597502212821">Jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chromium.</translation>
 <translation id="3593091352817399191">Jūs jau esat pierakstījies citā kontā. Lai atdalītu pārlūkošanu, pārlūkā Chromium varat sev izveidot atsevišķu profilu.</translation>
-<translation id="363078681319665186">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 10.15 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 10.13.</translation>
 <translation id="3639635944603682591">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chromium kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku.}=1{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Pieejams Chromium atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="3651803019964686660">Lai nosūtītu numuru no vietnes <ph name="ORIGIN" /> uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
@@ -157,7 +158,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> — Chromium</translation>
 <translation id="386822487697155367">Saņemt palīdzību saistībā ar Chromium OS</translation>
 <translation id="3871664619793219264">Piekļūstiet savam Chromium saturam no konta <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 10.15 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 10.14.</translation>
 <translation id="388648406173476553">Pielāgojiet un kontrolējiet pārlūkprogrammu Chromium. Ir nepieciešama jūsu uzmanība. Noklikšķiniet, lai skatītu plašāku informāciju.</translation>
 <translation id="3889543394854987837">Noklikšķiniet uz sava vārda, lai atvērtu Chromium un sāktu pārlūkošanu.</translation>
 <translation id="390528597099634151">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chromium profilā. Lai atdalītu pārlūkošanu, pārlūkā Chromium varat sev izveidot atsevišķu profilu.</translation>
@@ -218,6 +218,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4814736265800133385">Izmantot Chromium, nepierakstoties kontā</translation>
 <translation id="4888717733111232871">Ienākošo savienojumu kārtula pārlūkam Chromium, lai atļautu mDNS datplūsmu.</translation>
 <translation id="4893347770495441059">Atkārtoti palaist, lai atjauninātu &amp;Chromium</translation>
+<translation id="4942295735032723435">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 11 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium darbojas fona režīmā.</translation>
 <translation id="4987820182225656817">Viesi var izmantot Chromium, neatstājot nekādas pēdas.</translation>
 <translation id="4994636714258228724">Pievienot savu kontu pārlūkā Chromium</translation>
@@ -246,7 +247,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5623402015214259806">{0,plural, =0{Ir pieejams Chromium atjauninājums}=1{Ir pieejams Chromium atjauninājums}zero{Chromium atjauninājums ir pieejams jau # dienu}one{Chromium atjauninājums ir pieejams jau # dienu}other{Chromium atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="5643865575100044307">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chromium</translation>
 <translation id="5653831366781983928">Lūdzu, nekavējoties restartējiet pārlūku Chromium</translation>
-<translation id="5675598751761067447">Šis fails var būt bīstams.<ph name="LINE_BREAK" />Chromium var pārbaudīt šo lejupielādi, ja norādīsiet paroli, — parole paliks jūsu ierīcē.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
@@ -404,6 +404,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8105840573057009683">Pārlūkam Chromium ir nepieciešama atrašanās vietas atļauja šai vietnei.</translation>
 <translation id="8133124826068723441">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu domēnā nav pieejama sinhronizācija.</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
+<translation id="8166782796394721554">Ieslēdziet papildu aizsardzību Chromium JavaScript un WebAssembly programmā</translation>
 <translation id="81770708095080097">Šis fails ir bīstams, tāpēc Chromium to bloķēja.</translation>
 <translation id="8213374284266571500">Pārlūkā Chromium šis fails tika bloķēts, jo šī tipa faili ir bīstami.</translation>
 <translation id="8248265253516264921">Ja attēlam nav vērtīga apraksta, pārlūks Chromium mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>

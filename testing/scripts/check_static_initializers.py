@@ -260,7 +260,10 @@ def main_run(args):
 
 def main_compile_targets(args):
   if sys.platform.startswith('darwin'):
-    compile_targets = ['chrome']
+    if 'ios' in args.properties.get('target_platform', []):
+      compile_targets = ['ios/chrome/app:chrome']
+    else:
+      compile_targets = ['chrome']
   elif sys.platform.startswith('linux'):
     compile_targets = ['chrome']
   else:

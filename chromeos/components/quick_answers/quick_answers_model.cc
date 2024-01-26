@@ -53,6 +53,28 @@ TranslationResult& TranslationResult::TranslationResult::operator=(
     const TranslationResult& other) = default;
 TranslationResult::~TranslationResult() = default;
 
+StandardUnitConversionRates::StandardUnitConversionRates(double source_rate,
+                                                         double dest_rate)
+    : source_to_standard_conversion_rate(source_rate),
+      dest_to_standard_conversion_rate(dest_rate) {}
+StandardUnitConversionRates::StandardUnitConversionRates(
+    const StandardUnitConversionRates& other) = default;
+StandardUnitConversionRates&
+StandardUnitConversionRates::StandardUnitConversionRates::operator=(
+    const StandardUnitConversionRates& other) = default;
+StandardUnitConversionRates::~StandardUnitConversionRates() = default;
+
+UnitConversionInfo::UnitConversionInfo(
+    std::string unit,
+    StandardUnitConversionRates standard_unit_conversion_rates)
+    : unit(unit),
+      standard_unit_conversion_rates(standard_unit_conversion_rates) {}
+UnitConversionInfo::UnitConversionInfo(const UnitConversionInfo& other) =
+    default;
+UnitConversionInfo& UnitConversionInfo::UnitConversionInfo::operator=(
+    const UnitConversionInfo& other) = default;
+UnitConversionInfo::~UnitConversionInfo() = default;
+
 UnitConversionResult::UnitConversionResult() = default;
 UnitConversionResult::UnitConversionResult(const UnitConversionResult& other) =
     default;

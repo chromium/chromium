@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::autofill_metrics {
@@ -44,6 +45,10 @@ AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
       return AutofillFieldByFieldFillingTypes::kCreditCardExpiryYear;
     case CREDIT_CARD_EXP_MONTH:
       return AutofillFieldByFieldFillingTypes::kCreditCardExpiryMonth;
+    case ADDRESS_HOME_CITY:
+      return AutofillFieldByFieldFillingTypes::kCity;
+    case COMPANY_NAME:
+      return AutofillFieldByFieldFillingTypes::kCompany;
     default:
       NOTREACHED_NORETURN();
   }
@@ -63,15 +68,29 @@ void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete) {
                             user_accepted_delete);
 }
 
-void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method) {
-  CHECK_LE(filling_method, AutofillFillingMethodMetric::kMaxValue);
-  base::UmaHistogramEnumeration("Autofill.FillingMethodUsed", filling_method);
+void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method,
+                          FillingProduct filling_product,
+                          bool triggering_field_type_matches_filling_product) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.FillingMethodUsed.",
+                    FillingProductToString(filling_product),
+                    triggering_field_type_matches_filling_product
+                        ? ".TriggeringFieldMatchesFillingProduct"
+                        : ".TriggeringFieldDoesNotMatchFillingProduct"}),
+      filling_method);
 }
 
-void LogFieldByFieldFillingFieldUsed(FieldType field_type) {
-  base::UmaHistogramEnumeration("Autofill.FieldByFieldFilling.FieldTypeUsed",
-                                GetFieldByFieldFillingType(field_type),
-                                AutofillFieldByFieldFillingTypes::kMaxValue);
+void LogFieldByFieldFillingFieldUsed(
+    FieldType field_type_used,
+    FillingProduct filling_product,
+    bool triggering_field_type_matches_filling_product) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.FieldByFieldFilling.FieldTypeUsed.",
+                    FillingProductToString(filling_product),
+                    triggering_field_type_matches_filling_product
+                        ? ".TriggeringFieldMatchesFillingProduct"
+                        : ".TriggeringFieldDoesNotMatchFillingProduct"}),
+      GetFieldByFieldFillingType(field_type_used));
 }
 
 }  // namespace autofill::autofill_metrics

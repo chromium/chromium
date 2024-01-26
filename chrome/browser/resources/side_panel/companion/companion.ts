@@ -6,10 +6,12 @@ import './strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ImageQuery, LinkOpenMetadata, MethodType, PromoAction, PromoType, VisualSearchResult} from './companion.mojom-webui.js';
-import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
+import type {ImageQuery, LinkOpenMetadata, VisualSearchResult} from './companion.mojom-webui.js';
+import {MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
+import type {CompanionProxy} from './companion_proxy.js';
+import {CompanionProxyImpl} from './companion_proxy.js';
 
 /**
  * Method arguments to be passed as part of the JSON message object to be sent

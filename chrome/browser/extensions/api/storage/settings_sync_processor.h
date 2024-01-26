@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_STORAGE_SETTINGS_SYNC_PROCESSOR_H_
 #define CHROME_BROWSER_EXTENSIONS_API_STORAGE_SETTINGS_SYNC_PROCESSOR_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -13,7 +14,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/value_store/value_store_change.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class ModelError;
@@ -43,7 +43,7 @@ class SettingsSyncProcessor {
   void Init(const base::Value::Dict& initial_state);
 
   // Sends |changes| to sync.
-  absl::optional<syncer::ModelError> SendChanges(
+  std::optional<syncer::ModelError> SendChanges(
       const value_store::ValueStoreChangeList& changes);
 
   // Informs this that |changes| have been receieved from sync. No action will

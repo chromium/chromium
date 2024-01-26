@@ -16,12 +16,6 @@ component("chaps_util") {
     "chaps_util.h",
     "chaps_util_impl.cc",
     "chaps_util_impl.h",
-    "key_helper.cc",
-    "key_helper.h",
-    "pkcs12_reader.cc",
-    "pkcs12_reader.h",
-    "pkcs12_validator.cc",
-    "pkcs12_validator.h",
   ]
 
   deps = [
@@ -56,11 +50,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "chaps_util_impl_unittest.cc",
-    "key_helper_unittest.cc",
-    "pkcs12_reader_unittest.cc",
-  ]
+  sources = [ "chaps_util_impl_unittest.cc" ]
 
   deps = [
     ":chaps_util",

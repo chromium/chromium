@@ -10,20 +10,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::report::device_metrics {
 
 namespace {
-
-// day_of_week index for Monday in the base::Time::Exploded object.
-constexpr int kMondayDayOfWeekIndex = 1;
-
-// Record histogram for whether ActivateDate is read and parsed correctly.
-void RecordIsActivateDateSet(bool is_set) {
-  base::UmaHistogramBoolean("Ash.Report.IsActivateDateSet", is_set);
-}
 
 template <size_t N>
 int ConvertBitsetToInteger(std::bitset<N> bitset) {
@@ -38,8 +29,7 @@ std::bitset<N> ConvertIntegerToBitset(int val) {
 }  // namespace
 
 ActiveStatus::ActiveStatus(PrefService* local_state)
-    : local_state_(local_state),
-      statistics_provider_(system::StatisticsProvider::GetInstance()) {}
+    : local_state_(local_state) {}
 
 int ActiveStatus::GetValue() const {
   return local_state_->GetInteger(
@@ -66,7 +56,7 @@ std::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
   // Calculate total number of months since January 2000 to current month.
   // e.g. Dec 2022 should return a total of 275 months.
   int new_months_from_inception =
-      ((year - kInceptionYear) * kMonthsInYear) + (month - 1);
+      ((year - kInceptionYear) * utils::kMonthsInYear) + (month - 1);
   int previous_months_from_inception = GetMonthsSinceInception();
 
   // Check |ts| represents a new month than previously reported.
@@ -172,7 +162,7 @@ ActiveStatus::CalculateObservationMetadata(base::Time active_ts,
   metadata.set_monthly_active_status(is_monthly_active);
   metadata.set_yearly_active_status(is_yearly_active);
 
-  std::optional<base::Time> first_active_week = GetFirstActiveWeek();
+  std::optional<base::Time> first_active_week = utils::GetFirstActiveWeek();
   if (!first_active_week.has_value()) {
     LOG(ERROR) << "Cannot calculate observation metadata for first active "
                << "during cohort without the first active week.";
@@ -251,144 +241,6 @@ std::optional<base::Time> ActiveStatus::GetInceptionMonthTimestamp() const {
   return inception_ts;
 }
 
-base::Time ActiveStatus::GetFirstMondayFromNewYear(base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-
-  // Only the Year, Month, and Day fields should be set.
-  // All other values such as hour, minute, second should be set to 0.
-  exploded.hour = 0;
-  exploded.minute = 0;
-  exploded.second = 0;
-  exploded.millisecond = 0;
-
-  // day_of_week field is 0 based starting from Sunday.
-  int days_to_first_monday;
-
-  if (kMondayDayOfWeekIndex >= exploded.day_of_week) {
-    // Difference in days between Sunday/Monday to Monday.
-    days_to_first_monday = kMondayDayOfWeekIndex - exploded.day_of_week;
-  } else {
-    // Number of days to get to the next Monday from the current day_of_week.
-    days_to_first_monday =
-        ActiveStatus::kNumberOfDaysInWeek - (exploded.day_of_week - 1);
-  }
-
-  return ts + base::Days(days_to_first_monday);
-}
-
-// The ActivateDate is formatted: YYYY-WW and is generated based on UTC date.
-// Returns the first day of the ISO8601 week.
-std::optional<base::Time> ActiveStatus::Iso8601DateWeekAsTime(
-    int activate_year,
-    int activate_week_of_year) const {
-  if (activate_year < 0 || activate_week_of_year < 0 ||
-      activate_week_of_year > 53) {
-    LOG(ERROR) << "Invalid year or week of year"
-               << ". Variable activate_year = " << activate_year
-               << ". Variable activate_week_of_year = "
-               << activate_week_of_year;
-    return std::nullopt;
-  }
-
-  // Get the first monday of the parsed activate date year as a base::Time
-  // object. This will make it easier to add the required number of days to
-  // get the start of the ISO 8601 week standard period.
-  base::Time new_year_ts;
-  std::string new_year_date =
-      "Jan 01 00:00:00 GMT " + base::NumberToString(activate_year);
-  bool success = base::Time::FromUTCString(new_year_date.c_str(), &new_year_ts);
-
-  if (!success) {
-    LOG(ERROR) << "Failed to store new year in base::Time using "
-                  "FromUTCString method.";
-    return std::nullopt;
-  }
-
-  // ISO 8601 assigns the weeks to 0 if the stored date was
-  // before the first monday of the year.
-  // For example, the first monday of 2020 is Jan 6th, so devices that had
-  // Activated between [Jan 1st, Jan 5th] have activate week of year set to 0.
-  if (activate_week_of_year == 0) {
-    return new_year_ts;
-  }
-
-  base::Time first_monday_of_year = GetFirstMondayFromNewYear(new_year_ts);
-
-  // Get the number of days to the start of a ISO 8601 week standard period
-  // for that year from the years first monday. This is equal to
-  // (activate_week_of_year-1) * 7 days.
-  int days_in_iso_period = 0;
-  days_in_iso_period = (activate_week_of_year - 1) * 7;
-
-  // Add the above two steps to get the start of a ISO 8601 week time.
-  return first_monday_of_year + base::Days(days_in_iso_period);
-}
-
-std::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
-  std::optional<base::StringPiece> first_active_week_val =
-      statistics_provider_->GetMachineStatistic(system::kActivateDateKey);
-  std::string first_active_week_str =
-      std::string(first_active_week_val.value_or(kActivateDateKeyNotFound));
-
-  if (first_active_week_str == kActivateDateKeyNotFound) {
-    LOG(ERROR)
-        << "Failed to retrieve ActivateDate VPD field from machine statistics. "
-        << "Leaving |first_active_week_| unset.";
-    RecordIsActivateDateSet(false);
-    return std::nullopt;
-  }
-
-  // Activate date is formatted: "YYYY-WW"
-  int delimiter_index = first_active_week_str.find('-');
-
-  const int expected_first_active_week_size = 7;
-  const int expected_delimiter_index = 4;
-  if (first_active_week_str.size() != expected_first_active_week_size ||
-      delimiter_index != expected_delimiter_index) {
-    LOG(ERROR) << "ActivateDate was retrieved but is not formatted as YYYY-WW. "
-               << "Received string : " << first_active_week_str;
-    RecordIsActivateDateSet(false);
-    return std::nullopt;
-  }
-
-  const int expected_year_size = 4;
-  const int expected_weeks_size = 2;
-
-  std::string parsed_year = first_active_week_str.substr(0, expected_year_size);
-  std::string parsed_weeks = first_active_week_str.substr(
-      expected_delimiter_index + 1, expected_weeks_size);
-
-  if (parsed_year.empty() || parsed_weeks.empty()) {
-    LOG(ERROR) << "Failed to parse and convert the first active weeks string "
-               << "year and weeks.";
-    RecordIsActivateDateSet(false);
-    return std::nullopt;
-  }
-
-  // Convert parsed year and weeks to int.
-  int activate_year, activate_week_of_year;
-  bool success_year = base::StringToInt(parsed_year, &activate_year);
-  bool success_week = base::StringToInt(parsed_weeks, &activate_week_of_year);
-
-  if (!success_year || !success_week) {
-    LOG(ERROR) << "Failed to convert parsed_year or parsed_weeks: "
-               << parsed_year << " and " << parsed_weeks;
-    RecordIsActivateDateSet(false);
-    return std::nullopt;
-  }
-
-  auto iso8601_ts = Iso8601DateWeekAsTime(activate_year, activate_week_of_year);
-  if (!iso8601_ts.has_value()) {
-    LOG(ERROR) << "Failed to ISO8601 year and week of year as a timestamp.";
-    RecordIsActivateDateSet(false);
-    return std::nullopt;
-  }
-
-  RecordIsActivateDateSet(true);
-  return iso8601_ts.value();
-}
-
 int ActiveStatus::GetMonthsSinceInception() const {
   std::string month_from_inception =
       ConvertIntegerToBitset<kActiveStatusBitSize>(GetValue())
@@ -418,7 +270,7 @@ bool ActiveStatus::IsDeviceActiveInMonth(int month_idx) const {
 
 std::optional<bool> ActiveStatus::IsFirstActiveInCohort(
     base::Time active_ts) const {
-  auto first_active_week = GetFirstActiveWeek();
+  auto first_active_week = utils::GetFirstActiveWeek();
   if (!first_active_week.has_value()) {
     LOG(ERROR)
         << "First Active Week could not be retrieved correctly from VPD.";

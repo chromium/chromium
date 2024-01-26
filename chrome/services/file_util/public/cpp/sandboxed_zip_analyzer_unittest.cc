@@ -93,7 +93,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   // |results|.
   void RunAnalyzer(const base::FilePath& file_path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
-    RunAnalyzer(file_path, /*password=*/absl::nullopt, results);
+    RunAnalyzer(file_path, /*password=*/std::nullopt, results);
   }
 
   void RunAnalyzer(const base::FilePath& file_path,
@@ -557,7 +557,7 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeZipFile(_, _, _, _))
       .WillOnce([&](base::File zip_file,
-                    const absl::optional<std::string>& password,
+                    const std::optional<std::string>& password,
                     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
                         temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeZipFileCallback
@@ -567,9 +567,9 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
         run_loop.Quit();
       });
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-      SandboxedZipAnalyzer::CreateAnalyzer(
-          temp_path, /*password=*/absl::nullopt, base::DoNothing(),
-          std::move(remote));
+      SandboxedZipAnalyzer::CreateAnalyzer(temp_path, /*password=*/std::nullopt,
+                                           base::DoNothing(),
+                                           std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

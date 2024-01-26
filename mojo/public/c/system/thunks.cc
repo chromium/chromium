@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -25,7 +26,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
-#include <optional>
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
@@ -49,7 +49,6 @@ MojoResult NotImplemented(const char* name) {
       << "Mojo has not been initialized in this process. You must call "
       << "either mojo::core::Init() as an embedder, or |MojoInitialize()| if "
       << "using the mojo_core shared library.";
-  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 }  // namespace

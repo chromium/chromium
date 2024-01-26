@@ -3,21 +3,122 @@
 // found in the LICENSE file.
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
+
 #include "base/android/build_info.h"
+#include "base/android/pmf_utils.h"
+#include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
+
+#include <optional>
+#include <string>
 
 namespace base {
+namespace {
+
+// This constant is chosen arbitrarily, to allow time for the background tasks
+// to finish running BEFORE collecting metrics.
+const base::TimeDelta kDelayForMetrics = base::Seconds(2);
+
+std::optional<uint64_t> GetPrivateMemoryFootprint() {
+  return base::android::PmfUtils::GetPrivateMemoryFootprintForCurrentProcess();
+}
+
+uint64_t BytesToMiB(uint64_t v) {
+  return v / 1024 / 1024;
+}
+
+bool IsAndroidUPlus() {
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_U;
+}
+
+const char* GetProcessType() {
+  CHECK(base::CommandLine::InitializedForCurrentProcess());
+  const std::string type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
+  const char* process_type = type == ""              ? "Browser"
+                             : type == "renderer"    ? "Renderer"
+                             : type == "gpu-process" ? "Gpu"
+                             : type == "utility"     ? "Utility"
+                                                     : "Unknown";
+  return process_type;
+}
+
+std::string GetMetricName(const char* suffix) {
+  CHECK(base::CommandLine::InitializedForCurrentProcess());
+  const char* process_type = GetProcessType();
+  return StrCat(
+      {"Memory.PreFreeze.", process_type, ".PrivateMemoryFootprint.", suffix});
+}
+
+void MaybeRecordMetric(const std::string metric_name,
+                       std::optional<uint64_t> value_bytes) {
+  // Skip recording the metric if we failed to get the PMF.
+  if (!value_bytes.has_value()) {
+    return;
+  }
+  UmaHistogramMemoryLargeMB(metric_name,
+                            static_cast<int>(BytesToMiB(value_bytes.value())));
+}
+
+std::optional<uint64_t> PmfDiff(std::optional<uint64_t> pmf_before,
+                                std::optional<uint64_t> pmf_after) {
+  if (!pmf_before.has_value() || !pmf_before.has_value()) {
+    return std::nullopt;
+  }
+
+  const uint64_t pmf_before_value = pmf_before.value();
+  const uint64_t pmf_after_value = pmf_after.value();
+
+  return pmf_after_value < pmf_before_value ? pmf_before_value - pmf_after_value
+                                            : 0;
+}
+
+void RecordMetrics(std::optional<uint64_t> pmf_before) {
+  // We need the process type to record the metrics below, which we get from
+  // the command line.
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    return;
+  }
+
+  std::string before_name = GetMetricName("Before");
+  std::string after_name = GetMetricName("After");
+  std::string diff_name = GetMetricName("Diff");
+
+  std::optional<uint64_t> pmf_after = GetPrivateMemoryFootprint();
+
+  MaybeRecordMetric(before_name, pmf_before);
+  MaybeRecordMetric(after_name, pmf_after);
+  MaybeRecordMetric(diff_name, PmfDiff(pmf_before, pmf_after));
+}
+
+void PostMetricsTask(std::optional<uint64_t> pmf_before) {
+  // PreFreeze is only for Android U and greater, so no need to record metrics
+  // for older versions.
+  if (!IsAndroidUPlus()) {
+    return;
+  }
+  base::ThreadPool::PostDelayedTask(FROM_HERE, {MayBlock()},
+                                    base::BindOnce(&RecordMetrics, pmf_before),
+                                    kDelayForMetrics);
+}
+
+}  // namespace
 
 BASE_FEATURE(kOnPreFreezeMemoryTrim,
              "OnPreFreezeMemoryTrim",
              FEATURE_DISABLED_BY_DEFAULT);
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
-    : is_respecting_modern_trim_(
-          base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_U) {}
+    : is_respecting_modern_trim_(IsAndroidUPlus()) {}
 
 // static
 PreFreezeBackgroundMemoryTrimmer& PreFreezeBackgroundMemoryTrimmer::Instance() {
@@ -81,6 +182,7 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreeze() {
 }
 
 void PreFreezeBackgroundMemoryTrimmer::OnPreFreezeInternal() {
+  PostMetricsTask(GetPrivateMemoryFootprint());
   if (!IsRespectingModernTrim() ||
       !base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim)) {
     return;

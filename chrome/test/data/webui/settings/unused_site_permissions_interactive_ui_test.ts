@@ -95,8 +95,9 @@ suite('CrSettingsUnusedSitePermissionsInteractiveUITest', function() {
    */
   test('Undo Got It Click Refocus', async function() {
     // Click "Got it" button.
-    const button = testElement.shadowRoot!.querySelector(
-                       '.bulk-action-button') as HTMLElement;
+    const button = testElement.shadowRoot!.querySelector<HTMLElement>(
+        '.bulk-action-button');
+    assertTrue(!!button);
     button.click();
 
     const focusPromise = waitForFocusEventOnExpandButton();

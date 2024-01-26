@@ -147,14 +147,6 @@ void LogRemovedSettingInaccessibleField(FieldType field);
 // only emitted when a number is present.
 void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 
-// Logs the number of fields with an unrecognized autocomplete attributed that
-// were considered for the import due to AutofillFillAndImportFromMoreFields.
-void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count);
-
-// Logs the number of fields with an unrecognized autocomplete attributed that
-// were considered for the update due to AutofillFillAndImportFromMoreFields.
-void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count);
-
 // Logs that a specific type was edited in a save prompt.
 void LogNewProfileEditedType(FieldType edited_type);
 

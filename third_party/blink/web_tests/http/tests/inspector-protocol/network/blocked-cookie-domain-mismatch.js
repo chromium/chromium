@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that cookies blocked for a request of a subdomain of the cookie's domain are included in the blocked cookies of Network.RequestWillBeSentExtraInfo events.\n`);
   await dp.Network.enable();

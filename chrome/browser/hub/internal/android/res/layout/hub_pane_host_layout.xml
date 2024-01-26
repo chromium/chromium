@@ -28,8 +28,6 @@ found in the LICENSE file.
     android:paddingEnd="20dp"
     android:singleLine="true"
     android:visibility="gone"
-    app:buttonColor="@macro/chip_bg_selected_color"
-    app:buttonTextColor="@color/default_text_color_list"
     app:rippleCornerRadiusBottomEnd="@dimen/hub_button_radius"
     app:rippleCornerRadiusBottomStart="@dimen/hub_button_radius"
     app:rippleCornerRadiusTopEnd="@dimen/hub_button_radius"

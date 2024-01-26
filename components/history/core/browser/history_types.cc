@@ -295,6 +295,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          absl::nullopt,
                          absl::nullopt,
                          absl::nullopt,
+                         absl::nullopt,
                          absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
@@ -314,6 +315,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     absl::optional<GURL> top_level_url,
     absl::optional<Opener> opener,
     absl::optional<int64_t> bookmark_id,
+    absl::optional<std::string> app_id,
     absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),
@@ -331,6 +333,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       top_level_url(top_level_url),
       opener(opener),
       bookmark_id(bookmark_id),
+      app_id(app_id),
       context_annotations(std::move(context_annotations)) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =

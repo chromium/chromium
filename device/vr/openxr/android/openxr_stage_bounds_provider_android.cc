@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 #include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
 
+#include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/dev/xr_android.h"
 #include "ui/gfx/geometry/point3_f.h"
 
@@ -57,6 +61,42 @@ std::vector<gfx::Point3F> OpenXrStageBoundsProviderAndroid::GetStageBounds() {
                           });
 
   return stage_bounds;
+}
+
+OpenXrStageBoundsProviderAndroidFactory::
+    OpenXrStageBoundsProviderAndroidFactory() = default;
+OpenXrStageBoundsProviderAndroidFactory::
+    ~OpenXrStageBoundsProviderAndroidFactory() = default;
+
+const base::flat_set<std::string_view>&
+OpenXrStageBoundsProviderAndroidFactory::GetRequestedExtensions() const {
+  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
+      {XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME});
+  return *kExtensions;
+}
+
+std::set<device::mojom::XRSessionFeature>
+OpenXrStageBoundsProviderAndroidFactory::GetSupportedFeatures(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  if (!IsEnabled(extension_enum)) {
+    return {};
+  }
+
+  return {device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR};
+}
+
+std::unique_ptr<OpenXrStageBoundsProvider>
+OpenXrStageBoundsProviderAndroidFactory::CreateStageBoundsProvider(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session) const {
+  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  DVLOG(2) << __func__ << " is_supported=" << is_supported;
+  if (is_supported) {
+    return std::make_unique<OpenXrStageBoundsProviderAndroid>(extension_helper,
+                                                              session);
+  }
+
+  return nullptr;
 }
 
 }  // namespace device

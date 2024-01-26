@@ -52,6 +52,8 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
                       int id,
                       const gfx::Point& touch_loc,
                       base::OnceClosure closure) override;
+  void UpdateDisplay(const std::string& display_specs,
+                     base::OnceClosure closure) override;
 #endif
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) override;
   bool MustUseUiControlsForMoveCursorTo() override;

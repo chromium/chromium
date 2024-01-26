@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -58,6 +59,8 @@ constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 // The name hash of "chrome::TestProjectSix::TestEventSeven".
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
+// The name hash of "chrome::TestProjectSix::TestEnum".
+constexpr uint64_t kEventEnumHash = UINT64_C(14837072141472316574);
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
 // The name has for "chrome::TestProjectSevent::TestEventEight".
@@ -75,6 +78,8 @@ constexpr uint64_t kMetricFiveHash = UINT64_C(8665976921794972190);
 constexpr uint64_t kMetricSixHash = UINT64_C(3431522567539822144);
 // The name hash of "TestMetricSeven".
 constexpr uint64_t kMetricSevenHash = UINT64_C(8395865158198697574);
+// The name hash of "TestEnumMetric".
+constexpr uint64_t kMetricEnumHash = UINT64_C(16584986597633634829);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
 constexpr char kProjectOneId[] = "3BA3F5F43B926026";
@@ -309,8 +314,10 @@ TEST_F(StructuredMetricsRecorderTest, RecorderInitializesFromBlankSlate) {
 TEST_F(StructuredMetricsRecorderTest, EventsNotReportedWhenRecordingDisabled) {
   Init();
   OnRecordingDisabled();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
   ExpectNoErrors();
@@ -325,8 +332,11 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotReportedWhenFeatureDisabled) {
   // OnRecordingEnabled should not actually enable recording because the flag is
   // disabled.
   OnRecordingEnabled();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
+
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
   ExpectNoErrors();
@@ -369,18 +379,18 @@ TEST_F(StructuredMetricsRecorderTest, RecordingDisabledByDefault) {
 TEST_F(StructuredMetricsRecorderTest, RecordedEventAppearsInReport) {
   Init();
 
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("a string")
-      .SetTestMetricTwo(12345)
-      .Record();
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("a string")
-      .SetTestMetricTwo(12345)
-      .Record();
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("a string")
-      .SetTestMetricTwo(12345)
-      .Record();
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("a string")
+                    .SetTestMetricTwo(12345)));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("a string")
+                    .SetTestMetricTwo(12345)));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("a string")
+                    .SetTestMetricTwo(12345)));
 
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 3);
@@ -391,13 +401,13 @@ TEST_F(StructuredMetricsRecorderTest, EventMetricsReportedCorrectly) {
   WriteTestingProfileKeys();
   Init();
 
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne(kValueOne)
-      .SetTestMetricTwo(12345)
-      .Record();
-  events::v2::test_project_two::TestEventTwo()
-      .SetTestMetricThree(kValueTwo)
-      .Record();
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne(kValueOne)
+                    .SetTestMetricTwo(12345)));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_two::TestEventTwo().SetTestMetricThree(
+          kValueTwo)));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 2);
@@ -476,13 +486,13 @@ TEST_F(StructuredMetricsRecorderTest, FloatMetricsReportedCorrectly) {
   const float test_float = 3.4;
   const float test_float2 = 3.14e-8;
 
-  events::v2::test_project_six::TestEventSeven()
-      .SetTestMetricSeven(test_float)
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_six::TestEventSeven().SetTestMetricSeven(
+          test_float)));
 
-  events::v2::test_project_six::TestEventSeven()
-      .SetTestMetricSeven(test_float2)
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_six::TestEventSeven().SetTestMetricSeven(
+          test_float2)));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 2);
@@ -521,9 +531,9 @@ TEST_F(StructuredMetricsRecorderTest, DeviceKeysUsedForDeviceScopedProjects) {
   // keys set by WriteTestingDeviceKeys. In this case the expected key is
   // "ddd...d", which we observe by checking the ID and HMAC have the correct
   // value given that key.
-  events::v2::test_project_four::TestEventFive()
-      .SetTestMetricFive("value")
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_four::TestEventFive().SetTestMetricFive(
+          "value")));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -549,7 +559,8 @@ TEST_F(StructuredMetricsRecorderTest, DeviceKeysUsedForDeviceScopedProjects) {
 TEST_F(StructuredMetricsRecorderTest, Int64MetricsNotTruncated) {
   Init();
   const int64_t big = 1ll << 60;
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(big).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(big)));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -563,9 +574,12 @@ TEST_F(StructuredMetricsRecorderTest, EventsWithinProjectReportedWithSameID) {
   WriteTestingProfileKeys();
   Init();
 
-  events::v2::test_project_one::TestEventOne().Record();
-  events::v2::test_project_two::TestEventTwo().Record();
-  events::v2::test_project_two::TestEventThree().Record();
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_two::TestEventTwo()));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_two::TestEventThree()));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 3);
@@ -603,7 +617,7 @@ TEST_F(StructuredMetricsRecorderTest, EventWithoutMetricsReportCorrectly) {
   EXPECT_TRUE(test_event.IsEventSequenceType());
   test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
   test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
-  test_event.Record();
+  StructuredMetricsClient::Record(std::move(test_event));
 
   const auto data = GetEventMetrics();
 
@@ -620,9 +634,11 @@ TEST_F(StructuredMetricsRecorderTest, EventWithoutMetricsReportCorrectly) {
 TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
   InitWithoutEnabling();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
   OnRecordingEnabled();
   Wait();
 
@@ -637,12 +653,14 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
 TEST_F(StructuredMetricsRecorderTest, EventsRecordedBeforeKeysInitialized) {
   InitWithoutLogin();
   // Emulate metric before login.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
 
   OnProfileAdded(TempDirPath());
 
   // Called before user key is loaded.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
   Wait();
 
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
@@ -657,12 +675,17 @@ TEST_F(StructuredMetricsRecorderTest, EventsRecordedBeforeKeysInitialized) {
 TEST_F(StructuredMetricsRecorderTest,
        ExistingEventsClearedWhenRecordingDisabled) {
   Init();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
   OnRecordingDisabled();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
 
@@ -673,20 +696,24 @@ TEST_F(StructuredMetricsRecorderTest,
 // and then enabled again.
 TEST_F(StructuredMetricsRecorderTest, ReportingResumesWhenEnabled) {
   Init();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_two::TestEventThree()
-      .SetTestMetricFour("test-string")
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_two::TestEventThree().SetTestMetricFour(
+          "test-string")));
 
   OnRecordingDisabled();
   OnRecordingEnabled();
 
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_two::TestEventThree()
-      .SetTestMetricFour("test-string")
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_two::TestEventThree().SetTestMetricFour(
+          "test-string")));
 
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 6);
@@ -739,11 +766,13 @@ TEST_F(StructuredMetricsRecorderTest, DisallowedProjectAreDropped) {
 
   AddDisallowedProject(kProjectOneHash);
 
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_two::TestEventThree()
-      .SetTestMetricFour("value")
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_two::TestEventThree().SetTestMetricFour(
+          "value")));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -770,7 +799,8 @@ TEST_F(StructuredMetricsRecorderTest, AppliesProcessorCorrectly) {
   Recorder::GetInstance()->AddEventsProcessor(
       std::make_unique<TestProcessor>());
 
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
   const auto data = GetEventMetrics();
 
   EXPECT_TRUE(data.is_device_enrolled());
@@ -810,6 +840,59 @@ TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
 
   ASSERT_EQ((*event_validator)->GetMetricName(kMetricOneHash), kMetricOneName);
   ASSERT_EQ((*event_validator)->GetMetricName(kMetricTwoHash), kMetricTwoName);
+}
+
+class TestWatcher : public StructuredMetricsRecorder::Observer {
+ public:
+  TestWatcher(uint64_t expected_event) : expected_event_(expected_event) {}
+
+  void OnEventRecorded(const StructuredEventProto& event) override {
+    EXPECT_EQ(event.event_name_hash(), expected_event_);
+    ++event_count_;
+  }
+
+  int EventCount() { return event_count_; }
+
+ private:
+  const uint64_t expected_event_;
+  int event_count_ = 0;
+};
+
+TEST_F(StructuredMetricsRecorderTest, WatcherTest) {
+  Init();
+
+  TestWatcher watcher(kEventOneHash);
+
+  recorder_->AddEventsObserver(&watcher);
+
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne(kValueOne)
+                    .SetTestMetricTwo(12345)));
+
+  Wait();
+
+  EXPECT_EQ(watcher.EventCount(), 1);
+
+  recorder_->RemoveEventsObserver(&watcher);
+}
+
+TEST_F(StructuredMetricsRecorderTest, EnumRecordedCorrectly) {
+  Init();
+
+  // Processor that sets |is_device_enrolled| to true.
+  events::v2::test_project_six::TestEnum()
+      .SetTestEnumMetric(events::v2::test_project_six::Enum1::VARIANT2)
+      .Record();
+  const auto data = GetEventMetrics();
+
+  EXPECT_EQ(data.events_size(), 1);
+  EXPECT_EQ(data.events(0).project_name_hash(), kProjectSixHash);
+  EXPECT_EQ(data.events(0).event_name_hash(), kEventEnumHash);
+  EXPECT_EQ(data.events(0).metrics_size(), 1);
+  EXPECT_EQ(data.events(0).metrics(0).name_hash(), kMetricEnumHash);
+  EXPECT_EQ(data.events(0).metrics(0).value_int64(),
+            (int64_t)events::v2::test_project_six::Enum1::VARIANT2);
 }
 
 }  // namespace metrics::structured

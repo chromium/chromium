@@ -10,10 +10,10 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -25,29 +25,29 @@ public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
     public static final BooleanCachedFieldTrialParameter
             START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
-                    new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.START_SURFACE_ANDROID,
                             "hide_switch_when_no_incognito_tabs",
                             true);
 
     public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_NTP_INSTEAD_OF_START =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", true);
 
     public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_START_AS_HOMEPAGE =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_start_as_homepage", false);
 
     private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, 5);
 
     private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
             "signin_promo_NTP_since_first_time_shown_limit_hours";
     public static final IntCachedFieldTrialParameter
             SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
-                    new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.newIntCachedFieldTrialParameter(
                             ChromeFeatureList.START_SURFACE_ANDROID,
                             SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM,
                             336);
@@ -55,14 +55,14 @@ public class StartSurfaceConfiguration {
     private static final String SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM =
             "signin_promo_NTP_reset_after_hours";
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID,
                     SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM,
                     672);
 
     private static final String IS_DOODLE_SUPPORTED_PARAM = "is_doodle_supported";
     public static final BooleanCachedFieldTrialParameter IS_DOODLE_SUPPORTED =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
     // Start return time experiment:
@@ -71,7 +71,7 @@ public class StartSurfaceConfiguration {
             "start_surface_return_time_seconds";
 
     public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_SECONDS =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     START_SURFACE_RETURN_TIME_SECONDS_PARAM,
                     28800); // 8 hours
@@ -79,36 +79,36 @@ public class StartSurfaceConfiguration {
     public static final String START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM =
             "start_surface_return_time_on_tablet_seconds";
     public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM,
                     28800); // 8 hours
     private static final String START_SURFACE_RETURN_TIME_USE_MODEL_PARAM =
             "start_surface_return_time_use_model";
     public static final BooleanCachedFieldTrialParameter START_SURFACE_RETURN_TIME_USE_MODEL =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     START_SURFACE_RETURN_TIME_USE_MODEL_PARAM,
                     false);
 
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_OMNIBOX_COLOR =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, "polish_omnibox_color", false);
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, "polish_omnibox_color", true);
 
     private static final String SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM = "move_down_logo";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_MOVE_DOWN_LOGO =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM, false);
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM, true);
 
     private static final String SURFACE_POLISH_LESS_BRAND_SPACE_PARAM = "less_brand_space";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_LESS_BRAND_SPACE =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_LESS_BRAND_SPACE_PARAM, false);
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_LESS_BRAND_SPACE_PARAM, true);
 
     private static final String SURFACE_POLISH_SCROLLABLE_MVT_PARAM = "scrollable_mvt";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_SCROLLABLE_MVT =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, false);
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, true);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
@@ -131,8 +131,8 @@ public class StartSurfaceConfiguration {
                 || !isTablet && ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled();
     }
 
-    /** Returns whether a magic space is enabled on Start surface. */
-    public static boolean useMagicSpace() {
+    /** Returns whether a magic stack is enabled on Start surface. */
+    public static boolean useMagicStack() {
         return ChromeFeatureList.sSurfacePolish.isEnabled()
                 && ChromeFeatureList.sMagicStackAndroid.isEnabled()
                 && ChromeFeatureList.sStartSurfaceRefactor.isEnabled();

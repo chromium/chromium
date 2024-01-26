@@ -605,7 +605,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // The returned FDs are still owned by the VideoFrame. This means that the
   // caller shall not close them, or use them after the VideoFrame is destroyed.
   // For such use cases, use dup() to obtain your own copy of the FDs.
-  const base::ScopedFD& GetDmabufFd(size_t i) const;
+  int GetDmabufFd(size_t i) const;
 
   // Returns true if both VideoFrames are backed by DMABUF memory and point
   // to the same set of DMABUFs, meaning that both frames use the same memory.

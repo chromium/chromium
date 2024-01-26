@@ -313,6 +313,11 @@ bool MigrateKeystoneApps(
       } else {
         registration.version = base::Version(kNullVersion);
       }
+      if (ticket.versionPath && ticket.versionKey) {
+        registration.version_path =
+            base::apple::NSStringToFilePath(ticket.versionPath);
+        registration.version_key = base::SysNSStringToUTF8(ticket.versionKey);
+      }
       if (ticket.existenceChecker) {
         registration.existence_checker_path =
             base::apple::NSStringToFilePath(ticket.existenceChecker.path);

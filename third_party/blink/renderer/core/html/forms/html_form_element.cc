@@ -105,9 +105,6 @@ HTMLFormElement::HTMLFormElement(Document& document)
       did_finish_parsing_children_(false),
       is_in_reset_function_(false),
       rel_list_(MakeGarbageCollected<RelList>(this)) {
-  static uint64_t next_unique_renderer_form_id = 1;
-  unique_renderer_form_id_ = next_unique_renderer_form_id++;
-
   UseCounter::Count(document, WebFeature::kFormElement);
 }
 

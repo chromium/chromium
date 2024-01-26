@@ -16,9 +16,9 @@ ShareTarget::ShareTarget(
     std::vector<FileAttachment> file_attachments,
     std::vector<WifiCredentialsAttachment> wifi_credentials_attachments,
     bool is_incoming,
-    absl::optional<std::string> full_name,
+    std::optional<std::string> full_name,
     bool is_known,
-    absl::optional<std::string> device_id,
+    std::optional<std::string> device_id,
     bool for_self_share)
     : device_name(std::move(device_name)),
       image_url(std::move(image_url)),

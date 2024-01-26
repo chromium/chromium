@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests Runtime.getProperties doesnt crash on document.all in iframe');
   await dp.Runtime.enable();
   await dp.Debugger.enable();

@@ -24,10 +24,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#endif
-
 class ReadAnythingUntrustedPageHandler;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,9 +68,6 @@ class ReadAnythingUntrustedPageHandler
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
       public ReadAnythingSidePanelController::Observer,
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      public screen_ai::ScreenAIInstallState::Observer,
-#endif
       public TabStripModelObserver {
  public:
   ReadAnythingUntrustedPageHandler(
@@ -104,6 +97,7 @@ class ReadAnythingUntrustedPageHandler
       read_anything::mojom::LetterSpacing letter_spacing) override;
   void OnFontChange(const std::string& font) override;
   void OnFontSizeChange(double font_size) override;
+  void OnLinksEnabledChanged(bool enabled) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnSpeechRateChange(double rate) override;
   void OnVoiceChange(const std::string& voice,
@@ -124,6 +118,7 @@ class ReadAnythingUntrustedPageHandler
   void OnReadAnythingThemeChanged(
       const std::string& font_name,
       double font_scale,
+      bool links_enabled,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
@@ -202,14 +197,7 @@ class ReadAnythingUntrustedPageHandler
       ax_action_handler_observer_{this};
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // screen_ai::ScreenAIInstallState::Observer:
-  void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
-
-  // Observes the install state of ScreenAI. When ScreenAI is ready, notifies
-  // the WebUI.
-  base::ScopedObservation<screen_ai::ScreenAIInstallState,
-                          screen_ai::ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
+  void OnScreenAIServiceInitialized(bool successful);
 #endif
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};

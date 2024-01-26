@@ -10,10 +10,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/optional_ref.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
+#include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -43,11 +45,17 @@ class StorageHandler
 
   ~StorageHandler() override;
 
+  static std::vector<StorageHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
+
   // content::protocol::DevToolsDomainHandler
   void Wire(UberDispatcher* dispatcher) override;
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
   Response Disable() override;
+
+  bool interest_group_auction_tracking_enabled() const {
+    return interest_group_auction_tracking_enabled_;
+  }
 
   // content::protocol::storage::Backend
   Response GetStorageKeyForFrame(const std::string& frame_id,
@@ -109,6 +117,7 @@ class StorageHandler
       const std::string& name,
       std::unique_ptr<GetInterestGroupDetailsCallback> callback) override;
   Response SetInterestGroupTracking(bool enable) override;
+  Response SetInterestGroupAuctionTracking(bool enable) override;
 
   void GetSharedStorageMetadata(
       const std::string& owner_origin_string,
@@ -147,6 +156,18 @@ class StorageHandler
       override;
   Response SetAttributionReportingTracking(bool enable) override;
 
+  void NotifyInterestGroupAuctionEventOccurred(
+      base::Time event_time,
+      content::InterestGroupAuctionEventType type,
+      const std::string& unique_auction_id,
+      base::optional_ref<const std::string> parent_auction_id,
+      const base::Value::Dict& auction_config);
+
+  void NotifyInterestGroupAuctionNetworkRequestCreated(
+      content::InterestGroupAuctionFetchType type,
+      const std::string& request_id,
+      const std::vector<std::string>& devtools_auction_ids);
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
@@ -167,10 +188,14 @@ class StorageHandler
 
   // content::InterestGroupManagerImpl::InterestGroupObserver
   void OnInterestGroupAccessed(
-      const base::Time& accessTime,
+      base::optional_ref<const std::string> auction_id,
+      base::Time access_time,
       InterestGroupManagerImpl::InterestGroupObserver::AccessType type,
       const url::Origin& owner_origin,
-      const std::string& name) override;
+      const std::string& name,
+      base::optional_ref<const url::Origin> component_seller_origin,
+      std::optional<double> bid,
+      base::optional_ref<const std::string> bid_currency) override;
 
   // AttributionObserver
   void OnSourceHandled(
@@ -218,6 +243,8 @@ class StorageHandler
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
   bool client_is_trusted_;
+
+  bool interest_group_auction_tracking_enabled_ = false;
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       attribution_observation_{this};

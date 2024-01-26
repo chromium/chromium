@@ -52,11 +52,13 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     auto template_url_service = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, std::make_unique<SearchTermsData>(),
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+        std::make_unique<SearchTermsData>(),
         /*web_data_service=*/nullptr,
         std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , /*for_lacros_main_profile=*/false
+                                                         ,
+        /*for_lacros_main_profile=*/false
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
 

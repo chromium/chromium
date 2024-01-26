@@ -22,7 +22,7 @@ class PDFiumEngineExports : public PDFEngineExports {
 
 // PDFEngineExports:
 #if BUILDFLAG(IS_CHROMEOS)
-  std::vector<uint8_t> CreateFlattenedPdf(
+  std::optional<FlattenPdfResult> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)

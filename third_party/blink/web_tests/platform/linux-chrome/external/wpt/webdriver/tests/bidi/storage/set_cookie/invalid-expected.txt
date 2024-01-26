@@ -1,0 +1,24 @@
+This is a wdspec test.
+[FAIL] test_cookie_name_invalid_value[ cookieName]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie=name]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie\\tname]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie\\nname]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie\\x01name]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie\\x0fname]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name_invalid_value[cookie;name]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_path_invalid_value[no_leading_forward_slash]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_value_string_invalid_value[value\\twith\\ttab]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_value_string_invalid_value[value\\nwith\\nnewline]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_value_string_invalid_value[value;with;semicolon]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+Harness: the test ran to completion.

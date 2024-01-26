@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/model/followed_web_site_state.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -19,7 +19,7 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
 
@@ -85,23 +85,17 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   self.faviconLoader = IOSChromeFaviconLoaderFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 
-  if (@available(iOS 15, *)) {
-    firstFollowViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        firstFollowViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    firstFollowViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+  firstFollowViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      firstFollowViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   [self.baseViewController
       presentViewController:firstFollowViewController

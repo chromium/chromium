@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
 
  private:
   void StartWaiting();
+  void QuitWaitingIfNeeded();
 
   mojom::MediaSessionInfoPtr session_info_;
   absl::optional<absl::optional<MediaMetadata>> session_metadata_;

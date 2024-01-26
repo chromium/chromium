@@ -80,6 +80,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == FormControlType::kTextArea ||
+      field.form_control_type == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(field.global_id(), field.value,
                                      std::move(on_suggestions_returned)));

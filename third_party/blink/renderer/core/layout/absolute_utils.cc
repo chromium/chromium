@@ -22,16 +22,18 @@ namespace {
 
 using InsetBias = InsetModifiedContainingBlock::InsetBias;
 
-StyleSelfAlignmentData AlignSelf(const ComputedStyle& style) {
+StyleSelfAlignmentData AlignSelf(const ComputedStyle& style,
+                                 ItemPosition normal_behavior) {
   return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedAlignSelf(ItemPosition::kNormal)
+             ? style.ResolvedAlignSelf(normal_behavior)
              : StyleSelfAlignmentData(ItemPosition::kNormal,
                                       OverflowAlignment::kDefault);
 }
 
-StyleSelfAlignmentData JustifySelf(const ComputedStyle& style) {
+StyleSelfAlignmentData JustifySelf(const ComputedStyle& style,
+                                   ItemPosition normal_behavior) {
   return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedJustifySelf(ItemPosition::kNormal)
+             ? style.ResolvedJustifySelf(normal_behavior)
              : StyleSelfAlignmentData(ItemPosition::kNormal,
                                       OverflowAlignment::kDefault);
 }
@@ -183,22 +185,35 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
     WritingDirectionMode self_writing_direction) {
   InsetModifiedContainingBlock imcb;
   imcb.available_size = available_size;
+  imcb.has_auto_inline_inset = !insets.inline_start || !insets.inline_end;
+  imcb.has_auto_block_inset = !insets.block_start || !insets.block_end;
 
+  ItemPosition align_self_normal_behavior = ItemPosition::kNormal;
+  ItemPosition justify_self_normal_behavior = ItemPosition::kNormal;
+  const InsetArea inset_area = style.GetInsetArea().ToPhysical(
+      container_writing_direction, self_writing_direction);
+  if (!inset_area.IsNone()) {
+    std::tie(align_self_normal_behavior, justify_self_normal_behavior) =
+        inset_area.AlignJustifySelfFromPhysical(container_writing_direction);
+  }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
                             self_writing_direction.GetWritingMode());
-  const auto inline_alignment =
-      is_parallel ? JustifySelf(style) : AlignSelf(style);
-  const auto block_alignment =
-      is_parallel ? AlignSelf(style) : JustifySelf(style);
+  imcb.inline_alignment = is_parallel
+                              ? JustifySelf(style, justify_self_normal_behavior)
+                              : AlignSelf(style, align_self_normal_behavior);
+  imcb.block_alignment = is_parallel
+                             ? AlignSelf(style, align_self_normal_behavior)
+                             : JustifySelf(style, justify_self_normal_behavior);
 
   absl::optional<InsetBias> safe_inline_alignment_inset_bias;
   const auto inline_alignment_inset_bias = GetAlignmentInsetBias(
-      inline_alignment, container_writing_direction, self_writing_direction,
+      imcb.inline_alignment, container_writing_direction,
+      self_writing_direction,
       /* is_justify_axis */ is_parallel, &safe_inline_alignment_inset_bias);
   absl::optional<InsetBias> safe_block_alignment_inset_bias;
   const auto block_alignment_inset_bias = GetAlignmentInsetBias(
-      block_alignment, container_writing_direction, self_writing_direction,
+      imcb.block_alignment, container_writing_direction, self_writing_direction,
       /* is_justify_axis */ !is_parallel, &safe_block_alignment_inset_bias);
 
   ComputeUnclampedIMCBInOneAxis(
@@ -363,29 +378,6 @@ bool CanComputeBlockSizeWithoutLayout(
 
 }  // namespace
 
-bool IsInsetAutoForAxis(const Length& side1,
-                        const Length& side2,
-                        const ComputedStyle& style,
-                        WritingDirectionMode container_writing_direction,
-                        const AnchorEvaluatorImpl* anchor_evaluator) {
-  if (!side1.IsAuto() && !side2.IsAuto()) {
-    return false;
-  }
-  // The 'inset-area' property causes the used value of 'auto' to resolve to
-  // a non-'auto' value when different from 'none', the spans are orthogonal,
-  // and there is a valid default anchor.
-  // https://drafts.csswg.org/css-anchor-position-1/#resolving-spans
-  if (style.GetInsetArea().IsNone()) {
-    return true;
-  }
-  if (!anchor_evaluator->HasDefaultAnchor()) {
-    return true;
-  }
-  return style.GetInsetArea()
-      .ToPhysical(container_writing_direction, style.GetWritingDirection())
-      .IsNone();
-}
-
 LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
@@ -394,6 +386,9 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     AnchorEvaluatorImpl* anchor_evaluator) {
   InsetArea inset_area;
   if (!style.GetInsetArea().IsNone() && anchor_evaluator->HasDefaultAnchor()) {
+    // We only need to know if the inset-area is 'auto' or not below, but need
+    // to consider writing direction as the inset-area falls back to 'auto' if
+    // the axes are not orthogonal.
     inset_area = style.GetInsetArea().ToPhysical(container_writing_direction,
                                                  self_writing_direction);
   }
@@ -401,47 +396,47 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   // `direction`.
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, self_writing_direction.GetWritingMode());
-  const Length& left_length =
-      style.UsedLeft().IsAuto() ? inset_area.UsedLeft() : style.UsedLeft();
   std::optional<LayoutUnit> left;
-  if (!left_length.IsAuto()) {
+  if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ false,
                               available_size.width);
     left = MinimumValueForLength(left_length, available_size.width,
                                  anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    left = LayoutUnit();
   }
   std::optional<LayoutUnit> right;
-  const Length& right_length =
-      style.UsedRight().IsAuto() ? inset_area.UsedRight() : style.UsedRight();
-  if (!right_length.IsAuto()) {
+  if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ true,
                               available_size.width);
     right = MinimumValueForLength(right_length, available_size.width,
                                   anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    right = LayoutUnit();
   }
 
   std::optional<LayoutUnit> top;
-  const Length& top_length =
-      style.UsedTop().IsAuto() ? inset_area.UsedTop() : style.UsedTop();
-  if (!top_length.IsAuto()) {
+  if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ false,
                               available_size.height);
     top = MinimumValueForLength(top_length, available_size.height,
                                 anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    top = LayoutUnit();
   }
   std::optional<LayoutUnit> bottom;
-  const Length& bottom_length = style.UsedBottom().IsAuto()
-                                    ? inset_area.UsedBottom()
-                                    : style.UsedBottom();
-  if (!bottom_length.IsAuto()) {
+  if (const Length& bottom_length = style.UsedBottom();
+      !bottom_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ true,
                               available_size.height);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    bottom = LayoutUnit();
   }
 
   // Convert the physical insets to logical.
@@ -511,25 +506,14 @@ bool ComputeOofInlineDimensions(
   DCHECK(dimensions);
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
-  const bool is_justify_axis = IsParallelWritingMode(
-      container_writing_direction.GetWritingMode(), style.GetWritingMode());
-  const auto alignment_position =
-      (is_justify_axis ? JustifySelf(style) : AlignSelf(style)).GetPosition();
-  const auto block_alignment_position =
-      (is_justify_axis ? AlignSelf(style) : JustifySelf(style)).GetPosition();
-
-  const bool has_auto_inline_inset =
-      IsInsetAutoForAxis(style.LogicalInlineStart(), style.LogicalInlineEnd(),
-                         style, container_writing_direction, anchor_evaluator);
-  const bool has_auto_block_inset =
-      IsInsetAutoForAxis(style.LogicalTop(), style.LogicalBottom(), style,
-                         container_writing_direction, anchor_evaluator);
+  const auto alignment_position = imcb.inline_alignment.GetPosition();
+  const auto block_alignment_position = imcb.block_alignment.GetPosition();
 
   bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node, container_writing_direction,
                                        block_alignment_position,
-                                       has_auto_block_inset);
+                                       imcb.has_auto_block_inset);
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -571,15 +555,17 @@ bool ComputeOofInlineDimensions(
     Length min_inline_length = style.LogicalMinWidth();
 
     const bool is_implicit_stretch =
-        !has_auto_inline_inset && alignment_position == ItemPosition::kNormal;
+        !imcb.has_auto_inline_inset &&
+        alignment_position == ItemPosition::kNormal;
     const bool is_explicit_stretch =
-        !has_auto_inline_inset && alignment_position == ItemPosition::kStretch;
+        !imcb.has_auto_inline_inset &&
+        alignment_position == ItemPosition::kStretch;
     const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
 
     // If our block constraint is strong/explicit.
     const bool is_block_explicit =
         !style.LogicalHeight().IsAuto() ||
-        (!has_auto_block_inset &&
+        (!imcb.has_auto_block_inset &&
          block_alignment_position == ItemPosition::kStretch);
 
     // Determine how "auto" should resolve.
@@ -635,9 +621,9 @@ bool ComputeOofInlineDimensions(
 
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
                  imcb.InlineSize(), style.MarginInlineStart(),
-                 style.MarginInlineEnd(), inline_size, has_auto_inline_inset,
-                 is_margin_start_dominant, is_block_direction,
-                 &dimensions->margins.inline_start,
+                 style.MarginInlineEnd(), inline_size,
+                 imcb.has_auto_inline_inset, is_margin_start_dominant,
+                 is_block_direction, &dimensions->margins.inline_start,
                  &dimensions->margins.inline_end);
 
   ComputeInsets(space.AvailableSize().inline_size, imcb.inline_start,
@@ -662,15 +648,7 @@ const LayoutResult* ComputeOofBlockDimensions(
   DCHECK(dimensions);
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
 
-  const bool is_justify_axis = !IsParallelWritingMode(
-      container_writing_direction.GetWritingMode(), style.GetWritingMode());
-  const auto alignment_position =
-      (is_justify_axis ? JustifySelf(style) : AlignSelf(style)).GetPosition();
-
-  const bool has_auto_block_inset =
-      IsInsetAutoForAxis(style.LogicalTop(), style.LogicalBottom(), style,
-                         container_writing_direction, anchor_evaluator);
-
+  const auto alignment_position = imcb.block_alignment.GetPosition();
   const LayoutResult* result = nullptr;
 
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
@@ -696,7 +674,7 @@ const LayoutResult* ComputeOofBlockDimensions(
 
       // Tables need to know about the explicit stretch constraint to produce
       // the correct result.
-      if (!has_auto_block_inset &&
+      if (!imcb.has_auto_block_inset &&
           alignment_position == ItemPosition::kStretch) {
         builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
       }
@@ -727,9 +705,11 @@ const LayoutResult* ComputeOofBlockDimensions(
     const bool is_table = node.IsTable();
 
     const bool is_implicit_stretch =
-        !has_auto_block_inset && alignment_position == ItemPosition::kNormal;
+        !imcb.has_auto_block_inset &&
+        alignment_position == ItemPosition::kNormal;
     const bool is_explicit_stretch =
-        !has_auto_block_inset && alignment_position == ItemPosition::kStretch;
+        !imcb.has_auto_block_inset &&
+        alignment_position == ItemPosition::kStretch;
     const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
 
     // Determine how "auto" should resolve.
@@ -783,7 +763,7 @@ const LayoutResult* ComputeOofBlockDimensions(
 
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
                  imcb.BlockSize(), style.MarginBlockStart(),
-                 style.MarginBlockEnd(), block_size, has_auto_block_inset,
+                 style.MarginBlockEnd(), block_size, imcb.has_auto_block_inset,
                  is_margin_start_dominant, is_block_direction,
                  &dimensions->margins.block_start,
                  &dimensions->margins.block_end);

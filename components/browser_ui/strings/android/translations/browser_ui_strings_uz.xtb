@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Yuklab olish pauza qilindi.</translation>
 <translation id="1415402041810619267">URL manzil qisqartirildi</translation>
 <translation id="1426410128494586442">Ha</translation>
+<translation id="1434873037477293673">narx tushishi haqida bildirgilar</translation>
 <translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ta sayt}other{<ph name="SITE_COUNT" /> ta sayt}}</translation>
 <translation id="1510341833810331442">Saytlar maʼlumotlarni qurilmangizga saqlay olmaydi</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
 <translation id="2790501146643349491">Yoqilsa, yaqinda yopilgan saytlar axborot yuborish va qabul qilishni toʻxtatishi mumkin. Oʻchirilsa, toʻxtata olmaydi.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobil versiyani ochish</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
+<translation id="6452138246455930388">Ochiq varaqda narx pasaydi: <ph name="OLD_PRICE" />dan <ph name="NEW_PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Oyna kichkina boʻlsa, mobil versiyani soʻrang</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="652937045869844725">Tashqi cookie fayllarga ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Pastga tushish</translation>
 <translation id="6749077623962119521">Ruxsatlar tiklansinmi?</translation>
 <translation id="6766622839693428701">Yopish uchun pastga suring.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> uchun parametr tanlang</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6818926723028410516">Fayllarni tanlang</translation>
 <translation id="6864395892908308021">Bu qurilma NFC teglarni oʻqiy olmaydi</translation>
+<translation id="6867014948848323204">Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Saytlarga klipboarddagi matn va rasmlarni ko‘rishni taqiqlash</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6950072572526089586">Ochilgan saytlar sizni hisobda qoldirish yoki mahsulotlarni xarid savatida saqlash uchun saytdagi harakatlaringiz haqidagi maʼlumotlarni saqlashi mumkin. Odatda bu maʼlumotlar qurilmangizda vaqtincha saqlanadi.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Oz mamlakati sehrgari</translation>
 <translation id="7684642910516280563">Saytga tashqi cookie fayllardan foydalanishga ruxsat berilmaydi</translation>
 <translation id="7719367874908701697">Sahifa masshtabi</translation>
+<translation id="7770832849480336015"><ph name="TITLE_OF_MODULE" /> panelini yopish</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="780301667611848630">Kerak emas</translation>

@@ -19,6 +19,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -150,7 +151,7 @@ struct ScanResult : public base::SupportsUserData::Data {
   static const char kKey[];
 
   std::vector<FileMetadata> file_metadata;
-  absl::optional<std::u16string> user_justification;
+  std::optional<std::u16string> user_justification;
 };
 
 // Enum to identify which message to show once scanning is complete. Ordered
@@ -177,10 +178,19 @@ enum class FinalContentAnalysisResult {
 
 // Result for a single request of the RequestHandler classes.
 struct RequestHandlerResult {
+  RequestHandlerResult();
+  ~RequestHandlerResult();
+  RequestHandlerResult(RequestHandlerResult&&);
+  RequestHandlerResult& operator=(RequestHandlerResult&&);
+  RequestHandlerResult(const RequestHandlerResult&);
+  RequestHandlerResult& operator=(const RequestHandlerResult&);
+
   bool complies;
   FinalContentAnalysisResult final_result;
   std::string tag;
   std::string request_token;
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_rule_message;
 };
 
 // Calculates the result for the request handler based on the upload result and
@@ -208,6 +218,19 @@ safe_browsing::EventResult CalculateEventResult(
 // based on the response it got from scanning.
 ContentAnalysisAcknowledgement::FinalAction GetAckFinalAction(
     const ContentAnalysisResponse& response);
+
+// Extracts the message string from the custom rule message field in the content
+// analysis response.
+std::u16string GetCustomRuleString(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message);
+
+// Extracts the ranges and their corresponding links from the custom rule
+// message field in the content analysis response. Used to style the custom rule
+// message in the content analysis dialog.
+std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when

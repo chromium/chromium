@@ -121,8 +121,9 @@ struct RunOnOsLogin {
 
 // Locale info including tag and readable name translated based on ICU-20273.
 struct Locale {
-  // In general, this should be IETF BCP 47 tag, unless apps decide to specify
-  // their own tag.
+  // Locale tag of the language, e.g. en_US.
+  // Parsed based on IETF BCP 47, which will translate unknown format to
+  // just be "und", which is safe to be displayed on HTML.
   string locale_tag;
   // Readable name of the locale, translated based on the system language.
   // Empty if `locale_tag` cannot be translated.

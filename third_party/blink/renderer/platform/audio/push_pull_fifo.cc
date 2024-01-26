@@ -22,13 +22,10 @@ namespace {
 const unsigned kMaxMessagesToLog = 100;
 }
 
-const uint32_t PushPullFIFO::kMaxFIFOLength = 65536;
-
 PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
                            uint32_t fifo_length,
                            unsigned render_quantum_frames)
     : fifo_length_(fifo_length), render_quantum_frames_(render_quantum_frames) {
-  CHECK_LE(fifo_length_, kMaxFIFOLength);
   fifo_bus_ = AudioBus::Create(number_of_channels, fifo_length_);
 }
 

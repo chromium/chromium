@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string_view>
-#include <variant>
 
 #include "base/types/expected.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -24,6 +24,8 @@ enum class AutoEnrollmentResult {
   kNoEnrollment,
   // Check completed successfully, device is disabled.
   kDisabled,
+  // Check completed successfully, enrollment is suggested but not enforced.
+  kSuggestedEnrollment,
 };
 
 // Represents a state determination error due to a timeout.
@@ -69,12 +71,12 @@ struct AutoEnrollmentStateRetrievalResponseError {
 };
 
 using AutoEnrollmentError =
-    std::variant<AutoEnrollmentSafeguardTimeoutError,
-                 AutoEnrollmentSystemClockSyncError,
-                 AutoEnrollmentDMServerError,
-                 AutoEnrollmentStateAvailabilityResponseError,
-                 AutoEnrollmentPsmError,
-                 AutoEnrollmentStateRetrievalResponseError>;
+    absl::variant<AutoEnrollmentSafeguardTimeoutError,
+                  AutoEnrollmentSystemClockSyncError,
+                  AutoEnrollmentDMServerError,
+                  AutoEnrollmentStateAvailabilityResponseError,
+                  AutoEnrollmentPsmError,
+                  AutoEnrollmentStateRetrievalResponseError>;
 
 // Indicates the current state of the auto-enrollment check.
 using AutoEnrollmentState =

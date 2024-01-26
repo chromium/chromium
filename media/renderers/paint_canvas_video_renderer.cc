@@ -183,6 +183,7 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_XBGR == video_frame->format() ||
          PIXEL_FORMAT_XB30 == video_frame->format() ||
          PIXEL_FORMAT_XR30 == video_frame->format() ||
+         PIXEL_FORMAT_YV12 == video_frame->format() ||
          PIXEL_FORMAT_NV12 == video_frame->format() ||
          PIXEL_FORMAT_NV12A == video_frame->format() ||
          PIXEL_FORMAT_P016LE == video_frame->format() ||
@@ -680,6 +681,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   done->Run();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Valid gl texture internal format that can try to use direct uploading path.
 bool ValidFormatForDirectUploading(
     viz::RasterContextProvider* raster_context_provider,
@@ -704,6 +706,7 @@ bool ValidFormatForDirectUploading(
       return false;
   }
 }
+#endif
 
 std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
@@ -726,26 +729,14 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Controls whether the one-copy path when copying a VideoFrame to a GL texture
-// is enabled or disabled. This codepath is disabled on Android by default
-// pending the full transition of the codebase to the passthrough decoder and
-// the transition of this function away from using legacy mailboxes to do 1-copy
-// upload (see crbug.com/1494365 for details). On Android, this Feature serves
-// as a reverse-killswitch while we roll out the complete disabling of this
-// codepath.
-// TODO(crbug.com/1494365): Remove the usage of this feature for Android once
-// explicit disabling has safely rolled out and make
-// UploadOfVideoFrameToGLTexture() unconditionally disabled on Android.
-// On all other platforms, the one-copy path being enabled is the default
+// is enabled or disabled. The one-copy path being enabled is the default
 // production state, with this Feature being used to be able to disable this
 // path for performance testing.
 BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
              "OneCopyUploadOfVideoFrameToGLTexture",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Controls whether the one-copy path when copying a pure software VideoFrame
 // (i.e., a VideoFrame with no textures) to a GL texture is enabled or disabled.
@@ -772,6 +763,7 @@ BASE_FEATURE(kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture,
 BASE_FEATURE(kOneCopyLegacyMPVideoFrameUploadViaSI,
              "OneCopyLegacyMPVideoFrameUploadViaSI",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // anonymous namespace
 
@@ -1520,6 +1512,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // alpha been requested. And dst texture mipLevel must be 0.
     // TODO(crbug.com/1155003): Figure out whether premultiply options here are
     // accurate.
+    // NOTE: The direct upload path is not supported on Android (see comment on
+    // UploadVideoFrameToGLTexture()).
+    // TODO(crbug.com/1494365): Enable on Android.
+#if !BUILDFLAG(IS_ANDROID)
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 &&
         (video_frame->NumTextures() > 1 ||
@@ -1534,6 +1530,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
         }
       }
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     if (!UpdateLastImage(video_frame, raster_context_provider,
                          true /* allow_wrap_texture */)) {
@@ -1600,6 +1597,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   return true;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -1768,6 +1766,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   return true;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
@@ -1810,6 +1809,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // alpha been requested. And dst texture mipLevel must be 0.
   // TODO(crbug.com/1155003): Figure out whether premultiply options here are
   // accurate.
+  // NOTE: The direct upload path is not supported on Android (see comment on
+  // UploadVideoFrameToGLTexture()).
+  // TODO(crbug.com/1494365): Enable on Android.
+#if !BUILDFLAG(IS_ANDROID)
   if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
       level == 0) {
     if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
@@ -1821,6 +1824,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       }
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   auto* sii = raster_context_provider->SharedImageInterface();
   gpu::raster::RasterInterface* source_ri =
@@ -1845,7 +1849,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     // intermediate SI over the raster interface - the usage bits depend on
     // whether OOP-Raster is enabled.
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
+      usage |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+               gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
@@ -2078,7 +2083,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         // We copy the contents of the source VideoFrame *into* the
         // cached SI over the raster interface - the usage bits depend on
         // whether OOP-Raster is enabled.
-        flags |= gpu::SHARED_IMAGE_USAGE_RASTER;
+        flags |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
         if (gpu_rasterization) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         } else {

@@ -23,7 +23,7 @@ class PaintPreviewTabServiceFileMixin : public PaintPreviewFileMixin {
   // hrs if not specified.
   void GetCapturedPaintPreviewProto(
       const DirectoryKey& key,
-      absl::optional<base::TimeDelta> expiry_horizon,
+      std::optional<base::TimeDelta> expiry_horizon,
       OnReadProtoCallback on_read_proto_callback) override;
 
   // The time horizon after which unused paint previews will be deleted.

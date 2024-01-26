@@ -28,6 +28,7 @@ class Size;
 namespace display {
 
 class ContentProtectionManager;
+class DisplayLayoutManager;
 class DisplayMode;
 class DisplaySnapshot;
 class GammaCurve;
@@ -128,6 +129,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     // Gets the current delay of the |configure_timer_| if it's running, or zero
     // time delta otherwise.
     base::TimeDelta GetConfigureDelay() const;
+
+    DisplayLayoutManager* GetDisplayLayoutManager() const;
 
    private:
     raw_ptr<DisplayConfigurator, DanglingUntriaged> configurator_;  // not owned

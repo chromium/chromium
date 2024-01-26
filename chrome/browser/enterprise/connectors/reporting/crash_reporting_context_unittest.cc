@@ -67,7 +67,7 @@ class MockRealtimeCrashReportingClient : public RealtimeReportingClient {
   MockRealtimeCrashReportingClient& operator=(
       const MockRealtimeCrashReportingClient&) = delete;
 
-  absl::optional<ReportingSettings> GetReportingSettings() override {
+  std::optional<ReportingSettings> GetReportingSettings() override {
     return ReportingSettings();
   }
 

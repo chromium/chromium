@@ -323,7 +323,8 @@ WatchHangsInScope::~WatchHangsInScope() {
 
 // static
 void HangWatcher::InitializeOnMainThread(ProcessType process_type,
-                                         bool is_zygote_child) {
+                                         bool is_zygote_child,
+                                         bool emit_crashes) {
   DCHECK(!g_use_hang_watcher);
   DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
   DCHECK(g_main_thread_log_level == LoggingLevel::kNone);
@@ -356,57 +357,57 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
     return;
 
   // Retrieve thread-specific config for hang watching.
-  switch (process_type) {
-    case HangWatcher::ProcessType::kUnknownProcess:
-      break;
-
-    case HangWatcher::ProcessType::kBrowserProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+  if (process_type == HangWatcher::ProcessType::kBrowserProcess) {
+    // Crashes are set to always emit. Override any feature flags.
+    if (emit_crashes) {
+      g_io_thread_log_level.store(
+          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
           std::memory_order_relaxed);
+      g_main_thread_log_level.store(
+          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
+          std::memory_order_relaxed);
+    } else {
       g_io_thread_log_level.store(
           static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
           std::memory_order_relaxed);
       g_main_thread_log_level.store(
           static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
           std::memory_order_relaxed);
-      break;
+    }
 
-    case HangWatcher::ProcessType::kGPUProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
-
-    case HangWatcher::ProcessType::kRendererProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
-
-    case HangWatcher::ProcessType::kUtilityProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kGPUProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kRendererProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kUtilityProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
   }
 }
 

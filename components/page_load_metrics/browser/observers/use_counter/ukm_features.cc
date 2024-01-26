@@ -374,6 +374,18 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kElementRequestPointerLock,
           WebFeature::kKeyboardApiLock,
           WebFeature::kLCPImageWasLazy,
+          WebFeature::kUserFeatureNgOptimizedImage,
+          WebFeature::
+              kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls,
+          WebFeature::kUserFeatureNgAfterRender,
+          WebFeature::kUserFeatureNgHydration,
+          WebFeature::kUserFeatureNextThirdPartiesGA,
+          WebFeature::kUserFeatureNextThirdPartiesGTM,
+          WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed,
+          WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed,
+          WebFeature::kStorageAccessAPI_hasUnpartitionedCookieAccess,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies,
       }));
   return *opt_in_features;
 }

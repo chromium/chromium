@@ -228,7 +228,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1882814835921407042">Kein Mobilfunknetz</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
 <translation id="1885785240814121742">Mit Fingerabdruck entsperren</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="1908992311423394684">Neuinstallation</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
@@ -267,7 +266,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2064048859448024834">Kameravorschau wird angezeigt</translation>
 <translation id="2067602449040652523">Tastaturhelligkeit</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ein-/ausschalten. <ph name="CAPTURE_MEDIUM" /> ist <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Wische mit vier Fingern nach rechts, um zum nächsten Desktop zu wechseln</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji-Auswahl öffnen</translation>
@@ -283,7 +281,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2149229036084364364">Zum vorherigen Titel wechseln</translation>
 <translation id="2152895518047545149">Dir fehlen keine Aufgaben. Gut gemacht!</translation>
 <translation id="2161132820593978283">Probiere den automatischen Bildausschnitt aus – dabei wird die Kamera so angepasst, dass du dich bei Videoanrufen in der Mitte des Bildschirm siehst. Du kannst die Funktion in den Schnelleinstellungen aktivieren.</translation>
-<translation id="2170530631236737939">Wische mit drei Fingern nach unten, um die Übersicht zu schließen</translation>
 <translation id="2185166372312820725">Zum vorherigen Tab wechseln</translation>
 <translation id="2185444992308415167">Tabs 1 bis 8 durchgehen</translation>
 <translation id="2198625180564913276">Profil wird hinzugefügt. Das kann einige Minuten dauern.</translation>
@@ -392,7 +389,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2624588537172718173">Audio des Geräts und über Mikrofon</translation>
 <translation id="263399434338050016">„Alles auswählen“</translation>
 <translation id="2644422758626431000">Fenster links anpinnen</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Fensteraufnahme</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2658778018866295321">Klicken und ziehen</translation>
@@ -412,10 +409,12 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2726420622004325180">Damit dein Smartphone einen Hotspot nutzen kann, müssen mobile Daten aktiviert sein</translation>
 <translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
+<translation id="2744221223678373668">Freigegeben</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Löschen“</translation>
 <translation id="2750941250130734256">Fixierung des aktiven Fensters rückgängig gemacht.</translation>
 <translation id="2761723519669354964">Hervorgehobenes Element in der Ablage öffnen</translation>
+<translation id="2762000892062317888">gerade eben</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> bis <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Strg + Suchtaste + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="3580650856351781466">Sprachdateien werden heruntergeladen</translation>
 <translation id="3585296979871889131">Fotos, Medien, Benachrichtigungen und Apps auf deinem Smartphone anzeigen</translation>
+<translation id="3590441166907930941">Seitentaste</translation>
 <translation id="3593039967545720377">Du kannst die Zwischenablage öffnen, indem du „<ph name="SHORTCUT_KEY_NAME" /> + V“ drückst. Kopiere ein Element, das du zwischenspeichern und einfügen möchtest.</translation>
 <translation id="3593646411856133110">Nach oben wischen und halten, um geöffnete Apps zu sehen</translation>
 <translation id="3595596368722241419">Akku voll</translation>
@@ -732,6 +732,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3986082989454912832">Annehmen</translation>
 <translation id="3990002060657467458">Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen.</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="40062176907008878">Handschrift</translation>
 <translation id="4011112806063830608">„Bitte nicht stören“ ist aktiviert.</translation>
 <translation id="4017989525502048489">Laserpointer</translation>
@@ -1035,6 +1036,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5163434717504750796">Akkuzustand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Anzahl der Ladezyklen: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Desktop als Vorlage speichern</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>
+<translation id="5168753792967365150">In Google Tasks bearbeiten</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
 <translation id="5187627942836026988">Hotspot-Details anzeigen. Der Hotspot wird von deinem Administrator blockiert.</translation>
@@ -1304,6 +1306,8 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="6168622430237609329">Deine installierten Apps</translation>
 <translation id="6173151025443907148">Während Lacros aktiviert ist, kann kein zweiter Nutzer angemeldet werden. Verwende stattdessen ein zweites Browserprofil in Lacros oder deaktiviere Lacros und versuche es noch einmal.</translation>
 <translation id="6179832488876878285">Du kannst wichtige Dateien hier anpinnen. Öffne die Dateien App, um zu starten.</translation>
+<translation id="6180193585172850042">Zurück-Taste</translation>
+<translation id="6180651297859206670">Weiter-Taste</translation>
 <translation id="6182592640011875895">Desktop öffnen</translation>
 <translation id="6185696379715117369">Bildlauf nach oben</translation>
 <translation id="619335566042889110">Jetzt vollständig aufladen</translation>
@@ -1693,7 +1697,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7850320739366109486">Bitte nicht stören</translation>
 <translation id="7851039877802112575">Fokus auf Pop-up-Fenster und Dialogfelder verschieben</translation>
 <translation id="7851768487828137624">Kanarienvogel</translation>
-<translation id="7860671499921112077">Wische mit drei Fingern nach oben, um die Übersicht aufzurufen</translation>
 <translation id="7862292329216937261">Wenn du das Gerät als Gast verwenden möchtest, musst du dich abmelden und unten auf dem Bildschirm „Als Gast nutzen“ auswählen.</translation>
 <translation id="7866482334467279021">an</translation>
 <translation id="7872786842639831132">Aus</translation>
@@ -1804,7 +1807,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
 <translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
-<translation id="8284362522226889623">Wische mit vier Fingern nach links, um zum vorigen Desktop zu wechseln</translation>
 <translation id="828708037801473432">Aus</translation>
 <translation id="8297006494302853456">Schwach</translation>
 <translation id="8308637677604853869">Vorheriges Menü</translation>

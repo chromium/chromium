@@ -32,7 +32,14 @@ CommonStartupMetricRecorder& GetCommon() {
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(
     base::Time time) {
-  RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  // In certain cases, getting the process creation can fail, and no metrics
+  // should be emitted in that case.
+  bool time_is_valid = time != base::Time();
+  if (time_is_valid) {
+    RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  }
+  base::UmaHistogramBoolean("Startup.LoadTime.RecordedProcessCreation",
+                            time_is_valid);
 }
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(

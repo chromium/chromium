@@ -30,17 +30,18 @@ ManagePasswordsListView::ManagePasswordsListView(
     ui::ImageModel favicon,
     base::RepeatingCallback<void(password_manager::PasswordForm)>
         on_row_clicked_callback,
-    base::RepeatingClosure on_navigate_to_settings_clicked_callback) {
+    base::RepeatingClosure on_navigate_to_settings_clicked_callback,
+    bool is_account_storage_available) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
     std::optional<ui::ImageModel> store_icon = std::nullopt;
-    if (base::FeatureList::IsEnabled(
+    if (is_account_storage_available &&
+        base::FeatureList::IsEnabled(
             password_manager::features::kButterOnDesktopFollowup)) {
       if (!password_form->IsUsingAccountStore()) {
         store_icon = ui::ImageModel::FromVectorIcon(
-            vector_icons::kNotUploadedIcon, gfx::kPlaceholderColor,
-            gfx::kFaviconSize);
+            vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
       }
     } else if (password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(

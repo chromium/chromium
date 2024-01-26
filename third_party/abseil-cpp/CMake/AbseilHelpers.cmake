@@ -80,7 +80,7 @@ endif()
 #     absl::fantastic_lib
 # )
 #
-# TODO: Implement "ALWAYSLINK"
+# TODO(b/320467376): Implement "ALWAYSLINK".
 function(absl_cc_library)
   cmake_parse_arguments(ABSL_CC_LIB
     "DISABLE_INSTALL;PUBLIC;TESTONLY"
@@ -287,8 +287,8 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
 
     if(ABSL_PROPAGATE_CXX_STD)
       # Abseil libraries require C++14 as the current minimum standard. When
-      # compiled with C++17 (either because it is the compiler's default or
-      # explicitly requested), then Abseil requires C++17.
+      # compiled with a higher standard (either because it is the compiler's
+      # default or explicitly requested), then Abseil requires that standard.
       target_compile_features(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
     endif()
 

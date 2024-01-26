@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
 <translation id="1796666869097395659">מזעור הכרטיסייה כדי לחזור אליה מאוחר יותר</translation>
 <translation id="1807246157184219062">בהיר</translation>
+<translation id="1807709131360304325">פתיחת חלון חדש</translation>
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">האתר מושהה</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{הורדה אחת נכשלה}one{# הורדות נכשלו}two{# הורדות נכשלו}other{# הורדות נכשלו}}</translation>
 <translation id="2067805253194386918">טקסט</translation>
+<translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">מוצגת תצוגה קומפקטית</translation>
 <translation id="2093731487903423814">15 הדקות האחרונות</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
-<translation id="2241634353105152135">פעם אחת בלבד</translation>
 <translation id="2247789808226901522">תוקף הכרטיס פג</translation>
 <translation id="2248941474044011069">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="2249635629516220541">התאמה אישית של המידע שמשמש אתרים להצגת מודעות</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
-<translation id="2327226657832576859">‏לפתוח קובצי PDF באופן אוטומטי?</translation>
 <translation id="2328985652426384049">אי אפשר להיכנס לחשבון</translation>
 <translation id="2341410551640223969">לא הצלחנו להתקין את <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏סך כל הנתונים שבהם משתמש Chrome, כולל חשבונות, סימניות והגדרות שמורות</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
+<translation id="2789486458103222910">אישור</translation>
 <translation id="2800066122460699237">הכרטיסייה <ph name="TAB_TITLE" /> תיסגר</translation>
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">תפריט כרטיס הפיד נפתח בחצי מגובה המסך</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">‏מתבצע עדכון של Chrome כדי להתחבר למכשירים אחרים</translation>
 <translation id="2951071800649516099">מוסיפים דפים לרשימת הקריאה לשלב מאוחר יותר</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
-<translation id="2961210776189273067">תואר</translation>
 <translation id="296370266220139811">חוסכים זמן ומקלידים פחות</translation>
 <translation id="2977350910003566746">בתהליך מיון לפי מועד הפתיחה האחרונה</translation>
 <translation id="297771753501244313">מיון לפי נפתחו לאחרונה</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4307992518367153382">היסודות</translation>
+<translation id="4311652497846705514">‏לפתוח את קובץ ה-PDF?</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
 <translation id="433213510553688132">יתבצע מעקב…</translation>
 <translation id="4335835283689002019">הגלישה הבטוחה כבויה.</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">בשעה האחרונה</translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4532845899244822526">בחירת תיקייה</translation>
-<translation id="4541505619120536051">תמיד לפתוח</translation>
 <translation id="4543131175509360848">אין גיליון של מפתחות גישה</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4554077758708533499">‏הטלפון מחובר באמצעות כבל USB</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">לוגו של הודעת הפרטיות במרכז התובנות לגבי הדף שמפנה לדף 'הפעילות שלי'.</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
-<translation id="5509866835115085009">‏אפשר להגדיר ל-Chrome לפתוח קובצי PDF באופן אוטומטי אחרי שמורידים אותם.</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">יש להקיש כדי לכווץ</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5966233851250124270">‏הבחירה שלך תישמר ב-Chrome</translation>
+<translation id="5977976211062815271">במכשיר הזה</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="5995726099713306770">להוריד שוב את הדף?</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{כל הקבצים, קובץ אחד ברשימה}one{כל הקבצים, # קבצים ברשימה}two{כל הקבצים, # קבצים ברשימה}other{כל הקבצים, # קבצים ברשימה}}</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
+<translation id="7821130663268546430">כל הכרטיסיות הפתוחות מופיעות בכלי למעבר בין כרטיסיות</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="78270725016672455">התקבלה מהמחשב בקשה לרשום את המכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
+<translation id="7951102827450076904">‏קובצי PDF תמיד ייפתחו אחרי ההורדה</translation>
 <translation id="7957413488482743710">כרטיס וירטואלי מסתיר את הכרטיס שלך בפועל כדי להגן עליך מפני תרמיות פוטנציאליות. <ph name="BEGIN_LINK1" />כאן מפורט מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">לחצן 'הקודם' בתובנות לגבי הדף</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>

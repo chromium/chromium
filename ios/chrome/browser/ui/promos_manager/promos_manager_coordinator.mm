@@ -22,6 +22,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -87,6 +89,9 @@
 
   // The handler for the CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
+
+  // The handler for the DockingPromoCommands.
+  id<DockingPromoCommands> _dockingPromoCommandHandler;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -112,11 +117,15 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-            credentialProviderPromoHandler:
-                (id<CredentialProviderPromoCommands>)handler {
+            credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
+                                               credentialProviderPromoHandler
+                       dockingPromoHandler:
+                           (id<DockingPromoCommands>)dockingPromoHandler {
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
-    _credentialProviderPromoCommandHandler = handler;
+    _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
+    _dockingPromoCommandHandler = dockingPromoHandler;
+
     [self registerPromos];
 
     BOOL promosExist = _displayHandlerPromos.size() > 0 ||
@@ -156,24 +165,20 @@
 // Display a promo if one is available, with special behavior if this is the
 // first time this coordinator has shown a promo.
 - (void)displayPromoIfAvailable:(BOOL)isFirstShownPromo {
-  if (ShouldPromosManagerUseFET()) {
-    // Wait to present a promo until the feature engagement tracker database
-    // is fully initialized.
-    __weak __typeof(self) weakSelf = self;
-    void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-      if (!successfullyLoaded) {
-        return;
-      }
-      [weakSelf displayPromoCallback:isFirstShownPromo];
-    };
+  // Wait to present a promo until the feature engagement tracker database
+  // is fully initialized.
+  __weak __typeof(self) weakSelf = self;
+  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
+    if (!successfullyLoaded) {
+      return;
+    }
+    [weakSelf displayPromoCallback:isFirstShownPromo];
+  };
 
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
-  } else {
-    [self displayPromoCallback:isFirstShownPromo];
-  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
@@ -191,8 +196,7 @@
 }
 
 - (void)promoWasDismissed {
-  if (ShouldPromosManagerUseFET() && _currentPromoData.has_value() &&
-      !_currentPromoData.value().was_forced) {
+  if (_currentPromoData.has_value() && !_currentPromoData.value().was_forced) {
     PromoConfigsSet configs = [self promoImpressionLimits];
     auto it = configs.find(_currentPromoData.value().promo);
     if (it == configs.end() || !it->feature_engagement_feature) {
@@ -554,12 +558,8 @@
   // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
 
   // StandardPromoAlertProvider promo(s) below:
-  syncer::SyncUserSettings* syncUserSettings =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState())
-          ->GetUserSettings();
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
-      [[PostRestoreSignInProvider alloc]
-          initWithSyncUserSettings:syncUserSettings];
+      [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
   if (GetPostRestoreDefaultBrowserPromoType() ==
       PostRestoreDefaultBrowserPromoType::kAlert) {
     _alertProviderPromos
@@ -577,6 +577,14 @@
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
       [[CredentialProviderPromoDisplayHandler alloc]
           initWithHandler:_credentialProviderPromoCommandHandler];
+
+  // Docking Promo handler
+  _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
+      [[DockingPromoDisplayHandler alloc]
+          initWithHandler:_dockingPromoCommandHandler];
+  _displayHandlerPromos[promos_manager::Promo::DockingPromoRemindMeLater] =
+      [[DockingPromoDisplayHandler alloc]
+          initWithHandler:_dockingPromoCommandHandler];
 
   // DefaultBrowser Promo handler
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

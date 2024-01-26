@@ -243,16 +243,31 @@ const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(
 }
 
 void StyledLabel::SizeToFit(int fixed_width) {
-  CalculateLayout(fixed_width == 0 ? std::numeric_limits<int>::max()
-                                   : fixed_width);
-  gfx::Size size = layout_size_info_.total_size;
+  DCHECK_LE(0, fixed_width);
+  fixed_width_ = fixed_width;
+  gfx::Size size = CalculatePreferredSize(
+      SizeBounds(fixed_width_ == 0 ? SizeBound() : SizeBound(width()), {}));
   size.set_width(std::max(size.width(), fixed_width));
   SetSize(size);
 }
 
 gfx::Size StyledLabel::CalculatePreferredSize() const {
   // Respect any existing size.  If there is none, default to a single line.
-  CalculateLayout((width() == 0) ? std::numeric_limits<int>::max() : width());
+  return CalculatePreferredSize(
+      SizeBounds(width() == 0 ? SizeBound() : SizeBound(width()), {}));
+}
+
+gfx::Size StyledLabel::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  int width = 0;
+  if (fixed_width_) {
+    width = fixed_width_;
+  } else if (available_size.width().is_bounded()) {
+    width = available_size.width().value();
+  }
+
+  // Respect any existing size.  If there is none, default to a single line.
+  CalculateLayout(width == 0 ? std::numeric_limits<int>::max() : width);
   return layout_size_info_.total_size;
 }
 

@@ -5,11 +5,24 @@
 #ifndef ASH_WEBUI_VC_BACKGROUND_UI_VC_BACKGROUND_UI_H_
 #define ASH_WEBUI_VC_BACKGROUND_UI_VC_BACKGROUND_UI_H_
 
+#include <memory>
+
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
+
+namespace ash::common {
+class SeaPenProvider;
+}  // namespace ash::common
 
 namespace ash::vc_background_ui {
 
@@ -17,7 +30,8 @@ class VcBackgroundUI;
 
 class VcBackgroundUIConfig : public SystemWebAppUIConfig<VcBackgroundUI> {
  public:
-  VcBackgroundUIConfig();
+  explicit VcBackgroundUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func);
 
   VcBackgroundUIConfig(const VcBackgroundUIConfig&) = delete;
   VcBackgroundUIConfig& operator=(const VcBackgroundUIConfig&) = delete;
@@ -27,14 +41,26 @@ class VcBackgroundUIConfig : public SystemWebAppUIConfig<VcBackgroundUI> {
 
 class VcBackgroundUI : public ui::MojoWebUIController {
  public:
-  explicit VcBackgroundUI(content::WebUI* web_ui);
+  VcBackgroundUI(
+      content::WebUI* web_ui,
+      std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider);
 
   VcBackgroundUI(const VcBackgroundUI&) = delete;
   VcBackgroundUI& operator=(const VcBackgroundUI&) = delete;
 
   ~VcBackgroundUI() override;
 
+  void BindInterface(
+      mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
+          receiver);
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
+  std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.RootDamage" units="%"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
-    units="boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesScalingRequiredOverlays"
-    units="boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.AnimationUpdateOnMissingPropertyNode"
-    units="boolean" expires_after="2024-12-02">
+    enum="Boolean" expires_after="2024-12-02">
   <owner>awogbemila@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -666,7 +666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActiveLayers" units="layers"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActivePictureLayers" units="layers"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -687,7 +687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumRenderSurfaces" units="surfaces"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DirectlyDrawableRenderPassWithRPDQ"
-    units="boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>khushalsagar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -710,7 +710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
-    units="boolean" expires_after="2023-06-11">
+    enum="Boolean" expires_after="2023-06-11">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
@@ -820,7 +820,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.OrphanedRenderPassCount"
-    units="render passes" expires_after="2024-04-28">
+    units="render passes" expires_after="2024-07-14">
   <owner>kylechar@chromium.org</owner>
   <owner>khaslett@chromium.org</owner>
   <summary>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.TileManager.EnoughMemory" units="boolean"
+<histogram name="Compositing.TileManager.EnoughMemory" enum="Boolean"
     expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
@@ -979,7 +979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CompositorLatency.Type{Sequence}" enum="FrameReportType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1133,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2024-05-19">
+    units="%" expires_after="2024-07-21">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1264,29 +1264,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.MaxStale" units="ms"
-    expires_after="2024-05-19">
-  <owner>jonross@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the maximum staleness value for all presentations for a particular
-    sequence of frames (e.g. during scroll, animation, etc.). This is reported
-    in various sub-metrics with suffixes describing the type of the sequence
-    (e.g. TouchScroll etc.).
-
-    Typically, a frame presentation is expected to last at least one vsync
-    cycle, plus any number of additional vsync cycles if no updates are expected
-    duration that time. If the presentation interval is prolonged due to reasons
-    other than listed above, then that prolonged portion will be considered
-    staleness for that frame.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.AllSequences"
     units="%" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -1322,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
-    units="%" expires_after="2024-05-11">
+    units="%" expires_after="2024-07-14">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1345,28 +1322,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Thread" variants="SmoothnessThread"/>
   <token key="Sequence" variants="SmoothnessSequence"/>
-</histogram>
-
-<histogram name="Graphics.Smoothness.Stale" units="ms"
-    expires_after="2024-05-19">
-  <owner>jonross@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the staleness value for each frame presentation for a particular
-    sequence of frames (e.g. during scroll, animation, etc.). This is reported
-    in various sub-metrics with suffixes describing the type of the sequence
-    (e.g. TouchScroll etc.).
-
-    Typically, a frame presentation is expected to last at least one vsync
-    cycle, plus any number of additional vsync cycles if no updates are expected
-    duration that time. If the presentation interval is prolonged due to reasons
-    other than listed above, then that prolonged portion will be considered
-    staleness.
-
-    Note that the reporting of this metric occurs as soon as a frame is
-    presented, and is not affected by the length of the frame sequence.
-  </summary>
 </histogram>
 
 </histograms>

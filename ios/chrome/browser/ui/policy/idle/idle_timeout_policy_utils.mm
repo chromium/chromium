@@ -6,45 +6,10 @@
 
 #import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 
 namespace enterprise_idle {
-
-ActionSet GetActionSet(PrefService* prefs,
-                       AuthenticationService* auth_service) {
-  std::vector<ActionType> action_types = GetActionTypesFromPrefs(prefs);
-  ActionSet action_set = {.clear = false, .close = false, .signout = false};
-  for (ActionType action_type : action_types) {
-    switch (action_type) {
-      case ActionType::kCloseTabs:
-        action_set.close = true;
-        break;
-
-      // The dialog and snackbar should not say "signed out" if the user was not
-      // signed in before actions run.
-      case ActionType::kSignOut:
-        action_set.signout =
-            auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-        break;
-
-      case ActionType::kClearBrowsingHistory:
-      case ActionType::kClearCookiesAndOtherSiteData:
-      case ActionType::kClearCachedImagesAndFiles:
-      case ActionType::kClearPasswordSignin:
-      case ActionType::kClearAutofill:
-        action_set.clear = true;
-        break;
-
-      // TODO(b/301676922): Remove this once the ActionType enum has been
-      // cleaned up
-      default:
-        break;
-    }
-  }
-  return action_set;
-}
 
 absl::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
   if (actions.clear && actions.close && actions.signout) {

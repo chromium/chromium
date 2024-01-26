@@ -1,6 +1,5 @@
 # Static files are used as-is from the repository.
 image_loader_static_js_files = [
-  "image_loader/cache.js",
   "image_loader/image_loader.js",
   "image_loader/image_loader_client.js",
   "image_loader/image_loader_util.js",
@@ -11,7 +10,10 @@ image_loader_static_js_files = [
   "image_loader/scheduler.js",
 ]
 
-image_loader_ts = [ "image_loader/background.ts" ]
+image_loader_ts = [
+  "image_loader/background.ts",
+  "image_loader/cache.ts",
+]
 
 static_js_files = [
   # Files app Foreground:

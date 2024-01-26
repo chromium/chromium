@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/test_future.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/test_base.h"
@@ -36,28 +38,21 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the dml::ContextImpl through context provider.
-  bool is_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
-  provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResultPtr create_context_result) {
-            if (create_context_result->is_context_remote()) {
-              webnn_context_remote.Bind(
-                  std::move(create_context_result->get_context_remote()));
-            } else {
-              is_platform_supported =
-                  create_context_result->get_error()->code !=
-                  mojom::Error::Code::kNotSupportedError;
-            }
-            is_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(is_callback_called);
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  if (create_context_result->is_context_remote()) {
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_context_remote()));
+  } else {
+    is_platform_supported = create_context_result->get_error()->code !=
+                            mojom::Error::Code::kNotSupportedError;
+  }
 
-  // Remote is null when the platform is not supported which cannot be bound.
+  // Remote is null when the platform is not supported which cannot be
+  // bound.
   SKIP_TEST_IF(!is_platform_supported);
 
   ASSERT_TRUE(webnn_context_remote.is_bound());
@@ -71,22 +66,21 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   builder.BuildRelu(input_operand_id, output_operand_id);
 
   // The dml::GraphImpl should be built successfully.
-  base::RunLoop run_loop_create_graph;
-  is_callback_called = false;
-  webnn_context_remote->CreateGraph(
-      builder.CloneGraphInfo(),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            EXPECT_TRUE(create_graph_result->is_graph_remote());
-            is_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(is_callback_called);
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result->is_graph_remote());
+
+  // Reset the remote to ensure `WebNNGraphImpl` is released.
+  if (create_graph_result->is_graph_remote()) {
+    create_graph_result->get_graph_remote().reset();
+  }
 
   // Ensure `WebNNContextImpl::OnConnectionError()` is called and
   // `WebNNContextImpl` is released.
   webnn_context_remote.reset();
+  provider_remote.reset();
   base::RunLoop().RunUntilIdle();
 }
 

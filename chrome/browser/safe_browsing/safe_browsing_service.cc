@@ -505,6 +505,17 @@ void SafeBrowsingService::RefreshState() {
         estimated_extended_reporting_by_prefs_ = erl;
       }
     }
+
+    if (IsEnhancedProtectionEnabled(*pref.first)) {
+      if (pref.first->GetTime(prefs::kSafeBrowsingEsbEnabledTimestamp)
+              .is_null()) {
+        pref.first->SetTime(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                            base::Time::Now());
+      }
+    } else {
+      pref.first->SetTime(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                          base::Time());
+    }
   }
 
   if (enabled_by_prefs_) {
@@ -523,7 +534,7 @@ bool SafeBrowsingService::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
-    absl::optional<bool> show_download_in_folder) {
+    std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download));

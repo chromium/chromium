@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -15,6 +16,9 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -27,6 +31,7 @@
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface IdleTimeoutPolicySceneAgent () <
@@ -59,11 +64,6 @@
   // IdleTimeoutPolicySceneAgents observe this service.
   raw_ptr<enterprise_idle::IdleService> _idleService;
 
-  // The time `onIdleTimeoutInForeground` is triggered. Used to determine the
-  // start of the countdown displayed. Usually the countdown is 30s, but might
-  // need to be adjusted if the dialog was already started on a different scene.
-  base::Time _idleTriggerTime;
-
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout
   // confirmation dialog.
@@ -71,9 +71,6 @@
 
   // Coordinator for the idle timeout confirmation dialog.
   IdleTimeoutConfirmationCoordinator* _idleTimeoutConfirmationCoordinator;
-
-  // The actions that will run on idle timeout.
-  enterprise_idle::ActionSet _actions;
 
   // An extended launch screen that shows on start-up or re-foreground. The
   // windows shows on top of the browser to block the user from navigating when
@@ -141,9 +138,6 @@
 #pragma mark - IdleServiceObserving
 
 - (void)onIdleTimeoutInForeground {
-  _idleTriggerTime = base::Time::Now();
-  _actions =
-      enterprise_idle::GetActionSet([self prefService], [self authService]);
   [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
@@ -153,11 +147,6 @@
   // reforeground. The differentiating factor in this case will be which scene
   // enters foreground first.
   _pendingDisplayingSnackbar = YES;
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          _mainBrowser->GetBrowserState());
-  PrefService* prefService = _mainBrowser->GetBrowserState()->GetPrefs();
-  _actions = enterprise_idle::GetActionSet(prefService, authService);
   [self showExtendedLaunchScreenWindow];
 }
 
@@ -183,10 +172,16 @@
 - (void)stopPresentingAndRunActionsAfterwards:(BOOL)doRunActions {
   _idleService->OnIdleTimeoutDialogPresented();
   [self stopIdleTimeoutConfirmationCoordinator];
+
   if (doRunActions) {
+    enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+        enterprise_idle::metrics::IdleTimeoutDialogEvent::kDialogExpired);
     _pendingDisplayingSnackbar = YES;
     _idleService->RunActions();
   } else {
+    enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+        enterprise_idle::metrics::IdleTimeoutDialogEvent::
+            kDialogDismissedByUser);
     _pendingDisplayingSnackbar = NO;
   }
 }
@@ -245,16 +240,40 @@
     // `transitionedToActivationLevel` to foreground.
     return;
   }
-
+  // It is important to get the last actions from the service because the window
+  // showing the snackbar might have been opened after timeout happened. This
+  // can be the case in the following scenario: Foreground 1 window -> wait till
+  // dialog shows -> open another window -> Now close the window that initially
+  // showed the dialog.
   std::optional<int> messageId =
-      enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(_actions);
+      enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(
+          _idleService->GetLastActionSet());
   CHECK(messageId) << "There is no snackbar message for the set of actions";
   NSString* messageText = l10n_util::GetNSString(*messageId);
+
+  // Delay showing the snackbar message when voice over is on because other
+  // elements with higher accessibility priority will cut off reading the
+  // snackbar message. For example, when tabs are closed on idle timeout, the
+  // snackbar message is cut off when the screen reader reads out the text on
+  // the empty tab grid that got displayed, so we need to wait.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf showSnackbar:messageText];
+        }),
+        base::Seconds(2));
+  } else {
+    [self showSnackbar:messageText];
+  }
+  _idleService->OnIdleTimeoutSnackbarPresented();
+}
+
+- (void)showSnackbar:(NSString*)messageText {
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
+  message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
-
-  _idleService->OnIdleTimeoutSnackbarPresented();
 }
 
 // Returns whether the scene and app states allow for the idle timeout
@@ -314,13 +333,17 @@
 
 // Shows the notification dialog for the account on the `viewController`
 - (void)showIdleTimeoutConfirmation {
+  [self closeMediaPresentationsIfFullScreenMode];
   _idleTimeoutConfirmationCoordinator =
       [[IdleTimeoutConfirmationCoordinator alloc]
           initWithBaseViewController:[_sceneUIProvider activeViewController]
                              browser:_mainBrowser];
   _idleTimeoutConfirmationCoordinator.delegate = self;
-  _idleTimeoutConfirmationCoordinator.triggerTime = _idleTriggerTime;
+  _idleTimeoutConfirmationCoordinator.triggerTime =
+      _idleService->GetIdleTriggerTime();
   [_idleTimeoutConfirmationCoordinator start];
+  enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+      enterprise_idle::metrics::IdleTimeoutDialogEvent::kDialogShown);
 }
 
 // Dismisses the idle timeout confirmation dialog.
@@ -353,13 +376,22 @@
 }
 
 - (void)maybeDismissExtendedLaunchScreenWindowIfDisplayed {
-  if (!_actions.close) {
+  if (![self isLaunchScreenDisplayed]) {
+    // Nothing needs to be done here, so we can return.
+    return;
+  }
+
+  enterprise_idle::metrics::RecordIdleTimeoutLaunchScreenEvent(
+      enterprise_idle::metrics::IdleTimeoutLaunchScreenEvent::
+          kLaunchScreenDismissedAfterActionCompletion);
+
+  if (!_idleService->GetLastActionSet().close) {
     // Dismiss right away if tabs will not be closing, which is often delayed.
     [self dismissExtendedLaunchScreenWindowIfDisplayed];
     return;
   }
 
-  // Remove after 2 more seconds to give the UI enough time to update behind the
+  // Remove after 1 more second to give the UI enough time to update behind the
   // screen after actions have run. If the screen is dimssed right away, the
   // tabs will be seen closing.
   __weak __typeof(self) weakSelf = self;
@@ -408,9 +440,25 @@
   __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
+        enterprise_idle::metrics::RecordIdleTimeoutLaunchScreenEvent(
+            enterprise_idle::metrics::IdleTimeoutLaunchScreenEvent::
+                kLaunchScreenExpired);
         [weakSelf dismissExtendedLaunchScreenWindowIfDisplayed];
       }),
       base::Seconds(5));
+}
+
+// Closes the media presentations to avoid having the fullscreen video on top of
+// the dialog so the user does not miss the dialog if they are watching a video.
+- (void)closeMediaPresentationsIfFullScreenMode {
+  Browser* currentBrowser =
+      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  CHECK(currentBrowser);
+  web::WebState* activeWebState =
+      currentBrowser->GetWebStateList()->GetActiveWebState();
+  if (activeWebState) {
+    activeWebState->CloseMediaPresentations();
+  }
 }
 
 @end

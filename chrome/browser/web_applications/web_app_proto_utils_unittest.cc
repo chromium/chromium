@@ -54,10 +54,11 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
   ASSERT_TRUE(parsed);
   EXPECT_EQ(kStartUrl, sync_proto.start_url());
   EXPECT_EQ(kAppName, sync_proto.name());
-  EXPECT_EQ(sync_pb::WebAppSpecifics::BROWSER, sync_proto.user_display_mode());
+  EXPECT_EQ(sync_pb::WebAppSpecifics::BROWSER,
+            sync_proto.user_display_mode_non_cros());
 
   // Check the fields were parsed into the web app struct.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
   ASSERT_TRUE(fallback_data.has_value());
   EXPECT_EQ(kAppName, fallback_data->name);
@@ -75,10 +76,10 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_Minimal) {
   sync_pb::WebAppSpecifics sync_proto;
   sync_proto.set_start_url(kStartUrl);
   sync_proto.set_name(kAppName);
-  sync_proto.set_user_display_mode(sync_pb::WebAppSpecifics::BROWSER);
+  sync_proto.set_user_display_mode_non_cros(sync_pb::WebAppSpecifics::BROWSER);
 
   // Parse the proto.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
 
   // Check the fields were parsed.
@@ -94,7 +95,8 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_FullyPopulated) {
   sync_pb::WebAppSpecifics sync_proto;
   sync_proto.set_start_url(kStartUrl);
   sync_proto.set_name(kAppName);
-  sync_proto.set_user_display_mode(sync_pb::WebAppSpecifics::STANDALONE);
+  sync_proto.set_user_display_mode_non_cros(
+      sync_pb::WebAppSpecifics::STANDALONE);
   sync_proto.set_theme_color(SK_ColorRED);
   sync_proto.set_scope(kScope);
   sync_proto.set_user_page_ordinal(kUserPageOrdinal);
@@ -109,7 +111,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_FullyPopulated) {
   icon_info_2->set_purpose(sync_pb::WebAppIconInfo_Purpose_MASKABLE);
 
   // Parse the proto.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
 
   // Check the fields were parsed.

@@ -43,6 +43,10 @@ void TestElementBase::Hide() {
   ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(this);
 }
 
+bool TestElementBase::IsVisible() const {
+  return visible_;
+}
+
 void TestElementBase::SendCustomEvent(CustomElementEventType event_type) {
   DCHECK(visible_);
   ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this, event_type);

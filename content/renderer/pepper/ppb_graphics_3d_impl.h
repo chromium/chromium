@@ -146,7 +146,7 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   bool needs_stencil_ = false;
 
   std::unique_ptr<gpu::CommandBufferProxyImpl> command_buffer_;
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   base::WeakPtrFactory<PPB_Graphics3D_Impl> weak_ptr_factory_{this};
 };

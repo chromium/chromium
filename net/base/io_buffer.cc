@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/numerics/safe_math.h"
 
 namespace net {
@@ -37,14 +38,14 @@ IOBufferWithSize::IOBufferWithSize() = default;
 
 IOBufferWithSize::IOBufferWithSize(size_t buffer_size) {
   AssertValidBufferSize(buffer_size);
-  if (buffer_size) {
-    size_ = buffer_size;
-    data_ = new char[buffer_size];
-  }
+  storage_ = base::HeapArray<char>::Uninit(buffer_size);
+  size_ = storage_.size();
+  data_ = storage_.data();
 }
 
 IOBufferWithSize::~IOBufferWithSize() {
-  data_.ClearAndDeleteArray();
+  // Clear pointer before this destructor makes it dangle.
+  data_ = nullptr;
 }
 
 StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {

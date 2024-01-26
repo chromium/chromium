@@ -18,6 +18,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
@@ -75,45 +76,76 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   // "const" restriction that is often used to indicate read-only memory.
   virtual bool MountExistingCountsStorage() const = 0;
 
-  // Creates "counts" storage and returns a pointer to it. Ownership of the
+  // Creates "counts" storage and returns a span to it. The span's size must
+  // be the number of counts required by the histogram. Ownership of the
   // array remains with the called method but will never change. This must be
   // called while some sort of lock is held to prevent reentry.
-  virtual HistogramBase::Count* CreateCountsStorageWhileLocked() = 0;
+  virtual span<HistogramBase::Count> CreateCountsStorageWhileLocked() = 0;
 
-  HistogramBase::AtomicCount* counts() {
-    return counts_.load(std::memory_order_acquire);
+  std::optional<span<HistogramBase::AtomicCount>> counts() {
+    HistogramBase::AtomicCount* data =
+        counts_data_.load(std::memory_order_acquire);
+    if (data == nullptr) {
+      return std::nullopt;
+    }
+    return std::make_optional(make_span(data, counts_size_));
   }
 
-  const HistogramBase::AtomicCount* counts() const {
-    return counts_.load(std::memory_order_acquire);
+  std::optional<span<const HistogramBase::AtomicCount>> counts() const {
+    const HistogramBase::AtomicCount* data =
+        counts_data_.load(std::memory_order_acquire);
+    if (data == nullptr) {
+      return std::nullopt;
+    }
+    return std::make_optional(make_span(data, counts_size_));
   }
 
-  void set_counts(HistogramBase::AtomicCount* counts) const {
-    counts_.store(counts, std::memory_order_release);
+  void set_counts(span<HistogramBase::AtomicCount> counts) const {
+    CHECK_EQ(counts.size(), counts_size_);
+    counts_data_.store(counts.data(), std::memory_order_release);
   }
 
-  size_t counts_size() const { return bucket_ranges_->bucket_count(); }
+  size_t counts_size() const { return counts_size_; }
 
  private:
   friend class SampleVectorTest;
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);
   FRIEND_TEST_ALL_PREFIXES(SharedHistogramTest, CorruptSampleCounts);
 
-  // |counts_| is actually a pointer to a HistogramBase::AtomicCount array but
-  // is held as an atomic pointer for concurrency reasons. When combined with
-  // the single_sample held in the metadata, there are four possible states:
+  // Returns a reference into the `counts()` array. As `counts()` may be an
+  // empty optional until the array is populated, `counts()` must be checked for
+  // having a value before calling `counts_at()`, or this method may CHECK-fail.
+  const HistogramBase::AtomicCount& counts_at(size_t index) const {
+    return (counts().value())[index];
+  }
+  HistogramBase::AtomicCount& counts_at(size_t index) {
+    return (counts().value())[index];
+  }
+
+  // Shares the same BucketRanges with Histogram object.
+  const raw_ptr<const BucketRanges> bucket_ranges_;
+
+  // The number of counts in the histogram. Once `counts_data_` becomes
+  // non-null, this is the number of values in the `counts_data_` array that
+  // are usable by the SampleVector.
+  const size_t counts_size_;
+
+  // `counts_data_` is a pointer to a `HistogramBase::AtomicCount` array that is
+  // held as an atomic pointer for concurrency reasons. When combined with the
+  // single_sample held in the metadata, there are four possible states:
   //   1) single_sample == zero, counts_ == null
   //   2) single_sample != zero, counts_ == null
   //   3) single_sample != zero, counts_ != null BUT IS EMPTY
   //   4) single_sample == zero, counts_ != null and may have data
-  // Once |counts_| is set, it can never revert and any existing single-sample
-  // must be moved to this storage. It is mutable because changing it doesn't
-  // change the (const) data but must adapt if a non-const object causes the
-  // storage to be allocated and updated.
-  mutable std::atomic<HistogramBase::AtomicCount*> counts_{nullptr};
-
-  // Shares the same BucketRanges with Histogram object.
-  const raw_ptr<const BucketRanges> bucket_ranges_;
+  // Once `counts_data_` is set to a value, it can never be changed and any
+  // existing single-sample must be moved to this storage. It is mutable because
+  // changing it doesn't change the (const) data but must adapt if a non-const
+  // object causes the storage to be allocated and updated.
+  //
+  // Held as raw pointer in atomic, instead of as a span, to avoid locks. The
+  // `counts_size_` is the size of the would-be span, which is CHECKd when
+  // setting the pointer, and used to recreate a span on the way out.
+  mutable std::atomic<HistogramBase::AtomicCount*> counts_data_;
 };
 
 // A sample vector that uses local memory for the counts array.
@@ -138,7 +170,7 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
-  HistogramBase::Count* CreateCountsStorageWhileLocked() override;
+  span<HistogramBase::Count> CreateCountsStorageWhileLocked() override;
 
   // Writes cumulative percentage information based on the number
   // of past, current, and remaining bucket samples.
@@ -174,7 +206,7 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
  private:
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
-  HistogramBase::Count* CreateCountsStorageWhileLocked() override;
+  span<HistogramBase::Count> CreateCountsStorageWhileLocked() override;
 
   // Persistent storage for counts.
   DelayedPersistentAllocation persistent_counts_;

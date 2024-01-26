@@ -9,7 +9,7 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,13 +60,14 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   // the current thread.
   [[nodiscard]] static bool HasCurrentDefault();
 
-  class CurrentHandleOverride;
   class CurrentHandleOverrideForTesting;
 
   class BASE_EXPORT CurrentDefaultHandle {
    public:
-    // Binds |task_runner| to the current thread. |task_runner| must belong
-    // to the current thread.
+    // Sets the value returned by `SingleThreadTaskRunner::GetCurrentDefault()`
+    // and `SequencedTaskRunner::GetCurrentDefault()` to `task_runner` within
+    // its scope. `task_runner` must belong to the current thread. There must
+    // not already be a current default `SingleThreadTaskRunner` on this thread.
     explicit CurrentDefaultHandle(
         scoped_refptr<SingleThreadTaskRunner> task_runner);
 
@@ -77,89 +78,52 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
 
    private:
     friend class SingleThreadTaskRunner;
-    friend class CurrentHandleOverride;
 
-    const AutoReset<CurrentDefaultHandle*> resetter_;
-
-    scoped_refptr<SingleThreadTaskRunner> task_runner_;
-
-    // Registers |task_runner_|'s SequencedTaskRunner interface as the
-    // SequencedTaskRunner::CurrentDefaultHandle on this thread.
-    SequencedTaskRunner::CurrentDefaultHandle
-        sequenced_task_runner_current_default_;
-  };
-
-  // CurrentHandleOverride overrides the task runner returned by
-  // |SingleThreadTaskRunner::GetCurrentDefault()| to point at
-  // |overriding_task_runner| until the |CurrentHandleOverride| goes out of
-  // scope. CurrentHandleOverride instantiates a new SingleThreadTaskRunner if
-  // SingleThreadTaskRunner is not instantiated on the current thread. Nested
-  // overrides are allowed but callers must ensure the |CurrentHandleOverride|s
-  // expire in LIFO (stack) order.
-  //
-  // Note: nesting SingleThreadTaskRunner is subtle and should be done with
-  // care, hence the need to friend and request a //base/OWNERS review for usage
-  // outside of tests. Use CurrentHandleOverrideForTesting to bypass the friend
-  // requirement in tests.
-  class BASE_EXPORT CurrentHandleOverride {
-   public:
-    CurrentHandleOverride(const CurrentHandleOverride&) = delete;
-    CurrentHandleOverride& operator=(const CurrentHandleOverride&) = delete;
-    ~CurrentHandleOverride();
-
-   private:
-    friend class CurrentHandleOverrideForTesting;
-    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
-                             NestedRunLoop);
-
-    // We expect SingleThreadTaskRunner::CurrentHandleOverride to be only needed
-    // under special circumstances. Require them to be enumerated as friends to
-    // require //base/OWNERS review. Use
+    // Overriding an existing current default SingleThreadTaskRunner should only
+    // be needed under special circumstances. Require them to be enumerated as
+    // friends to require //base/OWNERS review. Use
     // SingleThreadTaskRunner::CurrentHandleOverrideForTesting in unit tests to
     // avoid the friend requirement.
-
     friend class blink::scheduler::MainThreadSchedulerImpl;
+    friend class CurrentHandleOverrideForTesting;
+    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+                             NestedRunLoopAllowedUnderHandleOverride);
+    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+                             NestedOverrideWithMayAlreadyExist);
+    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+                             OverrideWithNull);
+    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+                             OverrideWithNonNull);
 
-    // Constructs a SingleThreadTaskRunner::CurrentHandleOverride which will
-    // make SingleThreadTaskRunner::GetCurrentDefault() return
-    // |overriding_task_runner| for its lifetime. |allow_nested_loop| specifies
-    // whether RunLoop::Run() is allowed during this override's lifetime. It's
-    // not recommended to allow this unless the current thread's scheduler
-    // guarantees that only tasks which pertain to |overriding_task_runner|'s
-    // context will be run by nested RunLoops.
-    explicit CurrentHandleOverride(
-        scoped_refptr<SingleThreadTaskRunner> overriding_task_runner,
-        bool allow_nested_runloop = false);
+    struct MayAlreadyExist {};
 
-    absl::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
-        top_level_thread_task_runner_current_default_;
+    // Same as the public constructor, but there may already be a current
+    // default `SingleThreadTaskRunner` on this thread.
+    CurrentDefaultHandle(scoped_refptr<SingleThreadTaskRunner> task_runner,
+                         MayAlreadyExist);
 
-    scoped_refptr<SingleThreadTaskRunner> task_runner_to_restore_;
-
-#if DCHECK_IS_ON()
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION SingleThreadTaskRunner*
-        expected_task_runner_before_restore_{nullptr};
-#endif
-
-    std::unique_ptr<ScopedDisallowRunningRunLoop> no_running_during_override_;
+    scoped_refptr<SingleThreadTaskRunner> task_runner_;
+    raw_ptr<CurrentDefaultHandle> previous_handle_;
+    SequencedTaskRunner::CurrentDefaultHandle sequenced_handle_;
   };
 
-  // Note: nesting CurrentHandleOverrides isn't generally desired but it's
-  // useful in some unit tests where multiple task runners share the main thread
-  // for simplicity and determinism. Only use this when no other constructs will
-  // work (see base/test/task_environment.h and
+  // Overrides the current default `SingleThreadTaskRunner` and disables running
+  // a `RunLoop` within its scope.
+  //
+  // Note: Overriding the current default SingleThreadTaskRunner isn't generally
+  // desired but it's useful in some unit tests where multiple task runners
+  // share the main thread for simplicity and determinism. Only use this when no
+  // other constructs will work (see base/test/task_environment.h and
   // base/test/test_mock_time_task_runner.h for preferred alternatives).
   class BASE_EXPORT CurrentHandleOverrideForTesting {
    public:
     explicit CurrentHandleOverrideForTesting(
-        scoped_refptr<SingleThreadTaskRunner> overriding_task_runner)
-        : thread_task_runner_current_override_(
-              std::move(overriding_task_runner)) {}
+        scoped_refptr<SingleThreadTaskRunner> overriding_task_runner);
+    ~CurrentHandleOverrideForTesting();
 
    private:
-    CurrentHandleOverride thread_task_runner_current_override_;
+    CurrentDefaultHandle current_default_handle_;
+    std::unique_ptr<ScopedDisallowRunningRunLoop> no_running_during_override_;
   };
 
  protected:

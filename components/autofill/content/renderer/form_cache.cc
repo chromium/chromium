@@ -81,14 +81,10 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
 // (3) There is at least one iframe.
 // TODO(crbug.com/1489075): Should an element that IsCheckableElement() also be
 // IsAutofillableInputElement()?
-// TODO(crbug.com/1482526): Check FormFieldData::form_control_element instead of
-// calling IsCheckableElement(), and eliminate the `control_elements` parameter.
-bool IsFormInteresting(
-    const FormData& form,
-    base::span<const WebFormControlElement> control_elements) {
+bool IsFormInteresting(const FormData& form) {
   return !form.child_frames.empty() ||
-         base::ranges::any_of(control_elements,
-                              std::not_fn(&form_util::IsCheckableElement)) ||
+         base::ranges::any_of(form.fields, std::not_fn(&form_util::IsCheckable),
+                              &FormFieldData::form_control_type) ||
          base::ranges::any_of(form.fields, std::not_fn(&std::string::empty),
                               &FormFieldData::autocomplete_attribute);
 }
@@ -146,42 +142,41 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // false iff the total number of fields exceeds |kMaxExtractableFields|.
   // Clears |form|'s FormData::child_frames if the total number of frames
   // exceeds |kMaxExtractableChildFrames|.
-  auto ProcessForm =
-      [&](FormData form,
-          const std::vector<WebFormControlElement>& control_elements) {
-        for (const auto& field : form.fields)
-          observed_unique_renderer_ids.insert(field.unique_renderer_id);
+  auto ProcessForm = [&](FormData form) {
+    for (const auto& field : form.fields) {
+      observed_unique_renderer_ids.insert(field.unique_renderer_id);
+    }
 
-        num_fields_seen += form.fields.size();
-        num_frames_seen += form.child_frames.size();
+    num_fields_seen += form.fields.size();
+    num_frames_seen += form.child_frames.size();
 
-        // Enforce the kMaxExtractableFields limit: ignore all forms after this
-        // limit has been reached (i.e., abort parsing).
-        if (num_fields_seen > kMaxExtractableFields) {
-          return false;
-        }
+    // Enforce the kMaxExtractableFields limit: ignore all forms after this
+    // limit has been reached (i.e., abort parsing).
+    if (num_fields_seen > kMaxExtractableFields) {
+      return false;
+    }
 
-        // Enforce the kMaxExtractableChildFrames limit: ignore the iframes, but
-        // do not ignore the fields (i.e., continue parsing).
-        if (num_frames_seen > kMaxExtractableChildFrames) {
-          form.child_frames.clear();
-        }
+    // Enforce the kMaxExtractableChildFrames limit: ignore the iframes, but
+    // do not ignore the fields (i.e., continue parsing).
+    if (num_frames_seen > kMaxExtractableChildFrames) {
+      form.child_frames.clear();
+    }
 
-        // Store only forms that contain iframes or fields.
-        if (IsFormInteresting(form, control_elements)) {
-          FormRendererId form_id = form.unique_renderer_id;
-          DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
-          auto it = old_extracted_forms.find(form_id);
-          if (it == old_extracted_forms.end() ||
-              !FormData::DeepEqual(std::move(it->second), form)) {
-            SaveInitialValues(control_elements);
-            r.updated_forms.push_back(form);
-          }
-          r.removed_forms.erase(form_id);
-          extracted_forms_[form_id] = std::move(form);
-        }
-        return true;
-      };
+    // Store only forms that contain iframes or fields.
+    if (IsFormInteresting(form)) {
+      FormRendererId form_id = form.unique_renderer_id;
+      DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
+      auto it = old_extracted_forms.find(form_id);
+      if (it == old_extracted_forms.end() ||
+          !FormData::DeepEqual(std::move(it->second), form)) {
+        SaveInitialValues(form.fields);
+        r.updated_forms.push_back(form);
+      }
+      r.removed_forms.erase(form_id);
+      extracted_forms_[form_id] = std::move(form);
+    }
+    return true;
+  };
 
   constexpr DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
                                                        ExtractOption::kOptions};
@@ -191,12 +186,9 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
 
   for (const WebFormElement& form_element : document.Forms()) {
-    if (std::optional<FormData> form = WebFormElementToFormData(
-            form_element, WebFormControlElement(), field_data_manager,
-            extract_options, nullptr)) {
-      if (!ProcessForm(
-              std::move(*form),
-              form_util::ExtractAutofillableElementsInForm(form_element))) {
+    if (std::optional<FormData> form = ExtractFormData(
+            document, form_element, field_data_manager, extract_options)) {
+      if (!ProcessForm(std::move(*form))) {
         PruneInitialValueCaches(observed_unique_renderer_ids);
         return r;
       }
@@ -205,19 +197,13 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document);
-  std::vector<WebElement> iframe_elements =
-      form_util::GetUnownedIframeElements(document);
-
-  std::optional<FormData> synthetic_form = UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, document, field_data_manager,
-      extract_options, nullptr);
+  std::optional<FormData> synthetic_form = ExtractFormData(
+      document, WebFormElement(), field_data_manager, extract_options);
   if (!synthetic_form) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
-  if (!ProcessForm(std::move(*synthetic_form), control_elements)) {
+  if (!ProcessForm(std::move(*synthetic_form))) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
@@ -295,10 +281,8 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
   // * Send the focus event.
   WebFormElement form_element = element.Form();
   std::vector<WebFormControlElement> control_elements =
-      form_element.IsNull()
-          ? form_util::GetUnownedAutofillableFormFieldElements(
-                element.GetDocument())
-          : form_util::ExtractAutofillableElementsInForm(form_element);
+      form_util::GetAutofillableFormControlElements(element.GetDocument(),
+                                                    form_element);
 
   if (control_elements.empty())
     return true;
@@ -340,23 +324,11 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                 bool attach_predictions_to_dom) {
   DCHECK_EQ(form.data.fields.size(), form.fields.size());
 
-  std::vector<WebFormControlElement> control_elements;
-
-  if (form.data.unique_renderer_id.is_null()) {  // Form is synthetic.
-    WebDocument document = frame_->GetDocument();
-    control_elements =
-        form_util::GetUnownedAutofillableFormFieldElements(document);
-  } else {
-    for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
-      if (form_util::GetFormRendererId(form_element) ==
-          form.data.unique_renderer_id) {
-        control_elements =
-            form_util::ExtractAutofillableElementsInForm(form_element);
-        break;
-      }
-    }
-  }
-
+  WebDocument document = frame_->GetDocument();
+  WebFormElement form_element =
+      form_util::FindFormByRendererId(form.data.unique_renderer_id);
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetAutofillableFormControlElements(document, form_element);
   if (control_elements.size() != form.fields.size()) {
     // Keep things simple.  Don't show predictions for forms that were modified
     // between page load and the server's response to our query.
@@ -472,20 +444,17 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   return true;
 }
 
-void FormCache::SaveInitialValues(
-    const std::vector<WebFormControlElement>& control_elements) {
-  for (const WebFormControlElement& element : control_elements) {
-    if (form_util::IsSelectElement(element)) {
-      initial_select_values_.insert(
-          {form_util::GetFieldRendererId(element), element.Value().Utf16()});
-    } else if (form_util::IsSelectListElement(element)) {
+void FormCache::SaveInitialValues(base::span<const FormFieldData> fields) {
+  for (const FormFieldData& field : fields) {
+    if (field.form_control_type == FormControlType::kSelectOne) {
+      initial_select_values_.insert({field.unique_renderer_id, field.value});
+    } else if (field.form_control_type == FormControlType::kSelectList) {
       initial_selectlist_values_.insert(
-          {form_util::GetFieldRendererId(element), element.Value().Utf16()});
-    } else if (form_util::IsCheckableElement(element)) {
-      const WebInputElement input_element = element.To<WebInputElement>();
+          {field.unique_renderer_id, field.value});
+    } else if (form_util::IsCheckable(field.form_control_type)) {
       initial_checked_state_.insert(
-          {form_util::GetFieldRendererId(input_element),
-           input_element.IsChecked()});
+          {field.unique_renderer_id,
+           field.check_status == FormFieldData::CheckStatus::kChecked});
     }
   }
 }

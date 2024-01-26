@@ -78,6 +78,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
@@ -571,14 +572,16 @@ bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   return false;
 }
 
 bool ContentBrowserClient::IsSharedStorageSelectURLAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   return false;
 }
 
@@ -1125,6 +1128,10 @@ void ContentBrowserClient::CreateManagedConfigurationService(
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
 }
 
+void ContentBrowserClient::CreatePaymentCredential(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {}
+
 #if !BUILDFLAG(IS_ANDROID)
 SerialDelegate* ContentBrowserClient::GetSerialDelegate() {
   return nullptr;
@@ -1153,8 +1160,7 @@ FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate(
-    BrowserContext* browser_context) {
+SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate() {
   return nullptr;
 }
 #endif
@@ -1306,6 +1312,11 @@ bool ContentBrowserClient::ShouldBlockRendererDebugURL(
     BrowserContext* context,
     RenderFrameHost* render_frame_host) {
   return false;
+}
+
+std::optional<base::TimeDelta>
+ContentBrowserClient::GetSpareRendererDelayForSiteURL(const GURL& site_url) {
+  return std::nullopt;
 }
 
 ui::AXMode ContentBrowserClient::GetAXModeForBrowserContext(
@@ -1660,7 +1671,7 @@ ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 }
 
 void ContentBrowserClient::MaybePrewarmHttpDiskCache(
-    WebContents& web_contents,
+    BrowserContext& browser_context,
     const GURL& navigation_url) {}
 
 }  // namespace content

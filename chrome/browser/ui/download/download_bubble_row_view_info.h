@@ -8,13 +8,14 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_info.h"
+#include "chrome/browser/ui/download/download_bubble_info_utils.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 
-namespace offline_item_collection {
-class ContentId;
-}
+namespace offline_items_collection {
+struct ContentId;
+}  // namespace offline_items_collection
 
 // Interface for observers of changes to a download row
 class DownloadBubbleRowViewInfoObserver : public base::CheckedObserver {
@@ -57,10 +58,10 @@ class DownloadBubbleRowViewInfo
   download::DownloadItemMode mode() const {
     return download::GetDesiredDownloadItemMode(model_.get());
   }
-  const gfx::VectorIcon* icon_override() const { return icon_override_; }
-  ui::ColorId secondary_color() const { return secondary_color_; }
+  const gfx::VectorIcon* icon_override() const { return icon_and_color_.icon; }
+  ui::ColorId secondary_color() const { return icon_and_color_.color; }
   ui::ColorId secondary_text_color() const {
-    return secondary_text_color_.value_or(secondary_color_);
+    return secondary_text_color_.value_or(secondary_color());
   }
   const std::vector<QuickAction>& quick_actions() const {
     return quick_actions_;
@@ -86,7 +87,6 @@ class DownloadBubbleRowViewInfo
   void PopulateFromModel();
   void PopulateForInProgressOrComplete();
   void PopulateForInterrupted(offline_items_collection::FailState fail_state);
-  void PopulateForCancelled();
   void PopulateForTailoredWarning(
       DownloadUIModel::TailoredWarningType tailored_warning_type);
   void PopulateForFileTypeWarningNoSafeBrowsing();
@@ -104,13 +104,8 @@ class DownloadBubbleRowViewInfo
 
   // Information for displaying the row. This must all be cleared in Reset() or
   // updates will keep attributes of the previously displayed state.
+  IconAndColor icon_and_color_{};
 
-  // This is non-null if the row should display an icon other than the system
-  // icon for the filetype.
-  raw_ptr<const gfx::VectorIcon> icon_override_ = nullptr;
-  // kColorAlertHighSeverity, kColorAlertMediumSeverityIcon, or
-  // kColorSecondaryForeground
-  ui::ColorId secondary_color_ = ui::kColorSecondaryForeground;
   // Color used for alert text, which may be different from |secondary_color|,
   // used for icons. If this is nullopt, |secondary_color| will be used for
   // text.

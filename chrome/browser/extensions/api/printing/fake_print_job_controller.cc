@@ -38,6 +38,7 @@ FakePrintJobController::~FakePrintJobController() = default;
 void FakePrintJobController::CreatePrintJob(
     std::unique_ptr<printing::MetafileSkia> pdf,
     std::unique_ptr<printing::PrintSettings> settings,
+    uint32_t page_count,
     crosapi::mojom::PrintJob::Source source,
     const std::string& source_id,
     PrintJobCreatedCallback callback) {

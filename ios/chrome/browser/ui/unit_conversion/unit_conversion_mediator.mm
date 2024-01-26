@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
@@ -38,7 +39,7 @@
   // The unit conversion keyed service to keep track of the changes of the
   // target unit based on a source unit and store them as the new default
   // conversion.
-  UnitConversionService* _service;
+  raw_ptr<UnitConversionService> _service;
 }
 
 - (instancetype)initWithService:(UnitConversionService*)service {

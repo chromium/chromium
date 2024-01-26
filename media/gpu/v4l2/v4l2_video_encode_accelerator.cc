@@ -1148,7 +1148,7 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
     switch (input_memory_type_) {
       case V4L2_MEMORY_DMABUF:
         input_buffer = input_queue_->GetFreeBufferForFrame(
-            *encoder_input_queue_.front().frame);
+            GetSharedMemoryId(*encoder_input_queue_.front().frame));
         // We may have failed to preserve buffer affinity, fallback to any
         // buffer in that case.
         if (!input_buffer)

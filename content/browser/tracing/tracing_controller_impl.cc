@@ -34,6 +34,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "components/variations/active_field_trials.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/tracing/file_tracing_provider_impl.h"
@@ -226,6 +227,9 @@ void TracingControllerImpl::AddAgents() {
     metadata_source->AddGeneratorFunction(
         base::BindRepeating(&TracingDelegate::GenerateMetadataDict,
                             base::Unretained(delegate_.get())));
+    metadata_source->AddGeneratorFunction(base::BindRepeating(
+        &TracingControllerImpl::GenerateMetadataPacketFieldTrials,
+        base::Unretained(this)));
   }
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
@@ -233,6 +237,23 @@ void TracingControllerImpl::AddAgents() {
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
       tracing::JavaHeapProfiler::GetInstance());
 #endif
+}
+
+void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
+    perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
+    bool privacy_filtering_enabled) {
+  // Do not include low anonymity field trials, to prevent them from being
+  // included in chrometto reports.
+  std::vector<variations::ActiveGroupId> active_group_ids;
+  variations::GetFieldTrialActiveGroupIds(base::StringPiece(),
+                                          &active_group_ids);
+
+  for (const auto& active_group_id : active_group_ids) {
+    perfetto::protos::pbzero::ChromeMetadataPacket::FinchHash* finch_hash =
+        metadata_proto->add_field_trial_hashes();
+    finch_hash->set_name(active_group_id.name);
+    finch_hash->set_group(active_group_id.group);
+  }
 }
 
 void TracingControllerImpl::ConnectToServiceIfNeeded() {

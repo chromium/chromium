@@ -5,6 +5,7 @@
 #include "chrome/browser/downgrade/downgrade_manager.h"
 
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -35,7 +36,6 @@
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
@@ -181,7 +181,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     return false;
   }
 
-  absl::optional<base::Version> last_version = GetLastVersion(user_data_dir);
+  std::optional<base::Version> last_version = GetLastVersion(user_data_dir);
   if (!last_version)
     return false;
 
@@ -212,7 +212,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
   auto current_milestone = current_version.components()[0];
   int max_number_of_snapshots = g_browser_process->local_state()->GetInteger(
       prefs::kUserDataSnapshotRetentionLimit);
-  absl::optional<uint32_t> purge_milestone;
+  std::optional<uint32_t> purge_milestone;
   if (current_milestone == last_version->components()[0]) {
     // Mid-milestone snapshots are only taken on canary installs.
     if (chrome::GetChannel() != version_info::Channel::CANARY)

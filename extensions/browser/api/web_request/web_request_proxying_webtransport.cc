@@ -148,11 +148,12 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
-      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
-      override {
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      network::mojom::WebTransportStatsPtr initial_stats) override {
     receiver_.reset();
     pending_transport_ = std::move(transport);
     pending_client_ = std::move(client);
+    initial_stats_ = std::move(initial_stats);
     response_headers_ = response_headers;
     // Since WebTransport doesn't support redirect, 'redirect_url' is ignored
     // even if extensions assigned it.
@@ -191,9 +192,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     WebRequestEventRouter::Get(browser_context_)
         ->OnResponseStarted(browser_context_, &info_, net::OK);
 
-    remote_->OnConnectionEstablished(std::move(pending_transport_),
-                                     std::move(pending_client_),
-                                     response.headers);
+    remote_->OnConnectionEstablished(
+        std::move(pending_transport_), std::move(pending_client_),
+        response.headers, std::move(initial_stats_));
 
     OnCompleted();
     // `this` is deleted.
@@ -250,6 +251,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   scoped_refptr<net::HttpResponseHeaders> override_headers_;
   mojo::PendingRemote<network::mojom::WebTransport> pending_transport_;
   mojo::PendingReceiver<network::mojom::WebTransportClient> pending_client_;
+  network::mojom::WebTransportStatsPtr initial_stats_;
 
   CreateCallback create_callback_;
 };

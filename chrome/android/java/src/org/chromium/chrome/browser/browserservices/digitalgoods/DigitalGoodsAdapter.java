@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
@@ -108,7 +109,8 @@ public class DigitalGoodsAdapter {
                 new TrustedWebActivityClient.ExecutionCallback() {
                     @Override
                     public void onConnected(
-                            Origin origin, TrustedWebActivityClientWrappers.Connection service) {
+                            Origin origin, TrustedWebActivityClientWrappers.Connection service)
+                            throws RemoteException {
                         // Wrap this call so that crashes in the TWA client don't cause crashes in
                         // Chrome.
                         Bundle result = null;
@@ -127,6 +129,7 @@ public class DigitalGoodsAdapter {
 
                     @Override
                     public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to execute " + command + ".");
                         onClientAppUnavailable.run();
                     }
                 });

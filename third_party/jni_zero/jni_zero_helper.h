@@ -8,9 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #if defined(USE_CHROMIUM_BASE)
 // Used for ARCH_CPU_X86 - embedder must define this correctly if they want
 // 16-byte stack alignment on x86.
@@ -54,7 +51,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
   }
 
   // Force no inline to reduce code size.
-  template <base::android::MethodID::Type type>
+  template <MethodID::Type type>
   NOINLINE void Init(JNIEnv* env,
                      jclass clazz,
                      const char* method_name,
@@ -67,8 +64,8 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
     // Gets PC of the calling function.
     pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
 
-    method_id = base::android::MethodID::LazyGet<type>(
-        env, clazz, method_name, jni_signature, atomic_method_id);
+    method_id = MethodID::LazyGet<type>(env, clazz, method_name, jni_signature,
+                                        atomic_method_id);
   }
 
   NOINLINE ~JniJavaCallContextUnchecked() {
@@ -80,14 +77,14 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
   uintptr_t sp;
   uintptr_t pc;
 
-  raw_ptr<JNIEnv> env1;
+  JNIEnv* env1;
   jmethodID method_id;
 };
 
 // Context about the JNI call with exception unchecked to be stored in stack.
 struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextChecked {
   // Force no inline to reduce code size.
-  template <base::android::MethodID::Type type>
+  template <MethodID::Type type>
   NOINLINE void Init(JNIEnv* env,
                      jclass clazz,
                      const char* method_name,

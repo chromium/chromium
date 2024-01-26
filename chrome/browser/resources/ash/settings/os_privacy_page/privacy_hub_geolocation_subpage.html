@@ -1,6 +1,24 @@
 <style include="settings-shared">
+  .list-item:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
   h2 {
     padding-inline-start: var(--cr-section-padding);
+  }
+
+  .list-item:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
   }
 
   settings-dropdown-menu {
@@ -20,18 +38,82 @@
       pref="{{prefs.ash.user.geolocation_access_level}}">
   </settings-dropdown-menu>
 </div>
-<div class="settings-box">
-  <h2>
-    Apps
-  </h2>
+
+<div class="hr"></div>
+<div id="appsSection">
+  <h2 id="appsSectionTitle">$i18n{privacyHubAppsSectionTitle}</h2>
+  <template is="dom-if" if="[[isGeolocationAllowedForApps_]]" restamp>
+    <div class="list-frame">
+      <template id="appList" is="dom-repeat" items="[[appList_]]" as="app">
+        <settings-privacy-hub-app-permission-row
+            class="list-item"
+            app="[[app]]"
+            permission-type="kLocation">
+        </settings-privacy-hub-app-permission-row>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!isGeolocationAllowedForApps_]]" restamp>
+    <div id="noAppHasAccessText" class="settings-box-text subsection">
+      $i18n{noAppCanUseGeolocationText}
+    </div>
+  </template>
 </div>
-<div class="settings-box">
-  <h2>
-    Websites
-  </h2>
+
+<div class="hr"></div>
+<div id="websitesSection">
+  <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
+  <div class="subsection">
+    <template is="dom-if" if="[[isGeolocationAllowedForApps_]]" restamp>
+      <cr-link-row
+          id="managePermissionsInChromeRow"
+          start-icon="os-settings:chrome"
+          label="$i18n{manageLocationPermissionsInChromeText}"
+          on-click="onManagePermissionsInChromeRowClick_"
+          external>
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[!isGeolocationAllowedForApps_]]" restamp>
+      <div id="noWebsiteHasAccessText" class="settings-box-text">
+        $i18n{noWebsiteCanUseLocationText}
+      </div>
+    </template>
+  </div>
 </div>
-<div class="settings-box">
-  <h2>
-    System services
+
+<div class="hr"></div>
+<div id="systemServicesSection">
+  <h2 id="systemServicesSectionTitle">
+    $i18n{privacyHubSystemServicesSectionTitle}
   </h2>
+  <div class="list-frame">
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesAutomaticTimeZoneName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesSunsetScheduleName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesLocalWeatherName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesDarkThemeName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+  </div>
 </div>

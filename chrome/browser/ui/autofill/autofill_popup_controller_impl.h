@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -24,6 +25,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/zoom/zoom_observer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class Profile;
 
@@ -71,6 +76,9 @@ class ExpandablePopupParentControllerImpl {
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public content::WebContentsObserver,
+#if !BUILDFLAG(IS_ANDROID)
+      public zoom::ZoomObserver,
+#endif  // !BUILDFLAG(IS_ANDROID)
       public AutofillManager::Observer,
       public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
@@ -158,7 +166,7 @@ class AutofillPopupControllerImpl
 
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) {
     view_ = std::move(view);
-    time_view_shown_ = base::TimeTicks::Now();
+    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
   }
 
   int GetLineCountForTesting() const { return GetLineCount(); }
@@ -207,10 +215,21 @@ class AutofillPopupControllerImpl
 
  private:
   // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // ZoomObserver:
+  void OnZoomControllerDestroyed(zoom::ZoomController* source) override;
+  void OnZoomChanged(
+      const zoom::ZoomController::ZoomChangedEventData& data) override;
+#endif
 
   // AutofillManager::Observer:
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
@@ -224,7 +243,7 @@ class AutofillPopupControllerImpl
   // Returns true iff the focused frame has a pointer lock, which may be used to
   // trick the user into accepting some suggestion (crbug.com/1239496). In such
   // a case, we should hide the popup.
-  bool IsMouseLocked() const;
+  bool IsPointerLocked() const;
 
   // ExpandablePopupParentControllerImpl:
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
@@ -258,7 +277,7 @@ class AutofillPopupControllerImpl
   // The time the view was shown the last time. It is used to safeguard against
   // accepting suggestions too quickly after a the popup view was shown (see the
   // `show_threshold` parameter of `AcceptSuggestion`).
-  base::TimeTicks time_view_shown_;
+  NextIdleTimeTicks time_view_shown_;
 
   // An override to suppress minimum show thresholds. It should only be set
   // during tests that cannot mock time (e.g. the autofill interactive
@@ -279,6 +298,11 @@ class AutofillPopupControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
+#endif
 
   // Observer needed to check autofill popup overlap with picture-in-picture
   // window. It is guaranteed that there can only be one

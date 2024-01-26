@@ -7,6 +7,7 @@
 #include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -2037,6 +2039,159 @@ TEST_F(ComputedStyleTest, MaskMode) {
                                  false /* allow_visited_style */);
   ASSERT_TRUE(computed_value);
   ASSERT_EQ("alpha", computed_value->CssText());
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.3f,
+                                /*constrained_high_mix=*/0.7f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, constrained-high, 70%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.4f,
+                                /*constrained_high_mix=*/0.f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, high, 60%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.f,
+                                /*constrained_high_mix=*/0.55f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(constrained-high, high, 45%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.2f,
+                                /*constrained_high_mix=*/0.6f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, "
+            "dynamic-range-limit-mix(constrained-high, high, 25%), 80%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
 }
 
 }  // namespace blink

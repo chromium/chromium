@@ -78,7 +78,7 @@ class SenderRtcpSession : public RtcpSession {
   // Handle incoming RTCP packet.
   // Returns false if it is not a RTCP packet or it is not directed to
   // this session, e.g. SSRC doesn't match.
-  bool IncomingRtcpPacket(const uint8_t* data, size_t length) override;
+  bool IncomingRtcpPacket(base::span<const uint8_t> data) override;
 
  private:
   // Received last report information from RTP receiver which helps compute

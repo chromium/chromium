@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -40,6 +42,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -462,6 +465,20 @@ class AccountSelectionMediator {
         showBrandIcon(idpMetadata);
     }
 
+    void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
+        switch (linkType) {
+            case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:
+                RecordHistogram.recordBooleanHistogram(
+                        "Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+                break;
+            case IdentityRequestDialogLinkType.PRIVACY_POLICY:
+                RecordHistogram.recordBooleanHistogram(
+                        "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+                break;
+        }
+        CustomTabActivity.showInfoPage(context, url.getSpec());
+    }
+
     @VisibleForTesting
     void setComponentShowTime(long componentShowTime) {
         mComponentShowTime = componentShowTime;
@@ -745,15 +762,19 @@ class AccountSelectionMediator {
         properties.mIdpForDisplay = idpForDisplay;
         properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl();
         properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl();
-        properties.mTermsOfServiceClickRunnable =
-                () -> {
-                    RecordHistogram.recordBooleanHistogram(
-                            "Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+        properties.mTermsOfServiceClickCallback =
+                (Context context) -> {
+                    showUrl(
+                            context,
+                            IdentityRequestDialogLinkType.TERMS_OF_SERVICE,
+                            metadata.getTermsOfServiceUrl());
                 };
-        properties.mPrivacyPolicyClickRunnable =
-                () -> {
-                    RecordHistogram.recordBooleanHistogram(
-                            "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+        properties.mPrivacyPolicyClickCallback =
+                (Context context) -> {
+                    showUrl(
+                            context,
+                            IdentityRequestDialogLinkType.PRIVACY_POLICY,
+                            metadata.getPrivacyPolicyUrl());
                 };
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)

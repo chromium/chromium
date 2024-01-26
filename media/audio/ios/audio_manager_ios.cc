@@ -6,11 +6,10 @@
 
 #include <memory>
 
+#include "media/audio/apple/audio_input.h"
+#include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/ios/audio_session_manager_ios.h"
-#include "media/audio/mac/audio_auhal_mac.h"
-#include "media/audio/mac/audio_input_mac.h"
-#include "media/audio/mac/audio_low_latency_input_mac.h"
 
 namespace media {
 
@@ -81,49 +80,6 @@ const char* media::AudioManagerIOS::GetName() {
   return "iOS";
 }
 
-void AudioManagerIOS::ReleaseOutputStream(AudioOutputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
-  AudioManagerBase::ReleaseOutputStream(stream);
-}
-
-void AudioManagerIOS::ReleaseInputStream(AudioInputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
-  } else {
-    basic_input_streams_.erase(stream_it);
-  }
-  AudioManagerBase::ReleaseInputStream(stream);
-}
-
-void AudioManagerIOS::ReleaseOutputStreamUsingRealDevice(
-    AudioOutputStream* stream,
-    AudioDeviceID device_id) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DVLOG(1) << __FUNCTION__ << " Closing output stream with id=0x" << std::hex
-           << device_id << " requested_buffer_size: "
-           << static_cast<AUHALStream*>(stream)->requested_buffer_size();
-
-  // Start by closing down the specified output stream.
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
-  AudioManagerBase::ReleaseOutputStream(stream);
-}
-
-void AudioManagerIOS::ReleaseInputStreamUsingRealDevice(
-    AudioInputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
-  } else {
-    basic_input_streams_.erase(stream_it);
-  }
-
-  AudioManagerBase::ReleaseInputStream(stream);
-}
-
 AudioOutputStream* AudioManagerIOS::MakeLinearOutputStream(
     const AudioParameters& params,
     const LogCallback& log_callback) {
@@ -136,10 +92,8 @@ AudioOutputStream* AudioManagerIOS::MakeLowLatencyOutputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
   AUHALStream* stream =
       new AUHALStream(this, params, kAudioObjectUnknown, log_callback);
-  output_streams_.push_back(stream);
   return stream;
 }
 
@@ -149,7 +103,6 @@ AudioInputStream* AudioManagerIOS::MakeLinearInputStream(
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  basic_input_streams_.push_back(stream);
   return stream;
 }
 
@@ -163,7 +116,6 @@ AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
 
   auto* stream = new AUAudioInputStream(this, params, kAudioObjectUnknown,
                                         log_callback, voice_processing_mode);
-  low_latency_input_streams_.push_back(stream);
   return stream;
 }
 

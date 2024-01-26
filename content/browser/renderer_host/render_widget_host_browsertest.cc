@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1299,5 +1300,152 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
     EXPECT_FALSE(last_metadata.delegated_ink_metadata.has_value());
   }
 }
+
+namespace {
+
+class LocalSurfaceIdChangedObserver
+    : public RenderFrameMetadataProvider::Observer {
+ public:
+  explicit LocalSurfaceIdChangedObserver(
+      bool expect_newer_id,
+      const viz::LocalSurfaceId& local_surface_id,
+      RenderFrameMetadataProviderImpl* provider)
+      : expect_newer_id_(expect_newer_id),
+        current_id_(local_surface_id),
+        provider_(provider) {
+    provider_->AddObserver(this);
+  }
+  ~LocalSurfaceIdChangedObserver() override { provider_->RemoveObserver(this); }
+
+  // `RenderFrameMetadataProvider::Observer`:
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {
+    if (!metadata.local_surface_id.has_value()) {
+      return;
+    }
+    if (expect_newer_id_ &&
+        !metadata.local_surface_id->IsNewerThan(current_id_)) {
+      // Only record the first newer id.
+      return;
+    }
+    if (!expect_newer_id_) {
+      // Fail immediately instead of timing out.
+      ASSERT_FALSE(metadata.local_surface_id->IsNewerThan(current_id_));
+      if (metadata.local_surface_id != current_id_) {
+        // Only record the first id that's the same.
+        return;
+      }
+    }
+    observed_id_ = metadata.local_surface_id.value();
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override {}
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
+
+  [[nodiscard]] bool WaitForExpectedLocalSurfaceIdUpdate(
+      const viz::LocalSurfaceId& expected_id) {
+    // If `OnRenderFrameMetadataChangedBeforeActivation()` is called before
+    // `WaitForExpectedLocalSurfaceIdUpdate()`.
+    if (observed_id_.is_valid()) {
+      return observed_id_ == expected_id;
+    }
+    CHECK(!run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    return observed_id_ == expected_id;
+  }
+
+  const viz::LocalSurfaceId& observed_id() const { return observed_id_; }
+
+ private:
+  const bool expect_newer_id_;
+  const viz::LocalSurfaceId current_id_;
+  const raw_ptr<RenderFrameMetadataProviderImpl> provider_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  viz::LocalSurfaceId observed_id_ = viz::LocalSurfaceId{};
+};
+
+}  // namespace
+
+class RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest
+    : public RenderWidgetHostBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest() {
+    bool increment_local_surface_id = GetParam();
+    if (increment_local_surface_id) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::
+                kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+            {}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {},
+          /*disabled_features=*/{
+              blink::features::
+                  kIncrementLocalSurfaceIdForMainframeSameDocNavigation});
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Assert that with `IncrementLocalSurfaceIdForMainframeSameDocNavigation`
+// enabled, the `LocalSurfaceId` will be updated for same-doc navigations.
+IN_PROC_BROWSER_TEST_P(RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
+                       SameDocNavigationUpdatesLocalSurfaceId) {
+  bool increment_local_surface_id = GetParam();
+  ASSERT_EQ(increment_local_surface_id,
+            base::FeatureList::IsEnabled(
+                blink::features::
+                    kIncrementLocalSurfaceIdForMainframeSameDocNavigation));
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/session_history/fragment.html")));
+  // Changes the background color when navigate to "fragment.html#a".
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    window.addEventListener("hashchange", (event) => {
+      document.body.style.background = 'red';
+    })
+  )"));
+  // Get the current LocalSurfaceId of the mainframe.
+  const viz::LocalSurfaceId& id_before_nav = view()->GetLocalSurfaceId();
+  LocalSurfaceIdChangedObserver obs(
+      increment_local_surface_id, id_before_nav,
+      view()->host()->render_frame_metadata_provider());
+  viz::LocalSurfaceId expected;
+  if (increment_local_surface_id) {
+    // Expect the child component of the LocalSurfaceId is incremented by one,
+    // as the result of the same-doc navigation to #a.
+    expected = viz::LocalSurfaceId(id_before_nav.parent_sequence_number(),
+                                   id_before_nav.child_sequence_number() + 1,
+                                   id_before_nav.embed_token());
+  } else {
+    expected = id_before_nav;
+  }
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/session_history/fragment.html#a")));
+  // Forces a frame submission from the renderer.
+  WaitForCopyableViewInWebContents(shell()->web_contents());
+  ASSERT_TRUE(obs.WaitForExpectedLocalSurfaceIdUpdate(expected))
+      << "Expected " << expected << " but observed " << obs.observed_id();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
+                         ::testing::Bool());
 
 }  // namespace content

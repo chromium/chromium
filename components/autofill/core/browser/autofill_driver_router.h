@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_forest.h"
@@ -248,7 +249,8 @@ class AutofillDriverRouter {
   void SetFormToBeProbablySubmitted(
       AutofillDriver* source,
       std::optional<FormData> form,
-      void (*callback)(AutofillDriver* target, const FormData* optional_form));
+      void (*callback)(AutofillDriver* target,
+                       base::optional_ref<const FormData> form));
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.
@@ -262,8 +264,7 @@ class AutofillDriverRouter {
       void (*callback)(AutofillDriver* target,
                        mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,
-                       FormRendererId form_renderer_id,
-                       const std::vector<FormFieldData>& fields));
+                       const FormData::FillData& form));
   void ApplyFieldAction(
       AutofillDriver* source,
       mojom::ActionPersistence action_persistence,

@@ -11,6 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/metrics/serialization/metric_sample.h"
@@ -27,8 +29,11 @@ class ExternalMetricsTest : public testing::Test {
 
   void Init() {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    std::string test_uma_dir =
+        dir_.GetPath().Append("test-uma-events.d").value();
+    ASSERT_TRUE(base::CreateDirectory(base::FilePath(test_uma_dir)));
     external_metrics_ = ExternalMetrics::CreateForTesting(
-        dir_.GetPath().Append("testfile").value());
+        dir_.GetPath().Append("testfile").value(), test_uma_dir);
   }
 
   base::ScopedTempDir dir_;
@@ -98,6 +103,65 @@ TEST_F(ExternalMetricsTest, CanReceiveHistogram) {
   histogram_tester.ExpectTotalCount("foo_histogram", 2);
   histogram_tester.ExpectTotalCount("foo_linear", 3);
   histogram_tester.ExpectTotalCount("foo_sparse", 20);
+}
+
+TEST_F(ExternalMetricsTest, CanReceiveHistogramFromPidFiles) {
+  Init();
+  base::HistogramTester histogram_tester;
+  base::UserActionTester action_tester;
+
+  int expected_samples = 0;
+  const size_t expected_num_files = 10;
+  std::vector<std::unique_ptr<metrics::MetricSample>> samples;
+
+  // We do not test CrashSample here because the underlying class,
+  // ChromeOSMetricsProvider, relies heavily on |g_browser_process|, which is
+  // not set in unit tests.
+  // It is not currently possible to inject a mock for ChromeOSMetricsProvider.
+
+  samples.push_back(metrics::MetricSample::UserActionSample(
+      "foo_useraction", /*num_samples=*/100));
+  expected_samples += 100 * expected_num_files;
+
+  samples.push_back(metrics::MetricSample::HistogramSample(
+      "foo_histogram", /*sample=*/2, /*min=*/1,
+      /*max=*/100, /*bucket_count=*/10,
+      /*num_samples=*/2));
+  expected_samples += 2 * expected_num_files;
+
+  samples.push_back(metrics::MetricSample::LinearHistogramSample(
+      "foo_linear", /*sample=*/1, /*max=*/2, /*num_samples=*/3));
+  expected_samples += 3 * expected_num_files;
+
+  samples.push_back(metrics::MetricSample::SparseHistogramSample(
+      "foo_sparse", /*sample=*/1, /*num_samples=*/20));
+  expected_samples += 20 * expected_num_files;
+
+  size_t pid = 0;
+  for (const auto& sample : samples) {
+    // Create 10 of each file.
+    for (size_t count = 0; count < expected_num_files; count++) {
+      std::string pid_uma_file =
+          base::StrCat({external_metrics_->uma_events_dir_, "/",
+                        base::NumberToString(pid), ".uma"});
+      EXPECT_TRUE(metrics::SerializationUtils::WriteMetricToFile(*sample,
+                                                                 pid_uma_file));
+      ++pid;
+    }
+  }
+
+  base::RunLoop loop;
+
+  EXPECT_EQ(expected_samples, external_metrics_->CollectEvents());
+
+  loop.RunUntilIdle();
+
+  EXPECT_EQ(action_tester.GetActionCount("foo_useraction"), 1000);
+  histogram_tester.ExpectTotalCount("foo_histogram", 20);
+  histogram_tester.ExpectTotalCount("foo_linear", 30);
+  histogram_tester.ExpectTotalCount("foo_sparse", 200);
+  EXPECT_TRUE(base::IsDirectoryEmpty(
+      base::FilePath(external_metrics_->uma_events_dir_)));
 }
 
 TEST_F(ExternalMetricsTest, IncorrectHistogramsAreDiscarded) {

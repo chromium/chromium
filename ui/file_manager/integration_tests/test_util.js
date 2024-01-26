@@ -18,12 +18,14 @@ import {RemoteCall} from './remote_call.js';
  *
  * @param {Object} command Test command to send. The object is converted to
  *     a JSON string prior to sending.
- * @return {Promise} Promise to be fulfilled with the value returned by the
- *     chrome.test.sendMessage callback.
+ * @return {Promise<unknown>} Promise to be fulfilled with the value returned by
+ *     the chrome.test.sendMessage callback.
  */
 export function sendTestMessage(command) {
+  // @ts-ignore: error TS2339: Property 'name' does not exist on type 'Object'.
   if (typeof command.name === 'string') {
     return new Promise((fulfill) => {
+      // @ts-ignore: error TS2554: Expected 1 arguments, but got 2.
       chrome.test.sendMessage(JSON.stringify(command), fulfill);
     });
   } else {
@@ -35,7 +37,7 @@ export function sendTestMessage(command) {
 /**
  * Wait (aka pause, or sleep) for the given time in milliseconds.
  * @param {number} time Time in milliseconds.
- * @return {Promise} Promise that will resolve after Time in milliseconds
+ * @return {Promise<void>} Promise that will resolve after Time in milliseconds
  *     has elapsed.
  */
 export function wait(time) {
@@ -47,7 +49,7 @@ export function wait(time) {
  * asserting the count returned by the app.getErrorCount remote call.
  * @param {!RemoteCall} app RemoteCall interface to the app window.
  * @param {function()=} callback Completion callback.
- * @return {Promise} Promise to be fulfilled on completion.
+ * @return {Promise<void>} Promise to be fulfilled on completion.
  */
 export async function checkIfNoErrorsOccuredOnApp(app, callback) {
   const count = await app.callRemoteTestUtil('getErrorCount', null, []);
@@ -59,10 +61,12 @@ export async function checkIfNoErrorsOccuredOnApp(app, callback) {
 
 /**
  * Adds check of chrome.test to the end of the given promise.
- * @param {Promise} promise Promise to add the check to.
+ * @param {Promise<void>} promise Promise to add the check to.
  * @param {Array<!RemoteCall>} apps An array of RemoteCall interfaces.
  */
 export async function testPromiseAndApps(promise, apps) {
+  // @ts-ignore: error TS2339: Property 'callbackPass' does not exist on type
+  // 'typeof test'.
   const finished = chrome.test.callbackPass(
       () => {
           // The callbackPass is necessary to avoid prematurely finishing tests.
@@ -72,7 +76,9 @@ export async function testPromiseAndApps(promise, apps) {
     await promise;
     await Promise.all(apps.map(app => checkIfNoErrorsOccuredOnApp(app)));
   } catch (error) {
+    // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
     chrome.test.fail(error.stack || error);
+    // @ts-ignore: error TS7027: Unreachable code detected.
     return;
   }
   finished();
@@ -100,10 +106,12 @@ export const LOG_INTERVAL = 3000;
 export function getCaller() {
   const error = new Error('For extracting error.stack');
   const ignoreStackLines = 3;
+  // @ts-ignore: error TS18048: 'error.stack' is possibly 'undefined'.
   const lines = error.stack.split('\n');
   if (ignoreStackLines < lines.length) {
     const caller = lines[ignoreStackLines];
     // Strip 'chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco' prefix.
+    // @ts-ignore: error TS18048: 'caller' is possibly 'undefined'.
     return caller.replace(/(chrome-extension:\/\/\w*)/gi, '').trim();
   }
   return '';
@@ -126,6 +134,7 @@ export function pending(caller, message, ..._var_args) {
   let index = 2;
   const args = arguments;
   message = String(message);
+  // @ts-ignore: error TS2769: No overload matches this call.
   const formattedMessage = message.replace(/%[sdj]/g, (pattern) => {
     const arg = args[index++];
     switch (pattern) {
@@ -148,8 +157,8 @@ export function pending(caller, message, ..._var_args) {
  * Waits until the checkFunction returns a value but a pending marker.
  * @param {function():*} checkFunction Function to check a condition. It can
  *     return a pending marker created by a pending function.
- * @return {!Promise} Promise to be fulfilled with the return value of
- *     checkFunction when the checkFunction reutrns a value but a pending
+ * @return {!Promise<unknown>} Promise to be fulfilled with the return value of
+ *     checkFunction when the checkFunction returns a value but a pending
  *     marker.
  */
 export async function repeatUntil(checkFunction) {
@@ -160,6 +169,8 @@ export async function repeatUntil(checkFunction) {
       return result;
     }
     if (Date.now() > logTime) {
+      // @ts-ignore: error TS2339: Property 'message' does not exist on type
+      // '{}'.
       console.warn(result.message);
       logTime += LOG_INTERVAL;
     }
@@ -172,15 +183,18 @@ export async function repeatUntil(checkFunction) {
  * result. Calls |callback| with that result.
  * @param {Object} command Test command to send. Refer to sendTestMessage()
  *    above for the expected format of a test |command| object.
- * @param {function(string)} callback Completion callback.
+ * @param {(result: string)=>void} callback Completion callback.
  * @param {Object=} opt_debug If truthy, log the result.
  */
 export async function sendBrowserTestCommand(command, callback, opt_debug) {
   const caller = getCaller();
+  // @ts-ignore: error TS2339: Property 'name' does not exist on type 'Object'.
   if (typeof command.name !== 'string') {
     chrome.test.fail('Invalid test command: ' + JSON.stringify(command));
   }
   const result = await repeatUntil(async () => {
+    // @ts-ignore: error TS2339: Property 'name' does not exist on type
+    // 'Object'.
     const tryAgain = pending(caller, 'Sent BrowserTest ' + command.name);
     try {
       const result = await sendTestMessage(command);
@@ -189,13 +203,18 @@ export async function sendBrowserTestCommand(command, callback, opt_debug) {
       }
       return result;
     } catch (error) {
+      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
       console.log(error.stack || error);
       return tryAgain;
     }
   });
   if (opt_debug) {
+    // @ts-ignore: error TS2339: Property 'name' does not exist on type
+    // 'Object'.
     console.log('BrowserTest ' + command.name + ': ' + result);
   }
+  // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+  // parameter of type 'string'.
   callback(result);
 }
 
@@ -203,12 +222,15 @@ export async function sendBrowserTestCommand(command, callback, opt_debug) {
  * Get all the browser windows.
  * @param {number} expectedInitialCount The number of windows expected before
  *     opening a new one.
- * @return {Object} Object returned from chrome.windows.getAll().
+ * @return {Promise<Object>} Object returned from chrome.windows.getAll().
  */
 export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();
+  // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+  // 'Object'.
   return repeatUntil(async () => {
     const result = await new Promise((fulfill) => {
+      // @ts-ignore: error TS2554: Expected 0-1 arguments, but got 2.
       chrome.windows.getAll({'populate': true}, fulfill);
     });
     if (result.length === expectedInitialCount) {
@@ -228,7 +250,7 @@ export async function getBrowserWindows(expectedInitialCount = 0) {
  * @param {Array<TestEntryInfo>} entries List of entries to be added.
  * @param {function(boolean)=} opt_callback Callback function to be passed the
  *     result of function. The argument is true on success.
- * @return {Promise} Promise to be fulfilled when the entries are added.
+ * @return {Promise<void>} Promise to be fulfilled when the entries are added.
  */
 export async function addEntries(volumeNames, entries, opt_callback) {
   if (volumeNames.length === 0) {
@@ -243,6 +265,8 @@ export async function addEntries(volumeNames, entries, opt_callback) {
     });
   });
   if (!opt_callback) {
+    // @ts-ignore: error TS2322: Type 'Promise<unknown>[]' is not assignable to
+    // type 'void'.
     return volumeResultPromises;
   }
   try {
@@ -299,6 +323,8 @@ Object.freeze(SharedOption);
  * }}
  *
  */
+// @ts-ignore: error TS7005: Variable 'getRootPathsResult' implicitly has an
+// 'any' type.
 export let getRootPathsResult;
 
 /**
@@ -324,13 +350,15 @@ Object.seal(RootPath);
  * default to true if not specified.
  *
  * @typedef {{
- *    canCopy: (boolean|undefined),
- *    canDelete: (boolean|undefined),
- *    canRename: (boolean|undefined),
- *    canAddChildren: (boolean|undefined),
- *    canShare: (boolean|undefined),
+ *    canCopy?: (boolean|undefined),
+ *    canDelete?: (boolean|undefined),
+ *    canRename?: (boolean|undefined),
+ *    canAddChildren?: (boolean|undefined),
+ *    canShare?: (boolean|undefined),
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'TestEntryCapabilities' implicitly has an
+// 'any' type.
 export let TestEntryCapabilities;
 
 /**
@@ -339,11 +367,13 @@ export let TestEntryCapabilities;
  * default to false is not specified.
  *
  * @typedef {{
- *    isMachineRoot: (boolean|undefined),
- *    isArbitrarySyncFolder: (boolean|undefined),
- *    isExternalMedia: (boolean|undefined),
+ *    isMachineRoot?: (boolean|undefined),
+ *    isArbitrarySyncFolder?: (boolean|undefined),
+ *    isExternalMedia?: (boolean|undefined),
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'TestEntryFolderFeature' implicitly has an
+// 'any' type.
 export let TestEntryFolderFeature;
 
 /**
@@ -389,25 +419,27 @@ export let TestEntryFolderFeature;
  *
  * @typedef {{
  *    type: EntryType,
- *    sourceFileName: (string|undefined),
- *    targetPath: (string|undefined),
- *    teamDriveName: (string|undefined),
- *    computerName: (string|undefined),
- *    mimeType: (string|undefined),
- *    sharedOption: (SharedOption|undefined),
- *    lastModifiedTime: (string|undefined),
- *    nameText: (string|undefined),
- *    sizeText: (string|undefined),
- *    typeText: (string|undefined),
- *    capabilities: (TestEntryCapabilities|undefined),
- *    folderFeature: (TestEntryFolderFeature|undefined),
- *    pinned: (boolean|undefined),
- *    dirty: (boolean|undefined),
- *    availableOffline: (boolean|undefined),
- *    alternateUrl: (string|undefined),
- *    canPin: (boolean|undefined),
+ *    sourceFileName?: (string|undefined),
+ *    targetPath?: (string|undefined),
+ *    teamDriveName?: (string|undefined),
+ *    computerName?: (string|undefined),
+ *    mimeType?: (string|undefined),
+ *    sharedOption?: (SharedOption|undefined),
+ *    lastModifiedTime?: (string|undefined),
+ *    nameText?: (string|undefined),
+ *    sizeText?: (string|undefined),
+ *    typeText?: (string|undefined),
+ *    capabilities?: (TestEntryCapabilities|undefined),
+ *    folderFeature?: (TestEntryFolderFeature|undefined),
+ *    pinned?: (boolean|undefined),
+ *    dirty?: (boolean|undefined),
+ *    availableOffline?: (boolean|undefined),
+ *    alternateUrl?: (string|undefined),
+ *    canPin?: (boolean|undefined),
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'TestEntryInfoOptions' implicitly has an
+// 'any' type.
 export let TestEntryInfoOptions;
 
 /**
@@ -424,6 +456,8 @@ export class TestEntryInfo {
   constructor(options) {
     this.type = options.type;
     this.sourceFileName = options.sourceFileName || '';
+    // @ts-ignore: error TS2339: Property 'thumbnailFileName' does not exist on
+    // type 'TestEntryInfoOptions'.
     this.thumbnailFileName = options.thumbnailFileName || '';
     this.targetPath = options.targetPath;
     this.teamDriveName = options.teamDriveName || '';
@@ -460,6 +494,8 @@ export class TestEntryInfo {
    * @return {!Array<string>}
    */
   getExpectedRow() {
+    // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+    // type 'string'.
     return [this.nameText, this.sizeText, this.typeText, this.lastModifiedTime];
   }
 
@@ -507,9 +543,6 @@ export class TestEntryInfo {
  * TODO(sashab): Rename 'nameText', 'sizeText' and 'typeText' to
  * 'expectedNameText', 'expectedSizeText' and 'expectedTypeText' to reflect that
  * they are the expected values for those columns in the file manager.
- *
- * @type {!Object<string, TestEntryInfo>}
- * @const
  */
 export const ENTRIES = {
   hello: new TestEntryInfo({
@@ -538,6 +571,9 @@ export const ENTRIES = {
   world: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'video.ogv',
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and 'thumbnailFileName' does not exist in type
+    // 'TestEntryInfoOptions'.
     thumbnailFileName: 'image.png',
     targetPath: 'world.ogv',
     mimeType: 'video/ogg',
@@ -594,6 +630,9 @@ export const ENTRIES = {
   desktop: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'image.png',
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and 'thumbnailFileName' does not exist in type
+    // 'TestEntryInfoOptions'.
     thumbnailFileName: 'image.png',
     targetPath: 'My Desktop Background.png',
     mimeType: 'image/png',
@@ -1090,7 +1129,7 @@ export const ENTRIES = {
     typeText: 'Folder',
   }),
 
-  deeplyBurriedSmallJpeg: new TestEntryInfo({
+  deeplyBuriedSmallJpeg: new TestEntryInfo({
     type: EntryType.FILE,
     targetPath: 'A/B/C/deep.jpg',
     sourceFileName: 'small.jpg',
@@ -1768,6 +1807,8 @@ export async function getHistogramCount(name, value) {
     'histogramName': name,
     'value': value,
   });
+  // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+  // parameter of type 'string'.
   return /** @type {number} */ (JSON.parse(result));
 }
 
@@ -1781,6 +1822,8 @@ export async function getHistogramSum(name) {
     'name': 'getHistogramSum',
     'histogramName': name,
   });
+  // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+  // parameter of type 'string'.
   return /** @type {number} */ (parseInt(JSON.parse(result), 10));
 }
 
@@ -1807,6 +1850,8 @@ export async function getUserActionCount(name) {
     'name': 'getUserActionCount',
     'userActionName': name,
   });
+  // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+  // parameter of type 'string'.
   return /** @type {number} */ (JSON.parse(result));
 }
 
@@ -1827,6 +1872,7 @@ export function getDateWithDayDiff(diffDays) {
 /**
  * Formats the date to be able to compare to Files app date.
  */
+// @ts-ignore: error TS7006: Parameter 'date' implicitly has an 'any' type.
 export function formatDate(date) {
   return sanitizeDate(date.toLocaleString('default', {
     month: 'short',

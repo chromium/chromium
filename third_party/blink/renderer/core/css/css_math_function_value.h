@@ -93,6 +93,9 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool Equals(const CSSMathFunctionValue& other) const;
 
   bool HasComparisons() const { return expression_->HasComparisons(); }
+  bool InvolvesAnchorQueries() const {
+    return expression_->InvolvesAnchorQueries();
+  }
 
   const CSSValue& PopulateWithTreeScope(const TreeScope*) const;
 

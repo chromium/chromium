@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -138,13 +139,12 @@ class MarkupAccumulator::ElementSerializationData final {
   AtomicString serialized_prefix_;
 };
 
-MarkupAccumulator::MarkupAccumulator(AbsoluteURLs resolve_urls_method,
-                                     SerializationType serialization_type,
-                                     IncludeShadowRoots include_shadow_roots,
-                                     ClosedRootsSet include_closed_roots)
+MarkupAccumulator::MarkupAccumulator(
+    AbsoluteURLs resolve_urls_method,
+    SerializationType serialization_type,
+    const ShadowRootInclusion& shadow_root_inclusion)
     : formatter_(resolve_urls_method, serialization_type),
-      include_shadow_roots_(include_shadow_roots),
-      include_closed_roots_(include_closed_roots) {}
+      shadow_root_inclusion_(shadow_root_inclusion) {}
 
 MarkupAccumulator::~MarkupAccumulator() = default;
 
@@ -550,39 +550,53 @@ bool MarkupAccumulator::SerializeAsHTML() const {
   return formatter_.SerializeAsHTML();
 }
 
-std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
+// This serializes the shadow root of this element, if present. The behavior
+// is controlled by shadow_root_inclusion_:
+//  - If behavior is kIncludeSerializableShadowRoots, then any open shadow
+//    root that also has its `serializable` bit set will be serialized.
+//  - If behavior is kIncludeAllOpenShadowRoots, then any open shadow root
+//    will be serialized, *regardless* of the state of its `serializable` bit.
+//  - Any shadow root included in the `include_shadow_roots` collection will be
+//    serialized.
+using Behavior = ShadowRootInclusion::Behavior;
+std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     const Element& element) const {
   ShadowRoot* shadow_root = element.GetShadowRoot();
-  if (!shadow_root || include_shadow_roots_ != kIncludeShadowRoots)
-    return std::pair<Node*, Element*>();
-  AtomicString shadowroot_type;
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
-      // Don't serialize user agent shadow roots, only explicit shadow roots.
-      return std::pair<Node*, Element*>();
-    case ShadowRootType::kOpen:
-      shadowroot_type = keywords::kOpen;
-      break;
-    case ShadowRootType::kClosed:
-      shadowroot_type = keywords::kClosed;
-      break;
+  if (!shadow_root || shadow_root->GetType() == ShadowRootType::kUserAgent) {
+    // User agent shadow roots are never serialized.
+    return std::pair<ShadowRoot*, HTMLTemplateElement*>();
   }
-  if (shadow_root->GetType() == ShadowRootType::kClosed &&
-      !include_closed_roots_.Contains(shadow_root)) {
-    return std::pair<Node*, Element*>();
+  const bool explicitly_included =
+      shadow_root_inclusion_.include_shadow_roots.Contains(shadow_root);
+  if (!explicitly_included) {
+    const bool closed_root = shadow_root->GetType() == ShadowRootType::kClosed;
+    const bool only_if_explicitly_included =
+        shadow_root_inclusion_.behavior == Behavior::kOnlyProvidedShadowRoots;
+    const bool not_serializable =
+        shadow_root_inclusion_.behavior ==
+            Behavior::kIncludeAllSerializableShadowRoots &&
+        !shadow_root->serializable();
+    if (closed_root || only_if_explicitly_included || not_serializable) {
+      return std::pair<ShadowRoot*, HTMLTemplateElement*>();
+    }
   }
 
   // Wrap the shadowroot into a declarative Shadow DOM <template shadowrootmode>
   // element.
-  auto* template_element = MakeGarbageCollected<Element>(
-      html_names::kTemplateTag, &(element.GetDocument()));
+  // TODO(crbug.com/1517959): Add the `serializable` attribute to this template
+  // once declarative shadow roots support `serializable`.
+  HTMLTemplateElement* template_element =
+      MakeGarbageCollected<HTMLTemplateElement>(element.GetDocument());
   template_element->setAttribute(html_names::kShadowrootmodeAttr,
-                                 shadowroot_type);
+                                 shadow_root->GetType() == ShadowRootType::kOpen
+                                     ? keywords::kOpen
+                                     : keywords::kClosed);
   if (shadow_root->delegatesFocus()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootdelegatesfocusAttr, true);
   }
-  return std::pair<Node*, Element*>(shadow_root, template_element);
+  return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
+                                                      template_element);
 }
 
 template <typename Strategy>
@@ -622,9 +636,8 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
         SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
     }
 
-    // Traverses other DOM tree, i.e., shadow tree.
-    std::pair<Node*, Element*> auxiliary_pair =
-        GetAuxiliaryDOMTree(target_element);
+    // Traverses the shadow tree.
+    std::pair<Node*, Element*> auxiliary_pair = GetShadowTree(target_element);
     if (Node* auxiliary_tree = auxiliary_pair.first) {
       Element* enclosing_element = auxiliary_pair.second;
       AtomicString enclosing_element_prefix;

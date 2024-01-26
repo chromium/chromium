@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_change;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -14,7 +15,11 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -42,6 +47,10 @@ public class PriceChangeModuleMediator {
     private final int mFaviconSize;
     private final Profile mProfile;
     private final ImageFetcher mImageFetcher;
+    private final ModuleDelegate mModuleDelegate;
+    private final @ModuleType int mModuleType;
+    private final SharedPreferences mSharedPreferences;
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
 
     PriceChangeModuleMediator(
             Context context,
@@ -49,7 +58,9 @@ public class PriceChangeModuleMediator {
             Profile profile,
             TabModelSelector tabModelSelector,
             FaviconHelper faviconHelper,
-            ImageFetcher imageFetcher) {
+            ImageFetcher imageFetcher,
+            ModuleDelegate moduleDelegate,
+            SharedPreferences sharedPreferences) {
         mContext = context;
         mModel = model;
         mProfile = profile;
@@ -58,6 +69,19 @@ public class PriceChangeModuleMediator {
         mTabModelSelector = tabModelSelector;
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mImageFetcher = imageFetcher;
+        mModuleDelegate = moduleDelegate;
+        mModuleType = ModuleType.PRICE_CHANGE;
+        mSharedPreferences = sharedPreferences;
+        mPriceAnnotationsPrefListener =
+                (sharedPrefs, key) -> {
+                    if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)) return;
+                    if (!sharedPrefs.getBoolean(
+                            PriceTrackingUtilities.TRACK_PRICES_ON_TABS,
+                            PriceTrackingFeatures.isPriceTrackingEnabled(profile))) {
+                        mModuleDelegate.removeModule(getModuleType());
+                    }
+                };
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
     }
 
     /** Show the price change module. */
@@ -78,8 +102,10 @@ public class PriceChangeModuleMediator {
         mShoppingPersistedTabDataService.getAllShoppingPersistedTabDataWithPriceDrop(
                 res -> {
                     if (res.size() == 0) {
+                        mModuleDelegate.onDataFetchFailed(mModuleType);
                         return;
                     }
+                    Tab tab = res.get(0).getTab();
                     ShoppingPersistedTabData data = res.get(0).getData();
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_TITLE,
@@ -97,14 +123,29 @@ public class PriceChangeModuleMediator {
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING,
                             data.getPriceDrop().previousPrice);
-                    mModel.set(
-                            PriceChangeModuleProperties.MODULE_DOMAIN_STRING,
+                    String domain =
                             UrlUtilities.getDomainAndRegistry(
-                                    res.get(0).getTab().getUrl().getSpec(), false));
+                                    res.get(0).getTab().getUrl().getSpec(), false);
+                    mModel.set(PriceChangeModuleProperties.MODULE_DOMAIN_STRING, domain);
+                    mModel.set(
+                            PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL,
+                            mContext.getString(
+                                    R.string.price_change_module_accessibility_label,
+                                    data.getPriceDrop().previousPrice,
+                                    data.getPriceDrop().price,
+                                    data.getProductTitle(),
+                                    domain));
+                    mModel.set(
+                            PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER,
+                            v -> mModuleDelegate.onTabClicked(tab.getId(), mModuleType));
+
+                    // No need to wait for image and favicon ready to notify that the module is
+                    // ready.
+                    mModuleDelegate.onDataReady(mModuleType, mModel);
 
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile,
-                            res.get(0).getTab().getUrl(),
+                            tab.getUrl(),
                             mFaviconSize,
                             (image, iconUrl) -> {
                                 if (image != null) {
@@ -140,5 +181,14 @@ public class PriceChangeModuleMediator {
                                         image);
                             });
                 });
+    }
+
+    void destroy() {
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
+                mPriceAnnotationsPrefListener);
+    }
+
+    int getModuleType() {
+        return mModuleType;
     }
 }

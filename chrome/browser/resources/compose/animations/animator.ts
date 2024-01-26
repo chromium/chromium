@@ -28,10 +28,12 @@ export class Animator {
 
   animate(
       selector: string, keyframes: Keyframe[],
-      options: KeyframeAnimationOptions): Animation[] {
-    if (!this.animationsEnabled_) {
+      options: KeyframeAnimationOptions,
+      meetsCondition: boolean = true): Animation[] {
+    if (!this.animationsEnabled_ || !meetsCondition) {
       return [];
     }
+
     const elements = Array.from(
         this.root_.shadowRoot!.querySelectorAll<HTMLElement>(selector));
     assert(elements.length > 0);

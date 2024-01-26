@@ -49,7 +49,7 @@ class NotificationPlatformBridgeChromeOs
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<std::u16string>& reply) override;
   void HandleNotificationSettingsButtonClicked(const std::string& id) override;
   void DisableNotification(const std::string& id) override;
 

@@ -52,10 +52,12 @@ class HistoryClustersPageHandlerV2
                               GetDiscountsForClusterCallback callback) override;
   void ShowJourneysSidePanel(const std::string& query) override;
   void RecordClick(int64_t cluster_id) override;
+  void RecordDisabled(int64_t cluster_id) override;
   void RecordLayoutTypeShown(
       ntp::history_clusters::mojom::LayoutType layout_type,
       int64_t cluster_id) override;
   void UpdateClusterVisitsInteractionState(
+      int64_t cluster_id,
       const std::vector<history_clusters::mojom::URLVisitPtr> visits,
       const history_clusters::mojom::InteractionState state) override;
 

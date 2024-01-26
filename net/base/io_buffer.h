@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
@@ -121,6 +122,9 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
 
  protected:
   ~IOBufferWithSize() override;
+
+ private:
+  base::HeapArray<char> storage_;
 };
 
 // This is a read only IOBuffer.  The data is stored in a string and

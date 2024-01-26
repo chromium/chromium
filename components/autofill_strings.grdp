@@ -142,11 +142,11 @@
   </message>
 
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling address fields option was selected.">
-    The fill full address option was selected
+    The fill address option was selected
   </message>
 
   <message name="IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="The text displayed at one of the autofill submenus options allowing the users to fill all address related fields at once." meaning="Fills all address related fields">
-    Fill full address
+    Fill address
   </message>
 
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling name fields option was selected.">
@@ -323,6 +323,9 @@
   </message>
   <message name="IDS_AUTOFILL_LOCAL_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the 'no-cloud' address icon in Settings.">
     Address is available only on this device
+  </message>
+  <message name="IDS_AUTOFILL_SYNC_TOGGLE_LABEL" desc="The Sync Autofill toggle label on the Autofill Settings page.">
+    Use and save Addresses from your Google Account
   </message>
   <if expr="not is_ios">
     <then>
@@ -590,10 +593,7 @@
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
     </message>
-    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME" desc="Autofill desktop popup: the a11y name for the expandable suggestion controll." translateable="false">
-      Expand suggestion
-    </message>
-    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FULL_ADDRESS_A11Y_ADDON" desc="Autofill desktop popup: additional screen reader info to distinguish the address top level suggestions from others.">
+    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FILL_ADDRESS_A11Y_ADDON" desc="Autofill desktop popup: call to action message part for expandable address suggestions.">
       Fill address
     </message>
     <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT" desc="Autofill desktop popup: the shortcut used to focus the expanding control and effectively open the sub-menu, used in IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT.">

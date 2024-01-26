@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -45,7 +46,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -80,9 +81,9 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     PersonalDataManagerObserver,
     PopoverLabelViewControllerDelegate,
     SuccessfulReauthTimeAccessor> {
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge> _observer;
 
   // Whether Settings have been dismissed.

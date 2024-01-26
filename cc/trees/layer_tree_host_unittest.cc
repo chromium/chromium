@@ -3129,14 +3129,10 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
 
     root_layer_bounds_ = gfx::Size(50, 50);
     child_layer_bounds_ = gfx::Size(25, 25);
-    std::unique_ptr<FakeRecordingSource> recording(new FakeRecordingSource);
-    root_layer_ = FakePictureLayer::CreateWithRecordingSource(
-        &client_, std::move(recording));
+    root_layer_ = FakePictureLayer::Create(&client_);
     root_layer_->SetBounds(root_layer_bounds_);
 
-    recording = std::make_unique<FakeRecordingSource>();
-    child_layer_ = FakePictureLayer::CreateWithRecordingSource(
-        &client_, std::move(recording));
+    child_layer_ = FakePictureLayer::Create(&client_);
     child_layer_->SetBounds(child_layer_bounds_);
     child_layer_->SetIsDrawable(true);
     child_layer_->SetContentsOpaque(true);
@@ -3954,11 +3950,9 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
     // OnNeedsBeginFrames(true) will be called during tree initialization.
   }
 
-  void WillBeginMainFrame() override { ++will_begin_main_frame_count_; }
-
-  void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
-    ++sent_begin_main_frame_count_;
-    EXPECT_GE(begin_frame_count_, sent_begin_main_frame_count_);
+  void WillBeginMainFrame() override {
+    ++will_begin_main_frame_count_;
+    EXPECT_GE(begin_frame_count_, will_begin_main_frame_count_);
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
@@ -3969,7 +3963,7 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_LE(sent_begin_main_frame_count_, begin_frame_count_);
+    EXPECT_LE(will_begin_main_frame_count_, begin_frame_count_);
     if (begin_frame_count_ < 3) {
       // Send another animation_only BeginFrame.
       PostIssueBeginFrame(true);
@@ -4004,7 +3998,7 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
 
     // Fourth BeginMainFrame should lead to commit.
     EXPECT_EQ(5, begin_frame_count_);
-    EXPECT_EQ(3, sent_begin_main_frame_count_);
+    EXPECT_EQ(3, will_begin_main_frame_count_);
 
     EndTest();
   }
@@ -4016,7 +4010,6 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
   void AfterTest() override {
     EXPECT_EQ(2, commit_count_);
     EXPECT_EQ(5, begin_frame_count_);
-    EXPECT_EQ(3, sent_begin_main_frame_count_);
 
     EXPECT_EQ(3, will_begin_main_frame_count_);
     EXPECT_EQ(3, update_layer_tree_host_count_);
@@ -4040,7 +4033,6 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
       viz::BeginFrameArgs::kStartingFrameNumber;
   int commit_count_ = 0;
   int begin_frame_count_ = 0;
-  int sent_begin_main_frame_count_ = 0;
   int will_begin_main_frame_count_ = 0;
   int update_layer_tree_host_count_ = 0;
   int ready_to_commit_count_ = 0;
@@ -6658,13 +6650,8 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   void SetupTree() override {
     LayerTreeHostTest::SetupTree();
 
-    std::unique_ptr<FakeRecordingSource> recording_source(
-        new FakeRecordingSource);
-    recording_source_ = recording_source.get();
-
     scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &layer_client_, std::move(recording_source));
+        FakePictureLayer::Create(&layer_client_);
     layer_ = layer.get();
     layer->SetBounds(gfx::Size(10, 10));
     layer->SetIsDrawable(true);
@@ -6689,7 +6676,6 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
 
   FakeContentLayerClient layer_client_;
   raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
-  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationDisabled);
@@ -6711,13 +6697,8 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   void SetupTree() override {
     LayerTreeHostTest::SetupTree();
 
-    std::unique_ptr<FakeRecordingSource> recording_source(
-        new FakeRecordingSource);
-    recording_source_ = recording_source.get();
-
     scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &layer_client_, std::move(recording_source));
+        FakePictureLayer::Create(&layer_client_);
     layer_ = layer.get();
 
     layer->SetBounds(gfx::Size(10, 10));
@@ -6741,7 +6722,6 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
 
   FakeContentLayerClient layer_client_;
   raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
-  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationSupportedButDisabled);
@@ -6758,13 +6738,8 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   void SetupTree() override {
     LayerTreeHostTest::SetupTree();
 
-    std::unique_ptr<FakeRecordingSource> recording_source(
-        new FakeRecordingSource);
-    recording_source_ = recording_source.get();
-
     scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &layer_client_, std::move(recording_source));
+        FakePictureLayer::Create(&layer_client_);
     layer_ = layer.get();
 
     layer->SetBounds(gfx::Size(10, 10));
@@ -6790,7 +6765,6 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
 
   FakeContentLayerClient layer_client_;
   raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
-  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabled);
@@ -6815,12 +6789,8 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   void SetupTree() override {
     LayerTreeHostTest::SetupTree();
 
-    auto recording_source = std::make_unique<FakeRecordingSource>();
-    recording_source_ = recording_source.get();
-
     scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &layer_client_, std::move(recording_source));
+        FakePictureLayer::Create(&layer_client_);
     layer_ = layer.get();
     layer->SetBounds(gfx::Size(10, 10));
     layer->SetIsDrawable(true);
@@ -6854,7 +6824,6 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
 
   FakeContentLayerClient layer_client_;
   raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
-  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabledWithMSAA);
@@ -7287,11 +7256,8 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
     Layer* root = layer_tree_host()->root_layer();
     SetupViewport(root, root->bounds(), root->bounds());
 
-    std::unique_ptr<FakeRecordingSource> recording(new FakeRecordingSource);
-    recording->SetPlaybackAllowedEvent(&playback_allowed_event_);
-    scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(&client_,
-                                                    std::move(recording));
+    scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client_);
+    layer->set_playback_allowed_event(&playback_allowed_event_);
     layer->SetBounds(gfx::Size(500, 500));
     layer->SetContentsOpaque(true);
     // Avoid LCD text on the layer so we don't cause extra commits when we
@@ -7474,10 +7440,7 @@ class RasterizeWithGpuRasterizationCreatesResources : public LayerTreeHostTest {
     root->SetBounds(gfx::Size(500, 500));
     client_.set_bounds(root->bounds());
 
-    std::unique_ptr<FakeRecordingSource> recording(new FakeRecordingSource);
-    scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(&client_,
-                                                    std::move(recording));
+    scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client_);
     layer->SetBounds(gfx::Size(500, 500));
     layer->SetContentsOpaque(true);
     root->AddChild(layer);
@@ -7516,10 +7479,7 @@ class GpuRasterizationRasterizesBorderTiles : public LayerTreeHostTest {
   void SetupTree() override {
     client_.set_fill_with_nonsolid_color(true);
 
-    std::unique_ptr<FakeRecordingSource> recording(new FakeRecordingSource);
-    scoped_refptr<FakePictureLayer> root =
-        FakePictureLayer::CreateWithRecordingSource(&client_,
-                                                    std::move(recording));
+    scoped_refptr<FakePictureLayer> root = FakePictureLayer::Create(&client_);
     root->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(root->bounds());
     root->SetContentsOpaque(true);
@@ -7568,11 +7528,8 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
     Layer* root = layer_tree_host()->root_layer();
     SetupViewport(root, root->bounds(), root->bounds());
 
-    std::unique_ptr<FakeRecordingSource> recording(new FakeRecordingSource);
-    recording->SetPlaybackAllowedEvent(&playback_allowed_event_);
-    scoped_refptr<FakePictureLayer> layer =
-        FakePictureLayer::CreateWithRecordingSource(&client_,
-                                                    std::move(recording));
+    scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client_);
+    layer->set_playback_allowed_event(&playback_allowed_event_);
     layer->SetBounds(gfx::Size(500, 500));
     layer->SetContentsOpaque(true);
     CopyProperties(layer_tree_host()->InnerViewportScrollLayerForTesting(),
@@ -8171,18 +8128,9 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
 
   void SetupTree() override {
     client_.set_fill_with_nonsolid_color(true);
-
-    std::unique_ptr<FakeRecordingSource> recording =
-        FakeRecordingSource::CreateFilledRecordingSource(
-            gfx::Size(10000, 10000));
-
-    recording->add_draw_image(CreateDiscardablePaintImage(large_image_size_),
-                              gfx::Point(0, 0));
-    recording->Rerecord();
-
-    scoped_refptr<FakePictureLayer> root =
-        FakePictureLayer::CreateWithRecordingSource(&client_,
-                                                    std::move(recording));
+    client_.add_draw_image(CreateDiscardablePaintImage(large_image_size_),
+                           gfx::Point(0, 0));
+    scoped_refptr<FakePictureLayer> root = FakePictureLayer::Create(&client_);
     root->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(root->bounds());
     root->SetContentsOpaque(true);
@@ -10077,14 +10025,9 @@ class LayerTreeHostTestWithHelper : public LayerTreeHostTest {
       Layer* parent = nullptr) {
     if (!parent)
       parent = layer_tree_host()->root_layer();
-    std::unique_ptr<FakeRecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(size);
-    recording_source->set_fill_with_nonsolid_color(true);
-    recording_source->set_has_draw_text_op();
-    recording_source->Rerecord();
-    scoped_refptr<FakePictureLayer> picture_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    client_.set_fill_with_nonsolid_color(true);
+    client_.set_has_draw_text_op();
+    auto picture_layer = FakePictureLayer::Create(&client_);
     picture_layer->SetBounds(size);
     picture_layer->SetIsDrawable(true);
     parent->AddChild(picture_layer);

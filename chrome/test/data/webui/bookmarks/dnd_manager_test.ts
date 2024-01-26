@@ -141,9 +141,9 @@ suite('drag and drop', function() {
     app = document.createElement('bookmarks-app');
     replaceBody(app);
     list =
-        app.shadowRoot!.querySelector('bookmarks-list') as BookmarksListElement;
-    rootFolderNode = app.shadowRoot!.querySelector('bookmarks-folder-node') as
-        BookmarksFolderNodeElement;
+        app.shadowRoot!.querySelector<BookmarksListElement>('bookmarks-list')!;
+    rootFolderNode = app.shadowRoot!.querySelector<BookmarksFolderNodeElement>(
+        'bookmarks-folder-node')!;
     dndManager = app.getDndManagerForTesting() as DndManager;
     dndManager!.setTimerProxyForTesting(new TestTimerProxy());
 

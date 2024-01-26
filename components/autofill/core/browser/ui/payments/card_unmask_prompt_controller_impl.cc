@@ -184,10 +184,18 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
   new_card_link_clicked_ = true;
 }
 
+#if BUILDFLAG(IS_IOS)
+std::u16string CardUnmaskPromptControllerImpl::GetNavigationTitle() const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE);
+}
+#endif
+
 std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 #if BUILDFLAG(IS_IOS)
-  // The iOS UI has less room for the title so it shows a shorter string.
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE);
+  // There is no separate window title for IOS UI. It uses the instruction text
+  // below.
+  return std::u16string();
 #else
   // Set title for VCN retrieval errors first.
   if (unmasking_result_ ==

@@ -13,9 +13,9 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-using absl::optional;
 using base::Bucket;
 using base::Value;
+using std::optional;
 using ShiftFrame = page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -112,7 +112,7 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
     ++i;
 
     if (score) {
-      const absl::optional<double> traced_score = data.FindDouble("score");
+      const std::optional<double> traced_score = data.FindDouble("score");
       final_score += traced_score.has_value() ? traced_score.value() : 0;
       EXPECT_EQ(*score, final_score);
     }
@@ -280,7 +280,13 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
+// TODO(crbug.com/1454288): Disable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Sources_Enclosure DISABLED_Sources_Enclosure
+#else
+#define MAYBE_Sources_Enclosure Sources_Enclosure
+#endif
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_Sources_Enclosure) {
   RunWPT("sources-enclosure.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
          /*num_layout_shifts=*/2);
 }
@@ -344,8 +350,16 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
+// TODO(crbug.com/1500379): Disable this test on Win10
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CumulativeLayoutShift_hadRecentInput \
+  DISABLED_CumulativeLayoutShift_hadRecentInput
+#else
+#define MAYBE_CumulativeLayoutShift_hadRecentInput \
+  CumulativeLayoutShift_hadRecentInput
+#endif
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
-                       CumulativeLayoutShift_hadRecentInput) {
+                       MAYBE_CumulativeLayoutShift_hadRecentInput) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 

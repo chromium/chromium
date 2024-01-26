@@ -284,6 +284,12 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
     ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoice choice) {
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
+    // Enforce that the account declined the enterprise management. This value
+    // could have been set as a result of
+    // `ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation()`
+    // continuing by default prior in the flow.
+    signin::ClearProfileWithManagedAccounts(profile_);
+
     HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
                                  kAbortedOnEnterpriseWelcome);
     return;

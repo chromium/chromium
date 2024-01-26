@@ -26,6 +26,12 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 struct Params {
   bool shortstand_enabled;
   bool tab_strip_enabled;
@@ -70,8 +76,12 @@ class CreateShortcutConfirmationViewBrowserTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     features.insert(
         {chromeos::features::kCrosShortstand, IsShortstandEnabled()});
-    // TODO(b/311512111): Write lacros test
-#endif
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_cros_shortstand_enabled = IsShortstandEnabled();
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     features.insert(
         {blink::features::kDesktopPWAsTabStrip, GetParam().tab_strip_enabled});
@@ -83,10 +93,9 @@ class CreateShortcutConfirmationViewBrowserTest
   }
 
   bool IsShortstandEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return GetParam().shortstand_enabled;
 #else
-    // TODO(b/311512111): Write lacros test
     return false;
 #endif
   }

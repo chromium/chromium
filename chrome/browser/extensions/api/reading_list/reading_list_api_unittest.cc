@@ -412,7 +412,7 @@ TEST_F(ReadingListApiUnitTest, RetrieveCertainEntries) {
       reading_list_model->GetEntryByURL(GURL("https://www.example3.com"));
 
   // Expect that the first entry is equivalent to `e2`.
-  absl::optional<api::reading_list::ReadingListEntry> entry1_actual =
+  std::optional<api::reading_list::ReadingListEntry> entry1_actual =
       api::reading_list::ReadingListEntry::FromValue(entries->GetList()[0]);
   int64_t e2_update_in_milliseconds =
       base::Microseconds(e2->UpdateTime()).InMilliseconds();
@@ -425,7 +425,7 @@ TEST_F(ReadingListApiUnitTest, RetrieveCertainEntries) {
   EXPECT_EQ(entry1_actual->creation_time, e2_creation_in_milliseconds);
 
   // Expect that the second entry is equivalent to `e3`.
-  absl::optional<api::reading_list::ReadingListEntry> entry2_actual =
+  std::optional<api::reading_list::ReadingListEntry> entry2_actual =
       api::reading_list::ReadingListEntry::FromValue(entries->GetList()[1]);
   int64_t e3_update_in_milliseconds =
       base::Microseconds(e3->UpdateTime()).InMilliseconds();

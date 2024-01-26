@@ -9,6 +9,7 @@
 
 #import <map>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 
@@ -46,7 +47,7 @@ class WebFramesManagerImpl : public WebFramesManager {
   std::map<std::string, std::unique_ptr<WebFrame>> web_frames_;
 
   // Reference to the current main web frame.
-  WebFrame* main_web_frame_ = nullptr;
+  raw_ptr<WebFrame> main_web_frame_ = nullptr;
   base::ObserverList<Observer, /*check_empty=*/false> observers_;
   base::WeakPtrFactory<WebFramesManagerImpl> weak_factory_;
 };

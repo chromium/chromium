@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -756,6 +757,13 @@ void DeskBarViewBase::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void DeskBarViewBase::Init() {
+  // It's possible that window occlusion state change triggers some new windows
+  // to show up during desk bar initialization process. It should not broadcast
+  // the desk content update since desk mini view may not be ready. Please refer
+  // to b/320530730.
+  Desk::ScopedContentUpdateNotificationDisabler desks_scoped_notify_disabler(
+      DesksController::Get()->desks(), /*notify_when_destroyed=*/false);
+
   UpdateNewMiniViews(/*initializing_bar_view=*/true,
                      /*expanding_bar_view=*/false);
 

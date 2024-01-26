@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -44,7 +45,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -304,7 +304,7 @@ void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
   }
 
   WebApp::IsolationData updated_isolation_data = *web_app->isolation_data();
-  updated_isolation_data.SetPendingUpdateInfo(absl::nullopt);
+  updated_isolation_data.SetPendingUpdateInfo(std::nullopt);
   web_app->SetIsolationData(std::move(updated_isolation_data));
 }
 

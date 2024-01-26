@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,7 +16,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 

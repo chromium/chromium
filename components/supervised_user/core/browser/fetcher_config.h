@@ -6,16 +6,20 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
+#include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace supervised_user {
 
@@ -39,6 +43,10 @@ struct AccessTokenConfig {
 
 // Configuration bundle for the ProtoFetcher.
 struct FetcherConfig {
+  using PathArgs = std::vector<std::string>;
+  using PathTemplate =
+      base::StrongAlias<class PathTemplateTag, std::string_view>;
+
   enum class Method { kUndefined, kGet, kPost };
 
   // Primary endpoint of the fetcher. May be overridden with feature flags.
@@ -46,10 +54,19 @@ struct FetcherConfig {
       &kSupervisedUserProtoFetcherConfig, "service_endpoint",
       "https://kidsmanagement-pa.googleapis.com"};
 
-  // Path of the service. See the service specification at
+  // Path of the service or a template of such path.
+  //
+  // In the path mode, it is used literally. Template is substituted with values
+  // from supervised_user::CreateFetcher's `args` argument. Use
+  // `::StaticServicePath()` and `::ServicePath(const PathArgs&)` accessors to
+  // extract the right value.
+  //
+  // Example templated path: /path/to/{}/my/{}/resource
+  //
+  // See the service specification at
   // google3/google/internal/kids/chrome/v1/kidschromemanagement.proto for
   // examples.
-  base::StringPiece service_path;
+  absl::variant<std::string_view, PathTemplate> service_path;
 
   // HTTP method used to communicate with the service.
   const Method method = Method::kUndefined;
@@ -67,6 +84,26 @@ struct FetcherConfig {
   net::RequestPriority request_priority;
 
   std::string GetHttpMethod() const;
+
+  // Returns the non-template service_path or crashes for templated one.
+  std::string_view StaticServicePath() const;
+
+  // Returns the static (non-template) service path or interpolated template
+  // path.
+  // If the `service_path` is static (not `::PathTemplate`), `args` must
+  // be empty; otherwise this function crashes.
+  // For service_path which is `::PathTemplate`, args are inserted in
+  // place of placeholders and then exhausted. If there is no arg to be put, an
+  // empty string is used instead.
+  //
+  // Examples for "/path/{}{}/with/template/" template:
+  //
+  // ServicePath({}) -> /path//with/template/
+  // ServicePath({"a"}) -> /path/a/with/template/
+  // ServicePath({"a", "b"}) -> /path/ab/with/template/
+  // ServicePath({"a", "b", "c"}) -> /path/ab/with/template/c
+  // ServicePath({"a", "b", "c", "d"}) -> /path/ab/with/template/cd
+  std::string ServicePath(const PathArgs& args) const;
 };
 
 constexpr FetcherConfig kClassifyUrlConfig = {

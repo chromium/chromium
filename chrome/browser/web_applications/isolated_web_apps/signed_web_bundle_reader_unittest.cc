@@ -22,9 +22,9 @@
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -65,8 +65,7 @@ class FakeSignatureVerifier
     : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          error)
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error)
       : error_(error) {}
 
   void VerifySignatures(
@@ -78,7 +77,7 @@ class FakeSignatureVerifier
   }
 
  private:
-  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
+  std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
 };
 
 }  // namespace
@@ -105,8 +104,8 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = absl::nullopt,
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          signature_verifier_error = std::nullopt,
       const std::string test_file_data = kHtmlString) {
     base::FilePath swbn_file_path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII("bundle.swbn"));
@@ -336,9 +335,9 @@ class SignedWebBundleReaderTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = absl::nullopt,
-      const absl::optional<GURL>& base_url = absl::nullopt,
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          signature_verifier_error = std::nullopt,
+      const std::optional<GURL>& base_url = std::nullopt,
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
     // response. We do not need to provide an integrity block or metadata
@@ -424,8 +423,8 @@ TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
   base::FilePath file_path = base::FilePath::FromASCII("does-not-exist.swbn");
 
   std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
-      file_path, absl::nullopt,
-      std::make_unique<FakeSignatureVerifier>(absl::nullopt));
+      file_path, std::nullopt,
+      std::make_unique<FakeSignatureVerifier>(std::nullopt));
 
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       error_future;
@@ -949,7 +948,7 @@ TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
 
 class SignedWebBundleReaderBaseUrlTest
     : public SignedWebBundleReaderTest,
-      public ::testing::WithParamInterface<absl::optional<std::string>> {
+      public ::testing::WithParamInterface<std::optional<std::string>> {
  public:
   SignedWebBundleReaderBaseUrlTest() {
     if (GetParam().has_value()) {
@@ -958,11 +957,11 @@ class SignedWebBundleReaderBaseUrlTest
   }
 
  protected:
-  absl::optional<GURL> base_url_;
+  std::optional<GURL> base_url_;
 };
 
 TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
-  base::test::RepeatingTestFuture<absl::optional<GURL>> on_create_parser_future;
+  base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future;
   parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
       on_create_parser_future.GetCallback());
 
@@ -970,7 +969,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
       parse_status_future;
   auto reader = CreateReaderAndInitialize(
       parse_status_future.GetCallback(),
-      VerificationAction::ContinueAndVerifySignatures(), absl::nullopt,
+      VerificationAction::ContinueAndVerifySignatures(), std::nullopt,
       base_url_);
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -996,7 +995,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedWebBundleReaderBaseUrlTest,
-                         ::testing::Values(absl::nullopt,
+                         ::testing::Values(std::nullopt,
                                            "https://example.com"));
 
 class UnsecureSignedWebBundleReaderTest : public testing::Test {

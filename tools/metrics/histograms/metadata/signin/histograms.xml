@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -373,7 +373,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AddAccountState" enum="SigninAndroidAddAccountState"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -415,7 +415,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGetAccountIdsTime" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -424,7 +424,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.AndroidGetAccountsTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -433,7 +433,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -442,7 +442,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AuthError" enum="GoogleServiceAuthError"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -802,7 +802,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Extensions.LaunchWebAuthFlowResult"
-    enum="LaunchWebAuthFlowResult" expires_after="2024-05-19">
+    enum="LaunchWebAuthFlowResult" expires_after="2024-07-21">
   <owner>alexilin@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1826,7 +1826,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncDisabledNotificationShown" enum="SigninAccessPoint"
-    expires_after="2024-02-04">
+    expires_after="2024-08-22">
   <owner>birnie@google.com</owner>
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1893,7 +1893,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncOptIn.PreSyncConfirmationLatency" units="ms"
-    expires_after="2024-02-01">
+    expires_after="2024-05-01">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

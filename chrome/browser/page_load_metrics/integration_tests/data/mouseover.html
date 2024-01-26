@@ -27,9 +27,6 @@ const loadBackgroundImage = size => {
   }
 };
 
-// Turn off BFCache to see if it helps with BFCache bot flakes.
-window.addEventListener("unload", () => { console.log("Turn off BFCache"); });
-
 const registerMouseover = background => {
   const func = background ? loadBackgroundImage : loadImage;
   image.addEventListener("mouseover", func("100x50"));

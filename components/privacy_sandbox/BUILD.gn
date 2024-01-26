@@ -58,6 +58,7 @@ source_set("tracking_protection_settings") {
   ]
 
   deps = [
+    ":features",
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",

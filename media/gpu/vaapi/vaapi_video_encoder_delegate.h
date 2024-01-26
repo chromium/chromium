@@ -82,10 +82,12 @@ class VaapiVideoEncoderDelegate {
     // If |keyframe| is true, requests this job to produce a keyframe.
     EncodeJob(bool keyframe,
               base::TimeDelta timestamp,
+              bool end_of_picture,
               VASurfaceID input_surface_id);
     // Constructor for VA-API.
     EncodeJob(bool keyframe,
               base::TimeDelta timestamp,
+              bool end_of_picture,
               VASurfaceID input_surface_id,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
@@ -112,6 +114,8 @@ class VaapiVideoEncoderDelegate {
     bool IsFrameDropped() const { return !coded_buffer_; }
 
     base::TimeDelta timestamp() const;
+    // This is a frame in the top spatial layer.
+    bool end_of_picture() const;
 
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
@@ -122,6 +126,7 @@ class VaapiVideoEncoderDelegate {
     bool keyframe_;
     // |timestamp_| to be added to the produced encoded chunk.
     const base::TimeDelta timestamp_;
+    const bool end_of_picture_;
 
     // VA-API specific members.
     // Input surface ID and size for video frame data or scaled data.

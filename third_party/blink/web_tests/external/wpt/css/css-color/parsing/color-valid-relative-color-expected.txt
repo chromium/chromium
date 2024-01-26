@@ -1,0 +1,88 @@
+This is a testharness.js-based test.
+Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "rgb(from rebeccapurple b alpha r / g)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.00392157 0.4)\nExpected: color(srgb 0.6 1 0.4 / 0.2).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r r r / r)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.4 0.4 0.4)\nExpected: color(srgb 0.4 0.4 0.4 / 0.4).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+[FAIL] e.style['color'] = "rgb(from rebeccapurple alpha alpha alpha / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.00392157 0.00392157 0.00392157)\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1 +/- 0.01, expected 1 but got 0.00392157
+[FAIL] e.style['color'] = "rgb(from rgb(20%, 40%, 60%, 80%) b alpha r / g)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.00313725 0.2)\nExpected: color(srgb 0.6 0.8 0.2 / 0.4).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+[FAIL] e.style['color'] = "rgb(from rgb(20%, 40%, 60%, 80%) r r r / r)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.2 0.2 0.2)\nExpected: color(srgb 0.2 0.2 0.2 / 0.2).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+[FAIL] e.style['color'] = "rgb(from rgb(20%, 40%, 60%, 80%) alpha alpha alpha / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.00313725 0.00313725 0.00313725 / 0.8)\nExpected: color(srgb 0.8 0.8 0.8 / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.8 +/- 0.01, expected 0.8 but got 0.00313725
+[FAIL] e.style['color'] = "rgb(from rebeccapurple none none none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "rgb(from rebeccapurple none none none / none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r g none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r g none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "rgb(from rgb(20% 40% 60% / 80%) r g none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.2 0.4 0 / 0.8)\nExpected: color(srgb 0.2 0.4 none / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "rgb(from currentColor r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hsl(from rebeccapurple none none none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hsl(from rebeccapurple none none none / none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hsl(from rebeccapurple h s none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb 0 0 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hsl(from rebeccapurple h s none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb 0 0 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hsl(from rebeccapurple none s l / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.2)\nExpected: color(srgb none 0.2 0.2).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hsl(from hsl(120deg 20% 50% / .5) h s none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0 0 0 / 0.5)\nExpected: color(srgb 0 0 none / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsl(from hsl(120deg 20% 50% / .5) none s l / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: color(srgb none 0.4 0.4 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsl(from currentColor h s l)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hwb(from rebeccapurple none none none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hwb(from rebeccapurple none none none / none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 1 0 0 / none)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hwb(from rebeccapurple h w none)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 1)\nExpected: color(srgb 0.6 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hwb(from rebeccapurple h w none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 1)\nExpected: color(srgb 0.6 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hwb(from rebeccapurple none w b / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.2)\nExpected: color(srgb none 0.2 0.2).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "hwb(from hwb(120deg 20% 50% / .5) h w none / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.2 1 0.2 / 0.5)\nExpected: color(srgb 0.2 1 none / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hwb(from hwb(120deg 20% 50% / .5) none w b / alpha)" should set the property value
+  Colors do not match.\nActual:   color(srgb 0.5 0.2 0.2 / 0.5)\nExpected: color(srgb none 0.2 0.2 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hwb(from currentColor h w b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lab(from currentColor l a b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklab(from oklab(0.7 0.25 -0.15) l calc(a / 2) calc(b / 3))" should set the property value
+  Colors do not match.\nActual:   oklab(0.7 0.125 -0.05)\nExpected: oklab(0.7 0.125 -0.075).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected -0.075 +/- 0.01, expected -0.075 but got -0.05
+[FAIL] e.style['color'] = "oklab(from currentColor l a b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lch(from currentColor) l c h)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklch(from currentColor l c h)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor srgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor srgb-linear r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor a98-rgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor rec2020 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor prophoto-rgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor display-p3 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz-d50 x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz-d65 x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

@@ -39,6 +39,7 @@ BLINK_COMMON_EXPORT extern const char kDisableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char kDumpRuntimeCallStats[];
 BLINK_COMMON_EXPORT extern const char
     kEnableGpuMemoryBufferCompositorResources[];
+BLINK_COMMON_EXPORT extern const char kEnableLeakDetectionHeapSnapshot[];
 BLINK_COMMON_EXPORT extern const char kEnableLowResTiling[];
 BLINK_COMMON_EXPORT extern const char kEnablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kEnableRasterSideDarkModeForImages[];

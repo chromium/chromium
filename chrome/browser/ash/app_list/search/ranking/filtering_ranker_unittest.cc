@@ -86,7 +86,7 @@ TEST_F(FilteringRankerTest, DeduplicateDriveFilesAndTabs) {
 
   FilteringRanker ranker;
   CategoriesList categories;
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
   ranker.UpdateResultRanks(results, ProviderType::kKeyboardShortcut);
 
   EXPECT_FALSE(results[drive][0]->scoring().filtered());
@@ -115,7 +115,7 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
   // Start with a query that is one character too short.
   ASSERT_GT(kMinQueryLengthForCommonAnswers, 0u);
   ranker.Start(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'),
-               results, categories);
+               categories);
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // All results except dictionary and translate answers are allowed.

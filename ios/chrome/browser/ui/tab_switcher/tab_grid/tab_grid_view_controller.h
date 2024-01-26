@@ -30,7 +30,6 @@ class GURL;
 @class RecentTabsTableViewController;
 @class RegularGridViewController;
 @class TabGridBottomToolbar;
-@protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabGridActivityObserver;
@@ -74,6 +73,22 @@ enum class TabGridPageConfiguration {
 // Asks the delegate to show the inactive tabs.
 - (void)showInactiveTabs;
 
+// Asks the delegate whether the user is eligible for the swipe-to-incognito
+// in-product help message. This depends on multiple factors, including but not
+// limited to the current tab grid mode and the frequency that the IPH has
+// previously shown.
+- (BOOL)tabGridIsUserEligibleForSwipeToIncognitoIPH;
+
+// Asks the delegate whether the tab grid should present the swipe-to-incognito
+// in-product help message. Once this is invoked, `swipeToIncognitoIPH` must
+// show, and `tabGridDidDismissSwipeToIncognitoIPH` must be invoked on
+// dismissal.
+- (BOOL)tabGridShouldPresentSwipeToIncognitoIPH;
+
+// Notifies the delegate that the tab grid has dismissed the swipe-to-incognito
+// in-product help message.
+- (void)tabGridDidDismissSwipeToIncognitoIPH;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
@@ -115,7 +130,6 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
-@property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
 
 // Handles drag and drop interactions that require the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>

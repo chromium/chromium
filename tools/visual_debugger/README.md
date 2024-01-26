@@ -9,17 +9,27 @@ For information on the chromium integration of debug capture see: `//components/
 ### Launching
 To use the Visual Debugger, Chromium must be launch with remote debugging support.
 
-`    --remote-debugging-port=7777`
+`$ ./chrome --remote-debugging-port=7777 --remote-allow-origins=*`
 
 To launch the Debugging App simply run the python server from this directory. The default port is 7777.
 
-`    ./server.py [portnumber]`
+`$ tools/visual_debugger/server.py [portnumber]`
 
 This command will also launch the debugger as a Web App in a separate instance of the default browser.
 
 In official builds (`is_official_build=true` gn arg) the debugger is disabled by default but can be force enabled locally with the flag below in **args.gn**.
 
 `    use_viz_debugger=true`
+
+#### Android
+
+In order to connect to an Android device it must be launched with the args above
+and connected via USB to your development machine. Android ADB can then be setup
+to forward Chrome Devtools Protocol to the remote port, for example if you used
+`--remote-debugging-port=7777` when launching Chrome you would run the
+following.
+
+`$ adb forward tcp:7777 localabstract:chrome_devtools_remote`
 
 ### Usage
 

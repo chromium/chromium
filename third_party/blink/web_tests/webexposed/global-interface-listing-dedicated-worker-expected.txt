@@ -637,6 +637,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUAdapter
 [Worker]     attribute @@toStringTag
 [Worker]     getter features
+[Worker]     getter isCompatibilityMode
 [Worker]     getter isFallbackAdapter
 [Worker]     getter limits
 [Worker]     method constructor
@@ -699,6 +700,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method popDebugGroup
 [Worker]     method pushDebugGroup
 [Worker]     method resolveQuerySet
+[Worker]     method writeTimestamp
 [Worker]     setter label
 [Worker] interface GPUCompilationInfo
 [Worker]     attribute @@toStringTag
@@ -906,6 +908,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxStorageBufferBindingSize
 [Worker]     getter maxStorageBuffersPerShaderStage
 [Worker]     getter maxStorageTexturesPerShaderStage
+[Worker]     getter maxSubgroupSize
 [Worker]     getter maxTextureArrayLayers
 [Worker]     getter maxTextureDimension1D
 [Worker]     getter maxTextureDimension2D
@@ -916,6 +919,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxVertexBufferArrayStride
 [Worker]     getter maxVertexBuffers
 [Worker]     getter minStorageBufferOffsetAlignment
+[Worker]     getter minSubgroupSize
 [Worker]     getter minUniformBufferOffsetAlignment
 [Worker]     method constructor
 [Worker] interface GPUTexture
@@ -1286,6 +1290,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface MediaSourceHandle
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface Mesh2DIndexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DUVBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DVertexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
@@ -1427,6 +1440,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method subscribe
+[Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
@@ -1483,9 +1497,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createConicGradient
 [Worker]     method createImageData
 [Worker]     method createLinearGradient
+[Worker]     method createMesh2DIndexBuffer
+[Worker]     method createMesh2DUVBuffer
+[Worker]     method createMesh2DVertexBuffer
 [Worker]     method createPattern
 [Worker]     method createRadialGradient
 [Worker]     method drawImage
+[Worker]     method drawMesh
 [Worker]     method ellipse
 [Worker]     method endLayer
 [Worker]     method fill

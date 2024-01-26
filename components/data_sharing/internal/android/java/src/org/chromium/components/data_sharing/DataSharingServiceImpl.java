@@ -30,6 +30,11 @@ public class DataSharingServiceImpl implements DataSharingService {
         return DataSharingServiceImplJni.get().isEmptyService(mNativePtr, this);
     }
 
+    @Override
+    public DataSharingNetworkLoader getNetworkLoader() {
+        return DataSharingServiceImplJni.get().getNetworkLoader(mNativePtr);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -38,5 +43,7 @@ public class DataSharingServiceImpl implements DataSharingService {
     @NativeMethods
     interface Natives {
         boolean isEmptyService(long nativeDataSharingServiceAndroid, DataSharingServiceImpl caller);
+
+        DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
     }
 }

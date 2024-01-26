@@ -6,9 +6,9 @@ package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
@@ -41,6 +41,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -58,8 +60,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -277,7 +277,8 @@ public class StartSurfaceBackButtonTest {
         ViewUtils.isEventuallyVisible(withId(R.id.tab_list_recycler_view));
         onView(
                         allOf(
-                                withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);

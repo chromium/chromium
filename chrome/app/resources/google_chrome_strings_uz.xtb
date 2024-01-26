@@ -71,7 +71,6 @@
 <translation id="2130870084309816036">Internetga ulanmadi. Himoya devori ishlatsangiz, <ph name="PRODUCT_EXE_NAME" /> aloqasiga ruxsat bering.</translation>
 <translation id="2131230230468101642">Maxfiylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Yoki Chrome foydalanmasligini istasangiz, qiziqishlarni olib tashlashingiz mumkin.</translation>
 <translation id="2139300032719313227">ChromeOS tizimini qayta ishga tushirish</translation>
-<translation id="2146761408396054429">Bu fayl xavfli boʻlishi mumkin<ph name="LINE_BREAK" />Parol bilan tasdiqlasangiz, Chrome bu yuklanmani tekshirishi mumkin — parolingiz qurilmada saqlanadi</translation>
 <translation id="2151406531797534936">Chromeni hozir qayta ishga tushiring</translation>
 <translation id="2174917724755363426">Oʻrnatish yakunlanmadi. Haqiqatan ham bekor qilmoqchimisiz?</translation>
 <translation id="2190166659037789668">Yangilanishni tekshirishda xato: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -163,6 +162,7 @@
 <translation id="3426646014273736870">Xotirani tejash funksiyasi Chromeni tezlashtirdi</translation>
 <translation id="3428747202529429621">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi</translation>
 <translation id="3434246496373299699">Google hisobingizga kirsangiz, Chrome parollaringizni tekshira oladi</translation>
+<translation id="3450887623636316740">Bu fayl xavfli boʻlishi mumkin<ph name="LINE_BREAK" />Parol bilan tasdiqlasangiz, Chrome bu yuklanmani tekshirishi mumkin. Fayl Google Saytlarni xavfsiz kezish serveriga yuborilishi, ammo faylning kontenti va parol qurilmada saqlanishi haqidagi axborot.</translation>
 <translation id="3451115285585441894">O‘rnatilmoqda...</translation>
 <translation id="345171907106878721">Chrome foydalanuvchisini qo‘shish</translation>
 <translation id="3453763134178591239">ChromeOS shartlari</translation>
@@ -196,6 +196,7 @@
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
 <translation id="4106587138345390261">Chrome saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="4110895483821904099">Yangi Chrome profilini sozlang</translation>
+<translation id="4128488089242627000">Chrome tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
 <translation id="4147555960264124640">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Google Chrome profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chrome ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">O‘rnatilmoqda..</translation>
 <translation id="4149882025268051530">Fayllarni arxivdan chiqarib bo‘lmadi. Google Chrome‘ni qayta yuklab oling.</translation>
@@ -218,7 +219,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> kengaytmasi Chromega o‘rnatildi</translation>
 <translation id="4384570495110188418">Chrome parollaringizni faqat hisobingizga kirganingizdan keyin tekshira oladi</translation>
 <translation id="4389991535395284064">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chrome sizni ogohlantiradi.</translation>
-<translation id="4393248995085527349">Google Chrome yangilanishlari macOS 10.15 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.13.</translation>
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4450664632294415862">Chrome - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome boshqa amalni bajarmoqda. Keyinroq qayta urinib ko‘ring.</translation>
@@ -243,6 +243,7 @@
 <translation id="4793679854893018356">Chrome qanday qilib sizni himoya qilishi haqida batafsil</translation>
 <translation id="4828579605166583682">Google Chrome joriy parollarni almashtirishga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="4842397268809523050">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
+<translation id="4873692836499071887">Google Chrome yangilanishlari macOS 11 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.15.</translation>
 <translation id="4873783916118289636">Chrome ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
 <translation id="4891791193823137474">Google Chrome fonda ishlashiga ruxsat</translation>
 <translation id="4895437082222824641">&amp;Havolani yangi varaqda ochish</translation>
@@ -306,7 +307,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5941830788786076944">Google Chrome standart brauzer qilib belgilansin</translation>
 <translation id="6003112304606738118">Yuklab olinmoqda... <ph name="HOURS" /> soat qoldi</translation>
-<translation id="6010556343189461180">Google Chrome yangilanishlari macOS 10.15 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.14.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome vositalari yordamida<ph name="END_LINK" /> xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
 <translation id="6022659036123304283">Shaxsiy Chrome brauzeringiz</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />dan keyin qayta ishga tushadi</translation>
@@ -352,6 +352,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="677276454032249905">Chrome baribir yopilsinmi?</translation>
 <translation id="6794858689789885890">Chrome yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="683440813066116847">Google Chrome Canary‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
+<translation id="6851981911629679515">Chromeda JavaScript va WebAssembly tizimi uchun qoʻshimcha himoyasini yoqish</translation>
 <translation id="6881299373831449287">Chrome yangilanmoqda</translation>
 <translation id="6885412569789873916">Chrome Beta ilovalari</translation>
 <translation id="6933858244219479645">ChromeOS tizimi</translation>
@@ -473,6 +474,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="873133009373065397">Google Chrome asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi</translation>
 <translation id="8765470054473112089">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chrome yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="878572486461146056">Oʻrnatishda xato: Tarmoq administratori oʻrnatishlarni taqiqlovchi guruh siyosatini tatbiq qilgan: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 — Chromeda saytlar unumdorligini oshiradigan JavaScript va WebAssembly tizimi hisoblanadi</translation>
 <translation id="8821043148920470810">Google Chrome yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versiyasi eskirdi</translation>
 <translation id="8825634023950448068">Maxfiylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Chrome foydalanmasligi va tegishli reklama chiqmasligi uchun qiziqishni olib tashlash mumkin.</translation>

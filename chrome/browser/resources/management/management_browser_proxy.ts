@@ -80,12 +80,14 @@ export enum DeviceReportingType {
   CRD_SESSIONS = 'crd sessions',
   PERIPHERALS = 'peripherals',
   LEGACY_TECH = 'legacy-tech',
+  WEBSITE_INFO_AND_ACTIVITY = 'website info and activity',
 }
 
 
 export interface DeviceReportingResponse {
   messageId: string;
   reportingType: DeviceReportingType;
+  messageParams?: string[];
 }
 // </if>
 

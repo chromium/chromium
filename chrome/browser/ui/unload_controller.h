@@ -82,7 +82,7 @@ class UnloadController : public WebContentsCollection::Observer,
   //             AreAllBrowsersCloseable() in application_lifetime.cc. It seems
   //             very similar to ShouldCloseWindow() and some consolidation
   //             could be pursued.
-  bool TabsNeedBeforeUnloadFired();
+  bool TabsNeedBeforeUnloadFired() const;
 
   // Clears all the state associated with processing tabs' beforeunload/unload
   // events since the user cancelled closing the window.
@@ -104,6 +104,8 @@ class UnloadController : public WebContentsCollection::Observer,
 
   void TabAttachedImpl(content::WebContents* contents);
   void TabDetachedImpl(content::WebContents* contents);
+
+  UnloadListenerSet GetTabsNeedingBeforeUnloadFired() const;
 
   // Processes the next tab that needs it's beforeunload/unload event fired.
   void ProcessPendingTabs(bool skip_beforeunload);

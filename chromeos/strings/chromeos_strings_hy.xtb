@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">փոխանցել</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
+<translation id="1626590945318984973">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում առանց օգտագործելու գործառնական և «<ph name="META_KEY" />» ստեղները։</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
 <translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
 <translation id="1885577615937958993">առաջ տալ մեդիաֆայլը</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
-<translation id="1897672602657312171">Առանց որոնման ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով որոնման ստեղնը։</translation>
 <translation id="1904932688895783618">Ահա մի քանի այլ օգտակար ռեսուրսներ՝</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="2157660087437850958">զմայլիկների ընտրիչ</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> հավելվածն ավտոմատ գործարկվի։}=2{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ավտոմատ գործարկվեն։}=3{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածներն ավտոմատ գործարկվեն։}one{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ու ևս # հավելված ավտոմատ գործարկվեն։}other{Ձեր ադմինիստրատորն այնպես է կարգավորել, որ ամեն անգամ, երբ մուտք գործեք, <ph name="APP_NAME_1" /> և <ph name="APP_NAME_2" /> հավելվածներն ու ևս # հավելված ավտոմատ գործարկվեն։}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="215916044711630446">«Ավելացնել APN» կոճակն անջատված է</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN-ի տվյալների փոփոխում</translation>
 <translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
 <translation id="2212733584906323460">Անվանել լուծաչափը</translation>
+<translation id="2215920961700443347">Կապ չկա։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="2217935453350629363">Ընթացիկ արագությունը</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="222447520299472966">Անհրաժեշտ է ընտրել ցուցասրահի առնվազն մեկ ալբոմ</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Պատկեր <ph name="CURRENT_PAGE" />՝ <ph name="TOTAL_PAGES" />-ից</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
+<translation id="2465272316171730950">Համակարգն այս պահին ծանրաբեռնված է։ Վերադարձեք մի փոքր ուշ։</translation>
 <translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
 <translation id="2491955442992294626">Ստեղները չեն փորձարկվում, երբ օգտագործում եք մեկ այլ պատուհան։</translation>
 <translation id="2493126929778606526">Ավտոմատ ընտրված լավագույն լուսանկարները</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
 <translation id="2513396635448525189">Մուտքի պատկեր</translation>
-<translation id="2515109918609218604">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցման՝ առանց օգտագործելու գործառնական և որոնման ստեղները։</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2521835766824839541">նախորդ կատարումը</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Այժմ ձեզ հասանելի են նոր <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />պաստառներ<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
 <translation id="4130035430755296270">Մկնիկի նշորդը շարունակեք պահել վրան՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
+<translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> հավելվածն ավտոմատ գործարկվել է}one{# հավելված ավտոմատ գործարկվել է}other{# հավելված ավտոմատ գործարկվել է}}</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4150201353443180367">Էկրան</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">պակասեցնել պայծառությունը</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
 <translation id="4176659219503619100">Կառավարման վահանակ</translation>
-<translation id="4185315616950253617">Վերևի շարքի ստեղներով դյուրանցումը պետք է ներառի որոնման ստեղնը։</translation>
 <translation id="420283545744377356">Անջատել էկրանապահը</translation>
 <translation id="4213104098953699324">USB ստեղնաշար</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Անջատել</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> սարքը վերագործարկվում է</translation>
 <translation id="4395835743215824109">ստեղնաշարի հարմարեցում</translation>
+<translation id="4403262788869804671">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։</translation>
 <translation id="4415951057168511744">Ընթացիկ ավատարը</translation>
+<translation id="4417830657741848074">Ադմինիստրատորը կարգավորել է որոշ հավելվածների ավտոմատ գործարկումը։ Դուք չեք կարող փակել այս հավելվածներից մի քանիսը։</translation>
 <translation id="4422041425070339732">ներքև սլաք</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />-ն անջատված է</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">«երկիր մոլորակ» էկրանապահ</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4500722292849917410">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով կերպափոխիչ ստեղնը (Ctrl, Alt, Shift կամ <ph name="META_KEY" />)։</translation>
 <translation id="4500966230243561393">Միջերեսի գույն</translation>
 <translation id="4503223151711056411">Ձախ սլաք</translation>
 <translation id="4507392511610824664">ավելացնել պայծառությունը</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4835901797422965222">Ակտիվ ցանցեր չկան</translation>
 <translation id="4839698083503556542">Ստեցծեք ձեր ֆիլմը</translation>
+<translation id="48409034532829769">Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» հավելվածի ավտոմատ գործարկումը։ Դուք չեք կարող փակել այս հավելվածը։</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4847902821209177679">Ընտրված է «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը։ Սեղմեք Enter՝ <ph name="TOPIC_SOURCE" />ի ալբոմներ ընտրելու համար։</translation>
 <translation id="484790837831576105">DNS-ի լուծաչափ (Android)</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Տրոհել</translation>
 <translation id="4972592110715526173">փոխել ռեժիմը</translation>
 <translation id="498186245079027698">Ստուգեք սկաները և նորից փորձեք։ Համոզվեք, որ սկանավորված ֆայլերը պահելու համար բավարար տարածք կա։</translation>
+<translation id="4982627662315910959">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով Shift ստեղնն ու ևս մեկ կերպափոխիչ ստեղն (Ctrl, Alt կամ <ph name="META_KEY" />)։</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
 <translation id="4987769320337599931">Հրապատ</translation>
 <translation id="4988526792673242964">Էջեր</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
 <translation id="5229344016299762883">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="5234764350956374838">Փակել</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}=2{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս 1 այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}one{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}other{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}}</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>
 <translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
 <translation id="5264277876637023664">Փորձարկել CPU-ն</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
 <translation id="725133483556299729">Ընտրել էլ․ հասցե</translation>
 <translation id="7271040990581020067">Սկաներն այս պահին օգտագործվում է։ Փորձեք ավելի ուշ։</translation>
-<translation id="7273347807225967898">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով կերպափոխիչ ստեղնը (ctrl, alt, shift, որոնում կամ գործարկիչ)։</translation>
+<translation id="7271932918253517778">Վերևի շարքի ստեղներով դյուրանցումը պետք է ներառի «<ph name="META_KEY" />» ստեղնը։</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Զեփյուռ</translation>
 <translation id="7287310195820267359">Պաստառների հավաքածուներ</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Ընդհանուր կարգավորումներ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» հավելվածն ավտոմատ գործարկվել է}one{# հավելված ավտոմատ գործարկվել է}other{# հավելված ավտոմատ գործարկվել է}}</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8017679124341497925">Դյուրանցումը փոխվեց</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
-<translation id="8111706652656628199">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով shift ստեղն ու ևս մեկ կերպափոխիչ ստեղն (ctrl, alt, որոնում կամ գործարկիչ)։</translation>
 <translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>

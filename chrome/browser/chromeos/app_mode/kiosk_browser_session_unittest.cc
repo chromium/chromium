@@ -286,7 +286,7 @@ class KioskBrowserSessionBaseTest
 
   std::unique_ptr<Browser> CreateBrowserForWebApp(
       const std::string& web_app_name,
-      absl::optional<Browser::Type> browser_type = absl::nullopt) {
+      std::optional<Browser::Type> browser_type = std::nullopt) {
     Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
         /*app_name=*/web_app_name, /*trusted_source=*/true,
         /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),

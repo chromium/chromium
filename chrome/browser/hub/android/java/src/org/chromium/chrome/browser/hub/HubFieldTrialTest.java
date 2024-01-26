@@ -15,8 +15,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Unit tests for {@link HubFieldTrial}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,6 +32,7 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testHubDisabled() {
         assertFalse(HubFieldTrial.isHubEnabled());
     }

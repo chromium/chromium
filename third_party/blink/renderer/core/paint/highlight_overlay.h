@@ -42,7 +42,7 @@ class CORE_EXPORT HighlightOverlay {
    public:
     explicit HighlightLayer(HighlightLayerType type,
                             AtomicString name = g_null_atom)
-        : type(type), name(name) {}
+        : type(type), name(std::move(name)) {}
 
     String ToString() const;
     enum PseudoId PseudoId() const;
@@ -85,7 +85,7 @@ class CORE_EXPORT HighlightOverlay {
     HighlightEdge(HighlightRange range,
                   HighlightLayer layer,
                   HighlightEdgeType type)
-        : range(range), layer(layer), type(type) {}
+        : range(range), layer(std::move(layer)), type(type) {}
 
     String ToString() const;
     unsigned Offset() const;

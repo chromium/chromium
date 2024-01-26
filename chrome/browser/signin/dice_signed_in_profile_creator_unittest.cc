@@ -68,7 +68,7 @@ void CreateCookies(
             url.path(), base::Time::Now(), base::Time::Max(), base::Time::Now(),
             url.SchemeIsCryptographic(), false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            absl::nullopt);
+            std::nullopt);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(
@@ -328,7 +328,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), absl::nullopt,
+          profile(), account_info.account_id, std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
   profile_added_loop.Run();
@@ -365,7 +365,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), absl::nullopt,
+          profile(), account_info.account_id, std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), base::OnceClosure()));
   EXPECT_FALSE(creator_callback_called());
@@ -385,7 +385,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), absl::nullopt,
+          profile(), account_info.account_id, std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
   profile_added_loop.Run();

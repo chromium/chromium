@@ -837,6 +837,9 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       use_multiplanar_si() ? 1 : CopyOutputResult::kNV12MaxPlanes;
 
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
+  std::array<scoped_refptr<gpu::ClientSharedImage>,
+             CopyOutputResult::kMaxPlanes>
+      shared_images;
   std::array<std::vector<uint8_t>, CopyOutputResult::kNV12MaxPlanes> pixels;
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
@@ -859,14 +862,13 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
                  pixels[i].data(), row_bytes);
 
     if (!use_multiplanar_si() || i == 0) {
-      mailboxes[i].mailbox =
-          sii->CreateSharedImage(format, plane_size,
-                                 gfx::ColorSpace::CreateREC709(),
-                                 kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                                 "TestLabels", gpu::kNullSurfaceHandle)
-              ->mailbox();
-      DCHECK(!mailboxes[i].mailbox.IsZero());
+      shared_images[i] = sii->CreateSharedImage(
+          format, plane_size, gfx::ColorSpace::CreateREC709(),
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+          gpu::kNullSurfaceHandle);
+      DCHECK(shared_images[i]);
+      mailboxes[i].mailbox = shared_images[i]->mailbox();
     }
 
     // Populate the data. Note that this is done on the GPU main thread, so it
@@ -934,9 +936,8 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
                      chroma_planes);
 
   for (size_t i = 0; i < num_mailboxes; ++i) {
-    sii->DestroySharedImage(
-        result->GetTextureResult()->mailbox_holders[i].sync_token,
-        result->GetTextureResult()->mailbox_holders[i].mailbox);
+    sii->DestroySharedImage(mailboxes[i].sync_token,
+                            std::move(shared_images[i]));
   }
 
   // Allocate new bitmap & populate it with Y & UV data.

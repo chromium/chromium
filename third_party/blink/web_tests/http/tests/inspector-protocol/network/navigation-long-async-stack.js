@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       '../resources/test-page.html',
       `Tests that navigation instrumentation doesn't fail with a long async stack chain.`);

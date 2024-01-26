@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
@@ -78,7 +79,7 @@ class WebSessionStateTabHelper
   int last_committed_item_index_ = 0;
 
   // The WebState with which this object is associated.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Allows observing Objective-C object for Scroll and Zoom events.
   __strong id<CRWWebViewScrollViewProxyObserver> scroll_observer_;

@@ -27,10 +27,18 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
 
   LayerTreeImplTestBase impl;
 
+  auto resource = viz::TransferableResource::MakeGpu(
+      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
+      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
+                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
+      layer_bounds, viz::SinglePlaneFormat::kRGBA_8888,
+      false /* is_overlay_candidate */);
+
   TextureLayerImpl* layer = impl.AddLayer<TextureLayerImpl>();
   layer->SetBounds(layer_bounds);
   layer->draw_properties().visible_layer_rect = layer_rect;
   layer->SetBlendBackgroundColor(true);
+  layer->SetTransferableResource(resource, base::BindOnce(&IgnoreCallback));
   CopyProperties(impl.root_layer(), layer);
 
   // Verify initial conditions.

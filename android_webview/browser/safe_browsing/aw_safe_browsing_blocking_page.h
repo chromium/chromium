@@ -33,11 +33,12 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const UnsafeResource& unsafe_resource,
-      std::unique_ptr<AwWebResourceRequest> resource_request);
+      std::unique_ptr<AwWebResourceRequest> resource_request,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   ~AwSafeBrowsingBlockingPage() override;
 
-  // safe_browsing::BaseBlockingPage:
+  // security_interstitials::SecurityInterstitialPage:
   void CreatedPostCommitErrorPageNavigation(
       content::NavigationHandle* error_page_navigation_handle) override;
 

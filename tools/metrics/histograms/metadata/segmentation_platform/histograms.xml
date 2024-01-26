@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.SegmentInfoDatabase.ProtoDBUpdateResult.{SegmentationKey}"
-    units="BooleanSuccess" expires_after="2024-10-01">
+    enum="BooleanSuccess" expires_after="2024-10-01">
   <owner>salg@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

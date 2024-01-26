@@ -53,6 +53,7 @@
 
 #include "third_party/blink/renderer/core/html/html_document.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"

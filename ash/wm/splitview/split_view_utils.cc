@@ -665,6 +665,41 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal) {
   return minimum_width;
 }
 
+int CalculateDividerPosition(SnapPosition snap_position,
+                             aura::Window* root_window,
+                             float snap_ratio,
+                             bool account_for_divider_width) {
+  const int divider_upper_limit = GetDividerPositionUpperLimit(root_window);
+  // `snap_width` needs to be a float so that the rounding is performed at the
+  // end of the computation of `next_divider_position`. It's important because a
+  // 1-DIP gap between snapped windows precludes multiresizing. See b/262011280.
+  const float snap_width = divider_upper_limit * snap_ratio;
+  int next_divider_position = snap_position == SnapPosition::kPrimary
+                                  ? snap_width
+                                  : divider_upper_limit - snap_width;
+  if (account_for_divider_width) {
+    next_divider_position -= kSplitviewDividerShortSideLength / 2;
+  }
+  return next_divider_position;
+}
+
+int GetEquivalentDividerPosition(aura::Window* window,
+                                 bool account_for_divider_width) {
+  aura::Window* root_window = window->GetRootWindow();
+  const bool horizontal = IsLayoutHorizontal(root_window);
+  const int window_length = GetWindowLength(window, horizontal);
+  const bool is_physical_left_or_top = IsPhysicalLeftOrTop(window);
+  int divider_position =
+      is_physical_left_or_top
+          ? window_length
+          : GetDividerPositionUpperLimit(root_window) - window_length;
+  if (account_for_divider_width) {
+    const int factor = is_physical_left_or_top ? -1 : 1;
+    divider_position += factor * kSplitviewDividerShortSideLength / 2;
+  }
+  return divider_position;
+}
+
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* root_window,

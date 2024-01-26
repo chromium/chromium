@@ -29,12 +29,12 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)

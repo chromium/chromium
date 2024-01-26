@@ -34,7 +34,7 @@ void MidiOutputPortAndroid::Send(const std::vector<uint8_t>& data) {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> data_to_pass =
-      base::android::ToJavaByteArray(env, &data[0], data.size());
+      base::android::ToJavaByteArray(env, data);
 
   Java_MidiOutputPortAndroid_send(env, raw_port_, data_to_pass);
 }

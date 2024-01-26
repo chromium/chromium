@@ -4,11 +4,14 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <set>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -16,8 +19,10 @@ namespace browsing_topics {
 
 namespace {
 
+using RepresentativenessMap =
+    std::map<int, std::variant<int, std::pair<int, int>>>;
+
 constexpr size_t kInitialNumTopics = 349;
-constexpr int kMaxTaxonomyVersion = 2;
 
 constexpr Topic kNullTopic = Topic(0);
 
@@ -793,10 +798,11 @@ std::vector<Topic> GetParentTopics(Topic topic) {
   return parents;
 }
 
-bool IsAncestorTopic(Topic src, Topic target) {
+bool IsAncestorTopic(Topic src, Topic target, bool only_direct = false) {
   std::vector<Topic> parent_topics = GetParentTopics(src);
   for (Topic topic : parent_topics) {
-    if (topic == target || IsAncestorTopic(topic, target)) {
+    if (topic == target ||
+        (!only_direct && IsAncestorTopic(topic, target, only_direct))) {
       return true;
     }
   }
@@ -808,7 +814,7 @@ bool IsAncestorTopic(Topic src, Topic target) {
 // trivial (1-349).
 const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
   CHECK_GT(taxonomy_version, 1);
-  CHECK_LE(taxonomy_version, kMaxTaxonomyVersion);
+  CHECK_LE(taxonomy_version, SemanticTree::kMaxTaxonomyVersion);
   if (GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2].empty()) {
     // Include topics up to the maximum topic id for the `taxonomy_version`,
     // and then remove the deleted topics.
@@ -832,6 +838,45 @@ const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
   }
   return GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2];
 }
+
+RepresentativenessMap GetInternalRepresentativenessMap() {
+  return {{1, std::make_pair(363, 23)},    {57, std::make_pair(83, 70)},
+          {86, std::make_pair(96, 88)},    {100, std::make_pair(396, 400)},
+          {103, std::make_pair(104, 404)}, {126, std::make_pair(140, 129)},
+          {149, std::make_pair(164, 444)}, {172, std::make_pair(173, 462)},
+          {180, std::make_pair(183, 194)}, {196, std::make_pair(471, 201)},
+          {207, std::make_pair(209, 210)}, {215, std::make_pair(533, 528)},
+          {226, std::make_pair(227, 236)}, {239, std::make_pair(242, 560)},
+          {243, std::make_pair(245, 561)}, {250, 253},
+          {254, std::make_pair(258, 562)}, {263, std::make_pair(265, 264)},
+          {272, std::make_pair(565, 570)}, {275, std::make_pair(276, 277)},
+          {279, std::make_pair(280, 281)}, {289, std::make_pair(603, 572)},
+          {299, std::make_pair(325, 309)}, {332, std::make_pair(626, 334)}};
+}
+
+const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
+  int current_taxonomy = blink::features::kBrowsingTopicsTaxonomyVersion.Get();
+  switch (current_taxonomy) {
+    case 1:
+      static const base::NoDestructor<RepresentativenessMap>
+          kRepresentativenessMapV1(GetInternalRepresentativenessMap());
+      return *kRepresentativenessMapV1;
+    case 2:
+      static const base::NoDestructor<RepresentativenessMap>
+          kRepresentativenessMapV2([]() -> RepresentativenessMap {
+            RepresentativenessMap map;
+            base::ranges::copy_if(
+                GetInternalRepresentativenessMap(),
+                std::inserter(map, map.end()), [](const auto& topic_kv) {
+                  return topic_kv.first != 275 && topic_kv.first != 279;
+                });
+            return map;
+          }());
+      return *kRepresentativenessMapV2;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
@@ -849,11 +894,71 @@ Topic SemanticTree::GetRandomTopic(int taxonomy_version,
   return topics[random_topic_index];
 }
 
-bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
-  return taxonomy_version > 0 && taxonomy_version <= kMaxTaxonomyVersion;
+std::vector<Topic> SemanticTree::GetFirstLevelTopicsInCurrentTaxonomy() {
+  static const base::NoDestructor<std::vector<Topic>> kFirstLevelTopics(
+      GetFirstLevelTopicsInCurrentTaxonomyInternal());
+  return *kFirstLevelTopics;
 }
 
-std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
+std::vector<Topic>
+SemanticTree::GetFirstLevelTopicsInCurrentTaxonomyInternal() {
+  std::set<int> current_topics = GetTopicsInCurrentTaxonomyInternal();
+  std::vector<Topic> first_level_topics;
+  const int kTopicWithNoParent = 0;
+  for (uint16_t i = 0; i < std::size(kChildToFirstParent); i++) {
+    if (kChildToFirstParent[i] == kTopicWithNoParent &&
+        current_topics.contains(i + 1)) {
+      first_level_topics.emplace_back(i + 1);
+    }
+  }
+  return first_level_topics;
+}
+
+std::set<int> SemanticTree::GetTopicsInCurrentTaxonomyInternal() {
+  int current_taxonomy = blink::features::kBrowsingTopicsTaxonomyVersion.Get();
+  std::vector<Topic> topics_in_current_taxonomy;
+  if (current_taxonomy == 1) {
+    for (size_t i = 1; i <= kInitialNumTopics; i++) {
+      topics_in_current_taxonomy.emplace_back(base::checked_cast<int>(i));
+    }
+  } else {
+    topics_in_current_taxonomy = GetTopicsInTaxonomy(current_taxonomy);
+  }
+
+  std::set<int> current_topics(std::begin(topics_in_current_taxonomy),
+                               std::end(topics_in_current_taxonomy));
+
+  return current_topics;
+}
+
+std::vector<Topic> SemanticTree::GetAtMostTwoRepresentativesInCurrentTaxonomy(
+    const Topic& topic) {
+  const RepresentativenessMap& map =
+      GetRepresentativenessMapForCurrentTaxonomy();
+
+  auto map_iterator = map.find(topic.value());
+  if (map_iterator == map.end()) {
+    return {};
+  }
+  auto value = map_iterator->second;
+  if (holds_alternative<int>(value)) {
+    auto representative = get<int>(value);
+    return {Topic(representative)};
+  } else if (holds_alternative<std::pair<int, int>>(value)) {
+    auto [topic_1, topic_2] = get<std::pair<int, int>>(value);
+    return {Topic(topic_1), Topic(topic_2)};
+  } else {
+    return {};
+  }
+}
+
+bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
+  return taxonomy_version > 0 &&
+         taxonomy_version <= SemanticTree::kMaxTaxonomyVersion;
+}
+
+std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic,
+                                                     bool only_direct) {
   if (!IsTopicValid(topic)) {
     return {};
   }
@@ -861,7 +966,7 @@ std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
   std::vector<Topic> ret;
   for (size_t i = 0; i < kNumTopics; ++i) {
     Topic cur_topic = Topic(i + 1);
-    if (IsAncestorTopic(cur_topic, topic)) {
+    if (IsAncestorTopic(cur_topic, topic, only_direct)) {
       ret.push_back(cur_topic);
     }
   }

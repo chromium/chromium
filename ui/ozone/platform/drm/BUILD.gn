@@ -184,7 +184,6 @@ source_set("gbm_unittests") {
   testonly = true
   sources = [
     "common/drm_util_unittest.cc",
-    "gpu/drm_display_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
@@ -243,4 +242,23 @@ source_set("drm_integration_tests") {
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]
+}
+
+source_set("ui_controls") {
+  testonly = true
+
+  sources = [
+    "test/ui_controls_system_input_injector.cc",
+    "test/ui_controls_system_input_injector.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone/common",
+  ]
+
+  visibility += [ "//chrome/test:test_support" ]
 }

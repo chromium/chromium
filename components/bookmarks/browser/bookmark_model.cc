@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -42,6 +43,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -50,6 +52,11 @@ using base::Time;
 namespace bookmarks {
 
 namespace {
+
+bool AreFoldersForAccountStorageAllowed() {
+  return base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
+}
 
 // Helper to get a mutable bookmark node.
 BookmarkNode* AsMutable(const BookmarkNode* node) {
@@ -67,8 +74,8 @@ class VisibilityComparator {
                   const std::unique_ptr<BookmarkNode>& n2) {
     DCHECK(n1->is_permanent_node());
     DCHECK(n2->is_permanent_node());
-    bool n1_visible = client_->IsPermanentNodeVisibleWhenEmpty(n1->type());
-    bool n2_visible = client_->IsPermanentNodeVisibleWhenEmpty(n2->type());
+    bool n1_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n1->type());
+    bool n2_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n2->type());
     return n1_visible != n2_visible && n1_visible;
   }
 
@@ -125,6 +132,9 @@ BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
       observers_(base::ObserverListPolicy::EXISTING_ONLY),
       client_(std::move(client)) {
   DCHECK(client_);
+  uuid_index_.emplace(NodeTypeForUuidLookup::kLocalOrSyncableNodes,
+                      UuidIndex());
+  uuid_index_.emplace(NodeTypeForUuidLookup::kAccountNodes, UuidIndex());
   client_->Init(this);
 }
 
@@ -168,7 +178,7 @@ void BookmarkModel::Load(const base::FilePath& profile_path,
   store_ = std::make_unique<BookmarkStorage>(this, file_path);
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
-      file_path, std::make_unique<BookmarkLoadDetails>(client_.get()),
+      file_path, client_->GetLoadManagedNodeCallback(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 
@@ -180,22 +190,21 @@ scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
 const BookmarkNode* BookmarkModel::account_bookmark_bar_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_bookmark_bar_node_ ||
-        client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_bookmark_bar_node_ || AreFoldersForAccountStorageAllowed());
   return account_bookmark_bar_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_other_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_other_node_ || client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_other_node_ || AreFoldersForAccountStorageAllowed());
   return account_other_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_mobile_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_mobile_node_ || client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_mobile_node_ || AreFoldersForAccountStorageAllowed());
   return account_mobile_node_;
 }
 
@@ -286,6 +295,9 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   // Can't move permanent nodes.
   CHECK(!is_permanent_node(node)) << "for type " << node->type();
 
+  const NodeTypeForUuidLookup previous_type_for_uuid_lookup =
+      DetermineTypeForUuidLookupForExistingNode(node);
+
   // Group removing bookmarks from `this` and adding them to `dest_model` into
   // one undo action.
   ScopedGroupBookmarkActions undo_grouping(this);
@@ -300,7 +312,8 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
       url_index_->Remove(AsMutable(node), &removed_urls);
-  RemoveNodeFromIndicesRecursive(owned_node.get());
+  RemoveNodeFromIndicesRecursive(owned_node.get(),
+                                 previous_type_for_uuid_lookup);
 
   std::unique_ptr<BookmarkNode> subtree_copy =
       CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(owned_node.get(),
@@ -310,7 +323,8 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   // `dest_model`.
   const BookmarkNode* added_node = dest_model->AddNode(
       AsMutable(dest_parent), dest_parent->children().size(),
-      std::move(subtree_copy), /*added_by_user=*/true);
+      std::move(subtree_copy), /*added_by_user=*/true,
+      dest_model->DetermineTypeForUuidLookupForExistingNode(dest_parent));
 
   // Current implementation requires that `BookmarkNodeAdded` is sent for all
   // descendants (see `BookmarkNodeAdded` documentation).
@@ -379,11 +393,14 @@ void BookmarkModel::RemoveAllUserBookmarks() {
         continue;
       }
 
+      const NodeTypeForUuidLookup type_for_uuid_lookup =
+          DetermineTypeForUuidLookupForExistingNode(permanent_node.get());
+
       for (int j = static_cast<int>(permanent_node->children().size() - 1);
            j >= 0; --j) {
         std::unique_ptr<BookmarkNode> node = url_index_->Remove(
             permanent_node->children()[j].get(), &removed_urls);
-        RemoveNodeFromIndicesRecursive(node.get());
+        RemoveNodeFromIndicesRecursive(node.get(), type_for_uuid_lookup);
         removed_node_data_list.push_back(
             {permanent_node.get(), j, std::move(node)});
       }
@@ -437,6 +454,18 @@ void BookmarkModel::Move(const BookmarkNode* node,
 
   if (old_parent == new_parent && index > old_index) {
     index--;
+  }
+
+  const NodeTypeForUuidLookup old_type_for_uuid_lookup =
+      DetermineTypeForUuidLookupForExistingNode(old_parent);
+  const NodeTypeForUuidLookup new_type_for_uuid_lookup =
+      DetermineTypeForUuidLookupForExistingNode(new_parent);
+
+  if (old_type_for_uuid_lookup != new_type_for_uuid_lookup) {
+    uuid_index_[old_type_for_uuid_lookup].erase(node);
+    bool uuid_is_unique =
+        uuid_index_[new_type_for_uuid_lookup].insert(node).second;
+    DUMP_WILL_BE_CHECK(uuid_is_unique);
   }
 
   BookmarkNode* mutable_old_parent = AsMutable(old_parent);
@@ -636,6 +665,8 @@ void BookmarkModel::SetNodeMetaInfo(const BookmarkNode* node,
                                     const std::string& key,
                                     const std::string& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(node);
+  CHECK(!is_root_node(node));
 
   std::string old_value;
   if (node->GetMetaInfo(key, &old_value) && old_value == value) {
@@ -659,6 +690,8 @@ void BookmarkModel::SetNodeMetaInfoMap(
     const BookmarkNode* node,
     const BookmarkNode::MetaInfoMap& meta_info_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(node);
+  CHECK(!is_root_node(node));
 
   const BookmarkNode::MetaInfoMap* old_meta_info_map = node->GetMetaInfoMap();
   if ((!old_meta_info_map && meta_info_map.empty()) ||
@@ -767,7 +800,9 @@ BookmarkModel::GetNodesByURL(const GURL& url) const {
   return nodes;
 }
 
-const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
+const BookmarkNode* BookmarkModel::GetNodeByUuid(
+    const base::Uuid& uuid,
+    NodeTypeForUuidLookup type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Because of having to create a dummy node, the invalid-UUID case needs
@@ -776,8 +811,9 @@ const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
     return nullptr;
   }
 
-  auto it = uuid_index_.find(uuid);
-  return it == uuid_index_.end() ? nullptr : *it;
+  const UuidIndex& uuid_index = uuid_index_.at(type);
+  auto it = uuid_index.find(uuid);
+  return it == uuid_index.end() ? nullptr : *it;
 }
 
 const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
@@ -866,7 +902,11 @@ const BookmarkNode* BookmarkModel::AddFolder(
   }
   metrics::RecordBookmarkFolderAdded(GetFolderType(parent),
                                      client_->GetStorageStateForUma());
-  return AddNode(AsMutable(parent), index, std::move(new_node));
+  // TODO(mastiz): `added_by_user` should be true below or the parameter
+  // renamed.
+  return AddNode(AsMutable(parent), index, std::move(new_node),
+                 /*added_by_user=*/false,
+                 DetermineTypeForUuidLookupForExistingNode(parent));
 }
 
 const BookmarkNode* BookmarkModel::AddNewURL(
@@ -919,7 +959,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     new_node->SetMetaInfoMap(*meta_info);
   }
 
-  return AddNode(AsMutable(parent), index, std::move(new_node), added_by_user);
+  return AddNode(AsMutable(parent), index, std::move(new_node), added_by_user,
+                 DetermineTypeForUuidLookupForExistingNode(parent));
 }
 
 void BookmarkModel::SortChildren(const BookmarkNode* parent) {
@@ -1030,8 +1071,9 @@ void BookmarkModel::ClearStore() {
 }
 
 void BookmarkModel::LoadEmptyForTest() {
-  auto details = std::make_unique<BookmarkLoadDetails>(client_.get());
-  model_loader_ = ModelLoader::CreateForTest(details.get());
+  auto details = std::make_unique<BookmarkLoadDetails>();
+  model_loader_ = ModelLoader::CreateForTest(
+      client_->GetLoadManagedNodeCallback(), details.get());
   DoneLoading(std::move(details));
   CHECK(loaded_);
 }
@@ -1048,11 +1090,28 @@ void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BookmarkNode* node_ptr = node.get();
-  AddNode(AsMutable(parent), index, std::move(node));
+  AddNode(AsMutable(parent), index, std::move(node), /*added_by_user=*/false,
+          DetermineTypeForUuidLookupForExistingNode(parent));
 
   // We might be restoring a folder node that have already contained a set of
   // child nodes. We need to notify all of them.
   NotifyNodeAddedForAllDescendants(node_ptr, /*added_by_user=*/false);
+}
+
+BookmarkModel::NodeTypeForUuidLookup
+BookmarkModel::DetermineTypeForUuidLookupForExistingNode(
+    const BookmarkNode* node) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!is_root_node(node));
+
+  for (const auto& type_and_uuid_index : uuid_index_) {
+    if (GetNodeByUuid(node->uuid(), type_and_uuid_index.first) == node) {
+      return type_and_uuid_index.first;
+    }
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
@@ -1086,7 +1145,8 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   }
 
   titled_url_index_ = details->owned_titled_url_index();
-  uuid_index_ = details->owned_uuid_index();
+  uuid_index_[NodeTypeForUuidLookup::kLocalOrSyncableNodes] =
+      details->owned_uuid_index();
   url_index_ = details->url_index();
   root_ = details->root_node();
   // See declaration for details on why `owned_root_` is reset.
@@ -1095,15 +1155,14 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
 
-  // TODO(crbug.com/1494120): Load nodes for account storage as well.
+  // TODO(crbug.com/1520418): Load nodes for account storage as well and load
+  // UUIDs onto `uuid_index_`.
 
   titled_url_index_->SetNodeSorter(
       std::make_unique<TypedCountSorter>(client_.get()));
   // Sorting the permanent nodes has to happen on the main thread, so we do it
   // here, after loading completes.
   root_->SortChildren(VisibilityComparator(client_.get()));
-
-  root_->SetMetaInfoMap(details->model_meta_info_map());
 
   loaded_ = true;
   client_->DecodeBookmarkSyncMetadata(
@@ -1123,10 +1182,12 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   }
 }
 
-BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
-                                     size_t index,
-                                     std::unique_ptr<BookmarkNode> node,
-                                     bool added_by_user) {
+BookmarkNode* BookmarkModel::AddNode(
+    BookmarkNode* parent,
+    size_t index,
+    std::unique_ptr<BookmarkNode> node,
+    bool added_by_user,
+    NodeTypeForUuidLookup type_for_uuid_lookup) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BookmarkNode* node_ptr = node.get();
@@ -1136,7 +1197,7 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
     store_->ScheduleSave();
   }
 
-  AddNodeToIndicesRecursive(node_ptr);
+  AddNodeToIndicesRecursive(node_ptr, type_for_uuid_lookup);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeAdded(this, parent, index, added_by_user);
@@ -1145,10 +1206,12 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
   return node_ptr;
 }
 
-void BookmarkModel::AddNodeToIndicesRecursive(const BookmarkNode* node) {
+void BookmarkModel::AddNodeToIndicesRecursive(
+    const BookmarkNode* node,
+    NodeTypeForUuidLookup type_for_uuid_lookup) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool uuid_is_unique = uuid_index_.insert(node).second;
+  bool uuid_is_unique = uuid_index_[type_for_uuid_lookup].insert(node).second;
   DUMP_WILL_BE_CHECK(uuid_is_unique);
 
   if (node->is_url()) {
@@ -1158,7 +1221,7 @@ void BookmarkModel::AddNodeToIndicesRecursive(const BookmarkNode* node) {
   }
 
   for (const auto& child : node->children()) {
-    AddNodeToIndicesRecursive(child.get());
+    AddNodeToIndicesRecursive(child.get(), type_for_uuid_lookup);
   }
 }
 
@@ -1173,6 +1236,9 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
   absl::optional<size_t> index = parent->GetIndexOf(node);
   DCHECK(index.has_value());
 
+  const NodeTypeForUuidLookup type_for_uuid_lookup =
+      DetermineTypeForUuidLookupForExistingNode(node);
+
   for (BookmarkModelObserver& observer : observers_) {
     observer.OnWillRemoveBookmarks(this, parent, index.value(), node);
   }
@@ -1180,7 +1246,7 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
       url_index_->Remove(AsMutable(node), &removed_urls);
-  RemoveNodeFromIndicesRecursive(owned_node.get());
+  RemoveNodeFromIndicesRecursive(owned_node.get(), type_for_uuid_lookup);
 
   if (store_) {
     store_->ScheduleSave();
@@ -1194,7 +1260,9 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
   return owned_node;
 }
 
-void BookmarkModel::RemoveNodeFromIndicesRecursive(BookmarkNode* node) {
+void BookmarkModel::RemoveNodeFromIndicesRecursive(
+    BookmarkNode* node,
+    NodeTypeForUuidLookup type_for_uuid_lookup) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(!is_permanent_node(node));
@@ -1205,7 +1273,7 @@ void BookmarkModel::RemoveNodeFromIndicesRecursive(BookmarkNode* node) {
     titled_url_index_->RemovePath(node);
   }
 
-  uuid_index_.erase(node);
+  uuid_index_[type_for_uuid_lookup].erase(node);
 
   // Reset favicon state for the case when the `node` is restored.
   CancelPendingFaviconLoadRequests(node);
@@ -1213,7 +1281,8 @@ void BookmarkModel::RemoveNodeFromIndicesRecursive(BookmarkNode* node) {
 
   // Recurse through children.
   for (size_t i = node->children().size(); i > 0; --i) {
-    RemoveNodeFromIndicesRecursive(node->children()[i - 1].get());
+    RemoveNodeFromIndicesRecursive(node->children()[i - 1].get(),
+                                   type_for_uuid_lookup);
   }
 }
 
@@ -1287,48 +1356,36 @@ int64_t BookmarkModel::generate_next_node_id() {
 
 void BookmarkModel::CreateAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(client_->AreFoldersForAccountStorageAllowed());
+  CHECK(AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
-  // TODO(crbug.com/1494120): Permanent account folders should adopt the same
-  // UUIDs are "regular", local-or-syncable permanent folders, until
-  // local-or-syncable bookmarks become strictly local bookmarks. Adopting the
-  // same UUID isn't currently possible until the UUID index is separated for
-  // account bookmarks.
   {
     std::unique_ptr<BookmarkPermanentNode> account_bookmark_bar_node =
-        BookmarkPermanentNode::CreateBookmarkBar(
-            next_node_id_++,
-            client_->IsPermanentNodeVisibleWhenEmpty(
-                BookmarkNode::BOOKMARK_BAR),
-            /*is_account_bookmark_folder=*/true);
+        BookmarkPermanentNode::CreateBookmarkBar(next_node_id_++);
     account_bookmark_bar_node_ = account_bookmark_bar_node.get();
     AddNode(root_, root_->children().size(),
-            std::move(account_bookmark_bar_node));
+            std::move(account_bookmark_bar_node),
+            /*added_by_user=*/false, NodeTypeForUuidLookup::kAccountNodes);
   }
   {
     std::unique_ptr<BookmarkPermanentNode> account_other_node =
-        BookmarkPermanentNode::CreateOtherBookmarks(
-            next_node_id_++,
-            client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::OTHER_NODE),
-            /*is_account_bookmark_folder=*/true);
+        BookmarkPermanentNode::CreateOtherBookmarks(next_node_id_++);
     account_other_node_ = account_other_node.get();
-    AddNode(root_, root_->children().size(), std::move(account_other_node));
+    AddNode(root_, root_->children().size(), std::move(account_other_node),
+            /*added_by_user=*/false, NodeTypeForUuidLookup::kAccountNodes);
   }
   {
     std::unique_ptr<BookmarkPermanentNode> account_mobile_node =
-        BookmarkPermanentNode::CreateMobileBookmarks(
-            next_node_id_++,
-            client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::MOBILE),
-            /*is_account_bookmark_folder=*/true);
+        BookmarkPermanentNode::CreateMobileBookmarks(next_node_id_++);
     account_mobile_node_ = account_mobile_node.get();
-    AddNode(root_, root_->children().size(), std::move(account_mobile_node));
+    AddNode(root_, root_->children().size(), std::move(account_mobile_node),
+            /*added_by_user=*/false, NodeTypeForUuidLookup::kAccountNodes);
   }
 }
 
 void BookmarkModel::RemoveAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(client_->AreFoldersForAccountStorageAllowed());
+  CHECK(AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
   // No-op if account permanent folders don't exist.

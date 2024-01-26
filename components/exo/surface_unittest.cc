@@ -174,25 +174,6 @@ class SurfaceTest : public test::ExoTestBase,
   base::test::ScopedFeatureList feature_list_;
 };
 
-void ReleaseBuffer(int* release_buffer_call_count) {
-  (*release_buffer_call_count)++;
-}
-
-base::RepeatingClosure CreateReleaseBufferClosure(
-    int* release_buffer_call_count,
-    base::RepeatingClosure closure) {
-  return base::BindLambdaForTesting(
-      [release_buffer_call_count, closure = std::move(closure)]() {
-        (*release_buffer_call_count)++;
-        closure.Run();
-      });
-}
-
-void ExplicitReleaseBuffer(int* release_buffer_call_count,
-                           gfx::GpuFenceHandle release_fence) {
-  (*release_buffer_call_count)++;
-}
-
 // Instantiate the values of frame submission types and device scale factor in
 // the parameterized tests.
 INSTANTIATE_TEST_SUITE_P(
@@ -1293,7 +1274,7 @@ TEST_P(SurfaceTest, DestroyWithAttachedBufferReleasesBuffer) {
 
   int release_buffer_call_count = 0;
   base::RunLoop run_loop;
-  buffer->set_release_callback(CreateReleaseBufferClosure(
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
       &release_buffer_call_count, run_loop.QuitClosure()));
 
   surface->Attach(buffer.get());
@@ -1348,7 +1329,8 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
   child_surface->Commit();
   surface->Commit();
 
-  SurfaceObserverForTest observer;
+  SurfaceObserverForTest observer(
+      child_surface.get()->window()->GetOcclusionState());
   ScopedSurface scoped_child_surface(child_surface.get(), &observer);
 
   // Destroy the subsurface and expect to get an occlusion update.
@@ -1401,9 +1383,8 @@ TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
   EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
 }
 
-// TODO(crbug.com/1292674): Flaky.
-TEST_P(SurfaceTest, DISABLED_PerCommitBufferReleaseCallbackForSameSurface) {
-  gfx::Size buffer_size(1, 1);
+TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForSameSurface) {
+  gfx::Size buffer_size(64, 64);
   auto buffer1 = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
   auto buffer2 = std::make_unique<Buffer>(
@@ -1414,39 +1395,48 @@ TEST_P(SurfaceTest, DISABLED_PerCommitBufferReleaseCallbackForSameSurface) {
 
   // Set the release callback that will be run when buffer is no longer in use.
   int buffer_release_count = 0;
-  buffer1->set_release_callback(base::BindRepeating(
-      &ReleaseBuffer, base::Unretained(&buffer_release_count)));
+  base::RunLoop run_loop1;
+  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
+      &buffer_release_count, run_loop1.QuitClosure()));
 
-  surface->SetPerCommitBufferReleaseCallback(base::BindOnce(
-      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
+  base::RunLoop run_loop2;
+  surface->SetPerCommitBufferReleaseCallback(
+      test::CreateExplicitReleaseCallback(&per_commit_release_count,
+                                          run_loop2.QuitClosure()));
   surface->Attach(buffer1.get());
+  surface->Damage(gfx::Rect(buffer_size));
   surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
+  test::WaitForLastFramePresentation(shell_surface.get());
   EXPECT_EQ(per_commit_release_count, 0);
   EXPECT_EQ(buffer_release_count, 0);
 
   // Attaching the same buffer causes the per-commit callback to be emitted.
-  surface->SetPerCommitBufferReleaseCallback(base::BindOnce(
-      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
+  surface->SetPerCommitBufferReleaseCallback(
+      test::CreateExplicitReleaseCallback(&per_commit_release_count,
+                                          base::DoNothing()));
   surface->Attach(buffer1.get());
+  surface->Damage(gfx::Rect(buffer_size));
   surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
+  test::WaitForLastFramePresentation(shell_surface.get());
+
+  run_loop2.Run();
   EXPECT_EQ(per_commit_release_count, 1);
   EXPECT_EQ(buffer_release_count, 0);
 
   // Attaching a different buffer causes the per-commit callback to be emitted.
   surface->Attach(buffer2.get());
+  surface->Damage(gfx::Rect(buffer_size));
   surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
+  test::WaitForLastFramePresentation(shell_surface.get());
+
+  run_loop1.Run();
   EXPECT_EQ(per_commit_release_count, 2);
   // The buffer should now be completely released.
   EXPECT_EQ(buffer_release_count, 1);
 }
 
-// TODO(crbug.com/1292674): Flaky.
-TEST_P(SurfaceTest,
-       DISABLED_PerCommitBufferReleaseCallbackForDifferentSurfaces) {
-  gfx::Size buffer_size(1, 1);
+TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
+  gfx::Size buffer_size(64, 64);
   auto buffer1 = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
   auto buffer2 = std::make_unique<Buffer>(
@@ -1460,35 +1450,48 @@ TEST_P(SurfaceTest,
 
   // Set the release callback that will be run when buffer is no longer in use.
   int buffer_release_count = 0;
-  buffer1->set_release_callback(base::BindRepeating(
-      &ReleaseBuffer, base::Unretained(&buffer_release_count)));
+  base::RunLoop run_loop1;
+  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
+      &buffer_release_count, run_loop1.QuitClosure()));
 
   // Attach buffer1 to both surface1 and surface2.
-  surface1->SetPerCommitBufferReleaseCallback(base::BindOnce(
-      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count1)));
+  base::RunLoop run_loop2;
+  surface1->SetPerCommitBufferReleaseCallback(
+      test::CreateExplicitReleaseCallback(&per_commit_release_count1,
+                                          run_loop2.QuitClosure()));
   surface1->Attach(buffer1.get());
+  surface1->Damage(gfx::Rect(buffer_size));
   surface1->Commit();
-  surface2->SetPerCommitBufferReleaseCallback(base::BindOnce(
-      &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count2)));
+  surface2->SetPerCommitBufferReleaseCallback(
+      test::CreateExplicitReleaseCallback(&per_commit_release_count2,
+                                          base::DoNothing()));
   surface2->Attach(buffer1.get());
+  surface2->Damage(gfx::Rect(buffer_size));
   surface2->Commit();
-  test::WaitForLastFrameAck(shell_surface2.get());
+  test::WaitForLastFramePresentation(shell_surface2.get());
+
   EXPECT_EQ(per_commit_release_count1, 0);
   EXPECT_EQ(per_commit_release_count2, 0);
   EXPECT_EQ(buffer_release_count, 0);
 
   // Attach buffer2 to surface1, only the surface1 callback should be emitted.
   surface1->Attach(buffer2.get());
+  surface1->Damage(gfx::Rect(buffer_size));
   surface1->Commit();
-  test::WaitForLastFrameAck(shell_surface1.get());
+  test::WaitForLastFramePresentation(shell_surface1.get());
+
+  run_loop2.Run();
   EXPECT_EQ(per_commit_release_count1, 1);
   EXPECT_EQ(per_commit_release_count2, 0);
   EXPECT_EQ(buffer_release_count, 0);
 
   // Attach buffer2 to surface2, only the surface2 callback should be emitted.
   surface2->Attach(buffer2.get());
+  surface2->Damage(gfx::Rect(buffer_size));
   surface2->Commit();
-  test::WaitForLastFrameAck(shell_surface2.get());
+  test::WaitForLastFramePresentation(shell_surface2.get());
+
+  run_loop1.Run();
   EXPECT_EQ(per_commit_release_count1, 1);
   EXPECT_EQ(per_commit_release_count2, 1);
   // The buffer should now be completely released.

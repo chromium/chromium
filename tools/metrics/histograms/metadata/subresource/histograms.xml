@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
-    units="microseconds" expires_after="2024-05-19">
+    units="microseconds" expires_after="2024-07-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2024-05-19">
+    enum="SubresourceFilterVerifyStatus" expires_after="2024-07-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

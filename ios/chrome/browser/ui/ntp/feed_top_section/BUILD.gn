@@ -76,3 +76,36 @@ source_set("feed_top_section_promos_ui") {
     "//ui/base:base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feed_top_section_mediator+testing.h",
+    "feed_top_section_mediator_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":feed_top_section",
+    ":feed_top_section_promos_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:prefs",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

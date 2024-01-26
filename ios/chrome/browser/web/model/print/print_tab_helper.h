@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -30,7 +31,7 @@ class PrintTabHelper : public web::WebStateUserData<PrintTabHelper> {
  private:
   friend class web::WebStateUserData<PrintTabHelper>;
 
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   __weak id<WebStatePrinter> printer_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();

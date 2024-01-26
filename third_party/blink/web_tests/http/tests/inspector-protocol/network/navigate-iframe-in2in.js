@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that navigating from a in-process iframe to in-process iframe sets the right sessionId.\n`);
 

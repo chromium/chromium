@@ -13,7 +13,6 @@
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/base/ime/win/input_method_win_imm32.h"
 #include "ui/base/ime/win/input_method_win_tsf.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "ui/base/ime/mac/input_method_mac.h"
@@ -54,12 +53,7 @@ std::unique_ptr<InputMethod> CreateInputMethod(
     return base::WrapUnique(new MockInputMethod(ime_key_event_dispatcher));
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kTSFImeSupport)) {
-    return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher,
-                                               widget);
-  }
-  return std::make_unique<InputMethodWinImm32>(ime_key_event_dispatcher,
-                                               widget);
+  return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher, widget);
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<InputMethodMac>(ime_key_event_dispatcher);
 #elif BUILDFLAG(IS_OZONE)

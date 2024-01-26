@@ -1146,6 +1146,8 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
     // tab width (in DIP), not our new, scaled-and-aligned bounds.
     const float content_corner_radius =
         GetTopCornerRadiusForWidth(tab()->width()) * scale;
+    float top_content_corner_radius = content_corner_radius;
+    float bottom_content_corner_radius = content_corner_radius;
     const float extension_corner_radius =
         tab_style()->GetBottomCornerRadius() * scale;
     float tab_height = GetLayoutConstant(TAB_HEIGHT) * scale;
@@ -1157,6 +1159,11 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
         path_type != TabStyle::PathType::kHitTest) {
       tab_height -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
       tab_height -= GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
+    }
+
+    // Don't round the bottom corners to avoid creating dead space between tabs.
+    if (path_type == TabStyle::PathType::kHitTest) {
+      bottom_content_corner_radius = 0;
     }
 
     int left = aligned_bounds.x() + extension_corner_radius;
@@ -1171,6 +1178,8 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
         (tab()->GetWidget()->IsMaximized() ||
          tab()->GetWidget()->IsFullscreen())) {
       top -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
+      // Don't round the top corners to avoid creating dead space between tabs.
+      top_content_corner_radius = 0;
     }
 
     // if the size of the space for the path is smaller than the size of a
@@ -1203,10 +1212,15 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
       }
     }
 
+    // Radii are clockwise from top left.
+    const SkVector radii[4] = {
+        SkVector(top_content_corner_radius, top_content_corner_radius),
+        SkVector(top_content_corner_radius, top_content_corner_radius),
+        SkVector(bottom_content_corner_radius, bottom_content_corner_radius),
+        SkVector(bottom_content_corner_radius, bottom_content_corner_radius)};
+    SkRRect rrect;
+    rrect.setRectRadii(SkRect::MakeLTRB(left, top, right, bottom), radii);
     SkPath path;
-    SkRRect rrect =
-        SkRRect::MakeRectXY(SkRect::MakeLTRB(left, top, right, bottom),
-                            content_corner_radius, content_corner_radius);
     path.addRRect(rrect);
 
     // Convert path to be relative to the tab origin.

@@ -488,7 +488,7 @@ std::string GetExitTypePreferenceFromDisk(Profile* profile) {
   if (!base::ReadFileToString(prefs_path, &prefs))
     return std::string();
 
-  absl::optional<base::Value> value = base::JSONReader::Read(prefs);
+  std::optional<base::Value> value = base::JSONReader::Read(prefs);
   if (!value)
     return std::string();
 

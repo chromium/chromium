@@ -66,7 +66,7 @@ void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
   if (RealboxHandler* handler = presenter_->GetHandler()) {
-    handler->UpdateSelection(new_selection);
+    handler->UpdateSelection(old_selection, new_selection);
   }
 }
 

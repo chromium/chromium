@@ -85,8 +85,9 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   TileMapKey key(i, j);
   DCHECK(!base::Contains(tiles_, key));
 
-  if (!raster_source_->IntersectsRect(info.enclosing_layer_rect, *client_))
+  if (!raster_source_->IntersectsRect(info.enclosing_layer_rect)) {
     return nullptr;
+  }
 
   all_tiles_done_ = false;
   std::unique_ptr<Tile> tile = client_->CreateTile(info);
@@ -365,9 +366,10 @@ bool PictureLayerTiling::ShouldCreateTileAt(
 
   // If the active tree can't create a tile, because of its raster source, then
   // the pending tree should create one.
-  if (!active_twin->raster_source()->IntersectsRect(info.enclosing_layer_rect,
-                                                    *active_twin->client()))
+  if (!active_twin->raster_source()->IntersectsRect(
+          info.enclosing_layer_rect)) {
     return true;
+  }
 
   const Region* layer_invalidation = client_->GetPendingInvalidation();
 
@@ -796,8 +798,7 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
     PriorityRectType priority_rect_type,
     bool is_tile_occluded) const {
   DCHECK(tile);
-  DCHECK(
-      raster_source()->IntersectsRect(tile->enclosing_layer_rect(), *client_))
+  DCHECK(raster_source()->IntersectsRect(tile->enclosing_layer_rect()))
       << "Recording rect: "
       << EnclosingLayerRectFromContentsRect(tile->content_rect()).ToString();
 
@@ -975,7 +976,7 @@ void PictureLayerTiling::SetTilingSize(const gfx::Size& tiling_size) {
   has_soon_border_rect_tiles_ =
       tiling_rect.Intersects(current_soon_border_rect_);
   has_eventually_rect_tiles_ = tiling_rect.Intersects(current_eventually_rect_);
-  tiling_data_.SetTilingSize(tiling_size);
+  tiling_data_.SetTilingRect(gfx::Rect(tiling_size));
 }
 
 PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)

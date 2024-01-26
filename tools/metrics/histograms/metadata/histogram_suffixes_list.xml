@@ -3870,69 +3870,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Search.SearchEngineListedInPromoDialog.NewDevice"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SecurityInterstitialSBType" separator="."
-    ordering="prefix">
-  <suffix name="billing" label=""/>
-  <suffix name="billing_subresource" label=""/>
-  <suffix name="harmful" label=""/>
-  <suffix name="harmful_subresource" label=""/>
-  <suffix name="malware" label=""/>
-  <suffix name="malware_subresource" label=""/>
-  <suffix name="origin_policy" label=""/>
-  <suffix name="phishing" label=""/>
-  <suffix name="phishing_subresource" label=""/>
-  <affected-histogram name="interstitial.decision"/>
-  <affected-histogram name="interstitial.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.interaction"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SecurityInterstitialSBWithSourceType" separator=".">
-  <suffix name="from_android_safebrowsing"
-      label="Interstitial for a resource classified as unsafe by the Android
-             Safe Browsing local blocklist API."/>
-  <suffix name="from_android_safebrowsing_real_time"
-      label="Interstitial for a resource classified as unsafe by the Android
-             Safe Browsing hash-prefix real-time API."/>
-  <suffix name="from_client_side_detection"
-      label="Interstitial for a resource classified as unsafe by the client
-             side detection."/>
-  <suffix name="from_device"
-      label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing database via either
-             {Local,Remote}SafeBrowsingDatabaseManager."/>
-  <suffix name="from_device_v4"
-      label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing database version 4 via either
-             {Local,Remote}SafeBrowsingDatabaseManager."/>
-  <suffix name="from_hash_prefix_real_time_check_v5"
-      label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing hash-prefix real-time API version 5."/>
-  <suffix name="from_real_time_check"
-      label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing URL real-time API."/>
-  <affected-histogram name="interstitial.harmful.decision"/>
-  <affected-histogram name="interstitial.harmful.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.harmful.interaction"/>
-  <affected-histogram name="interstitial.harmful_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.harmful_subresource.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.harmful_subresource.interaction"/>
-  <affected-histogram name="interstitial.malware.decision"/>
-  <affected-histogram name="interstitial.malware.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.malware.interaction"/>
-  <affected-histogram name="interstitial.malware_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.malware_subresource.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.malware_subresource.interaction"/>
-  <affected-histogram name="interstitial.phishing.decision"/>
-  <affected-histogram name="interstitial.phishing.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.phishing.interaction"/>
-  <affected-histogram name="interstitial.phishing_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.phishing_subresource.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.phishing_subresource.interaction"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SecurityInterstitialSSLType" separator="."
     ordering="prefix">
   <suffix name="bad_clock" label=""/>
@@ -4264,21 +4201,6 @@ chromium-metrics-reviews@google.com.
       name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"/>
   <affected-histogram
       name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
-  <suffix name="CanvasAnimation" label="Main-thread canvas animation"/>
-  <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
-  <suffix name="JSAnimation" label="JS-driven animation"/>
-  <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>
-  <suffix name="PinchZoom" label="Pinch-to-zoom interaction"/>
-  <suffix name="RAF" label="rAF callback driven animation"/>
-  <suffix name="ScrollbarScroll" label="Scrollbar driven scrolls"/>
-  <suffix name="TouchScroll" label="Touchscreen driven interaction"/>
-  <suffix name="Video" label="Video playback"/>
-  <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
-  <affected-histogram name="Graphics.Smoothness.MaxStale"/>
-  <affected-histogram name="Graphics.Smoothness.Stale"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">

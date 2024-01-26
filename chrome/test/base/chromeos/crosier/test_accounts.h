@@ -9,30 +9,34 @@
 
 namespace crosier {
 
-// Used to store the accounts that make up a family from the test account pool.
-struct FamilyAccounts {
+// Represents data that makes up a family. It consists of credentials for
+// different types of accounts and information related to account configuration.
+struct FamilyTestData {
   struct User {
     std::string email;
     std::string password;
   };
 
-  FamilyAccounts();
-  FamilyAccounts(const FamilyAccounts&);
-  ~FamilyAccounts();
+  FamilyTestData();
+  FamilyTestData(const FamilyTestData&);
+  ~FamilyTestData();
 
   User parent;
   User unicorn;
   User geller;
   User griffin;
+
+  // Mature site that is blocked for the Unicorn, Geller, and Griffin accounts
+  // in this account pool.
+  std::string mature_site;
 };
 
 // Randomly picks a gaia test account from the test accounts pool.
 void GetGaiaTestAccount(std::string& out_email, std::string& out_password);
 
-// Returns the set of accounts relevant to a supervised user login from the test
-// accounts pool. This includes the supervised user accounts, parent accounts,
-// and EDU accounts associated with the supervised user.
-FamilyAccounts GetFamilyTestAccounts();
+// Returns the set of accounts relevant to a supervised user from the test
+// accounts pool.
+FamilyTestData GetFamilyTestData();
 
 }  // namespace crosier
 

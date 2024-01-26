@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
-#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,8 +27,7 @@ class DismissButton;
 // View for media controls that appear on the lock screen if it is enabled. This
 // replaces the old LockScreenMediaControlsView if the flag
 // media::kGlobalMediaControlsCrOSUpdatedUI is enabled. It registers for media
-// updates and reuses MediaNotificationViewAshImpl to display the media
-// controls.
+// updates and reuses MediaItemUIDetailedView to display the media controls.
 class ASH_EXPORT LockScreenMediaView
     : public views::View,
       public media_session::mojom::MediaControllerObserver,
@@ -99,8 +98,7 @@ class ASH_EXPORT LockScreenMediaView
 
   views::Button* GetDismissButtonForTesting();
 
-  global_media_controls::MediaNotificationViewAshImpl*
-  GetMediaNotificationViewForTesting();
+  global_media_controls::MediaItemUIDetailedView* GetDetailedViewForTesting();
 
  private:
   friend class LockScreenMediaViewTest;
@@ -137,7 +135,7 @@ class ASH_EXPORT LockScreenMediaView
   const base::RepeatingClosure hide_media_view_callback_;
 
   raw_ptr<DismissButton> dismiss_button_;
-  raw_ptr<global_media_controls::MediaNotificationViewAshImpl> view_;
+  raw_ptr<global_media_controls::MediaItemUIDetailedView> view_;
 
   base::WeakPtrFactory<LockScreenMediaView> weak_ptr_factory_{this};
 };

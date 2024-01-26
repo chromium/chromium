@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1426410128494586442">Ano</translation>
+<translation id="1434873037477293673">karta s poklesem ceny</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="2790501146643349491">Když je tato možnost zapnutá, nedávno zavřené weby mohou dokončit odesílání a přijímání dat. Když je vypnutá, nedávno zavřené weby nemohou dokončit odesílání nebo přijímání dat.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Bránit webům v používání zařízení a dat pro virtuální realitu</translation>
 <translation id="6447842834002726250">Soubory cookie</translation>
+<translation id="6452138246455930388">Pokles ceny na otevřené kartě z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Když je okno úzké, požádejte o mobilní zobrazení</translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="652937045869844725">Zkuste povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="6749077623962119521">Resetovat oprávnění?</translation>
 <translation id="6766622839693428701">Zavřete přejetím prstem dolů.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Ze zařízení <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Vyberte možnost pro web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
+<translation id="6867014948848323204">Ze zařízení <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6950072572526089586">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Čaroděj ze země Oz</translation>
 <translation id="7684642910516280563">Nepovolení, aby web používal soubory cookie třetích stran</translation>
 <translation id="7719367874908701697">Přiblížení/oddálení stránky</translation>
+<translation id="7770832849480336015">Skrýt modul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>

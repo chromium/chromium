@@ -103,7 +103,7 @@ void KeyRotationManagerImpl::Rotate(
 
   // Create a rotation or creation upload request based on the current
   // parameters.
-  absl::optional<const KeyUploadRequest> upload_request =
+  std::optional<const KeyUploadRequest> upload_request =
       is_rotation
           ? KeyUploadRequest::Create(dm_server_url, dm_token, *new_key_pair,
                                      *old_key_pair, nonce)

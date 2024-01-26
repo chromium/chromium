@@ -23,7 +23,6 @@
 
 namespace blink {
 
-class Blob;
 class BlobDataHandle;
 class ExceptionState;
 class IDBValue;

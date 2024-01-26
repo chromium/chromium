@@ -25,6 +25,7 @@
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/root_window_controller.h"
@@ -59,6 +60,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -133,6 +135,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/fake_event_rewriter_ash_delegate.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -144,9 +147,11 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -5341,8 +5346,7 @@ TEST_F(DesksRestoreMultiUserTest,
 }  // namespace
 
 // Simulates the same behavior of event rewriting that key presses go through.
-class DesksAcceleratorsTest : public DesksTest,
-                              public ui::EventRewriterAsh::Delegate {
+class DesksAcceleratorsTest : public DesksTest {
  public:
   DesksAcceleratorsTest() = default;
 
@@ -5357,62 +5361,9 @@ class DesksAcceleratorsTest : public DesksTest,
 
     auto* event_rewriter_controller = EventRewriterController::Get();
     auto event_rewriter = std::make_unique<ui::EventRewriterAsh>(
-        this, Shell::Get()->keyboard_capability(),
+        &event_rewriter_delegate_, Shell::Get()->keyboard_capability(),
         Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
     event_rewriter_controller->AddEventRewriter(std::move(event_rewriter));
-  }
-
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  void SuppressModifierKeyRewrites(bool should_supress) override {}
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    return std::nullopt;
-  }
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-  bool IsSearchKeyAcceleratorReserved() const override { return true; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  std::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return std::nullopt;
-  }
-
-  std::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return std::nullopt;
   }
 
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
@@ -5427,6 +5378,7 @@ class DesksAcceleratorsTest : public DesksTest,
   }
 
  private:
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
 };
 
@@ -11617,6 +11569,25 @@ TEST_P(DeskButtonTest, ContextMenuLongTap) {
   EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
 }
 
+// Tests that metrics are being recorded when a desk animation screenshot is
+// taken.
+TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
+  NewDesk();
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDeskSwitchScreenshotResultHistogramName,
+                                    0);
+
+  // Switching desks should result in 2 successful screenshots: one for the
+  // starting desk and one for the ending desk.
+  DeskSwitchAnimationWaiter waiter;
+  SendAccelerator(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  waiter.Wait();
+  histogram_tester.ExpectTotalCount(kDeskSwitchScreenshotResultHistogramName,
+                                    2);
+  histogram_tester.ExpectBucketCount(kDeskSwitchScreenshotResultHistogramName,
+                                     true, 2);
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
@@ -11750,27 +11721,62 @@ class DeskProfilesTest : public AshTestBase {
   DeskProfilesTest() = default;
   ~DeskProfilesTest() override = default;
 
+ protected:
+  static constexpr uint64_t kLacrosProfileIdBase = 1001;
+
+  TestDeskProfilesDelegate& GetTestDelegate() {
+    return *static_cast<TestDeskProfilesDelegate*>(
+        Shell::Get()->GetDeskProfilesDelegate());
+  }
+
+  void AddDummyProfiles(size_t count) {
+    for (size_t i = 0; i != count; ++i) {
+      LacrosProfileSummary summary;
+      summary.profile_id = kLacrosProfileIdBase + i * 2;
+      summary.name = base::StringPrintf("Lacros user %lu", i + 1);
+      summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
+      summary.icon = gfx::test::CreateImageSkia(32, 32);
+
+      GetTestDelegate().AddProfile(std::move(summary));
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kDeskProfiles};
 };
 
 TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
-  // Bypass the requirements and show the desk profiles button.
-  auto show_desk_profiles_button =
-      DeskMiniView::SetShouldShowDeskProfilesButtonForTesting();
+  // The desk profile button is visible when there are two or more profiles.
+  AddDummyProfiles(2);
+
   base::HistogramTester histogram_tester;
   auto* desk_controller = DesksController::Get()->desk_bar_controller();
   desk_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
   auto* desk_bar_view =
       desk_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
   ASSERT_EQ(1u, desk_bar_view->mini_views().size());
+
   DeskProfilesButton* desk_profile_button =
-      desk_bar_view->mini_views()[0]->desk_profile_button_;
+      DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[0]);
   ASSERT_NE(desk_profile_button, nullptr);
+  DeskProfilesButton::TestApi test_api(desk_profile_button);
   auto* event_generator = GetEventGenerator();
+  // Test desk profile button click metrics.
   ClickOnView(desk_profile_button, event_generator);
   histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
+
+  // Test context menu profile manager click metrics.
+  DeskActionContextMenu* menu = desk_profile_button->menu();
+  ASSERT_NE(menu, nullptr);
+
+  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
+      menu, DeskActionContextMenu::kShowProfileManager);
+  ASSERT_NE(menu_item, nullptr);
+
+  ClickOnView(menu_item, event_generator);
+  histogram_tester.ExpectTotalCount(
+      kDeskProfilesOpenProfileManagerHistogramName, 1);
 }
 
 }  // namespace ash

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1066101356081285416">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Google untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja Google bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="1105362920864247682">Menghapus Data Penjelajahan di Chrome.</translation>
 <translation id="1113057722807951993">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay.
@@ -40,13 +41,13 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="1682483655351012182">Sinkronkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Menambahkan URL yang diinput ke bookmark Anda di Chrome.</translation>
+<translation id="1799920918471566157">Tips untuk Chrome</translation>
 <translation id="1830634592642484976">Alamat ini disimpan ke Chrome untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Otomatis gunakan Chrome saat Anda mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="1910975740091000991">Chrome untuk iOS</translation>
 <translation id="1917964099031477364">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chrome dan Google app lainnya di perangkat ini.</translation>
 <translation id="1965935827552890526">Selesaikan yang Anda kerjakan di jendela Chrome lain yang terbuka.</translation>
 <translation id="1987779152850321833">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan Chrome.</translation>
-<translation id="2008357574463816229">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Tingkatkan produktivitas dengan Google Chrome yang lebih praktis, aman, dan cepat.</translation>
 <translation id="2120238739383482109">Membuka bookmark Chrome.</translation>
 <translation id="2147651015520127414">Chrome memverifikasi bahwa <ph name="ISSUER" /> menerbitkan sertifikat situs web ini.</translation>
@@ -75,6 +76,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="2702250627063295552">Tambahkan Item Daftar Bacaan ke Chrome</translation>
 <translation id="2736805085127235148">Notifikasi Chrome saat ini dinonaktifkan di setelan perangkat.</translation>
 <translation id="2767464022270041271">Tidak ada sandi tersimpan. Pengelola Sandi Google dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
+<translation id="2789947168960170215">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Hapus Data Penjelajahan di Chrome</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
 <translation id="2876628302275096482">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chrome menjaga privasi data Anda<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3503014945441706099">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chrome ini</translation>
 <translation id="3522659714780527202">Untuk melihat tab Chrome Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="3577555362230509265">Gunakan Chrome di aplikasi lain.</translation>
-<translation id="3594076341410558780">Sembunyikan “Maksimalkan penggunaan Chrome”</translation>
 <translation id="364480321352456989">Chrome belum diupdate.</translation>
 <translation id="3646736009628185125">Anggota keluarga Anda saat ini tidak dapat menerima sandi. Minta anggota keluarga untuk mengupdate Chrome dan menyinkronkan sandi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Artinya, Chrome akan selalu meminta situs seluler.</translation>
@@ -204,7 +205,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="686691656039982452">Anda dapat <ph name="BEGIN_LINK" />mengelola data Chrome yang disimpan<ph name="END_LINK" /> di Akun Google Anda.
 
 Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome Anda, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Data Anda akan dibagikan kepada Google untuk menyediakan fitur ini dan meningkatkan layanan Shopping bagi semua orang. Anda dapat mengubahnya di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Telusuri dengan Suara di Chrome</translation>
 <translation id="6964931465519938134">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="6975725306479268850">Pilih Chrome untuk Isi Otomatis</translation>

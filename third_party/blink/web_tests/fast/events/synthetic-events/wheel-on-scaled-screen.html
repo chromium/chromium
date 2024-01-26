@@ -38,12 +38,16 @@
   promise_test(async () => {
     var deltaX;
     var deltaY;
+    var wheelDeltaX;
+    var wheelDeltaY;
     var testDiv = document.getElementById("target");
     testDiv.addEventListener(
       "wheel",
       (e) => {
         deltaX = e.deltaX;
         deltaY = e.deltaY;
+        wheelDeltaX = e.wheelDeltaX;
+        wheelDeltaY = e.wheelDeltaY;
       },
       { once: true }
     );
@@ -51,6 +55,7 @@
     var y = testDiv.offsetTop + 5;
     await mouseMoveTo(x, y);
     const pixelsToScroll = 40;
+    const expectedWheelDelta = (pixelsToScroll / pixelsPerTick()) * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
     await smoothScroll(
       pixelsToScroll,
       x,
@@ -66,5 +71,7 @@
     assert_greater_than(testDiv.scrollTop, 0);
     assert_equals(deltaX, testDiv.scrollLeft);
     assert_equals(deltaY, testDiv.scrollTop);
+    assert_equals(wheelDeltaX, -Math.floor(expectedWheelDelta));
+    assert_equals(wheelDeltaY, -Math.floor(expectedWheelDelta));
   }, "Tests the deltas are the same no matter what the screen scale factor is.");
 </script>

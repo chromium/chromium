@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
 <translation id="1428770807407000502">ስምረት ይጥፋ?</translation>
 <translation id="1430915738399379752">አትም</translation>
+<translation id="1435593198351412143">PDFዎችን በራስ-ሰር ክፈት</translation>
 <translation id="1436784010935106834">ተወግዷል</translation>
 <translation id="1437543266176261764">በ<ph name="APP_NAME" /> በመሄድ ላይ</translation>
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
@@ -146,6 +147,7 @@
 <translation id="1792959175193046959">በማንኛውም ጊዜ ነባሪውን የማውረጃ ቦታ ይቀይሩ</translation>
 <translation id="1796666869097395659">በኋላ ላይ ወደ እሱ ለመመለስ ትርን ያሳንሱ</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
+<translation id="1807709131360304325">አዲስ መስኮት ክፈት</translation>
 <translation id="1810845389119482123">የመጀመሪያ የስምረት ማዋቀር አልተጠናቀቀም</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መጠቀም መቀጠል አይችልም</translation>
 <translation id="1829244130665387512">በዚህ ገፅ ውስጥ የተገኘ</translation>
@@ -189,6 +191,7 @@
 <translation id="2056878612599315956">ጣቢያ ባለበት ቆሟል</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ማውረድ አልተሳካም}one{# ማውረዶች አልተሳኩም}other{# ማውረዶች አልተሳኩም}}</translation>
 <translation id="2067805253194386918">ጽሁፍ</translation>
+<translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">ውሱን ዕይታን በማሳየት ላይ</translation>
 <translation id="2093731487903423814">ካለፉት 15 ደቂቃዎች</translation>
@@ -218,7 +221,6 @@
 <translation id="223356358902285214">የድር እና የመተግበሪያ እንቅስቃሴ</translation>
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
 <translation id="2239812875700136898">ከአማራጮች ለምርምር አዝራሩ ሆነው የእርስዎን ዘገባዎች ይቆጣጠሩ</translation>
-<translation id="2241634353105152135">አንድ ጊዜ ብቻ</translation>
 <translation id="2247789808226901522">ካርዱ ጊዜው አልፎበታል</translation>
 <translation id="2248941474044011069">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሣሪያዎ ላይ ይመሰጠራሉ</translation>
 <translation id="2249635629516220541">ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ የሚውለውን መረጃ ያብጁ</translation>
@@ -233,7 +235,6 @@
 <translation id="2318045970523081853">ጥሪ ለማድረግ መታ ያድርጉ</translation>
 <translation id="2321086116217818302">የይለፍ ቃላትን በማዘጋጀት ላይ…</translation>
 <translation id="2323763861024343754">የጣቢያ ማከማቻ</translation>
-<translation id="2327226657832576859">PDF በራስ-ሰር ይክፈቱ?</translation>
 <translation id="2328985652426384049">መግባት አልተቻለም</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />ን መጫን አልተቻለም።</translation>
 <translation id="2349710944427398404">መለያዎች፣ ዕልባቶች እና የተቀመጡ ቅንብሮችን ጨምሮ Chrome የተጠቀመው ጠቅላላ ውሂብ</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ሰከንዶች ይቀራሉ</translation>
 <translation id="2779651927720337254">አልተሳካም</translation>
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
+<translation id="2789486458103222910">እሺ</translation>
 <translation id="2800066122460699237">ትር <ph name="TAB_TITLE" /> ይዘጋል</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="2827278682606527653">የምግብ ካርድ ምናሌ በግማሽ ቁመት</translation>
@@ -340,6 +342,7 @@
 <translation id="2894821468041866720">በሚያስታውቅ መልኩ የእርስዎን አሳሸ ወይም መሣሪያ ቀስ አይደርግም።</translation>
 <translation id="2900528713135656174">ክስተት ፍጠር</translation>
 <translation id="2901411048554510387">ለ<ph name="WEBSITE_TITLE" /> የአስተያየት ጥቆማዎችን በማሳየት ላይ</translation>
+<translation id="2904300462646366554">የወረዱ PDFዎች በመሣሪያዎ ላይ ካሉት PDF ተመልካቾች በአንዱ በራስ-ሰር ይከፈታሉ</translation>
 <translation id="2904414404539560095">በሙሉ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="2908243544703713905">ያልተነበቡ ታሪኮች ተዘጋጅተዋል</translation>
 <translation id="2909615210195135082">የGoogle ማሳወቂያዎች መሣሪያ ስርዓት</translation>
@@ -354,7 +357,6 @@
 <translation id="2946420957526726953">ከሌሎች መሣሪያዎች ጋር ለመገናኘት Chromeን በማዘመን ላይ።</translation>
 <translation id="2951071800649516099">ለበኋላ ወደ ንባብ ዝርዝርዎ ገጾችን ያክሉ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ያልተነበበ ገፅ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}}</translation>
-<translation id="2961210776189273067">ርዕስ</translation>
 <translation id="296370266220139811">ጊዜ ይቆጥቡ እና ያነሰ ይተይቡ</translation>
 <translation id="2977350910003566746">መጨረሻ ላይ በተከፈተው በመደርደር ላይ</translation>
 <translation id="297771753501244313">መጨረሻ በተከፈተ ደርድር</translation>
@@ -600,6 +602,7 @@
 <translation id="4303044213806199882">የchrome_ቅጽበታዊ ገፅ ዕይታ_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4307992518367153382">መሠረታዊ</translation>
+<translation id="4311652497846705514">PDF ይክፈቱ?</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
 <translation id="433213510553688132">በመከተል ላይ...</translation>
 <translation id="4335835283689002019">ደህንነቱ የተጠበቀ አሰሳ ጠፍቷል</translation>
@@ -639,7 +642,6 @@
 <translation id="4523326818319942067">ካለፈው ሰዓት</translation>
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
-<translation id="4541505619120536051">ሁልጊዜ ክፍት ነው</translation>
 <translation id="4543131175509360848">ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}other{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}}</translation>
 <translation id="4554077758708533499">በዩኤስቢ ገመድ ተገናኝቷል</translation>
@@ -831,7 +833,6 @@
 <translation id="5486841595534124508">ለገፅ ግንዛቤዎች ማዕከል ወደ የእኔ እንቅስቃሴ ገፅ የሚያዞር የግላዊነት ማስታወቂያ ዓርማ።</translation>
 <translation id="5487521232677179737">ውሂብን አጽዳ</translation>
 <translation id="5492637351392383067">የመሣሪያ ላይ ምስጠራ</translation>
-<translation id="5509866835115085009">እርስዎ ሲጭኗቸው Chrome በራስ-ሰር PDF ሊከፍት ይችላል።</translation>
 <translation id="5514904542973294328">በዚህ መሣሪያ አስተዳዳሪ ተሰናክሏል</translation>
 <translation id="5515439363601853141">የይለፍ ቃልዎን ለመመልከት ይክፈቱ</translation>
 <translation id="5517095782334947753">ከ<ph name="FROM_ACCOUNT" /> የመጡ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት  እና ሌሎች ቅንብሮች አለዎት።</translation>
@@ -897,9 +898,11 @@
 <translation id="5810288467834065221">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
 <translation id="5814749351757353073">የሚወዷቸው ጣቢያዎችን በቅርበት ይከታተሉ</translation>
 <translation id="5822875253699806474">ወደጎበኟቸው ጣቢያዎች በቶሎ ለመመለስ ትሮችዎን እና ታሪክዎን ያስምሩ</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ውስጥ ተቀምጧል</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5833984609253377421">አገናኝ አጋራ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">PDF በ<ph name="APP_NAME" /> ይከፈት?</translation>
 <translation id="5853623416121554550">ባለበት ቆሟል</translation>
 <translation id="5855546874025048181">አጣራ፦ <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">የሆነ ችግር ተፈጥሯል። ዋጋ ተከታተልን ማዘመን አልተቻለም።</translation>
@@ -925,6 +928,7 @@
 <translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5966233851250124270">Chrome የእርስዎን ምርጫ ያስታውሳል</translation>
+<translation id="5977976211062815271">በዚህ መሣሪያ ላይ</translation>
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="5995726099713306770">ገፅ እንደገና ይውረድ?</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
@@ -1128,7 +1132,6 @@
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6955535239952325894">ይህ ቅንብር በሚተዳደሩ አሳሾች ላይ ተሰናክሏል</translation>
-<translation id="6958103823951858863">ካወረዱ በኋላ PDFን በራስ-ሰር ይክፈቱ</translation>
 <translation id="6963766334940102469">ዕልባቶችን ሰርዝ</translation>
 <translation id="696447261358045621">ከማንነት የማያሳውቅ ሁነታ ይውጡ</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -1303,6 +1306,7 @@
 <translation id="7810647596859435254">ክፈት በ…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ 1 ፋይል}one{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ # ፋይል}other{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ # ፋይሎች}}</translation>
 <translation id="7815484226266492798">ረጅም ቅጽበታዊ ገፅ ዕይታ</translation>
+<translation id="7821130663268546430">ሁሉንም ክፍት ትሮች በትር መቀያየሪያ ውስጥ ማግኘት ይችላሉ</translation>
 <translation id="7822705602465980873">በመለያዎ በሚገቡበት ጊዜ ይህ ውሂብ በሁሉም የGoogle አገልግሎቶች ላይ እርስዎን ለመጠበቅ Google መለያዎ ጋር ይገናኛል፣ ለምሳሌ ከደህንነት ክስተት በኋላ Gmail ውስጥ ጥበቃን መጨመር።</translation>
 <translation id="78270725016672455">ኮምፒተርዎ ወደ አንድ ጣቢያ ለመግባት ይህንን መሣሪያ ለመመዝገብ ይፈልጋል</translation>
 <translation id="7844171778363018843">ለማመሳሰል ምንም ውሂብ አልተመረጠም</translation>
@@ -1330,6 +1334,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ጊዜው ያለፈበት ነው።</translation>
 <translation id="7944772052836377867">ስምረት እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="7947953824732555851">ተቀበል እና ግባ</translation>
+<translation id="7951102827450076904">ሁልጊዜ የወረዱ ፒዲኤፎችን ክፈት</translation>
 <translation id="7957413488482743710">ምናባዊ ካርድ እርስዎን ሊሆን ከሚችል መጭበርበር ለመጠበቅ እንዲረዳዎ ትክክለኛውን የእርስዎ ካርድ ይደብቀዋል። <ph name="BEGIN_LINK1" />ስለምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">የገፅ ግንዛቤዎች መመለሻ አዝራር</translation>
 <translation id="7961926449547174351">የማከማቻ መዳረሻን አሰናክለዋል፣ እሱን ለማንቃት እባክዎ ወደ ቅንብሮች ይሂዱ።</translation>
@@ -1380,6 +1385,7 @@
 <translation id="8127542551745560481">መነሻ ገጽን ያርትዑ</translation>
 <translation id="8130309322784422030">የተከማቸው የመግቢያ መረጃዎ ጊዜው ያለፈበት ሊሆን ይችላል</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
+<translation id="8135406045838672858">የወረዱ PDFዎች በራስ-ሰር በ<ph name="APP_NAME" /> ይከፈታሉ</translation>
 <translation id="8137562778192957619">ይህን የይለፍ ቃል ማስታወስ አያስፈልግዎትም። በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ፋይሎች ይቀራሉ</translation>
 <translation id="8190358571722158785">1 ቀን ይቀራል</translation>

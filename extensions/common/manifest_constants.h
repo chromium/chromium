@@ -378,6 +378,8 @@ inline constexpr char kInvalidExcludeMatches[] =
     "Invalid value for 'content_scripts[*].exclude_matches'.";
 inline constexpr char kInvalidExportPermissions[] =
     "Permissions are not allowed for extensions that export resources.";
+inline constexpr char kInvalidExportAllowlistEmpty[] =
+    "Empty 'export.allowlist' implies any extension can import this module.";
 inline constexpr char kInvalidExportAllowlistString[] =
     "Invalid value for 'export.allowlist[*]'.";
 inline constexpr char kInvalidExtensionOriginPopup[] =
@@ -435,6 +437,9 @@ inline constexpr char16_t kInvalidImportAndExport[] =
 inline constexpr char kInvalidImportId[] = "Invalid value for 'import[*].id'.";
 inline constexpr char kInvalidImportVersion[] =
     "Invalid value for 'import[*].minimum_version'.";
+inline constexpr char kInvalidImportRepeatedImport[] =
+    "There are multiple occurences of the same extension ID in 'import'. Only "
+    "one version will be installed.";
 inline constexpr char kInvalidInputComponents[] =
     "Invalid value for 'input_components'";
 inline constexpr char16_t kInvalidInputComponents16[] =

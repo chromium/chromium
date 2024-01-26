@@ -34,16 +34,13 @@
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
-namespace cc {
-class DisplayResourceProvider;
-}
-
 namespace gpu {
 class SharedImageInterface;
 }
 
 namespace viz {
 struct DebugRendererSettings;
+class DisplayResourceProvider;
 class OutputSurface;
 class RendererSettings;
 

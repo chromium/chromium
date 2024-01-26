@@ -105,10 +105,10 @@ std::optional<extensions::mojom::HostID> GenerateHostIDFromEmbedder(
 
   if (embedder_rfh->GetWebExposedIsolationLevel() >=
       content::WebExposedIsolationLevel::kIsolatedApplication) {
-    const GURL& url = embedder_rfh->GetMainFrame()->GetLastCommittedURL();
+    const std::string origin =
+        embedder_rfh->GetMainFrame()->GetLastCommittedOrigin().Serialize();
     return extensions::mojom::HostID(
-        extensions::mojom::HostID::HostType::kControlledFrameEmbedder,
-        url.spec());
+        extensions::mojom::HostID::HostType::kControlledFrameEmbedder, origin);
   }
   return std::nullopt;
 }

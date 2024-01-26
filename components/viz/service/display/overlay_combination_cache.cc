@@ -5,12 +5,12 @@
 #include "components/viz/service/display/overlay_combination_cache.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/display/overlay_strategy.h"
@@ -64,7 +64,7 @@ void CombinationIdMapper::RemoveStaleIds(
   if (stale_candidates.none()) {
     return;
   }
-  base::EraseIf(candidate_ids_, [&stale_candidates](auto& entry) {
+  std::erase_if(candidate_ids_, [&stale_candidates](auto& entry) {
     return stale_candidates[entry.second];
   });
   claimed_ids_ &= ~stale_candidates;

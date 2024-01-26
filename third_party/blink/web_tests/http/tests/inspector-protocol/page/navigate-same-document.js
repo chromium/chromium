@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that Page.navigate within same document does not report loaderId`);
 

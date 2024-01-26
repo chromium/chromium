@@ -53,6 +53,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -98,7 +99,7 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
-// Dismisses the remaining screens in FRE after the search engine choice screen.
+// Dismisses the remaining screens in FRE after the default browser screen.
 void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
@@ -1181,7 +1182,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1270,7 +1271,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1310,7 +1311,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1370,7 +1371,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
@@ -1409,7 +1410,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
@@ -1479,8 +1480,9 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
-  config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
-  config.additional_args.push_back("-SearchEngineForceEnabled");
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
+  config.additional_args.push_back(
+      std::string("-") + base::SysNSStringToUTF8(kSearchEngineForceEnabled));
   config.additional_args.push_back("true");
   return config;
 }
@@ -1491,10 +1493,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    // Do not run this test if the choice screen is not enabled.
-    return;
-  }
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1503,6 +1501,13 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       performAction:grey_tap()];
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+
+  BOOL isPhone = (ui::GetDeviceFormFactor() ==
+                  ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE);
+  // Checks that the fake omnibox illustration is displayed on phones and is
+  // initially empty
+  [SearchEngineChoiceEarlGreyUI
+      verifyFakeOmniboxIllustrationState:isPhone ? kEmpty : kHidden];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1515,6 +1520,10 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
                               amount:50];
+  // Checks that the fake omnibox illustration is still displayed on phones but
+  // is no longer empty
+  [SearchEngineChoiceEarlGreyUI
+      verifyFakeOmniboxIllustrationState:isPhone ? kFull : kHidden];
   // Taps the primary button. This scrolls the table down to the bottom.
   [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
@@ -1531,10 +1540,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    // Do not run this test if the choice screen is not enabled.
-    return;
-  }
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1543,6 +1548,13 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       performAction:grey_tap()];
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+
+  BOOL isPhone = (ui::GetDeviceFormFactor() ==
+                  ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE);
+  // Checks that the fake omnibox illustration is displayed on phones and is
+  // initially empty
+  [SearchEngineChoiceEarlGreyUI
+      verifyFakeOmniboxIllustrationState:isPhone ? kEmpty : kHidden];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1567,6 +1579,10 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp
                               amount:300];
+  // Checks that the fake omnibox illustration is still displayed on phones but
+  // is no longer empty
+  [SearchEngineChoiceEarlGreyUI
+      verifyFakeOmniboxIllustrationState:isPhone ? kFull : kHidden];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 
   DismissDefaultBrowserAndOmniboxPositionSelectionScreens();

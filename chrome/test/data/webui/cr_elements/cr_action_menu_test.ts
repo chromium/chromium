@@ -439,48 +439,55 @@ suite('CrActionMenu', function() {
     menu.close();
   });
 
-  (function() {
-    // TODO(dpapad): fix flakiness and re-enable this test.
-    test.skip(
-        '[auto-reposition] enables repositioning if content changes',
-        function(done) {
-          menu.autoReposition = true;
+  function autoRepositionTest(done: () => void) {
+    menu.autoReposition = true;
 
-          dots.style.marginLeft = '800px';
+    dots.style.marginLeft = '800px';
 
-          const dotsRect = dots.getBoundingClientRect();
+    const dotsRect = dots.getBoundingClientRect();
 
-          // Anchored at right-top by default.
-          menu.showAt(dots);
-          assertTrue(dialog.open);
-          let menuRect = dialog.getBoundingClientRect();
-          assertEquals(
-              Math.round(dotsRect.left + dotsRect.width),
-              Math.round(menuRect.left + menuRect.width));
-          assertEquals(dotsRect.top, menuRect.top);
+    // Anchored at right-top by default.
+    menu.showAt(dots);
+    assertTrue(dialog.open);
+    let menuRect = dialog.getBoundingClientRect();
+    assertEquals(
+        Math.round(dotsRect.left + dotsRect.width),
+        Math.round(menuRect.left + menuRect.width));
+    assertEquals(dotsRect.top, menuRect.top);
 
-          const lastMenuLeft = menuRect.left;
-          const lastMenuWidth = menuRect.width;
+    const lastMenuLeft = menuRect.left;
+    const lastMenuWidth = menuRect.width;
 
-          menu.addEventListener('cr-action-menu-repositioned', () => {
-            assertTrue(dialog.open);
-            menuRect = dialog.getBoundingClientRect();
-            // Test that menu width got larger.
-            assertTrue(menuRect.width > lastMenuWidth);
-            // Test that menu upper-left moved further left.
-            assertTrue(menuRect.left < lastMenuLeft);
-            // Test that right and top did not move since it is anchored there.
-            assertEquals(
-                Math.round(dotsRect.left + dotsRect.width),
-                Math.round(menuRect.left + menuRect.width));
-            assertEquals(dotsRect.top, menuRect.top);
-            done();
-          });
+    menu.addEventListener('cr-action-menu-repositioned', () => {
+      assertTrue(dialog.open);
+      menuRect = dialog.getBoundingClientRect();
+      // Test that menu width got larger.
+      assertTrue(menuRect.width > lastMenuWidth);
+      // Test that menu upper-left moved further left.
+      assertTrue(menuRect.left < lastMenuLeft);
+      // Test that right and top did not move since it is anchored there.
+      assertEquals(
+          Math.round(dotsRect.left + dotsRect.width),
+          Math.round(menuRect.left + menuRect.width));
+      assertEquals(dotsRect.top, menuRect.top);
+      done();
+    });
 
-          // Still anchored at the right place after content size changes.
-          items[0]!.textContent = 'this is a long string to make menu wide';
-        });
-  })();
+    // Still anchored at the right place after content size changes.
+    items[0]!.textContent = 'this is a long string to make menu wide';
+  }
+
+  // <if expr="is_win">
+  // TODO(dpapad): Figure out why it fails on windows only and re-enable.
+  test.skip(
+      '[auto-reposition] enables repositioning if content changes',
+      autoRepositionTest);
+  // </if>
+  // <if expr="not is_win">
+  test(
+      '[auto-reposition] enables repositioning if content changes',
+      autoRepositionTest);
+  // </if>
 
   test('accessibilityLabel', function() {
     document.body.innerHTML = getTrustedStaticHtml`

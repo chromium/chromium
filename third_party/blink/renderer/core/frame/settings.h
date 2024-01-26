@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_defaults.h"
 #include "third_party/blink/renderer/core/editing/selection_strategy.h"
 #include "third_party/blink/renderer/core/frame/settings_delegate.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"

@@ -9,6 +9,7 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
@@ -62,8 +63,10 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
                        int seq_id,
                        const base::Value::Dict& metadata) override;
   void OnDecorated(web::WebState* web_state,
+                   int annotations,
                    int successes,
-                   int annotations) override;
+                   int failures,
+                   const base::Value::List& cancelled) override;
   void OnClick(web::WebState* web_state,
                const std::string& text,
                CGRect rect,
@@ -115,7 +118,7 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   id<UnitConversionCommands> unit_conversion_handler_ = nil;
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   std::unique_ptr<base::Value::Dict> metadata_;
 

@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.DocumentInheritedStorageAccess"
-    enum="BooleanInherited" expires_after="2024-05-12">
+    enum="BooleanInherited" expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.DocumentLoadedWithStorageAccess"
-    enum="Boolean" expires_after="2024-05-12">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
-    expires_after="2024-04-28">
+    expires_after="2024-07-14">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.Destruction"
-    units="BooleanDestroyed" expires_after="2024-01-31">
+    enum="BooleanDestroyed" expires_after="2024-01-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -819,7 +819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.IsFileBacked"
-    units="BooleanIsFileBacked" expires_after="2024-06-02">
+    enum="BooleanIsFileBacked" expires_after="2024-06-02">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted"
-    units="BooleanRecoveryAttempted" expires_after="2024-01-31">
+    enum="BooleanAttempted" expires_after="2024-01-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1018,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.OnShutdown.RecoveryOnDiskAttempted"
-    units="BooleanRecoveryOnDiskAttempted" expires_after="2024-01-31">
+    enum="BooleanAttempted" expires_after="2024-01-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1042,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Context.IsDefined"
-    units="BooleanIsDefined" expires_after="2024-01-31">
+    enum="Boolean" expires_after="2024-01-31">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

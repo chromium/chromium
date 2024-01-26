@@ -51,12 +51,17 @@ class PolicyUiLacrosBrowserTest : public InProcessBrowserTest {
   PolicyUiLacrosBrowserTest& operator=(const PolicyUiLacrosBrowserTest&) =
       delete;
 
-  void SetUp() override {
+  // Set custom init params in SetUpInProcessBrowserTestFixture, as it must
+  // happen after BrowserTestBase::SetUp sets up the crosapi command line
+  // switches but before the profile-independent instance of PolicyLoaderLacros
+  // is initialized (ChromeMainDelegate::PostEarlyInitialization).
+  void SetUpInProcessBrowserTestFixture() override {
     std::vector<uint8_t> data = GetValidPolicyFetchResponse();
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
+    auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
     init_params->device_account_policy = data;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    InProcessBrowserTest::SetUp();
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void ReadStatusFor(const std::string& policy_legend,
@@ -103,7 +108,7 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
-  absl::optional<base::Value> statuses = base::JSONReader::Read(json);
+  std::optional<base::Value> statuses = base::JSONReader::Read(json);
   ASSERT_TRUE(statuses.has_value() && statuses->is_dict());
   const base::Value::Dict* actual_entries =
       statuses->GetDict().FindDict(policy_legend);
@@ -113,13 +118,7 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
   }
 }
 
-// TODO(crbug.com/1447850) This test constantly fail for internal builder.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_ShowManagedByField DISABLED_ShowManagedByField
-#else
-#define MAYBE_ShowManagedByField ShowManagedByField
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyUiLacrosBrowserTest, MAYBE_ShowManagedByField) {
+IN_PROC_BROWSER_TEST_F(PolicyUiLacrosBrowserTest, ShowManagedByField) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
   base::flat_map<std::string, std::string> status;

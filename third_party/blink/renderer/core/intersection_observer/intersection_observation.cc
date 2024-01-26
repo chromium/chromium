@@ -17,8 +17,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
-#define CHECK_SKIPPED_UPDATE_ON_SCROLL DCHECK_IS_ON()
-
 namespace blink {
 
 namespace {
@@ -58,13 +56,13 @@ int64_t IntersectionObservation::ComputeIntersection(
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return 0;
 
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
       cached_rects_.valid && cached_rects_.min_scroll_delta_to_update.x() > 0 &&
       cached_rects_.min_scroll_delta_to_update.y() > 0) {
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
     cached_rects_backup.emplace(cached_rects_);
 #else
     return 0;
@@ -77,12 +75,14 @@ int64_t IntersectionObservation::ComputeIntersection(
       observer_->thresholds(), observer_->TargetMargin(),
       observer_->ScrollMargin(), geometry_flags, root_geometry, &cached_rects_);
 
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {
     // A skipped update on scroll should generate the same result.
-    cached_rects_ = cached_rects_backup.value();
-    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex());
+    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex())
+        << "Previous: " << cached_rects_backup->ToString()
+        << "\nNew: " << cached_rects_.ToString();
     CHECK_EQ(last_is_visible_, geometry.IsVisible());
+    cached_rects_ = cached_rects_backup.value();
     return 0;
   }
 #endif
@@ -124,19 +124,14 @@ void IntersectionObservation::Disconnect() {
   observer_.Clear();
 }
 
-bool IntersectionObservation::InvalidateCachedRectsIfNeeded() {
+void IntersectionObservation::InvalidateCachedRectsIfPaintPropertiesChanged() {
   DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  if (!cached_rects_.valid) {
-    return true;
-  }
-  if (NeedsInvalidateCachedRects()) {
+  if (cached_rects_.valid && PaintPropertiesChanged()) {
     InvalidateCachedRects();
-    return true;
   }
-  return false;
 }
 
-bool IntersectionObservation::NeedsInvalidateCachedRects() const {
+bool IntersectionObservation::PaintPropertiesChanged() const {
   DCHECK(cached_rects_.valid);
   if (observer_->trackVisibility()) {
     return true;

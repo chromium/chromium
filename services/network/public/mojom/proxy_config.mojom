@@ -5,17 +5,16 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
+import "services/network/public/mojom/network_param.mojom";
+
 // This corresponds to the string representation of net::ProxyConfigBypassRules.
 struct ProxyBypassRules {
   array<string> rules;
 };
 
-// A list of proxy chains. Each chain is represented by a list of its proxy
-// servers, each server in the format of a single semi-colon delimited entry
-// in the output of a PAC script (e.g., "PROXY foo.com", "DIRECT").
+// A list of proxy chains.
 struct ProxyList {
-  // TODO(crbug.com/1491092): Update to be list of ProxyChain elements.
-  array<array<string>> proxies;
+  array<network.mojom.ProxyChain> proxies;
 };
 
 // This corresponds to net::ProxyConfig::ProxyRules::Type.

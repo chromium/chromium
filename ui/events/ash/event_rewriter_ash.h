@@ -87,8 +87,8 @@ class EventRewriterAsh : public EventRewriter {
     virtual bool RewriteModifierKeys() = 0;
 
     // Suppresses all modifier key rewrites and makes |RewriteModifierKeys|
-    // always return false if |should_supress| is true.
-    virtual void SuppressModifierKeyRewrites(bool should_supress) = 0;
+    // always return false if |should_suppress| is true.
+    virtual void SuppressModifierKeyRewrites(bool should_suppress) = 0;
 
     // Returns whether or not Meta + Top Row Keys should be rewritten. Should
     // return correctly with respect to the values set in
@@ -105,7 +105,7 @@ class EventRewriterAsh : public EventRewriter {
     // |modifier_key|.
     // TODO(dpad): Remove |pref_name| once fully transitioned to per-device
     // settings.
-    virtual absl::optional<mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+    virtual std::optional<mojom::ModifierKey> GetKeyboardRemappedModifierValue(
         int device_id,
         mojom::ModifierKey modifier_key,
         const std::string& pref_name) const = 0;
@@ -153,20 +153,20 @@ class EventRewriterAsh : public EventRewriter {
                                            bool alt_based) = 0;
 
     // Returns the modifier (Alt/Search) that must be pressed when remapping
-    // an event to right click for `device_id` or `absl::nullopt` if settings
+    // an event to right click for `device_id` or `std::nullopt` if settings
     // for the device are unable to be retrieved. If the return value is
-    // `SimulateRightClickModifier::kNone` or `absl::nullopt`, the event
+    // `SimulateRightClickModifier::kNone` or `std::nullopt`, the event
     // will not be rewritten to a right click.
-    virtual absl::optional<ui::mojom::SimulateRightClickModifier>
+    virtual std::optional<ui::mojom::SimulateRightClickModifier>
     GetRemapRightClickModifier(int device_id) = 0;
 
     // Returns whether the Alt or Search based shortcut variant must be used
     // to perform a Six Pack (PageUp, PageDown, Home, End, Insert, Delete) key
     // action for `device_id`. The key event will not be rewritten if the
-    // return value is either absl::nullopt (settings for `device_id`
+    // return value is either std::nullopt (settings for `device_id`
     // weren't found) or the key is mapped to `SixPackShortcutModifier::kNone`.
     // `key_code` is used to look up the correct modifier for the Six Pack key.
-    virtual absl::optional<ui::mojom::SixPackShortcutModifier>
+    virtual std::optional<ui::mojom::SixPackShortcutModifier>
     GetShortcutModifierForSixPackKey(int device_id,
                                      ui::KeyboardCode key_code) = 0;
 
@@ -194,9 +194,9 @@ class EventRewriterAsh : public EventRewriter {
     // `ui::KeyboardCode::VKEY_F11` or `ui::KeyboardCode::VKEY_F12` and is used
     // used to determine if the setting for F11 or F12 should be retrieved for
     // the keyboard with the given `device_id`. The key event will not be
-    // rewritten if the return value is either absl::nullopt (settings for
+    // rewritten if the return value is either std::nullopt (settings for
     // `device_id` weren't found) or if an invalid `key_code` was passed in.
-    virtual absl::optional<ui::mojom::ExtendedFkeysModifier>
+    virtual std::optional<ui::mojom::ExtendedFkeysModifier>
     GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
   };
 

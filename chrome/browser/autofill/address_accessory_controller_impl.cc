@@ -97,7 +97,7 @@ void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
 std::optional<autofill::AccessorySheetData>
 AddressAccessoryControllerImpl::GetSheetData() const {
   if (!personal_data_manager_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<AutofillProfile*> profiles =
       personal_data_manager_->GetProfilesToSuggest();

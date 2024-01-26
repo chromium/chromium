@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Omnibox.AcceptedKeywordSuggestion"
-    enum="OmniboxEnteredKeywordMode2" expires_after="2024-06-30">
+    enum="OmniboxEnteredKeywordMode2" expires_after="2024-08-30">
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -777,7 +777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.Escape" enum="OmniboxEscapeAction"
-    expires_after="2024-02-04">
+    expires_after="2024-08-30">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -808,7 +808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.InputType" enum="OmniboxInputType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1024,7 +1024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.JustDeletedText" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1040,7 +1040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.KeywordModeUsageByEngineType.{Usage}"
-    enum="OmniboxBuiltinEngineType" expires_after="2024-07-18">
+    enum="OmniboxBuiltinEngineType" expires_after="2024-08-30">
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1374,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown" units="position"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1391,7 +1391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown.ClusterKeywordType"
-    enum="HistoryClusterKeywordType" expires_after="2024-05-19">
+    enum="HistoryClusterKeywordType" expires_after="2024-07-21">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown.PageEntityCollection"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2024-05-19">
+    enum="OptimizationGuidePageEntityCollection" expires_after="2024-07-21">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1454,7 +1454,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.RichAutocompletion.Triggered.Any" units="Boolean"
+<histogram name="Omnibox.RichAutocompletion.Triggered.Any" enum="Boolean"
     expires_after="2024-06-30">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1553,13 +1553,20 @@ chromium-metrics-reviews@google.com.
   <token key="Population">
     <variant name="" summary="Reported for all users."/>
     <variant name=".SetByEnterprisePolicy"
-        summary="Reported for users with DSP set by Enterprise policy."/>
+        summary="Reported for users with search engine set by Enterprise
+                 policy."/>
+    <variant name=".SetByEnterprisePolicy.DefaultSearchProvider"
+        summary="Reported for users with search engine set by the
+                 DefaultSearchProvider* Enterprise policies."/>
+    <variant name=".SetByEnterprisePolicy.SiteSearchSettings"
+        summary="Reported for users with search engine set by the
+                 SiteSearchSettings Enterprise policy."/>
   </token>
 </histogram>
 
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
-    units="boolean" expires_after="2023-05-02">
+    enum="Boolean" expires_after="2023-05-02">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1703,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.AnswerInSuggest"
-    enum="SuggestionAnswerOptionalType" expires_after="2024-05-19">
+    enum="SuggestionAnswerOptionalType" expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1716,7 +1723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ClientSummarizedResultType"
-    enum="ClientSummarizedResultType" expires_after="2024-05-19">
+    enum="ClientSummarizedResultType" expires_after="2024-07-21">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
@@ -1778,7 +1785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney" units="position"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
@@ -2056,7 +2063,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2.1"
-    units="ms" expires_after="2024-05-19">
+    units="ms" expires_after="2024-07-21">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2115,7 +2122,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2024-05-19">
+    units="ms" expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2138,7 +2145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.URL.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2024-05-19">
+    units="ms" expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

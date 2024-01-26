@@ -69,7 +69,7 @@ const char kChromeOpened[] = "chrome_opened";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";
-const char kViewedWhatsNew[] = "viewed_whats_new_m116";
+const char kViewedWhatsNew[] = "viewed_whats_new_m122";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
@@ -119,6 +119,8 @@ const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
 const char kIOSSwipeLeftForIncognitoUsed[] = "swipe_left_for_incognito_used";
+const char kIOSBackForwardButtonTapped[] = "back_forward_button_tapped";
+const char kIOSSwipeBackForwardUsed[] = "swiped_back_forward_used";
 const char kEnhancedSafeBrowsingPromoCriterionMet[] =
     "enhanced_safe_browsing_promo_criterion_met";
 const char kEnhancedSafeBrowsingInlinePromoClosed[] =

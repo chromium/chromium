@@ -53,6 +53,7 @@ source_set("model") {
     "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
@@ -233,6 +234,7 @@ source_set("unit_tests") {
   sources = [
     "ios_chrome_password_check_manager_unittest.mm",
     "ios_chrome_password_manager_client_unittest.mm",
+    "ios_chrome_save_password_infobar_delegate_unittest.mm",
     "password_checkup_utils_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
@@ -240,6 +242,7 @@ source_set("unit_tests") {
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
+    ":infobar_delegates",
     ":model",
     ":password_checkup_metrics",
     "//base",
@@ -249,6 +252,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_util_feature",
+    "//components/infobars/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
@@ -262,6 +266,8 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
+    "//components/ukm:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/credential_provider_promo/model:features",
@@ -280,6 +286,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

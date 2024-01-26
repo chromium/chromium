@@ -228,7 +228,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1882814835921407042">Non hai ningunha rede de telefonía móbil</translation>
 <translation id="1882897271359938046">Proxectando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear coa impresión dixital</translation>
-<translation id="1888656773939766144">O dispositivo (<ph name="DISPLAY_NAME" />) non é compatible cunha resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para conservar este cambio, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Instalada recentemente</translation>
 <translation id="1915307458270490472">Deter</translation>
 <translation id="1918022425394817322">Cámara axustada á esquina superior dereita</translation>
@@ -267,7 +266,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2064048859448024834">A vista previa da cámara está activada</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
 <translation id="2075520525463668108">Activar ou desactivar <ph name="CAPTURE_MEDIUM" />. A función <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Para cambiar ao escritorio seguinte, pasa catro dedos cara á dereita</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2083190527011054446">Boas noites, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Abre o selector de emojis</translation>
@@ -283,7 +281,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2149229036084364364">Ir á pista anterior</translation>
 <translation id="2152895518047545149">Parece que xa tes todo feito. Bo traballo!</translation>
 <translation id="2161132820593978283">Proba o zoom automático para aparecer no centro da pantalla durante as videochamadas. Actívao en Configuración rápida.</translation>
-<translation id="2170530631236737939">Para saír do modo Visión xeral, pasa tres dedos cara abaixo</translation>
 <translation id="2185166372312820725">Vai á pestana anterior</translation>
 <translation id="2185444992308415167">Ir da pestana 1 á 8</translation>
 <translation id="2198625180564913276">Engadindo perfil. Esta acción pode tardar uns minutos.</translation>
@@ -412,10 +409,12 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
+<translation id="2744221223678373668">Compartidas</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Ventá activa sen fixar.</translation>
 <translation id="2761723519669354964">Abre o elemento destacado do andel</translation>
+<translation id="2762000892062317888">agora</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> do <ph name="KEY_ONE" /> ao <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Control + Busca + S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -624,6 +623,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3580650856351781466">Descargando ficheiros de voz</translation>
 <translation id="3585296979871889131">Consulta o contido multimedia, as notificacións, as aplicacións e as fotos recentes do teu teléfono</translation>
+<translation id="3590441166907930941">Botón lateral</translation>
 <translation id="3593039967545720377">Para acceder ao historial do teu portapapeis, preme <ph name="SHORTCUT_KEY_NAME" /> + V. Copia un elemento para comezar.</translation>
 <translation id="3593646411856133110">Pasa o dedo cara arriba e mantén premida a pantalla para ver as aplicacións abertas</translation>
 <translation id="3595596368722241419">Batería completa</translation>
@@ -733,6 +733,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí.</translation>
 <translation id="3995138139523574647">Dispositivo USB‑C (porto dereito posterior)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="40062176907008878">Escritura manual</translation>
 <translation id="4011112806063830608">O modo Non molestar está activado.</translation>
 <translation id="4017989525502048489">Punteiro láser</translation>
@@ -1036,6 +1037,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5163434717504750796">Estado da batería <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Gardar escritorio como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
+<translation id="5168753792967365150">Editar en Tarefas de Google</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5187627942836026988">Mostrar os detalles da zona wifi. A persoa administradora bloqueou a zona wifi.</translation>
@@ -1305,6 +1307,8 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="6168622430237609329">As túas aplicacións instaladas</translation>
 <translation id="6173151025443907148">Non se admite o inicio de sesión cun segundo usuario se Lacros está activado. Utiliza un segundo perfil de navegador en Lacros ou desactiva Lacros e téntao de novo.</translation>
 <translation id="6179832488876878285">Podes fixar aquí os ficheiros importantes. Para comezar a utilizar esta función, abre a aplicación Ficheiros.</translation>
+<translation id="6180193585172850042">Botón de retroceso</translation>
+<translation id="6180651297859206670">Botón de avance</translation>
 <translation id="6182592640011875895">Abrir escritorio</translation>
 <translation id="6185696379715117369">Retroceder páxina</translation>
 <translation id="619335566042889110">Cargar por completo agora</translation>
@@ -1694,7 +1698,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7850320739366109486">Non molestar</translation>
 <translation id="7851039877802112575">Mover enfoque ás ventás emerxentes e cadros de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Para acceder ao modo Visión xeral, pasa tres dedos cara arriba</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como invitado, tes que pechar sesión e, a continuación, seleccionar Navegar como invitado na parte de abaixo da pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7872786842639831132">Desactivado</translation>
@@ -1805,7 +1808,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8262312463845990408">Activar/desactivar reprodución</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 hora}other{Cambia o dispositivo a unha versión anterior no prazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar o texto na pantalla</translation>
-<translation id="8284362522226889623">Para cambiar ao escritorio anterior, pasa catro dedos cara á esquerda</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>

@@ -39,13 +39,13 @@ class TestPlatformManagementStatusProvider
     policy::ManagementStatusProvider::UsePrefServiceAsCache(prefs);
   }
 
-  const absl::optional<policy::EnterpriseManagementAuthority>&
-  cached_authority() const {
+  const std::optional<policy::EnterpriseManagementAuthority>& cached_authority()
+      const {
     return cached_authority_;
   }
 
  private:
-  absl::optional<policy::EnterpriseManagementAuthority> cached_authority_;
+  std::optional<policy::EnterpriseManagementAuthority> cached_authority_;
   policy::EnterpriseManagementAuthority authority_;
 };
 

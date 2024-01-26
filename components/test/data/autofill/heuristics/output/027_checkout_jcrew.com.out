@@ -1,4 +1,3 @@
-UNKNOWN_TYPE | searchTerm | search keyword or item # | search keyword or item # | searchTerm_1
 ADDRESS_HOME_COUNTRY | ADDRESS<>country_cd | country * | US | ADDRESS<>country_cd_1
 NAME_FIRST | ADDRESS<>firstName | first name * |  | ADDRESS<>country_cd_1
 NAME_LAST | ADDRESS<>lastName | last name * |  | ADDRESS<>country_cd_1
@@ -12,4 +11,7 @@ PHONE_HOME_CITY_AND_NUMBER | ADDRESS<>phone | phone number (numbers only) * |  |
 UNKNOWN_TYPE | anonPassword | create password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordConfirm | confirm password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordHint | create password hint |  | ADDRESS<>country_cd_1
+
 UNKNOWN_TYPE | emailID | enter email | enter email | emailID_1
+
+UNKNOWN_TYPE | searchTerm | search keyword or item # | search keyword or item # | searchTerm_1

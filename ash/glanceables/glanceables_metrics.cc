@@ -24,16 +24,28 @@ constexpr char kTimeManagementTaskPrefix[] =
 constexpr char kTimeManagementClassroomPrefix[] =
     "Ash.Glanceables.TimeManagement.Classroom";
 
+void RecordTasksUserAction() {
+  base::RecordAction(base::UserMetricsAction("Glanceables_Tasks_UserAction"));
+}
+
+void RecordClassroomUserAction() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_UserAction"));
+}
+
 }  // namespace
 
 namespace ash {
 
 void RecordActiveTaskListChanged() {
+  RecordTasksUserAction();
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_ActiveTaskListChanged"));
 }
 
 void RecordTaskMarkedAsCompleted(bool complete) {
+  RecordTasksUserAction();
+
   if (complete) {
     base::RecordAction(
         base::UserMetricsAction("Glanceables_Tasks_TaskMarkedAsCompleted"));
@@ -43,7 +55,48 @@ void RecordTaskMarkedAsCompleted(bool complete) {
   }
 }
 
+void RecordUserStartedAddingTask() {
+  RecordTasksUserAction();
+
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Tasks_AddTaskStarted"));
+}
+
+void RecordTaskAdditionResult(TaskModificationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kTimeManagementTaskPrefix, ".AddTaskResult"}), result);
+}
+
+void RecordNumberOfAddedTasks(int add_task_action_count,
+                              bool in_empty_task_list,
+                              bool first_usage) {
+  if (first_usage) {
+    base::UmaHistogramCounts100(
+        "Ash.Glanceables.TimeManagement.Tasks."
+        "AddedTasksForFirstUsage",
+        add_task_action_count);
+  }
+  base::UmaHistogramCounts100(
+      base::StrCat({kTimeManagementTaskPrefix, ".AddedTasks",
+                    in_empty_task_list ? ".InEmptyList" : ".InNonEmptyList"}),
+      add_task_action_count);
+}
+
+void RecordUserModifyingTask() {
+  RecordTasksUserAction();
+
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Tasks_ModifyTaskStarted"));
+}
+
+void RecordTaskModificationResult(TaskModificationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kTimeManagementTaskPrefix, ".ModifyTaskResult"}), result);
+}
+
 void RecordTasksLaunchSource(TasksLaunchSource source) {
+  RecordTasksUserAction();
+
   switch (source) {
     case TasksLaunchSource::kHeaderButton:
       base::RecordAction(base::UserMetricsAction(
@@ -57,10 +110,19 @@ void RecordTasksLaunchSource(TasksLaunchSource source) {
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
       break;
+    case TasksLaunchSource::kEditInGoogleTasksButton:
+      base::RecordAction(base::UserMetricsAction(
+          "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
+      break;
   }
 }
 
-void RecordAddTaskButtonShown() {
+void RecordUserWithNoTasksRedictedToTasksUI() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Tasks_NewUserNavigatedToTasks"));
+}
+
+void RecordAddTaskButtonShownForTT() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_AddTaskButtonShown"));
 }
@@ -198,7 +260,28 @@ void RecordStudentSelectedListChangeCount(int change_count) {
       change_count);
 }
 
+void RecordStudentAssignmentPressed(bool default_list) {
+  RecordClassroomUserAction();
+
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_AssignmentPressed"));
+
+  if (default_list) {
+    base::RecordAction(base::UserMetricsAction(
+        "Glanceables_Classroom_AssignmentPressed_DefaultList"));
+  }
+}
+
+void RecordClassroomHeaderIconPressed() {
+  RecordClassroomUserAction();
+
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_HeaderIconPressed"));
+}
+
 void RecordStudentAssignmentListSelected(StudentAssignmentsListType list_type) {
+  RecordClassroomUserAction();
+
   base::UmaHistogramEnumeration(
       "Ash.Glanceables.Classroom.Student.ListSelected", list_type);
 }

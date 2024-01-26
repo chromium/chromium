@@ -32,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/scoped_block_tests_writing_to_special_dirs.h"
@@ -456,6 +457,8 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
                 size_t parallel_jobs,
                 int argc,
                 char** argv) {
+  base::test::AllowCheckIsTestForTesting();
+
   base::CommandLine::Init(argc, argv);
   AppendCommandLineSwitches();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

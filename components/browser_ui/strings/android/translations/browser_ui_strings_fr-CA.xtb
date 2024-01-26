@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Téléchargement interrompu</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1426410128494586442">Oui</translation>
+<translation id="1434873037477293673">carte de baisse de prix</translation>
 <translation id="1448064542941920355">Diminuer le zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
@@ -91,7 +92,7 @@
 <translation id="2490684707762498678">Les notifications sont gérées par <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
-<translation id="2546283357679194313">Témoins et données de site</translation>
+<translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 témoin bloqué}one{# témoin bloqué}other{# témoins bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la localisation est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé : cliquer pour réduire</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Demander l'affichage sur un appareil mobile</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
+<translation id="6452138246455930388">Baisse de prix sur votre onglet ouvert, de <ph name="OLD_PRICE" /> à <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Lorsque la fenêtre est étroite, demander l'affichage sur appareil mobile</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="652937045869844725">Essayez d'autoriser les témoins tiers, ce qui signifie moins de protection, mais les fonctionnalités du site sont plus susceptibles de fonctionner</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations?</translation>
 <translation id="6766622839693428701">Glissez le doigt vers le bas pour fermer.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> à partir de <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Sélectionner une option pour <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6864395892908308021">Cet appareil ne prend pas en charge la technologie CCP</translation>
+<translation id="6867014948848323204">À partir de <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Empêcher les sites de lire du texte et des images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6950072572526089586">Un site que vous visitez peut enregistrer des informations en fonction de votre activité pour fonctionner comme prévu : par exemple, pour maintenir votre connexion à un site ou pour conserver des articles dans votre panier. Souvent, les sites enregistrent temporairement ces données sur votre appareil.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Ne pas autoriser un site à utiliser des témoins tiers</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
+<translation id="7770832849480336015">Masquer « <ph name="TITLE_OF_MODULE" /> »</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>

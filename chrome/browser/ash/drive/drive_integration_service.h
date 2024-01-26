@@ -99,7 +99,7 @@ class DriveIntegrationService : public KeyedService,
       base::OnceCallback<void(FileError,
                               std::vector<drivefs::mojom::QueryItemPtr>)>;
   using GetThumbnailCallback =
-      base::OnceCallback<void(const absl::optional<std::vector<uint8_t>>&)>;
+      base::OnceCallback<void(const std::optional<std::vector<uint8_t>>&)>;
   using GetReadOnlyAuthenticationTokenCallback =
       base::OnceCallback<void(google_apis::ApiErrorCode code,
                               const std::string& access_token)>;
@@ -202,9 +202,9 @@ class DriveIntegrationService : public KeyedService,
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;
-  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
+  void OnUnmounted(std::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
-                     absl::optional<base::TimeDelta> remount_delay) override;
+                     std::optional<base::TimeDelta> remount_delay) override;
 
   // PinningManager::Observer implementation
   using Progress = drivefs::pinning::Progress;
@@ -403,7 +403,7 @@ class DriveIntegrationService : public KeyedService,
   // then tries to add it back after that delay. If |remount_delay| isn't
   // specified, |failed_to_mount| is true and the user is offline, schedules a
   // retry when the user is online.
-  void MaybeRemountFileSystem(absl::optional<base::TimeDelta> remount_delay,
+  void MaybeRemountFileSystem(std::optional<base::TimeDelta> remount_delay,
                               bool failed_to_mount);
 
   // Helper function for ClearCacheAndRemountFileSystem() that deletes the cache
@@ -455,17 +455,17 @@ class DriveIntegrationService : public KeyedService,
       mojo::Remote<drivefs::mojom::SearchQuery> search_query,
       base::OnceCallback<void(int64_t)> callback,
       FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
       FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnSearchDriveByFileName(
       SearchDriveByFileNameCallback callback,
       FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
 
@@ -582,7 +582,7 @@ class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
   ~DriveIntegrationServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   // This is static so it can be set without instantiating the factory. This

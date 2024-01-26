@@ -105,14 +105,15 @@ std::vector<base::FilePath> GetTestFiles() {
 
 std::string FormStructuresToString(
     const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
-  std::string forms_string;
+  std::vector<std::string> string_forms;
+  string_forms.reserve(forms.size());
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& [form_id, form_structure] : forms) {
+    std::string string_form;
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form_structure) {
       std::string section = field->section.ToString();
-
       if (field->section.is_from_fieldidentifier()) {
         // Normalize the section by replacing the unique but platform-dependent
         // integers in `field->section` with consecutive unique integers.
@@ -131,16 +132,17 @@ std::string FormStructuresToString(
               section_index);
         }
       }
-
-      forms_string += base::JoinString(
-          {field->Type().ToString(), base::UTF16ToUTF8(field->name),
+      string_form += base::JoinString(
+          {field->Type().ToStringView(), base::UTF16ToUTF8(field->name),
            base::UTF16ToUTF8(field->label), base::UTF16ToUTF8(field->value),
            section},
           base::StringPiece(" | "));
-      forms_string += "\n";
+      string_form.push_back('\n');
     }
+    string_forms.push_back(string_form);
   }
-  return forms_string;
+  sort(string_forms.begin(), string_forms.end());
+  return base::JoinString(string_forms, "\n");
 }
 
 }  // namespace
@@ -217,9 +219,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
           // TODO(crbug.com/1311937): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          features::kAutofillInferCountryCallingCode,
-          // TODO(crbug.com/1355264): Remove once launched.
-          features::kAutofillLabelAffixRemoval,
           // TODO(crbug.com/1441057): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           // TODO(crbug.com/1474308): Clean up when launched.
@@ -236,9 +235,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
        // default parsing behavior, so must be disabled to avoid
        // fieldtrial_testing_config interference.
-       features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-       // TODO(crbug.com/1427131): Remove once launched.
-       blink::features::kAutofillUseDomNodeIdForRendererId});
+       features::kAutofillEnableEmailHeuristicOnlyAddressForms});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;

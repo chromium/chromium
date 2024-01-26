@@ -689,11 +689,8 @@ IN_PROC_BROWSER_TEST_P(
               kExtensionContactedHost);
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
-    // TODO(crbug.com/1494413): Verify unspecified contact initiator for
-    // websocket connections until that information becomes available in the
-    // renderer throttles.
     EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
-              RemoteHostInfo::CONTACT_INITIATOR_UNSPECIFIED);
+              RemoteHostInfo::EXTENSION);
   }
   // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
   // logs.
@@ -741,6 +738,9 @@ IN_PROC_BROWSER_TEST_P(
             let response = await fetch(url);
             let text = await response.text();
             chrome.test.assertEq('Hello!', text);
+            const baseURLForWebSocket = 'ws://example.com:' + config.testServer.port;
+            let socket = new WebSocket(baseURLForWebSocket);
+            socket.close();
             chrome.test.sendMessage('done');
             chrome.test.succeed();
           }]);
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(
         extension_report->signals()[0];
     const RemoteHostContactedInfo& remote_host_contacted_info =
         signal.remote_host_contacted_info();
-    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 1);
+    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
     EXPECT_TRUE(remote_host_contacted_info.collected_from_new_interception());
 
     const RemoteHostInfo& remote_host_info =
@@ -801,6 +801,16 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
     EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::CONTENT_SCRIPT);
+
+    const RemoteHostInfo& remote_host_contacted_info_websocket =
+        remote_host_contacted_info.remote_host(1);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(), 1u);
+    EXPECT_EQ(remote_host_contacted_info_websocket.url(),
+              kExtensionContactedHost);
+    EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
+              RemoteHostInfo::WEBSOCKET);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+              RemoteHostInfo::CONTENT_SCRIPT);
   }
 }
 

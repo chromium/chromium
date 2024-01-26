@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("gesture_iph") {
+  sources = [
+    "gesture_in_product_help_view.h",
+    "gesture_in_product_help_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/bubble:bubble_view",
+    "//ios/chrome/browser/ui/bubble:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "gesture_in_product_help_constants.h",
+    "gesture_in_product_help_constants.mm",
+  ]
+}

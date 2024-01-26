@@ -372,7 +372,8 @@ TEST_F(PasswordCheckupUtilsTest,
   RunUntilIdle();
 
   // Run password check.
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   // Remove one of the reused passwords.

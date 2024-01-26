@@ -8,7 +8,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/core/style/paint_images.h"
 
 namespace blink {
 
@@ -28,6 +28,10 @@ std::unique_ptr<T> MemberCopy(const std::unique_ptr<T>& v) {
 }
 
 inline Member<ContentData> MemberCopy(const Member<ContentData>& v) {
+  return v ? v->Clone() : nullptr;
+}
+
+inline Member<PaintImages> MemberCopy(const Member<PaintImages>& v) {
   return v ? v->Clone() : nullptr;
 }
 

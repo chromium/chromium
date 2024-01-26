@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -60,7 +61,7 @@ class WebSelectionTabHelper
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The callback to call when the selection is finally retrieved.
   base::OnceCallback<void(WebSelectionResponse*)> final_callback_;

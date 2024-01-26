@@ -102,7 +102,7 @@ WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
   DCHECK(tab_insertion_agent_);
   browser_ = browser;
   browser_observation_.Observe(browser);
-  web_state_list_observation_.Observe(web_state_list_);
+  web_state_list_observation_.Observe(web_state_list_.get());
 
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.

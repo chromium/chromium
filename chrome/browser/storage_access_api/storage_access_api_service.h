@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_SERVICE_H_
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_SERVICE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -24,7 +25,7 @@ class StorageAccessAPIService {
   // order to avoid unnecessary disk writes.
   //
   // `embedded_origin` and `top_frame_origin` must be non-opaque.
-  virtual absl::optional<base::TimeDelta> RenewPermissionGrant(
+  virtual std::optional<base::TimeDelta> RenewPermissionGrant(
       const url::Origin& embedded_origin,
       const url::Origin& top_frame_origin) = 0;
 };

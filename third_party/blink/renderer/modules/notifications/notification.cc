@@ -389,8 +389,7 @@ v8::LocalVector<v8::Value> Notification::actions(
     // returned in are expected to the frozen. This cannot be done with
     // WebIDL.
     result[i] = FreezeV8Object(
-        ToV8Traits<NotificationAction>::ToV8(script_state, action)
-            .ToLocalChecked(),
+        ToV8Traits<NotificationAction>::ToV8(script_state, action),
         script_state->GetIsolate());
   }
 

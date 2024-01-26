@@ -4,11 +4,10 @@
 
 #include "partition_alloc/page_allocator.h"
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -29,10 +28,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include <setjmp.h>
-#include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+
+#include <csetjmp>
+#include <csignal>
 #endif  // BUILDFLAG(IS_POSIX)
 
 #include "partition_alloc/arm_bti_test_functions.h"

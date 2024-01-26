@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -135,7 +135,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     base::Value::List& list_of_values = update.Get();
     list_of_values.clear();
     for (auto id : updated_list) {
-      const absl::optional<std::string>& id_string =
+      const std::optional<std::string>& id_string =
           actions::ActionIdMap::ActionIdToString(id);
       // The ActionId should have a string equivalent.
       CHECK(id_string.has_value());

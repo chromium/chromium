@@ -14,8 +14,6 @@ default	rel
 section	.text code align=64
 
 
-EXTERN	OPENSSL_ia32cap_P
-
 section	.rdata rdata align=8
 ALIGN	64
 $L$zero:
@@ -52,14 +50,14 @@ $L$sixteen:
 	DB	108,46,111,114,103,62,0
 section	.text
 
-global	ChaCha20_ctr32
+global	ChaCha20_ctr32_nohw
 
 ALIGN	64
-ChaCha20_ctr32:
+ChaCha20_ctr32_nohw:
 	mov	QWORD[8+rsp],rdi	;WIN64 prologue
 	mov	QWORD[16+rsp],rsi
 	mov	rax,rsp
-$L$SEH_begin_ChaCha20_ctr32:
+$L$SEH_begin_ChaCha20_ctr32_nohw:
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rdx,r8
@@ -69,12 +67,6 @@ $L$SEH_begin_ChaCha20_ctr32:
 
 
 _CET_ENDBR
-	cmp	rdx,0
-	je	NEAR $L$no_data
-	mov	r10,QWORD[((OPENSSL_ia32cap_P+4))]
-	test	r10d,512
-	jnz	NEAR $L$ChaCha20_ssse3
-
 	push	rbx
 
 	push	rbp
@@ -347,14 +339,15 @@ $L$no_data:
 	mov	rsi,QWORD[16+rsp]
 	ret
 
-$L$SEH_end_ChaCha20_ctr32:
+$L$SEH_end_ChaCha20_ctr32_nohw:
+global	ChaCha20_ctr32_ssse3
 
 ALIGN	32
-ChaCha20_ssse3:
+ChaCha20_ctr32_ssse3:
 	mov	QWORD[8+rsp],rdi	;WIN64 prologue
 	mov	QWORD[16+rsp],rsi
 	mov	rax,rsp
-$L$SEH_begin_ChaCha20_ssse3:
+$L$SEH_begin_ChaCha20_ctr32_ssse3:
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rdx,r8
@@ -362,14 +355,10 @@ $L$SEH_begin_ChaCha20_ssse3:
 	mov	r8,QWORD[40+rsp]
 
 
-$L$ChaCha20_ssse3:
 
+_CET_ENDBR
 	mov	r9,rsp
 
-	cmp	rdx,128
-	ja	NEAR $L$ChaCha20_4x
-
-$L$do_sse3_after_all:
 	sub	rsp,64+40
 	movaps	XMMWORD[(-40)+r9],xmm6
 	movaps	XMMWORD[(-24)+r9],xmm7
@@ -502,14 +491,15 @@ $L$ssse3_epilogue:
 	mov	rsi,QWORD[16+rsp]
 	ret
 
-$L$SEH_end_ChaCha20_ssse3:
+$L$SEH_end_ChaCha20_ctr32_ssse3:
+global	ChaCha20_ctr32_ssse3_4x
 
 ALIGN	32
-ChaCha20_4x:
+ChaCha20_ctr32_ssse3_4x:
 	mov	QWORD[8+rsp],rdi	;WIN64 prologue
 	mov	QWORD[16+rsp],rsi
 	mov	rax,rsp
-$L$SEH_begin_ChaCha20_4x:
+$L$SEH_begin_ChaCha20_ctr32_ssse3_4x:
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rdx,r8
@@ -517,22 +507,11 @@ $L$SEH_begin_ChaCha20_4x:
 	mov	r8,QWORD[40+rsp]
 
 
-$L$ChaCha20_4x:
 
+_CET_ENDBR
 	mov	r9,rsp
 
 	mov	r11,r10
-	shr	r10,32
-	test	r10,32
-	jnz	NEAR $L$ChaCha20_8x
-	cmp	rdx,192
-	ja	NEAR $L$proceed4x
-
-	and	r11,71303168
-	cmp	r11,4194304
-	je	NEAR $L$do_sse3_after_all
-
-$L$proceed4x:
 	sub	rsp,0x140+168
 	movaps	XMMWORD[(-168)+r9],xmm6
 	movaps	XMMWORD[(-152)+r9],xmm7
@@ -1088,14 +1067,15 @@ $L$4x_epilogue:
 	mov	rsi,QWORD[16+rsp]
 	ret
 
-$L$SEH_end_ChaCha20_4x:
+$L$SEH_end_ChaCha20_ctr32_ssse3_4x:
+global	ChaCha20_ctr32_avx2
 
 ALIGN	32
-ChaCha20_8x:
+ChaCha20_ctr32_avx2:
 	mov	QWORD[8+rsp],rdi	;WIN64 prologue
 	mov	QWORD[16+rsp],rsi
 	mov	rax,rsp
-$L$SEH_begin_ChaCha20_8x:
+$L$SEH_begin_ChaCha20_ctr32_avx2:
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rdx,r8
@@ -1103,8 +1083,8 @@ $L$SEH_begin_ChaCha20_8x:
 	mov	r8,QWORD[40+rsp]
 
 
-$L$ChaCha20_8x:
 
+_CET_ENDBR
 	mov	r9,rsp
 
 	sub	rsp,0x280+168
@@ -1728,7 +1708,7 @@ $L$8x_epilogue:
 	mov	rsi,QWORD[16+rsp]
 	ret
 
-$L$SEH_end_ChaCha20_8x:
+$L$SEH_end_ChaCha20_ctr32_avx2:
 EXTERN	__imp_RtlVirtualUnwind
 
 ALIGN	16
@@ -1897,36 +1877,36 @@ full_handler:
 
 section	.pdata rdata align=4
 ALIGN	4
-	DD	$L$SEH_begin_ChaCha20_ctr32 wrt ..imagebase
-	DD	$L$SEH_end_ChaCha20_ctr32 wrt ..imagebase
-	DD	$L$SEH_info_ChaCha20_ctr32 wrt ..imagebase
+	DD	$L$SEH_begin_ChaCha20_ctr32_nohw wrt ..imagebase
+	DD	$L$SEH_end_ChaCha20_ctr32_nohw wrt ..imagebase
+	DD	$L$SEH_info_ChaCha20_ctr32_nohw wrt ..imagebase
 
-	DD	$L$SEH_begin_ChaCha20_ssse3 wrt ..imagebase
-	DD	$L$SEH_end_ChaCha20_ssse3 wrt ..imagebase
-	DD	$L$SEH_info_ChaCha20_ssse3 wrt ..imagebase
+	DD	$L$SEH_begin_ChaCha20_ctr32_ssse3 wrt ..imagebase
+	DD	$L$SEH_end_ChaCha20_ctr32_ssse3 wrt ..imagebase
+	DD	$L$SEH_info_ChaCha20_ctr32_ssse3 wrt ..imagebase
 
-	DD	$L$SEH_begin_ChaCha20_4x wrt ..imagebase
-	DD	$L$SEH_end_ChaCha20_4x wrt ..imagebase
-	DD	$L$SEH_info_ChaCha20_4x wrt ..imagebase
-	DD	$L$SEH_begin_ChaCha20_8x wrt ..imagebase
-	DD	$L$SEH_end_ChaCha20_8x wrt ..imagebase
-	DD	$L$SEH_info_ChaCha20_8x wrt ..imagebase
+	DD	$L$SEH_begin_ChaCha20_ctr32_ssse3_4x wrt ..imagebase
+	DD	$L$SEH_end_ChaCha20_ctr32_ssse3_4x wrt ..imagebase
+	DD	$L$SEH_info_ChaCha20_ctr32_ssse3_4x wrt ..imagebase
+	DD	$L$SEH_begin_ChaCha20_ctr32_avx2 wrt ..imagebase
+	DD	$L$SEH_end_ChaCha20_ctr32_avx2 wrt ..imagebase
+	DD	$L$SEH_info_ChaCha20_ctr32_avx2 wrt ..imagebase
 section	.xdata rdata align=8
 ALIGN	8
-$L$SEH_info_ChaCha20_ctr32:
+$L$SEH_info_ChaCha20_ctr32_nohw:
 	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 
-$L$SEH_info_ChaCha20_ssse3:
+$L$SEH_info_ChaCha20_ctr32_ssse3:
 	DB	9,0,0,0
 	DD	ssse3_handler wrt ..imagebase
 	DD	$L$ssse3_body wrt ..imagebase,$L$ssse3_epilogue wrt ..imagebase
 
-$L$SEH_info_ChaCha20_4x:
+$L$SEH_info_ChaCha20_ctr32_ssse3_4x:
 	DB	9,0,0,0
 	DD	full_handler wrt ..imagebase
 	DD	$L$4x_body wrt ..imagebase,$L$4x_epilogue wrt ..imagebase
-$L$SEH_info_ChaCha20_8x:
+$L$SEH_info_ChaCha20_ctr32_avx2:
 	DB	9,0,0,0
 	DD	full_handler wrt ..imagebase
 	DD	$L$8x_body wrt ..imagebase,$L$8x_epilogue wrt ..imagebase

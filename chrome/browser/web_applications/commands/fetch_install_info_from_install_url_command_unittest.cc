@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
@@ -41,7 +42,7 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
   std::unique_ptr<WebAppInstallInfo> CreateAndRunCommand(
       GURL install_url,
       webapps::ManifestId manifest_id,
-      absl::optional<webapps::ManifestId> parent_manifest_id,
+      std::optional<webapps::ManifestId> parent_manifest_id,
       bool disable_web_app_info = false,
       bool valid_manifest = true,
       WebAppUrlLoader::Result url_load_result =
@@ -129,7 +130,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, RetrievesCorrectly) {
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest,
        RetrievesCorrectlyWhenParentManifestIsNull) {
   std::unique_ptr<WebAppInstallInfo> command_result =
-      CreateAndRunCommand(app_url(), manifest_id(), absl::nullopt);
+      CreateAndRunCommand(app_url(), manifest_id(), std::nullopt);
   EXPECT_TRUE(command_result);
   EXPECT_EQ(GetCommandErrorFromLog(), "kAppInfoObtained");
 }

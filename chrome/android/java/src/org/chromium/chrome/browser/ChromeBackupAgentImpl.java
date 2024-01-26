@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
@@ -24,15 +25,21 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentProcessInfo;
 
 import java.io.FileInputStream;
@@ -69,6 +76,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         RestoreStatus.RESTORE_AFTER_FIRST_RUN,
         RestoreStatus.BROWSER_STARTUP_FAILED,
         RestoreStatus.NOT_SIGNED_IN,
+        RestoreStatus.SIGNIN_TIMED_OUT,
         RestoreStatus.RESTORE_STATUS_RECORDED
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -79,12 +87,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int RESTORE_AFTER_FIRST_RUN = 2;
         int BROWSER_STARTUP_FAILED = 3;
         int NOT_SIGNED_IN = 4;
+        int SIGNIN_TIMED_OUT = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
 
         // Set RESTORE_STATUS_RECORDED when the histogram has been recorded; so that it is only
         // recorded once.
-        int RESTORE_STATUS_RECORDED = 5;
+        int RESTORE_STATUS_RECORDED = 6;
     }
 
     private static final String RESTORE_STATUS = "android_restore_status";
@@ -113,6 +122,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     // Timeout for running the background tasks, needs to be quite long since they may be doing
     // network access, but must be less than the 1 minute restore timeout to be useful.
     private static final long BACKGROUND_TASK_TIMEOUT_SECS = 20;
+
+    // Timeout for the sign-in flow and related preferences commit.
+    private static final long SIGNIN_TIMEOUT_SECS = 10;
 
     /**
      * Class to save and restore the backup state, used to decide if backups are needed. Since the
@@ -211,6 +223,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                     IdentityServicesProvider.get()
                                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+
+                            if (syncAccount.get() != null
+                                    && !syncAccount.get().equals(signedInAccount.get())) {
+                                throw new IllegalStateException(
+                                        "Recorded signed in account differs from syncing account");
+                            }
 
                             Natives jni = ChromeBackupAgentImplJni.get();
 
@@ -327,17 +345,17 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        String restoredUserName = null;
+        @Nullable String restoredSyncUserEmail = null;
+        @Nullable String restoredSignedInUserID = null;
         while (data.readNextHeader()) {
             String key = data.getKey();
             int dataSize = data.getDataSize();
             byte[] buffer = new byte[dataSize];
             data.readEntityData(buffer, 0, dataSize);
             if (key.equals(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY)) {
-                restoredUserName = new String(buffer);
+                restoredSyncUserEmail = new String(buffer);
             } else if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY)) {
-                // TODO(crbug.com/1493706): Implement the restoration of the signed in account.
-                continue;
+                restoredSignedInUserID = new String(buffer);
             } else {
                 backupNames.add(key);
                 backupValues.add(buffer);
@@ -389,8 +407,17 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             return;
         }
 
+        @Nullable
+        CoreAccountInfo signedInAccountInfo = getDeviceAccountWithGaiaId(restoredSignedInUserID);
+        @Nullable
+        CoreAccountInfo syncAccountInfo = getDeviceAccountWithEmail(restoredSyncUserEmail);
+
         // If the user hasn't signed in, or can't sign in, then don't restore anything.
-        if (!accountExistsOnDevice(restoredUserName)) {
+        if (syncAccountInfo == null
+                && (signedInAccountInfo == null
+                        || !SigninFeatureMap.isEnabled(
+                                SigninFeatures
+                                        .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP))) {
             setRestoreStatus(RestoreStatus.NOT_SIGNED_IN);
             Log.i(TAG, "Chrome was not signed in with a known account name, not restoring");
             return;
@@ -438,14 +465,45 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // This will sign in the user on first run to the account in BACKUP_FLOW_SIGNIN_ACCOUNT_NAME
-        // if any.
-        editor.putString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, restoredUserName);
-        editor.apply();
+        if (syncAccountInfo != null) {
+            // Both accounts are recorded at the same time. Since only one account is in signed-in
+            // state at a given time, they should be identical if both are valid.
+            if (signedInAccountInfo != null && !signedInAccountInfo.equals(syncAccountInfo)) {
+                throw new IllegalStateException(
+                        "Recorded signed in account differs from syncing account");
+            }
 
-        // The silent first run will change things, so there is no point in trying to prevent
-        // additional backups at this stage. Don't write anything to |newState|.
-        setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                editor.apply();
+                signInAndWaitForResult(syncAccountInfo);
+            } else {
+                // This will sign in the user on first run to the account in
+                // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME if any.
+                editor.putString(
+                        ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
+                        restoredSyncUserEmail);
+                editor.apply();
+
+                // The silent first run will change things, so there is no point in trying to
+                // prevent
+                // additional backups at this stage. Don't write anything to |newState|.
+                setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
+            }
+        } else {
+            editor.apply();
+
+            // signedInAccountInfo and syncAccountInfo should not be null at the same at this point.
+            // If there's no valid syncing account and the signed-in account restore is disabled,
+            // the restore should already be stopped and the restore state set to `NOT_SIGNED_IN`.
+            if (signedInAccountInfo == null
+                    || !SigninFeatureMap.isEnabled(
+                            SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
+                throw new IllegalStateException("No valid account can be signed-in");
+            }
+
+            signInAndWaitForResult(signedInAccountInfo);
+        }
         Log.i(TAG, "Restore complete");
     }
 
@@ -466,18 +524,107 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         };
     }
 
-    private boolean accountExistsOnDevice(String accountEmail) {
+    private @Nullable CoreAccountInfo getDeviceAccountWithEmail(@Nullable String accountEmail) {
+        if (accountEmail == null) {
+            return null;
+        }
+
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    List<CoreAccountInfo> coreAccountInfos =
-                            AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                                    AccountManagerFacadeProvider.getInstance()
-                                            .getCoreAccountInfos());
-                    return accountEmail != null
-                            && AccountUtils.findCoreAccountInfoByEmail(
-                                            coreAccountInfos, accountEmail)
-                                    != null;
+                    return AccountUtils.findCoreAccountInfoByEmail(getAccountInfos(), accountEmail);
+                });
+    }
+
+    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable String accountGaiaId) {
+        if (accountGaiaId == null) {
+            return null;
+        }
+
+        return PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    return AccountUtils.findCoreAccountInfoByGaiaId(
+                            getAccountInfos(), accountGaiaId);
+                });
+    }
+
+    private static List<CoreAccountInfo> getAccountInfos() {
+        return AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+    }
+
+    private static void signInAndWaitForResult(CoreAccountInfo accountInfo) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        SigninManager.SignInCallback signInCallback =
+                new SigninManager.SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        // Sign-in preferences need to be committed for the sign-in to be effective.
+                        // Therefore the count down is done in `onPrefsCommitted` instead.
+                    }
+
+                    @Override
+                    public void onPrefsCommitted() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onSignInAborted() {
+                        // Ignore failure as Chrome will simply remain signed-out otherwise, and the
+                        // user is still able to sign-in manually after opening Chrome.
+                        latch.countDown();
+                    }
+                };
+
+        signIn(accountInfo, signInCallback);
+
+        try {
+            // Wait the sign-in to finish the restore. Otherwise, the account info request will be
+            // cancelled one the restore ends. Timeout can be ignored as Chrome will simply remain
+            // signed-out otherwise, and the user is still able to sign-in manually after opening
+            // Chrome.
+            boolean success = latch.await(SIGNIN_TIMEOUT_SECS, TimeUnit.SECONDS);
+            int status = success ? RestoreStatus.RESTORE_COMPLETED : RestoreStatus.SIGNIN_TIMED_OUT;
+            setRestoreStatus(status);
+        } catch (InterruptedException e) {
+            // Exception can be ignored as explained above.
+            setRestoreStatus(RestoreStatus.SIGNIN_TIMED_OUT);
+        }
+    }
+
+    private static void signIn(CoreAccountInfo accountInfo, SigninManager.SignInCallback callback) {
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                    final AccountManagerFacade accountManagerFacade =
+                            AccountManagerFacadeProvider.getInstance();
+
+                    AccountUtils.checkChildAccountStatus(
+                            accountManagerFacade,
+                            getAccountInfos(),
+                            (isChild, unused) -> {
+                                if (isChild) {
+                                    // TODO(crbug.com/1318350):
+                                    // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
+                                    // child accounts would happen in SigninChecker anyways.
+                                    // Maybe it should be handled by this  class once the feature
+                                    // launches.
+                                    return;
+                                }
+
+                                // signinManager.addSignInStateObserver(observer);
+                                signinManager.runAfterOperationInProgress(
+                                        () -> {
+                                            signinManager.signin(
+                                                    accountInfo,
+                                                    SigninAccessPoint
+                                                            .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
+                                                    callback);
+                                        });
+                            });
                 });
     }
 

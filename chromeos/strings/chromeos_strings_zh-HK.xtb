@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">向前</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
+<translation id="1626590945318984973">無法使用快速鍵。請使用其他快速鍵，且當中不得有功能鍵和<ph name="META_KEY" />鍵。</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1643449475550628585">每日變更桌布圖片</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">關閉暗光模式</translation>
 <translation id="1885577615937958993">向前快播媒體</translation>
 <translation id="1887850431809612466">硬件版本</translation>
-<translation id="1897672602657312171">使用快速鍵時如未按下搜尋鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下搜尋鍵重新輸入快速鍵。</translation>
 <translation id="1904932688895783618">其他實用資源如下：</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2157660087437850958">Emoji 點選器</translation>
 <translation id="2157959690810728433">已排入序列</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」。}=2{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」和「<ph name="APP_NAME_2" />」。}=3{管理員已設定在你每次登入時自動啟動<ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />和<ph name="APP_NAME_3" />。}other{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」、「<ph name="APP_NAME_2" />」和另外 # 個應用程式。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="215916044711630446">宜家停用咗「加入 APN」掣</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">編輯 APN 詳情</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
+<translation id="2215920961700443347">沒有互聯網連線。請連接互聯網，然後再試一次。</translation>
 <translation id="2217935453350629363">目前速度</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖，總共有 <ph name="TOTAL_PAGES" /> 張</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2448312741937722512">類型</translation>
+<translation id="2465272316171730950">資源已用盡，請稍後再回來查看。</translation>
 <translation id="248546197012830854">裝置已離線。連線至 Wi-Fi 網絡即可查看說明內容。</translation>
 <translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動選取的最佳相片</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">重新整理目前嘅桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
-<translation id="2515109918609218604">無法使用快速鍵。請使用其他快速鍵，且當中不得有功能鍵和搜尋鍵。</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2521835766824839541">上一首歌</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">您現可使用全新<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">暗光模式</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
+<translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{系統已自動啟動「<ph name="APP_NAME_1" />」}other{系統已自動啟動 # 個應用程式}}</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相片</translation>
 <translation id="4150201353443180367">顯示屏</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">校暗</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
-<translation id="4185315616950253617">如果快速鍵包括最上排的按鍵，亦需要使用搜尋鍵。</translation>
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4213104098953699324">USB 鍵盤</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重新啟動「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4395835743215824109">自訂鍵盤</translation>
+<translation id="4403262788869804671">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。</translation>
 <translation id="4415951057168511744">目前嘅顯示圖片</translation>
+<translation id="4417830657741848074">管理員已將部分應用程式設定為自動啟動，部分應用程式可能無法關閉。</translation>
 <translation id="4422041425070339732">向下鍵</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 已停用</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">地球動態螢幕保護程式</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
+<translation id="4500722292849917410">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左箭咀</translation>
 <translation id="4507392511610824664">校光</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網絡</translation>
 <translation id="4839698083503556542">自製影片</translation>
+<translation id="48409034532829769">管理員已將「<ph name="APP_NAME" />」設定為自動啟動，此應用程式可能無法關閉。</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4847902821209177679">揀咗「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」，㩒一下 [Enter] 鍵就可以揀「<ph name="TOPIC_SOURCE" />」相簿</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">改變模式</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
+<translation id="4982627662315910959">無法使用快速鍵。請透過 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">深色主題背景時間表</translation>
 <translation id="5229344016299762883">結束全螢幕模式</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{管理員已將「<ph name="APP_NAME" />」設定為登入時自動啟動。}=2{管理員已將「<ph name="APP_NAME" />」和另外 1 個應用程式設定為登入時自動啟動。}other{管理員已將「<ph name="APP_NAME" />」和另外 # 個應用程式設定為登入時自動啟動。}}</translation>
 <translation id="5252456968953390977">漫遊中</translation>
 <translation id="5257811368506016604">啟用淺色模式</translation>
 <translation id="5264277876637023664">執行 CPU 測試</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
-<translation id="7273347807225967898">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
+<translation id="7271932918253517778">如果快速鍵包括最上排的按鍵，亦需要使用<ph name="META_KEY" />鍵。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">感受微風</translation>
 <translation id="7287310195820267359">桌布收藏</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">一般控制項</translation>
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網絡，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{系統已自動啟動「<ph name="APP_NAME_1" />」}other{系統已自動啟動 # 個應用程式}}</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8017679124341497925">已編輯捷徑</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8094062939584182041">允許 Google 就此問題向您傳送電郵</translation>
 <translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
-<translation id="8111706652656628199">無法使用快速鍵。請透過 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>

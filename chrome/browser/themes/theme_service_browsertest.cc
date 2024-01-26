@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
     // non-deterministically; thus, don't check the `expected_change` value.
     InstallExtension(
         test_data_dir_.AppendASCII("theme_test_toolbar_button_tint/"),
-        absl::nullopt);
+        std::nullopt);
     waiter.WaitForThemeChanged();
   }
 

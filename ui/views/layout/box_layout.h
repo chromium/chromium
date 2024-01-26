@@ -228,9 +228,8 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     bool VisibleToLayout() const;
 
    private:
-    // `view_` and `layout_` is not a raw_ptr<> for performance reasons: based
-    // on this sampling profiler result on ChromeOS.
-    // go/brp-cros-prof-diff-20230403
+    // RAW_PTR_EXCLUSION: Performance reasons: based on this sampling profiler
+    // result on ChromeOS. go/brp-cros-prof-diff-20230403
     RAW_PTR_EXCLUSION View* view_ = nullptr;
     RAW_PTR_EXCLUSION const BoxLayout* layout_ = nullptr;
     gfx::Insets margins_;

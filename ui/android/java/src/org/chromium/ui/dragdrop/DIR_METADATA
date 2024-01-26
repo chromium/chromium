@@ -1,5 +1,8 @@
+monorail: {
+  component: "UI>Browser>Mobile"
+}
 team_email: "clank-large-form-factors@google.com"
 os: ANDROID
-monorail {
-    component: "UI>Browser>Mobile"
+buganizer_public: {
+  component_id: 1457074
 }

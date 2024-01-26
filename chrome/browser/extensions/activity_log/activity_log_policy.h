@@ -102,7 +102,7 @@ class ActivityLogPolicy {
 
     // Serialize a Value as a JSON string.  Returns an empty string if value is
     // null.
-    static std::string Serialize(absl::optional<base::ValueView> value);
+    static std::string Serialize(std::optional<base::ValueView> value);
 
     // Removes potentially privacy-sensitive data that should not be logged.
     // This should generally be called on an Action before logging, unless

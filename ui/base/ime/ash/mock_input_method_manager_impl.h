@@ -75,9 +75,6 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
   void SetComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManager> comp_ime_manager);
 
-  // Set values that will be provided to the InputMethodUtil.
-  void set_application_locale(const std::string& value);
-
   // Set the value returned by IsISOLevel5ShiftUsedByCurrentInputMethod
   void set_mod3_used(bool value) { mod3_used_ = value; }
 

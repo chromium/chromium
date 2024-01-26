@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/files/file_path.h"
-
-#include <stddef.h>
-
+#include <cstddef>
 #include <sstream>
 
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This macro helps avoid wrapped lines in the test structs.

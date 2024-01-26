@@ -211,7 +211,7 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
   // instead be inside the template element's template contents, after its last
   // child (if any).
   if (auto* template_element = DynamicTo<HTMLTemplateElement>(*task.parent)) {
-    task.parent = template_element->TemplateContentForHTMLConstructionSite();
+    task.parent = template_element->TemplateContentOrDeclarativeShadowRoot();
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents, so bail out.
     if (!task.parent)
@@ -917,22 +917,20 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
     DeclarativeShadowRootType declarative_shadow_root_type) {
-  // Regardless of the state of the StreamingDeclarativeShadowDOM feature, the
-  // template element is always created. If the feature is enabled, and if the
-  // template is a valid declarative Shadow Root (has a valid attribute value
-  // and parent element), then the template is only added to the stack of open
-  // elements, but is not attached to the DOM tree.
+  // Regardless of whether a declarative shadow root is being attached, the
+  // template element is always created. If the template is a valid declarative
+  // Shadow Root (has a valid attribute value and parent element), then the
+  // template is only added to the stack of open elements, but is not attached
+  // to the DOM tree.
   auto* template_element = To<HTMLTemplateElement>(
       CreateElement(token, html_names::xhtmlNamespaceURI));
-  template_element->SetDeclarativeShadowRootType(declarative_shadow_root_type);
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if ((declarative_shadow_root_type ==
-           DeclarativeShadowRootType::kStreamingOpen ||
-       declarative_shadow_root_type ==
-           DeclarativeShadowRootType::kStreamingClosed) &&
+  if (declarative_shadow_root_type != DeclarativeShadowRootType::kNone &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
+    CHECK(declarative_shadow_root_type == DeclarativeShadowRootType::kOpen ||
+          declarative_shadow_root_type == DeclarativeShadowRootType::kClosed);
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
@@ -944,41 +942,27 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
 
-    ShadowRootType type = declarative_shadow_root_type ==
-                                  DeclarativeShadowRootType::kStreamingOpen
-                              ? ShadowRootType::kOpen
-                              : ShadowRootType::kClosed;
-    bool success = host->AttachStreamingDeclarativeShadowRoot(
+    ShadowRootType type =
+        declarative_shadow_root_type == DeclarativeShadowRootType::kOpen
+            ? ShadowRootType::kOpen
+            : ShadowRootType::kClosed;
+    bool success = host->AttachDeclarativeShadowRoot(
         *template_element, type, focus_delegation, slot_assignment_mode);
+    // If the shadow root attachment fails, e.g. if the host element isn't a
+    // valid shadow host, then we leave should_attach_template true, so that
+    // a "normal" template element gets attached to the DOM tree.
     if (success) {
       DCHECK(host->AuthorShadowRoot());
       UseCounter::Count(host->GetDocument(),
                         WebFeature::kStreamingDeclarativeShadowDOM);
       should_attach_template = false;
       template_element->SetDeclarativeShadowRoot(*host->AuthorShadowRoot());
-    } else {
-      // If the shadow root attachment fails, e.g. if the host element isn't a
-      // valid shadow host, then we leave should_attach_template true, so that
-      // a "normal" template element gets attached to the DOM tree.
-      template_element->SetDeclarativeShadowRootType(
-          DeclarativeShadowRootType::kNone);
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element, or the opening tag of a non-streaming
-    // declarative shadow root.
+    // Attach a normal template element.
     AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
-    // cant_attach_shadow can happen if we are being asked to attach a
-    // declarative shadowroot to another declarative shadowroot or another
-    // existing shadowroot.
-    bool cant_attach_shadow =
-        !IsA<Element>(open_elements_.TopStackItem()->GetNode());
-    DocumentFragment* template_content =
-        cant_attach_shadow ||
-                template_element->GetDeclarativeShadowRootType() ==
-                    DeclarativeShadowRootType::kNone
-            ? template_element->content()
-            : template_element->DeclarativeShadowContent();
+    DocumentFragment* template_content = template_element->content();
     if (pending_dom_parts_ && template_content) {
       pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
     }
@@ -1073,7 +1057,7 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
     // If the Document was detached in the middle of parsing, the template
     // element won't be able to initialize its contents.
     if (auto* content =
-            template_element->TemplateContentForHTMLConstructionSite()) {
+            template_element->TemplateContentOrDeclarativeShadowRoot()) {
       dummy_task.parent = content;
     }
   }
@@ -1136,7 +1120,7 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
     // element won't be able to initialize its contents. Fallback to the
     // current node's document in that case..
     if (auto* content =
-            template_element->TemplateContentForHTMLConstructionSite()) {
+            template_element->TemplateContentOrDeclarativeShadowRoot()) {
       return content->GetDocument();
     }
   }

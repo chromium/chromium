@@ -12,6 +12,7 @@
 
 #include <climits>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_paths.h"
@@ -21,18 +22,17 @@
 #include "base/ranges/algorithm.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_util {
 
 namespace {
 
-absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
+std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
       nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
   if (!file.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   constexpr ULONG kMaxNameSize = USHRT_MAX + sizeof(UNICODE_STRING);
@@ -43,7 +43,7 @@ absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
       ::NtQueryObject(file.get(), static_cast<OBJECT_INFORMATION_CLASS>(1),
                       buffer.get(), kMaxNameSize, &return_length);
   if (!NT_SUCCESS(status)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PUNICODE_STRING name = reinterpret_cast<PUNICODE_STRING>(buffer.get());
@@ -71,7 +71,7 @@ bool IsBrowserAlreadyRunning() {
     // probably broken already if this API is failing.
     return false;
   }
-  absl::optional<std::wstring> nt_dir_name =
+  std::optional<std::wstring> nt_dir_name =
       GetNtPathFromWin32Path(exe_dir_path.value());
   if (!nt_dir_name) {
     // See above for why false is returned here.

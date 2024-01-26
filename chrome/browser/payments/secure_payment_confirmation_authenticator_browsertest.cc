@@ -96,7 +96,7 @@ class SecurePaymentConfirmationAuthenticatorTestBase
             .ExtractString();
     ASSERT_EQ(std::string::npos, response.find("Error")) << response;
 
-    absl::optional<base::Value> value = base::JSONReader::Read(response);
+    std::optional<base::Value> value = base::JSONReader::Read(response);
     ASSERT_TRUE(value.has_value());
     ASSERT_TRUE(value->is_dict());
     const auto& value_dict = value->GetDict();
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
           .ExtractString();
 
   ASSERT_EQ(std::string::npos, response.find("Error"));
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value = base::JSONReader::Read(response);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
   const base::Value::Dict& value_dict = value->GetDict();
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ASSERT_NE(nullptr, origin) << response;
   EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
 
-  absl::optional<bool> cross_origin = value_dict.FindBool("crossOrigin");
+  std::optional<bool> cross_origin = value_dict.FindBool("crossOrigin");
   ASSERT_TRUE(cross_origin.has_value()) << response;
   EXPECT_TRUE(cross_origin.value());
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
           .ExtractString();
 
   ASSERT_EQ(std::string::npos, response.find("Error"));
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value = base::JSONReader::Read(response);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(
           .ExtractString();
 
   ASSERT_EQ(std::string::npos, response.find("Error"));
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value = base::JSONReader::Read(response);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 

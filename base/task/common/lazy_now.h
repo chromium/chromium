@@ -34,9 +34,8 @@ class BASE_EXPORT LazyNow {
 
  private:
   absl::optional<TimeTicks> now_;
-  // `tick_clock_` is not a raw_ptr<TickClock> as a performance optimization:
-  // The pointee doesn't need UaF protection (it has the same lifetime as the
-  // theead/sequence).
+  // RAW_PTR_EXCLUSION: The pointee doesn't need UaF protection (it has the same
+  // lifetime as the thread/sequence).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
 };
 

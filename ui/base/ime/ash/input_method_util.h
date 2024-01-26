@@ -96,14 +96,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   //    m17n:vi_telex -> _comp_ime_...vkd_vi_telex
   //  - ChromiumOS input method ID to ChromeOS one, or vice versa, e.g.
   //    _comp_ime_xxxxxx...xkb:us::eng -> _comp_ime_yyyyyy...xkb:us::eng
-  static std::string MigrateInputMethod(const std::string& input_method_id);
+  static std::string GetMigratedInputMethod(const std::string& input_method_id);
 
   // Migrates the input method IDs.
   // Returns true if the given input method id list is modified,
   // returns false otherwise.
   // This method should not be removed because it's required to transfer XKB
   // input method ID from VPD into extension-based XKB input method ID.
-  static bool MigrateInputMethods(std::vector<std::string>* input_method_ids);
+  static bool GetMigratedInputMethodIDs(
+      std::vector<std::string>* input_method_ids);
 
   // Updates the internal cache of hardware layouts.
   void UpdateHardwareLayoutCache();

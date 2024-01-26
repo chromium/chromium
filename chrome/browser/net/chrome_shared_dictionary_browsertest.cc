@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -23,18 +25,20 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/url_constants.h"
 
 namespace {
 
-constexpr base::StringPiece kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryHashBase64 =
+    ":CqNpAU9/qzcL6UB0aYVFx7uTLsRhJSePN780qwKjWuw=:";
 
-constexpr base::StringPiece kCompressedDataOriginalString =
+constexpr std::string_view kCompressedDataOriginalString =
     "This is compressed test data using a test dictionary";
 
 // kBrotliCompressedData is generated using the following commands:
@@ -101,13 +105,21 @@ class SharedDictionaryAccessObserver : public content::WebContentsObserver {
   network::mojom::SharedDictionaryAccessDetailsPtr details_;
 };
 
-absl::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  auto it = headers.find("sec-available-dictionary");
-  if (it == headers.end()) {
-    return absl::nullopt;
+  switch (
+      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
+      auto it = headers.find("sec-available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
+      auto it = headers.find("available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
   }
-  return it->second;
 }
 
 void CheckSharedDictionaryUseCounter(
@@ -153,14 +165,23 @@ void CheckSharedDictionaryUseCounter(
 // `ChromeSharedDictionaryBrowserTest` is required to test Chrome
 // specific code such as Site Settings.
 // See `SharedDictionaryBrowserTest` for content's version of tests.
-class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
+class ChromeSharedDictionaryBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<
+          network::features::CompressionDictionaryTransportBackendVersion> {
  public:
   ChromeSharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport,
-         network::features::kSharedZstd},
+        {base::test::FeatureRefAndParams(
+             network::features::kCompressionDictionaryTransportBackend,
+             {{network::features::kCompressionDictionaryTransportBackendVersion
+                   .name,
+               network::features::kCompressionDictionaryTransportBackendVersion
+                   .GetName(GetVersion())}}),
+         base::test::FeatureRefAndParams(
+             network::features::kCompressionDictionaryTransport, {}),
+         base::test::FeatureRefAndParams(network::features::kSharedZstd, {})},
         /*disabled_features=*/{});
 
     embedded_test_server()->RegisterRequestHandler(
@@ -181,6 +202,9 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
       const ChromeSharedDictionaryBrowserTest&) = delete;
 
  protected:
+  network::features::CompressionDictionaryTransportBackendVersion GetVersion() {
+    return GetParam();
+  }
   net::EmbeddedTestServer* cross_origin_server() {
     return cross_origin_server_.get();
   }
@@ -312,33 +336,40 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     if (request.relative_url == "/dictionary") {
       response->set_content_type("text/plain");
       response->AddCustomHeader("use-as-dictionary", "match=\"/path/*\"");
+      response->AddCustomHeader("cache-control", "max-age=3600");
       response->set_content(kTestDictionaryString);
       return response;
     } else if (request.relative_url == "/path/check_header") {
       response->set_content_type("text/plain");
-      absl::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+      std::optional<std::string> dict_hash =
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
     } else if (request.relative_url == "/path/check_header1.html" ||
                request.relative_url == "/path/check_header2.html") {
       response->set_content_type("text/html");
-      absl::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+      std::optional<std::string> dict_hash =
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
     } else if (request.relative_url == "/path/brotli_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding", "sbr");
+      response->AddCustomHeader("content-encoding",
+                                network::GetSharedBrotliContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kBrotliCompressedDataString);
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding", "zstd-d");
+      response->AddCustomHeader("content-encoding",
+                                network::GetSharedZstdContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kZstdCompressedDataString);
       return response;
     }
@@ -348,7 +379,26 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeSharedDictionaryBrowserTest,
+    testing::Values(
+        network::features::CompressionDictionaryTransportBackendVersion::kV1,
+        network::features::CompressionDictionaryTransportBackendVersion::kV2),
+    [](const testing::TestParamInfo<
+        network::features::CompressionDictionaryTransportBackendVersion>&
+           info) {
+      switch (info.param) {
+        case network::features::CompressionDictionaryTransportBackendVersion::
+            kV1:
+          return "V1";
+        case network::features::CompressionDictionaryTransportBackendVersion::
+            kV2:
+          return "V2";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockWriting) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
@@ -359,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
   EXPECT_FALSE(TryRegisterDictionary(*embedded_test_server()));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        BlockWritingCrossOrigin) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
@@ -371,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
   EXPECT_FALSE(TryRegisterDictionary(*cross_origin_server()));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockReading) {
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockReading) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
@@ -388,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockReading) {
       CheckDictionaryHeader(*embedded_test_server(), /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        BlockReadingCrossOrigin) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -406,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       CheckDictionaryHeader(*cross_origin_server(), /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        BlockReadingWhileNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -427,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        BlockReadingWhileIframeNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -448,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        UseCounterMainFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -482,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        UseCounterSubFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -527,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        UseCounterSubresource) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -566,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        UseCounterZstdMainFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -600,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
                        UseCounterZstdSubresource) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -645,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
 #else
 #define MAYBE_SiteDataCount SiteDataCount
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
+IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
   base::Time time1 = base::Time::Now();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that mouse manipulation through input domain works concurrently from multiple sessions.');
   var page = await testRunner.createPage();
   var session1 = await page.createSession();

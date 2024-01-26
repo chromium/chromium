@@ -519,8 +519,8 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
                                                         app_name, extension));
   }
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      scoped_supress = absl::nullopt;
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
   scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
   // File extensions should still be left behind, even though the app has been

@@ -6,12 +6,13 @@
 #define CHROME_SERVICES_SHARING_PUBLIC_CPP_ADVERTISEMENT_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {
 
@@ -25,7 +26,7 @@ class Advertisement {
       std::vector<uint8_t> salt,
       std::vector<uint8_t> encrypted_metadata_key,
       nearby_share::mojom::ShareTargetType device_type,
-      absl::optional<std::string> device_name);
+      std::optional<std::string> device_name);
 
   Advertisement(Advertisement&& other);
   Advertisement(const Advertisement& other) = delete;
@@ -42,9 +43,7 @@ class Advertisement {
   nearby_share::mojom::ShareTargetType device_type() const {
     return device_type_;
   }
-  const absl::optional<std::string>& device_name() const {
-    return device_name_;
-  }
+  const std::optional<std::string>& device_name() const { return device_name_; }
   bool HasDeviceName() const { return device_name_.has_value(); }
 
   static const uint8_t kSaltSize = 2;
@@ -55,7 +54,7 @@ class Advertisement {
                 std::vector<uint8_t> salt,
                 std::vector<uint8_t> encrypted_metadata_key,
                 nearby_share::mojom::ShareTargetType device_type,
-                absl::optional<std::string> device_name);
+                std::optional<std::string> device_name);
 
   // The version of the advertisement. Different versions can have different
   // ways of parsing the endpoint id.
@@ -75,7 +74,7 @@ class Advertisement {
   nearby_share::mojom::ShareTargetType device_type_;
 
   // The human readable name of the remote device.
-  absl::optional<std::string> device_name_;
+  std::optional<std::string> device_name_;
 };
 
 }  // namespace sharing

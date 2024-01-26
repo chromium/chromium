@@ -18,6 +18,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_detachable_base_model.h"
@@ -429,22 +430,23 @@ class LockDebugView::DebugDataDispatcherTransformer
   // Toggles force online sign-in for the user at |user_index|.
   void ToggleForceOnlineSignInForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleForceOnlineSignInForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
   }
 
   // Enables or disables user management for the user at |user_index|.
   void ToggleManagementForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleManagementForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleManagementForUser(debug_users_[user_index].account_id);
   }
 
   // Toggles TPM disabled message for the user at |user_index|.
   void ToggleDisableTpmForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleDisableTpmForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleDisableTpmForUser(debug_users_[user_index].account_id);
   }
 
   // Cycles disabled auth message for the user at |user_index|.
@@ -487,9 +489,10 @@ class LockDebugView::DebugDataDispatcherTransformer
     }
 
     debug_dispatcher_.EnableAuthForUser(debug_user->account_id);
-    lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.SetMultiUserSignInPolicyForUser(
         debug_users_[user_index].account_id, multi_user_sign_in_policy);
-    lock_debug_view_->lock()->UndoForceOnlineSignInForUserForDebug(
+    lock_test_api.UndoForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
 
     switch (debug_user->auth_enable_state) {
@@ -507,7 +510,7 @@ class LockDebugView::DebugDataDispatcherTransformer
         break;
       case DebugAuthEnabledState::kMultiUserPolicyPrimaryOnly:
       case DebugAuthEnabledState::kMultiUserPolicyNotAllowed:
-        lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+        lock_test_api.SetMultiUserSignInPolicyForUser(
             debug_users_[user_index].account_id, multi_user_sign_in_policy);
         break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
@@ -1114,6 +1117,7 @@ void LockDebugView::TogglePublicAccountButtonPressed(int index) {
 }
 
 void LockDebugView::CycleAuthErrorMessage() {
+  LockContentsViewTestApi lock_test_api(lock_);
   switch (next_auth_error_type_) {
     case AuthErrorType::kFirstUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailedCapsLockOn;
@@ -1122,25 +1126,25 @@ void LockDebugView::CycleAuthErrorMessage() {
       debug_detachable_base_model_->SetPairingState(
           DetachableBasePairingStatus::kNone,
           DebugLoginDetachableBaseModel::kNullBaseId);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kFirstUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kSecondUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailedCapsLockOn;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           false /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kSecondUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kDetachableBaseFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kDetachableBaseFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailed;

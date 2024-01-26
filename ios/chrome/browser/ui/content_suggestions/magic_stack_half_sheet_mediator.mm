@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
@@ -20,7 +21,7 @@
 @end
 
 @implementation MagicStackHalfSheetMediator {
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
 
   PrefBackedBoolean* _setUpListDisabled;
   PrefBackedBoolean* _safetyCheckDisabled;

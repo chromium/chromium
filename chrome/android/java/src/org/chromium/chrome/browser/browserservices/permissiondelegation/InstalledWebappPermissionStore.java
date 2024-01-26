@@ -98,7 +98,7 @@ public class InstalledWebappPermissionStore {
      */
     @Nullable
     public @ContentSettingValues Integer getPermission(
-            @ContentSettingsType int type, Origin origin) {
+            @ContentSettingsType.EnumType int type, Origin origin) {
         String key = createPermissionSettingKey(type, origin);
 
         if (!mPreferences.contains(key)) {
@@ -154,15 +154,14 @@ public class InstalledWebappPermissionStore {
     }
 
     /**
-     * Sets the permission state for the origin.
-     * Returns whether {@code true} if state was changed, {@code false} if the provided state was
-     * the same as the state beforehand.
+     * Sets the permission state for the origin. Returns whether {@code true} if state was changed,
+     * {@code false} if the provided state was the same as the state beforehand.
      */
     boolean setStateForOrigin(
             Origin origin,
             String packageName,
             String appName,
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             @ContentSettingValues int settingValue) {
         boolean modified = !getStoredOrigins().contains(origin.toString());
 
@@ -211,7 +210,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Reset permission {@type} from the store. */
-    void resetPermission(Origin origin, @ContentSettingsType int type) {
+    void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
         mPreferences
                 .edit()
                 .remove(createPermissionKey(type, origin))
@@ -264,7 +263,7 @@ public class InstalledWebappPermissionStore {
         mPreferences.edit().putStringSet(KEY_ALL_ORIGINS, origins).apply();
     }
 
-    private static String getKeyPermissionPrefix(@ContentSettingsType int type) {
+    private static String getKeyPermissionPrefix(@ContentSettingsType.EnumType int type) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 return KEY_NOTIFICATION_PERMISSION_PREFIX;
@@ -275,7 +274,7 @@ public class InstalledWebappPermissionStore {
         }
     }
 
-    private static String getPermissionSettingKeyPrefix(@ContentSettingsType int type) {
+    private static String getPermissionSettingKeyPrefix(@ContentSettingsType.EnumType int type) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 return KEY_NOTIFICATION_PERMISSION_SETTING_PREFIX;
@@ -286,11 +285,13 @@ public class InstalledWebappPermissionStore {
         }
     }
 
-    private static String createPermissionKey(@ContentSettingsType int type, Origin origin) {
+    private static String createPermissionKey(
+            @ContentSettingsType.EnumType int type, Origin origin) {
         return getKeyPermissionPrefix(type) + origin.toString();
     }
 
-    private static String createPermissionSettingKey(@ContentSettingsType int type, Origin origin) {
+    private static String createPermissionSettingKey(
+            @ContentSettingsType.EnumType int type, Origin origin) {
         return getPermissionSettingKeyPrefix(type) + origin.toString();
     }
 

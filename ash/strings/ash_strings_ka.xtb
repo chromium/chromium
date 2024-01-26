@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">მობილური ქსელი არ არის</translation>
 <translation id="1882897271359938046">გამოსახვა <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">თითის ანაბეჭდით განბლოკვა</translation>
-<translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> ჰც) არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ით (<ph name="FALLBACK_REFRESH_RATE" />). დააწკაპუნეთ ცვლილებების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩენილია <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">ახალდაინსტალირებული</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1918022425394817322">კამერა მიზიდულია ზედა მარჯვენა კუთხეში</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">კამერის გადახედვა ჩართულია</translation>
 <translation id="2067602449040652523">კლავიატურის სიკაშკაშე</translation>
 <translation id="2075520525463668108">გადაირთოს <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> არის <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">შემდეგ სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარჯვნივ ოთხი თითით</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2083190527011054446">ღამე მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Emoji-ს ამომრჩევის გახსნა</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">წინა ჩანაწერზე გადასვლა</translation>
 <translation id="2152895518047545149">როგორც ჩანს, არაფერი აკლია. ყოჩაღ!</translation>
 <translation id="2161132820593978283">ცადეთ კამერის კადრირება, რის მეშვეობითაც, ვიდეოზარების დროს, ეკრანის ცენტრში იქნებით მოქცეული. მისი ჩართვა შეგიძლიათ სწრაფი პარამეტრებიდან.</translation>
-<translation id="2170530631236737939">მიმოხილვიდან გასასვლელად გადაფურცლეთ ქვემოთ სამი თითით</translation>
 <translation id="2185166372312820725">წინა ჩანართზე გადასვლა</translation>
 <translation id="2185444992308415167">1-ელიდან მე-8 ჩანართებს შორის გადასვლა</translation>
 <translation id="2198625180564913276">მიმდინარეობს პროფილის დამატება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
+<translation id="2744221223678373668">გაზიარებული</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"წაშლა"</translation>
 <translation id="2750941250130734256">აქტიური ფანჯრის ჩამაგრება მოხსნილია.</translation>
 <translation id="2761723519669354964">გამოყოფილი ერთეულის გახსნა თაროდან</translation>
+<translation id="2762000892062317888">ახლახან</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-დან <ph name="KEY_TWO" />-მდე</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">წარმოიქმნა შეფერხება. ცადეთ ხელახლა.</translation>
 <translation id="3580650856351781466">მიმდინარეობს მეტყველების ფაილების ჩამოტვირთვა</translation>
 <translation id="3585296979871889131">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილების, შეტყობინებებისა და აპების ნახვა</translation>
+<translation id="3590441166907930941">გვერდითა ღილაკი</translation>
 <translation id="3593039967545720377">თქვენი გაცვლის ბუფერის ისტორიაზე წვდომისთვის და გაცვლის ბუფერის სანახავად დააჭირეთ კლავიშთა კომბინაციას <ph name="SHORTCUT_KEY_NAME" /> + V. დასაწყებად დააკოპირეთ ერთეული.</translation>
 <translation id="3593646411856133110">გახსნილი აპების სანახავად გადაფურცლეთ ზემოთ და არ აუშვათ</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">პასუხი</translation>
 <translation id="3990002060657467458">მართვის ხშირად გამოყენებული საშუალებები (მაგალითად, Wi-Fi, Bluetooth და ხმის სიძლიერე) მოცემულია სწრაფ პარამეტრებში. იქიდან ეკრანის ანაბეჭდების გადაღებასაც შეძლებთ.</translation>
 <translation id="3995138139523574647">USB-C მოწყობილობა (მარჯვენა უკანა პორტი)</translation>
+<translation id="4002066346123236978">სათაური</translation>
 <translation id="40062176907008878">ხელნაწერი</translation>
 <translation id="4011112806063830608">„არ შემაწუხოთ“ რეჟიმი ჩართულია.</translation>
 <translation id="4017989525502048489">ლაზერული მიმთითებელი</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">ბატარეის მდგომარეობა: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ციკლების რაოდენობა: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">სამუშაო მაგიდის შენახვა შაბლონად</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
+<translation id="5168753792967365150">Google Tasks-ში რედაქტირება</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
 <translation id="5187627942836026988">უსადენო ქსელის დეტალების ნახვა. უსადენო ქსელი დაბლოკილია თქვენი ადმინისტრატორის მიერ.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">თქვენი დაინსტალირებული აპები</translation>
 <translation id="6173151025443907148">მეორე მომხმარებლის შესვლა მხარდაუჭერელია, როცა Lacros ჩართულია. გამოიყენეთ ბრაუზერის მეორე პროფილი Lacros-ში, ან გათიშეთ Lacros და ცადეთ ხელახლა.</translation>
 <translation id="6179832488876878285">აქ შეგიძლიათ მნიშვნელოვანი ფაილების ჩამაგრება. დასაწყებად გახსენით ფაილების აპი.</translation>
+<translation id="6180193585172850042">ღილაკი „უკან“</translation>
+<translation id="6180651297859206670">ღილაკი „წინ“</translation>
 <translation id="6182592640011875895">სამუშაო მაგიდის გახსნა</translation>
 <translation id="6185696379715117369">ერთი გვერდით ზემოთ</translation>
 <translation id="619335566042889110">სრულად დატენა ახლავე</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">არ შემაწუხოთ</translation>
 <translation id="7851039877802112575">ამომხტარი და დიალოგური ფანჯრების მოქცევა ფოკუსში</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით</translation>
 <translation id="7862292329216937261">მოწყობილობის სტუმრის რეჟიმში გამოსაყენებლად უნდა გახვიდეთ სისტემიდან, შემდეგ კი ეკრანის ქვედა ნაწილში აირჩიოთ „დათვალიერება სტუმრის სტატუსით“.</translation>
 <translation id="7866482334467279021">ჩართული</translation>
 <translation id="7872786842639831132">გამორთვა</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
 <translation id="8270450402312105425">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # საათის განმავლობაში}}</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
-<translation id="8284362522226889623">წინა სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარცხნივ ოთხი თითით</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>
 <translation id="8308637677604853869">წინა მენიუ</translation>

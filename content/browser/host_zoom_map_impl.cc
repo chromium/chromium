@@ -41,12 +41,6 @@ namespace content {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-const char kRequestDesktopSiteZoomScaleParamName[] = "desktop_site_zoom_scale";
-const double kDefaultRequestDesktopSiteZoomScale =
-    1.1;  // Equivalent to 110% zoom.
-#endif
-
 std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!rfh)
@@ -182,28 +176,20 @@ double HostZoomMapImpl::GetZoomLevelForHostAndScheme(const std::string& scheme,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-double HostZoomMapImpl::GetZoomLevelForHostAndScheme(
+double HostZoomMapImpl::GetZoomLevelForHostAndSchemeAndroid(
     const std::string& scheme,
-    const std::string& host,
-    bool is_overriding_user_agent) {
+    const std::string& host) {
   double zoom_level = GetZoomLevelForHostAndScheme(scheme, host);
 
-  // On Android, if Request Desktop Site zoom is enabled, use a pre-defined zoom
-  // scale (default to 1.1, or 110%) relative to the current host zoom level
-  // when the desktop user agent is used.
-  double desktop_site_zoom_scale =
-      GetDesktopSiteZoomScale(is_overriding_user_agent);
-
   // On Android, we will use a zoom level that considers the current OS-level
-  // setting and the desktop site zoom scale. For this we pass the given |level|
-  // through JNI to the Java-side code, which can access the Android
-  // configuration and |fontScale|. This method will return the adjusted zoom
-  // level considering OS settings as well as the desktop site zoom. Note that
-  // the OS |fontScale| will be factored in only when the Page Zoom feature is
-  // enabled.
+  // setting. For this we pass the given |level| through JNI to the Java-side
+  // code, which can access the Android configuration and |fontScale|. This
+  // method will return the adjusted zoom level considering OS settings. Note
+  // that the OS |fontScale| will be factored in only when the Page Zoom feature
+  // is enabled.
   JNIEnv* env = base::android::AttachCurrentThread();
-  double adjusted_zoom_level = Java_HostZoomMapImpl_getAdjustedZoomLevel(
-      env, zoom_level, desktop_site_zoom_scale);
+  double adjusted_zoom_level =
+      Java_HostZoomMapImpl_getAdjustedZoomLevel(env, zoom_level);
   return adjusted_zoom_level;
 }
 #endif
@@ -389,9 +375,8 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
     url = GetURLFromEntry(entry);
 
 #if BUILDFLAG(IS_ANDROID)
-  return GetZoomLevelForHostAndScheme(
-      url.scheme(), net::GetHostOrSpecFromURL(url),
-      entry && entry->GetIsOverridingUserAgent());
+  return GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
+                                             net::GetHostOrSpecFromURL(url));
 #else
   return GetZoomLevelForHostAndScheme(url.scheme(),
                                       net::GetHostOrSpecFromURL(url));
@@ -542,17 +527,6 @@ HostZoomMapImpl::GetDefaultZoomLevelPrefCallback() {
   return &default_zoom_level_pref_callback_;
 }
 
-double HostZoomMapImpl::GetDesktopSiteZoomScale(bool is_overriding_user_agent) {
-  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteZoom) &&
-      is_overriding_user_agent) {
-    return base::GetFieldTrialParamByFeatureAsDouble(
-        features::kRequestDesktopSiteZoom,
-        kRequestDesktopSiteZoomScaleParamName,
-        kDefaultRequestDesktopSiteZoomScale);
-  }
-  return 1;
-}
-
 void JNI_HostZoomMapImpl_SetZoomLevel(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
@@ -681,19 +655,6 @@ ScopedJavaLocalRef<jobjectArray> JNI_HostZoomMapImpl_GetAllHostZoomLevels(
   }
 
   return base::android::ToTypedJavaArrayOfObjects(env, jobject_vector, type);
-}
-
-jdouble JNI_HostZoomMapImpl_GetDesktopSiteZoomScale(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
-
-  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(web_contents));
-  NavigationEntry* entry =
-      web_contents->GetController().GetLastCommittedEntry();
-  return host_zoom_map->GetDesktopSiteZoomScale(
-      entry && entry->GetIsOverridingUserAgent());
 }
 #endif
 

@@ -4,6 +4,7 @@
 
 #include "partition_alloc/starscan/stats_collector.h"
 
+#include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "partition_alloc/starscan/logging.h"
 #include "partition_alloc/starscan/stats_reporter.h"

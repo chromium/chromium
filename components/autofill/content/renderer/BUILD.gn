@@ -111,3 +111,31 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [
+    "a11y_utils_browsertest.cc",
+    "autofill_agent_browsertest.cc",
+    "autofill_agent_form_interaction_browsertest.cc",
+    "form_autofill_issues_browsertest.cc",
+    "form_autofill_util_browsertest.cc",
+    "form_cache_browsertest.cc",
+    "form_tracker_browsertest.cc",
+    "html_based_username_detector_browsertest.cc",
+    "password_form_conversion_utils_browsertest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/content/common/mojom",
+    "//components/autofill/core/common",
+    "//content/public/renderer",
+    "//google_apis:google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+  ]
+}

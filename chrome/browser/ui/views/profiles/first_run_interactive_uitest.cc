@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -268,12 +270,9 @@ class FirstRunParameterizedInteractiveUiTest
                   /*force_chrome_build=*/true));
 
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoiceFre, {}});
-      enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice, {}});
+          {switches::kSearchEngineChoiceTrigger, {}});
     } else {
-      disabled_features.push_back(switches::kSearchEngineChoice);
-      disabled_features.push_back(switches::kSearchEngineChoiceFre);
+      disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
     }
 
     if (WithPrivacySandboxEnabled()) {
@@ -337,6 +336,10 @@ class FirstRunParameterizedInteractiveUiTest
     return GetParam().with_privacy_sandbox_enabled;
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   auto CompleteSearchEngineChoiceStep() {
     const DeepQuery first_search_engine = {"search-engine-choice-app",
                                            "cr-radio-button"};
@@ -345,6 +348,16 @@ class FirstRunParameterizedInteractiveUiTest
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+        Do([&] {
+          histogram_tester().ExpectBucketCount(
+              search_engines::kSearchEngineChoiceScreenEventsHistogram,
+              search_engines::SearchEngineChoiceScreenEvents::
+                  kFreChoiceScreenWasDisplayed,
+              1);
+          EXPECT_EQ(user_action_tester_.GetActionCount(
+                        "SearchEngineChoiceScreenShown"),
+                    1);
+        }),
         // Click on "More" to scroll to the bottom of the search engine list.
         PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton),
         // The button should become disabled because we didn't make a choice.
@@ -363,6 +376,8 @@ class FirstRunParameterizedInteractiveUiTest
   }
 
  private:
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
@@ -377,7 +392,6 @@ INSTANTIATE_TEST_SUITE_P(,
 // the FRE and not after it is closed.
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   OpenFirstRun(proceed_future.GetCallback());
   RunTestSequenceInContext(
@@ -398,10 +412,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
 }
@@ -410,7 +424,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                        CloseChromeWithKeyboardShortcut) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   OpenFirstRun(proceed_future.GetCallback());
   RunTestSequenceInContext(
@@ -429,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   WaitForPickerClosed();
 
   EXPECT_FALSE(proceed_future.Get());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
 }
@@ -437,7 +450,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(IsProfileNameDefault());
 
@@ -457,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
       Do([&] {
         EXPECT_FALSE(GetFirstRunFinishedPrefValue());
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester().ExpectUniqueSample(
             "Signin.SignIn.Offered",
             signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
       }),
@@ -473,7 +485,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
                                    GetSigninChromeSyncDiceUrl()),
 
       Do([&] {
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester().ExpectUniqueSample(
             "Signin.SignIn.Started",
             signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
       }));
@@ -483,7 +495,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
   GURL sync_page_url = AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
@@ -496,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       WaitForWebContentsNavigation(kWebContentsId, sync_page_url),
 
       Do([&] {
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester().ExpectUniqueSample(
             "Signin.SyncOptIn.Started",
             signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
       }),
@@ -525,18 +537,18 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     EXPECT_TRUE(privacy_sandbox_service->IsPromptOpenForBrowser(browser()));
   }
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   if (WithDefaultBrowserStep()) {
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         "ProfilePicker.FirstRun.DefaultBrowser",
         DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
 
   if (WithSearchEngineChoiceStep()) {
-    histogram_tester.ExpectBucketCount(
+    histogram_tester().ExpectBucketCount(
         search_engines::kSearchEngineChoiceScreenEventsHistogram,
         search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
   }
@@ -550,29 +562,28 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
   // Re-assessment of all metrics from this flow, and check for no
   // double-logs.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(IsProfileNameDefault());
 
@@ -615,27 +626,26 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
 
   // Checking the expected metrics from this flow.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(IsProfileNameDefault());
 
@@ -683,26 +693,25 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
 
   // Checking the expected metrics from this flow.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                        PeekAndDeclineSignIn) {
-  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -744,13 +753,13 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
@@ -758,7 +767,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                        DeclineProfileManagement) {
   base::test::TestFuture<bool> proceed_future;
-  base::HistogramTester histogram_tester;
 
   policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(
@@ -822,20 +830,20 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   EXPECT_TRUE(IsUsingDefaultProfileName());
 
   // Checking the expected metrics from this flow.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }

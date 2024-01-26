@@ -27,7 +27,6 @@ bool GetTestDataPath(const std::string& filename, base::FilePath* result_path) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path)) {
     LOG(FATAL) << "Failed to get the path to root for " << filename;
-    return false;
   }
   path = path.Append(FILE_PATH_LITERAL("chromeos"));
   path = path.Append(FILE_PATH_LITERAL("components"));
@@ -37,7 +36,6 @@ bool GetTestDataPath(const std::string& filename, base::FilePath* result_path) {
   path = path.Append(FILE_PATH_LITERAL(filename));
   if (!base::PathExists(path)) {  // We don't want to create this.
     LOG(FATAL) << "The file doesn't exist: " << path;
-    return false;
   }
 
   *result_path = path;
@@ -63,7 +61,6 @@ base::Value ReadTestJson(const std::string& filename) {
   base::FilePath path;
   if (!GetTestDataPath(filename, &path)) {
     LOG(FATAL) << "Unable to get test file path for: " << filename;
-    return {};
   }
   JSONFileValueDeserializer deserializer(
       path,

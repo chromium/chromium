@@ -450,12 +450,13 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY),
       /*mimetype*/ PrintMimeTypes(),
-      /*size*/ absl::nullopt,
+      /*size*/ std::nullopt,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -513,12 +514,13 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
       /*mimetype*/ PrintMimeTypes(),
-      /*size*/ absl::nullopt,
+      /*size*/ std::nullopt,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -578,17 +580,18 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
           /*dlp_verdict*/
           CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
           /*mimetype*/ PrintMimeTypes(),
-          /*size*/ absl::nullopt,
+          /*size*/ std::nullopt,
           /*result*/
           safe_browsing::EventResultToString(
               safe_browsing::EventResult::BYPASSED),
           /*username*/ kUserName,
           /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ kScanId);
+          /*scan_id*/ kScanId,
+          /*content_transfer_method*/ absl::nullopt);
       ASSERT_TRUE(test_delegate_);
       test_delegate_->SetPageWarningForTesting(
           CreateResponse(ContentAnalysisResponse::Result::TriggeredRule::WARN));
-      test_delegate_->BypassWarnings(absl::nullopt);
+      test_delegate_->BypassWarnings(std::nullopt);
     }
   }));
 
@@ -604,12 +607,13 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
       /*mimetype*/ PrintMimeTypes(),
-      /*size*/ absl::nullopt,
+      /*size*/ std::nullopt,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -661,12 +665,13 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK),
       /*mimetype*/ PrintMimeTypes(),
-      /*size*/ absl::nullopt,
+      /*size*/ std::nullopt,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;

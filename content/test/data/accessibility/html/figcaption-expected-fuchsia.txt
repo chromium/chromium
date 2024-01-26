@@ -1,0 +1,13 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++IMAGE label='This is a green box.'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Fig.1 - A green Box'
+++++++++++++UNKNOWN label='Fig.1 - A green Box'
+++++++UNKNOWN
+++++++++IMAGE label='This is a blue box.'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Fig.2 - A blue Box'
+++++++++++++UNKNOWN label='Fig.2 - A blue Box'

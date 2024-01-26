@@ -505,11 +505,20 @@ PositionTemplate<Strategy> FirstEditablePositionAfterPositionInRootAlgorithm(
       !editable_position.AnchorNode()->IsDescendantOf(&highest_root))
     return PositionTemplate<Strategy>();
 
-  // If |editablePosition| has the non-editable child skipped, get the next
-  // sibling position. If not, we can't get the next paragraph in
-  // InsertListCommand::doApply's while loop. See http://crbug.com/571420
-  if (non_editable_node &&
-      non_editable_node->IsDescendantOf(editable_position.AnchorNode())) {
+  // If `non_editable_node` is the last child of
+  // `editable_position.AnchorNode()`, obtain the next sibling position.
+  // - If we do not obtain the next sibling position, we will be unable to
+  //   access the next paragraph within the `InsertListCommand::DoApply` while
+  //   loop. See http://crbug.com/571420 for more details.
+  // - If `non_editable_node` is not the last child, we will bypass the next
+  //   editable sibling position. See http://crbug.com/1334557 for more details.
+  bool need_obtain_next =
+      RuntimeEnabledFeatures::GetNextSiblingPositionWhenLastChildEnabled()
+          ? non_editable_node && editable_position.AnchorNode() &&
+                non_editable_node == editable_position.AnchorNode()->lastChild()
+          : non_editable_node && non_editable_node->IsDescendantOf(
+                                     editable_position.AnchorNode());
+  if (need_obtain_next) {
     // Make sure not to move out of |highest_root|
     const PositionTemplate<Strategy> boundary =
         PositionTemplate<Strategy>::LastPositionInNode(highest_root);

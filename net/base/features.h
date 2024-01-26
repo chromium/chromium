@@ -87,6 +87,13 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Update protocol using ALPN information in HTTPS DNS records.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 
+// If enabled, HostResolver will use the new HostResolverCache that separately
+// caches by DNS type, unlike the old HostCache that always cached by merged
+// request results. May enable related behavior such as separately sorting DNS
+// results after each transaction rather than sorting collectively after all
+// transactions complete.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
+
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by
 // `kAlternativePortForGloballyReachableCheck` flag. Otherwise, the globally
@@ -311,11 +318,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 
-// Feature to enable consideration of 3PCD Support settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
+// Feature to enable consideration of 3PC deprecation trial settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTpcdTrialSettings);
 
-// Feature to enable consideration of top-level 3PCD Support settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdSupportSettings);
+// Feature to enable consideration of top-level 3PC deprecation trial settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdTrialSettings);
 
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.

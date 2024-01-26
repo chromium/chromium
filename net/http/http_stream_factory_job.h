@@ -23,7 +23,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_request.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/client_socket_pool_manager.h"
@@ -32,6 +32,7 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -96,8 +97,7 @@ class HttpStreamFactory::Job
                                     const SSLInfo& ssl_info) = 0;
 
     // Invoked when |job| raises failure for SSL Client Auth.
-    virtual void OnNeedsClientAuth(Job* job,
-                                   SSLCertRequestInfo* cert_info) = 0;
+    virtual void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) = 0;
 
     // Invoked when |job| needs proxy authentication.
     virtual void OnNeedsProxyAuth(Job* job,
@@ -349,6 +349,17 @@ class HttpStreamFactory::Job
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy);
 
+  // Returns whether an appropriate SPDY or QUIC session would correspond to
+  // either a connection to the last proxy server in the chain (for the
+  // traditional HTTP proxying behavior of sending a GET request to the proxy
+  // server) or a connection through the entire proxy chain (for tunneled
+  // requests).
+  // TODO(https://crbug.com/1495793): Support for this is being removed for QUIC
+  // proxy chains, but will remain for SPDY proxies (so update the comment
+  // above once this change is made).
+  static bool IsGetToProxy(const ProxyChain& proxy_chain,
+                           const GURL& origin_url);
+
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;
 
@@ -370,6 +381,8 @@ class HttpStreamFactory::Job
   // with an HTTPS origin, and proxying a cleartext HTTP request over an HTTP/2
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy() const;
+
+  bool disable_cert_verification_network_fetches() const;
 
   const HttpRequestInfo request_info_;
   RequestPriority priority_;
@@ -431,7 +444,7 @@ class HttpStreamFactory::Job
   // True if this job might succeed with a different proxy config.
   bool should_reconsider_proxy_ = false;
 
-  QuicStreamRequest quic_request_;
+  QuicSessionRequest quic_request_;
 
   // Only valid for a QUIC job. Set when a QUIC connection is started. If true,
   // then OnQuicHostResolution() is expected to be called in the future.

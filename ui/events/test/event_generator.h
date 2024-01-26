@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
@@ -185,6 +186,16 @@ class EventGenerator {
   // Resets the event flags bitmask.
   void set_flags(int flags) { flags_ = flags; }
   int flags() const { return flags_; }
+
+  // Resets the Mouse Event device ID.
+  void set_mouse_source_device_id(
+      int source_device_id = ui::ED_UNKNOWN_DEVICE) {
+    mouse_source_device_id_ = source_device_id;
+  }
+
+  // Generates a button press / release event.
+  void PressButton(int flag);
+  void ReleaseButton(int flag);
 
   // Generates a left button press event.
   void PressLeftButton();
@@ -495,8 +506,6 @@ class EventGenerator {
 
   void SetCurrentScreenLocation(const gfx::Point& point);
   void UpdateCurrentDispatcher(const gfx::Point& point);
-  void PressButton(int flag);
-  void ReleaseButton(int flag);
 
   gfx::Point GetLocationInCurrentRoot() const;
   gfx::Point CenterOfWindow(const EventTarget* window) const;
@@ -505,6 +514,7 @@ class EventGenerator {
   gfx::Point current_screen_location_;
   raw_ptr<EventTarget, AcrossTasksDanglingUntriaged> current_target_ = nullptr;
   int flags_ = 0;
+  int mouse_source_device_id_ = ui::ED_UNKNOWN_DEVICE;
   bool grab_ = false;
 
   ui::PointerDetails touch_pointer_details_;

@@ -13,6 +13,8 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/shell.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -39,6 +41,8 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
@@ -123,6 +127,15 @@ void FloatingWorkspaceService::OnSyncShutdown(syncer::SyncService* sync) {
     sync_service_->RemoveObserver(this);
   }
   sync_service_ = nullptr;
+}
+
+void FloatingWorkspaceService::OnShuttingDown() {
+  if (ash::NetworkHandler::IsInitialized()) {
+    auto* network_handler = NetworkHandler::Get();
+    if (network_handler->network_state_handler()->HasObserver(this)) {
+      network_handler->network_state_handler()->RemoveObserver(this);
+    }
+  }
 }
 
 // TODO(b/309137462): Clean up params to not need to be passed in.
@@ -225,9 +238,14 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
+  OnNetworkStateOrSyncServiceStateChanged();
+  // Prematurely return when sync feature is not active.
+  if (!sync_service_->IsSyncFeatureActive()) {
+    return;
+  }
   switch (sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
     case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates: {
-      // Floating Workspace Service needs to Wait until workspace desks are up
+      // Floating Workspace Service needs to wait until workspace desks are up
       // to date.
       break;
     }
@@ -261,9 +279,36 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void FloatingWorkspaceService::DefaultNetworkChanged(
+    const NetworkState* network) {
+  OnNetworkStateOrSyncServiceStateChanged();
+}
+
+void FloatingWorkspaceService::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  OnNetworkStateOrSyncServiceStateChanged();
+}
+
+void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
+  if (!floating_workspace_util::IsInternetConnected() ||
+      (sync_service_ && !sync_service_->IsSyncFeatureActive())) {
+    // Only send notification if there's no notification currently or the
+    // current notification is the same one that we want to display.
+    if (notification_ == nullptr ||
+        notification_->id() != kNotificationForNoNetworkConnection) {
+      StopProgressBarNotification();
+      SendNotification(kNotificationForNoNetworkConnection);
+    }
+  } else {
+    if (notification_ != nullptr &&
+        notification_->id() == kNotificationForNoNetworkConnection) {
+      MaybeCloseNotification();
+    }
+  }
+}
 void FloatingWorkspaceService::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK(notification_);
 
   switch (GetNotificationTypeById(notification_->id())) {
@@ -491,7 +536,7 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
     std::unique_ptr<DeskTemplate> desk_template) {
-  OnTemplateCaptured(absl::nullopt, std::move(desk_template));
+  OnTemplateCaptured(std::nullopt, std::move(desk_template));
 }
 
 void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
@@ -645,7 +690,7 @@ void FloatingWorkspaceService::HandleTemplateCaptureErrors(
 }
 
 void FloatingWorkspaceService::OnTemplateCaptured(
-    absl::optional<DesksClient::DeskActionError> error,
+    std::optional<DesksClient::DeskActionError> error,
     std::unique_ptr<DeskTemplate> desk_template) {
   // Desk capture was not successful, nothing to upload.
   if (error) {
@@ -662,7 +707,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // the sync bridge. However, the sync bridge does not need to know the new
   // uuid since the current service will handle it. Ignore for testing.
   if (!floating_workspace_uuid_.has_value()) {
-    absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
+    std::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
         GetFloatingWorkspaceUuidForCurrentDevice();
     if (floating_workspace_uuid_from_desk_model.has_value()) {
       floating_workspace_uuid_ =
@@ -711,7 +756,7 @@ void FloatingWorkspaceService::OnTemplateUploaded(
   VLOG(1) << "Desk template uploaded successfully.";
 }
 
-absl::optional<base::Uuid>
+std::optional<base::Uuid>
 FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
   std::string cache_guid = desk_sync_service_->GetDeskModel()->GetCacheGuid();
   std::vector<const ash::DeskTemplate*> fws_entries =
@@ -721,7 +766,7 @@ FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
       return entry->uuid();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FloatingWorkspaceService::HandleSyncEror() {
@@ -974,11 +1019,18 @@ void FloatingWorkspaceService::OnActiveUserSessionChanged(
   }
 }
 
+void FloatingWorkspaceService::OnFocusLeavingSystemTray(bool reverse) {}
+
+void FloatingWorkspaceService::OnSystemTrayBubbleShown() {
+  CaptureAndUploadActiveDesk();
+}
+
 void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // Remove `this` service as an observer so we do not run into an issue where
   // chrome sync data is downloaded and the capture is kicked started after we
   // stopped the capture timer below.
   OnSyncShutdown(sync_service_);
+  OnShuttingDown();
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   if (app_cache_obs_.IsObserving()) {
@@ -990,6 +1042,9 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   if (timer_.IsRunning()) {
     StopCaptureAndUploadActiveDesk();
   }
+  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
+    Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
+  }
 }
 
 void FloatingWorkspaceService::SetUpServiceAndObservers(
@@ -997,6 +1052,15 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
     desks_storage::DeskSyncService* desk_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
+  if (ash::NetworkHandler::IsInitialized()) {
+    auto* network_handler = NetworkHandler::Get();
+    if (!network_handler->network_state_handler()->HasObserver(this)) {
+      network_handler->network_state_handler()->AddObserver(this);
+    }
+  }
+  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
+    Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
+  }
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
   }

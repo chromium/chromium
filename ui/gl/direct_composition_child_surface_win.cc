@@ -122,9 +122,8 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
                           : 1;
       UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-      TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
-                   "has_alpha", has_alpha_, "dirty_rect",
-                   swap_rect_.ToString());
+      TRACE_EVENT2("gpu", "IDXGISwapChain1::Present1", "has_alpha", has_alpha_,
+                   "dirty_rect", swap_rect_.ToString());
       DXGI_PRESENT_PARAMETERS params = {};
       RECT dirty_rect = swap_rect_.ToRECT();
       params.DirtyRectsCount = 1;

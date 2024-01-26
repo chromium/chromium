@@ -77,6 +77,11 @@ void SSLBlockingPageBase::PopulateEnhancedProtectionMessage(
 
   load_time_data.Set(security_interstitials::kDisplayEnhancedProtectionMessage,
                      show);
+  // This needs to be set even if it's not shown.
+  load_time_data.Set(
+      security_interstitials::kEnhancedProtectionMessage,
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
+
   // Disable Extended Reporting checkbox.
   load_time_data.Set(security_interstitials::kDisplayCheckBox, false);
 
@@ -88,8 +93,4 @@ void SSLBlockingPageBase::PopulateEnhancedProtectionMessage(
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
   }
-
-  load_time_data.Set(
-      security_interstitials::kEnhancedProtectionMessage,
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }

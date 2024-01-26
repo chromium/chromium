@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_MANAGER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -24,7 +24,7 @@ namespace component_updater {
 struct CompatibleComponentInfo {
   CompatibleComponentInfo();
   CompatibleComponentInfo(const base::FilePath& path_in,
-                          const absl::optional<base::Version>& version_in);
+                          const std::optional<base::Version>& version_in);
   CompatibleComponentInfo(const CompatibleComponentInfo& rhs) = delete;
   CompatibleComponentInfo& operator=(const CompatibleComponentInfo& rhs) =
       delete;
@@ -32,7 +32,7 @@ struct CompatibleComponentInfo {
   CompatibleComponentInfo& operator=(CompatibleComponentInfo&& rhs);
   ~CompatibleComponentInfo();
   base::FilePath path;
-  absl::optional<base::Version> version;
+  std::optional<base::Version> version;
 };
 
 // This class contains functions used to register and install a component.

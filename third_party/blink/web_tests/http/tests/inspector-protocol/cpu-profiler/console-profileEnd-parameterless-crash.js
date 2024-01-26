@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // <a href='https://bugs.webkit.org/show_bug.cgi?id=105759'>Bug 105759.</a>
   var {page, session, dp} = await testRunner.startBlank('Tests that "console.profileEnd()" does not cause crash.\nBug 105759.');
 

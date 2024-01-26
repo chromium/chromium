@@ -180,34 +180,34 @@ chromium-metrics-reviews@google.com.
   <int value="126" label="WindowMinimize"/>
   <int value="127" label="MinimizeTopWindowOnBack"/>
   <int value="128" label="VolumeMuteToggle"/>
-  <int value="129" label="DebugClearUseKMeansPref"/>
-  <int value="130" label="DebugKeyboardBacklightToggle"/>
-  <int value="131" label="DebugMicrophoneMuteToggle"/>
-  <int value="132" label="DebugPrintLayerHierarchy"/>
-  <int value="133" label="DebugPrintViewHierarchy"/>
-  <int value="134" label="DebugPrintWindowHierarchy"/>
-  <int value="135" label="DebugShowInformedRestore"/>
-  <int value="136" label="DebugShowToast"/>
-  <int value="137" label="DebugShowSystemNudge"/>
-  <int value="138" label="DebugSystemUiStyleViewer"/>
-  <int value="139" label="DebugToggleDarkMode"/>
-  <int value="140" label="DebugToggleDynamicColor"/>
-  <int value="141" label="DebugTogglePowerButtonMenu"/>
-  <int value="142" label="DebugToggleShowDebugBorders"/>
-  <int value="143" label="DebugToggleShowFpsCounter"/>
-  <int value="144" label="DebugToggleShowPaintRects"/>
-  <int value="145" label="DebugToggleTouchPad"/>
-  <int value="146" label="DebugToggleTouchScreen"/>
-  <int value="147" label="DebugToggleTabletMode"/>
-  <int value="148" label="DebugToggleVideoConferenceCameraTrayIcon"/>
-  <int value="149" label="DebugToggleWallpaperMode"/>
-  <int value="150" label="DebugTriggerCrash"/>
-  <int value="151" label="DebugToggleHudDisplay"/>
-  <int value="152" label="DebugToggleVirtualTrackpad"/>
-  <int value="153" label="DevAddRemoveDisplay"/>
-  <int value="154" label="DevToggleAppList"/>
-  <int value="155" label="DevToggleUnifiedDesktop"/>
-  <int value="156" label="DebugToggleFocusModeState"/>
+  <int value="9000" label="DebugClearUseKMeansPref"/>
+  <int value="9001" label="DebugKeyboardBacklightToggle"/>
+  <int value="9002" label="DebugMicrophoneMuteToggle"/>
+  <int value="9003" label="DebugPrintLayerHierarchy"/>
+  <int value="9004" label="DebugPrintViewHierarchy"/>
+  <int value="9005" label="DebugPrintWindowHierarchy"/>
+  <int value="9006" label="DebugShowInformedRestore"/>
+  <int value="9007" label="DebugShowToast"/>
+  <int value="9008" label="DebugShowSystemNudge"/>
+  <int value="9009" label="DebugSystemUiStyleViewer"/>
+  <int value="9010" label="DebugToggleDarkMode"/>
+  <int value="9011" label="DebugToggleDynamicColor"/>
+  <int value="9012" label="DebugTogglePowerButtonMenu"/>
+  <int value="9013" label="DebugToggleShowDebugBorders"/>
+  <int value="9014" label="DebugToggleShowFpsCounter"/>
+  <int value="9015" label="DebugToggleShowPaintRects"/>
+  <int value="9016" label="DebugToggleTouchPad"/>
+  <int value="9017" label="DebugToggleTouchScreen"/>
+  <int value="9018" label="DebugToggleTabletMode"/>
+  <int value="9019" label="DebugToggleVideoConferenceCameraTrayIcon"/>
+  <int value="9020" label="DebugToggleWallpaperMode"/>
+  <int value="9021" label="DebugTriggerCrash"/>
+  <int value="9022" label="DebugToggleHudDisplay"/>
+  <int value="9023" label="DebugToggleVirtualTrackpad"/>
+  <int value="9024" label="DevAddRemoveDisplay"/>
+  <int value="9025" label="DevToggleAppList"/>
+  <int value="9026" label="DevToggleUnifiedDesktop"/>
+  <int value="9027" label="DebugToggleFocusModeState"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
@@ -326,6 +326,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWorkerCreated"/>
   <int value="6" label="kWorkerDeserialized"/>
   <int value="7" label="kWorkerDeserializationFailed"/>
+  <int value="8" label="kSuccessfullySubscribedToInvalidationTopic"/>
 </enum>
 
 <enum name="CertProvisioningWorkerState">

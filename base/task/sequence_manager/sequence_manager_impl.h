@@ -14,7 +14,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/base_export.h"
-#include "base/cancelable_callback.h"
+#include "base/callback_list.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -154,7 +154,8 @@ class BASE_EXPORT SequenceManagerImpl
       CurrentThread::DestructionObserver* destruction_observer);
   void RemoveDestructionObserver(
       CurrentThread::DestructionObserver* destruction_observer);
-  void RegisterOnNextIdleCallback(OnceClosure on_next_idle_callback);
+  [[nodiscard]] CallbackListSubscription RegisterOnNextIdleCallback(
+      OnceClosure on_next_idle_callback);
   // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
   void SetTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner);
   // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
@@ -346,9 +347,9 @@ class BASE_EXPORT SequenceManagerImpl
     ObserverList<CurrentThread::DestructionObserver>::Unchecked
         destruction_observers;
 
-    // If non-null, invoked the next time OnIdle() completes without scheduling
-    // additional work.
-    OnceClosure on_next_idle_callback;
+    // Notified the next time `OnIdle()` completes without scheduling additional
+    // work.
+    OnceClosureList on_next_idle_callbacks;
   };
 
   void CompleteInitializationOnBoundThread();

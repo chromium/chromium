@@ -18,14 +18,6 @@ luci.console_view(
             category = "rbe|staging|linux|debug",
         ),
         luci.console_view_entry(
-            builder = "goma/Chromium Mac Goma RBE Staging",
-            category = "rbe|staging|mac|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Mac Goma RBE Staging (dbg)",
-            category = "rbe|staging|mac|debug",
-        ),
-        luci.console_view_entry(
             builder = "goma/Chromium Win Goma RBE Staging",
             category = "rbe|staging|win|rel",
         ),

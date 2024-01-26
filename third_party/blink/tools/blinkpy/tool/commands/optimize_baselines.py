@@ -49,7 +49,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         self._successful = True
 
     def execute(self, options, args, tool):
-        self._tool, self._successful = tool, True
+        self._successful = True
         if options.test_name_file:
             tests = self._host_port.tests_from_file(options.test_name_file)
             args.extend(sorted(tests))
@@ -63,8 +63,6 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             _log.error("No port names match '%s'", options.platform)
             return 1
 
-        for option, value in vars(options).items():
-            self._host_port.set_option_default(option, value)
         test_set = self._get_test_set(options, args)
         if not test_set:
             _log.error('No tests to optimize. Ensure all listed tests exist.')
@@ -74,8 +72,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
                                            port_names=port_names,
                                            options=options)
         tasks = self._make_tasks(test_set, options.suffixes.split(','))
-        with self._message_pool(worker_factory) as pool:
-            pool.run(tasks)
+        self._run_in_message_pool(worker_factory, tasks)
         if options.check:
             if self._successful:
                 _log.info('All baselines are optimal.')

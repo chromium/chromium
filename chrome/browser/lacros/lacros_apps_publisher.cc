@@ -100,8 +100,8 @@ bool LacrosAppsPublisher::ShouldModifyCapabilityAccess(
 }
 
 void LacrosAppsPublisher::ModifyCapabilityAccess(
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
     return;
   }

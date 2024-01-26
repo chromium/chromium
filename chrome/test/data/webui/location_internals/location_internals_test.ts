@@ -67,7 +67,7 @@ function checkTableHidden(tableId: string) {
       getRequiredElement<HTMLElement>(DIAGNOSE_INFO_VIEW_ID);
   assert(diagnoseInfoView);
   const diagnoseInfoTable =
-      diagnoseInfoView.shadowRoot!.querySelector(`#${tableId}`) as HTMLElement;
+      diagnoseInfoView.shadowRoot!.querySelector<HTMLElement>(`#${tableId}`);
   assert(diagnoseInfoTable);
   assert(diagnoseInfoTable.style.display === 'none');
 }
@@ -83,7 +83,7 @@ function checkTableContents(
       getRequiredElement<HTMLElement>(DIAGNOSE_INFO_VIEW_ID);
   assert(diagnoseInfoView);
   const diagnoseInfoTable =
-      diagnoseInfoView.shadowRoot!.querySelector(`#${tableId}`) as HTMLElement;
+      diagnoseInfoView.shadowRoot!.querySelector<HTMLElement>(`#${tableId}`);
   assert(diagnoseInfoTable);
   assert(diagnoseInfoTable.style.display !== 'none');
   const tableElement = diagnoseInfoTable.shadowRoot!.querySelector('table');

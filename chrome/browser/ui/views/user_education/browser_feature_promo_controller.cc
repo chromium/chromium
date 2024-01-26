@@ -47,13 +47,15 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
     user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
     user_education::FeaturePromoStorageService* storage_service,
     user_education::FeaturePromoSessionPolicy* session_policy,
-    user_education::TutorialService* tutorial_service)
+    user_education::TutorialService* tutorial_service,
+    user_education::ProductMessagingController* messaging_controller)
     : FeaturePromoControllerCommon(feature_engagement_tracker,
                                    registry,
                                    help_bubble_registry,
                                    storage_service,
                                    session_policy,
-                                   tutorial_service),
+                                   tutorial_service,
+                                   messaging_controller),
       browser_view_(browser_view) {}
 
 BrowserFeaturePromoController::~BrowserFeaturePromoController() = default;
@@ -103,7 +105,8 @@ BrowserFeaturePromoController::MaybeCreateForBrowserView(
       &user_education_service->help_bubble_factory_registry(),
       &user_education_service->feature_promo_storage_service(),
       &user_education_service->feature_promo_session_policy(),
-      &user_education_service->tutorial_service());
+      &user_education_service->tutorial_service(),
+      &user_education_service->product_messaging_controller());
 }
 
 // static
@@ -130,13 +133,6 @@ ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
 bool BrowserFeaturePromoController::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
   auto* const profile = browser_view_->GetProfile();
-
-  // Verify that there are no required notices pending.
-  UserEducationService* const ue_service =
-      UserEducationServiceFactory::GetForBrowserContext(profile);
-  if (ue_service->product_messaging_controller().has_pending_notices()) {
-    return false;
-  }
 
   // Turn off IPH while a required privacy interstitial is visible or pending.
   // TODO(dfried): with Desktop User Education 2.0, filtering of IPH may need to
@@ -174,7 +170,7 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     if (const auto* const controller =
             browser_view_->toolbar()->toolbar_controller()) {
-      if (controller->ShouldShowOverflowButton()) {
+      if (controller->InOverflowMode()) {
         return false;
       }
     }
@@ -184,11 +180,13 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
   auto* const anchor_widget = anchor_view ? anchor_view->view()->GetWidget()
                                           : browser_view_->GetWidget();
-  if (!anchor_widget)
+  if (!anchor_widget) {
     return false;
+  }
 
-  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive())
+  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive()) {
     return false;
+  }
 
   return true;
 }

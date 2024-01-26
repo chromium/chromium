@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,11 +29,13 @@ class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   // Test with the real method for url extensions support.
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
-          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
-          /*delegate=*/nullptr);
+          pref_service_,
+          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
 };
 
 TEST_F(SupervisedUserURLFilterExtensionsTest,

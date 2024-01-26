@@ -62,9 +62,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
-  // all pages containing them. Each QueryResult variant will contain a
+  // all pages containing them. Each QueryResults object will contain a
   // CPUTimeResult.
-  std::map<ResourceContext, QueryResult> UpdateAndGetCPUMeasurements();
+  QueryResultMap UpdateAndGetCPUMeasurements();
 
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
@@ -164,6 +164,22 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
   void ApplyMeasurementDeltas(
       const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
       GraphChange graph_change = NoGraphChange());
+
+  // Adds the measurement in `delta` to the result for `context`. The start time
+  // of `delta` must follow the end time of the result. Used for adding
+  // successive measurements of process, frame and worker contexts, so the
+  // algorithm in the metadata for the result should match that of `delta`.
+  // There may be gaps between deltas, such as if a process died and was
+  // restarted.
+  void ApplySequentialDelta(const ResourceContext& context,
+                            const CPUTimeResult& delta);
+
+  // Adds the measurement in `delta` to the result for `context`. Delta may
+  // start before the result or end after it. Used for adding frame and worker
+  // measurements to page contexts, since the frames and workers can be added in
+  // any order.
+  void ApplyOverlappingDelta(const PageContext& context,
+                             const CPUTimeResult& delta);
 
   // Returns description of the most recent measurement of `context` for
   // NodeDataDescriber, or an empty dict if there is none.

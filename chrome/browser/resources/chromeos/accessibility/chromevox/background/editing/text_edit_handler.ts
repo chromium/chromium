@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 

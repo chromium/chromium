@@ -523,13 +523,11 @@ def make_blink_to_v8_value(
             "native_value_tag": native_value_tag(idl_type, argument=argument),
             "v8_var_name": v8_var_name,
         }
-        pattern = ("!ToV8Traits<{native_value_tag}>::ToV8("
-                   "{creation_context_script_state}, {blink_value_expr})"
-                   ".ToLocal(&{v8_var_name})")
+        pattern = ("{v8_var_name} = ToV8Traits<{native_value_tag}>::ToV8("
+                   "{creation_context_script_state}, {blink_value_expr});")
         nodes = [
             F("v8::Local<v8::Value> {v8_var_name};", **binds),
-            CxxUnlikelyIfNode(cond=F(pattern, **binds),
-                              body=T(error_exit_return_statement)),
+            F(pattern, **binds)
         ]
         return SymbolDefinitionNode(symbol_node, nodes)
 

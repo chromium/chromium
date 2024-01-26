@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
-
 namespace base {
 class ThreadChecker;
 }

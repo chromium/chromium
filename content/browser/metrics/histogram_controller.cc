@@ -98,16 +98,16 @@ HistogramController::GetChildHistogramFetcherMap() {
 
 template void HistogramController::SetHistogramMemory(
     ChildProcessHost* host,
-    base::WritableSharedMemoryRegion shared_region);
+    base::UnsafeSharedMemoryRegion shared_region);
 
 template void HistogramController::SetHistogramMemory(
     RenderProcessHost* host,
-    base::WritableSharedMemoryRegion shared_region);
+    base::UnsafeSharedMemoryRegion shared_region);
 
 template <class T>
 void HistogramController::SetHistogramMemory(
     T* host,
-    base::WritableSharedMemoryRegion shared_region) {
+    base::UnsafeSharedMemoryRegion shared_region) {
   mojo::Remote<content::mojom::ChildHistogramFetcherFactory> factory;
   host->BindReceiver(factory.BindNewPipeAndPassReceiver());
 

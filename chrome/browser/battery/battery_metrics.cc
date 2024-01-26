@@ -69,7 +69,7 @@ void BatteryMetrics::RecordBatteryDropUMA(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (battery_status.charging) {
     // If the battery charges, drop the stored battery level.
-    last_recorded_battery_level_ = absl::nullopt;
+    last_recorded_battery_level_ = std::nullopt;
     return;
   }
 

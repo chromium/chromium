@@ -44,7 +44,7 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
                                    const std::string& data_pack_lang,
                                    uint32_t resource_id,
                                    const char* resource_id_str) {
-  absl::optional<base::StringPiece> data =
+  std::optional<base::StringPiece> data =
       data_pack->GetStringPiece(resource_id);
   CHECK(data.has_value()) << "failed to load string " << resource_id_str
                           << " for lang " << data_pack_lang;
@@ -59,7 +59,6 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
 
   LOG(FATAL) << "requested string " << resource_id_str
              << " from binary data pack";
-  return std::string();  // Unreachable.
 }
 
 // Escape quotes, newlines, etc so there are no errors when the strings file
@@ -114,7 +113,6 @@ int main(int argc, char* const argv[]) {
         break;
       default:
         LOG(FATAL) << "bad command line arg";
-        break;
     }
   }
   argc -= optind;

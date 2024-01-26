@@ -94,12 +94,12 @@ found in the LICENSE file.
     no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]"
     isGaia$="[[!isSamlSsoVisible]]">
   <div slot="content" id="signin-frame-container"
-      hideshadows$="[[isPopUpOverlayVisible_]]"
+      hideshadows$="[[isPopUpOverlayVisible]]"
       class="flex layout vertical">
     <div id="saml-notice-container" class="layout horizontal center"
         hidden$="[[!isSamlSsoVisible]]">
       <cr-icon-button id="saml-back-button" iron-icon="cr:arrow-back"
-          on-click="close_" hidden="[[isSamlBackButtonHidden_]]">
+          on-click="close" hidden="[[samlBackButtonHidden]]">
       </cr-icon-button>
       <div class="flex layout horizontal center-justified">
         <span id="saml-notice-recording-indicator"
@@ -107,7 +107,7 @@ found in the LICENSE file.
           <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
         </span>
         <span id="saml-notice-message">
-          [[getSamlNoticeMessage_(locale, videoEnabled, authDomain)]]
+          [[getSamlNoticeMessage(locale, videoEnabled, authDomain)]]
         </span>
       </div>
     </div>
@@ -121,7 +121,7 @@ found in the LICENSE file.
       <div>[[i18nDynamic(locale, 'samlChangeProviderMessage')]]</div>
       <oobe-text-button id="change-account"
           text-key="samlChangeProviderButton"
-          on-click="onChangeSigninProviderClicked_">
+          on-click="onChangeSigninProviderClicked">
       </oobe-text-button>
     </div>
   </div>
@@ -130,74 +130,74 @@ found in the LICENSE file.
         disabled="[[!navigationEnabled]]"
         hidden="[[isBackButtonHidden(navigationHidden,
                                      hideBackButtonIfCantGoBack, canGoBack)]]"
-        on-click="onBackButtonClicked_">
+        on-click="onBackButtonClicked">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
-    <div hidden="[[!isDefaultNavigationShown_(canGoBack,
+    <div hidden="[[!isDefaultNavigationShown(canGoBack,
         gaiaDialogButtonsType)]]" class="flex layout horizontal">
       <quick-start-entry-point
         id="quick-start-signin-button"
-        on-click="onQuickStartClicked_"
-        hidden="[[!isQuickStartEnabled_]]"
+        on-click="onQuickStartClicked"
+        hidden="[[!isQuickStartEnabled]]"
         quick-start-text-key="signinScreenQuickStart">
       </quick-start-entry-point>
       <oobe-text-button id="secondary-action-button"
-          label-for-aria="[[secondaryActionButtonLabel_]]"
-          on-click="onSecondaryActionButtonClicked_"
-          hidden$="[[!secondaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        secondaryActionButtonEnabled_)]]">
-        <div slot="text">[[secondaryActionButtonLabel_]]</div>
+          label-for-aria="[[secondaryActionButtonLabel]]"
+          on-click="onSecondaryActionButtonClicked"
+          hidden$="[[!secondaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        secondaryActionButtonEnabled)]]">
+        <div slot="text">[[secondaryActionButtonLabel]]</div>
       </oobe-text-button>
       <oobe-text-button id="primary-action-button"
-          label-for-aria="[[primaryActionButtonLabel_]]"
-          on-click="onPrimaryActionButtonClicked_"
-          hidden$="[[!primaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        primaryActionButtonEnabled_)]]"
+          label-for-aria="[[primaryActionButtonLabel]]"
+          on-click="onPrimaryActionButtonClicked"
+          hidden$="[[!primaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        primaryActionButtonEnabled)]]"
           inverse>
-        <div slot="text">[[primaryActionButtonLabel_]]</div>
+        <div slot="text">[[primaryActionButtonLabel]]</div>
       </oobe-text-button>
     </div>
-    <div hidden="[[!isEnterpriseNavigationShown_(canGoBack,
+    <div hidden="[[!isEnterpriseNavigationShown(canGoBack,
         gaiaDialogButtonsType)]]">
       <oobe-text-button id="enterprise-navigation-kiosk"
           text-key="kioskEnrollmentButton"
-          on-click="onKioskButtonClicked_"
-          hidden$="[[!primaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        primaryActionButtonEnabled_)]]">
+          on-click="onKioskButtonClicked"
+          hidden$="[[!primaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        primaryActionButtonEnabled)]]">
       </oobe-text-button>
       <oobe-text-button id="enterprise-navigation-enterprise"
           text-key="enterpriseEnrollmentButton"
-          on-click="onEnterpriseButtonClicked_"
-          hidden$="[[!primaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        primaryActionButtonEnabled_)]]"
+          on-click="onEnterpriseButtonClicked"
+          hidden$="[[!primaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        primaryActionButtonEnabled)]]"
           inverse>
       </oobe-text-button>
     </div>
-    <div hidden="[[!isKioskNavigationShown_(canGoBack,
+    <div hidden="[[!isKioskNavigationShown(canGoBack,
         gaiaDialogButtonsType)]]">
       <oobe-text-button id="kiosk-navigation-enterprise"
           text-key="enterpriseEnrollmentButton"
-          on-click="onEnterpriseButtonClicked_"
-          hidden$="[[!primaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        primaryActionButtonEnabled_)]]">
+          on-click="onEnterpriseButtonClicked"
+          hidden$="[[!primaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        primaryActionButtonEnabled)]]">
       </oobe-text-button>
       <oobe-text-button id="kiosk-navigation-kiosk"
           text-key="kioskEnrollmentButton"
-          on-click="onKioskButtonClicked_"
-          hidden$="[[!primaryActionButtonLabel_]]"
-          disabled="[[!isButtonEnabled_(navigationEnabled,
-                                        primaryActionButtonEnabled_)]]"
+          on-click="onKioskButtonClicked"
+          hidden$="[[!primaryActionButtonLabel]]"
+          disabled="[[!isButtonEnabled(navigationEnabled,
+                                        primaryActionButtonEnabled)]]"
           inverse>
       </oobe-text-button>
     </div>
   </div>
 </oobe-content-dialog>
 <div class="popup-overlay"
-    hidden="[[!isPopUpOverlayVisible_]]">
+    hidden="[[!isPopUpOverlayVisible]]">
 </div>

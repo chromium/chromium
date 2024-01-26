@@ -11,7 +11,8 @@ import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverabl
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ariaLabel, TabGroupData} from './tab_data.js';
+import type {TabGroupData} from './tab_data.js';
+import {ariaLabel} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {getTemplate} from './tab_search_group_item.html.js';
 import {highlightText} from './tab_search_utils.js';

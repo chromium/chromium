@@ -131,14 +131,7 @@ void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
     if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
         !deprecated_app_ids_.empty()) {
       TabDialogs::FromWebContents(web_contents)
-          ->ShowDeprecatedAppsDialog(
-              app_id, deprecated_app_ids_, web_contents,
-              base::BindOnce(
-                  &AppHomePageHandler::LaunchAppInternal,
-                  weak_ptr_factory_.GetWeakPtr(), app_id,
-                  extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
-                  std::move(event_ptr),
-                  /*force_launch_deprecated_apps=*/true));
+          ->ShowDeprecatedAppsDialog(app_id, deprecated_app_ids_, web_contents);
     }
   } else if (net::GetValueForKeyInQuery(web_contents->GetLastCommittedURL(),
                                         kForceInstallDialogQueryString,
@@ -151,14 +144,7 @@ void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
                                                                 web_contents);
       } else {
         TabDialogs::FromWebContents(web_contents)
-            ->ShowForceInstalledDeprecatedAppsDialog(
-                app_id, web_contents,
-                base::BindOnce(
-                    &AppHomePageHandler::LaunchAppInternal,
-                    weak_ptr_factory_.GetWeakPtr(), app_id,
-                    extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
-                    std::move(event_ptr),
-                    /*force_launch_deprecated_apps=*/true));
+            ->ShowForceInstalledDeprecatedAppsDialog(app_id, web_contents);
       }
     }
   }
@@ -168,26 +154,24 @@ void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
 void AppHomePageHandler::LaunchAppInternal(
     const std::string& app_id,
     extension_misc::AppLaunchBucket launch_bucket,
-    app_home::mojom::ClickEventPtr click_event,
-    bool force_launch_deprecated_apps) {
-  if (!force_launch_deprecated_apps &&
-      extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
+    app_home::mojom::ClickEventPtr click_event) {
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
       base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
     if (!extensions::IsExtensionForceInstalled(profile_, app_id, nullptr)) {
       TabDialogs::FromWebContents(web_ui_->GetWebContents())
-          ->ShowDeprecatedAppsDialog(
-              app_id, deprecated_app_ids_, web_ui_->GetWebContents(),
-              base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             launch_bucket, std::move(click_event), true));
+          ->ShowDeprecatedAppsDialog(app_id, deprecated_app_ids_,
+                                     web_ui_->GetWebContents());
       return;
     } else {
-      TabDialogs::FromWebContents(web_ui_->GetWebContents())
-          ->ShowForceInstalledDeprecatedAppsDialog(
-              app_id, web_ui_->GetWebContents(),
-              base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             launch_bucket, std::move(click_event), true));
+      if (extensions::IsPreinstalledAppId(app_id)) {
+        TabDialogs::FromWebContents(web_ui_->GetWebContents())
+            ->ShowForceInstalledPreinstalledDeprecatedAppDialog(
+                app_id, web_ui_->GetWebContents());
+      } else {
+        TabDialogs::FromWebContents(web_ui_->GetWebContents())
+            ->ShowForceInstalledDeprecatedAppsDialog(app_id,
+                                                     web_ui_->GetWebContents());
+      }
       return;
     }
   }
@@ -737,7 +721,7 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
 void AppHomePageHandler::LaunchApp(const std::string& app_id,
                                    app_home::mojom::ClickEventPtr click_event) {
   LaunchAppInternal(app_id, extension_misc::APP_LAUNCH_NTP_APPS_MAXIMIZED,
-                    std::move(click_event), false);
+                    std::move(click_event));
 }
 
 void AppHomePageHandler::SetRunOnOsLoginMode(
@@ -759,7 +743,7 @@ void AppHomePageHandler::SetRunOnOsLoginMode(
 void AppHomePageHandler::LaunchDeprecatedAppDialog() {
   TabDialogs::FromWebContents(web_ui_->GetWebContents())
       ->ShowDeprecatedAppsDialog(extensions::ExtensionId(), deprecated_app_ids_,
-                                 web_ui_->GetWebContents(), base::DoNothing());
+                                 web_ui_->GetWebContents());
 }
 
 void AppHomePageHandler::InstallAppLocally(const std::string& app_id) {

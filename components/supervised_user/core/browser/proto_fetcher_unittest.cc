@@ -271,7 +271,7 @@ TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
       test_url_loader_factory_.GetPendingRequest(0);
 
   GURL expected_url =
-      GURL("http://example.com" + std::string(GetConfig().service_path) +
+      GURL("http://example.com" + std::string(GetConfig().StaticServicePath()) +
            "?alt=proto");
   EXPECT_EQ(pending_request->request.url, expected_url);
   EXPECT_EQ(pending_request->request.method, GetConfig().GetHttpMethod());

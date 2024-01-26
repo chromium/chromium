@@ -167,4 +167,10 @@ void FakeRasterSource::PlaybackDisplayListToCanvas(
   RasterSource::PlaybackDisplayListToCanvas(canvas, image_provider);
 }
 
+void FakeRasterSource::SetDirectlyCompositedImageDefaultRasterScale(
+    gfx::Vector2dF scale) {
+  directly_composited_image_info_.emplace();
+  directly_composited_image_info_->default_raster_scale = scale;
+}
+
 }  // namespace cc

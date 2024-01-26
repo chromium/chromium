@@ -2910,7 +2910,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.DeveloperEngagement">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when we parse a form to log whether developer has used autocomplete
     markup or UPI-VPA hints. The value is a bitmask of
@@ -3107,7 +3107,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.FormEvent">
-  <owner>dlkumar@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when user interacted with autofill.
   </summary>
@@ -3144,7 +3144,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.FormSubmitted">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when user submits a form.
   </summary>
@@ -3269,7 +3269,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.InteractedWithForm">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when we parse a form to log form metadata and autofill settings
     that apply to all subsequent events for this form.
@@ -3472,7 +3472,7 @@ be describing additional metrics about the same event.
   <obsolete>
     Deprecated 2/2019
   </obsolete>
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <metric name="MillisecondsSinceFormParsed">
     <summary>
       Obsolete.
@@ -3483,7 +3483,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.SuggestionFilled">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when user selects a suggestion and we fill the form with that
     suggestion.
@@ -3517,7 +3517,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.SuggestionsShown">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when a suggestion is shown to user.
   </summary>
@@ -3555,7 +3555,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.TextFieldDidChange">
-  <owner>jiahuiguo@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Recorded when user edits a text field. The text field may have been
     autofilled.
@@ -5073,22 +5073,30 @@ be describing additional metrics about the same event.
   <metric name="PossibleSynchronizedScrollCount">
     <obsolete>
       Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
-      where page mutation was realized by changing scroll offset.
+      where page mutation was realized by changing scroll offset. Deprecated
+      01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll) between navigation and First
-      Contentful Paint.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page between navigation
+      and First Contentful Paint (see sync_scroll_attempt_heuristic.h for
+      details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2">
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll) between navigation and First
-      Contentful Paint. We consider only effects realized by either changing
-      inline style or updating scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page between navigation
+      and First Contentful Paint (see sync_scroll_attempt_heuristic.h for
+      details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -6155,55 +6163,63 @@ be describing additional metrics about the same event.
   <metric name="PossibleSynchronizedScrollCount">
     <obsolete>
       Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
-      where page mutation was realized by changing scroll offset.
+      where page mutation was realized by changing scroll offset. Deprecated
+      01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll).
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2">
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll) between navigation and First
-      Contentful Paint. We consider only effects realized by either changing
-      inline style or updating scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2BeginMainFrame">
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll) between navigation and First
-      Contentful Paint. We consider only effects realized by either changing
-      inline style or updating scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
+
+      Note that since the check happens during main frame updates, there should
+      be no difference between this metric and PossibleSynchronizedScrollCount2
+      above.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
     <obsolete>
       Was succeeded by PossibleSynchronizedScrollCount2BeginMainFrame since this
       missed a case where page mutation was realized by changing scroll offset.
+      Deprecated 01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll).
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
+
+      Note that since the check happens during main frame updates, there should
+      be no difference between this metric and PossibleSynchronizedScrollCount2
+      above.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -7870,6 +7886,105 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Compose.PageEvents">
+  <owner>chrome-compose-frontend@google.com</owner>
+  <owner>petewil@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Reported at PrimaryPageChanged (or tab destruction) if any metrics have been
+    recorded. This collects user actions in the compose feature for this page.
+  </summary>
+  <metric name="ComposeTextInserted">
+    <summary>
+      The number of times the Compose result was inserted into the page. Uses
+      exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="MenuItemClicked">
+    <summary>
+      The number of times the Compose context menu item was clicked for an
+      element on the page. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="MenuItemShown">
+    <summary>
+      The number of times the Compose context menu item was shown for an element
+      on the page. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+</event>
+
+<event name="Compose.SessionProgress">
+  <owner>chrome-compose-frontend@google.com</owner>
+  <owner>petewil@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Reported at the end of every compose session. There may be more than one
+    compose session per pageload. This collects user actions in the compose
+    dialogs for this URL.
+  </summary>
+  <metric name="Canceled" enum="Boolean">
+    <summary>
+      If the user canceled this session with the &quot;X&quot; button. This does
+      not include dismissing the dialog by losing focus.
+    </summary>
+  </metric>
+  <metric name="CasualCount">
+    <summary>
+      How many times the user pressed the &quot;shorten&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="ComposeCount">
+    <summary>
+      How many times the user pressed the &quot;generate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="DialogShownCount">
+    <summary>
+      How many times the compose dialog was shown to the user. Uses exponential
+      buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="FormalCount">
+    <summary>
+      How many times the user pressed the &quot;formal&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="InsertedResults" enum="Boolean">
+    <summary>
+      If the user inserted results back to the web page in this session, either
+      by pressing the &quot;insert&quot; or &quot;replace&quot; button.
+    </summary>
+  </metric>
+  <metric name="LengthenCount">
+    <summary>
+      How many times the user pressed the &quot;elaborate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="RegenerateCount">
+    <summary>
+      How many times the user pressed the &quot;regenerate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="ShortenCount">
+    <summary>
+      How many times the user pressed the &quot;shorten&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="UndoCount">
+    <summary>
+      How many times the user pressed the &quot;undo&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+</event>
+
 <event name="Compose.TextElementUsage">
   <owner>harringtond@google.com</owner>
   <owner>carlosk@chromium.org</owner>
@@ -8438,12 +8553,12 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Cookies.FirstPartyPartitionedInCrossSiteContext">
+<event name="Cookies.FirstPartyPartitionedInCrossSiteContextV2">
   <owner>selya@chromium.org</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
-    Recorded when a page loads that has a first-party partitioned cookie present
-    and is in a cross site context.
+    Recorded when a page loads that has a first-party partitioned cookie
+    present.
   </summary>
   <metric name="CookiePresent" enum="Boolean">
     <summary>
@@ -9026,27 +9141,62 @@ be describing additional metrics about the same event.
       then it is considered medium; if this is greater than 64 presented frames,
       then it is considered large.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PredictorJankyFrameCount">
     <summary>
       The number of frames that are deemed janky to the human eye after Chrome
       has applied its scroll prediction algorithm..
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.DelayedFrameCount">
     <summary>
       The number of delayed frames.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.MissedVsyncsMax">
     <summary>
       The maximum number of vsyncs missed during any and all janks.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.MissedVsyncsSum">
     <summary>
       The total number of vsyncs missed during any and all janks that occurred.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="VsyncCount">
     <summary>
@@ -9055,6 +9205,13 @@ be describing additional metrics about the same event.
       greater than 16 and less than or equal to 64 vsyncs, then it is considered
       medium; if this is greater than 64 vsyncs, then is considered large.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -9128,6 +9285,60 @@ be describing additional metrics about the same event.
       <history>
         <index fields="profile.country"/>
         <index fields="profile.country,profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Event.ScrollJank.PredictorJank">
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Recorded for scroll update events only if the conditions for janky predictor
+    metrics are met - if the ratio of displacement between any consecutive
+    frames is above a particular threshold. Threshold depends on scroll speed
+    and screen displacement in pixels.
+  </summary>
+  <metric name="MaxDelta">
+    <summary>
+      The maximum scroll delta at a given update, when compared to its two
+      neighbors. If this value is less than 7 (kScrollDeltaThreshold in
+      PredictorJankTracker), then the scroll is considered slow. Above this
+      threshold, the scroll is considered fast. This also helps to determine
+      what the threshold for jank should be.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollUpdate.MissedVsync.FrameAboveJankyThreshold2">
+    <summary>
+      The total number of times that there was a larger displacement at a given
+      frame relative to its neighboring frames in the sequence, if the previous
+      vsync was missed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollUpdate.NoMissedVsync.FrameAboveJankyThreshold2">
+    <summary>
+      The total number of times that there was a larger displacement at a given
+      frame relative to its neighboring frames in the sequence, if the previous
+      vsync was not missed.
+    </summary>
+    <aggregation>
+      <history>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -9445,6 +9656,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FamilyLinkUser.BlockedContent">
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Logged whenever a page load for a supervised user had some or all of its
+    content blocked. Either MainFrameBlocked is true, or NumBlockedIframes is
+    non-zero.
+  </summary>
+  <metric name="MainFrameBlocked" enum="Boolean">
+    <summary>
+      Whether the main frame for the navigation was blocked (in which case) none
+      of the content of the site is loaded.
+    </summary>
+  </metric>
+  <metric name="NumBlockedIframes">
+    <summary>
+      The number of Iframes that were blocked by the supervised user filtering
+      logic in this page load. Exponentially bucketed.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>
@@ -9478,6 +9710,46 @@ be describing additional metrics about the same event.
       may still be skipped if the floc was not calculated or has been
       invalidated.
     </summary>
+  </metric>
+</event>
+
+<event name="Fullscreen.Enter">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    The browser enters the fullscreen mode.
+  </summary>
+  <metric name="LockState" enum="FullscreenLockState">
+    <summary>
+      The keyboard and pointer lock states.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Fullscreen.Exit">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    The browser exits the fullscreen mode.
+  </summary>
+  <metric name="SessionDuration">
+    <summary>
+      Duration of the fullscreen session.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -16343,6 +16615,12 @@ be describing additional metrics about the same event.
       Whether the user engaged with the module.
     </summary>
   </metric>
+  <metric name="DidMarkAsDone" enum="Boolean">
+    <summary>
+      Whether the user dismissed with positive intent the cluster shown in this
+      module.
+    </summary>
+  </metric>
   <metric name="LayoutTypeShown" enum="NTPHistoryClustersModuleDisplayLayout">
     <summary>
       The layout type that was shown to the user for this module.
@@ -16357,6 +16635,16 @@ be describing additional metrics about the same event.
   <metric name="NumAbandonedCarts">
     <summary>
       Number of abandoned carts associated with the cluster.
+    </summary>
+  </metric>
+  <metric name="NumTimesSeenLast24h">
+    <summary>
+      Number of times the cluster was seen by the user in the last 24 hours.
+    </summary>
+  </metric>
+  <metric name="NumTimesUsedLast24h">
+    <summary>
+      Number of times the cluster was used by the user in the last 24 hours.
     </summary>
   </metric>
   <metric name="NumTotalVisits">
@@ -19241,6 +19529,13 @@ be describing additional metrics about the same event.
     <summary>
       Records '1' if the user has modified a generated a password on this form.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Generation.PopupShown" enum="PasswordGenerationPopupShown">
     <summary>
@@ -19268,11 +19563,35 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ManagerFill.Assistance" enum="PasswordManagerFillingAssistance">
     <summary>
-      Records for each successful submission the degree to which the user has
-      been assisted by the password manager.
+      Records for each successful submission of a password form, the degree to
+      which the user has been assisted by the password manager.
 
       This is replicated as PasswordManager.FillingAssistance in UMA.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ManagerFill.AssistanceForSingleUsername"
+      enum="SingleUsernameFillingAssistance">
+    <summary>
+      Records for each successful submission of a single username form, the
+      degree to which the user has been assisted by the password manager.
+
+      This is replicated as PasswordManager.FillingAssistanceForSingleUsername
+      in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ParsingComparison">
     <obsolete>
@@ -19332,6 +19651,13 @@ be describing additional metrics about the same event.
       In case a store() via the Credential Management API, a virtual password
       form is created, for which this metric is recorded.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Saving.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
@@ -19359,6 +19685,13 @@ be describing additional metrics about the same event.
       Records whether a submission of a password form has been observered. The
       values 0 and 1 correspond to false and true respectively.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Submission.SubmissionResult"
       enum="PasswordFormSubmissionResult">
@@ -19484,6 +19817,13 @@ be describing additional metrics about the same event.
       user was shown a prompt that asked for permission to update existing
       credentials.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Updating.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
@@ -19567,6 +19907,39 @@ be describing additional metrics about the same event.
     <summary>
       Records the type of the password leak dialog.
     </summary>
+  </metric>
+</event>
+
+<event name="PasswordManager.NewlySavedPassword">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Metrics for newly saved passwords, recorded at the moment of saving.
+  </summary>
+  <metric name="HasEmptyUsername" enum="Boolean">
+    <summary>
+      Whether the password has an empty username.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsPasswordGenerated" enum="Boolean">
+    <summary>
+      Whether the password was generated by Chrome or typed manually by the
+      user.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -26069,7 +26442,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Unload" singular="True">
-  <owner>kdillon@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Metrics associated with a unloading in preparation for a navigation.
   </summary>
@@ -28116,12 +28490,29 @@ be describing additional metrics about the same event.
     WebAPK usage metrics recorded on Install.
   </summary>
   <metric name="AppVersion">
+    <obsolete>
+      No longer needed
+    </obsolete>
     <summary>
       WebAPK app version that the user is installing.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DisplayMode" enum="WebAppDisplayMode">
+    <summary>
+      Records the display mode of the added WebAPK.
+    </summary>
+    <aggregation>
+      <history>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28152,7 +28543,21 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InstallSource" enum="WebappInstallSource">
+    <summary>
+      From where the user initiates the install: app menu, install API, etc.
+    </summary>
+    <aggregation>
+      <history>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28177,7 +28582,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28211,7 +28615,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28236,7 +28639,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28269,7 +28671,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28286,7 +28687,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28302,7 +28702,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28327,7 +28726,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28358,7 +28756,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28374,7 +28771,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>

@@ -210,7 +210,6 @@ void HostService::CreateLauncher(
                                  base::MessagePumpType::IO);
   if (!io_task_runner.get()) {
     LOG(FATAL) << "Failed to start the I/O thread";
-    return;
   }
 
   daemon_process_ = DaemonProcess::Create(

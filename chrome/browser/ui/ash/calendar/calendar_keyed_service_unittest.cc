@@ -44,17 +44,14 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
       delete;
   ~CalendarKeyedServiceTest() override = default;
 
-  TestingProfile* CreateProfile() override {
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
+  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
 
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-
-    GetSessionControllerClient()->AddUserSession(kPrimaryProfileName);
+    GetSessionControllerClient()->AddUserSession(email);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
-
-    return profile_manager()->CreateTestingProfile(kPrimaryProfileName,
-                                                   /*testing_factories=*/{});
   }
 
   TestingProfile* CreateSecondaryProfile() {

@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "app_shim_listener_browsertest_mac.mm": [
+  "app_shim_listener_browsertest.mm": [
     "+chrome/app_shim/app_shim_controller.h",
   ],
   "mach_bootstrap_acceptor_unittest.mm": [

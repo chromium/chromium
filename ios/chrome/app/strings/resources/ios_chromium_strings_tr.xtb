@@ -81,7 +81,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3366305173356742781">Hesabınızdaki Chromium verileri</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}other{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}}</translation>
 <translation id="3472200483164753384">Chromium Canary'de desteklenmiyor</translation>
-<translation id="3478750326643748149">"Chromium'dan en iyi şekilde yararlanma" kartını gizleyin</translation>
 <translation id="347967311580159871">Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="3512168799938877162">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chromium'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>
 <translation id="3554027294407525061">Chromium'da Tarama Verilerini Temizleyin.</translation>
@@ -101,9 +100,9 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium'u İstediğiniz Uygulamadan Açın</translation>
-<translation id="4002314982058020967">Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
+<translation id="4076589763479456892">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> olarak oturum açtınız.
 
@@ -114,7 +113,6 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="4408912345039114853">Chromium Güvenlik Kontrolü yürüt</translation>
 <translation id="4432744876818348753">Chromium'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="4445228361214254027">Kuruluşunuz, Chromium verilerini Google Hesabınızda kullanma ve kaydetme özelliğini devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
-<translation id="4485517920713468480">Chromium, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Verileriniz, bu özelliği sunmak ve Alışveriş'i herkes için iyileştirmek üzere Google ile paylaşılır. Bunu <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan değiştirebilirsiniz.</translation>
 <translation id="4498832288620833153">Girilen URL'leri Chromium'daki okuma listenize ekler.</translation>
 <translation id="452436063477828504">Google Hesabınızdaki Chromium verilerini her zaman kullanabildiğinizden emin olun</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="5534584691915394889">Bu bilgiler, Chromium ve Google Lens'ten alınan etkinlikleri Apple Takvim'de oluşturmak için kullanılır.</translation>
 <translation id="5571094606370987472">Chromium'daki Son Sekmeleri Açar.</translation>
 <translation id="5623083843656850677">Chromium'dan çıktığınızda veya farklı bir uygulamaya geçtiğinizde Gizli sekmelerinizi kilitleyin.</translation>
+<translation id="5671188105328420281">Chromium İpuçları</translation>
 <translation id="5688047395118852662">Bu kartta, Chromium'dan en iyi şekilde yararlanmayla ilgili öneriler gösterilmektedir.</translation>
 <translation id="5700709190537129682">Chromium, şifrelerinizi kontrol edemiyor</translation>
 <translation id="5777187867430702742">Chromium Sayfası</translation>
@@ -286,6 +285,7 @@ Dikkate alınması gereken noktalar:
 <translation id="8776843108004031667">Bu hesap ve kaydedilmemiş tüm veriler Chromium'dan kaldırılacak.</translation>
 <translation id="88376265765385899">Chromium yer işaretlerini açar.</translation>
 <translation id="8860548555286245440">URL'leri Chromium'da Gizli modda aç</translation>
+<translation id="8866191443434488382">Chromium, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Kargo takip numarası ve web sitesinin adı, bu özelliğin sunulması ve Alışveriş özelliklerinin herkes için iyileştirilmesi amacıyla Chromium'a gönderilir. Bunu istediğiniz zaman <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan güncelleyebilirsiniz.</translation>
 <translation id="8909995017390087892">iOS için Chromium</translation>
 <translation id="8924617840944134898">Chromium gizli sekmesini aç</translation>
 <translation id="894437814105052438">Oturumu kapattığınızda Chromium, hiçbir yeni veriyi Google Hesabınızla senkronize etmez. Önceden senkronize edilmiş veriler hesapta kalır.</translation>

@@ -42,15 +42,14 @@ class GetControlledFramePartitionCommandTest : public WebAppTest {
       const std::string& partition_name,
       bool in_memory = false,
       const base::Location location = FROM_HERE) {
-    base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
+    base::test::TestFuture<std::optional<content::StoragePartitionConfig>>
         future;
     provider().scheduler().ScheduleCallbackWithResult(
         "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
         base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
                        url_info, partition_name, in_memory),
         future.GetCallback(), /*arg_for_shutdown=*/
-        absl::optional<content::StoragePartitionConfig>(absl::nullopt),
-        location);
+        std::optional<content::StoragePartitionConfig>(std::nullopt), location);
     return future.Get().value();
   }
 
@@ -165,23 +164,25 @@ TEST_F(GetControlledFramePartitionCommandTest, CorrectWithDifferentApps) {
   const GURL iwa_1_url(
       "isolated-app://"
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  const std::string expected_partition_domain_1 =
+      "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
   IsolatedWebAppUrlInfo iwa_1_url_info = InstallIsolatedWebApp(iwa_1_url);
 
   auto expected_iwa_1_sp_base = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      profile(), expected_partition_domain_1,
       /*partition_name=*/"", /*in_memory=*/false);
 
   content::StoragePartitionConfig output_iwa_1_sp_1 =
       RunCommand(iwa_1_url_info, "partition_name", /*in_memory=*/true);
   auto expected_iwa_1_sp_1 = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      profile(), expected_partition_domain_1,
       /*partition_name=*/"partition_name", /*in_memory=*/true);
   ASSERT_EQ(expected_iwa_1_sp_1, output_iwa_1_sp_1);
 
   content::StoragePartitionConfig output_iwa_1_sp_2 =
       RunCommand(iwa_1_url_info, "partition_name", /*in_memory=*/false);
   auto expected_iwa_1_sp_2 = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      profile(), expected_partition_domain_1,
       /*partition_name=*/"partition_name", /*in_memory=*/false);
   ASSERT_EQ(expected_iwa_1_sp_2, output_iwa_1_sp_2);
 
@@ -189,23 +190,25 @@ TEST_F(GetControlledFramePartitionCommandTest, CorrectWithDifferentApps) {
   const GURL iwa_2_url(
       "isolated-app://"
       "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic");
+  const std::string expected_partition_domain_2 =
+      "ixhWrMZlUCk1eUZYDqDyJy4DZzylqxRZWbMlA4WqsfTo=";
   IsolatedWebAppUrlInfo iwa_2_url_info = InstallIsolatedWebApp(iwa_2_url);
 
   auto expected_iwa_2_sp_base = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      profile(), expected_partition_domain_2,
       /*partition_name=*/"", /*in_memory=*/false);
 
   content::StoragePartitionConfig output_iwa_2_sp_1 =
       RunCommand(iwa_2_url_info, "partition_name", /*in_memory=*/true);
   auto expected_iwa_2_sp_1 = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      profile(), expected_partition_domain_2,
       /*partition_name=*/"partition_name", /*in_memory=*/true);
   ASSERT_EQ(expected_iwa_2_sp_1, output_iwa_2_sp_1);
 
   content::StoragePartitionConfig output_iwa_2_sp_2 =
       RunCommand(iwa_2_url_info, "partition_name", /*in_memory=*/false);
   auto expected_iwa_2_sp_2 = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      profile(), expected_partition_domain_2,
       /*partition_name=*/"partition_name", /*in_memory=*/false);
   ASSERT_EQ(expected_iwa_2_sp_2, output_iwa_2_sp_2);
 

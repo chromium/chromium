@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -374,7 +375,7 @@ void ClipboardPromise::ResolveRead() {
   for (const auto& item : clipboard_item_data_) {
     ScriptPromise promise = ScriptPromise::Cast(
         script_state,
-        ToV8Traits<Blob>::ToV8(script_state, item.second).ToLocalChecked());
+        ToV8Traits<IDLNullable<Blob>>::ToV8(script_state, item.second));
     items.emplace_back(item.first, promise);
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {
@@ -593,6 +594,25 @@ void ClipboardPromise::ValidatePreconditions(
            ReportOptions::kReportOnFailure, kFeaturePolicyMessage))) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, kFeaturePolicyMessage);
+    return;
+  }
+
+  // Grant permission by-default if extension has read/write permissions.
+  if (GetLocalFrame()->GetContentSettingsClient() &&
+      ((permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
+        GetLocalFrame()
+            ->GetContentSettingsClient()
+            ->AllowReadFromClipboard()) ||
+       (permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
+        GetLocalFrame()
+            ->GetContentSettingsClient()
+            ->AllowWriteToClipboard()))) {
+    GetClipboardTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(
+            script_promise_resolver_->WrapCallbackInScriptScope(
+                base::IgnoreArgs<ScriptPromiseResolver*>(std::move(callback))),
+            mojom::blink::PermissionStatus::GRANTED));
     return;
   }
 

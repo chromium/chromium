@@ -146,6 +146,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1792959175193046959">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào</translation>
 <translation id="1796666869097395659">Thu nhỏ thẻ để quay lại sau</translation>
 <translation id="1807246157184219062">Sáng</translation>
+<translation id="1807709131360304325">Mở một cửa sổ mới</translation>
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> không thể tiếp tục dùng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
@@ -189,6 +190,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2056878612599315956">Đã tạm dừng trang web</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 tệp tải xuống không thành công}other{# tệp tải xuống không thành công}}</translation>
 <translation id="2067805253194386918">văn bản</translation>
+<translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2082238445998314030">Kết quả <ph name="RESULT_NUMBER" /> trong tổng số <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Đang hiển thị chế độ xem thu gọn</translation>
 <translation id="2093731487903423814">15 phút qua</translation>
@@ -218,7 +220,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="223356358902285214">Hoạt động trên web và ứng dụng</translation>
 <translation id="2234827758954819389">Hướng dẫn về quyền riêng tư</translation>
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
-<translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2247789808226901522">Thẻ đã hết hạn</translation>
 <translation id="2248941474044011069">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="2249635629516220541">Tuỳ chỉnh thông tin mà các trang web sử dụng để hiện quảng cáo cho bạn</translation>
@@ -233,7 +234,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
-<translation id="2327226657832576859">Tự động mở PDF?</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
 <translation id="2341410551640223969">Không cài đặt được <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
@@ -316,6 +316,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Thẻ <ph name="TAB_TITLE" /> sẽ đóng</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="2827278682606527653">Trình đơn thẻ nguồn cấp dữ liệu mở ở nửa dưới của màn hình</translation>
@@ -354,7 +355,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2946420957526726953">Đang cập nhật Chrome để kết nối với các thiết bị khác</translation>
 <translation id="2951071800649516099">Thêm các trang vào danh sách đọc để đọc sau</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
-<translation id="2961210776189273067">Danh xưng</translation>
 <translation id="296370266220139811">Tiết kiệm thời gian, công sức nhập</translation>
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
@@ -376,7 +376,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="3027644380269727216">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang bật.</translation>
 <translation id="3029276696788198026">Không tải trước</translation>
 <translation id="3029704984691124060">Cụm mật khẩu không khớp</translation>
-<translation id="303514781271618814">Chrome đang khám phá các tính năng mới cho phép các trang web mang lại trải nghiệm duyệt web như nhau nhưng tiêu tốn ít dữ liệu hơn</translation>
+<translation id="303514781271618814">Chrome đang khám phá các tính năng mới cho phép các trang web duy trì cùng một trải nghiệm duyệt web nhưng sử dụng ít dữ liệu về bạn hơn</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037517125981011456">Hiển thị lời nhắc đăng nhập vào Chrome</translation>
@@ -600,6 +600,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4307992518367153382">Cơ bản</translation>
+<translation id="4311652497846705514">Mở tệp PDF?</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
 <translation id="433213510553688132">Đang theo dõi...</translation>
 <translation id="4335835283689002019">Tính năng Duyệt web an toàn đang tắt</translation>
@@ -609,7 +610,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4380055775103003110">Nếu sự cố này vẫn tiếp diễn, bạn có thể thử các cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sử dụng Sogou để tìm kiếm</translation>
-<translation id="4387647248986092471">Tạo khoá hồ sơ cho ô tô</translation>
+<translation id="4387647248986092471">Tạo phương thức khoá hồ sơ cho ô tô</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Đang tải xuống…</translation>
 <translation id="4404568932422911380">Không có dấu trang nào</translation>
 <translation id="4405224443901389797">Chuyển tới...</translation>
@@ -639,7 +640,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4523326818319942067">một giờ qua</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4532845899244822526">Chọn thư mục</translation>
-<translation id="4541505619120536051">Luôn mở</translation>
 <translation id="4543131175509360848">Trang thông báo "Không có khoá truy cập nào"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
 <translation id="4554077758708533499">Đã kết nối bằng cáp USB</translation>
@@ -831,7 +831,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5486841595534124508">Biểu trưng của thông báo về quyền riêng tư cho trung tâm thông tin chi tiết về trang chuyển hướng đến trang hoạt động của tôi.</translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
 <translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
-<translation id="5509866835115085009">Chrome có thể tự động mở PDF khi bạn tải tệp đó xuống.</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
 <translation id="5517095782334947753">Bạn có dữ liệu về dấu trang, nhật ký hoạt động, mật khẩu và các chế độ cài đặt khác từ tài khoản <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5966233851250124270">Chrome sẽ ghi nhớ lựa chọn của bạn</translation>
+<translation id="5977976211062815271">Trên thiết bị này</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
 <translation id="5995726099713306770">Tải trang xuống lần nữa?</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
@@ -1183,7 +1183,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="727288900855680735">Gửi <ph name="ONE_TIME_CODE" /> tới <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
 <translation id="7276100255011548441">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
-<translation id="7284878711178835966">Khi bạn nhập, Chrome sẽ gửi nội dung trong thanh địa chỉ hoặc hộp tìm kiếm đến công cụ tìm kiếm mặc định</translation>
+<translation id="7284878711178835966">Khi bạn nhập nội dung vào thanh địa chỉ hoặc hộp tìm kiếm, Chrome sẽ gửi nội dung  này đến công cụ tìm kiếm mặc định của bạn</translation>
 <translation id="7289303553784750393">Nếu bạn đang trực tuyến nhưng sự cố này vẫn tiếp diễn, bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Không đổi tên được</translation>
 <translation id="7291910923717764901">Đã thêm nội dung mô tả hình ảnh cho trang này</translation>
@@ -1302,6 +1302,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tất cả tệp, 1 tệp trong danh sách}other{Tất cả tệp, # tệp trong danh sách}}</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
+<translation id="7821130663268546430">Bạn có thể tìm thấy tất cả các thẻ đang mở trong trình chuyển đổi thẻ</translation>
 <translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
 <translation id="78270725016672455">Máy tính của bạn muốn đăng ký thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
@@ -1329,6 +1330,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> đã lỗi thời.</translation>
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
 <translation id="7947953824732555851">Chấp nhận &amp; đăng nhập</translation>
+<translation id="7951102827450076904">Luôn mở tệp PDF đã tải xuống</translation>
 <translation id="7957413488482743710">Thẻ ảo giúp bạn ẩn thẻ thực, bảo vệ bạn trước nguy cơ bị lừa đảo. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Nút quay lại thông tin chi tiết về trang</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>

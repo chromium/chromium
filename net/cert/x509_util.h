@@ -9,11 +9,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/hash_value.h"
@@ -31,10 +31,18 @@ namespace net {
 
 namespace x509_util {
 
+// Convert a vector of bytes into X509Certificate objects.
+// This will silently drop all input that does not parse, so be careful using
+// this.
+NET_EXPORT net::CertificateList ConvertToX509CertificatesIgnoreErrors(
+    const std::vector<std::vector<uint8_t>>& certs_bytes);
+
 // Parse all certificiates with default parsing options. Return those that
 // parse.
-NET_EXPORT bssl::ParsedCertificateList ParseAllCerts(
-    net::CertificateList x509_certs);
+// This will silently drop all certs with parsing errors, so be careful using
+// this.
+NET_EXPORT bssl::ParsedCertificateList ParseAllValidCerts(
+    const CertificateList& x509_certs);
 
 // Supported digest algorithms for signing certificates.
 enum DigestAlgorithm { DIGEST_SHA256 };
@@ -50,7 +58,7 @@ NET_EXPORT bool CBBAddTime(CBB* cbb, base::Time time);
 // distinguished names. It should only be used if |name| is a constant
 // value, rather than programmatically constructed. If programmatic support
 // is needed, this input should be replaced with a richer type.
-NET_EXPORT bool AddName(CBB* cbb, base::StringPiece name);
+NET_EXPORT bool AddName(CBB* cbb, std::string_view name);
 
 // Generate a 'tls-server-end-point' channel binding based on the specified
 // certificate. Channel bindings are based on RFC 5929.
@@ -116,7 +124,7 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 
 // Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool.
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
-    base::StringPiece data);
+    std::string_view data);
 
 // Overload with no definition, to disallow creating a CRYPTO_BUFFER from a
 // char* due to StringPiece implicit ctor.
@@ -134,7 +142,7 @@ NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
                                   const CRYPTO_BUFFER* b);
 
 // Returns a StringPiece pointing to the data in |buffer|.
-NET_EXPORT base::StringPiece CryptoBufferAsStringPiece(
+NET_EXPORT std::string_view CryptoBufferAsStringPiece(
     const CRYPTO_BUFFER* buffer);
 
 // Returns a span pointing to the data in |buffer|.

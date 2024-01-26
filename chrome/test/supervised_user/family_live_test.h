@@ -6,6 +6,7 @@
 #define CHROME_TEST_SUPERVISED_USER_FAMILY_LIVE_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/supervised_user/core/common/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "url/gurl.h"
 

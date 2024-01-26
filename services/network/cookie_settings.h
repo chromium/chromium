@@ -154,8 +154,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // given top level site. PST for specific origins can be disabled through
   // content settings.
   bool ArePrivateStateTokensAllowed(const GURL& primary_url) const {
-    ContentSetting setting = GetContentSetting(primary_url, primary_url,
-                                               ContentSettingsType::COOKIES);
+    ContentSetting setting =
+        GetContentSetting(primary_url, primary_url,
+                          ContentSettingsType::COOKIES, /*info=*/nullptr);
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
@@ -167,12 +168,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      content_settings::SettingInfo* info = nullptr) const override;
+      content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
   bool ShouldBlockThirdPartyCookies() const override;
   bool MitigationsEnabledFor3pcd() const override;
   bool IsStorageAccessApiEnabled() const override;
+
+  bool IsThirdPartyPhaseoutEnabled() const;
 
   const ContentSettingsForOneType& GetContentSettings(
       ContentSettingsType type) const;
@@ -181,10 +184,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // the input `type`.
   const content_settings::HostIndexedContentSettings&
   GetHostIndexedContentSettings(ContentSettingsType type) const;
-
-  // An enum that represents the scope of cookies to which the user's
-  // third-party-cookie-blocking setting applies, in a given context.
-  using ThirdPartyBlockingScope = CookieSettingsBase::ThirdPartyBlockingScope;
 
   // Returns whether the given cookie should be allowed to be sent, according
   // to the user's settings. Assumes that the `cookie.access_result` has been
@@ -209,6 +208,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
+  // Returns true if user blocks 3PC or 3PCD is on.
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool block_truncated_cookies_ = true;

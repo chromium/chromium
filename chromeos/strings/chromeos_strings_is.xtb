@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">áfram</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
+<translation id="1626590945318984973">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án þess að nota virkni- og <ph name="META_KEY" />-lykla.</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1641857168437328880">Skjalamatari (einhliða)</translation>
 <translation id="1643449475550628585">Skipta daglega um veggfóðursmynd</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Slökkva á dökku þema</translation>
 <translation id="1885577615937958993">spóla áfram í efni</translation>
 <translation id="1887850431809612466">Útgáfa vélbúnaðar</translation>
-<translation id="1897672602657312171">Flýtileið án flýtilykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með leitarlyklinum.</translation>
 <translation id="1904932688895783618">Hér eru fleiri gagnleg úrræði:</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
 <translation id="1908234395526491708">UDP-beiðnir mistókust</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> myndir</translation>
 <translation id="2157660087437850958">emoji-val</translation>
 <translation id="2157959690810728433">Í BIÐRÖÐ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}=2{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}=3{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}one{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # forrit í viðbót á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}other{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # forrit í viðbót á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reyna aftur</translation>
 <translation id="215916044711630446">Ekki hægt að bæta við hnappi fyrir aðgangsstað lengur</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Breyta upplýsingum um aðgangsstað</translation>
 <translation id="2209788852729124853">Endurstilla talningu umferðar</translation>
 <translation id="2212733584906323460">Sundurgreining heita</translation>
+<translation id="2215920961700443347">Engin nettenging. Tengstu netinu og reyndu aftur.</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
 <translation id="2224337661447660594">Engin nettenging</translation>
 <translation id="222447520299472966">Velja verður að lágmarki eitt albúm listasafns</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Mynd <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
+<translation id="2465272316171730950">Við getum ekki tekið meira að okkur eins og er. Komdu aftur eftir smástund.</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
 <translation id="2491955442992294626">Lyklar eru ekki prófaðir þegar þú notar annan glugga</translation>
 <translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Endurnýja núverandi veggfóðursmynd</translation>
 <translation id="2512979179176933762">sýna glugga</translation>
 <translation id="2513396635448525189">Innskráningarmynd</translation>
-<translation id="2515109918609218604">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án þess að nota aðgerða- og leitarlykla.</translation>
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2521835766824839541">fyrra lag</translation>
 <translation id="2526590354069164005">Skjáborð</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dökk stilling</translation>
 <translation id="4130035430755296270">Haltu bendlinum lengur yfir til að sjá fleiri valkosti fyrir uppsetningu</translation>
+<translation id="4130750466177569591">Ég samþykki</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> var ræst sjálfkrafa}one{# forrit var ræst sjálfkrafa}other{# forrit voru ræst sjálfkrafa}}</translation>
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4147897805161313378">Google-myndir</translation>
 <translation id="4150201353443180367">Skjár</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">draga úr birtustigi</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
 <translation id="4176659219503619100">Stjórnborð</translation>
-<translation id="4185315616950253617">Flýtilyklar sem innihalda lykla í efstu röð lyklaborðsins verða að innihalda leitarlykilinn.</translation>
 <translation id="420283545744377356">Slökkva á skjávara</translation>
 <translation id="4213104098953699324">USB-lyklaborð</translation>
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Slökkva</translation>
 <translation id="439429847087949098">Endurræsir <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sérsníða lyklaborð</translation>
+<translation id="4403262788869804671">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum.</translation>
 <translation id="4415951057168511744">Núverandi notandamynd</translation>
+<translation id="4417830657741848074">Stjórnandinn þinn stillti sum forrit þannig að þau ræsist sjálfkrafa. Ekki er hægt að loka sumum þessara forrita.</translation>
 <translation id="4422041425070339732">ör niður</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
 <translation id="4428374560396076622">Slökkt er á <ph name="NETWORK_NAME" /></translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Skjávari, jarðarflæði</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
+<translation id="4500722292849917410">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift eða <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Litur viðmóts</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4507392511610824664">auka birtustig</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
 <translation id="4839698083503556542">Búðu til eigin kvikmynd</translation>
+<translation id="48409034532829769">Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ þannig að það ræsist sjálfkrafa. Ekki er hægt að loka forritinu.</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valið, ýttu á færslulykilinn til að velja albúm í <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Skipta</translation>
 <translation id="4972592110715526173">breyta stillingu</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
+<translation id="4982627662315910959">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota shift og 1 annan breytilykil (ctrl, alt eða <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="4987769320337599931">Eldveggur</translation>
 <translation id="4988526792673242964">Síður</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Áætlun dökks þema</translation>
 <translation id="5229344016299762883">Hætta að nota allan skjáinn</translation>
 <translation id="5234764350956374838">Hunsa</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ þannig að það ræsist sjálfkrafa í hvert sinn sem þú skráir þig inn.}=2{Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ og eitt forrit til viðbótar þannig að þau ræsist sjálfkrafa í hvert sinn sem þú skráir þig inn.}one{Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ og # forrit til viðbótar þannig að þau ræsist sjálfkrafa í hvert sinn sem þú skráir þig inn.}other{Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ og # forrit til viðbótar þannig að þau ræsist sjálfkrafa í hvert sinn sem þú skráir þig inn.}}</translation>
 <translation id="5252456968953390977">Í reiki</translation>
 <translation id="5257811368506016604">Kveikja á ljósri litastillingu</translation>
 <translation id="5264277876637023664">Keyra örgjörvapróf</translation>
@@ -738,7 +743,7 @@
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
 <translation id="6411934471898487866">birtustig lyklaborðs</translation>
 <translation id="6412715219990689313">Innbyggt lyklaborð</translation>
-<translation id="6417265370957905582">Google hjálpari</translation>
+<translation id="6417265370957905582">Google-hjálpari</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lítill (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Fara í reikningsstillingar</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="725133483556299729">Velja netfang</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
-<translation id="7273347807225967898">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift, leitarlykil, eða ræsilykil).</translation>
+<translation id="7271932918253517778">Flýtilyklar sem innihalda lykla í efstu röð lyklaborðsins verða að innihalda <ph name="META_KEY" />-lykilinn.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Finndu andvarann</translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Almennar stýringar</translation>
 <translation id="7977800524392185497">Opnaðu stillingarnar til að tengjast <ph name="NETWORK_NAME" /> netkerfi</translation>
 <translation id="7978412674231730200">Einkalykill</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ var ræst sjálfkrafa}one{# forrit var ræst sjálfkrafa}other{# forrit voru ræst sjálfkrafa}}</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>
 <translation id="8004582292198964060">Vafri</translation>
 <translation id="8017679124341497925">Flýtileið breytt</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8094062939584182041">Leyfa Google að senda þér tölvupóst vegna vandamálsins</translation>
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
-<translation id="8111706652656628199">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota shift og 1 annan breytilykil (ctrl, alt, leitarlykil, eða ræsilykil).</translation>
 <translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Biðja um talningu umferðar</translation>

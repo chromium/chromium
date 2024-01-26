@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
@@ -100,6 +101,11 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
       IncumbentScriptState()->GetContext());
 
   std::move(closure).Run(callback_relevant_script_state_);
+}
+
+void CallbackFunctionWithTaskAttributionBase::Trace(Visitor* visitor) const {
+  CallbackFunctionBase::Trace(visitor);
+  visitor->Trace(parent_task_);
 }
 
 }  // namespace blink

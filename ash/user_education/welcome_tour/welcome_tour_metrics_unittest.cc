@@ -186,7 +186,7 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteractionBeforeLogin) {
 
 // WelcomeTourMetricsEnumTest --------------------------------------------------
 
-// Base class of tests that verify all valid enum values and no other are
+// Base class of tests that verify all valid enum values and no others are
 // included in the relevant `base::EnumSet`s.
 using WelcomeTourMetricsEnumTest = testing::Test;
 

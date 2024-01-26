@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
@@ -46,10 +47,12 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class UpdateMenuItemHelper {
     private static final String TAG = "UpdateMenuItemHelper";
 
-    private static UpdateMenuItemHelper sInstance;
+    private static UpdateMenuItemHelper sInstanceForTesting;
+    private static ProfileKeyedMap<UpdateMenuItemHelper> sProfileMap;
 
     private static Object sGetInstanceLock = new Object();
 
+    private final Profile mProfile;
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
 
     private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
@@ -76,19 +79,24 @@ public class UpdateMenuItemHelper {
      */
     private boolean mMenuDismissedRunnableExecuted;
 
-    /** @return The {@link UpdateMenuItemHelper} instance. */
-    public static UpdateMenuItemHelper getInstance() {
+    /** Return the {@link UpdateMenuItemHelper} for the given {@link Profile}. */
+    public static UpdateMenuItemHelper getInstance(Profile profile) {
         synchronized (UpdateMenuItemHelper.sGetInstanceLock) {
-            if (sInstance == null) {
-                sInstance = new UpdateMenuItemHelper();
+            if (sInstanceForTesting != null) return sInstanceForTesting;
+            if (sProfileMap == null) {
+                sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
             }
-            return sInstance;
+            return sProfileMap.getForProfile(profile, () -> new UpdateMenuItemHelper(profile));
         }
     }
 
     public static void setInstanceForTesting(UpdateMenuItemHelper testingInstance) {
-        sInstance = testingInstance;
-        ResettersForTesting.register(() -> sInstance = null);
+        sInstanceForTesting = testingInstance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    private UpdateMenuItemHelper(Profile profile) {
+        mProfile = profile;
     }
 
     /**
@@ -258,8 +266,8 @@ public class UpdateMenuItemHelper {
         for (Runnable observer : mObservers) observer.run();
     }
 
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    private PrefService getPrefService() {
+        return UserPrefs.get(mProfile);
     }
 
     boolean getMenuDismissedRunnableExecutedForTests() {

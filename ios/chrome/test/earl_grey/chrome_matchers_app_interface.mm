@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/download/download_manager_constants.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
@@ -62,6 +63,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -975,8 +977,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)openInButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_OPEN_IN];
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerOpenInAccessibilityIdentifier),
+      grey_interactable(), nil);
 }
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
@@ -1044,6 +1047,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_descendant(
           [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton]),
       grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridInactiveTabsButton {
+  return grey_allOf(
+      grey_accessibilityID(kInactiveTabsButtonAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 

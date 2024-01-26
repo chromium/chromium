@@ -16,7 +16,9 @@ static_library("vc_background_ui") {
   deps = [
     "resources:resources",
     "//ash/constants",
+    "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//components/manta",

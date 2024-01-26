@@ -92,7 +92,7 @@ class DownloadProtectionService {
   virtual void CheckClientDownload(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback,
-      base::optional_ref<const std::string> password = absl::nullopt);
+      base::optional_ref<const std::string> password = std::nullopt);
 
   // Checks the user permissions, then calls |CheckClientDownload| if
   // appropriate. Returns whether we began scanning.

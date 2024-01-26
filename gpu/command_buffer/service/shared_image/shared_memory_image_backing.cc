@@ -118,7 +118,8 @@ std::unique_ptr<DawnImageRepresentation> SharedMemoryImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
@@ -202,6 +203,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     SharedMemoryRegionWrapper wrapper,
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -212,6 +214,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
+                         std::move(debug_label),
                          format.EstimatedSizeInBytes(size),
                          false,
                          std::move(buffer_usage)),

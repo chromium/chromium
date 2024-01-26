@@ -49,13 +49,13 @@ import org.robolectric.shadows.ShadowPaint;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
 import java.util.Collections;
 
@@ -76,11 +76,12 @@ public class UrlBarUnitTest {
 
     private final String mShortPath = "/aaaa";
     private final String mLongPath =
-            "/" + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION, "a"));
+            "/" + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION_V2, "a"));
     private final String mShortDomain = "www.a.com";
     private final String mLongDomain =
             "www."
-                    + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION, "a"))
+                    + TextUtils.join(
+                            "", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION_V2, "a"))
                     + ".com";
 
     // Screen width is set to 100px, with a default density of 1px per dp, and we estimate 5dp per
@@ -226,7 +227,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongUrl() {
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
@@ -236,7 +237,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_ShortUrl() {
         String url = mShortDomain + mShortPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
@@ -245,7 +246,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToTld() {
         measureAndLayoutUrlBar();
         String url = mLongDomain + mShortPath;
@@ -255,7 +256,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToBeginning() {
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
@@ -265,7 +266,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_NoTruncationForWrapContent() {
         measureAndLayoutUrlBar();
         LayoutParams previousLayoutParams = mUrlBar.getLayoutParams();
@@ -281,7 +282,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_NoTruncationWhileFocused() {
         mUrlBar.onFocusChanged(true, 0, null);
 
@@ -335,7 +336,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testSetLengthHistogram_noTruncation() {
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
@@ -347,7 +348,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testSetLengtHistogram_withTruncation() {
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;

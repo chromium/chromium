@@ -649,7 +649,7 @@ std::string InputMethodUtil::GetLanguageDefaultInputMethodId(
   return std::string();
 }
 
-std::string InputMethodUtil::MigrateInputMethod(
+std::string InputMethodUtil::GetMigratedInputMethod(
     const std::string& input_method_id) {
   std::string engine_id = input_method_id;
   // Migrates some Engine IDs from VPD.
@@ -671,12 +671,12 @@ std::string InputMethodUtil::MigrateInputMethod(
   return id;
 }
 
-bool InputMethodUtil::MigrateInputMethods(
+bool InputMethodUtil::GetMigratedInputMethodIDs(
     std::vector<std::string>* input_method_ids) {
   bool rewritten = false;
   std::vector<std::string>& ids = *input_method_ids;
   for (std::string& i : ids) {
-    std::string id = MigrateInputMethod(i);
+    std::string id = GetMigratedInputMethod(i);
     if (id != i) {
       i = id;
       rewritten = true;
@@ -706,7 +706,7 @@ void InputMethodUtil::UpdateHardwareLayoutCache() {
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
   hardware_layouts_ = cached_hardware_layouts_;
-  MigrateInputMethods(&hardware_layouts_);
+  GetMigratedInputMethodIDs(&hardware_layouts_);
 
   bool has_xkb = false;
   for (const auto& hardware_layout : hardware_layouts_) {

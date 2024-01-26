@@ -10,6 +10,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,23 +19,12 @@ namespace net {
 // SpdySessionKey is used as unique index for SpdySessionPool.
 class NET_EXPORT_PRIVATE SpdySessionKey {
  public:
-  enum class IsProxySession {
-    kFalse,
-    // This means this is a ProxyServer::Direct() session for an HTTP2 proxy,
-    // with |host_port_pair| being the proxy host and port. This should not be
-    // confused with a tunnel over an HTTP2 proxy session, for which
-    // |proxy_chain| will be information about the proxy being used, and
-    // |host_port_pair| will be information not about the proxy, but the host
-    // that we're proxying the connection to.
-    kTrue,
-  };
-
   SpdySessionKey();
 
   SpdySessionKey(const HostPortPair& host_port_pair,
                  const ProxyChain& proxy_chain,
                  PrivacyMode privacy_mode,
-                 IsProxySession is_proxy_session,
+                 SessionUsage session_usage,
                  const SocketTag& socket_tag,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy);
@@ -84,7 +74,7 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
     return privacy_mode_;
   }
 
-  IsProxySession is_proxy_session() const { return is_proxy_session_; }
+  SessionUsage session_usage() const { return session_usage_; }
 
   const SocketTag& socket_tag() const { return socket_tag_; }
 
@@ -98,7 +88,7 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   HostPortProxyPair host_port_proxy_pair_;
   // If enabled, then session cannot be tracked by the server.
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
-  IsProxySession is_proxy_session_;
+  SessionUsage session_usage_;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts. If network state
   // partitioning is disabled this will be set to an empty key.

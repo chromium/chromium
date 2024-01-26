@@ -38,7 +38,6 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-class CapturedWheelAction;
 class MediaStreamVideoTrack;
 class VideoTrackAdapter;
 class VideoTrackAdapterSettings;
@@ -170,13 +169,25 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 #if !BUILDFLAG(IS_ANDROID)
   // Deliver a wheel event on the captured tab.
   //
-  // `action` contains the parameters of the action that's to be delivered.
+  // `relative_x` is a value from [0, 1). It denotes the relative position
+  // in the coordinate space of the captured surface, which is unknown to the
+  // capturer. A value of 0 denotes the leftmost pixel; increasing values denote
+  // values further to the right. The sender of the message scales from its own
+  // coordinate space down to the relative values, and the receiver scales
+  // back up to its own coordinates.
+  //
+  // `relative_y` is defined analogously to `relative_x`.
+  //
+  // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
   //
   // `callback` is used to report the result.
   // `callback.success` reports back success/failure.
   // `callback.error` has the error message upon failure. (Empty otherwise.)
   virtual void SendWheel(
-      CapturedWheelAction* action,
+      double relative_x,
+      double relative_y,
+      int wheel_delta_x,
+      int wheel_delta_y,
       base::OnceCallback<void(bool success, const String& error)> callback);
 
   // Retrieves the zoom level from the captured tab.
@@ -190,8 +201,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   // Sets the zoom level for the captured tab.
   //
-  // `zoom_level` is the requested zoom level and must be at least
-  // getMinZoomLevel() and at most getMaxZoomLevel()
+  // `zoom_level` is the requested zoom level and must be among the values
+  // returned by `CaptureController::getSupportedZoomLevels()`.
   //
   // `callback` is used to report the result.
   // `callback.success` reports back success/failure.

@@ -155,7 +155,7 @@ TEST_F(ExtensionsHatsHandlerTest, DISABLED_ExtensionsPageLoad) {
       LaunchDelayedSurveyForWebContents(
           "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
           _, expected_product_specific_data,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(1);
   ExtensionsSafetyHubTriggerSurvey();
   task_environment()->RunUntilIdle();
@@ -181,7 +181,7 @@ TEST_F(ExtensionsHatsHandlerTest, DISABLED_OnSurveyInteraction) {
       LaunchDelayedSurveyForWebContents(
           "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
           _, expected_product_specific_data,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(1);
 
   ExtensionsSafetyHubExtensionKept();

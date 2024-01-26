@@ -15,7 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace autofill {
@@ -87,6 +87,8 @@ class Bitset {
     return x;
   }
 
+  friend constexpr auto operator<=>(const Bitset& lhs,
+                                    const Bitset& rhs) = default;
   friend constexpr bool operator==(const Bitset& lhs,
                                    const Bitset& rhs) = default;
 
@@ -136,6 +138,8 @@ class Bitset<Word, 1u> {
     return x;
   }
 
+  friend constexpr auto operator<=>(const Bitset& lhs,
+                                    const Bitset& rhs) = default;
   friend constexpr bool operator==(Bitset lhs, Bitset rhs) = default;
 
   constexpr base::span<const Word, 1> data() const {
@@ -307,9 +311,7 @@ class DenseSet {
       return owner_->bitset_.get_bit(index_);
     }
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION const DenseSet* owner_ = nullptr;
+    raw_ptr<const DenseSet<T, Traits>> owner_ = nullptr;
 
     // The current index is in the interval [0, owner_->max_size()].
     Index index_ = 0;
@@ -352,6 +354,7 @@ class DenseSet {
     return bitset_.data();
   }
 
+  friend auto operator<=>(const DenseSet& a, const DenseSet& b) = default;
   friend bool operator==(const DenseSet& a, const DenseSet& b) = default;
 
   // Iterators.

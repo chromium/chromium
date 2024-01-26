@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Tests Target.autoAttachRelated attachers to new SW version when watchin a SW target`);
   const bp = testRunner.browserP();

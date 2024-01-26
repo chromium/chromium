@@ -4,10 +4,13 @@
 
 #include "components/autofill/content/renderer/form_tracker.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -26,21 +29,41 @@ class MockFormTrackerObserver : public FormTracker::Observer {
   MOCK_METHOD1(OnInferredFormSubmission, void(mojom::SubmissionSource));
 };
 
-class FormTrackerTest : public test::AutofillRendererTest {
+class FormTrackerTest : public test::AutofillRendererTest,
+                        public testing::WithParamInterface<bool> {
  public:
+  FormTrackerTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kAutofillReplaceCachedWebElementsByRendererIds,
+           features::kAutofillImproveSubmissionDetection},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAutofillImproveSubmissionDetection);
+    }
+  }
   blink::WebFormControlElement GetFormControlById(const std::string& id) {
     return GetMainFrame()
         ->GetDocument()
         .GetElementById(blink::WebString::FromUTF8(id))
         .DynamicTo<blink::WebFormControlElement>();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
+                         FormTrackerTest,
+                         ::testing::Bool());
 
 // Check that submission is detected on a page with no <form> when in sequence:
 // 1) User types into a field.
 // 2) Page does an XHR.
 // 3) Page hides all of the inputs.
-TEST_F(FormTrackerTest, FormlessXHRThenHide) {
+TEST_P(FormTrackerTest, FormlessXHRThenHide) {
   LoadHTML("<!DOCTYPE HTML><input id='input1'><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
@@ -63,15 +86,15 @@ TEST_F(FormTrackerTest, FormlessXHRThenHide) {
   // FormTracker should detect a submission after the <input>s are hidden.
   EXPECT_CALL(observer, OnInferredFormSubmission).Times(1);
   ExecuteJavaScriptForTests(
-      "document.getElementById('input1').style.display = 'none';"
-      "document.getElementById('input2').style.display = 'none';");
+      R"(document.getElementById('input1').style.display = 'none';
+         document.getElementById('input2').style.display = 'none';)");
 }
 
 // Check that submission is detected on a page with no <form> when in sequence:
 // 1) User types into a field.
 // 2) Page hides all of the inputs.
 // 3) Page does an XHR.
-TEST_F(FormTrackerTest, FormlessHideThenXhr) {
+TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   LoadHTML("<!DOCTYPE HTML><input id='input1'><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");

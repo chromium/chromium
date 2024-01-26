@@ -27,7 +27,8 @@ enum class MantaStatusCode {
   // Request was never sent due to missing IdentityManager. This is usually
   // caused by a request being attempted while ChromeOS is shutting down.
   kNoIdentityManager = 10,
-  kMax = kNoIdentityManager,
+  kPerUserQuotaExceeded = 11,
+  kMax = kPerUserQuotaExceeded,
 };
 
 struct MantaStatus {

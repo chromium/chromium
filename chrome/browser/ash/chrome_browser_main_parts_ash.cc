@@ -52,11 +52,8 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
@@ -169,6 +166,7 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
@@ -176,7 +174,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -301,7 +299,7 @@ namespace ash {
 
 namespace {
 
-void ChromeOSVersionCallback(const absl::optional<std::string>& version) {
+void ChromeOSVersionCallback(const std::optional<std::string>& version) {
   base::SetLinuxDistro("CrOS " + version.value_or("0.0.0.0"));
 }
 
@@ -964,13 +962,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                      chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
-  kiosk_chrome_app_manager_ = std::make_unique<KioskChromeAppManager>();
-  arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();
-  web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
-  kiosk_controller_ = std::make_unique<KioskController>(
-      CHECK_DEREF(web_kiosk_app_manager_.get()),
-      CHECK_DEREF(kiosk_chrome_app_manager_.get()),
-      CHECK_DEREF(arc_kiosk_app_manager_.get()));
+  kiosk_controller_ = std::make_unique<KioskController>();
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),
@@ -1039,7 +1031,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Needs to be initialized after crosapi_manager_.
-  metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
+  metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
 
   multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
 
@@ -1344,11 +1336,8 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
 
 void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Instantiate report controller if the feature is enabled.
-  if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
-    report_controller_initializer_ =
-        std::make_unique<ReportControllerInitializer>();
-  }
+  report_controller_initializer_ =
+      std::make_unique<ReportControllerInitializer>();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Construct a delegate to connect the accessibility component extensions and
@@ -1365,9 +1354,13 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   event_rewriter_controller->Initialize(
       event_rewriter_delegate_.get(),
       accessibility_event_rewriter_delegate_.get());
-  // `ShortcutInputHandler` is dependent on `EventRewriterController`'s
-  // initialization.
-  Shell::Get()->shortcut_input_handler()->Initialize();
+  // `ShortcutInputHandler` and `ModifierKeyComboRecorder` are dependent on
+  // `EventRewriterController`'s initialization.
+  if (ash::features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    Shell::Get()->shortcut_input_handler()->Initialize();
+  }
+  Shell::Get()->modifier_key_combo_recorder()->Initialize();
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {
@@ -1620,11 +1613,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // subsystems.
   g_browser_process->platform_part()->ShutdownAutomaticRebootManager();
 
-  // Clean before the Kiosk web, Chrome app, and ARC app managers.
+  // Dependens on Profile, so needs to be destroyed before ProfileManager, which
+  // happens in `ChromeBrowserMainPartsLinux::PostMainMessageLoopRun()` below.
   kiosk_controller_.reset();
-
-  // Clean up dependency on CrosSettings and stop pending data fetches.
-  kiosk_chrome_app_manager_.reset();
 
   // Make sure that there is no pending URLRequests.
   if (pre_profile_init_called_) {
@@ -1674,7 +1665,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // LacrosAvailabilityPolicyObserver and
   // LacrosDataBackwardMigrationModePolicyObserver have the dependency to
   // ProfileManager, so they need to be destroyed before ProfileManager
-  // destruction, which happens inside PostMainMessageLoop below.
+  // destruction, which happens inside PostMainMessageLoopRun below.
   lacros_availability_policy_observer_.reset();
   lacros_data_backward_migration_mode_policy_observer_.reset();
 
@@ -1684,13 +1675,12 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   vc_app_service_client_.reset();
   vc_ash_feature_client_.reset();
 
-  // Has a dependency on Profile, so it needs to be destroyed before Profile
-  // gets destroyed during ProfileManager destruction, which happens inside
-  // PostMainMessageLoop below.
-  web_kiosk_app_manager_.reset();
-
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+  // Contains a raw_ptr to ChapsService (an object owned by `crosapi_manager_`)
+  // and should be shut down before `crosapi_manager_`.
+  kcer::KcerFactory::Shutdown();
 
   // BrowserManager and CrosapiManager need to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
@@ -1701,8 +1691,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // because crosapi depends on it.
   g_browser_process->platform_part()->ShutdownAshProxyMonitor();
 
-  // Destroy classes that may have ash observers or dependencies.
-  arc_kiosk_app_manager_.reset();
   chrome_keyboard_controller_client_.reset();
 
   // All ARC related modules should have been shut down by this point, so

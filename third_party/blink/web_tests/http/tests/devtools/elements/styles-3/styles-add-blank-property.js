@@ -25,7 +25,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     // Create and increment.
     treeElement = section.addNewBlankProperty(0);
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'margin-left';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
@@ -53,7 +53,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     treeElement = ElementsTestRunner.inlineStyleSection().addNewBlankProperty(2);
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'color';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
@@ -73,7 +73,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     treeElement = ElementsTestRunner.inlineStyleSection().addNewBlankProperty(2);
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'third-property';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     treeElement.valueElement.textContent = 'third-value';

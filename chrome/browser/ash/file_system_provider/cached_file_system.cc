@@ -71,8 +71,9 @@ std::ostream& operator<<(std::ostream& out,
 }  // namespace
 
 CachedFileSystem::CachedFileSystem(
-    std::unique_ptr<ProvidedFileSystemInterface> file_system)
-    : file_system_(std::move(file_system)) {}
+    std::unique_ptr<ProvidedFileSystemInterface> file_system,
+    ContentCache* content_cache)
+    : file_system_(std::move(file_system)), content_cache_(content_cache) {}
 
 CachedFileSystem::~CachedFileSystem() = default;
 

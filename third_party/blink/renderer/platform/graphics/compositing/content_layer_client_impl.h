@@ -29,9 +29,6 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient {
   ~ContentLayerClientImpl() override;
 
   // cc::ContentLayerClient
-  gfx::Rect PaintableRegion() const final {
-    return gfx::Rect(gfx::Size(raster_invalidator_.LayerBounds()));
-  }
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final {
     return cc_display_item_list_;
   }

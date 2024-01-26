@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1426410128494586442">Igen</translation>
+<translation id="1434873037477293673">árcsökkenést jelző kártya</translation>
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webhely}other{<ph name="SITE_COUNT" /> webhely}}</translation>
 <translation id="1510341833810331442">Webhelyek nem menthetnek adatokat az eszközére</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobilnézet kérelmezése</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2874939134665556319">Előző szám</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">A virtuálisvalóság-eszközök és -adatok használatának letiltása a webhelyek számára</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
+<translation id="6452138246455930388">Árcsökkenés a megnyitott lapon: <ph name="OLD_PRICE" /> helyett <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Ha az ablak keskeny, kérjen mobilnézetet</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="652937045869844725">Próbálja meg engedélyezni a harmadik féltől származó cookie-kat, ami kevesebb védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel fognak működni.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
 <translation id="6766622839693428701">A bezáráshoz csúsztasson lefelé.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> innen: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Válassza ki a kívánt lehetőséget a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
+<translation id="6867014948848323204">Innen: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6950072572526089586">A felkeresett webhelyek információkat menthetnek az Ön által végzett műveletekről annak érdekében, hogy a várt módon működjenek (például hogy bejelentkezve maradhasson az adott webhelyen, illetve a bevásárlókosárban lévő tételek mentéséhez). A webhelyek gyakran ideiglenesen mentik ezeket az adatokat az eszközére.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Óz, a csodák csodája</translation>
 <translation id="7684642910516280563">Annak letiltása egy webhely számára, hogy harmadik féltől származó cookie-t használjon</translation>
 <translation id="7719367874908701697">Oldal nagyítása/kicsinyítése</translation>
+<translation id="7770832849480336015">A(z) „<ph name="TITLE_OF_MODULE" />” elrejtése</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>

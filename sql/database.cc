@@ -990,7 +990,7 @@ bool Database::Raze() {
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
-    DLOG(DCHECK) << "Cannot raze within a transaction";
+    DLOG(FATAL) << "Cannot raze within a transaction";
     return false;
   }
 
@@ -1003,7 +1003,7 @@ bool Database::Raze() {
           options_.enable_virtual_tables_discouraged,
   });
   if (!null_db.OpenInMemory()) {
-    DLOG(DCHECK) << "Unable to open in-memory database.";
+    DLOG(FATAL) << "Unable to open in-memory database.";
     return false;
   }
 
@@ -1064,7 +1064,7 @@ bool Database::Raze() {
       sqlite_result_code == SqliteResultCode::kIoShortRead) {
     sqlite3_file* file = GetSqliteVfsFile();
     if (!file || file->pMethods->xTruncate(file, 0) != SQLITE_OK) {
-      DLOG(DCHECK) << "Failed to truncate file.";
+      DLOG(FATAL) << "Failed to truncate file.";
       return false;
     }
 
@@ -1179,12 +1179,6 @@ bool Database::Delete(const base::FilePath& path) {
   CHECK(vfs);
   CHECK(vfs->xDelete);
   CHECK(vfs->xAccess);
-
-  // We only work with the VFS implementations listed below. If you're trying to
-  // use this code with any other VFS, you're not in a good place.
-  CHECK(strncmp(vfs->zName, "unix", 4) == 0 ||
-        strncmp(vfs->zName, "win32", 5) == 0 ||
-        strcmp(vfs->zName, "storage_service") == 0);
 
   vfs->xDelete(vfs, journal_str.c_str(), 0);
   vfs->xDelete(vfs, wal_str.c_str(), 0);
@@ -1809,7 +1803,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
   }
 
   if (is_open()) {
-    DLOG(DCHECK) << "sql::Database is already open.";
+    DLOG(FATAL) << "sql::Database is already open.";
     return false;
   }
 
@@ -1824,10 +1818,6 @@ bool Database::OpenInternal(const std::string& db_file_path,
   // only considers the sqlite3 handle's state.
   DCHECK(!poisoned_) << "sql::Database is already open.";
   poisoned_ = false;
-
-  // Custom memory-mapping VFS which reads pages using regular I/O on first hit.
-  sqlite3_vfs* vfs = VFSWrapper();
-  const char* vfs_name = (vfs ? vfs->zName : nullptr);
 
   // The flags are documented at https://www.sqlite.org/c3ref/open.html.
   //
@@ -1857,8 +1847,8 @@ bool Database::OpenInternal(const std::string& db_file_path,
 #endif  // BUILDFLAG(IS_WIN)
   }
 
-  auto sqlite_result_code = ToSqliteResultCode(
-      sqlite3_open_v2(uri_file_path.c_str(), &db_, open_flags, vfs_name));
+  auto sqlite_result_code = ToSqliteResultCode(sqlite3_open_v2(
+      uri_file_path.c_str(), &db_, open_flags, /*zVfs=*/nullptr));
   if (sqlite_result_code != SqliteResultCode::kOk) {
     // sqlite3_open_v2() will usually create a database connection handle, even
     // if an error occurs (see https://www.sqlite.org/c3ref/open.html).

@@ -11,8 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * refactor that will move it out of current folder.
  */
 public class ShoppingPersistedTabDataService {
-    private static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFieldTrialParameter
             SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
-                    new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.PRICE_CHANGE_MODULE,
                             "skip_shopping_persisted_tab_data_delayed_initialization",
                             true);

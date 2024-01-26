@@ -7,6 +7,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -110,7 +111,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // ChromeBrowserState we're to remove from.
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
 
   // Used to delete data from HTTP cache.
   scoped_refptr<net::URLRequestContextGetter> context_getter_;

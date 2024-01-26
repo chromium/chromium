@@ -37,6 +37,7 @@
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/test_cookie_access_delegate.h"
+#include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"

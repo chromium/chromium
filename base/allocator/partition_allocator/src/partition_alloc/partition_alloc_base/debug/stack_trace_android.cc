@@ -4,12 +4,13 @@
 
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
-
-#include <string.h>
 #include <unistd.h>
 #include <unwind.h>
+
+#include <cstring>
+
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 namespace partition_alloc::internal::base::debug {
 

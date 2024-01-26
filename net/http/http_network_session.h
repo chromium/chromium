@@ -30,7 +30,7 @@
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_stream_factory.h"
 #include "net/net_buildflags.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
@@ -178,8 +178,8 @@ struct NET_EXPORT HttpNetworkSessionParams {
   bool use_dns_https_svcb_alpn = false;
 };
 
-  // Structure with pointers to the dependencies of the HttpNetworkSession.
-  // These objects must all outlive the HttpNetworkSession.
+// Structure with pointers to the dependencies of the HttpNetworkSession.
+// These objects must all outlive the HttpNetworkSession.
 struct NET_EXPORT HttpNetworkSessionContext {
   HttpNetworkSessionContext();
   HttpNetworkSessionContext(const HttpNetworkSessionContext& other);
@@ -205,7 +205,7 @@ struct NET_EXPORT HttpNetworkSessionContext {
   raw_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
 
-    // Optional factory to use for creating QuicCryptoClientStreams.
+  // Optional factory to use for creating QuicCryptoClientStreams.
   raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory;
 };
 
@@ -245,7 +245,7 @@ class NET_EXPORT HttpNetworkSession {
     return &websocket_endpoint_lock_manager_;
   }
   SpdySessionPool* spdy_session_pool() { return &spdy_session_pool_; }
-  QuicStreamFactory* quic_stream_factory() { return &quic_stream_factory_; }
+  QuicSessionPool* quic_session_pool() { return &quic_session_pool_; }
   HttpAuthHandlerFactory* http_auth_handler_factory() {
     return http_auth_handler_factory_;
   }
@@ -255,9 +255,7 @@ class NET_EXPORT HttpNetworkSession {
   HttpStreamFactory* http_stream_factory() {
     return http_stream_factory_.get();
   }
-  NetLog* net_log() {
-    return net_log_;
-  }
+  NetLog* net_log() { return net_log_; }
   HostResolver* host_resolver() { return host_resolver_; }
 #if BUILDFLAG(ENABLE_REPORTING)
   ReportingService* reporting_service() const { return reporting_service_; }
@@ -341,7 +339,7 @@ class NET_EXPORT HttpNetworkSession {
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
   std::unique_ptr<ClientSocketPoolManager> normal_socket_pool_manager_;
   std::unique_ptr<ClientSocketPoolManager> websocket_socket_pool_manager_;
-  QuicStreamFactory quic_stream_factory_;
+  QuicSessionPool quic_session_pool_;
   SpdySessionPool spdy_session_pool_;
   std::unique_ptr<HttpStreamFactory> http_stream_factory_;
   std::set<std::unique_ptr<HttpResponseBodyDrainer>, base::UniquePtrComparator>

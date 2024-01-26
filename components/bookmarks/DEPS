@@ -6,6 +6,9 @@ include_rules = [
   "+components/prefs",
   "+components/query_parser",
   "+components/strings/grit/components_strings.h",
+  # TODO(crbug.com/1503127): Remove this dependency once the feature toggle is
+  # cleaned up.
+  "+components/sync/base/features.h",
   "+components/url_formatter",
   "+net/base",
   "+ui",

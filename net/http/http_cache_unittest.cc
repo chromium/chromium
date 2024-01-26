@@ -10990,8 +10990,6 @@ TEST_F(HttpCacheTest, SyncRead) {
   r3.load_flags |= LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
   c3.Start(&r3, NetLogWithSource());
 
-  base::RunLoop().Run();
-
   EXPECT_TRUE(c1.is_done());
   EXPECT_TRUE(c2.is_done());
   EXPECT_TRUE(c3.is_done());

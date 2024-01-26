@@ -241,13 +241,20 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
       mock_proxy_resolver_->pending_jobs()[0].get();
   EXPECT_EQ(GURL("http://example.com"), job->url);
 
-  job->results->UsePacString(
-      "PROXY proxy.example.com:1; "
-      "SOCKS4 socks4.example.com:2; "
-      "SOCKS5 socks5.example.com:3; "
-      "HTTPS https.example.com:4; "
-      "QUIC quic.example.com:65000; "
-      "DIRECT");
+  net::ProxyList proxy_list;
+  proxy_list.AddProxyChain(net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTP, "proxy.example.com", 1));
+  proxy_list.AddProxyChain(net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_SOCKS4, "socks4.example.com", 2));
+  proxy_list.AddProxyChain(net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_SOCKS5, "socks5.example.com", 3));
+  proxy_list.AddProxyChain(net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "https.example.com", 4));
+  proxy_list.AddProxyChain(net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_QUIC, "quic.example.com", 65000));
+  proxy_list.AddProxyChain(net::ProxyChain::Direct());
+
+  job->results->UseProxyList(proxy_list);
   job->Complete(net::OK);
   client.WaitForResult();
 

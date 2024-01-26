@@ -45,7 +45,7 @@ source_set("model") {
     "//components/sync",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

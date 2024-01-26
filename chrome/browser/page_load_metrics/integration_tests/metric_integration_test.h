@@ -171,8 +171,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   const ukm::mojom::UkmEntryPtr GetEntry();
 
   base::test::ScopedFeatureList feature_list_;
-  absl::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  absl::optional<base::HistogramTester> histogram_tester_;
+  std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::optional<base::HistogramTester> histogram_tester_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_

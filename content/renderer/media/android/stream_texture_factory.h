@@ -131,7 +131,7 @@ class CONTENT_EXPORT StreamTextureFactory
   ~StreamTextureFactory();
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace content

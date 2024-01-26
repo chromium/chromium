@@ -178,7 +178,9 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
       frame_context_menu_controller_.get());
 }
 
-NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
+NonClientFrameViewAsh::~NonClientFrameViewAsh() {
+  header_view_->set_context_menu_controller(nullptr);
+}
 
 // static
 NonClientFrameViewAsh* NonClientFrameViewAsh::Get(aura::Window* window) {
@@ -308,9 +310,10 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
+  const int corner_radius =
+      chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+
   if (frame_enabled_) {
-    const int corner_radius =
-        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
     header_view_->SetHeaderCornerRadius(corner_radius);
   }
 
@@ -318,7 +321,7 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
-  GetWidget()->client_view()->UpdateWindowRoundedCorners();
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
 }
 
 base::RepeatingCallback<void()>

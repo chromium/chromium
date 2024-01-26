@@ -18,6 +18,7 @@ import {
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
+  WifiConfig,
 } from './mojo/type.js';
 import {MimeType} from './type.js';
 import {expandPath} from './util.js';
@@ -34,7 +35,7 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override async initScreenStateMonitor(
       _onChange: (state: ScreenState) => void): Promise<ScreenState> {
-    return ScreenState.ON;
+    return ScreenState.kOn;
   }
 
   override async initExternalScreenMonitor(
@@ -145,7 +146,7 @@ export class ChromeHelperFake extends ChromeHelper {
   override async startMonitorStorage(
       _onChange: (status: StorageMonitorStatus) => void):
       Promise<StorageMonitorStatus> {
-    return StorageMonitorStatus.NORMAL;
+    return StorageMonitorStatus.kNormal;
   }
 
   override stopMonitorStorage(): void {
@@ -153,6 +154,10 @@ export class ChromeHelperFake extends ChromeHelper {
   }
 
   override openStorageManagement(): void {
+    /* Do nothing. */
+  }
+
+  override openWifiDialog(_config: WifiConfig): void {
     /* Do nothing. */
   }
   /* eslint-enable @typescript-eslint/require-await */

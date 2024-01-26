@@ -34,7 +34,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -151,8 +151,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
     : client_(client),
       credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
           client,
-          // `client` is guaranteed to be present as it owns `this`.
-          client->GetPaymentsNetworkInterface(),
           app_locale,
           personal_data_manager)),
       address_profile_save_manager_(
@@ -504,13 +502,9 @@ FormDataImporter::GetAddressObservedFieldValues(
       continue;
     }
 
-    // When `kAutofillImportFromAutocompleteUnrecognized` is enabled, Autofill
-    // imports from fields despite an unrecognized autocomplete attribute.
+    // Don't import from ac=unrecognized fields.
     if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      if (!features::kAutofillImportFromAutocompleteUnrecognized.Get()) {
-        continue;
-      }
-      import_metadata.num_autocomplete_unrecognized_fields++;
+      continue;
     }
 
     AutofillType autofill_type = field->Type();

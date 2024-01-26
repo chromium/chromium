@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -64,6 +65,7 @@ public class EdgeToEdgeControllerFactory {
         if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
         return isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                && !BuildInfo.getInstance().isAutomotive
                 && WindowInsetsCompat.toWindowInsetsCompat(
                                         activity.getWindow().getDecorView().getRootWindowInsets())
                                 .getInsets(WindowInsetsCompat.Type.tappableElement())

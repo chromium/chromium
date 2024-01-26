@@ -111,7 +111,7 @@ void RecordIgnore(base::Value::Dict& dict) {
 
 // If we should suppress the item with the given dictionary ignored record.
 bool ShouldSuppressItem(base::Value::Dict& dict) {
-  absl::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
+  std::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() -
@@ -123,7 +123,7 @@ bool ShouldSuppressItem(base::Value::Dict& dict) {
     }
   }
 
-  absl::optional<int> times_ignored = dict.FindInt(kNumTimesIgnoredName);
+  std::optional<int> times_ignored = dict.FindInt(kNumTimesIgnoredName);
   return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
@@ -153,12 +153,16 @@ void MaybePopulateImportantInfoForReason(
     const GURL& origin,
     std::set<GURL>* visited_origins,
     ImportantReason reason,
-    absl::optional<std::string> app_name,
+    std::optional<std::string> app_name,
     std::map<std::string, ImportantDomainInfo>* output) {
   if (!origin.is_valid() || !visited_origins->insert(origin).second)
     return;
   std::string registerable_domain =
       ImportantSitesUtil::GetRegisterableDomainOrIP(origin);
+  if (registerable_domain.empty()) {
+    return;
+  }
+
   ImportantDomainInfo& info = (*output)[registerable_domain];
   info.reason_bitfield |= 1 << reason;
   if (info.example_origin.is_empty()) {
@@ -252,7 +256,7 @@ void PopulateInfoMapWithEngagement(
     if (detail.installed_bonus > 0) {
       MaybePopulateImportantInfoForReason(detail.origin, &content_origins,
                                           ImportantReason::HOME_SCREEN,
-                                          absl::nullopt, output);
+                                          std::nullopt, output);
     }
 
     (*engagement_map)[detail.origin] = detail.total_score;
@@ -264,6 +268,11 @@ void PopulateInfoMapWithEngagement(
 
     std::string registerable_domain =
         ImportantSitesUtil::GetRegisterableDomainOrIP(detail.origin);
+
+    if (registerable_domain.empty()) {
+      continue;
+    }
+
     ImportantDomainInfo& info = (*output)[registerable_domain];
     if (detail.total_score > info.engagement_score) {
       info.registerable_domain = registerable_domain;
@@ -290,7 +299,7 @@ void PopulateInfoMapWithContentTypeAllowed(
     GURL url(site.primary_pattern.ToString());
 
     MaybePopulateImportantInfoForReason(url, &content_origins, reason,
-                                        absl::nullopt, output);
+                                        std::nullopt, output);
   }
 }
 
@@ -337,7 +346,7 @@ void PopulateInfoMapWithBookmarks(
   for (const UrlAndTitle& bookmark : result_bookmarks) {
     MaybePopulateImportantInfoForReason(bookmark.url, &content_origins,
                                         ImportantReason::BOOKMARKS,
-                                        absl::nullopt, output);
+                                        std::nullopt, output);
   }
 }
 

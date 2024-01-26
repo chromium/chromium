@@ -33,6 +33,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
                     const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj,
                     jstring j_query,
+                    const JavaParamRef<jstring>& j_app_id,
                     jboolean j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,

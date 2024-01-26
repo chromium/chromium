@@ -228,8 +228,7 @@ void GoFullscreen(Element& element,
   // If there are any open popovers, close them.
   HTMLElement::HideAllPopoversUntil(
       nullptr, document, HidePopoverFocusBehavior::kNone,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-      HidePopoverIndependence::kHideUnrelated);
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
   // To fullscreen an |element| within a |document|, set the |element|'s
   // fullscreen flag and add it to |document|'s top layer.

@@ -990,7 +990,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 } catch (RuntimeException e) {
                     // Handle any issue gracefully, we should never crash due failures while
                     // logging.
-                    Log.e(TAG, "Error while trying to log CronetTrafficInfo: ", e);
+                    Log.i(TAG, "Error while trying to log CronetTrafficInfo: ", e);
                 }
             }
         }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div id='mydiv'>div from page</div>
   `, `Tests that console.memory works correct.`);

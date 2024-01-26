@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/cert/cert_db_initializer_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/scoped_nss_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using CrosapiCertDb = crosapi::mojom::CertDatabase;
 

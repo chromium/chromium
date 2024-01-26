@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp, session } = await testRunner.startBlank(
     `Tests that deleting a bucket works correctly\n`);
   await dp.Page.enable();

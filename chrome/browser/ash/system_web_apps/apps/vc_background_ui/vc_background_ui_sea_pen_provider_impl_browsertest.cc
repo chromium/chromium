@@ -32,8 +32,8 @@ namespace ash::vc_background_ui {
 namespace {
 
 constexpr const base::FilePath::CharType* kExistingFileImage[] = {
-    FILE_PATH_LITERAL("a.jpeg"),
-    FILE_PATH_LITERAL("b.jpeg"),
+    FILE_PATH_LITERAL("a.jpg"),
+    FILE_PATH_LITERAL("b.jpg"),
 };
 
 // Create fake Jpg image bytes.
@@ -49,10 +49,9 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
  public:
   VcBackgroundUISeaPenProviderImplTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware,
-         manta::features::kMantaService, features::kSeaPen,
-         features::kFeatureManagementSeaPen},
+        {features::kVideoConference, manta::features::kMantaService,
+         features::kVcBackgroundReplace,
+         features::kCameraEffectsSupportedByHardware},
         {});
   }
 

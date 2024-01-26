@@ -55,6 +55,8 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(GenerationUIState, state, (), (const override));
   MOCK_METHOD(bool, password_selected, (), (const override));
   MOCK_METHOD(bool, edit_password_selected, (), (const override));
+  MOCK_METHOD(bool, accept_button_selected, (), (const override));
+  MOCK_METHOD(bool, cancel_button_selected, (), (const override));
   MOCK_METHOD(const std::u16string&, password, (), (const override));
   MOCK_METHOD(const std::u16string&, HelpText, (), (const override));
   MOCK_METHOD(std::u16string, SuggestedText, (), (const override));

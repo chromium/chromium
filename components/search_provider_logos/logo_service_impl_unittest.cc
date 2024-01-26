@@ -349,7 +349,8 @@ class SigninHelper {
 class LogoServiceImplTest : public ::testing::Test {
  protected:
   LogoServiceImplTest()
-      : template_url_service_(nullptr, 0),
+      : template_url_service_(/*prefs=*/nullptr,
+                              /*search_engine_choice_service=*/nullptr),
         logo_cache_(new NiceMock<MockLogoCache>()),
         shared_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

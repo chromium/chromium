@@ -9,22 +9,37 @@ module.exports = {
     'no-fallthrough' : 'error',
     'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
     'no-console' : 'off',
-    /**
-     * https://google.github.io/styleguide/tsguide.html#type-inference
-     */
-    '@typescript-eslint/no-inferrable-types': [
-      'error',
-      {
-        // Function parameters may have explicit types for clearer APIs.
-        ignoreParameters: true,
-        // Class properties may have explicit types for clearer APIs.
-        ignoreProperties: true,
-      },
-    ],
+
     /**
      * https://google.github.io/styleguide/tsguide.html#function-expressions
      */
     'prefer-arrow-callback': 'error',
   },
+
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'parser': '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
+    'plugins': [
+      '@typescript-eslint',
+    ],
+    'rules': {
+      /**
+       * https://google.github.io/styleguide/tsguide.html#type-inference
+       */
+      '@typescript-eslint/no-inferrable-types': [
+        'error',
+        {
+          // Function parameters may have explicit types for clearer APIs.
+          ignoreParameters: true,
+          // Class properties may have explicit types for clearer APIs.
+          ignoreProperties: true,
+        },
+      ],
+
+      // Turn off until all TS violations under this folder are fixed. This was
+      // done for other parts of the codebase in http://crbug.com/1521107
+      'no-restricted-syntax': 'off',
+    },
+  }],
   // clang-format on
 };

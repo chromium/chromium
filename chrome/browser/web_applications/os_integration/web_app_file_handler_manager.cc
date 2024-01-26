@@ -41,7 +41,7 @@ namespace {
 
 // Used to enable running tests on platforms that don't support file handling
 // icons.
-absl::optional<bool> g_icons_supported_by_os_override;
+std::optional<bool> g_icons_supported_by_os_override;
 
 }  // namespace
 

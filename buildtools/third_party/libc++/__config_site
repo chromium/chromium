@@ -33,6 +33,14 @@
 /* #undef _LIBCPP_HAS_NO_LOCALIZATION */
 /* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
 
+// TODO(thakis): Is this right?
+/* #undef _LIBCPP_HAS_NO_STD_MODULES */
+
+// TODO(thakis): Is this right?
+/* #undef _LIBCPP_HAS_NO_TIME_ZONE_DATABASE */
+
+#define _LIBCPP_INSTRUMENTED_WITH_ASAN
+
 // PSTL backends
 /* #undef _LIBCPP_PSTL_CPU_BACKEND_SERIAL */
 #if defined(__APPLE__)

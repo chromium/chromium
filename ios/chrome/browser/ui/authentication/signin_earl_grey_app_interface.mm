@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 @implementation SigninEarlGreyAppInterface

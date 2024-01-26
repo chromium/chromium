@@ -625,8 +625,10 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   protected restoreDefaults(): void {
-    const remapKeysPage = this.shadowRoot!.querySelector('#remap-keys') as
-        SettingsPerDeviceKeyboardRemapKeysElement;
+    const remapKeysPage =
+        this.shadowRoot!
+            .querySelector<SettingsPerDeviceKeyboardRemapKeysElement>(
+                '#remap-keys')!;
     remapKeysPage.restoreDefaults();
   }
   /**

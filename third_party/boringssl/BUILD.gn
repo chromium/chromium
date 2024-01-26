@@ -65,6 +65,12 @@ if (enable_rust_boringssl) {
       "enable-function-attribute-detection",
       "use-core",
       "default-macro-constant-type=signed",
+
+      # These two functions use `va_list`, which causes bindgen errors on
+      # some platforms: i.e. "`extern` block uses type `[u64; 4]`, which is not
+      # FFI-safe"
+      "blocklist-function=BIO_vsnprintf",
+      "blocklist-function=OPENSSL_vasprintf",
       "rustified-enum=point_conversion_form_t",
       "allowlist-file=.*[[:punct:]]include[[:punct:]]openssl[[:punct:]].*\\.h",
       "allowlist-file=.*[[:punct:]]rust_wrapper\\.h",
@@ -76,14 +82,20 @@ if (enable_rust_boringssl) {
   cargo_crate("bssl_sys") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-sys/src/lib.rs"
-    sources = [ "src/rust/bssl-sys/src/lib.rs" ]
+    sources = rust_bssl_sys
     edition = "2021"
     deps = [
       ":boringssl",
       ":raw_bssl_sys_bindings",
     ]
-    visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
 
+    visibility = [
+      ":*",  # private, should only be exposed through bssl_crypto
+
+      # temporary, while bssl_crypto is augmented with
+      # some needed functionality.
+      "//third_party/cloud_authenticator/crypto:*",
+    ]
     bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
     inputs = bindgen_output
     rustenv =
@@ -95,26 +107,7 @@ if (enable_rust_boringssl) {
   cargo_crate("bssl_crypto") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-crypto/src/lib.rs"
-    sources = [
-      "src/rust/bssl-crypto/src/aead.rs",
-      "src/rust/bssl-crypto/src/aes.rs",
-      "src/rust/bssl-crypto/src/bn.rs",
-      "src/rust/bssl-crypto/src/cipher/aes_cbc.rs",
-      "src/rust/bssl-crypto/src/cipher/aes_ctr.rs",
-      "src/rust/bssl-crypto/src/cipher/mod.rs",
-      "src/rust/bssl-crypto/src/digest.rs",
-      "src/rust/bssl-crypto/src/ec.rs",
-      "src/rust/bssl-crypto/src/ecdh.rs",
-      "src/rust/bssl-crypto/src/ed25519.rs",
-      "src/rust/bssl-crypto/src/hkdf.rs",
-      "src/rust/bssl-crypto/src/hmac.rs",
-      "src/rust/bssl-crypto/src/lib.rs",
-      "src/rust/bssl-crypto/src/mem.rs",
-      "src/rust/bssl-crypto/src/pkey.rs",
-      "src/rust/bssl-crypto/src/rand.rs",
-      "src/rust/bssl-crypto/src/test_helpers.rs",
-      "src/rust/bssl-crypto/src/x25519.rs",
-    ]
+    sources = rust_bssl_crypto
     edition = "2021"
     deps = [ ":bssl_sys" ]
   }

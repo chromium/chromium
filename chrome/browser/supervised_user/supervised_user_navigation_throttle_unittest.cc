@@ -8,13 +8,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -28,10 +28,11 @@ static const char* kExampleURL = "https://example.com/";
 class MockSupervisedUserURLFilter
     : public supervised_user::SupervisedUserURLFilter {
  public:
-  MockSupervisedUserURLFilter()
+  explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : supervised_user::SupervisedUserURLFilter(
-            base::BindRepeating([](const GURL& url) { return false; }),
-            std::make_unique<supervised_user::FakeURLFilterDelegate>()) {}
+            prefs,
+            std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+            base::BindRepeating([](const GURL& url) { return false; })) {}
 
   MOCK_METHOD(FilteringBehavior,
               GetFilteringBehaviorForURL,
@@ -82,7 +83,10 @@ class SupervisedUserNavigationThrottleTest
 };
 
 TEST_F(SupervisedUserNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
-  CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest();
+  GURL allowed_url(kExampleURL);
+  std::map<std::string, bool> hosts{{allowed_url.host(), true}};
+  GetSupervisedUserURLFilter()->SetManualHosts(std::move(hosts));
+  CreateNavigationThrottle(allowed_url)->WillStartRequest();
 
   histogram_tester()->ExpectBucketCount(
       supervised_user::kSupervisedUserTopLevelURLFilteringResultHistogramName,
@@ -122,7 +126,7 @@ TEST_F(SupervisedUserNavigationThrottleTest,
 TEST_F(SupervisedUserNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>();
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   ON_CALL(*mock_url_filter, GetFilteringBehaviorForURL(testing::_, testing::_))
       .WillByDefault([](const GURL& url,
                         supervised_user::FilteringBehaviorReason* reason) {

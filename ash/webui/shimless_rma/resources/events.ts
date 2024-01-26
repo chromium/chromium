@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StateResult} from './shimless_rma.mojom-webui.js';
+import {RmadErrorCode, StateResult} from './shimless_rma.mojom-webui.js';
 
 export const DISABLE_NEXT_BUTTON = 'disable-next-button';
 export type DisableNextButtonEvent = CustomEvent<boolean>;
@@ -15,8 +15,8 @@ export const ENABLE_ALL_BUTTONS = 'enable-all-buttons';
 export type EnableAllButtonsEvent = CustomEvent;
 
 export const TRANSITION_STATE = 'transition-state';
-export type TransitionStateEvent =
-    CustomEvent<() => Promise<{stateResult: StateResult}>>;
+export type TransitionStateEvent = CustomEvent<
+    () => Promise<{stateResult: StateResult, error?: RmadErrorCode}>>;
 
 export const CLICK_NEXT_BUTTON = 'click-next-button';
 export type ClickNextButtonEvent = CustomEvent;
@@ -31,6 +31,19 @@ export const CLICK_REPAIR_COMPONENT_BUTTON = 'click-repair-component-button';
 export type ClickRepairComponentButtonEvent = CustomEvent<number>;
 
 export type OnSelectedChangedEvent = CustomEvent<{value: string}>;
+
+export const CLICK_CALIBRATION_COMPONENT_BUTTON =
+    'click-calibration-component-button';
+export type ClickCalibrationComponentEvent = CustomEvent<number>;
+
+export const FATAL_HARDWARE_ERROR = 'fatal-hardware-error';
+export type FatalHardwareEvent = CustomEvent<{
+  rmadErrorCode: RmadErrorCode,
+  fatalErrorCode: number,
+}>;
+
+export const OPEN_LOGS_DIALOG = 'open-logs-dialog';
+export type OpenLogsDialogEvent = CustomEvent;
 
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
 

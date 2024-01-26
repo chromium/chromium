@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/location.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace {

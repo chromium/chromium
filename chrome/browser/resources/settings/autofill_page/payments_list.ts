@@ -18,8 +18,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SettingsCreditCardListEntryElement} from './credit_card_list_entry.js';
-import {SettingsIbanListEntryElement} from './iban_list_entry.js';
+import type {SettingsCreditCardListEntryElement} from './credit_card_list_entry.js';
+import type {SettingsIbanListEntryElement} from './iban_list_entry.js';
 import {getTemplate} from './payments_list.html.js';
 
 export class SettingsPaymentsListElement extends PolymerElement {

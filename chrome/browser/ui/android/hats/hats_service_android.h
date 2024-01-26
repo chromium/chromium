@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_HATS_HATS_SERVICE_ANDROID_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -20,7 +21,6 @@
 #include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace messages {
 class MessageWrapper;
@@ -44,7 +44,8 @@ class HatsServiceAndroid : public HatsService {
                       const SurveyStringData& product_specific_string_data,
                       base::OnceClosure success_callback,
                       base::OnceClosure failure_callback,
-                      absl::optional<std::string_view> supplied_trigger_id);
+                      const std::optional<std::string>& supplied_trigger_id,
+                      const SurveyOptions& survey_options);
 
     // Not copyable or movable
     DelayedSurveyTask(const DelayedSurveyTask&) = delete;
@@ -80,7 +81,8 @@ class HatsServiceAndroid : public HatsService {
     SurveyStringData product_specific_string_data_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
-    absl::optional<std::string_view> supplied_trigger_id_;
+    std::optional<std::string> supplied_trigger_id_;
+    SurveyOptions survey_options_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
   };
 
@@ -129,8 +131,8 @@ class HatsServiceAndroid : public HatsService {
       const SurveyStringData& product_specific_string_data,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const absl::optional<std::string_view>& supplied_trigger_id =
-          absl::nullopt) override;
+      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
+      const SurveyOptions& survey_options = SurveyOptions()) override;
 
   bool LaunchDelayedSurvey(
       const std::string& trigger,
@@ -147,8 +149,8 @@ class HatsServiceAndroid : public HatsService {
       NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const absl::optional<std::string_view>& supplied_trigger_id =
-          absl::nullopt) override;
+      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
+      const SurveyOptions& survey_options = SurveyOptions()) override;
 
   // Currently not implemented
   bool CanShowAnySurvey(bool user_prompted) const override;

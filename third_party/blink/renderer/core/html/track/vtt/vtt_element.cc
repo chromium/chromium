@@ -149,7 +149,7 @@ void VTTElement::Trace(Visitor* visitor) const {
 LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style) {
   switch (web_vtt_node_type_) {
     case kVTTNodeTypeRuby:
-      return MakeGarbageCollected<LayoutRubyAsInline>(this);
+      return MakeGarbageCollected<LayoutRuby>(this);
     case kVTTNodeTypeRubyText:
       return MakeGarbageCollected<LayoutRubyText>(this);
   }

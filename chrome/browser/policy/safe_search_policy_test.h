@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_POLICY_SAFE_SEARCH_POLICY_TEST_H_
 #define CHROME_BROWSER_POLICY_SAFE_SEARCH_POLICY_TEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -23,10 +23,10 @@ class SafeSearchPolicyTest : public PolicyTest {
   SafeSearchPolicyTest();
   ~SafeSearchPolicyTest() override;
 
-  void ApplySafeSearchPolicy(absl::optional<base::Value> legacy_safe_search,
-                             absl::optional<base::Value> google_safe_search,
-                             absl::optional<base::Value> legacy_youtube,
-                             absl::optional<base::Value> youtube_restrict);
+  void ApplySafeSearchPolicy(std::optional<base::Value> legacy_safe_search,
+                             std::optional<base::Value> google_safe_search,
+                             std::optional<base::Value> legacy_youtube,
+                             std::optional<base::Value> youtube_restrict);
 
   static GURL GetExpectedSearchURL(bool expect_safe_search);
 

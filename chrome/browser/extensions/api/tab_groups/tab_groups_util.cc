@@ -54,11 +54,11 @@ api::tab_groups::TabGroup CreateTabGroupObject(
   return tab_group_object;
 }
 
-absl::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
+std::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
   Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
   if (!browser)
-    return absl::nullopt;
+    return std::nullopt;
 
   CHECK(browser->tab_strip_model()->SupportsTabGroups());
   TabGroupModel* group_model = browser->tab_strip_model()->group_model();

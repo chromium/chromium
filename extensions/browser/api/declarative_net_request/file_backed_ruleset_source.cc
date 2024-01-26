@@ -451,9 +451,7 @@ LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
     return LoadRulesetResult::kErrorVersionMismatch;
 
   if (expected_ruleset_checksum !=
-      GetChecksum(
-          base::make_span(reinterpret_cast<const uint8_t*>(ruleset_data.data()),
-                          ruleset_data.size()))) {
+      GetChecksum(base::as_byte_span(ruleset_data))) {
     return LoadRulesetResult::kErrorChecksumMismatch;
   }
 

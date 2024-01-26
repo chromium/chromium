@@ -213,11 +213,11 @@ PP_Bool ReadImageData(PP_Resource device_context_2d,
 }
 
 void RunMessageLoop(PP_Instance instance) {
-  base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).Run();
+  HostGlobals::Get()->RunMsgLoop();
 }
 
 void QuitMessageLoop(PP_Instance instance) {
-  base::RunLoop::QuitCurrentDeprecated();
+  HostGlobals::Get()->QuitMsgLoop();
 }
 
 uint32_t GetLiveObjectsForInstance(PP_Instance instance_id) {

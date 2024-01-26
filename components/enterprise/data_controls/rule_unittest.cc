@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/rule.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -21,6 +22,70 @@ absl::optional<Rule> MakeRule(const std::string& value) {
   EXPECT_TRUE(dict) << value << " is not valid JSON";
   return Rule::Create(*dict);
 }
+
+struct NotTestCase {
+  const char* conditions;
+  ActionContext context;
+};
+
+// Test to validate that a valid set of conditions in a rule will return
+// opposite "IsTriggered" results when those conditions are nested in a "not"
+// attribute. This is parametrized with conditions and a corresponding context
+// to trigger them.
+class DataControlsRuleNotTest : public testing::TestWithParam<NotTestCase> {
+ public:
+  std::string normal_rule_string() {
+    return base::StringPrintf(R"(
+    {
+      "name": "Normal rule",
+      "rule_id": "1234",
+      %s,
+      "restrictions": [
+        { "class": "CLIPBOARD", "level": "BLOCK" }
+      ]
+    })",
+                              GetParam().conditions);
+  }
+
+  std::string negative_rule_string() {
+    return base::StringPrintf(R"(
+    {
+      "name": "Negative rule",
+      "rule_id": "5678",
+      "not": {
+        %s
+      },
+      "restrictions": [
+        { "class": "CLIPBOARD", "level": "BLOCK" }
+      ]
+    })",
+                              GetParam().conditions);
+  }
+};
+
+// This is done as a function instead of a simple constant because some
+// sub-types of ActionContext (namely GURL) doesn't support being statically
+// instantiated.
+std::vector<NotTestCase> NotTestCases() {
+  return {
+      {.conditions = R"("sources": {"incognito":true})",
+       .context = {.source = {.incognito = true}}},
+      {.conditions = R"("sources": {"os_clipboard":true})",
+       .context = {.source = {.os_clipboard = true}}},
+      {.conditions = R"("sources": {"urls":["google.com"]})",
+       .context = {.source = {.url = GURL("https://google.com")}}},
+      {.conditions = R"("destinations": {"incognito":true})",
+       .context = {.destination = {.incognito = true}}},
+      {.conditions = R"("destinations": {"os_clipboard":true})",
+       .context = {.destination = {.os_clipboard = true}}},
+      {.conditions = R"("destinations": {"urls":["google.com"]})",
+       .context = {.destination = {.url = GURL("https://google.com")}}},
+  };
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataControlsRuleNotTest,
+                         testing::ValuesIn(NotTestCases()));
 
 }  // namespace
 
@@ -332,5 +397,33 @@ TEST(DataControlsRuleTest, DestinationComponent) {
       Rule::Level::kNotSet);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_P(DataControlsRuleNotTest, TriggeringContext) {
+  auto normal_rule = MakeRule(normal_rule_string());
+  auto negative_rule = MakeRule(negative_rule_string());
+
+  ASSERT_TRUE(normal_rule);
+  ASSERT_TRUE(negative_rule);
+
+  ASSERT_EQ(
+      normal_rule->GetLevel(Rule::Restriction::kClipboard, GetParam().context),
+      Rule::Level::kBlock);
+  ASSERT_EQ(negative_rule->GetLevel(Rule::Restriction::kClipboard,
+                                    GetParam().context),
+            Rule::Level::kNotSet);
+}
+
+TEST_P(DataControlsRuleNotTest, NonTriggeringContext) {
+  auto normal_rule = MakeRule(normal_rule_string());
+  auto negative_rule = MakeRule(negative_rule_string());
+
+  ASSERT_TRUE(normal_rule);
+  ASSERT_TRUE(negative_rule);
+
+  ASSERT_EQ(normal_rule->GetLevel(Rule::Restriction::kClipboard, {}),
+            Rule::Level::kNotSet);
+  ASSERT_EQ(negative_rule->GetLevel(Rule::Restriction::kClipboard, {}),
+            Rule::Level::kBlock);
+}
 
 }  // namespace data_controls

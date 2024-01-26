@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_enumerator.h"
@@ -33,7 +34,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 constexpr base::StringPiece kIwa1UrlString(
@@ -109,7 +109,7 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
 
     WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
         url_info.value(), DevModeProxy{.proxy_url = proxy_origin},
-        /*expected_version=*/absl::nullopt,
+        /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -121,15 +121,14 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name,
       const base::Location location = FROM_HERE) {
-    base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
+    base::test::TestFuture<std::optional<content::StoragePartitionConfig>>
         future;
     provider().scheduler().ScheduleCallbackWithResult(
         "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
         base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
                        url_info, partition_name, /*in_memory=*/false),
         future.GetCallback(), /*arg_for_shutdown=*/
-        absl::optional<content::StoragePartitionConfig>(absl::nullopt),
-        location);
+        std::optional<content::StoragePartitionConfig>(std::nullopt), location);
     return future.Get().value();
   }
 };

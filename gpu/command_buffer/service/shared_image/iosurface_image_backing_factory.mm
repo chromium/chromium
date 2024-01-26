@@ -101,9 +101,10 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
-    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
     SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING |
@@ -158,9 +159,9 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
-  return CreateSharedImageInternal(mailbox, format, surface_handle, size,
-                                   color_space, surface_origin, alpha_type,
-                                   usage, base::span<const uint8_t>());
+  return CreateSharedImageInternal(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, std::move(debug_label), base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -176,7 +177,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> pixel_data) {
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
-                                   usage, pixel_data);
+                                   usage, std::move(debug_label), pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -194,7 +195,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle), /*io_surface_plane=*/0, gfx::BufferPlane::DEFAULT,
+      std::move(debug_label), std::move(handle), /*io_surface_plane=*/0,
+      gfx::BufferPlane::DEFAULT,
       /*is_plane_format=*/false);
 }
 
@@ -225,7 +227,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   }
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle), io_surface_plane, plane, /*is_plane_format=*/true);
+      std::move(debug_label), std::move(handle), io_surface_plane, plane,
+      /*is_plane_format=*/true);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -273,7 +276,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle), /*io_surface_plane=*/0, gfx::BufferPlane::DEFAULT,
+      std::move(debug_label), std::move(handle), /*io_surface_plane=*/0,
+      gfx::BufferPlane::DEFAULT,
       /*is_plane_format=*/false, std::move(buffer_usage));
 }
 
@@ -332,6 +336,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   if (!base::Contains(supported_formats_, format)) {
     LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable. "
@@ -355,8 +360,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   }
 
   const bool for_framebuffer_attachment =
-      (usage & (SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+      (usage &
+       (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
 
   // |scoped_progress_reporter| will notify |progress_reporter_| upon
   // construction and destruction. We limit the scope so that progress is
@@ -392,8 +398,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, io_surface_id, mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, texture_target,
-      framebuffer_attachment_angle, is_cleared, retain_gl_texture);
+      color_space, surface_origin, alpha_type, usage, std::move(debug_label),
+      texture_target, framebuffer_attachment_angle, is_cleared,
+      retain_gl_texture);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     backing->InitializePixels(pixel_data);
@@ -410,6 +417,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     gfx::GpuMemoryBufferHandle handle,
     uint32_t io_surface_plane,
     gfx::BufferPlane buffer_plane,
@@ -465,8 +473,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   }
 
   const bool for_framebuffer_attachment =
-      (usage & (SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+      (usage &
+       (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
   const bool retain_gl_texture = gr_context_type_ == GrContextType::kGL;
@@ -477,16 +486,16 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
         GetPlaneBufferFormat(buffer_plane, buffer_format));
     return std::make_unique<IOSurfaceImageBacking>(
         io_surface, io_surface_plane, io_surface_id, mailbox, plane_format,
-        plane_size, color_space, surface_origin, alpha_type, usage, target,
-        framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture,
-        std::move(buffer_usage));
+        plane_size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label), target, framebuffer_attachment_angle,
+        /*is_cleared=*/true, retain_gl_texture, std::move(buffer_usage));
   }
 
   return std::make_unique<IOSurfaceImageBacking>(
       io_surface, /*io_surface_plane=*/0, io_surface_id, mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, target,
-      framebuffer_attachment_angle, /*is_cleared=*/true, retain_gl_texture,
-      std::move(buffer_usage));
+      color_space, surface_origin, alpha_type, usage, std::move(debug_label),
+      target, framebuffer_attachment_angle, /*is_cleared=*/true,
+      retain_gl_texture, std::move(buffer_usage));
 }
 
 }  // namespace gpu

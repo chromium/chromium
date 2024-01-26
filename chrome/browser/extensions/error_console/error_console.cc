@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/error_console/error_console.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/logging_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -127,7 +127,7 @@ void ErrorConsole::UseDefaultReportingForExtension(
     return;
 
   prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref,
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 void ErrorConsole::ReportError(std::unique_ptr<ExtensionError> error) {

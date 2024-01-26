@@ -25,7 +25,7 @@ struct MatchingWebAppResult {
 
 MatchingWebAppResult FindMatchingWebApp(
     const WebAppRegistrar& registrar,
-    const absl::optional<webapps::AppId>& app_id,
+    const std::optional<webapps::AppId>& app_id,
     const WebAppManagement::Type& install_source,
     const GURL& install_url) {
   if (app_id.has_value()) {
@@ -75,7 +75,7 @@ RemoveInstallUrlJob::RemoveInstallUrlJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
     base::Value::Dict& debug_value,
-    absl::optional<webapps::AppId> app_id,
+    std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url)
     : uninstall_source_(uninstall_source),

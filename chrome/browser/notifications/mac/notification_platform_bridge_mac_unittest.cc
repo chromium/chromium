@@ -107,10 +107,9 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
         message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
         base::UTF8ToUTF16(title), base::UTF8ToUTF16(subtitle), ui::ImageModel(),
         u"Notifier's Name", url,
-        message_center::NotifierId(url, /*title=*/absl::nullopt,
-                                   web_app_id.empty()
-                                       ? absl::nullopt
-                                       : absl::make_optional(web_app_id)),
+        message_center::NotifierId(
+            url, /*title=*/std::nullopt,
+            web_app_id.empty() ? std::nullopt : std::make_optional(web_app_id)),
         optional_fields, new message_center::NotificationDelegate());
     if (require_interaction)
       notification->set_never_timeout(true);

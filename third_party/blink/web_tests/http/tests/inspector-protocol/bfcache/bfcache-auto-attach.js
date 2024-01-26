@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
     'http://localhost:8000/inspector-protocol/bfcache/resources/page-with-oopif.html',
     'Tests that target for oopif is attached after BFCache navigation');

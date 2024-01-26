@@ -99,8 +99,8 @@ bool WebRtcLocalEventLogManager::EnableLogging(const base::FilePath& base_path,
 
   max_log_file_size_bytes_ =
       (max_file_size_bytes == kWebRtcEventLogManagerUnlimitedFileSize)
-          ? absl::optional<size_t>()
-          : absl::optional<size_t>(max_file_size_bytes);
+          ? std::optional<size_t>()
+          : std::optional<size_t>(max_file_size_bytes);
 
   for (const PeerConnectionKey& peer_connection : active_peer_connections_) {
     if (log_files_.size() >= kMaxNumberLocalWebRtcEventLogFiles) {

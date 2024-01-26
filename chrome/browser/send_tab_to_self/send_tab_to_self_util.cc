@@ -19,18 +19,18 @@
 
 namespace send_tab_to_self {
 
-absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents) {
   // TODO(crbug.com/1274173): This can probably be a DCHECK instead.
   if (!web_contents)
-    return absl::nullopt;
+    return std::nullopt;
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   return service ? service->GetEntryPointDisplayReason(
                        web_contents->GetLastCommittedURL())
-                 : absl::nullopt;
+                 : std::nullopt;
 }
 
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {

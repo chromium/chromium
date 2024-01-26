@@ -131,7 +131,6 @@ class PlatformSensorChromeOSOneChannelTest
         return reading.als;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        return reading.als;
     }
   }
 
@@ -311,7 +310,6 @@ class PlatformSensorChromeOSAxesTest
         return reading.magn;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        return reading.accel;
     }
   }
 
@@ -333,7 +331,6 @@ class PlatformSensorChromeOSAxesTest
         break;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        break;
     }
   }
 

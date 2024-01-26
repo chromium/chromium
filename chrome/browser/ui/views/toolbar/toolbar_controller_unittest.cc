@@ -68,6 +68,11 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
   bool IsOverflowed(const actions::ActionId& id) override {
     return kIdToOverflowedMap_.at(id);
   }
+  views::View* GetContainerView() override { return container_view_; }
+  void SetContainerView(views::View* view) { container_view_ = view; }
+  bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override {
+    return true;
+  }
   int get_overflowed_count() { return overflowed_count_; }
   std::vector<actions::ActionId> get_action_ids() { return action_ids_; }
 
@@ -77,6 +82,7 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
   std::vector<std::unique_ptr<actions::ActionItem>> action_items_;
   base::flat_map<actions::ActionId, actions::ActionItem*> kIdToItemMap_;
   base::flat_map<actions::ActionId, bool> kIdToOverflowedMap_;
+  raw_ptr<views::View> container_view_;
 };
 
 class MockToolbarController : public ToolbarController {
@@ -293,8 +299,9 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void SetOverflowButtonVisible(bool visible) {
-    toolbar_controller()->overflow_button()->SetVisible(visible);
+  void UpdateOverflowButtonVisibility() {
+    toolbar_controller()->overflow_button()->SetVisible(
+        toolbar_controller()->ShouldShowOverflowButton(widget()->GetSize()));
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -338,21 +345,21 @@ TEST_F(ToolbarControllerUnitTest, OverflowButtonVisibility) {
   widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
                               kButtonSize.height()));
   EXPECT_EQ(GetOverflowedElements().size(), size_t(0));
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Shrink widget width with one button width smaller.
   widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
                               kButtonSize.height()));
   EXPECT_EQ(GetOverflowedElements().size(), size_t(1));
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
 }
 
 TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
                               kButtonSize.height()));
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   widget()->LayoutRootViewIfNecessary();
@@ -377,7 +384,7 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
 TEST_F(ToolbarControllerUnitTest, MenuSeparator) {
   // Set widget to be small enough to ensure all the buttons overflow.
   widget()->SetSize(gfx::Size(1, 1));
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
 
   // All 3 buttons overflowed.
   EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(3));
@@ -424,7 +431,7 @@ TEST_F(ToolbarControllerUnitTest, InValidFirstSectionAddsNoLeadingSeparator) {
           const_cast<views::View*>(overflow_button()), test_delegate.get());
 
   widget()->SetSize(kButtonSize);
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   views::View* button1 = test_buttons()[0];
@@ -472,7 +479,7 @@ TEST_F(ToolbarControllerUnitTest, InValidSectionInMiddleAddsNoExtraSeparator) {
           const_cast<views::View*>(overflow_button()), test_delegate.get());
 
   widget()->SetSize(kButtonSize);
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   views::View* button1 = test_buttons()[0];
@@ -520,7 +527,7 @@ TEST_F(ToolbarControllerUnitTest, InValidLastSectionAddsNoTrailingSeparator) {
           const_cast<views::View*>(overflow_button()), test_delegate.get());
 
   widget()->SetSize(kButtonSize);
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   views::View* button1 = test_buttons()[0];
@@ -697,7 +704,7 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   // Not enough space. Button3 is hidden.
   widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
                               kButtonSize.height()));
-  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  UpdateOverflowButtonVisibility();
   EXPECT_TRUE(overflow_button()->GetVisible());
   EXPECT_FALSE(button3->GetVisible());
 
@@ -734,8 +741,11 @@ TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
       std::vector<ui::ElementIdentifier>(), kElementFlexOrderStart,
       toolbar_container_view(), const_cast<views::View*>(overflow_button()),
       test_delegate.get());
+  test_delegate->SetContainerView(
+      toolbar_container_view()->AddChildView(std::make_unique<views::View>()));
 
-  SetOverflowButtonVisible(test_controller->ShouldShowOverflowButton());
+  toolbar_controller()->overflow_button()->SetVisible(
+      test_controller->ShouldShowOverflowButton(widget()->GetSize()));
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   const auto menu = test_controller->CreateOverflowMenuModel();

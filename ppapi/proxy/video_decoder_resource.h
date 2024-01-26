@@ -98,27 +98,7 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
     const uint32_t shm_id;
   };
 
-  // Struct to hold texture information.
-  struct Texture {
-    Texture(uint32_t texture_target, const PP_Size& size);
-    ~Texture();
-
-    const uint32_t texture_target;
-    const PP_Size size;
-  };
-
-  // Struct to hold a picture received from the decoder.
-  struct Picture {
-    Picture(int32_t decode_id,
-            uint32_t texture_id,
-            const PP_Rect& visible_rect);
-    ~Picture();
-
-    int32_t decode_id;
-    uint32_t texture_id;
-    PP_Rect visible_rect;
-  };
-
+  // Struct to hold a shared image received from the decoder.
   struct ReceivedSharedImage {
     int32_t decode_id;
     gpu::Mailbox mailbox;
@@ -126,42 +106,24 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
     PP_Rect visible_rect;
   };
 
-  bool use_shared_images() const {
-    CHECK(initialized_);
-    return use_shared_images_;
-  }
-
   // Unsolicited reply message handlers.
-  void OnPluginMsgRequestTextures(const ResourceMessageReplyParams& params,
-                                  uint32_t num_textures,
-                                  const PP_Size& size,
-                                  uint32_t texture_target);
-  void OnPluginMsgPictureReady(const ResourceMessageReplyParams& params,
-                               int32_t decode_id,
-                               uint32_t texture_id,
-                               const PP_Rect& visible_rect);
   void OnPluginMsgSharedImageReady(const ResourceMessageReplyParams& params,
                                    int32_t decode_id,
                                    const gpu::Mailbox& mailbox,
                                    const PP_Size& size,
                                    const PP_Rect& visible_rect);
 
-  void OnPluginMsgDismissPicture(const ResourceMessageReplyParams& params,
-                                 uint32_t texture_id);
   void OnPluginMsgNotifyError(const ResourceMessageReplyParams& params,
                               int32_t error);
 
   // Reply message handlers for operations that are done in the host.
-  void OnPluginMsgInitializeComplete(const ResourceMessageReplyParams& params,
-                                     bool use_shared_images);
+  void OnPluginMsgInitializeComplete(const ResourceMessageReplyParams& params);
   void OnPluginMsgDecodeComplete(const ResourceMessageReplyParams& params,
                                  uint32_t shm_id);
   void OnPluginMsgFlushComplete(const ResourceMessageReplyParams& params);
   void OnPluginMsgResetComplete(const ResourceMessageReplyParams& params);
 
   void RunCallbackWithError(scoped_refptr<TrackedCallback>* callback);
-  void DeleteGLTexture(uint32_t texture_id);
-  void WriteNextPicture();
   void WriteNextSharedImage();
 
   // The shared memory buffers.
@@ -171,14 +133,7 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
   using ShmBufferList = std::vector<ShmBuffer*>;
   ShmBufferList available_shm_buffers_;
 
-  // Map of GL texture id to texture info.
-  using TextureMap = std::unordered_map<uint32_t, Texture>;
-  TextureMap textures_;
-
-  // Queue of received pictures.
-  using PictureQueue = base::queue<Picture>;
-  PictureQueue received_pictures_;
-
+  // Queue of received shared images.
   base::queue<ReceivedSharedImage> received_shared_images_;
 
   // Pending callbacks.
@@ -211,7 +166,6 @@ class PPAPI_PROXY_EXPORT VideoDecoderResource
   bool initialized_;
   bool testing_;
   int32_t decoder_last_error_;
-  bool use_shared_images_ = false;
 
   // |used_shared_images_| maps texture names to ReceivedSharedImages that are
   // in use by the plugin.

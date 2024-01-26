@@ -76,8 +76,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // Checks the current policies to determine whether files must be uploaded by
   // policy. Returns the settings to apply to this analysis if it should happen
-  // or absl::nullopt if no analysis should happen.
-  static absl::optional<enterprise_connectors::AnalysisSettings>
+  // or std::nullopt if no analysis should happen.
+  static std::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(download::DownloadItem* item);
 
   // Scan the given `item`, with the given `trigger`. The result of the scanning
@@ -263,7 +263,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   std::vector<std::string> request_tokens_;
 
   // Password for the file, if it's an archive.
-  absl::optional<std::string> password_;
+  std::optional<std::string> password_;
 
   // Reason the scanning took place. Used to populate enterprise requests to
   // give more context on what user action lead to a scan.

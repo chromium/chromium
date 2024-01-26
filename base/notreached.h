@@ -10,6 +10,10 @@
 #include "base/dcheck_is_on.h"
 #include "base/logging_buildflags.h"
 
+// TODO(crbug.com/1520664): Remove once NOTIMPLEMENTED() call sites include
+// base/notimplemented.h.
+#include "base/notimplemented.h"
+
 namespace logging {
 
 // NOTREACHED() annotates should-be unreachable code. When a base::NotFatalUntil
@@ -62,29 +66,6 @@ namespace logging {
 // suggested usage.
 #define DUMP_WILL_BE_NOTREACHED_NORETURN() \
   ::logging::CheckError::DumpWillBeNotReachedNoreturn()
-
-// The NOTIMPLEMENTED() macro annotates codepaths which have not been
-// implemented yet. If output spam is a serious concern,
-// NOTIMPLEMENTED_LOG_ONCE() can be used.
-#if DCHECK_IS_ON()
-#define NOTIMPLEMENTED() \
-  ::logging::CheckError::NotImplemented(__PRETTY_FUNCTION__)
-
-// The lambda returns false the first time it is run, and true every other time.
-#define NOTIMPLEMENTED_LOG_ONCE()                                \
-  LOGGING_CHECK_FUNCTION_IMPL(NOTIMPLEMENTED(), []() {           \
-    bool old_value = true;                                       \
-    [[maybe_unused]] static const bool call_once = [](bool* b) { \
-      *b = false;                                                \
-      return true;                                               \
-    }(&old_value);                                               \
-    return old_value;                                            \
-  }())
-
-#else
-#define NOTIMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
-#define NOTIMPLEMENTED_LOG_ONCE() EAT_CHECK_STREAM_PARAMS()
-#endif
 
 }  // namespace logging
 

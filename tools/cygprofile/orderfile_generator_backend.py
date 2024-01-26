@@ -56,7 +56,7 @@ _ARCH_GN_ARGS = {
     'arm': ['target_cpu="arm"'],
     'arm64': [
         'target_cpu="arm64"', 'android_64bit_browser=true',
-        'is_high_end_android=false'
+        'is_high_end_android=true'
     ],
     'x86': ['target_cpu="x86"'],
 }

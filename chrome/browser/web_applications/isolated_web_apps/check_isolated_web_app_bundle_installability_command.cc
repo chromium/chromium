@@ -26,13 +26,13 @@ CheckIsolatedWebAppBundleInstallabilityCommand::
         BundleInstallabilityCallback callback)
     : WebAppCommand<AppLock,
                     IsolatedInstallabilityCheckResult,
-                    absl::optional<base::Version>>(
+                    std::optional<base::Version>>(
           "CheckIsolatedWebAppBundleInstallabilityCommand",
           AppLockDescription(bundle_metadata.app_id()),
           std::move(callback),
           /*args_for_shutdown=*/
           std::make_tuple(IsolatedInstallabilityCheckResult::kShutdown,
-                          absl::nullopt)),
+                          std::nullopt)),
       profile_(profile),
       bundle_metadata_(bundle_metadata) {
   CHECK(profile_);
@@ -51,12 +51,11 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
   const WebApp* app = lock_->registrar().GetAppById(bundle_metadata_.app_id());
 
   if (!app) {
-    ReportResult(IsolatedInstallabilityCheckResult::kInstallable,
-                 absl::nullopt);
+    ReportResult(IsolatedInstallabilityCheckResult::kInstallable, std::nullopt);
     return;
   }
 
-  const absl::optional<WebApp::IsolationData>& isolation_data =
+  const std::optional<WebApp::IsolationData>& isolation_data =
       app->isolation_data();
   // If there is an app with the same app ID, it must be an IWA.
   CHECK(isolation_data.has_value());
@@ -82,7 +81,7 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
 
 void CheckIsolatedWebAppBundleInstallabilityCommand::ReportResult(
     IsolatedInstallabilityCheckResult status,
-    absl::optional<base::Version> installed_version) {
+    std::optional<base::Version> installed_version) {
   std::string message;
   bool success = false;
   switch (status) {

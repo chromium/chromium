@@ -9,9 +9,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
+
 // Arguments passed to `-browsingDataRemover:didRemoveBrowsingDataWithMask:`.
 struct TestDidRemoveBrowsingDataWithMaskInfo {
-  BrowsingDataRemover* remover = nullptr;
+  raw_ptr<BrowsingDataRemover> remover = nullptr;
   BrowsingDataRemoveMask mask = BrowsingDataRemoveMask::REMOVE_NOTHING;
 };
 

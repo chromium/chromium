@@ -66,6 +66,10 @@ extern const char kOnDeviceModelTimeoutCount[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClass[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceBaseModelVersion[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceBaseModelName[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kStoreFilePathsToDelete[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeOnDeviceEligibleFeatureWasUsed[];

@@ -100,7 +100,6 @@ public class BaseRobolectricTestRule implements TestRule {
             CommandLineFlags.tearDownClass();
             ResettersForTesting.onAfterMethod();
             ApplicationStatus.destroyForJUnitTests();
-            ContextUtils.clearApplicationContextForTests();
             PathUtils.resetForTesting();
             ThreadUtils.clearUiThreadForTesting();
             Locale.setDefault(ORIG_LOCALE);

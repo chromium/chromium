@@ -179,8 +179,7 @@ class TestTransactionConsumer {
   std::string content_;
   scoped_refptr<IOBuffer> read_buf_;
   int error_ = OK;
-
-  static int quit_counter_;
+  base::OnceClosure quit_closure_;
 };
 
 //-----------------------------------------------------------------------------
@@ -265,6 +264,7 @@ class MockNetworkTransaction
   ConnectionAttempts GetConnectionAttempts() const override;
 
   void CloseConnectionOnDestruction() override;
+  bool IsMdlMatchForMetrics() const override;
 
   CreateHelper* websocket_handshake_stream_create_helper() {
     return websocket_handshake_stream_create_helper_;

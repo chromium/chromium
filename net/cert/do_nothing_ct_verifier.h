@@ -5,6 +5,8 @@
 #ifndef NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 #define NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 
+#include <string_view>
+
 #include "net/base/net_export.h"
 #include "net/cert/ct_verifier.h"
 
@@ -54,8 +56,8 @@ class NET_EXPORT DoNothingCTVerifier : public CTVerifier {
   ~DoNothingCTVerifier() override;
 
   void Verify(X509Certificate* cert,
-              base::StringPiece stapled_ocsp_response,
-              base::StringPiece sct_list_from_tls_extension,
+              std::string_view stapled_ocsp_response,
+              std::string_view sct_list_from_tls_extension,
               SignedCertificateTimestampAndStatusList* output_scts,
               const NetLogWithSource& net_log) const override;
 };

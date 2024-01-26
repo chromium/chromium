@@ -416,6 +416,7 @@ TEST_P(ProxyResolvingClientSocketTest, ConnectToProxy) {
     // even be an HTTP connection.
     net::SSLSocketDataProvider server_ssl_data(net::ASYNC, net::OK);
     server_ssl_data.next_protos_expected_in_ssl_config = net::NextProtoVector();
+    server_ssl_data.expected_early_data_enabled = false;
     if (use_tls_) {
       mock_client_socket_factory_.AddSSLSocketDataProvider(&server_ssl_data);
     }

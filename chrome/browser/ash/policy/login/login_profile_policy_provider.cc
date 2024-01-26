@@ -75,6 +75,8 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kPromptOnMultipleMatchingCertificates},
     {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
      key::kUserContextAwareAccessSignalsAllowlist},
+    {key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+     key::kTouchVirtualKeyboardEnabled},
 
     // The authentication URL blocklist and allowlist policies implement content
     // control for authentication flows, including in the login screen and lock

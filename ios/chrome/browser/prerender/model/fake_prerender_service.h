@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 
+#import "base/memory/raw_ptr.h"
+
 // Fake implementation of PrerenderService. Treats a prerender as in-progress
 // after a call to StartPrerender(), but MaybeLoadPrerenderedURL() always
 // returns false.
@@ -37,7 +39,7 @@ class FakePrerenderService : public PrerenderService {
   bool HasPrerenderForUrl(const GURL& url) override;
   bool IsWebStatePrerendered(web::WebState* web_state) override;
 
-  web::WebState* prerender_web_state_ = nullptr;
+  raw_ptr<web::WebState> prerender_web_state_ = nullptr;
 
   // The URL for the in-progress preload.
   GURL preload_url_;

@@ -74,63 +74,6 @@ FontHeight PhysicalLineBoxFragment::BaselineMetrics() const {
   return metrics_;
 }
 
-namespace {
-
-// Include the inline-size of the line-box in the overflow.
-// Do not update block offset and block size of |overflow|.
-inline void AddInlineSizeToRubyEmHeightBox(
-    const PhysicalRect& rect,
-    const WritingMode container_writing_mode,
-    PhysicalRect* overflow) {
-  PhysicalRect inline_rect;
-  inline_rect.offset = rect.offset;
-  if (IsHorizontalWritingMode(container_writing_mode)) {
-    inline_rect.size.width = rect.size.width;
-    inline_rect.offset.top = overflow->offset.top;
-    inline_rect.size.height = overflow->size.height;
-  } else {
-    inline_rect.size.height = rect.size.height;
-    inline_rect.offset.left = overflow->offset.left;
-    inline_rect.size.width = overflow->size.width;
-  }
-  overflow->UniteEvenIfEmpty(inline_rect);
-}
-
-}  // namespace
-
-PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBox(
-    const PhysicalBoxFragment& container,
-    const ComputedStyle& container_style) const {
-  const WritingMode container_writing_mode = container_style.GetWritingMode();
-  PhysicalRect overflow;
-  // Make sure we include the inline-size of the line-box in the overflow.
-  AddInlineSizeToRubyEmHeightBox(LocalRect(), container_writing_mode,
-                                 &overflow);
-
-  return overflow;
-}
-
-PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBoxForLine(
-    const PhysicalBoxFragment& container,
-    const ComputedStyle& container_style,
-    const FragmentItem& line,
-    const InlineCursor& cursor) const {
-  DCHECK_EQ(&line, cursor.CurrentItem());
-  DCHECK_EQ(line.LineBoxFragment(), this);
-
-  PhysicalRect overflow;
-  AddRubyEmHeightBoxForInlineChild(container, container_style, line,
-                                   has_hanging_, cursor, &overflow);
-
-  // Make sure we include the inline-size of the line-box in the overflow.
-  // Note, the bottom half-leading should not be included. crbug.com/996847
-  const WritingMode container_writing_mode = container_style.GetWritingMode();
-  AddInlineSizeToRubyEmHeightBox(line.RectInContainerFragment(),
-                                 container_writing_mode, &overflow);
-
-  return overflow;
-}
-
 bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<InlineBreakToken>(GetBreakToken());
   return break_token && !break_token->IsForcedBreak();

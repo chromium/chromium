@@ -311,6 +311,10 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& relation_source) {
 // root, it discovers that any other two objects are repeated in the ancestor
 // chain, this is unexpected, and results in the CHECK(false) condition.
 static bool ContainsCycle(AXObject* owner, AXObject* child) {
+  if (FlatTreeTraversal::IsDescendantOf(*owner->GetNode(), *child->GetNode())) {
+    // A DOM descendant cannot own its ancestor.
+    return true;
+  }
   HashSet<AXID> visited;
   // Walk up the parents of the owner object, make sure that this child
   // doesn't appear there, as that would create a cycle.
@@ -590,7 +594,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
   } else if (element && element->HasExplicitlySetAttrAssociatedElements(
                             html_names::kAriaOwnsAttr)) {
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-        owner, *element->GetElementArrayAttribute(html_names::kAriaOwnsAttr),
+        owner, *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr),
         owned_children, force);
   } else {
     // Figure out the ids that actually correspond to children that exist
@@ -733,6 +737,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
   // First check for an existing aria-owns relation to the related AXObject.
   AXObject* related_target = obj ? obj : Get(node);
+  AXObject* ax_new_owner = nullptr;
 
   // Look for any new aria-owns relations.
   // Schedule an update on any potential new owner.
@@ -741,29 +746,34 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
   for (AXObject* related : related_sources) {
     if (related) {
+      // Ensure that the candidate owner updates its children in its validity
+      // as an owner is changing.
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+      related->SetNeedsToUpdateChildren();
       bool is_valid = related_target
                           ? IsValidOwnsRelation(related, related_target)
                           : IsValidOwner(related);
-      if (!is_valid) {
-        continue;
+      if (is_valid) {
+        if (!ax_new_owner) {
+          ax_new_owner = related;
+        }
+        owner_ids_to_update_.insert(related->AXObjectID());
       }
-      owner_ids_to_update_.insert(related->AXObjectID());
-      object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
     }
   }
 
   // Schedule an update on any previous owner. This owner takes priority over
   // any new owners.
   if (related_target && IsAriaOwned(related_target)) {
-    AXObject* owned_parent = ValidatedAriaOwner(related_target);
-    if (owned_parent) {
-      owner_ids_to_update_.insert(owned_parent->AXObjectID());
-      return owned_parent;
+    AXObject* ax_previous_owner = ValidatedAriaOwner(related_target);
+    if (ax_previous_owner) {
+      owner_ids_to_update_.insert(ax_previous_owner->AXObjectID());
+      return ax_previous_owner;
     }
   }
 
   // Only the first aria-owns relation can be used.
-  return related_sources.empty() ? nullptr : related_sources[0];
+  return ax_new_owner;
 }
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
@@ -858,6 +868,10 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
       for (const auto& child_axid : child_axids) {
         if (AXObject* owned_child = ObjectFromAXID(child_axid)) {
           owned_child->DetachFromParent();
+          DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree())
+              << "Removing owned child at a bad time, which leads to "
+                 "parentless objects at a bad time: "
+              << owned_child->ToString(true, true);
           MaybeRestoreParentOfOwnedChild(owned_child);
         }
       }
@@ -871,6 +885,7 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
 void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
   // Another id owned |obj_id|.
   if (aria_owned_child_to_owner_mapping_.Contains(obj_id)) {
+    DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree());
     // Previous owner no longer relevant to this child.
     // Also, remove |obj_id| from previous owner's owned child list:
     AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
@@ -882,8 +897,16 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
         break;
       }
     }
-    if (AXObject* owned_child = ObjectFromAXID(obj_id))
+    if (AXObject* owner = ObjectFromAXID(owner_id)) {
+      if (object_cache_->IsProcessingDeferredEvents()) {
+        object_cache_->ChildrenChangedWithCleanLayout(owner);
+      } else {
+        object_cache_->ChildrenChanged(owner);
+      }
+    }
+    if (AXObject* owned_child = ObjectFromAXID(obj_id)) {
       owned_child->DetachFromParent();
+    }
   }
 }
 

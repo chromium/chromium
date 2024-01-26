@@ -448,7 +448,7 @@ class AppWindow : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
-  void RequestToLockMouse(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
   bool PreHandleGestureEvent(content::WebContents* source,

@@ -64,6 +64,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
@@ -98,8 +100,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
@@ -162,7 +162,7 @@ public class NewTabPageTest {
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
 
-    private static final String SURFACE_POLISH_PARAMS = "force-fieldtrial-params=Study.Group:";
+    private static final String SURFACE_POLISH_BASE_PARAMS = "force-fieldtrial-params=Study.Group:";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -276,8 +276,8 @@ public class NewTabPageTest {
                 mNtp.getView().getRootView(),
                 "focus_fake_box"
                         + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt"
-                                : "_with_non_scrollable_mvt"));
+                                ? "_with_scrollable_mvt_v2"
+                                : "_with_non_scrollable_mvt_v2"));
         scrimCoordinator.disableAnimationForTesting(false);
     }
 
@@ -299,7 +299,7 @@ public class NewTabPageTest {
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());
         // Check header is collapsed.
-        mRenderTestRule.render(view, "expandable_header_collapsed");
+        mRenderTestRule.render(view, "expandable_header_collapsed_v2");
     }
 
     /**
@@ -979,7 +979,7 @@ public class NewTabPageTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
     })
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -1222,7 +1222,7 @@ public class NewTabPageTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
     })
     public void test1RowMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
@@ -1244,9 +1244,13 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/false"
+    })
     public void test2RowMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
 

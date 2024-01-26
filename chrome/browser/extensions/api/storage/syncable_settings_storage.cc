@@ -140,7 +140,7 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
     return;
 
   if (sync_processor_.get()) {
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         sync_processor_->SendChanges(result.changes());
     if (error.has_value())
       StopSyncing();
@@ -154,7 +154,7 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
 
 // Sync-related methods.
 
-absl::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
+std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
     base::Value::Dict sync_state,
     std::unique_ptr<SettingsSyncProcessor> sync_processor) {
   DCHECK(IsOnBackendSequence());
@@ -177,29 +177,29 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
                                               std::move(current_settings));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SyncableSettingsStorage::SendLocalSettingsToSync(
     base::Value::Dict local_state) {
   DCHECK(IsOnBackendSequence());
 
   if (local_state.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Transform the current settings into a list of sync changes.
   value_store::ValueStoreChangeList changes;
   for (auto pair : local_state) {
-    changes.push_back(value_store::ValueStoreChange(pair.first, absl::nullopt,
+    changes.push_back(value_store::ValueStoreChange(pair.first, std::nullopt,
                                                     std::move(pair.second)));
   }
 
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->SendChanges(std::move(changes));
   if (error.has_value())
     StopSyncing();
   return error;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
     base::Value::Dict sync_state,
     base::Value::Dict local_state) {
@@ -209,7 +209,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
   auto changes = std::make_unique<SettingSyncDataList>();
 
   for (auto it : local_state) {
-    absl::optional<base::Value> sync_value = sync_state.Extract(it.first);
+    std::optional<base::Value> sync_value = sync_state.Extract(it.first);
     if (sync_value.has_value()) {
       // If the sync value is different, update local setting with new value.
       if (*sync_value != it.second) {
@@ -233,7 +233,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
   }
 
   if (changes->empty())
-    return absl::nullopt;
+    return std::nullopt;
   return ProcessSyncChanges(std::move(changes));
 }
 
@@ -242,7 +242,7 @@ void SyncableSettingsStorage::StopSyncing() {
   sync_processor_.reset();
 }
 
-absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
+std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
     std::unique_ptr<SettingSyncDataList> sync_changes) {
   DCHECK(IsOnBackendSequence());
   DCHECK(!sync_changes->empty()) << "No sync changes for " << extension_id_;
@@ -260,7 +260,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
     const std::string& key = sync_change->key();
     base::Value change_value = sync_change->ExtractValue();
 
-    absl::optional<base::Value> current_value;
+    std::optional<base::Value> current_value;
     {
       ReadResult maybe_settings = Get(key);
       if (!maybe_settings.status().ok()) {
@@ -274,7 +274,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
       current_value = maybe_settings.settings().Extract(key);
     }
 
-    absl::optional<syncer::ModelError> error;
+    std::optional<syncer::ModelError> error;
 
     DCHECK(sync_change->change_type().has_value());
 
@@ -323,16 +323,16 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   sync_processor_->NotifyChanges(changes);
 
   observer_->Run(extension_id_, StorageAreaNamespace::kSync,
-                 /*session_access_level=*/absl::nullopt,
+                 /*session_access_level=*/std::nullopt,
                  value_store::ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return errors[0];
 }
 
-absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncAdd(
+std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncAdd(
     const std::string& key,
     base::Value new_value,
     value_store::ValueStoreChangeList* changes) {
@@ -345,11 +345,11 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncAdd(
                            result.status().message.c_str()));
   }
   changes->push_back(
-      value_store::ValueStoreChange(key, absl::nullopt, std::move(new_value)));
-  return absl::nullopt;
+      value_store::ValueStoreChange(key, std::nullopt, std::move(new_value)));
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncUpdate(
+std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncUpdate(
     const std::string& key,
     base::Value old_value,
     base::Value new_value,
@@ -364,10 +364,10 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncUpdate(
   }
   changes->push_back(value_store::ValueStoreChange(key, std::move(old_value),
                                                    std::move(new_value)));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncDelete(
+std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncDelete(
     const std::string& key,
     base::Value old_value,
     value_store::ValueStoreChangeList* changes) {
@@ -379,8 +379,8 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncDelete(
                            result.status().message.c_str()));
   }
   changes->push_back(
-      value_store::ValueStoreChange(key, std::move(old_value), absl::nullopt));
-  return absl::nullopt;
+      value_store::ValueStoreChange(key, std::move(old_value), std::nullopt));
+  return std::nullopt;
 }
 
 }  // namespace extensions

@@ -88,9 +88,13 @@ std::string ToString(const BiddingAndAuctionResponse& response) {
          (response.buyer_reporting.has_value()
               ? ToString(*response.buyer_reporting)
               : "nullopt") +
-         ", " + "seller_reporting: " +
-         (response.seller_reporting.has_value()
-              ? ToString(*response.seller_reporting)
+         ", " + "top_level_seller_reporting: " +
+         (response.top_level_seller_reporting.has_value()
+              ? ToString(*response.top_level_seller_reporting)
+              : "nullopt") +
+         ", " + "component_seller_reporting: " +
+         (response.component_seller_reporting.has_value()
+              ? ToString(*response.component_seller_reporting)
               : "nullopt") +
          ")";
 }
@@ -156,15 +160,29 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
         "buyer_reporting", &BiddingAndAuctionResponse::buyer_reporting,
         testing::Eq(std::nullopt)));
   }
-  if (other.get().seller_reporting) {
+  if (other.get().top_level_seller_reporting) {
     matchers.push_back(testing::Field(
-        "seller_reporting", &BiddingAndAuctionResponse::seller_reporting,
-        testing::Optional(
-            EqualsReportingURLS(std::ref(*other.get().seller_reporting)))));
+        "top_level_seller_reporting",
+        &BiddingAndAuctionResponse::top_level_seller_reporting,
+        testing::Optional(EqualsReportingURLS(
+            std::ref(*other.get().top_level_seller_reporting)))));
   } else {
+    matchers.push_back(
+        testing::Field("top_level_seller_reporting",
+                       &BiddingAndAuctionResponse::top_level_seller_reporting,
+                       testing::Eq(std::nullopt)));
+  }
+  if (other.get().component_seller_reporting) {
     matchers.push_back(testing::Field(
-        "seller_reporting", &BiddingAndAuctionResponse::seller_reporting,
-        testing::Eq(std::nullopt)));
+        "component_seller_reporting",
+        &BiddingAndAuctionResponse::component_seller_reporting,
+        testing::Optional(EqualsReportingURLS(
+            std::ref(*other.get().component_seller_reporting)))));
+  } else {
+    matchers.push_back(
+        testing::Field("component_seller_reporting",
+                       &BiddingAndAuctionResponse::component_seller_reporting,
+                       testing::Eq(std::nullopt)));
   }
   if (other.get().top_level_seller) {
     matchers.push_back(testing::Field(
@@ -391,7 +409,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                                           "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
+            response.top_level_seller_reporting.emplace();
             // ignore the error.
             return response;
           }(),
@@ -404,7 +422,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                                           "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
+            response.top_level_seller_reporting.emplace();
             // ignore the error.
             return response;
           }(),
@@ -417,8 +435,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                                           "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
-            response.seller_reporting->reporting_url = GURL(kReportingURL);
+            response.top_level_seller_reporting.emplace();
+            response.top_level_seller_reporting->reporting_url =
+                GURL(kReportingURL);
             return response;
           }(),
       },
@@ -431,7 +450,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                       "interactionReportingURLs", "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
+            response.top_level_seller_reporting.emplace();
             // ignore the error.
             return response;
           }(),
@@ -446,7 +465,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                       base::Value(base::Value::Dict().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
+            response.top_level_seller_reporting.emplace();
             // ignore the error.
             return response;
           }(),
@@ -461,7 +480,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                                               "click", kUntrustedURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
+            response.top_level_seller_reporting.emplace();
             // ignore the error.
             return response;
           }(),
@@ -476,9 +495,116 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
                                               "click", kReportingURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
-            response.seller_reporting.emplace();
-            response.seller_reporting->beacon_urls.emplace("click",
-                                                           GURL(kReportingURL));
+            response.top_level_seller_reporting.emplace();
+            response.top_level_seller_reporting->beacon_urls.emplace(
+                "click", GURL(kReportingURL));
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs",
+              base::Value(base::Value::Dict().Set(
+                  "componentSellerReportingURLs", "not a dict")))),
+          CreateExpectedValidResponse(),  // ignore the error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "componentSellerReportingURLs",
+                                      base::Value(base::Value::Dict().Set(
+                                          "reportingURL", "not a URL")))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            // ignore the error.
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "componentSellerReportingURLs",
+                                      base::Value(base::Value::Dict().Set(
+                                          "reportingURL", kUntrustedURL)))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            // ignore the error.
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "componentSellerReportingURLs",
+                                      base::Value(base::Value::Dict().Set(
+                                          "reportingURL", kReportingURL)))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            response.component_seller_reporting->reporting_url =
+                GURL(kReportingURL);
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs",
+              base::Value(base::Value::Dict().Set(
+                  "componentSellerReportingURLs",
+                  base::Value(base::Value::Dict().Set(
+                      "interactionReportingURLs", "not a dict")))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            // ignore the error.
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs",
+              base::Value(base::Value::Dict().Set(
+                  "componentSellerReportingURLs",
+                  base::Value(base::Value::Dict().Set(
+                      "interactionReportingURLs",
+                      base::Value(base::Value::Dict().Set("click", 5)))))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            // ignore the error.
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "componentSellerReportingURLs",
+                                      base::Value(base::Value::Dict().Set(
+                                          "interactionReportingURLs",
+                                          base::Value(base::Value::Dict().Set(
+                                              "click", kUntrustedURL)))))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            // ignore the error.
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "winReportingURLs", base::Value(base::Value::Dict().Set(
+                                      "componentSellerReportingURLs",
+                                      base::Value(base::Value::Dict().Set(
+                                          "interactionReportingURLs",
+                                          base::Value(base::Value::Dict().Set(
+                                              "click", kReportingURL)))))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.component_seller_reporting.emplace();
+            response.component_seller_reporting->beacon_urls.emplace(
+                "click", GURL(kReportingURL));
             return response;
           }(),
       },

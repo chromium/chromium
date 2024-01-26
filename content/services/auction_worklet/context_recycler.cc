@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
@@ -116,7 +117,7 @@ void ContextRecycler::AddSetPriorityBindings() {
 void ContextRecycler::AddInterestGroupLazyFiller() {
   DCHECK(!interest_group_lazy_filler_);
   interest_group_lazy_filler_ =
-      std::make_unique<InterestGroupLazyFiller>(v8_helper_);
+      std::make_unique<InterestGroupLazyFiller>(v8_helper_, v8_logger_.get());
 }
 
 void ContextRecycler::AddBiddingBrowserSignalsLazyFiller() {
@@ -141,7 +142,9 @@ void ContextRecycler::AddBindings(Bindings* bindings) {
 v8::Local<v8::Context> ContextRecycler::GetContext() {
   v8::Isolate* isolate = v8_helper_->isolate();
   if (context_.IsEmpty()) {
-    context_.Reset(isolate, v8_helper_->CreateContext());
+    v8::Local<v8::Context> context = v8_helper_->CreateContext();
+    context_.Reset(isolate, context);
+    v8_logger_ = std::make_unique<AuctionV8Logger>(v8_helper_, context);
   }
 
   return context_.Get(isolate);

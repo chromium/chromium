@@ -23,6 +23,7 @@ import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
+import "services/network/public/mojom/network_annotation_monitor.mojom";
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
@@ -34,7 +35,6 @@ import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
-import "services/network/public/mojom/cookie_encryption_provider.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -279,11 +279,11 @@ interface NetworkService {
   // (e.g. DevTools attached).
   SetRawHeadersAccess(int32 process_id, array<url.mojom.Origin> origins);
 
-  // Sets the maximum number of connections for a proxy server.
+  // Sets the maximum number of connections for a proxy chain.
   //   * Negative values will set the default proxy connection limit (32)
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
-  SetMaxConnectionsPerProxy(int32 max_connections);
+  SetMaxConnectionsPerProxyChain(int32 max_connections);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(
@@ -411,12 +411,8 @@ interface NetworkService {
   SetGssapiLibraryLoadObserver(
     pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
 
-  // Sets the cookie encryption provider to be used by future network contexts
-  // that have cookie encryption enabled. The `GetEncryptor` method on the
-  // supplied `provider` is called to obtain a valid set of keys for cookie
-  // encryption.
-  // This only affects any network contexts created after the provider has been
-  // set and existing ones are not affected.
-  SetCookieEncryptionProvider(
-    pending_remote<CookieEncryptionProvider> provider);
+  // Set NetworkAnnotationMonitor remote. This allows network calls to be
+  // reported via `NotifyNetworkRequestWithAnnotation`.
+  SetNetworkAnnotationMonitor(
+    pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
 };

@@ -132,6 +132,12 @@ struct FillFieldLogEvent {
   // autofill security policy that applies to credit cards.
   OptionalBoolean filling_prevented_by_iframe_security_policy =
       OptionalBoolean::kUndefined;
+  // The hash of the value that would have been filled if the field wasn't
+  // skipped because it was pre-filled on page load. In all other cases this
+  // member is set to `std::nullopt`.
+  std::optional<size_t>
+      value_that_would_have_been_filled_in_a_prefilled_field_hash =
+          std::nullopt;
 };
 
 bool AreCollapsible(const FillFieldLogEvent& event1,
@@ -168,9 +174,11 @@ bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
 
 // Events recorded after autofill server prediction happened.
 struct ServerPredictionFieldLogEvent {
-  FieldType server_type1 = internal::IsRequired();
+  std::optional<FieldType> server_type1 =
+      static_cast<FieldType>(internal::IsRequired());
   FieldPrediction::Source prediction_source1 = internal::IsRequired();
-  FieldType server_type2 = internal::IsRequired();
+  std::optional<FieldType> server_type2 =
+      static_cast<FieldType>(internal::IsRequired());
   FieldPrediction::Source prediction_source2 = internal::IsRequired();
   bool server_type_prediction_is_override = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();

@@ -71,6 +71,8 @@ enum RequestDestination {
   // Requests for speculation rules.
   // https://wicg.github.io/nav-speculation/speculation-rules.html
   kSpeculationRules = 25,
+  // Requests for JSON modules
+  kJson = 26,
 };
 
 // Corresponds to Fetch request's "redirect mode":

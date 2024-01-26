@@ -256,9 +256,10 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   DCHECK(format.is_single_plane());
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), /*dxgi_shared_handle_state=*/nullptr,
-      gl_format_caps, GL_TEXTURE_2D, /*array_slice=*/0u, /*plane_index=*/0u,
-      std::move(swap_chain), is_back_buffer));
+      "SwapChainBuffer", std::move(d3d11_texture),
+      /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
+      /*array_slice=*/0u, /*plane_index=*/0u, std::move(swap_chain),
+      is_back_buffer));
 }
 
 // static
@@ -270,6 +271,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
@@ -281,8 +283,9 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps, texture_target, array_slice, plane_index));
+      std::move(debug_label), std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
+      array_slice, plane_index));
   return backing;
 }
 
@@ -330,9 +333,9 @@ D3DImageBacking::CreateFromVideoTexture(
     // destructor.
     shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        dxgi_shared_handle_state, gl_format_caps, kTextureTarget, array_slice,
-        plane_index));
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "VideoTexture",
+        d3d11_texture, dxgi_shared_handle_state, gl_format_caps, kTextureTarget,
+        array_slice, plane_index));
     if (!shared_images[plane_index])
       return {};
 
@@ -350,6 +353,7 @@ D3DImageBacking::D3DImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
@@ -365,6 +369,7 @@ D3DImageBacking::D3DImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       d3d11_texture_(std::move(d3d11_texture)),
@@ -572,7 +577,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
@@ -1049,8 +1055,9 @@ D3DImageBacking::ProduceSkiaGraphite(
   auto device = context_state->dawn_context_provider()->GetDevice();
   wgpu::AdapterProperties adapter_properties;
   device.GetAdapter().GetProperties(&adapter_properties);
-  auto dawn_representation = ProduceDawn(manager, tracker, device.Get(),
-                                         adapter_properties.backendType, {});
+  auto dawn_representation =
+      ProduceDawn(manager, tracker, device.Get(),
+                  adapter_properties.backendType, {}, context_state);
   const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,

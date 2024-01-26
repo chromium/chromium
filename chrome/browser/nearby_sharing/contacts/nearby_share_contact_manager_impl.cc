@@ -320,7 +320,7 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 
   // Enable cross-device self-share by adding your account to the list of
   // contacts. It is also marked as a selected contact.
-  absl::optional<std::string> user_name =
+  std::optional<std::string> user_name =
       profile_info_provider_->GetProfileUserName();
   base::UmaHistogramBoolean("Nearby.Share.Contacts.CanGetProfileUserName",
                             user_name.has_value());

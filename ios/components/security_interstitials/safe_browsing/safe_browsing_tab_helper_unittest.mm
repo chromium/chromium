@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -21,7 +22,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/network/public/mojom/fetch_api.mojom.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -62,7 +63,7 @@ class SafeBrowsingTabHelperTest
           ui::PageTransition::PAGE_TRANSITION_FIRST) {
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition, for_main_frame, /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/false);
+        /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -144,7 +145,7 @@ class SafeBrowsingTabHelperTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   FakeSafeBrowsingClient client_;
 };
 

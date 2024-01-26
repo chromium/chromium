@@ -64,8 +64,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       std::unique_ptr<payments::TestPaymentsNetworkInterface>(
           payments_network_interface));
   auto credit_card_save_manager = std::make_unique<TestCreditCardSaveManager>(
-      autofill_driver_.get(), autofill_client_.get(),
-      payments_network_interface, &personal_data());
+      autofill_driver_.get(), autofill_client_.get(), &personal_data());
   autofill_client_->set_test_form_data_importer(
       std::make_unique<TestFormDataImporter>(
           autofill_client_.get(), std::move(credit_card_save_manager),
@@ -321,7 +320,7 @@ void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
   test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                        "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                        "Lubbock", "Texas", "79401", "US", "2345678901");
-  profile2.set_guid("00000000-0000-0000-0000-000000000002");
+  profile2.set_guid(kTestProfile2Id);
   personal_data().AddProfile(profile2);
 }
 

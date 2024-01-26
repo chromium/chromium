@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 
+#include <optional>
 #include <string>
 
 #include "base/barrier_callback.h"
@@ -39,7 +40,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -66,9 +66,9 @@ base::Value::Dict GetBackgroundInfoAsDict(
     const std::string& attribution_line_1,
     const std::string& attribution_line_2,
     const GURL& action_url,
-    const absl::optional<std::string>& collection_id,
-    const absl::optional<std::string>& resume_token,
-    const absl::optional<int> refresh_timestamp) {
+    const std::optional<std::string>& collection_id,
+    const std::optional<std::string>& resume_token,
+    const std::optional<int> refresh_timestamp) {
   base::Value::Dict background_info;
   background_info.Set(kNtpCustomBackgroundURL,
                       base::Value(background_url.spec()));
@@ -162,6 +162,7 @@ void NtpCustomBackgroundService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
                                 false);
   registry->RegisterStringPref(prefs::kNtpCustomBackgroundLocalToDeviceId, "");
+  registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundInspiration, false);
   // Register wallpaper search profile prefs.
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
@@ -178,6 +179,7 @@ void NtpCustomBackgroundService::ResetNtpTheme(Profile* profile) {
   pref_service->ClearPref(prefs::kNtpCustomBackgroundDict);
   pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
   pref_service->ClearPref(prefs::kNtpCustomBackgroundLocalToDeviceId);
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundInspiration, false);
 }
 
 // static
@@ -286,8 +288,8 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   }
   // Store current background info before it is changed so it can be used if
   // RevertBackgroundChanges is called.
-  if (previous_background_info_ == absl::nullopt) {
-    previous_background_info_ = absl::make_optional(
+  if (previous_background_info_ == std::nullopt) {
+    previous_background_info_ = std::make_optional(
         pref_service_->GetValue(prefs::kNtpCustomBackgroundDict).Clone());
     previous_local_background_ = false;
   }
@@ -311,7 +313,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
 
   if (!background_url.is_valid() && !collection_id.empty() &&
       is_backdrop_collection) {
-    background_service_->FetchNextCollectionImage(collection_id, absl::nullopt);
+    background_service_->FetchNextCollectionImage(collection_id, std::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
     if (base::FeatureList::IsEnabled(
             ntp_features::kCustomizeChromeColorExtraction) &&
@@ -321,7 +323,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
     }
     base::Value::Dict background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
-        collection_id, absl::nullopt, absl::nullopt);
+        collection_id, std::nullopt, std::nullopt);
     pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
                            std::move(background_info));
   } else {
@@ -430,12 +432,12 @@ void NtpCustomBackgroundService::ConfirmBackgroundChanges() {
   previous_local_background_ = false;
 }
 
-absl::optional<CustomBackground>
+std::optional<CustomBackground>
 NtpCustomBackgroundService::GetCustomBackground() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
-    auto custom_background = absl::make_optional<CustomBackground>();
+    auto custom_background = std::make_optional<CustomBackground>();
     // Add a timestamp to the url to prevent the browser from using a cached
     // version when "Upload an image" is used multiple times.
     std::string time_string = std::to_string(base::Time::Now().ToTimeT());
@@ -449,6 +451,8 @@ NtpCustomBackgroundService::GetCustomBackground() {
     custom_background->is_uploaded_image = true;
     custom_background->local_background_id =
         base::Token::FromString(local_background_id);
+    custom_background->is_inspiration_image =
+        pref_service_->GetBoolean(prefs::kNtpCustomBackgroundInspiration);
     custom_background->custom_background_snapshot_url = GURL();
     custom_background->custom_background_attribution_line_1 = std::string();
     custom_background->custom_background_attribution_line_2 = std::string();
@@ -460,7 +464,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
 
   // Attempt to get custom background URL from preferences.
   if (IsCustomBackgroundPrefValid()) {
-    auto custom_background = absl::make_optional<CustomBackground>();
+    auto custom_background = std::make_optional<CustomBackground>();
     const base::Value::Dict& background_info =
         pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
     GURL custom_background_url(
@@ -531,7 +535,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     return custom_background;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void NtpCustomBackgroundService::AddObserver(
@@ -630,7 +634,8 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
 }
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
-    const base::Token& id) {
+    const base::Token& id,
+    bool is_inspiration_image) {
   background_updated_timestamp_ = base::TimeTicks::Now();
   // Remove the last local background if it exists. This is
   // temporary until multiple local images is supported.
@@ -638,6 +643,8 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
                            id.ToString());
+  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundInspiration,
+                            is_inspiration_image);
   NotifyAboutBackgrounds();
 }
 

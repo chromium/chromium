@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.text.style.ClickableSpan;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -44,8 +45,10 @@ public class PlusAddressCreationBottomSheetContentTest {
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
+    private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
     private static final GURL MANAGE_URL = new GURL("manage.com");
+    private static final GURL ERROR_URL = new GURL("bug.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PlusAddressCreationDelegate mDelegate;
@@ -63,7 +66,9 @@ public class PlusAddressCreationBottomSheetContentTest {
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
                         MODAL_CANCEL,
-                        MANAGE_URL);
+                        MODAL_ERROR_MESSAGE,
+                        MANAGE_URL,
+                        ERROR_URL);
         mBottomSheetContent.setDelegate(mDelegate);
     }
 
@@ -125,7 +130,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
-        mBottomSheetContent.showError(MODAL_ERROR_MESSAGE);
+        mBottomSheetContent.showError();
         Assert.assertFalse(modalConfirmButton.isEnabled());
     }
 
@@ -137,10 +142,19 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(),
                 MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
+        Assert.assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.VISIBLE);
 
-        mBottomSheetContent.showError(MODAL_ERROR_MESSAGE);
+        TextViewWithClickableSpans plusAddressErrorReportView =
+                mBottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_modal_error_report);
+        Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
+
+        mBottomSheetContent.showError();
+        Assert.assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.GONE);
+        Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.VISIBLE);
         Assert.assertEquals(
-                modalPlusAddressPlaceholderView.getText().toString(), MODAL_ERROR_MESSAGE);
+                plusAddressErrorReportView.getText().toString(), MODAL_FORMATTED_ERROR_MESSAGE);
     }
 
     @Test
@@ -154,7 +168,21 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertEquals(spans.length, 1);
         spans[0].onClick(modalDescriptionView);
 
-        verify(mDelegate).openManagementPage(MANAGE_URL);
+        verify(mDelegate).openUrl(MANAGE_URL);
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomsheetLinkClicked_callsDelegateOpenErrorReportLink() {
+        TextViewWithClickableSpans errorReportInstruction =
+                mBottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_modal_error_report);
+        ClickableSpan[] spans = errorReportInstruction.getClickableSpans();
+        Assert.assertEquals(spans.length, 1);
+        spans[0].onClick(errorReportInstruction);
+
+        verify(mDelegate).openUrl(ERROR_URL);
     }
 
     @Test
@@ -177,7 +205,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         modalConfirmButton.callOnClick();
         Assert.assertTrue(mBottomSheetContent.showsLoadingIndicatorForTesting());
         // Hide the loading indicator if we show an error.
-        mBottomSheetContent.showError(MODAL_ERROR_MESSAGE);
+        mBottomSheetContent.showError();
         Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
     }
 

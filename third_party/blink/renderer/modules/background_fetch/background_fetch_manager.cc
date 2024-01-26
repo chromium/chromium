@@ -489,7 +489,7 @@ void BackgroundFetchManager::DidGetDeveloperIds(
 
   switch (error) {
     case mojom::blink::BackgroundFetchError::NONE:
-      resolver->Resolve(developer_ids);
+      resolver->Resolve<IDLArray<IDLString>>(developer_ids);
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
       DCHECK(developer_ids.empty());

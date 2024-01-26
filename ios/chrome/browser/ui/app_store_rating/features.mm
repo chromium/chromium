@@ -11,14 +11,26 @@ BASE_FEATURE(kAppStoreRating,
              "AppStoreRating",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppStoreRatingLoosenedTriggers,
-             "AppStoreRatingLoosenedTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppStoreRatingDBExclusionJan2024,
+             "AppStoreRatingDBExclusionJan2024",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);
 }
 
-bool IsAppStoreRatingLoosenedTriggersEnabled() {
-  return base::FeatureList::IsEnabled(kAppStoreRatingLoosenedTriggers);
+bool IsDefaultBrowserConditionExclusionInEffect() {
+  return base::FeatureList::IsEnabled(kAppStoreRatingDBExclusionJan2024);
+}
+
+const std::vector<std::string>
+GetCountriesExcludedFromDefaultBrowserCondition() {
+  if (!IsDefaultBrowserConditionExclusionInEffect()) {
+    return {};
+  }
+  return {
+      "at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi",
+      "fr", "gr", "hr", "hu", "ie", "is", "it", "lt", "lu", "lv",
+      "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk",
+  };
 }

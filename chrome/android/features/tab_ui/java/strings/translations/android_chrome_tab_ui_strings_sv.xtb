@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Få aviseringar</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="4212246570487010370">Fortsätt surfa</translation>
+<translation id="427987768447457592">Ny flikgrupp</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
 <translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
+<translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> flik som du inte har använt nyligen}other{Du har <ph name="TABS_COUNT_MANY" /> flikar som du inte har använt nyligen}}</translation>
 <translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>

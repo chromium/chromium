@@ -110,9 +110,9 @@ class TestPrinterQuery : public PrinterQuery {
   void SetPrintableAreaOffsets(int offset_x, int offset_y);
 
  private:
-  absl::optional<gfx::Point> offsets_;
+  std::optional<gfx::Point> offsets_;
 #if BUILDFLAG(IS_WIN)
-  absl::optional<mojom::PrinterLanguageType> printer_language_type_;
+  std::optional<mojom::PrinterLanguageType> printer_language_type_;
 #endif
 };
 
@@ -172,7 +172,7 @@ void TestPrinterQuery::SetSettings(base::Value::Dict new_settings,
   settings->set_printer_language_type(*printer_language_type_);
 #endif
 
-  GetSettingsDone(std::move(callback), /*maybe_is_modifiable=*/absl::nullopt,
+  GetSettingsDone(std::move(callback), /*maybe_is_modifiable=*/std::nullopt,
                   std::move(settings), result);
 }
 

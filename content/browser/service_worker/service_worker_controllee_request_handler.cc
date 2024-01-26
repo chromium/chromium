@@ -527,6 +527,10 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
 
   switch (active_version->EffectiveFetchHandlerType()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
+      // When we have non-fetch router rules, we cannot skip service worker.
+      if (active_version->HasRouterWithNonFetchEventSource()) {
+        break;
+      }
       RecordSkipReason(FetchHandlerSkipReason::kNoFetchHandler);
       TRACE_EVENT_WITH_FLOW1(
           "ServiceWorker",
@@ -538,6 +542,10 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler: {
+      // When we have non-fetch router rules, we cannot skip service worker.
+      if (active_version->HasRouterWithNonFetchEventSource()) {
+        break;
+      }
       RecordSkipReason(FetchHandlerSkipReason::kSkippedForEmptyFetchHandler);
       TRACE_EVENT_WITH_FLOW2(
           "ServiceWorker",

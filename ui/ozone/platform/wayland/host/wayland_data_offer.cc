@@ -58,7 +58,10 @@ base::ScopedFD WaylandDataOffer::Receive(const std::string& mime_type) {
 void WaylandDataOffer::FinishOffer() {
   if (wl::get_version_of_object(data_offer_.get()) >=
       WL_DATA_OFFER_FINISH_SINCE_VERSION) {
-    wl_data_offer_finish(data_offer_.get());
+    // As per the spec it is illegal to call finish if no action was received.
+    if (dnd_action_) {
+      wl_data_offer_finish(data_offer_.get());
+    }
   }
 }
 

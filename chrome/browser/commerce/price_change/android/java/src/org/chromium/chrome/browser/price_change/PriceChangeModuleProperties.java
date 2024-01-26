@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_change;
 
 import android.graphics.Bitmap;
+import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,6 +26,10 @@ interface PriceChangeModuleProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<Bitmap> MODULE_PRODUCT_IMAGE_BITMAP =
             new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<OnClickListener> MODULE_ON_CLICK_LISTENER =
+            new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<String> MODULE_ACCESSIBILITY_LABEL =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -35,5 +40,7 @@ interface PriceChangeModuleProperties {
                 MODULE_PREVIOUS_PRICE_STRING,
                 MODULE_CURRENT_PRICE_STRING,
                 MODULE_PRODUCT_IMAGE_BITMAP,
+                MODULE_ON_CLICK_LISTENER,
+                MODULE_ACCESSIBILITY_LABEL,
             };
 }

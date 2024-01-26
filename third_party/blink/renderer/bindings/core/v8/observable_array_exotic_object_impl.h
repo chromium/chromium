@@ -31,7 +31,7 @@ class CORE_EXPORT ObservableArrayExoticObjectImpl final
   ~ObservableArrayExoticObjectImpl() override = default;
 
   // ScriptWrappable overrides
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState* script_state) override;
+  v8::Local<v8::Value> Wrap(ScriptState* script_state) override;
   [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
       const WrapperTypeInfo* wrapper_type_info,

@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
-#include "third_party/blink/renderer/core/url_pattern/url_pattern_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/liburlpattern/constructor_string_parser.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/tokenize.h"
 #include "third_party/liburlpattern/utils.h"
@@ -37,6 +37,9 @@ namespace blink {
 
 using url_pattern::Component;
 using url_pattern::ValueType;
+using ComponentSet = base::EnumSet<Component::Type,
+                                   Component::Type::kProtocol,
+                                   Component::Type::kHash>;
 
 namespace {
 
@@ -283,8 +286,7 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
     if (pair.second.IsNull()) {
       v8_value = v8::Undefined(script_state->GetIsolate());
     } else {
-      v8_value = ToV8Traits<IDLUSVString>::ToV8(script_state, pair.second)
-                     .ToLocalChecked();
+      v8_value = ToV8Traits<IDLUSVString>::ToV8(script_state, pair.second);
     }
     v8_group_values.emplace_back(
         pair.first,
@@ -292,6 +294,67 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
   }
 
   result->setGroups(std::move(v8_group_values));
+  return result;
+}
+
+URLPatternInit* MakeURLPatternInit(
+    const liburlpattern::ConstructorStringParser::Result& result) {
+  auto* init = URLPatternInit::Create();
+  if (result.protocol) {
+    init->setProtocol(String::FromUTF8(*result.protocol));
+  }
+  if (result.username) {
+    init->setUsername(String::FromUTF8(*result.username));
+  }
+  if (result.password) {
+    init->setPassword(String::FromUTF8(*result.password));
+  }
+  if (result.hostname) {
+    init->setHostname(String::FromUTF8(*result.hostname));
+  }
+  if (result.port) {
+    init->setPort(String::FromUTF8(*result.port));
+  }
+  if (result.pathname) {
+    init->setPathname(String::FromUTF8(*result.pathname));
+  }
+  if (result.search) {
+    init->setSearch(String::FromUTF8(*result.search));
+  }
+  if (result.hash) {
+    init->setHash(String::FromUTF8(*result.hash));
+  }
+  return init;
+}
+
+ComponentSet ToURLPatternComponentSet(
+    const liburlpattern::ConstructorStringParser::ComponentSet&
+        present_components) {
+  ComponentSet result;
+  if (present_components.protocol) {
+    result.Put(Component::Type::kProtocol);
+  }
+  if (present_components.username) {
+    result.Put(Component::Type::kUsername);
+  }
+  if (present_components.password) {
+    result.Put(Component::Type::kPassword);
+  }
+  if (present_components.hostname) {
+    result.Put(Component::Type::kHostname);
+  }
+  if (present_components.port) {
+    result.Put(Component::Type::kPort);
+  }
+  if (present_components.pathname) {
+    result.Put(Component::Type::kPathname);
+  }
+  if (present_components.search) {
+    result.Put(Component::Type::kSearch);
+  }
+  if (present_components.hash) {
+    result.Put(Component::Type::kHash);
+  }
   return result;
 }
 
@@ -364,13 +427,39 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   }
 
   const auto& input_string = input->GetAsUSVString();
+  const StringUTF8Adaptor utf8_string(input_string);
+  liburlpattern::ConstructorStringParser constructor_string_parser(
+      absl::string_view(utf8_string.data(), utf8_string.size()),
+      liburlpattern::ConstructorStringParser::StringParserOptions{
+          .more_wildcards =
+              RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled()});
 
-  url_pattern::Parser parser(input_string, *options);
-  parser.Parse(isolate, exception_state);
-  if (exception_state.HadException())
+  Component* protocol_component = nullptr;
+  absl::Status status = constructor_string_parser.Parse(
+      [=, &protocol_component, &exception_state](
+          absl::string_view protocol_string) -> absl::StatusOr<bool> {
+        protocol_component = Component::Compile(
+            isolate, String::FromUTF8(protocol_string),
+            Component::Type::kProtocol,
+            /*protocol_component=*/nullptr, *options, exception_state);
+        if (exception_state.HadException()) {
+          return absl::InvalidArgumentError("Failed to compile protocol");
+        }
+        return protocol_component &&
+               protocol_component->ShouldTreatAsStandardURL();
+      });
+
+  if (exception_state.HadException()) {
     return nullptr;
+  }
+  if (!status.ok()) {
+    exception_state.ThrowTypeError("Invalid input string '" + input_string +
+                                   "'. It unexpectedly fails to tokenize.");
+    return nullptr;
+  }
+  URLPatternInit* init =
+      MakeURLPatternInit(constructor_string_parser.GetResult());
 
-  URLPatternInit* init = parser.GetResult();
   if (!base_url && !init->hasProtocol()) {
     exception_state.ThrowTypeError(
         "Relative constructor string '" + input_string +
@@ -381,10 +470,11 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (base_url)
     init->setBaseURL(base_url);
 
-  URLPattern* result = Create(isolate, init, parser.GetProtocolComponent(),
-                              options, exception_state);
+  URLPattern* result =
+      Create(isolate, init, protocol_component, options, exception_state);
   if (result) {
-    URLPattern::ComponentSet present = parser.GetPresentComponents();
+    URLPattern::ComponentSet present = ToURLPatternComponentSet(
+        constructor_string_parser.GetPresentComponents());
     URLPattern::ComponentSet wildcard_with_string_format_change =
         URLPattern::ComponentSet::All();
     wildcard_with_string_format_change.RemoveAll(present);

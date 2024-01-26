@@ -14,7 +14,7 @@
 
 namespace apps {
 
-APP_ENUM_TO_STRING(ShortcutSource, kUnknown, kUser, kDeveloper)
+APP_ENUM_TO_STRING(ShortcutSource, kUnknown, kUser, kPolicy, kDefault)
 
 Shortcut::Shortcut(const std::string& host_app_id, const std::string& local_id)
     : host_app_id(host_app_id),

@@ -35,7 +35,7 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   ~StorageAccessAPIServiceImpl() override;
 
   // StorageAccessAPIService:
-  absl::optional<base::TimeDelta> RenewPermissionGrant(
+  std::optional<base::TimeDelta> RenewPermissionGrant(
       const url::Origin& embedded_origin,
       const url::Origin& top_frame_origin) override;
 

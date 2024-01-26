@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

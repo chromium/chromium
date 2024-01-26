@@ -126,7 +126,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
 
   SetContents(std::make_unique<views::View>());
 
-  if (!controller->is_recording_in_progress()) {
+  if (controller->can_start_new_recording()) {
     const bool audio_capture_managed_by_policy =
         controller->IsAudioCaptureDisabledByPolicy();
 
@@ -200,7 +200,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
                      camera_managed_by_policy);
   }
 
-  if (!controller->is_recording_in_progress()) {
+  if (controller->can_start_new_recording()) {
     separator_2_ =
         contents()->AddChildView(std::make_unique<views::Separator>());
     separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);

@@ -381,7 +381,7 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCopyFunction::RunOnReady() {
-  absl::optional<Copy::Params> params = Copy::Params::Create(args());
+  std::optional<Copy::Params> params = Copy::Params::Create(args());
   if (!params)
     return BadMessage();
   return CopyOrCut(false, params->id_list);
@@ -392,7 +392,7 @@ BookmarkManagerPrivateCutFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  absl::optional<Cut::Params> params = Cut::Params::Create(args());
+  std::optional<Cut::Params> params = Cut::Params::Create(args());
   if (!params)
     return BadMessage();
   return CopyOrCut(true, params->id_list);
@@ -403,7 +403,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  absl::optional<Paste::Params> params = Paste::Params::Create(args());
+  std::optional<Paste::Params> params = Paste::Params::Create(args());
   if (!params)
     return BadMessage();
   BookmarkModel* model =
@@ -436,7 +436,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
-  absl::optional<CanPaste::Params> params = CanPaste::Params::Create(args());
+  std::optional<CanPaste::Params> params = CanPaste::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -458,7 +458,7 @@ BookmarkManagerPrivateSortChildrenFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  absl::optional<SortChildren::Params> params =
+  std::optional<SortChildren::Params> params =
       SortChildren::Params::Create(args());
   if (!params)
     return BadMessage();
@@ -479,7 +479,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  absl::optional<StartDrag::Params> params = StartDrag::Params::Create(args());
+  std::optional<StartDrag::Params> params = StartDrag::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -507,7 +507,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  absl::optional<Drop::Params> params = Drop::Params::Create(args());
+  std::optional<Drop::Params> params = Drop::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -543,8 +543,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateGetSubtreeFunction::RunOnReady() {
-  absl::optional<GetSubtree::Params> params =
-      GetSubtree::Params::Create(args());
+  std::optional<GetSubtree::Params> params = GetSubtree::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -575,7 +574,7 @@ BookmarkManagerPrivateRemoveTreesFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  absl::optional<RemoveTrees::Params> params =
+  std::optional<RemoveTrees::Params> params =
       RemoveTrees::Params::Create(args());
   if (!params)
     return BadMessage();
@@ -617,7 +616,7 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
-  absl::optional<OpenInNewTab::Params> params =
+  std::optional<OpenInNewTab::Params> params =
       OpenInNewTab::Params::Create(args());
   if (!params)
     return BadMessage();
@@ -644,7 +643,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
-  absl::optional<OpenInNewWindow::Params> params =
+  std::optional<OpenInNewWindow::Params> params =
       OpenInNewWindow::Params::Create(args());
   if (!params)
     return BadMessage();

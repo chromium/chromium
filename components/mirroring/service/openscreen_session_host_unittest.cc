@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -113,7 +114,7 @@ class MockRemotingSource : public media::mojom::RemotingSource {
   base::WeakPtrFactory<MockRemotingSource> weak_factory_{this};
 };
 
-Json::Value ParseAsJsoncppValue(absl::string_view document) {
+Json::Value ParseAsJsoncppValue(std::string_view document) {
   Json::CharReaderBuilder builder;
   Json::CharReaderBuilder::strictMode(&builder.settings_);
   EXPECT_FALSE(document.empty());

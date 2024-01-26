@@ -1,6 +1,6 @@
 self.testRunner.disableAutomaticDragDrop();
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startHTML(
       `
       <style>

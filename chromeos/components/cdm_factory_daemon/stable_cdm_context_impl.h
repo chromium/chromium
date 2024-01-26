@@ -46,6 +46,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) StableCdmContextImpl
   void GetScreenResolutions(GetScreenResolutionsCallback callback) override;
   void AllocateSecureBuffer(uint32_t size,
                             AllocateSecureBufferCallback callback) override;
+  void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ParseEncryptedSliceHeaderCallback callback) override;
 
  private:
   // Receives callbacks from the |cdm_context_| after we register with it.

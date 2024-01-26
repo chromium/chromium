@@ -15,9 +15,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace url {
 class GURL;
-}
 
 namespace net::test_server {
 struct HttpRequest;

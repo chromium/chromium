@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_notifications/device_status_icon_unittest.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/stringprintf.h"
@@ -20,7 +21,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"

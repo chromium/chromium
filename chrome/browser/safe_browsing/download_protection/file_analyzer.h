@@ -124,7 +124,7 @@ class FileAnalyzer {
 
   base::FilePath target_path_;
   base::FilePath tmp_path_;
-  absl::optional<std::string> password_;
+  std::optional<std::string> password_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;
   base::Time start_time_;

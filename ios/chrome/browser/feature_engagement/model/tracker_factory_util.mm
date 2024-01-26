@@ -40,10 +40,8 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       browser_state->GetProtoDatabaseProvider();
 
   base::WeakPtr<PromosManagerEventExporter> event_exporter =
-      ShouldPromosManagerUseFET()
-          ? PromosManagerEventExporterFactory::GetForBrowserState(browser_state)
-                ->AsWeakPtr()
-          : nullptr;
+      PromosManagerEventExporterFactory::GetForBrowserState(browser_state)
+          ->AsWeakPtr();
 
   return base::WrapUnique(feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider, event_exporter));

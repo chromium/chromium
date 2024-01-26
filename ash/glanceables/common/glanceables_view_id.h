@@ -35,6 +35,7 @@ enum class GlanceablesViewId {
 
   // `GlanceablesTasksView` or `TasksBubbleView`.
   kTasksBubbleComboBox,
+  kTasksBubbleListScrollView,
   kTasksBubbleListContainer,
   kTasksBubbleAddNewButton,
   kTasksBubbleListFooter,
@@ -45,6 +46,7 @@ enum class GlanceablesViewId {
   kTaskItemTitleLabel,
   kTaskItemTitleTextField,
   kTaskItemDueLabel,
+  kTaskItemEditInBrowserLabel,
 
   // `GlanceablesErrorMessageView`
   kGlanceablesErrorMessageLabel,

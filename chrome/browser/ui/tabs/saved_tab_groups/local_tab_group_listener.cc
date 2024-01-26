@@ -66,6 +66,10 @@ void LocalTabGroupListener::ResumeTracking() {
   }
 }
 
+bool LocalTabGroupListener::IsTrackingPaused() const {
+  return paused_;
+}
+
 void LocalTabGroupListener::UpdateVisualDataFromLocal(
     const TabGroupChange::VisualsChange* visual_change) {
   if (paused_) {

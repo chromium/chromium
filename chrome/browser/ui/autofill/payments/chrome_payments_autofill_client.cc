@@ -9,6 +9,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace autofill::payments {
 
 ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
@@ -39,6 +44,32 @@ void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
   ManageMigrationUiController* controller =
       ManageMigrationUiController::FromWebContents(web_contents());
   controller->ShowBubble(std::move(show_migration_dialog_closure));
+}
+
+void ChromePaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
+    const LegalMessageLines& legal_message_lines,
+    const std::string& user_email,
+    const std::vector<MigratableCreditCard>& migratable_credit_cards,
+    LocalCardMigrationCallback start_migrating_cards_callback) {
+  ManageMigrationUiController::CreateForWebContents(web_contents());
+  ManageMigrationUiController* controller =
+      ManageMigrationUiController::FromWebContents(web_contents());
+  controller->ShowOfferDialog(legal_message_lines, user_email,
+                              migratable_credit_cards,
+                              std::move(start_migrating_cards_callback));
+}
+
+void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
+    bool has_server_error,
+    const std::u16string& tip_message,
+    const std::vector<MigratableCreditCard>& migratable_credit_cards,
+    MigrationDeleteCardCallback delete_local_card_callback) {
+  ManageMigrationUiController::CreateForWebContents(web_contents());
+  ManageMigrationUiController* controller =
+      ManageMigrationUiController::FromWebContents(web_contents());
+  controller->UpdateCreditCardIcon(has_server_error, tip_message,
+                                   migratable_credit_cards,
+                                   delete_local_card_callback);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

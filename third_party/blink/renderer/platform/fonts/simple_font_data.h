@@ -98,10 +98,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   FontMetrics& GetFontMetrics() { return font_metrics_; }
   const FontMetrics& GetFontMetrics() const { return font_metrics_; }
-  float SizePerUnit() const {
-    return PlatformData().size() /
-           (GetFontMetrics().UnitsPerEm() ? GetFontMetrics().UnitsPerEm() : 1);
-  }
   float InternalLeading() const {
     return GetFontMetrics().FloatHeight() - PlatformData().size();
   }
@@ -140,7 +136,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   void BoundsForGlyphs(const Vector<Glyph, 256>&, Vector<SkRect, 256>*) const;
   gfx::RectF PlatformBoundsForGlyph(Glyph) const;
   float WidthForGlyph(Glyph) const;
-  float PlatformWidthForGlyph(Glyph) const;
 
   float SpaceWidth() const { return space_width_; }
   void SetSpaceWidth(float space_width) { space_width_ = space_width; }
@@ -170,13 +165,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   }
 
   CustomFontData* GetCustomFontData() const { return custom_font_data_.get(); }
-
-  unsigned VisualOverflowInflationForAscent() const {
-    return visual_overflow_inflation_for_ascent_;
-  }
-  unsigned VisualOverflowInflationForDescent() const {
-    return visual_overflow_inflation_for_descent_;
-  }
 
  private:
   SimpleFontData(
@@ -238,12 +226,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   };
   mutable HanKerningCacheEntry han_kerning_cache_[2];
 
-  // These are set to non-zero when ascent or descent is rounded or shifted
-  // to be smaller than the actual ascent or descent. When calculating visual
-  // overflows, we should add the inflations.
-  unsigned visual_overflow_inflation_for_ascent_ = 0;
-  unsigned visual_overflow_inflation_for_descent_ = 0;
-
   mutable FontHeight normalized_typo_ascent_descent_;
 
 // See discussion on crbug.com/631032 and Skia issue
@@ -252,7 +234,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 // too slow to be able to remove the caching layer we have here.
 #if BUILDFLAG(IS_APPLE)
   mutable std::unique_ptr<GlyphMetricsMap<gfx::RectF>> glyph_to_bounds_map_;
-  mutable GlyphMetricsMap<float> glyph_to_width_map_;
 #endif
 };
 
@@ -273,20 +254,6 @@ ALWAYS_INLINE gfx::RectF SimpleFontData::BoundsForGlyph(Glyph glyph) const {
   glyph_to_bounds_map_->SetMetricsForGlyph(glyph, bounds_result);
 
   return bounds_result;
-#endif
-}
-
-ALWAYS_INLINE float SimpleFontData::WidthForGlyph(Glyph glyph) const {
-#if !BUILDFLAG(IS_APPLE)
-  return PlatformWidthForGlyph(glyph);
-#else
-  if (absl::optional<float> width = glyph_to_width_map_.MetricsForGlyph(glyph))
-    return *width;
-
-  float width = PlatformWidthForGlyph(glyph);
-
-  glyph_to_width_map_.SetMetricsForGlyph(glyph, width);
-  return width;
 #endif
 }
 

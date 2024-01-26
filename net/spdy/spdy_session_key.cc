@@ -13,6 +13,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,13 +25,13 @@ SpdySessionKey::SpdySessionKey(
     const HostPortPair& host_port_pair,
     const ProxyChain& proxy_chain,
     PrivacyMode privacy_mode,
-    IsProxySession is_proxy_session,
+    SessionUsage session_usage,
     const SocketTag& socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy)
     : host_port_proxy_pair_(host_port_pair, proxy_chain),
       privacy_mode_(privacy_mode),
-      is_proxy_session_(is_proxy_session),
+      session_usage_(session_usage),
       socket_tag_(socket_tag),
       network_anonymization_key_(
           NetworkAnonymizationKey::IsPartitioningEnabled()
@@ -47,10 +48,10 @@ SpdySessionKey::~SpdySessionKey() = default;
 
 bool SpdySessionKey::operator<(const SpdySessionKey& other) const {
   return std::tie(privacy_mode_, host_port_proxy_pair_.first,
-                  host_port_proxy_pair_.second, is_proxy_session_,
+                  host_port_proxy_pair_.second, session_usage_,
                   network_anonymization_key_, secure_dns_policy_, socket_tag_) <
          std::tie(other.privacy_mode_, other.host_port_proxy_pair_.first,
-                  other.host_port_proxy_pair_.second, other.is_proxy_session_,
+                  other.host_port_proxy_pair_.second, other.session_usage_,
                   other.network_anonymization_key_, other.secure_dns_policy_,
                   other.socket_tag_);
 }
@@ -60,7 +61,7 @@ bool SpdySessionKey::operator==(const SpdySessionKey& other) const {
          host_port_proxy_pair_.first.Equals(
              other.host_port_proxy_pair_.first) &&
          host_port_proxy_pair_.second == other.host_port_proxy_pair_.second &&
-         is_proxy_session_ == other.is_proxy_session_ &&
+         session_usage_ == other.session_usage_ &&
          network_anonymization_key_ == other.network_anonymization_key_ &&
          secure_dns_policy_ == other.secure_dns_policy_ &&
          socket_tag_ == other.socket_tag_;
@@ -76,7 +77,7 @@ SpdySessionKey::CompareForAliasingResult SpdySessionKey::CompareForAliasing(
   result.is_potentially_aliasable =
       (privacy_mode_ == other.privacy_mode_ &&
        host_port_proxy_pair_.second == other.host_port_proxy_pair_.second &&
-       is_proxy_session_ == other.is_proxy_session_ &&
+       session_usage_ == other.session_usage_ &&
        network_anonymization_key_ == other.network_anonymization_key_ &&
        secure_dns_policy_ == other.secure_dns_policy_);
   result.is_socket_tag_match = (socket_tag_ == other.socket_tag_);

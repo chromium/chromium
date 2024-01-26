@@ -1544,9 +1544,9 @@ void RenderWidgetHostViewAndroid::FocusedNodeChanged(
                                              node_bounds_in_screen);
 }
 
-bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
+bool RenderWidgetHostViewAndroid::ShouldInitiateStylusWriting() {
   return ime_adapter_android_ &&
-         ime_adapter_android_->RequestStartStylusWriting();
+         ime_adapter_android_->ShouldInitiateStylusWriting();
 }
 
 void RenderWidgetHostViewAndroid::NotifyHoverActionStylusWritable(
@@ -2162,6 +2162,7 @@ gfx::Rect RenderWidgetHostViewAndroid::GetBoundsInRootWindow() {
 void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
+  TRACE_EVENT0("input", "RenderWidgetHostViewAndroid::ProcessAckedTouchEvent");
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
@@ -2254,19 +2255,19 @@ RenderWidgetHostViewAndroid::FilterInputEvent(
   return blink::mojom::InputEventResultState::kNotConsumed;
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockMouse(
+blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockPointer(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnsupportedOptions;
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::ChangeMouseLock(
+blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::ChangePointerLock(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnsupportedOptions;
 }
 
-void RenderWidgetHostViewAndroid::UnlockMouse() {
+void RenderWidgetHostViewAndroid::UnlockPointer() {
   NOTIMPLEMENTED();
 }
 

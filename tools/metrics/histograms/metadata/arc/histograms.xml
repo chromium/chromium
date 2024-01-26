@@ -887,6 +887,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.DataRemoved.Success" enum="Boolean"
+    expires_after="2024-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>True if data was successfully removed on request.</summary>
+</histogram>
+
 <histogram name="Arc.DataRestore.Duration" units="ms"
     expires_after="2024-09-03">
   <owner>khmel@google.com</owner>
@@ -1160,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.IdleManager.ScreenOffTime" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>raging@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -1266,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>sstan@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <summary>The number of ARC apps launched with ghost window.</summary>
@@ -1421,7 +1428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Net.ArcNetworkEvent" enum="ArcNetworkEvent"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <summary>
@@ -1588,6 +1595,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.OptinTosLoadResult" enum="BooleanSuccess"
+    expires_after="2024-09-17">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the status of loading Play terms of service in in-session optin
+    dialog. This metric reports false on aborts and failed retries as well.
+  </summary>
+</histogram>
+
 <histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
     enum="ArcPlayAutoInstallRequestState" expires_after="2024-07-01">
   <owner>jhorwich@google.com</owner>
@@ -1638,52 +1655,55 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.QueryTime" units="ms"
-    expires_after="2023-03-19">
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-15">
   <owner>ypitsishin@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Time between sending an Play Store app discovery request and the storing
     returned results.
-  </summary>
-</histogram>
 
-<histogram name="Arc.PlayStoreSearch.ResultClickLatency" units="ms"
-    expires_after="2021-12-31">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between a play store result being clicked and being displayed.
+    This histogram was expired between 2023-03-19 and 2024-01-17 and some data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.ReturnedAppsTotalV2" units="apps"
-    expires_after="2023-09-01">
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-15">
   <owner>ypitsishin@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The total number of returned apps of a Play Store app discovery query.
+
+    This histogram was expired between 2023-09-01 and 2024-01-17 and some data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.ReturnedInstantAppsV2" units="apps"
-    expires_after="2023-09-01">
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-15">
   <owner>ypitsishin@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of returned instant apps of a Play Store app discovery query.
+
+    This histogram was expired between 2023-09-01 and 2024-01-17 and some data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.ReturnedUninstalledAppsV2" units="apps"
-    expires_after="2023-09-01">
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-15">
   <owner>ypitsishin@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of returned uninstalled apps of a Play Store app discovery query.
+
+    This histogram was expired between 2023-09-01 and 2024-01-17 and some data
+    may be missing.
   </summary>
 </histogram>
 
@@ -1812,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure{ArcUserTypes}" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1826,7 +1846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Success{ArcUserTypes}" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1915,7 +1935,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2024-05-05">
+    units="fps" expires_after="2024-07-21">
   <owner>khmel@google.com</owner>
   <owner>matvore@google.com</owner>
   <summary>
@@ -1946,7 +1966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>niwa@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -2510,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2561,6 +2581,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time elapsed from a window closing operation until the window is
     destroyed. The data is collected once when a closing operation happens.
+  </summary>
+</histogram>
+
+<histogram name="Arc.WM.WindowDragResizeTime" units="ms"
+    expires_after="2024-04-23">
+  <owner>lingyufeng@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the time of handling each bounds changing request of drag resizing
+    operation. The data is collected when ARC window drag resizing operation
+    happens. Note that this metric might be recorded multiple times for a single
+    drag operation if multiple bounds changing requests occur in one drag
+    operation.
   </summary>
 </histogram>
 

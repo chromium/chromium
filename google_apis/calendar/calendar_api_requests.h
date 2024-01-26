@@ -6,6 +6,8 @@
 #define GOOGLE_APIS_CALENDAR_CALENDAR_API_REQUESTS_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,6 +19,8 @@
 namespace google_apis {
 
 namespace calendar {
+
+inline constexpr char kPrimaryCalendarID[] = "primary";
 
 // Callback used for requests that the server returns Calendar List
 // data formatted into JSON value.
@@ -98,9 +102,18 @@ class CalendarApiCalendarListRequest : public CalendarApiGetRequest {
   base::WeakPtrFactory<CalendarApiCalendarListRequest> weak_ptr_factory_{this};
 };
 
-// Request to fetch calendar events.
+// Request to fetch calendar events. By default, an event fetch for the primary
+// calendar is requested. If a calendar ID is passed, an event fetch is
+// requested for the calendar matching that ID.
 class CalendarApiEventsRequest : public CalendarApiGetRequest {
  public:
+  CalendarApiEventsRequest(RequestSender* sender,
+                           const CalendarApiUrlGenerator& url_generator,
+                           CalendarEventListCallback callback,
+                           const base::Time& start_time,
+                           const base::Time& end_time,
+                           const std::string& calendar_id,
+                           const std::string& calendar_color_id);
   CalendarApiEventsRequest(RequestSender* sender,
                            const CalendarApiUrlGenerator& url_generator,
                            CalendarEventListCallback callback,
@@ -134,6 +147,8 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
 
   const base::Time start_time_;
   const base::Time end_time_;
+  const std::string calendar_id_;
+  const std::string calendar_color_id_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

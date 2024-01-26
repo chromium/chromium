@@ -33,7 +33,7 @@ bool BuildUploadPublicKeyRequest(
     const SigningKeyPair& new_key_pair,
     enterprise_management::BrowserPublicKeyUploadRequest* request,
     const SigningKeyPair* old_key_pair = nullptr,
-    absl::optional<std::string> nonce = absl::nullopt) {
+    std::optional<std::string> nonce = std::nullopt) {
   // A nonce is only needed in key rotation scenarios.
   DCHECK_EQ(!!old_key_pair, nonce.has_value());
 
@@ -53,7 +53,7 @@ bool BuildUploadPublicKeyRequest(
   // the user re-enrolls this device, the first key rotation attempt will use
   // an empty nonce to signal this is the first public key being uploaded to
   // DM server. DM server expects the public key to be self signed.
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       old_key_pair ? old_key_pair->key()->SignSlowly(buffer)
                    : new_key_pair.key()->SignSlowly(buffer);
   if (!signature.has_value())
@@ -88,32 +88,32 @@ KeyUploadRequest::KeyUploadRequest(const GURL& dm_server_url,
 }
 
 // static
-absl::optional<const KeyUploadRequest> KeyUploadRequest::Create(
+std::optional<const KeyUploadRequest> KeyUploadRequest::Create(
     const GURL& dm_server_url,
     const std::string& dm_token,
     const SigningKeyPair& key_pair) {
   if (!AreParametersValid(dm_server_url, dm_token, key_pair)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   enterprise_management::DeviceManagementRequest overall_request;
   if (!BuildUploadPublicKeyRequest(
           key_pair,
           overall_request.mutable_browser_public_key_upload_request())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string request_body;
   if (!overall_request.SerializeToString(&request_body) &&
       !request_body.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return KeyUploadRequest(dm_server_url, dm_token, request_body);
 }
 
 // static
-absl::optional<const KeyUploadRequest> KeyUploadRequest::Create(
+std::optional<const KeyUploadRequest> KeyUploadRequest::Create(
     const GURL& dm_server_url,
     const std::string& dm_token,
     const SigningKeyPair& new_key_pair,
@@ -121,7 +121,7 @@ absl::optional<const KeyUploadRequest> KeyUploadRequest::Create(
     const std::string& nonce) {
   if (!AreParametersValid(dm_server_url, dm_token, new_key_pair) ||
       old_key_pair.is_empty() || nonce.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   enterprise_management::DeviceManagementRequest overall_request;
@@ -129,13 +129,13 @@ absl::optional<const KeyUploadRequest> KeyUploadRequest::Create(
           new_key_pair,
           overall_request.mutable_browser_public_key_upload_request(),
           &old_key_pair, nonce)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string request_body;
   if (!overall_request.SerializeToString(&request_body) &&
       !request_body.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return KeyUploadRequest(dm_server_url, dm_token, request_body);

@@ -244,9 +244,6 @@ TEST_F(QuicEndToEndTest, LargeGetWithNoPacketLoss) {
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
 
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
-
   CheckResponse(consumer, "HTTP/1.1 200", response);
 }
 
@@ -263,9 +260,6 @@ TEST_F(QuicEndToEndTest, LargePostWithNoPacketLoss) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
@@ -284,9 +278,6 @@ TEST_F(QuicEndToEndTest, LargePostWithPacketLoss) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
@@ -309,9 +300,6 @@ TEST_F(QuicEndToEndTest, UberTest) {
     consumer->Start(&request_, NetLogWithSource());
   }
 
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
-
   for (const auto& consumer : consumers)
     CheckResponse(*consumer.get(), "HTTP/1.1 200", kResponseBody);
 }
@@ -330,9 +318,6 @@ TEST_F(QuicEndToEndTest, EnableKyber) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
   EXPECT_EQ(consumer.response_info()->ssl_info.key_exchange_group,
@@ -353,9 +338,6 @@ TEST_F(QuicEndToEndTest, KyberDisabled) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   // Connection should fail because there's no supported group in common between
   // client and server.

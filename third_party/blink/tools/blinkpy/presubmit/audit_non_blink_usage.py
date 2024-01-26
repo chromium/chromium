@@ -29,8 +29,8 @@ _DISALLOW_NON_BLINK_MOJOM = (
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (
-    '.*(Get|Set)ContinuationPreservedEmbedderData.*',
-    '[Get|Set]ContinuationPreservedEmbedderData does not support multiple '
+    '.*(Get|Set|Ensure)ContinuationPreservedEmbedderData.*',
+    '[Get|Set|Ensure]ContinuationPreservedEmbedderData does not support multiple '
     'clients.')
 
 _CONFIG = [
@@ -90,6 +90,7 @@ _CONFIG = [
             'base::FilePath',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
+            'base::HeapArray',
             'base::HexStringToUInt64',
             'base::Hours',
             "base::i18n::TextDirection",
@@ -149,6 +150,7 @@ _CONFIG = [
             'base::as_byte_span',
             'base::as_bytes',
             'base::as_chars',
+            'base::as_writable_bytes',
             'base::bit_cast',
             'base::expected',
             'base::make_span',
@@ -345,6 +347,7 @@ _CONFIG = [
             'cc::RecordPaintCanvas',
             'cc::PaintShader',
             'cc::PaintWorkletInput',
+            'cc::RefCountedBuffer',
             'cc::NodeId',
             'cc::NodeInfo',
             'cc::UsePaintCache',
@@ -1586,6 +1589,7 @@ _CONFIG = [
         'allowed': [
             # Required to provide a canonicalization functor to liburlpattern.
             "absl::InvalidArgumentError",
+            "absl::Status",
             "absl::StatusOr",
 
             # Required by liburlpattern API in order to pass string data
@@ -1860,6 +1864,15 @@ _CONFIG = [
         ],
         'allowed': [
             'base::CommandLine',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/controller/blink_leak_detector.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+            'switches::kEnableLeakDetectionHeapSnapshot',
         ]
     },
     {

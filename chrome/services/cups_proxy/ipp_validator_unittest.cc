@@ -41,9 +41,9 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     known_printers_.insert(printer_id);
   }
 
-  absl::optional<Printer> GetPrinter(const std::string& id) override {
+  std::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(known_printers_, id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return Printer(id);
@@ -62,7 +62,7 @@ class IppValidatorTest : public testing::Test {
 
   ~IppValidatorTest() override = default;
 
-  absl::optional<IppRequest> RunValidateIppRequest(
+  std::optional<IppRequest> RunValidateIppRequest(
       const IppRequestPtr& request) {
     return ipp_validator_->ValidateIppRequest(request.Clone());
   }

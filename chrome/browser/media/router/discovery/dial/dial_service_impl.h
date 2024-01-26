@@ -51,7 +51,7 @@ class DialServiceImpl : public DialService {
   friend void PostSendNetworkList(
       base::WeakPtr<DialServiceImpl> impl,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const absl::optional<net::NetworkInterfaceList>& networks);
+      const std::optional<net::NetworkInterfaceList>& networks);
 
   // Represents a socket binding to a single network interface.
   class DialSocket {
@@ -137,7 +137,7 @@ class DialServiceImpl : public DialService {
 
   // For each network interface in |list|, finds all unique IPv4 network
   // interfaces and call |DiscoverOnAddresses()| with their IP addresses.
-  void SendNetworkList(const absl::optional<net::NetworkInterfaceList>& list);
+  void SendNetworkList(const std::optional<net::NetworkInterfaceList>& list);
 
   // Calls |BindAndAddSocket()| for each address in |ip_addresses|, calls
   // |SendOneRequest()|, and start the timer to finish discovery if needed.

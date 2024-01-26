@@ -10,7 +10,6 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
-#include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
 namespace blink {
@@ -22,7 +21,7 @@ namespace {
 constexpr double kMinFieldOfView = 0.01;
 constexpr double kMaxFieldOfView = 3.13;
 constexpr double kDefaultFieldOfView = M_PI * 0.5;
-}  // anonymous namespace
+}  // namespace
 
 XRRenderState::XRRenderState(bool immersive) : immersive_(immersive) {
   if (!immersive_)
@@ -38,11 +37,13 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   }
   if (init->hasBaseLayer()) {
     base_layer_ = init->baseLayer();
-    layers_.clear();
+    layers_ = MakeGarbageCollected<FrozenArray<XRLayer>>();
   }
   if (init->hasLayers()) {
     base_layer_ = nullptr;
-    layers_ = *init->layers();
+    layers_ = init->layers()
+                  ? MakeGarbageCollected<FrozenArray<XRLayer>>(*init->layers())
+                  : MakeGarbageCollected<FrozenArray<XRLayer>>();
   }
   if (init->hasInlineVerticalFieldOfView()) {
     double fov = init->inlineVerticalFieldOfView();

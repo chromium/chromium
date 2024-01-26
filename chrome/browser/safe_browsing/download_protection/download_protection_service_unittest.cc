@@ -217,7 +217,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
-      absl::optional<bool> show_download_in_folder) override {
+      std::optional<bool> show_download_in_folder) override {
     auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
     report->set_type(report_type);
     report->set_download_verdict(
@@ -320,28 +320,6 @@ class DownloadProtectionServiceTestBase
 
     in_process_utility_thread_helper_ =
         std::make_unique<content::InProcessUtilityThreadHelper>();
-
-    // Use TestPasswordStore to remove a possible race. Normally the
-    // PasswordStore does its database manipulation on the DB thread, which
-    // creates a possible race during navigation. Specifically the
-    // PasswordManager will ignore any forms in a page if the load from the
-    // PasswordStore has not completed. ChromePasswordProtectionService uses
-    // PasswordStore.
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
-        profile(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                content::BrowserContext, password_manager::TestPasswordStore>));
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kEnablePasswordsAccountStorage)) {
-      AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
-          profile(),
-          base::BindRepeating(
-              &password_manager::BuildPasswordStoreWithArgs<
-                  content::BrowserContext, password_manager::TestPasswordStore,
-                  password_manager::IsAccountStore>,
-              password_manager::IsAccountStore(true)));
-    }
 
     // Start real threads for the IO and File threads so that the DCHECKs
     // to test that we're on the correct thread work.
@@ -454,6 +432,28 @@ class DownloadProtectionServiceTestBase
             GetIdentityTestEnvironmentFactories();
     factories.emplace_back(HistoryServiceFactory::GetInstance(),
                            HistoryServiceFactory::GetDefaultFactory());
+    // Use TestPasswordStore to remove a possible race. Normally the
+    // PasswordStore does its database manipulation on the DB thread, which
+    // creates a possible race during navigation. Specifically the
+    // PasswordManager will ignore any forms in a page if the load from the
+    // PasswordStore has not completed. ChromePasswordProtectionService uses
+    // PasswordStore.
+    factories.emplace_back(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                content::BrowserContext, password_manager::TestPasswordStore>));
+    // It's fine to override unconditionally, GetForProfile() will still return
+    // null if account storage is disabled.
+    // TODO(crbug.com/1516660): Remove the comment above when the account store
+    // is always non-null.
+    factories.emplace_back(
+        AccountPasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreWithArgs<
+                content::BrowserContext, password_manager::TestPasswordStore,
+                password_manager::IsAccountStore>,
+            password_manager::IsAccountStore(true)));
     return factories;
   }
 
@@ -3030,7 +3030,7 @@ TEST_F(DownloadProtectionServiceTest,
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
       profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
-      {} /* expected_scan_id */);
+      {} /* expected_scan_id */, absl::nullopt /* content_transfer_reason */);
 
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
@@ -3148,7 +3148,7 @@ TEST_F(DownloadProtectionServiceTest,
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
       profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
-      {} /* expected_scan_id */);
+      {} /* expected_scan_id */, absl::nullopt /* content_transfer_method */);
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING);
@@ -3212,7 +3212,7 @@ TEST_F(DownloadProtectionServiceTest,
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
       profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
-      {} /* expected_scan_id */);
+      {} /* expected_scan_id */, absl::nullopt /* content_transfer_method */);
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK);

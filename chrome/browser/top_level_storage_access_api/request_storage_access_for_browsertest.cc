@@ -98,7 +98,9 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
-    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    features_.InitWithFeaturesAndParameters(
+        GetEnabledFeatures(),
+        {content_settings::features::kActiveContentSettingExpiry});
     InProcessBrowserTest::SetUp();
   }
 
@@ -192,7 +194,8 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   std::string ReadCookiesViaJS(content::RenderFrameHost* render_frame_host) {
-    return content::EvalJs(render_frame_host, "document.cookie")
+    return content::EvalJs(render_frame_host, "document.cookie",
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
         .ExtractString();
   }
 
@@ -511,6 +514,36 @@ IN_PROC_BROWSER_TEST_F(
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
+}
+
+// Validate that a user gesture is required.
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_DeniedWithoutUserGesture) {
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
+  // The request comes from `kHostA`, which is in a First-Party Set with
+  // `khostB`. (Note that `kHostB` would not be auto-granted access if it were
+  // the requestor, because it is a service domain.)
+  //
+  // kHostA would be autogranted access if the request has a user gesture, but
+  // it doesn't.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec(),
+      /*omit_user_gesture=*/true));
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            "");
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            "");
 }
 
 // Validate that the permission for rSAFor allows autogranting of rSA, including

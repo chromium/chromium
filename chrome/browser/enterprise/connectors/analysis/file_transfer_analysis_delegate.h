@@ -87,12 +87,12 @@ class FileTransferAnalysisDelegate {
     bool IsUnknown() const;
 
     const std::string& tag() const;
-    const absl::optional<FinalContentAnalysisResult> final_result() const;
+    const std::optional<FinalContentAnalysisResult> final_result() const;
 
    private:
     FileTransferAnalysisResult(
         Verdict verdict,
-        absl::optional<FinalContentAnalysisResult> final_result,
+        std::optional<FinalContentAnalysisResult> final_result,
         const std::string& tag);
 
     Verdict verdict_ = Verdict::UNKNOWN;
@@ -102,7 +102,7 @@ class FileTransferAnalysisDelegate {
     // it's too large to be uploaded.
     // For blocked files with an empty tag, final result contains the reason for
     // which they were blocked.
-    absl::optional<FinalContentAnalysisResult> final_result_;
+    std::optional<FinalContentAnalysisResult> final_result_;
     std::string tag_;
   };
 
@@ -131,7 +131,7 @@ class FileTransferAnalysisDelegate {
   // If the enterprise connectors are not enabled for any of the transfers an
   // empty vector is returned. Each entry in the returned vector corresponds to
   // the entry in the `source_urls` vector with the same index.
-  static std::vector<absl::optional<AnalysisSettings>> IsEnabledVec(
+  static std::vector<std::optional<AnalysisSettings>> IsEnabledVec(
       Profile* profile,
       const std::vector<storage::FileSystemURL>& source_urls,
       storage::FileSystemURL destination_url);
@@ -150,15 +150,15 @@ class FileTransferAnalysisDelegate {
   void Cancel(bool warning);
 
   // Called when the user byapass a warning.
-  void BypassWarnings(absl::optional<std::u16string> user_justification);
+  void BypassWarnings(std::optional<std::u16string> user_justification);
 
   // Returns the custom message specified by the admin for the given tag, or
-  // absl::nullopt if there isn't any.
-  absl::optional<std::u16string> GetCustomMessage(const std::string& tag) const;
+  // std::nullopt if there isn't any.
+  std::optional<std::u16string> GetCustomMessage(const std::string& tag) const;
 
   // Returns the custom "learn more" URL specified by the admin for the given
-  // tag, or absl::nullopt if there isn't any.
-  absl::optional<GURL> GetCustomLearnMoreUrl(const std::string& tag) const;
+  // tag, or std::nullopt if there isn't any.
+  std::optional<GURL> GetCustomLearnMoreUrl(const std::string& tag) const;
 
   // Returns whether a user justification is required for the given tag.
   bool BypassRequiresJustification(const std::string& tag) const;

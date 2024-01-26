@@ -9,6 +9,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
@@ -60,7 +61,7 @@
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/gtest_util.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -189,7 +190,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
-  UserActivityBrowserAgent* user_activity_browser_agent_;
+  raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;

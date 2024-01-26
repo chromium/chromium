@@ -340,6 +340,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   if (resource_id != kInvalidResourceId) {
     candidate.format = resource_provider_->GetBufferFormat(resource_id);
     candidate.color_space = resource_provider_->GetColorSpace(resource_id);
+    candidate.needs_detiling =
+        resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
 
     if (!context_.is_delegated_context &&
@@ -381,7 +383,17 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       TrackingIdData track_data{
           quad->rect,
           resource_provider_->GetSurfaceId(resource_id).frame_sink_id()};
-      candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));
+      // Assert that there is no padding - otherwise the bytes-based hash below
+      // may differ for otherwise equal objects.
+      static_assert(sizeof(track_data) ==
+                    sizeof(decltype(track_data.rect)) +
+                        sizeof(decltype(track_data.frame_sink_id)));
+      // Intentionally throwing away the high bits (assuming that hash entropy
+      // is uniformly spread across all the bits).
+      size_t original_hash =
+          base::FastHash(base::as_bytes(base::span_from_ref(track_data)));
+      uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+      candidate.tracking_id = narrow_hash;
     }
   }
 
@@ -563,7 +575,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 
   AssignDamage(quad, candidate);
-  candidate.tracking_id = base::FastHash(quad->overlay_plane_id.AsBytes());
+
+  // Intentionally throwing away the high bits (assuming that hash entropy is
+  // uniformly spread across all the bits).
+  size_t original_hash = base::FastHash(quad->overlay_plane_id.AsBytes());
+  uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+  candidate.tracking_id = narrow_hash;
 
   return CandidateStatus::kSuccess;
 }

@@ -678,14 +678,9 @@ TEST_F(FastCheckoutClientImplTest,
       web_contents()->GetPrimaryMainFrame(),
       autofill::ContentAutofillClient::FromWebContents(web_contents())
           ->GetAutofillDriverFactory());
-  auto browser_autofill_manager =
-      std::make_unique<autofill::BrowserAutofillManager>(
-          autofill_driver.get(),
-          autofill::ContentAutofillClient::FromWebContents(web_contents()),
-          "en-US");
-  autofill::BrowserAutofillManager* autofill_manager =
-      browser_autofill_manager.get();
-  autofill_driver->set_autofill_manager(std::move(browser_autofill_manager));
+  autofill::BrowserAutofillManager& autofill_manager =
+      static_cast<autofill::BrowserAutofillManager&>(
+          autofill_driver->GetAutofillManager());
 
   // `FastCheckoutClientImpl::autofill_manager_` is `nullptr` initially.
   EXPECT_FALSE(fast_checkout_client()->autofill_manager_);
@@ -694,7 +689,7 @@ TEST_F(FastCheckoutClientImplTest,
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_manager->GetWeakPtr()));
+      autofill_manager.GetWeakPtr()));
   OnAfterAskForValuesToFill();
 
   // `FastCheckoutClientImpl::autofill_manager_` is not `nullptr` anymore.

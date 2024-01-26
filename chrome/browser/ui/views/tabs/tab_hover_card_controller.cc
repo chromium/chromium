@@ -288,8 +288,7 @@ TabHoverCardController::~TabHoverCardController() = default;
 
 // static
 bool TabHoverCardController::AreHoverCardImagesEnabled() {
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kTabHoverCardImageSettings)) {
+  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages)) {
     PrefService* pref_service = g_browser_process->local_state();
     return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
   }

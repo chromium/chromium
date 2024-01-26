@@ -78,7 +78,8 @@ void PasswordCheckManager::StartCheck() {
     progress_->IncrementCounts(password);
   observer_->OnPasswordCheckProgressChanged(progress_->already_processed(),
                                             progress_->remaining_in_queue());
-  bulk_leak_check_service_adapter_.StartBulkLeakCheck();
+  bulk_leak_check_service_adapter_.StartBulkLeakCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
 }
 
 void PasswordCheckManager::StopCheck() {
@@ -222,7 +223,8 @@ void PasswordCheckManager::OnCredentialDone(
   }
   if (is_leaked) {
     // TODO(crbug.com/1092444): Trigger single-credential update.
-    insecure_credentials_manager_.SaveInsecureCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(
+        credential, password_manager::TriggerBackendNotification(false));
   }
 }
 

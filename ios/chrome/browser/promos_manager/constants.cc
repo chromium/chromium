@@ -15,7 +15,6 @@ const char kImpressionPromoKey[] = "promo";
 const char kImpressionDayKey[] = "day";
 const char kImpressionFeatureEngagementMigrationCompletedKey[] =
     "feature_engagement_migration_completed";
-const int kNumDaysImpressionHistoryStored = 365;
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
@@ -61,6 +60,17 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::DockingPromoRemindMeLater;
   }
 
+  if (promo == "promos_manager::Promo::AllTabsDefaultBrowser") {
+    return promos_manager::Promo::AllTabsDefaultBrowser;
+  }
+
+  if (promo == "promos_manager::Promo::MadeForIOSDefaultBrowser") {
+    return promos_manager::Promo::MadeForIOSDefaultBrowser;
+  }
+
+  if (promo == "promos_manager::Promo::StaySafeDefaultBrowser") {
+    return promos_manager::Promo::StaySafeDefaultBrowser;
+  }
   return std::nullopt;
 }
 
@@ -94,6 +104,12 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "DockingPromo";
     case promos_manager::Promo::DockingPromoRemindMeLater:
       return "DockingPromoRemindMeLater";
+    case promos_manager::Promo::AllTabsDefaultBrowser:
+      return "AllTabsDefaultBrowser";
+    case promos_manager::Promo::MadeForIOSDefaultBrowser:
+      return "MadeForIOSDefaultBrowser";
+    case promos_manager::Promo::StaySafeDefaultBrowser:
+      return "StaySafeDefaultBrowser";
   }
 }
 

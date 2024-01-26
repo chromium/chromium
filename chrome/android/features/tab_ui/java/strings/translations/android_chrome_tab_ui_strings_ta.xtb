@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
+<translation id="427987768447457592">புதிய பக்கக் குழு</translation>
 <translation id="4648718555153979859">உங்கள் தாவல்கள் இங்கு குழுவாக்கப்பட்டுள்ளன</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை)}other{(<ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்)}}</translation>
 <translation id="4850886885716139402">காட்சி</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>
 <translation id="5082793167783849073">ஒரு குழுவை உருவாக்கிப் பக்கங்களை விரைவாக ஒப்பிடலாம். தொடங்க, ஓர் இணைப்பைத் தொட்டுப் பிடிக்கவும்.</translation>
+<translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ளது}other{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ளன}}</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>

@@ -28,7 +28,7 @@ struct Params {
   ~Params();
 
   // The opener web state of the inserted tab.
-  web::WebState* parent = nullptr;
+  raw_ptr<web::WebState> parent = nullptr;
 
   // Whether the page is opened by DOM.
   bool opened_by_dom = false;

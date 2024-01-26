@@ -16,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
@@ -26,6 +27,7 @@
 #include "ui/views/view.h"
 
 using testing::_;
+using testing::Pointwise;
 
 namespace {
 
@@ -50,6 +52,11 @@ MATCHER_P(HasItems, items, "") {
   return true;
 }
 
+MATCHER(VideoCaptureDeviceInfoEq, "") {
+  return std::get<0>(arg).descriptor.device_id ==
+         std::get<1>(arg).descriptor.device_id;
+}
+
 }  // namespace
 
 class CameraCoordinatorTest : public TestWithBrowserView {
@@ -60,12 +67,12 @@ class CameraCoordinatorTest : public TestWithBrowserView {
         &fake_video_capture_service_);
     fake_video_capture_service_.SetOnGetVideoSourceCallback(
         on_get_video_source_future_.GetRepeatingCallback());
+
     parent_view_.emplace();
     InitializeCoordinator(/*eligible_camera_ids=*/{});
   }
 
   void TearDown() override {
-    base::RunLoop().RunUntilIdle();
     coordinator_.reset();
     parent_view_.reset();
     content::OverrideVideoCaptureServiceForTesting(nullptr);
@@ -73,12 +80,13 @@ class CameraCoordinatorTest : public TestWithBrowserView {
   }
 
   void InitializeCoordinator(std::vector<std::string> eligible_camera_ids) {
+    CHECK(profile()->GetPrefs());
     coordinator_.emplace(*parent_view_,
-                         /*needs_borders=*/true,
-                         /*eligible_camera_ids=*/eligible_camera_ids);
+                         /*needs_borders=*/true, eligible_camera_ids,
+                         *profile()->GetPrefs());
   }
 
-  const CameraSelectorComboboxModel& GetComboboxModel() const {
+  const ui::SimpleComboboxModel& GetComboboxModel() const {
     return coordinator_->GetComboboxModelForTest();
   }
 
@@ -217,4 +225,33 @@ TEST_F(CameraCoordinatorTest, TryConnectToSameDevice) {
   // Add camera, and connect to it again.
   ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
   EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
+}
+
+TEST_F(CameraCoordinatorTest, UpdateDevicePreferenceRanking) {
+  VerifyEmptyCombobox();
+  const media::VideoCaptureDeviceInfo kDevice1{{kDeviceName, kDeviceId}};
+  const media::VideoCaptureDeviceInfo kDevice2{{kDeviceName2, kDeviceId2}};
+
+  ASSERT_TRUE(AddFakeCamera(kDevice1.descriptor));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
+  ASSERT_TRUE(AddFakeCamera(kDevice2.descriptor));
+  on_get_video_source_future_.Clear();
+
+  // Select device 2.
+  coordinator_->OnVideoSourceChanged(/*selected_index=*/1);
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId2);
+
+  // Preference ranking defaults to noop.
+  std::vector device_infos{kDevice1, kDevice2};
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+                                              device_infos);
+  EXPECT_THAT(device_infos,
+              Pointwise(VideoCaptureDeviceInfoEq(), {kDevice1, kDevice2}));
+
+  // Ranking is updated to make the currently selected device most preferred.
+  coordinator_->UpdateDevicePreferenceRanking();
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+                                              device_infos);
+  EXPECT_THAT(device_infos,
+              Pointwise(VideoCaptureDeviceInfoEq(), {kDevice2, kDevice1}));
 }

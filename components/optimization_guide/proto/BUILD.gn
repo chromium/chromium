@@ -35,6 +35,7 @@ proto_library("optimization_guide_proto") {
     "push_notification.proto",
     "salient_image_metadata.proto",
     "string_value.proto",
+    "text_safety_model_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
 

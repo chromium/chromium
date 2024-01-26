@@ -2574,12 +2574,15 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
 // Tests that |MenuHost::InitParams| are correctly forwarded to the created
 // |aura::Window|.
 TEST_F(MenuControllerTest, AuraWindowIsInitializedWithMenuHostInitParams) {
-  ShowSubmenu(nullptr,
-              [](auto& params) { params.menu_type = ui::MenuType::kRootMenu; });
-  EXPECT_EQ(
-      ui::MenuType::kRootMenu,
+  constexpr gfx::Rect kAnchorRect(1, 5, 2, 5);
+  ShowSubmenu(nullptr, [anchor_rect = kAnchorRect](auto& params) {
+    params.owned_window_anchor.anchor_rect = anchor_rect;
+  });
+  auto* property =
       menu_item()->GetSubmenu()->GetWidget()->GetNativeWindow()->GetProperty(
-          aura::client::kMenuType));
+          aura::client::kOwnedWindowAnchor);
+  ASSERT_TRUE(property);
+  EXPECT_EQ(kAnchorRect, property->anchor_rect);
 }
 
 // Tests that |aura::Window| has the correct properties when a context menu is
@@ -2593,8 +2596,6 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const aura::Window* window = submenu->GetWidget()->GetNativeWindow();
-  EXPECT_EQ(ui::MenuType::kRootContextMenu,
-            window->GetProperty(aura::client::kMenuType));
   const ui::OwnedWindowAnchor* anchor =
       window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
@@ -2622,8 +2623,6 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
 
   anchor = window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
-  EXPECT_EQ(ui::MenuType::kChildMenu,
-            window->GetProperty(aura::client::kMenuType));
   EXPECT_EQ(ui::OwnedWindowAnchorPosition::kTopRight, anchor->anchor_position);
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
@@ -2650,8 +2649,6 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
   const ui::OwnedWindowAnchor* anchor =
       window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
-  EXPECT_EQ(ui::MenuType::kRootMenu,
-            window->GetProperty(aura::client::kMenuType));
   EXPECT_EQ(ui::OwnedWindowAnchorPosition::kBottomLeft,
             anchor->anchor_position);
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
@@ -2678,8 +2675,6 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
 
   anchor = window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
-  EXPECT_EQ(ui::MenuType::kChildMenu,
-            window->GetProperty(aura::client::kMenuType));
   EXPECT_EQ(ui::OwnedWindowAnchorPosition::kTopRight, anchor->anchor_position);
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |

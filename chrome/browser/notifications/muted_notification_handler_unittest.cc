@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/muted_notification_handler.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/browser_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class MockMutedNotificationHandlerDelegate
@@ -79,7 +79,7 @@ TEST_P(MutedNotificationHandlerTest, OnClickBody) {
               OnAction(MutedNotificationHandler::Action::kBodyClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/absl::nullopt, /*reply=*/absl::nullopt, callback.Get());
+      /*action_index=*/std::nullopt, /*reply=*/std::nullopt, callback.Get());
 }
 
 TEST_P(MutedNotificationHandlerTest, OnClickSnooze) {
@@ -92,7 +92,7 @@ TEST_P(MutedNotificationHandlerTest, OnClickSnooze) {
               OnAction(MutedNotificationHandler::Action::kSnoozeClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/0, /*reply=*/absl::nullopt, callback.Get());
+      /*action_index=*/0, /*reply=*/std::nullopt, callback.Get());
 }
 
 TEST_P(MutedNotificationHandlerTest, OnClickShow) {
@@ -102,7 +102,7 @@ TEST_P(MutedNotificationHandlerTest, OnClickShow) {
               OnAction(MutedNotificationHandler::Action::kShowClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/GetParam() ? 1 : 0, /*reply=*/absl::nullopt,
+      /*action_index=*/GetParam() ? 1 : 0, /*reply=*/std::nullopt,
       callback.Get());
 }
 

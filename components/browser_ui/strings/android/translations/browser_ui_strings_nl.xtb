@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Download onderbroken</translation>
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1434873037477293673">kaart met prijsdaling</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2790501146643349491">Als deze optie aanstaat, kunnen recent gesloten sites het sturen en ontvangen van gegevens afronden. Staat de optie uit, dan kunnen recent gesloten sites het sturen of ontvangen van gegevens niet afronden.</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobiele weergave opvragen</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Prijsdaling op je geopende tabblad, van <ph name="OLD_PRICE" /> naar <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Mobiele weergave aanvragen als het venster smal is</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="652937045869844725">Sta cookies van derden toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="6749077623962119521">Rechten resetten?</translation>
 <translation id="6766622839693428701">Swipe omlaag om te sluiten.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecteer een optie voor <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
+<translation id="6867014948848323204">Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">De tovenaar van Oz</translation>
 <translation id="7684642910516280563">Niet toestaan dat een site cookies van derden gebruikt</translation>
 <translation id="7719367874908701697">Zoomen op pagina</translation>
+<translation id="7770832849480336015"><ph name="TITLE_OF_MODULE" /> verbergen</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>

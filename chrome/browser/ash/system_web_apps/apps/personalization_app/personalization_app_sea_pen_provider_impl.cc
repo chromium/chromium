@@ -5,27 +5,22 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
-#include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
-#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
-#include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/manta/features.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash::personalization_app {
 
@@ -35,10 +30,19 @@ PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
         wallpaper_fetcher_delegate)
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
-          std::move(wallpaper_fetcher_delegate)) {}
+          std::move(wallpaper_fetcher_delegate),
+          manta::proto::FeatureName::CHROMEOS_WALLPAPER) {}
 
 PersonalizationAppSeaPenProviderImpl::~PersonalizationAppSeaPenProviderImpl() =
     default;
+
+void PersonalizationAppSeaPenProviderImpl::BindInterface(
+    mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
+        receiver) {
+  CHECK(::ash::features::IsSeaPenEnabled());
+  CHECK(manta::features::IsMantaServiceEnabled());
+  PersonalizationAppSeaPenProviderBase::BindInterface(std::move(receiver));
+}
 
 void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
     const base::FilePath& path,
@@ -54,7 +58,9 @@ void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
   base::FilePath wallpaper_dir;
   CHECK(
       base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpaper_dir));
-  const base::FilePath sea_pen_wallpaper_dir = wallpaper_dir.Append("sea_pen/");
+  const base::FilePath sea_pen_wallpaper_dir =
+      wallpaper_dir.Append("sea_pen/")
+          .Append(GetAccountId(profile_).GetAccountIdKey());
   ash::EnumerateJpegFilesFromDir(profile_, sea_pen_wallpaper_dir,
                                  std::move(callback));
 }

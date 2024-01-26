@@ -379,8 +379,9 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       ktm.Set(CreateTransactionManager(&tm_attributes, nullptr,
                                        TRANSACTION_MANAGER_VOLATILE,
                                        TRANSACTION_MANAGER_COMMIT_DEFAULT));
-      if (ktm.IsValid() || ::GetLastError() != ERROR_ACCESS_DENIED)
+      if (ktm.is_valid() || ::GetLastError() != ERROR_ACCESS_DENIED) {
         return SBOX_TEST_FAILED;
+      }
 
       break;
     }

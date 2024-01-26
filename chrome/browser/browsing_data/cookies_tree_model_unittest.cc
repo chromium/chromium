@@ -1449,7 +1449,7 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
                             content_settings, ContentSettingsType::COOKIES,
                             false, ContentSettingsPattern::FromURL(host),
                             ContentSettingsPattern::Wildcard(), false))
-      .Times(2);
+      .Times(1);
   origin->CreateContentException(
       cookie_settings, CONTENT_SETTING_SESSION_ONLY);
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(

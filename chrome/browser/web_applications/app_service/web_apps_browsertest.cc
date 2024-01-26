@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
 
-  absl::optional<apps::IconKey> original_key;
+  std::optional<apps::IconKey> original_key;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&original_key](const apps::AppUpdate& update) {
         original_key = update.IconKey();

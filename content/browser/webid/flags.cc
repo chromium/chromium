@@ -84,4 +84,9 @@ bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {
 bool IsFedCmButtonModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
 }
+
+bool IsFedCmSameSiteLoginStatusEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLoginStatus);
+}
+
 }  // namespace content

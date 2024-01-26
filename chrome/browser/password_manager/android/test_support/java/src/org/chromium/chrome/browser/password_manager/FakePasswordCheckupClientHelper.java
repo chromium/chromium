@@ -63,9 +63,35 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     }
 
     @Override
+    public void runPasswordCheckupInBackground(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {
+        if (mError != null) {
+            failureCallback.onResult(mError);
+            return;
+        }
+        successCallback.onResult(null);
+    }
+
+    @Override
     public void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
             Optional<String> accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        if (mError != null) {
+            failureCallback.onResult(mError);
+            return;
+        }
+        successCallback.onResult(mBreachedCredentialsCount);
+    }
+
+    @Override
+    public void getBreachedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {

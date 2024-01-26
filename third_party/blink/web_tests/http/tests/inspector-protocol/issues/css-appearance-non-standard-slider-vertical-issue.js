@@ -1,5 +1,5 @@
 // TODO(crbug.com/1426629) This test can be deleted once non-standard CSS appearance value slider-vertical is removed.
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startBlank(`Tests that non-standard appearance value slider-vertical trigger a deprecation issue.`);
   await dp.Audits.enable();
 

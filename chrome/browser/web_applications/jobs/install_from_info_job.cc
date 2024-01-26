@@ -27,7 +27,7 @@ InstallFromInfoJob::InstallFromInfoJob(
     std::unique_ptr<WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
-    absl::optional<WebAppInstallParams> install_params,
+    std::optional<WebAppInstallParams> install_params,
     ResultCallback install_callback)
     : profile_(*profile),
       debug_value_(debug_value),
@@ -86,7 +86,6 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
   }
 
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
-  options.locally_installed = true;
   options.overwrite_existing_manifest_fields =
       overwrite_existing_manifest_fields_;
 

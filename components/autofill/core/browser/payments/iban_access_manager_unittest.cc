@@ -23,7 +23,9 @@ namespace {
 
 constexpr char16_t kFullIbanValue[] = u"CH5604835012345678009";
 constexpr int64_t kInstrumentId = 12345678;
+constexpr int kDaysSinceLastUsed = 3;
 constexpr int kDefaultUnmaskIbanLatencyMs = 200;
+constexpr size_t kDefaultUseCount = 4;
 
 }  // namespace
 
@@ -88,21 +90,28 @@ class IbanAccessManagerTest : public testing::Test {
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
 };
 
-// Verify that `FetchValue` returns the correct value for a `ValueToFill`
-// payload.
-TEST_F(IbanAccessManagerTest, FetchValue_WithValueToFill) {
+// Verify that `FetchValue` returns the correct value for an existing local
+// IBAN.
+TEST_F(IbanAccessManagerTest, FetchValue_ExistingLocalIban) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
-  suggestion.payload = Suggestion::ValueToFill(kFullIbanValue);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 }
 
-// Verify that `FetchValue` returns empty value if `ValueToFill` is empty.
-TEST_F(IbanAccessManagerTest, FetchValue_WithValueToFill_EmptyValue) {
+// Verify that `FetchValue` does not trigger callback if local IBAN does not
+// exist.
+TEST_F(IbanAccessManagerTest, FetchValue_NonExistingLocalIban) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
-  suggestion.payload = Suggestion::ValueToFill(u"");
+  Iban local_iban;
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
@@ -164,7 +173,11 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Failure) {
 // Verify that there will be no progress dialog when unmasking a local IBAN.
 TEST_F(IbanAccessManagerTest, FetchValue_LocalIbanNoProgressDialog) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
-  suggestion.payload = Suggestion::ValueToFill(kFullIbanValue);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   iban_access_manager_->FetchValue(suggestion, callback.Get());
@@ -205,6 +218,51 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
 
   EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
   EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+}
+
+// Verify that local IBAN metadata has been recorded correctly.
+TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
+  base::HistogramTester histogram_tester;
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  local_iban.set_use_count(kDefaultUseCount);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  task_environment_.FastForwardBy(base::Days(kDaysSinceLastUsed));
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.DaysSinceLastUse.StoredIban.Local", kDaysSinceLastUsed, 1);
+  EXPECT_EQ(personal_data().GetIbanByGUID(local_iban.guid())->use_count(),
+            kDefaultUseCount + 1);
+}
+
+// Verify that server IBAN metadata has been recorded correctly.
+TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
+  base::HistogramTester histogram_tester;
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_use_count(kDefaultUseCount);
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  task_environment_.FastForwardBy(base::Days(kDaysSinceLastUsed));
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.DaysSinceLastUse.StoredIban.Server", kDaysSinceLastUsed, 1);
+  EXPECT_EQ(personal_data()
+                .GetIbanByInstrumentId(server_iban.instrument_id())
+                ->use_count(),
+            kDefaultUseCount + 1);
 }
 
 // Verify that the duration of successful `UnmaskIban` call is logged correctly.

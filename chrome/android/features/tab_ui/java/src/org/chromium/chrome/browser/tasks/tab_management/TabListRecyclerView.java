@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -182,8 +183,15 @@ class TabListRecyclerView extends RecyclerView
      * @param runnable the runnable that executes on next layout.
      */
     void runAnimationOnNextLayout(Runnable runnable) {
-        assert mOnNextLayoutRunnable == null
-                : "TabListRecyclerView animation on next layout set multiple times without running.";
+        // Very fast navigations to/from the tab list may not have time for a layout to reach a
+        // completed state. Since this is primarily used for cancellable or skippable animations
+        // where the runnable will not be serviced downstream, dropping the runnable altogether is
+        // safe for Hub.
+        if (!HubFieldTrial.isHubEnabled()) {
+            assert mOnNextLayoutRunnable == null
+                    : "TabListRecyclerView animation on next layout set multiple times without"
+                            + " running.";
+        }
         mOnNextLayoutRunnable =
                 () -> {
                     if (mDynamicView == null) {
@@ -201,7 +209,8 @@ class TabListRecyclerView extends RecyclerView
 
         // If the view is detached or won't conduct a new layout then trigger the runnable
         // immediately rather than waiting for it to be attached.
-        if (!isAttachedToWindow() || !isLayoutRequested()) {
+        // if (!isAttachedToWindow() || !isLayoutRequested()) {
+        if (!isLayoutRequested()) {
             Runnable runNow = mOnNextLayoutRunnable;
             mOnNextLayoutRunnable = null;
             runNow.run();
@@ -254,6 +263,13 @@ class TabListRecyclerView extends RecyclerView
         // Stop all the animations to make all the items show up and scroll to position immediately.
         mOriginalAnimator = getItemAnimator();
         setItemAnimator(null);
+    }
+
+    void prepareTabSwitcherPaneView() {
+        endAllAnimations();
+        // Ignore the rest of prepareTabSwitcherView since the pane version doesn't use a dynamic
+        // view and the items should already be visible. Don't replace the item animator as
+        // startShowing is skipped for panes meaning the animator would never be re-added.
     }
 
     /**
@@ -574,6 +590,24 @@ class TabListRecyclerView extends RecyclerView
     }
 
     /**
+     * @param tabIndex The index in the RecyclerView of the tab.
+     * @param tabId The tab ID of the tab.
+     * @return The {@link Rect} of the thumbnail of the tab in global coordinates.
+     */
+    @NonNull
+    Rect getRectOfTabThumbnail(int tabIndex, int tabId) {
+        SimpleRecyclerViewAdapter.ViewHolder holder =
+                (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
+        Rect rect = new Rect();
+        if (holder == null || tabIndex == TabModel.INVALID_TAB_INDEX) return rect;
+        assert holder.model.get(TabProperties.TAB_ID) == tabId;
+        ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
+        View v = root.fastFindViewById(R.id.tab_thumbnail);
+        if (v != null) v.getGlobalVisibleRect(rect);
+        return rect;
+    }
+
+    /**
      * @param selectedTabIndex The index in the RecyclerView of the selected tab.
      * @param selectedTabId The tab ID of the selected tab.
      * @return The {@link Rect} of the thumbnail of the current tab, relative to the
@@ -676,7 +710,6 @@ class TabListRecyclerView extends RecyclerView
         if (position == -1) {
             return actions;
         }
-        assert getLayoutManager() instanceof GridLayoutManager;
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
         int spanCount = layoutManager.getSpanCount();
         Context context = getContext();
@@ -732,7 +765,6 @@ class TabListRecyclerView extends RecyclerView
     @Override
     public Pair<Integer, Integer> getPositionsOfReorderAction(View view, int action) {
         int currentPosition = getChildAdapterPosition(view);
-        assert getLayoutManager() instanceof GridLayoutManager;
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
         int spanCount = layoutManager.getSpanCount();
         int targetPosition = -1;

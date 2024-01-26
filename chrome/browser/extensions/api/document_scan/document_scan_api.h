@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 
+#include <optional>
+
 #include "chrome/common/extensions/api/document_scan.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -26,8 +27,8 @@ class DocumentScanScanFunction : public ExtensionFunction {
 
  private:
   void OnScanCompleted(
-      absl::optional<api::document_scan::ScanResults> scan_result,
-      absl::optional<std::string> error);
+      std::optional<api::document_scan::ScanResults> scan_result,
+      std::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENTSCAN_SCAN)
 };
 

@@ -143,7 +143,9 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 class ScriptStreamingTest : public testing::Test {
  public:
-  ScriptStreamingTest() : url_("http://www.streaming-test.com/") {
+  ScriptStreamingTest()
+      : url_(String("http://www.streaming-test.com/foo" +
+                    base::NumberToString(url_counter_++))) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -227,6 +229,8 @@ class ScriptStreamingTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
+  static int url_counter_;
+
   test::TaskEnvironment task_environment_;
   KURL url_;
 
@@ -236,6 +240,8 @@ class ScriptStreamingTest : public testing::Test {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 };
+
+int ScriptStreamingTest::url_counter_ = 0;
 
 TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // Test that we can successfully compile a streamed script.
@@ -390,7 +396,13 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
 TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
   // If we notice before streaming that there is a compile hints cache, we use
   // it for eager compilation.
-  base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
+
+  // Disable features::kProduceCompileHints2 forcefully, because local compile
+  // hints are not used when producing crowdsourced compile hints.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureStates({{features::kLocalCompileHints, true},
+                                  {features::kProduceCompileHints2, false}});
+
   V8TestingScope scope;
 
   CachedMetadataHandler* cache_handler = resource_->CacheHandler();
@@ -412,6 +424,11 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
       /*code_cache_host*/ nullptr,
       V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
       cached_data->length);
+
+  // Checks for debugging failures in this test.
+  EXPECT_TRUE(V8CodeCache::HasCompileHints(
+      cache_handler, CachedMetadataHandler::kAllowUnchecked));
+  EXPECT_TRUE(V8CodeCache::HasHotTimestamp(cache_handler));
 
   AppendData("/*this doesn't matter*/");
   Finish();
@@ -643,10 +660,7 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
 
-// TODO(crbug.com/1515152) Re-enable when the source of the hard-crashes has
-// been addressed.
-TEST_F(ScriptStreamingTest,
-       DISABLED_ProduceLocalCompileHintsForStreamedScript) {
+TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
   // Test that we can produce local compile hints when a script is streamed.
   base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
   V8TestingScope scope;

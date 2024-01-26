@@ -111,14 +111,14 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
   auto* title = view->AddChildView(std::make_unique<views::Label>(
-      item.title, views::style::CONTEXT_DIALOG_BODY_TEXT));
+      item.title(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   title->SetCollapseWhenHidden(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* message = view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           IDS_MESSAGE_CENTER_LIST_NOTIFICATION_MESSAGE_WITH_DIVIDER,
-          item.message),
+          item.message()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   message->SetCollapseWhenHidden(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -221,18 +221,12 @@ void NotificationViewBase::CreateOrUpdateViews(
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
     : MessageView(notification), for_ash_notification_(IsForAshNotification()) {
-  SetNotifyEnterExitOnChild(true);
-
   click_activator_ = std::make_unique<ClickActivator>(this);
   // Reasons to use pretarget handler instead of OnMousePressed:
   // - NotificationViewBase::OnMousePresssed would not fire on the inline reply
   //   textfield click in native notification.
   // - To make it look similar to ArcNotificationContentView::EventForwarder.
   AddPreTargetHandler(click_activator_.get());
-
-  DCHECK(views::FocusRing::Get(this));
-  views::FocusRing::Get(this)->SetPathGenerator(
-      std::make_unique<MessageView::HighlightPathGenerator>());
 
   UpdateCornerRadius(kNotificationCornerRadius, kNotificationCornerRadius);
 }
@@ -312,20 +306,6 @@ void NotificationViewBase::OnMouseReleased(const ui::MouseEvent& event) {
     return;
 
   MessageView::OnMouseReleased(event);
-}
-
-void NotificationViewBase::OnMouseEvent(ui::MouseEvent* event) {
-  switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
-      UpdateControlButtonsVisibility();
-      break;
-    case ui::ET_MOUSE_EXITED:
-      UpdateControlButtonsVisibility();
-      break;
-    default:
-      break;
-  }
-  View::OnMouseEvent(event);
 }
 
 void NotificationViewBase::OnGestureEvent(ui::GestureEvent* event) {

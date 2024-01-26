@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">কোনো ম’বাইল নেটৱৰ্ক উপলব্ধ নহয়</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ৰ সৈতে মিৰ’ৰ কৰা হৈছে</translation>
 <translation id="1885785240814121742">ফিংগাৰপ্ৰিণ্টৰ দ্বাৰা আনলক কৰক</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="1908992311423394684">নতুনকৈ ইনষ্টল কৰা</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1918022425394817322">কেমেৰা ওপৰৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">কেমেৰাৰ পূৰ্বদৰ্শন অন আছে</translation>
 <translation id="2067602449040652523">কীব’ৰ্ডৰ উজ্জ্বলতা</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ট’গল কৰক। <ph name="CAPTURE_MEDIUM" />টো <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰিবলৈ চাৰিটা আঙুলিৰে সোঁফালে ছোৱাইপ কৰক</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="2083190527011054446">শুভৰাত্ৰি <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ইম’জি বাছনি কৰোঁতা খোলক</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">পূৰ্বৱৰ্তী ট্ৰেকটোলৈ যাওক</translation>
 <translation id="2152895518047545149">একো মিছ হোৱা নাই যেন লাগিছে। বঢ়িয়া!</translation>
 <translation id="2161132820593978283">কেমেৰা ফ্ৰে’মিং ব্যৱহাৰ কৰি চাওক যাতে ভিডিঅ’ কলৰ সময়ত আপুনি স্ক্ৰীনখনৰ মাজত থাকে। এইটো ক্ষিপ্ৰ ছেটিঙত অন কৰক।</translation>
-<translation id="2170530631236737939">অৱলোকনৰ পৰা বাহিৰ হ’বলৈ তিনিটা আঙুলিৰে তললৈ ছোৱাইপ কৰক</translation>
 <translation id="2185166372312820725">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="2185444992308415167">টেব ১ৰ পৰা ৮লৈকে যাওক</translation>
 <translation id="2198625180564913276">প্ৰ’ফাইল যোগ দি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
+<translation id="2744221223678373668">শ্বেয়াৰ কৰা</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"মচক"</translation>
 <translation id="2750941250130734256">ড’ক নকৰা ৱিণ্ড’ সক্ৰিয় কৰক।</translation>
 <translation id="2761723519669354964">শ্বেল্ফৰ পৰা হাইলাইট কৰা বস্তু খোলক</translation>
+<translation id="2762000892062317888">এইমাত্ৰ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ৰ পৰা <ph name="KEY_TWO" />লৈ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3580650856351781466">কথনৰ ফাইল ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="3585296979871889131">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চাওক</translation>
+<translation id="3590441166907930941">কাষৰ বুটাম</translation>
 <translation id="3593039967545720377">আপোনাৰ ক্লিপব’ৰ্ড চাবলৈ <ph name="SHORTCUT_KEY_NAME" /> + V টিপি নিজৰ ক্লিপব’ৰ্ডৰ ইতিহাস এক্সেছ কৰক। আৰম্ভ কৰিবলৈ এটা বস্তু প্ৰতিলিপি কৰক।</translation>
 <translation id="3593646411856133110">খোলা এপ্‌সমূহ চাবলৈ ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক</translation>
 <translation id="3595596368722241419">বেটাৰী চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">উত্তৰ দিয়ক</translation>
 <translation id="3990002060657467458">সঘনাই ব্যৱহৃত নিয়ন্ত্ৰণ যেনে, ৱাই-ফাই, ব্লুটুথ আৰু ভলিউম ক্ষিপ্ৰ ছেটিঙত আছে। স্ক্ৰীনশ্বট ল’বলৈ আপুনি ইয়ালৈ যাবও পাৰে।</translation>
 <translation id="3995138139523574647">USB-C ডিভাইচ (সোঁফালে থকা পিছফালৰ প’ৰ্ট)</translation>
+<translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="40062176907008878">হস্তলিপি</translation>
 <translation id="4011112806063830608">অসুবিধা নিদিব অন আছে।</translation>
 <translation id="4017989525502048489">লেজাৰ প্ৰিণ্টাৰ</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">বেটাৰীৰ স্বাস্থ্য <ph name="BATTERY_HEALTH_PERCENTAGE" />% | চক্ৰৰ গণনা <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">এটা টেমপ্লে’ট হিচাপে ডেস্ক ছেভ কৰক</translation>
 <translation id="5168181903108465623">কাষ্ট কৰিব পৰা ডিভাইচ উপলব্ধ</translation>
+<translation id="5168753792967365150">Google Tasksত সম্পাদনা কৰক</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5176318573511391780">আংশিক স্ক্ৰীন ৰেকৰ্ড কৰক</translation>
 <translation id="5187627942836026988">হ’টস্প’টৰ সবিশেষ দেখুৱাওক। আপোনাৰ প্ৰশাসকে হ’টস্প’ট অৱৰোধ কৰিছে।</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">আপোনাৰ ইনষ্টল কৰা এপ্</translation>
 <translation id="6173151025443907148">Lacros সক্ষম কৰি থোৱাৰ সময়ত দ্বিতীয় এগৰাকী ব্যৱহাৰকাৰী ছাইন ইন কৰাটো সমৰ্থিত নহয়। অনুগ্ৰহ কৰি তাৰ সলনি Lacrosত দ্বিতীয় এটা ব্ৰাউজাৰ প্ৰ’ফাইল ব্যৱহাৰ কৰক অথবা Lacros অক্ষম কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6179832488876878285">আপুনি নিজৰ গুৰুত্বপূৰ্ণ ফাইলসমূহ ইয়াত পিন কৰিব পাৰে। আৰম্ভ কৰিবলৈ Files এপ্‌টো খোলক।</translation>
+<translation id="6180193585172850042">উভতি যোৱাৰ বুটাম</translation>
+<translation id="6180651297859206670">ফৰৱাৰ্ড কৰাৰ বুটাম</translation>
 <translation id="6182592640011875895">ডেস্ক খোলক</translation>
 <translation id="6185696379715117369">পেজ আপ</translation>
 <translation id="619335566042889110">এতিয়াই সম্পূৰ্ণৰূপে চাৰ্জ কৰক</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6981291220124935078">এক্সেছ অন কৰক</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="698231206551913481">ব্যৱহাৰকাৰীজনক আঁতৰোৱাৰ পাছত তেওঁৰ সৈতে জড়িত সকলো ফাইল বা স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ব।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="6989752354829085073">আপোনাৰ Chromebook কেনেকৈ ব্যৱহাৰ কৰিব লাগে সেই বিষয়ে জানিবলৈ কি কি সুবিধা আছে চাওক। ৬ টা পদক্ষেপত কাৰ্যক্ষম কৰি তোলক।</translation>
 <translation id="7004910047186208204">ম’বাইলৰ ডেটাৰ সৈতে সংযোগ কৰক</translation>
 <translation id="7005239792648594238">আৰম্ভ কৰিবলৈ এটা এপ্‌ খোলক</translation>
@@ -1693,7 +1698,6 @@
 <translation id="7850320739366109486">অসুবিধা নিদিব ম’ড</translation>
 <translation id="7851039877802112575">পপআপ আৰু ডায়লগলৈ ফ’কাছ স্থানান্তৰ কৰক</translation>
 <translation id="7851768487828137624">কেনেৰী</translation>
-<translation id="7860671499921112077">অৱলোকনত সোমাবলৈ তিনিটা আঙুলিৰে ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="7862292329216937261">অতিথি হিচাপে ডিভাইচটো ব্যৱহাৰ কৰিবলৈ, আপুনি ছাইন আউট কৰিব লাগিব আৰু তাৰ পাছত স্ক্ৰীনৰ একেবাৰে তলত অতিথি হিচাপে ব্ৰাউজ কৰক বাছনি কৰিব লাগিব।</translation>
 <translation id="7866482334467279021">অন আছে</translation>
 <translation id="7872786842639831132">অফ আছে</translation>
@@ -1804,7 +1808,6 @@
 <translation id="8262312463845990408">প্লে’বেক ট’গল কৰক</translation>
 <translation id="8270450402312105425">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="8277261673056602147">আপোনাৰ স্ক্ৰীনত থকা পাঠ হাইলাইট কৰক</translation>
-<translation id="8284362522226889623">পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰিবলৈ চাৰিটা আঙুলিৰে বাওঁফালে ছোৱাইপ কৰক</translation>
 <translation id="828708037801473432">অফ আছে</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
 <translation id="8308637677604853869">পূৰ্বৱৰ্তী মেনু</translation>

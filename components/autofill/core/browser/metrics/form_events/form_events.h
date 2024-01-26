@@ -42,10 +42,12 @@ enum FormEvent {
   FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE = 10,
   FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE = 11,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE = 12,
+  // DEPRECATED IN M123, DO NOT USE. Use value 87 instead!
   // A masked server card suggestion was selected to fill the form.
-  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 13,
+  DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 13,
+  // DEPRECATED IN M123, DO NOT USE. Use value 88 instead!
   // Same as above but only triggered once per page load.
-  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 14,
+  DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 14,
   // An autofillable form is about to be submitted. If the submission is not
   // interrupted by JavaScript, the "form submitted" events above will also be
   // logged. Depending on the user filling a local, server, masked server card,
@@ -76,14 +78,17 @@ enum FormEvent {
   FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_FAIL_LUHN_CHECK_CARD = 25,
 
   // The form was changed dynamically. This value has been deprecated.
-  FORM_EVENT_DID_SEE_DYNAMIC_FORM = 26,
+  // DEPRECATED_FORM_EVENT_DID_SEE_DYNAMIC_FORM = 26,
+
   // The form was changed dynamically and was fillable.
-  FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM = 27,
+  // DEPRECATED_FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM = 27,
+
   // There was a dynamic change of the form and it got re-filled
   // automatically.
   FORM_EVENT_DID_DYNAMIC_REFILL = 28,
+
   // The form dynamically changed another time after the refill.
-  FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL = 29,
+  // DEPRECATED_FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL = 29,
 
   // The two events below are deprecated and no longer emitted.
   FORM_EVENT_POPUP_SUPPRESSED = 30,
@@ -201,6 +206,34 @@ enum FormEvent {
   // A credit card was about to be submitted after a suggestion was filled,
   // and the suggested card had no metadata. Logged once per page load.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE = 78,
+
+  // Metric logged when a credit card suggestion with cvc info was shown.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN = 79,
+  // Metric logged when a credit card suggestion with cvc info was shown. Logged
+  // once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN_ONCE = 80,
+  // Metric logged when a credit card suggestion with cvc info was selected.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED = 81,
+  // Metric logged when a credit card suggestion with cvc info was selected.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED_ONCE = 82,
+  // Metric logged when a credit card suggestion with cvc info was filled.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED = 83,
+  // Metric logged when a credit card suggestion with cvc info was filled.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED_ONCE = 84,
+  // Metric logged when form is about to be submitted after a credit card
+  // suggestion with cvc info was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_WILL_SUBMIT_ONCE = 85,
+  // Metric logged when form was submitted after a credit card suggestion with
+  // cvc info was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE = 86,
+
+  // A masked server card suggestion was selected to fill the form. Updated in
+  // M123 to include a fix for missing selection events.
+  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 87,
+  // Same as above but only triggered once per page load.
+  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 88,
 
   NUM_FORM_EVENTS,
 };

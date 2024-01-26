@@ -121,6 +121,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -130,6 +131,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       thread_safe),
       context_state_(std::move(context_state)) {
@@ -354,7 +356,8 @@ WrappedGraphiteTextureBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state_->IsGraphiteDawnVulkan());
   if (context_state_->context_lost()) {
     return nullptr;

@@ -33,7 +33,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -61,8 +61,9 @@ void WaitForEntitiesOnFakeServer(int entity_count,
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kSyncOperationTimeout,
                                                           condition),
-             @"Expected %d %s entities", entity_count,
-             syncer::ModelTypeToDebugString(entity_type));
+             @"Expected %d %s entities but found %d", entity_count,
+             syncer::ModelTypeToDebugString(entity_type),
+             [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
 }
 
 void WaitForAutofillProfileLocallyPresent(const std::string& guid,
@@ -89,6 +90,14 @@ void ClearRelevantData() {
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
   WaitForEntitiesOnFakeServer(0, syncer::PASSWORDS);
   WaitForEntitiesOnFakeServer(0, syncer::READING_LIST);
+
+  // Ensure that all of the changes made are flushed to disk before the app is
+  // terminated.
+  [ChromeEarlGrey flushFakeSyncServerToDisk];
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [BookmarkEarlGrey commitPendingWrite];
+  // Note that the ReadingListModel immediately writes pending changes to disk,
+  // so no need for an explicit "flush" there.
 }
 
 }  // namespace
@@ -150,7 +159,8 @@ void ClearRelevantData() {
              [self isRunningTest:@selector
                    (testMigrateSyncToSignin_CustomPassphraseMissing)] ||
              [self isRunningTest:@selector
-                   (testMigrateSyncToSignin_ManagedAccount)]) {
+                   (testMigrateSyncToSignin_ManagedAccount)] ||
+             [self isRunningTest:@selector(testMigrateSyncToSignin_Undo)]) {
     // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
     // later turn on the appropriate flags and restart Chrome.
     config.features_disabled.push_back(
@@ -1138,6 +1148,86 @@ void ClearRelevantData() {
   [BookmarkEarlGrey
       verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
                            inStorage:bookmarks::StorageType::kAccount];
+}
+
+- (void)testMigrateSyncToSignin_Undo {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Create some data and wait for it to arrive on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The bookmark should still exist, but now be in the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+  // Similarly the password.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
+
+  // Restart Chrome with the reverse migration (undo) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kUndoMigrationOfSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should be enabled again.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The bookmark should be back in the local store.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kAccount];
+  // Similarly the password.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should be back in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store anymore");
+
+  // Verify that the local-or-syncable store is the one being synced again: Add
+  // another bookmark (to the local store) and ensure it arrives on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"Other title"
+                       URL:@"https://other.url.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
 }
 
 @end

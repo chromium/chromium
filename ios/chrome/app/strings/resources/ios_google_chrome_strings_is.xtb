@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
 <translation id="1105362920864247682">Hreinsa vefskoðunargögn í Chrome.</translation>
 <translation id="1113057722807951993">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og heimilisföng frá Google Pay.
@@ -40,13 +41,13 @@ Hafðu í huga:
 <translation id="1682483655351012182">Samstilla gögnin þín í Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Bæta innteknum vefslóðum við bókamerkin þín í Chrome.</translation>
+<translation id="1799920918471566157">Ábendingar fyrir Chrome</translation>
 <translation id="1830634592642484976">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Notaðu Chrome sjálfkrafa þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="1910975740091000991">Chrome fyrir iOS</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
 <translation id="1965935827552890526">Ljúktu því sem þú ert að gera í öðrum opnum Chrome glugga.</translation>
 <translation id="1987779152850321833">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best.</translation>
-<translation id="2008357574463816229">Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Komdu meiru í verk með einfaldari, öruggari og hraðari Google Chrome.</translation>
 <translation id="2120238739383482109">Opnar bókamerki Chrome.</translation>
 <translation id="2147651015520127414">Chrome staðfesti að <ph name="ISSUER" /> gaf út vottorð þessa vefsvæðis.</translation>
@@ -75,6 +76,7 @@ Hafðu í huga:
 <translation id="2702250627063295552">Bæta leslistaatriði við Chrome</translation>
 <translation id="2736805085127235148">Slökkt er á Chrome-tilkynningum í stillingum tækisins.</translation>
 <translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
+<translation id="2789947168960170215">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Hreinsa vefskoðunargögn í Chrome</translation>
 <translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
@@ -86,7 +88,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="309672519329227863">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum.</translation>
 <translation id="3146109040683991651">Nota Chrome sem sjálfgefinn vafra</translation>
-<translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
+<translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google-reikning til að skrá þig inn.</translation>
 <translation id="3173834708294760622">Google Chrome síða</translation>
 <translation id="322254490661677575">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
@@ -98,7 +100,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="3577555362230509265">Notaðu Chrome í öðrum forritum.</translation>
-<translation id="3594076341410558780">Fela „Nýttu þér Chrome til fulls“</translation>
 <translation id="364480321352456989">Chrome er úrelt</translation>
 <translation id="3646736009628185125">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chrome og samstilla aðgangsorðin sín. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Þetta þýðir að Chrome biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
@@ -204,7 +205,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="686691656039982452">Þú getur <ph name="BEGIN_LINK" />stjórnað því hvaða Chrome-gögn eru vistuð<ph name="END_LINK" /> á Google-reikningnum þínum.
 
 Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum. Hægt er að breyta þessu í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Leita með röddinni í Chrome</translation>
 <translation id="6964931465519938134">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="6975725306479268850">Velja Chrome fyrir sjálfvirka útfyllingu</translation>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
@@ -15,7 +16,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -102,7 +102,7 @@ class CampaignsManagerClientTest : public testing::Test {
 
 TEST_F(CampaignsManagerClientTest, LoadCampaignsComponent) {
   campaigns_manager_client_->LoadCampaignsComponent(base::BindLambdaForTesting(
-      [](const absl::optional<const base::FilePath>& file_path) {
+      [](const std::optional<const base::FilePath>& file_path) {
         // ASSERT_TRUE(file_path.has_value());
         ASSERT_TRUE(file_path.has_value());
         ASSERT_EQ(file_path.value().value(),
@@ -117,7 +117,7 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponent) {
 
 TEST_F(CampaignsManagerClientTest, LoadCampaignsComponentFailed) {
   campaigns_manager_client_->LoadCampaignsComponent(base::BindLambdaForTesting(
-      [](const absl::optional<const base::FilePath>& file_path) {
+      [](const std::optional<const base::FilePath>& file_path) {
         ASSERT_FALSE(file_path.has_value());
       }));
 

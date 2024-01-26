@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Services>SignIn"
 }
-
 team_email: "chrome-signin-team@google.com"
+buganizer_public: {
+  component_id: 1456393
+}

@@ -26,23 +26,12 @@
 // Extend this class with new events as necessary.
 @interface SceneObservingAppAgent : ObservingAppAgent <SceneStateObserver>
 
-// For convenience overridable events below, the events will not be delivered
-// until this stage is reached. The default is Final.
-@property(nonatomic, assign) InitStage minimumStageForNotifications;
-
-// For convenience overridable events below, will call events such as "some
-// scene is foreground" if the conditions are met when the minimum init stage is
-// reached. The default is YES.
-@property(nonatomic, assign) BOOL notifyOfPastEventsWhenMinimumStageReached;
-
 // Overridable methods.
 
 // Called when the app enters foreground, e.g. any scene is foreground.
-// See also minimumStageForNotifications.
 - (void)appDidEnterForeground;
 
 // Called when the app enters background, e.g. no scene is foreground.
-// See also minimumStageForNotifications.
 - (void)appDidEnterBackground;
 
 // Require super calls for overriden observer callbacks:

@@ -17,9 +17,18 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kComposeWebviewElementId);
 class ComposeDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(ComposeDialogView, WebUIBubbleDialogView)
  public:
+  static constexpr int kComposeDialogWorkAreaPadding = 16;
+  static constexpr int kComposeDialogAnchorPadding = 0;
+
+  static constexpr int kComposeMaxDialogHeightPx = 366;
+  static constexpr int kComposeMaxDialogWidthPx = 448;
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeDialogId);
 
- public:
+  static gfx::Rect CalculateBubbleBounds(gfx::Rect screen_work_area,
+                                         const gfx::Size& widget_size,
+                                         gfx::Rect anchor_bounds);
+
   explicit ComposeDialogView(
       View* anchor_view,
       std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,

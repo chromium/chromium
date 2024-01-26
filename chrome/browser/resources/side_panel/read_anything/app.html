@@ -14,7 +14,7 @@
     width: 100%;
   }
 
-  #flex-parent {
+  #flexParent {
     height: 100%;
     width: 100%;
     display: flex;
@@ -71,9 +71,10 @@
     background-color: transparent;
   }
 </style>
-<div id="flex-parent" on-keydown="onKeyDown_">
+<div id="flexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
-    <read-anything-toolbar id="toolbar"></read-anything-toolbar>
+    <read-anything-toolbar paused="[[paused]]" id="toolbar">
+    </read-anything-toolbar>
   </div>
   <div id="container-parent" class="sp-card sp-scroller"
        hidden="[[!hasContent_]]">

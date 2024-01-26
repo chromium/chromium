@@ -36,7 +36,6 @@ public class UsageStatsService {
 
     private Profile mProfile;
     private EventTracker mEventTracker;
-    private NotificationSuspender mNotificationSuspender;
     private SuspensionTracker mSuspensionTracker;
     private TokenTracker mTokenTracker;
     private UsageStatsBridge mBridge;
@@ -84,8 +83,7 @@ public class UsageStatsService {
         mProfile = Profile.getLastUsedRegularProfile();
         mBridge = new UsageStatsBridge(mProfile, this);
         mEventTracker = new EventTracker(mBridge);
-        mNotificationSuspender = new NotificationSuspender(mProfile);
-        mSuspensionTracker = new SuspensionTracker(mBridge, mNotificationSuspender);
+        mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
         mClient = AppHooks.get().createDigitalWellbeingClient();
@@ -100,8 +98,8 @@ public class UsageStatsService {
         mOptInState = getOptInState();
     }
 
-    /* package */ NotificationSuspender getNotificationSuspender() {
-        return mNotificationSuspender;
+    public SuspensionTracker getSuspensionTracker() {
+        return mSuspensionTracker;
     }
 
     /**
@@ -220,7 +218,8 @@ public class UsageStatsService {
                                             (exceptionInner) -> {
                                                 Log.e(
                                                         TAG,
-                                                        "Failed to clear all events for history deletion");
+                                                        "Failed to clear all events for history"
+                                                                + " deletion");
                                             });
                         });
     }
@@ -245,7 +244,8 @@ public class UsageStatsService {
                                             (exceptionInner) -> {
                                                 Log.e(
                                                         TAG,
-                                                        "Failed to clear range of events for history deletion");
+                                                        "Failed to clear range of events for"
+                                                                + " history deletion");
                                             });
                         });
     }
@@ -266,7 +266,8 @@ public class UsageStatsService {
                                             (exceptionInner) -> {
                                                 Log.e(
                                                         TAG,
-                                                        "Failed to clear domain events for history deletion");
+                                                        "Failed to clear domain events for history"
+                                                                + " deletion");
                                             });
                         });
     }

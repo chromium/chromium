@@ -4,7 +4,9 @@
 
 #include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 
-#include <windows.h>
+// clang-format off
+#include <windows.h> // Must be in front of other Windows header files.
+// clang-format on
 
 #include <softpub.h>
 #include <wincrypt.h>

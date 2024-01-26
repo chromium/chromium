@@ -32,6 +32,7 @@ class AppsGridView;
 class AppListModel;
 class PaginationModel;
 class AppListItemView;
+class SearchResultListView;
 
 // Accesses ash data for app list view testing.
 class ASH_EXPORT AppListTestApi {
@@ -179,6 +180,9 @@ class ASH_EXPORT AppListTestApi {
 
   // Updates launcher search box content, and triggers search.
   void SimulateSearch(const std::u16string& query);
+
+  // Returns the top visible search result list view.
+  SearchResultListView* GetTopVisibleSearchResultListView();
 
   // App list sort related methods ---------------------------------------------
 

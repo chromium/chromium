@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
+
+import java.util.function.Consumer;
 
 /** Properties defined here reflect the state of the AccountSelection-components. */
 class AccountSelectionProperties {
@@ -99,8 +102,8 @@ class AccountSelectionProperties {
             public String mIdpForDisplay;
             public GURL mTermsOfServiceUrl;
             public GURL mPrivacyPolicyUrl;
-            public Runnable mTermsOfServiceClickRunnable;
-            public Runnable mPrivacyPolicyClickRunnable;
+            public Consumer<Context> mTermsOfServiceClickCallback;
+            public Consumer<Context> mPrivacyPolicyClickCallback;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =

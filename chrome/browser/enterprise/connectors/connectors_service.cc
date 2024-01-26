@@ -127,20 +127,20 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-absl::optional<std::string> GetDeviceDMToken() {
+std::optional<std::string> GetDeviceDMToken() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const chromeos::BrowserParamsProxy* init_params =
       chromeos::BrowserParamsProxy::Get();
   if (init_params->DeviceProperties()) {
     return init_params->DeviceProperties()->device_dm_token;
   }
-  return absl::nullopt;
+  return std::nullopt;
 #else
   const enterprise_management::PolicyData* policy_data =
       ash::DeviceSettingsService::Get()->policy_data();
   if (policy_data && policy_data->has_request_token())
     return policy_data->request_token();
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 #endif
@@ -186,15 +186,15 @@ ConnectorsService::ConnectorsService(content::BrowserContext* context,
 
 ConnectorsService::~ConnectorsService() = default;
 
-absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
+std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     ReportingConnector connector) {
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       connectors_manager_->GetReportingSettings(connector);
   if (!settings.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context_);
@@ -202,7 +202,7 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     // The device dm token includes additional information like a device id,
     // which is relevant for reporting and should only be used for
     // IncludeDeviceInfo==true.
-    absl::optional<std::string> device_dm_token = GetDeviceDMToken();
+    std::optional<std::string> device_dm_token = GetDeviceDMToken();
     if (device_dm_token.has_value()) {
       settings.value().dm_token = device_dm_token.value();
       settings.value().per_profile = false;
@@ -210,9 +210,9 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     }
   }
 #endif
-  absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   settings.value().dm_token = dm_token.value().value;
   settings.value().per_profile =
@@ -221,15 +221,15 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   return settings;
 }
 
-absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
+std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   DCHECK_NE(connector, AnalysisConnector::FILE_TRANSFER);
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (IsURLExemptFromAnalysis(url))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
     GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.path());
@@ -242,13 +242,13 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
+std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     AnalysisConnector connector) {
   DCHECK_EQ(connector, AnalysisConnector::FILE_TRANSFER);
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetCommonAnalysisSettings(
       connectors_manager_->GetAnalysisSettings(context_, source_url,
@@ -257,24 +257,24 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-absl::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
-    absl::optional<AnalysisSettings> settings,
+std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
+    std::optional<AnalysisSettings> settings,
     AnalysisConnector connector) {
   if (!settings.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   if (settings->cloud_or_local_settings.is_local_analysis()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 #endif
 
-  absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
 
   if (is_cloud) {
     if (!dm_token.has_value())
-      return absl::nullopt;
+      return std::nullopt;
 
     absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
         .dm_token = dm_token.value().value;
@@ -330,20 +330,20 @@ bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
   return connectors_manager_->DelayUntilVerdict(connector);
 }
 
-absl::optional<std::u16string> ConnectorsService::GetCustomMessage(
+std::optional<std::u16string> ConnectorsService::GetCustomMessage(
     AnalysisConnector connector,
     const std::string& tag) {
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   return connectors_manager_->GetCustomMessage(connector, tag);
 }
 
-absl::optional<GURL> ConnectorsService::GetLearnMoreUrl(
+std::optional<GURL> ConnectorsService::GetLearnMoreUrl(
     AnalysisConnector connector,
     const std::string& tag) {
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   return connectors_manager_->GetLearnMoreUrl(connector, tag);
 }
@@ -378,7 +378,7 @@ std::string ConnectorsService::GetManagementDomain() {
   if (!ConnectorsEnabled())
     return std::string();
 
-  absl::optional<policy::PolicyScope> scope = absl::nullopt;
+  std::optional<policy::PolicyScope> scope = std::nullopt;
   for (const char* scope_pref :
        {prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
         ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
@@ -386,7 +386,7 @@ std::string ConnectorsService::GetManagementDomain() {
         ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
         ConnectorScopePref(AnalysisConnector::PRINT),
         ConnectorScopePref(ReportingConnector::SECURITY_EVENT)}) {
-    absl::optional<DmToken> dm_token = GetDmToken(scope_pref);
+    std::optional<DmToken> dm_token = GetDmToken(scope_pref);
     if (dm_token.has_value()) {
       scope = dm_token.value().scope;
 
@@ -431,23 +431,23 @@ std::string ConnectorsService::GetManagementDomain() {
 #endif
 }
 
-absl::optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
+std::optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
     const {
   if (!ConnectorsEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) ==
       safe_browsing::REAL_TIME_CHECK_DISABLED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<DmToken> dm_token =
+  std::optional<DmToken> dm_token =
       GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
 
   if (dm_token.has_value())
     return dm_token.value().value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 safe_browsing::EnterpriseRealTimeUrlCheckMode
@@ -475,7 +475,7 @@ ConnectorsService::DmToken& ConnectorsService::DmToken::operator=(DmToken&&) =
     default;
 ConnectorsService::DmToken::~DmToken() = default;
 
-absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
+std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS the settings from primary profile applies to all profiles.
@@ -493,26 +493,26 @@ absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
 #endif
 }
 
-absl::optional<ConnectorsService::DmToken>
-ConnectorsService::GetBrowserDmToken() const {
+std::optional<ConnectorsService::DmToken> ConnectorsService::GetBrowserDmToken()
+    const {
   policy::DMToken dm_token =
       policy::GetDMToken(Profile::FromBrowserContext(context_));
 
   if (!dm_token.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<ConnectorsService::DmToken>
-ConnectorsService::GetProfileDmToken() const {
+std::optional<ConnectorsService::DmToken> ConnectorsService::GetProfileDmToken()
+    const {
   Profile* profile = Profile::FromBrowserContext(context_);
 
   policy::UserCloudPolicyManager* policy_manager =
       profile->GetUserCloudPolicyManager();
   if (!policy_manager || !policy_manager->IsClientRegistered()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return DmToken(policy_manager->core()->client()->dm_token(),

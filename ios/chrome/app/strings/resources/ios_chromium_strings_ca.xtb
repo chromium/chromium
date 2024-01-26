@@ -81,7 +81,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
-<translation id="3478750326643748149">Amaga "Treu el màxim profit de Chromium"</translation>
 <translation id="347967311580159871">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La contrasenya no s'ha compartit. Comprova la connexió a Internet i assegura't que tens la sessió iniciada a Chromium. Després, torna-ho a provar.</translation>
 <translation id="3554027294407525061">Esborra les dades de navegació a Chromium.</translation>
@@ -101,9 +100,9 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Obre Chromium des de qualsevol aplicació</translation>
-<translation id="4002314982058020967">Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Obre i executa la comprovació de seguretat a Chromium.</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
+<translation id="4076589763479456892">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4106512142782407609">Has iniciat la sessió com a <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="4408912345039114853">Executa la comprovació de seguretat de Chromium</translation>
 <translation id="4432744876818348753">Inicia la sessió per treure el màxim profit de Chromium.</translation>
 <translation id="4445228361214254027">La teva organització ha desactivat l'opció de fer servir i desar dades de Chromium al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
-<translation id="4485517920713468480">Chromium detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Afegeix a la llista de lectura de Chromium els URL introduïts.</translation>
 <translation id="452436063477828504">Assegura't de poder utilitzar sempre les dades de Chromium al teu Compte de Google</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="5534584691915394889">S'utilitzarà per crear esdeveniments al teu Calendari d'Apple des de Chromium i Google Lens.</translation>
 <translation id="5571094606370987472">Obre les pestanyes recents de Chromium.</translation>
 <translation id="5623083843656850677">Bloqueja les pestanyes d'incògnit quan surtis de Chromium o quan canviïs d'aplicació.</translation>
+<translation id="5671188105328420281">Consells per a Chromium</translation>
 <translation id="5688047395118852662">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chromium.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
@@ -284,6 +283,7 @@ Aspectes que cal tenir en compte:
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
 <translation id="88376265765385899">Obre les adreces d'interès de Chromium.</translation>
 <translation id="8860548555286245440">Obre els URL en mode d'incògnit a Chromium</translation>
+<translation id="8866191443434488382">Chromium detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Chromium per oferir aquesta funció i millorar les funcions de compra per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium per a iOS</translation>
 <translation id="8924617840944134898">Obre una pestanya d'incògnit de Chromium</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>

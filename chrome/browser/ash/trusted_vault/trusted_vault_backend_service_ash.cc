@@ -125,7 +125,7 @@ void TrustedVaultBackendServiceAsh::ClearLocalDataForAccount(
 
 bool TrustedVaultBackendServiceAsh::ValidateAccountKeyIsPrimaryAccount(
     const crosapi::mojom::AccountKeyPtr& mojo_account_key) const {
-  const absl::optional<account_manager::AccountKey> account_key =
+  const std::optional<account_manager::AccountKey> account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   if (!account_key.has_value()) {
     return false;

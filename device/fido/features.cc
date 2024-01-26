@@ -102,11 +102,6 @@ BASE_FEATURE(kWebAuthConditionalUIExperimentation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnCableViaCredMan,
-             "WebAuthenticationCableViaCredMan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthnLinkingExperimentation,
              "WebAuthenticationLinkingExperimentation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -116,40 +111,15 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnCachePaaSK,
-             "WebAuthenticationCachePaaSK",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnDontPrelinkInProfiles,
-             "WebAuthenticationDontPrelinkInProfiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled in M120. Remove in or after M123.
 BASE_FEATURE(kWebAuthnNewPasskeyUI,
              "WebAuthenticationNewPasskeyUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnSortRecognizedCredentials,
-             "WebAuthenticationSortRecognizedCredentials",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries,
-             "WebAuthenticationRequestUIForComplexDiscoveries",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
              "WebAuthenticationFilterGooglePasskeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnPINProtocolInHMACSecret,
-             "WebAuthenticationPINProtocolInHMACSecret",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M119. Remove in or after M122.
@@ -197,6 +167,11 @@ BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
 // Default enabled in M122. Remove in or after M125.
 BASE_FEATURE(kWebAuthnAndroidFidoJson,
              "WebAuthenticationAndroidFidoJson",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Default enabled in M123. Remove in or after M126.
+BASE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator,
+             "WebAuthenticationPreferVirtualPlatformAuthenticator",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

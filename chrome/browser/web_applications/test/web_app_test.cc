@@ -46,6 +46,6 @@ content::BrowserContext* WebAppTest::GetBrowserContext() {
   return profile();
 }
 
-web_app::FakeWebAppProvider& WebAppTest::fake_provider() {
+web_app::FakeWebAppProvider& WebAppTest::fake_provider() const {
   return *web_app::FakeWebAppProvider::Get(profile());
 }

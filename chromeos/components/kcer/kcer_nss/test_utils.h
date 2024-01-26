@@ -49,8 +49,8 @@ class TokenHolder {
 };
 
 // Compares two KerPermissions, returns true if they are equal.
-bool KeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
-                         const std::optional<chaps::KeyPermissions>& b);
+bool ExpectKeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
+                               const std::optional<chaps::KeyPermissions>& b);
 
 // Verifies `signature` created with `signing_scheme` and the public key from
 // `spki` for `data_to_sign`. By default (with `strict` == true) only returns

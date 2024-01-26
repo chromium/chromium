@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "content/public/browser/visibility.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using mojom::LifecycleUnitDiscardReason;
 
@@ -126,7 +126,7 @@ class TabStatsDataStore : public TabStatsObserver {
       base::SampleMetadata("NumberOfTabs", base::SampleMetadataScope::kProcess);
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

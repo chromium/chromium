@@ -28,7 +28,6 @@ import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,11 +84,6 @@ public class SelectFileDialogTest {
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION, false);
         FeatureList.setTestFeatures(featureMap);
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     private void runAllAsyncTasks() {

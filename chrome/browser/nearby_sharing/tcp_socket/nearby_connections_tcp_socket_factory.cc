@@ -14,7 +14,7 @@
 
 NearbyConnectionsTcpSocketFactory::ConnectTask::ConnectTask(
     network::mojom::NetworkContext* network_context,
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -45,8 +45,8 @@ void NearbyConnectionsTcpSocketFactory::ConnectTask::Run(
 
 void NearbyConnectionsTcpSocketFactory::ConnectTask::OnFinished(
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -67,8 +67,8 @@ void NearbyConnectionsTcpSocketFactory::ConnectTask::OnFinished(
 void NearbyConnectionsTcpSocketFactory::ConnectTask::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
-  OnFinished(net::ERR_TIMED_OUT, /*local_addr=*/absl::nullopt,
-             /*peer_addr=*/absl::nullopt,
+  OnFinished(net::ERR_TIMED_OUT, /*local_addr=*/std::nullopt,
+             /*peer_addr=*/std::nullopt,
              /*receive_stream=*/mojo::ScopedDataPipeConsumerHandle(),
              /*send_stream=*/mojo::ScopedDataPipeProducerHandle());
 }
@@ -90,7 +90,7 @@ void NearbyConnectionsTcpSocketFactory::CreateTCPServerSocket(
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
   if (!network_context) {
-    std::move(callback).Run(net::ERR_FAILED, /*local_addr=*/absl::nullopt);
+    std::move(callback).Run(net::ERR_FAILED, /*local_addr=*/std::nullopt);
     return;
   }
   auto options = network::mojom::TCPServerSocketOptions::New();
@@ -105,7 +105,7 @@ void NearbyConnectionsTcpSocketFactory::CreateTCPServerSocket(
 
 void NearbyConnectionsTcpSocketFactory::CreateTCPConnectedSocket(
     base::TimeDelta timeout,
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -116,8 +116,8 @@ void NearbyConnectionsTcpSocketFactory::CreateTCPConnectedSocket(
       network_context_getter_.Run();
   if (!network_context) {
     std::move(callback).Run(
-        net::ERR_FAILED, /*local_addr=*/absl::nullopt,
-        /*peer_addr=*/absl::nullopt,
+        net::ERR_FAILED, /*local_addr=*/std::nullopt,
+        /*peer_addr=*/std::nullopt,
         /*receive_stream=*/mojo::ScopedDataPipeConsumerHandle(),
         /*send_stream=*/mojo::ScopedDataPipeProducerHandle());
     return;
@@ -139,7 +139,7 @@ void NearbyConnectionsTcpSocketFactory::CreateTCPConnectedSocket(
 void NearbyConnectionsTcpSocketFactory::OnTcpServerSocketCreated(
     CreateTCPServerSocketCallback callback,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   std::move(callback).Run(result, local_addr);
 }
 
@@ -147,8 +147,8 @@ void NearbyConnectionsTcpSocketFactory::OnTcpConnectedSocketCreated(
     base::UnguessableToken task_id,
     CreateTCPConnectedSocketCallback callback,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   std::move(callback).Run(result, local_addr, peer_addr,

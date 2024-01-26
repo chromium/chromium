@@ -19,7 +19,11 @@ PermissionRequestData::PermissionRequestData(
       user_gesture(request_description.user_gesture),
       embedded_permission_element_initiated(
           request_description.embedded_permission_element_initiated),
-      requesting_origin(canonical_requesting_origin) {}
+      requesting_origin(canonical_requesting_origin),
+      requested_audio_capture_device_ids(
+          request_description.requested_audio_capture_device_ids),
+      requested_video_capture_device_ids(
+          request_description.requested_video_capture_device_ids) {}
 
 PermissionRequestData::PermissionRequestData(PermissionContextBase* context,
                                              const PermissionRequestID& id,

@@ -303,9 +303,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
-                      .SetBorder(views::CreateEmptyBorder(
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+                      // Override the hover button border since we are adding
+                      // vertical spacing in between menu items.
+                      .SetBorder(views::CreateEmptyBorder(gfx::Insets(0)))
                       .SetTooltipText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))),
           // Secondary row.

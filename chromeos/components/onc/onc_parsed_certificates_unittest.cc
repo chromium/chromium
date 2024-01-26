@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +22,7 @@ class OncParsedCertificatesTest : public testing::Test {
 
  protected:
   std::unique_ptr<OncParsedCertificates> ReadFromJSON(
-      base::StringPiece onc_certificates_json) {
+      std::string_view onc_certificates_json) {
     std::optional<base::Value> onc_certificates =
         base::JSONReader::Read(onc_certificates_json);
     if (!onc_certificates || !onc_certificates->is_list()) {

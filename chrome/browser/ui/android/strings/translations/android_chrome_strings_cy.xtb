@@ -146,6 +146,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1792959175193046959">Gallwch newid y lleoliad lawrlwytho diofyn ar unrhyw adeg</translation>
 <translation id="1796666869097395659">Lleihau'r tab i ddychwelyd ato'n hwyrach ymlaen</translation>
 <translation id="1807246157184219062">Golau</translation>
+<translation id="1807709131360304325">Agor ffenestr newydd</translation>
 <translation id="1810845389119482123">Mae'r gosodiad cysoni cychwynnol heb ei orffen</translation>
 <translation id="1812027881030482584">Ni all <ph name="SITE_ETLD_PLUS_ONE" /> barhau trwy ddefnyddio <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
@@ -189,6 +190,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2056878612599315956">Cafodd y wefan ei seibio</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad wedi methu}zero{Mae # lawrlwythiad wedi methu}two{Mae # lawrlwythiad wedi methu}few{Mae # lawrlwythiad wedi methu}many{Mae # lawrlwythiad wedi methu}other{Mae # lawrlwythiad wedi methu}}</translation>
 <translation id="2067805253194386918">testun</translation>
+<translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2082238445998314030">Canlyniad <ph name="RESULT_NUMBER" /> o <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Wrthi'n dangos gwedd gryno</translation>
 <translation id="2093731487903423814">15 munud diwethaf</translation>
@@ -218,7 +220,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="223356358902285214">Gweithgarwch ar y We ac Apiau</translation>
 <translation id="2234827758954819389">Canllaw Preifatrwydd</translation>
 <translation id="2239812875700136898">Rheoli'ch straeon o'r botwm Dewisiadau ar gyfer Discover</translation>
-<translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2247789808226901522">Mae'r cerdyn wedi darfod</translation>
 <translation id="2248941474044011069">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google</translation>
 <translation id="2249635629516220541">Addaswch y wybodaeth a ddefnyddir gan wefannau i ddangos hysbysebion i chi</translation>
@@ -233,7 +234,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2318045970523081853">Tapiwch i wneud galwad</translation>
 <translation id="2321086116217818302">Wrthi'n paratoi cyfrineiriau…</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
-<translation id="2327226657832576859">Agor ffeiliau PDF yn awtomatig?</translation>
 <translation id="2328985652426384049">Methu â mewngofnodi</translation>
 <translation id="2341410551640223969">Methu â gosod <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Cyfanswm y data a ddefnyddir gan Chrome, gan gynnwys cyfrifon, nodau tudalen, a gosodiadau sydd wedi'u cadw</translation>
@@ -316,6 +316,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2777555524387840389"><ph name="SECONDS" /> eiliad ar ôl</translation>
 <translation id="2779651927720337254">wedi methu</translation>
 <translation id="2781151931089541271">1 eiliad ar ôl</translation>
+<translation id="2789486458103222910">Iawn</translation>
 <translation id="2800066122460699237">Bydd y tab <ph name="TAB_TITLE" /> yn cael ei gau</translation>
 <translation id="281504910091592009">Gweld a rheoli cyfrineiriau sydd wedi'u cadw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Mae dewislen cardiau'r ffrwd wedi ei hagor ar hanner uchder</translation>
@@ -354,7 +355,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2946420957526726953">Wrthi'n diweddaru Chrome i gysylltu â dyfeisiau eraill</translation>
 <translation id="2951071800649516099">Ychwanegu tudalennau at eich rhestr ddarllen ar gyfer nes ymlaen</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> dudalen sydd heb ei darllen}zero{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}two{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> dudalen sydd heb eu darllen}few{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}many{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> thudalen sydd heb eu darllen}other{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}}</translation>
-<translation id="2961210776189273067">Teitl</translation>
 <translation id="296370266220139811">Arbed amser a theipio llai</translation>
 <translation id="2977350910003566746">Wrthi'n trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="297771753501244313">Trefnu yn ôl agorwyd ddiwethaf</translation>
@@ -600,6 +600,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Rheolwr Cyfrineiriau</translation>
 <translation id="4307992518367153382">Hanfodion</translation>
+<translation id="4311652497846705514">Agor PDF?</translation>
 <translation id="4320177379694898372">Dim cysylltiad rhyngrwyd</translation>
 <translation id="433213510553688132">Yn dilyn...</translation>
 <translation id="4335835283689002019">Mae Pori'n Ddiogel wedi'i ddiffodd</translation>
@@ -639,7 +640,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4523326818319942067">awr olaf</translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
 <translation id="4532845899244822526">Dewis ffolder</translation>
-<translation id="4541505619120536051">Bob amser ar agor</translation>
 <translation id="4543131175509360848">Dalen dim codau pas</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}two{<ph name="TAB_COUNT_MANY" /> dab, <ph name="TAB_COUNT_INCOGNITO" /> dab anhysbys}few{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}many{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}}</translation>
 <translation id="4554077758708533499">Wedi cysylltu â chebl USB</translation>
@@ -831,7 +831,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5486841595534124508">Logo hysbysiad preifatrwydd ar gyfer hwb mewnwelediadau'r dudalen sy'n ailgyfeirio i fy nhudalen gweithgarwch.</translation>
 <translation id="5487521232677179737">Clirio data</translation>
 <translation id="5492637351392383067">Amgryptio ar y ddyfais</translation>
-<translation id="5509866835115085009">Gall Chrome agor PDF yn awtomatig pan fyddwch chi'n eu lawrlwytho.</translation>
 <translation id="5514904542973294328">Wedi'i analluogi gan weinyddwr y ddyfais hon</translation>
 <translation id="5515439363601853141">Datglowch i weld eich cyfrinair</translation>
 <translation id="5517095782334947753">Mae gennych nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5962718611393537961">Tapiwch i grebachu</translation>
 <translation id="5964869237734432770">Stopio disgrifio lluniau</translation>
 <translation id="5966233851250124270">Bydd Chrome yn cofio eich dewis</translation>
+<translation id="5977976211062815271">Ar y ddyfais hon</translation>
 <translation id="5979084224081478209">Gwirio cyfrineiriau</translation>
 <translation id="5995726099713306770">Lawrlwytho'r dudalen eto?</translation>
 <translation id="6000066717592683814">Cadw Google</translation>
@@ -1302,6 +1302,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7810647596859435254">Agor gyda…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Pob ffeil, 1 ffeil yn y rhestr}zero{Pob ffeil, # ffeiliau yn y rhestr}two{Pob ffeil, # ffeil yn y rhestr}few{Pob ffeil, # ffeil yn y rhestr}many{Pob ffeil, # ffeil yn y rhestr}other{Pob ffeil, # ffeil yn y rhestr}}</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
+<translation id="7821130663268546430">Gallwch ddod o hyd i'r holl dabiau agored yn y newidiwr tabiau</translation>
 <translation id="7822705602465980873">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="78270725016672455">Mae eich cyfrifiadur eisiau cofrestru'r ddyfais hon i fewngofnodi i wefan</translation>
 <translation id="7844171778363018843">Ni ddewiswyd unrhyw ddata i'w cysoni</translation>
@@ -1329,6 +1330,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7942131818088350342">Mae <ph name="PRODUCT_NAME" /> yn hen.</translation>
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
 <translation id="7947953824732555851">Derbyn a mewngofnodi</translation>
+<translation id="7951102827450076904">Agor ffeiliau PDF sydd wedi'u lawrlwytho bob amser</translation>
 <translation id="7957413488482743710">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botwm yn ôl mewnwelediadau tudalen</translation>
 <translation id="7961926449547174351">Rydych wedi analluogi mynediad Storio, ewch i'r Gosodiadau i'w alluogi.</translation>

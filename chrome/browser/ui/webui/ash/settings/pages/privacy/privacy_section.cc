@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -511,10 +512,14 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT},
       {"manageMicPermissionsInChromeText",
        IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT},
+      {"manageLocationPermissionsInChromeText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT},
       {"noWebsiteCanUseCameraText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT},
       {"noWebsiteCanUseMicText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT},
+      {"noWebsiteCanUseLocationText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_LOCATION_TEXT},
       {"privacyHubAppsSectionTitle",
        IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE},
       {"privacyHubPermissionAllowedText",
@@ -527,8 +532,50 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT},
       {"noAppCanUseCameraText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT},
-      {"blockedForAllText", IDS_OS_SETTINGS_PRIVACY_HUB_BLOCKED_FOR_ALL_TEXT},
+      {"noAppCanUseGeolocationText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT},
+      {"privacyHubCameraAccessBlockedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_ACCESS_BLOCKED_TEXT},
+      {"privacyHubMicrophoneAccessBlockedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_ACCESS_BLOCKED_TEXT},
+      {"privacyHubSystemServicesSectionTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE},
+      {"privacyHubSystemServicesAllowedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT},
+      {"privacyHubSystemServicesBlockedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT},
+      {"privacyHubSensorNameWithBlockedSuffix",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX},
+      {"privacyHubCameraAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubLocationAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_LOCATION_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubMicrophoneAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubAppPermissionRowAriaDescription",
+       IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ARIA_DESCRIPTION},
+      {"privacyHubAppPermissionRowAndroidSettingsLinkAriaDescription",
+       IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION},
+      {"privacyHubSystemServicesAutomaticTimeZoneName",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME},
+      {"privacyHubSystemServicesSunsetScheduleName",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_NAME},
+      {"privacyHubSystemServicesLocalWeatherName",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_LOCAL_WEATHER_NAME},
+      {"privacyHubSystemServicesDarkThemeName",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_DARK_THEME_NAME},
+      {"privacyHubPageCameraRowSubtext",
+       IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT},
+      {"privacyHubPageCameraRowFallbackSubtext",
+       IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_FALLBACK_SUBTEXT},
+      {"privacyHubPageMicrophoneRowSubtext",
+       IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT},
+      {"privacyHubNoCameraConnectedTooltipText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_NO_CAMERA_CONNECTED_TOOLTIP_TEXT},
+      {"privacyHubNoMicrophoneConnectedTooltipText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_TOOLTIP_TEXT},
   };
+
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("isSnoopingProtectionEnabled",
@@ -573,6 +620,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("geolocationAreaLearnMoreURL",
                          chrome::kGeolocationAreaLearnMoreURL);
+
+  html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);

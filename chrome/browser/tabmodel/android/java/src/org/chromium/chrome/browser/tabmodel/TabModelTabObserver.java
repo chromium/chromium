@@ -71,8 +71,9 @@ public class TabModelTabObserver extends EmptyTabObserver {
     }
 
     private void maybeCallOnTabSelected() {
-        if (mTabModel.index() != TabList.INVALID_TAB_INDEX) {
-            onTabSelected(mTabModel.getTabAt(mTabModel.index()));
+        Tab tab = mTabModel.getTabAt(mTabModel.index());
+        if (tab != null) {
+            onTabSelected(tab);
         }
     }
 }

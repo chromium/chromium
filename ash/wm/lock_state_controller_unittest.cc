@@ -25,13 +25,18 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/test/test_session_state_animator.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -1025,6 +1030,86 @@ TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
   loop.Run();
   EXPECT_FALSE(lock_state_controller_->animating_lock_for_test());
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+}
+
+class LockStateControllerPineTest : public LockStateControllerTest {
+ public:
+  LockStateControllerPineTest() {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+  }
+  LockStateControllerPineTest(const LockStateControllerPineTest&) = delete;
+  LockStateControllerPineTest& operator=(const LockStateControllerPineTest&) =
+      delete;
+  ~LockStateControllerPineTest() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
+
+  // LockStateControllerTest:
+  void SetUp() override {
+    LockStateControllerTest::SetUp();
+
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    file_path_ = temp_dir_.GetPath().AppendASCII("test_pine.png");
+    SetPineImagePathForTest(file_path_);
+  }
+
+  void TearDown() override {
+    SetPineImagePathForTest(base::FilePath());
+    LockStateControllerTest::TearDown();
+  }
+
+  const base::FilePath& file_path() const { return file_path_; }
+
+ private:
+  base::ScopedAllowBlockingForTesting allow_blocking_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath file_path_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
+};
+
+// Tests that a pine image is taken when there are windows open.
+TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
+  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+  run_loop.Run();
+
+  // The pine image was taken and not empty.
+  EXPECT_TRUE(base::PathExists(file_path()));
+  int64_t file_size = 0;
+  ASSERT_TRUE(base::GetFileSize(file_path(), &file_size));
+  EXPECT_GT(file_size, 0);
+
+  auto* local_state = Shell::Get()->local_state();
+  // Pine screenshot related durations were recorded.
+  const base::TimeDelta screenshot_taken_duration =
+      local_state->GetTimeDelta(prefs::kPineScreenshotTakenDuration);
+  EXPECT_FALSE(screenshot_taken_duration.is_zero());
+  const base::TimeDelta screenshot_encode_and_save_duration =
+      local_state->GetTimeDelta(prefs::kPineScreenshotEncodeAndSaveDuration);
+  EXPECT_FALSE(screenshot_encode_and_save_duration.is_zero());
+}
+
+// Tests that no pine image is taken when there are no windows opened and the
+// existing pine image should be deleted.
+TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
+  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+  run_loop.Run();
+
+  // Existing pine image was deleted.
+  EXPECT_FALSE(base::PathExists(file_path()));
 }
 
 }  // namespace ash

@@ -166,10 +166,8 @@ bool AreLocalAndRemotePasswordsEqualExcludingIssues(
              remote_password_specifics.avatar_url() &&
          local_password_specifics.federation_url() ==
              remote_password_specifics.federation_url() &&
-         (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)
-              ? PasswordNotesFromProto(local_password_specifics.notes()) ==
-                    PasswordNotesFromProto(remote_password_specifics.notes())
-              : true);
+         PasswordNotesFromProto(local_password_specifics.notes()) ==
+             PasswordNotesFromProto(remote_password_specifics.notes());
 }
 
 // Returns true iff |remote_password_specifics| and |local_password_specifics|
@@ -364,8 +362,7 @@ PasswordSyncBridge::PasswordSyncBridge(
     } else if (syncer::IsInitialSyncDone(
                    batch->GetModelTypeState().initial_sync_state()) &&
                !batch->GetModelTypeState()
-                    .notes_enabled_before_initial_sync_for_passwords() &&
-               base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+                    .notes_enabled_before_initial_sync_for_passwords()) {
       // The browser has just been upgraded to a version that supports password
       // notes. Therefore, the metadata are cleared to enforce the initial sync
       // flow and download any potential passwords notes on the server. The
@@ -376,18 +373,6 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
-    } else if (syncer::IsInitialSyncDone(
-                   batch->GetModelTypeState().initial_sync_state()) &&
-               batch->GetModelTypeState()
-                   .notes_enabled_before_initial_sync_for_passwords() &&
-               !base::FeatureList::IsEnabled(
-                   syncer::kPasswordNotesWithBackup)) {
-      // The feature was enabled before, but not anymore (e.g. due to experiment
-      // ramp-down). Clear the flag to enforce the initial sync flow when the
-      // feature is enabled again.
-      sync_pb::ModelTypeState model_state = batch->GetModelTypeState();
-      model_state.set_notes_enabled_before_initial_sync_for_passwords(false);
-      batch->SetModelTypeState(model_state);
     } else if (DoesPasswordStoreContainAccidentalBatchDeletions(
                    password_store_sync_->IsAccountStore(),
                    batch->GetAllMetadata())) {

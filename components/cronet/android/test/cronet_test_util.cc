@@ -48,20 +48,6 @@ jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
       ->contains(jnetwork_handle);
 }
 
-void JNI_CronetTestUtil_FlushWritePropertiesForTesting(JNIEnv* env,
-                                                       jlong jcontext_adapter) {
-  base::WaitableEvent wait_for_callback;
-  TestUtil::GetTaskRunner(jcontext_adapter)
-      ->PostTask(
-          FROM_HERE, base::BindLambdaForTesting([&]() {
-            TestUtil::GetURLRequestContext(jcontext_adapter)
-                ->http_server_properties()
-                ->FlushWritePropertiesForTesting(base::BindLambdaForTesting(
-                    [&wait_for_callback]() { wait_for_callback.Signal(); }));
-          }));
-  wait_for_callback.Wait();
-}
-
 // static
 base::flat_map<net::handles::NetworkHandle,
                std::unique_ptr<net::URLRequestContext>>*

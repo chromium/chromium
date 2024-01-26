@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
+
 namespace web {
 
 class WebClient;
@@ -21,7 +23,7 @@ class ScopedTestingWebClient {
 
  private:
   std::unique_ptr<WebClient> web_client_;
-  WebClient* original_web_client_;
+  raw_ptr<WebClient> original_web_client_;
 };
 
 }  // namespace web

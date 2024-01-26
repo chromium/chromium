@@ -257,12 +257,12 @@ void CWSInfoService::Shutdown() {
   info_check_timer_.Stop();
 }
 
-absl::optional<bool> CWSInfoService::IsLiveInCWS(
+std::optional<bool> CWSInfoService::IsLiveInCWS(
     const Extension& extension) const {
   const base::Value::Dict* cws_info_dict =
       extension_prefs_->ReadPrefAsDict(extension.id(), kCWSInfo);
   if (cws_info_dict == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!cws_info_dict->FindBool(kIsPresent).value_or(false)) {
     return false;
@@ -270,12 +270,12 @@ absl::optional<bool> CWSInfoService::IsLiveInCWS(
   return cws_info_dict->FindBool(kIsLive).value_or(false);
 }
 
-absl::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
+std::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
     const Extension& extension) const {
   const base::Value::Dict* cws_info_dict =
       extension_prefs_->ReadPrefAsDict(extension.id(), kCWSInfo);
   if (cws_info_dict == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   CWSInfo info;
   info.is_present = cws_info_dict->FindBool(kIsPresent).value_or(false);
@@ -300,7 +300,7 @@ absl::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
         cws_info_dict->FindBool(kNoPrivacyPractice).value_or(false);
   }
 
-  return absl::make_optional<CWSInfo>(info);
+  return std::make_optional<CWSInfo>(info);
 }
 
 void CWSInfoService::CheckAndMaybeFetchInfo() {

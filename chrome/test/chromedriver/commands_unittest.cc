@@ -58,7 +58,7 @@ void OnGetStatus(const Status& status,
   ASSERT_EQ(kOk, status.code());
   base::Value::Dict* dict = value->GetIfDict();
   ASSERT_TRUE(dict);
-  absl::optional<bool> ready = dict->FindBool("ready");
+  std::optional<bool> ready = dict->FindBool("ready");
   ASSERT_TRUE(ready.has_value() && ready.value());
   ASSERT_TRUE(dict->Find("message"));
   AssertGetStatusExtendedData(dict);

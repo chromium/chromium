@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -65,19 +65,19 @@ void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,
                                         base::Value(gaia_id));
 }
 
-absl::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
+std::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
     const std::string& extension_id) {
   std::string gaia_id;
   if (!extension_prefs_->ReadPrefAsString(extension_id, kIdentityGaiaIdPref,
                                           &gaia_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return gaia_id;
 }
 
 void IdentityAPI::EraseGaiaIdForExtension(const std::string& extension_id) {
   extension_prefs_->UpdateExtensionPref(extension_id, kIdentityGaiaIdPref,
-                                        absl::nullopt);
+                                        std::nullopt);
 }
 
 void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
@@ -88,7 +88,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
   std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
   for (const ExtensionId& extension_id : extension_prefs_->GetExtensions()) {
-    absl::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
+    std::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;
     if (!base::Contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {

@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1434873037477293673">Оповещение о скидках</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
 <translation id="1510341833810331442">Сайтам запрещено сохранять данные на вашем устройстве</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="2790501146643349491">Когда этот параметр включен, недавно закрытые сайты могут завершать отправку и получение данных. Когда параметр отключен, недавно закрытым сайтам запрещено это делать.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Запрашивать мобильную версию</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Запретить сайтам использовать устройство и данные виртуальной реальности</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
+<translation id="6452138246455930388">На одной из открытых вкладок появилась скидка. Цена снизилась с <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" />. Товар: "<ph name="PRODUCT_NAME" />", домен: <ph name="DOMAIN_NAME" />.</translation>
 <translation id="6500423977866688905">Запрашивать мобильную версию, если окно узкое</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="652937045869844725">Попробуйте разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="6749077623962119521">Сбросить разрешения?</translation>
 <translation id="6766622839693428701">Проведите вниз, чтобы закрыть панель.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> С устройства "<ph name="FROM_DEVICE" />"</translation>
 <translation id="6787751205395685251">Выберите значение для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6818926723028410516">Выберите объекты</translation>
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
+<translation id="6867014948848323204">Источник: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Блокировать сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6950072572526089586">Для обеспечения правильной работы сайты могут сохранять информацию о ваших действиях на них. Например, это делается, чтобы вам не приходилось вновь входить в аккаунт или повторно добавлять товары в корзину. Часто такая информация временно хранится на вашем устройстве.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Удивительный волшебник из страны Оз</translation>
 <translation id="7684642910516280563">Запретите сайту использовать сторонние файлы cookie.</translation>
 <translation id="7719367874908701697">Масштабирование страницы</translation>
+<translation id="7770832849480336015">Скрыть "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>

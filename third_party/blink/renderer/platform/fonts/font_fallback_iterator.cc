@@ -14,10 +14,10 @@ namespace blink {
 
 FontFallbackIterator::FontFallbackIterator(
     const FontDescription& description,
-    scoped_refptr<FontFallbackList> fallback_list,
+    FontFallbackList* fallback_list,
     FontFallbackPriority font_fallback_priority)
     : font_description_(description),
-      font_fallback_list_(std::move(fallback_list)),
+      font_fallback_list_(fallback_list),
       current_font_data_index_(0),
       segmented_face_index_(0),
       fallback_stage_(kFontGroupFonts),

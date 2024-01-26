@@ -19,17 +19,17 @@ namespace optimization_guide {
 namespace {
 
 // Parses the optimization target from |custom_data|.
-absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+std::optional<proto::OptimizationTarget> ParseOptimizationTarget(
     const download::DownloadParams::CustomData& custom_data) {
   const auto target_it =
       custom_data.find(kPredictionModelOptimizationTargetCustomDataKey);
   if (target_it == custom_data.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   proto::OptimizationTarget optimization_target;
   if (!proto::OptimizationTarget_Parse(target_it->second,
                                        &optimization_target)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return optimization_target;
 }

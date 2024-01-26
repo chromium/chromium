@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "net/base/url_util.h"
 

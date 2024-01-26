@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
                                        webapps::InstallResultCode code) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(installed_app_id,
-                    web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url));
+                    web_app::GenerateAppId(/*manifest_id=*/std::nullopt, url));
           callback_called = true;
         }));
 

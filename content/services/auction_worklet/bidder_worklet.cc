@@ -1258,12 +1258,6 @@ BidderWorklet::V8State::GenerateSingleBid(
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
   if (!interest_group_dict.Set("owner", owner_.Serialize()) ||
       !interest_group_dict.Set("name", bidder_worklet_non_shared_params.name) ||
-      // TODO(https://crbug.com/1517121): This field is deprecated in favor of
-      // "enableBiddingSignalsPrioritization". Remove this when it can be done
-      // safely.
-      !interest_group_dict.Set("useBiddingSignalsPrioritization",
-                               bidder_worklet_non_shared_params
-                                   .enable_bidding_signals_prioritization) ||
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
@@ -1361,6 +1355,14 @@ BidderWorklet::V8State::GenerateSingleBid(
            "forDebuggingOnlyInCooldownOrLockout",
            bidding_browser_signals
                ->for_debugging_only_in_cooldown_or_lockout)) ||
+      // `adComponentsLimit` is reported only when the corresponding change
+      // is rolled out, to avoid affecting behavior if it's not.
+      (base::FeatureList::IsEnabled(
+           blink::features::kFledgeCustomMaxAuctionAdComponents) &&
+       !browser_signals_dict.Set(
+           "adComponentsLimit",
+           // Cast to help gin on mac.
+           static_cast<uint64_t>(blink::MaxAdAuctionAdComponents()))) ||
       (base::FeatureList::IsEnabled(
            blink::features::kFledgePassRecencyToGenerateBid) &&
        !browser_signals_dict.Set("recency",

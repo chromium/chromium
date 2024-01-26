@@ -5,8 +5,9 @@
 /**
  * @fileoverview Default implementation for TTS in the background context.
  */
-import {constants} from '../../common/constants.js';
-import {LocalStorage} from '../../common/local_storage.js';
+import {constants} from '/common/constants.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
@@ -747,7 +748,9 @@ export class PrimaryTts extends AbstractTts {
       properties.lang = chrome.i18n.getUILanguage();
     }
 
-    const phoneticText = PhoneticData.forCharacter(text, properties.lang);
+    const phoneticText = text.length === 1 ?
+        PhoneticData.forCharacter(text, properties.lang) :
+        PhoneticData.forText(text, properties.lang);
     if (phoneticText) {
       properties.delay = true;
       this.speak(phoneticText, ttsTypes.QueueMode.QUEUE, properties);

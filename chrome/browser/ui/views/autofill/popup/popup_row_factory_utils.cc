@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -100,8 +101,10 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       views::MenuConfig::instance().touchable_menu_height);
 
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(suggestion.main_text,
-                                            views::style::STYLE_SECONDARY);
+      popup_cell_utils::CreateMainTextLabel(
+          suggestion.main_text, ShouldApplyNewAutofillPopupStyle()
+                                    ? views::style::TextStyle::STYLE_BODY_3
+                                    : views::style::TextStyle::STYLE_SECONDARY);
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->TrackLabel(view->AddChildView(std::move(main_text_label)));
 
@@ -168,8 +171,8 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          suggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
+      popup_cell_utils::CreateMainTextLabel(suggestion.main_text,
+                                            GetPrimaryTextStyle());
   main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
 
   popup_cell_utils::AddSuggestionContentToView(
@@ -209,9 +212,8 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
     FillingProduct main_filling_product) {
   auto view = std::make_unique<PopupRowContentView>();
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          suggestion.main_text,
-          GetMainTextStyleForPopupItemId(suggestion.popup_item_id));
+      popup_cell_utils::CreateMainTextLabel(suggestion.main_text,
+                                            GetPrimaryTextStyle());
   popup_cell_utils::FormatLabel(
       *main_text_label, suggestion.main_text, main_filling_product,
       popup_cell_utils::GetMaxPopupAddressProfileWidth());
@@ -235,9 +237,8 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
 
   const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          kSuggestion.main_text,
-          GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
+      popup_cell_utils::CreateMainTextLabel(kSuggestion.main_text,
+                                            GetPrimaryTextStyle());
   popup_cell_utils::FormatLabel(
       *main_text_label, kSuggestion.main_text,
       controller->GetMainFillingProduct(),

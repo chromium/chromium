@@ -72,14 +72,19 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
-  std::vector<blink::mojom::SpeculationCandidatePtr> prerender_candidates;
+  std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
+      prerender_candidates;
   for (const auto& candidate : candidates) {
-    if (candidate->action == blink::mojom::SpeculationAction::kPrerender)
-      prerender_candidates.push_back(candidate.Clone());
+    if (candidate->action == blink::mojom::SpeculationAction::kPrerender) {
+      prerender_candidates.emplace_back(prerender_candidates.size(),
+                                        candidate.Clone());
+    }
   }
-  base::ranges::sort(prerender_candidates, std::less<>(),
-                     &blink::mojom::SpeculationCandidate::url);
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_to_start;
+
+  base::ranges::stable_sort(prerender_candidates, std::less<>(),
+                            [](const auto& p) { return p.second->url; });
+  std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
+      candidates_to_start;
 
   // Collects the host ids corresponding to the URLs that are removed from the
   // speculation rules. These hosts are cancelled later.
@@ -102,11 +107,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // Select the lesser of the two URLs to diff.
     GURL url;
     if (started_it == started_prerenders_.end())
-      url = (*candidate_it)->url;
+      url = candidate_it->second->url;
     else if (candidate_it == prerender_candidates.end())
       url = started_it->url;
     else
-      url = std::min((*candidate_it)->url, started_it->url);
+      url = std::min(candidate_it->second->url, started_it->url);
 
     // Select the ranges from both that match the URL in question.
     auto equal_prerender_end = base::ranges::find_if(
@@ -116,9 +121,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
                                                   equal_prerender_end);
     auto equal_candidate_end = base::ranges::find_if(
         candidate_it, prerender_candidates.end(),
-        [&](const auto& candidate) { return candidate->url != url; });
-    base::span<blink::mojom::SpeculationCandidatePtr> matching_candidates(
-        candidate_it, equal_candidate_end);
+        [&](const auto& candidate) { return candidate.second->url != url; });
+    base::span<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
+        matching_candidates(candidate_it, equal_candidate_end);
 
     // Decide what started prerenders to cancel.
     for (PrerenderInfo& prerender : matching_prerenders) {
@@ -175,8 +180,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     });
   }
 
-  // Actually start the candidates once the diffing is done.
-  for (const auto& candidate : candidates_to_start) {
+  // Actually start the candidates in their original order once the diffing is
+  // done.
+  base::ranges::sort(candidates_to_start, std::less<>(),
+                     [](const auto& p) { return p.first; });
+  for (const auto& [_, candidate] : candidates_to_start) {
     MaybePrerender(candidate);
   }
 }

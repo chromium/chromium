@@ -99,7 +99,7 @@ class MockOutputControllerSyncReader : public OutputController::SyncReader {
                void(base::TimeDelta delay,
                     base::TimeTicks delay_timestamp,
                     const media::AudioGlitchInfo& glitch_info));
-  MOCK_METHOD2(Read, void(AudioBus* dest, bool is_mixing));
+  MOCK_METHOD2(Read, bool(AudioBus* dest, bool is_mixing));
   MOCK_METHOD0(Close, void());
 };
 
@@ -323,6 +323,7 @@ ACTION(PopulateBuffer) {
   // Note: To confirm the buffer will be populated in these tests, it's
   // sufficient that only the first float in channel 0 is set to the value.
   arg0->channel(0)[0] = kBufferNonZeroData;
+  return true;
 }
 
 class OutputControllerTest : public ::testing::Test {
@@ -371,6 +372,7 @@ class OutputControllerTest : public ::testing::Test {
           data->Zero();
           data->channel(0)[0] = kBufferNonZeroData;
           barrier.Run();
+          return true;
         }))
         .WillRepeatedly(PopulateBuffer());
 

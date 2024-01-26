@@ -888,6 +888,46 @@ void CheckOutput(
               top_frame_origin, context_origin));
       return;
     }
+    case (OutputKey::kIsSharedStorageAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in IsSharedStorageAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
+
+    case (OutputKey::kIsSharedStorageSelectURLAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in "
+          "IsSharedStorageSelectURLAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageSelectURLDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
   }
 }
 
@@ -906,68 +946,6 @@ MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() {
 
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
     default;
-
-void SetupTestState(
-    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
-    HostContentSettingsMap* map,
-    bool block_third_party_cookies,
-    ContentSetting default_cookie_setting,
-    const std::vector<CookieContentSettingException>& user_cookie_exceptions,
-    ContentSetting managed_cookie_setting,
-    const std::vector<CookieContentSettingException>&
-        managed_cookie_exceptions) {
-  // Setup block-third-party-cookies settings.
-  testing_pref_service->SetUserPref(
-      prefs::kCookieControlsMode,
-      base::Value(static_cast<int>(
-          block_third_party_cookies
-              ? content_settings::CookieControlsMode::kBlockThirdParty
-              : content_settings::CookieControlsMode::kOff)));
-
-  // Setup cookie content settings.
-  auto user_provider = std::make_unique<content_settings::MockProvider>();
-  auto managed_provider = std::make_unique<content_settings::MockProvider>();
-
-  if (default_cookie_setting != kNoSetting) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(default_cookie_setting),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
-  }
-
-  for (const auto& exception : user_cookie_exceptions) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(exception.primary_pattern),
-        ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
-  }
-
-  if (managed_cookie_setting != kNoSetting) {
-    managed_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(managed_cookie_setting),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
-  }
-
-  for (const auto& exception : managed_cookie_exceptions) {
-    managed_provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(exception.primary_pattern),
-        ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
-  }
-
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(user_provider), HostContentSettingsMap::DEFAULT_PROVIDER);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(managed_provider),
-      HostContentSettingsMap::POLICY_PROVIDER);
-}
 
 void RunTestCase(
     content::BrowserTaskEnvironment* task_environment,

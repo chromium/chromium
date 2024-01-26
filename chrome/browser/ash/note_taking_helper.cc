@@ -401,7 +401,7 @@ void NoteTakingHelper::LaunchAppForNewNote(Profile* profile) {
 }
 
 void NoteTakingHelper::OnIntentFiltersUpdated(
-    const absl::optional<std::string>& package_name) {
+    const std::optional<std::string>& package_name) {
   if (play_store_enabled_)
     UpdateAndroidApps();
 }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests that disabling device emulation restores back to original values.');
 
   var DeviceEmulator = await testRunner.loadScript('../resources/device-emulator.js');

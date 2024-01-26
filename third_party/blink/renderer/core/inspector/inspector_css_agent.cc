@@ -1118,8 +1118,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         protocol::CSS::PseudoElementMatches::create()
             .setPseudoType(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
-            .setMatches(
-                BuildArrayForMatchedRuleList(match->matched_rules, element))
+            .setMatches(BuildArrayForMatchedRuleList(
+                match->matched_rules, element, match->pseudo_id,
+                match->view_transition_name))
             .build());
     if (match->view_transition_name) {
       pseudo_id_matches->value().back()->setPseudoIdentifier(
@@ -1625,8 +1626,12 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
         "Node is not an element and does not have a parent element");
   }
 
+  TRACE_EVENT1("devtools", "InspectorCSSAgent::getComputedStyleForNode", "node",
+               element->DebugName());
   auto* computed_style_info =
       MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
+  CSSComputedStyleDeclaration::ScopedCleanStyleForAllProperties
+      clean_style_scope(computed_style_info);
   *style = std::make_unique<
       protocol::Array<protocol::CSS::CSSComputedStyleProperty>>();
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
@@ -2933,21 +2938,26 @@ protocol::CSS::StyleSheetOrigin InspectorCSSAgent::DetectOrigin(
 
 std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
     CSSStyleRule* rule,
-    Element* element) {
+    Element* element,
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
   InspectorStyleSheet* inspector_style_sheet = InspectorStyleSheetForRule(rule);
   if (!inspector_style_sheet)
     return nullptr;
 
   std::unique_ptr<protocol::CSS::CSSRule> result =
-      inspector_style_sheet->BuildObjectForRuleWithoutAncestorData(rule,
-                                                                   element);
+      inspector_style_sheet->BuildObjectForRuleWithoutAncestorData(
+          rule, element, pseudo_id, pseudo_argument);
   FillAncestorData(rule, result.get());
   return result;
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list,
-                                                Element* element) {
+InspectorCSSAgent::BuildArrayForMatchedRuleList(
+    RuleIndexList* rule_list,
+    Element* element,
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
   auto result = std::make_unique<protocol::Array<protocol::CSS::RuleMatch>>();
   if (!rule_list)
     return result;
@@ -2973,7 +2983,7 @@ InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list,
   for (auto it = uniq_rules.rbegin(); it != uniq_rules.rend(); ++it) {
     CSSStyleRule* rule = it->Get();
     std::unique_ptr<protocol::CSS::CSSRule> rule_object =
-        BuildObjectForRule(rule, element);
+        BuildObjectForRule(rule, element, pseudo_id, pseudo_argument);
     if (!rule_object)
       continue;
 

@@ -47,6 +47,11 @@
 #include "crypto/nss_util_internal.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/initialize_extensions_client.h"
 #include "extensions/common/extension_paths.h"
@@ -56,7 +61,7 @@
 namespace extensions {
 class ContextData;
 }  // namespace extensions
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -106,6 +111,9 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
+    web_app::SetTrustedWebBundleIdsForTesting({});
+#endif  // !BUILDFLAG(IS_ANDROID)
     browser_shutdown::ResetShutdownGlobalsForTesting();
   }
 };

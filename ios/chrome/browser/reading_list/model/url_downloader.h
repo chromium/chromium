@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #include "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
@@ -178,9 +179,10 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // needed.
   SuccessState SavePDFFile(const base::FilePath& temporary_path);
 
-  reading_list::ReadingListDistillerPageFactory* distiller_page_factory_;
-  dom_distiller::DistillerFactory* distiller_factory_;
-  PrefService* pref_service_;
+  raw_ptr<reading_list::ReadingListDistillerPageFactory>
+      distiller_page_factory_;
+  raw_ptr<dom_distiller::DistillerFactory> distiller_factory_;
+  raw_ptr<PrefService> pref_service_;
   const DownloadCompletion download_completion_;
   const SuccessCompletion delete_completion_;
 

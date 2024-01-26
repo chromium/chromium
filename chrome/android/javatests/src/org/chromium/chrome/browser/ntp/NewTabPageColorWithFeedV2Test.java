@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
@@ -29,8 +30,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -113,8 +112,12 @@ public class NewTabPageColorWithFeedV2Test {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testTextBoxBackgroundColor() throws Exception {
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:polish_omnibox_color/false"
+    })
+    public void testTextBoxBackgroundColor_SurfacePolishOmniboxColorDisabled() throws Exception {
         RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
         Context context = mActivityTestRule.getActivity();

@@ -171,6 +171,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = "try/linux-rel",
@@ -200,6 +201,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = {
@@ -229,6 +231,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = "try/win-rel",
@@ -258,6 +261,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = {
@@ -290,6 +294,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
     gn_args = "try/linux-chromeos-rel",
@@ -320,6 +325,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
     gn_args = {
@@ -466,6 +472,7 @@ This builder measures build performance for Linux developer builds, by simulatin
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = {
@@ -498,6 +505,7 @@ This builder measures build performance for Windows developer builds, by simulat
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = {
@@ -530,6 +538,7 @@ This builder measures build performance for Mac developer builds, by simulating 
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = {
@@ -541,6 +550,43 @@ This builder measures build performance for Mac developer builds, by simulating 
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
+        short_name = "dev",
+    ),
+    reclient_jobs = 800,
+)
+
+developer_build_perf_builder(
+    name = "ios-build-perf-developer",
+    description_html = """\
+This builder measures build performance for iOS developer builds, by simulating developer build scenarios on a bot.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
+    gn_args = {
+        "ninja": gn_args.config(configs = ["ios_developer", "reclient", "no_siso"]),
+        "siso_reproxy": gn_args.config(configs = ["ios_developer", "reclient"]),
+        "siso_native": gn_args.config(configs = ["ios_developer"]),
+    },
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios",
         short_name = "dev",
     ),
     reclient_jobs = 800,

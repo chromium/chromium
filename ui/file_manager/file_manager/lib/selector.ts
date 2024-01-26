@@ -9,7 +9,7 @@
 
 import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 
-import {isDebugStoreEnabled} from '../common/js/util.js';
+import {isDebugStoreEnabled} from './base_store.js';
 
 type Callback<T> = (value: T) => void;
 type Unsubscribe = () => void;

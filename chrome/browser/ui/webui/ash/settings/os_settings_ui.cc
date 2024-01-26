@@ -49,7 +49,6 @@
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/cellular_setup_impl.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -328,11 +327,6 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    mojo::ReportBadMessage(
-        "Jelly not enabled: OSSettingsUI should not listen to color changes.");
-    return;
-  }
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }

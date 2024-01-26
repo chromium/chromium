@@ -556,7 +556,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementClicked) {
   next_page.Complete("empty");
   ProcessEvents(0);
   // The second page load has no anchor elements and therefore no host is bound.
-  EXPECT_EQ(1u, hosts_.size());
+  ASSERT_EQ(1u, hosts_.size());
   EXPECT_EQ(1u, mock_host->clicks_.size());
 }
 

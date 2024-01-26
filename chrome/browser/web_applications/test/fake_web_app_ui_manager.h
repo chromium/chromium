@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -59,8 +59,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<webapps::AppId>& previous_app_id,
-      const absl::optional<webapps::AppId>& new_app_id) const override {}
+      const std::optional<webapps::AppId>& previous_app_id,
+      const std::optional<webapps::AppId>& new_app_id) const override {}
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
   void ReparentAppTabToWindow(content::WebContents* contents,
@@ -96,7 +96,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
                             base::OnceClosure callback) override;
 
   void DisplayRunOnOsLoginNotification(
-      const std::vector<std::string>& app_names,
+      const base::flat_map<webapps::AppId,
+                           WebAppUiManager::RoolNotificationBehavior>& apps,
       base::WeakPtr<Profile> profile) override;
 #endif
   void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,

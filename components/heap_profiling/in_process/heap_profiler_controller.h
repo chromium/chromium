@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 #define COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
@@ -13,6 +15,11 @@
 #include "components/version_info/channel.h"
 
 namespace heap_profiling {
+
+// If this is enabled, reports with 0 samples (from clients who allocated less
+// than the sampling rate threshold) will be uploaded so that they're included
+// in the average as 0 bytes allocated.
+BASE_DECLARE_FEATURE(kHeapProfilerIncludeZero);
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
@@ -55,6 +62,18 @@ class HeapProfilerController {
   // before Start.
   void SuppressRandomnessForTesting();
 
+  // Sets a callback that will be invoked in tests after StartIfEnabled() is
+  // called. The callback will be called immediately if profiling is disabled,
+  // or when the first snapshot is scheduled if it's enabled. This lets tests
+  // quit a RunLoop once the profiler has a chance to collect a snapshot.
+  //
+  // The callback parameter will be true if a snapshot is to be collected, false
+  // otherwise. If the parameter is true, the test will need to wait for another
+  // callback from CallStackProfileBuilder before the snapshot is actually
+  // collected.
+  void SetFirstSnapshotCallbackForTesting(
+      base::OnceCallback<void(bool)> callback);
+
  private:
   using ProcessType = metrics::CallStackProfileParams::Process;
   using StoppedFlag = base::RefCountedData<base::AtomicFlag>;
@@ -67,7 +86,8 @@ class HeapProfilerController {
                    bool use_random_interval,
                    scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
-                   base::TimeTicks profiler_creation_time);
+                   base::TimeTicks profiler_creation_time,
+                   base::OnceCallback<void(bool)> on_first_snapshot_callback);
     ~SnapshotParams();
 
     // Move-only.
@@ -91,8 +111,13 @@ class HeapProfilerController {
 
     // Time the profiler was created.
     base::TimeTicks profiler_creation_time;
+
+    // A callback to invoke for the first snapshot. Will be null for the
+    // following snapshots.
+    base::OnceCallback<void(bool)> on_first_snapshot_callback;
   };
 
+  // Schedules the next call to TakeSnapshot.
   static void ScheduleNextSnapshot(SnapshotParams params);
 
   // Takes a heap snapshot unless the `params.stopped` flag is set.
@@ -101,9 +126,13 @@ class HeapProfilerController {
   static void TakeSnapshot(SnapshotParams params,
                            base::TimeDelta previous_interval);
 
+  // Processes the most recent snapshot and sends it to CallStackProfileBuilder.
+  // Invokes `on_snapshot_callback` with true if a snapshot will be sent,
+  // false otherwise.
   static void RetrieveAndSendSnapshot(
       ProcessType process_type,
-      base::TimeDelta time_since_profiler_creation);
+      base::TimeDelta time_since_profiler_creation,
+      base::OnceCallback<void(bool)> on_snapshot_callback);
 
   const ProcessType process_type_;
 
@@ -119,6 +148,9 @@ class HeapProfilerController {
   // HeapProfilerController is deleted on the main thread.
   scoped_refptr<StoppedFlag> stopped_;
   bool suppress_randomness_for_testing_ = false;
+
+  // A callback to call before the first scheduled snapshot in tests.
+  base::OnceCallback<void(bool)> on_first_snapshot_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

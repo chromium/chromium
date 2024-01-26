@@ -1,0 +1,36 @@
+// Copyright (c) 2021, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification.CoreMLModels;
+
+/*
+ * A model which takes an input audio and outputs array(s) of features
+ * according to the specified feature types
+ */
+message AudioFeaturePrint {
+  // Specific audio feature print types
+
+  // Sound extracts features useful for identifying the predominant
+  // sound in audio signal
+  message Sound {
+    enum SoundVersion {
+      SOUND_VERSION_INVALID = 0;
+      // VERSION_1 is available on iOS,tvOS 15.0+, macOS 12.0+
+      // It uses a variable-length input audio sample vector and yields a 512
+      // float feature vector
+      SOUND_VERSION_1 = 1;
+    }
+
+    SoundVersion version = 1;
+  }
+
+  // Audio feature print type
+  oneof AudioFeaturePrintType {
+    Sound sound = 20;
+  }
+}

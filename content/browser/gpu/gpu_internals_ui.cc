@@ -713,7 +713,6 @@ base::Value GetDawnInfo() {
 // this class's methods are expected to run on the UI thread.
 class GpuMessageHandler
     : public WebUIMessageHandler,
-      public base::SupportsWeakPtr<GpuMessageHandler>,
       public GpuDataManagerObserver,
       public ui::GpuSwitchingObserver {
  public:

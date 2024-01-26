@@ -115,20 +115,20 @@ void PulseAudioOutputStream::Reset() {
       pa_stream_disconnect(pa_stream_);
       pa_stream_set_write_callback(pa_stream_, nullptr, nullptr);
       pa_stream_set_state_callback(pa_stream_, nullptr, nullptr);
-      pa_stream_unref(pa_stream_);
+      pa_stream_unref(pa_stream_.ExtractAsDangling());
       pa_stream_ = nullptr;
     }
 
     if (pa_context_) {
       pa_context_disconnect(pa_context_);
       pa_context_set_state_callback(pa_context_, nullptr, nullptr);
-      pa_context_unref(pa_context_);
+      pa_context_unref(pa_context_.ExtractAsDangling());
       pa_context_ = nullptr;
     }
   }
 
   pa_threaded_mainloop_stop(pa_mainloop_);
-  pa_threaded_mainloop_free(pa_mainloop_);
+  pa_threaded_mainloop_free(pa_mainloop_.ExtractAsDangling());
   pa_mainloop_ = nullptr;
 }
 

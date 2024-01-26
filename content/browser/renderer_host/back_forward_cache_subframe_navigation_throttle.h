@@ -10,15 +10,15 @@
 
 namespace content {
 
-// BackForwardCacheSubframeNavigationThrottle defers subframe navigation at
-// every possible stage of navigation before commit when the page that the
-// subframe is in is BFCached. For now, this is only for
-// WillCommitWithoutUrlLoader since currently, we allow no-url-loader
-// navigations that haven't yet reached the "pending commit" stage, but disallow
-// any navigations with URLLoaders. This throttle resumes the deferred
-// navigation when a page which contains the subframe is restored from the
-// BFCache. Find more details in https://crbug.com/1511153 See the design doc:
-// https://docs.google.com/document/d/1XLOQuHjCVmBfXAJhgrASkVyrHAK_DGmcYPyrTnOrSPM/edit?usp=sharing&resourcekey=0-uNz75Ux7INdCLhj2FWVILg
+// BackForwardCacheSubframeNavigationThrottle defers subframe navigation before
+// commit when the page that the subframe is in is BFCached. For now, this is
+// only for WillCommitWithoutUrlLoader and WillStartRequest since currently, we
+// allow no-URLLoader navigations that haven't yet reached the "pending commit"
+// stage and navigations that use URLLoader that haven't sent network requests.
+// We disallow any navigations in all other stages when the frame is in
+// BFCache. This throttle resumes the deferred navigation when a page which
+// contains the subframe is restored from the BFCache. Find more details in
+// https://crbug.com/1511153.
 class BackForwardCacheSubframeNavigationThrottle : public NavigationThrottle,
                                                    public WebContentsObserver {
  public:
@@ -34,6 +34,10 @@ class BackForwardCacheSubframeNavigationThrottle : public NavigationThrottle,
 
   // NavigationThrottle
   const char* GetNameForLogging() override;
+  ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillFailRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   ThrottleCheckResult WillCommitWithoutUrlLoader() override;
 
   // WebContentsObserver
@@ -41,6 +45,14 @@ class BackForwardCacheSubframeNavigationThrottle : public NavigationThrottle,
       RenderFrameHost* render_frame_host,
       RenderFrameHost::LifecycleState old_state,
       RenderFrameHost::LifecycleState new_state) override;
+
+  // Defer subframe navigation which hasn't reached "pending commit" stage nor
+  // sent a network request if the frame is in BackForwardCache.
+  NavigationThrottle::ThrottleCheckResult DeferNavigationIfNeeded();
+
+  // Check that navigations that need URLLoader in bfcached page don't hit the
+  // stages after sending network requests.
+  void ConfirmNavigationIsNotInBFCachedFrame();
 
   bool is_deferred_ = false;
 };

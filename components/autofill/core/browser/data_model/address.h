@@ -10,7 +10,9 @@
 
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_store.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 
@@ -55,8 +57,9 @@ class Address : public FormGroup {
   // For structured addresses, returns true if |this| is mergeable with |newer|.
   bool IsStructuredAddressMergeable(const Address& newer) const;
 
-  // Returns a constant reference to |structured_address_|.
-  const AddressComponent& GetStructuredAddress() const;
+  // Returns a constant reference to the structured address' root node (i.e.
+  // ADDRESS_HOME_ADDRESS) from the nodes store.
+  const AddressComponent& GetRoot() const;
 
   // Returns the structured address country code.
   AddressCountryCode GetAddressCountryCode() const;
@@ -83,9 +86,12 @@ class Address : public FormGroup {
   void SetAddressCountryCode(const std::u16string& country_code,
                              VerificationStatus status);
 
-  // This data structure holds the address information if the structured address
-  // feature is enabled.
-  std::unique_ptr<AddressComponent> structured_address_;
+  // Returns a pointer to the structured address' root node (i.e.
+  // ADDRESS_HOME_ADDRESS) from the nodes store.
+  AddressComponent* Root();
+
+  // This data structure holds the structured address information.
+  AddressComponentsStore address_component_store_;
 
   // Whether the structured address uses the legacy hierarchy.
   bool is_legacy_address_ = true;

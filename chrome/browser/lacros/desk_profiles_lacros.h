@@ -34,6 +34,8 @@ class DeskProfilesLacros : public ProfileAttributesStorageObserver,
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void OnProfileHighResAvatarLoaded(
+      const base::FilePath& profile_path) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;

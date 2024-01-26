@@ -172,17 +172,15 @@ declare_args() {
 use_hookable_raw_ptr = use_asan_backup_ref_ptr
 
 declare_args() {
-  # - put_ref_count_in_previous_slot: place the ref-count at the end of the
-  #   previous slot (or in metadata if a slot starts on the page boundary), as
-  #   opposed to end of the same slot.
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
   # - enable_dangling_raw_ptr_checks: enable checking raw_ptr do not become
   #   dangling during their lifetime.
   # - backup_ref_ptr_poison_oob_ptr: poison out-of-bounds (OOB) pointers to
   #   generate an exception in the event that an OOB pointer is dereferenced.
-  put_ref_count_in_previous_slot =
-      put_ref_count_in_previous_slot_default && enable_backup_ref_ptr_support
+  # - enable_backup_ref_ptr_instance_tracer: use a global table to track all
+  #   live raw_ptr/raw_ref instances to help debug dangling pointers at test
+  #   end.
 
   enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks_default && enable_backup_ref_ptr_support
@@ -220,6 +218,8 @@ declare_args() {
 
   # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
   backup_ref_ptr_poison_oob_ptr = false
+
+  enable_backup_ref_ptr_instance_tracer = false
 }
 
 declare_args() {
@@ -250,21 +250,15 @@ if (!use_partition_alloc) {
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
   use_hookable_raw_ptr = false
-  put_ref_count_in_previous_slot = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
+  enable_dangling_raw_ptr_feature_flag = false
   enable_dangling_raw_ptr_perf_experiment = false
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
+  enable_backup_ref_ptr_instance_tracer = false
   use_starscan = false
 }
-
-# put_ref_count_in_previous_slot can only be used if
-# enable_backup_ref_ptr_support is true.
-assert(
-    enable_backup_ref_ptr_support || !put_ref_count_in_previous_slot,
-    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled " +
-        "at all")
 
 # enable_backup_ref_ptr_slow_checks can only be used if
 # enable_backup_ref_ptr_support is true.
@@ -276,6 +270,11 @@ assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
 assert(
     enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
     "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
+
+# It's meaningless to force on DPD (e.g. on bots) if the support isn't compiled
+# in.
+assert(enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_feature_flag,
+       "Meaningless to enable DPD without it compiled.")
 
 # To run the dangling raw_ptr detector experiment, the underlying feature must
 # be enabled too.

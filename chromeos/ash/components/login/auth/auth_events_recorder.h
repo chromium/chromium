@@ -129,8 +129,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
                                      int num_login_attempts);
 
   // Report which auth factors the user has configured.
-  void RecordUserAuthFactors(
-      const std::vector<cryptohome::AuthFactorType>& auth_factors) const;
+  void RecordSessionAuthFactors(const SessionAuthFactors& auth_factors) const;
 
   // Report the result of the recovery and time taken to UMA.
   void OnRecoveryDone(CryptohomeRecoveryResult result,

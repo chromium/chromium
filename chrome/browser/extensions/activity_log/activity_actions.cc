@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/dom_action_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace constants = activity_log_constants;
@@ -29,7 +29,7 @@ namespace extensions {
 
 namespace {
 
-std::string Serialize(absl::optional<base::ValueView> value) {
+std::string Serialize(std::optional<base::ValueView> value) {
   std::string value_as_text;
   if (!value) {
     value_as_text = "null";
@@ -76,7 +76,7 @@ scoped_refptr<Action> Action::Clone() const {
   return clone;
 }
 
-void Action::set_args(absl::optional<base::Value::List> args) {
+void Action::set_args(std::optional<base::Value::List> args) {
   args_ = std::move(args);
 }
 
@@ -95,7 +95,7 @@ void Action::set_arg_url(const GURL& arg_url) {
   arg_url_ = arg_url;
 }
 
-void Action::set_other(absl::optional<base::Value::Dict> other) {
+void Action::set_other(std::optional<base::Value::Dict> other) {
   other_ = std::move(other);
 }
 
@@ -184,7 +184,7 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
 
   if (other()) {
     result.other.emplace();
-    if (absl::optional<bool> prerender =
+    if (std::optional<bool> prerender =
             other()->FindBool(constants::kActionPrerender)) {
       result.other->prerender = *prerender;
     }
@@ -196,7 +196,7 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
     const std::string* extra = other()->FindString(constants::kActionExtra);
     if (extra)
       result.other->extra = *extra;
-    if (absl::optional<int> dom_verb =
+    if (std::optional<int> dom_verb =
             other()->FindInt(constants::kActionDomVerb)) {
       switch (static_cast<DomActionType::Type>(dom_verb.value())) {
         case DomActionType::GETTER:

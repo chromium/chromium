@@ -12,9 +12,20 @@ import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
+group("build") {
+  deps = [ ":copied_files" ]
+}
+
 enhanced_network_tts_dir =
     "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
 tsc_out_dir = "$target_gen_dir/tsc"
+
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
 
 # TS files to compile.
 ts_modules = [
@@ -27,8 +38,16 @@ js_deps = []
 
 # Root dir must be parent directory to access common/.
 ts_library("ts_build") {
-  root_dir = "../"
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
+
+  deps = [ "../common:ts_build" ]
+
+  extra_deps = [ ":stage_ts_build" ]
+
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
   definitions = [
     "mojo_bindings_externs.d.ts",
     "../definitions/extensions.d.ts",
@@ -40,19 +59,9 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
-  in_files = []
-  foreach(_js_file, js_deps) {
-    in_files += [ "enhanced_network_tts/" + _js_file ]
-  }
-  foreach(_ts_file, ts_modules) {
-    in_files += [ "enhanced_network_tts/" + _ts_file ]
-  }
+  in_files = ts_modules + js_deps
 
   tsconfig_base = "../tsconfig.base.json"
-}
-
-group("build") {
-  deps = [ ":copied_files" ]
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -68,10 +77,18 @@ run_jsbundler("copied_files") {
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path("$tsc_out_dir/enhanced_network_tts", root_build_dir) + ":",
+    rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 source_set("browser_tests") {

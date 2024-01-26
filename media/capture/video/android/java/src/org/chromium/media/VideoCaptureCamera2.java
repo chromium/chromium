@@ -1149,7 +1149,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         } catch (CameraAccessException
                 | IllegalArgumentException
                 | AssertionError
-                | NullPointerException ex) {
+                | NullPointerException
+                | SecurityException ex) {
             Log.e(TAG, "getCameraCharacteristics: ", ex);
         }
         return null;

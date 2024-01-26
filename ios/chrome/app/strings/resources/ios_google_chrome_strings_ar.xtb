@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1066101356081285416">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". وسيتم إرسال رقم تتبُّع الطرد واسم الموقع الإلكتروني إلى فريق Google لتوفير هذه الميزة وتحسين ميزات التسوّق المقدّمة من Google للجميع. ويمكنك تغيير ذلك في أي وقت في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="1105362920864247682">‏يمكنك محو بيانات التصفُّح في Chrome.</translation>
 <translation id="1113057722807951993">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">‏مزامنة بيانات Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى الإشارات المرجعية في Chrome.</translation>
+<translation id="1799920918471566157">‏معلومات بشأن استخدام متصفِّح Chrome</translation>
 <translation id="1830634592642484976">‏هذا العنوان محفوظ حاليًا في Chrome. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google، <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">‏سيتم فتح Chrome تلقائيًا عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="1910975740091000991">‏متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="1917964099031477364">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chrome وتطبيقات Google الأخرى على هذا الجهاز.</translation>
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
 <translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
-<translation id="2008357574463816229">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Google Chrome السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="2120238739383482109">‏فتح الإشارات المرجعية في Chrome.</translation>
 <translation id="2147651015520127414">‏لقد تحقق Chrome من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني.</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">‏إضافة عنصر "قائمة القراءة" إلى متصفِّح Chrome</translation>
 <translation id="2736805085127235148">‏إنّ إشعارات Chrome غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
+<translation id="2789947168960170215">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">‏محو بيانات التصفُّح في Chrome</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
 <translation id="3522659714780527202">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، فعِّل المزامنة.</translation>
 <translation id="3577555362230509265">‏استخدام Chrome في تطبيقات أخرى</translation>
-<translation id="3594076341410558780">‏إخفاء قائمة "الاستفادة بشكل أفضل من Chrome"</translation>
 <translation id="364480321352456989">‏إصدار Chrome الحالي قديم.</translation>
 <translation id="3646736009628185125">‏لا يمكن لأفراد عائلتك تلقّي كلمات المرور الآن. اطلب منهم تحديث تطبيق Chrome ومزامنة كلمات المرور لديهم. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة.</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">‏يمكنك <ph name="BEGIN_LINK" />إدارة بيانات Chrome التي يتم حفظها<ph name="END_LINK" /> في حسابك على Google.
 
 وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chrome، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". ستتم مشاركة بياناتك مع Google لتوفير هذه الميزة وتحسين خدمة Shopping للجميع. يمكنك تغيير ذلك في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">‏البحث باستخدام الصوت في Chrome</translation>
 <translation id="6964931465519938134">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="6975725306479268850">‏اختيار Chrome للاستفادة من ميزة "الملء التلقائي"</translation>

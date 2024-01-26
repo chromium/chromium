@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -112,7 +113,7 @@ class ArcFeaturesParser {
   // Given an input feature JSON, return ARC features. This method is for
   // testing only.
   static std::optional<ArcFeatures> ParseFeaturesJsonForTesting(
-      base::StringPiece input_json);
+      std::string_view input_json);
 
   // Overrides the ArcFeatures returned by GetArcFeatures, for testing only.
   // Does not take ownership of |getter|, it must be alive when GetArcFeatures

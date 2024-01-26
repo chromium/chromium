@@ -37,18 +37,25 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
   GlanceablesKeyedServiceTest()
       : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
-  TestingProfile* CreateProfile() override {
-    const auto account_id = AccountId::FromUserEmail(kPrimaryProfileName);
+  // BrowserWithTestWindowTest:
+  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
+
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    const auto account_id = AccountId::FromUserEmail(email);
     fake_chrome_user_manager()->AddUser(account_id);
     fake_chrome_user_manager()->LoginUser(account_id);
-    session_controller_client()->AddUserSession(kPrimaryProfileName);
+    session_controller_client()->AddUserSession(email);
     session_controller_client()->SwitchActiveUser(account_id);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
     return profile_manager()->CreateTestingProfile(
-        kPrimaryProfileName, std::move(prefs), u"Test profile", /*avatar_id=*/0,
+        profile_name, std::move(prefs), u"Test profile", /*avatar_id=*/0,
         TestingProfile::TestingFactories(), /*is_supervised_profile=*/false,
         /*is_new_profile=*/std::nullopt, /*policy_service=*/std::nullopt,
         /*is_main_profile=*/true);

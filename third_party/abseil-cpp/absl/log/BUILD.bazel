@@ -119,6 +119,7 @@ cc_library(
         "//absl/base:log_severity",
         "//absl/base:raw_logging_internal",
         "//absl/hash",
+        "//absl/log/internal:vlog_config",
         "//absl/strings",
     ],
 )
@@ -277,6 +278,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":flags",
+        ":globals",
         ":log",
         ":scoped_mock_log",
         ":vlog_is_on",

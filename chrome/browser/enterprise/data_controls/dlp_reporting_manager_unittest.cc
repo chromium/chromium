@@ -12,16 +12,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "components/enterprise/data_controls/rule.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/account_id/account_id.h"
-#include "components/reporting/encryption/primitives.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/rule.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/encryption/primitives.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "content/public/test/browser_task_environment.h"
@@ -73,8 +73,8 @@ class DlpReportingManagerTest : public testing::Test {
       DlpPolicyEventDestination_Component event_component,
       unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern, rule_component,
-                         Rule::Restriction::kClipboard,
-                         Rule::Level::kBlock, kRuleName, kRuleId);
+                         Rule::Restriction::kClipboard, Rule::Level::kBlock,
+                         kRuleName, kRuleId);
 
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].source().url(), kCompanyPattern);
@@ -97,8 +97,7 @@ class DlpReportingManagerTest : public testing::Test {
                                bool is_child = false) {
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, is_child);
-    manager_.ReportEvent(kCompanyPattern,
-                         Rule::Restriction::kPrinting,
+    manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
                          Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
@@ -116,8 +115,7 @@ class DlpReportingManagerTest : public testing::Test {
 
   void ReportEventAndCheckUser(DlpPolicyEvent_UserType dlp_user_type,
                                unsigned int event_number) {
-    manager_.ReportEvent(kCompanyPattern,
-                         Rule::Restriction::kPrinting,
+    manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
                          Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), dlp_user_type);
@@ -154,8 +152,8 @@ TEST_F(DlpReportingManagerTest, ReportEvent) {
 TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   const std::string dst_pattern = "*";
   manager_.ReportEvent(kCompanyPattern, dst_pattern,
-                       Rule::Restriction::kClipboard,
-                       Rule::Level::kBlock, kRuleName, kRuleId);
+                       Rule::Restriction::kClipboard, Rule::Level::kBlock,
+                       kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -194,8 +192,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
 
 TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
   manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
-                       Rule::Level::kBlock, std::string(),
-                       std::string());
+                       Rule::Level::kBlock, std::string(), std::string());
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -211,11 +208,9 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
   base::HistogramTester histogram_tester;
   manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kPrinting,
                        Rule::Level::kBlock, kRuleName, kRuleId);
-  manager_.ReportEvent(kCompanyPattern,
-                       Rule::Restriction::kScreenshot,
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kScreenshot,
                        Rule::Level::kReport, kRuleName, kRuleId);
-  manager_.ReportEvent(kCompanyPattern,
-                       Rule::Restriction::kUnknownRestriction,
+  manager_.ReportEvent(kCompanyPattern, Rule::Restriction::kUnknownRestriction,
                        Rule::Level::kWarn, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 3u);

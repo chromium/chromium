@@ -16,7 +16,11 @@
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 namespace autofill {
 
@@ -60,8 +64,18 @@ class AutofillProviderAndroid : public AutofillProvider,
       "Autofill.WebView.PrefillRequestState";
   // The name of the UMA that is emitted when a form similarity check between a
   // cached form and the interacted form fails.
+  static constexpr char kPrefillRequestBottomsheetNoViewStructureDelayUma[] =
+      "Autofill.WebView.BottomsheetNoViewStructureDelay";
   static constexpr char kSimilarityCheckCacheRequestUma[] =
       "Autofill.WebView.FormSimilarityCheck.CachedForm";
+  // The name of the UMA that is emitted when a form similarity check is run in
+  // OnAskForValuesToFill.
+  static constexpr char kSimilarityCheckAskForValuesToFillUma[] =
+      "Autofill.WebView.FormSimilarityCheck.AskForValuesToFill";
+  // The name of the UMA that is emitted when a form similarity check is run in
+  // OnFocusOnFormField.
+  static constexpr char kSimilarityCheckFocusOnFormFieldUma[] =
+      "Autofill.WebView.FormSimilarityCheck.FocusOnFormField";
 
   static void CreateForWebContents(content::WebContents* web_contents);
 
@@ -175,7 +189,10 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   // Same as `IsLinkedForm`, but also checks that `form` and `form_` are
   // similar, using form similarity checks.
-  bool IsLinkedForm(const FormData& form) const;
+  // If `similarity_metric` is not null, it emits a
+  // `FormDataAndroid::SimilarityCheckResult` with the name `similarity_metric`.
+  bool IsLinkedForm(const FormData& form,
+                    const char* similarity_metric = nullptr);
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
 
@@ -207,6 +224,46 @@ class AutofillProviderAndroid : public AutofillProvider,
   void MaybeSendPrefillRequest(const AndroidAutofillManager& manager,
                                FormGlobalId form_id);
 
+  // Stores field ids for fields detected by `password_manager::FormDataParser`
+  // as username or password fields. Currently used only for prefill requests.
+  struct PasswordParserOverrides {
+    bool operator==(const PasswordParserOverrides&) const = default;
+
+    // Returns the `PasswordParserOverrides` obtained from matching the
+    // `FieldRendererId`s of username and password fields in `pw_form` to the
+    // `FieldGlobalId`s in `form_structure`. Returns `std::nullopt` if no unique
+    // matching could be found. A unique matching may not exist if the form is
+    // spread across multiple iframes. In practice, this should be extremely
+    // rare for password forms.
+    static std::optional<PasswordParserOverrides> FromLoginForm(
+        const password_manager::PasswordForm& pw_form,
+        const FormStructure& form_structure);
+
+    // Creates a map as expected by `FormDataAndroid::UpdateFieldTypes`.
+    base::flat_map<FieldGlobalId, AutofillType> ToFieldTypeMap() const;
+
+    std::optional<FieldGlobalId> username_field_id;
+    std::optional<FieldGlobalId> password_field_id;
+  };
+
+  // Checks whether `form` is similar to the cached form. `form_structure` must
+  // be the `form_structure` corresponding to `form` if it is available (i.e.
+  // cached by the AutofillManager already). The check works as follows:
+  // - If `form_structure` is not null and
+  //   `kAndroidAutofillSignatureForPrefillRequestSimilarityCheck` is enabled,
+  //   the form is parsed using `password_manager::FormDataParser`. The form
+  //   is classified as similar if the fields classified as username and
+  //   passwords match between the cached and the focused form.
+  // - Alternatively, it returns the result of `FormDataAndroid::SimilarFormAs`.
+  bool IsFormSimilarToCachedForm(const FormData& form,
+                                 const FormStructure* form_structure) const;
+
+  // In some cases we get two AskForValuesToFill events within short time frame
+  // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
+  // gets accessed.
+  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
+  void SetBottomSheetShownOff();
+
   // This is used by the keyboard suppressor. We update it with the result of
   // the platform method call `showAutofillDialog`. Since we are not notified
   // when the bottom sheet is dismissed, we set a timer to set it to `false`
@@ -215,14 +272,22 @@ class AutofillProviderAndroid : public AutofillProvider,
   // can currently happen (crbug.com/1490581).
   bool was_bottom_sheet_just_shown_ = false;
 
-  // In some cases we get two AskForValuesToFill events within short time frame
-  // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
-  // gets accessed.
-  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
-  void SetBottomSheetShownOff();
-
   // Sets `was_bottom_sheet_just_shown` to false after a timeout.
   base::OneShotTimer was_shown_bottom_sheet_timer_;
+
+  // Helper struct that contains cache data used in prefill requests.
+  struct CachedData {
+    CachedData();
+    CachedData(CachedData&&);
+    CachedData& operator=(CachedData&&);
+    ~CachedData();
+
+    std::unique_ptr<FormDataAndroid> cached_form;
+    PasswordParserOverrides password_parser_overrides;
+    // The time when the prefill request was sent - used for metrics only.
+    base::TimeTicks prefill_request_creation_time;
+  };
+  std::optional<CachedData> cached_data_;
 
   // The form for which a prefill request has been sent.
   std::unique_ptr<FormDataAndroid> cached_form_;
@@ -236,24 +301,25 @@ class AutofillProviderAndroid : public AutofillProvider,
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
 
-  // Properties of the field of the current session (queried input or changed
-  // select box).
-  FieldGlobalId field_id_;
+  // Properties of the last-focused field of the current session for `form_`
+  // (queried input or changed select box).
+  FieldGlobalId last_focused_field_id_;
   FieldTypeGroup field_type_group_{FieldTypeGroup::kNoGroup};
 
   // The frame of the field for which the last OnAskForValuesToFill() happened.
   //
   // It is not necessarily the same frame as the current session's
-  // `field_id_.host_frame` because the session may survive
+  // `last_focused_field_id_.host_frame` because the session may survive
   // OnAskForValuesToFill().
   //
   // It's not necessarily the same frame as `manager_`'s for the same reason as
-  // `field_id_`, and also because `manager_` may refer to an ancestor frame of
-  // the queried field.
+  // `last_focused_field_id_`, and also because `manager_` may refer to an
+  // ancestor frame of the queried field.
   content::GlobalRenderFrameHostId last_queried_field_rfh_id_;
 
-  // The origin of the field of the current session (cf. `field_id_`). This is
-  // determines which fields are safe to be filled in cross-frame forms.
+  // The origin of the field of the current session (cf.
+  // `last_focused_field_id_`). This is determines which fields are safe to be
+  // filled in cross-frame forms.
   url::Origin triggered_origin_;
   base::WeakPtr<AndroidAutofillManager> manager_;
   bool check_submission_ = false;

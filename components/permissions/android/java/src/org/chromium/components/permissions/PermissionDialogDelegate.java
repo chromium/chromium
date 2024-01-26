@@ -6,11 +6,16 @@ package org.chromium.components.permissions;
 
 import android.graphics.Bitmap;
 
+import androidx.core.util.Pair;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Delegate class for modal permission dialogs. Contains all of the data displayed in a prompt,
@@ -52,6 +57,12 @@ public class PermissionDialogDelegate {
     /** The {@link ContentSettingsType}s requested in this dialog.  */
     private int[] mContentSettingsTypes;
 
+    /**
+     * Defines a (potentially empty) list of ranges represented as pairs of <startIndex, endIndex>,
+     * which shall be used by the UI to format the specified ranges as bold text.
+     */
+    private List<Pair<Integer, Integer>> mBoldedRanges = new ArrayList<>();
+
     public WindowAndroid getWindow() {
         return mWindow;
     }
@@ -70,6 +81,10 @@ public class PermissionDialogDelegate {
 
     public String getMessageText() {
         return mMessageText;
+    }
+
+    public List<Pair<Integer, Integer>> getBoldedRanges() {
+        return mBoldedRanges;
     }
 
     public String getPositiveButtonText() {
@@ -149,6 +164,8 @@ public class PermissionDialogDelegate {
      * @param contentSettingsTypes The content settings types requested by this dialog.
      * @param iconId The id of the icon to display in the dialog.
      * @param message The message to display in the dialog.
+     * @param boldedRanges A list of ranges (pairs of <textOffset, rangeSize>) that should be
+     *     formatted as bold in the message.
      * @param positiveButtonText The text to display on the persistent grant button.
      * @param negativeButtonText The text to display on the persistent deny button.
      * @param positiveEphemeralButtonText The text to display on the ephemeral grant button. May be
@@ -161,15 +178,19 @@ public class PermissionDialogDelegate {
             int[] contentSettingsTypes,
             int iconId,
             String message,
+            int[] boldedRanges,
             String positiveButtonText,
             String negativeButtonText,
             String positiveEphemeralButtonText) {
+        assert (boldedRanges.length % 2 == 0); // Contains a list of offset and length values
+
         return new PermissionDialogDelegate(
                 nativeDelegatePtr,
                 window,
                 contentSettingsTypes,
                 iconId,
                 message,
+                boldedRanges,
                 positiveButtonText,
                 negativeButtonText,
                 positiveEphemeralButtonText);
@@ -182,6 +203,7 @@ public class PermissionDialogDelegate {
             int[] contentSettingsTypes,
             int iconId,
             String message,
+            int[] boldedRanges,
             String positiveButtonText,
             String negativeButtonText,
             String positiveEphemeralButtonText) {
@@ -190,6 +212,9 @@ public class PermissionDialogDelegate {
         mContentSettingsTypes = contentSettingsTypes;
         mDrawableId = iconId;
         mMessageText = message;
+        for (int i = 0; i + 1 < boldedRanges.length; i += 2) {
+            mBoldedRanges.add(new Pair(boldedRanges[i], boldedRanges[i] + boldedRanges[i + 1]));
+        }
         mPositiveButtonText = positiveButtonText;
         mNegativeButtonText = negativeButtonText;
         mPositiveEphemeralButtonText = positiveEphemeralButtonText;

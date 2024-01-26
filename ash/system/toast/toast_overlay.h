@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "ash/public/cpp/system/toast_data.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback.h"
@@ -38,7 +37,7 @@ class Widget;
 namespace ash {
 
 class ToastManagerImplTest;
-class SystemToastView;
+class SystemToastStyle;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver,
@@ -66,8 +65,13 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // To test different Toast UI variations, enable debug shortcuts by building
   // with flag `--ash-debug-shortcuts` and use command "Shift + Ctrl + Alt + O".
   ToastOverlay(Delegate* delegate,
-               ToastData& toast_data,
-               aura::Window* root_window);
+               const std::u16string& text,
+               const std::u16string& dismiss_text,
+               const gfx::VectorIcon& leading_icon,
+               base::TimeDelta duration,
+               bool persist_on_hover,
+               aura::Window* root_window,
+               base::RepeatingClosure dismiss_callback);
 
   ToastOverlay(const ToastOverlay&) = delete;
   ToastOverlay& operator=(const ToastOverlay&) = delete;
@@ -137,7 +141,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   const std::u16string text_;
   const std::u16string dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
-  std::unique_ptr<SystemToastView> overlay_view_;
+  std::unique_ptr<SystemToastStyle> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   raw_ptr<aura::Window> root_window_;
   base::RepeatingClosure dismiss_callback_;

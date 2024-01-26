@@ -47,7 +47,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-AC817E10-993C-470F-8DCA-25F53D70EA8D",
       "system":"PLACEHOLDER-GUID-9367601E-C100-4702-8755-808D6BB385D8"
     },
-    "tokensToSuffix": ["IAppVersionWeb"]
+    "tokensToSuffix": ["IAppVersionWeb"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -76,7 +77,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-31479718-D170-467B-9274-27FC3E88CB76",
       "system":"PLACEHOLDER-GUID-71CBC6BB-CA4B-4B5A-83C0-FC95F9CA6A30"
     },
-    "tokensToSuffix": ["ICurrentState"]
+    "tokensToSuffix": ["ICurrentState"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -171,7 +173,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-EE8EE731-C592-4A4F-9774-BB04337B8F46",
       "system":"PLACEHOLDER-GUID-AE5F8C9D-B94D-4367-A422-D1DC4E913A52"
     },
-    "tokensToSuffix": ["IGoogleUpdate3Web"]
+    "tokensToSuffix": ["IGoogleUpdate3Web"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -192,7 +195,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-CE7A37FD-A255-460C-BAF1-708765EB76EC",
       "system":"PLACEHOLDER-GUID-BFFD766D-A2DD-436E-89FA-BF05BC5B5958"
     },
-    "tokensToSuffix": ["IAppBundleWeb"]
+    "tokensToSuffix": ["IAppBundleWeb"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -241,7 +245,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-47B9D508-CB72-4F8B-AF00-7D0143603B25",
       "system":"PLACEHOLDER-GUID-540B227A-F442-45D5-BA52-298A05BAF1A8"
     },
-    "tokensToSuffix": ["IAppWeb"]
+    "tokensToSuffix": ["IAppWeb"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -280,7 +285,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-5515E66F-FA6F-4D74-B5EA-4FCFDA16FE12",
       "system":"PLACEHOLDER-GUID-C6E2C5D5-86FA-4A64-9D08-8C9B644F0E49"
     },
-    "tokensToSuffix": ["IAppCommandWeb"]
+    "tokensToSuffix": ["IAppCommandWeb"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -313,7 +319,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-EF739C0C-40B0-478D-B76B-3659B8F2B0EB",
       "system":"PLACEHOLDER-GUID-F3964464-A939-44D3-9244-36BD2E3630B8"
     },
-    "tokensToSuffix": ["IPolicyStatus"]
+    "tokensToSuffix": ["IPolicyStatus"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -405,7 +412,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-7E0A6B39-7CEB-4944-ABFA-F419D201D6A0",
       "system":"PLACEHOLDER-GUID-CC2CCD05-119C-44E1-852D-6DCC2DFB72EC"
     },
-    "tokensToSuffix": ["IPolicyStatusValue"]
+    "tokensToSuffix": ["IPolicyStatusValue"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -439,7 +447,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-AD91C851-86AC-499F-9BA9-9A561744AA4D",
       "system":"PLACEHOLDER-GUID-F4A0362A-3702-48B8-9896-7D8013D03AB2"
     },
-    "tokensToSuffix": ["IPolicyStatus2", "IPolicyStatusValue"]
+    "tokensToSuffix": ["IPolicyStatus2", "IPolicyStatusValue"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -550,7 +559,9 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-BC39E1E1-E8FA-4E72-903F-3BF346E7E165",
       "system":"PLACEHOLDER-GUID-7B26CC23-B2B8-441B-AA9C-8B551ABB611B"
     },
-    "tokensToSuffix": ["IPolicyStatus3", "IPolicyStatus2", "IPolicyStatusValue"]
+    "tokensToSuffix": ["IPolicyStatus3", "IPolicyStatus2",
+                       "IPolicyStatusValue"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -568,6 +579,12 @@ interface IPolicyStatus3 : IPolicyStatus2 {
 };
 END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "addToLibrary": [""],
+    "includeFor": ["system"]
+  }
+)
 [
   object,
   oleautomation,
@@ -584,7 +601,14 @@ interface IProcessLauncher : IUnknown {
                             [in] DWORD caller_proc_id,
                             [out] ULONG_PTR* proc_handle);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "addToLibrary": [""],
+    "includeFor": ["system"]
+  }
+)
 [
   object,
   oleautomation,
@@ -602,6 +626,7 @@ interface IProcessLauncher2 : IProcessLauncher {
                           [out] ULONG_PTR* proc_handle,
                           [out] ULONG_PTR* stdout_handle);
 };
+END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-7A1FDE1F-AAA9-441B-B9AA-95B31D78592B),
@@ -660,40 +685,5 @@ library UpdaterLegacyLib {
     [default] interface IUnknown;
   }
 
-  interface IAppVersionWeb;
-  interface IAppVersionWebUser;
-  interface IAppVersionWebSystem;
-  interface ICurrentState;
-  interface ICurrentStateUser;
-  interface ICurrentStateSystem;
-  interface IGoogleUpdate3Web;
-  interface IGoogleUpdate3WebUser;
-  interface IGoogleUpdate3WebSystem;
-  interface IAppBundleWeb;
-  interface IAppBundleWebUser;
-  interface IAppBundleWebSystem;
-  interface IAppWeb;
-  interface IAppWebUser;
-  interface IAppWebSystem;
-  interface IAppCommandWeb;
-  interface IAppCommandWebUser;
-  interface IAppCommandWebSystem;
-  interface IPolicyStatus;
-  interface IPolicyStatusUser;
-  interface IPolicyStatusSystem;
-  interface IPolicyStatus2;
-  interface IPolicyStatus2User;
-  interface IPolicyStatus2System;
-  interface IPolicyStatus3;
-  interface IPolicyStatus3User;
-  interface IPolicyStatus3System;
-  interface IPolicyStatusValue;
-  interface IPolicyStatusValueUser;
-  interface IPolicyStatusValueSystem;
-  interface IProcessLauncher;
-  interface IProcessLauncherUser;
-  interface IProcessLauncherSystem;
-  interface IProcessLauncher2;
-  interface IProcessLauncher2User;
-  interface IProcessLauncher2System;
+  INTERFACES_IN_LIBRARY;
 };

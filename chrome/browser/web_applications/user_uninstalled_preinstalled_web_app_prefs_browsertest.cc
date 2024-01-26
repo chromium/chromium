@@ -77,9 +77,9 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(app_id2, preinstalled_prefs.LookUpAppIdByInstallUrl(url2));
   EXPECT_EQ(app_id2, preinstalled_prefs.LookUpAppIdByInstallUrl(url3));
   EXPECT_NE(app_id1, preinstalled_prefs.LookUpAppIdByInstallUrl(url3));
-  EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(GURL()));
-  EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(
-                               GURL("https://baz.com")));
+  EXPECT_EQ(std::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(GURL()));
+  EXPECT_EQ(std::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(
+                              GURL("https://baz.com")));
 }
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(app_id2, preinstalled_prefs.LookUpAppIdByInstallUrl(url3));
   // url1 has been deleted, so app_id1 has been wiped from the prefs, and url2
   // has been plain deleted.
-  EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url1));
-  EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url2));
+  EXPECT_EQ(std::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url1));
+  EXPECT_EQ(std::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url2));
 }
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,

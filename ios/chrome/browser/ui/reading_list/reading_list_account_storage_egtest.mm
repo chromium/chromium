@@ -221,6 +221,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                               fakeIdentity.userEmail)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
+
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Verify that the identity is signed-in without sync and the promo is hidden.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
                                         consent:signin::ConsentLevel::kSignin];
@@ -284,6 +289,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                               fakeIdentity2.userEmail)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
+
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity2.userEmail)]
+      performAction:grey_tap()];
+
   // Verify that the identity2 is signed-in without sync, and that the promo is
   // hidden.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
@@ -355,6 +365,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
                                         consent:signin::ConsentLevel::kSignin];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity1.userEmail)]
+      performAction:grey_tap()];
+
   // Sign-out without changing the UI and verify that the promo is shown,
   // without spinner.
   [SigninEarlGrey signOut];
@@ -385,6 +400,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbar(
                                               fakeIdentity1.userEmail)];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity1.userEmail)]
+      performAction:grey_tap()];
+
   // Sign-out & sign-in with the identity2.
   [SigninEarlGrey signOut];
   [[EarlGrey
@@ -402,6 +421,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:SignedInSnackbar(
                                                 fakeIdentity2.userEmail)];
+    // Dismiss the sign-in snackbar.
+    [[EarlGrey
+        selectElementWithMatcher:SignedInSnackbar(fakeIdentity2.userEmail)]
+        performAction:grey_tap()];
   }
 
   // Verify that the second account is signed-in.
@@ -467,6 +490,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    chrome_test_util::PrimarySignInButton(),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity1.userEmail)]
+      performAction:grey_tap()];
+
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
                                         consent:signin::ConsentLevel::kSignin];
@@ -502,6 +530,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                  grey_allOf(AddedToAccountReadingListSnackbarUndoButton(),
                             grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
+
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
+      performAction:grey_tap()];
+
   // Verify there's no cloud icon on the new item in the Reading List.
   OpenReadingList();
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
@@ -512,6 +545,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // that both items do not have the cloud icon in the Reading List.
 - (void)testAddItemWithFullSync {
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
+      performAction:grey_tap()];
+
   // Sign-in with full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
@@ -523,6 +560,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:AddedToAccountReadingListSnackbar(
                                               fakeIdentity.userEmail)];
+
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Verify that the new items are shown, and there's no cloud icon on the them
   // in the Reading List.
   OpenReadingList();
@@ -561,6 +604,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // promo. Test that only the first item has the cloud icon in the Reading List.
 - (void)testAddItemWithAccountStorage {
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
+      performAction:grey_tap()];
+
   // Sign-in with the Reading List promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -569,6 +616,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Ensure that the first sync spinner has disappeared.
   [ChromeEarlGreyUI waitForAppToIdle];
   [ChromeEarlGrey
@@ -586,6 +637,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:AddedToAccountReadingListSnackbar(
                                               fakeIdentity.userEmail)];
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Verify that both items are visible in the Reading List, and that there's
   // one cloud icon on the first item, but none on the second.
   OpenReadingList();
@@ -610,6 +666,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Close the Reading List.
@@ -632,6 +692,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that the item added to account Reading List disappears when signed-out.
 - (void)testAddAccountItemThenSignOut {
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
+      performAction:grey_tap()];
+
   // Sign-in with fakeIdentity in the Reading List.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -640,6 +704,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Close the Reading List.
@@ -648,6 +716,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   // Add Page 2 to the Reading List.
   AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Sign-out.
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
@@ -669,6 +742,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // visible and do not have the cloud icon.
 - (void)testAddAccountItemThenUpgradeToFullSync {
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
+      performAction:grey_tap()];
+
   // Sign-in with fakeIdentity in the Reading List.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -677,6 +754,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Dismiss the Reading List.
@@ -685,6 +766,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   // Add Page 2 to the Reading List.
   AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  // Dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Upgrade to full sync.
   [ChromeEarlGreyUI openSettingsMenu];
   id<GREYMatcher> syncCell =
@@ -741,15 +827,25 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
       performAction:grey_tap()];
-  // Add pages to the Reading List.
+  // Add pages to the Reading List and dismiss the snackbars.
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
   AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
   // Remove Page 1 from the Reading List.
   OpenReadingList();
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
@@ -768,6 +864,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Verify that only the page 2 is still in the Reading list.
@@ -790,15 +890,26 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
       performAction:grey_tap()];
-  // Add pages to the Reading List.
+  // Add pages to the Reading List and dismiss the snackbars.
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
   AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   // Mark Page 1 as read.
   OpenReadingList();
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
@@ -839,6 +950,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Dismiss the sign-in snackbar.
+  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Verify that both items are visible and only one of them is unread.

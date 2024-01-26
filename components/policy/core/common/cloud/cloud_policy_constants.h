@@ -33,6 +33,9 @@ extern const char kServiceTokenAuthHeaderPrefix[];
 extern const char kDMTokenAuthHeaderPrefix[];
 extern const char kEnrollmentTokenAuthHeaderPrefix[];
 extern const char kOAuthTokenHeaderPrefix[];
+extern const char kOidcAuthHeaderPrefix[];
+extern const char kOidcAuthTokenHeaderPrefix[];
+extern const char kOidcIdTokenHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 extern const char kValueAppType[];
@@ -43,6 +46,7 @@ extern const char kValueRequestPsmHasDeviceState[];
 extern const char kValueCheckUserAccount[];
 extern const char kValueRequestPolicy[];
 extern const char kValueRequestRegister[];
+extern const char kValueRequestOidcRegister[];
 extern const char kValueRequestApiAuthorization[];
 extern const char kValueRequestUnregister[];
 extern const char kValueRequestUploadCertificate[];

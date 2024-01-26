@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -99,7 +99,7 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
   autofill_util::IbanEntryList ibanList =
       extensions::autofill_util::GenerateIbanList(*personal_data_);
 
-  absl::optional<api::autofill_private::AccountInfo> account_info =
+  std::optional<api::autofill_private::AccountInfo> account_info =
       extensions::autofill_util::GetAccountInfo(*personal_data_);
 
   base::Value::List args;

@@ -81,7 +81,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3366305173356742781">Data sa Chromium sa iyong account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Posibleng kasama rito ang history at autofill.}}</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
-<translation id="3478750326643748149">I-hide ang “Sulitin ang Chromium”</translation>
 <translation id="347967311580159871">Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chromium, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Hindi na-share ang password mo. Suriin ang iyong koneksyon sa internet at tiyaking naka-sign in ka sa Chromium. Pagkatapos ay subukan ulit.</translation>
 <translation id="3554027294407525061">I-clear ang Data Mula sa Pagba-browse sa Chromium.</translation>
@@ -101,9 +100,9 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
-<translation id="4002314982058020967">Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chromium.</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
+<translation id="4076589763479456892">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4106512142782407609">Naka-sign in bilang <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="4408912345039114853">Magpatakbo ng Pag-check sa Kaligtasan sa Chromium</translation>
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
 <translation id="4445228361214254027">In-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chromium sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
-<translation id="4485517920713468480">Made-detect ng Chromium ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Idaragdag ang mga in-input na URL sa iyong listahan ng babasahin sa Chromium.</translation>
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="5534584691915394889">Gagamitin ito para gumawa ng mga event sa iyong Apple Calendar mula sa Chromium at Google Lens.</translation>
 <translation id="5571094606370987472">Mabubuksan ang Mga Kamakailang Tab sa Chromium.</translation>
 <translation id="5623083843656850677">I-lock ang iyong mga tab na incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
+<translation id="5671188105328420281">Mga Tip sa Chromium</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
@@ -286,6 +285,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
 <translation id="88376265765385899">Mabubuksan ang mga bookmark sa Chromium.</translation>
 <translation id="8860548555286245440">Buksan ang mga URL sa Chromium sa Incognito</translation>
+<translation id="8866191443434488382">Made-detect ng Chromium ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Chromium ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium para sa iOS</translation>
 <translation id="8924617840944134898">Magbukas ng Tab na Incognito sa Chromium</translation>
 <translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>

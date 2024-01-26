@@ -11,8 +11,7 @@
 
 namespace extensions {
 
-class IconsManifestTest : public ChromeManifestTest {
-};
+using IconsManifestTest = ChromeManifestTest;
 
 TEST_F(IconsManifestTest, NormalizeIconPaths) {
   scoped_refptr<extensions::Extension> extension(

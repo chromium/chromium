@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
@@ -17,7 +18,6 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::privacy_hub_util {
 
@@ -95,7 +95,7 @@ void TrackGeolocationRelinquished(const std::string& name) {
 }
 
 namespace {
-absl::optional<bool> camera_led_fallback_for_testing{};
+std::optional<bool> camera_led_fallback_for_testing{};
 }
 
 // TODO(b/289510726): remove when all cameras fully support the software

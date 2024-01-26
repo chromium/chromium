@@ -387,8 +387,7 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
     hmac_extension.emplace(2, hmac_secret.encrypted_salts);
     hmac_extension.emplace(3, hmac_secret.salts_auth);
     if (request.pin_protocol &&
-        static_cast<unsigned>(*request.pin_protocol) >= 2 &&
-        base::FeatureList::IsEnabled(kWebAuthnPINProtocolInHMACSecret)) {
+        static_cast<unsigned>(*request.pin_protocol) >= 2) {
       // If the request is using a PIN protocol other than v1, it must be
       // specified here too:
       // https://fidoalliance.org/specs/fido-v2.2-rd-20230321/fido-client-to-authenticator-protocol-v2.2-rd-20230321.html#sctn-hmac-secret-extension:~:text=pinuvauthprotocol(0x04)%3A%20(optional)%20as%20selected%20when%20getting%20the%20shared%20secret.%20ctap2.1%20platforms%20must%20include%20this%20parameter%20if%20the%20value%20of%20pinuvauthprotocol%20is%20not%201

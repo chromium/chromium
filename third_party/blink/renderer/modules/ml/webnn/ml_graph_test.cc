@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 
+// TODO(https://crbug.com/1273291): Remove all uses of this macro.
 #define SKIP_TEST_ON_UNSUPPORTED_BACKEND(backend_type)       \
   do {                                                       \
     if (GetBackendType() == backend_type)                    \
@@ -32,7 +35,7 @@ const TestVariety kGraphTestVariety[] = {
     {BackendType::kXnnpack, ExecutionMode::kSync},
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
     {BackendType::kModelLoader, ExecutionMode::kAsync},
 #endif
 };
@@ -61,7 +64,7 @@ struct ElementWiseBinaryTester {
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -71,7 +74,7 @@ struct ElementWiseBinaryTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -273,7 +276,7 @@ struct PowTester {
         scope, builder, ElementWiseBinaryKind::kPow, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -282,7 +285,7 @@ struct PowTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -381,7 +384,7 @@ struct ElementWiseUnaryTester {
     }
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -391,7 +394,7 @@ struct ElementWiseUnaryTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -494,7 +497,7 @@ struct PReluTester {
         builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -504,7 +507,7 @@ struct PReluTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -562,7 +565,7 @@ struct ReluTester {
         builder->relu(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -572,7 +575,7 @@ struct ReluTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -648,7 +651,7 @@ struct LeakyReluTester {
         BuildLeakyRelu(scope, builder, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -658,7 +661,7 @@ struct LeakyReluTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -723,7 +726,7 @@ struct ReduceTester {
     EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -732,7 +735,7 @@ struct ReduceTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -814,7 +817,7 @@ struct Resample2dTester {
         BuildResample2d(scope, builder, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -824,7 +827,7 @@ struct Resample2dTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -882,7 +885,7 @@ struct ClampTester {
         builder->clamp(input_operand, options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -892,7 +895,7 @@ struct ClampTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -986,7 +989,7 @@ struct Conv2dTester {
         BuildConv2d(scope, builder, input_operand, filter_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -996,7 +999,7 @@ struct Conv2dTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -1151,7 +1154,7 @@ struct ConvTranspose2dTester {
                                                 filter_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -1161,7 +1164,7 @@ struct ConvTranspose2dTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -1319,7 +1322,7 @@ struct GemmTester {
         BuildGemm(scope, builder, a_operand, b_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -1328,7 +1331,7 @@ struct GemmTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
   }
 };
@@ -1402,7 +1405,7 @@ struct HardSwishTester {
         builder->hardSwish(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -1412,7 +1415,7 @@ struct HardSwishTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results.size(), expected.size());
     for (wtf_size_t i = 0; i < expected.size(); ++i) {
@@ -1488,7 +1491,7 @@ struct Pool2dTester {
         BuildPool2d(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -1497,7 +1500,7 @@ struct Pool2dTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -1569,7 +1572,7 @@ struct ReshapeTester {
     EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -1579,7 +1582,7 @@ struct ReshapeTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, input.values);
   }
@@ -1652,7 +1655,7 @@ struct SplitTester {
     }
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, named_operands);
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -1666,7 +1669,7 @@ struct SplitTester {
     }
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     for (uint32_t i = 0; i < outputs.size(); ++i) {
       auto result = GetArrayBufferViewValues<T>(outputs[i].second);
       EXPECT_EQ(result, expected[i]);
@@ -1746,7 +1749,7 @@ struct TransposeTester {
         BuildTranspose(scope, builder, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -1755,7 +1758,7 @@ struct TransposeTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -1830,7 +1833,7 @@ struct ConcatTester {
     EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews named_inputs;
@@ -1844,7 +1847,7 @@ struct ConcatTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, named_inputs, named_outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(named_outputs[0].second);
     EXPECT_EQ(results, expected_output_data);
   }
@@ -1952,7 +1955,7 @@ struct PadTester {
                                     beginning_padding, ending_padding, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -1961,7 +1964,7 @@ struct PadTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -2019,7 +2022,7 @@ struct SliceTester {
         builder->slice(input_operand, starts, sizes, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     MLNamedArrayBufferViews inputs(
         {{"input",
@@ -2028,7 +2031,7 @@ struct SliceTester {
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
@@ -2069,20 +2072,20 @@ TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
     auto* constant_operand =
         BuildConstant<float>(builder, {3}, V8MLOperandDataType::Enum::kFloat32,
                              {-1, 0, 1}, scope.GetExceptionState());
-    ASSERT_NE(constant_operand, nullptr);
+    ASSERT_THAT(constant_operand, testing::NotNull());
     auto* output_operand =
         builder->relu(constant_operand, scope.GetExceptionState());
-    ASSERT_NE(output_operand, nullptr);
+    ASSERT_THAT(output_operand, testing::NotNull());
     auto [graph, build_exception] =
         BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs;
     MLNamedArrayBufferViews outputs(
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({0, 0, 1}));
   }
@@ -2091,24 +2094,24 @@ TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
     auto* constant_a_operand = BuildConstant<float>(
         builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {1, 1, 1, 1},
         scope.GetExceptionState());
-    ASSERT_NE(constant_a_operand, nullptr);
+    ASSERT_THAT(constant_a_operand, testing::NotNull());
     auto* constant_b_operand = BuildConstant<float>(
         builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {2, 2, 2, 2},
         scope.GetExceptionState());
-    ASSERT_NE(constant_b_operand, nullptr);
+    ASSERT_THAT(constant_b_operand, testing::NotNull());
     auto* output_operand = builder->add(constant_a_operand, constant_b_operand,
                                         scope.GetExceptionState());
-    ASSERT_NE(output_operand, nullptr);
+    ASSERT_THAT(output_operand, testing::NotNull());
     auto [graph, build_exception] =
         BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs;
     MLNamedArrayBufferViews outputs(
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({3, 3, 3, 3}));
   }
@@ -2118,31 +2121,31 @@ TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
     auto* constant_a_operand = BuildConstant<float>(
         builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {1, 1, 1, 1},
         scope.GetExceptionState());
-    ASSERT_NE(constant_a_operand, nullptr);
+    ASSERT_THAT(constant_a_operand, testing::NotNull());
     auto* constant_b_operand = BuildConstant<float>(
         builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {2, 2, 2, 2},
         scope.GetExceptionState());
-    ASSERT_NE(constant_b_operand, nullptr);
+    ASSERT_THAT(constant_b_operand, testing::NotNull());
     auto* intermediate_operand = builder->add(
         constant_a_operand, constant_b_operand, scope.GetExceptionState());
-    ASSERT_NE(intermediate_operand, nullptr);
+    ASSERT_THAT(intermediate_operand, testing::NotNull());
     auto* constant_c_operand = BuildConstant<float>(
         builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {3, 3, 3, 3},
         scope.GetExceptionState());
-    ASSERT_NE(constant_c_operand, nullptr);
+    ASSERT_THAT(constant_c_operand, testing::NotNull());
     auto* output_operand = builder->mul(
         intermediate_operand, constant_c_operand, scope.GetExceptionState());
-    ASSERT_NE(output_operand, nullptr);
+    ASSERT_THAT(output_operand, testing::NotNull());
     auto [graph, build_exception] =
         BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs;
     MLNamedArrayBufferViews outputs(
         {{"output", CreateArrayBufferViewForOperand(output_operand)}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({9, 9, 9, 9}));
   }

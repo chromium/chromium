@@ -5,6 +5,7 @@
 #include "ppapi/shared_impl/ppapi_globals.h"
 
 #include "base/check.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -33,6 +34,9 @@ PpapiGlobals::PpapiGlobals(PerThreadForTest) {
 
 PpapiGlobals::~PpapiGlobals() {
   DCHECK(ppapi_globals == this || !ppapi_globals);
+  while (!message_loop_quit_closures_.empty()) {
+    QuitMsgLoop();
+  }
   ppapi_globals = NULL;
 }
 
@@ -51,6 +55,19 @@ void PpapiGlobals::SetPpapiGlobalsOnThreadForTest(PpapiGlobals* ptr) {
   // If we allowed it, it would always over-ride the "test" versions.
   DCHECK(!ppapi_globals);
   ppapi_globals_for_test = ptr;
+}
+
+void PpapiGlobals::RunMsgLoop() {
+  base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+  message_loop_quit_closures_.push(loop.QuitClosure());
+  loop.Run();
+}
+
+void PpapiGlobals::QuitMsgLoop() {
+  if (!message_loop_quit_closures_.empty()) {
+    std::move(message_loop_quit_closures_.top()).Run();
+    message_loop_quit_closures_.pop();
+  }
 }
 
 base::SingleThreadTaskRunner* PpapiGlobals::GetMainThreadMessageLoop() {

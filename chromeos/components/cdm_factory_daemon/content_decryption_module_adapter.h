@@ -112,6 +112,10 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   bool IsRemoteCdm() const override;
   void AllocateSecureBuffer(uint32_t size,
                             AllocateSecureBufferCB callback) override;
+  void ParseEncryptedSliceHeader(uint64_t secure_handle,
+                                 uint32_t offset,
+                                 const std::vector<uint8_t>& stream_data,
+                                 ParseEncryptedSliceHeaderCB callback) override;
 
   // cdm::mojom::ContentDecryptionModuleClient:
   void OnSessionMessage(const std::string& session_id,

@@ -248,12 +248,10 @@ void PopulateRandomizedFieldMetadata(
                           RandomizedEncoder::FIELD_NAME, field.name_attribute,
                           /*include_checksum=*/false, metadata->mutable_name());
   }
-  if (!FormControlTypeToString(field.form_control_type).empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_CONTROL_TYPE,
-                          FormControlTypeToString(field.form_control_type),
-                          /*include_checksum=*/false, metadata->mutable_type());
-  }
+  EncodeRandomizedValue(encoder, form_signature, field_signature,
+                        RandomizedEncoder::FIELD_CONTROL_TYPE,
+                        FormControlTypeToString(field.form_control_type),
+                        /*include_checksum=*/false, metadata->mutable_type());
   if (!field.label.empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
                           RandomizedEncoder::FIELD_LABEL, field.label,
@@ -809,17 +807,24 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion->password_requirements());
       }
       ++field_rank_map[field->GetFieldSignature()];
+
       // Log the field type predicted from Autofill crowdsourced server.
       field->AppendLogEventIfNotRepeated(ServerPredictionFieldLogEvent{
-          .server_type1 = field->server_type(),
-          .prediction_source1 = field->server_predictions().empty()
-                                    ? FieldPrediction::SOURCE_UNSPECIFIED
-                                    : field->server_predictions()[0].source(),
+          // If the server prediction is empty, the server type should be
+          // SERVER_RESPONSE_PENDING (161), which means that Autofill may not
+          // have received server predictions. NO_SERVER_DATA means that the
+          // server has no classification for the field.
+          .server_type1 = !field->server_predictions().empty()
+                              ? std::optional<FieldType>(field->server_type())
+                              : std::nullopt,
+          .prediction_source1 = !field->server_predictions().empty()
+                                    ? field->server_predictions()[0].source()
+                                    : FieldPrediction::SOURCE_UNSPECIFIED,
           .server_type2 =
               field->server_predictions().size() >= 2
-                  ? ToSafeFieldType(field->server_predictions()[1].type(),
-                                    NO_SERVER_DATA)
-                  : NO_SERVER_DATA,
+                  ? std::optional<FieldType>(ToSafeFieldType(
+                        field->server_predictions()[1].type(), NO_SERVER_DATA))
+                  : std::nullopt,
           .prediction_source2 = field->server_predictions().size() >= 2
                                     ? field->server_predictions()[1].source()
                                     : FieldPrediction::SOURCE_UNSPECIFIED,

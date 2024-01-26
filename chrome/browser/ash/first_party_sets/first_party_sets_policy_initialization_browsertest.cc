@@ -58,17 +58,17 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
   // FirstPartySetsOverrides policies with `true` and `overrides` respectively.
   //
   // If `overrides` is nullopt, this disables the FirstPartySetsEnabled policy.
-  void SetFirstPartySetsPolicies(absl::optional<base::Value::Dict> overrides) {
+  void SetFirstPartySetsPolicies(std::optional<base::Value::Dict> overrides) {
     policy_.Set(
         policy::key::kFirstPartySetsEnabled, policy::POLICY_LEVEL_MANDATORY,
         policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-        absl::make_optional(base::Value(overrides.has_value())), nullptr);
+        std::make_optional(base::Value(overrides.has_value())), nullptr);
     if (overrides.has_value()) {
-      policy_.Set(
-          policy::key::kFirstPartySetsOverrides, policy::POLICY_LEVEL_MANDATORY,
-          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-          absl::make_optional(base::Value(std::move(overrides.value()))),
-          nullptr);
+      policy_.Set(policy::key::kFirstPartySetsOverrides,
+                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                  policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                  std::make_optional(base::Value(std::move(overrides.value()))),
+                  nullptr);
     }
     policy_provider_.UpdateChromePolicy(policy_);
   }
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
       ->SetTestingFactoryForTesting(std::move(factory));
 
   SetFirstPartySetsPolicies(
-      /*overrides=*/absl::nullopt);
+      /*overrides=*/std::nullopt);
   LoginUser(test_account_id());
   loop.Run();
 }

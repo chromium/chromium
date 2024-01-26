@@ -50,25 +50,6 @@ enum class PageLoadPrerenderObserverEvent {
   kMaxValue = kRecordNormalizedResponsivenessMetrics,
 };
 
-extern const char kPageLoadPrerenderForegroundCheckResult[];
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PageLoadPrerenderForegroundCheckResult {
-  kActivatedInBackground = 0,
-  kNoEventTime = 1,
-  kBackgroundedBeforeEvent = 2,
-  kPassed = 3,
-  kMaxValue = kPassed
-};
-
-enum class PageLoadPrerenderForegroundCheckEvent {
-  kFirstPaint,
-  kFirstContentfulPaint,
-  kFirstInputDelay,
-  kLargestContentfulPaint
-};
-
 }  // namespace internal
 
 namespace page_load_metrics {

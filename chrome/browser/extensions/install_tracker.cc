@@ -142,13 +142,13 @@ void InstallTracker::OnExtensionInstalled(
 }
 
 void InstallTracker::OnAppsReordered(
-    const absl::optional<std::string>& extension_id) {
+    const std::optional<std::string>& extension_id) {
   for (auto& observer : observers_)
     observer.OnAppsReordered(browser_context_, extension_id);
 }
 
 void InstallTracker::OnExtensionPrefChanged() {
-  OnAppsReordered(absl::nullopt);
+  OnAppsReordered(std::nullopt);
 }
 
 }  // namespace extensions

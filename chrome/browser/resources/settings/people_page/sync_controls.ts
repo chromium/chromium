@@ -16,14 +16,16 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
 // <if expr="chromeos_lacros">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 // </if>
 
 import {loadTimeData} from '../i18n_setup.js';
-import {Route, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './sync_controls.html.js';
 

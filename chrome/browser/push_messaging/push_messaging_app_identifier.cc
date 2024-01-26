@@ -38,11 +38,11 @@ std::string FromTimeToString(base::Time time) {
 }
 
 bool FromStringToTime(const std::string& time_string,
-                      absl::optional<base::Time>* time) {
+                      std::optional<base::Time>* time) {
   DCHECK(!time_string.empty());
   int64_t milliseconds;
   if (base::StringToInt64(time_string, &milliseconds) && milliseconds > 0) {
-    *time = absl::make_optional(base::Time::FromDeltaSinceWindowsEpoch(
+    *time = std::make_optional(base::Time::FromDeltaSinceWindowsEpoch(
         base::Milliseconds(milliseconds)));
     return true;
   }
@@ -52,7 +52,7 @@ bool FromStringToTime(const std::string& time_string,
 std::string MakePrefValue(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const absl::optional<base::Time>& expiration_time = absl::nullopt) {
+    const std::optional<base::Time>& expiration_time = std::nullopt) {
   std::string result = origin.spec() + kPrefValueSeparator +
                        base::NumberToString(service_worker_registration_id);
   if (expiration_time)
@@ -63,7 +63,7 @@ std::string MakePrefValue(
 bool DisassemblePrefValue(const std::string& pref_value,
                           GURL* origin,
                           int64_t* service_worker_registration_id,
-                          absl::optional<base::Time>* expiration_time) {
+                          std::optional<base::Time>* expiration_time) {
   std::vector<std::string> parts =
       base::SplitString(pref_value, std::string(1, kPrefValueSeparator),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -106,7 +106,7 @@ bool PushMessagingAppIdentifier::UseInstanceID(const std::string& app_id) {
 PushMessagingAppIdentifier PushMessagingAppIdentifier::Generate(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const absl::optional<base::Time>& expiration_time) {
+    const std::optional<base::Time>& expiration_time) {
   // All new push subscriptions use Instance ID tokens.
   return GenerateInternal(origin, service_worker_registration_id,
                           true /* use_instance_id */, expiration_time);
@@ -116,7 +116,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::Generate(
 PushMessagingAppIdentifier PushMessagingAppIdentifier::LegacyGenerateForTesting(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const absl::optional<base::Time>& expiration_time) {
+    const std::optional<base::Time>& expiration_time) {
   return GenerateInternal(origin, service_worker_registration_id,
                           false /* use_instance_id */, expiration_time);
 }
@@ -126,7 +126,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::GenerateInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
     bool use_instance_id,
-    const absl::optional<base::Time>& expiration_time) {
+    const std::optional<base::Time>& expiration_time) {
   // Use uppercase GUID for consistency with GUIDs Push has already sent to GCM.
   // Also allows detecting case mangling; see code commented "crbug.com/461867".
   std::string guid =
@@ -170,7 +170,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
 
   GURL origin;
   int64_t service_worker_registration_id;
-  absl::optional<base::Time> expiration_time;
+  std::optional<base::Time> expiration_time;
   // Try disassemble the pref value, return an invalid app identifier if the
   // pref value is corrupted
   if (!DisassemblePrefValue(*map_value, &origin,
@@ -243,7 +243,7 @@ PushMessagingAppIdentifier::PushMessagingAppIdentifier(
     const std::string& app_id,
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const absl::optional<base::Time>& expiration_time)
+    const std::optional<base::Time>& expiration_time)
     : app_id_(app_id),
       origin_(origin),
       service_worker_registration_id_(service_worker_registration_id),

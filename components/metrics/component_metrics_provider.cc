@@ -22,8 +22,6 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
       base::StringPiece, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
        SystemProfileProto_ComponentId_REAL_TIME_URL_CHECKS_ALLOWLIST},
-      {"aemllinfpjdgcldgaelcgakpjmaekbai",
-       SystemProfileProto_ComponentId_WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST},
       {"bjbdkfoakgmkndalgpadobhgbhhoanho",
        SystemProfileProto_ComponentId_EPSON_INKJET_PRINTER_ESCPR},
       {"cdoopinbipdmaefofkedmagbfmdcjnaa",

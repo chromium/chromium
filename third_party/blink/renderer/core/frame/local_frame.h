@@ -78,7 +78,6 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -117,6 +116,7 @@ namespace blink {
 class AdTracker;
 class AssociatedInterfaceProvider;
 class AttributionSrcLoader;
+class AuditsIssue;
 class BackgroundColorPaintImageGenerator;
 class BoxShadowPaintImageGenerator;
 class BrowserInterfaceBrokerProxy;
@@ -916,10 +916,6 @@ class CORE_EXPORT LocalFrame final
   // Can only be called while the frame is not detached.
   const mojom::RendererContentSettingsPtr& GetContentSettings();
 
-  // Returns true if the frame supports app-region: drag/no-drag.
-  bool SupportsAppRegion();
-  void SetSupportsAppRegion(bool supports_app_region);
-
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1178,8 +1174,6 @@ class CORE_EXPORT LocalFrame final
 
   Member<v8_compile_hints::V8LocalCompileHintsProducer>
       v8_local_compile_hints_producer_;
-
-  bool supports_app_region_ = false;
 
   // This handle notifies the scheduler of whether the unload handler is used or
   // not so it can block BFCache.

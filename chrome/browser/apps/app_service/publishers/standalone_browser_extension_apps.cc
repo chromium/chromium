@@ -165,7 +165,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
   if (!controller_.is_bound()) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -176,7 +176,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
       intent, ProfileManager::GetPrimaryUserProfile());
   controller_->Launch(std::move(launch_params),
                       /*callback=*/base::DoNothing());
-  std::move(callback).Run(LaunchResult(State::SUCCESS));
+  std::move(callback).Run(LaunchResult(State::kSuccess));
 
   if (ShouldSaveToFullRestore(proxy(), app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(

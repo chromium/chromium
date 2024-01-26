@@ -156,7 +156,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, Cleanup) {
   base::RunLoop run_loop;
 
   CleanupHandler::CleanupHandlerCallback callback = base::BindLambdaForTesting(
-      [&](const absl::optional<std::string>& error_message) {
+      [&](const std::optional<std::string>& error_message) {
         ASSERT_FALSE(error_message);
         run_loop.QuitClosure().Run();
       });
@@ -173,7 +173,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, CleanupWithError) {
   base::RunLoop run_loop;
 
   CleanupHandler::CleanupHandlerCallback callback = base::BindLambdaForTesting(
-      [&](const absl::optional<std::string>& error_message) {
+      [&](const std::optional<std::string>& error_message) {
         ASSERT_EQ(error_message, "Failed to delete all print jobs");
         run_loop.QuitClosure().Run();
       });

@@ -42,9 +42,9 @@ class ASH_EXPORT FederatedClientManager {
   // be undesired in client tests e.g. in unit tests which do not operate
   // in a mocked ash environment.
   //
-  // Call this method during test set-up (and before creation of an instance of
-  // this class) to prevent this class from interacting with the ash shell.
-  // Faked (and successful) ash interactions will occur instead.
+  // Call this method during test set-up to prevent this class from interacting
+  // with the ash shell. Faked (and successful) ash interactions will occur
+  // instead.
   static void UseFakeAshInteractionForTest();
 
   // ***** Methods for generic clients *****
@@ -52,32 +52,56 @@ class ASH_EXPORT FederatedClientManager {
   // Whether the Federated Service is available.
   // It is recommended (but not necessary) for clients to call this before each
   // attempt to call |ReportExample()|.
-  bool IsFederatedServiceAvailable() const;
+  bool IsFederatedServiceAvailable();
   // Reports an example to Federated Service storage.
   // If the Federated Service is not available, this method is effectively a
   // no-op.
   void ReportExample(const std::string& client_name, ExamplePtr example);
+  // Same as ReportExample above, except FederatedClientManager will use the
+  // inputs to construct an ExamplePtr (see .cc for exact schema). This is
+  // expected to be useful mainly for PHH cases.
+  void ReportSingleString(const std::string& client_name,
+                          const std::string& example_feature_name,
+                          const std::string& example_str);
 
   // ***** Methods for Federated Strings Service clients *****
 
   // Whether the Federated Strings Service is available.
   // It is recommended (but not necessary) for clients to call this before each
   // attempt to call |ReportStringViaStringsService()|.
-  bool IsFederatedStringsServiceAvailable() const;
+  bool IsFederatedStringsServiceAvailable();
   // Reports a Strings Service example to Federated Service storage.
   // If the Federated Service is not available, this method is effectively a
   // no-op.
   void ReportStringViaStringsService(const std::string& client_name,
                                      const std::string& client_string);
 
+  // Returns a count of examples which were sent to the Federated Service.
+  // "Success" here means "successfully processed by FederatedClientManager, and
+  // forwarded to CrOS Federated Service".
+  //
+  // It has no knowledge of how results are received CrOS-side (whether in prod,
+  // or mocked for test).
+  int get_num_successful_reports_for_test() const {
+    return successful_reports_for_test_;
+  }
+
  private:
   void TryToBindFederatedServiceIfNecessary();
   void ReportExampleToFederatedService(const std::string& client_name,
                                        ExamplePtr example);
 
+  int successful_reports_for_test_ = 0;
+  bool initialized_ = false;
   static inline bool use_fake_controller_for_testing_ = false;
   mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service_;
-  raw_ptr<FederatedServiceController> controller_ = nullptr;
+  // Reason for `DisableDanglingPtrDetection`:
+  // In prod: controller_ not owned by this class.
+  // In non-ash unit tests: controller_ can be owned by this class.
+  // TODO(b/299186135): Consider refactoring test management of ash and non-ash
+  // environments, and the impact on management of ownership of this controller.
+  raw_ptr<FederatedServiceController, DisableDanglingPtrDetection> controller_ =
+      nullptr;
 };
 
 }  // namespace ash::federated

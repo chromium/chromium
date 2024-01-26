@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {_, session, dp} = await testRunner.startBlank(
       'Tests that appropriate Network domain events are dispatched during a fetchLater request following redirects cross site.');
 

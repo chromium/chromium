@@ -44,7 +44,9 @@ public class ImprovedBookmarkSaveFlowProperties {
             BOOKMARK_ROW_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> BOOKMARK_ROW_ICON =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<FolderText> FOLDER_TEXT =
+    public static final WritableObjectPropertyKey<CharSequence> TITLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> SUBTITLE =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey PRICE_TRACKING_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -58,7 +60,8 @@ public class ImprovedBookmarkSaveFlowProperties {
     private static final PropertyKey[] NEW_KEYS = {
         BOOKMARK_ROW_CLICK_LISTENER,
         BOOKMARK_ROW_ICON,
-        FOLDER_TEXT,
+        TITLE,
+        SUBTITLE,
         PRICE_TRACKING_VISIBLE,
         PRICE_TRACKING_ENABLED,
         PRICE_TRACKING_SWITCH_CHECKED,

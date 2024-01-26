@@ -233,7 +233,6 @@ void GbmPixmapWayland::CreateDmabufBasedWlBuffer() {
   base::ScopedFD fd(HANDLE_EINTR(dup(GetDmaBufFd(0))));
   if (!fd.is_valid()) {
     PLOG(FATAL) << "dup";
-    return;
   }
 
   // The wl_buffer must be destroyed once this pixmap is destroyed.

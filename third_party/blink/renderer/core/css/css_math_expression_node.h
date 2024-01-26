@@ -85,7 +85,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSAnchorQueryTypes allowed_anchor_queries,
       // Variable substitutions for relative color syntax.
       // https://www.w3.org/TR/css-color-5/#relative-colors
-      const HashMap<CSSValueID, double> color_channel_keyword_values = {});
+      const HashMap<CSSValueID, double>& color_channel_keyword_values = {});
 
   virtual CSSMathExpressionNode* Copy() const = 0;
 
@@ -144,6 +144,7 @@ class CORE_EXPORT CSSMathExpressionNode
     return category_ == kCalcPercent || category_ == kCalcPercentLength;
   }
   virtual bool InvolvesPercentage() const { return HasPercentage(); }
+  virtual bool InvolvesAnchorQueries() const { return IsAnchorQuery(); }
 
   // Returns the unit type of the math expression *without doing any type
   // conversion* (e.g., 1px + 1em needs type conversion to resolve).
@@ -437,6 +438,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   }
 
   bool InvolvesPercentage() const final;
+  bool InvolvesAnchorQueries() const final;
 
   String CSSTextAsClamp() const;
 

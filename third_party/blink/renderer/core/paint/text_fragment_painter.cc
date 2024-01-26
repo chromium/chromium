@@ -395,10 +395,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font =
-      UNLIKELY(text_combine && text_combine->UsesCompressedFont())
-          ? text_combine->CompressedFont()
-          : text_item.ScaledFont();
+  const Font& font = UNLIKELY(text_combine && text_combine->CompressedFont())
+                         ? *text_combine->CompressedFont()
+                         : text_item.ScaledFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
@@ -414,10 +413,10 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
           : physical_box.offset.top + ascent};
 
   TextPainter text_painter(context, font, visual_rect, text_origin,
-                           inline_context_, is_horizontal);
-  TextDecorationPainter decoration_painter(text_painter, text_item, paint_info,
-                                           style, text_style, rotated_box,
-                                           selection);
+                           is_horizontal);
+  TextDecorationPainter decoration_painter(text_painter, inline_context_,
+                                           text_item, paint_info, style,
+                                           text_style, rotated_box, selection);
   HighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, *cursor_.CurrentItem(), rotation, physical_box.offset, style,

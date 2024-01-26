@@ -383,7 +383,7 @@ TEST_F(InputMethodUtilTest, TestInputMethodIDMigration) {
   // Duplicated hangul_2set.
   input_method_ids.emplace_back("ime:ko:hangul_2set");
 
-  util_.MigrateInputMethods(&input_method_ids);
+  util_.GetMigratedInputMethodIDs(&input_method_ids);
 
   EXPECT_EQ(std::size(migration_cases), input_method_ids.size());
   for (size_t i = 0; i < std::size(migration_cases); ++i) {

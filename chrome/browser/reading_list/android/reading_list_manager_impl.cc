@@ -285,6 +285,10 @@ bool ReadingListManagerImpl::IsLoaded() const {
   return loaded_;
 }
 
+void ReadingListManagerImpl::SetIsLoadedForTests(bool is_loaded) {
+  loaded_ = is_loaded;
+}
+
 BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) const {
   if (!url.is_valid())
     return nullptr;

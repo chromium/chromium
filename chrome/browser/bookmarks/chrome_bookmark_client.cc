@@ -127,11 +127,6 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
 #endif
 }
 
-bool ChromeBookmarkClient::AreFoldersForAccountStorageAllowed() {
-  return base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
-}
-
 base::CancelableTaskTracker::TaskId
 ChromeBookmarkClient::GetFaviconImageForPageURL(
     const GURL& page_url,
@@ -202,7 +197,7 @@ bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
 }
 
 std::string ChromeBookmarkClient::EncodeBookmarkSyncMetadata() {
-  // TODO(crbug.com/1494120): Also encode metadata produced by
+  // TODO(crbug.com/1520418): Also encode metadata produced by
   // `account_bookmark_sync_service_` once BookmarkClient API allows it.
   return local_or_syncable_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }
@@ -214,7 +209,7 @@ void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure,
       std::make_unique<
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
-  // TODO(crbug.com/1494120): Pass along sync metadata once BookmarkClient API
+  // TODO(crbug.com/1520418): Pass along sync metadata once BookmarkClient API
   // is capable of reading it from BookmarkModel.
   if (account_bookmark_sync_service_) {
     account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(

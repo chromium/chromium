@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +45,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -212,7 +212,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
       SigninInterceptionHeuristicOutcome expected_outcome) {
     ASSERT_EQ(interceptor()->GetHeuristicOutcome(is_new_account, is_sync_signin,
                                                  account_info.email),
-              absl::nullopt);
+              std::nullopt);
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
@@ -514,7 +514,7 @@ TEST_P(
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
       policy::ProfileSeparationPolicies(
-          policy::ProfileSeparationSettings::DISABLED, absl::nullopt));
+          policy::ProfileSeparationSettings::DISABLED, std::nullopt));
 
   if (signin_interception_enabled_) {
     TestAsynchronousInterception(
@@ -1051,7 +1051,7 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionDisabled) {
   EXPECT_EQ(
       interceptor()->GetHeuristicOutcome(
           /*is_new_account=*/true, /*is_sync_signin=*/false, "bob@example.com"),
-      absl::nullopt);
+      std::nullopt);
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
@@ -1811,7 +1811,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,
                                                account_info.email),
-            absl::nullopt);
+            std::nullopt);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       expected_outcome, 1);
@@ -1921,7 +1921,7 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,
                                                second_account_info.email),
-            absl::nullopt);
+            std::nullopt);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       expected_outcome, 1);

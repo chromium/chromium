@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -1958,6 +1959,11 @@ public class CustomTabsConnection {
      */
     public boolean shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider intentData) {
         return false;
+    }
+
+    public PageInsightsIntentParams getPageInsightsIntentParams(
+            BrowserServicesIntentDataProvider intentData) {
+        return PageInsightsIntentParams.getDefaultInstance();
     }
 
     /**

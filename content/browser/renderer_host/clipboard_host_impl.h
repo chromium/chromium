@@ -219,7 +219,11 @@ class CONTENT_EXPORT ClipboardHostImpl
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
 
-  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
+  // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
+  // Returns null if the browser context is OTR, unless `include_otr` is set to
+  // true.
+  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
+      bool include_otr = false);
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 

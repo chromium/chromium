@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string json;
     ASSERT_TRUE(base::ReadFileToString(json_path, &json));
-    absl::optional<base::Value> prefs = base::JSONReader::Read(json);
+    std::optional<base::Value> prefs = base::JSONReader::Read(json);
     ASSERT_TRUE(prefs.has_value());
     ASSERT_TRUE(prefs->is_dict());
     ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(

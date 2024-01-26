@@ -126,6 +126,7 @@ class Connection
       RequestAccountTransferAssertionCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   base::Value::Dict GetPrepareForUpdateInfo() override;
+  void NotifyPhoneSetupComplete() override;
 
   void DoWaitForUserVerification(size_t attempt_number,
                                  AwaitUserVerificationCallback callback);

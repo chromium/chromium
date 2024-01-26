@@ -84,6 +84,26 @@
 #define PA_ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
 #endif
 
+// In case the compiler supports it PA_NO_UNIQUE_ADDRESS evaluates to the C++20
+// attribute [[no_unique_address]]. This allows annotating data members so that
+// they need not have an address distinct from all other non-static data members
+// of its class.
+//
+// References:
+// * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
+// * https://wg21.link/dcl.attr.nouniqueaddr
+#if defined(COMPILER_MSVC) && PA_HAS_CPP_ATTRIBUTE(msvc::no_unique_address)
+// Unfortunately MSVC ignores [[no_unique_address]] (see
+// https://devblogs.microsoft.com/cppblog/msvc-cpp20-and-the-std-cpp20-switch/#msvc-extensions-and-abi),
+// and clang-cl matches it for ABI compatibility reasons. We need to prefer
+// [[msvc::no_unique_address]] when available if we actually want any effect.
+#define PA_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#elif PA_HAS_CPP_ATTRIBUTE(no_unique_address)
+#define PA_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#else
+#define PA_NO_UNIQUE_ADDRESS
+#endif
+
 // Tells the compiler a function is using a printf-style format string.
 // |format_param| is the one-based index of the format string parameter;
 // |dots_param| is the one-based index of the "..." parameter.

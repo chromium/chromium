@@ -275,7 +275,7 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED();
 }
 
-bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
+bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
   return false;
 }
 

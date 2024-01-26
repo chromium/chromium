@@ -15,12 +15,12 @@
 
   UILabel* requestLabel = [[UILabel alloc] init];
   requestLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  requestLabel.text = self.event.requestBody;
+  requestLabel.text = [self prettifyJsonString:self.event.requestBody];
   requestLabel.numberOfLines = 0;
 
   UILabel* responseLabel = [[UILabel alloc] init];
   responseLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  responseLabel.text = self.event.responseBody;
+  responseLabel.text = [self prettifyJsonString:self.event.responseBody];
   responseLabel.numberOfLines = 0;
 
   UIStackView* stackView = [[UIStackView alloc]
@@ -40,6 +40,29 @@
   [NSLayoutConstraint activateConstraints:@[
     [stackView.widthAnchor constraintEqualToAnchor:scrollView.widthAnchor]
   ]];
+}
+
+- (NSString*)prettifyJsonString:(NSString*)jsonString {
+  NSError* error;
+
+  NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+  NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                             options:0
+                                                               error:&error];
+  if (!jsonObject) {
+    return jsonString;
+  }
+  NSData* prettyJsonData =
+      [NSJSONSerialization dataWithJSONObject:jsonObject
+                                      options:NSJSONWritingPrettyPrinted
+                                        error:&error];
+  if (!prettyJsonData) {
+    return jsonString;
+  }
+  NSString* prettyPrintedJson =
+      [[NSString alloc] initWithData:prettyJsonData
+                            encoding:NSUTF8StringEncoding];
+  return prettyPrintedJson;
 }
 
 @end

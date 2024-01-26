@@ -4,10 +4,12 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
+#include <array>
 #include <atomic>
 #include <queue>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
@@ -789,9 +791,7 @@ bool SequenceManagerImpl::OnIdle() {
   }
   if (!have_work_to_do) {
     MaybeReclaimMemory();
-    if (main_thread_only().on_next_idle_callback) {
-      std::move(main_thread_only().on_next_idle_callback).Run();
-    }
+    main_thread_only().on_next_idle_callbacks.Notify();
     if (main_thread_only().task_execution_stack.empty()) {
       work_tracker_.OnIdle();
     }
@@ -1161,10 +1161,10 @@ void SequenceManagerImpl::RemoveDestructionObserver(
   main_thread_only().destruction_observers.RemoveObserver(destruction_observer);
 }
 
-void SequenceManagerImpl::RegisterOnNextIdleCallback(
+CallbackListSubscription SequenceManagerImpl::RegisterOnNextIdleCallback(
     OnceClosure on_next_idle_callback) {
-  DCHECK(!main_thread_only().on_next_idle_callback || !on_next_idle_callback);
-  main_thread_only().on_next_idle_callback = std::move(on_next_idle_callback);
+  return main_thread_only().on_next_idle_callbacks.Add(
+      std::move(on_next_idle_callback));
 }
 
 void SequenceManagerImpl::SetTaskRunner(

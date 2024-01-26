@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_PIPE_CONTROL_MESSAGE_HANDLER_DELEGATE_H_
 
 #include <optional>
+
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 

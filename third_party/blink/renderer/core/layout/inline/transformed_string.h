@@ -22,12 +22,12 @@ class TransformedString {
   STACK_ALLOCATED();
 
  public:
-  using Length = const uint8_t;
+  using Length = const unsigned;
 
   explicit TransformedString(StringView view) : view_(view) {}
   TransformedString(StringView view, base::span<Length> map)
       : view_(view), length_map_(map) {}
-  static CORE_EXPORT Vector<uint8_t> CreateLengthMap(
+  static CORE_EXPORT Vector<unsigned> CreateLengthMap(
       unsigned dom_length,
       unsigned transformed_length,
       const TextOffsetMap& offset_map);

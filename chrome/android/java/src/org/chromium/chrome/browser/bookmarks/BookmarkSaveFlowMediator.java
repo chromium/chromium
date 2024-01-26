@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -27,11 +31,14 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -54,6 +61,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     private final BookmarkModel mBookmarkModel;
     private final ShoppingService mShoppingService;
     private final Profile mProfile;
+    private final IdentityManager mIdentityManager;
 
     private BookmarkId mBookmarkId;
     private PowerBookmarkMeta mPowerBookmarkMeta;
@@ -72,15 +80,17 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
      * @param shoppingService Used to manage the price-tracking subscriptions.
      * @param bookmarkImageFetcher Used to fetch images/favicons for bookmarks.
      * @param profile The current chrome profile.
+     * @param identityManager The {@link IdentityManager} which supplies the account data.
      */
     public BookmarkSaveFlowMediator(
-            BookmarkModel bookmarkModel,
-            PropertyModel propertyModel,
-            Context context,
-            Runnable closeRunnable,
-            ShoppingService shoppingService,
-            BookmarkImageFetcher bookmarkImageFetcher,
-            Profile profile) {
+            @NonNull BookmarkModel bookmarkModel,
+            @NonNull PropertyModel propertyModel,
+            @NonNull Context context,
+            @NonNull Runnable closeRunnable,
+            @NonNull ShoppingService shoppingService,
+            @NonNull BookmarkImageFetcher bookmarkImageFetcher,
+            @NonNull Profile profile,
+            @NonNull IdentityManager identityManager) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(this);
 
@@ -95,6 +105,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mProfile = profile;
+        mIdentityManager = identityManager;
     }
 
     /**
@@ -151,14 +162,10 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         mFolderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            String folderDisplayTextRaw = getFolderDisplayTextRaw(wasBookmarkMoved);
-            String folderDisplayText = getFolderDisplayText(wasBookmarkMoved);
+            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.TITLE, createTitleCharSequence());
             mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT,
-                    new FolderText(
-                            folderDisplayText,
-                            folderDisplayTextRaw.indexOf(FOLDER_TEXT_TOKEN),
-                            mFolderName.length()));
+                    ImprovedBookmarkSaveFlowProperties.SUBTITLE,
+                    createSubTitleCharSequnce(wasBookmarkMoved));
         } else {
             mPropertyModel.set(
                     BookmarkSaveFlowProperties.TITLE_TEXT,
@@ -181,6 +188,54 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                     BookmarkSaveFlowProperties.SUBTITLE_TEXT,
                     getFolderDisplayText(wasBookmarkMoved));
         }
+    }
+
+    private CharSequence createTitleCharSequence() {
+        assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
+
+        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+            return createHighlightedCharSequence(
+                    mContext,
+                    new FolderText(
+                            mContext.getString(
+                                    R.string.account_bookmark_save_flow_title, mFolderName),
+                            mContext.getString(R.string.account_bookmark_save_flow_title)
+                                    .indexOf(FOLDER_TEXT_TOKEN),
+                            mFolderName.length()));
+        } else {
+            return mContext.getString(R.string.bookmark_save_flow_title);
+        }
+    }
+
+    private CharSequence createSubTitleCharSequnce(boolean wasBookmarkMoved) {
+        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+            BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
+            return bookmarkItem.isAccountBookmark()
+                    ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail()
+                    : mContext.getString(R.string.account_bookmark_save_flow_subtitle_local);
+        } else {
+            String folderDisplayTextRaw = getFolderDisplayTextRaw(wasBookmarkMoved);
+            String folderDisplayText = getFolderDisplayText(wasBookmarkMoved);
+            return createHighlightedCharSequence(
+                    mContext,
+                    new FolderText(
+                            folderDisplayText,
+                            folderDisplayTextRaw.indexOf(FOLDER_TEXT_TOKEN),
+                            mFolderName.length()));
+        }
+    }
+
+    @VisibleForTesting
+    static CharSequence createHighlightedCharSequence(Context context, FolderText folderText) {
+        SpannableString ss = new SpannableString(folderText.getDisplayText());
+        ForegroundColorSpan fcs =
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(context));
+        ss.setSpan(
+                fcs,
+                folderText.getFolderTitleStartIndex(),
+                folderText.getFolderTitleEndIndex(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ss;
     }
 
     private void bindPowerBookmarkProperties(

@@ -703,7 +703,7 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
   ApplyDevModeUpdate(app_id,
                      // For dev mode proxy apps, the location remains the same
                      // and does not change between updates.
-                     /*location=*/absl::nullopt, std::move(callback));
+                     /*location=*/std::nullopt, std::move(callback));
 }
 
 void WebAppInternalsHandler::ApplyDevModeUpdate(

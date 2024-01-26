@@ -53,7 +53,7 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
   update->Set(app_id, std::move(url_list));
 }
 
-absl::optional<webapps::AppId>
+std::optional<webapps::AppId>
 UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -61,7 +61,7 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   if (!url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
   for (auto it : ids_to_urls) {
     const base::Value::List* urls = it.second.GetIfList();
@@ -74,7 +74,7 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
         return it.first;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool UserUninstalledPreinstalledWebAppPrefs::DoesAppIdExist(

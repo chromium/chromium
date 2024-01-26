@@ -41,3 +41,28 @@ interface UIEventInit {
   // https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
   sourceCapabilities?: InputDeviceCapabilities|null;
 }
+
+// Barcode Detection API, this is currently only supported in Chrome on
+// ChromeOS, Android or macOS.
+// https://wicg.github.io/shape-detection-api/
+// https://developer.mozilla.org/en-US/docs/Web/API/BarcodeDetector
+declare class BarcodeDetector {
+  static getSupportedFormats(): Promise<BarcodeFormat[]>;
+  constructor(barcodeDetectorOptions?: BarcodeDetectorOptions);
+  detect(image: ImageBitmapSource): Promise<DetectedBarcode[]>;
+}
+
+interface BarcodeDetectorOptions {
+  formats?: BarcodeFormat[];
+}
+
+interface DetectedBarcode {
+  boundingBox: DOMRectReadOnly;
+  rawValue: string;
+  format: BarcodeFormat;
+  cornerPoints: ReadonlyArray<{x: number, y: number}>;
+}
+
+type BarcodeFormat =
+    'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
+    'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';

@@ -4,12 +4,18 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
 
+#include <iterator>
+#include <set>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -17,21 +23,35 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
+#include "components/segmentation_platform/public/database_client.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler.h"
 #endif
 
+const char kHistoryClusterSeenEventName[] = "NewTabPage.HistoryClusters.Seen";
+const char kHistoryClusterUsedEventName[] = "NewTabPage.HistoryClusters.Used";
+
 HistoryClustersModuleRanker::HistoryClustersModuleRanker(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     CartService* cart_service,
     const base::flat_set<std::string>& category_boostlist)
-    : cart_service_(cart_service),
+    : segmentation_platform_service_(segmentation_platform_service),
+      cart_service_(cart_service),
       category_boostlist_(category_boostlist),
+      query_day_count_(GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kNtpHistoryClustersModuleRankingMetricsQueryDays,
+          ntp_features::kNtpHistoryClustersModuleRankingMetricsQueryDaysParam,
+          1)),
       threshold_param_((float)GetFieldTrialParamByFeatureAsDouble(
           ntp_features::kNtpHistoryClustersModule,
           ntp_features::kNtpHistoryClustersModuleScoreThresholdParam,
-          -1.0)) {
+          0)) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (model_provider) {
     model_handler_ = std::make_unique<HistoryClustersModuleRankingModelHandler>(
@@ -45,27 +65,111 @@ HistoryClustersModuleRanker::~HistoryClustersModuleRanker() = default;
 void HistoryClustersModuleRanker::RankClusters(
     std::vector<history::Cluster> clusters,
     ClustersCallback callback) {
+  DCHECK(!clusters.empty());
+
+  auto metrics_ready_callback =
+      base::BindOnce(&HistoryClustersModuleRanker::OnClusterMetricsReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  if (!segmentation_platform_service_) {
+    OnMetricsQueryDataReady(
+        std::move(metrics_ready_callback), std::move(clusters),
+        segmentation_platform::DatabaseClient::ResultStatus::kError, {});
+    return;
+  }
+  segmentation_platform::DatabaseClient* client =
+      segmentation_platform_service_->GetDatabaseClient();
+  if (!client) {
+    OnMetricsQueryDataReady(
+        std::move(metrics_ready_callback), std::move(clusters),
+        segmentation_platform::DatabaseClient::ResultStatus::kError, {});
+    return;
+  }
+
+  std::set<std::string> cluster_ids;
+  std::ranges::transform(clusters,
+                         std::inserter(cluster_ids, cluster_ids.end()),
+                         [](const history::Cluster& cluster) {
+                           return base::NumberToString(cluster.cluster_id);
+                         });
+  // A non-empty cluster ids set is required for the below query logic to work
+  // correctly.
+  segmentation_platform::proto::SegmentationModelMetadata metadata;
+  segmentation_platform::MetadataWriter writer(&metadata);
+  writer.SetDefaultSegmentationMetadataConfig();
+  segmentation_platform::DatabaseApiClients::AddSumGroupQuery(
+      writer, kHistoryClusterSeenEventName, cluster_ids, query_day_count_);
+  segmentation_platform::DatabaseApiClients::AddSumGroupQuery(
+      writer, kHistoryClusterUsedEventName, cluster_ids, query_day_count_);
+
+  // The resulting vector of floats produced by the queries specified in the
+  // `metadata` above is guaranteed to be of size equal to 2 * the size of the
+  // cluster_ids set.
+  client->ProcessFeatures(
+      metadata, base::Time::Now(),
+      base::BindOnce(&HistoryClustersModuleRanker::OnMetricsQueryDataReady,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(metrics_ready_callback), std::move(clusters)));
+}
+
+void HistoryClustersModuleRanker::OnMetricsQueryDataReady(
+    base::OnceCallback<void(std::vector<history::Cluster>,
+                            std::vector<HistoryClusterMetrics>)> callback,
+    std::vector<history::Cluster> clusters,
+    segmentation_platform::DatabaseClient::ResultStatus status,
+    const segmentation_platform::ModelProvider::Request& result) {
+  if (status != segmentation_platform::DatabaseClient::ResultStatus::kSuccess) {
+    std::move(callback).Run(std::move(clusters), {});
+    return;
+  }
+
+  // Split the single query results vector into two vectors, one for
+  // each of the requested queries.
+  DCHECK_EQ(result.size() / 2, clusters.size());
+  auto seen_counts =
+      std::vector<float>(result.begin(), result.begin() + clusters.size());
+  auto used_counts =
+      std::vector<float>(result.begin() + clusters.size(), result.end());
+  std::vector<HistoryClusterMetrics> metrics;
+  for (size_t i = 0; i < clusters.size(); i++) {
+    HistoryClusterMetrics cluster_metrics;
+    cluster_metrics.num_times_seen = seen_counts.at(i);
+    cluster_metrics.num_times_used = used_counts.at(i);
+    metrics.push_back(std::move(cluster_metrics));
+  }
+
+  std::move(callback).Run(std::move(clusters), std::move(metrics));
+}
+
+void HistoryClustersModuleRanker::OnClusterMetricsReady(
+    ClustersCallback callback,
+    std::vector<history::Cluster> clusters,
+    std::vector<HistoryClusterMetrics> cluster_metrics) {
   if (IsCartModuleEnabled() && cart_service_) {
     cart_service_->LoadAllActiveCarts(
         base::BindOnce(&HistoryClustersModuleRanker::OnAllSignalsReady,
                        weak_ptr_factory_.GetWeakPtr(), std::move(clusters),
-                       std::move(callback)));
+                       std::move(cluster_metrics), std::move(callback)));
   } else {
-    OnAllSignalsReady(std::move(clusters), std::move(callback),
+    OnAllSignalsReady(std::move(clusters), std::move(cluster_metrics),
+                      std::move(callback),
                       /*success=*/false, /*active_carts=*/{});
   }
 }
 
 void HistoryClustersModuleRanker::OnAllSignalsReady(
     std::vector<history::Cluster> clusters,
+    std::vector<HistoryClusterMetrics> cluster_metrics,
     ClustersCallback callback,
     bool success,
     std::vector<CartDB::KeyAndValue> active_carts) {
   auto ranking_signals =
       std::make_unique<std::vector<HistoryClustersModuleRankingSignals>>();
   ranking_signals->reserve(clusters.size());
-  for (const auto& cluster : clusters) {
-    ranking_signals->emplace_back(active_carts, category_boostlist_, cluster);
+  for (size_t i = 0; i < clusters.size(); i++) {
+    ranking_signals->emplace_back(
+        active_carts, category_boostlist_, clusters.at(i),
+        !cluster_metrics.empty() ? cluster_metrics.at(i)
+                                 : HistoryClusterMetrics());
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -94,8 +198,22 @@ void HistoryClustersModuleRanker::RunFallbackHeuristic(
     ClustersCallback callback) {
   CHECK_EQ(clusters.size(), ranking_signals->size());
 
+  std::vector<std::pair<history::Cluster, std::optional<float>>>
+      clusters_with_scores;
+  std::transform(clusters.cbegin(), clusters.cend(),
+                 std::back_inserter(clusters_with_scores),
+                 [](history::Cluster cluster) {
+                   return std::make_pair(cluster, std::nullopt);
+                 });
+
+  std::vector<history::Cluster*> cart_clusters = {};
+  for (auto& cluster_and_score : clusters_with_scores) {
+    auto& cluster = std::get<history::Cluster>(cluster_and_score);
+    cart_clusters.push_back(&cluster);
+  }
+
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
-                                                            clusters);
+                                                            cart_clusters);
 
   std::vector<std::tuple<history::Cluster, HistoryClustersModuleRankingSignals>>
       ranking_infos;
@@ -111,16 +229,18 @@ void HistoryClustersModuleRanker::RunFallbackHeuristic(
                                              std::get<history::Cluster>(c2));
       });
 
-  clusters.clear();
+  clusters_with_scores.clear();
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
       ranking_signals_map;
   for (auto& ranking_info : ranking_infos) {
     auto& cluster = std::get<history::Cluster>(ranking_info);
     ranking_signals_map[cluster.cluster_id] =
         std::move(std::get<HistoryClustersModuleRankingSignals>(ranking_info));
-    clusters.emplace_back(std::move(cluster));
+    clusters_with_scores.emplace_back(std::make_pair(cluster, std::nullopt));
   }
-  std::move(callback).Run(std::move(clusters), std::move(ranking_signals_map));
+
+  std::move(callback).Run(std::move(clusters_with_scores),
+                          std::move(ranking_signals_map));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -142,40 +262,46 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
 
   std::vector<
       std::tuple<history::Cluster, HistoryClustersModuleRankingSignals, float>>
-      clusters_with_scores;
-  clusters_with_scores.reserve(clusters.size());
+      clusters_with_signals_and_scores;
 
   // Filter clusters by model score.
   for (size_t i = 0; i < clusters.size(); i++) {
-    if (outputs[i] > threshold_param_) {
-      clusters_with_scores.emplace_back(std::move(clusters[i]),
-                                        std::move(ranking_signals->at(i)),
-                                        outputs[i]);
+    if (outputs[i] <= threshold_param_) {
+      clusters_with_signals_and_scores.emplace_back(
+          std::move(clusters[i]), std::move(ranking_signals->at(i)),
+          outputs[i]);
     }
   }
 
-  // Sort clusters by model score.
-  base::ranges::stable_sort(clusters_with_scores,
+  // Sort clusters by model score. This sort function is reversed and so all
+  // models account for this by flipping the sign. i.e. -1 is before -0.5.
+  base::ranges::stable_sort(clusters_with_signals_and_scores,
                             [](const auto& c1, const auto& c2) {
                               return std::get<float>(c1) < std::get<float>(c2);
                             });
 
-  std::vector<history::Cluster> output_clusters;
-  output_clusters.reserve(clusters_with_scores.size());
+  std::vector<std::pair<history::Cluster, std::optional<float>>>
+      clusters_and_scores;
+  clusters_and_scores.reserve(clusters_with_signals_and_scores.size());
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
       output_ranking_signals;
-  output_ranking_signals.reserve(clusters_with_scores.size());
-  for (auto& cluster_and_score : clusters_with_scores) {
-    auto& cluster = std::get<history::Cluster>(cluster_and_score);
+  output_ranking_signals.reserve(clusters_with_signals_and_scores.size());
+  std::vector<history::Cluster*> cart_clusters = {};
+  for (auto& cluster_and_score : clusters_with_signals_and_scores) {
+    clusters_and_scores.emplace_back(
+        std::move(std::get<history::Cluster>(cluster_and_score)),
+        std::get<float>(cluster_and_score));
+    auto& cluster = std::get<history::Cluster>(clusters_and_scores.back());
+    cart_clusters.push_back(&cluster);
+
     output_ranking_signals[cluster.cluster_id] = std::move(
         std::get<HistoryClustersModuleRankingSignals>(cluster_and_score));
-    output_clusters.push_back(std::move(cluster));
   }
 
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
-                                                            output_clusters);
+                                                            cart_clusters);
 
-  std::move(callback).Run(std::move(output_clusters),
+  std::move(callback).Run(std::move(clusters_and_scores),
                           std::move(output_ranking_signals));
 }
 

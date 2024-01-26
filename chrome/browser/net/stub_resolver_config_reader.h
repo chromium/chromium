@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 #define CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/weak_ptr.h"
@@ -74,7 +74,7 @@ class StubResolverConfigReader {
   // If the URI templates for the DNS-over-HTTPS resolver contain user or device
   // identifiers (which are hashed before being used), this method returns the
   // plain text version of the URI templates. Otherwise returns nullopt.
-  absl::optional<std::string> GetDohWithIdentifiersDisplayServers();
+  std::optional<std::string> GetDohWithIdentifiersDisplayServers();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -108,7 +108,7 @@ class StubResolverConfigReader {
   // expiration of the delay timer or because of a forced check.
   bool parental_controls_checked_ = false;
 
-  absl::optional<bool> parental_controls_testing_override_;
+  std::optional<bool> parental_controls_testing_override_;
 
   // This object lives on the UI thread, but it's possible for it to be created
   // before BrowserMainLoop::CreateThreads() is called which would cause a
@@ -121,7 +121,7 @@ class StubResolverConfigReader {
 #if BUILDFLAG(IS_ANDROID)
   // Whether or not an Android device or profile is owned.
   // A nullopt indicates this value has not been determined yet.
-  absl::optional<bool> android_has_owner_ = absl::nullopt;
+  std::optional<bool> android_has_owner_ = std::nullopt;
   base::WeakPtrFactory<StubResolverConfigReader> weak_factory_{this};
 #endif
 };

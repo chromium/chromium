@@ -15,10 +15,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
-#include "chrome/browser/download/download_target_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -51,13 +51,43 @@ class DownloadPrefs;
 // instance of DownloadTargetDeterminer.
 class DownloadTargetDeterminer : public download::DownloadItem::Observer {
  public:
-  using CompletionCallback =
-      base::OnceCallback<void(std::unique_ptr<DownloadTargetInfo>)>;
+  // A callback to convey the information of the target once determined.
+  //
+  // |target_info| contains information about the paths, as well as other
+  // information about the target.
+  //
+  // |target_info.danger_type| is set to MAYBE_DANGEROUS_CONTENT if the file
+  // type is handled by SafeBrowsing. However, if the SafeBrowsing service is
+  // unable to verify whether the file is safe or not, we are on our own. The
+  // value of |danger_level| indicates whether the download should be considered
+  // dangerous if SafeBrowsing returns an unknown verdict.
+  //
+  // Note that some downloads (e.g. "Save link as" on a link to a binary) would
+  // not be considered 'Dangerous' even if SafeBrowsing came back with an
+  // unknown verdict. So we can't always show a warning when SafeBrowsing fails.
+  //
+  // The value of |danger_level| should be interpreted as follows:
+  //
+  //   NOT_DANGEROUS : Unless flagged by SafeBrowsing, the file should be
+  //       considered safe.
+  //
+  //   ALLOW_ON_USER_GESTURE : If SafeBrowsing claims the file is safe, then the
+  //       file is safe. An UNKOWN verdict results in the file being marked as
+  //       DANGEROUS_FILE.
+  //
+  //   DANGEROUS : This type of file shouldn't be allowed to download without
+  //       any user action. Hence, if SafeBrowsing marks the file as SAFE, or
+  //       UNKNOWN, the file will still be considered a DANGEROUS_FILE. However,
+  //       SafeBrowsing may flag the file as being malicious, in which case the
+  //       malicious classification should take precedence.
+  using CompletionCallback = base::OnceCallback<void(
+      download::DownloadTargetInfo target_info,
+      safe_browsing::DownloadFileType::DangerLevel danger_level)>;
 
   DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;
   DownloadTargetDeterminer& operator=(const DownloadTargetDeterminer&) = delete;
 
-  // Start the process of determing the target of |download|.
+  // Start the process of determining the target of |download|.
   //
   // |initial_virtual_path| if non-empty, defines the initial virtual path for
   //   the target determination process. If one isn't specified, one will be
@@ -226,7 +256,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Callback invoked after the file picker completes. Cancels the download if
   // the user cancels the file picker.
   void RequestConfirmationDone(DownloadConfirmationResult result,
-                               const base::FilePath& virtual_path);
+                               const ui::SelectedFileInfo& selected_file_info);
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback invoked after the incognito message has been accepted/rejected
@@ -319,7 +349,8 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // this object. The determined target info will be passed into the callback
   // if |interrupt_reason| is NONE. Otherwise, only the interrupt reason will be
   // passed on.
-  void ScheduleCallbackAndDeleteSelf(download::DownloadInterruptReason result);
+  void ScheduleCallbackAndDeleteSelf(
+      download::DownloadInterruptReason interrupt_reason);
 
   Profile* GetProfile() const;
 
@@ -356,7 +387,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
       PriorVisitsToReferrer visits) const;
 
   // Returns the timestamp of the last download bypass.
-  absl::optional<base::Time> GetLastDownloadBypassTimestamp() const;
+  std::optional<base::Time> GetLastDownloadBypassTimestamp() const;
 
   // Generates the download file name based on information from URL, response
   // headers and sniffed mime type.
@@ -382,6 +413,11 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   download::DownloadItem::InsecureDownloadStatus insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
+#endif
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags_;
 #endif
 
   raw_ptr<download::DownloadItem> download_;

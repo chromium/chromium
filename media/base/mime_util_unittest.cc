@@ -141,6 +141,11 @@ static bool HasAc4Support() {
   return false;
 }
 
+static bool HasIamfSupport() {
+  // TODO (crbug.com/1517114): Enable once IAMF is supported on Android.
+  return false;
+}
+
 TEST(MimeUtilTest, CommonMediaMimeType) {
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/webm"));
   EXPECT_TRUE(IsSupportedMediaMimeType("video/webm"));
@@ -570,6 +575,10 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
           case MimeUtil::AC4:
             EXPECT_EQ(HasAc4Support(), result);
             break;
+
+          case MimeUtil::IAMF:
+            EXPECT_EQ(HasIamfSupport(), result);
+            break;
         }
       });
 }
@@ -640,6 +649,10 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           case MimeUtil::AC4:
             EXPECT_EQ(HasAc4Support(), result);
+            break;
+
+          case MimeUtil::IAMF:
+            EXPECT_EQ(HasIamfSupport(), result);
             break;
         }
       });

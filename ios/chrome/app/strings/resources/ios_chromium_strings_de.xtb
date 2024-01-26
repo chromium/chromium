@@ -80,7 +80,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="3366305173356742781">Chromium-Daten in deinem Konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Das passiert, wenn Chromium {THRESHOLD} Minute lang nicht verwendet wird. Dazu können der Verlauf und die Funktion „Autofill“ gehören.}other{Das passiert, wenn Chromium {THRESHOLD} Minuten lang nicht verwendet wird. Dazu können der Verlauf und die Funktion „Autofill“ gehören.}}</translation>
 <translation id="3472200483164753384">Wird von Chromium Canary nicht unterstützt</translation>
-<translation id="3478750326643748149">„Chromium optimal nutzen“ ausblenden</translation>
 <translation id="347967311580159871">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und vergewissere dich, dass du in Chromium angemeldet bist. Versuch es dann noch einmal.</translation>
 <translation id="3554027294407525061">Browserdaten in Chromium löschen.</translation>
@@ -100,9 +99,9 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium über jede App öffnen</translation>
-<translation id="4002314982058020967">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Dadurch wird der Sicherheitscheck in Chromium geöffnet und ausgeführt.</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
+<translation id="4076589763479456892">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
 <translation id="4106512142782407609">Angemeldet als <ph name="EMAIL" />.
 
@@ -113,7 +112,6 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 <translation id="4408912345039114853">Chromium-Sicherheitscheck ausführen</translation>
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
 <translation id="4445228361214254027">Deine Organisation hat die Möglichkeit deaktiviert, Chromium-Daten in deinem Google-Konto zu speichern und zu nutzen. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
-<translation id="4485517920713468480">Chromium erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern. Du kannst dies in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> ändern.</translation>
 <translation id="4498832288620833153">Fügt die eingegebenen URLs deiner Leseliste in Chromium hinzu.</translation>
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -155,6 +153,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 <translation id="5534584691915394889">Dadurch kannst du in deinem Apple-Kalender Termine anhand von Inhalten aus Chromium und Google Lens erstellen.</translation>
 <translation id="5571094606370987472">Öffnet die zuletzt geöffneten Chromium-Tabs.</translation>
 <translation id="5623083843656850677">Du kannst Inkognitotabs sperren lassen, wenn du Chromium verlässt oder zu einer anderen App wechselst.</translation>
+<translation id="5671188105328420281">Chromium-Tipps</translation>
 <translation id="5688047395118852662">Auf dieser Karte findest du Vorschläge, wie du Chromium optimal nutzen kannst.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
@@ -283,6 +282,7 @@ Wichtige Hinweise:
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
 <translation id="88376265765385899">Öffnet die Chromium-Lesezeichen.</translation>
 <translation id="8860548555286245440">URLs in Chromium im Inkognitomodus öffnen</translation>
+<translation id="8866191443434488382">Chromium erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Chromium gesendet, um diese Funktion bereitzustellen und die Shopping-Funktionen für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
 <translation id="8909995017390087892">Chromium für iOS</translation>
 <translation id="8924617840944134898">Chromium-Inkognitotab öffnen</translation>
 <translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>

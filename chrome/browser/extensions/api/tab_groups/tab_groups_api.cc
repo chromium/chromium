@@ -52,9 +52,9 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
     return false;
   }
 
-  absl::optional<tab_groups::TabGroupId> target_group =
+  std::optional<tab_groups::TabGroupId> target_group =
       tab_strip->GetTabGroupForTab(target_index);
-  absl::optional<tab_groups::TabGroupId> adjacent_group =
+  std::optional<tab_groups::TabGroupId> adjacent_group =
       tab_strip->GetTabGroupForTab(target_index - 1);
 
   if (target_group.has_value() && target_group == adjacent_group) {
@@ -68,7 +68,7 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 }  // namespace
 
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
-  absl::optional<api::tab_groups::Get::Params> params =
+  std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   int group_id = params->group_id;
@@ -89,7 +89,7 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
-  absl::optional<api::tab_groups::Query::Params> params =
+  std::optional<api::tab_groups::Query::Params> params =
       api::tab_groups::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -159,7 +159,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
-  absl::optional<api::tab_groups::Update::Params> params =
+  std::optional<api::tab_groups::Update::Params> params =
       api::tab_groups::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -214,7 +214,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
-  absl::optional<api::tab_groups::Move::Params> params =
+  std::optional<api::tab_groups::Move::Params> params =
       api::tab_groups::Move::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       int new_index,
-                                      const absl::optional<int>& window_id,
+                                      const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
   Browser* source_browser = nullptr;

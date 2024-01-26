@@ -46,12 +46,12 @@ const char kAfpBlockedDomainListManifestName[] =
     "Anti-Fingerprinting Blocked Domain List";
 
 // Runs on a thread pool and reads the component file from disk to a string.
-absl::optional<std::string> ReadComponentFromDisk(
+std::optional<std::string> ReadComponentFromDisk(
     const base::FilePath& file_path) {
   std::string contents;
   if (!base::ReadFileToString(file_path, &contents)) {
     VLOG(1) << "Failed reading from " << file_path.value();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return contents;
 }
@@ -117,7 +117,7 @@ void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
       base::BindOnce(&ReadComponentFromDisk, GetInstalledPath(install_dir)),
       base::BindOnce(
           [](ListReadyRepeatingCallback on_list_ready,
-             const absl::optional<std::string>& maybe_contents) {
+             const std::optional<std::string>& maybe_contents) {
             if (maybe_contents.has_value()) {
               on_list_ready.Run(maybe_contents.value());
             }

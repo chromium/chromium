@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -78,7 +79,7 @@ constexpr base::TimeDelta kLoadTimeout = base::Seconds(3);
 // found.
 std::optional<std::string> JoinListValuesToString(
     const base::Value::Dict& dictionary,
-    base::StringPiece key) {
+    std::string_view key) {
   const base::Value::List* list_value = dictionary.FindList(key);
   if (list_value == nullptr)
     return std::nullopt;
@@ -105,7 +106,7 @@ std::optional<std::string> JoinListValuesToString(
 // first value of the list as string. Returns nullopt if `key` is not found.
 std::optional<std::string> GetFirstListValueAsString(
     const base::Value::Dict& dictionary,
-    base::StringPiece key) {
+    std::string_view key) {
   const base::Value::List* list_value = dictionary.FindList(key);
   if (list_value == nullptr || list_value->empty()) {
     return std::nullopt;
@@ -165,7 +166,7 @@ base::FilePath GetFilePathIgnoreFailure(int key) {
   return file_path;
 }
 
-bool HasOemPrefix(base::StringPiece name) {
+bool HasOemPrefix(std::string_view name) {
   return name.substr(0, 4) == "oem_";
 }
 
@@ -301,8 +302,8 @@ void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
                                                            std::move(callback));
 }
 
-std::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
-    base::StringPiece name) {
+std::optional<std::string_view> StatisticsProviderImpl::GetMachineStatistic(
+    std::string_view name) {
   VLOG(1) << "Machine Statistic requested: " << name;
   if (!WaitForStatisticsLoaded()) {
     LOG(ERROR) << "GetMachineStatistic called before load started: " << name;
@@ -312,17 +313,17 @@ std::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
   // Test region should override any other value.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCrosRegion)) {
-    if (const std::optional<base::StringPiece> region_result =
+    if (const std::optional<std::string_view> region_result =
             GetRegionalInformation(name)) {
       return region_result;
     }
   }
 
   if (const auto iter = machine_info_.find(name); iter != machine_info_.end()) {
-    return base::StringPiece(iter->second);
+    return std::string_view(iter->second);
   }
 
-  if (const std::optional<base::StringPiece> region_result =
+  if (const std::optional<std::string_view> region_result =
           GetRegionalInformation(name)) {
     return region_result;
   }
@@ -336,7 +337,7 @@ std::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
 }
 
 StatisticsProviderImpl::FlagValue StatisticsProviderImpl::GetMachineFlag(
-    base::StringPiece name) {
+    std::string_view name) {
   VLOG(1) << "Machine Flag requested: " << name;
   if (!WaitForStatisticsLoaded()) {
     LOG(ERROR) << "GetMachineFlag called before load started: " << name;
@@ -619,7 +620,7 @@ void StatisticsProviderImpl::LoadOemManifestFromFile(
 }
 
 void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
-                                             base::StringPiece region) {
+                                             std::string_view region) {
   JSONFileValueDeserializer regions_file(filename);
   int regions_error_code = 0;
   std::string regions_error_message;
@@ -652,14 +653,14 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
   }
 }
 
-std::optional<base::StringPiece> StatisticsProviderImpl::GetRegionalInformation(
-    base::StringPiece name) const {
+std::optional<std::string_view> StatisticsProviderImpl::GetRegionalInformation(
+    std::string_view name) const {
   if (!base::Contains(machine_info_, kRegionKey)) {
     return std::nullopt;
   }
 
   if (const auto iter = region_info_.find(name); iter != region_info_.end()) {
-    return base::StringPiece(iter->second);
+    return std::string_view(iter->second);
   }
 
   return std::nullopt;

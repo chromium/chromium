@@ -28,7 +28,8 @@ class DestructCounter {
   void set_where(size_t* where) { where_ = where; }
 
  private:
-  RAW_PTR_EXCLUSION size_t* where_ = nullptr;  // Stack location only.
+  // RAW_PTR_EXCLUSION: Stack location only.
+  RAW_PTR_EXCLUSION size_t* where_ = nullptr;
 };
 
 }  // namespace
@@ -202,6 +203,18 @@ TEST(HeapArray, Uninit) {
 #endif
 }
 
+TEST(HeapArray, CopiedFrom) {
+  base::span<uint32_t> empty_span;
+  auto empty_vec = base::HeapArray<uint32_t>::CopiedFrom(empty_span);
+  EXPECT_EQ(0u, empty_vec.size());
+
+  const uint32_t kData[] = {1000u, 1001u};
+  auto vec = base::HeapArray<uint32_t>::CopiedFrom(kData);
+  ASSERT_EQ(2u, vec.size());
+  EXPECT_EQ(1000u, vec[0]);
+  EXPECT_EQ(1001u, vec[1]);
+}
+
 TEST(HeapArray, RunsDestructor) {
   size_t count = 0;
   {
@@ -211,6 +224,41 @@ TEST(HeapArray, RunsDestructor) {
     EXPECT_EQ(count, 0u);
   }
   EXPECT_EQ(count, 2u);
+}
+
+TEST(HeapArray, CopyFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::Uninit(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::Uninit(2);
+  const uint32_t kStuff[] = {1000u, 1001u};
+
+  empty.copy_from(base::span<uint32_t>());  // Should not check.
+  something.copy_from(kStuff);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+
+  other.copy_from(something);
+  EXPECT_EQ(1000u, other[0]);
+  EXPECT_EQ(1001u, other[1]);
+}
+
+TEST(HeapArray, Leak) {
+  size_t count = 0;
+  span<DestructCounter> leaked;
+  {
+    auto vec = base::HeapArray<DestructCounter>::WithSize(2);
+    vec[0].set_where(&count);
+    vec[1].set_where(&count);
+
+    auto* data = vec.data();
+    leaked = std::move(vec).leak();
+    ASSERT_EQ(data, leaked.data());
+
+    EXPECT_EQ(count, 0u);
+  }
+  EXPECT_EQ(count, 0u);
+
+  delete[] leaked.data();
 }
 
 }  // namespace base

@@ -109,6 +109,11 @@ StorageAccessHandle::StorageAccessHandle(
     window.CountUse(
         WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_all);
   }
+  if (storage_access_types_->cookies()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies);
+  }
   if (storage_access_types_->sessionStorage()) {
     window.CountUse(
         WebFeature::

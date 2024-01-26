@@ -6,6 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/ozone/platform/drm/test/ui_controls_system_input_injector.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_ash.h"
@@ -27,7 +28,7 @@ void ChromeOSTestSuite::Initialize() {
   // chromeos_integration_tests must use functions in ui_controls.h.
   ui::test::EventGenerator::BanEventGenerator();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::test::EnableUIControlsAsh();
+  ui::test::EnableUIControlsSystemInputInjector();
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   cmdline->AppendSwitch(switches::kDisableMojoBroker);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

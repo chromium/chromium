@@ -68,6 +68,11 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveMaskedCreditCard;
 
+// Saves a masked credit which is enrolled to create a Virtual Card.
+// No current CVC auth required.
+// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
++ (NSString*)saveMaskedCreditCardEnrolledInVirtualCard;
+
 // The functions below are helpers for the SaveCardInfobarEGTest that requires
 // observing autofill events in the app process.
 // SaveCardInfobarEGTestHelper is an object instantiated in the app process that

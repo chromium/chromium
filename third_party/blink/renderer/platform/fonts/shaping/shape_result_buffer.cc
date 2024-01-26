@@ -16,10 +16,11 @@ namespace blink {
 namespace {
 
 unsigned CharactersInShapeResult(
-    const Vector<scoped_refptr<const ShapeResult>, 64>& results) {
+    const HeapVector<Member<const ShapeResult>, 64>& results) {
   unsigned num_characters = 0;
-  for (const scoped_refptr<const ShapeResult>& result : results)
+  for (const Member<const ShapeResult>& result : results) {
     num_characters += result->NumCharacters();
+  }
   return num_characters;
 }
 
@@ -52,7 +53,7 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
 
   unsigned total_num_characters = 0;
   for (unsigned j = 0; j < results_.size(); j++) {
-    const scoped_refptr<const ShapeResult> result = results_[j];
+    const ShapeResult* result = results_[j];
     result->EnsureGraphemes(
         StringView(text, total_num_characters, result->NumCharacters()));
     if (direction == TextDirection::kRtl) {
@@ -182,7 +183,7 @@ Vector<double> ShapeResultBuffer::IndividualCharacterAdvances(
   Vector<double> advances;
   double current_x = direction == TextDirection::kRtl ? total_width : 0;
 
-  for (const scoped_refptr<const ShapeResult>& result : results_) {
+  for (const Member<const ShapeResult>& result : results_) {
     unsigned run_count = result->runs_.size();
 
     result->EnsureGraphemes(
@@ -215,7 +216,7 @@ int ShapeResultBuffer::OffsetForPosition(
   if (run.Rtl()) {
     total_offset = run.length();
     for (unsigned i = results_.size(); i; --i) {
-      const scoped_refptr<const ShapeResult>& word_result = results_[i - 1];
+      const Member<const ShapeResult>& word_result = results_[i - 1];
       if (!word_result)
         continue;
       total_offset -= word_result->NumCharacters();
@@ -230,7 +231,7 @@ int ShapeResultBuffer::OffsetForPosition(
     }
   } else {
     total_offset = 0;
-    for (const scoped_refptr<const ShapeResult>& word_result : results_) {
+    for (const Member<const ShapeResult>& word_result : results_) {
       if (!word_result)
         continue;
       int offset_for_word = word_result->OffsetForPosition(

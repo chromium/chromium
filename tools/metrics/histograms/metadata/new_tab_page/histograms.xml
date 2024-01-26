@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DataRequest" enum="CartDiscountDataType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DiscountCountAtLoad" units="count"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2024-05-19">
+<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Collections.IdOnLoad" enum="NTPCollectionId"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -538,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Drive.FileClick" units="index"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>aee@chromium.org</owner>
   <owner>andrevincent@google.com</owner>
@@ -837,6 +837,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.Score" units="score"
+    expires_after="2024-06-30">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the scores of the history clusters that may be shown on the NTP. Logged
+    when a cluster is ready to be shown on the NTP. Scores are a float ranging
+    from -1.0 to 0.0. To convert this to a possible histogram value we multiply
+    by -100 to make it between 0 and 100 and then round that value to make it an
+    integer.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
     expires_after="2024-06-30">
   <owner>danpeng@google.com</owner>
@@ -872,7 +887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Lens.UploadDialog.DialogAction"
-    enum="NewTabPageLensUploadDialogActions" expires_after="2024-05-19">
+    enum="NewTabPageLensUploadDialogActions" expires_after="2024-07-21">
   <owner>nguyenbryan@google.com</owner>
   <owner>yowakita@google.com</owner>
   <owner>bbonnet@google.com</owner>
@@ -987,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MainUi.ShownTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1325,6 +1340,18 @@ chromium-metrics-reviews@google.com.
     restores a previously dismissed module via the toast on the New Tab Page.
     Every restoral emits a 1 which has no inherent meaning aside from a restoral
     occurred.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.SegmentationPlatformClientReady"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether the segmentation platform client was ready when attempting to
+    record a module related event. Logged at a module lifecycle stage, such as
+    when showing or interacting with modules. Only logged on the 1P NTP and when
+    NTP modules are enabled.
   </summary>
 </histogram>
 
@@ -1669,7 +1696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestionsImpression" enum="MostVisitedTileIndex"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1724,7 +1751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileTitle" enum="NTPTileTitleSource"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1746,7 +1773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileType" enum="NTPTileVisualType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1834,7 +1861,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.VoiceActions" enum="NewTabPageVoiceAction"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1868,6 +1895,21 @@ chromium-metrics-reviews@google.com.
     Histogram of the time, in milliseconds, it takes to process the Wallpaper
     Search results after we get the images back from the server. This tracks the
     time from server response until the images are sent to the UI.
+  </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
+    units="ms" expires_after="2024-06-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, it took to set an inspiration
+    Wallpaper Search theme as the current theme. This tracks how long the image
+    processing takes from the time image processing starts for setting an
+    inspiration Wallpaper Search theme to when the profile preference is set to
+    change the background image.
   </summary>
 </histogram>
 

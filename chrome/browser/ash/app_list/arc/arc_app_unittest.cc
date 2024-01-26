@@ -1555,6 +1555,35 @@ TEST_P(ArcAppModelBuilderTest,
   ASSERT_TRUE(app_instance()->selected_locales().empty());
 }
 
+TEST_P(ArcAppModelBuilderTest, ArcPackagePref_RejectMaliciousAppLocaleTag) {
+  // Setup.
+  SendRefreshAppList(fake_apps());
+  std::vector<arc::mojom::ArcPackageInfoPtr> packages =
+      ArcAppTest::ClonePackages(fake_packages());
+  // Update fake_packages to use malicious locale tag.
+  // fake_packages[4] is the test package with localeInfo.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info->supported_locales.clear();
+  // Add malicious locale tag.
+  updated_package->locale_info->supported_locales.push_back(
+      "+!@#$%^&*()[]{};'");
+  UpdateTestPackage(updated_package);
+
+  // Run.
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(fake_packages()));
+
+  // Assert.
+  // Since supported locales will be rejected, we'll have to clear that from the
+  // fake_packages.
+  std::vector<arc::mojom::ArcPackageInfoPtr> expected_packages =
+      ArcAppTest::ClonePackages(fake_packages());
+  arc::mojom::ArcPackageInfoPtr expected_package = fake_packages()[4]->Clone();
+  expected_package->locale_info->supported_locales.clear();
+  UpdateTestPackage(expected_package);
+  ValidateHavePackages(fake_packages());
+}
+
 TEST_P(ArcAppModelBuilderTest, RefreshAllFillsContent) {
   ValidateHaveApps({});
   SendRefreshAppList(fake_apps());

@@ -1053,7 +1053,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI starCurrentTab];
 
   // Verify the snackbar title.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Bookmarked")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(base::SysUTF16ToNSString(
+                                   l10n_util::GetPluralStringFUTF16(
+                                       IDS_IOS_BOOKMARKS_BULK_SAVED, 1)))]
       assertWithMatcher:grey_notNil()];
 
   // Tap on the snackbar.

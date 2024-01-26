@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -19,7 +21,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -67,7 +68,7 @@ bool EventRewriterDelegateImpl::RewriteModifierKeys() {
   return !suppress_modifier_key_rewrites_;
 }
 
-absl::optional<ui::mojom::ModifierKey>
+std::optional<ui::mojom::ModifierKey>
 EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
     int device_id,
     ui::mojom::ModifierKey modifier_key,
@@ -84,12 +85,12 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
     }
     const PrefService* pref_service = GetPrefService();
     if (!pref_service) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     const PrefService::Preference* preference =
         pref_service->FindPreference(pref_name);
     if (!preference) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     DCHECK_EQ(preference->GetType(), base::Value::Type::INTEGER);
@@ -101,7 +102,7 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
   const mojom::KeyboardSettings* settings =
       input_device_settings_controller_->GetKeyboardSettings(device_id);
   if (!settings) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto iter = settings->modifier_remappings.find(modifier_key);
@@ -250,24 +251,24 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
   pref_service->SetInteger(it->second, count);
 }
 
-absl::optional<ui::mojom::SimulateRightClickModifier>
+std::optional<ui::mojom::SimulateRightClickModifier>
 EventRewriterDelegateImpl::GetRemapRightClickModifier(int device_id) {
   const mojom::TouchpadSettings* settings =
       input_device_settings_controller_->GetTouchpadSettings(device_id);
   if (!settings) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return settings->simulate_right_click;
 }
 
-absl::optional<ui::mojom::SixPackShortcutModifier>
+std::optional<ui::mojom::SixPackShortcutModifier>
 EventRewriterDelegateImpl::GetShortcutModifierForSixPackKey(
     int device_id,
     ui::KeyboardCode key_code) {
   const mojom::KeyboardSettings* settings =
       input_device_settings_controller_->GetKeyboardSettings(device_id);
   if (!settings) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   switch (key_code) {
     case ui::KeyboardCode::VKEY_DELETE:
@@ -328,7 +329,7 @@ void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedBySetting(
                                              active_modifier, device_id);
 }
 
-absl::optional<ui::mojom::ExtendedFkeysModifier>
+std::optional<ui::mojom::ExtendedFkeysModifier>
 EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
                                                   ui::KeyboardCode key_code) {
   CHECK(key_code == ui::KeyboardCode::VKEY_F11 ||
@@ -338,7 +339,7 @@ EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
       input_device_settings_controller_->GetKeyboardSettings(device_id);
 
   if (!settings) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CHECK(settings->f11.has_value() && settings->f12.has_value());

@@ -498,7 +498,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
       &cert_provisioning_client_, MakeInvalidator(&mock_invalidator),
       GetStateChangeCallback(), GetResultCallback());
 
-  base::RepeatingClosure on_invalidation_callback;
+  OnInvalidationEventCallback on_invalidation_event_callback;
 
   auto VerifyNoBackendErrorsSeen = [&worker]() {
     EXPECT_EQ(worker.GetLastBackendServerError(), std::nullopt);
@@ -523,7 +523,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
                  StartResultOk());
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_callback));
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -538,6 +538,27 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+  {
+    // A signal that the the client has successfully subscribed to the
+    // invalidation topic should result in a retry of the waiting action.
+    // In this particular scenario, the result is still
+    // InstructionNotYetAvailable.
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    // kReadyForNextOperation -> kReadyForNextOperation is still reported as a
+    // state change.
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kSuccessfullySubscribed);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -633,7 +654,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    on_invalidation_callback.Run();
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kInvalidationReceived);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -661,7 +683,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
                 Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
         .Times(1);
 
-    on_invalidation_callback.Run();
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kInvalidationReceived);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
   }
 
@@ -674,8 +697,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kInvalidationReceived, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.CertProvisioning.Event.Dynamic.User",
+      CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.Event.Dynamic.User", 3);
+      "ChromeOS.CertProvisioning.Event.Dynamic.User", 4);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
   histogram_tester.ExpectTotalCount(
@@ -726,9 +752,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    base::RepeatingClosure on_invalidation_callback;
+    OnInvalidationEventCallback on_invalidation_event_callback;
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_callback));
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())

@@ -24,9 +24,10 @@
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <optional>
+
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/memory/stack_allocated.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
 
@@ -79,9 +80,9 @@ class ScopedBundleSwizzlerMac;
 // . Your test method is invoked on the ui thread. If you need to block until
 //   state changes you'll need to run the message loop from your test method.
 //   For example, if you need to wait till a find bar has completely been shown
-//   you'll need to invoke content::RunMessageLoop(). When the message bar is
-//   shown, invoke RunLoop::QuitCurrentWhenIdleDeprecated() to return control
-//   back to your test method.
+//   you'll need to create a base::RunLoop and call it's Run() method. When the
+//   message bar is shown, invoke loop.QuitWhenIdle()/loop.QuitWhenIdleClosure()
+//   to return control back to your test method.
 // . If you subclass and override SetUp(), be sure and invoke
 //   InProcessBrowserTest::SetUp(). (But see also BrowserTestBase's
 //   SetUpOnMainThread(), SetUpInProcessBrowserTestFixture(), and other related
@@ -489,7 +490,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
 #if BUILDFLAG(IS_MAC)
   STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
-  absl::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
+  std::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
   std::unique_ptr<ScopedBundleSwizzlerMac> bundle_swizzler_;
 
   // Enable fake full keyboard access by default, so that tests don't depend on

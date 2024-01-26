@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Értesítések kérése</translation>
 <translation id="4133493477912226187">Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="4212246570487010370">Böngészés folytatása</translation>
+<translation id="427987768447457592">Új lapcsoport</translation>
 <translation id="4648718555153979859">A lapok itt vannak csoportosítva</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> vélemény)}other{(<ph name="REVIEWS_COUNT_MANY" /> vélemény)}}</translation>
 <translation id="4850886885716139402">Nézet</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
+<translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> olyan lapja van, amelyet nem használt mostanában}other{<ph name="TABS_COUNT_MANY" /> olyan lapja van, amelyet nem használt mostanában}}</translation>
 <translation id="5339733443032484186">A legutóbbi lap</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>

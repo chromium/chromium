@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests that Page.addScriptToEvaluateOnLoad has access to command line APIs');
   dp.Runtime.enable();

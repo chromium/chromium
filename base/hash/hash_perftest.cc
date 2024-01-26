@@ -21,18 +21,16 @@
 namespace base {
 namespace {
 
-void Sha1Hash(void* data, size_t size) {
-  unsigned char digest[kSHA1Length];
-  memset(digest, 0, kSHA1Length);
-  SHA1HashBytes(reinterpret_cast<uint8_t*>(data), size, digest);
+void Sha1Hash(base::span<const uint8_t> data) {
+  SHA1HashSpan(data);
 }
 
-void FastHash(void* data, size_t size) {
-  base::Hash(reinterpret_cast<uint8_t*>(data), size);
+void FastHash(base::span<const uint8_t> data) {
+  base::FastHash(data);
 }
 
 void RunTest(const char* hash_name,
-             void (*hash)(void*, size_t),
+             void (*hash)(base::span<const uint8_t>),
              const size_t len) {
   constexpr char kMetricRuntime[] = "runtime";
   constexpr char kMetricThroughput[] = "throughput";
@@ -55,7 +53,7 @@ void RunTest(const char* hash_name,
 
     for (int i = 0; i < kNumRuns; ++i) {
       const auto start = TimeTicks::Now();
-      hash(buf.data(), len);
+      hash(buf);
       utime[i] = TimeTicks::Now() - start;
       total_test_time += utime[i];
     }

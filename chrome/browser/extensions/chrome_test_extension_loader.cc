@@ -310,15 +310,15 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
           CrxInstaller::OffStoreInstallAllowedInTest);
     }
 
-    base::test::TestFuture<absl::optional<CrxInstallError>>
+    base::test::TestFuture<std::optional<CrxInstallError>>
         installer_done_future;
     installer->AddInstallerCallback(
         installer_done_future
-            .GetCallback<const absl::optional<CrxInstallError>&>());
+            .GetCallback<const std::optional<CrxInstallError>&>());
 
     installer->InstallCrx(file_path);
 
-    absl::optional<CrxInstallError> error = installer_done_future.Get();
+    std::optional<CrxInstallError> error = installer_done_future.Get();
     if (error) {
       return nullptr;
     }

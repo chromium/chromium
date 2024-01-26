@@ -20,7 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -117,6 +117,12 @@ class ASH_EXPORT CaptureModeController
     return is_initializing_recording_ ||
            (video_recording_watcher_ &&
             !video_recording_watcher_->is_shutting_down());
+  }
+  bool can_start_new_recording() const {
+    // Even if recording stops, it takes a while for the video/gif file to be
+    // fully finalized. Until that happens, a new recording is not allowed to
+    // start.
+    return current_video_file_path_.empty() && !is_recording_in_progress();
   }
   bool enable_demo_tools() const { return enable_demo_tools_; }
 
@@ -387,9 +393,7 @@ class ASH_EXPORT CaptureModeController
   // kWindow source, or no region is selected in a kRegion source), then a
   // std::nullopt is returned.
   struct CaptureParams {
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION aura::Window* window = nullptr;
+    raw_ptr<aura::Window> window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
     // capture sources), or window-local coordinates (in a kWindow capture
     // source).

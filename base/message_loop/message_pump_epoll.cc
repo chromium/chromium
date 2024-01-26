@@ -4,6 +4,7 @@
 
 #include "base/message_loop/message_pump_epoll.h"
 
+#include <errno.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
@@ -13,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -96,12 +98,16 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
     }
 
     // Process any immediately ready IO event, but don't wait for more yet.
-    const bool processed_events = WaitForEpollEvents(TimeDelta(), delegate);
+    WaitForEpollEvents(TimeDelta(), delegate);
+
+    bool attempt_more_work = immediate_work_available || processed_io_events_;
+    processed_io_events_ = false;
+
     if (run_state.should_quit) {
       break;
     }
 
-    if (immediate_work_available || processed_events) {
+    if (attempt_more_work) {
       continue;
     }
 
@@ -152,24 +158,44 @@ void MessagePumpEpoll::ScheduleDelayedWork(
 
 void MessagePumpEpoll::AddEpollEvent(EpollEventEntry& entry) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!entry.stopped);
   const uint32_t events = entry.ComputeActiveEvents();
   epoll_event event{.events = events, .data = {.ptr = &entry}};
   int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_ADD, entry.fd, &event);
-  DPCHECK(rv == 0);
+  if (rv != 0) {
+    // TODO(crbug.com/1519703): Certain tests use regular files to simulate
+    // devices, which does not support epoll. Adding a fake entry for testing
+    // purposes as a temporary workaround. Tests need to be fixed and this
+    // workaround removed.
+    DLOG(WARNING) << "Can not register file descriptor for epoll event";
+    DPCHECK(errno == EPERM);
+    entry.stopped = true;
+  }
   entry.registered_events = events;
 }
 
 void MessagePumpEpoll::UpdateEpollEvent(EpollEventEntry& entry) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const uint32_t events = entry.ComputeActiveEvents();
-  if (events == entry.registered_events && !(events & EPOLLONESHOT)) {
-    // Persistent events don't need to be modified if no bits are changing.
-    return;
+  if (!entry.stopped) {
+    const uint32_t events = entry.ComputeActiveEvents();
+    if (events == entry.registered_events && !(events & EPOLLONESHOT)) {
+      // Persistent events don't need to be modified if no bits are changing.
+      return;
+    }
+    epoll_event event{.events = events, .data = {.ptr = &entry}};
+    int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_MOD, entry.fd, &event);
+    DPCHECK(rv == 0);
+    entry.registered_events = events;
   }
-  epoll_event event{.events = events, .data = {.ptr = &entry}};
-  int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_MOD, entry.fd, &event);
-  DPCHECK(rv == 0);
-  entry.registered_events = events;
+}
+
+void MessagePumpEpoll::StopEpollEvent(EpollEventEntry& entry) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!entry.stopped) {
+    int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_DEL, entry.fd, nullptr);
+    DPCHECK(rv == 0);
+    entry.stopped = true;
+  }
 }
 
 void MessagePumpEpoll::UnregisterInterest(
@@ -187,9 +213,8 @@ void MessagePumpEpoll::UnregisterInterest(
   interests.erase(it);
 
   if (interests.empty()) {
+    StopEpollEvent(entry);
     entries_.erase(entry_it);
-    int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_DEL, fd, nullptr);
-    DPCHECK(rv == 0);
   } else {
     UpdateEpollEvent(entry);
   }
@@ -253,13 +278,16 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout,
 
 void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!entry.stopped);
 
   const bool readable = (events & EPOLLIN) != 0;
   const bool writable = (events & EPOLLOUT) != 0;
 
   // Under different circumstances, peer closure may raise both/either EPOLLHUP
-  // and/or EPOLLERR. Treat them as equivalent.
+  // and/or EPOLLERR. Treat them as equivalent. Notify the watchers to
+  // gracefully stop watching if disconnected.
   const bool disconnected = (events & (EPOLLHUP | EPOLLERR)) != 0;
+  DCHECK(readable || writable || disconnected);
 
   // Copy the set of Interests, since interests may be added to or removed from
   // `entry` during the loop below. This copy is inexpensive in practice
@@ -273,13 +301,15 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
     interest->WatchForControllerDestruction();
   }
 
+  bool event_handled = false;
   for (const auto& interest : interests) {
     if (!interest->active()) {
       continue;
     }
 
     const bool can_read = (readable || disconnected) && interest->params().read;
-    const bool can_write = writable && interest->params().write;
+    const bool can_write =
+        (writable || disconnected) && interest->params().write;
     if (!can_read && !can_write) {
       // If this Interest is active but not watching for whichever event was
       // raised here, there's nothing to do. This can occur if a descriptor has
@@ -298,7 +328,14 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
 
     if (!interest->was_controller_destroyed()) {
       HandleEvent(entry.fd, can_read, can_write, interest->controller());
+      event_handled = true;
     }
+  }
+
+  // Stop `EpollEventEntry` for disconnected file descriptor without active
+  // interests.
+  if (disconnected && !event_handled) {
+    StopEpollEvent(entry);
   }
 
   for (const auto& interest : interests) {
@@ -311,6 +348,7 @@ void MessagePumpEpoll::HandleEvent(int fd,
                                    bool can_write,
                                    FdWatchController* controller) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  processed_io_events_ = true;
   // Make the MessagePumpDelegate aware of this other form of "DoWork". Skip if
   // HandleNotification() is called outside of Run() (e.g. in unit tests).
   Delegate::ScopedDoWorkItem scoped_do_work_item;
@@ -349,6 +387,7 @@ void MessagePumpEpoll::HandleEvent(int fd,
 
 void MessagePumpEpoll::HandleWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  processed_io_events_ = true;
   uint64_t value;
   ssize_t n = HANDLE_EINTR(read(wake_event_.get(), &value, sizeof(value)));
   DPCHECK(n == sizeof(value));

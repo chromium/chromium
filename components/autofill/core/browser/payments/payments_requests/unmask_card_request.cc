@@ -153,9 +153,7 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   // Check if it's an email OTP challenge option, and if it is, set
   // `defined_challenge_option` to the defined challenge option found, parse the
   // challenge option, and return it.
-  else if (base::FeatureList::IsEnabled(
-               features::kAutofillEnableEmailOtpForVcnYellowPath) &&
-           (defined_challenge_option =
+  else if ((defined_challenge_option =
                 challenge_option.FindDict("email_otp_challenge_option"))) {
     ParseAsOtpChallengeOption(defined_challenge_option,
                               &parsed_challenge_option,

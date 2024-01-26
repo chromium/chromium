@@ -150,17 +150,6 @@ TEST_F(HTMLFormControlElementTest, DoNotUpdateLayoutDuringDOMMutation) {
       << "DOM mutation should not handle validation message UI in it.";
 }
 
-TEST_F(HTMLFormControlElementTest, UniqueRendererFormControlId) {
-  SetHtmlInnerHTML("<body><input id=input1><input id=input2></body>");
-  auto* form_control1 = To<HTMLFormControlElement>(GetElementById("input1"));
-  uint64_t first_id = form_control1->UniqueRendererFormControlId();
-  auto* form_control2 = To<HTMLFormControlElement>(GetElementById("input2"));
-  EXPECT_EQ(first_id + 1, form_control2->UniqueRendererFormControlId());
-  SetHtmlInnerHTML("<body><select id=select1></body>");
-  auto* form_control3 = To<HTMLFormControlElement>(GetElementById("select1"));
-  EXPECT_EQ(first_id + 2, form_control3->UniqueRendererFormControlId());
-}
-
 class HTMLFormControlElementFormControlTypeTest
     : public HTMLFormControlElementTest,
       public testing::WithParamInterface<

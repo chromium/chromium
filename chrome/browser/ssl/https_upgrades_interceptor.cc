@@ -111,7 +111,7 @@ net::RedirectInfo SetupRedirect(
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       request.referrer_policy, request.referrer.spec(),
       net::HTTP_TEMPORARY_REDIRECT, new_url,
-      /*referrer_policy_header=*/absl::nullopt,
+      /*referrer_policy_header=*/std::nullopt,
       /*insecure_scheme_was_upgraded=*/false);
   return redirect_info;
 }
@@ -310,6 +310,18 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     // Chrome shows the HTTP interstitial before navigation to them.
     // Potentially, these could fast-fail instead and skip directly to the
     // interstitial.
+    //
+    // In any case, record this as a fallback event so that we don't
+    // auto-enable HFM due to typically secure user heuristic and start showing
+    // interstitials on it.
+    // HttpsUpgradesBrowserTest.
+    //   UrlWithHttpScheme_NonUniqueHostname_ShouldNotInterstitial_TypicallySecureUser
+    // should fail when this check is removed.
+    HttpsFirstModeService* hfm_service =
+        HttpsFirstModeServiceFactory::GetForProfile(profile);
+    if (hfm_service) {
+      hfm_service->RecordHttpsUpgradeFallbackEvent();
+    }
     if (base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
         !IsInterstitialEnabled(*interstitial_state_)) {
       std::move(callback).Run({});

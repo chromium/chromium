@@ -28,10 +28,16 @@ export interface CanonicalTopic {
   topicId: number;
   taxonomyVersion: number;
   displayString: string;
+  description: string;
 }
 
 export interface TopicsState {
   topTopics: CanonicalTopic[];
+  blockedTopics: CanonicalTopic[];
+}
+
+export interface FirstLevelTopicsState {
+  firstLevelTopics: CanonicalTopic[];
   blockedTopics: CanonicalTopic[];
 }
 
@@ -53,6 +59,19 @@ export interface PrivacySandboxBrowserProxy {
    * Topics toggle.
    */
   topicsToggleChanged(newToggleValue: boolean): void;
+
+  /**
+   * Proactive Topics Blocking - used to get the full list of first level
+   * topics.
+   */
+  getFirstLevelTopics(): Promise<FirstLevelTopicsState>;
+
+  /**
+   * Proactive Topics Blocking - used to see if the passed in topic has any
+   *  child topics that are currently assigned
+   */
+  getChildTopicsCurrentlyAssigned(topic: CanonicalTopic):
+      Promise<CanonicalTopic[]>;
 }
 
 export class PrivacySandboxBrowserProxyImpl implements
@@ -76,6 +95,16 @@ export class PrivacySandboxBrowserProxyImpl implements
 
   topicsToggleChanged(newToggleValue: boolean) {
     chrome.send('topicsToggleChanged', [newToggleValue]);
+  }
+
+  getFirstLevelTopics() {
+    return sendWithPromise('getFirstLevelTopics');
+  }
+
+  getChildTopicsCurrentlyAssigned(topic: CanonicalTopic) {
+    return sendWithPromise(
+        'getChildTopicsCurrentlyAssigned', topic.topicId,
+        topic.taxonomyVersion);
   }
 
   static getInstance(): PrivacySandboxBrowserProxy {

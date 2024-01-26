@@ -142,12 +142,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
-  // Disable BackForwardCache for Android WebView as it is not supported.
-  // WebView-specific code hasn't been audited and fixed to ensure compliance
-  // with the changed API contracts around new navigation types and changes to
-  // the document lifecycle.
-  cl->AppendSwitch(switches::kDisableBackForwardCache);
-
   // Deemed that performance benefit is not worth the stability cost.
   // See crbug.com/1309151.
   cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
@@ -165,6 +159,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     if (AwDrawFnImpl::IsUsingVulkan())
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
+#ifdef V8_USE_EXTERNAL_STARTUP_DATA
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
     const gin::V8SnapshotFileType file_type =
         gin::V8SnapshotFileType::kWithAdditionalContext;
@@ -177,6 +172,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+#endif  // V8_USE_EXTERNAL_STARTUP_DATA
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {
@@ -187,10 +183,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     // TODO(crbug.com/1453407): Consider to migrate all the following overrides
     // to the new mechanism in android_webview/browser/aw_field_trials.cc.
     base::ScopedAddFeatureFlags features(cl);
-
-    features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
-    features.EnableIfNotSet(
-        autofill::features::kAutofillLegacyDatalistDropdown);
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);
@@ -207,7 +199,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
       features.EnableIfNotSet(blink::features::kFencedFramesAPIChanges);
       features.EnableIfNotSet(blink::features::kFencedFramesDefaultMode);
       features.EnableIfNotSet(::features::kFencedFramesEnforceFocus);
-      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }
 

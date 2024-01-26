@@ -201,10 +201,10 @@ WebContentsDelegate::GetProtocolHandlerSecurityLevel(RenderFrameHost*) {
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
-void WebContentsDelegate::RequestToLockMouse(WebContents* web_contents,
+void WebContentsDelegate::RequestPointerLock(WebContents* web_contents,
                                              bool user_gesture,
                                              bool last_unlocked_by_target) {
-  web_contents->GotResponseToLockMouseRequest(
+  web_contents->GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult::kUnknownError);
 }
 
@@ -372,6 +372,11 @@ bool WebContentsDelegate::IsBackForwardCacheSupported() {
 PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
+NavigationController::UserAgentOverrideOption
+WebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+  return NavigationController::UA_OVERRIDE_INHERIT;
 }
 
 void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(

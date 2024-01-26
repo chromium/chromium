@@ -76,6 +76,11 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   void GetTokenInfo(Kcer::GetTokenInfoCallback callback) override;
   void GetKeyInfo(PrivateKeyHandle key,
                   Kcer::GetKeyInfoCallback callback) override;
+  void GetKeyPermissions(PrivateKeyHandle key,
+                         Kcer::GetKeyPermissionsCallback callback) override;
+  void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      Kcer::GetCertProvisioningProfileIdCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       Kcer::StatusCallback callback) override;
@@ -100,6 +105,10 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
       base::OnceCallback<void(Args...)> callback);
   // Immediately unblocks the queue and attempts to perform the next task.
   void UnblockQueueProcessNextTask();
+
+  void FindPrivateKey(
+      Pkcs11Id id,
+      base::OnceCallback<void(std::vector<ObjectHandle>, uint32_t)> callback);
 
   struct GenerateRsaKeyTask {
     GenerateRsaKeyTask(RsaModulusLength in_modulus_length_bits,
@@ -129,6 +138,34 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                          PublicKey kcer_public_key,
                          uint32_t result_code);
 
+  struct GenerateEcKeyTask {
+    GenerateEcKeyTask(EllipticCurve in_curve,
+                      bool in_hardware_backed,
+                      Kcer::GenerateKeyCallback in_callback);
+    GenerateEcKeyTask(GenerateEcKeyTask&& other);
+    ~GenerateEcKeyTask();
+
+    const EllipticCurve curve;
+    const bool hardware_backed;
+    Kcer::GenerateKeyCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GenerateEcKeyImpl(GenerateEcKeyTask task);
+  void DidGenerateEcKey(GenerateEcKeyTask task,
+                        ObjectHandle public_key_id,
+                        ObjectHandle private_key_id,
+                        uint32_t result_code);
+  void DidGetEcPublicKey(GenerateEcKeyTask task,
+                         ObjectHandle public_key_id,
+                         ObjectHandle private_key_id,
+                         chaps::AttributeList public_key_attributes,
+                         uint32_t result_code);
+  void DidAssignEcKeyId(GenerateEcKeyTask task,
+                        ObjectHandle public_key_id,
+                        ObjectHandle private_key_id,
+                        PublicKey kcer_public_key,
+                        uint32_t result_code);
+
   struct RemoveKeyAndCertsTask {
     RemoveKeyAndCertsTask(PrivateKeyHandle in_key,
                           Kcer::StatusCallback in_callback);
@@ -145,6 +182,48 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                                           uint32_t result_code);
   void DidRemoveKeyAndCerts(RemoveKeyAndCertsTask task, uint32_t result_code);
 
+  struct ListKeysTask {
+    explicit ListKeysTask(TokenListKeysCallback in_callback);
+    ListKeysTask(ListKeysTask&& other);
+    ~ListKeysTask();
+
+    TokenListKeysCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void ListKeysImpl(ListKeysTask task);
+  void ListKeysWithRsaHandles(ListKeysTask task,
+                              std::vector<ObjectHandle> handles,
+                              uint32_t result_code);
+  void ListKeysGetOneRsaKey(ListKeysTask task,
+                            std::vector<ObjectHandle> handles,
+                            std::vector<PublicKey> result_keys);
+  void ListKeysDidGetOneRsaKey(ListKeysTask task,
+                               std::vector<ObjectHandle> handles,
+                               std::vector<PublicKey> result_keys,
+                               chaps::AttributeList attributes,
+                               uint32_t result_code);
+  void ListKeysFindEcKeys(ListKeysTask task,
+                          std::vector<PublicKey> result_keys);
+  void ListKeysWithEcHandles(ListKeysTask task,
+                             std::vector<PublicKey> result_keys,
+                             std::vector<ObjectHandle> handles,
+                             uint32_t result_code);
+  void ListKeysGetOneEcKey(ListKeysTask task,
+                           std::vector<ObjectHandle> handles,
+                           std::vector<PublicKey> result_keys);
+  void ListKeysDidGetOneEcKey(ListKeysTask task,
+                              std::vector<ObjectHandle> handles,
+                              std::vector<PublicKey> result_keys,
+                              chaps::AttributeList attributes,
+                              uint32_t result_code);
+  void ListKeysDidFindEcPrivateKey(
+      ListKeysTask task,
+      std::vector<ObjectHandle> handles,
+      std::vector<PublicKey> result_keys,
+      PublicKey current_public_key,
+      std::vector<ObjectHandle> private_key_handles,
+      uint32_t result_code);
+
   struct DoesPrivateKeyExistTask {
     DoesPrivateKeyExistTask(PrivateKeyHandle in_key,
                             Kcer::DoesKeyExistCallback in_callback);
@@ -160,11 +239,156 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                               std::vector<ObjectHandle> object_list,
                               uint32_t result_code);
 
+  struct SignTask {
+    SignTask(PrivateKeyHandle in_key,
+             SigningScheme in_signing_scheme,
+             DataToSign in_data,
+             Kcer::SignCallback in_callback);
+    SignTask(SignTask&& other);
+    ~SignTask();
+
+    const PrivateKeyHandle key;
+    const SigningScheme signing_scheme;
+    const DataToSign data;
+    Kcer::SignCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void SignImpl(SignTask task);
+  void SignWithKeyHandle(SignTask task,
+                         std::vector<ObjectHandle> key_handles,
+                         uint32_t result_code);
+  void SignWithKeyHandleAndDigest(
+      SignTask task,
+      ObjectHandle key_handle,
+      base::expected<DigestWithPrefix, Error> digest);
+  void DidSign(SignTask task,
+               std::vector<uint8_t> signature,
+               uint32_t result_code);
+
   void NotifyCertsChanged(base::OnceClosure callback);
 
-  // Indicates whether the task queue is blocked. Task queue should be blocked
-  // until the token is initialized, during the processing of most requests and
-  // during updating the cache.
+  struct SignRsaPkcs1RawTask {
+    SignRsaPkcs1RawTask(PrivateKeyHandle in_key,
+                        DigestWithPrefix in_digest_with_prefix,
+                        Kcer::SignCallback in_callback);
+    SignRsaPkcs1RawTask(SignRsaPkcs1RawTask&& other);
+    ~SignRsaPkcs1RawTask();
+
+    const PrivateKeyHandle key;
+    const DigestWithPrefix digest_with_prefix;
+    Kcer::SignCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void SignRsaPkcs1RawImpl(SignRsaPkcs1RawTask task);
+  void SignRsaPkcs1RawWithKeyHandle(SignRsaPkcs1RawTask task,
+                                    std::vector<ObjectHandle> key_handles,
+                                    uint32_t result_code);
+  void DidSignRsaPkcs1Raw(SignRsaPkcs1RawTask task,
+                          std::vector<uint8_t> signature,
+                          uint32_t result_code);
+
+  struct GetKeyInfoTask {
+    GetKeyInfoTask(PrivateKeyHandle in_key,
+                   Kcer::GetKeyInfoCallback in_callback);
+    GetKeyInfoTask(GetKeyInfoTask&& other);
+    ~GetKeyInfoTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetKeyInfoCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetKeyInfoImpl(GetKeyInfoTask task);
+  void GetKeyInfoWithMechanismList(GetKeyInfoTask task,
+                                   const std::vector<uint64_t>& mechanism_list,
+                                   uint32_t result_code);
+  void GetKeyInfoGetAttributes(GetKeyInfoTask task);
+  void GetKeyInfoWithAttributes(GetKeyInfoTask task,
+                                std::optional<Error> kcer_error,
+                                chaps::AttributeList attributes,
+                                uint32_t result_code);
+
+  struct GetKeyPermissionsTask {
+    GetKeyPermissionsTask(PrivateKeyHandle in_key,
+                          Kcer::GetKeyPermissionsCallback in_callback);
+    GetKeyPermissionsTask(GetKeyPermissionsTask&& other);
+    ~GetKeyPermissionsTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetKeyPermissionsCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetKeyPermissionsImpl(GetKeyPermissionsTask task);
+  void GetKeyPermissionsWithAttributes(GetKeyPermissionsTask task,
+                                       std::optional<Error> kcer_error,
+                                       chaps::AttributeList attributes,
+                                       uint32_t result_code);
+
+  struct GetCertProvisioningIdTask {
+    GetCertProvisioningIdTask(
+        PrivateKeyHandle in_key,
+        Kcer::GetCertProvisioningProfileIdCallback in_callback);
+    GetCertProvisioningIdTask(GetCertProvisioningIdTask&& other);
+    ~GetCertProvisioningIdTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetCertProvisioningProfileIdCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetCertProvisioningIdImpl(GetCertProvisioningIdTask task);
+  void GetCertProvisioningIdWithAttributes(GetCertProvisioningIdTask task,
+                                           std::optional<Error> kcer_error,
+                                           chaps::AttributeList attributes,
+                                           uint32_t result_code);
+
+  struct SetKeyAttributeTask {
+    SetKeyAttributeTask(PrivateKeyHandle in_key,
+                        HighLevelChapsClient::AttributeId in_attribute_id,
+                        std::vector<uint8_t> in_attribute_value,
+                        Kcer::StatusCallback in_callback);
+    SetKeyAttributeTask(SetKeyAttributeTask&& other);
+    ~SetKeyAttributeTask();
+
+    const PrivateKeyHandle key;
+    const HighLevelChapsClient::AttributeId attribute_id;
+    const std::vector<uint8_t> attribute_value;
+    Kcer::StatusCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  // Sets the `attribute_value` for the attribute with `attribute_id` on the
+  // `key`. Assumes that the `task_queue_` is already blocked.
+  void SetKeyAttribute(PrivateKeyHandle key,
+                       HighLevelChapsClient::AttributeId attribute_id,
+                       std::vector<uint8_t> attribute_value,
+                       Kcer::StatusCallback callback);
+  void SetKeyAttributeImpl(SetKeyAttributeTask task);
+  void SetKeyAttributeWithHandle(SetKeyAttributeTask task,
+                                 std::vector<ObjectHandle> private_key_handles,
+                                 uint32_t result_code);
+  void SetKeyAttributeDidSetAttribute(SetKeyAttributeTask task,
+                                      uint32_t result_code);
+
+  // If `kcer_error` is not empty, the rest of the values can be discarded.
+  // Otherwise `attributes` and `result_code` contain the reply from Chaps
+  // (`resul_code` can still contain an error).
+  using GetKeyAttributesCallback =
+      base::OnceCallback<void(std::optional<Error> kcer_error,
+                              chaps::AttributeList attributes,
+                              uint32_t result_code)>;
+
+  // Retrieves attributes with `attribute_ids` for the key.
+  void GetKeyAttributes(
+      PrivateKeyHandle key,
+      std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+      GetKeyAttributesCallback callback);
+  void GetKeyAttributesWithKeyHandle(
+      std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+      GetKeyAttributesCallback callback,
+      std::vector<ObjectHandle> private_key_handles,
+      uint32_t result_code);
+
+  // Indicates whether the task queue is blocked. Task queue should be
+  // blocked until the token is initialized, during the processing of most
+  // requests and during updating the cache.
   bool is_blocked_ = true;
   // Token type of this KcerToken.
   const Token token_;
@@ -173,6 +397,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   // slot and is not used until it's overwritten in InitializeWithoutNss.
   SessionChapsClient::SlotId pkcs_11_slot_id_ =
       SessionChapsClient::SlotId(0xFFFFFFFF);
+  // Indicates whether PSS signatures are supported. This variable caches the
+  // value from Chaps, if it's empty, it needs to be retrieved first.
+  absl::optional<bool> token_supports_pss_;
 
   // Queue for the tasks that were received while the tast queue was blocked.
   std::deque<base::OnceClosure> task_queue_;

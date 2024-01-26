@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/download/download_controller_delegate.h"
 
 namespace web {
@@ -42,7 +43,8 @@ class FakeDownloadControllerDelegate : public DownloadControllerDelegate {
                          std::unique_ptr<DownloadTask>) override;
   void OnDownloadControllerDestroyed(DownloadController*) override;
 
-  DownloadController* controller_ = nullptr;
+  raw_ptr<DownloadControllerDelegate> old_delegate_ = nullptr;
+  raw_ptr<DownloadController> controller_ = nullptr;
   AliveDownloadTaskList alive_download_tasks_;
 };
 

@@ -100,6 +100,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.CookiePartitionSizeKibibytes" units="kibibytes"
+    expires_after="2024-07-12">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the sum of the sizes of the name and value of all
+    cookies in a single partition of the partitioned cookie jar. This metric is
+    recorded every 10 minutes and emits one event per partition. This metric is
+    only recorded when partitioned cookies are enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.CookiePrefix" enum="CookiePrefix"
     expires_after="2024-06-30">
   <owner>estark@chromium.org</owner>
@@ -111,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariant" enum="CookiePrefix"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -129,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariantCount" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -144,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix.CaseVariantValid" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -206,7 +218,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Count2" units="units" expires_after="2024-05-19">
+<histogram name="Cookie.Count2" units="units" expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -336,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ErrorInitializeDB" enum="SqliteLoggedResultCode"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>wfh@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -410,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ComponentSetsNonfatalErrors"
-    units="sets" expires_after="2024-05-12">
+    units="sets" expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
   <summary>
@@ -429,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ComponentSetsParsedSuccessfully"
-    units="sets" expires_after="2024-05-12">
+    units="sets" expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
   <summary>
@@ -447,7 +459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ContextDelayedQueriesCount"
-    units="queries" expires_after="2024-05-12">
+    units="queries" expires_after="2024-07-14">
   <owner>shuuran@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -460,7 +472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ContextMostDelayedQueryDelta" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>shuuran@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -552,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ProcessedEntireComponent"
-    enum="BooleanSuccess" expires_after="2024-05-12">
+    enum="BooleanSuccess" expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
   <summary>
@@ -663,7 +675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
@@ -814,7 +826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PerFirstPartySetCount" units="cookies"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -846,7 +858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Port.OmniboxURLNavigation.RemoteHost"
-    enum="InterestingCookiePorts" expires_after="2024-05-18">
+    enum="InterestingCookiePorts" expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -867,7 +879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Port.Read.{HostType}" enum="InterestingCookiePorts"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -954,7 +966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SameSiteAttributeValue" enum="CookieSameSiteString"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -987,8 +999,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cookie.ScriptExpirationInHoursGTOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours in the future a session cookie being set via JavaScript
+    wants to expire (for values greater than to one week). Recorded when the
+    cookie is stored via script.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.ScriptExpirationInHoursLTEOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours in the future a session cookie being set via JavaScript
+    wants to expire (for values less than or equal to one week). Recorded when
+    the cookie is stored via script.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SessionAgeInHoursGTOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values greater than one week). Recorded when cookies are loaded from the
+    store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SessionAgeInHoursLTEOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values less than or equal to one week). Recorded when cookies are loaded
+    from the store.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>nharper@chromium.org</owner>
   <summary>
     The amount of time (ms) between the cookie store load starting and
@@ -1036,7 +1092,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2024-05-19">
+<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>The amount of time (ms) to initialize the cookies database.</summary>
@@ -1062,7 +1118,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Type" enum="CookieType" expires_after="2024-05-19">
+<histogram name="Cookie.Type" enum="CookieType" expires_after="2024-07-21">
   <owner>mkwst@chromium.org</owner>
   <summary>For each cookie added to the store, record it's type(s).</summary>
 </histogram>

@@ -54,6 +54,9 @@ using ::chromeos::settings::mojom::kAudioAndCaptionsSubpagePath;
 using ::chromeos::settings::mojom::kChromeVoxSubpagePath;
 using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
+using ::chromeos::settings::mojom::kFaceGazeCursorSettingsSubpagePath;
+using ::chromeos::settings::mojom::
+    kFaceGazeFacialExpressionsSettingsSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
 using ::chromeos::settings::mojom::kManageAccessibilitySubpagePath;
 using ::chromeos::settings::mojom::kSelectToSpeakSubpagePath;
@@ -482,7 +485,7 @@ bool AreTabletNavigationButtonsAllowed() {
 }
 
 int GetDisplayAndMangificationLinkDescriptionResourceId() {
-    return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
+  return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
 bool IsAccessibilityFaceGazeEnabled() {
@@ -794,6 +797,10 @@ void AccessibilitySection::AddLoadTimeData(
       {"dockedMagnifierLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL},
       {"dockedMagnifierZoomLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_ZOOM_LABEL},
       {"durationInSeconds", IDS_SETTINGS_DURATION_IN_SECONDS},
+      {"facegazeCursorSettings",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_LABEL},
+      {"facegazeFacialExpressionSettings",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_LABEL},
       {"focusHighlightLabel",
        IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
       {"focusHighlightLabelSubtext",
@@ -1355,6 +1362,20 @@ void AccessibilitySection::RegisterHierarchy(
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSwitchAccessOptions,
                             kSwitchAccessSettings, generator);
+
+  // Face Gaze cursor settings.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_LABEL,
+      mojom::Subpage::kFaceGazeCursorSettings, mojom::SearchResultIcon::kA11y,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kFaceGazeCursorSettingsSubpagePath);
+
+  // Face Gaze facial expressions settings.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_LABEL,
+      mojom::Subpage::kFaceGazeFacialExpressionsSettings,
+      mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kFaceGazeFacialExpressionsSettingsSubpagePath);
 }
 
 void AccessibilitySection::OnVoicesChanged() {

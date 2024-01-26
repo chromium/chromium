@@ -6,10 +6,11 @@
 
 #if BUILDFLAG(ENABLE_PKEYS)
 
-#include <errno.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#include <cerrno>
 
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_check.h"

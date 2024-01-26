@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   using SessionId = base::StrongAlias<class TypeTagSessionId, uint64_t>;
   using ObjectHandle = base::StrongAlias<class TypeTagObjectHandle, uint64_t>;
 
+  using GetMechanismListCallback =
+      base::OnceCallback<void(const std::vector<uint64_t>& mechanism_list,
+                              uint32_t result_code)>;
   using CreateObjectCallback =
       base::OnceCallback<void(ObjectHandle object_handle,
                               uint32_t result_code)>;
@@ -53,6 +56,8 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   using FindObjectsCallback =
       base::OnceCallback<void(std::vector<ObjectHandle> object_list,
                               uint32_t result_code)>;
+  using SignCallback = base::OnceCallback<void(std::vector<uint8_t> signature,
+                                               uint32_t result_code)>;
   using GenerateKeyPairCallback =
       base::OnceCallback<void(ObjectHandle public_key_handle,
                               ObjectHandle private_key_handle,
@@ -60,6 +65,9 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
 
   SessionChapsClient();
   virtual ~SessionChapsClient();
+  // Shuts down the client. All methods can still be called after that, but they
+  // will start returning an error.
+  virtual void Shutdown() {}
 
   // Returns true if the `result_code` contains an error related to
   // problems with PKCS#11 session, i.e. if the session cannot be used
@@ -70,6 +78,10 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   // A convenience method for serializing `chaps::AttributeList`.
   static std::vector<uint8_t> SerializeToBytes(
       const chaps::AttributeList& attr_list);
+
+  // PKCS #11 v2.20 section 11.5 page 111.
+  virtual void GetMechanismList(SlotId slot_id,
+                                GetMechanismListCallback callback) = 0;
 
   // PKCS #11 v2.20 section 11.7 page 128.
   virtual void CreateObject(SlotId slot_id,
@@ -107,6 +119,16 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
                            std::vector<uint8_t> attributes,
                            int attempts_left,
                            FindObjectsCallback callback) = 0;
+
+  // Combines SignInit and Sign, PKCS #11 v2.20 section 11.7 page 152-153.
+  virtual void Sign(SlotId slot_id,
+                    uint64_t mechanism_type,
+                    std::vector<uint8_t> mechanism_parameter,
+                    ObjectHandle key_handle,
+                    std::vector<uint8_t> data,
+                    int attempts_left,
+                    SignCallback callback) = 0;
+
   // PKCS #11 v2.20 section 11.14 page 176.
   virtual void GenerateKeyPair(SlotId slot_id,
                                uint64_t mechanism_type,
@@ -126,6 +148,9 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
   ~SessionChapsClientImpl() override;
 
   // Implements SessionChapsClient.
+  void Shutdown() override;
+  void GetMechanismList(SlotId slot_id,
+                        GetMechanismListCallback callback) override;
   void CreateObject(SlotId slot_id,
                     const std::vector<uint8_t>& attributes,
                     int attempts_left,
@@ -151,6 +176,13 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
                    std::vector<uint8_t> attributes,
                    int attempts_left,
                    FindObjectsCallback callback) override;
+  void Sign(SlotId slot_id,
+            uint64_t mechanism_type,
+            std::vector<uint8_t> mechanism_parameter,
+            ObjectHandle key_handle,
+            std::vector<uint8_t> data,
+            int attempts_left,
+            SignCallback callback) override;
   void GenerateKeyPair(SlotId slot_id,
                        uint64_t mechanism_type,
                        // Serialized chaps::AttributeList-s.
@@ -187,6 +219,15 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
                            FindObjectsCallback callback,
                            std::vector<ObjectHandle> object_list,
                            uint32_t result_code);
+  void DidSignInit(SlotId slot_id,
+                   std::vector<uint8_t> data,
+                   SignCallback callback,
+                   uint32_t result_code);
+  void DidSign(SlotId slot_id,
+               SignCallback callback,
+               uint64_t actual_out_length,
+               const std::vector<uint8_t>& signature,
+               uint32_t result_code);
   void DidGenerateKeyPair(SlotId slot_id,
                           GenerateKeyPairCallback callback,
                           uint64_t public_key_id,
@@ -202,7 +243,8 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<crosapi::mojom::ChapsService> chaps_service_;
+  // Will become nullptr after Shutdown, should be checked before using.
+  raw_ptr<crosapi::mojom::ChapsService> chaps_service_;
   base::flat_map<SlotId, SessionId> sessions_map_;
   base::WeakPtrFactory<SessionChapsClientImpl> weak_factory_{this};
 };

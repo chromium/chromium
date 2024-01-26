@@ -73,8 +73,10 @@ NotificationTypeDetailed GetNotificationTypeForChromeApp(
       case 2:
         return CHROME_APP_PRIORITY_TWO_REQUIRE_INTERACTION;
       default:
-        NOTREACHED();
-        return OTHER;
+        // Note that after launch/4288967, we will ignore require interaction in
+        // chromeOS. Thus, we don't need to record require interaction metrics
+        // in CrOS from now on.
+        return CHROME_APP_PRIORITY_OTHER;
     }
   } else {
     switch (priority) {
@@ -89,8 +91,7 @@ NotificationTypeDetailed GetNotificationTypeForChromeApp(
       case 2:
         return CHROME_APP_PRIORITY_TWO;
       default:
-        NOTREACHED();
-        return OTHER;
+        return CHROME_APP_PRIORITY_OTHER;
     }
   }
 }
@@ -270,6 +271,7 @@ NotificationTypeDetailed GetNotificationType(
     case message_center::NotifierType::PHONE_HUB:
       return GetNotificationTypeForPhoneHub(notification);
     case message_center::NotifierType::CROSTINI_APPLICATION:
+      return CROSTINI;
     default:
       return OTHER;
   }

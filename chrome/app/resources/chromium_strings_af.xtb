@@ -90,6 +90,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2583187216237139145">Enige Chromium-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium werk vinniger en kenmerke wat JavaScript gebruik, moet werk soos ontwerp (aanbeveel)</translation>
 <translation id="2648074677641340862">'n Bedryfstelselfout het voorgekom met installering. Laai Chromium asseblief weer af.</translation>
 <translation id="2661879430930417727">As jy 'n toestel deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê</translation>
 <translation id="268602741124540128">Welkom by Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3258596308407688501">Chromium kan nie sy datagids lees of daarheen skryf nie:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 is Chromium se JavaScript- en WebAssembly-enjin wat gebruik word om werf se werkverrigting te verbeter</translation>
 <translation id="3283186697780795848">Chromium-weergawe <ph name="PRODUCT_VERSION" /> is geïnstalleer</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreek. Sommige funksies van Chromium sal gedeaktiveer word.</translation>
@@ -142,7 +144,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3533435340678213462">Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings verwyder wat jy nie wil hê Chromium moet oorweeg nie.</translation>
 <translation id="3567254597502212821">Jou blaaigeskiedenis, ’n rekord van werwe wat jy besoek het deur Chromium op hierdie toestel te gebruik.</translation>
 <translation id="3593091352817399191">’n Ander rekening is reeds aangemeld. Chromium kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
-<translation id="363078681319665186">Jy het macOS 10.15 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 10.13.</translation>
 <translation id="3639635944603682591">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chromium aan om die data te herwin.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="3651803019964686660">Meld op albei toestelle by Chromium aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
@@ -159,7 +160,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Kry hulp met Chromium-bedryfstelsel</translation>
 <translation id="3871664619793219264">Kry jou Chromium-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
-<translation id="387966568917439637">Jy het macOS 10.15 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 10.14.</translation>
 <translation id="388648406173476553">Pasmaak en beheer Chromium. Iets verg jou aandag – klik vir besonderhede.</translation>
 <translation id="3889543394854987837">Klik jou naam om Chromium oop te maak en te begin blaai.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> is reeds by hierdie Chromium-profiel aangemeld. Chromium kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
@@ -220,6 +220,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4814736265800133385">Gebruik Chromium sonder 'n rekening</translation>
 <translation id="4888717733111232871">Inkomende reël vir Chromium om mDNS-verkeer toe te laat.</translation>
 <translation id="4893347770495441059">Begin weer om &amp;Chromium op te dateer</translation>
+<translation id="4942295735032723435">Jy het macOS 11 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in agtergrondmodus.</translation>
 <translation id="4987820182225656817">Gaste kan Chromium gebruik sonder om iets agter te laat.</translation>
 <translation id="4994636714258228724">Voeg jouself by Chromium</translation>
@@ -248,7 +249,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5623402015214259806">{0,plural, =0{'n Chromium-opdatering is beskikbaar}=1{'n Chromium-opdatering is beskikbaar}other{'n Chromium-opdatering is al # dae lank beskikbaar}}</translation>
 <translation id="5643865575100044307">Vee altyd werfdata op jou toestel uit wanneer jy Chromium toemaak</translation>
 <translation id="5653831366781983928">Herbegin Chromium asseblief nou</translation>
-<translation id="5675598751761067447">Hierdie lêer kan gevaarlik wees<ph name="LINE_BREAK" />Chromium kan hierdie aflaai vir jou nagaan as jy die wagwoord verskaf – jou wagwoord bly op jou toestel</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wys Chromium in hierdie taal</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
@@ -409,6 +409,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8105840573057009683">Chromium het liggingtoestemming vir hierdie werf nodig</translation>
 <translation id="8133124826068723441">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
+<translation id="8166782796394721554">Skakel bykomende beskerming in Chromium se JavaScript- en WebAssembly-enjin aan</translation>
 <translation id="81770708095080097">Hierdie lêer is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="8213374284266571500">Chromium het hierdie lêer geblokkeer omdat hierdie soort lêer gevaarlik is</translation>
 <translation id="8248265253516264921">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>

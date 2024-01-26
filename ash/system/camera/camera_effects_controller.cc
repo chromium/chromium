@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -26,6 +27,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -51,6 +53,10 @@ using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
 // Directory used for saving camera backgrounds.
 constexpr char kCameraBackgroundOriginalDir[] =
     "custom-camera-backgrounds/original";
+
+constexpr char kMetadataSuffix[] = ".metadata";
+
+constexpr char kSupportedImages[] = FILE_PATH_LITERAL("*.jpg");
 
 constexpr unsigned int k3M = 3 * 1024 * 1024;
 
@@ -161,25 +167,46 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
   return CameraEffectsController::BackgroundBlurState::kOff;
 }
 
-base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
-  return base::FilePath(
-      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpg"}));
+inline base::FilePath GetMetadataFilePath(const base::FilePath& filepath) {
+  return filepath.AddExtensionASCII(kMetadataSuffix);
+}
+
+// Remove the file and its metadata if exists.
+bool RemoveBackgroundImageOnWorker(const base::FilePath& filepath) {
+  if (!base::DeleteFile(filepath)) {
+    return false;
+  }
+
+  const auto metadata_filepath = GetMetadataFilePath(filepath);
+  if (base::PathExists(metadata_filepath) &&
+      !base::DeleteFile(metadata_filepath)) {
+    return false;
+  }
+
+  return true;
 }
 
 // Writes `jpeg_bytes` to the `camera_background_img_dir`.
 // Returns basename if succeeds, empty path otherwise.
 base::FilePath WriteImageToBackgroundDir(
     const base::FilePath& camera_background_img_dir,
-    std::string&& jpeg_bytes) {
-  const base::FilePath basename = HashAsFileName(jpeg_bytes);
+    SeaPenImage&& sea_pen_image,
+    const std::string& metadata) {
+  const auto basename =
+      base::FilePath(base::NumberToString(sea_pen_image.id) + ".jpg");
   const base::FilePath background_image_filepath =
       camera_background_img_dir.Append(basename);
+  const base::FilePath background_metadata_filepath =
+      GetMetadataFilePath(background_image_filepath);
 
   if (base::CreateDirectory(camera_background_img_dir) &&
-      base::WriteFile(background_image_filepath, jpeg_bytes)) {
+      base::WriteFile(background_image_filepath, sea_pen_image.jpg_bytes) &&
+      base::WriteFile(background_metadata_filepath, metadata)) {
     return basename;
   }
 
+  // We don't want keep corrupted images.
+  RemoveBackgroundImageOnWorker(background_image_filepath);
   return base::FilePath();
 }
 
@@ -198,9 +225,9 @@ bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
                     file_info.last_modified);
 
     // Remove all other images in the background_run_dir`.
-    base::FileEnumerator enumerator(background_run_dir,
-                                    /*recursive=*/false,
-                                    base::FileEnumerator::FILES);
+    base::FileEnumerator enumerator(
+        background_run_dir,
+        /*recursive=*/false, base::FileEnumerator::FILES, kSupportedImages);
     for (auto path = enumerator.Next(); !path.empty();
          path = enumerator.Next()) {
       if (enumerator.GetInfo().GetName() != basename) {
@@ -225,9 +252,9 @@ std::vector<base::FilePath> GetBackgroundImageFileNamesOnWorker(
   std::vector<FileNameAndTime> filenames_and_modified_time;
 
   // Loop through all files in `camera_background_img_dir`.
-  base::FileEnumerator enumerator(camera_background_img_dir,
-                                  /*recursive=*/false,
-                                  base::FileEnumerator::FILES);
+  base::FileEnumerator enumerator(
+      camera_background_img_dir,
+      /*recursive=*/false, base::FileEnumerator::FILES, kSupportedImages);
   for (auto path = enumerator.Next(); !path.empty(); path = enumerator.Next()) {
     base::File::Info file_info;
     base::GetFileInfo(path, &file_info);
@@ -246,9 +273,12 @@ std::vector<base::FilePath> GetBackgroundImageFileNamesOnWorker(
   if (filenames_and_modified_time.size() > kMaxNumberOfImageKeptOnDisk) {
     for (std::size_t i = kMaxNumberOfImageKeptOnDisk;
          i < filenames_and_modified_time.size(); i++) {
-      base::DeleteFile(camera_background_img_dir.Append(
-          filenames_and_modified_time[i].first));
+      const auto filename = camera_background_img_dir.Append(
+          filenames_and_modified_time[i].first);
+      RemoveBackgroundImageOnWorker(filename);
     }
+
+    filenames_and_modified_time.resize(kMaxNumberOfImageKeptOnDisk);
   }
 
   std::vector<base::FilePath> filenames;
@@ -268,12 +298,17 @@ std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
   }
 
   BackgroundImageInfo info{file_info.creation_time, file_info.last_accessed,
-                           filename.BaseName(), ""};
+                           filename.BaseName(), "", ""};
 
   // TODO(b/314186143): resize the image since we don't need the full size
   // image here.
   if (!base::ReadFileToString(filename, &info.jpeg_bytes)) {
     return std::nullopt;
+  }
+
+  // if the metadata is not read successfully, then set it as empty.
+  if (!base::ReadFileToString(GetMetadataFilePath(filename), &info.metadata)) {
+    info.metadata = "";
   }
 
   return info;
@@ -321,6 +356,19 @@ void SetBackgroundReplaceUiVisible(bool visible) {
 }
 
 }  // namespace
+
+BackgroundImageInfo::BackgroundImageInfo(const BackgroundImageInfo& info) =
+    default;
+BackgroundImageInfo::BackgroundImageInfo(const base::Time& creation_time,
+                                         const base::Time& last_accessed,
+                                         const base::FilePath& basename,
+                                         const std::string& jpeg_bytes,
+                                         const std::string& metadata)
+    : creation_time(creation_time),
+      last_accessed(last_accessed),
+      basename(basename),
+      jpeg_bytes(jpeg_bytes),
+      metadata(metadata) {}
 
 CameraEffectsController::CameraEffectsController()
     : camera_background_run_dir_(kImageDirForCameraModule),
@@ -402,20 +450,24 @@ void CameraEffectsController::SetBackgroundImage(
 }
 
 void CameraEffectsController::SetBackgroundImageFromContent(
-    std::string&& jpeg_bytes,
+    const SeaPenImage& sea_pen_image,
+    const std::string& metadata,
     base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "SetBackgroundImageFromContent should not be called when "
          "camera_background_img_dir_ is not set.";
 
-  CHECK_LT(jpeg_bytes.size(), k3M)
+  CHECK(!sea_pen_image.jpg_bytes.empty());
+  CHECK_LT(sea_pen_image.jpg_bytes.size(), k3M)
       << "Can't use an image that is larger than 30M as a background";
 
   // Write images to disk;
+  // TODO(b/321122378) remove unnecessary copy of SeaPenImage.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,
-                     std::move(jpeg_bytes)),
+                     SeaPenImage(sea_pen_image.jpg_bytes, sea_pen_image.id),
+                     metadata),
       base::BindOnce(
           &CameraEffectsController::OnSaveBackgroundImageFileComplete,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -442,7 +494,7 @@ void CameraEffectsController::RemoveBackgroundImage(
   // Remove file.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&base::DeleteFile,
+      base::BindOnce(&RemoveBackgroundImageOnWorker,
                      camera_background_img_dir_.Append(basename)),
       std::move(callback));
 }
@@ -500,6 +552,14 @@ void CameraEffectsController::OnActiveUserSessionChanged(
 
   camera_background_img_dir_ =
       profile_path.Append(kCameraBackgroundOriginalDir);
+
+  // Initialze camera effects if the `pref_change_registrar_` is set.
+  // TODO(b/321585013): figure out the order of OnActiveUserSessionChanged and
+  // OnActiveUserPrefServiceChanged, and only initialize in one place.
+  if (pref_change_registrar_) {
+    SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
+                     base::DoNothing());
+  }
 }
 
 void CameraEffectsController::OnActiveUserPrefServiceChanged(
@@ -513,11 +573,13 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
-  // If the camera has started, it won't get the previous setting so call it
-  // here too. If the camera service isn't ready it this call will be ignored.
-  SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
-                   base::DoNothing());
-
+  // Initialze camera effects if the `camera_background_img_dir_` is set.
+  if (!camera_background_img_dir_.empty()) {
+    // If the camera has started, it won't get the previous setting so call it
+    // here too. If the camera service isn't ready it this call will be ignored.
+    SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
+                     base::DoNothing());
+  }
   // If any effects have controls the user can access, this will create the
   // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
   // interface.
@@ -578,12 +640,11 @@ void CameraEffectsController::OnEffectControlActivated(
           MapBackgroundBlurPrefValueToCameraHalState(state.value());
       new_effects->blur_level = blur_level;
       new_effects->blur_enabled = blur_enabled;
-      if (new_effects->blur_enabled) {
-        // background replace should be disabled since background blur is
-        // enabled.
-        new_effects->replace_enabled = false;
-        new_effects->background_filepath.reset();
-      }
+
+      // No matter which background blur button the user clicked on, we should
+      // always turn off background replace.
+      new_effects->replace_enabled = false;
+      new_effects->background_filepath.reset();
       break;
     }
     case VcEffectId::kPortraitRelighting: {

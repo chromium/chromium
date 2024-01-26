@@ -274,7 +274,7 @@ export class CameraManager implements EventListener {
     };
 
     const updateScreenOffAuto = async (screenState: ScreenState) => {
-      const isOffAuto = screenState === ScreenState.OFF_AUTO;
+      const isOffAuto = screenState === ScreenState.kOffAuto;
       if (this.screenOffAuto !== isOffAuto) {
         this.screenOffAuto = isOffAuto;
         await handleScreenStateChange();
@@ -292,7 +292,7 @@ export class CameraManager implements EventListener {
     const hasExternalScreen =
         await helper.initExternalScreenMonitor(updateExternalScreen);
 
-    this.screenOffAuto = screenState === ScreenState.OFF_AUTO;
+    this.screenOffAuto = screenState === ScreenState.kOffAuto;
     this.hasExternalScreen = hasExternalScreen;
 
     await this.scheduler.initialize(cameraViewUI);

@@ -72,7 +72,7 @@ class CommerceHintAgent
       mojo::Remote<mojom::CommerceHintObserver> observer,
       const std::string& product_id_json,
       const std::string& cart_extraction_script);
-  void OnProductsExtracted(absl::optional<base::Value> results,
+  void OnProductsExtracted(std::optional<base::Value> results,
                            base::TimeTicks start_time);
   bool ShouldUseDOMBasedHeuristics();
 
@@ -81,8 +81,8 @@ class CommerceHintAgent
   int extraction_count_{0};
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
-  absl::optional<bool> should_skip_;
-  absl::optional<bool> should_use_dom_heuristics_;
+  std::optional<bool> should_skip_;
+  std::optional<bool> should_use_dom_heuristics_;
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   base::Time add_to_cart_focus_time_;
   base::Time add_to_cart_heuristics_execution_time_;
@@ -93,7 +93,7 @@ class CommerceHintAgent
   void WillSendRequest(const blink::WebURLRequest& request) override;
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFinishLoad() override;
   void WillSubmitForm(const blink::WebFormElement& form) override;

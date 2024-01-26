@@ -90,6 +90,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2583187216237139145">Visus „Chromium“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="259935314519650377">Nepavyko talpykloje išsaugoti atsisiųstos diegimo programos. Klaida: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">„Chromium“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta (rekomenduojama)</translation>
 <translation id="2648074677641340862">Diegiant įvyko operacinės sistemos klaida. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="2661879430930417727">Jei bendrinate įrenginį, šeimos nariai ir draugai gali naršyti atskirai ir nustatyti „Chromium“ pagal savo poreikius</translation>
 <translation id="268602741124540128">Sveiki, <ph name="ACCOUNT_FIRST_NAME" />, tai – „Chromium“</translation>
@@ -125,6 +126,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="3258596308407688501">„Chromium“ negali skaityti ir rašyti į duomenų katalogą:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 yra „Chromium“ „JavaScript“ ir „WebAssembly“ variklis, naudojamas svetainės našumui pagerinti</translation>
 <translation id="3283186697780795848">„Chromium“ versija <ph name="PRODUCT_VERSION" /> įdiegta</translation>
 <translation id="3286538390144397061">Paleisti iš naujo dabar</translation>
 <translation id="328888136576916638">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Chromium“ funkcijos.</translation>
@@ -142,7 +144,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="3533435340678213462">Siekdami apsaugoti jūsų privatumą, automatiškai ištriname senesnius nei keturių savaičių pomėgius. Jums naršant toliau, pomėgiai vėl gali atsirasti sąraše. Arba galite pašalinti pomėgius, kurių „Chromium“ įtraukti neturėtų.</translation>
 <translation id="3567254597502212821">Jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chromium“ šiame įrenginyje, įrašas.</translation>
 <translation id="3593091352817399191">Jau prisijungta prie kitos paskyros. Kad naršytumėte atskirai, „Chromium“ gali sukurti jums atskirą profilį.</translation>
-<translation id="363078681319665186">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10.15 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.13 versijos „macOS“.</translation>
 <translation id="3639635944603682591">Šio asmens naršymo duomenys bus ištrinti iš šio įrenginio. Jei norite atkurti duomenis, prisijunkite prie „Chromium“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo.}=1{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo. Inkognito langas nebus atidarytas iš naujo.}one{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo. # inkognito langas nebus atidarytas iš naujo.}few{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo. # inkognito langai nebus atidaryti iš naujo.}many{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo. # inkognito lango nebus atidaryta iš naujo.}other{Pasiekiamas naujas „Chromium“ naujinys. Jis bus pritaikytas, kai paleisite „Chromium“ iš naujo. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="3651803019964686660">Jei norite iš <ph name="ORIGIN" /> į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chromium“ abiejuose įrenginiuose.</translation>
@@ -159,7 +160,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="3848258323044014972">„<ph name="PAGE_TITLE" />“ – „Chromium“</translation>
 <translation id="386822487697155367">Gaukite su „Chromium“ OS susijusios pagalbos</translation>
 <translation id="3871664619793219264">Gaukite „Chromium“ naršyklės informaciją iš <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10.15 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.14 versijos „macOS“.</translation>
 <translation id="388648406173476553">Tinkinkite ir valdykite „Chromium“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="3889543394854987837">Spustelėkite savo vardą, kad atidarytumėte „Chromium“ ir pradėtumėte naršyti.</translation>
 <translation id="390528597099634151">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chromium“ profilio. Kad naršytumėte atskirai, „Chromium“ gali sukurti jums atskirą profilį.</translation>
@@ -220,6 +220,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4814736265800133385">Naudoti „Chromium“ be paskyros</translation>
 <translation id="4888717733111232871">„Chromium“ skirta taisyklė, pagal kurią leidžiamas mDNS srautas.</translation>
 <translation id="4893347770495441059">Paleisti iš naujo atnaujinant „&amp;Chromium“</translation>
+<translation id="4942295735032723435">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 11 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.15 versijos „macOS“.</translation>
 <translation id="4943838377383847465">„Chromium“ veikia fono režimu.</translation>
 <translation id="4987820182225656817">Svečiai gali naudoti „Chromium“ nepalikdami jokių duomenų.</translation>
 <translation id="4994636714258228724">Pridėkite save prie „Chromium“</translation>
@@ -248,7 +249,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5623402015214259806">{0,plural, =0{Pasiekiamas „Chromium“ naujinys}=1{Pasiekiamas „Chromium“ naujinys}one{„Chromium“ naujinys pasiekiamas # dieną}few{„Chromium“ naujinys pasiekiamas # dienas}many{„Chromium“ naujinys pasiekiamas # dienos}other{„Chromium“ naujinys pasiekiamas # dienų}}</translation>
 <translation id="5643865575100044307">Visada ištrinti svetainių duomenis iš įrenginio uždarius „Chromium“</translation>
 <translation id="5653831366781983928">Dabar iš naujo paleiskite „Chromium“</translation>
-<translation id="5675598751761067447">Šis failas gali būti pavojingas<ph name="LINE_BREAK" />„Chromium“ gali patikrinti šį atsisiuntimą už jus, jei pateiksite slaptažodį. Slaptažodis liks jūsų įrenginyje</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Pateikti „Chromium“ šia kalba</translation>
 <translation id="569897634095159764">Nepavyko prisijungti prie interneto. Reikalingas tarpinio serverio autentifikavimas.</translation>
@@ -409,6 +409,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8105840573057009683">„Chromium“ reikalingas leidimas pasiekti vietovės duomenis šioje svetainėje</translation>
 <translation id="8133124826068723441">„Chromium“ OS nepavyko sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
+<translation id="8166782796394721554">Įjunkite papildomą apsaugą „Chromium“ „JavaScript“ ir „WebAssembly“ variklyje</translation>
 <translation id="81770708095080097">Šis failas pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="8213374284266571500">„Chromium“ užblokavo šį failą, nes šio tipo failai pavojingi</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>

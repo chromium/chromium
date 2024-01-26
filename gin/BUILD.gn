@@ -154,21 +154,27 @@ if (is_android && enable_java_templates &&
 
   if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
     android_assets("v8_snapshot_secondary_abi_assets") {
-      assert(android_64bit_target_cpu,
-             "32-bit targets shouldn't have secondary abi")
-      disable_compression = true
-      if (use_v8_context_snapshot) {
-        sources = [ "$root_out_dir/v8_context_snapshot_32.bin" ]
-        deps =
-            [ "//tools/v8_context_snapshot($android_secondary_abi_toolchain)" ]
-      } else {
-        _secondary_abi_out_dir =
-            get_label_info("//v8($android_secondary_abi_toolchain)",
-                           "root_out_dir")
-        renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
-        renaming_destinations = [ "snapshot_blob_32.bin" ]
-        deps =
-            [ "//v8:run_mksnapshot_default($android_secondary_abi_toolchain)" ]
+      # only import asset when v8_use_external_startup_data == true
+      # like "v8_snapshot_assets" above
+      if (v8_use_external_startup_data) {
+        assert(android_64bit_target_cpu,
+               "32-bit targets shouldn't have secondary abi")
+        disable_compression = true
+        if (use_v8_context_snapshot) {
+          sources = [ "$root_out_dir/v8_context_snapshot_32.bin" ]
+          deps = [
+            "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
+          ]
+        } else {
+          _secondary_abi_out_dir =
+              get_label_info("//v8($android_secondary_abi_toolchain)",
+                             "root_out_dir")
+          renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
+          renaming_destinations = [ "snapshot_blob_32.bin" ]
+          deps = [
+            "//v8:run_mksnapshot_default($android_secondary_abi_toolchain)",
+          ]
+        }
       }
     }
   }

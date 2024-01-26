@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_FAKE_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_FAKE_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network::mojom {
 class CookieManager;
@@ -26,7 +26,7 @@ class FakeBoundSessionRefreshCookieFetcher
       network::mojom::CookieManager* cookie_manager,
       const GURL& url,
       base::flat_set<std::string> cookie_names,
-      absl::optional<base::TimeDelta> unlock_automatically_in = absl::nullopt);
+      std::optional<base::TimeDelta> unlock_automatically_in = std::nullopt);
   ~FakeBoundSessionRefreshCookieFetcher() override;
 
   // BoundSessionRefreshCookieFetcher:
@@ -36,7 +36,7 @@ class FakeBoundSessionRefreshCookieFetcher
   // `BoundSessionRefreshCookieFetcher::Result::kSuccess`.
   void SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result result,
-      absl::optional<base::Time> cookie_expiration);
+      std::optional<base::Time> cookie_expiration);
 
  protected:
   std::unique_ptr<net::CanonicalCookie> CreateFakeCookie(
@@ -60,7 +60,7 @@ class FakeBoundSessionRefreshCookieFetcher
   // the request is completed. If `unlock_automatically_in_` is not set,
   // `SimulateCompleteRefreshRequest()` must be called manually to complete
   // the refresh request.
-  absl::optional<base::TimeDelta> unlock_automatically_in_;
+  std::optional<base::TimeDelta> unlock_automatically_in_;
   base::WeakPtrFactory<FakeBoundSessionRefreshCookieFetcher> weak_ptr_factory_{
       this};
 };

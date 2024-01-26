@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CanonicalTopic, FledgeState, PrivacySandboxBrowserProxy, TopicsState} from 'chrome://settings/settings.js';
+import {CanonicalTopic, FirstLevelTopicsState, FledgeState, PrivacySandboxBrowserProxy, TopicsState} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxBrowserProxy {
   private fledgeState_: FledgeState;
   private topicsState_: TopicsState;
+  private firstLevelTopicsState_:
+      FirstLevelTopicsState = {firstLevelTopics: [], blockedTopics: []};
+  private childTopicsCurrentlyAssigned_: CanonicalTopic[] = [];
 
   constructor() {
     super([
+      'getChildTopicsCurrentlyAssigned',
       'getFledgeState',
-      'setFledgeJoiningAllowed',
+      'getFirstLevelTopics',
       'getTopicsState',
+      'setFledgeJoiningAllowed',
       'setTopicAllowed',
       'topicsToggleChanged',
     ]);
@@ -25,11 +30,27 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     };
 
     this.topicsState_ = {
-      topTopics:
-          [{topicId: 1, taxonomyVersion: 1, displayString: 'test-topic-1'}],
-      blockedTopics:
-          [{topicId: 2, taxonomyVersion: 1, displayString: 'test-topic-2'}],
+      topTopics: [{
+        topicId: 1,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-1',
+        description: '',
+      }],
+      blockedTopics: [{
+        topicId: 2,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-2',
+        description: '',
+      }],
     };
+  }
+
+  setChildTopics(childTopics: CanonicalTopic[]) {
+    this.childTopicsCurrentlyAssigned_ = childTopics;
+  }
+
+  setFirstLevelTopicsState(firstLevelTopicsState: FirstLevelTopicsState) {
+    this.firstLevelTopicsState_ = firstLevelTopicsState;
   }
 
   setFledgeState(fledgeState: FledgeState) {
@@ -60,5 +81,17 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
 
   topicsToggleChanged(newToggleValue: boolean) {
     this.methodCalled('topicsToggleChanged', [newToggleValue]);
+  }
+
+  getFirstLevelTopics() {
+    this.methodCalled('getFirstLevelTopics');
+    return Promise.resolve(this.firstLevelTopicsState_);
+  }
+
+  getChildTopicsCurrentlyAssigned(topic: CanonicalTopic) {
+    this.methodCalled(
+        'getChildTopicsCurrentlyAssigned', topic.topicId,
+        topic.taxonomyVersion);
+    return Promise.resolve(this.childTopicsCurrentlyAssigned_.slice());
   }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapps.pwa_restore_ui;
 
+import android.util.Pair;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
@@ -24,15 +25,21 @@ public class PwaRestoreProperties {
     public static class AppInfo {
         private final String mAppId;
         private final String mAppName;
+        private int mLastUsedDaysAgo;
+
+        // Whether the app is selected or not.
         private boolean mSelected;
 
         /**
          * @param appId the ID of the app.
          * @param appName the name of the app.
+         * @param lastUsedDaysAgo when the app was last used (days ago).
          */
-        public AppInfo(String appId, String appName) {
+        public AppInfo(String appId, String appName, int lastUsedDaysAgo) {
             mAppId = appId;
             mAppName = appName;
+            mLastUsedDaysAgo = lastUsedDaysAgo;
+
             mSelected = false;
         }
 
@@ -42,6 +49,10 @@ public class PwaRestoreProperties {
 
         public String getName() {
             return mAppName;
+        }
+
+        public long getLastUsedDaysAgo() {
+            return mLastUsedDaysAgo;
         }
 
         public boolean isSelected() {
@@ -67,8 +78,8 @@ public class PwaRestoreProperties {
     // PropertyKey indicating the view state of the bottom sheet:
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
 
-    // App list:
-    static final WritableObjectPropertyKey<List<AppInfo>> APPS =
+    // App list (recent apps and older apps):
+    static final WritableObjectPropertyKey<Pair<List<AppInfo>, List<AppInfo>>> APPS =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     // Simple labels:

@@ -289,6 +289,7 @@ const PrecisionMetrics = {
   argMax: {ULP: {int64: 0}},
   argMin: {ULP: {int64: 0}},
   batchNormalization: {ULP: {float32: 6, float16: 6}},
+  cast: {ULP: {float32: 1, float16: 1, int32: 0, uint32: 0, int64: 0, int8: 0, uint8: 0}},
   clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
   conv2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
@@ -327,9 +328,12 @@ const PrecisionMetrics = {
   // End Element-wise unary operations
   elu: {ULP: {float32: 18, float16: 18}},
   expand: {ULP: {float32: 0, float16: 0}},
+  gather: {ULP: {float32: 0, float16: 0}},
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
+  instanceNormalization: {ULP: {float32: 840, float16: 8400}},
   hardSigmoid: {ULP: {float32: 2, float16: 2}},
   hardSwish: {ULP: {float32: 4, float16: 4}},
+  layerNormalization: {ATOL: {float32: 1/1024, float16: 1/512}},
   leakyRelu: {ULP: {float32: 1, float16: 1}},
   linear: {ULP: {float32: 2, float16: 2}},
   matmul: {ULP: {float32: getMatmulPrecisionTolerance, float16: getMatmulPrecisionTolerance}},
@@ -359,7 +363,6 @@ const PrecisionMetrics = {
   softplus: {ULP: {float32: 18, float16: 18}},
   softsign: {ULP: {float32: 3, float16: 3}},
   split: {ULP: {float32: 0, float16: 0}},
-  squeeze: {ULP: {float32: 0, float16: 0}},
   tanh: {ATOL: {float32: 1/1024, float16: 1/512}},
   transpose: {ULP: {float32: 0, float16: 0}},
   where: {ULP: {float32: 0, float16: 0}},
@@ -526,7 +529,13 @@ const createConstantOperand = (builder, resources) => {
 const createSingleInputOperand = (builder, resources, inputOperandName) => {
   inputOperandName = inputOperandName ? inputOperandName : Object.keys(resources.inputs)[0];
   const inputResources = resources.inputs[inputOperandName];
-  return builder.input(inputOperandName, {dataType: inputResources.type, type: inputResources.type, dimensions: inputResources.shape});
+  let operand;
+  if (resources.inputs[inputOperandName].hasOwnProperty('constant') && resources.inputs[inputOperandName]['constant']) {
+    operand = createConstantOperand(builder, resources.inputs[inputOperandName]);
+  } else {
+    operand = builder.input(inputOperandName, {dataType: inputResources.type, type: inputResources.type, dimensions: inputResources.shape});
+  }
+  return operand;
 };
 
 /**
@@ -539,12 +548,7 @@ const createMultiInputOperands = (builder, resources) => {
   let inputOperands = [];
   const inputOperandNameArray = Object.keys(resources.inputs);
   inputOperandNameArray.forEach(inputOperandName => {
-    let operand;
-    if (resources.inputs[inputOperandName].hasOwnProperty('constant') && resources.inputs[inputOperandName]['constant']) {
-      operand = createConstantOperand(builder, resources.inputs[inputOperandName]);
-    } else {
-      operand = createSingleInputOperand(builder, resources, inputOperandName);
-    }
+    const operand = createSingleInputOperand(builder, resources, inputOperandName);
     inputOperands.push(operand);
   });
   return inputOperands;
@@ -604,12 +608,27 @@ const buildBatchNorm = (operationName, builder, resources) => {
   return namedOutputOperand;
 };
 
+const buildCast = (operationName, builder, resources) => {
+  // MLOperand cast(MLOperand input, MLOperandDataType type);
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.cast()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.type);
+  return namedOutputOperand;
+};
+
 const buildConcat = (operationName, builder, resources) => {
   // MLOperand concat(sequence<MLOperand> inputs, unsigned long axis);
   const namedOutputOperand = {};
   const inputOperands = [];
+  let operand;
   for (let input of resources.inputs) {
-    inputOperands.push(builder.input(input.name, {dataType: input.type, type: input.type, dimensions: input.shape}));
+    if (input.hasOwnProperty('constant') && input['constant']) {
+      operand = createConstantOperand(builder, input);
+    } else {
+      operand = builder.input(input.name, {dataType: input.type, type: input.type, dimensions: input.shape});
+    }
+    inputOperands.push(operand);
   }
   // invoke builder.concat()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperands, resources.axis);
@@ -661,6 +680,23 @@ const buildGemm = (operationName, builder, resources) => {
     }
   }
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperandA, inputOperandB, gemmOptions);
+  return namedOutputOperand;
+};
+
+const buildLayerNorm = (operationName, builder, resources) => {
+  // MLOperand layerNormalization(MLOperand input, optional MLLayerNormalizationOptions options = {});
+  // MLOperand instanceNormalization(MLOperand input, optional MLInstanceNormalizationOptions options = {});
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  const layerNormOptions = {...resources.options};
+  if (layerNormOptions.scale) {
+    layerNormOptions.scale = createConstantOperand(builder, layerNormOptions.scale);
+  }
+  if (layerNormOptions.bias) {
+    layerNormOptions.bias = createConstantOperand(builder, layerNormOptions.bias);
+  }
+  // invoke builder.layerNormalization() or builder.instanceNormalization()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, layerNormOptions);
   return namedOutputOperand;
 };
 

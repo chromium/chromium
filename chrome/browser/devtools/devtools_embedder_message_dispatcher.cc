@@ -52,10 +52,10 @@ bool GetValue(const base::Value& value, gfx::Rect* rect) {
   if (!value.is_dict())
     return false;
   const base::Value::Dict& dict = value.GetDict();
-  absl::optional<int> x = dict.FindInt("x");
-  absl::optional<int> y = dict.FindInt("y");
-  absl::optional<int> width = dict.FindInt("width");
-  absl::optional<int> height = dict.FindInt("height");
+  std::optional<int> x = dict.FindInt("x");
+  std::optional<int> y = dict.FindInt("y");
+  std::optional<int> width = dict.FindInt("width");
+  std::optional<int> height = dict.FindInt("height");
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value()) {
     return false;
@@ -89,18 +89,18 @@ bool GetValue(const base::Value& value, ImpressionEvent* event) {
     if (!impression.is_dict()) {
       return false;
     }
-    absl::optional<int> id = impression.GetDict().FindInt("id");
-    absl::optional<int> type = impression.GetDict().FindInt("type");
+    std::optional<int> id = impression.GetDict().FindInt("id");
+    std::optional<int> type = impression.GetDict().FindInt("type");
     if (!id || !type) {
       return false;
     }
     event->impressions.emplace_back(VisualElementImpression{*id, *type});
 
-    absl::optional<int> parent = impression.GetDict().FindInt("parent");
+    std::optional<int> parent = impression.GetDict().FindInt("parent");
     if (parent) {
       event->impressions.back().parent = *parent;
     }
-    absl::optional<int> context = impression.GetDict().FindInt("context");
+    std::optional<int> context = impression.GetDict().FindInt("context");
     if (context) {
       event->impressions.back().context = *context;
     }
@@ -113,17 +113,17 @@ bool GetValue(const base::Value& value, ClickEvent* event) {
     return false;
   }
 
-  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<int> veid = value.GetDict().FindInt("veid");
   if (!veid) {
     return false;
   }
   event->veid = *veid;
 
-  absl::optional<int> mouse_button = value.GetDict().FindInt("mouseButton");
+  std::optional<int> mouse_button = value.GetDict().FindInt("mouseButton");
   if (mouse_button) {
     event->mouse_button = *mouse_button;
   }
-  absl::optional<int> context = value.GetDict().FindInt("context");
+  std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
   }
@@ -135,17 +135,17 @@ bool GetValue(const base::Value& value, HoverEvent* event) {
     return false;
   }
 
-  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<int> veid = value.GetDict().FindInt("veid");
   if (!veid) {
     return false;
   }
   event->veid = *veid;
 
-  absl::optional<int> time = value.GetDict().FindInt("time");
+  std::optional<int> time = value.GetDict().FindInt("time");
   if (time) {
     event->time = *time;
   }
-  absl::optional<int> context = value.GetDict().FindInt("context");
+  std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
   }
@@ -157,17 +157,17 @@ bool GetValue(const base::Value& value, DragEvent* event) {
     return false;
   }
 
-  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<int> veid = value.GetDict().FindInt("veid");
   if (!veid) {
     return false;
   }
   event->veid = *veid;
 
-  absl::optional<int> distance = value.GetDict().FindInt("distance");
+  std::optional<int> distance = value.GetDict().FindInt("distance");
   if (distance) {
     event->distance = *distance;
   }
-  absl::optional<int> context = value.GetDict().FindInt("context");
+  std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
   }
@@ -179,13 +179,13 @@ bool GetValue(const base::Value& value, ChangeEvent* event) {
     return false;
   }
 
-  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<int> veid = value.GetDict().FindInt("veid");
   if (!veid) {
     return false;
   }
   event->veid = *veid;
 
-  absl::optional<int> context = value.GetDict().FindInt("context");
+  std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
   }
@@ -197,13 +197,13 @@ bool GetValue(const base::Value& value, KeyDownEvent* event) {
     return false;
   }
 
-  absl::optional<int> veid = value.GetDict().FindInt("veid");
+  std::optional<int> veid = value.GetDict().FindInt("veid");
   if (!veid) {
     return false;
   }
   event->veid = *veid;
 
-  absl::optional<int> context = value.GetDict().FindInt("context");
+  std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
   }

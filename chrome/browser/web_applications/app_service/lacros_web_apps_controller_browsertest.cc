@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -90,7 +91,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -368,9 +368,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
     web_app_info->description = description;
     app_id = InstallWebApp(std::move(web_app_info));
 
-    provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        app_id,
-        /*is_locally_installed=*/false);
+    provider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(app_id);
   }
 
   MockAppPublisher mock_app_publisher(profile());
@@ -383,9 +381,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                                      IconEffects::kBlocked |
                                      IconEffects::kCrOsStandardMask));
 
-  provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-      app_id,
-      /*is_locally_installed=*/true);
+  base::test::TestFuture<void> future;
+  provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask);
@@ -674,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, StopApp) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
   auto CheckMenuItem = [](const crosapi::mojom::MenuItem& menu_item,
                           const std::string& label,
-                          absl::optional<SkColor> color) {
+                          std::optional<SkColor> color) {
     EXPECT_EQ(menu_item.label, label);
     if (color.has_value()) {
       EXPECT_FALSE(menu_item.image.isNull());
@@ -711,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
   CheckMenuItem(*menu_items->items[2], "Three", SK_ColorYELLOW);
   CheckMenuItem(*menu_items->items[3], "Four", SK_ColorCYAN);
   CheckMenuItem(*menu_items->items[4], "Five", SK_ColorMAGENTA);
-  CheckMenuItem(*menu_items->items[5], "Six", absl::nullopt);
+  CheckMenuItem(*menu_items->items[5], "Six", std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
@@ -844,9 +843,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
     web_app_info->title = description;
     web_app_info->description = description;
     app2_id = InstallWebApp(std::move(web_app_info));
-    web_app_sync_bridge.SetAppIsLocallyInstalledForTesting(
-        app2_id,
-        /*is_locally_installed=*/false);
+    web_app_sync_bridge.SetAppNotLocallyInstalledForTesting(app2_id);
   }
 
   MockAppPublisher mock_app_publisher(profile());

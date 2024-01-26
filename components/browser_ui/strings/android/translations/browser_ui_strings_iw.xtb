@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1426410128494586442">כן</translation>
+<translation id="1434873037477293673">כרטיס לגבי ירידה במחיר</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
 <translation id="1510341833810331442">לאתרים אין הרשאה לשמור נתונים במכשיר שלך</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
 <translation id="2790501146643349491">כשהאפשרות מופעלת, אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים. כשהאפשרות מושבתת, אתרים שנסגרו לאחרונה לא יכולים לסיים שליחה או קבלה של נתונים.</translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">בקשה לתצוגה לנייד</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
@@ -329,6 +331,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
+<translation id="6452138246455930388">זוהתה ירידה במחיר בכרטיסייה הפתוחה שלך, מ-<ph name="OLD_PRICE" /> ל-<ph name="NEW_PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">כשהחלון צר, אפשר לבקש תצוגת נייד.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652937045869844725">‏אפשר להפעיל קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
@@ -348,10 +351,12 @@
 <translation id="6746124502594467657">העברה למטה</translation>
 <translation id="6749077623962119521">לאפס את ההרשאות?</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
+<translation id="6785959295338971061">‫<ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">יש לבחור אפשרות עבור <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
+<translation id="6867014948848323204">המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
@@ -400,6 +405,7 @@
 <translation id="7667547420449112975">הקוסם המופלא מארץ עוץ</translation>
 <translation id="7684642910516280563">‏ביטול האפשרות של אתר להשתמש בקובצי cookie של צדדים שלישיים</translation>
 <translation id="7719367874908701697">מרחק מתצוגה בדף</translation>
+<translation id="7770832849480336015">הסתרה של '<ph name="TITLE_OF_MODULE" />'</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="780301667611848630">לא תודה</translation>

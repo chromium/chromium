@@ -4,6 +4,8 @@
 
 #include "ash/webui/diagnostics_ui/diagnostics_metrics_message_handler.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
@@ -11,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_ui.h"
 
@@ -40,7 +41,7 @@ void EmitScreenOpenDuration(const NavigationView screen,
                             const base::TimeDelta& time_elapsed) {
   // Map of screens within Diagnostics app to matching duration metric name.
   constexpr auto kOpenDurationMetrics =
-      base::MakeFixedFlatMap<NavigationView, base::StringPiece>({
+      base::MakeFixedFlatMap<NavigationView, std::string_view>({
           {NavigationView::kConnectivity,
            "ChromeOS.DiagnosticsUi.Connectivity.OpenDuration"},
           {NavigationView::kInput, "ChromeOS.DiagnosticsUi.Input.OpenDuration"},

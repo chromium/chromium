@@ -44,7 +44,6 @@ bool GetSwitch(const char* switch_name, std::string* value) {
   ScopedLocalAlloc scoped_args(args);  // Take ownership.
   if (!args) {
     PLOG(FATAL) << "CommandLineToArgvW";
-    return false;
   }
 
   std::string switch_name_with_equals(switch_name);

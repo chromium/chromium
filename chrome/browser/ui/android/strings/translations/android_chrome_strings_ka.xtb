@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">ჩამოტვირთვის ნაგულისხმევი მდებარეობის შეცვლა ნებისმიერ დროს შეგიძლიათ</translation>
 <translation id="1796666869097395659">ჩაკეცეთ ჩანართი, მოგვიანებით რომ დაუბრუნდეთ მას</translation>
 <translation id="1807246157184219062">ნათელი</translation>
+<translation id="1807709131360304325">ახალი ფანჯრის გახსნა</translation>
 <translation id="1810845389119482123">სინქრონიზაციის თავდაპირველი დაყენება არ დასრულებულა</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">საიტი დაპაუზებულია</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა ვერ მოხერხდა}other{# ჩამოტვირთვა ვერ მოხერხდა}}</translation>
 <translation id="2067805253194386918">ტექსტი</translation>
+<translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2091863218454846791">ნაჩვენებია კომპაქტური ხედი</translation>
 <translation id="2093731487903423814">ბოლო 15 წუთში</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
 <translation id="2234827758954819389">კონფიდენციალურობის სახელმძღვანელო</translation>
 <translation id="2239812875700136898">მართეთ ამბები „Discover-ის ვარიანტების“ ღილაკის მეშვეობით</translation>
-<translation id="2241634353105152135">მხოლოდ ერთხელ</translation>
 <translation id="2247789808226901522">ბარათს მოქმედების ვადა ამოეწურა</translation>
 <translation id="2248941474044011069">Google-ის პაროლების მმართველში შენახვამდე, თქვენი პაროლები თქვენს მოწყობილობაზე დაიშიფრება</translation>
 <translation id="2249635629516220541">ჩაასწორეთ ინფორმაცია, რომელსაც იყენებს საიტები თქვენთვის რეკლამის საჩვენებლად</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">შეეხეთ ზარის განსახორციელებლად</translation>
 <translation id="2321086116217818302">მიმდინარეობს პაროლების მომზადება…</translation>
 <translation id="2323763861024343754">საიტების მეხსიერება</translation>
-<translation id="2327226657832576859">გსურთ, PDF-ები ავტომატურად გაიხსნას?</translation>
 <translation id="2328985652426384049">სისტემაში შესვლა ვერ მოხერხდა</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />-ის ინსტალაცია ვერ მოხერხდა.</translation>
 <translation id="2349710944427398404">Chrome-ის მიერ გამოყენებული მეხსიერების საერთო მოცულობა, რომელშიც ინახება ანგარიშები, სანიშნეები და შენახული პარამეტრები</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">დარჩენილია <ph name="SECONDS" /> წმ</translation>
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
 <translation id="2781151931089541271">დარჩენილია 1 წმ</translation>
+<translation id="2789486458103222910">კარგი</translation>
 <translation id="2800066122460699237">ჩანართი „<ph name="TAB_TITLE" />“ დაიხურება</translation>
 <translation id="281504910091592009">ნახეთ და მართეთ შენახული პაროლები თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">არხის ბარათის მენიუ ნახევარ სიმაღლეზე</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">მიმდინარეობს Chrome-ის განახლება სხვა მოწყობილობებთან დასაკავშირებლად</translation>
 <translation id="2951071800649516099">დაამატეთ გვერდები თქვენს მოგვიანებით წასაკითხთა სიაში</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> წაუკითხავი გვერდი}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> წაუკითხავი გვერდი}}</translation>
-<translation id="2961210776189273067">მიმართვა</translation>
 <translation id="296370266220139811">დაზოგეთ დრო — აკრიფეთ ნაკლები</translation>
 <translation id="2977350910003566746">ბოლოს გახსნილის მიხედვით დალაგება</translation>
 <translation id="297771753501244313">ბოლო გახსნით დალაგება</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">პაროლების მმართველი</translation>
 <translation id="4307992518367153382">ძირითადი</translation>
+<translation id="4311652497846705514">გსურთ PDF-ის გახსნა?</translation>
 <translation id="4320177379694898372">ინტერნეტთან კავშირი არ არის</translation>
 <translation id="433213510553688132">მიმდინარეობს თვალის მიდევნება...</translation>
 <translation id="4335835283689002019">Safe Browsing გამორთულია</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">ბოლო საათში</translation>
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
 <translation id="4532845899244822526">აირჩიეთ საქაღალდე</translation>
-<translation id="4541505619120536051">ყოველთვის გახსნა</translation>
 <translation id="4543131175509360848">წვდომის გასაღებების არარსებობის ფურცელი</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი, <ph name="TAB_COUNT_INCOGNITO" /> ინკოგნიტო}}</translation>
 <translation id="4554077758708533499">დაკავშირებულია USB კაბელით</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">გვერდის ანალიზის ცენტრის მონაცემთა კონფიდენციალურობის წესების თაობაზე შეტყობინების ლოგო, რომელიც მისამართდება „ჩემი აქტივობის“ გვერდზე.</translation>
 <translation id="5487521232677179737">მონაცემების წაშლა</translation>
 <translation id="5492637351392383067">მოწყობილობაზე დაშიფვრა</translation>
-<translation id="5509866835115085009">Chrome-ს შეუძლია, ავტომატურად გახსნას PDF, როცა მას ჩამოტვირთავთ.</translation>
 <translation id="5514904542973294328">გათიშულია ამ მოწყობილობის ადმინისტრატორის მიერ</translation>
 <translation id="5515439363601853141">განბლოკეთ თქვენი პაროლის სანახავად</translation>
 <translation id="5517095782334947753">თქვენ <ph name="FROM_ACCOUNT" />-დან მიღებული სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები გაქვთ.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">შეეხეთ ჩასაკეცად</translation>
 <translation id="5964869237734432770">სურათების აღწერის შეწყვეტა</translation>
 <translation id="5966233851250124270">Chrome დაიმახსოვრებს თქვენს არჩევანს</translation>
+<translation id="5977976211062815271">ამ მოწყობილობაზე</translation>
 <translation id="5979084224081478209">პაროლების შემოწმება</translation>
 <translation id="5995726099713306770">გსურთ, ხელახლა ჩამოტვირთოთ გვერდი?</translation>
 <translation id="6000066717592683814">Google-ის შენარჩუნება</translation>
@@ -1128,7 +1128,6 @@
 <translation id="694267552845942083">ამჟამად სინქრონიზაციის პარამეტრების მორგებას ახორციელებთ. სინქრონიზაციის ჩართვის დასასრულებლად შეეხეთ დადასტურების ღილაკს ეკრანის ქვედა ნაწილთან. ნავიგაცია ზემოთ</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6955535239952325894">ეს პარამეტრი გათიშულია მართულ ბრაუზერებში</translation>
-<translation id="6958103823951858863">PDF-ის ავტომატურად გახსნა ჩამოტვირთვის შემდეგ</translation>
 <translation id="6963766334940102469">სანიშნეების წაშლა</translation>
 <translation id="696447261358045621">ინკოგნიტო რეჟიმიდან გამოსვლა</translation>
 <translation id="6965382102122355670">კარგი</translation>
@@ -1303,6 +1302,7 @@
 <translation id="7810647596859435254">გახსნა აპით…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ყველა ფაილი, სიაშია 1 ფაილი}other{ყველა ფაილი, სიაშია # ფაილი}}</translation>
 <translation id="7815484226266492798">ეკრანის გრძელი ანაბეჭდი</translation>
+<translation id="7821130663268546430">ყველა გახსნილი ჩანართის პოვნა ჩანართების გადამრთველში შეგიძლიათ</translation>
 <translation id="7822705602465980873">როცა სისტემაში შესული ხართ, ეს მონაცემები მიებმება თქვენს Google ანგარიშს, რომ დაცული იყოთ Google სერვისების ფარგლებში, მაგალითად, უსაფრთხოებასთან დაკავშირებული ინციდენტის შემდეგ გაძლიერდება დაცვა Gmail-ში.</translation>
 <translation id="78270725016672455">თქვენს კომპიუტერი ითხოვს ამ მოწყობილობის დარეგისტრირებას ვებსაიტზე შესვლის მიზნით</translation>
 <translation id="7844171778363018843">სინქრონიზაციისთვის მონაცემები არჩეული არ არის</translation>
@@ -1330,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> მოძველდა.</translation>
 <translation id="7944772052836377867">სინქრონიზაციის ფუნქციას სჭირდება თქვენი ვინაობის დადასტურება</translation>
 <translation id="7947953824732555851">მიღება და შესვლა</translation>
+<translation id="7951102827450076904">ჩამოტვირთული PDF-ების ყოველთვის გახსნა</translation>
 <translation id="7957413488482743710">ვირტუალური ბარათი დამალავს თქვენს რეალურ ბარათს, რაც დაგიცავთ თაღლითობის პოტენციური შემთხვევებისგან. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი ვირტუალური ბარათების შესახებ<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ღილაკი „უკან“ გვერდის ანალიზში</translation>
 <translation id="7961926449547174351">მეხსიერებაზე წვდომა გათიშული გაქვთ. ჩასართავად გადადით პარამეტრებზე.</translation>

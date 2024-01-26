@@ -626,17 +626,32 @@ include(CheckCXXSourceCompiles)
 check_cxx_source_compiles(
   [==[
 #ifdef _MSC_VER
-#  if _MSVC_LANG < 201700L
+#  if _MSVC_LANG < 201703L
 #    error "The compiler defaults or is configured for C++ < 17"
 #  endif
-#elif __cplusplus < 201700L
+#elif __cplusplus < 201703L
 #  error "The compiler defaults or is configured for C++ < 17"
 #endif
 int main() { return 0; }
 ]==]
   ABSL_INTERNAL_AT_LEAST_CXX17)
 
-if(ABSL_INTERNAL_AT_LEAST_CXX17)
+check_cxx_source_compiles(
+  [==[
+#ifdef _MSC_VER
+#  if _MSVC_LANG < 202002L
+#    error "The compiler defaults or is configured for C++ < 20"
+#  endif
+#elif __cplusplus < 202002L
+#  error "The compiler defaults or is configured for C++ < 20"
+#endif
+int main() { return 0; }
+]==]
+  ABSL_INTERNAL_AT_LEAST_CXX20)
+
+if(ABSL_INTERNAL_AT_LEAST_CXX20)
+  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_20)
+elseif(ABSL_INTERNAL_AT_LEAST_CXX17)
   set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_17)
 else()
   set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_14)
@@ -806,8 +821,8 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
 
   if(ABSL_PROPAGATE_CXX_STD)
     # Abseil libraries require C++14 as the current minimum standard. When
-    # compiled with C++17 (either because it is the compiler's default or
-    # explicitly requested), then Abseil requires C++17.
+    # compiled with a higher minimum (either because it is the compiler's
+    # default or explicitly requested), then Abseil requires that standard.
     target_compile_features(${_dll} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
   endif()
 

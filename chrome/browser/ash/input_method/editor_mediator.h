@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
@@ -64,14 +65,16 @@ class EditorMediator : public EditorEventSink,
   // TODO(b/301869966): Consider removing default parameters once the context
   // menu Orca entry is removed.
   void HandleTrigger(
-      absl::optional<std::string_view> preset_query_id = absl::nullopt,
-      absl::optional<std::string_view> freeform_text = absl::nullopt) override;
+      std::optional<std::string_view> preset_query_id = std::nullopt,
+      std::optional<std::string_view> freeform_text = std::nullopt) override;
   EditorMode GetEditorMode() const override;
   // This method is currently used for metric purposes to understand the ratio
   // of requests being blocked vs. the potential requests that can be
   // accommodated.
   EditorOpportunityMode GetEditorOpportunityMode() const override;
+  std::vector<EditorBlockedReason> GetBlockedReasons() const override;
   void CacheContext() override;
+  EditorMetricsRecorder* GetMetricsRecorder() override;
 
   // display::DisplayObserver overrides
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -116,6 +119,7 @@ class EditorMediator : public EditorEventSink,
   MakoBubbleCoordinator mako_bubble_coordinator_;
 
   std::unique_ptr<EditorSwitch> editor_switch_;
+  std::unique_ptr<EditorMetricsRecorder> metrics_recorder_;
   std::unique_ptr<EditorConsentStore> consent_store_;
   EditorServiceConnector editor_service_connector_;
 

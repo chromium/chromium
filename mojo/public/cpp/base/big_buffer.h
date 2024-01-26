@@ -6,9 +6,9 @@
 #define MOJO_PUBLIC_CPP_BASE_BIG_BUFFER_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

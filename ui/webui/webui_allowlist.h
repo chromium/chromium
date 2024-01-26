@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -73,6 +73,13 @@ class WebUIAllowlist : public base::RefCountedThreadSafe<WebUIAllowlist> {
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type) const;
 
+  // Returns the matching Rule with highest precedence or nullptr if no Rule
+  // matched. This method is thread-safe.
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type) const;
+
   void SetWebUIAllowlistProvider(WebUIAllowlistProvider* provider);
   void ResetWebUIAllowlistProvider();
 
@@ -82,7 +89,7 @@ class WebUIAllowlist : public base::RefCountedThreadSafe<WebUIAllowlist> {
 
   THREAD_CHECKER(thread_checker_);
 
-  content_settings::OriginIdentifierValueMap value_map_;
+  content_settings::OriginValueMap value_map_;
 
   raw_ptr<WebUIAllowlistProvider> provider_
       GUARDED_BY_CONTEXT(thread_checker_) = nullptr;

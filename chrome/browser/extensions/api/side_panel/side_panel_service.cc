@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -19,7 +20,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -85,7 +85,7 @@ bool SidePanelService::HasSidePanelAvailableForTab(const Extension& extension,
 
 api::side_panel::PanelOptions SidePanelService::GetOptions(
     const Extension& extension,
-    absl::optional<TabId> id) {
+    std::optional<TabId> id) {
   auto extension_panel_options = panels_.find(extension.id());
 
   // Get default path from manifest if nothing was stored in this service for
@@ -227,7 +227,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
     return base::unexpected(error);
   }
 
-  auto global_options = GetOptions(extension, absl::nullopt);
+  auto global_options = GetOptions(extension, std::nullopt);
   if (!global_options.path || !global_options.enabled.has_value() ||
       !(*global_options.enabled)) {
     return base::unexpected(
@@ -242,7 +242,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
 base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
     const Extension& extension,
     int tab_id,
-    absl::optional<int> window_id,
+    std::optional<int> window_id,
     bool include_incognito_information) {
   // First, find the corresponding tab.
   Browser* browser = nullptr;

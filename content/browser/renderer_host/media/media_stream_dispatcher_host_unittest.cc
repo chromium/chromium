@@ -203,6 +203,9 @@ class MockMediaStreamDispatcherHost
   void OnDeviceCaptureHandleChange(
       const std::string& label,
       const blink::MediaStreamDevice& device) override {}
+  void OnZoomLevelChange(const std::string& label,
+                         const blink::MediaStreamDevice& device,
+                         int zoom_level) override {}
   void OnDeviceRequestStateChange(
       const std::string& label,
       const blink::MediaStreamDevice& device,

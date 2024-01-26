@@ -6,12 +6,15 @@
 
 #include "base/check_deref.h"
 #include "base/check_version_internal.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/macros/concat.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -290,15 +293,12 @@ TEST(CheckDeathTest, Dcheck) {
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
   // Release build.
   EXPECT_FALSE(DCHECK_IS_ON());
-  EXPECT_FALSE(DLOG_IS_ON(DCHECK));
 #elif defined(NDEBUG) && defined(DCHECK_ALWAYS_ON)
   // Release build with real DCHECKS.
   EXPECT_TRUE(DCHECK_IS_ON());
-  EXPECT_TRUE(DLOG_IS_ON(DCHECK));
 #else
   // Debug build.
   EXPECT_TRUE(DCHECK_IS_ON());
-  EXPECT_TRUE(DLOG_IS_ON(DCHECK));
 #endif
 
   EXPECT_DCHECK("Check failed: false. ", DCHECK(false));

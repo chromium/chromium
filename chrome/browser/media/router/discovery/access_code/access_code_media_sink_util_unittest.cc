@@ -131,7 +131,7 @@ TEST_F(AccessCodeMediaSinkUtilTest, MissingPort) {
   expected_sink_internal.set_sink(expected_sink);
   expected_sink_internal.set_cast_data(expected_extra_data);
 
-  std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+  std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
       constructed_pair = CreateAccessCodeMediaSink(discovery_device_proto);
 
   EXPECT_EQ(constructed_pair.second, CreateCastMediaSinkResult::kOk);
@@ -186,7 +186,7 @@ TEST_F(AccessCodeMediaSinkUtilTest, MediaSinkCreatedCorrectly) {
   expected_sink_internal.set_sink(expected_sink);
   expected_sink_internal.set_cast_data(expected_extra_data);
 
-  std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+  std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
       constructed_pair = CreateAccessCodeMediaSink(discovery_device_proto);
 
   EXPECT_EQ(constructed_pair.second, CreateCastMediaSinkResult::kOk);

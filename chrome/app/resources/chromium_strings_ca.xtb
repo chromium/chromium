@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">L'administrador del perfil de treball pot suprimir qualsevol dada de Chromium que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
 <translation id="2648074677641340862">S'ha produït un error en el sistema operatiu durant la instal·lació. Torneu a baixar Chromium.</translation>
 <translation id="2661879430930417727">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chromium com vulguin</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, et donem la benvinguda a Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="3258596308407688501">Chromium no pot llegir ni escriure en el directori de dades:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 és el motor JavaScript i WebAssembly de Chromium que s'utilitza per millorar el rendiment dels llocs web</translation>
 <translation id="3283186697780795848">Està instal·lada la versió <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
@@ -140,7 +142,6 @@
 <translation id="3533435340678213462">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. També pots suprimir els interessos que no vulguis que Chromium tingui en compte.</translation>
 <translation id="3567254597502212821">El teu historial de navegació, que és un registre dels llocs web que has visitat amb Chromium en aquest dispositiu.</translation>
 <translation id="3593091352817399191">Ja s'ha iniciat la sessió amb un altre compte. Per continuar amb la teva navegació per separat, Chromium et pot crear un perfil propi.</translation>
-<translation id="363078681319665186">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 10.15 o una versió posterior. Aquest ordinador utilitza macOS 10.13.</translation>
 <translation id="3639635944603682591">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs.}=1{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. La finestra d'incògnit no es tornarà a obrir.}other{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="3651803019964686660">Per enviar un número del dispositiu <ph name="ORIGIN" /> al teu telèfon Android, inicia la sessió a Chromium en tots dos dispositius.</translation>
@@ -157,7 +158,6 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
 <translation id="386822487697155367">Obtén ajuda per a Chromium OS</translation>
 <translation id="3871664619793219264">Obtén el contingut del teu navegador Chromium del compte <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 10.15 o una versió posterior. Aquest ordinador utilitza macOS 10.14.</translation>
 <translation id="388648406173476553">Personalitza i controla Chromium. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
 <translation id="3889543394854987837">Feu clic al vostre nom per obrir Chromium i començar a navegar.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chromium. Per continuar amb la teva navegació per separat, Chromium et pot crear un perfil propi.</translation>
@@ -218,6 +218,7 @@
 <translation id="4814736265800133385">Fes servir Chromium sense cap compte</translation>
 <translation id="4888717733111232871">Regla d'entrada de Chromium per permetre el trànsit de mDNS.</translation>
 <translation id="4893347770495441059">Reinicia per actualitzar &amp;Chromium</translation>
+<translation id="4942295735032723435">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 11 o una versió posterior. Aquest ordinador utilitza macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium està en mode de segon pla.</translation>
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
@@ -246,7 +247,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Hi ha una actualització de Chromium disponible}=1{Hi ha una actualització de Chromium disponible}other{Fa # dies que hi ha una actualització de Chromium disponible}}</translation>
 <translation id="5643865575100044307">Suprimeix sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ara</translation>
-<translation id="5675598751761067447">Aquest fitxer pot ser perillós<ph name="LINE_BREAK" />Chromium pot comprovar aquesta baixada per tu si proporciones la contrasenya (la contrasenya no sortirà del dispositiu)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostra Chromium en aquest idioma</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
@@ -407,6 +407,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8105840573057009683">Chromium necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="8133124826068723441">Chromium OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
+<translation id="8166782796394721554">Activa la protecció addicional al motor JavaScript i WebAssembly de Chromium</translation>
 <translation id="81770708095080097">Chromium ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8213374284266571500">Chromium ha bloquejat aquest fitxer perquè aquest tipus de fitxer és perillós</translation>
 <translation id="8248265253516264921">Si una imatge no té una descripció útil, Chromium provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>

@@ -36,4 +36,16 @@ Color LayoutThemeIOS::PlatformActiveSelectionForegroundColor(
                    color_scheme);
 }
 
+Color LayoutThemeIOS::PlatformSpellingMarkerUnderlineColor() const {
+  // Use the same color as MacPort for spelling marker underline.
+  // See LayoutThemeMac::PlatformSpellingMarkerUnderlineColor()
+  return Color(255, 59, 48, 191);
+}
+
+Color LayoutThemeIOS::PlatformGrammarMarkerUnderlineColor() const {
+  // Use the same color as MacPort for grammar marker underline.
+  // See LayoutThemeMac::PlatformGrammarMarkerUnderlineColor()
+  return Color(25, 175, 50, 191);
+}
+
 }  // namespace blink

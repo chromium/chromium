@@ -16,7 +16,8 @@
   const container = readAnythingApp.getElementById('container');
 
   chrome.readingMode.setThemeForTesting(
-      'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
+      'f', 1, true, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1,
+      0);
   const expected = 'rgb(253, 226, 147)';  // #FDE293
   const actual = getComputedStyle(container).backgroundColor;
   const isEqual = actual === expected;

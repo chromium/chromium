@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
     menu.Init();
 
     const ui::SimpleMenuModel& menu_model = menu.menu_model();
-    absl::optional<size_t> target_command_index =
+    std::optional<size_t> target_command_index =
         menu_model.GetIndexOfCommandId(clipboard_history_command_id);
     ASSERT_TRUE(target_command_index);
 

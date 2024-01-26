@@ -159,7 +159,8 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
@@ -436,6 +437,7 @@ OzoneImageBacking::OzoneImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
     const GpuDriverBugWorkarounds& workarounds,
@@ -448,6 +450,7 @@ OzoneImageBacking::OzoneImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       GetPixmapSizeInBytes(*pixmap),
                                       false,
                                       std::move(buffer_usage)),
@@ -458,7 +461,8 @@ OzoneImageBacking::OzoneImageBacking(
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       use_passthrough_(use_passthrough) {
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_gl =
       (HasGLES2ReadOrWriteUsage(usage)) ||

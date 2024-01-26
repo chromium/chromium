@@ -51,7 +51,8 @@ TEST(InstallShTest, Install) {
        src.value(), dest.GetPath().AppendASCII("Google Chrome.app").value()});
   EXPECT_TRUE(base::GetAppOutputWithExitCode(command, &output, &exit_code));
   EXPECT_EQ(exit_code, 0) << output;
-  ASSERT_TRUE(base::PathExists(dest.GetPath().AppendASCII("Google Chrome.app");
+  ASSERT_TRUE(
+      base::PathExists(dest.GetPath().AppendASCII("Google Chrome.app")));
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

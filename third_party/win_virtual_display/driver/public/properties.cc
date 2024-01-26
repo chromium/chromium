@@ -8,6 +8,7 @@
 namespace display::test {
 const MonitorConfig MonitorConfig::k1024x768 = MonitorConfig(1024, 768);
 const MonitorConfig MonitorConfig::k1920x1080 = MonitorConfig(1920, 1080);
+const MonitorConfig MonitorConfig::k1440x900 = MonitorConfig(1440, 900);
 
 DriverProperties::DriverProperties(const std::vector<MonitorConfig>& modes) {
   requested_configs_size_ = std::min(modes.size(), kMaxMonitors);

@@ -54,7 +54,6 @@ public class AutofillProfile {
     public static final class Builder {
         private String mGUID = "";
         private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
-        private ValueWithStatus mHonorificPrefix = ValueWithStatus.EMPTY;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
         private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
         private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
@@ -76,17 +75,6 @@ public class AutofillProfile {
 
         public Builder setSource(@Source int source) {
             mSource = source;
-            return this;
-        }
-
-        public Builder setHonorificPrefix(String honorificPrefix) {
-            mHonorificPrefix =
-                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
-            return this;
-        }
-
-        public Builder setHonorificPrefix(String honorificPrefix, @VerificationStatus int status) {
-            mHonorificPrefix = new ValueWithStatus(honorificPrefix, status);
             return this;
         }
 
@@ -216,7 +204,6 @@ public class AutofillProfile {
             return new AutofillProfile(
                     mGUID,
                     mSource,
-                    mHonorificPrefix,
                     mFullName,
                     mCompanyName,
                     mStreetAddress,
@@ -247,7 +234,6 @@ public class AutofillProfile {
     private AutofillProfile(
             String guid,
             @Source int source,
-            ValueWithStatus honorificPrefix,
             ValueWithStatus fullName,
             ValueWithStatus companyName,
             ValueWithStatus streetAddress,
@@ -261,7 +247,6 @@ public class AutofillProfile {
             ValueWithStatus emailAddress,
             String languageCode) {
         this(guid, source, languageCode);
-        mFields.put(FieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
         mFields.put(FieldType.NAME_FULL, fullName);
         mFields.put(FieldType.COMPANY_NAME, companyName);
         mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
@@ -319,14 +304,6 @@ public class AutofillProfile {
             return VerificationStatus.NO_STATUS;
         }
         return mFields.get(fieldType).getStatus();
-    }
-
-    public String getHonorificPrefix() {
-        return getInfo(FieldType.NAME_HONORIFIC_PREFIX);
-    }
-
-    private @VerificationStatus int getHonorificPrefixStatus() {
-        return getInfoStatus(FieldType.NAME_HONORIFIC_PREFIX);
     }
 
     public String getFullName() {
@@ -455,10 +432,6 @@ public class AutofillProfile {
 
     public void setInfo(@FieldType int fieldType, @Nullable String value) {
         setInfo(fieldType, value, VerificationStatus.USER_VERIFIED);
-    }
-
-    public void setHonorificPrefix(String honorificPrefix) {
-        setInfo(FieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
     }
 
     public void setFullName(String fullName) {

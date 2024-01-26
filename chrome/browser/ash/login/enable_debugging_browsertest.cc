@@ -255,7 +255,16 @@ class EnableDebuggingDevTest : public EnableDebuggingTestBase {
 };
 
 // Show remove protection screen, click on [Cancel] button.
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
+// TODO(https://crbug.com/1521436) Leaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_ShowAndCancelRemoveProtection \
+  DISABLED_ShowAndCancelRemoveProtection
+#else
+#define MAYBE_ShowAndCancelRemoveProtection ShowAndCancelRemoveProtection
+#endif
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest,
+                       MAYBE_ShowAndCancelRemoveProtection) {
   ShowRemoveProtectionScreen();
   CloseEnableDebuggingScreen();
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
@@ -267,7 +276,14 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
 
 // Show remove protection, click on [Remove protection] button and wait for
 // reboot.
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
+// TODO(https://crbug.com/1521436) Leaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_ShowAndRemoveProtection DISABLED_ShowAndRemoveProtection
+#else
+#define MAYBE_ShowAndRemoveProtection ShowAndRemoveProtection
+#endif
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, MAYBE_ShowAndRemoveProtection) {
   // Disarm faked reboot, otherwise Chrome just stops and there's nothing to
   // verify.
   chromeos::FakePowerManagerClient* fake_power_manager_client =
@@ -346,7 +362,14 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupNotMatchingPasswords) {
 
 // Test images come with some features enabled but still has rootfs protection.
 // Invoking debug screen should show remove protection screen.
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowOnTestImages) {
+// TODO(https://crbug.com/1521436) Leaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_ShowOnTestImages DISABLED_ShowOnTestImages
+#else
+#define MAYBE_ShowOnTestImages ShowOnTestImages
+#endif
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, MAYBE_ShowOnTestImages) {
   debug_daemon_client_->SetDebuggingFeaturesStatus(
       debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED |
       debugd::DevFeatureFlag::DEV_FEATURE_SYSTEM_ROOT_PASSWORD_SET);

@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -433,6 +434,12 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   if (IsAppServiceShortcut(profile_, app_id)) {
     apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kShelf);
     proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
+    return;
+  }
+
+  // Handle user selects promise app from Shelf
+  if (IsPromiseApp(profile_, app_id)) {
+    proxy->PromiseAppService()->UpdateInstallPriority(app_id);
     return;
   }
 

@@ -170,13 +170,14 @@ suite('textAcceleratorTest', function() {
         continue;
       }
       for (const scenario of scenarios) {
-        // replicate getCategory() logic.
-        const category = manager!.getAcceleratorCategory(
+        // replicate getSubcategory() logic.
+        const subcategory = manager!.getAcceleratorSubcategory(
             layoutInfo.source, layoutInfo.action);
-        const categoryIsUnlocked = !manager!.isCategoryLocked(category);
+        const subcategoryIsUnlocked =
+            !manager!.isSubcategoryLocked(subcategory);
         // replicate shouldShowLockIcon() logic.
         const expectLockIconVisible =
-            scenario.customizationEnabled && categoryIsUnlocked;
+            scenario.customizationEnabled && subcategoryIsUnlocked;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,

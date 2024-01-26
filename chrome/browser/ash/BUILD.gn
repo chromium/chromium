@@ -1213,6 +1213,8 @@ source_set("ash") {
     "file_system_provider/abort_callback.h",
     "file_system_provider/cached_file_system.cc",
     "file_system_provider/cached_file_system.h",
+    "file_system_provider/content_cache/content_cache.cc",
+    "file_system_provider/content_cache/content_cache.h",
     "file_system_provider/extension_provider.cc",
     "file_system_provider/extension_provider.h",
     "file_system_provider/fileapi/backend_delegate.cc",
@@ -1485,8 +1487,6 @@ source_set("ash") {
     "input_method/candidate_window_controller_impl.h",
     "input_method/component_extension_ime_manager_delegate_impl.cc",
     "input_method/component_extension_ime_manager_delegate_impl.h",
-    "input_method/diacritics_checker.cc",
-    "input_method/diacritics_checker.h",
     "input_method/diacritics_insensitive_string_comparator.cc",
     "input_method/diacritics_insensitive_string_comparator.h",
     "input_method/editor_client_connector.cc",
@@ -1619,6 +1619,8 @@ source_set("ash") {
     "input_method/ui/undo_window.h",
     "input_method/url_utils.cc",
     "input_method/url_utils.h",
+    "kcer/kcer_factory_ash.cc",
+    "kcer/kcer_factory_ash.h",
     "kerberos/kerberos_credentials_manager.cc",
     "kerberos/kerberos_credentials_manager.h",
     "kerberos/kerberos_credentials_manager_factory.cc",
@@ -1964,6 +1966,8 @@ source_set("ash") {
     "nonclosable_app_ui_utils.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
+    "login/screens/install_attributes_error_screen.cc",
+    "login/screens/install_attributes_error_screen.h",
     "login/screens/placeholder_screen.cc",
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
@@ -2661,6 +2665,8 @@ source_set("ash") {
     "policy/remote_commands/user_commands_factory_ash.h",
     "policy/reporting/app_install_event_log_manager_wrapper.cc",
     "policy/reporting/app_install_event_log_manager_wrapper.h",
+    "policy/reporting/arc_app_install_event_encrypted_reporter.cc",
+    "policy/reporting/arc_app_install_event_encrypted_reporter.h",
     "policy/reporting/arc_app_install_event_log.cc",
     "policy/reporting/arc_app_install_event_log.h",
     "policy/reporting/arc_app_install_event_log_collector.cc",
@@ -2923,6 +2929,8 @@ source_set("ash") {
     "printing/cups_print_job_notification.h",
     "printing/cups_print_job_notification_manager.cc",
     "printing/cups_print_job_notification_manager.h",
+    "printing/cups_print_job_notification_utils.cc",
+    "printing/cups_print_job_notification_utils.h",
     "printing/cups_printer_status_creator.cc",
     "printing/cups_printer_status_creator.h",
     "printing/cups_printers_manager.cc",
@@ -3388,6 +3396,8 @@ source_set("ash") {
     "system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h",
     "system_web_apps/apps/personalization_app/personalization_system_app_delegate.cc",
     "system_web_apps/apps/personalization_app/personalization_system_app_delegate.h",
+    "system_web_apps/apps/personalization_app/wallpaper_metrics_provider.cc",
+    "system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h",
     "system_web_apps/apps/print_management_web_app_info.cc",
     "system_web_apps/apps/print_management_web_app_info.h",
     "system_web_apps/apps/projector_app/untrusted_projector_annotator_ui_config.cc",
@@ -3414,6 +3424,8 @@ source_set("ash") {
     "system_web_apps/apps/vc_background_ui/vc_background_ui_sea_pen_provider_impl.h",
     "system_web_apps/apps/vc_background_ui/vc_background_ui_system_app_delegate.cc",
     "system_web_apps/apps/vc_background_ui/vc_background_ui_system_app_delegate.h",
+    "system_web_apps/apps/vc_background_ui/vc_background_ui_utils.cc",
+    "system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h",
     "tether/fake_tether_service.cc",
     "tether/fake_tether_service.h",
     "tether/tether_service.cc",
@@ -3971,6 +3983,7 @@ source_set("ash") {
 
   deps = [
     ":add_remove_user_event_proto",
+    ":app_install_events_proto",
     ":attestation_proto",
     ":device_policy_remover_generated",
     "//apps",
@@ -3988,9 +4001,11 @@ source_set("ash") {
     "//ash/style",
     "//ash/webui/camera_app_ui:document_scanning",
     "//ash/webui/camera_app_ui/resources/strings",
+    "//ash/webui/common:sea_pen",
     "//ash/webui/connectivity_diagnostics/resources:resources",
     "//ash/webui/demo_mode_app_ui",
     "//ash/webui/diagnostics_ui",
+    "//ash/webui/diagnostics_ui/resources:resources",
     "//ash/webui/file_manager:constants",
     "//ash/webui/file_manager:file_manager_untrusted_ui",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
@@ -4008,7 +4023,6 @@ source_set("ash") {
     "//ash/webui/projector_app/public/cpp",
     "//ash/webui/resources:camera_app_resources",
     "//ash/webui/resources:demo_mode_app_resources",
-    "//ash/webui/resources:diagnostics_app_resources",
     "//ash/webui/resources:eche_bundle_resources",
     "//ash/webui/resources:help_app_resources",
     "//ash/webui/resources:media_app_bundle_resources",
@@ -4134,6 +4148,7 @@ source_set("ash") {
     "//chromeos/ash/components/power",
     "//chromeos/ash/components/report",
     "//chromeos/ash/components/report:fresnel_service_proto",
+    "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/scalable_iph:iph_session",
@@ -4166,6 +4181,7 @@ source_set("ash") {
     "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/components/certificate_provider",
     "//chromeos/components/disks:prefs",
+    "//chromeos/components/kcer",
     "//chromeos/components/kcer:chaps_proto",
     "//chromeos/components/kiosk",
     "//chromeos/components/mgs",
@@ -4387,8 +4403,6 @@ source_set("ash") {
       "chromebox_for_meetings/logger/cfm_logger_service.h",
       "chromebox_for_meetings/logger/reporting_pipeline.cc",
       "chromebox_for_meetings/logger/reporting_pipeline.h",
-      "chromebox_for_meetings/network_settings/network_settings_service.cc",
-      "chromebox_for_meetings/network_settings/network_settings_service.h",
       "chromebox_for_meetings/service_adaptor.cc",
       "chromebox_for_meetings/service_adaptor.h",
       "chromebox_for_meetings/xu_camera/xu_camera_service.cc",
@@ -4804,6 +4818,10 @@ static_library("test_support") {
     "policy/login/signin_profile_extensions_policy_test_base.h",
     "policy/remote_commands/crd/fake_start_crd_session_job_delegate.cc",
     "policy/remote_commands/crd/fake_start_crd_session_job_delegate.h",
+    "policy/remote_commands/device_command_fetch_support_packet_job_test_util.cc",
+    "policy/remote_commands/device_command_fetch_support_packet_job_test_util.h",
+    "policy/remote_commands/user_session_type_test_util.cc",
+    "policy/remote_commands/user_session_type_test_util.h",
     "policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.cc",
     "policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h",
     "policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.cc",
@@ -4902,6 +4920,7 @@ static_library("test_support") {
     "//components/policy/proto",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/reporting/storage:test_support",
     "//components/session_manager/core",
     "//components/sync/model",
     "//components/sync/protocol",
@@ -5104,7 +5123,9 @@ source_set("unit_tests") {
     "app_list/search/common/keyword_util_unittest.cc",
     "app_list/search/common/string_util_unittest.cc",
     "app_list/search/desks_admin_template_provider_unittest.cc",
+    "app_list/search/essential_search/socs_cookie_fetcher_unittest.cc",
     "app_list/search/federated_metrics_manager_unittest.cc",
+    "app_list/search/files/diacritics_checker_unittest.cc",
     "app_list/search/files/file_result_unittest.cc",
     "app_list/search/files/file_search_provider_unittest.cc",
     "app_list/search/files/justifications_unittest.cc",
@@ -5565,11 +5586,12 @@ source_set("unit_tests") {
     "input_method/assistive_window_controller_unittest.cc",
     "input_method/autocorrect_manager_unittest.cc",
     "input_method/autocorrect_prefs_unittest.cc",
-    "input_method/diacritics_checker_unittest.cc",
     "input_method/diacritics_insensitive_string_comparator_unittest.cc",
     "input_method/editor_consent_store_unittest.cc",
     "input_method/editor_feedback_unittest.cc",
     "input_method/editor_helpers_unittest.cc",
+    "input_method/editor_metrics_recorder_unittest.cc",
+    "input_method/editor_panel_manager_unittest.cc",
     "input_method/editor_switch_unittest.cc",
     "input_method/emoji_suggester_unittest.cc",
     "input_method/fake_suggestion_handler.cc",
@@ -5671,6 +5693,7 @@ source_set("unit_tests") {
     "login/version_updater/update_time_estimator_unittest.cc",
     "login/version_updater/version_updater_unittest.cc",
     "login/wizard_controller_unittest.cc",
+    "mahi/mahi_manager_ash_unittest.cc",
     "mobile/mobile_activator_unittest.cc",
     "nearby/bluetooth_adapter_manager_unittest.cc",
     "nearby/nearby_process_manager_impl_unittest.cc",
@@ -5828,9 +5851,8 @@ source_set("unit_tests") {
     "policy/remote_commands/fake_cros_network_config_base.cc",
     "policy/remote_commands/fake_cros_network_config_base.h",
     "policy/remote_commands/user_command_arc_job_unittest.cc",
-    "policy/remote_commands/user_session_type_test_util.cc",
-    "policy/remote_commands/user_session_type_test_util.h",
     "policy/reporting/app_install_event_log_manager_wrapper_unittest.cc",
+    "policy/reporting/arc_app_install_event_encrypted_reporter_unittest.cc",
     "policy/reporting/arc_app_install_event_log_collector_unittest.cc",
     "policy/reporting/arc_app_install_event_log_manager_unittest.cc",
     "policy/reporting/arc_app_install_event_log_unittest.cc",
@@ -5920,6 +5942,7 @@ source_set("unit_tests") {
     "printing/bulk_printers_calculator_unittest.cc",
     "printing/calculators_policies_binder_unittest.cc",
     "printing/cups_print_job_notification_manager_unittest.cc",
+    "printing/cups_print_job_notification_unittest.cc",
     "printing/cups_printer_status_creator_unittest.cc",
     "printing/cups_printers_manager_unittest.cc",
     "printing/enterprise_printers_provider_unittest.cc",
@@ -6045,6 +6068,7 @@ source_set("unit_tests") {
     "system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl_unittest.cc",
     "system_web_apps/apps/personalization_app/personalization_app_user_provider_impl_unittest.cc",
     "system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl_unittest.cc",
+    "system_web_apps/apps/personalization_app/wallpaper_metrics_provider_unittest.cc",
     "tether/tether_service_unittest.cc",
     "throttle_observer_unittest.cc",
     "throttle_service_unittest.cc",
@@ -6052,6 +6076,7 @@ source_set("unit_tests") {
     "trusted_vault/trusted_vault_backend_service_ash_unittest.cc",
     "usb/cros_usb_detector_unittest.cc",
     "video_conference/video_conference_manager_ash_unittest.cc",
+    "wallpaper_handlers/sea_pen_utils_unittest.cc",
     "wallpaper_handlers/wallpaper_handlers_unittest.cc",
     "wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.cc",
     "wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.h",
@@ -6066,6 +6091,7 @@ source_set("unit_tests") {
 
   deps = [
     ":add_remove_user_event_proto",
+    ":app_install_events_proto",
     ":arc_test_support",
     ":ash",
     ":attestation_proto",
@@ -6300,6 +6326,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
+    "//chromeos/ash/services/federated/public/cpp:cpp",
     "//chromeos/ash/services/federated/public/cpp:test_support",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ash/services/ime/public/mojom",
@@ -6379,6 +6406,7 @@ source_set("unit_tests") {
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",
+    "//components/feature_engagement/public",
     "//components/feedback",
     "//components/feedback/proto",
     "//components/file_access",
@@ -6651,7 +6679,12 @@ source_set("unit_tests") {
     ]
   }
 
-  data = [ "//chromeos/test/data/" ]
+  data = [
+    "//chromeos/test/data/",
+
+    # Needed by os_settings_manager_unittest.cc.
+    "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml",
+  ]
 }
 
 config("allow_shadow_variables") {
@@ -6677,6 +6710,12 @@ source_set("test_with_shadow_variables") {
     "//third_party/securemessage",
     "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
+}
+
+proto_library("app_install_events_proto") {
+  proto_in_dir = "//"
+  sources =
+      [ "../policy/messaging_layer/proto/synced/app_install_events.proto" ]
 }
 
 proto_library("add_remove_user_event_proto") {

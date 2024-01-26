@@ -1,5 +1,7 @@
 Google,google.com
 Google,chromium.org
+Google,webrtc.org
+Google,skia.org
 Igalia,igalia.com
 Microsoft,microsoft.com
 Samsung,samsung.com
@@ -8,12 +10,13 @@ Yandex,yandex-team.ru
 Yandex,ya.ru
 LGE,lge.com
 Vewd,vewd.com
-NaverCorp,navercorp.com
+Naver,navercorp.com
 Mobica,mobica.com
 Intel,intel.com
 Huawei,huawei.com
 Amazon,amazon.com
-Facebook,fb.com
+Meta,fb.com
+Meta,meta.com
 ARM,arm.com
 Szeged,inf.u-szeged.hu
 Xiaomi,xiaomi.com
@@ -22,28 +25,33 @@ Nvidia,nvidia.com
 Brave,brave.com
 ByteDance,bytedance.com
 Alibaba,alibaba-inc.com
+Individuals,adenilson.org
 Individuals,gmail.com
 Individuals,googlemail.com
 Individuals,niedermayer.cc
+Individuals,sonic.net
 Individuals,noemail.net
 Individuals,outlook.com
 Individuals,hotmail.com
+Individuals,warlow.dev
+Individuals,greggman.com
 Redhat,redhat.com
 Individuals,behdad.org
 Tencent,tencent.com
 Apple,apple.com
 WebKit,webkit.org
-WebRTC,webrtc.org
 LunarG,lunarg.com
+LunarG,LunarG.com
 Individuals,users.noreply.github.com
 Mozilla,mozilla.com
-ArntzenSoftware,arntzen-software.no
-Foolip,foolip.org
+Arntzen Software,arntzen-software.no
+Individuals,foolip.org
 Slack,slack-corp.com
 Qiaxin,www.qianxin.com
 IBM,ca.ibm.com
 IBM,in.ibm.com
 IBM,ibm.com
+IBM,us.ibm.com
 AMD,amd.com
 antmicro,antmicro.com
 BDTi,bdti.com
@@ -51,3 +59,14 @@ Broadcom,broadcom.com
 TensorFlow,tensorflow.org
 GNU,gnu.org
 Netflix,netflix.com
+Shopify,shopify.com
+Individuals,kzar.co.uk
+Loongson,loongson.cn
+Qualcom,quincinc.com
+Imagination,imgtec.com
+Front Range Internet,frii.com
+Adobe,adobe.com
+Alif Type,aliftype.com
+Chinese Academy of Sciences,iscas.ac.cn
+Khronos,khronosgroup.org
+MediaTek,mediatek.com

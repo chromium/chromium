@@ -98,7 +98,7 @@ StructuredMetricsService* StructuredMetricsMixin::GetService() {
       ->GetStructuredMetricsService();
 }
 
-absl::optional<StructuredEventProto> StructuredMetricsMixin::FindEvent(
+std::optional<StructuredEventProto> StructuredMetricsMixin::FindEvent(
     uint64_t project_name_hash,
     uint64_t event_name_hash) {
   std::vector<StructuredEventProto> events =
@@ -106,7 +106,7 @@ absl::optional<StructuredEventProto> StructuredMetricsMixin::FindEvent(
   if (events.size() > 0) {
     return events[0];
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
@@ -127,7 +127,7 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
 void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
                                                     uint64_t event_name_hash) {
   // Check if event already exists.
-  absl::optional<StructuredEventProto> event =
+  std::optional<StructuredEventProto> event =
       FindEvent(project_name_hash, event_name_hash);
   if (event.has_value()) {
     return;
@@ -137,7 +137,7 @@ void StructuredMetricsMixin::WaitUntilEventRecorded(uint64_t project_name_hash,
   record_run_loop_ = std::make_unique<base::RunLoop>();
   base::RepeatingClosure callback =
       base::BindLambdaForTesting([project_name_hash, event_name_hash, this]() {
-        absl::optional<StructuredEventProto> event =
+        std::optional<StructuredEventProto> event =
             FindEvent(project_name_hash, event_name_hash);
 
         if (event.has_value()) {

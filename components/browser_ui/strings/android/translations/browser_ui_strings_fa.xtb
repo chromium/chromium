@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
 <translation id="1426410128494586442">بله</translation>
+<translation id="1434873037477293673">کارت کاهش قیمت</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
 <translation id="1510341833810331442">سایت‌ها نمی‌توانند در دستگاه داده ذخیره کنند</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
 <translation id="2790501146643349491">هرگاه روشن باشد، سایت‌های اخیراً بسته‌شده می‌توانند ارسال و دریافت داده را تکمیل کنند. هرگاه خاموش باشد، سایت‌های اخیراً بسته‌شده نمی‌توانند ارسال یا دریافت داده را تکمیل کنند.</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">درخواست نمای تلفن همراه</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
@@ -120,7 +122,7 @@
 <translation id="2979365474350987274">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
 <translation id="3013291976881901233">‏دستگاه‌های MIDI</translation>
-<translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
+<translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
@@ -170,7 +172,7 @@
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3843916486309149084">‏Chrome کوکی‌ها را امروز دوباره مسدود خواهد کرد</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3859306556332390985">جستجو به جلو</translation>
 <translation id="3895926599014793903">فعال کردن اجباری بزرگ‌نمایی</translation>
 <translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">دسترسی سایت‌ها به دستگاه و داده‌های واقعیت مجازی مسدود شود</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
+<translation id="6452138246455930388">کاهش قیمت در برگه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">وقتی پنجره باریک است، نمای تلفن همراه درخواست شود</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="652937045869844725">کوکی‌های شخص ثالث را مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
 <translation id="6766622839693428701">برای بستن، تند به‌پایین بکشید.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">گزینه‌ای برای <ph name="SITE_NAME" /> انتخاب کنید</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
+<translation id="6867014948848323204">از <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">سایت‌ها از خواندن نوشتار و تصاویر بریده‌دان منع شوند</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6950072572526089586">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاهتان ذخیره می‌کنند.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>
 <translation id="7684642910516280563">اجازه ندادن به سایتی به‌خصوص برای استفاده از کوکی‌های شخص ثالث</translation>
 <translation id="7719367874908701697">بزرگ‌نمایی صفحه</translation>
+<translation id="7770832849480336015">پنهان کردن «<ph name="TITLE_OF_MODULE" />»</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="780301667611848630">نه متشکرم</translation>

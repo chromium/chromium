@@ -141,11 +141,16 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAttestationSentinel);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxEnrollmentOverrides[];
 
-// Allow the Privacy Sandbox Attestations component registration to use higher
-// task priority.
+// Allow the Privacy Sandbox Attestations component registration to use
+// `USER_VISIBLE` task priority.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(
     kPrivacySandboxAttestationsHigherComponentRegistrationPriority);
+
+// Allow the Privacy Sandbox Attestations component registration to use
+// `USER_BLOCKING` task priority.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsUserBlockingPriority);
 
 // Enables Privacy Sandbox Proactive Topics Blocking.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -179,6 +184,10 @@ BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
 // Enables chrome://privacy-sandbox-internals DevUI page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
+
+// Enables showing the IP Protection setting on the cookies settings page.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kIpProtectionV1);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the trackingProtectionNoticeController to notify the

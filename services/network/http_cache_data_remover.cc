@@ -34,8 +34,9 @@ HttpCacheDataRemover::HttpCacheDataRemover(
       backend_(nullptr) {
   DCHECK(!done_callback_.is_null());
 
-  if (!url_filter)
+  if (!url_filter) {
     return;
+  }
 
   // Use the filter to create the |url_matcher_| callback.
   std::set<std::string> domains;
@@ -78,7 +79,7 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
   // TODO(crbug.com/817849): add a browser test to validate the QUIC information
   // is cleared.
   http_cache->GetSession()
-      ->quic_stream_factory()
+      ->quic_session_pool()
       ->ClearCachedStatesInCryptoConfig(remover->url_matcher_);
 
   net::CompletionOnceCallback callback =

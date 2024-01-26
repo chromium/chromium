@@ -92,13 +92,19 @@ class KeywordTableTest : public testing::Test {
 
   void KeywordMiscTest() const {
     EXPECT_EQ(kInvalidTemplateURLID, table_->GetDefaultSearchProviderID());
-    EXPECT_EQ(0, table_->GetBuiltinKeywordVersion());
+    EXPECT_EQ(0, table_->GetBuiltinKeywordDataVersion());
+    EXPECT_EQ(0, table_->GetBuiltinKeywordCountry());
+    EXPECT_EQ(0, table_->GetBuiltinKeywordMilestone());
 
     EXPECT_TRUE(table_->SetDefaultSearchProviderID(10));
-    EXPECT_TRUE(table_->SetBuiltinKeywordVersion(11));
+    EXPECT_TRUE(table_->SetBuiltinKeywordDataVersion(11));
+    EXPECT_TRUE(table_->SetBuiltinKeywordCountry(12));
+    EXPECT_TRUE(table_->SetBuiltinKeywordMilestone(13));
 
     EXPECT_EQ(10, table_->GetDefaultSearchProviderID());
-    EXPECT_EQ(11, table_->GetBuiltinKeywordVersion());
+    EXPECT_EQ(11, table_->GetBuiltinKeywordDataVersion());
+    EXPECT_EQ(12, table_->GetBuiltinKeywordCountry());
+    EXPECT_EQ(13, table_->GetBuiltinKeywordMilestone());
   }
 
   void GetStatement(const char* sql, sql::Statement* statement) const {

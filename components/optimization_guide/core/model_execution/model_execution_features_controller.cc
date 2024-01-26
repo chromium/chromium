@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace optimization_guide {
 
@@ -22,26 +23,6 @@ bool ShouldCheckSettingForFeature(proto::ModelExecutionFeature feature) {
   return feature != proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED &&
          feature != proto::MODEL_EXECUTION_FEATURE_TEST;
 }
-
-enum class SettingsVisibilityResult {
-  kUnknown = 0,
-  // Not visible because user is not signed-in.
-  kNotVisibleUnsignedUser = 1,
-  // Visible because feature is already enabled.
-  kVisibleFeatureAlreadyEnabled = 2,
-  // Not visible because field trial is disabled.
-  kNotVisibleFieldTrialDisabled = 3,
-  // Visible because field trial is enabled.
-  kVisibleFieldTrialEnabled = 4,
-  // Not visible because feature was disabled by enterprise policy.
-  kNotVisibleEnterprisePolicy = 5,
-  // Not visible because model execution capability was disabled for the user
-  // account.
-  kNotVisibleModelExecutionCapability = 6,
-  // Updates should match with FeaturesSettingsVisibilityResult enum in
-  // enums.xml.
-  kMaxValue = kNotVisibleModelExecutionCapability
-};
 
 // Util class for recording the construction and validation of Settings
 // Visibility histogram.
@@ -60,8 +41,9 @@ class ScopedSettingsVisibilityResultHistogramRecorder {
 
   void SetValid() { is_valid_ = true; }
 
-  void SetResult(proto::ModelExecutionFeature feature,
-                 SettingsVisibilityResult result) {
+  void SetResult(
+      proto::ModelExecutionFeature feature,
+      ModelExecutionFeaturesController::SettingsVisibilityResult result) {
     is_valid_ = true;
     feature_ = feature;
     result_ = result;
@@ -70,7 +52,7 @@ class ScopedSettingsVisibilityResultHistogramRecorder {
  private:
   bool is_valid_ = false;
   proto::ModelExecutionFeature feature_;
-  SettingsVisibilityResult result_;
+  ModelExecutionFeaturesController::SettingsVisibilityResult result_;
 };
 
 enum class FeatureCurrentlyEnabledResult {
@@ -119,6 +101,20 @@ class ScopedFeatureCurrentlyEnabledHistogramRecorder {
   FeatureCurrentlyEnabledResult result_;
 };
 
+// Returns whether the model execution capability is enabled. Use this whenever
+// the `AccountInfo` is available which has more recent data, instead of
+// querying via the `IdentityManager` that could be having stale information.
+bool CanUseModelExecutionFeaturesFromAccountInfo(
+    const AccountInfo account_info) {
+  if (base::FeatureList::IsEnabled(
+          features::internal::kModelExecutionCapabilityDisable)) {
+    // Disable the capability check and allow all model execution features.
+    return true;
+  }
+  return account_info.capabilities.can_use_model_execution_features() !=
+         signin::Tribool::kFalse;
+}
+
 bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
   if (base::FeatureList::IsEnabled(
           features::internal::kModelExecutionCapabilityDisable)) {
@@ -133,10 +129,8 @@ bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
   if (account_id.empty()) {
     return false;
   }
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  return account_info.capabilities.can_use_model_execution_features() !=
-         signin::Tribool::kFalse;
+  return CanUseModelExecutionFeaturesFromAccountInfo(
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id));
 }
 
 }  // namespace
@@ -443,7 +437,7 @@ void ModelExecutionFeaturesController::OnExtendedAccountInfoUpdated(
     return;
   }
   can_use_model_execution_features_ =
-      CanUseModelExecutionFeatures(identity_manager_);
+      CanUseModelExecutionFeaturesFromAccountInfo(info);
   ResetInvalidFeaturePrefs();
 }
 

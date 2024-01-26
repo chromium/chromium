@@ -146,6 +146,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         }
         actual_contents += "press " + dom_key_string + '\n';
         RunUntilInputProcessed(GetWidgetHost());
+
+        // Input presses could create a11y events. Wait for those to clear
+        // before procceding.
+        WaitForEndOfTest(mode);
       }
       if (printTree) {
         actual_contents += DumpTreeAsString() + '\n';

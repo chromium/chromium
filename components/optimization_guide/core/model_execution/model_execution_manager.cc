@@ -110,7 +110,8 @@ ModelExecutionManager::ModelExecutionManager(
       model_provider_(model_provider),
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {
-  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+  if (model_provider_ && on_device_model_service_controller_ &&
+      features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
         /*model_metadata=*/absl::nullopt, this);
@@ -118,7 +119,8 @@ ModelExecutionManager::ModelExecutionManager(
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
-  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+  if (model_provider_ && on_device_model_service_controller_ &&
+      features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
   }
@@ -232,9 +234,10 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(base::DoNothing(), feature, nullptr,
-                                       nullptr, std::move(execute_fn),
-                                       optimization_guide_logger_.get());
+  return std::make_unique<SessionImpl>(
+      base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
+      /*safety_config=*/std::nullopt, std::move(execute_fn),
+      optimization_guide_logger_.get());
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

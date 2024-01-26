@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">fremover</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
+<translation id="1626590945318984973">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som ikke inneholder funksjonstastene eller <ph name="META_KEY" />-tasten.</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1643449475550628585">Endre bakgrunnsbilde daglig</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Slå av mørk modus</translation>
 <translation id="1885577615937958993">spol medieinnhold fremover</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
-<translation id="1897672602657312171">Hurtigtaster uten søketasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som bruker søketasten.</translation>
 <translation id="1904932688895783618">Her er noen andre nyttige ressurser:</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratoren din har angitt at <ph name="APP_NAME_1" /> skal startes automatisk hver gang du logger på.}=2{Administratoren din har angitt at <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> skal startes automatisk hver gang du logger på.}=3{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> skal startes automatisk hver gang du logger på.}other{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # apper til skal startes automatisk hver gang du logger på.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="215916044711630446">Legg til APN-knappen er nå deaktivert</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Endre APN-detaljene</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
+<translation id="2215920961700443347">Ingen internettilkobling. Koble til internett, og prøv på nytt.</translation>
 <translation id="2217935453350629363">Nåværende hastighet</translation>
 <translation id="2224337661447660594">Ingen nettilkobling</translation>
 <translation id="222447520299472966">Minst ett Kunst-gallerialbum må velges</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">Det er ikke ledig kapasitet. Kom tilbake om en liten stund.</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
 <translation id="2491955442992294626">Taster blir ikke testet når du bruker andre vinduer</translation>
 <translation id="2493126929778606526">De beste bildene dine, valgt automatisk</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Last inn det nåværende bakgrunnsbildet på nytt</translation>
 <translation id="2512979179176933762">vis vinduer</translation>
 <translation id="2513396635448525189">Påloggingsbilde</translation>
-<translation id="2515109918609218604">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast uten å bruke funksjonstastene eller søketasten.</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2521835766824839541">forrige spor</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Nå har du tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mørk modus</translation>
 <translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
+<translation id="4130750466177569591">Godta</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Skjerm</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">lysstyrke ned</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
 <translation id="4176659219503619100">Kontrollpanel</translation>
-<translation id="4185315616950253617">En hurtigtast som bruker taster på øverste rad, må inneholde søketasten.</translation>
 <translation id="420283545744377356">Slå av skjermspareren</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Deaktiver</translation>
 <translation id="439429847087949098">Starter <ph name="DEVICE_NAME" /> på nytt</translation>
 <translation id="4395835743215824109">tastatur tilpasse</translation>
+<translation id="4403262788869804671">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten.</translation>
 <translation id="4415951057168511744">Nåværende brukerbilde</translation>
+<translation id="4417830657741848074">Administratoren din har konfigurert at noen apper skal startes automatisk. Noen av disse appene kan ikke lukkes.</translation>
 <translation id="4422041425070339732">pil ned</translation>
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er av</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Skjermsparer: Jordflyt</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
+<translation id="4500722292849917410">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder en modifikatortast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grensesnittfarge</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4507392511610824664">lysstyrke opp</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4835901797422965222">Ingen aktive nettverk</translation>
 <translation id="4839698083503556542">Lag din egen film</translation>
+<translation id="48409034532829769">Administratoren din har konfigurert at «<ph name="APP_NAME" />» skal startes automatisk. Denne appen kan ikke lukkes.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt – trykk på Enter for å velge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="484790837831576105">(Android) DNS-oppslag</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Del opp</translation>
 <translation id="4972592110715526173">modusendring</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
+<translation id="4982627662315910959">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder Shift og én modifikatortast til (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Tidsplan for mørkt tema</translation>
 <translation id="5229344016299762883">Avslutt fullskjerm</translation>
 <translation id="5234764350956374838">Lukk</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratoren din har konfigurert at «<ph name="APP_NAME" />» skal startes automatisk hver gang du logger på.}=2{Administratoren din har konfigurert at «<ph name="APP_NAME" />» og én app til skal startes automatisk hver gang du logger på.}other{Administratoren din har konfigurert at «<ph name="APP_NAME" />» og # apper til skal startes automatisk hver gang du logger på.}}</translation>
 <translation id="5252456968953390977">Datastreifing</translation>
 <translation id="5257811368506016604">Slå på modus for lyse farger</translation>
 <translation id="5264277876637023664">Kjør prosessortest</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobiloperatør</translation>
 <translation id="725133483556299729">Velg en e-postadresse</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv på nytt senere.</translation>
-<translation id="7273347807225967898">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder en modifikatortast (Ctrl, Alt, Shift, Søk, eller Appoversikt).</translation>
+<translation id="7271932918253517778">En hurtigtast som bruker taster på øverste rad, må inneholde <ph name="META_KEY" />-tasten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Kjenn brisen</translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Generelle kontroller</translation>
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8017679124341497925">Snarveien er endret</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8094062939584182041">La Google sende deg e-post om dette problemet</translation>
 <translation id="8104083085214006426">Du bruker et åpent og usikret nettverk</translation>
-<translation id="8111706652656628199">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder Shift og en modifikatortast til (Ctrl, Alt, Søk, eller Appoversikt).</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>

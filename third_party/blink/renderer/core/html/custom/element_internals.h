@@ -69,10 +69,37 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   void SetElementAttribute(const QualifiedName& name, Element* element);
   Element* GetElementAttribute(const QualifiedName& name);
-  HeapVector<Member<Element>>* GetElementArrayAttribute(
+  ScriptValue GetElementArrayAttribute(ScriptState* script_state,
+                                       const QualifiedName& name);
+  HeapVector<Member<Element>>* GetAttrAssociatedElements(
       const QualifiedName& name) const;
-  void SetElementArrayAttribute(const QualifiedName& name,
-                                const HeapVector<Member<Element>>* elements);
+  void SetElementArrayAttribute(ScriptState* script_state,
+                                const QualifiedName& name,
+                                const ScriptValue given_value,
+                                const char* const property_name);
+
+  ScriptValue ariaControlsElements(ScriptState* script_state);
+  void setAriaControlsElements(ScriptState* script_state,
+                               ScriptValue given_elements);
+  ScriptValue ariaDescribedByElements(ScriptState* script_state);
+  void setAriaDescribedByElements(ScriptState* script_state,
+                                  ScriptValue given_elements);
+  ScriptValue ariaDetailsElements(ScriptState* script_state);
+  void setAriaDetailsElements(ScriptState* script_state,
+                              ScriptValue given_elements);
+  ScriptValue ariaErrorMessageElements(ScriptState* script_state);
+  void setAriaErrorMessageElements(ScriptState* script_state,
+                                   ScriptValue given_elements);
+  ScriptValue ariaFlowToElements(ScriptState* script_state);
+  void setAriaFlowToElements(ScriptState* script_state,
+                             ScriptValue given_elements);
+  ScriptValue ariaLabelledByElements(ScriptState* script_state);
+  void setAriaLabelledByElements(ScriptState* script_state,
+                                 ScriptValue given_elements);
+  ScriptValue ariaOwnsElements(ScriptState* script_state);
+  void setAriaOwnsElements(ScriptState* script_state,
+                           ScriptValue given_elements);
+
   bool HasAttribute(const QualifiedName& attribute) const;
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 

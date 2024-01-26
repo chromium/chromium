@@ -522,7 +522,7 @@ TEST_F(AddressTest, TestGettingTheStructuredAddress) {
   address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
 
   // Get the structured address and verify that it has the same test value set.
-  const AddressComponent& structured_address = address1.GetStructuredAddress();
+  const AddressComponent& structured_address = address1.GetRoot();
   EXPECT_EQ(structured_address.GetValueForType(ADDRESS_HOME_ZIP), u"12345");
 }
 
@@ -610,7 +610,7 @@ TEST_F(AddressTest, IsLegacyAddressUpdateCountry) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"BR");
   EXPECT_FALSE(address.IsLegacyAddress());
 
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AZ");
   EXPECT_TRUE(address.IsLegacyAddress());
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"MX");
@@ -622,7 +622,6 @@ TEST_F(AddressTest, IsLegacyAddressUpdateCountry) {
 
 TEST_F(AddressTest, TestUpdateLegacyToCustomHierarchy) {
   Address address(kLegacyHierarchyCountryCode);
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
   address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Munich",
                                            VerificationStatus::kObserved);
   address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Bayern",
@@ -723,10 +722,10 @@ TEST_F(AddressTest, TestUpdateCustomHierarchyToLegacy) {
                                            VerificationStatus::kParsed);
 
   // Updates the internal hierarchy and copies the data into the legacy model.
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AZ");
   address.FinalizeAfterImport();
 
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"AZ");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_CITY), u"Munich");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STATE), u"Bayern");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_ZIP), u"111");

@@ -47,6 +47,7 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
@@ -134,6 +135,11 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/media/captured_surface_controller.h"
+#include "content/public/test/mock_captured_surface_controller.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/grit/ash_webui_common_resources.h"
@@ -4312,5 +4318,36 @@ base::CallbackListSubscription RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback) {
   return WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(callback);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SetCapturedSurfaceControllerFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+        GlobalRenderFrameHostId,
+        WebContentsMediaCaptureId)> factory) {
+  using FactoryType =
+      ::base::RepeatingCallback<std::unique_ptr<CapturedSurfaceController>(
+          GlobalRenderFrameHostId, WebContentsMediaCaptureId,
+          base::RepeatingCallback<void(int)>)>;
+  using MockFactoryType =
+      ::base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+          GlobalRenderFrameHostId, WebContentsMediaCaptureId)>;
+
+  FactoryType wrapped_factory = base::BindRepeating(
+      [](MockFactoryType mock_factory, GlobalRenderFrameHostId rfh_id,
+         WebContentsMediaCaptureId captured_wc_id,
+         base::RepeatingCallback<void(int)> on_zoom_level_change_callback) {
+        std::unique_ptr<MockCapturedSurfaceController> mock_controller =
+            mock_factory.Run(rfh_id, captured_wc_id);
+        std::unique_ptr<CapturedSurfaceController> wrapped_object =
+            base::WrapUnique<CapturedSurfaceController>(
+                mock_controller.release());
+        return wrapped_object;
+      },
+      factory);
+
+  MediaStreamManager::GetInstance()
+      ->SetCapturedSurfaceControllerFactoryForTesting(wrapped_factory);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace content

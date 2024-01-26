@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
@@ -43,6 +44,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -80,6 +83,7 @@ public class SingleTabSwitcherMediatorUnitTest {
     @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabSwitcherViewObserver mTabSwitcherViewObserver;
     @Mock private TabContentManager mTabContentManager;
+    @Mock private ModuleDelegate mModuleDelegate;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
@@ -119,7 +123,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTabContentManager,
-                        false);
+                        /* isSurfacePolishEnabled= */ false,
+                        /* moduleDelegate= */ null);
     }
 
     @After
@@ -161,6 +166,47 @@ public class SingleTabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void showAndHideHomeModule() {
+        mMediator =
+                new SingleTabSwitcherMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        mTabContentManager,
+                        /* isSurfacePolishEnabled */ true,
+                        mModuleDelegate);
+
+        int activeIndex = 1;
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getModel(eq(false))).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getCount()).thenReturn(3);
+        when(mNormalTabModel.index()).thenReturn(activeIndex);
+        when(mNormalTabModel.getTabAt(activeIndex)).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        when(mTab.getId()).thenReturn(1);
+
+        mMediator.showModule();
+        verify(mModuleDelegate).onDataFetchFailed(eq(ModuleType.SINGLE_TAB));
+
+        when(mTab.getUrl()).thenReturn(mUrl);
+        mMediator.showModule();
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SINGLE_TAB), eq(mPropertyModel));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+        assertEquals(mPropertyModel.get(TITLE), mTitle);
+
+        mMediator.hideTabSwitcherView(true);
+        assertEquals(mPropertyModel.get(TITLE), "");
+        mPropertyModel.set(TAB_THUMBNAIL, null);
+        mPropertyModel.set(URL, "");
+
+        mMediator.removeTabSwitcherViewObserver(mTabSwitcherViewObserver);
+        mMediator.setOnTabSelectingListener(null);
+    }
+
+    @Test
     public void showAndHide_SurfacePolish() {
         mMediator =
                 new SingleTabSwitcherMediator(
@@ -169,7 +215,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTabContentManager,
-                        /* isSurfacePolishEnabled= */ true);
+                        /* isSurfacePolishEnabled= */ true,
+                        null);
 
         assertNotNull(mPropertyModel.get(FAVICON));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));

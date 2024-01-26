@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -16,7 +18,6 @@
 #include "net/http/http_connection_info.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/metrics/public/cpp/ukm_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "ui/base/page_transition_types.h"
 
@@ -144,8 +145,8 @@ class UkmPageLoadMetricsObserver
 
   // Returns the current Core Web Vital definition of Cumulative Layout Shift.
   // Returns nullopt if current value should not be reported to UKM.
-  absl::optional<float> GetCoreWebVitalsCLS();
-  absl::optional<float> GetCoreWebVitalsSoftNavigationIntervalCLS();
+  std::optional<float> GetCoreWebVitalsCLS();
+  std::optional<float> GetCoreWebVitalsSoftNavigationIntervalCLS();
 
   // Returns the current Core Web Vital definition of Largest Contentful Paint.
   // The caller needs to check whether the value should be reported to UKM based
@@ -180,12 +181,12 @@ class UkmPageLoadMetricsObserver
 
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
-  absl::optional<int64_t> GetRoundedSiteEngagementScore() const;
+  std::optional<int64_t> GetRoundedSiteEngagementScore() const;
 
   // Returns whether third party cookie blocking is enabled for the committed
   // URL. This is only recorded for users who have prefs::kCookieControlsEnabled
   // set to true.
-  absl::optional<bool> GetThirdPartyCookieBlockingEnabled() const;
+  std::optional<bool> GetThirdPartyCookieBlockingEnabled() const;
 
   // Records the metrics for the nostate prefetch to an event with UKM source ID
   // |source_id|.
@@ -264,23 +265,23 @@ class UkmPageLoadMetricsObserver
   // Network quality estimates.
   net::EffectiveConnectionType effective_connection_type_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-  absl::optional<int32_t> http_response_code_;
-  absl::optional<base::TimeDelta> http_rtt_estimate_;
-  absl::optional<base::TimeDelta> transport_rtt_estimate_;
-  absl::optional<int32_t> downstream_kbps_estimate_;
+  std::optional<int32_t> http_response_code_;
+  std::optional<base::TimeDelta> http_rtt_estimate_;
+  std::optional<base::TimeDelta> transport_rtt_estimate_;
+  std::optional<int32_t> downstream_kbps_estimate_;
 
   // Total CPU wall time used by the page while in the foreground.
   base::TimeDelta total_foreground_cpu_time_;
 
   // Load timing metrics of the main frame resource request.
   content::NavigationHandleTiming navigation_handle_timing_;
-  absl::optional<net::LoadTimingInfo> main_frame_timing_;
+  std::optional<net::LoadTimingInfo> main_frame_timing_;
 
   // First contentful paint as reported in OnFirstContentfulPaintInPage.
-  absl::optional<base::TimeDelta> first_contentful_paint_;
+  std::optional<base::TimeDelta> first_contentful_paint_;
 
   // How the SiteInstance for the committed page was assigned a renderer.
-  absl::optional<content::SiteInstanceProcessAssignment>
+  std::optional<content::SiteInstanceProcessAssignment>
       render_process_assignment_;
 
   // PAGE_TRANSITION_LINK is the default PageTransition value.
@@ -309,12 +310,12 @@ class UkmPageLoadMetricsObserver
   // Set to true if any main frame request in the redirect chain had cookies set
   // on the request. Set to false if there were no cookies set. Not set if we
   // didn't get a response from the CookieManager before recording metrics.
-  absl::optional<bool> main_frame_request_had_cookies_;
+  std::optional<bool> main_frame_request_had_cookies_;
 
   // Set to true if the main frame resource has a 'Cache-control: no-store'
   // response header and set to false otherwise. Not set if there is no response
   // header present.
-  absl::optional<bool> main_frame_resource_has_no_store_;
+  std::optional<bool> main_frame_resource_has_no_store_;
 
   // The browser context this navigation is operating in.
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
@@ -345,7 +346,7 @@ class UkmPageLoadMetricsObserver
   base::Time navigation_start_time_;
 
   // The connection info for the committed URL.
-  absl::optional<net::HttpConnectionInfo> connection_info_;
+  std::optional<net::HttpConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -30,7 +31,7 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
     const TemplateURL& template_url) {
   SnippetSearchEngineItem* item = nil;
   // Only works for prepopulated search engines.
-  CHECK_GT(template_url.prepopulate_id(), 0)
+  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M124)
       << base::UTF16ToUTF8(template_url.short_name());
   item = [[SnippetSearchEngineItem alloc] initWithType:kItemTypeEnumZero];
   // Add the name and snippet to the item.
@@ -49,8 +50,8 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
 @end
 
 @implementation SearchEngineChoiceTableMediator {
-  TemplateURLService* _templateURLService;  // weak
-  PrefService* _prefService;
+  raw_ptr<TemplateURLService> _templateURLService;  // weak
+  raw_ptr<PrefService> _prefService;
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of URLs of prepopulated search engines and search engines that are
   // created by policy.

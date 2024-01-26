@@ -27,6 +27,8 @@ class Event {
  public:
   // There should be a 1-1 mapping between MetricType and the mojom enums.
   //
+  // kInt is used to represent enums.
+  //
   // TODO(jongahn): Move this into common enum file.
   enum class MetricType {
     kHmac = 0,
@@ -103,11 +105,15 @@ class Event {
   // Explicitly set the system uptime.
   void SetRecordedTimeSinceBoot(base::TimeDelta recorded_time_since_boot);
 
-  const std::string& project_name() const;
-  const std::string& event_name() const;
-  bool is_event_sequence() const;
-  const std::map<std::string, MetricValue>& metric_values() const;
-
+  const std::string& project_name() const { return project_name_; }
+  const std::string& event_name() const { return event_name_; }
+  bool is_event_sequence() const { return is_event_sequence_; }
+  const std::map<std::string, MetricValue>& metric_values() const {
+    return metric_values_;
+  }
+  bool has_system_uptime() const {
+    return recorded_time_since_boot_.has_value();
+  }
   const base::TimeDelta recorded_time_since_boot() const;
   const EventSequenceMetadata& event_sequence_metadata() const;
 

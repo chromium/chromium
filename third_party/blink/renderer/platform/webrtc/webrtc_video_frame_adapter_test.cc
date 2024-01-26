@@ -191,6 +191,7 @@ TEST(WebRtcVideoFrameAdapterTest, MapScaledFrameCreatesNewFrame) {
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta());
           }));
+  resources->ExpectConvertAndScaleWithRealImplementation();
 
   auto frame_720p = CreateTestFrame(
       kSize720p, kRect720p, kSize720p, media::VideoFrame::STORAGE_OWNED_MEMORY,
@@ -238,6 +239,7 @@ TEST(WebRtcVideoFrameAdapterTest,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta());
           }));
+  resources->ExpectConvertAndScaleWithRealImplementation();
 
   auto frame_720p = CreateTestFrame(
       kSize720p, kRect720p, kSize720p, media::VideoFrame::STORAGE_OWNED_MEMORY,
@@ -289,6 +291,7 @@ TEST(WebRtcVideoFrameAdapterTest,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta());
           }));
+  resources->ExpectConvertAndScaleWithRealImplementation();
 
   // Create a full frame with soft-applied cropping and scaling.
   auto full_frame = CreateTestFrame(
@@ -363,6 +366,7 @@ TEST(WebRtcVideoFrameAdapterTest,
                                                          resources));
 
   // Hard-apply scaling to 480p WITH cropping.
+  resources->ExpectConvertAndScaleWithRealImplementation();
   auto scaled_frame_480p = multi_buffer->CropAndScale(
       kCroppedRect.x(), kCroppedRect.y(), kCroppedRect.width(),
       kCroppedRect.height(), kSize480p.width(), kSize480p.height());
@@ -372,7 +376,9 @@ TEST(WebRtcVideoFrameAdapterTest,
   // The 480p must have been scaled from a media::VideoFrame.
   EXPECT_TRUE(multi_buffer->GetAdaptedVideoBufferForTesting(
       WebRtcVideoFrameAdapter::ScaledBufferSize(kCroppedRect, kSize480p)));
+
   // Hard-apply scaling to 360p WITHOUT cropping.
+  resources->ExpectConvertAndScaleWithRealImplementation();
   auto scaled_frame_360p =
       multi_buffer->Scale(kSize360p.width(), kSize360p.height());
   auto mapped_frame_360p = scaled_frame_360p->GetMappedFrameBuffer(kNv12);

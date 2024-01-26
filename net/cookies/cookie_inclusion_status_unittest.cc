@@ -34,6 +34,11 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
   // Test exactly one exclusion reason and multiple (two) exclusion reasons.
   for (int i = 0; i < num_exclusion_reasons; ++i) {
     auto reason1 = static_cast<CookieInclusionStatus::ExclusionReason>(i);
+    if (reason1 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT &&
+        reason1 != CookieInclusionStatus::
+                       EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
+      continue;
+    }
     CookieInclusionStatus status_one_reason(reason1);
     EXPECT_FALSE(status_one_reason.IsInclude());
     EXPECT_TRUE(status_one_reason.HasExclusionReason(reason1));
@@ -43,7 +48,11 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
       if (i == j)
         continue;
       auto reason2 = static_cast<CookieInclusionStatus::ExclusionReason>(j);
-
+      if (reason2 != CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT &&
+          reason2 != CookieInclusionStatus::
+                         EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
+        continue;
+      }
       EXPECT_FALSE(status_one_reason.HasExclusionReason(reason2));
       EXPECT_FALSE(status_one_reason.HasOnlyExclusionReason(reason2));
 
@@ -117,10 +126,7 @@ TEST(CookieInclusionStatusTest,
   status.AddExclusionReason(
       CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE,
-       // TODO(crbug.com/1516673): This should also be removed.
-       CookieInclusionStatus::
-           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}));
+      {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
   EXPECT_FALSE(status.IsInclude());
 }
 

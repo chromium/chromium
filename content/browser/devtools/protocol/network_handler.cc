@@ -1948,6 +1948,7 @@ std::unique_ptr<Network::Response> BuildResponse(
           .SetStatusText(status_text)
           .SetHeaders(BuildResponseHeaders(info.headers.get()))
           .SetMimeType(info.mime_type)
+          .SetCharset(info.charset)
           .SetConnectionReused(info.load_timing.socket_reused)
           .SetConnectionId(info.load_timing.socket_log_id)
           .SetSecurityState(securityState(url, info.cert_status))

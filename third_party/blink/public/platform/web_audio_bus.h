@@ -25,7 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_BUS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_BUS_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -75,9 +75,7 @@ class BLINK_PLATFORM_EXPORT WebAudioBus {
   WebAudioBus(const WebAudioBus&) = delete;
   void operator=(const WebAudioBus&) = delete;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION AudioBus* private_ = nullptr;
+  raw_ptr<AudioBus> private_ = nullptr;
 };
 
 }  // namespace blink

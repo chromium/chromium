@@ -6,7 +6,7 @@
 
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 @implementation CWVLookalikeURLHandler {
   web::WebState* _webState;

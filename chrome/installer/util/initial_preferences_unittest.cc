@@ -335,7 +335,7 @@ TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
               Optional(true));
 
 #if BUILDFLAG(ENABLE_RLZ)
-  absl::optional<int> rlz_ping_delay =
+  std::optional<int> rlz_ping_delay =
       prefs.initial_dictionary().FindInt(prefs::kRlzPingDelaySeconds);
   EXPECT_TRUE(rlz_ping_delay);
   EXPECT_GT(rlz_ping_delay, 0);

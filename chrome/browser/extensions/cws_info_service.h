@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -40,8 +41,7 @@ class CWSInfoServiceInterface {
   // Synchronously checks if the extension is currently live in CWS.
   // If the information is not available immediately (i.e., not stored in local
   // cache), does not return a value.
-  virtual absl::optional<bool> IsLiveInCWS(
-      const Extension& extension) const = 0;
+  virtual std::optional<bool> IsLiveInCWS(const Extension& extension) const = 0;
 
   enum class CWSViolationType {
     kNone = 0,
@@ -69,7 +69,7 @@ class CWSInfoServiceInterface {
     // CWS.
     bool no_privacy_practice = false;
   };
-  virtual absl::optional<CWSInfo> GetCWSInfo(
+  virtual std::optional<CWSInfo> GetCWSInfo(
       const Extension& extension) const = 0;
 
   // Initiates a fetch from CWS if:
@@ -108,8 +108,8 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   ~CWSInfoService() override;
 
   // CWSInfoServiceInterface:
-  absl::optional<bool> IsLiveInCWS(const Extension& extension) const override;
-  absl::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
+  std::optional<bool> IsLiveInCWS(const Extension& extension) const override;
+  std::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
   void CheckAndMaybeFetchInfo() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

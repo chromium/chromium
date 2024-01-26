@@ -22,65 +22,55 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="HoldingSpaceFileSystemType">
+  <variant name="DriveFs" summary="Drive"/>
+  <variant name="Local" summary="local"/>
+</variants>
+
 <variants name="HoldingSpaceItemAction">
-  <variant name="Cancel" summary="The user cancelled the item."/>
-  <variant name="Copy" summary="The user copied the item."/>
-  <variant name="Drag" summary="The user dragged the item."/>
-  <variant name="Launch" summary="The user launched the item."/>
-  <variant name="Pause" summary="The user paused the item."/>
-  <variant name="Pin" summary="The user pinned the item."/>
-  <variant name="Remove" summary="The user removed the item."/>
-  <variant name="Resume" summary="The user resumed the item."/>
-  <variant name="ShowInFolder"
-      summary="The user showed the item in its folder."/>
-  <variant name="Unpin" summary="The user unpinned the item."/>
+  <variant name="Cancel" summary="cancel"/>
+  <variant name="Copy" summary="copy"/>
+  <variant name="Drag" summary="drag"/>
+  <variant name="Launch" summary="launch"/>
+  <variant name="Pause" summary="pause"/>
+  <variant name="Pin" summary="pin"/>
+  <variant name="Remove" summary="remove"/>
+  <variant name="Resume" summary="resume"/>
+  <variant name="ShowInFolder" summary="show-in-folder"/>
+  <variant name="Unpin" summary="unpin"/>
 </variants>
 
 <variants name="HoldingSpaceItemType">
-  <variant name="All" summary="Includes all item types."/>
-  <variant name="ArcDownload" summary="Items backed by an ARC download file."/>
-  <variant name="CameraAppPhoto"
-      summary="Items backed by a camera app photo file."/>
-  <variant name="CameraAppScanJpg"
-      summary="Items backed by a JPG camera app scan file."/>
-  <variant name="CameraAppScanPdf"
-      summary="Items backed by a PDF camera app scan file."/>
-  <variant name="CameraAppVideoGif"
-      summary="Items backed by a GIF camera app video file."/>
-  <variant name="CameraAppVideoMp4"
-      summary="Items backed by a MP4 camera app video file."/>
-  <variant name="DiagnosticsLog"
-      summary="Items backed by a diagnostics log file."/>
-  <variant name="Download"
-      summary="Items backed by a download file originating from Ash Chrome."/>
-  <variant name="DriveSuggestion"
-      summary="Items backed by a suggested Drive file."/>
-  <variant name="LacrosDownload"
-      summary="Items backed by a download file originating from Lacros
-               Chrome."/>
-  <variant name="LocalSuggestion"
-      summary="Items backed by a suggested local file."/>
-  <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
-  <variant name="PhoneHubCameraRoll"
-      summary="Recent photos and videos taken on connected Android phone."/>
-  <variant name="PhotoshopWeb" summary="Items backed by a Photoshop Web file."/>
-  <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
-  <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>
-  <variant name="Scan" summary="Items backed by a scanned file."/>
-  <variant name="ScreenRecording"
-      summary="Items backed by a WebM screen recording file."/>
-  <variant name="ScreenRecordingGif"
-      summary="Items backed by a GIF screen recording file."/>
-  <variant name="Screenshot" summary="Items backed by a screenshot file."/>
+  <variant name="All" summary="all"/>
+  <variant name="ArcDownload" summary="ARC download"/>
+  <variant name="CameraAppPhoto" summary="Camera app photo"/>
+  <variant name="CameraAppScanJpg" summary="JPG Camera app scan"/>
+  <variant name="CameraAppScanPdf" summary="PDF Camera app scan"/>
+  <variant name="CameraAppVideoGif" summary="GIF Camera app video"/>
+  <variant name="CameraAppVideoMp4" summary="MP4 Camera app video"/>
+  <variant name="DiagnosticsLog" summary="Diagnostics app log"/>
+  <variant name="Download" summary="Ash-Chrome download"/>
+  <variant name="DriveSuggestion" summary="Drive suggestion"/>
+  <variant name="LacrosDownload" summary="Lacros-Chrome download"/>
+  <variant name="LocalSuggestion" summary="local suggestion"/>
+  <variant name="NearbyShare" summary="Nearby Share"/>
+  <variant name="PhoneHubCameraRoll" summary="Phone Hub camera roll"/>
+  <variant name="PhotoshopWeb" summary="Photoshop Web"/>
+  <variant name="PinnedFile" summary="pinned file"/>
+  <variant name="PrintedPdf" summary="printed PDF"/>
+  <variant name="Scan" summary="Scan app"/>
+  <variant name="ScreenRecording" summary="WebM screen recording"/>
+  <variant name="ScreenRecordingGif" summary="GIF screen recording"/>
+  <variant name="Screenshot" summary="screenshot"/>
 </variants>
 
 <histogram name="HoldingSpace.Animation.BubbleResize.Smoothness" units="%"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records the smoothness of the holding space bubble resize animation. Note
-    that smoothness is expected be be between 0 and 100 (inclusively) with 100
+    that smoothness is expected be between 0 and 100 (inclusively) with 100
     representing ideal smoothness of &gt;= 60 frames per second. This histogram
     is emitted when the resize animation ends.
   </summary>
@@ -89,7 +79,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Animation.PodResize.Smoothness" units="%"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records the smoothness of the holding space pod resize animation. Note that
     smoothness is expected be be between 0 and 100 (inclusively) with 100
@@ -101,7 +91,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Downloads.Action.All"
     enum="HoldingSpaceDownloadsAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records an action taken on the downloads header in holding space UI at the
     moment the action is performed.
@@ -133,7 +123,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.FilesAppChip.Action.All"
     enum="HoldingSpaceFilesAppChipAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records an action taken on the Files app chip in holding space UI at the
     moment the action is performed.
@@ -143,7 +133,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records an action taken on an item in holding space UI at the moment the
     action is performed.
@@ -203,10 +193,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Item.Action.{action}" enum="HoldingSpaceItemType"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
-    Records the type of item in holding space UI for which an action was taken
-    at the moment the action is performed. {action}
+    Records the type of item in holding space UI for which the {action} action
+    was taken at the moment the action is performed.
   </summary>
   <token key="action" variants="HoldingSpaceItemAction"/>
 </histogram>
@@ -214,10 +204,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Item.Action.{action}.Extension"
     enum="HoldingSpaceExtension" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
-    Records the extension of an item in holding space UI for which an action was
-    taken at the moment the action is performed. {action}
+    Records the extension of an item in holding space UI for which the {action}
+    action was taken at the moment the action is performed.
   </summary>
   <token key="action" variants="HoldingSpaceItemAction"/>
 </histogram>
@@ -225,41 +215,70 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Item.Action.{action}.FileSystemType"
     enum="HoldingSpaceFileSystemType" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
-    Records the file system type of an item in holding space UI for which an
-    action was taken at the moment the action is performed. {action}
+    Records the file system type of an item in holding space UI for which the
+    {action} action was taken at the moment the action is performed.
   </summary>
   <token key="action" variants="HoldingSpaceItemAction"/>
 </histogram>
 
-<histogram name="HoldingSpace.Item.Count.{type}" units="items"
+<histogram name="HoldingSpace.Item.TotalCountV2.{type}" units="items"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
-    Records the count of all visible items of a specific type in holding space
-    at the moment holding space UI is shown. {type}
+    Records the total count of {type} items in holding space on startup and as
+    additions/removals take place. Note that this histogram is emitted no more
+    than once every thirty seconds.
   </summary>
   <token key="type" variants="HoldingSpaceItemType"/>
 </histogram>
 
-<histogram name="HoldingSpace.Item.TotalCount.{type}" units="items"
+<histogram
+    name="HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}"
+    units="items" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the total count of {type} items in holding space which are backed by
+    a file in the {fs_type} file system, on startup and as additions/removals
+    take place. Note that this histogram is emitted no more than once every
+    thirty seconds.
+  </summary>
+  <token key="fs_type" variants="HoldingSpaceFileSystemType"/>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
+<histogram name="HoldingSpace.Item.VisibleCount.{type}" units="items"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
-    Records the total count of all items of a specific type in holding space on
-    startup and as additions/removals take place. Note that this histogram is
-    emitted no more than once every thirty seconds. {type}
+    Records the visible count of {type} items in holding space at the moment
+    holding space UI is shown.
   </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
+<histogram
+    name="HoldingSpace.Item.VisibleCount.{type}.FileSystemType.{fs_type}"
+    units="items" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the visible count of {type} items in holding space which are backed
+    by a file in the {fs_type} file system at the moment holding space UI is
+    shown.
+  </summary>
+  <token key="fs_type" variants="HoldingSpaceFileSystemType"/>
   <token key="type" variants="HoldingSpaceItemType"/>
 </histogram>
 
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records an action taken on the holding space pod in the shelf at the moment
     the action is performed.
@@ -269,7 +288,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.Suggestions.Action.All"
     enum="HoldingSpaceSuggestionsAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records an action taken on the suggestions header in holding space UI at the
     moment the action is performed.
@@ -279,7 +298,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstAdd" units="ms"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records the time from when the holding space feature first became available
     to when the user first added an item to holding space.
@@ -289,7 +308,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstEntry" units="ms"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records the time from when the holding space feature first became available
     to when the user first entered holding space.
@@ -299,7 +318,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.TimeFromFirstEntryToFirstPin" units="ms"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records the time from when the user first entered holding space to when the
     user first pinned a file. Note that this may be zero if the user pinned
@@ -310,7 +329,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.UserPreferences.PreviewsEnabled"
     enum="BooleanEnabled" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records whether the user has previews enabled. Note that this histogram is
     emitted once per user session at start up.
@@ -320,7 +339,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="HoldingSpace.UserPreferences.SuggestionsExpanded"
     enum="BooleanExpanded" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
   <summary>
     Records whether the user has suggestions expanded. Note that this histogram
     is emitted once per user session at start up.

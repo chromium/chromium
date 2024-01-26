@@ -4,10 +4,16 @@
 
 #include "components/enterprise/data_controls/rule.h"
 
+#include <vector>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "components/enterprise/data_controls/and_condition.h"
 #include "components/enterprise/data_controls/attributes_condition.h"
+#include "components/enterprise/data_controls/not_condition.h"
+#include "components/policy/core/browser/policy_error_map.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace data_controls {
 namespace {
@@ -20,6 +26,9 @@ constexpr char kKeyDescription[] = "description";
 constexpr char kKeySources[] = "sources";
 constexpr char kKeyDestinations[] = "destinations";
 constexpr char kKeyRestrictions[] = "restrictions";
+constexpr char kKeyAnd[] = "and";
+constexpr char kKeyOr[] = "or";
+constexpr char kKeyNot[] = "not";
 constexpr char kKeyClass[] = "class";
 constexpr char kKeyLevel[] = "level";
 
@@ -27,6 +36,61 @@ constexpr char kKeyLevel[] = "level";
 std::string GetStringOrEmpty(const base::Value::Dict& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
+}
+
+// A oneof attribute is an attribute that needs to be the only condition in
+// their dictionary. If other attributes are present alongside them, it creates
+// ambiguity as to how the rule is evaluated, and as such this is considered an
+// error in the set policy.
+std::vector<base::StringPiece> OneOfConditions(const base::Value::Dict& value) {
+  std::vector<base::StringPiece> oneof_conditions;
+  for (const char* oneof_value :
+       {// "and", "or" and "not" need to be the only value at their level as it
+        // is otherwise ambiguous which of them has precedence or how they are
+        // combined together into one condition.
+        kKeyAnd, kKeyOr, kKeyNot,
+
+        // "os_clipboard" needs to be the only value in its dictionary as it
+        // represents a unique source/destination. For example, a clipboard
+        // interaction cannot both be the OS clipboard and match URL patterns
+        // at the same time.
+        AttributesCondition::kKeyOsClipboard}) {
+    if (value.contains(oneof_value)) {
+      oneof_conditions.push_back(oneof_value);
+    }
+  }
+  return oneof_conditions;
+}
+
+// Returns any condition present in `value` that wouldn't match
+// `OneOfConditions`.
+std::vector<base::StringPiece> AnyOfConditions(const base::Value::Dict& value) {
+  std::vector<base::StringPiece> anyof_conditions;
+  for (const char* anyof_condition :
+       {kKeySources, kKeyDestinations, AttributesCondition::kKeyUrls,
+        AttributesCondition::kKeyIncognito,
+#if BUILDFLAG(IS_CHROMEOS)
+        AttributesCondition::kKeyComponents
+#endif  // BUILDFLAG(IS_CHROMEOS)
+       }) {
+    if (value.contains(anyof_condition)) {
+      anyof_conditions.push_back(anyof_condition);
+    }
+  }
+  return anyof_conditions;
+}
+
+// Clones `error_path` and update the copy with a new value.
+policy::PolicyErrorPath CreateErrorPath(
+    const policy::PolicyErrorPath& error_path,
+    std::string new_value,
+    std::optional<int> new_list_index = std::nullopt) {
+  policy::PolicyErrorPath new_error_path(error_path);
+  new_error_path.push_back(std::move(new_value));
+  if (new_list_index) {
+    new_error_path.push_back(*new_list_index);
+  }
+  return new_error_path;
 }
 
 }  // namespace
@@ -46,23 +110,23 @@ Rule::Rule(std::string name,
       restrictions_(std::move(restrictions)) {}
 
 // static
-absl::optional<Rule> Rule::Create(const base::Value& value) {
+std::optional<Rule> Rule::Create(const base::Value& value) {
   if (!value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Create(value.GetDict());
 }
 
 // static
-absl::optional<Rule> Rule::Create(const base::Value::Dict& value) {
+std::optional<Rule> Rule::Create(const base::Value::Dict& value) {
   auto condition = GetCondition(value);
   if (!condition) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto restrictions = GetRestrictions(value);
   if (restrictions.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return absl::make_optional(Rule(
@@ -101,13 +165,35 @@ const std::string& Rule::description() const {
 // static
 std::unique_ptr<const Condition> Rule::GetCondition(
     const base::Value::Dict& value) {
+  // `value` can hold different condition-related keys, namely:
+  // - The "not" key with a sub-dict that is parsed recursively.
+  // - The "and" or "not" keys with sub-arrays of conditions parsed recursively.
+  // - The "sources" and/or "destinations" keys with corresponding sub-dicts.
+  // These 3 cases are mutually exclusive and should preemptively be filtered
+  // by policy validations of the DataControlsRules policy, and as such the
+  // precedence in which these keys are parsed here should not matter.
+  // - TODO(b/302340176): Add "and" and "or" support
+
+  if (const base::Value::Dict* condition = value.FindDict(kKeyNot)) {
+    return NotCondition::Create(GetCondition(*condition));
+  }
+
+  // Reaching this statement implies `value` contains no boolean-logic keys
+  // ("not", "and", "or") and that it should simply be evaluated based on
+  // attributes keys ("sources", "destinations").
+  return GetSourcesAndDestinationsCondition(value);
+}
+
+// static
+std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
+    const base::Value::Dict& value) {
   // This function will add a `Condition` for each of the following keys found
   // in `value`:
   // - "sources"
   // - "destinations"
   // Then combine them into an `AndCondition` to make an overall condition for
   // the rule being constructed.
-  std::vector<std::unique_ptr<Condition>> conditions;
+  std::vector<std::unique_ptr<const Condition>> conditions;
 
   const base::Value* sources_value = value.Find(kKeySources);
   if (sources_value) {
@@ -125,11 +211,6 @@ std::unique_ptr<const Condition> Rule::GetCondition(
     if (destinations_condition) {
       conditions.push_back(std::move(destinations_condition));
     }
-  }
-
-  if (conditions.empty()) {
-    // No conditions implies the rule is not valid and shouldn't be evaluated.
-    return nullptr;
   }
 
   return AndCondition::Create(std::move(conditions));
@@ -263,6 +344,72 @@ const char* Rule::LevelToString(Level level) {
       return kLevelWarn;
     case Level::kReport:
       return kLevelReport;
+  }
+}
+
+// static
+bool Rule::ValidateRuleValue(const char* policy_name,
+                             const base::Value::Dict& value,
+                             policy::PolicyErrorPath error_path,
+                             policy::PolicyErrorMap* errors) {
+  std::vector<base::StringPiece> oneof_conditions = OneOfConditions(value);
+  std::vector<base::StringPiece> anyof_conditions = AnyOfConditions(value);
+
+  if (oneof_conditions.size() > 1 ||
+      (oneof_conditions.size() == 1 && anyof_conditions.size() != 0)) {
+    AddMutuallyExclusiveErrors(oneof_conditions, anyof_conditions, policy_name,
+                               std::move(error_path), errors);
+    return false;
+  }
+
+  // Even if the values in `oneof_conditions` and `anyof_conditions` are
+  // acceptable for `value`, it's possible there are errors in nested values, so
+  // additional checks must be performed recursively.
+
+  bool valid = true;
+  for (const char* sub_key : {kKeySources, kKeyDestinations, kKeyNot}) {
+    if (value.contains(sub_key)) {
+      valid &= ValidateRuleValue(policy_name, *value.FindDict(sub_key),
+                                 CreateErrorPath(error_path, sub_key), errors);
+    }
+  }
+  for (const char* sub_key : {kKeyAnd, kKeyOr}) {
+    if (value.contains(sub_key)) {
+      int index = 0;
+      for (const base::Value& sub_condition : *value.FindList(sub_key)) {
+        valid &= ValidateRuleValue(policy_name, sub_condition.GetDict(),
+                                   CreateErrorPath(error_path, sub_key, index),
+                                   errors);
+        ++index;
+      }
+    }
+  }
+
+  return valid;
+}
+
+// static
+void Rule::AddMutuallyExclusiveErrors(
+    const std::vector<base::StringPiece>& oneof_conditions,
+    const std::vector<base::StringPiece>& anyof_conditions,
+    const char* policy_name,
+    policy::PolicyErrorPath error_path,
+    policy::PolicyErrorMap* errors) {
+  if (oneof_conditions.size() == 0) {
+    return;
+  }
+
+  if (oneof_conditions.size() > 1) {
+    errors->AddError(policy_name,
+                     IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEYS,
+                     base::JoinString(oneof_conditions, ", "), error_path);
+  }
+
+  if (anyof_conditions.size() > 0) {
+    errors->AddError(policy_name,
+                     IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEY_SETS,
+                     base::JoinString(anyof_conditions, ", "),
+                     base::JoinString(oneof_conditions, ", "), error_path);
   }
 }
 

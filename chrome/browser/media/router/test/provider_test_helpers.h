@@ -98,13 +98,13 @@ class TestDialURLFetcher : public DialURLFetcher {
   ~TestDialURLFetcher() override;
   void Start(const GURL& url,
              const std::string& method,
-             const absl::optional<std::string>& post_data,
+             const std::optional<std::string>& post_data,
              int max_retries,
              bool set_origin_header) override;
   MOCK_METHOD4(DoStart,
                void(const GURL&,
                     const std::string&,
-                    const absl::optional<std::string>&,
+                    const std::optional<std::string>&,
                     int));
   void StartDownload() override;
 
@@ -143,7 +143,7 @@ class TestDialActivityManager : public DialActivityManager {
 
   void SetExpectedRequest(const GURL& url,
                           const std::string& method,
-                          const absl::optional<std::string>& post_data);
+                          const std::optional<std::string>& post_data);
 
   MOCK_METHOD0(OnFetcherCreated, void());
 
@@ -152,7 +152,7 @@ class TestDialActivityManager : public DialActivityManager {
 
   GURL expected_url_;
   std::string expected_method_;
-  absl::optional<std::string> expected_post_data_;
+  std::optional<std::string> expected_post_data_;
 };
 
 // Helper function to create an IP endpoint object.

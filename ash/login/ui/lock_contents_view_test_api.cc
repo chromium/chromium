@@ -4,9 +4,24 @@
 
 #include "ash/login/ui/lock_contents_view_test_api.h"
 
+#include <vector>
+
+#include "ash/login/ui/auth_error_bubble.h"
+#include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_screen_media_controls_view.h"
+#include "ash/login/ui/lock_screen_media_view.h"
+#include "ash/login/ui/login_big_user_view.h"
+#include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
+#include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/note_action_launch_button.h"
+#include "ash/login/ui/scrollable_users_list_view.h"
+#include "ash/public/cpp/login_types.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
+#include "components/account_id/account_id.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -59,10 +74,6 @@ views::View* LockContentsViewTestApi::note_action() const {
 
 views::View* LockContentsViewTestApi::management_bubble() const {
   return view_->management_bubble_;
-}
-
-LoginErrorBubble* LockContentsViewTestApi::auth_error_bubble() const {
-  return view_->auth_error_bubble_;
 }
 
 LoginErrorBubble* LockContentsViewTestApi::detachable_base_error_bubble()
@@ -157,6 +168,162 @@ FingerprintState LockContentsViewTestApi::GetFingerPrintState(
   UserState* user_state = view_->FindStateForUser(account_id);
   DCHECK(user_state);
   return user_state->fingerprint_state;
+}
+
+AuthErrorBubble* LockContentsViewTestApi::auth_error_bubble() const {
+  return view_->auth_error_bubble_;
+}
+
+bool LockContentsViewTestApi::IsAuthErrorBubbleVisible() const {
+  return auth_error_bubble()->GetVisible();
+}
+
+void LockContentsViewTestApi::ShowAuthErrorBubble(int unlock_attempt) const {
+  LoginBigUserView* big_view = view_->CurrentBigUserView();
+  if (!big_view->auth_user()) {
+    return;
+  }
+
+  const AccountId account_id =
+      big_view->GetCurrentUser().basic_user_info.account_id;
+  UserState* user_state = view_->FindStateForUser(account_id);
+
+  auth_error_bubble()->ShowAuthError(
+      /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
+      /*unlock_attempt = */ unlock_attempt,
+      /*show_pin = */ user_state->show_pin,
+      /*is_login_screen = */ view_->screen_type_ ==
+          LockScreen::ScreenType::kLogin);
+}
+
+void LockContentsViewTestApi::HideAuthErrorBubble() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->Hide();
+}
+
+void LockContentsViewTestApi::PressAuthErrorRecoveryButton() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->OnRecoverButtonPressed();
+}
+
+void LockContentsViewTestApi::PressAuthErrorLearnMoreButton() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->OnLearnMoreButtonPressed();
+}
+
+void LockContentsViewTestApi::ToggleManagementForUser(const AccountId& user) {
+  auto replace = [](const LoginUserInfo& user_info) {
+    auto changed = user_info;
+    if (user_info.user_account_manager) {
+      changed.user_account_manager.reset();
+    } else {
+      changed.user_account_manager = "example@example.com";
+    }
+    return changed;
+  };
+
+  LoginBigUserView* big =
+      view_->TryToFindBigUser(user, false /*require_auth_active*/);
+  if (big) {
+    big->UpdateForUser(replace(big->GetCurrentUser()));
+    return;
+  }
+
+  LoginUserView* user_view =
+      view_->users_list_ ? view_->users_list_->GetUserView(user) : nullptr;
+  if (user_view) {
+    user_view->UpdateForUser(replace(user_view->current_user()),
+                             false /*animate*/);
+    return;
+  }
+}
+
+void LockContentsViewTestApi::SetMultiUserSignInPolicyForUser(
+    const AccountId& user,
+    user_manager::MultiUserSignInPolicy policy) {
+  auto replace = [policy](const LoginUserInfo& user_info) {
+    auto changed = user_info;
+    changed.multi_user_sign_in_policy = policy;
+    changed.is_multi_user_sign_in_allowed =
+        policy == user_manager::MultiUserSignInPolicy::kUnrestricted;
+    return changed;
+  };
+
+  LoginBigUserView* big =
+      view_->TryToFindBigUser(user, false /*require_auth_active*/);
+  if (big) {
+    big->UpdateForUser(replace(big->GetCurrentUser()));
+  }
+
+  LoginUserView* user_view =
+      view_->users_list_ ? view_->users_list_->GetUserView(user) : nullptr;
+  if (user_view) {
+    user_view->UpdateForUser(replace(user_view->current_user()),
+                             false /*animate*/);
+  }
+
+  view_->LayoutAuth(view_->CurrentBigUserView(), nullptr /*opt_to_hide*/,
+                    true /*animate*/);
+}
+
+void LockContentsViewTestApi::ToggleForceOnlineSignInForUser(
+    const AccountId& user) {
+  UserState* state = view_->FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user forcing online sign in";
+    return;
+  }
+  state->force_online_sign_in = !state->force_online_sign_in;
+
+  LoginBigUserView* big_user =
+      view_->TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    view_->LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+  }
+}
+
+void LockContentsViewTestApi::ToggleDisableTpmForUser(const AccountId& user) {
+  UserState* state = view_->FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user to toggle TPM disabled message";
+    return;
+  }
+  if (state->time_until_tpm_unlock.has_value()) {
+    state->time_until_tpm_unlock = std::nullopt;
+  } else {
+    state->time_until_tpm_unlock = base::Minutes(5);
+  }
+
+  LoginBigUserView* big_user =
+      view_->TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    view_->LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+  }
+}
+
+void LockContentsViewTestApi::UndoForceOnlineSignInForUser(
+    const AccountId& user) {
+  UserState* state = view_->FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user forcing online sign in";
+    return;
+  }
+  state->force_online_sign_in = false;
+
+  LoginBigUserView* big_user =
+      view_->TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    view_->LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+  }
+}
+
+void LockContentsViewTestApi::SetKioskLicenseMode(bool is_kiosk_license_mode) {
+  view_->kiosk_license_mode_ = is_kiosk_license_mode;
+
+  // Normally when management device mode is updated, via
+  // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
+  // meesage too.
+  view_->UpdateKioskDefaultMessageVisibility();
 }
 
 }  // namespace ash

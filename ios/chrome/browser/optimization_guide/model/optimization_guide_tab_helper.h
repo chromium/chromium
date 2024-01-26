@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_TAB_HELPER_H_
 
 #import "base/containers/flat_map.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/core/insertion_ordered_set.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -98,7 +99,7 @@ class OptimizationGuideTabHelper
 
   // Initialized in constructor. It may be null if the OptimizationGuideService
   // feature is not enabled.
-  OptimizationGuideService* optimization_guide_service_ = nullptr;
+  raw_ptr<OptimizationGuideService> optimization_guide_service_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

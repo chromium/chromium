@@ -52,6 +52,8 @@ class ASH_EXPORT AcceleratorLauncherStateMachine : public ui::EventHandler {
 
   LauncherState current_state() const { return current_state_; }
 
+  void SetCanHandleLauncherForTesting(bool can_handle);
+
  private:
   LauncherState current_state_ = LauncherState::kStart;
   raw_ptr<ui::InputController> input_controller_;

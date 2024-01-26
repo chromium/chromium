@@ -49,14 +49,14 @@ url::Origin GetOriginForURL(const std::string url) {
   return url::Origin::Create(GURL(url));
 }
 
-std::unique_ptr<SharingTargetDeviceInfo> CreateFakeSharingTargetDeviceInfo(
+SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
     const std::string& guid,
     const std::string& client_name) {
-  return std::make_unique<SharingTargetDeviceInfo>(
-      guid, client_name, SharingDevicePlatform::kUnknown,
-      /*pulse_interval=*/base::TimeDelta(),
-      syncer::DeviceInfo::FormFactor::kUnknown,
-      /*last_updated_timestamp=*/base::Time());
+  return SharingTargetDeviceInfo(guid, client_name,
+                                 SharingDevicePlatform::kUnknown,
+                                 /*pulse_interval=*/base::TimeDelta(),
+                                 syncer::DeviceInfo::FormFactor::kUnknown,
+                                 /*last_updated_timestamp=*/base::Time());
 }
 
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
@@ -68,7 +68,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
@@ -77,9 +77,9 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -101,7 +101,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -124,9 +124,9 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_TRUE(result);
             ASSERT_EQ("ABC", result);
             loop.Quit();
@@ -146,7 +146,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -167,9 +167,9 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -185,7 +185,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid-abc", "name"));
 
@@ -207,9 +207,9 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
   base::OnceClosure cancel_callback = FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> one_time_code,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> one_time_code,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(one_time_code);
             loop.Quit();
           }));
@@ -237,9 +237,9 @@ TEST(SmsRemoteFetcherTest, FeatureDisabled) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -263,9 +263,9 @@ TEST(SmsRemoteFetcherTest, NoSharingService) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -286,7 +286,7 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -307,9 +307,9 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -331,7 +331,7 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -357,9 +357,9 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kPromptCancelled);

@@ -158,7 +158,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Failure) {
       /*expected_success=*/false,
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
   fake_tcp_server_socket_->FinishNextAccept(net::ERR_FAILED,
-                                            /*remote_addr=*/absl::nullopt);
+                                            /*remote_addr=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -172,7 +172,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Failure_ConcurrentCalls) {
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
     fake_tcp_server_socket_->FinishNextAccept(net::ERR_FAILED,
-                                              /*remote_addr=*/absl::nullopt);
+                                              /*remote_addr=*/std::nullopt);
   }
   run_loop.Run();
 }

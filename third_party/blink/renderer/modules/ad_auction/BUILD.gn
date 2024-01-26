@@ -11,6 +11,8 @@ blink_modules_sources("ad_auction") {
     "join_leave_queue.h",
     "navigator_auction.cc",
     "navigator_auction.h",
+    "protected_audience.cc",
+    "protected_audience.h",
     "validate_blink_interest_group.cc",
     "validate_blink_interest_group.h",
   ]

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
-
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <limits>
 #include <memory>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -34,7 +34,7 @@ namespace {
 const int kMessageWidth = 400;
 
 void OnArcHandled(const GURL& url,
-                  const absl::optional<url::Origin>& initiating_origin,
+                  const std::optional<url::Origin>& initiating_origin,
                   content::WeakDocumentPtr initiator_document,
                   base::WeakPtr<WebContents> web_contents,
                   bool handled) {
@@ -53,7 +53,7 @@ void OnArcHandled(const GURL& url,
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
   // Otherwise, if there is no handler and the URL is a Tel-link, show the No
   // Handler Tel Scheme dialog
-  absl::optional<guest_os::GuestOsUrlHandler> registration =
+  std::optional<guest_os::GuestOsUrlHandler> registration =
       guest_os::GuestOsUrlHandler::GetForUrl(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
   if (registration) {
@@ -77,7 +77,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name) {
   // Don't launch anything from Shimless RMA app.

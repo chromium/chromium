@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/js_messaging/script_message.h"
@@ -65,7 +66,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 
-  WebState* last_received_web_state_ = nullptr;
+  raw_ptr<WebState> last_received_web_state_ = nullptr;
   std::unique_ptr<const ScriptMessage> last_received_message_;
 };
 

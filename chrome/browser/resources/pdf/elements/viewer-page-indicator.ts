@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Viewport} from '../viewport.js';
+import type {Viewport} from '../viewport.js';
 
 import {getTemplate} from './viewer-page-indicator.html.js';
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -48,7 +49,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class UserPolicySigninServiceTest;
 class SigninUIError;
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, UndoSignin) {
     // Policy is reverted.
     WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                      base::Value(false));
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
   WaitForPolicyHanging();
 
   // User is not signed in, policy is not applied.
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
                           kDiceResponseHandler_Signout);
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_FALSE(
         chrome::enterprise_util::UserAcceptedAccountManagement(profile()));

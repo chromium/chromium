@@ -58,6 +58,7 @@ Network.responseReceived{
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : 261
@@ -178,6 +179,7 @@ Network.requestWillBeSent{
     redirectHasExtraInfo : true
     redirectResponse : {
         alternateProtocolUsage : unspecifiedReason
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : 226
@@ -273,6 +275,7 @@ Network.responseReceived{
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : 257

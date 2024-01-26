@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
@@ -66,7 +67,7 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
 
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoFramePool frame_pool_;
-  std::vector<uint8_t> resize_buf_;
+  VideoFrameConverter frame_converter_;
   Options options_;
   OutputCB output_cb_;
 };

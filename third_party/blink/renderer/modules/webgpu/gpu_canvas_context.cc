@@ -505,7 +505,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // actually make the contents opaque.
   switch (alpha_mode_) {
     case V8GPUCanvasAlphaMode::Enum::kOpaque: {
-      CcLayer()->SetContentsOpaque(true);
       if (!alpha_clearer_ ||
           !alpha_clearer_->IsCompatible(device_->GetHandle(),
                                         swap_texture_descriptor_.format)) {
@@ -517,7 +516,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     }
     case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
       alpha_clearer_ = nullptr;
-      CcLayer()->SetContentsOpaque(false);
       break;
   }
 
@@ -667,6 +665,12 @@ void GPUCanvasContext::OnTextureTransferred() {
   }
   texture_ = nullptr;
   swap_texture_ = nullptr;
+}
+
+void GPUCanvasContext::SetNeedsCompositingUpdate() {
+  if (Host()) {
+    Host()->SetNeedsCompositingUpdate();
+  }
 }
 
 void GPUCanvasContext::CopyToSwapTexture() {

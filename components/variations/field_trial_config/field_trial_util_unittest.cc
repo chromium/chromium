@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -21,7 +22,6 @@
 #include "components/variations/variations_seed_processor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 namespace {
@@ -142,7 +142,7 @@ TEST_F(FieldTrialUtilTest, AssociateParamsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        array_kFieldTrialConfig_params_0,
        2,
@@ -162,7 +162,7 @@ TEST_F(FieldTrialUtilTest, AssociateParamsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        array_kFieldTrialConfig_params_0,
        2,
@@ -178,7 +178,7 @@ TEST_F(FieldTrialUtilTest, AssociateParamsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        array_kFieldTrialConfig_params_1,
        2,
@@ -265,7 +265,7 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
        /*platforms_size=*/1,
        /*form_factors=*/{},
        /*form_factors_size=*/0,
-       /*is_low_end_device=*/absl::nullopt,
+       /*is_low_end_device=*/std::nullopt,
        /*min_os_version=*/nullptr,
        /*params=*/nullptr,
        /*params_size=*/0,
@@ -285,7 +285,7 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
        /*platforms_size=*/1,
        /*form_factors=*/{},
        /*form_factors_size=*/0,
-       /*is_low_end_device=*/absl::nullopt,
+       /*is_low_end_device=*/std::nullopt,
        /*min_os_version=*/nullptr,
        /*params=*/nullptr,
        /*params_size=*/0,
@@ -306,7 +306,7 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
        /*platforms_size=*/1,
        /*form_factors=*/{},
        /*form_factors_size=*/0,
-       /*is_low_end_device=*/absl::nullopt,
+       /*is_low_end_device=*/std::nullopt,
        /*min_os_version=*/nullptr,
        /*params=*/nullptr,
        /*params_size=*/0,
@@ -383,7 +383,7 @@ TEST_F(FieldTrialUtilTest,
          1,
          {},
          0,
-         absl::nullopt,
+         std::nullopt,
          nullptr,
          array_kFieldTrialConfig_params,
          2,
@@ -431,7 +431,7 @@ TEST_F(FieldTrialUtilTest,
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        array_kFieldTrialConfig_params,
        2,
@@ -475,7 +475,7 @@ TEST_F(FieldTrialUtilTest,
        2,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        array_kFieldTrialConfig_params,
        2,
@@ -524,8 +524,8 @@ TEST_F(FieldTrialUtilTest,
       {{"x", "1"}, {"y", "2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
       {"TestGroup", &platform, 1, form_factors, std::size(form_factors),
-       absl::nullopt, nullptr, array_kFieldTrialConfig_params, 2, nullptr, 0,
-       nullptr, 0, nullptr,nullptr, 0},
+       std::nullopt, nullptr, array_kFieldTrialConfig_params, 2, nullptr, 0,
+       nullptr, 0, nullptr, nullptr, 0},
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
       {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
@@ -558,7 +558,7 @@ TEST_F(FieldTrialUtilTest,
   const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
         {{"x", "1"}, {"y", "2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
-      {"TestGroup", &platform, 1, &form_factor, 1, absl::nullopt, nullptr,
+      {"TestGroup", &platform, 1, &form_factor, 1, std::nullopt, nullptr,
        array_kFieldTrialConfig_params, 2, nullptr, 0, nullptr, 0, nullptr,
        nullptr, 0},
   };
@@ -604,7 +604,7 @@ TEST_F(FieldTrialUtilTest,
     const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
         {{"x", "1"}, {"y", "2"}};
     const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
-        {"TestGroup", &platform, 1, &form_factor, 1, absl::nullopt, nullptr,
+        {"TestGroup", &platform, 1, &form_factor, 1, std::nullopt, nullptr,
          array_kFieldTrialConfig_params, 2, nullptr, 0, nullptr, 0, nullptr,
          nullptr, 0},
     };
@@ -645,7 +645,7 @@ TEST_F(FieldTrialUtilTest, AssociateFeaturesFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -663,7 +663,7 @@ TEST_F(FieldTrialUtilTest, AssociateFeaturesFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -679,7 +679,7 @@ TEST_F(FieldTrialUtilTest, AssociateFeaturesFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -729,7 +729,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -746,7 +746,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -762,7 +762,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -780,7 +780,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -796,7 +796,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -812,7 +812,7 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        nullptr,
        nullptr,
        0,
@@ -854,7 +854,7 @@ TEST_F(FieldTrialUtilTest,
   const OverrideUIString array_kFieldTrialConfig_override_ui_string[] =
         {{1234, "test1"}, {5678, "test2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
-      {"TestGroup", &platform, 1, nullptr, 0, absl::nullopt, nullptr,
+      {"TestGroup", &platform, 1, nullptr, 0, std::nullopt, nullptr,
        array_kFieldTrialConfig_params, 2, nullptr, 0, nullptr, 0, nullptr,
        array_kFieldTrialConfig_override_ui_string, 2},
   };
@@ -986,7 +986,7 @@ TEST_F(FieldTrialUtilTest,
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        min_os_version.c_str(),
        array_kFieldTrialConfig_params,
        2,
@@ -1033,7 +1033,7 @@ TEST_F(FieldTrialUtilTest,
        1,
        {},
        0,
-       absl::nullopt,
+       std::nullopt,
        min_os_version.c_str(),
        array_kFieldTrialConfig_params,
        2,

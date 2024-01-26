@@ -33,7 +33,6 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -340,43 +339,6 @@ void MessageLoopRunner::Quit() {
     }
     loop_running_ = false;
   }
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    const NotificationSource& source) {
-  registrar_.Add(this, notification_type, source);
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    ConditionTestCallback callback)
-    : callback_(std::move(callback)) {
-  registrar_.Add(this, notification_type, NotificationService::AllSources());
-}
-
-WindowedNotificationObserver::~WindowedNotificationObserver() = default;
-
-void WindowedNotificationObserver::Wait() {
-  if (!seen_) {
-    run_loop_.Run();
-  }
-  EXPECT_TRUE(seen_);
-}
-
-void WindowedNotificationObserver::Observe(int type,
-                                           const NotificationSource& source,
-                                           const NotificationDetails& details) {
-  if (!callback_.is_null() && !callback_.Run(source, details)) {
-    return;
-  }
-
-  seen_ = true;
-  run_loop_.Quit();
-}
-
-bool WindowedNotificationObserver::NotificationReceived() const {
-  return seen_;
 }
 
 LoadStopObserver::LoadStopObserver(WebContents* web_contents)

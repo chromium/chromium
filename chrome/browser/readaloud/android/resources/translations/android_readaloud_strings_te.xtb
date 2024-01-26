@@ -1,25 +1,44 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1173075331199604451">వాయిస్ మెనూ</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
+<translation id="1246424317317450637">బోల్డ్</translation>
+<translation id="1586836055630070874">మధురమైన</translation>
+<translation id="1741047078107369903">ఉత్తేజమైన</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు వేగంగా ఫార్వర్డ్ చేయండి</translation>
 <translation id="1984328900355667246">ప్లేబ్యాక్ అందుబాటులో లేదు</translation>
+<translation id="2224347680315897176">స్థిరంగా ఉంది</translation>
+<translation id="2611765907167846862">నిర్మలమైన</translation>
 <translation id="3023502830214299618">దురదృష్టవశాత్తూ, ఈ సమయంలో ఈ పేజీకి ప్లేబ్యాక్ అందుబాటులో లేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3807208219231826020">స్క్రబ్ ప్లేబ్యాక్</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
+<translation id="3936324432406465283">ప్లేబ్యాక్ వేగం</translation>
+<translation id="4020327272915390518">ఎంపికల మెనూ</translation>
 <translation id="4431240646217225907">టెక్స్ట్‌ను హైలైట్ చేయండి, ఆటోమెటిక్ స్క్రోల్ చేయండి</translation>
-<translation id="4654641641922242357">"ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి" ప్లేయర్.</translation>
+<translation id="4494605076346185630">మధ్య స్థాయిలో ఉంది</translation>
+<translation id="4710974520964166851">టైమ్ లిమిట్ లేని మోడ్</translation>
+<translation id="4773921449011281499">ప్రశాంతమైన</translation>
 <translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు వెనక్కి వెళ్లండి</translation>
+<translation id="5026371835667036198">బిగ్గరగా</translation>
 <translation id="5234971936051226002">“ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి” ప్లేయర్ మినిమైజ్ చేయబడింది.</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
+<translation id="5694491020339060116">ప్లేబ్యాక్ వేగం మెనూ</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6550675742724504774">ఎంపికలు</translation>
+<translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6846298663435243399">లోడ్ చేస్తున్నాము…</translation>
+<translation id="6889157801232138307">"ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి" ప్లేయర్</translation>
+<translation id="7221920857098237570">మృదువైన</translation>
+<translation id="7237590978482584900">ఉల్లాసమైన</translation>
+<translation id="7282547042039404307">మృదువైనది</translation>
 <translation id="7587250070160020374">Chrome ఇప్పుడు ప్లే అవుతోంది</translation>
 <translation id="8136852699834914183">ఈ పేజీకి ప్లేబ్యాక్ అందుబాటులో లేదు.</translation>
 <translation id="8264989794233974275">వేగాన్ని <ph name="PLAYBACK_SPEED" />xకు పెంచండి/తగ్గించండి.</translation>
 <translation id="8407011429883244666">ప్లేయర్‌ను మూసివేయండి.</translation>
+<translation id="8481839122437406573">గాలులు లేకుండా ప్రశాంతంగా ఉంది</translation>
 <translation id="8953618380150219653">"ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి" ప్లేయర్ పూర్తి ఎత్తులో తెరవబడింది.</translation>
+<translation id="978117257931832348">తక్కువ-సౌండ్</translation>
 </translationbundle>

@@ -68,6 +68,11 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  void RegisterDoneInitializingCallback(
+      base::OnceCallback<void(bool)> init_done_callback);
+  void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
+                               std::vector<int> last_used_days_vector);
+
   // internal helpers, exposed for testing.
   bool AppWasUsedRecently(const sync_pb::WebApkSpecifics* specifics) const;
 
@@ -170,6 +175,7 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   Registry registry_;
   std::unique_ptr<base::Clock> clock_;
   std::unique_ptr<AbstractWebApkSpecificsFetcher> webapk_specifics_fetcher_;
+  base::OnceCallback<void(bool)> init_done_callback_;
 
   base::WeakPtrFactory<WebApkSyncBridge> weak_ptr_factory_{this};
 };

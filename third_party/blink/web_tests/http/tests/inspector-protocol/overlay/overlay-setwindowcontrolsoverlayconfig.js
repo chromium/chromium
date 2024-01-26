@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {session, dp} = await testRunner.startBlank('Verifies that Overlay.setShowWindowControlsOverlay works.');
 
     await dp.DOM.enable();

@@ -9,6 +9,7 @@
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -20,15 +21,16 @@ BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
 
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
-    UIViewController* base_view_controller,
-    id<ApplicationCommands> handler)
-    : base_view_controller_(base_view_controller),
-      handler_(handler),
-      browser_(browser) {
+    UIViewController* base_view_controller)
+    : base_view_controller_(base_view_controller), browser_(browser) {
   installation_observer_ =
       std::make_unique<WebStateDependencyInstallationObserver>(
           browser->GetWebStateList(), this);
   browser_->AddObserver(this);
+  application_handler_ =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  settings_handler_ = HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                         ApplicationSettingsCommands);
 }
 
 AccountConsistencyBrowserAgent::~AccountConsistencyBrowserAgent() {}
@@ -56,7 +58,7 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
       ios::AccountReconcilorFactory::GetForBrowserState(
           browser_->GetBrowserState())
           ->GetState());
-  [handler_
+  [application_handler_
       showSigninAccountNotificationFromViewController:base_view_controller_];
 }
 
@@ -65,8 +67,9 @@ void AccountConsistencyBrowserAgent::OnManageAccounts() {
       ios::AccountReconcilorFactory::GetForBrowserState(
           browser_->GetBrowserState())
           ->GetState());
-  [handler_ showAccountsSettingsFromViewController:base_view_controller_
-                              skipIfUINotAvailable:YES];
+  [settings_handler_
+      showAccountsSettingsFromViewController:base_view_controller_
+                        skipIfUINotAvailable:YES];
 }
 
 void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
@@ -79,8 +82,9 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   web::WebState* current_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (current_web_state == web_state) {
-    [handler_ showWebSigninPromoFromViewController:base_view_controller_
-                                               URL:url];
+    [application_handler_
+        showWebSigninPromoFromViewController:base_view_controller_
+                                         URL:url];
   }
 }
 
@@ -96,7 +100,8 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
   command.skipIfUINotAvaible = YES;
-  [handler_ showSignin:command baseViewController:base_view_controller_];
+  [application_handler_ showSignin:command
+                baseViewController:base_view_controller_];
 }
 
 void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
@@ -118,7 +123,7 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
        inIncognito:YES
       inBackground:NO
           appendTo:OpenPosition::kLastTab];
-  [handler_ openURLInNewTab:command];
+  [application_handler_ openURLInNewTab:command];
 }
 
 void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {

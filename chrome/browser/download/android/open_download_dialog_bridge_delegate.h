@@ -14,10 +14,6 @@
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 // Class for showing dialogs to asks whether user wants to open a downloaded
 // file from an external app.
 class OpenDownloadDialogBridgeDelegate
@@ -32,8 +28,7 @@ class OpenDownloadDialogBridgeDelegate
   ~OpenDownloadDialogBridgeDelegate() override;
 
   // Called to create and show a dialog for opening a download.
-  void CreateDialog(download::DownloadItem* download_item,
-                    content::WebContents* web_contents);
+  void CreateDialog(download::DownloadItem* download_item);
 
   // Called from Java via JNI.
   void OnConfirmed(const std::string& download_guid, bool accepted);

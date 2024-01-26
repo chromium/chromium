@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package sql_fuzzers;
+
+// Note that BUILD.gn puts //third_party/sqlite/fuzz/ in `import_dirs`.
+import public "sql_queries.proto";
+
+message RecoveryFuzzerTestCase {
+  required sql_query_grammar.SQLQueries queries = 1;
+  // Queries to attempt after a successful open.
+  required sql_query_grammar.SQLQueries queries_after_open = 2;
+  required int32 recovery_strategy = 3;
+  required bool wal_mode = 4;
+
+  // A sequence of instructions for simulating disk corruption. Should be
+  // interpreted as file positions and 8-byte XOR masks.
+  map<int64, uint64> mutations = 5;
+}

@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -23,10 +24,13 @@ class WebNNContextProviderImplTest : public testing::Test {
       delete;
 
  protected:
-  WebNNContextProviderImplTest() = default;
+  WebNNContextProviderImplTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
   ~WebNNContextProviderImplTest() override = default;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -41,32 +45,20 @@ class WebNNContextProviderImplTest : public testing::Test {
 #if !BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
   WebNNContextProviderImpl::Create(
       provider_remote.BindNewPipeAndPassReceiver());
 
-  bool is_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
-  provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting([&](mojom::CreateContextResultPtr result) {
-        ASSERT_TRUE(result->is_error());
-        const auto& create_context_error = result->get_error();
-        EXPECT_EQ(create_context_error->code,
-                  mojom::Error::Code::kNotSupportedError);
-        EXPECT_EQ(create_context_error->message,
-                  "WebNN Service is not supported on this platform.");
-        is_callback_called = true;
-        run_loop_create_context.Quit();
-      }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(is_callback_called);
+  base::test::TestFuture<mojom::CreateContextResultPtr> future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      future.GetCallback());
+  mojom::CreateContextResultPtr result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const auto& create_context_error = result->get_error();
+  EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(create_context_error->message,
+            "WebNN Service is not supported on this platform.");
 }
 
 #endif

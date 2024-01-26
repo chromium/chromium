@@ -306,7 +306,7 @@ public class PasswordManagerHelper {
      */
     public static void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
+            String accountName,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
         assert canUseUpm();
@@ -347,7 +347,7 @@ public class PasswordManagerHelper {
      */
     public static void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            Optional<String> accountName,
+            String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         assert canUseUpm();

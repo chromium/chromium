@@ -138,6 +138,7 @@ export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {SettingsDisplayElement} from './device_page/display.js';
+export {DisplayLayoutElement} from './device_page/display_layout.js';
 export {getDisplaySettingsProvider, setDisplaySettingsProviderForTesting} from './device_page/display_settings_mojo_interface_provider.js';
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakeMouseButtonActions, fakePointingSticks, fakePointingSticks2, fakeStyluses, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';
@@ -225,6 +226,7 @@ export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataA
 export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
 export {GeolocationAccessLevel} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
 export {PrivacyHubSensorSubpageUserAction} from './os_privacy_page/privacy_hub_metrics_util.js';
+export {SettingsPrivacyHubSystemServiceRow} from './os_privacy_page/privacy_hub_system_service_row.js';
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';

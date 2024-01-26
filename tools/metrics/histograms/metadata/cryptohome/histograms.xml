@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.BackupKeysetCleanupResult"
-    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2024-05-18">
+    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2024-07-21">
   <owner>betuls@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -267,7 +267,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 fully migrated pinweaver_manager to libhwsec (target: M120)-->
 
 <histogram name="Cryptohome.LECredential.{Operation}{Action}"
-    enum="CryptohomeLECredError" expires_after="2024-05-19">
+    enum="CryptohomeLECredError" expires_after="2024-07-21">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -544,7 +544,7 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.TimeToInitPkcs11" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

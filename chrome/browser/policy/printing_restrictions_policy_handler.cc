@@ -52,7 +52,7 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
                                                Mode* result) {
   const base::Value* value;
   if (CheckAndGetValue(policies, errors, &value) && value) {
-    absl::optional<Mode> mode;
+    std::optional<Mode> mode;
     auto it = policy_value_to_mode_.find(value->GetString());
     if (it != policy_value_to_mode_.end())
       mode = it->second;

@@ -16,5 +16,5 @@ public interface PlusAddressCreationDelegate {
 
     public void onPromptDismissed();
 
-    public void openManagementPage(GURL url);
+    public void openUrl(GURL url);
 }

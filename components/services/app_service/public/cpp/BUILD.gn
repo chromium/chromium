@@ -285,6 +285,21 @@ source_set("preferred_apps") {
   visibility = [ "//components/services/app_service/*" ]
 }
 
+source_set("app_shortcut_image") {
+  sources = [
+    "app_shortcut_image.cc",
+    "app_shortcut_image.h",
+  ]
+
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//ui/gfx",
+  ]
+
+  visibility = [ "//components/services/app_service/*" ]
+}
+
 source_set("crosapi_utils") {
   sources = [ "crosapi_utils.h" ]
 

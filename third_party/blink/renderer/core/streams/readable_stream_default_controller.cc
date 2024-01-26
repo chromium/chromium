@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
@@ -624,8 +623,7 @@ void ReadableStreamDefaultController::SetUpFromUnderlyingSource(
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
   auto controller_value = ToV8Traits<ReadableStreamDefaultController>::ToV8(
-                              script_state, controller)
-                              .ToLocalChecked();
+      script_state, controller);
 
   // 3. Let startAlgorithm be the following steps:
   //   a. Return ? InvokeOrNoop(underlyingSource, "start", « controller »).

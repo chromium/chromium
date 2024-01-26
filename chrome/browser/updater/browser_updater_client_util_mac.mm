@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
@@ -39,6 +41,7 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -54,28 +57,20 @@ base::FilePath GetUpdaterExecutablePath() {
       .Append(kUpdaterName);
 }
 
-bool BundleOwnedByUser(uid_t user_uid) {
+std::optional<uid_t> GetBundleOwner() {
   const base::FilePath path = base::apple::OuterBundlePath();
   base::stat_wrapper_t stat_info = {};
   if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
     VPLOG(2) << "Failed to get information on path " << path.value();
-    return false;
+    return std::nullopt;
   }
 
   if (S_ISLNK(stat_info.st_mode)) {
     VLOG(2) << "Path " << path.value() << " is a symbolic link.";
-    return false;
+    return std::nullopt;
   }
 
-  return stat_info.st_uid == user_uid;
-}
-
-bool BundleOwnedByRoot() {
-  return BundleOwnedByUser(0);
-}
-
-bool BundleOwnedByCurrentUser() {
-  return BundleOwnedByUser(geteuid());
+  return stat_info.st_uid;
 }
 
 bool IsEffectiveUserAdmin() {
@@ -123,24 +118,31 @@ bool IsEffectiveUserAdmin() {
 }
 
 bool ShouldPromoteUpdater() {
+  std::optional<uid_t> owner = GetBundleOwner();
+
   // 1) Should promote if browser is owned by root and not installed. The not
   // installed part of this case is handled in version_updater_mac.mm
-  if (BundleOwnedByRoot())
+  if (owner && *owner == 0) {
     return true;
+  }
 
   // 2) If the effective user is root and the browser is not owned by root (i.e.
   // if the current user has run with sudo).
-  if (geteuid() == 0)
+  if (geteuid() == 0) {
     return true;
+  }
 
   // 3) If effective user is not the owner of the browser and is an
   // administrator.
-  return !BundleOwnedByCurrentUser() && IsEffectiveUserAdmin();
+  return owner && *owner != geteuid() && IsEffectiveUserAdmin();
 }
 
 int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
   base::CommandLine command(exe_path);
   command.AppendSwitch(cmd_switch);
+  command.AppendSwitch(updater::kEnableLoggingSwitch);
+  command.AppendSwitchASCII(updater::kLoggingModuleSwitch,
+                            updater::kLoggingModuleSwitchValue);
 
   int exit_code = -1;
   auto process = base::LaunchProcess(command, {});
@@ -231,8 +233,10 @@ std::string CurrentlyInstalledVersion() {
 }
 
 updater::UpdaterScope GetUpdaterScope() {
-  return BundleOwnedByRoot() ? updater::UpdaterScope::kSystem
-                             : updater::UpdaterScope::kUser;
+  std::optional<uid_t> owner = GetBundleOwner();
+  return owner && (*owner == 0 || *owner != geteuid())
+             ? updater::UpdaterScope::kSystem
+             : updater::UpdaterScope::kUser;
 }
 
 void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {

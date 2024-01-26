@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -128,20 +129,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   Document* GetPopupDocumentIfShowing() const { return popup_document_.Get(); }
 
   AXObject* FocusedObject();
-
-  // This stores the last time a serialization was ACK'ed after being sent to
-  // the browser, so that serializations can be skipped if the time since the
-  // last serialization is less than GetDeferredEventsDelay(). Setting to
-  // "beginning of time" causes the upcoming serialization to occur at the next
-  // available opportunity.  Batching is used to reduce the number of
-  // serializations, in order to provide overall faster content updates while
-  // using less CPU, because nodes that change multiple times in a short time
-  // period only need to be serialized once, e.g. during page loads or
-  // animations.
-  static constexpr base::Time kSerializeAtNextOpportunity =
-      base::Time::UnixEpoch();
-  base::Time last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
 
@@ -255,6 +242,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
+
+  // Returns true if we can immediately process tree updates for this node.
+  // The main reason we cannot is lacking enough context to determine the
+  // relevance of a whitespace node.
+  bool IsReadyToProcessTreeUpdatesForNode(const Node*);
   // Called when a node is connected to the document.
   void NodeIsConnected(Node*) override;
   // Called when a node is attached to the layout tree.
@@ -888,12 +880,14 @@ class MODULES_EXPORT AXObjectCacheImpl
 
 #if DCHECK_IS_ON()
   bool updating_layout_and_ax_ = false;
+  int tree_check_counter_ = 0;
+  base::Time last_tree_check_time_stamp_ = base::Time::Now();
 #endif
 
-  // If true, do not do work to process a11y or build the a11y in
-  // ProcessDeferredAccessibilityEvents(). Will be set to false when more
-  // content is loaded or the load is completed.
-  bool pause_tree_updates_until_more_loaded_content_ = false;
+  // If non-zero, do not do work to process a11y or build the a11y tree in
+  // ProcessDeferredAccessibilityEvents(). Will be set to 0 when more content
+  // is loaded or the load is completed.
+  size_t allowed_tree_update_pauses_remaining_ = 0;
   // If null, then any new connected node will unpause tree updates.
   // Otherwise, tree updates will unpause once the node is fully parsed.
   WeakMember<Node> node_to_parse_before_more_tree_updates_;
@@ -1064,6 +1058,21 @@ class MODULES_EXPORT AXObjectCacheImpl
   // the browser, and will flip back to false once we receive back an ACK.
   bool serialization_in_flight_ = false;
 
+  // This stores the last time a serialization was ACK'ed after being sent to
+  // the browser, so that serializations can be skipped if the time since the
+  // last serialization is less than GetDeferredEventsDelay(). Setting to
+  // "beginning of time" causes the upcoming serialization to occur at the next
+  // available opportunity.  Batching is used to reduce the number of
+  // serializations, in order to provide overall faster content updates while
+  // using less CPU, because nodes that change multiple times in a short time
+  // period only need to be serialized once, e.g. during page loads or
+  // animations.
+  base::Time last_serialization_timestamp_ = base::Time::UnixEpoch();
+
+  // If true, will not attempt to batch and will serialize at the next
+  // opportunity.
+  bool serialize_immediately_ = false;
+
   // This flips to true if a request for an immediate update was not honored
   // because serialization_in_flight_ was true. It flips back to false once
   // serialization_in_flight_ has flipped to false and an immediate update has
@@ -1133,7 +1142,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // So we can ensure the serialization pipeline never stalls with dirty objects
   // remaining to be serialized.
-  base::WeakPtrFactory<AXObjectCacheImpl>
+  blink::WeakCellFactory<AXObjectCacheImpl>
       weak_factory_for_serialization_pipeline_{this};
 };
 

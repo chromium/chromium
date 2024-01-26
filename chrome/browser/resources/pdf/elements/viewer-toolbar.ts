@@ -18,13 +18,15 @@ import './viewer-annotations-mode-dialog.js';
 
 // </if>
 
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
 import {record, recordPdfOcrUserSelection, UserAction} from '../metrics.js';
 // <if expr="enable_screen_ai_service">
-import {PdfOcrPrefCallback, PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
+import type {PdfOcrPrefCallback} from '../pdf_viewer_private_proxy.js';
+import {PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
 
 // </if>
 

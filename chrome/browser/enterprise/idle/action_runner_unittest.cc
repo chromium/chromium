@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -328,9 +329,9 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   uint64_t GetLastUsedOriginTypeMaskForTesting() override {
     return origin_type_mask_;
   }
-  absl::optional<content::StoragePartitionConfig>
+  std::optional<content::StoragePartitionConfig>
   GetLastUsedStoragePartitionConfigForTesting() override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   uint64_t GetPendingTaskCountForTesting() override { return 0; }
 
@@ -366,6 +367,8 @@ class IdleActionRunnerClearDataTest : public ChromeViewsTestBase {
 };
 
 TEST_F(IdleActionRunnerClearDataTest, ClearBrowsingHistory) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearBrowsingHistory));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -377,9 +380,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearBrowsingHistory) {
   task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_HISTORY,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearDownloadHistory) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearDownloadHistory));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -392,9 +399,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearDownloadHistory) {
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearCookies) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearCookiesAndOtherSiteData));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -409,9 +420,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCookies) {
             remover()->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             remover()->GetLastUsedOriginTypeMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearCache) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearCachedImagesAndFiles));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -424,9 +439,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCache) {
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_CACHE,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearPasswordSignin) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearPasswordSignin));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -439,9 +458,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearPasswordSignin) {
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_PASSWORDS,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearAutofill) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearAutofill));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -454,9 +477,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearAutofill) {
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearSiteSettings) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearSiteSettings));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -469,9 +496,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearSiteSettings) {
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearHostedAppData) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearHostedAppData));
   profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
@@ -486,9 +517,13 @@ TEST_F(IdleActionRunnerClearDataTest, ClearHostedAppData) {
             remover()->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
             remover()->GetLastUsedOriginTypeMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, MultipleTypes) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   base::Value::List actions;
   actions.Append(static_cast<int>(ActionType::kClearBrowsingHistory));
   actions.Append(static_cast<int>(ActionType::kClearDownloadHistory));
@@ -505,9 +540,13 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypes) {
                 BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
                 chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   remover()->SetFailedDataTypesForTesting(
       chrome_browsing_data_remover::DATA_TYPE_HISTORY |
       BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
@@ -530,6 +569,8 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
 
   actions.top()->Run(profile(), cb.Get());
   run_loop.Run();
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", false, 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

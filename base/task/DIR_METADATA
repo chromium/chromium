@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Internals>TaskScheduling"
 }
 team_email: "scheduler-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456866
+}

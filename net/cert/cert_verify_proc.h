@@ -115,6 +115,11 @@ class NET_EXPORT CertVerifyProc
     // additional anchors through.
     bssl::ParsedCertificateList additional_trust_anchors;
 
+    // Same as additional_trust_anchors, but embedded anchor constraints and
+    // NotBefore/NotAfter are enforced.
+    bssl::ParsedCertificateList
+        additional_trust_anchors_with_enforced_constraints;
+
     // Additional temporary certs to consider as intermediates during path
     // validation. Ordinarily, implementations of CertVerifier use intermediate
     // certs from the configured system store. This is implementation-specific
@@ -123,6 +128,11 @@ class NET_EXPORT CertVerifyProc
 
     //  Additional SPKIs to consider as distrusted during path validation.
     std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
+
+    // If true, use the user-added certs in the system trust store for path
+    // validation.
+    // This only has an impact if the Chrome Root Store is being used.
+    bool include_system_trust_store = true;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

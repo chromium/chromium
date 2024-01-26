@@ -171,8 +171,7 @@ StyleImage* StyleImageLoader::ResolveImageSet(
   }
   CSSValue& image_value = option->GetImage();
   // Artificially reject types that are not "supported".
-  if (RuntimeEnabledFeatures::CSSImageSetEnabled() &&
-      !IsA<CSSImageValue>(image_value) &&
+  if (!IsA<CSSImageValue>(image_value) &&
       !IsA<cssvalue::CSSGradientValue>(image_value)) {
     return nullptr;
   }

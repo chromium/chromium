@@ -187,6 +187,7 @@ source_set("common") {
     "input/web_mouse_wheel_event.cc",
     "input/web_pointer_event.cc",
     "input/web_touch_event.cc",
+    "interest_group/ad_auction_constants.cc",
     "interest_group/ad_auction_currencies.cc",
     "interest_group/ad_display_size.cc",
     "interest_group/ad_display_size_mojom_traits.cc",

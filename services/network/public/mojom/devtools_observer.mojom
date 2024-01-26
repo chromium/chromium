@@ -47,6 +47,7 @@ struct URLResponseHeadDevToolsInfo {
   mojo_base.mojom.Time response_time;
   HttpResponseHeaders headers;
   string mime_type;
+  string charset;
   LoadTimingInfo load_timing;
   uint32 cert_status;
   int64 encoded_data_length;

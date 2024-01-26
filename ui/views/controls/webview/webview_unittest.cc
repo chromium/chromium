@@ -412,9 +412,12 @@ TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
   WidgetAutoclosePtr widget_2(CreateTopLevelPlatformWidget());
   View* contents_view_2 = widget_2->GetContentsView();
 
-  // Reparent the web view.
-  added_web_view = contents_view_2->AddChildView(
-      contents_view_1->RemoveChildViewT(added_web_view));
+  // Reparent the web view. During reparenting, the holder should not return
+  // a reference to the old parent's accessible object.
+  std::unique_ptr<WebView> removed_view =
+      contents_view_1->RemoveChildViewT(added_web_view);
+  EXPECT_EQ(nullptr, added_web_view->holder()->GetParentAccessible());
+  added_web_view = contents_view_2->AddChildView(std::move(removed_view));
 
   // After reparenting the holder's NativeViewAccessible should match that of
   // the web view's new parent view.

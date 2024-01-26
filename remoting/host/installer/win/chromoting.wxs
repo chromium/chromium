@@ -847,7 +847,7 @@
          using a custom action that uses CAQuietExec to execute a command line which is
          stored in a property with the same name as the action. -->
     <SetProperty Id="make_symbolic_link"
-      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass New-Item -ItemType SymbolicLink -Path '[chromoting]CurrentVersion' -Target '[binaries]'"
+      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass New-Item -ItemType SymbolicLink -Path '[chromoting]CurrentVersion' -Target '[binaries]' -Force"
       Before="make_symbolic_link"
       Sequence="execute" />
     <CustomAction Id="make_symbolic_link"

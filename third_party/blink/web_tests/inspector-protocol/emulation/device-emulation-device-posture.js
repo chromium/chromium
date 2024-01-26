@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {session, dp} = await testRunner.startBlank('Tests that device emulation of device posture is propagated and powers Device Posture API.');
 
   await session.navigate('../resources/device-emulation.html');

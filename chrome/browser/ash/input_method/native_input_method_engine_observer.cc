@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -384,7 +383,7 @@ mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
 }
 
 // Not using an EnumTraits here because the mapping is not 1:1.
-absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
+std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
     const ui::DomKey::Base& key) {
   switch (key) {
     case ui::DomKey::ALT:
@@ -446,7 +445,7 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
     case ui::DomKey::F12:
       return mojom::NamedDomKey::kF12;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -457,7 +456,7 @@ mojom::DomKeyPtr DomKeyToMojom(const ui::DomKey& key) {
   // Unicode representation. Hence, try to convert the key into a named key
   // first before trying to convert it to a character key.
   if (ui::KeycodeConverter::IsDomKeyNamed(key)) {
-    absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
+    std::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
     return named_key ? mojom::DomKey::NewNamedKey(*named_key) : nullptr;
   }
   if (key.IsCharacter()) {
@@ -984,7 +983,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
   // Always hide the candidates window when there's no focus.
   UpdateCandidatesWindowSync(nullptr);
 
-  text_client_ = absl::nullopt;
+  text_client_ = std::nullopt;
 
   if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
     editor_event_sink_->OnBlur();
@@ -1392,7 +1391,7 @@ void NativeInputMethodEngineObserver::RequestSuggestions(
 
 void NativeInputMethodEngineObserver::DisplaySuggestions(
     const std::vector<ime::AssistiveSuggestion>& suggestions,
-    const absl::optional<ime::SuggestionsTextContext>& context) {
+    const std::optional<ime::SuggestionsTextContext>& context) {
   if (!IsTextClientActive())
     return;
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions, context);

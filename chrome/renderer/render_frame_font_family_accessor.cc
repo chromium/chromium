@@ -96,7 +96,5 @@ void RenderFrameFontFamilyAccessor::ReadyToCommitNavigation(
 
 void RenderFrameFontFamilyAccessor::RunCallback(
     GetFontFamilyNamesCallback callback) {
-  std::move(callback).Run(
-      WebStringVectorToStl(family_names_->primary_family_names),
-      WebStringVectorToStl(family_names_->fallback_family_names));
+  std::move(callback).Run(WebStringVectorToStl(family_names_->font_names));
 }

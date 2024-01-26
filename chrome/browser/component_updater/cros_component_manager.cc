@@ -8,7 +8,7 @@ namespace component_updater {
 CompatibleComponentInfo::CompatibleComponentInfo() = default;
 CompatibleComponentInfo::CompatibleComponentInfo(
     const base::FilePath& path_in,
-    const absl::optional<base::Version>& version_in)
+    const std::optional<base::Version>& version_in)
     : path(path_in), version(version_in) {}
 CompatibleComponentInfo::CompatibleComponentInfo(
     CompatibleComponentInfo&& lhs) = default;

@@ -92,7 +92,8 @@ suite('SidePanelShoppingListTest', () => {
       assertEquals(priceElements[0]!.textContent, product.info.currentPrice);
       assertEquals(priceElements[1]!.textContent, product.info.previousPrice);
     }
-    const actionButton = element.querySelector('.action-button') as HTMLElement;
+    const actionButton = element.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!actionButton);
     assertEquals(
         actionButton.getAttribute('iron-icon'), ACTION_BUTTON_UNTRACK_IMAGE);
     assertEquals(

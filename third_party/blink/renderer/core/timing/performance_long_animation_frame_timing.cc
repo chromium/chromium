@@ -102,9 +102,9 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   builder.AddNumber("styleAndLayoutStart", styleAndLayoutStart());
   builder.AddNumber("firstUIEventTimestamp", firstUIEventTimestamp());
   builder.AddNumber("blockingDuration", blockingDuration());
-  builder.Add("scripts", ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
-                             builder.GetScriptState(), scripts())
-                             .ToLocalChecked());
+  builder.AddV8Value("scripts",
+                     ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
+                         builder.GetScriptState(), scripts()));
 }
 
 void PerformanceLongAnimationFrameTiming::Trace(Visitor* visitor) const {

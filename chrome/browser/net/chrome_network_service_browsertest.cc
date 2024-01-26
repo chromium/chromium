@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -106,6 +107,18 @@ class ChromeNetworkServiceBrowserTest
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
+#if BUILDFLAG(IS_WIN)
+    // On Windows, the ProfileNetworkContextService adds a cookie encryption
+    // manager when the feature is enabled. This test uses its own network
+    // context, so replicate that behavior here to ensure that this test
+    // represents production code as much as possible.
+    if (base::FeatureList::IsEnabled(
+            features::kUseOsCryptAsyncForCookieEncryption)) {
+      g_browser_process->system_network_context_manager()
+          ->AddCookieEncryptionManagerToNetworkContextParams(
+              context_params.get());
+    }
+#endif  // BUILDFLAG(IS_WIN)
     context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
 
     // Network files for the test context need to differ from the ones created
@@ -130,8 +143,7 @@ class ChromeNetworkServiceBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   // These test is only valid if crypto is enabled on the platform.
-  net::CookieCryptoDelegate* crypto_delegate =
-      cookie_config::GetCookieCryptoDelegate();
+  auto crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   if (!crypto_delegate) {
     GTEST_SKIP() << "No crypto on this platform.";
   }

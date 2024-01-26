@@ -101,8 +101,6 @@ using HoldingSpaceClientImplTest = HoldingSpaceBrowserTestBase;
 
 // Verifies that `HoldingSpaceClient::AddItemOfType()` works as intended.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
-  using Type = HoldingSpaceItem::Type;
-
   // Verify existence of controller, `client`, and `model`.
   ASSERT_TRUE(HoldingSpaceController::Get());
   auto* client = HoldingSpaceController::Get()->client();
@@ -115,9 +113,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
   EXPECT_EQ(model->items().size(), expected_count);
 
   // Verify client API works for every item type.
-  for (size_t i = 0u; i <= static_cast<int>(Type::kMaxValue); ++i) {
+  for (const auto expected_type : holding_space_util::GetAllItemTypes()) {
     // Create the item of the `expected_type` using the client API.
-    const HoldingSpaceItem::Type expected_type = static_cast<Type>(i);
     const base::FilePath expected_file_path =
         TestFile(GetProfile(), kTextFilePath);
     const std::string& expected_id =

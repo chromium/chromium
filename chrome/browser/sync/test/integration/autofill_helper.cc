@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <utility>
@@ -32,7 +33,6 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutocompleteChangeList;
 using autofill::AutocompleteEntry;
@@ -119,7 +119,7 @@ std::vector<AutocompleteEntry> GetAllAutocompleteEntries(
   return entries;
 }
 
-bool ProfilesMatchImpl(const absl::optional<unsigned int>& expected_count,
+bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
                        int profile_a,
                        const std::vector<AutofillProfile*>& autofill_profiles_a,
                        int profile_b,
@@ -361,9 +361,9 @@ bool ProfilesMatch(int profile_a, int profile_b) {
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
   std::ostringstream mismatch_reason_stream;
-  bool matched = ProfilesMatchImpl(
-      absl::nullopt, profile_a, autofill_profiles_a, profile_b,
-      autofill_profiles_b, &mismatch_reason_stream);
+  bool matched =
+      ProfilesMatchImpl(std::nullopt, profile_a, autofill_profiles_a, profile_b,
+                        autofill_profiles_b, &mismatch_reason_stream);
   if (!matched) {
     DLOG(INFO) << "Profiles mismatch: " << mismatch_reason_stream.str();
   }
@@ -386,7 +386,7 @@ bool AutocompleteKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
 AutofillProfileChecker::AutofillProfileChecker(
     int profile_a,
     int profile_b,
-    absl::optional<unsigned int> expected_count)
+    std::optional<unsigned int> expected_count)
     : profile_a_(profile_a),
       profile_b_(profile_b),
       expected_count_(expected_count) {

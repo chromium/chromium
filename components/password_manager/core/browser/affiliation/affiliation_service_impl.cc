@@ -275,4 +275,20 @@ void AffiliationServiceImpl::GetPSLExtensions(
       std::move(callback));
 }
 
+void AffiliationServiceImpl::UpdateAffiliationsAndBranding(
+    const std::vector<FacetURI>& facets,
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  auto callback_in_main_sequence =
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+                     std::move(callback));
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::UpdateAffiliationsAndBranding,
+                     base::Unretained(backend_.get()), facets,
+                     std::move(callback_in_main_sequence)));
+}
+
 }  // namespace password_manager

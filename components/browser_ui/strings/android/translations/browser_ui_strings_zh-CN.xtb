@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1434873037477293673">降价卡片</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">请求使用移动视图</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2874939134665556319">上一首</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">重置权限？</translation>
 <translation id="6766622839693428701">向下滑动即可关闭。</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />，来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="6787751205395685251">为 <ph name="SITE_NAME" /> 选择一个选项</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">选择内容</translation>
 <translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
+<translation id="6867014948848323204">来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">绿野仙踪</translation>
 <translation id="7684642910516280563">不允许网站使用第三方 Cookie</translation>
 <translation id="7719367874908701697">网页缩放</translation>
+<translation id="7770832849480336015">隐藏“<ph name="TITLE_OF_MODULE" />”</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
@@ -409,7 +415,7 @@
 <translation id="783819812427904514">将视频取消静音</translation>
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
-<translation id="789180354981963912">阻止无痕模式下的第三方 Cookie：</translation>
+<translation id="789180354981963912">在无痕模式下阻止第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="7986741934819883144">选择联系人</translation>

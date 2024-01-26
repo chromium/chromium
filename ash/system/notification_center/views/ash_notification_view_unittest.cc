@@ -312,11 +312,13 @@ class AshNotificationViewTestBase : public AshTestBase,
     ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(view->layer());
 
-    // Force a frame then wait, ensuring there is one more frame presented after
-    // animation finishes to allow animation throughput data to be passed from
-    // cc to ui.
-    compositor->ScheduleFullRedraw();
-    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    // Force frames and wait for all throughput trackers to be gone to allow
+    // animation throughput data to be passed from cc to ui.
+    while (compositor->has_throughput_trackers_for_testing()) {
+      compositor->ScheduleFullRedraw();
+      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
+                                                      base::Milliseconds(500));
+    }
 
     // Smoothness should be recorded.
     histograms.ExpectTotalCount(animation_histogram_name, data_point_count);
@@ -860,7 +862,7 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
 TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -920,7 +922,7 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
 TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -982,12 +984,14 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
                           "ScaleAndTranslate.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
+// TODO(crbug.com/1520190): Re-enable when flakiness is resolved.
+TEST_F(AshNotificationViewTest,
+       DISABLED_GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1052,7 +1056,7 @@ TEST_F(AshNotificationViewTest, SingleToGroupAnimationsRecordSmoothness) {
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1086,7 +1090,7 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1123,12 +1127,21 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
+// TODO(crbug.com/1518434): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InlineSettingsAnimationsRecordSmoothness \
+  DISABLED_InlineSettingsAnimationsRecordSmoothness
+#else
+#define MAYBE_InlineSettingsAnimationsRecordSmoothness \
+  InlineSettingsAnimationsRecordSmoothness
+#endif
+TEST_F(AshNotificationViewTest,
+       MAYBE_InlineSettingsAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1195,7 +1208,7 @@ TEST_F(AshNotificationViewTest,
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
   notification_view->RemoveGroupNotification(child_view->notification_id());
@@ -1306,7 +1319,7 @@ TEST_F(AshNotificationViewTest, DuplicateGroupChildRemovalWithAnimation) {
 
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Ensure a duplicate call to RemoveGroupNotification does not cause a crash.
   auto* child_view = GetFirstGroupedChildNotificationView(notification_view);

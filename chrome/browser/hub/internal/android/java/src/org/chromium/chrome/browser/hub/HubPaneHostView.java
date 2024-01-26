@@ -5,17 +5,21 @@
 package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.core.widget.TextViewCompat;
+
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Holds the current pane's {@link View}. */
 public class HubPaneHostView extends FrameLayout {
     private FrameLayout mPaneFrame;
-    private Button mActionButton;
+    private ButtonCompat mActionButton;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
@@ -38,5 +42,19 @@ public class HubPaneHostView extends FrameLayout {
 
     void setActionButtonData(@Nullable FullButtonData buttonData) {
         ApplyButtonData.apply(buttonData, mActionButton);
+    }
+
+    void setColorScheme(@HubColorScheme int colorScheme) {
+        Context context = getContext();
+
+        ColorStateList iconColor = HubColors.getIconColor(context, colorScheme);
+        TextViewCompat.setCompoundDrawableTintList(mActionButton, iconColor);
+
+        ColorStateList backgroundColor =
+                HubColors.getSecondaryContainerColorStateList(context, colorScheme);
+        mActionButton.setButtonColor(backgroundColor);
+
+        @StyleRes int textAppearance = HubColors.getTextAppearanceMedium(colorScheme);
+        mActionButton.setTextAppearance(textAppearance);
     }
 }

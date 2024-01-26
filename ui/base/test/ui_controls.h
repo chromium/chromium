@@ -5,6 +5,9 @@
 #ifndef UI_BASE_TEST_UI_CONTROLS_H_
 #define UI_BASE_TEST_UI_CONTROLS_H_
 
+#include <cstdint>
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -202,6 +205,14 @@ void InstallUIControlsAura(UIControlsAura* instance);
 // to traverse to the desired item; because the application is configured to
 // traverse more elements for accessibility reasons.
 bool IsFullKeyboardAccessEnabled();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(vincentchiang): Move to another test API file.
+// Update the test display configurations in accordance to the passed in
+// |display_specs| which is a comma separated list of display specs. See
+// ash::DisplayManagerTestApi::UpdateDisplay for detail.
+void UpdateDisplaySync(const std::string& display_specs);
 #endif
 
 }  // namespace ui_controls

@@ -5,10 +5,11 @@
 #ifndef ASH_ACCELERATORS_ACCELERATOR_TRACKER_H_
 #define ASH_ACCELERATORS_ACCELERATOR_TRACKER_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_handler.h"
 
@@ -46,10 +47,10 @@ struct TrackerData {
 struct ShortcutMetadata {
   // Default constructor needed for when a key is not found in the map.
   constexpr ShortcutMetadata() : type(TrackerType::kUndefined) {}
-  constexpr ShortcutMetadata(base::StringPiece action_string, TrackerType type)
+  constexpr ShortcutMetadata(std::string_view action_string, TrackerType type)
       : action_string(action_string), type(type) {}
 
-  base::StringPiece action_string;
+  std::string_view action_string;
   TrackerType type;
 };
 

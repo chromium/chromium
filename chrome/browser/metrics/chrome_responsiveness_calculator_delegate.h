@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_METRICS_CHROME_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
 #include "content/public/browser/responsiveness_calculator_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class UsageScenarioDataStore;
 class UsageScenarioTracker;
@@ -44,7 +44,7 @@ class ChromeResponsivenessCalculatorDelegate
 
   std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> usage_scenario_data_store_;
-  absl::optional<ScenarioParams> interval_scenario_params_;
+  std::optional<ScenarioParams> interval_scenario_params_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_RESPONSIVENESS_CALCULATOR_DELEGATE_H_

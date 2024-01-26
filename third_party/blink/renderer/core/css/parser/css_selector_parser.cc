@@ -836,21 +836,6 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
   CSSSelector::PseudoType pseudo_type =
       CSSSelector::NameToPseudoType(name, has_arguments, document);
 
-  if (!RuntimeEnabledFeatures::WebKitScrollbarStylingEnabled()) {
-    // Don't convert ::-webkit-scrollbar into webkit custom element pseudos -
-    // they should just be treated as unknown pseudos and not have the ability
-    // to style shadow/custom elements.
-    if (pseudo_type == CSSSelector::kPseudoResizer ||
-        pseudo_type == CSSSelector::kPseudoScrollbar ||
-        pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
-        pseudo_type == CSSSelector::kPseudoScrollbarButton ||
-        pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
-      return CSSSelector::kPseudoUnknown;
-    }
-  }
-
   if (pseudo_type != CSSSelector::PseudoType::kPseudoUnknown) {
     return pseudo_type;
   }
@@ -1694,6 +1679,18 @@ bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenRange& range) {
 
   output_.push_back(
       CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/false));
+
+  if (is_inside_has_argument_) {
+    // In case that a nesting parent selector is inside a :has() pseudo class,
+    // mark the :has() containing a pseudo selector so that the StyleEngine can
+    // invalidate the anchor element of the :has() for a pseudo state change
+    // in the parent selector. (crbug.com/1517866)
+    // This ignores whether the nesting parent actually contains a pseudo to
+    // avoid nesting parent lookup overhead and the complexity caused by
+    // reparenting style rules.
+    found_pseudo_in_has_argument_ = true;
+  }
+
   return true;
 }
 
@@ -2223,7 +2220,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       feature = WebFeature::kCSSSelectorPseudoReadWrite;
       break;
     case CSSSelector::kPseudoDir:
-      DCHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
       feature = WebFeature::kCSSSelectorPseudoDir;
       break;
     case CSSSelector::kPseudoHas:

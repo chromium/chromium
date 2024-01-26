@@ -28,7 +28,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   // Once editing begins, we expect any scheduled updates to be suppressed.
   TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', onUpdateScheduled);
   treeElement.applyStyleText('color: red');
-  treeElement.startEditing();
+  treeElement.startEditingName();
 
   TestRunner.addResult('Start editing');
   dumpFocus();

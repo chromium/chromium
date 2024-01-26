@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -31,6 +32,8 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
 
   // Reset counters and cached values.
   void Reset();
+
+  void set_quit_closure(base::OnceClosure quit_closure);
 
   // BluetoothAdapter::Observer
   void AdapterPresentChanged(BluetoothAdapter* adapter, bool present) override;
@@ -282,6 +285,9 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
 
   base::RepeatingClosure discovering_changed_callback_;
   base::RepeatingClosure discovery_change_completed_callback_;
+
+  // RunLoop QuitClosure
+  base::OnceClosure quit_closure_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   int device_bonded_changed_count_;

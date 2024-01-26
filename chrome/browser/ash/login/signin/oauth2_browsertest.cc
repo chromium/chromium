@@ -984,11 +984,10 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPageAsync(
-      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr()),
-                                    BoolToString(/*should_throttle=*/true)));
+                                    BoolToString(do_async_xhr())));
   ExtensionTestMessageListener listener("Both XHR's Opened");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -1053,11 +1052,10 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPage(
-      ext->id(),
-      base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
-                         fake_google_page_url_.spec().c_str(),
-                         non_google_page_url_.spec().c_str(),
-                         BoolToString(do_async_xhr()), BoolToString(false)));
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
+                                    fake_google_page_url_.spec().c_str(),
+                                    non_google_page_url_.spec().c_str(),
+                                    BoolToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR request from the extension side...
@@ -1104,6 +1102,12 @@ class MergeSessionTimeoutTest : public MergeSessionTest {
   }
 };
 
+// TODO(b/320482170) - Consider splitting this test into 2 - one for Google web
+// properties, and one for non-Google web properties. It is not possible right
+// now because chrome/test/data/extensions/api_test/merge_session/background.js
+// has a bunch of hidden assumptions about the ordering of Google and non-Google
+// web requests and doesn't really allow firing Google requests without
+// non-Google requests (and vice versa).
 IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
   fake_google_.set_hang_multilogin();
 
@@ -1118,6 +1122,8 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
 
   std::unique_ptr<ExtensionTestMessageListener> non_google_xhr_listener(
       new ExtensionTestMessageListener("non-google-xhr-received"));
+  std::unique_ptr<ExtensionTestMessageListener> google_xhr_listener(
+      new ExtensionTestMessageListener("google-xhr-received"));
 
   // Load extension with a background page. The background page will
   // attempt to load `fake_google_page_url_` via XHR.
@@ -1128,21 +1134,22 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPageAsync(
-      ext->id(),
-      base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
-                         fake_google_page_url_.spec().c_str(),
-                         non_google_page_url_.spec().c_str(),
-                         BoolToString(do_async_xhr()), BoolToString(true)));
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
+                                    fake_google_page_url_.spec().c_str(),
+                                    non_google_page_url_.spec().c_str(),
+                                    BoolToString(do_async_xhr())));
 
   if (do_async_xhr()) {
-    // Verify that we've sent XHR request from the extension side...
+    // Verify that we've sent XHR requests from the extension side...
     JsExpectOnBackgroundPage(ext->id(),
                              "googleRequestSent && !googleResponseReceived");
+    JsExpectOnBackgroundPage(ext->id(), "nonGoogleRequestSent");
 
     // ...but didn't see it on the server side yet.
     EXPECT_FALSE(fake_google_.IsPageRequested());
 
-    // Wait until the last XHR load completes.
+    // Wait until all the XHR loads complete.
+    ASSERT_TRUE(google_xhr_listener->WaitUntilSatisfied());
     ASSERT_TRUE(non_google_xhr_listener->WaitUntilSatisfied());
 
     // If the test runs in less than the test timeout (1 second) then we know

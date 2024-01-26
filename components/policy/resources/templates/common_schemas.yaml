@@ -40,6 +40,45 @@ Config:
       description: Secret shared between child and parent devices.
       type: string
   type: object
+DataControlsCondition:
+  properties:
+    and:
+      items:
+        $ref: DataControlsCondition
+      type: array
+    destinations:
+      properties:
+        incognito:
+          type: boolean
+        os_clipboard:
+          type: boolean
+        other_profile:
+          type: boolean
+        urls:
+          items:
+            type: string
+          type: array
+      type: object
+    not:
+      $ref: DataControlsCondition
+    or:
+      items:
+        $ref: DataControlsCondition
+      type: array
+    sources:
+      properties:
+        incognito:
+          type: boolean
+        os_clipboard:
+          type: boolean
+        other_profile:
+          type: boolean
+        urls:
+          items:
+            type: string
+          type: array
+      type: object
+  type: object
 DayPercentagePair:
   description: Contains the number of days and the percentage of the fleet that should
     be updated after those days have passed.

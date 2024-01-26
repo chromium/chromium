@@ -470,6 +470,11 @@ inline constexpr char kInsightsExtensionEnabled[] =
 // Boolean controlling whether showing Sync Consent during sign-in is enabled.
 // Controlled by policy.
 inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
+
+// Boolean pref recording the whether a nudge has been shown, to notify users of
+// changes to default display modes for affected web apps.
+inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
+    "standalone_window_migration_nudge_shown";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -648,6 +653,10 @@ inline constexpr char kFileSystemProviderMounted[] =
 // A boolean pref set to true if the virtual keyboard should be enabled.
 inline constexpr char kTouchVirtualKeyboardEnabled[] =
     "ui.touch_virtual_keyboard_enabled";
+
+// A boolean pref to enable virtual keyboard smart visibility.
+inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
+    "ui.virtual_keyboard_smart_visibility_enabled";
 
 // This is the policy CaptivePortalAuthenticationIgnoresProxy that allows to
 // open captive portal authentication pages in a separate window under
@@ -1176,12 +1185,6 @@ inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
 // chrome.login API.
 inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
     "extensions_api.login.data_for_next_login_attempt";
-
-// A boolean user profile pref which indicates that the current Managed Guest
-// Session is lockable. Set by the chrome.login extension API and read by
-// `UserManager`.
-inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
-    "extensions_api.login.can_lock_managed_guest_session";
 
 // String containing last RSU lookup key uploaded. Empty until first upload.
 inline constexpr char kLastRsuDeviceIdUploaded[] =
@@ -2198,9 +2201,6 @@ inline constexpr char kWasRestarted[] = "was.restarted";
 // Whether Extensions are enabled.
 inline constexpr char kDisableExtensions[] = "extensions.disabled";
 
-// Customized app page names that appear on the New Tab Page.
-inline constexpr char kNtpAppPageNames[] = "ntp.app_page_names";
-
 // Keeps track of which sessions are collapsed in the Other Devices menu.
 inline constexpr char kNtpCollapsedForeignSessions[] =
     "ntp.collapsed_foreign_sessions";
@@ -2224,6 +2224,8 @@ inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
     "ntp.custom_background_local_to_device";
 inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =
     "ntp.custom_background_local_to_device_id";
+inline constexpr char kNtpCustomBackgroundInspiration[] =
+    "ntp.custom_background_inspiration";
 // Number of times the user has opened the side panel with the customize chrome
 // button.
 inline constexpr char kNtpCustomizeChromeButtonOpenCount[] =
@@ -2259,9 +2261,6 @@ inline constexpr char kNtpWallpaperSearchHistory[] =
 inline constexpr char kSeedColorChangeCount[] =
     "colorpicker.SeedColorChangeCount";
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Which page should be visible on the new tab page v4
-inline constexpr char kNtpShownPage[] = "ntp.shown_page";
 
 // A private RSA key for ADB handshake.
 inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";
@@ -2806,6 +2805,16 @@ inline constexpr char kDeviceRegistered[] = "DeviceRegistered";
 // enrollment recovery flow upon next boot.
 inline constexpr char kEnrollmentRecoveryRequired[] =
     "EnrollmentRecoveryRequired";
+
+// String pref with the data about the OS version and browser version at the
+// time of enrollment. The format is established by release management team.
+// The Chrome OS version format is
+// [Milestone.]TIP_BUILD.BRANCH_BUILD.BRANCH_BRANCH_BUILD.
+// Example: 15711.0.0
+// For browser version the format is MAJOR.MINOR.BRANCH.BUILD.
+// Example: 122.0.6252.0
+inline constexpr char kEnrollmentVersionOS[] = "EnrollmentVersionOS";
+inline constexpr char kEnrollmentVersionBrowser[] = "EnrollmentVersionBrowser";
 
 // Pref name for whether we should show the Getting Started module in the Help
 // app.
@@ -4010,6 +4019,11 @@ inline constexpr char kCADistrustedCertificates[] =
 // building. Only specifiable as an enterprise policy.
 inline constexpr char kCAHintCertificates[] =
     "certificates.ca_hint_certificates";
+
+// Boolean that specifies whether to use user-added certificates that are in the
+// platform trust stores.
+inline constexpr char kCAPlatformIntegrationEnabled[] =
+    "certificates.ca_platform_integration_enabled";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 }  // namespace prefs

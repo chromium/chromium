@@ -19,6 +19,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -27,6 +28,7 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
+#include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_types.h"
@@ -137,48 +139,6 @@ WallpaperView* GetWallpaperViewNearestPoint(
       ->wallpaper_view();
 }
 
-// Indicates whether the nudge should be shown based on when it was last shown,
-// how many times total it's been shown, and whether the user has pinned a file
-// before. It should be no more than once in a 24 hour period, no more than 3
-// times total, and never if the user has pinned a file before.
-bool NudgeShouldBeShown() {
-  const bool forced_eligibility =
-      features::IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled();
-  const bool accelerated_rate_limiting = features::
-      IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled();
-
-  if (forced_eligibility && !accelerated_rate_limiting) {
-    return true;
-  }
-
-  PrefService* const prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-
-  // If the user has ever pinned a file, don't show the nudge.
-  if (!forced_eligibility &&
-      holding_space_prefs::GetTimeOfFirstPin(prefs).has_value()) {
-    return false;
-  }
-
-  const bool should_limit_count =
-      !forced_eligibility || accelerated_rate_limiting;
-
-  // If the user has seen the nudge 3 times, don't show it again.
-  if (should_limit_count &&
-      holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs) >= 3u) {
-    return false;
-  }
-
-  const base::TimeDelta timeout =
-      accelerated_rate_limiting ? base::Minutes(1) : base::Hours(24);
-  const auto time_of_last_nudge =
-      holding_space_wallpaper_nudge_prefs::GetLastTimeNudgeWasShown(prefs);
-
-  // Show the nudge if it has not been shown within the timeout period.
-  return !time_of_last_nudge.has_value() ||
-         base::Time::Now() - time_of_last_nudge.value() >= timeout;
-}
-
 // Highlight -------------------------------------------------------------------
 
 // A class which adds a highlight layer to the region above the associated
@@ -249,7 +209,15 @@ class Highlight : public ui::LayerOwner, public views::ViewObserver {
 //
 // While the observed drag-and-drop sequence is in progress.
 class DragDropDelegate : public WallpaperDragDropDelegate,
-                         public HoldingSpaceControllerObserver {
+                         public HoldingSpaceControllerObserver,
+                         public SessionObserver {
+ public:
+  explicit DragDropDelegate(
+      UserEducationPrivateApiKey user_education_private_api_key)
+      : user_education_private_api_key_(user_education_private_api_key) {
+    session_observer_.Observe(Shell::Get()->session_controller());
+  }
+
  private:
   // WallpaperDragDropDelegate:
   void GetDropFormats(int* formats,
@@ -540,6 +508,127 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     }
   }
 
+  // SessionObserver:
+  void OnChromeTerminating() override { session_observer_.Reset(); }
+
+  void OnSessionStateChanged(session_manager::SessionState state) override {
+    // This override is only meant to happen right after session start.
+    if (state != session_manager::SessionState::ACTIVE) {
+      return;
+    }
+
+    // Determine (and store) eligibility. If the user is eligible, then attempt
+    // to mark this as the first eligible session.
+    if (DetermineEligibility()) {
+      holding_space_wallpaper_nudge_prefs::MarkTimeOfFirstEligibleSession(
+          Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+    }
+  }
+
+  // Calculates and persists the user's eligibility for the nudge based on
+  // account type and new-ness. This is a simple pref fetch once the eligibility
+  // is persisted. Returns true if the user is eligible.
+  bool DetermineEligibility() {
+    const auto* const session_controller = Shell::Get()->session_controller();
+    PrefService* const prefs =
+        session_controller->GetLastActiveUserPrefService();
+
+    auto eligibility =
+        holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs);
+
+    // If there isn't a cached eligibility value for the user, determine and
+    // cache it now.
+    if (eligibility == std::nullopt) {
+      eligibility = true;
+
+      // The nudge is supported for regular users only.
+      if (const auto user_type = session_controller->GetUserType();
+          user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+        eligibility = false;
+      }
+
+      // The nudge is not supported for managed accounts.
+      if (session_controller->IsActiveAccountManaged()) {
+        eligibility = false;
+      }
+
+      // For sanity, confirm that the user is also considered "new" locally in
+      // case the proxy check proves to be erroneous.
+      if (!session_controller->IsUserFirstLogin()) {
+        eligibility = false;
+      }
+
+      const std::optional<bool>& is_new_user =
+          UserEducationController::Get()->IsNewUser(
+              user_education_private_api_key_);
+
+      // If we were unable to fetch cross device user new-ness, assume the user
+      // is not new.
+      if (!is_new_user.value_or(false)) {
+        eligibility = false;
+      }
+
+      // Persist eligibility.
+      holding_space_wallpaper_nudge_prefs::SetUserEligibility(
+          prefs, eligibility.value());
+    }
+
+    return eligibility.value();
+  }
+
+  // Indicates whether the nudge should be shown based on when it was last
+  // shown, how many times total it's been shown, and whether the user has
+  // pinned a file before. It should be no more than once in a 24 hour period,
+  // no more than 3 times total, and never if the user has pinned a file before.
+  bool NudgeShouldBeShown() {
+    // NOTE: User education in Ash is currently only supported for the primary
+    // user profile. This is a self-imposed restriction.
+    if (!user_education_util::IsPrimaryAccountActive()) {
+      return false;
+    }
+
+    const bool forced_eligibility =
+        features::IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled();
+    const bool accelerated_rate_limiting = features::
+        IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled();
+
+    if (forced_eligibility && !accelerated_rate_limiting) {
+      return true;
+    }
+
+    const auto* const session_controller = Shell::Get()->session_controller();
+    PrefService* const prefs =
+        session_controller->GetLastActiveUserPrefService();
+
+    // If the user has ever pinned a file, don't show the nudge.
+    if (!forced_eligibility &&
+        holding_space_prefs::GetTimeOfFirstPin(prefs).has_value()) {
+      return false;
+    }
+
+    if (!(forced_eligibility || DetermineEligibility())) {
+      return false;
+    }
+
+    const bool should_limit_count =
+        !forced_eligibility || accelerated_rate_limiting;
+
+    // If the user has seen the nudge 3 times, don't show it again.
+    if (should_limit_count &&
+        holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs) >= 3u) {
+      return false;
+    }
+
+    const base::TimeDelta timeout =
+        accelerated_rate_limiting ? base::Minutes(1) : base::Hours(24);
+    const auto time_of_last_nudge =
+        holding_space_wallpaper_nudge_prefs::GetLastTimeNudgeWasShown(prefs);
+
+    // Show the nudge if it has not been shown within the timeout period.
+    return !time_of_last_nudge.has_value() ||
+           base::Time::Now() - time_of_last_nudge.value() >= timeout;
+  }
+
   // A pointer to the `HoldingSpaceTray` anchoring the currently open help
   // bubble. Used to determine if the help bubble should be dismissed to prevent
   // overlap between the help bubble and `HoldingSpaceTrayBubble`. NOTE: Do not
@@ -568,6 +657,9 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   // Used to close the help bubble on drop-to-pin.
   base::ScopedClosureRunner scoped_help_bubble_closer_;
 
+  // The key that allows access to restricted `UserEducationController` APIs.
+  UserEducationPrivateApiKey user_education_private_api_key_;
+
   // Used to highlight the wallpaper when data is dragged over it so that the
   // user better understands the wallpaper is a drop target.
   std::unique_ptr<Highlight> wallpaper_highlight_;
@@ -576,6 +668,10 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observer_{this};
+
+  // Observes session changes so that user eligibility can be saved after login.
+  base::ScopedObservation<SessionController, SessionObserver> session_observer_{
+      this};
 };
 
 }  // namespace
@@ -589,7 +685,7 @@ HoldingSpaceWallpaperNudgeController::HoldingSpaceWallpaperNudgeController() {
   // Register our implementation as the singleton delegate for drag-and-drop
   // events over the wallpaper.
   WallpaperController::Get()->SetDragDropDelegate(
-      std::make_unique<DragDropDelegate>());
+      std::make_unique<DragDropDelegate>(UserEducationPrivateApiKey()));
 }
 
 HoldingSpaceWallpaperNudgeController::~HoldingSpaceWallpaperNudgeController() {

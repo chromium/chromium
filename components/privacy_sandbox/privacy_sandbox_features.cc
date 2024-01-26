@@ -119,6 +119,10 @@ BASE_FEATURE(kPrivacySandboxAttestationsHigherComponentRegistrationPriority,
              "PrivacySandboxAttestationsHigherComponentRegistrationPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxAttestationsUserBlockingPriority,
+             "PrivacySandboxAttestationsUserBlockingPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -148,6 +152,10 @@ BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
 
 BASE_FEATURE(kPrivacySandboxInternalsDevUI,
              "PrivacySandboxInternalsDevUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIpProtectionV1,
+             "IpProtectionV1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1,0 +1,68 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BatterySaverBubbleActionType">
+  <int value="0" label="Turn off mode for current session"/>
+  <int value="1" label="Dismissed bubble"/>
+</enum>
+
+<enum name="BatterySaverModeState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled below threshold"/>
+  <int value="2" label="Enabled on battery"/>
+  <int value="3" label="Enabled"/>
+</enum>
+
+<enum name="MemorySaverBubbleActionType">
+  <int value="0" label="Open settings"/>
+  <int value="1" label="Dismiss dialog"/>
+  <int value="2" label="Add exception"/>
+</enum>
+
+<enum name="MemorySaverChipState">
+  <int value="0" label="Collapsed chip"/>
+  <int value="1" label="Expanded educational chip"/>
+  <int value="2" label="Expanded chip with savings"/>
+</enum>
+
+<enum name="MemorySaverModeExceptionListAction">
+  <int value="0" label="Add"/>
+  <int value="1" label="Edit"/>
+  <int value="2" label="Remove"/>
+  <int value="3" label="Add from current"/>
+</enum>
+
+<enum name="MemorySaverModeState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Enabled on timer"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

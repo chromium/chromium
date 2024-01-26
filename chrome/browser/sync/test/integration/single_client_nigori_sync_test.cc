@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
+  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
       syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           raw_private_key);
   EXPECT_TRUE(private_key.has_value());
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
+  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
       syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           raw_private_key);
   EXPECT_TRUE(private_key.has_value());
@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
   // Verify that a notification was displayed.
   const std::string notification_id =
       sync_error_notifier->GetNotificationIdForTesting();
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service.GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_THAT(notification->title(),
@@ -1350,8 +1350,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
   // Mimic the user clickling on the system notification, which opens up a
   // tab where the user can interact with the retrieval flow.
   display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                notification_id, /*action_index=*/absl::nullopt,
-                                /*reply=*/absl::nullopt);
+                                notification_id, /*action_index=*/std::nullopt,
+                                /*reply=*/std::nullopt);
 
   // Wait until successful completion.
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
@@ -1398,7 +1398,7 @@ IN_PROC_BROWSER_TEST_P(
   // Verify that a notification was displayed.
   const std::string notification_id =
       sync_error_notifier->GetNotificationIdForTesting();
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service.GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_THAT(notification->title(),
@@ -1412,8 +1412,8 @@ IN_PROC_BROWSER_TEST_P(
   // Mimic the user clickling on the system notification, which opens up a
   // tab where the user can interact with the degraded recoverability flow.
   display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                notification_id, /*action_index=*/absl::nullopt,
-                                /*reply=*/absl::nullopt);
+                                notification_id, /*action_index=*/std::nullopt,
+                                /*reply=*/std::nullopt);
 
   // Wait until successful completion.
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
@@ -2114,7 +2114,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatus::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.DownloadKeys",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.DownloadKeys."
+      "ChromeSync",
       /*sample=*/200,
       /*expected_bucket_count=*/1);
 }

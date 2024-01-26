@@ -29,7 +29,8 @@ constexpr int kSpaceBetweenButtons = 8;
 constexpr int kBarWidth = 225;
 constexpr int kBarHeight = 8;
 constexpr int kAboveBarSpace = 8;
-constexpr int kBelowBarSpace = 6;
+constexpr int kAboveBarSpaceInBubble = 12;
+constexpr int kBelowBarSpace = 8;
 constexpr int kSpaceBetweenContainers = 16;
 
 std::unique_ptr<views::Label> CreateTimerLabel(
@@ -91,8 +92,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   progress_bar_->SetPreferredCornerRadii(gfx::RoundedCornersF(kBarHeight / 2));
   progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
-  progress_bar_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kAboveBarSpace, 0, kBelowBarSpace, 0)));
+  progress_bar_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      include_end_button_ ? kAboveBarSpaceInBubble : kAboveBarSpace, 0,
+      kBelowBarSpace, 0)));
 
   // Add a horizontal container to hold the two bar label timers, and the spacer
   // view used to space them out.
@@ -127,9 +129,11 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   if (include_end_button_) {
-    button_container->AddChildView(std::make_unique<PillButton>(
-        base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                            base::Unretained(focus_mode_controller)),
+    end_button_ = button_container->AddChildView(std::make_unique<PillButton>(
+        base::BindRepeating(
+            &FocusModeController::ToggleFocusMode,
+            base::Unretained(focus_mode_controller),
+            focus_mode_histogram_names::ToggleSource::kContextualPanel),
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
         PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));

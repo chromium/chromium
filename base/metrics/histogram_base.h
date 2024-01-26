@@ -341,7 +341,7 @@ class BASE_EXPORT HistogramBase {
 
   // Gets a permanent string that can be used for histogram objects when the
   // original is not a code constant or held in persistent memory.
-  static const char* GetPermanentName(const std::string& name);
+  static const char* GetPermanentName(std::string_view name);
 
  private:
   friend class HistogramBaseTest;

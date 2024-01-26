@@ -53,8 +53,9 @@ void SetStorageForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : GetStorageTypesForFrame(include_cookies)) {
-    actual[data_type] =
-        content::EvalJs(frame, "set" + data_type + "()").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     if (frame->GetLastCommittedOrigin() !=
             frame->GetMainFrame()->GetLastCommittedOrigin() &&
         data_type == "WebSql") {
@@ -73,8 +74,9 @@ void SetStorageForWorker(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : kStorageTypesForWorker) {
-    actual[data_type] =
-        content::EvalJs(frame, "set" + data_type + "()").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     expected[data_type] = true;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
@@ -87,8 +89,9 @@ void ExpectStorageForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : GetStorageTypesForFrame(false)) {
-    actual[data_type] =
-        content::EvalJs(frame, "has" + data_type + "();").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     if (frame->GetLastCommittedOrigin() !=
             frame->GetMainFrame()->GetLastCommittedOrigin() &&
         data_type == "WebSql") {
@@ -108,8 +111,9 @@ void ExpectStorageForWorker(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : kStorageTypesForWorker) {
-    actual[data_type] =
-        content::EvalJs(frame, "has" + data_type + "();").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
@@ -121,8 +125,9 @@ void SetCrossTabInfoForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    actual[data_type] =
-        content::EvalJs(frame, "set" + data_type + "()").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     expected[data_type] = true;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
@@ -135,8 +140,9 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    actual[data_type] =
-        content::EvalJs(frame, "has" + data_type + "();").ExtractBool();
+    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
+                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                            .ExtractBool();
     expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
@@ -148,9 +154,14 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame) {
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
-                                   const std::string& origin) {
-  return content::ExecJs(frame,
-                         content::JsReplace(kRequestStorageAccessFor, origin));
+                                   const std::string& origin,
+                                   bool omit_user_gesture) {
+  int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS;
+  if (omit_user_gesture) {
+    options |= content::EXECUTE_SCRIPT_NO_USER_GESTURE;
+  }
+  return content::ExecJs(
+      frame, content::JsReplace(kRequestStorageAccessFor, origin), options);
 }
 
 bool HasStorageAccessForFrame(content::RenderFrameHost* frame) {

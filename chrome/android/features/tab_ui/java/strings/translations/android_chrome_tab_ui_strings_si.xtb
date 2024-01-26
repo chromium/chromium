@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">දැනුම්දීම් ලබන්න</translation>
 <translation id="4133493477912226187">පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="4212246570487010370">දිගටම බ්‍රවුස් කරන්න</translation>
+<translation id="427987768447457592">නව පටිති සමූහය</translation>
 <translation id="4648718555153979859">ඔබේ පටිති මෙහි එකට කණ්ඩායම් කෙරේ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />)}one{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}other{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">දසුන</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">පූර්ණ තිර ජාලකය සඟවන්න</translation>
 <translation id="5076161749301278626">වෙළඳසැල් සමාලෝචන බලන්නද?</translation>
 <translation id="5082793167783849073">කණ්ඩායමක් කිරීමෙන් ඉක්මනින් පිටු සංසන්දන කරන්න. පටන් ගැනීමට, සබැඳියක් ස්පර්ශ කර අල්ලා සිටින්න.</translation>
+<translation id="5161254044473106830">මාතෘකාව අවශ්‍යයි</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{ඔබ මෑතක දී භාවිතා නොකළ <ph name="TABS_COUNT_ONE" /> පටිත්තක් ඇත}one{ඔබ මෑතක දී භාවිතා නොකළ පටිති <ph name="TABS_COUNT_MANY" />ක් ඇත}other{ඔබ මෑතක දී භාවිතා නොකළ පටිති <ph name="TABS_COUNT_MANY" />ක් ඇත}}</translation>
 <translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>

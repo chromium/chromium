@@ -43,6 +43,11 @@ std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataReuqest() {
   std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
       new proto::LogAiDataRequest());
 
+  // Inject logging metadata and make sure it gets written to final log.
+  log_ai_data_request->mutable_logging_metadata()
+      ->mutable_system_profile()
+      ->set_build_timestamp(12345);
+
   proto::ComposeLoggingData compose_logging_data;
 
   proto::ComposeRequest request;
@@ -218,6 +223,9 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
             pending_request->logging_metadata()
                 .on_device_system_profile()
                 .performance_class());
+  EXPECT_EQ(
+      12345,
+      pending_request->logging_metadata().system_profile().build_timestamp());
 
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode",
@@ -225,7 +233,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.Status", 1);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kUploadSuccessful, 1);
 }
 
@@ -252,7 +260,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestMultipleUploads) {
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.Status", 2);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kUploadSuccessful, 2);
 }
 
@@ -268,7 +276,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenLoggingDisabled) {
   // When logging is disabled there should be no pending requests.
   VerifyNumberOfPendingRequests(0);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
 }
 
@@ -295,7 +303,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestNetErrorResponse) {
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode", 1);
 
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kNetError, 1);
 }
 

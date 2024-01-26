@@ -40,7 +40,7 @@ LCPCriticalPathPredictorHost::~LCPCriticalPathPredictorHost() = default;
 
 void LCPCriticalPathPredictorHost::SetLcpElementLocator(
     const std::string& lcp_element_locator,
-    absl::optional<uint32_t> predicted_lcp_index) {
+    std::optional<uint32_t> predicted_lcp_index) {
   // `LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit()` stores
   // `LcpCriticalPathPredictorPageLoadMetricsObserver` in `PageData` as a weak
   // pointer. This weak pointer can be deleted at any time.

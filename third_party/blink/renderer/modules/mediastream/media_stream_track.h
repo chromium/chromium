@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -142,10 +141,21 @@ class MODULES_EXPORT MediaStreamTrack
   // asks to deliver a wheel event on the captured tab's viewport.
   // This is subject to a permission policy on the capturing origin.
   //
-  // If successful, |callback| is invoked with `true` and an empty string.
-  // If unsuccessful, it is invoked with `false` and an error message.
+  // `relative_x` is a value from [0, 1). It denotes the relative position
+  // in the coordinate space of the captured surface, which is unknown to the
+  // capturer. A value of 0 denotes the leftmost pixel; increasing values denote
+  // values further to the right. The sender of the message scales from its own
+  // coordinate space down to the relative values, and the receiver scales back
+  // up to its own coordinates.
+  //
+  // `relative_y` is defined analogously to `relative_x`.
+  //
+  // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
   virtual void SendWheel(
-      CapturedWheelAction* action,
+      double relative_x,
+      double relative_y,
+      int wheel_delta_x,
+      int wheel_delta_y,
       base::OnceCallback<void(bool, const String&)> callback) = 0;
 
   // When called on a "live" video track associated with tab-capture,
@@ -171,7 +181,8 @@ class MODULES_EXPORT MediaStreamTrack
 #endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) = 0;
+      int context_sample_rate,
+      uint32_t context_buffer_size) = 0;
 
   virtual ImageCapture* GetImageCapture() = 0;
   virtual absl::optional<const MediaStreamDevice> device() const = 0;

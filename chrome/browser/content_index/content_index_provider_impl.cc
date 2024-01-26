@@ -187,7 +187,7 @@ void ContentIndexProviderImpl::OpenItem(
 }
 
 void ContentIndexProviderImpl::DidGetEntryToOpen(
-    absl::optional<content::ContentIndexEntry> entry) {
+    std::optional<content::ContentIndexEntry> entry) {
   if (!entry)
     return;
 
@@ -237,8 +237,7 @@ void ContentIndexProviderImpl::PauseDownload(const ContentId& id) {
   NOTREACHED();
 }
 
-void ContentIndexProviderImpl::ResumeDownload(const ContentId& id,
-                                              bool has_user_gesture) {
+void ContentIndexProviderImpl::ResumeDownload(const ContentId& id) {
   NOTREACHED();
 }
 
@@ -251,7 +250,7 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -263,9 +262,9 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
 
 void ContentIndexProviderImpl::DidGetItem(
     SingleItemCallback callback,
-    absl::optional<content::ContentIndexEntry> entry) {
+    std::optional<content::ContentIndexEntry> entry) {
   if (!entry)
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   else
     std::move(callback).Run(EntryToOfflineItem(*entry));
 }

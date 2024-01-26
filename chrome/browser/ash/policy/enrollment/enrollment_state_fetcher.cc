@@ -7,7 +7,6 @@
 #include <memory>
 #include <string_view>
 #include <tuple>
-#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -40,6 +39,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 using private_membership::rlwe::RlwePlaintextId;
@@ -71,6 +71,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   if (state.has_value()) {
     switch (state.value()) {
       case AutoEnrollmentResult::kEnrollment:
+      case AutoEnrollmentResult::kSuggestedEnrollment:
         return kUMASuffixEnrollment;
       case AutoEnrollmentResult::kNoEnrollment:
         return kUMASuffixNoEnrollment;
@@ -80,7 +81,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   }
 
   // TODO(b/309921228): Add more suffixes.
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return kUMASuffixConnectionError;
@@ -960,7 +961,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 
@@ -975,7 +976,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixQueryRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 

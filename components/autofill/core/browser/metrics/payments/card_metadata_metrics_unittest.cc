@@ -42,6 +42,7 @@ class CardMetadataFormEventMetricsTest
   bool new_card_art_and_network_images_used() const {
     return std::get<2>(GetParam());
   }
+
   const std::string& issuer_id() const { return std::get<3>(GetParam()); }
 
   FormData form() { return form_; }
@@ -59,8 +60,9 @@ class CardMetadataFormEventMetricsTest
                                       {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
                            .action = ""});
 
-    // Add a masked server card.
+    // Add a Mastercard masked server card.
     card_ = test::WithCvc(test::GetMaskedServerCard());
+    card_.SetNetworkForMaskedCard(autofill::kMasterCard);
     card_.set_guid(kCardGuid);
     card_.set_issuer_id(issuer_id());
     if (issuer_id() == kCapitalOneCardIssuerId && card_has_static_art_image()) {
@@ -70,25 +72,28 @@ class CardMetadataFormEventMetricsTest
         card_.set_card_art_url(GURL(kCapitalOneCardArtUrl));
       }
     }
-    // Set metadata to card. The `card_art_url` will be overriden with rich card
-    // art url regarless of `card_has_static_art_image()` in the test set-up,
-    // because rich card art, if available, is preferred by Payments server and
-    // will be sent to the client .
+
+    // Set metadata to card. The `card_art_url` will be overridden with rich
+    // card art url regardless of `card_has_static_art_image()` in the test
+    // set-up, because rich card art, if available, is preferred by Payments
+    // server and will be sent to the client.
     if (card_metadata_available()) {
       card_.set_product_description(u"card_description");
       card_.set_card_art_url(GURL("https://www.example.com/cardart.png"));
     }
+
     personal_data().AddServerCreditCard(card_);
     personal_data().Refresh();
   }
 
   void TearDown() override { TearDownHelper(); }
 
-  std::string GetHistogramName(std::string_view event) {
+  std::string GetHistogramName(const std::string& issuer_or_network,
+                               const std::string_view event) {
     return base::StrCat({"Autofill.CreditCard.",
-                         GetCardIssuerIdSuffix(issuer_id()) != ""
-                             ? GetCardIssuerIdSuffix(issuer_id())
-                             : issuer_id(),
+                         GetCardIssuerIdOrNetworkSuffix(issuer_or_network) != ""
+                             ? GetCardIssuerIdOrNetworkSuffix(issuer_or_network)
+                             : issuer_or_network,
                          event});
   }
 
@@ -150,11 +155,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                          card_metadata_available() ? 0 : 1)));
 
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".ShownWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".ShownWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".ShownWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      card_metadata_available(), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..ShownWithMetadata",
                                       card_metadata_available(), 0);
 
@@ -175,11 +186,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                   Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
                          card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".ShownWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(card().issuer_id(), ".ShownWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".ShownWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      card_metadata_available(), 2);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      card_metadata_available(), 1);
 }
 
 // Test metadata selected metrics are correctly logged.
@@ -234,11 +251,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SelectedWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".SelectedWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SelectedWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      card_metadata_available(), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard..SelectedWithMetadata", card_metadata_available(),
       0);
@@ -262,22 +285,33 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SelectedWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(card().issuer_id(), ".SelectedWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SelectedWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SelectedWithIssuerMetadataPresentOnce"), true,
+      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      card_metadata_available(), 2);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      card_metadata_available(), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(card().issuer_id(),
+                       ".SelectedWithIssuerMetadataPresentOnce"),
+      true,
       card_metadata_available() && registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard,
+                       ".SelectedWithIssuerMetadataPresentOnce"),
+      true, card_metadata_available() ? 1 : 0);
 
   // Only test non-Amex because for Amex case it will log true in
   // SelectedWithIssuerMetadataPresentOnce histogram.
   if (issuer_id() != "amex") {
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCard.Amex.SelectedWithIssuerMetadataPresentOnce", false,
-        card_metadata_available() && registered_card_issuer_available() ? 1
-                                                                        : 0);
+        card_metadata_available() ? 1 : 0);
   }
 }
 
@@ -321,11 +355,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".FilledWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".FilledWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".FilledWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      card_metadata_available(), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..FilledWithMetadata",
                                       card_metadata_available(), 0);
 
@@ -346,11 +386,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".FilledWithMetadata"), card_metadata_available(),
-      registered_card_issuer_available() ? 2 : 0);
+      GetHistogramName(card().issuer_id(), ".FilledWithMetadata"),
+      card_metadata_available(), registered_card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".FilledWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      card_metadata_available(), 2);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      card_metadata_available(), 1);
 }
 
 // Test metadata will submit and submitted metrics are correctly logged.
@@ -393,14 +439,17 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
                  card_metadata_available() ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".WillSubmitWithMetadataOnce"),
+      GetHistogramName(card().issuer_id(), ".WillSubmitWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(".SubmittedWithMetadataOnce"), card_metadata_available(),
-      registered_card_issuer_available() ? 1 : 0);
+      GetHistogramName(card().issuer_id(), ".SubmittedWithMetadataOnce"),
+      card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard..SubmittedWithMetadata", card_metadata_available(),
-      0);
+      GetHistogramName(autofill::kMasterCard, ".WillSubmitWithMetadataOnce"),
+      card_metadata_available(), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName(autofill::kMasterCard, ".SubmittedWithMetadataOnce"),
+      card_metadata_available(), 1);
 }
 
 // Params:
@@ -440,13 +489,14 @@ class CardMetadataLatencyMetricsTest
                            .action = ""});
 
     CreditCard masked_server_card = test::GetMaskedServerCard();
+    masked_server_card.SetNetworkForMaskedCard(autofill::kMasterCard);
     masked_server_card.set_guid(kTestMaskedCardId);
     masked_server_card.set_issuer_id(kCapitalOneCardIssuerId);
     if (card_has_static_art_image()) {
       masked_server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
-    // If metadata is available, the `card_art_url` will be overriden with rich
-    // card art url regarless of `card_has_static_art_image()` in the test
+    // If metadata is available, the `card_art_url` will be overridden with rich
+    // card art url regardless of `card_has_static_art_image()` in the test
     // set-up, because rich card art, if available, is preferred by Payments
     // server and will be sent to the client.
     if (card_metadata_available()) {
@@ -515,8 +565,14 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   histogram_tester.ExpectUniqueSample(
       latency_histogram_prefix + latency_histogram_suffix, 2000, 1);
   histogram_tester.ExpectUniqueSample(
-      latency_histogram_prefix + "CardWithIssuerId." +
-          latency_histogram_suffix + ".CapitalOne",
+      base::StrCat(
+          {latency_histogram_prefix,
+           "CardWithIssuerId." + latency_histogram_suffix + ".CapitalOne"}),
+      2000, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {latency_histogram_prefix,
+           "CardWithIssuerId." + latency_histogram_suffix + ".Mastercard"}),
       2000, 1);
 }
 

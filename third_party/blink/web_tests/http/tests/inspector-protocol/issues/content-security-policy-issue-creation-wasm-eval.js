@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {page, session, dp} = await testRunner.startBlank(
       `Verifies that CSP issue is created from a page with eval() usage.\n`);
 

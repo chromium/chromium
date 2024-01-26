@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_INTERNAL_MESSAGE_UTIL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_INTERNAL_MESSAGE_UTIL_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -90,7 +91,7 @@ class CastInternalMessage {
 
   Type type() const { return type_; }
   const std::string& client_id() const { return client_id_; }
-  absl::optional<int> sequence_number() const { return sequence_number_; }
+  std::optional<int> sequence_number() const { return sequence_number_; }
 
   bool has_session_id() const {
     return type_ == Type::kAppMessage || type_ == Type::kV2Message;
@@ -124,14 +125,14 @@ class CastInternalMessage {
  private:
   CastInternalMessage(Type type,
                       const std::string& client_id,
-                      absl::optional<int> sequence_number,
+                      std::optional<int> sequence_number,
                       const std::string& session_id,
                       const std::string& namespace_or_v2_type_,
                       base::Value message_body);
 
   const Type type_;
   const std::string client_id_;
-  const absl::optional<int> sequence_number_;
+  const std::optional<int> sequence_number_;
 
   // Set if |type| is |kAppMessage| or |kV2Message|.
   const std::string session_id_;
@@ -231,17 +232,17 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
     const base::Value::Dict& payload,
-    absl::optional<int> sequence_number);
+    std::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
     base::Value::Dict error,
-    absl::optional<int> sequence_number);
+    std::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    absl::optional<int> sequence_number);
+    std::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    absl::optional<int> sequence_number);
+    std::optional<int> sequence_number);
 
 base::Value::List SupportedMediaCommandsToListValue(int media_commands);
 

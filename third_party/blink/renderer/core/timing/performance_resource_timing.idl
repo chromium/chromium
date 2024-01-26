@@ -62,15 +62,14 @@ interface PerformanceResourceTiming : PerformanceEntry {
         readonly attribute RenderBlockingStatusType renderBlockingStatus;
     // PerformanceResourceTiming#responseStatus
     // See: https://github.com/abinpaul1/resource-timing/blob/explainer-resource-response-status/Explainers/Response_Status_Code.md
-    [RuntimeEnabled=ResourceTimingResponseStatus]
-        readonly attribute short responseStatus;
+    readonly attribute short responseStatus;
+
     // PerformanceResourceTiming#contentType
     // See: https://github.com/abinpaul1/resource-timing/blob/explainer-content-type/Explainers/Content-Type.md
     [RuntimeEnabled=ResourceTimingContentType]
         readonly attribute DOMString contentType;
 
-    [RuntimeEnabled=ResourceTimingInterimResponseTimes]
-        readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
+    readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

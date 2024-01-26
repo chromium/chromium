@@ -307,7 +307,8 @@ public class AutofillSuggestion extends DropdownItemBase {
         }
 
         public AutofillSuggestion build() {
-            assert !TextUtils.isEmpty(mLabel) : "AutofillSuggestion requires the label to be set.";
+            assert mPopupItemId == PopupItemId.SEPARATOR || !TextUtils.isEmpty(mLabel)
+                    : "Only separators may have an empty label.";
             assert (mSubLabel != null)
                     : "The AutofillSuggestion sublabel can be empty but never null.";
             return new AutofillSuggestion(

@@ -143,7 +143,7 @@ class GPU_EXPORT GpuChannelHost
   void TerminateGpuProcessForTesting();
 
   // Virtual for testing.
-  virtual std::unique_ptr<ClientSharedImageInterface>
+  virtual scoped_refptr<ClientSharedImageInterface>
   CreateClientSharedImageInterface();
 
   ImageDecodeAcceleratorProxy* image_decode_accelerator_proxy() {

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import enum
 import os
 import re
 import sys
@@ -18,6 +19,8 @@ from telemetry.internal.platform import gpu_info as tgi
 EXPECTATIONS_DRIVER_TAGS = frozenset([
     'mesa_lt_19.1',
     'mesa_ge_21.0',
+    'nvidia_ge_31.0.15.4601',
+    'nvidia_lt_31.0.15.4601',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION
@@ -44,18 +47,14 @@ ENTIRE_TAG_REPLACEMENTS = {
     'google-vulkan',
 }
 
-VENDOR_AMD = 0x1002
-VENDOR_INTEL = 0x8086
-VENDOR_NVIDIA = 0x10DE
-# ACPI ID as opposed to a PCI-E ID like other vendors.
-VENDOR_QUALCOMM = 0x4D4F4351
 
-VENDOR_NAMES_BY_ID = {
-    VENDOR_AMD: 'amd',
-    VENDOR_INTEL: 'intel',
-    VENDOR_NVIDIA: 'nvidia',
-    VENDOR_QUALCOMM: 'qualcomm',
-}
+class GpuVendors(enum.IntEnum):
+  AMD = 0x1002
+  INTEL = 0x8086
+  NVIDIA = 0x10DE
+  # ACPI ID as opposed to a PCI-E ID like other vendors.
+  QUALCOMM = 0x4D4F4351
+
 
 INTEL_DEVICE_ID_MASK = 0xFF00
 INTEL_GEN_9 = {0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00}
@@ -94,8 +93,12 @@ def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
       angle_vendor_string = _ParseANGLEGpuVendorString(
           primary_gpu.device_string)
       vendor_id = primary_gpu.vendor_id
-      if vendor_id in VENDOR_NAMES_BY_ID:
-        return VENDOR_NAMES_BY_ID[vendor_id]
+      try:
+        vendor_id = GpuVendors(vendor_id)
+        return vendor_id.name.lower()
+      except ValueError:
+        # Hit if vendor_id is not a known vendor.
+        pass
       if angle_vendor_string:
         return angle_vendor_string.lower()
       if vendor_string:
@@ -115,7 +118,7 @@ def GetGpuDeviceId(gpu_info: Optional[tgi.GPUInfo],
 
 
 def IsIntel(vendor_id: int) -> bool:
-  return vendor_id == VENDOR_INTEL
+  return vendor_id == GpuVendors.INTEL
 
 
 # Intel GPU architectures
@@ -387,6 +390,61 @@ def EvaluateVersionComparison(version: str,
 
   return operation in ('eq', 'ge', 'le')
 # pylint: enable=too-many-locals,too-many-branches
+
+
+# No good way to reduce the number of return statements to the required level
+# without harming readability.
+# pylint: disable=too-many-return-statements,too-many-branches
+def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
+  if driver_tag1 == driver_tag2:
+    return True
+
+  match = MatchDriverTag(driver_tag1)
+  vendor1 = match.group(1)
+  operation1 = match.group(2)
+  version1 = match.group(3)
+
+  match = MatchDriverTag(driver_tag2)
+  vendor2 = match.group(1)
+  operation2 = match.group(2)
+  version2 = match.group(3)
+
+  if vendor1 != vendor2:
+    return False
+
+  if operation1 == 'ne':
+    return not (operation2 == 'eq' and version1 == version2)
+  if operation2 == 'ne':
+    return not (operation1 == 'eq' and version1 == version2)
+  if operation1 == 'eq':
+    return EvaluateVersionComparison(version1, operation2, version2)
+  if operation2 == 'eq':
+    return EvaluateVersionComparison(version2, operation1, version1)
+
+  if operation1 in ('ge', 'gt') and operation2 in ('ge', 'gt'):
+    return True
+  if operation1 in ('le', 'lt') and operation2 in ('le', 'lt'):
+    return True
+
+  if operation1 == 'ge':
+    if operation2 == 'le':
+      return not EvaluateVersionComparison(version1, 'gt', version2)
+    if operation2 == 'lt':
+      return not EvaluateVersionComparison(version1, 'ge', version2)
+  if operation1 == 'gt':
+    return not EvaluateVersionComparison(version1, 'ge', version2)
+  if operation1 == 'le':
+    if operation2 == 'ge':
+      return not EvaluateVersionComparison(version1, 'lt', version2)
+    if operation2 == 'gt':
+      return not EvaluateVersionComparison(version1, 'le', version2)
+  if operation1 == 'lt':
+    return not EvaluateVersionComparison(version1, 'le', version2)
+  assert False
+  return False
+
+
+# pylint: enable=too-many-return-statements,too-many-branches
 
 
 def ExpectationsDriverTags() -> FrozenSet[str]:

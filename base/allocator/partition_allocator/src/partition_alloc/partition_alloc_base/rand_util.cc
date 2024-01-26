@@ -4,10 +4,9 @@
 
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 
-#include <limits.h>
-#include <math.h>
-#include <stdint.h>
-
+#include <climits>
+#include <cmath>
+#include <cstdint>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/check.h"

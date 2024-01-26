@@ -30,17 +30,6 @@ constexpr int kMaxFrameSizeDip = 64;
 // will get an incorrect hint as to which pixels are fully opaque.
 constexpr int kMaxCornerRadiusDip = 32;
 
-std::string GetThemeName() {
-  gchar* theme = nullptr;
-  g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme, nullptr);
-  std::string theme_string;
-  if (theme) {
-    theme_string = theme;
-    g_free(theme);
-  }
-  return theme_string;
-}
-
 GtkCssContext WindowContext(bool solid_frame, bool tiled, bool focused) {
   std::string selector = "window.background.";
   selector += solid_frame ? "solid-csd" : "csd";
@@ -188,12 +177,6 @@ bool HeaderIsTranslucent() {
   return false;
 }
 
-// Returns int(scale * 100), which essentially limits the scale to fractions of
-// 100 and secures from rounding errors.
-int ToRoundedScale(float scale) {
-  return round(scale * 100);
-}
-
 }  // namespace
 
 WindowFrameProviderGtk::Asset::Asset() = default;
@@ -224,7 +207,17 @@ void WindowFrameProviderGtk::Asset::CloneFrom(
 }
 
 WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame, bool tiled)
-    : solid_frame_(solid_frame), tiled_(tiled) {}
+    : solid_frame_(solid_frame), tiled_(tiled) {
+  GtkSettings* settings = gtk_settings_get_default();
+  // Unretained() is safe since WindowFrameProviderGtk will own the signals.
+  auto callback = base::BindRepeating(&WindowFrameProviderGtk::OnThemeChanged,
+                                      base::Unretained(this));
+  theme_name_signal_ = ScopedGSignal(settings, "notify::gtk-theme-name",
+                                     callback, G_CONNECT_AFTER);
+  prefer_dark_signal_ =
+      ScopedGSignal(settings, "notify::gtk-application-prefer-dark-theme",
+                    callback, G_CONNECT_AFTER);
+}
 
 WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
@@ -253,7 +246,7 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
 
   MaybeUpdateBitmaps(scale);
 
-  const auto& asset = assets_[ToRoundedScale(scale)];
+  const auto& asset = assets_[scale];
   DCHECK(asset.valid);
 
   const auto input_insets_px = gfx::ScaleToRoundedInsets(input_insets, scale);
@@ -350,13 +343,7 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
 }
 
 void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
-  std::string theme_name = GetThemeName();
-  if (theme_name_ != theme_name) {
-    assets_.clear();
-    theme_name_ = theme_name;
-  }
-
-  auto& asset = assets_[ToRoundedScale(scale)];
+  auto& asset = assets_[scale];
   if (asset.valid) {
     return;
   }
@@ -430,6 +417,11 @@ int WindowFrameProviderGtk::BitmapSizePx(const Asset& asset) const {
   // The left and right sides of the decoration add 2 * kMaxDecorationThickness,
   // and the window itself has size 2 * kMaxDecorationThickness.
   return 4 * asset.frame_size_px;
+}
+
+void WindowFrameProviderGtk::OnThemeChanged(GtkSettings* settings,
+                                            GtkParamSpec* param) {
+  assets_.clear();
 }
 
 }  // namespace gtk

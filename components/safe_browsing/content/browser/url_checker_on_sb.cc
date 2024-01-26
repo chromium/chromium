@@ -27,12 +27,14 @@ UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+    bool all_checks_completed)
     : proceed(proceed),
       showed_interstitial(showed_interstitial),
       has_post_commit_interstitial_skipped(
           has_post_commit_interstitial_skipped),
-      performed_check(performed_check) {}
+      performed_check(performed_check),
+      all_checks_completed(all_checks_completed) {}
 
 UrlCheckerOnSB::StartParams::StartParams(
     net::HttpRequestHeaders headers,
@@ -87,6 +89,10 @@ UrlCheckerOnSB::UrlCheckerOnSB(
 }
 
 UrlCheckerOnSB::~UrlCheckerOnSB() {
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
   base::UmaHistogramMediumTimes(
       "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
@@ -123,6 +129,8 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
           ? content::BrowserThread::UI
           : content::BrowserThread::IO);
   DCHECK(url_checker_);
+  pending_checks_++;
+  redirect_chain_.push_back(url);
   url_checker_->CheckUrl(url, method,
                          base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
                                         base::Unretained(this)));
@@ -130,6 +138,10 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
 
 void UrlCheckerOnSB::SwapCompleteCallback(OnCompleteCheckCallback callback) {
   complete_callback_ = std::move(callback);
+}
+
+const std::vector<GURL>& UrlCheckerOnSB::GetRedirectChain() {
+  return redirect_chain_;
 }
 
 void UrlCheckerOnSB::SetUrlCheckerForTesting(
@@ -143,12 +155,17 @@ bool UrlCheckerOnSB::IsRealTimeCheckForTesting() {
              hash_realtime_utils::HashRealTimeSelection::kNone;
 }
 
+void UrlCheckerOnSB::AddUrlInRedirectChainForTesting(const GURL& url) {
+  redirect_chain_.push_back(url);
+}
+
 void UrlCheckerOnSB::OnCheckUrlResult(
     NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  pending_checks_--;
   OnCompleteCheck(proceed, showed_interstitial,
                   has_post_commit_interstitial_skipped, performed_check);
 }
@@ -158,9 +175,10 @@ void UrlCheckerOnSB::OnCompleteCheck(
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  bool all_checks_completed = pending_checks_ == 0;
   OnCompleteCheckResult result(proceed, showed_interstitial,
                                has_post_commit_interstitial_skipped,
-                               performed_check);
+                               performed_check, all_checks_completed);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     complete_callback_.Run(result);
   } else {

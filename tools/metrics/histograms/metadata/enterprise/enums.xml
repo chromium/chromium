@@ -316,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Use Another Account button clicked"/>
 </enum>
 
+<enum name="EnrollmentRecoveryOnBootAction">
+  <summary>
+    The action taken on boot when enrollment recovery is marked in the local
+    state.
+  </summary>
+  <int value="0" label="Proceed with recovery"/>
+  <int value="1" label="False flag, the device policy is good"/>
+  <int value="2" label="Device without serial number, skip recovery"/>
+</enum>
+
 <enum name="EnterpriseAccountStatus">
   <summary>Account status fetched before enrollment process starts.</summary>
   <int value="0" label="Unknown account"/>
@@ -1839,8 +1849,7 @@ chromium-metrics-reviews@google.com.
   <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
   <int value="1030" label="ExtensionManifestV2Availability"/>
   <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
-  <int value="1032"
-      label="OBSOLETE_SendMouseEventsDisabledFormControlsEnabled"/>
+  <int value="1032" label="SendMouseEventsDisabledFormControlsEnabled"/>
   <int value="1033" label="BruschettaVMConfiguration"/>
   <int value="1034" label="DnsOverHttpsSalt"/>
   <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
@@ -1992,16 +2001,25 @@ chromium-metrics-reviews@google.com.
   <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
   <int value="1182" label="FeedbackSurveysEnabled"/>
   <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
-  <int value="1184" label="OopPrintDriversEnabled"/>
+  <int value="1184" label="OopPrintDriversAllowed"/>
   <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
-  <int value="1186" label="TabOrganizationAllowed"/>
-  <int value="1187" label="ComposeAllowed"/>
-  <int value="1188" label="WallpaperSearchAllowed"/>
+  <int value="1186" label="TabOrganizerSettings"/>
+  <int value="1187" label="HelpMeWriteSettings"/>
+  <int value="1188" label="CreateThemesSettings"/>
   <int value="1189" label="ListenToThisPageEnabled"/>
   <int value="1190" label="AlwaysOnVpnPreConnectUrlAllowlist"/>
   <int value="1191" label="CACertificates"/>
   <int value="1192" label="CADistrustedCertificates"/>
   <int value="1193" label="CAHintCertificates"/>
+  <int value="1194" label="DeviceLoginScreenTouchVirtualKeyboardEnabled"/>
+  <int value="1195" label="DeviceExtendedAutoUpdateEnabled"/>
+  <int value="1196" label="CAPlatformIntegrationEnabled"/>
+  <int value="1197" label="FloatingSsoEnabled"/>
+  <int value="1198" label="FloatingSsoDomainBlocklist"/>
+  <int value="1199" label="FloatingSsoDomainBlocklistExceptions"/>
+  <int value="1200" label="F11KeyModifier"/>
+  <int value="1201" label="F12KeyModifier"/>
+  <int value="1202" label="VirtualKeyboardSmartVisibilityEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2139,6 +2157,24 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Automatic public session"/>
   <int value="3" label="Manual kiosk session"/>
   <int value="4" label="Automatic kiosk session"/>
+</enum>
+
+<enum name="IdleTimeoutCase">
+  <int value="0" label="Foreground"/>
+  <int value="1" label="Background"/>
+</enum>
+
+<enum name="IdleTimeoutDialogEvent">
+  <int value="0" label="Idle timeout dialog shown"/>
+  <int value="1" label="Idle timeout dialog dismissed by user"/>
+  <int value="2" label="Idle timeout dialog expired"/>
+</enum>
+
+<enum name="IdleTimeoutLaunchScreenEvent">
+  <int value="0" label="Idle timeout launch screen shown"/>
+  <int value="1"
+      label="Idle timeout launch screen dismissed after action completion"/>
+  <int value="2" label="Idle timeout launch screen expired"/>
 </enum>
 
 <enum name="InvalidDevicePolicyFilesStatus">

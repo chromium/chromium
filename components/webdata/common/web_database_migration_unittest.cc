@@ -142,7 +142,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 123;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 124;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1244,43 +1244,6 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion118ToCurrent) {
   }
 }
 
-TEST_F(WebDatabaseMigrationTest, MigrationVersion119ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_119.sql")));
-  // Verify pre-conditions.
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    // Check version.
-    EXPECT_EQ(119, VersionFromConnection(&connection));
-
-    EXPECT_FALSE(connection.DoesTableExist("bank_accounts"));
-    EXPECT_FALSE(connection.DoesTableExist("payment_instruments"));
-    EXPECT_FALSE(connection.DoesTableExist("payment_instruments_metadata"));
-    EXPECT_FALSE(
-        connection.DoesTableExist("payment_instrument_supported_rails"));
-  }
-
-  DoMigration();
-
-  // Verify post-conditions.
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    // Check version.
-    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
-
-    EXPECT_TRUE(connection.DoesTableExist("bank_accounts"));
-    EXPECT_TRUE(connection.DoesTableExist("payment_instruments"));
-    EXPECT_TRUE(connection.DoesTableExist("payment_instruments_metadata"));
-    EXPECT_TRUE(
-        connection.DoesTableExist("payment_instrument_supported_rails"));
-  }
-}
-
 // Tests that the server_address* tables are dropped.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion120ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_120.sql")));
@@ -1377,5 +1340,42 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion122ToCurrent) {
         connection.DoesColumnExist("benefit_merchant_domains", "benefit_id"));
     EXPECT_TRUE(connection.DoesColumnExist("benefit_merchant_domains",
                                            "merchant_domain"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion123ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_123.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(123, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesTableExist("payment_instruments"));
+    EXPECT_TRUE(
+        connection.DoesTableExist("payment_instrument_supported_rails"));
+    EXPECT_TRUE(connection.DoesTableExist("payment_instruments_metadata"));
+    EXPECT_TRUE(connection.DoesTableExist("bank_accounts"));
+    EXPECT_FALSE(connection.DoesTableExist("masked_bank_accounts"));
+    EXPECT_FALSE(connection.DoesTableExist("masked_bank_accounts_metadata"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_FALSE(connection.DoesTableExist("payment_instruments"));
+    EXPECT_FALSE(
+        connection.DoesTableExist("payment_instrument_supported_rails"));
+    EXPECT_FALSE(connection.DoesTableExist("payment_instruments_metadata"));
+    EXPECT_FALSE(connection.DoesTableExist("bank_accounts"));
+    EXPECT_TRUE(connection.DoesTableExist("masked_bank_accounts"));
+    EXPECT_TRUE(connection.DoesTableExist("masked_bank_accounts_metadata"));
   }
 }

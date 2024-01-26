@@ -55,13 +55,13 @@ PP_Bool ReadImageData(PP_Resource graphics_2d,
 void RunMessageLoop(PP_Instance instance) {
   CHECK(PpapiGlobals::Get()->GetMainThreadMessageLoop()->
       BelongsToCurrentThread());
-  base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).Run();
+  PpapiGlobals::Get()->RunMsgLoop();
 }
 
 void QuitMessageLoop(PP_Instance instance) {
   CHECK(PpapiGlobals::Get()->GetMainThreadMessageLoop()->
             BelongsToCurrentThread());
-  base::RunLoop::QuitCurrentDeprecated();
+  PpapiGlobals::Get()->QuitMsgLoop();
 }
 
 uint32_t GetLiveObjectsForInstance(PP_Instance instance_id) {

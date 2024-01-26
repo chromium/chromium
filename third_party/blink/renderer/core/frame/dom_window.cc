@@ -74,7 +74,7 @@ DOMWindow::~DOMWindow() {
   DCHECK(!frame_);
 }
 
-v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
+v8::Local<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   // TODO(yukishiino): Get understanding of why it's possible to initialize
   // the context after the frame is detached.  And then, remove the following
   // lines.  See also https://crbug.com/712638 .
@@ -228,7 +228,6 @@ void DOMWindow::setOpenerForBindings(v8::Isolate* isolate,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> this_wrapper =
       ToV8Traits<DOMWindow>::ToV8(ScriptState::From(context), this)
-          .ToLocalChecked()
           .As<v8::Object>();
   v8::PropertyDescriptor desc(opener.V8Value(), /*writable=*/true);
   desc.set_enumerable(true);

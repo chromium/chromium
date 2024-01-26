@@ -72,8 +72,8 @@ TEST_F(ExperimentManagerImplTestBase, Version) {
 
   const struct {
     const char* desc;
-    absl::optional<int> initial_version;
-    absl::optional<utils::ExperimentState> initial_state;
+    std::optional<int> initial_version;
+    std::optional<utils::ExperimentState> initial_state;
     int expected_version;
     utils::ExperimentState expected_state;
   } kTestCases[] = {
@@ -320,7 +320,7 @@ TEST_F(ExperimentManagerImplTest, IsClientEligible_PrefIsUnknownReturnsEmpty) {
       prefs::kTPCDExperimentClientState,
       static_cast<int>(utils::ExperimentState::kUnknownEligibility));
 
-  EXPECT_EQ(TestingExperimentManagerImpl().IsClientEligible(), absl::nullopt);
+  EXPECT_EQ(TestingExperimentManagerImpl().IsClientEligible(), std::nullopt);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -428,21 +429,52 @@ GURL SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
   return GetMainFrameAllowlistUrlForResource(resource);
 }
 
-BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
+security_interstitials::SecurityInterstitialPage*
+SafeBrowsingUIManager::CreateBlockingPage(
     content::WebContents* contents,
     const GURL& blocked_url,
-    const UnsafeResource& unsafe_resource) {
-  SafeBrowsingBlockingPage* blocking_page =
-      blocking_page_factory_->CreateSafeBrowsingPage(
-          this, contents, blocked_url, {unsafe_resource},
-          /*should_trigger_reporting=*/true);
+    const UnsafeResource& unsafe_resource,
+    bool forward_extension_event,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+  security_interstitials::SecurityInterstitialPage* blocking_page = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  if (unsafe_resource.threat_type ==
+      SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
+    blocking_page = blocking_page_factory_->CreateEnterpriseWarnPage(
+        this, contents, blocked_url, {unsafe_resource});
+
+    // Report that we showed an interstitial.
+    if (forward_extension_event) {
+      ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
+          contents, blocked_url, "ENTERPRISE_WARNED_SEEN",
+          unsafe_resource.rt_lookup_response);
+    }
+    return blocking_page;
+  } else if (unsafe_resource.threat_type ==
+             SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK) {
+    blocking_page = blocking_page_factory_->CreateEnterpriseBlockPage(
+        this, contents, blocked_url, {unsafe_resource});
+
+    // Report that we showed an interstitial.
+    if (forward_extension_event) {
+      ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
+          contents, blocked_url, "ENTERPRISE_BLOCKED_SEEN",
+          unsafe_resource.rt_lookup_response);
+    }
+    return blocking_page;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  blocking_page = blocking_page_factory_->CreateSafeBrowsingPage(
+      this, contents, blocked_url, {unsafe_resource},
+      /*should_trigger_reporting=*/true, blocked_page_shown_timestamp);
 
   // Report that we showed an interstitial.
-  ForwardSecurityInterstitialShownExtensionEventToEmbedder(
-      contents, blocked_url,
-      GetThreatTypeStringForInterstitial(unsafe_resource.threat_type),
-      /*net_error_code=*/0);
-
+  if (forward_extension_event) {
+    ForwardSecurityInterstitialShownExtensionEventToEmbedder(
+        contents, blocked_url,
+        GetThreatTypeStringForInterstitial(unsafe_resource.threat_type),
+        /*net_error_code=*/0);
+  }
   return blocking_page;
 }
 

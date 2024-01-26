@@ -797,6 +797,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetPageTitle", IDS_SETTINGS_INTERNET},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
+      {"internetToggleTetherA11yLabel",
+       IDS_SETTINGS_INTERNET_TOGGLE_MOBILE_ACCESSIBILITY_LABEL},
       {"internetToggleMobileA11yLabel",
        IDS_SETTINGS_INTERNET_TOGGLE_MOBILE_ACCESSIBILITY_LABEL},
       {"internetToggleWiFiA11yLabel",

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1066101356081285416">Chrome détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications de colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Google afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping Google pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1105362920864247682">Effacer les données de navigation dans Chrome.</translation>
 <translation id="1113057722807951993">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
@@ -40,13 +41,13 @@ Points à prendre en compte :
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL saisies à vos favoris dans Chrome.</translation>
+<translation id="1799920918471566157">Astuces Chrome</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1843217788865538014">Utilisez automatiquement Chrome lorsque vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="1910975740091000991">Chrome pour iOS</translation>
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
 <translation id="1987779152850321833">Effectuez les actions suggérées ci-dessous pour exploiter tout le potentiel de Chrome.</translation>
-<translation id="2008357574463816229">Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Soyez plus efficace grâce à Google Chrome, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="2120238739383482109">Ouvre les favoris Chrome.</translation>
 <translation id="2147651015520127414">Chrome a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
@@ -75,6 +76,7 @@ Points à prendre en compte :
 <translation id="2702250627063295552">Ajouter un élément de liste de lecture à Chrome</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
+<translation id="2789947168960170215">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Effacer les données de navigation dans Chrome</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>
 <translation id="3522659714780527202">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, activez la synchronisation</translation>
 <translation id="3577555362230509265">Utilisez Chrome dans d'autres applis.</translation>
-<translation id="3594076341410558780">Masquer la fiche "Profiter pleinement de Chrome"</translation>
 <translation id="364480321352456989">Votre version de Chrome est obsolète.</translation>
 <translation id="3646736009628185125">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chrome et de synchroniser ses mots de passe. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Cela signifie que Chrome demandera la version pour mobile à chaque fois.</translation>
@@ -204,7 +205,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome à enregistrer<ph name="END_LINK" /> dans votre compte Google.
 
 Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome détectera le numéro de suivi sur les sites que vous consultez et vous présentera les notifications de colis sur la page "Nouvel onglet". Vos données seront partagées avec Google afin d'assurer cette fonctionnalité et d'améliorer l'expérience d'achat pour tous les utilisateurs. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Faire une recherche vocale dans Chrome</translation>
 <translation id="6964931465519938134">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>

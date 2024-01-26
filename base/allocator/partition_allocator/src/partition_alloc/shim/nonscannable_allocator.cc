@@ -10,7 +10,7 @@
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/starscan/pcscan.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -68,7 +68,7 @@ void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
       quarantinable ? partition_alloc::PartitionOptions::kAllowed
                     : partition_alloc::PartitionOptions::kDisallowed;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
-  allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
+  allocator_.reset(partition_alloc::internal::ConstructAtInternalPartition<
                    partition_alloc::PartitionAllocator>(opts));
   if constexpr (quarantinable) {
     partition_alloc::internal::PCScan::RegisterNonScannableRoot(
@@ -78,8 +78,10 @@ void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
 #endif  // BUILDFLAG(USE_STARSCAN)
 }
 
-template class NonScannableAllocatorImpl<true>;
-template class NonScannableAllocatorImpl<false>;
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    NonScannableAllocatorImpl<true>;
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    NonScannableAllocatorImpl<false>;
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

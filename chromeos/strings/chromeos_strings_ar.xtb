@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">للأمام</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
+<translation id="1626590945318984973">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون استخدام مفتاحَي الوظائف و<ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1643449475550628585">تغيير صورة الخلفية يوميًا</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">إيقاف تشغيل الوضع المُعتِم</translation>
 <translation id="1885577615937958993">تقديم سريع للوسائط</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
-<translation id="1897672602657312171">قد يتعارض الاختصار بدون مفتاح البحث مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدم مفتاح البحث.</translation>
 <translation id="1904932688895783618">إليك بعض المراجع المفيدة الأخرى:</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> صورة</translation>
 <translation id="2157660087437850958">أداة اختيار الرموز التعبيرية</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{لقد ضبط مشرفك تطبيق "<ph name="APP_NAME_1" />" للبدء تلقائيًا مع كل تسجيل دخول.}=2{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" للبدء تلقائيًا مع كل تسجيل دخول.}=3{لقد ضبط مشرفك التطبيقات "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و"<ph name="APP_NAME_3" />" للبدء تلقائيًا مع كل تسجيل دخول.}zero{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}few{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقات أخرى للبدء تلقائيًا مع كل تسجيل دخول.}many{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقًا آخر للبدء تلقائيًا مع كل تسجيل دخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="215916044711630446">‏زر "إضافة اسم نقطة الوصول" (APN) غير مفعَّل الآن</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">تعديل تفاصيل اسم نقطة الوصول</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2212733584906323460">تحليل الأسماء</translation>
+<translation id="2215920961700443347">لا يتوفر اتصال بالإنترنت. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="222447520299472966">يجب اختيار ألبوم واحد على الأقل من "معرض الفنون".</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">الصورة في الصفحة رقم <ph name="CURRENT_PAGE" /> من إجمالي <ph name="TOTAL_PAGES" />.</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
+<translation id="2465272316171730950">لقد بلغنا الحدّ الأقصى. يُرجى العودة بعد قليل.</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
 <translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى.</translation>
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">إعادة تحميل صورة الخلفية الحالية</translation>
 <translation id="2512979179176933762">إظهار النوافذ</translation>
 <translation id="2513396635448525189">صورة الملف الشخصي</translation>
-<translation id="2515109918609218604">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون استخدام مفاتيح الوظائف والبحث.</translation>
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2521835766824839541">المقطع الصوتي السابق</translation>
 <translation id="2526590354069164005">سطح المكتب</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة.</translation>
 <translation id="4117637339509843559">الوضع الداكن</translation>
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
+<translation id="4130750466177569591">أوافق</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="4145784616224233563">‏جدار الحماية لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4150201353443180367">عرض</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">خفض مستوى السطوع</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4176659219503619100">لوحة التحكم</translation>
-<translation id="4185315616950253617">إنّ الاختصار المكوَّن من أحد مفاتيح الصف العلوي يجب أن يشتمل على مفتاح البحث.</translation>
 <translation id="420283545744377356">إيقاف شاشة التوقف</translation>
 <translation id="4213104098953699324">‏لوحة مفاتيح USB</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="439429847087949098">جارٍ إعادة تشغيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="4395835743215824109">تخصيص لوحة المفاتيح</translation>
+<translation id="4403262788869804671">إنّ الاختصار بدون مفتاح <ph name="META_KEY" /> قد يتعارض مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">الصورة الرمزية الحالية</translation>
+<translation id="4417830657741848074">لقد ضبط مشرفك بعض التطبيقات لبدء تشغيلها تلقائيًا. ولا يمكنك إغلاقها.</translation>
 <translation id="4422041425070339732">سهم متّجه للأسفل</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4428374560396076622">شبكة<ph name="NETWORK_NAME" /> متوقّفة</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">شاشة استراحة تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
+<translation id="4500722292849917410">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
 <translation id="4507392511610824664">رفع مستوى السطوع</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
 <translation id="4839698083503556542">إنشاء فيلم خاص بك</translation>
+<translation id="48409034532829769">لقد ضبط مشرفك "<ph name="APP_NAME" />" لبدء تشغيله تلقائيًا. ولا يمكنك إغلاقه.</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4847902821209177679">‏تم اختيار <ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />، يُرجى الضغط على Enter لاختيار ألبومات <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">‏(نظام التشغيل Android) اختبار التحويل باستخدام نظام أسماء النطاقات (DNS)</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">تقسيم الشاشة</translation>
 <translation id="4972592110715526173">تغيير الوضع</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
+<translation id="4982627662315910959">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">جدار الحماية</translation>
 <translation id="4988526792673242964">الصفحات</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">الجدول الزمني للمظهر الداكن</translation>
 <translation id="5229344016299762883">الخروج من وضع ملء الشاشة</translation>
 <translation id="5234764350956374838">تجاهل</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{لقد ضبط مشرفك "<ph name="APP_NAME" />" لبدء تشغيله تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}=2{لقد ضبط مشرفك "<ph name="APP_NAME" />" وتطبيقًا آخر لبدء تشغيلهما تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}zero{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}few{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقات أخرى لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}many{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقًا آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}}</translation>
 <translation id="5252456968953390977">تجوال</translation>
 <translation id="5257811368506016604">تفعيل وضع الألوان الفاتحة</translation>
 <translation id="5264277876637023664">‏تشغيل اختبار وحدة المعالجة المركزية (CPU)</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
 <translation id="725133483556299729">اختيار عنوان البريد الإلكتروني</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
-<translation id="7273347807225967898">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح البحث أو مفتاح مشغِّل التطبيقات).</translation>
+<translation id="7271932918253517778">إنّ الاختصار المكوَّن من أحد مفاتيح الصف العلوي يجب أن يشتمل على مفتاح <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">استنشاق النسيم</translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">عناصر التحكّم العامة</translation>
 <translation id="7977800524392185497">للانضمام إلى شبكة <ph name="NETWORK_NAME" />، انتقِل إلى "الإعدادات".</translation>
 <translation id="7978412674231730200">مفتاح خاص</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
-<translation id="8111706652656628199">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح البحث أو مفتاح مشغِّل التطبيقات).</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>

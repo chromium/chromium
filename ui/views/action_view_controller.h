@@ -106,7 +106,20 @@ class VIEWS_EXPORT ActionViewControllerTemplate
     action_view->GetActionViewInterface()->LinkActionInvocationToView(
         base::BindRepeating(&ActionViewControllerTemplate::InvokeAction,
                             base::Unretained(this)));
+    view_changed_subscription_ =
+        action_view->RegisterNotifyViewControllerCallback(
+            base::BindRepeating(&ActionViewControllerTemplate::OnViewChanged,
+                                base::Unretained(this)));
     LinkActionItemAndView();
+  }
+
+  void OnViewChanged() {
+    actions::ActionItem* action_item = GetActionItem();
+    ViewT* action_view = GetActionView();
+    if (!action_item || !action_view) {
+      return;
+    }
+    action_view->GetActionViewInterface()->OnViewChangedImpl(action_item);
   }
 
   actions::ActionItem* GetActionItem() { return action_item_.get(); }
@@ -115,6 +128,7 @@ class VIEWS_EXPORT ActionViewControllerTemplate
   views::ViewTracker action_view_tracker_;
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::CallbackListSubscription action_changed_subscription_;
+  base::CallbackListSubscription view_changed_subscription_;
 };
 
 // ActionViewController is the main view controller to be instantiated or

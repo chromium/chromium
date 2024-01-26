@@ -133,11 +133,9 @@ class Manifest final {
 
   mojom::ManifestLocation location() const { return location_; }
 
-  // Returns false and |error| will be non-empty if the manifest is malformed.
-  // |warnings| will be populated if there are keys in the manifest that cannot
-  // be specified by the extension type.
-  bool ValidateManifest(std::string* error,
-                        std::vector<InstallWarning>* warnings) const;
+  // Populates |warnings| if manifest contains keys not permitted for the
+  // chosen extension type.
+  void ValidateManifest(std::vector<InstallWarning>* warnings) const;
 
   // The version of this extension's manifest. We increase the manifest
   // version when making breaking changes to the extension system. If the

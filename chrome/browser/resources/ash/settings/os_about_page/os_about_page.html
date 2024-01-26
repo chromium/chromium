@@ -97,6 +97,10 @@
   eol-offer-section {
     margin: 6px 3px 16px 3px;
   }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)) #copyrightCard {
+    margin-top: var(--cr-section-vertical-margin);
+  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
@@ -290,7 +294,7 @@
         <crostini-settings-card prefs="{{prefs}}"></crostini-settings-card>
       </template>
 
-      <settings-card>
+      <settings-card id="copyrightCard">
         <div class="settings-box padded block first">
           <div class="info-section">
             <div class="secondary">$i18n{aboutOsProductTitle}</div>

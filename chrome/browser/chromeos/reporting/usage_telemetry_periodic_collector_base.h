@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -43,7 +43,7 @@ class UsageTelemetryPeriodicCollectorBase : public CollectorBase {
  private:
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override;
+                             std::optional<MetricData> metric_data) override;
 
   // CollectorBase:
   bool CanCollect() const override;

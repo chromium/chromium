@@ -45,6 +45,7 @@ class VIEWS_EXPORT Tooltip {
 
   // Returns the max width of the tooltip when shown at the specified location.
   virtual int GetMaxWidth(const gfx::Point& location) const = 0;
+  virtual void SetMaxWidth(int width) {}
 
   // Updates the text on the tooltip and resizes to fit.
   // `position` is relative to `window` and in `window` coordinate space.

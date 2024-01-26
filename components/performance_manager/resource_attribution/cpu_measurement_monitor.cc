@@ -57,26 +57,9 @@ bool IsDeadContext(const ResourceContext& resource_context) {
                      resource_context);
 }
 
-// Returns true if `result` is in the default-initialized state.
-bool IsEmptyCPUTimeResult(const CPUTimeResult& result) {
-  if (result.metadata.measurement_time.is_null()) {
-    CHECK(result.start_time.is_null());
-    CHECK(result.cumulative_cpu.is_zero());
-    return true;
-  }
-  return false;
-}
-
-// CHECK's that `result` obeys all constraints: either it is empty (both start
-// and end timestamps are null, and `cumulative_cpu` is zero) or the start and
-// end timestamps form a positive interval and `cumulative_cpu` will fit into
-// that interval.
+// CHECK's that `result` obeys all constraints: the start and end timestamps
+// form a positive interval and `cumulative_cpu` will fit into that interval.
 void ValidateCPUTimeResult(const CPUTimeResult& result) {
-  // Empty struct is valid.
-  if (IsEmptyCPUTimeResult(result)) {
-    return;
-  }
-
   // Start and end must form a valid interval.
   CHECK(!result.metadata.measurement_time.is_null());
   CHECK(!result.start_time.is_null());
@@ -85,51 +68,6 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
   CHECK(interval.is_positive());
 
   CHECK(!result.cumulative_cpu.is_negative());
-}
-
-// Adds the measurement in `delta` to `result`. The start time of `delta` must
-// follow the end time of `result`. Used for adding successive measurements of
-// process, frame and worker contexts, so the algorithm in the metadata for
-// `result` should match that of `delta`. There may be gaps between deltas, such
-// as if a process died and was restarted.
-void ApplySequentialDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
-  CHECK(!IsEmptyCPUTimeResult(delta));
-  ValidateCPUTimeResult(delta);
-  if (IsEmptyCPUTimeResult(result)) {
-    result = delta;
-  } else {
-    ValidateCPUTimeResult(result);
-    CHECK_EQ(result.metadata.algorithm, delta.metadata.algorithm);
-    CHECK_LE(result.metadata.measurement_time, delta.start_time);
-    result.metadata.measurement_time = delta.metadata.measurement_time;
-    result.cumulative_cpu += delta.cumulative_cpu;
-  }
-
-  // Adding a valid delta to a valid result should produce a valid result.
-  ValidateCPUTimeResult(result);
-}
-
-// Adds the measurement in `delta` to `result`. Delta may start before `result`
-// or end after it. Used for adding frame and worker measurements to page
-// contexts, since the frames and workers can be added in any order. The
-// algorithm in the metadata for `result` will be set to kSum.
-void ApplyOverlappingDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
-  CHECK(!IsEmptyCPUTimeResult(delta));
-  ValidateCPUTimeResult(delta);
-  if (IsEmptyCPUTimeResult(result)) {
-    result = delta;
-    result.metadata.algorithm = MeasurementAlgorithm::kSum;
-  } else {
-    ValidateCPUTimeResult(result);
-    CHECK_EQ(result.metadata.algorithm, MeasurementAlgorithm::kSum);
-    result.metadata.measurement_time = std::max(
-        result.metadata.measurement_time, delta.metadata.measurement_time);
-    result.start_time = std::min(result.start_time, delta.start_time);
-    result.cumulative_cpu += delta.cumulative_cpu;
-  }
-
-  // Adding a valid delta to a valid result should produce a valid result.
-  ValidateCPUTimeResult(result);
 }
 
 }  // namespace
@@ -187,18 +125,13 @@ bool CPUMeasurementMonitor::IsMonitoring() const {
   return graph_;
 }
 
-std::map<ResourceContext, QueryResult>
-CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
+QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateAllCPUMeasurements();
-  std::map<ResourceContext, QueryResult> results;
+  QueryResultMap results;
   for (const auto& [context, result] : measurement_results_) {
     ValidateCPUTimeResult(result);
-    if (IsEmptyCPUTimeResult(result)) {
-      // Don't include empty measurements in the public results.
-      continue;
-    }
-    results.emplace(context, QueryResult(result));
+    results.emplace(context, QueryResults{.cpu_time_result = result});
   }
 
   // After a node is deleted its measurements should only be kept until used
@@ -384,16 +317,16 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
 
   absl::visit(base::Overloaded{
                   [&nodes_to_skip](GraphChangeAddFrame change) {
-                    nodes_to_skip.insert(change.frame_node);
+                    nodes_to_skip.insert(change.frame_node.get());
                   },
                   [&nodes_to_skip](GraphChangeAddWorker change) {
-                    nodes_to_skip.insert(change.worker_node);
+                    nodes_to_skip.insert(change.worker_node.get());
                   },
                   [&extra_nodes](GraphChangeRemoveFrame change) {
-                    extra_nodes.insert(change.frame_node);
+                    extra_nodes.insert(change.frame_node.get());
                   },
                   [&extra_nodes](GraphChangeRemoveWorker change) {
-                    extra_nodes.insert(change.worker_node);
+                    extra_nodes.insert(change.worker_node.get());
                   },
                   [](auto change) {
                     // Do nothing.
@@ -424,27 +357,67 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
 
     // Add the new process, frame and worker measurements to the existing
     // measurements.
-    ApplySequentialDelta(measurement_results_[context], delta);
+    ApplySequentialDelta(context, delta);
 
     // Aggregate new frame and worker measurements to pages.
     if (ContextIs<FrameContext>(context)) {
       const FrameNode* frame_node =
           AsContext<FrameContext>(context).GetFrameNode();
       CHECK(frame_node);
-      ApplyOverlappingDelta(
-          measurement_results_[frame_node->GetPageNode()->GetResourceContext()],
-          delta);
+      ApplyOverlappingDelta(frame_node->GetPageNode()->GetResourceContext(),
+                            delta);
     } else if (ContextIs<WorkerContext>(context)) {
       const WorkerNode* worker_node =
           AsContext<WorkerContext>(context).GetWorkerNode();
       CHECK(worker_node);
       for (const PageNode* page_node :
            GetWorkerClientPages(worker_node, graph_change)) {
-        ApplyOverlappingDelta(
-            measurement_results_[page_node->GetResourceContext()], delta);
+        ApplyOverlappingDelta(page_node->GetResourceContext(), delta);
       }
     }
   }
+}
+
+void CPUMeasurementMonitor::ApplySequentialDelta(const ResourceContext& context,
+                                                 const CPUTimeResult& delta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ValidateCPUTimeResult(delta);
+  auto [it, inserted] = measurement_results_.try_emplace(context, delta);
+  if (inserted) {
+    // First result for `context`, use `delta` unchanged.
+    return;
+  }
+  CPUTimeResult& result = it->second;
+  ValidateCPUTimeResult(result);
+  CHECK_EQ(result.metadata.algorithm, delta.metadata.algorithm);
+  CHECK_LE(result.metadata.measurement_time, delta.start_time);
+  result.metadata.measurement_time = delta.metadata.measurement_time;
+  result.cumulative_cpu += delta.cumulative_cpu;
+
+  // Adding a valid delta to a valid result should produce a valid result.
+  ValidateCPUTimeResult(result);
+}
+
+void CPUMeasurementMonitor::ApplyOverlappingDelta(const PageContext& context,
+                                                  const CPUTimeResult& delta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ValidateCPUTimeResult(delta);
+  auto [it, inserted] = measurement_results_.try_emplace(context, delta);
+  if (inserted) {
+    // First result for `context`, use `delta` with correct algorithm for pages.
+    it->second.metadata.algorithm = MeasurementAlgorithm::kSum;
+    return;
+  }
+  CPUTimeResult& result = it->second;
+  ValidateCPUTimeResult(result);
+  CHECK_EQ(result.metadata.algorithm, MeasurementAlgorithm::kSum);
+  result.metadata.measurement_time = std::max(result.metadata.measurement_time,
+                                              delta.metadata.measurement_time);
+  result.start_time = std::min(result.start_time, delta.start_time);
+  result.cumulative_cpu += delta.cumulative_cpu;
+
+  // Adding a valid delta to a valid result should produce a valid result.
+  ValidateCPUTimeResult(result);
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
@@ -629,12 +602,12 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     // is measured.
     CHECK(!cpu_delta.is_negative());
     const auto [_, inserted] = measurement_deltas.emplace(
-        context, CPUTimeResult{
-                     .metadata = {.measurement_time = measurement_interval_end,
-                                  .algorithm = algorithm},
-                     .start_time = measurement_interval_start,
-                     .cumulative_cpu = cpu_delta,
-                 });
+        context,
+        CPUTimeResult{
+            .metadata = ResultMetadata(measurement_interval_end, algorithm),
+            .start_time = measurement_interval_start,
+            .cumulative_cpu = cpu_delta,
+        });
     CHECK(inserted);
   };
 

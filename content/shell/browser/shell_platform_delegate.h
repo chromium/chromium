@@ -93,9 +93,9 @@ class ShellPlatformDelegate {
   virtual std::unique_ptr<JavaScriptDialogManager>
   CreateJavaScriptDialogManager(Shell* shell);
 
-  // Requests handling of locking the mouse. This returns true if the request
-  // has been handled, otherwise false.
-  virtual bool HandleRequestToLockMouse(Shell* shell,
+  // Requests handling of locking the mouse pointer. This returns true if the
+  // request has been handled, otherwise false.
+  virtual bool HandlePointerLockRequest(Shell* shell,
                                         WebContents* web_contents,
                                         bool user_gesture,
                                         bool last_unlocked_by_target);

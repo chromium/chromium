@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,6 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;

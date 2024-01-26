@@ -306,7 +306,6 @@ void SurfacelessSkiaGlRenderer::PostRenderFrameTask(
     case gfx::SwapResult::SWAP_SKIPPED:
     case gfx::SwapResult::SWAP_FAILED:
       LOG(FATAL) << "Failed to swap buffers";
-      break;
   }
 }
 

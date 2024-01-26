@@ -8,6 +8,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
 #import "components/grit/dev_ui_components_resources.h"
@@ -43,7 +44,7 @@ class InterstitialHTMLSource : public web::URLDataSourceIOS {
 
   // The ChromeBrowserState passed on initialization.  Used to construct
   // WebStates that are passed to IOSSecurityInterstitialPages.
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
 };
 
 }  //  namespace

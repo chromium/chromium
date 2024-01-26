@@ -29,11 +29,20 @@ using content::FedCmDisconnectStatus;
 
 namespace content::webid {
 
+namespace {
+constexpr net::registry_controlled_domains::PrivateRegistryFilter
+    kDefaultPrivateRegistryFilter =
+        net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
+}  // namespace
+
 bool IsSameOriginWithAncestors(const url::Origin& origin,
                                RenderFrameHost* render_frame_host) {
   while (render_frame_host) {
     if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
-      return false;
+      if (!IsFedCmSameSiteLoginStatusEnabled() ||
+          !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
+        return false;
+      }
     }
     render_frame_host = render_frame_host->GetParent();
   }
@@ -106,6 +115,37 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
                           const GURL& endpoint_url) {
   return url::Origin::Create(identity_provider_config_url)
       .IsSameOriginWith(endpoint_url);
+}
+
+bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
+  if (origin1.opaque() || origin2.opaque()) {
+    return false;
+  }
+  // We don't use FormatUrlWithDomain because that does not let us detect if
+  // the eTLD+1 is empty -- an empty eTLD+1 should be considered cross-site
+  // unless the host is equal (we want "localhost" to be same-site with
+  // "localhost", but cross-site with "foo"). Conversely, GetDomainAndRegistry
+  // only returns the domain itself without a scheme. Combining these
+  // constraints means we have to explicitly compare the scheme and the host
+  // here.
+  if (origin1.scheme() != origin2.scheme()) {
+    return false;
+  }
+  if (origin1.host() == origin2.host()) {
+    return true;
+  }
+  std::string origin1_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin1.GetURL(), kDefaultPrivateRegistryFilter);
+  if (origin1_etld_plus_one.empty()) {
+    // If the host is different but there is no eTLD, the origins are not
+    // same-site.
+    return false;
+  }
+  std::string origin2_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin2.GetURL(), kDefaultPrivateRegistryFilter);
+  return origin1_etld_plus_one == origin2_etld_plus_one;
 }
 
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
@@ -390,8 +430,7 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
       net::IsLocalhost(url)
           ? url.host()
           : net::registry_controlled_domains::GetDomainAndRegistry(
-                url,
-                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+                url, kDefaultPrivateRegistryFilter);
   if (for_display) {
     return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
         GURL(url.scheme() + "://" + formatted_url_str),

@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
@@ -74,7 +75,7 @@ class HistoryTabHelperTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_;
   base::CancelableTaskTracker tracker_;
 
   // Cached data from the last call to `QueryURL()`.

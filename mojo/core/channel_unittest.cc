@@ -5,8 +5,8 @@
 #include "mojo/core/channel.h"
 
 #include <atomic>
-
 #include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"

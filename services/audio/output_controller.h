@@ -94,7 +94,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     // Attempts to completely fill `dest`, zeroing `dest` if the request can not
     // be fulfilled (due to timeout). If `is_mixing` is set, the SyncReader
     // might use a mixing-specific timeout.
-    virtual void Read(media::AudioBus* dest, bool is_mixing) = 0;
+    // Returns true if data was read, false if there was a timeout. This helps
+    // distinguish between `dest` being zero'ed due to timeout, and `dest` being
+    // successfully filled with zero'ed audio data.
+    virtual bool Read(media::AudioBus* dest, bool is_mixing) = 0;
 
     // Close this synchronous reader.
     virtual void Close() = 0;
@@ -240,10 +243,8 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
    private:
     void WedgeCheck();
 
-    // Using a raw pointer is safe since the OutputController object will
-    // outlive the ErrorStatisticsTracker object.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
+    // RAW_PTR_EXCLUSION: OutputController object will outlive the
+    // ErrorStatisticsTracker object.
     RAW_PTR_EXCLUSION OutputController* const controller_;
 
     const base::TimeTicks start_time_;
@@ -294,9 +295,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // being called.
   void ProcessDeviceChange();
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION media::AudioManager* const audio_manager_;
+  const raw_ptr<media::AudioManager> audio_manager_;
   const media::AudioParameters params_;
 
   // Callback to create a device output stream; if not specified -
@@ -306,10 +305,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // This object (OC) is owned by an OutputStream (OS) object which is an
   // EventHandler. |handler_| is set at construction by the OS (using this).
-  // It is safe to use a raw pointer here since the OS will always outlive
-  // the OC object.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
+  // RAW_PTR_EXCLUSION: OS will always outlive the OC object.
   RAW_PTR_EXCLUSION EventHandler* const handler_;
 
   // The task runner for the audio manager. All control methods should be called
@@ -324,9 +320,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // default output device.
   const std::string output_device_id_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION media::AudioOutputStream* stream_;
+  raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
 
   // When true, local audio output should be muted; either by having audio
   // diverted to |diverting_to_stream_|, or a fake AudioOutputStream.
@@ -343,9 +337,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   State state_;
 
   // SyncReader is used only in low latency mode for synchronous reading.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SyncReader* const sync_reader_;
+  const raw_ptr<SyncReader> sync_reader_;
 
   // Scans audio samples from OnMoreData() as input to compute power levels.
   media::AudioPowerMonitor power_monitor_;

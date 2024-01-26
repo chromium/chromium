@@ -82,7 +82,8 @@ export class TextAcceleratorElement extends PolymerElement {
 
   private parseAndDisplayTextParts(): void {
     const container =
-        this.shadowRoot!.querySelector('.parts-container') as HTMLDivElement;
+        this.shadowRoot!.querySelector<HTMLElement>('.parts-container');
+    assert(container);
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
     const textParts: Node[] = [];
@@ -140,8 +141,8 @@ export class TextAcceleratorElement extends PolymerElement {
     if (!isCustomizationAllowed()) {
       return false;
     }
-    return !this.lookupManager.isCategoryLocked(
-        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+    return !this.lookupManager.isSubcategoryLocked(
+        this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
   }
 
   private areAllPartsTextParts(): boolean {

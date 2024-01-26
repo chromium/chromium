@@ -81,7 +81,7 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
 
   GURL GetUrl() const override { return throttle_->request_url_; }
 
-  absl::optional<url::Origin> GetRequestInitiator() const override {
+  std::optional<url::Origin> GetRequestInitiator() const override {
     return throttle_->request_initiator_;
   }
 

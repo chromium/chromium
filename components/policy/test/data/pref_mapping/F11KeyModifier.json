@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.settings.f11_key_modifier": {
+            "default_value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "F11KeyModifier": 1
+        },
+        "prefs": {
+          "ash.settings.f11_key_modifier": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -2609,8 +2610,8 @@ TEST(HostCacheTest, ConvertFromNonCachableInternalErrorResult) {
 
   std::set<std::unique_ptr<HostResolverInternalResult>> results;
   results.insert(std::make_unique<HostResolverInternalErrorResult>(
-      "endpoint.test", DnsQueryType::AAAA, /*expiration=*/absl::nullopt,
-      /*timed_expiration=*/absl::nullopt,
+      "endpoint.test", DnsQueryType::AAAA, /*expiration=*/std::nullopt,
+      /*timed_expiration=*/std::nullopt,
       HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,

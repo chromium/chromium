@@ -456,11 +456,8 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         </else>
       </if>
       <if expr="is_macosx">
-        <message name="IDS_MAC_10_13_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.13.
-        </message>
-        <message name="IDS_MAC_10_14_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.14.
+        <message name="IDS_MACOS_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
+          To get future Chromium updates, you'll need macOS 11 or later. This computer is using macOS 10.15.
         </message>
       </if>
       <if expr="is_win">
@@ -712,7 +709,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_LOCAL_DECRYPTION"
         desc="Subpage summary of warning for a file where we recommend providing the password for on-device decryption">
-        This file may be dangerous<ph name="LINE_BREAK">$1</ph>Chromium can check this download for you if you provide the password &#x2014; your password stays on your device
+        This file may be dangerous<ph name="LINE_BREAK">$1</ph>Chromium can check this download for you if you provide the password. Info about the file gets sent to Google Safe Browsing, but the file content and password stay on your device.
       </message>
 
       <!-- Download Shelf Items -->
@@ -1738,6 +1735,17 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BOTTOM_SUMMARY" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”. * “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
         You can learn more about these features in Chromium settings.
+      </message>
+
+      <!-- Advanced security settings -->
+      <message name="IDS_SETTINGS_SECURITY_V8_LINK_DESCRIPTION" desc="Description for the link row of the V8 security settings page.">
+        Turn on additional protection in Chromium’s JavaScript and WebAssembly engine
+      </message>
+      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_DESCRIPTION" desc="Description of the JavaScript optimizer content setting.">
+        V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance
+      </message>
+      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
+        Chromium runs faster and features that use JavaScript should work as designed (recommended)
       </message>
 
       <!-- ChromiumUpdater Strings -->

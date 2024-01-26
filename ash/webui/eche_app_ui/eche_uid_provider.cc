@@ -6,7 +6,9 @@
 
 #include <base/base64.h>
 #include <openssl/base64.h>
+
 #include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -63,7 +65,7 @@ void EcheUidProvider::GenerateKeyPair(
 }
 
 std::optional<std::vector<uint8_t>> EcheUidProvider::ConvertStringToBinary(
-    base::StringPiece str,
+    std::string_view str,
     size_t expected_len) {
   std::vector<uint8_t> decoded_data(str.size());
   size_t decoded_data_len = 0;

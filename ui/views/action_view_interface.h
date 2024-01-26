@@ -52,6 +52,7 @@ class VIEWS_EXPORT ActionViewInterface {
   virtual void LinkActionInvocationToView(
       base::RepeatingClosure trigger_action_callback) {}
   virtual void InvokeActionImpl(actions::ActionItem* action_item);
+  virtual void OnViewChangedImpl(actions::ActionItem* action_item) {}
 };
 
 }  // namespace views

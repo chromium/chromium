@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
   static std::unique_ptr<WebSocketEncoder> CreateClient(
       const std::string& response_extensions);
 
-  WebSocket::ParseResult DecodeFrame(const std::string_view& frame,
+  WebSocket::ParseResult DecodeFrame(std::string_view frame,
                                      int* bytes_consumed,
                                      std::string* output);
   void EncodeTextFrame(std::string_view frame,

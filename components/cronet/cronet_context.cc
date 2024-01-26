@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -672,6 +673,24 @@ void CronetContext::StopNetLog() {
   PostTaskToNetworkThread(
       FROM_HERE, base::BindOnce(&CronetContext::NetworkTasks::StopNetLog,
                                 base::Unretained(network_tasks_)));
+}
+
+void CronetContext::FlushWritePropertiesForTesting() {
+  base::WaitableEvent wait_for_callback;
+  network_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](NetworkTasks* network_tasks, base::OnceClosure callback) {
+            network_tasks
+                ->GetURLRequestContext(net::handles::kInvalidNetworkHandle)
+                ->http_server_properties()
+                ->FlushWritePropertiesForTesting(  // IN-TEST
+                    std::move(callback));
+          },
+          network_tasks_,
+          base::BindOnce(&base::WaitableEvent::Signal,
+                         base::Unretained(&wait_for_callback))));
+  wait_for_callback.Wait();
 }
 
 void CronetContext::MaybeDestroyURLRequestContext(

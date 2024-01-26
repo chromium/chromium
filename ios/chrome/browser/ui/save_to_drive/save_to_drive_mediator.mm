@@ -8,6 +8,10 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+// TODO(crbug.com/1495352): Depend on account_picker_consumer.h directly.
+#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_drive/file_destination.h"
+#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_consumer.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -22,6 +26,7 @@
   raw_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   id<SaveToDriveCommands> _saveToDriveCommandsHandler;
+  FileDestination _fileDestination;
 }
 
 - (instancetype)initWithDownloadTask:(web::DownloadTask*)downloadTask
@@ -38,6 +43,7 @@
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
     _saveToDriveCommandsHandler = saveToDriveCommandsHandler;
+    _fileDestination = FileDestination::kFiles;
   }
   return self;
 }
@@ -56,15 +62,30 @@
   _saveToDriveCommandsHandler = nil;
 }
 
-- (void)startDownloadAndSaveToDriveWithIdentity:(id<SystemIdentity>)identity {
+- (void)startDownloadWithIdentity:(id<SystemIdentity>)identity {
   if (!_downloadTask || !_webState) {
     return;
   }
-  DriveTabHelper* driveTabHelper = DriveTabHelper::FromWebState(_webState);
+  if (_fileDestination == FileDestination::kDrive) {
+    DriveTabHelper* driveTabHelper = DriveTabHelper::FromWebState(_webState);
+    driveTabHelper->AddDownloadToSaveToDrive(_downloadTask, identity);
+  }
   DownloadManagerTabHelper* downloadManagerTabHelper =
       DownloadManagerTabHelper::FromWebState(_webState);
-  driveTabHelper->AddDownloadToSaveToDrive(_downloadTask, identity);
-  downloadManagerTabHelper->OnDownloadAddedToSaveToDrive(_downloadTask);
+  downloadManagerTabHelper->StartDownload(_downloadTask);
+}
+
+#pragma mark - Properties getters/setters
+
+- (void)setAccountPickerConsumer:(id<AccountPickerConsumer>)consumer {
+  _accountPickerConsumer = consumer;
+  [self updateConsumersAnimated:NO];
+}
+
+- (void)setDestinationPickerConsumer:
+    (id<FileDestinationPickerConsumer>)consumer {
+  _destinationPickerConsumer = consumer;
+  [self updateConsumersAnimated:NO];
 }
 
 #pragma mark - CRWDownloadTaskObserver
@@ -89,6 +110,23 @@
   _webStateObserverBridge = nullptr;
   _webState = nullptr;
   [_saveToDriveCommandsHandler hideSaveToDrive];
+}
+
+#pragma mark - FileDestinationPickerActionDelegate
+
+- (void)fileDestinationPicker:(UIViewController*)picker
+         didSelectDestination:(FileDestination)destination {
+  _fileDestination = destination;
+  [self updateConsumersAnimated:YES];
+}
+
+#pragma mark - Private
+
+- (void)updateConsumersAnimated:(BOOL)animated {
+  bool destinationIsFiles = _fileDestination == FileDestination::kFiles;
+  [self.accountPickerConsumer setIdentityButtonHidden:destinationIsFiles
+                                             animated:animated];
+  [self.destinationPickerConsumer setSelectedDestination:_fileDestination];
 }
 
 @end

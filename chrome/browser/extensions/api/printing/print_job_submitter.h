@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINT_JOB_SUBMITTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -17,7 +18,6 @@
 #include "base/types/expected.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -33,11 +33,11 @@ class NativeWindowTracker;
 }  // namespace views
 
 namespace printing {
-class MetafileSkia;
 class PdfBlobDataFlattener;
 class PrintedDocument;
 class PrintJobController;
 class PrintSettings;
+struct FlattenPdfResult;
 struct PrintJobCreatedInfo;
 }  // namespace printing
 
@@ -49,11 +49,11 @@ class Extension;
 // arguments, sending errors and submitting print job to the printer.
 class PrintJobSubmitter {
  public:
-  // The error field in `PrintJobCreationResult` is absl::nullopt when a print
+  // The error field in `PrintJobCreationResult` is std::nullopt when a print
   // job is rejected by the user. In all other possible failure cases the error
   // is well-formed.
-  using PrintJobCreationResult = base::expected<printing::PrintJobCreatedInfo,
-                                                absl::optional<std::string>>;
+  using PrintJobCreationResult =
+      base::expected<printing::PrintJobCreatedInfo, std::optional<std::string>>;
 
   using SubmitJobCallback = base::OnceCallback<void(PrintJobCreationResult)>;
 
@@ -94,7 +94,7 @@ class PrintJobSubmitter {
                           int64_t total_blob_length);
 
   void OnPdfReadAndFlattened(
-      std::unique_ptr<printing::MetafileSkia> flattened_pdf);
+      std::unique_ptr<printing::FlattenPdfResult> result);
 
   void ShowPrintJobConfirmationDialog(const gfx::Image& extension_icon);
 
@@ -102,7 +102,7 @@ class PrintJobSubmitter {
 
   void StartPrintJob();
 
-  void OnPrintJobCreated(absl::optional<printing::PrintJobCreatedInfo> info);
+  void OnPrintJobCreated(std::optional<printing::PrintJobCreatedInfo> info);
 
   void FireErrorCallback(const std::string& error);
 
@@ -124,7 +124,7 @@ class PrintJobSubmitter {
   std::unique_ptr<printing::PrintSettings> settings_;
   std::u16string printer_name_;
 
-  std::unique_ptr<printing::MetafileSkia> flattened_pdf_;
+  std::unique_ptr<printing::FlattenPdfResult> flatten_pdf_result_;
 
   const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
   SubmitJobCallback callback_;

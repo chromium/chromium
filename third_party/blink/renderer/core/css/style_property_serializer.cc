@@ -27,13 +27,13 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/core/css/cssom_utils.h"
@@ -493,7 +493,7 @@ String StylePropertySerializer::CommonShorthandChecks(
         value.IsPendingSubstitutionValue()) {
       return g_empty_string;
     }
-    if (value.IsVariableReferenceValue()) {
+    if (value.IsUnparsedDeclaration()) {
       return g_empty_string;
     }
   }
@@ -2349,7 +2349,7 @@ String StylePropertySerializer::TextSpacingValue() const {
   const CSSValueID autospace_id = autospace_value->GetValueID();
   const CSSValueID spacing_trim_id = spacing_trim_value->GetValueID();
   if (autospace_id == CSSValueID::kNormal &&
-      spacing_trim_id == CSSValueID::kSpaceFirst) {
+      spacing_trim_id == CSSValueID::kNormal) {
     return getValueName(CSSValueID::kNormal);
   }
   if (autospace_id == CSSValueID::kNoAutospace &&
@@ -2359,14 +2359,14 @@ String StylePropertySerializer::TextSpacingValue() const {
 
   // Otherwise build a multi-value list.
   StringBuilder result;
-  if (autospace_id != CSSValueID::kNormal) {
-    result.Append(getValueName(autospace_id));
+  if (spacing_trim_id != CSSValueID::kNormal) {
+    result.Append(getValueName(spacing_trim_id));
   }
-  if (spacing_trim_id != CSSValueID::kSpaceFirst) {
+  if (autospace_id != CSSValueID::kNormal) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }
-    result.Append(getValueName(spacing_trim_id));
+    result.Append(getValueName(autospace_id));
   }
   // When all longhands are initial values, it should be `normal`.
   DCHECK(!result.empty());

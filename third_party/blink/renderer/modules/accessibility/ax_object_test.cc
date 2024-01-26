@@ -926,6 +926,36 @@ TEST_F(AccessibilityTest, NextOnLine) {
   EXPECT_EQ("b", next->GetNode()->textContent());
 }
 
+TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
+  // Note the spans must be in the same line or we could get other unwanted
+  // behavior. See https://crbug.com/1511390 for details.
+  SetBodyInnerHTML(R"HTML(
+    <div contenteditable="true" style="outline: 1px solid;">
+        <div>first line</div>
+        <span id="this">this line </span><span style="display: inline-block"><span style="display: block;">is</span></span><span> broken.</span>
+        <div>last line</div>
+    </div>
+  )HTML");
+  const AXObject* this_object = GetAXObjectByElementId("this");
+  ASSERT_NE(nullptr, this_object);
+
+  const AXObject* next = this_object->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ("is", next->GetNode()->textContent());
+
+  next = next->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+
+  AXObject* prev = next->PreviousOnLine();
+  ASSERT_NE(nullptr, prev);
+  EXPECT_EQ("is", prev->GetNode()->textContent());
+
+  prev = prev->PreviousOnLine();
+  ASSERT_NE(nullptr, prev);
+  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+}
+
 TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
   // Spans need to be in the same line: see https://crbug.com/1511390.
   SetBodyInnerHTML(R"HTML(
@@ -1063,7 +1093,7 @@ TEST_F(AccessibilityTest, SlotIsLineBreakingObject) {
       )HTML";
   SetBodyContent(body_content);
   ShadowRoot& shadow_root =
-      GetElementById("host")->AttachShadowRootInternal(ShadowRootType::kOpen);
+      GetElementById("host")->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_content),
                            ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
@@ -1322,7 +1352,6 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
 }
 
 TEST_F(AccessibilityTest, ComputeIsInertReason) {
-  ScopedInertAttributeForTest enabled_scope(true);
   NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div id="div1" inert>inert</div>
@@ -1471,7 +1500,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
 }
 
 TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
-  ScopedInertAttributeForTest enabled_scope(true);
   SetBodyInnerHTML(R"HTML(
     <main inert>
       main
@@ -1522,7 +1550,6 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
 }
 
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
-  ScopedInertAttributeForTest enabled_scope(true);
   SetBodyInnerHTML(R"HTML(
     <canvas>
       <section>
@@ -1803,10 +1830,12 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedAriaHiddenProperty) {
   // Ensure that aria-hidden has propagated to a deep descendant.
   ASSERT_TRUE(mark->IsAriaHidden());
 
+  main = GetAXObjectByElementId("main");
   main->GetElement()->removeAttribute(html_names::kAriaHiddenAttr);
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   // Ensure that clearing aria-hidden has propagated to a deep descendant.
+  mark = GetAXObjectByElementId("mark");
   ASSERT_FALSE(mark->IsAriaHidden());
 }
 

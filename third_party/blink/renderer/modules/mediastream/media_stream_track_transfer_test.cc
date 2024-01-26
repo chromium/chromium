@@ -156,7 +156,8 @@ mojom::blink::StreamDevices DevicesTabCaptureVideo(
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::BROWSER,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
+      /*capture_handle=*/nullptr,
+      /*zoom_level=*/100);
   return {absl::nullopt, device};
 }
 
@@ -233,7 +234,8 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::BROWSER,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
+      /*capture_handle=*/nullptr,
+      /*zoom_level=*/100);
   scoped_user_media_client.display_mock_media_stream_dispatcher_host
       .SetStreamDevices({absl::nullopt, device});
 

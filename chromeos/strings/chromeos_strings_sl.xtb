@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">naprej</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
+<translation id="1626590945318984973">Bližnjica ni na voljo. Pritisnite novo bližnjico brez uporabe funkcijskih tipk in tipk <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1643449475550628585">Dnevna sprememba slike zaslonskega ozadja</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Izklop temnega načina</translation>
 <translation id="1885577615937958993">previjanje predstavnosti naprej</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
-<translation id="1897672602657312171">Bližnjica brez tipke za iskanje je morda v sporu z bližnjico katere druge aplikacije. Če želite še naprej uporabljati to bližnjico, jo znova pritisnite, ali pritisnite novo bližnjico s tipko za iskanje.</translation>
 <translation id="1904932688895783618">Na voljo so še nekateri drugi koristni viri:</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
 <translation id="1908234395526491708">Neuspele zahteve UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Št. fotografij: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">izbirnik emodžijev</translation>
 <translation id="2157959690810728433">NA ČAKANJU</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Skrbnik je nastavil, da se aplikacija <ph name="APP_NAME_1" /> zažene samodejno ob vsaki prijavi.}=2{Skrbnik je nastavil, da se aplikaciji <ph name="APP_NAME_1" /> in <ph name="APP_NAME_2" /> zaženeta samodejno ob vsaki prijavi.}=3{Skrbnik je nastavil, da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> zaženejo samodejno ob vsaki prijavi.}one{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druga aplikacija zaženejo samodejno ob vsaki prijavi.}two{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugi aplikaciji zaženejo samodejno ob vsaki prijavi.}few{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druge aplikacije zaženejo samodejno ob vsaki prijavi.}other{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugih aplikacij zažene samodejno ob vsaki prijavi.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
 <translation id="215916044711630446">Gumb za dodajanje APN-ja je zdaj onemogočen</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Urejanje podrobnosti APN-ja</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
+<translation id="2215920961700443347">Ni internetne povezave. Vzpostavite internetno povezavo in poskusite znova.</translation>
 <translation id="2217935453350629363">Trenutna hitrost</translation>
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="222447520299472966">Izbrati morate najmanj en album iz umetnostne galerije.</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. slika od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
 <translation id="2448312741937722512">Vrsta</translation>
+<translation id="2465272316171730950">Zasedeni smo. Vrnite se kmalu.</translation>
 <translation id="248546197012830854">Naprava nima vzpostavljene povezave. Če si želite ogledati vsebino s pomočjo, vzpostavite povezavo z omrežjem Wi-Fi.</translation>
 <translation id="2491955442992294626">Tipke se ne preizkušajo, če uporabljate drugo okno.</translation>
 <translation id="2493126929778606526">Vaše najboljše fotografije, izbrane samodejno</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Osveži trenutno sliko zaslonskega ozadja</translation>
 <translation id="2512979179176933762">prikaz oken</translation>
 <translation id="2513396635448525189">Slika za prijavo</translation>
-<translation id="2515109918609218604">Bližnjica ni na voljo. Pritisnite novo bližnjico brez uporabe funkcijskih tipk in tipk za iskanje.</translation>
 <translation id="2517472476991765520">Optično preberi</translation>
 <translation id="2521835766824839541">prejšnja skladba</translation>
 <translation id="2526590354069164005">Namizje</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Temni način</translation>
 <translation id="4130035430755296270">Premikajte miškin kazalec, če želite več možnosti postavitve.</translation>
+<translation id="4130750466177569591">Strinjam se</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> se je zagnala samodejno}one{# aplikacija se je zagnala samodejno}two{# aplikaciji sta se zagnali samodejno}few{# aplikacije so se zagnale samodejno}other{# aplikacij se je zagnalo samodejno}}</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Prikaz</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">zmanjšanje svetlosti</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4176659219503619100">Nadzorna plošča</translation>
-<translation id="4185315616950253617">Bližnjica s tipkami zgornje vrstice mora vključevati tipko za iskanje.</translation>
 <translation id="420283545744377356">Izklop ohranjevalnika zaslona</translation>
 <translation id="4213104098953699324">Tipkovnica USB</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Onemogoči</translation>
 <translation id="439429847087949098">Vnovičen zagon naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">prilagajanje tipkovnice po meri</translation>
+<translation id="4403262788869804671">Bližnjica brez tipke <ph name="META_KEY" /> je morda v sporu z bližnjico katere druge aplikacije. Če želite še naprej uporabljati to bližnjico, jo znova pritisnite, ali pritisnite novo bližnjico s tipko <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Trenutni avatar</translation>
+<translation id="4417830657741848074">Skrbnik je nastavil, da se nekatere aplikacije zaženejo samodejno. Nekatere od teh aplikacij morda niso zaprte.</translation>
 <translation id="4422041425070339732">puščica dol</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622">Omrežje <ph name="NETWORK_NAME" /> je izklopljeno.</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Ohranjevalnik zaslona premika Zemlje</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
+<translation id="4500722292849917410">Bližnjica ni na voljo. Pritisnite novo bližnjico z modifikatorsko tipko (ctrl, alt, shift ali <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Barva vmesnika</translation>
 <translation id="4503223151711056411">Puščica levo</translation>
 <translation id="4507392511610824664">povečanje svetlosti</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
 <translation id="4839698083503556542">Ustvarite svoj film</translation>
+<translation id="48409034532829769">Skrbnik je nastavil, da se »<ph name="APP_NAME" />« zažene samodejno. Ta aplikacija morda ni zaprta.</translation>
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="4847902821209177679">Izbrali ste <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter, da izberete albume <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Razreševanje DNS-ja (Android)</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Razdeli</translation>
 <translation id="4972592110715526173">sprememba načina</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
+<translation id="4982627662315910959">Bližnjica ni na voljo. Pritisnite novo bližnjico s tipko Shift in še 1 modifikatorsko tipko (ctrl, alt ali <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="4987769320337599931">Požarni zid</translation>
 <translation id="4988526792673242964">Strani</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Urnik za temno temo</translation>
 <translation id="5229344016299762883">Zapusti celozaslonski način</translation>
 <translation id="5234764350956374838">Opusti</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« zažene samodejno ob vsaki prijavi.}=2{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še 1 aplikacija zaženeta samodejno ob vsaki prijavi.}one{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacija zaženejo samodejno ob vsaki prijavi.}two{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikaciji zaženejo samodejno ob vsaki prijavi.}few{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacije zaženejo samodejno ob vsaki prijavi.}other{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacij zaženejo samodejno ob vsaki prijavi.}}</translation>
 <translation id="5252456968953390977">Gostovanje</translation>
 <translation id="5257811368506016604">Omogoči način svetle barve</translation>
 <translation id="5264277876637023664">Zaženi preizkus CPE-ja</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
 <translation id="725133483556299729">Izberite e-poštni naslov</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
-<translation id="7273347807225967898">Bližnjica ni na voljo. Pritisnite novo bližnjico s modifikatorsko tipko (ctrl, alt, shift, iskanje ali zaganjalnik).</translation>
+<translation id="7271932918253517778">Bližnjica s tipkami zgornje vrstice mora vključevati tipko <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Začutite vetrič</translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Splošni kontrolniki</translation>
 <translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija »<ph name="APP_NAME_1" />« se je zagnala samodejno}one{# aplikacija se je zagnala samodejno}two{# aplikaciji sta se zagnali samodejno}few{# aplikacije so se zagnale samodejno}other{# aplikacij se je zagnalo samodejno}}</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8017679124341497925">Bližnjica je bila urejena</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8094062939584182041">Googlu dovolite, da se po e-pošti obrne na vas glede te težave</translation>
 <translation id="8104083085214006426">Uporabljate odprto omrežje, ki ni varno.</translation>
-<translation id="8111706652656628199">Bližnjica ni na voljo. Pritisnite novo bližnjico s tipko Shift in še 1 modifikatorsko tipko (ctrl, alt, iskanje ali zaganjalnik).</translation>
 <translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>

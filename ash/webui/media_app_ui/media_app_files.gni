@@ -7,14 +7,12 @@ ts_root_dir = "$root_gen_dir/ash/webui/media_app_ui/stage_ts"
 
 # Static JS files that have .d.ts files generated for them for consumption by
 # tsc in the staging folder. These are also copied for rollup.
-media_app_unconverted_js_sources = [
-  "error_reporter.js",
-  "mojo_api_bootstrap.js",
-]
+media_app_unconverted_js_sources = [ "mojo_api_bootstrap.js" ]
 
 # Files converted to TS.
 media_app_converted_ts_sources = [
   "app_context_test_support.ts",
+  "error_reporter.ts",
   "launch.ts",
   "message_types.ts",
   "mojo_api_bootstrap_untrusted.ts",

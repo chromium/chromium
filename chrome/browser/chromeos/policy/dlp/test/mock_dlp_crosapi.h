@@ -41,7 +41,7 @@ class MockDlpCrosapi : public crosapi::mojom::Dlp {
               (override));
   MOCK_METHOD(void,
               ShowBlockedFiles,
-              (absl::optional<uint64_t> task_id,
+              (std::optional<uint64_t> task_id,
                const std::vector<base::FilePath>& blocked_files,
                crosapi::mojom::FileAction action),
               (override));

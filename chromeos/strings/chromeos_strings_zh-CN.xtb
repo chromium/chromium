@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">前进</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
+<translation id="1626590945318984973">此快捷键不可用。请在不使用功能键和<ph name="META_KEY" />键的情况下按一个新快捷键。</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">关闭深色模式</translation>
 <translation id="1885577615937958993">让媒体快进</translation>
 <translation id="1887850431809612466">硬件版本</translation>
-<translation id="1897672602657312171">不含搜索键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有搜索键的新快捷键。</translation>
 <translation id="1904932688895783618">以下是一些其他的实用资源：</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
 <translation id="2157660087437850958">表情符号选择器</translation>
 <translation id="2157959690810728433">已加入队列</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{您的管理员已将“<ph name="APP_NAME_1" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME_1" />”和“<ph name="APP_NAME_2" />”设为在您每次登录时都自动启动。}=3{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和“<ph name="APP_NAME_3" />”设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="215916044711630446">APN“添加”按钮现已停用</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
+<translation id="2215920961700443347">未连接到互联网。请连接到互联网，然后重试。</translation>
 <translation id="2217935453350629363">当前速度</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
+<translation id="2465272316171730950">我们已达到容量上限。请稍后再回来查看。</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
 <translation id="2491955442992294626">不再测试按键，因为您正在使用另一个窗口</translation>
 <translation id="2493126929778606526">您的最佳照片，由系统自动挑选</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2512979179176933762">显示窗口</translation>
 <translation id="2513396635448525189">登录图片</translation>
-<translation id="2515109918609218604">此快捷键不可用。请在不使用功能键和搜索键的情况下按一个新快捷键。</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
+<translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白色</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4150201353443180367">显示</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">调低亮度</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
-<translation id="4185315616950253617">使用顶行按键的快捷键必须包含搜索键。</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">键盘自定义</translation>
+<translation id="4403262788869804671">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。</translation>
 <translation id="4415951057168511744">当前头像</translation>
+<translation id="4417830657741848074">您的管理员已将部分应用设为自动启动。上述部分应用可能无法关闭。</translation>
 <translation id="4422041425070339732">向下箭头</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4428374560396076622">“<ph name="NETWORK_NAME" />”已关闭</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">“地球的风景变化”屏保</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4507392511610824664">调高亮度</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4835901797422965222">未连接到任何网络</translation>
 <translation id="4839698083503556542">创建您自己的影片</translation>
+<translation id="48409034532829769">您的管理员已将“<ph name="APP_NAME" />”设为自动启动。此应用可能无法关闭。</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择影集</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">拆分</translation>
 <translation id="4972592110715526173">更改模式</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
+<translation id="4982627662315910959">此快捷键不可用。按新的快捷键时，请使用 shift 和另外 1 个辅助键（ctrl、alt 或<ph name="META_KEY" />键）。</translation>
 <translation id="4985509611418653372">运行</translation>
 <translation id="4987769320337599931">防火墙</translation>
 <translation id="4988526792673242964">页面</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">深色主题时间表</translation>
 <translation id="5229344016299762883">退出全屏模式</translation>
 <translation id="5234764350956374838">关闭</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{您的管理员已将“<ph name="APP_NAME" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME" />”和另外 1 个应用设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
 <translation id="5252456968953390977">漫游</translation>
 <translation id="5257811368506016604">启用浅色模式</translation>
 <translation id="5264277876637023664">运行 CPU 测试</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">移动网络服务提供商</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
-<translation id="7273347807225967898">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift、搜索键或启动器键）。</translation>
+<translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">微风拂面</translation>
 <translation id="7287310195820267359">壁纸集</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">常规控件</translation>
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8094062939584182041">允许 Google 就此问题向您发送电子邮件</translation>
 <translation id="8104083085214006426">您正在使用不安全的开放网络</translation>
-<translation id="8111706652656628199">此快捷键不可用。按新的快捷键时，请使用 shift 和另外 1 个辅助键（ctrl、alt、搜索键或启动器键）。</translation>
 <translation id="811820734797650957">(Android) 可对网关执行 ping 操作</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>

@@ -12,9 +12,7 @@
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 
-@class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
-@class ImmersiveModeTitlebarObserver;
 
 namespace remote_cocoa {
 class ImmersiveModeControllerCocoa;
@@ -80,9 +78,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // Called when the menu bar reveal status changes.
   void OnMenuBarRevealChanged();
 
-  // Called when the NSTitlebarContainerView frame changes.
-  virtual void OnTitlebarFrameDidChange(NSRect frame);
-
   // Called when a child window is added to the observed windows.
   // `ObserveChildWindows` controls which windows are being observed.
   virtual void OnChildWindowAdded(NSWindow* child);
@@ -135,12 +130,20 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // If the `anchor_view` is offscreen, the `window` will be moved offscreen.
   void LayoutWindowWithAnchorView(NSWindow* window, NSView* anchor_view);
 
+  // Reanchor the overlay window with its anchor view.
+  virtual void Reanchor();
+
  private:
   // Get offscreen y origin. Used for moving overlay windows offscreen.
   double GetOffscreenYOrigin();
 
   // Notify the browser window that the reveal status changes.
   void NotifyBrowserWindowAboutToolbarRevealChanged();
+
+  // Updates the visibility of the thin controller. The thin controller will
+  // only become visible when the toolbar is hidden.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  void UpdateThinControllerVisibility();
 
   bool initialized_ = false;
 
@@ -165,8 +168,15 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   ImmersiveModeTitlebarViewController* __strong
       immersive_mode_titlebar_view_controller_;
 
+  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
+  // NSWindow on screen.
+  // This controller is used as a workaround for an AppKit bug that displays a
+  // black bar when changing a NSTitlebarAccessoryViewController's
+  // fullScreenMinHeight from zero to non-zero.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
+
   ImmersiveModeMapper* __strong immersive_mode_mapper_;
-  ImmersiveModeTitlebarObserver* __strong immersive_mode_titlebar_observer_;
 
   // Keeps track of which windows have received titlebar and reveal locks.
   std::set<NSWindow*> window_lock_received_;
@@ -175,27 +185,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 };
 
 }  // namespace remote_cocoa
-
-// A small class that moves the overlay window along the y axis.
-//
-// The overlay's content view (top chrome) is not hosted in the overlay window.
-// It is moved to the AppKit controlled fullscreen window via the
-// NSTitlebarAccessoryViewController API. However the overlay window is still
-// important.
-//  * It is the parent window for top chrome popups. Moving the overlay window
-//  in turn moves the child windows.
-//  * Its origin in important for dragging operations.
-//
-// This class will keep the position of the overlay window in sync with its
-// original content (top chrome).
-REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver : NSObject
-
-- (instancetype)initWithController:
-                    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
-                        controller
-             titlebarContainerView:(NSView*)titlebarContainerView;
-
-@end
 
 // An empty NSView that is also opaque.
 @interface OpaqueView : NSView

@@ -119,7 +119,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
         profile_name, {}, base::UTF8ToUTF16(profile_name), 0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        /*is_supervised_profile=*/false, absl::nullopt,
+        /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service));
   }
 

@@ -17,7 +17,7 @@
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/web_int_test.h"
 #import "ios/web/web_view/error_translation_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 

@@ -25,13 +25,15 @@ function createSampleClusters(count: number): Cluster[] {
       (_, i) => createSampleCluster(2, {id: BigInt(i)}));
 }
 
+const SAMPLE_CLUSTER_ID = BigInt(111);
+
 function createSampleCluster(
     numRelatedSearches: number,
     overrides?: Partial<Cluster>,
     ): Cluster {
   const cluster: Cluster = Object.assign(
       {
-        id: BigInt(111),
+        id: SAMPLE_CLUSTER_ID,
         visits: createSampleVisits(2, 2),
         label: '',
         labelMatchPositions: [],
@@ -98,10 +100,11 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
   }
 
   async function assertUpdateClusterVisitsInteractionStateCall(
-      state: InteractionState, count: number) {
-    const [visits, interactionState] =
+      id: bigint, state: InteractionState, count: number) {
+    const [clusterId, visits, interactionState] =
         await handler.whenCalled('updateClusterVisitsInteractionState');
 
+    assertEquals(id, clusterId);
     assertEquals(count, visits.length);
     visits.forEach((visit: URLVisit, index: number) => {
       assertEquals(index, Number(visit.visitId));
@@ -202,7 +205,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           await waitForDismissEvent;
       assertEquals(
           `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
-      assertUpdateClusterVisitsInteractionStateCall(InteractionState.kDone, 3);
+      assertUpdateClusterVisitsInteractionStateCall(
+          SAMPLE_CLUSTER_ID, InteractionState.kDone, 3);
     });
 
     test(
@@ -271,7 +275,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
               `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
           assertTrue(!!dismissEvent.detail.restoreCallback);
           assertUpdateClusterVisitsInteractionStateCall(
-              InteractionState.kHidden, 3);
+              SAMPLE_CLUSTER_ID, InteractionState.kHidden, 3);
 
           // Act.
           const restoreCallback = dismissEvent.detail.restoreCallback!;
@@ -279,7 +283,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
           // Assert.
           assertUpdateClusterVisitsInteractionStateCall(
-              InteractionState.kDefault, 3);
+              SAMPLE_CLUSTER_ID, InteractionState.kDefault, 3);
         });
 
     test(
@@ -309,7 +313,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
               `${sampleCluster.label!} hidden`, dismissEvent.detail.message);
           assertTrue(!!dismissEvent.detail.restoreCallback);
           assertUpdateClusterVisitsInteractionStateCall(
-              InteractionState.kDone, 3);
+              SAMPLE_CLUSTER_ID, InteractionState.kDone, 3);
 
           // Act.
           const restoreCallback = dismissEvent.detail.restoreCallback!;
@@ -317,8 +321,27 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
           // Assert.
           assertUpdateClusterVisitsInteractionStateCall(
-              InteractionState.kDefault, 3);
+              SAMPLE_CLUSTER_ID, InteractionState.kDefault, 3);
         });
+
+    test('Backend is notified when module is disabled', async () => {
+      // Arrange.
+      const sampleCluster = createSampleCluster(2, {label: '"Sample Journey"'});
+      const moduleElements = await initializeModule([sampleCluster]);
+      const moduleElement = moduleElements[0];
+      assertTrue(!!moduleElement);
+
+      // Act.
+      const disableButton =
+          moduleElement.shadowRoot!.querySelector('history-clusters-header-v2')!
+              .shadowRoot!.querySelector('ntp-module-header-v2')!.shadowRoot!
+              .querySelector('#disable')! as HTMLButtonElement;
+      disableButton.click();
+
+      // Assert.
+      const clusterId = await handler.whenCalled('recordDisabled');
+      assertEquals(BigInt(111), clusterId);
+    });
 
     test('Show History side panel invoked when clicking header', async () => {
       loadTimeData.overrideValues({

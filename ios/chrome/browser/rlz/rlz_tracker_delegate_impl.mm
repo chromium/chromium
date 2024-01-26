@@ -118,6 +118,10 @@ void RLZTrackerDelegateImpl::SetHomepageSearchCallback(
   NOTREACHED();
 }
 
+void RLZTrackerDelegateImpl::RunHomepageSearchCallback() {
+  NOTREACHED();
+}
+
 bool RLZTrackerDelegateImpl::ShouldUpdateExistingAccessPointRlz() {
   NOTREACHED();
   return false;

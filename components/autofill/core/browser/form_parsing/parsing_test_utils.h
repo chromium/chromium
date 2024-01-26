@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/address_field.h"
+#include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/language_code.h"
@@ -41,13 +41,13 @@ struct PatternProviderFeatureState {
   const char* active_source = nullptr;
 };
 
-class FormFieldTestBase {
+class FormFieldParserTestBase {
  public:
-  explicit FormFieldTestBase(
+  explicit FormFieldParserTestBase(
       PatternProviderFeatureState pattern_provider_feature_state);
-  FormFieldTestBase(const FormFieldTestBase&) = delete;
-  FormFieldTestBase& operator=(const FormFieldTestBase&) = delete;
-  ~FormFieldTestBase();
+  FormFieldParserTestBase(const FormFieldParserTestBase&) = delete;
+  FormFieldParserTestBase& operator=(const FormFieldParserTestBase&) = delete;
+  ~FormFieldParserTestBase();
 
  protected:
   // Add a field with |control_type|, the |name|, the |label| the expected
@@ -93,13 +93,13 @@ class FormFieldTestBase {
   void TestClassificationExpectations();
 
   // Apply the parsing with a specific parser.
-  virtual std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                           AutofillScanner* scanner) = 0;
+  virtual std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                 AutofillScanner* scanner) = 0;
 
   FieldRendererId MakeFieldRendererId();
 
   std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<FormField> field_;
+  std::unique_ptr<FormFieldParser> field_;
   FieldCandidatesMap field_candidates_map_;
   std::map<FieldGlobalId, FieldType> expected_classifications_;
 

@@ -67,8 +67,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 std::ostream& operator<<(std::ostream& os, const CdmKeyInformation& info) {
-  return os << "key_id = "
-            << base::HexEncode(info.key_id.data(), info.key_id.size())
+  return os << "key_id = " << base::HexEncode(info.key_id)
             << ", status = " << info.status
             << ", system_code = " << info.system_code;
 }

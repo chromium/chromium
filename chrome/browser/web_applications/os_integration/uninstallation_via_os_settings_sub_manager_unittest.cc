@@ -227,8 +227,8 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest,
 
     // Verify that OS integration is bypassed but the app is
     // uninstalled, leading to left over OS states.
-    absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-        scoped_supress = absl::nullopt;
+    std::optional<OsIntegrationManager::ScopedSuppressForTesting>
+        scoped_supress = std::nullopt;
     scoped_supress.emplace();
     test::UninstallAllWebApps(profile());
     base::expected<bool, std::string> output_result =

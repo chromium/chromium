@@ -91,6 +91,7 @@ gfx::Insets GetRestoredFrameBorderInsetsLinux(
     const gfx::InsetsF shadow_insets(shadow_radius);
     gfx::RectF shadow_extents;
     shadow_extents.Inset(-shadow_insets);
+    shadow_extents.set_origin(shadow_extents.origin() + shadow_value.offset());
     frame_extents.Union(gfx::ToEnclosingRect(shadow_extents));
   }
 

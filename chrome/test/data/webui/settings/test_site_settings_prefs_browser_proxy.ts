@@ -94,6 +94,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.IDLE_DETECTION,
       ContentSettingsTypes.IMAGES,
       ContentSettingsTypes.JAVASCRIPT,
+      ContentSettingsTypes.JAVASCRIPT_JIT,
       ContentSettingsTypes.LOCAL_FONTS,
       ContentSettingsTypes.MIC,
       ContentSettingsTypes.MIXEDSCRIPT,

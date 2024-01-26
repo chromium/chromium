@@ -56,7 +56,7 @@ class MenuButtonMediator implements AppMenuObserver {
     private final ThemeColorProvider mThemeColorProvider;
     private final Activity mActivity;
     private final KeyboardVisibilityDelegate mKeyboardDelegate;
-    private boolean mShouldShowAppUpdateBadge;
+    private boolean mCanShowAppUpdateBadge;
     private final Supplier<Boolean> mIsActivityFinishingSupplier;
     private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
@@ -71,25 +71,25 @@ class MenuButtonMediator implements AppMenuObserver {
 
     /**
      * @param propertyModel Model to write property changes to.
-     * @param shouldShowAppUpdateBadge Whether the "update available" badge should ever be shown.
+     * @param canShowAppUpdateBadge Whether the "update available" badge can be shown.
      * @param isActivityFinishingSupplier Supplier for knowing if the embedding activity is in the
-     *         process of finishing or has already been destroyed.
+     *     process of finishing or has already been destroyed.
      * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
-     *         containing the app menu button.
+     *     containing the app menu button.
      * @param themeColorProvider Provider of theme color changes.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
-     *         controls.
+     *     controls.
      * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
      * @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
-     *         app menu MVC components.
+     *     app menu MVC components.
      * @param windowAndroid The WindowAndroid instance.
      * @param menuButtonStateSupplier Suplier of {@link MenuButtonState}.
      * @param onMenuButtonClicked Runnable to execute when menu button is clicked.
      */
     MenuButtonMediator(
             PropertyModel propertyModel,
-            boolean shouldShowAppUpdateBadge,
+            boolean canShowAppUpdateBadge,
             Supplier<Boolean> isActivityFinishingSupplier,
             Runnable requestRenderRunnable,
             ThemeColorProvider themeColorProvider,
@@ -101,7 +101,7 @@ class MenuButtonMediator implements AppMenuObserver {
             Supplier<MenuButtonState> menuButtonStateSupplier,
             Runnable onMenuButtonClicked) {
         mPropertyModel = propertyModel;
-        mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
+        mCanShowAppUpdateBadge = canShowAppUpdateBadge;
         mIsActivityFinishingSupplier = isActivityFinishingSupplier;
         mRequestRenderRunnable = requestRenderRunnable;
         mThemeColorProvider = themeColorProvider;
@@ -178,7 +178,7 @@ class MenuButtonMediator implements AppMenuObserver {
         mSuppressAppMenuUpdateBadge = isSuppressed;
         if (isSuppressed) {
             removeAppMenuUpdateBadge(false);
-        } else if (isUpdateAvailable() && mShouldShowAppUpdateBadge) {
+        } else if (isUpdateAvailable() && mCanShowAppUpdateBadge) {
             showAppMenuUpdateBadge(false);
         }
     }
@@ -207,7 +207,7 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     void updateStateChanged() {
-        if (mIsActivityFinishingSupplier.get() || !mShouldShowAppUpdateBadge) {
+        if (mIsActivityFinishingSupplier.get() || !mCanShowAppUpdateBadge) {
             return;
         }
 

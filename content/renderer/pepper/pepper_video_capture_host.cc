@@ -167,12 +167,11 @@ void PepperVideoCaptureHost::OnFrameReady(
                 media::PIXEL_FORMAT_I420, frame->natural_size(),
                 gfx::Rect(frame->natural_size()), frame->natural_size(), dst,
                 buffers_[i].buffer->size(), frame->timestamp());
-        int uv_size = mapped_frame->coded_size().GetArea() / 2;
-        std::vector<uint8_t> temp_uv_buffer(uv_size);
-        media::EncoderStatus status = media::ConvertAndScaleFrame(
-            *mapped_frame, *dst_frame, temp_uv_buffer);
-        if (!status.is_ok())
+        media::EncoderStatus status =
+            frame_converter_.ConvertAndScale(*mapped_frame, *dst_frame);
+        if (!status.is_ok()) {
           return;
+        }
       } else {
         DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_I420);
         size_t num_planes = media::VideoFrame::NumPlanes(frame->format());

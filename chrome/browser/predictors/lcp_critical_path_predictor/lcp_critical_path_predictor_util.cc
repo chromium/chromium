@@ -504,7 +504,7 @@ bool IsValidLcpUrlsHistogram(
 
 }  // namespace
 
-absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppData& lcpp_data) {
   std::vector<std::string> lcp_element_locators =
@@ -519,7 +519,7 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
         std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
         std::move(fetched_fonts));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {

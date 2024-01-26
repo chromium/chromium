@@ -213,7 +213,7 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes_PriceIncrease) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
-  uint64_t cluster_id = 123L;
+  uint64_t cluster_id = 123u;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
       cluster_id, false, 1230000, "usd");
@@ -236,7 +236,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
-  uint64_t cluster_id = 123L;
+  uint64_t cluster_id = 123u;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
       cluster_id, true, 1230000, "usd");
@@ -259,7 +259,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
-  uint64_t cluster_id = 123L;
+  uint64_t cluster_id = 123u;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
       cluster_id, false, 1230000, "usd");
@@ -286,7 +286,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
-  uint64_t cluster_id = 123L;
+  uint64_t cluster_id = 123u;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
       cluster_id, true, 1230000, "usd");
@@ -327,7 +327,7 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
-  int64_t cluster_id = 123L;
+  uint64_t cluster_id = 123u;
   EXPECT_CALL(page_, PriceUntrackedForBookmark(
                          MojoBookmarkInfoWithClusterId(cluster_id)))
       .Times(1);
@@ -401,7 +401,7 @@ TEST_F(ShoppingListHandlerTest,
   info.emplace();
   info->title = "example_title";
   info->product_cluster_title = "example_cluster_title";
-  info->product_cluster_id = absl::optional<uint64_t>(123L);
+  info->product_cluster_id = absl::optional<uint64_t>(123u);
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
@@ -409,7 +409,7 @@ TEST_F(ShoppingListHandlerTest,
          shopping_list::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("example_title", product_info->title);
         ASSERT_EQ("example_cluster_title", product_info->cluster_title);
-        ASSERT_EQ(123L, product_info->cluster_id);
+        ASSERT_EQ(123u, product_info->cluster_id);
         run_loop->Quit();
       },
       &run_loop));
@@ -444,7 +444,7 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
 
   absl::optional<commerce::PriceInsightsInfo> info;
   info.emplace();
-  info->product_cluster_id = 123;
+  info->product_cluster_id = 123u;
   info->currency_code = "usd";
   info->typical_low_price_micros = 1230000;
   info->typical_high_price_micros = 2340000;
@@ -461,7 +461,7 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   handler_->GetPriceInsightsInfoForCurrentUrl(base::BindOnce(
       [](base::RunLoop* run_loop,
          shopping_list::mojom::PriceInsightsInfoPtr info) {
-        ASSERT_EQ(123, info->cluster_id);
+        ASSERT_EQ(123u, info->cluster_id);
         ASSERT_EQ("$1.23", info->typical_low_price);
         ASSERT_EQ("$2.34", info->typical_high_price);
         ASSERT_EQ("Unlocked, 4GB", info->catalog_attributes);
@@ -525,7 +525,7 @@ TEST_F(ShoppingListHandlerTest,
   delegate_->SetCurrentTabUrl(current_url);
 
   ProductInfo info;
-  info.product_cluster_id = 123L;
+  info.product_cluster_id = 123u;
   info.title = "product";
   AddProductBookmark(bookmark_model_.get(), u"product", current_url,
                      info.product_cluster_id.value(), true, 1230000, "usd");
@@ -581,7 +581,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackPriceForCurrentUrl) {
 
 TEST_F(ShoppingListHandlerTest, TestUntrackPriceForCurrentUrl) {
   ProductInfo info;
-  info.product_cluster_id = 123L;
+  info.product_cluster_id = 123u;
   info.title = "product";
   AddProductBookmark(bookmark_model_.get(), u"product",
                      GURL("http://example.com/1"),
@@ -618,7 +618,7 @@ TEST_F(ShoppingListHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestBookmarkNodeMoved) {
-  uint64_t cluster_id = 12345L;
+  uint64_t cluster_id = 12345u;
 
   const bookmarks::BookmarkNode* node_with_product = AddProductBookmark(
       bookmark_model_.get(), u"title", GURL("https://example.com"), cluster_id);

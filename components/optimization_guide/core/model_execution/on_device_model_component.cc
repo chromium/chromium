@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -22,6 +24,19 @@
 
 namespace optimization_guide {
 namespace {
+
+const std::optional<OnDeviceBaseModelSpec> ReadBaseModelSpecFromManifest(
+    const base::Value::Dict& manifest) {
+  auto* model_spec = manifest.FindDict("BaseModelSpec");
+  if (model_spec) {
+    auto* name = model_spec->FindString("name");
+    auto* version = model_spec->FindString("version");
+    if (name && version) {
+      return OnDeviceBaseModelSpec{*name, *version};
+    }
+  }
+  return std::nullopt;
+}
 
 base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
   static base::NoDestructor<base::WeakPtr<OnDeviceModelComponentStateManager>>
@@ -116,7 +131,7 @@ void LogInstallCriteria(
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   local_state_->ClearPref(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload);
-
+  UpdateOnDeviceBaseModelSpecCache();
   component_installer_registered_ = false;
 }
 
@@ -157,6 +172,25 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
                            base::to_underlying(performance_class));
 
   BeginUpdateRegistration();
+}
+
+void OnDeviceModelComponentStateManager::UpdateOnDeviceBaseModelSpecCache() {
+  if (state_ && state_->GetBaseModelSpec()) {
+    local_state_->SetString(prefs::localstate::kOnDeviceBaseModelVersion,
+                            state_->GetBaseModelSpec().value().model_version);
+    local_state_->SetString(prefs::localstate::kOnDeviceBaseModelName,
+                            state_->GetBaseModelSpec().value().model_name);
+  } else {
+    local_state_->ClearPref(prefs::localstate::kOnDeviceBaseModelVersion);
+    local_state_->ClearPref(prefs::localstate::kOnDeviceBaseModelName);
+  }
+}
+
+const std::optional<OnDeviceBaseModelSpec>
+OnDeviceModelComponentStateManager::GetCachedBaseModelSpec() {
+  return OnDeviceBaseModelSpec{
+      local_state_->GetString(prefs::localstate::kOnDeviceBaseModelName),
+      local_state_->GetString(prefs::localstate::kOnDeviceBaseModelVersion)};
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {
@@ -310,7 +344,13 @@ void OnDeviceModelComponentStateManager::SetReady(
     const base::Value::Dict& manifest) {
   state_ = base::WrapUnique(new OnDeviceModelComponentState);
   state_->install_dir_ = install_dir;
-  state_->version_ = version;
+  // This version refers to the component version specifically, not the model
+  // version.
+  state_->component_version_ = version;
+  // Populate the model version and name from the manifest into the Chrome
+  // pref cache. If not present, clears the state and cache.
+  state_->model_spec_ = ReadBaseModelSpecFromManifest(manifest);
+  UpdateOnDeviceBaseModelSpecCache();
   if (is_model_allowed_) {
     NotifyStateChanged();
   }

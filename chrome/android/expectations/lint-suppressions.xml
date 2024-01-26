@@ -266,10 +266,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.tab_resumption_module_single_post_info` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_resumption_module_multi_info` appears to be unused"/>
 
-    <!-- TODO(https://crbug.com/1512962): Remove the following 2 lines after the magic stack is implemented. -->
-    <ignore regexp="The resource `R.string.home_modules_context_menu_hide_module` appears to be unused"/>
-    <ignore regexp="The resource `R.string.home_modules_context_menu_customize` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

@@ -23,7 +23,6 @@ class FastCheckoutTestUtils {
         return new FastCheckoutAutofillProfile(
                 guid,
                 /* isLocal= */ true,
-                /* honorificPrefix= */ "",
                 name,
                 /* companyName= */ "",
                 /* streetAddress= */ streetAddress,

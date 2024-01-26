@@ -147,6 +147,7 @@ void PasswordReuseManagerImpl::Init(
     PrefService* prefs,
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
+    std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
     signin::IdentityManager* identity_manager,
     std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate) {
   prefs_ = prefs;
@@ -169,7 +170,7 @@ void PasswordReuseManagerImpl::Init(
   DCHECK(background_task_runner_);
   DCHECK(profile_store);
 
-  reuse_detector_ = std::make_unique<PasswordReuseDetector>();
+  reuse_detector_ = std::move(password_reuse_detector);
 
   account_store_ = account_store;
   profile_store_ = profile_store;
@@ -487,6 +488,7 @@ void PasswordReuseManagerImpl::OnPrimaryAccountChanged(
             saved_creds_entry->FindDouble(kLoginHashedPassword).value());
         password_hash_data.force_update = true;
         hash_password_manager_.SavePasswordHash(password_hash_data);
+        SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
         metrics_util::LogGaiaPasswordHashChange(
             metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN,
             /*is_sync_password=*/true);

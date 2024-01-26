@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Hankige märguandeid</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="4212246570487010370">Jätka sirvimist</translation>
+<translation id="427987768447457592">Uus vahelehegrupp</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Peida täisekraani ruudustik</translation>
 <translation id="5076161749301278626">Kas kuvada poe arvustused?</translation>
 <translation id="5082793167783849073">Looge rühm, et lehti kiiresti võrrelda. Alustamiseks puudutage pikalt linki.</translation>
+<translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Teil on <ph name="TABS_COUNT_ONE" /> vaheleht, mida te pole hiljuti kasutanud}other{Teil on <ph name="TABS_COUNT_MANY" /> vahelehte, mida te pole hiljuti kasutanud}}</translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>

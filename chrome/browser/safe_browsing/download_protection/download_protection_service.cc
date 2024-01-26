@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -58,7 +59,6 @@
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using ReportThreatDetailsResult =
@@ -257,12 +257,12 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
             weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::UNKNOWN, std::move(settings.value()),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
     return true;
   }
 
   if (safe_browsing_enabled) {
-    CheckClientDownload(item, std::move(callback), /*password=*/absl::nullopt);
+    CheckClientDownload(item, std::move(callback), /*password=*/std::nullopt);
     return true;
   }
 
@@ -275,7 +275,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
                           DownloadCheckResult::UNKNOWN,
                           std::move(settings.value()),
-                          /*password=*/absl::nullopt);
+                          /*password=*/std::nullopt);
     return true;
   }
 
@@ -739,9 +739,9 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
             item->GetURL(), item->GetTabUrl(), "", "", metadata.filename,
             metadata.sha256, metadata.mime_type,
             extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            metadata.scan_response.request_token(),
+            metadata.scan_response.request_token(), "",
             DeepScanAccessPoint::DOWNLOAD, result, metadata.size,
-            /*user_justification=*/absl::nullopt);
+            /*user_justification=*/std::nullopt);
 
         // There won't be multiple DLP verdicts in the same response, so no need
         // to keep iterating.
@@ -949,7 +949,7 @@ void DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning(
     CheckDownloadRepeatingCallback callback,
     DownloadCheckResult result) {
   if (result == DownloadCheckResult::UNKNOWN) {
-    CheckClientDownload(item, callback, /*password=*/absl::nullopt);
+    CheckClientDownload(item, callback, /*password=*/std::nullopt);
   } else {
     std::move(callback).Run(result);
   }

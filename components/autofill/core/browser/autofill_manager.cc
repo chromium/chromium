@@ -484,10 +484,11 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
               form.global_id(), field.global_id())));
 }
 
-bool AutofillManager::GetCachedFormAndField(const FormData& form,
-                                            const FormFieldData& field,
-                                            FormStructure** form_structure,
-                                            AutofillField** autofill_field) {
+bool AutofillManager::GetCachedFormAndField(
+    const FormData& form,
+    const FormFieldData& field,
+    FormStructure** form_structure,
+    AutofillField** autofill_field) const {
   FormStructure* cached_form = FindCachedFormById(form.global_id());
   if (!cached_form || cached_form->autofill_count() == 0) {
     return false;

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/upload_data_stream.h"
 
@@ -61,11 +62,11 @@ class ChunkedDataStreamUploader : public net::UploadDataStream {
   int ReadInternal(IOBuffer* buffer, int buffer_length) override;
   void ResetInternal() override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The pointer to the network layer buffer to send and the length of the
   // buffer.
-  net::IOBuffer* pending_read_buffer_;
+  raw_ptr<net::IOBuffer> pending_read_buffer_;
   int pending_read_buffer_length_;
 
   // Flags indicating current upload process has network read callback pending.

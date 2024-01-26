@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTimeFirstPrint" units="ms"
-    expires_after="2024-03-14">
+    expires_after="2024-07-14">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2024-05-19">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2024-07-21">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

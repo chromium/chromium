@@ -95,7 +95,7 @@ class FakeExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
     EXPECT_EQ(block_state_, ExternalProtocolHandler::UNKNOWN);
     EXPECT_NE(os_state_, shell_integration::IS_DEFAULT);
@@ -139,7 +139,7 @@ class FakeExternalProtocolHandlerDelegate
   bool has_launched() { return has_launched_; }
   bool has_prompted() { return has_prompted_; }
   bool has_blocked() { return has_blocked_; }
-  const absl::optional<url::Origin>& initiating_origin() {
+  const std::optional<url::Origin>& initiating_origin() {
     return initiating_origin_;
   }
 
@@ -155,7 +155,7 @@ class FakeExternalProtocolHandlerDelegate
   bool has_prompted_;
   bool has_blocked_;
   GURL launch_or_prompt_url_;
-  absl::optional<url::Origin> initiating_origin_;
+  std::optional<url::Origin> initiating_origin_;
   base::OnceClosure on_complete_;
   std::u16string program_name_;
 };
@@ -344,7 +344,7 @@ class MockInterceptNavigationDelegate
                void(const GURL&,
                     ui::PageTransition,
                     bool,
-                    const absl::optional<url::Origin>&,
+                    const std::optional<url::Origin>&,
                     mojo::PendingRemote<network::mojom::URLLoaderFactory>*));
 };
 

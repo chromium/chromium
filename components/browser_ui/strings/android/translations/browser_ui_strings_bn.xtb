@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
 <translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
+<translation id="1434873037477293673">দাম কমা সংক্রান্ত কার্ড</translation>
 <translation id="1448064542941920355">জুম কমান</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" />টি সাইট}one{<ph name="SITE_COUNT" />টি সাইট}other{<ph name="SITE_COUNT" />টি সাইট}}</translation>
 <translation id="1510341833810331442">কোনও সাইটকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দিন</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">সাইটগুলি পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট দেখাতে পারে।</translation>
 <translation id="2790501146643349491">চালু থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে। বন্ধ থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে না।</translation>
 <translation id="2822354292072154809">আপনি কি <ph name="CHOSEN_OBJECT_NAME" />-এর জন্য সাইটের সব অনুমতি রিসেট করার ব্যাপারে নিশ্চিত?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">মোবাইল ভিউয়ের অনুরোধ করুন</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
+<translation id="6452138246455930388">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="OLD_PRICE" /> থেকে <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">উইন্ডো ছোট হলে, মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="652937045869844725">থার্ড-পার্টি কুকিকে অনুমতি দিয়ে দেখুন। এর মানে হল সাইটের ফিচার কাজ করবে কিন্তু আপনার সুরক্ষা কম হয়ে যাবে</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">নিচে যান</translation>
 <translation id="6749077623962119521">অনুমতি রিসেট করবেন?</translation>
 <translation id="6766622839693428701">বন্ধ করতে নিচের দিকে সোয়াইপ করুন।</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> থেকে<ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />-এর জন্য বিকল্প বেছে নিন</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>
 <translation id="6864395892908308021">এই ডিভাইস NFC পড়তে পারছে না</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> থেকে</translation>
 <translation id="6912998170423641340">ক্লিপবোর্ডের টেক্সট এবং ছবি পড়ার থেকে সাইটগুলিকে ব্লক করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6950072572526089586">আপনি যে সাইটটি ভিজিট করেন সেটিতে আপনি কী করছেন সেই সম্পর্কিত তথ্য সেভ করা হতে পারে যাতে এটি আপনার প্রত্যাশা অনুযায়ী কাজ করে — যেমন, আপনাকে একটি সাইটে সাইন-ইন রাখতে বা আপনার শপিং কার্টে আইটেমগুলি সেভ করতে। প্রায়শই সাইটগুলি আপনার ডিভাইসে সাময়িকভাবে এই তথ্য সেভ করে।</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">দি ওয়ান্ডারফুল উইজার্ড অফ ওজ</translation>
 <translation id="7684642910516280563">কোনও সাইটকে থার্ড-পার্টি কুকি ব্যবহার করার অনুমতি দেবেন না</translation>
 <translation id="7719367874908701697">পৃষ্ঠা জুম</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" আড়াল করুন</translation>
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="780301667611848630">না থাক</translation>

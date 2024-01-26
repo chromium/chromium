@@ -38,10 +38,6 @@ bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
   return true;
 }
 
-bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return false;
-}
-
 bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,

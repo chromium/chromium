@@ -1312,7 +1312,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ absl::nullopt);
 
   SendFcmMessage(response);
   run_loop.Run();
@@ -1383,7 +1384,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ absl::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();
@@ -1420,7 +1422,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*result*/ EventResultToString(EventResult::BYPASSED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ absl::nullopt);
 
   DownloadItemModel model(item);
   DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
@@ -1491,7 +1494,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ absl::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();
@@ -1593,7 +1597,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ absl::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();

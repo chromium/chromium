@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // The number includes the two directly imported modules and the two they then
   // import (each).
   const numberOfURLs = 6;

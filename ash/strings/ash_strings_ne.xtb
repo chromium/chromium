@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">मोबाइल नेटवर्कमा कनेक्ट भएको छैन</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
 <translation id="1885785240814121742">फिंगरप्रिन्टमार्फत अनलक गर्नुहोस्</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
 <translation id="1908992311423394684">भर्खरै इन्स्टल गरिएको</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1918022425394817322">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">क्यामेरामा फोटोको प्रिभ्यू हेर्ने सुविधा अन छ</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टगल गर्नुहोस्। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">इमोजी पिकर खोल्नुहोस्</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">अघिल्लो ट्रयाक प्ले गर्नुहोस्</translation>
 <translation id="2152895518047545149">तपाईंले सबै असाइनमेन्ट पेस गरिसक्नुभयो जस्तो देखिन्छ। राम्रो काम!</translation>
 <translation id="2161132820593978283">भिडियो कल गर्दा आफूलाई स्क्रिनको बिचमा राखिराख्न क्यामेरा फ्रेमिङ प्रयोग गरी हेर्नुहोस्। "द्रुत सेटिङ" मा गई यो सुविधा अन गर्नुहोस्।</translation>
-<translation id="2170530631236737939">हालैका स्क्रिन देखाइने मोड बन्द गर्न तीनवटा औँलाले तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="2185444992308415167">ट्याब १ बाट ट्याब ८ मा जानुहोस्</translation>
 <translation id="2198625180564913276">प्रोफाइल थपिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">हटस्पट सुविधा अन गर्न तपाईंको फोनमा अनिवार्य रूपमा मोबाइल डेटा उपलब्ध हुनु पर्छ</translation>
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
+<translation id="2744221223678373668">साझा गरिएको</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"मेटाऊ"</translation>
 <translation id="2750941250130734256">सक्रिय विन्डो अनडक गरिएको छ।</translation>
 <translation id="2761723519669354964">सेल्फबाट हाइलाइट गरिएको वस्तु खोल्नुहोस्</translation>
+<translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> देखि <ph name="KEY_TWO" /> सम्म थिच्नुहोस्</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3580650856351781466">वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिँदै छन्</translation>
 <translation id="3585296979871889131">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्नुहोस्</translation>
+<translation id="3590441166907930941">साइड बटन</translation>
 <translation id="3593039967545720377">आफूले विगतमा क्लिपबोर्डमा कपी गरेका वस्तुहरू हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। सुरु गर्न कुनै वस्तु कपी गर्नुहोस्।</translation>
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">कल उठाउनुहोस्</translation>
 <translation id="3990002060657467458">Wi-Fi, ब्लुटुथ र भोल्युमलगायतका प्रायः प्रयोग गरिने सेटिङ द्रुत सेटिङअन्तर्गत भेट्टाउन सकिन्छ। तपाईं यहाँ गएर पनि स्क्रिनसट लिन सक्नुहुन्छ।</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
 <translation id="4011112806063830608">Do Not Disturb अन छ।</translation>
 <translation id="4017989525502048489">लेजर प्वाइन्टर</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">ब्याट्रीको अवस्था <ph name="BATTERY_HEALTH_PERCENTAGE" />% | साइकल काउन्ट <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">टेम्प्लेटका रूपमा डेस्क सेभ गर्नुहोस्</translation>
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
+<translation id="5168753792967365150">Google Tasks मा सम्पादन गर्नुहोस्</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="5187627942836026988">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। तपाईंको एड्मिनले हटस्पट ब्लक गर्नुभएको छ।</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">इन्स्टल गरिएका एपहरू</translation>
 <translation id="6173151025443907148">Lacros अन गरिएको छ भने अर्का प्रयोगकर्ताले साइन इन गर्न सक्नुहुन्न। कृपया Lacros मा अर्को ब्राउजर प्रोफाइल प्रयोग गर्नुहोस् वा Lacros अफ गर्नुहोस् अनि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6179832488876878285">तपाईं यहाँ आफ्ना महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न थाल्न फाइलहरू नामक एप खोल्नुहोस्।</translation>
+<translation id="6180193585172850042">"पछाडि" बटन</translation>
+<translation id="6180651297859206670">फर्वार्ड बटन</translation>
 <translation id="6182592640011875895">डेस्क खोल्नुहोस्</translation>
 <translation id="6185696379715117369">पृष्ठ माथि</translation>
 <translation id="619335566042889110">अहिले नै फुल चार्ज गर्नुहोस्</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6981291220124935078">प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सेभ गर्न "पुष्टि गर्नुहोस्" बटनमा क्लिक गर्नुहोस्। <ph name="TIMEOUT_SECONDS" /> मा पहिलेका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="6989752354829085073">Chromebook चलाउने तरिका सिक्न केही समय खर्चेर यसका सुविधाहरू हेर्नुहोस्। ६ वटा चरणमा सेटअप गरी चलाउन थाल्नुहोस्।</translation>
 <translation id="7004910047186208204">मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="7005239792648594238">सुरु गर्न कुनै एप खोल्नुहोस्</translation>
@@ -1693,7 +1698,6 @@
 <translation id="7850320739366109486">Do Not Disturb</translation>
 <translation id="7851039877802112575">फोकस सारेर पप-अप तथा डायलगहरूमा लैजानुहोस्</translation>
 <translation id="7851768487828137624">क्यानरी</translation>
-<translation id="7860671499921112077">हालैका स्क्रिन देखाइने मोड खोल्न तीनवटा औँलाले माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="7862292329216937261">अतिथिका रूपमा यो डिभाइस प्रयोग गर्न तपाईंले साइन आउट गरी स्क्रिनको पुछारमा रहेको "अतिथिका रूपमा ब्राउज गर्नुहोस्" चयन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7866482334467279021">अन छ</translation>
 <translation id="7872786842639831132">अफ छ</translation>
@@ -1804,7 +1808,6 @@
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
-<translation id="8284362522226889623">अघिल्लो डेस्कमा जान टचप्याडमा चारवटा औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>

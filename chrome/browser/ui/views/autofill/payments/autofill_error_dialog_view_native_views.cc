@@ -42,16 +42,6 @@ AutofillErrorDialogViewNativeViews::~AutofillErrorDialogViewNativeViews() {
   }
 }
 
-// static
-AutofillErrorDialogView* AutofillErrorDialogView::CreateAndShow(
-    AutofillErrorDialogController* controller,
-    content::WebContents* web_contents) {
-  AutofillErrorDialogViewNativeViews* dialog_view =
-      new AutofillErrorDialogViewNativeViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
-  return dialog_view;
-}
-
 void AutofillErrorDialogViewNativeViews::Dismiss() {
   if (controller_) {
     controller_->OnDismissed();
@@ -98,6 +88,15 @@ void AutofillErrorDialogViewNativeViews::AddedToWidget() {
 
 std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
   return controller_->GetTitle();
+}
+
+AutofillErrorDialogView* CreateAndShowAutofillErrorDialog(
+    AutofillErrorDialogController* controller,
+    content::WebContents* web_contents) {
+  AutofillErrorDialogViewNativeViews* dialog_view =
+      new AutofillErrorDialogViewNativeViews(controller);
+  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  return dialog_view;
 }
 
 }  // namespace autofill

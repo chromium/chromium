@@ -86,10 +86,12 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr,
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin) const override;
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
@@ -185,9 +187,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // environment or the reason why it is not allowed.
   Status GetM1TopicAllowedStatus() const;
 
-  // Whether Attribution Reporting API can be allowed given the current
-  // environment or the reason why it is not allowed.
-  Status GetM1AttributionReportingAllowedStatus(
+  // Whether ad measurement APIs can be allowed given the current environment or
+  // the reason why it is not allowed.
+  Status GetM1AdMeasurementAllowedStatus(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const;
 

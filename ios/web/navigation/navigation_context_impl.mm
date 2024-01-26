@@ -44,7 +44,7 @@ NSString* NavigationContextImpl::GetDescription() const {
       stringWithFormat:
           @"web::WebState: %ld, url: %s, "
            "is_same_document: %@, error: %@ is_loading_error_page: %@",
-          reinterpret_cast<long>(web_state_), url_.spec().c_str(),
+          reinterpret_cast<long>(web_state_.get()), url_.spec().c_str(),
           is_same_document_ ? @"true" : @"false", error_,
           is_loading_error_page_ ? @"true" : @"false"];
 }

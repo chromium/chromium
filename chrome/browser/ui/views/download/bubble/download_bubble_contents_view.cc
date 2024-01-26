@@ -44,6 +44,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     views::BubbleDialogDelegate* bubble_delegate)
     : info_(std::move(info)),
       bubble_controller_(bubble_controller),
+      navigation_handler_(navigation_handler),
       bubble_delegate_(bubble_delegate) {
   SetProperty(views::kElementIdentifierKey, kToolbarDownloadBubbleElementId);
   CHECK(!info_->row_list_view_info().rows().empty());
@@ -75,6 +76,9 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {
+  if (VisiblePage() == Page::kSecurity) {
+    security_view_->MaybeLogDismiss();
+  }
   security_view_->Reset();
   // In order to ensure that `info_` is valid for the entire lifetime of the
   // child views, we delete the child views here rather than in `~View()`.
@@ -113,7 +117,6 @@ void DownloadBubbleContentsView::ShowSecurityPage(const ContentId& id) {
   primary_view_->SetVisible(false);
   page_ = Page::kSecurity;
   InitializeSecurityView(id);
-  security_view_->UpdateAccessibilityTextAndFocus();
   security_view_->SetVisible(true);
 }
 
@@ -143,6 +146,11 @@ void DownloadBubbleContentsView::ProcessSecuritySubpageButtonPress(
     return;
   }
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    // Calling this before because ProcessDownloadButtonPress may cause
+    // the model item to be deleted during its call.
+    if (navigation_handler_) {
+      navigation_handler_->OnSecurityDialogButtonPress(*model, command);
+    }
     bubble_controller_->ProcessDownloadButtonPress(model->GetWeakPtr(), command,
                                                    /*is_main_view=*/false);
   }

@@ -186,8 +186,6 @@ class SupervisedUserService : public KeyedService,
 
   void OnSafeSitesSettingChanged();
 
-  void UpdateAsyncUrlChecker();
-
   // Updates the manual overrides for hosts in the URL filters when the
   // corresponding preference is changed.
   void UpdateManualHosts();
@@ -241,8 +239,7 @@ class SupervisedUserService : public KeyedService,
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
   // reports. Initialized in the SetActive().
-  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
-      SupervisedUserURLFilter::WebFilterType::kMaxValue;
+  WebFilterType current_web_filter_type_ = WebFilterType::kMaxValue;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };

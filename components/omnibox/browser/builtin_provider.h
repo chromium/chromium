@@ -8,16 +8,15 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
 class AutocompleteInput;
 class AutocompleteProviderClient;
+class TemplateURLService;
 
 // This is the provider for built-in URLs, such as about:settings and
-// chrome://version, as well as the built-in Starter Pack search engines.
+// chrome://version.
 class BuiltinProvider : public AutocompleteProvider {
  public:
   explicit BuiltinProvider(AutocompleteProviderClient* client);
@@ -33,11 +32,6 @@ class BuiltinProvider : public AutocompleteProvider {
   typedef std::vector<std::u16string> Builtins;
 
   static const int kRelevance;
-  static const int kStarterPackRelevance;
-
-  // Populates `matches_` with matching starter pack keywords such as @history,
-  // and @bookmarks
-  void DoStarterPackAutocompletion(const AutocompleteInput& input);
 
   // Populates `matches_` with matching built-in URLs such as about:settings and
   // chrome://version.
@@ -52,11 +46,6 @@ class BuiltinProvider : public AutocompleteProvider {
   void AddBuiltinMatch(const std::u16string& match_string,
                        const std::u16string& inline_completion,
                        const ACMatchClassifications& styles);
-
-  // Constructs an AutocompleteMatch for starter pack suggestions such as
-  // @bookmarks, @history, etc. and adds it to `matches_`.
-  void AddStarterPackMatch(const TemplateURL& template_url,
-                           const AutocompleteInput& input);
 
   // Returns true if |matches_| contains a match that should be allowed to be
   // the default match. If true, the index of that match in |matches_| is

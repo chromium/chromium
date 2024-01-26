@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -38,7 +39,7 @@ class JavaScriptConsoleFeature : public KeyedService,
                              const web::ScriptMessage& message) override;
 
   // The delegate which receives details about the console messages.
-  JavaScriptConsoleFeatureDelegate* delegate_ = nullptr;
+  raw_ptr<JavaScriptConsoleFeatureDelegate> delegate_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_H_

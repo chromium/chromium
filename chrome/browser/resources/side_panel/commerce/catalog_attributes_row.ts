@@ -9,8 +9,10 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
 
-import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {ShoppingServiceApiProxy} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import {ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {PriceInsightsInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './catalog_attributes_row.html.js';

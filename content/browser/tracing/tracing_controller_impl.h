@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace perfetto::protos::pbzero {
 class TracePacket;
@@ -90,6 +91,9 @@ class TracingControllerImpl : public TracingController,
   std::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
                               bool privacy_filtering_enabled);
+  void GenerateMetadataPacketFieldTrials(
+      perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
+      bool privacy_filtering_enabled);
 
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override;

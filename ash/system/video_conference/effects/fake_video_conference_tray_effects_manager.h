@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_TRAY_EFFECTS_MANAGER_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_TRAY_EFFECTS_MANAGER_H_
 
+#include "ash/ash_export.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
@@ -22,7 +23,7 @@ namespace ash {
 // default behavior of `GetUiControllerForEffectId()` can only support returning
 // a single tile UI controller for any given id. Once http://b/312496000 is
 // addressed, this class may no longer be needed.
-class FakeVideoConferenceTrayEffectsManager
+class ASH_EXPORT FakeVideoConferenceTrayEffectsManager
     : public VideoConferenceTrayEffectsManager {
  public:
   FakeVideoConferenceTrayEffectsManager();

@@ -200,6 +200,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // if it does another redirect without user activation after the user has come
 // back to that document again. This implies that a single user activation does
 // not mean that the user can be infintely trapped.
+// For a same-document version of this test, see
+// OnUserGestureResetSameDocumentEntriesSkipFlag (https://crbug.com/1248529).
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationAfterReturningSetsSkippable) {
   GURL non_skippable_url(
@@ -467,6 +469,511 @@ class CanGoBackNavigationStateChangedDelegate : public WebContentsDelegate {
 };
 }  // namespace
 
+// Tests the value of honor_sticky_activation_for_history_intervention_ starts
+// at true, becomes false after same-document history navigations and gets
+// properly reset to true again.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestHonorStickyActivationForHistoryIntervention) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry using the pushState API with a user activation,
+  // and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+
+  // `honor_sticky_activation_for_history_intervention_` should still be false
+  // if there is a same-document navigation.
+  GURL push_state_url2(embedded_test_server()->GetURL("/title1.html"));
+  script = ("history.pushState('', '','" + push_state_url2.spec() + "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script,
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+
+  // Cross-document navigation will reset
+  // `honor_sticky_activation_for_history_intervention_`.
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh1 = root->current_frame_host();
+  EXPECT_TRUE(rfh1->honor_sticky_activation_for_history_intervention_);
+  // Go to previous index.
+  TestNavigationObserver load_observer(shell()->web_contents());
+  controller.GoToOffset(-1);
+  load_observer.Wait();
+  RenderFrameHostImpl* rfh2 = root->current_frame_host();
+  EXPECT_TRUE(rfh2->honor_sticky_activation_for_history_intervention_);
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh2->HasStickyUserActivationForHistoryIntervention());
+}
+
+// Same as above but for forward button instead of back button to ensure the
+// intervention works in both directions.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestHonorStickyActivationForHistoryInterventionForward) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry and then do history.back followed by the forward
+  // button.`honor_sticky_activation_for_history_intervention_` should now be
+  // false.
+
+  // Use the pushState API to add another entry with user gesture.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Go back to the last entry using history.back so that we still honor the
+  // activation.
+  EXPECT_TRUE(
+      ExecJs(shell(), "history.back();", EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated forward navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver forward_load_observer(shell()->web_contents());
+  controller.GoForward();
+  forward_load_observer.Wait();
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+
+  // `honor_sticky_activation_for_history_intervention_` should still be false
+  // if there is a same-document navigation.
+  GURL push_state_url2(embedded_test_server()->GetURL("/title1.html"));
+  script = ("history.pushState('', '','" + push_state_url2.spec() + "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script,
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+
+  // Cross-document navigation will reset
+  // `honor_sticky_activation_for_history_intervention_`.
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh1 = root->current_frame_host();
+  EXPECT_TRUE(rfh1->honor_sticky_activation_for_history_intervention_);
+  // Go to previous index.
+  TestNavigationObserver load_observer(shell()->web_contents());
+  controller.GoToOffset(-1);
+  load_observer.Wait();
+  RenderFrameHostImpl* rfh2 = root->current_frame_host();
+  EXPECT_TRUE(rfh2->honor_sticky_activation_for_history_intervention_);
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh2->HasStickyUserActivationForHistoryIntervention());
+}
+
+// Same as above but expects honor_sticky_activation_for_history_intervention_
+// to be true when a user activation is received.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       HonorStickyActivationForHistoryInterventionReset) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  // Use the pushState API to add another entry with user gesture.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+
+  // `honor_sticky_activation_for_history_intervention_` should be set as true
+  // if there is a same-document navigation along with user activation (default
+  // for ExecJs).
+  GURL push_state_url2(embedded_test_server()->GetURL("/title1.html"));
+  script = ("history.pushState('', '','" + push_state_url2.spec() + "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(rfh->HasStickyUserActivationForHistoryIntervention());
+}
+
+// Same as above but expects honor_sticky_activation_for_history_intervention_
+// to not be reset with a replaceState call.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerHistoryInterventionBrowserTest,
+    HonorStickyActivationForHistoryInterventionNotResetOnReplaceState) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  // Use the pushState API to add another entry with user gesture.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // `honor_sticky_activation_for_history_intervention_` should not be set to
+  // true if there is a replaceState same-document navigation without user
+  // activation.
+  GURL replace_state_url2(embedded_test_server()->GetURL("/title1.html"));
+  script =
+      ("history.replaceState('', '','" + replace_state_url2.spec() + "');");
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), script, EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+  EXPECT_FALSE(rfh->HasStickyUserActivationForHistoryIntervention());
+}
+
+// Tests that both sticky user activation and
+// `honor_sticky_activation_for_history_intervention_`are reset on a reload
+// since reload is considered a cross-document navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestStickyActivationOnReload) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  // Use the pushState API to add another entry with user gesture.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Reload should cause the sticky activation and
+  // `honor_sticky_activation_for_history_intervention_` to be reset.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  rfh = root->current_frame_host();
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+}
+
+// Tests that when `honor_sticky_activation_for_history_intervention_` is
+// false, a cross-document navigation should mark the entry as skippable.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestHonorStickyActivationCrossDocument) {
+  GURL url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  // Use the pushState API to add another entry with user gesture.
+  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
+  std::string script("history.pushState('', '','" + push_state_url1.spec() +
+                     "');");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(rfh->honor_sticky_activation_for_history_intervention_);
+
+  // A cross-document navigation should mark the entry as skippable.
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // Previous entry should have been marked as skippable.
+  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+}
+
+// Tests that `honor_sticky_activation_for_history_intervention_` should
+// stay false and a cross-document navigation should mark the entry as
+// skippable, even if the back navigation that set the
+// `honor_sticky_activation_for_history_intervention_` to false was for a
+// child frame that did a same-document navigation. The next test tests the
+// same behavior after the child frame does a cross-document navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestHonorStickyActivationWithChildFrame) {
+  GURL url(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* main_rfh = root->current_frame_host();
+  EXPECT_TRUE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Also check that the honor bit is always true for subframes, since it is
+  // only consulted for the main frame.
+  EXPECT_TRUE(root->child_at(0)
+                  ->current_frame_host()
+                  ->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a same-document entry to a child frame with a user activation and then
+  // go back.`honor_sticky_activation_for_history_intervention_` should now be
+  // false.
+  // Use the pushState API to add another entry with user gesture.
+  std::string script = "history.pushState({}, 'page 1', 'simple_page_1.html')";
+  EXPECT_TRUE(ExecJs(root->child_at(0), script));
+
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // The honor bit is not consulted for subframes and never changes from its
+  // default value of true.
+  EXPECT_TRUE(root->child_at(0)
+                  ->current_frame_host()
+                  ->honor_sticky_activation_for_history_intervention_);
+
+  // A navigation (cross-document or same-document) should mark the entry as
+  // skippable.
+  // Navigate from the renderer without a user gesture.
+  GURL redirected_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // Previous entry should have been marked as skippable.
+  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+}
+
+// Same as the above test except the child frame does a cross-document
+// navigation in this test.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       TestHonorStickyActivationWithChildFrameCrossDocument) {
+  GURL url(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  RenderFrameHostImpl* main_rfh = root->current_frame_host();
+  EXPECT_TRUE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Also check that the honor bit is always true for subframes, since it is
+  // only consulted for the main frame.
+  EXPECT_TRUE(root->child_at(0)
+                  ->current_frame_host()
+                  ->honor_sticky_activation_for_history_intervention_);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Add a cross-document entry to a child frame and then go back.
+  // `honor_sticky_activation_for_history_intervention_` should now be false.
+  GURL next_url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), next_url));
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_TRUE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // Do a browser-initiated back navigation so the activation is no longer
+  // honored.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_TRUE(root->HasStickyUserActivation());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+
+  EXPECT_FALSE(main_rfh->honor_sticky_activation_for_history_intervention_);
+
+  // The honor bit is not consulted for subframes and never changes from its
+  // default value of true.
+  EXPECT_TRUE(root->child_at(0)
+                  ->current_frame_host()
+                  ->honor_sticky_activation_for_history_intervention_);
+
+  // A navigation (cross-document or same-document) should mark the entry as
+  // skippable.
+  // Navigate from the renderer without a user gesture.
+  GURL redirected_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // Previous entry should have been marked as skippable.
+  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+}
+
 // Tests that if a navigation entry is marked as skippable due to pushState then
 // the flag should be reset if there is a user gesture on this document. All of
 // the adjacent entries belonging to the same document will have their skippable
@@ -536,7 +1043,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 
   // Go to index 2.
   TestNavigationObserver load_observer(shell()->web_contents());
-  controller.GoToIndex(2);
+  script = "history.go(-2);";
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), script, EXECUTE_SCRIPT_NO_USER_GESTURE));
   load_observer.Wait();
   EXPECT_EQ(push_state_url1, controller.GetLastCommittedEntry()->GetURL());
 
@@ -574,6 +1083,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
 
   // goBack should now navigate to entry at index 1.
+  // This should also reset the page's ability to create non-skippable entries,
+  // because it is a browser-initiated history navigation.
+  // See https://crbug.com/1248529.
   TestNavigationObserver back_load_observer(shell()->web_contents());
   controller.GoBack();
   back_load_observer.Wait();
@@ -585,14 +1097,29 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(
       ExecJs(shell()->web_contents(), script, EXECUTE_SCRIPT_NO_USER_GESTURE));
   // We now have
-  // [skippable_url(skip), redirected_url, push_state_url4*]
+  // [skippable_url(skip), redirected_url(skip), push_state_url4(skip)*]
+  // The skippable flag for [1] will now be set since it added an entry without
+  // any new user activation after user went back to it.
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(skippable_url, controller.GetEntryAtIndex(0)->GetURL());
   EXPECT_EQ(redirected_url, controller.GetEntryAtIndex(1)->GetURL());
   EXPECT_EQ(push_state_url4, controller.GetEntryAtIndex(2)->GetURL());
-  // The skippable flag will still be unset since this page has seen a user
-  // gesture once.
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+
+  // Go back to [1] again.
+  TestNavigationObserver load_observer1(shell()->web_contents());
+  controller.GoToIndex(1);
+  load_observer1.Wait();
+  EXPECT_EQ(redirected_url, controller.GetLastCommittedEntry()->GetURL());
+  // It should still be skippable.
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+
+  // Simulate a user gesture. ExecuteScript internally also sends a user
+  // gesture.
+  EXPECT_TRUE(content::ExecJs(shell()->web_contents(), script));
+  // The skippable flag for [1] will now be unset.
   EXPECT_FALSE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
 }
 
 // Tests that if a navigation entry is marked as skippable due to redirect to a

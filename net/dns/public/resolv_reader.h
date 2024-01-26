@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/scoped_res_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -28,7 +28,7 @@ class NET_EXPORT ResolvReader {
 };
 
 // Returns configured DNS servers or nullopt on failure.
-NET_EXPORT absl::optional<std::vector<IPEndPoint>> GetNameservers(
+NET_EXPORT std::optional<std::vector<IPEndPoint>> GetNameservers(
     const struct __res_state& res);
 
 }  // namespace net

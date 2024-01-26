@@ -34,10 +34,9 @@ namespace ash {
 namespace {
 
 constexpr int kIconSize = 20;
-constexpr auto kSelectedStateBoxInsets = gfx::Insets::TLBR(8, 0, 0, 0);
+constexpr int kTextfieldCornerRadius = 8;
+constexpr auto kSelectedStateBoxInsets = gfx::Insets::VH(4, 0);
 constexpr auto kSelectedStateTextfieldInsets = gfx::Insets::TLBR(0, 16, 0, 12);
-
-constexpr int kUnselectedStateBoxCornerRadius = 8;
 constexpr auto kUnselectedStateBoxInsets = gfx::Insets::TLBR(4, 8, 4, 16);
 constexpr auto kUnselectedStateTextfieldInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 
@@ -230,13 +229,18 @@ FocusModeTaskView::FocusModeTaskView() {
   textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER));
   textfield_->SetPlaceholderTextColorId(cros_tokens::kCrosSysSecondary);
+  // Shrink the inactive `textfield_` ring so it's not touching the other views
+  // when focused.
+  views::InstallRoundRectHighlightPathGenerator(
+      textfield_, gfx::Insets::VH(0, 8), kTextfieldCornerRadius);
+
   textfield_container_->SetFlexForView(textfield_, 1);
   // We only show `textfield_container_`'s focus ring when the textfield is
   // active.
   views::FocusRing::Install(textfield_container_);
   // Set the focus ring corner radius with 8px.
   views::InstallRoundRectHighlightPathGenerator(
-      textfield_container_, gfx::Insets(), kUnselectedStateBoxCornerRadius);
+      textfield_container_, gfx::Insets(), kTextfieldCornerRadius);
   auto* textfield_container_focus_ring =
       views::FocusRing::Get(textfield_container_);
   textfield_container_focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -409,7 +413,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
       show_selected_state ? nullptr
                           : views::CreateThemedRoundedRectBackground(
                                 cros_tokens::kCrosSysInputFieldOnShaded,
-                                kUnselectedStateBoxCornerRadius));
+                                kTextfieldCornerRadius));
 
   radio_button_->SetEnabled(true);
   radio_button_->SetVisible(show_selected_state);

@@ -20,6 +20,7 @@ import org.chromium.url.Origin;
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
+    private long mNativeNavigationHandle;
     private boolean mIsInPrimaryMainFrame;
     private boolean mIsRendererInitiated;
     private boolean mIsSameDocument;
@@ -67,7 +68,7 @@ public class NavigationHandle {
             @PageTransition int transition,
             boolean hasUserGesture,
             boolean isReload) {
-        NavigationHandle handle = new NavigationHandle();
+        NavigationHandle handle = new NavigationHandle(0);
         handle.initialize(
                 0,
                 url,
@@ -89,7 +90,9 @@ public class NavigationHandle {
     }
 
     @CalledByNative
-    private NavigationHandle() {}
+    private NavigationHandle(long nativeNavigationHandle) {
+        mNativeNavigationHandle = nativeNavigationHandle;
+    }
 
     @CalledByNative
     private void initialize(
@@ -168,11 +171,12 @@ public class NavigationHandle {
     /** Release the C++ pointer. */
     @CalledByNative
     private void release() {
+        mNativeNavigationHandle = 0;
         mNativeNavigationHandleProxy = 0;
     }
 
-    public long nativePtr() {
-        return mNativeNavigationHandleProxy;
+    public long nativeNavigationHandlePtr() {
+        return mNativeNavigationHandle;
     }
 
     /**

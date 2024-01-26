@@ -49,11 +49,6 @@ iron-validatable-behavior/*
 iron-test-helpers/iron-test-helpers.*
 iron-test-helpers/test-helpers.*
 
-# paper-behaviors
-paper-behaviors/paper-button-behavior.*
-paper-behaviors/paper-checked-element-behavior.*
-
-
 # paper-ripple
 paper-ripple/paper-ripple.d.ts
 

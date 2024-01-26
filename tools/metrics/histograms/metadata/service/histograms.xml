@@ -439,6 +439,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Subresource" summary="subresource"/>
   </token>
   <token key="Action">
+    <variant name="Initial"
+        summary="the value passed as a callback value in SimpleWatcher"/>
     <variant name="Read" summary="read"/>
     <variant name="WriteForFetchHandler" summary="write for fetch handler"/>
     <variant name="WriteForRaceNetworkRequset"
@@ -817,7 +819,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ServiceWorkerIsStopped.WaitingForWarmUp"
-    enum="Boolean" expires_after="2024-05-12">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -911,8 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.Subresource.
-          AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
+    name="ServiceWorker.LoadTiming.Subresource.AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
     units="ms" expires_after="2024-06-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1460,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StaticRouter.{Resource}.CacheStorageError"
-    enum="CacheStorageErrorType" expires_after="2024-03-01">
+    enum="CacheStorageErrorType" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

@@ -29,7 +29,7 @@ source_set("tab_grid") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/find_in_page/model:util",
@@ -47,6 +47,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -120,12 +121,6 @@ source_set("tab_grid_page_mutator") {
   ]
 }
 
-source_set("tab_collection_commands") {
-  sources = [ "tab_collection_commands.h" ]
-
-  deps = [ "//base" ]
-}
-
 source_set("tab_grid_ui_constants") {
   sources = [
     "tab_grid_constants.h",
@@ -152,7 +147,6 @@ source_set("tab_grid_ui") {
   ]
 
   deps = [
-    ":tab_collection_commands",
     ":tab_grid_activity_observer",
     ":tab_grid_metrics",
     ":tab_grid_page_mutator",
@@ -161,6 +155,7 @@ source_set("tab_grid_ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -168,6 +163,8 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/browser/ui/bubble:constants",
+    "//ios/chrome/browser/ui/bubble/gesture_iph/",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/menu",

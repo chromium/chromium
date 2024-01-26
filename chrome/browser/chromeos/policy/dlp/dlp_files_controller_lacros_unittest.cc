@@ -22,7 +22,7 @@ namespace policy {
 class DlpFilesControllerLacrosTest
     : public DlpFilesTestBase,
       public ::testing::WithParamInterface<
-          std::tuple<std::string, absl::optional<data_controls::Component>>> {
+          std::tuple<std::string, std::optional<data_controls::Component>>> {
  public:
   DlpFilesControllerLacrosTest(const DlpFilesControllerLacrosTest&) = delete;
   DlpFilesControllerLacrosTest& operator=(const DlpFilesControllerLacrosTest&) =
@@ -80,7 +80,7 @@ INSTANTIATE_TEST_SUITE_P(
                                       data_controls::Component::kCrostini),
                       std::make_tuple("/drive/path/filename",
                                       data_controls::Component::kDrive),
-                      std::make_tuple("/Downloads", absl::nullopt)));
+                      std::make_tuple("/Downloads", std::nullopt)));
 TEST_P(DlpFilesControllerLacrosTest, MapFilePathToPolicyComponentTest) {
   auto [path, expected_component] = GetParam();
   EXPECT_EQ(files_controller_->MapFilePathToPolicyComponent(

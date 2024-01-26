@@ -46,7 +46,7 @@ class SystemGeolocationSourceLacrosTests : public InProcessBrowserTest {
     auto& prefs =
         chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
-    base::test::TestFuture<absl::optional<::base::Value>> future;
+    base::test::TestFuture<std::optional<::base::Value>> future;
     prefs->GetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                    future.GetCallback());
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
   // By default, the geolocation is allowed in ash.
-  base::test::TestFuture<absl::optional<::base::Value>> future;
+  base::test::TestFuture<std::optional<::base::Value>> future;
   prefs->GetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  future.GetCallback());
 
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
   Observer observer;
   manager->AddObserver(&observer);
 
-  base::test::TestFuture<absl::optional<::base::Value>> future;
+  base::test::TestFuture<std::optional<::base::Value>> future;
   auto& prefs =
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 

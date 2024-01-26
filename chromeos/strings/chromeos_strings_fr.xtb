@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
+<translation id="1626590945318984973">Raccourci non disponible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction ni la touche <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Annuler le mode sombre</translation>
 <translation id="1885577615937958993">faire une avance rapide sur le contenu multimédia</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
-<translation id="1897672602657312171">Un raccourci sans touche de recherche peut entrer en conflit avec le raccourci de certaines applis. Appuyez de nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci avec la touche de recherche.</translation>
 <translation id="1904932688895783618">Voici d'autres ressources utiles :</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">Test ajouté à la file d'attente</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Votre administrateur a configuré <ph name="APP_NAME_1" /> pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré <ph name="APP_NAME_1" /> et <ph name="APP_NAME_2" /> pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}=3{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autre appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autres applis pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="215916044711630446">Le bouton "Ajouter un APN" est désormais désactivé</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Modifier les détails de l'APN</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
+<translation id="2215920961700443347">Aucun accès à Internet. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">Nous avons atteint notre capacité maximale. Veuillez réessayer dans quelques instants.</translation>
 <translation id="248546197012830854">L'appareil est hors connexion. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos plus belles photos sélectionnées automatiquement</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
-<translation id="2515109918609218604">Raccourci non disponible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction et de recherche.</translation>
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2521835766824839541">piste précédente</translation>
 <translation id="2526590354069164005">Bureau</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Vous pouvez profiter de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
+<translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# appli a démarré automatiquement}other{# applis ont démarré automatiquement}}</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Écran</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">baisser la luminosité</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4176659219503619100">Panneau de configuration</translation>
-<translation id="4185315616950253617">Le raccourci avec des touches supérieures doit inclure la touche de recherche.</translation>
 <translation id="420283545744377356">Désactiver l'économiseur d'écran</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> : redémarrage…</translation>
 <translation id="4395835743215824109">personnalisation du clavier</translation>
+<translation id="4403262788869804671">Un raccourci sans la touche <ph name="META_KEY" /> peut entrer en conflit avec un raccourci d'une appli. Appuyez de nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci avec la touche <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar actuel</translation>
+<translation id="4417830657741848074">Votre administrateur a configuré certaines applis pour qu'elles démarrent automatiquement. Certaines de ces applis ne peuvent pas être fermées.</translation>
 <translation id="4422041425070339732">flèche vers le bas</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> désactivé</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Économiseur d'écran Flux terrestre</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
+<translation id="4500722292849917410">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Maj ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
 <translation id="4839698083503556542">Créez votre propre film</translation>
+<translation id="48409034532829769">Votre administrateur a configuré l'appli "<ph name="APP_NAME" />" pour qu'elle démarre automatiquement. Elle ne peut pas être fermée.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679">Source <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />) sélectionnée, appuyez sur Entrée pour sélectionner des albums dans <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Résolution DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Diviser</translation>
 <translation id="4972592110715526173">changement de mode</translation>
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
+<translation id="4982627662315910959">Raccourci non disponible. Appuyez sur un nouveau raccourci avec la touche Maj et une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Programmation du thème sombre</translation>
 <translation id="5229344016299762883">Quitter le plein écran</translation>
 <translation id="5234764350956374838">Ignorer</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Votre administrateur a configuré l'appli <ph name="APP_NAME" /> pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré <ph name="APP_NAME" /> et 1 autre appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré <ph name="APP_NAME" /> et # autres appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré <ph name="APP_NAME" /> et # autres applis pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
 <translation id="5252456968953390977">Itinérance</translation>
 <translation id="5257811368506016604">Activer le mode couleur clair</translation>
 <translation id="5264277876637023664">Lancer le test de CPU</translation>
@@ -684,7 +689,7 @@
 <translation id="6061772781719867950">Échec des requêtes HTTPS</translation>
 <translation id="6073292342939316679">baisser la luminosité du clavier</translation>
 <translation id="6075872808778243331">(Android) Latence HTTP</translation>
-<translation id="6078323886959318429">Ajouter un raccourci</translation>
+<translation id="6078323886959318429">Ajouter raccourci</translation>
 <translation id="6104112872696127344">Numérisation annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="725133483556299729">Sélectionnez une adresse e-mail</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
-<translation id="7273347807225967898">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Maj, Recherche ou Lanceur d'applications).</translation>
+<translation id="7271932918253517778">Le raccourci avec des touches supérieures doit inclure la touche <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Brise légère</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour rejoindre un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# appli a démarré automatiquement}other{# applis ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8094062939584182041">Autoriser Google à vous informer de ce problème par e-mail</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
-<translation id="8111706652656628199">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide de la touche Maj et d'une autre touche de modification (Ctrl, Alt, Recherche ou Lanceur d'applications).</translation>
 <translation id="811820734797650957">(Android) Pinguer la passerelle</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander les compteurs de trafic</translation>

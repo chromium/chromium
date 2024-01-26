@@ -38,6 +38,7 @@ cargo_crate("lib") {
   features = [ "std" ]
 
   # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
 }

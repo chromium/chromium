@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -152,7 +152,7 @@ TEST(DnsQueryTest, Block128Padding) {
 }
 
 TEST(DnsQueryTest, Block128Padding_LongName) {
-  absl::optional<std::vector<uint8_t>> qname =
+  std::optional<std::vector<uint8_t>> qname =
       dns_names_util::DottedNameToNetwork(
           "really.long.domain.name.that.will.push.us.past.the.128.byte.block."
           "size.because.it.would.be.nice.to.test.something.realy.long.like."

@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_page_protocols[http]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_page_protocols[https]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+Harness: the test ran to completion.

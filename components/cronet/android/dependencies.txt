@@ -11,6 +11,7 @@
 //build/config
 //build/config/clang
 //build/config/compiler
+//build/config/sanitizers
 //build/rust
 //build/rust/std
 //build/rust/std/rules

@@ -39,8 +39,9 @@
   raw_ptr<ChromeBrowserState> _browserState;
 
   __weak SceneState* _sceneState;
-  __weak id<ApplicationCommands> _applicationCommandEndpoint;
-  __weak id<BrowsingDataCommands> _browsingDataCommandEndpoint;
+  __weak id<ApplicationCommands> _applicationEndpoint;
+  __weak id<ApplicationSettingsCommands> _settingsEndpoint;
+  __weak id<BrowsingDataCommands> _browsingDataEndpoint;
 
   std::unique_ptr<Browser> _mainBrowser;
   std::unique_ptr<Browser> _otrBrowser;
@@ -51,17 +52,18 @@
   BOOL _isShutdown;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                          sceneState:(SceneState*)sceneState
-          applicationCommandEndpoint:
-              (id<ApplicationCommands>)applicationCommandEndpoint
-         browsingDataCommandEndpoint:
-             (id<BrowsingDataCommands>)browsingDataCommandEndpoint {
+- (instancetype)
+    initWithBrowserState:(ChromeBrowserState*)browserState
+              sceneState:(SceneState*)sceneState
+     applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+        settingsEndpoint:(id<ApplicationSettingsCommands>)settingsEndpoint
+    browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint {
   if ((self = [super init])) {
     _browserState = browserState;
     _sceneState = sceneState;
-    _applicationCommandEndpoint = applicationCommandEndpoint;
-    _browsingDataCommandEndpoint = browsingDataCommandEndpoint;
+    _applicationEndpoint = applicationEndpoint;
+    _settingsEndpoint = settingsEndpoint;
+    _browsingDataEndpoint = browsingDataEndpoint;
 
     // Create all browsers.
     _mainBrowser = Browser::Create(_browserState, _sceneState);
@@ -273,19 +275,11 @@
   [dispatcher startDispatchingToTarget:reauthAgent
                            forProtocol:@protocol(IncognitoReauthCommands)];
 
-  [dispatcher startDispatchingToTarget:_applicationCommandEndpoint
+  [dispatcher startDispatchingToTarget:_applicationEndpoint
                            forProtocol:@protocol(ApplicationCommands)];
-
-  // -startDispatchingToTarget:forProtocol: doesn't pick up protocols the
-  // passed protocol conforms to, so ApplicationSettingsCommands is explicitly
-  // dispatched to the endpoint as well. Since this is potentially
-  // fragile, DCHECK that it should still work (if the endpoint is non-nil).
-  DCHECK(!_applicationCommandEndpoint ||
-         [_applicationCommandEndpoint
-             conformsToProtocol:@protocol(ApplicationSettingsCommands)]);
-  [dispatcher startDispatchingToTarget:_applicationCommandEndpoint
+  [dispatcher startDispatchingToTarget:_settingsEndpoint
                            forProtocol:@protocol(ApplicationSettingsCommands)];
-  [dispatcher startDispatchingToTarget:_browsingDataCommandEndpoint
+  [dispatcher startDispatchingToTarget:_browsingDataEndpoint
                            forProtocol:@protocol(BrowsingDataCommands)];
 }
 

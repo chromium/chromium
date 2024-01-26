@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,14 +46,12 @@ class TestDelegate : public mojom::NotificationDelegate {
   void OnNotificationClicked() override {}
   void OnNotificationButtonClicked(
       uint32_t button_index,
-      const absl::optional<std::u16string>& reply) override {}
+      const std::optional<std::u16string>& reply) override {}
   void OnNotificationSettingsButtonClicked() override {}
   void OnNotificationDisabled() override {}
 
   // Public because this is test code.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION base::RunLoop* on_closed_run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> on_closed_run_loop_ = nullptr;
   mojo::Receiver<mojom::NotificationDelegate> receiver_{this};
 };
 

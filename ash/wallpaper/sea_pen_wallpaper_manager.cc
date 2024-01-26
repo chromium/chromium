@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 
 namespace ash {
@@ -45,6 +46,7 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
     std::move(callback).Run(gfx::ImageSkia());
     return;
   }
+  DVLOG(2) << __func__ << " image_skia.size()=" << image_skia.size().ToString();
   std::string file_name = base::NumberToString(sea_pen_image_id) + ".jpg";
   auto on_saved = base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageSaved,
                                  weak_factory_.GetWeakPtr(), image_skia,

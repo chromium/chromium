@@ -436,8 +436,6 @@ component("platform") {
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
     "bindings/cross_thread_copier.h",
-    "bindings/custom_wrappable.cc",
-    "bindings/custom_wrappable.h",
     "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",
     "bindings/dom_data_store.cc",
@@ -490,7 +488,6 @@ component("platform") {
     "bindings/thread_debugger.h",
     "bindings/to_blink_string.cc",
     "bindings/to_blink_string.h",
-    "bindings/to_v8.h",
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/union_base.cc",
     "bindings/union_base.h",
@@ -733,7 +730,6 @@ component("platform") {
     "fonts/shaping/harfbuzz_font_data.h",
     "fonts/shaping/harfbuzz_shaper.cc",
     "fonts/shaping/harfbuzz_shaper.h",
-    "fonts/shaping/ng_shape_cache.cc",
     "fonts/shaping/ng_shape_cache.h",
     "fonts/shaping/run_segmenter.cc",
     "fonts/shaping/run_segmenter.h",
@@ -1904,6 +1900,8 @@ static_library("test_support") {
     "testing/paint_test_configurations.h",
     "testing/picture_matchers.cc",
     "testing/picture_matchers.h",
+    "testing/renderer_fuzzing_support.cc",
+    "testing/renderer_fuzzing_support.h",
     "testing/scoped_fake_ukm_recorder.cc",
     "testing/scoped_fake_ukm_recorder.h",
     "testing/scoped_main_thread_overrider.cc",
@@ -1979,6 +1977,7 @@ static_library("test_support") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
+    "//testing/libfuzzer:renderer_fuzzing",
     "//third_party/blink/public/common:common",
     "//third_party/blink/renderer/modules:modules",
     "//third_party/blink/renderer/platform/network:test_support",
@@ -2019,6 +2018,7 @@ test("blink_platform_unittests") {
     bundle_deps = [
       ":blink_platform_unittests_bundle_data",
       "//media:unit_tests_bundle_data",
+      "//testing/buildbot/filters:blink_platform_unittests_filters_bundle_data",
     ]
   }
 }
@@ -2261,6 +2261,7 @@ source_set("blink_platform_unittests_sources") {
     sources += [ "text/locale_win_test.cc" ]
   } else if (is_mac) {
     sources += [
+      "fonts/mac/font_cache_mac_test.mm",
       "fonts/mac/font_matcher_mac_test.mm",
       "fonts/mac/font_platform_data_mac_test.mm",
       "fonts/opentype/open_type_caps_support_test.mm",

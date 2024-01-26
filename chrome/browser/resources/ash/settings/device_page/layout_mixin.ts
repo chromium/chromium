@@ -55,6 +55,8 @@ export interface LayoutMixinInterface extends DragMixinInterface {
   getCalculatedDisplayBounds<T extends boolean>(displayId: string, notest: T):
       T extends false? Bounds: (Bounds|undefined);
   getCalculatedDisplayBounds(displayId: string): Bounds;
+
+  getDisplayLayoutMapForTesting(): Map<string, DisplayLayout>;
 }
 
 export const LayoutMixin = dedupingMixin(
@@ -87,6 +89,10 @@ export const LayoutMixin = dedupingMixin(
         private dragLayoutId_: string = '';
         private dragLayoutPosition_: LayoutPosition|undefined = undefined;
         private dragParentId_: string = '';
+
+        getDisplayLayoutMapForTesting(): Map<string, DisplayLayout> {
+          return this.displayLayoutMap_;
+        }
 
         initializeDisplayLayout(
             displays: DisplayUnitInfo[], layouts: DisplayLayout[]): void {

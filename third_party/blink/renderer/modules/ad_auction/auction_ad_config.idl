@@ -23,6 +23,13 @@ dictionary ProtectedAudiencePrivateAggregationConfig {
   USVString aggregationCoordinatorOrigin;
 };
 
+dictionary AuctionReportBuyerDebugModeConfig {
+  boolean enabled = false;
+
+  // Must only be provided if `enabled` is true.
+  bigint? debugKey;
+};
+
 dictionary AuctionAdConfig {
   required USVString seller;
 
@@ -37,6 +44,7 @@ dictionary AuctionAdConfig {
   USVString trustedScoringSignalsURL;
   [ImplementedAs=trustedScoringSignalsUrlDeprecated]
   USVString trustedScoringSignalsUrl;
+  long maxTrustedScoringSignalsURLLength;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;
@@ -64,6 +72,8 @@ dictionary AuctionAdConfig {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
   sequence<bigint> auctionReportBuyerKeys;
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
+  [RuntimeEnabled=PrivateAggregationAuctionReportBuyerDebugModeConfig]
+  AuctionReportBuyerDebugModeConfig auctionReportBuyerDebugModeConfig;
   sequence<DOMString> requiredSellerCapabilities;
 
   AuctionAdInterestGroupSize requestedSize;

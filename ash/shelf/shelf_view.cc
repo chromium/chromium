@@ -484,6 +484,10 @@ int ShelfView::GetShelfShortcutHostBadgeContainerSize() const {
          ShelfConfig::Get()->GetShelfShortcutHostBadgeBorderSize() * 2;
 }
 
+int ShelfView::GetShelfShortcutTeardropCornerRadiusSize() const {
+  return ShelfConfig::Get()->GetShelfShortcutTeardropCornerRadiusSize();
+}
+
 int ShelfView::GetShelfItemRippleSize() const {
   return GetButtonSize() +
          2 * ShelfConfig::Get()->scrollable_shelf_ripple_padding();
@@ -1515,7 +1519,7 @@ void ShelfView::AnimateToIdealBounds() {
 
   move_animation_tracker_.emplace(
       GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-  move_animation_tracker_->Start(metrics_util::ForSmoothness(
+  move_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportMoveAnimationSmoothness)));
 
   for (size_t i = 0; i < view_model_->view_size(); ++i) {
@@ -1580,7 +1584,7 @@ void ShelfView::FadeIn(views::View* view) {
 
   ui::AnimationThroughputReporter reporter(
       fade_in_animation_settings.GetAnimator(),
-      metrics_util::ForSmoothness(
+      metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportFadeInAnimationSmoothness)));
 
   view->layer()->SetOpacity(1.f);
@@ -2375,7 +2379,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     if (!fade_out_animation_tracker_) {
       fade_out_animation_tracker_.emplace(
           GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-      fade_out_animation_tracker_->Start(metrics_util::ForSmoothness(
+      fade_out_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportFadeOutAnimationSmoothness)));
     }
 
@@ -2663,11 +2667,12 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 
+  // UnsafeDangling triaged in https://crbug.com/1423849.
   shelf_menu_model_adapter_ = std::make_unique<ShelfMenuModelAdapter>(
       item ? item->id.app_id : std::string(), std::move(menu_model), source,
       source_type,
       base::BindOnce(&ShelfView::OnMenuClosed, base::Unretained(this),
-                     base::UnsafeDanglingUntriaged(source)),
+                     base::UnsafeDangling(source)),
       display::Screen::GetScreen()->InTabletMode(),
       /*for_application_menu_items*/ !context_menu);
   shelf_menu_model_adapter_->Run(
@@ -2681,7 +2686,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
     context_menu_shown_callback_.Run();
 }
 
-void ShelfView::OnMenuClosed(views::View* source) {
+void ShelfView::OnMenuClosed(MayBeDangling<views::View> source) {
   context_menu_id_ = ShelfID();
 
   closing_event_time_ = shelf_menu_model_adapter_->GetClosingEventTime();

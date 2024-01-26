@@ -79,6 +79,7 @@ namespace container_internal {
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
 #error ABSL_BTREE_ENABLE_GENERATIONS cannot be directly set
 #elif defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER)
 // When compiled in sanitizer mode, we add generation integers to the nodes and
 // iterators. When iterators are used, we validate that the container has not
@@ -2856,7 +2857,8 @@ inline auto btree<P>::internal_emplace(iterator iter, Args &&...args)
     }
   }
   (void)replaced_node;
-#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER)
   if (!replaced_node) {
     assert(iter.node_->is_leaf());
     if (iter.node_->is_root()) {

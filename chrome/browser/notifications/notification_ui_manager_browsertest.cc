@@ -59,8 +59,8 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
       log_ += "Close_";
       log_ += (by_user ? "by_user_" : "programmatically_");
     }
-    void Click(const absl::optional<int>& button_index,
-               const absl::optional<std::u16string>& reply) override {
+    void Click(const std::optional<int>& button_index,
+               const std::optional<std::u16string>& reply) override {
       if (button_index) {
         log_ += "ButtonClick_";
         log_ += base::NumberToString(*button_index) + "_";

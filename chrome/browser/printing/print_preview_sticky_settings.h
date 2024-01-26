@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_PREVIEW_STICKY_SETTINGS_H_
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_STICKY_SETTINGS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "printing/print_job_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -52,7 +52,7 @@ class PrintPreviewStickySettings {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  absl::optional<std::string> printer_app_state_;
+  std::optional<std::string> printer_app_state_;
 };
 
 }  // namespace printing

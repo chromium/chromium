@@ -22,6 +22,7 @@ android_library("java") {
   deps = [
     ":content_settings_enums_java",
     "//build/android:build_java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -50,6 +51,9 @@ android_library("content_settings_enums_java") {
   sources = [ "java/src/org/chromium/components/content_settings/ContentSettingsTypeSet.java" ]
   srcjar_deps = [ ":content_settings_enums_javagen" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  public_deps = [
+    "//components/content_settings/core/common:content_settings_types_java",
+  ]
 }
 
 java_cpp_enum("content_settings_enums_javagen") {
@@ -57,7 +61,6 @@ java_cpp_enum("content_settings_enums_javagen") {
     "../core/browser/cookie_settings.h",
     "../core/common/content_settings.h",
     "../core/common/content_settings_constraints.h",
-    "../core/common/content_settings_types.h",
     "../core/common/cookie_blocking_3pcd_status.h",
     "../core/common/cookie_controls_breakage_confidence_level.h",
     "../core/common/cookie_controls_enforcement.h",
@@ -67,7 +70,7 @@ java_cpp_enum("content_settings_enums_javagen") {
 }
 
 java_cpp_strings("java_pref_names_srcjar") {
-  sources = [ "//components/content_settings/core/common/pref_names.cc" ]
+  sources = [ "//components/content_settings/core/common/pref_names.h" ]
 
   template = "java_templates/PrefNames.java.tmpl"
 }

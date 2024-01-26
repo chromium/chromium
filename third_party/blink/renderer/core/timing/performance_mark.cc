@@ -136,6 +136,39 @@ ScriptValue PerformanceMark::detail(ScriptState* script_state) {
   return ScriptValue(isolate, value);
 }
 
+// static
+const PerformanceMark::UserFeatureNameToWebFeatureMap&
+PerformanceMark::GetUseCounterMapping() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<UserFeatureNameToWebFeatureMap>, map, ());
+  if (!map.IsSet()) {
+    *map = {
+        {"NgOptimizedImage", WebFeature::kUserFeatureNgOptimizedImage},
+        {"NgAfterRender", WebFeature::kUserFeatureNgAfterRender},
+        {"NgHydration", WebFeature::kUserFeatureNgHydration},
+        {"next-third-parties-ga", WebFeature::kUserFeatureNextThirdPartiesGA},
+        {"next-third-parties-gtm", WebFeature::kUserFeatureNextThirdPartiesGTM},
+        {"next-third-parties-YouTubeEmbed",
+         WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed},
+        {"next-third-parties-GoogleMapsEmbed",
+         WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed},
+    };
+  }
+  return *map;
+}
+
+// static
+absl::optional<mojom::blink::WebFeature>
+PerformanceMark::GetWebFeatureForUserFeatureName(const String& feature_name) {
+  auto& feature_map = PerformanceMark::GetUseCounterMapping();
+  auto it = feature_map.find(feature_name);
+  if (it == feature_map.end()) {
+    return absl::nullopt;
+  }
+
+  return it->value;
+}
+
 void PerformanceMark::Trace(Visitor* visitor) const {
   visitor->Trace(deserialized_detail_map_);
   PerformanceEntry::Trace(visitor);

@@ -228,6 +228,7 @@ if (enable_message_center) {
       sources += [
         "views/large_image_view_unittest.cc",
         "views/message_popup_collection_unittest.cc",
+        "views/message_view_unittest.cc",
         "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",
         "views/notification_view_base_unittest.cc",

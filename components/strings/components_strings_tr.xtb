@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Masaüstü Yer İşaretleri</translation>
+<translation id="1067029985695494416">Arama motoru ayrıntıları</translation>
 <translation id="1068672505746868501">Bu dildeki (<ph name="SOURCE_LANGUAGE" />) sayfaları asla çevirme</translation>
 <translation id="1070333806075222467">Metal (Parlak)</translation>
 <translation id="1070853536588271387">Hibrit ve alternatif araçlar</translation>
@@ -230,6 +231,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1406812885827747674">Bu defalık izin ver</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="1408787208417187241">Üstte üçlü tel zımba</translation>
+<translation id="1410365862999780287">Etkinliğiniz bu cihazı kullanan diğer kullanıcılar tarafından görülmediğinden daha gizli bir şekilde göz atabilirsiniz. Bu durum, Google da dahil olmak üzere ziyaret ettiğiniz web siteleri ve kullandıkları hizmetler tarafından verilerin toplanma şeklini değiştirmez. Yine de indirdikleriniz, yer işaretleri ve okuma listesi öğeleri kaydedilir.</translation>
 <translation id="1410941016594047814">Zarf Invite</translation>
 <translation id="1413407968866574823">Aksiyon ve platform oyunları</translation>
 <translation id="1413809658975081374">Gizlilik hatası</translation>
@@ -251,6 +253,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1434317006812369578">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="1435940442311036198">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
 <translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
+<translation id="1441816242347931036">Devam etmek için açın</translation>
 <translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
 <translation id="1442987760062738829">Delik</translation>
 <translation id="1446396933673057385">Doğruluk kontrolü</translation>
@@ -266,13 +269,15 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> sitesine devam etmek için <ph name="EMBEDDED_ORIGIN" /> kodunuz: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">Daha fazla göster</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Yazma konusunda yardım almak için en az 3 kelime girin</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Temizlik Hizmetleri</translation>
 <translation id="1475299637784133125">Tarayıcı sürümünü mü arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="1476595624592550506">Şifrenizi değiştirin</translation>
 <translation id="1482879811280872320">Bisiklet</translation>
 <translation id="1483493594462132177">Gönder</translation>
-<translation id="1484632730438126438">Giriş çok kısa. En az 3 kelime yazın.</translation>
+<translation id="1484449009683144042">Bu, yapay zekadan yararlanarak yazım konusunda deneysel destek sunan bir özellik olduğundan her zaman düzgün çalışmayabilir.
+    <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
 <translation id="14938948731065592">Bilgisayar çevre birimleri</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
@@ -418,6 +423,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Bu verileri nasıl kullanırız?<ph name="END_BOLD" /> Chrome, siz internette gezindikçe ilgi alanlarınızı not eder. Konu etiketleri önceden tanımlanmış olup sanat ve eğlence, alışveriş ve spor gibi konuları içerir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan birkaç konuyu (tarama geçmişinizi değil) göstermesini isteyebilir.</translation>
 <translation id="1746113442205726301">Resim Y kayması</translation>
 <translation id="1746531169546376413">0 derece</translation>
+<translation id="1748225549612934682">Yazma konusunda yardım almak için metninizi kısaltın</translation>
 <translation id="1751544761369730824"><ph name="SITE_NAME" /> sitesini sil</translation>
 <translation id="1752021286346845558">Posta kutusu 8</translation>
 <translation id="1753068535428855445">Buluşma ve kişisel ilanlar</translation>
@@ -459,6 +465,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1828959155404624835">Araç kiralama işlemleri</translation>
 <translation id="1834321415901700177">Bu site zararlı programlar içeriyor</translation>
 <translation id="1838374766361614909">Aramayı temizle</translation>
+<translation id="1839331950812095887">düşüncelerinizi özetleyen birkaç kelime</translation>
 <translation id="1839551713262164453">Politika değerlerini doğrulama işlemi hatalarla başarısız oldu</translation>
 <translation id="1842969606798536927">Ödeme</translation>
 <translation id="1846432862466000825">Plastik (Arşiv)</translation>
@@ -511,6 +518,8 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1956486093533522234">Cihazınızı bulun, güvenliğini sağlayın veya silin</translation>
 <translation id="1958218078413065209">Aldığınız en yüksek puan <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Google'a <ph name="BEGIN_WHITEPAPER_LINK" />ziyaret ettiğiniz bazı sitelerin URL'lerini, sınırlı sistem bilgisini ve bazı sayfa içeriklerini<ph name="END_WHITEPAPER_LINK" /> göndererek herkes için web güvenliğini iyileştirmeye yardımcı olun. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Gizlilik politikası<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">Metniniz ve sayfa içeriğiniz Google'a gönderilerek bu özelliği iyileştirmek için kullanılabilir.
+  <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Yer İşaretleri</translation>
 <translation id="196752089528718902">Sitelere genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Serileştirme hatası</translation>
@@ -688,7 +697,9 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2289385804009217824">Kırp</translation>
 <translation id="2292556288342944218">İnternet erişiminiz engellendi</translation>
 <translation id="2293443924986248631">Etkinleştirildiğinde, siteler sizi web'de takip eden çerezler kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
+<translation id="2295831393422400053">Yazmama yardım et özelliğini kullanmak için Aramaları ve Göz Atmayı Daha İyi Yap ayarını açın</translation>
 <translation id="2300306941146563769">Yüklenmeyenler</translation>
+<translation id="2301098101308036335">Hangi web sitelerinin ne zaman ziyaret edildiği.</translation>
 <translation id="230286397113210245">Gizli pencere aç düğmesi, yeni gizli pencere açıp gizli olarak göz atmak için etkinleştirin</translation>
 <translation id="2312234273148520048">Çeşniler ve Soslar</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />'tan az. Sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
@@ -701,6 +712,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2328651992442742497">İzin veriliyor (varsayılan)</translation>
 <translation id="2328955282645810595">El Aletleri ve Elektrikli Aletler</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Özgeçmiş yazımı</translation>
 <translation id="2337852623177822836">Ayar yöneticinizin kontrolü altındadır</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> eşlenmek istiyor</translation>
 <translation id="2340549657492527534">Sürüngenler ve amfibiler</translation>
@@ -712,6 +724,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2354430244986887761">Google Güvenli Tarama son zamanlarda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı uygulamalar buldu<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
 <translation id="2356070529366658676">Sor</translation>
+<translation id="2356926036049612643">V8 optimize edici</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam et</translation>
@@ -748,6 +761,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ana makinesinin tüm <ph name="PROTOCOL" /> bağlantılarını açmasına izin verilsin mi?</translation>
 <translation id="2438874542388153331">Sağda dörtlü delik</translation>
 <translation id="2441854154602066476">Dokunarak doldurulabilen ödeme yöntemleri. Klavye gizli.</translation>
+<translation id="2442865686365739754">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tarama geçmişiniz
+            <ph name="LIST_ITEM" />Çerezler ve site verileri
+            <ph name="LIST_ITEM" />Formlara girilen bilgiler
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Giriş yaptığınızda bu cihaza bağlı çevre birimleri</translation>
 <translation id="2450021089947420533">Arama Yolculukları</translation>
 <translation id="2456755709261364512">Piliniz %<ph name="REQUIRED_BATTERY_PRECENT" /> üzerinde şarj olmalıdır</translation>
@@ -791,6 +810,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2535585790302968248">Gizli olarak göz atmak için yeni bir gizli sekme aç</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ve 1 tane daha}other{ve # tane daha}}</translation>
 <translation id="2536110899380797252">Adres Ekle</translation>
+<translation id="2537931901612099523">Etkinliğiniz bu cihazı kullanan diğer kullanıcılar tarafından görülmediğinden daha gizli bir şekilde göz atabilirsiniz. Bu durum, Google da dahil olmak üzere ziyaret ettiğiniz web siteleri ve kullandıkları hizmetler tarafından verilerin toplanma şeklini değiştirmez. İndirilenler ve yer işaretleri kaydedilir.</translation>
 <translation id="2539524384386349900">Algıla</translation>
 <translation id="2541219929084442027">Gizli sekmelerde görüntülediğiniz sayfalar, açık olan tüm gizli sekmeler kapatıldıktan sonra tarayıcınızın geçmişinden, çerez deposundan veya arama geçmişinden silinecektir. İndirdiğiniz dosyalar veya oluşturduğunuz yer işaretleri kalacaktır.</translation>
 <translation id="2542106216580219892">Sörf</translation>
@@ -862,6 +882,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2677696497921480781">Doğum günleri ve isim günleri</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2678468611080193228">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
+<translation id="2686919536310834199">Yazmama yardım et özelliği hakkında geri bildirim gönderin.</translation>
 <translation id="2687555958734450033">En uygun</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Evet, devam et</translation>
@@ -1162,7 +1183,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="33073482541490531">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
 <translation id="3307649904964670439">Chrome'u özelleştir düğmesi, tarayıcınızın görünümünü özelleştirmek için etkinleştirin</translation>
 <translation id="3308006649705061278">Kuruluş Birimi (OU)</translation>
-<translation id="3324223664999044166">Düşüncelerinizi özetleyen en az üç kelime</translation>
 <translation id="3324687287337751929">4 x 6 inç</translation>
 <translation id="3324983252691184275">Kızıl</translation>
 <translation id="3325027355611702542">Karavanlar</translation>
@@ -1179,6 +1199,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="334438173029876234">Kaykay Gereçleri</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
+<translation id="335809815767823">Dışa aktarıldı</translation>
 <translation id="3359565626472459400">Evlilik</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
 <translation id="3360313521703038580">Ekoloji ve çevre</translation>
@@ -1333,6 +1354,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3632892046558972264">Ekran paylaşımı duraklatıldı</translation>
 <translation id="3634530185120165534">Tepsi 5</translation>
 <translation id="3634567936866541746">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
+<translation id="3638102297696182302">Yazmama yardım et özelliğini devam ettirin. Açmak için Sekme ve ardından Enter tuşuna basın</translation>
 <translation id="3642196846309122856">Dosyalarınızı tekrar indirmeyi deneyin</translation>
 <translation id="3642638418806704195">Uygulama:</translation>
 <translation id="3646643500201740985">Bir reklamın ne kadar iyi performans gösterdiğini ölçme</translation>
@@ -1345,6 +1367,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Gündelik Giyim Ürünleri</translation>
 <translation id="3658742229777143148">Düzeltme</translation>
+<translation id="3659521826520353662">Yönetici tarafından tanımlanan hangi web sitelerinin ne zaman ziyaret edildiği: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Anahtar kelimeler:</translation>
 <translation id="3665100783276035932">Çoğu site beklendiği gibi çalışır</translation>
 <translation id="3667704023705708645">Risk sermayesi</translation>
@@ -1398,10 +1421,10 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3744212718085287312">Bir dahaki sefere sanal kartla daha güvenli hale getirilsin mi?</translation>
 <translation id="3744899669254331632">Web sitesi Chromium'un işleyemediği karışık kimlik bilgileri gönderdiğinden <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici türdendir, dolayısıyla bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
+<translation id="3745599309295009257">Metniniz ile yazdığınız sayfanın içeriği ve URL'si Google'a gönderilecek, gerçek kişiler tarafından incelenecek ve bu özelliği iyileştirmek için kullanılacaktır. Kişisel bilgiler (ör. tıbbi veya finansal bilgiler) girmeyin veya bu aracı özel ya da hassas bilgiler içeren sitelerde kullanmayın.</translation>
 <translation id="3748009735914587286">Metal (Çok Parlak)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesindeki saldırganlar sizi yanıltarak yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) açıklamanızı sağlamak gibi tehlikeli bir şey yapmanızı sağlayabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Havacılık sektörü</translation>
-<translation id="3751020515020988516">İsteğiniz anlaşılmadı. Farklı bir istekte bulunun.</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığı için yoksayıldı.</translation>
 <translation id="3754210790023674521">Pencere içinde pencere modundan çık</translation>
 <translation id="3759461132968374835">Son zamanda herhangi bir kilitlenme bildirmediniz. Kilitlenme bildirme özelliği devre dışıyken oluşan kilitlenmeler burada görünmez.</translation>
@@ -1435,6 +1458,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3812398568375898177">Bu güncelleme, ChromeOS'ta Android uygulamalarının performansını iyileştiren kritik bir güncellemedir.</translation>
 <translation id="3815434930383843058">8 x 12 inç</translation>
 <translation id="3816482573645936981">Değer (geçersiz kılındı)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> kartının CVC numarası</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Tarayıcınız <ph name="BROWSER_DOMAIN" /> tarafından, profiliniz ise <ph name="PROFILE_DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="382518646247711829">Proxy sunucu kullanıyorsanız...</translation>
@@ -1458,7 +1482,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3872834068356954457">Bilim</translation>
 <translation id="3875783148670536197">Nasıl Yapıldığını Göster</translation>
-<translation id="3877877650871124156">Giriş çok uzun. Metni kısaltıp tekrar deneyin.</translation>
 <translation id="3881478300875776315">Daha az satır göster</translation>
 <translation id="3883500545751229739">araya giren reklamlar</translation>
 <translation id="3884278016824448484">Çakışan cihaz tanımlayıcısı</translation>
@@ -1518,6 +1541,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4014895360827978999">Ticaret Hizmetleri ve Ödeme Sistemleri</translation>
 <translation id="4018819349042761761">Ortak Anahtar</translation>
 <translation id="4023431997072828269">Bu form, güvenli olmayan bir bağlantı kullanılarak gönderildiğinden bilgileriniz başkaları tarafından görülebilir.</translation>
+<translation id="4025325634010721551">Politikalar yeniden yüklendi</translation>
 <translation id="4030383055268325496">Eklemeyi &amp;geri al</translation>
 <translation id="4030545038933060179">Bu ayar açık olduğunda, son tarama geçmişinize bağlı bir konu listesi burada gösterilir</translation>
 <translation id="4031179711345676612">Mikrofona izin verildi</translation>
@@ -1637,7 +1661,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="422722221769396062">Restoran Sipariş Hizmetleri</translation>
 <translation id="4230204356098880324">Kameranızı kullanmak ve hareket ettirmek isteyebilir</translation>
 <translation id="4231448684371260244">8 x 13 inç</translation>
-<translation id="4233220688695460165">Chrome, reklam öneren konuları ve siteleri 30 gün içinde otomatik olarak siler. Dilerseniz hoşunuza gitmeyen belirli konuları ve siteleri kendiniz de engelleyebilirsiniz.</translation>
+<translation id="4233220688695460165">Chrome, reklam öneren konuları ve siteleri 30 gün içinde otomatik olarak siler. Dilerseniz hoşunuza gitmeyen konuları ve siteleri kendiniz de engelleyebilirsiniz.</translation>
 <translation id="4235360514405112390">Geçerli</translation>
 <translation id="4239799716689808527">Etiketler</translation>
 <translation id="4242380780309416996">Zarf (Kalın)</translation>
@@ -1701,6 +1725,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4333295216031073611">Alışveriş listesi</translation>
 <translation id="4333561522337981382">Tüm ekranlarınızda pencereleri yönetmek</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
+<translation id="4336913590841287350">Bu politika henüz iOS'te kullanıcı politikası olarak desteklenmemektedir.</translation>
 <translation id="4340575312453649552">Bu reklam, cihazınız için çok fazla kaynak kullandığından Chrome tarafından kaldırıldı.</translation>
 <translation id="4340810192899866471">JSON dosyasından içe aktar</translation>
 <translation id="4340982228985273705">Bu bilgisayarın kurumsal olarak yönetilmediği algılandığı için politika yalnızca Chrome Web Mağazası'nda barındırılan uzantıları otomatik olarak yükleyebilir. Chrome Web Mağazası'nın güncelleme URL'si "<ph name="CWS_UPDATE_URL" />" şeklindedir.</translation>
@@ -1795,7 +1820,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Şifreleri doldurmak için ekran kilidinizi kullanıyorsunuz</translation>
 <translation id="4558551763791394412">Uzantılarınızı devre dışı bırakmayı deneyin</translation>
-<translation id="456043042661026303">Ödeme ayrıntılarınız güvenli bir şekilde kontrol ediliyor</translation>
 <translation id="4566017918361049074">Açık hava spor aktiviteleri</translation>
 <translation id="4567686777917670400">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chromium dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Doğrulandı</translation>
@@ -1825,6 +1849,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Nakit para üstü bağlantısı oluşturuldu</translation>
 <translation id="4631881646528206880">Sanal kart kaydı</translation>
+<translation id="4635278307999235413">Veriler, Yönetici Konsolu'na gönderiliyor</translation>
 <translation id="4636930964841734540">Bilgi</translation>
 <translation id="4638670630777875591">Chromium'daki Gizli mod</translation>
 <translation id="464342062220857295">Özellik ara</translation>
@@ -2226,6 +2251,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Hiçbir site engellenmiyor}=1{1 site engelleniyor}other{# site engelleniyor}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
+<translation id="5434798570900738152">Chromium aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Tarama geçmişiniz
+            <ph name="LIST_ITEM" />Çerezler ve site verileri
+            <ph name="LIST_ITEM" />Formlara girilen bilgiler
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" />, MIDI cihazlarınızı kontrol etmek ve yeniden programlamak istiyor (SysEx)</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
@@ -2465,6 +2496,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5925040402342933574">Optik Disk (Yarı Parlak)</translation>
 <translation id="5926982310317673627">Spor Salonları ve Sağlık Kulüpleri</translation>
 <translation id="5928444777041341328">Ev ve bahçe</translation>
+<translation id="5930147475897662863">Yazmama yardım et özelliğini kullanmak için bu ayarı açın</translation>
 <translation id="5932224571077948991">Site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="5937560539988385583">Sayfa çevrildi</translation>
 <translation id="5938153366081463283">Sanal kart ekleyin</translation>
@@ -2495,7 +2527,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5997247540087773573">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi, hesaplarınızın güvenliğini sağlamak için bu şifreyi hemen değiştirmenizi ve kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="5999271311987646952">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede <ph name="BEGIN_LINK" />kısa süre önce kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" için bulunan <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
-<translation id="6001839398155993679">Başlayalım</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6005659677094197001">Sürekli</translation>
 <translation id="6005765687956866568">Otomatik doldurulan bilgiler formdan silindi</translation>
@@ -2554,6 +2585,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6105460996796456817">Site oluştur</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> adresindeki web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
 <translation id="6107012941649240045">Verilen:</translation>
+<translation id="6107924765192360631">Yazma önerileri almak için birkaç kelime veya ilk taslağınızı yazmanız yeterlidir.</translation>
 <translation id="610911394827799129">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="6116338172782435947">Panoya kopyalanan metin ve resimleri görme</translation>
 <translation id="6117833587752089929">Fotoğraf (Saten)</translation>
@@ -2564,10 +2596,10 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf Chinese #2</translation>
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
+<translation id="6131824478727057281">konum</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome'daki Gizli mod hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">İzin vermeye devam et</translation>
 <translation id="6133984428121856852">Dosya uzantısı boş veya bozuk.</translation>
-<translation id="6139769382153674477">Bir hata oluştu. Oturum açtınız mı?</translation>
 <translation id="6139975341602920272">17 x 22 inç</translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>
@@ -2634,7 +2666,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6272088941196661550">Chrome geçmişinizde alakalı etkinlikleri görmek için arama yolculuğunuzu devam ettirin.</translation>
 <translation id="6272383483618007430">Google Güncelleme</translation>
 <translation id="6279183038361895380">İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
-<translation id="628016388715774955">Tam adresi doldur seçeneği belirlendi</translation>
 <translation id="6280223929691119688">Bu adrese teslimat yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
 <translation id="6284517535531159884">Varyasyon Çekirdek Türü</translation>
@@ -2765,6 +2796,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6502626736864595182">Forum ve sohbet sağlayıcıları</translation>
 <translation id="6502991525169604759">Yaptığınız değişiklikler hariç</translation>
 <translation id="6506959208958864820">Zarf</translation>
+<translation id="6507117483253822672">Web'in herhangi bir yerinde kendinize güvenerek yazın</translation>
 <translation id="6508722015517270189">Chrome'u yeniden başlatın</translation>
 <translation id="6513005815064132016">Kameranızın konumunu izlemek isteyebilir</translation>
 <translation id="6517596291481585650">Uyarı: Bu politika bir liste olmadığından politikada belirtildiği gibi bir liste olarak birleştirilmemiştir.</translation>
@@ -2824,7 +2856,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6645291930348198241">Çerezlere ve site verilerine erişmek.</translation>
 <translation id="6645478838938543427">Fiyat düşüşü uyarıları <ph name="EMAIL_ADDRESS" /> adresine gönderilir</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızdan çıkış yapılmaz)}other{# siteden (Google Hesabınızdan çıkış yapılmaz)}}</translation>
 <translation id="6648459603387803038">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.</translation>
 <translation id="6648524591329069940">Serif Yazı Tipi</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -2906,7 +2937,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6807791860691150411">Eğitim</translation>
 <translation id="681021252041861472">Gerekli Alan</translation>
 <translation id="6810899417690483278">Özelleştirme Kimliği</translation>
-<translation id="681459028290894216">Tam adresi doldur</translation>
 <translation id="6816109178681043245">Spor Malzemeleri</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">seri bağlantı noktaları</translation>
@@ -3113,6 +3143,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7192537357091279678">Bilgisayar Sürücüleri ve Depolama</translation>
 <translation id="7193661028827781021">Referans</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">Bu ayarı açtıktan sonra yazmaya başlamak için bu sekmeye dönün</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Yöneticiniz şunları görebilir:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir gizli sekme açıp gizli olarak göz atmak için Sekme tuşuna, sonra Enter'a basın</translation>
@@ -3176,6 +3207,7 @@ Ek ayrıntılar:
 <translation id="7341357280245177602">Kullanılmış araçlar</translation>
 <translation id="7346048084945669753">İlişkili olma durumu:</translation>
 <translation id="7346062987309535530">Yemek Takımları</translation>
+<translation id="7346081071264046066">"bu düğün davetini kabul edin ve ne kadar sevindiğinizi belirtin"</translation>
 <translation id="7352651011704765696">Bir şeyler ters gitti</translation>
 <translation id="7353601530677266744">Komut Satırı</translation>
 <translation id="7354880545102894991">Düşük maliyetli ve son dakika seyahat</translation>
@@ -3201,7 +3233,6 @@ Ek ayrıntılar:
 <translation id="7378877318020334501">TV komedi dizileri</translation>
 <translation id="7380398842872229465">10 x 15 inç</translation>
 <translation id="738439098860678026">Okul öncesi eğitim</translation>
-<translation id="7388071710882496863">"Bu restoran için 5 yıldızlı yorum yaz" gibi istekler</translation>
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dakika içinde yeniden başlatılacak}other{Cihazınız # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7390545607259442187">Kartı Onayla</translation>
 <translation id="7392089738299859607">Adresi Güncelle</translation>
@@ -3691,6 +3722,7 @@ Ek ayrıntılar:
 <translation id="8286036467436129157">Oturum Aç</translation>
 <translation id="8286799286781881307">Yöneticiniz tarafından yetkilendirilen uygulamalar, cihazınıza bağlı tüm ekranlarda ekran görüntüsü alabilir. Bu bilgiler yerel olarak işlenebilir veya kuruluşunuzun sunucularına yüklenebilir.</translation>
 <translation id="8287123726498397887">Zarf (Önceden Basılmış)</translation>
+<translation id="8288320283441806607">Bu özelliği kullanmak için Aramaları ve Göz Atmayı Daha İyi Yap ayarını açın</translation>
 <translation id="8288807391153049143">Sertifikayı göster</translation>
 <translation id="8289355894181816810">Bunun ne anlama geldiğini bilmiyorsanız ağ yöneticinizle bağlantı kurun.</translation>
 <translation id="8292520987784410870">Her zaman doğrulansın mı?</translation>
@@ -3739,6 +3771,7 @@ Ek ayrıntılar:
 <translation id="8381674639488873545">Bu ödemeler bir defalık alınabileceği gibi yinelenen ödemeler de olabilir ve bu durum açıkça belli olmayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Normal şartlarda <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> sitesinden <ph name="VM_NAME" /> ile paylaşma işlevi, yönetici politikası tarafından engellendi</translation>
+<translation id="8392783408127179588">Politikalar yeniden yükleniyor</translation>
 <translation id="8396522675989118466">Bu, <ph name="SIDE_OF_CARD" /> bulunan <ph name="NUMBER_OF_DIGITS" /> basamaklı koddur</translation>
 <translation id="8398335999901363925">Dokunarak doldurulabilen ödeme yöntemleri tam ekranda açıldı.</translation>
 <translation id="8398446215576328011">Geçerli politikaları geri döndür</translation>
@@ -4012,6 +4045,7 @@ Ek ayrıntılar:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Hukuk ve kamu hizmetleri</translation>
 <translation id="8954252855949068147">Giyim</translation>
+<translation id="8956124158020778855">Bu ayarı açtıktan sonra yazmaya başlamak için bu sekmeye dönün.</translation>
 <translation id="8957210676456822347">Giriş Portalı Yetkilendirmesi</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Site ayarlarına gidin</translation>
@@ -4056,6 +4090,7 @@ Ek ayrıntılar:
 <translation id="9038649477754266430">Sayfaları daha hızlı yüklemek için bir tahmin hizmeti kullan</translation>
 <translation id="9039213469156557790">Ayrıca, bu sayfa güvenli olmayan başka kaynaklar içeriyor. Bu kaynaklar, aktarım sırasında başkaları tarafından görülebilir ve bir saldırgan tarafından sayfanın davranışını değiştirmek üzere kullanılabilir.</translation>
 <translation id="9042617223719777575">Yüksek Kapasite</translation>
+<translation id="9042827002460091668">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="9044359186343685026">Touch ID'yi kullan</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9048035366624198823">Şu işlemler için <ph name="POLICY_NAME" /> politikasının <ph name="POLICY_VALUE" /> değerine ayarlanması gerekir: <ph name="ACTION_LIST" />.</translation>
@@ -4159,6 +4194,7 @@ Ek ayrıntılar:
 <translation id="936602727769022409">Google Hesabınıza erişimi kaybedebilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="937457230470581909">Hayvanat Bahçeleri, akvaryumlar ve doğa koruma alanları</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Reklam konularınız, bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin listesi olan son tarama geçmişinize göre belirlenir.</translation>
+<translation id="937885410143139026">Veriler, Yönetici Konsolu'na gönderildi</translation>
 <translation id="939736085109172342">Yeni klasör</translation>
 <translation id="940053046584497293">Seyahat ve ulaşım</translation>
 <translation id="944540589955480312">Google Hesabınıza kaydedilen şifreleri ve geçiş anahtarlarını kullanın</translation>

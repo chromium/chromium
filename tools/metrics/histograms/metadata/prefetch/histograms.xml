@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieReadTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
-    units="Boolean" expires_after="2024-01-14">
+    enum="Boolean" expires_after="2024-01-14">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2024-05-12">
+    enum="HttpResponseCode" expires_after="2024-07-14">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>

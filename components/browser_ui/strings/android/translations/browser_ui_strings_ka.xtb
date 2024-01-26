@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ჩამოტვირთვა დაპაუზებულია</translation>
 <translation id="1415402041810619267">URL შემოკლებულია</translation>
 <translation id="1426410128494586442">დიახ</translation>
+<translation id="1434873037477293673">ფასის კლების ბარათი</translation>
 <translation id="1448064542941920355">მასშტაბის შემცირება</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ვებსაიტზე}other{<ph name="SITE_COUNT" /> ვებსაიტზე}}</translation>
 <translation id="1510341833810331442">საიტებისთვის არ არის დაშვებული თქვენს მოწყობილობაზე მონაცემთა შენახვა</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">საიტებს შეუძლია სისტემაში შესვლის მოთხოვნების ჩვენება პირადობის მონაცემების სერვისებიდან.</translation>
 <translation id="2790501146643349491">ჩართვის შემთხვევაში ბოლო დროს დახურულ საიტებს შეეძლება მონაცემთა გაგზავნისა და მიღების დასრულება. გამორთვის შემთხვევაში ბოლო დროს დახურულ საიტებს არ შეეძლება მონაცემთა გაგზავნისა და მიღების დასრულება.</translation>
 <translation id="2822354292072154809">ნამდვილად გსურთ, საიტის ყველა ნებართვის გადაყენება <ph name="CHOSEN_OBJECT_NAME" />-ისთვის?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">მობილურის ხედის მოთხოვნა</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">საიტებისთვის თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების დაბლოკვა</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
+<translation id="6452138246455930388">ფასის კლება თქვენს გახსნილ ჩანართში, <ph name="OLD_PRICE" />-დან <ph name="NEW_PRICE" />-მდე, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">მობილურის ხედის მოთხოვნა, როცა ფანჯრები ვიწროა</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="652937045869844725">ცადეთ მესამე მხარის ქუქი-ჩანაწერების დაშვება, რაც ნიშნავს, რომ ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები უფრო დიდი ალბათობით იმუშავებს</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">გადაადგილება ქვემოთ</translation>
 <translation id="6749077623962119521">გსურთ ნებართვების გადაყენება?</translation>
 <translation id="6766622839693428701">დასახურად გადაფურცლეთ ქვემოთ.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-დან</translation>
 <translation id="6787751205395685251">აირჩიეთ ვარიანტი <ph name="SITE_NAME" />-ისთვის</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6818926723028410516">აირჩიეთ ერთეულები</translation>
 <translation id="6864395892908308021">NFC მხარდაუჭერელია ამ მოწყობილობის მიერ</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" />-დან</translation>
 <translation id="6912998170423641340">საიტებისთვის გაცვლის ბუფერში არსებულ ტექსტსა და სურათებზე წვდომის დაბლოკვა</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6950072572526089586">თქვენ მიერ მონახულებულ საიტს შეუძლია ინფორმაციის შენახვა იმის შესახებ, თუ რას აკეთებდით. ამგვარად, ის თქვენი მოლოდინისამებრ იმუშავებს. მაგალითად, ის დაგტოვებთ სისტემაში შესულ მდგომარეობაში ან შეინახავს თქვენს საყიდლების კალათაში არსებულ ერთეულებს. ხშირ შემთხვევაში, საიტები ამ ინფორმაციას დროებით ინახავს.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">ოზის საოცარი ჯადოქარი</translation>
 <translation id="7684642910516280563">საიტისთვის არ დაიშვას მესამე მხარის ქუქი-ჩანაწერების გამოყენება</translation>
 <translation id="7719367874908701697">გვერდის მასშტაბი</translation>
+<translation id="7770832849480336015">დაიმალოს „<ph name="TITLE_OF_MODULE" />“</translation>
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7791543448312431591">დამატება</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>

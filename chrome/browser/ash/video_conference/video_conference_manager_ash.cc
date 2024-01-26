@@ -123,7 +123,6 @@ void VideoConferenceManagerAsh::CreateBackgroundImage() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
   ash::SystemAppLaunchParams params;
-  params.url = GURL(vc_background_ui::kChromeUIVcBackgroundURL);
   params.launch_source = apps::LaunchSource::kFromShelf;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::VC_BACKGROUND,
                                params);

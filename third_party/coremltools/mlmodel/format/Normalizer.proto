@@ -1,0 +1,38 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * A normalization preprocessor.
+ */
+message Normalizer {
+  /*
+   * There are three normalization modes,
+   * which have the corresponding formulas:
+   *
+   * Max
+   *     .. math::
+   *         max(x_i)
+   *
+   * L1
+   *     .. math::
+   *         z = ||x||_1 = \sum_{i=1}^{n} |x_i|
+   *
+   * L2
+   *     .. math::
+   *         z = ||x||_2 = \sqrt{\sum_{i=1}^{n} x_i^2}
+   */
+  enum NormType {
+    LMax = 0;
+    L1 = 1;
+    L2 = 2;
+  }
+
+  NormType normType = 1;
+}

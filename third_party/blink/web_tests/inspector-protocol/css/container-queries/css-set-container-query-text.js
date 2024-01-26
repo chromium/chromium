@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
 <link rel='stylesheet' href='${testRunner.url('../resources/set-container-query-text.css')}'/>`, 'Tests CSS.setContainerQueryText method.');
 

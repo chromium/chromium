@@ -17,6 +17,9 @@
     </div>
   </main>
   <script>
+    window.addEventListener("keydown", () => {
+      timestamps[counter]["eventEnd"] = performance.now();
+    });
     testSoftNavigation({
       addContent: () => {
         addTextToDivOnMain();

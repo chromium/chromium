@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/size.h"
 
 class Profile;
 
@@ -47,7 +48,7 @@ InstallPlaceholderJob::InstallPlaceholderJob(
     : profile_(*profile),
       debug_value_(debug_value),
       // For placeholder installs, the install_url is treated as the start_url.
-      app_id_(GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+      app_id_(GenerateAppId(/*manifest_id_path=*/std::nullopt,
                             install_options.install_url)),
       lock_(lock),
       install_options_(install_options),
@@ -94,14 +95,15 @@ void InstallPlaceholderJob::OnUrlLoaded(
     return;
   }
 
-  FinalizeInstall(/*bitmaps=*/absl::nullopt);
+  FinalizeInstall(/*bitmaps=*/std::nullopt);
 }
 
 void InstallPlaceholderJob::FetchCustomIcon(const GURL& url, int retries_left) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   data_retriever_->GetIcons(
-      web_contents_.get(), {url}, /*skip_page_favicons=*/true,
+      web_contents_.get(), {IconUrlWithSize::CreateForUnspecifiedSize(url)},
+      /*skip_page_favicons=*/true,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPlaceholderJob::OnCustomIconFetched,
                      weak_factory_.GetWeakPtr(), url, retries_left));
@@ -123,7 +125,7 @@ void InstallPlaceholderJob::OnCustomIconFetched(
   if (retries_left <= 0) {
     // Download failed.
     debug_value_->Set("custom_icon_download_success", false);
-    FinalizeInstall(absl::nullopt);
+    FinalizeInstall(std::nullopt);
     return;
   }
   // Retry download.
@@ -135,7 +137,7 @@ void InstallPlaceholderJob::OnCustomIconFetched(
 }
 
 void InstallPlaceholderJob::FinalizeInstall(
-    absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
+    std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
         bitmaps) {
   // For placeholder installs, the install_url is treated as the start_url.
   WebAppInstallInfo web_app_info(

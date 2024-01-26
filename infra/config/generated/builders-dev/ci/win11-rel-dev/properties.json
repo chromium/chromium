@@ -4,6 +4,9 @@
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders-dev/ci/win11-rel-dev/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -20,7 +23,8 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium"
+                "config": "chromium",
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

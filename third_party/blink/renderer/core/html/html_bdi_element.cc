@@ -13,7 +13,6 @@ HTMLBDIElement::HTMLBDIElement(Document& document)
   SetSelfOrAncestorHasDirAutoAttribute();
   GetDocument().SetHasDirAttribute();
   if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
-    CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
     SetDirAutoInheritsFromParent();
   }
 }

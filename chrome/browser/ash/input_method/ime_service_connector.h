@@ -62,7 +62,7 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // The url of the current in progress request.
-  absl::optional<std::string> active_request_url_;
+  std::optional<std::string> active_request_url_;
 
   // Callbacks collected for simultaneous requests for the same download url.
   std::vector<DownloadImeFileToCallback> download_callbacks_;

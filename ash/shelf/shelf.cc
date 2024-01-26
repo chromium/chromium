@@ -136,7 +136,7 @@ class HotseatWidgetAnimationMetricsReporter {
 
   metrics_util::ReportCallback GetReportCallback(HotseatState target_state) {
     DCHECK_NE(target_state, HotseatState::kNone);
-    return metrics_util::ForSmoothness(base::BindRepeating(
+    return metrics_util::ForSmoothnessV3(base::BindRepeating(
         &HotseatWidgetAnimationMetricsReporter::ReportSmoothness,
         weak_ptr_factory_.GetWeakPtr(), target_state));
   }
@@ -191,7 +191,7 @@ class ASH_EXPORT NavigationWidgetAnimationMetricsReporter {
   metrics_util::ReportCallback GetReportCallback(
       HotseatState target_hotseat_state) {
     DCHECK_NE(target_hotseat_state, HotseatState::kNone);
-    return metrics_util::ForSmoothness(base::BindRepeating(
+    return metrics_util::ForSmoothnessV3(base::BindRepeating(
         &NavigationWidgetAnimationMetricsReporter::ReportSmoothness,
         weak_ptr_factory_.GetWeakPtr(), target_hotseat_state));
   }

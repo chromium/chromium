@@ -23,18 +23,6 @@ void HTMLFormElementTest::SetUp() {
   GetDocument().SetMimeType(AtomicString("text/html"));
 }
 
-TEST_F(HTMLFormElementTest, UniqueRendererFormId) {
-  SetHtmlInnerHTML(
-      "<body><form id='form1'></form><form id='form2'></form></body>");
-  auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
-  uint64_t first_id = form1->UniqueRendererFormId();
-  auto* form2 = To<HTMLFormElement>(GetElementById("form2"));
-  EXPECT_EQ(first_id + 1, form2->UniqueRendererFormId());
-  SetHtmlInnerHTML("<body><form id='form3'></form></body>");
-  auto* form3 = To<HTMLFormElement>(GetElementById("form3"));
-  EXPECT_EQ(first_id + 2, form3->UniqueRendererFormId());
-}
-
 // This tree is created manually because the HTML parser removes nested forms.
 // The created tree looks like this:
 // <body>
@@ -105,7 +93,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form1->AppendChild(form1div);
   ShadowRoot& form1root =
-      form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form1div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLFormElement* form2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   form1root.AppendChild(form2);
@@ -117,7 +105,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form3->AppendChild(form3div);
   ShadowRoot& form3root =
-      form3div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form3div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLInputElement* input =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());
@@ -279,7 +267,7 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form1->AppendChild(form1div);
   ShadowRoot& form1root =
-      form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form1div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLInputElement* input2 =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());

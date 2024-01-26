@@ -197,6 +197,16 @@ ShoppingService::ShoppingService(
     discounts_storage_ =
         std::make_unique<DiscountsStorage>(discounts_proto_db, history_service);
   }
+
+  if (subscriptions_manager_) {
+    RemoveDanglingSubscriptions(
+        this, bookmark_model_used_for_sync_,
+        base::BindOnce([](size_t dangling_sub_count) {
+          base::UmaHistogramCounts100(
+              "Commerce.PriceTracking.DanglingUserSubscriptionCountAtStartup",
+              dangling_sub_count);
+        }));
+  }
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}

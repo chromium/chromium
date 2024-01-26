@@ -35,9 +35,8 @@ class MetadataProcessorAsh final : public EventsProcessorInterface {
   StructuredEventProto::PrimaryUserSegment GetPrimaryUserSegment();
 
   // Cache of the primary user and device segment.
-  absl::optional<StructuredDataProto::DeviceSegment> device_segment_;
-  absl::optional<StructuredEventProto::PrimaryUserSegment>
-      primary_user_segment_;
+  std::optional<StructuredDataProto::DeviceSegment> device_segment_;
+  std::optional<StructuredEventProto::PrimaryUserSegment> primary_user_segment_;
 };
 
 }  // namespace metrics::structured

@@ -36,7 +36,7 @@ class FedCmTracker : public DevToolsEventListener {
   const base::Value::List& GetLastAccounts() const { return last_accounts_; }
 
   const std::string& GetLastTitle() const { return last_title_; }
-  const absl::optional<std::string>& GetLastSubtitle() const {
+  const std::optional<std::string>& GetLastSubtitle() const {
     return last_subtitle_;
   }
 
@@ -55,7 +55,7 @@ class FedCmTracker : public DevToolsEventListener {
  private:
   std::string last_dialog_id_;
   std::string last_title_;
-  absl::optional<std::string> last_subtitle_;
+  std::optional<std::string> last_subtitle_;
   std::string last_dialog_type_;
   base::Value::List last_accounts_;
 };

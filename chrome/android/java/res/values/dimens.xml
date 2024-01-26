@@ -460,4 +460,7 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_spacing_extra_small">8dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_medium">16dp</dimen>
 
+    <!-- Autofill dialog dimensions. -->
+    <dimen name="autofill_dialog_progress_bar_size">36dp</dimen>
+
 </resources>

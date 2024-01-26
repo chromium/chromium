@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -70,7 +71,7 @@ class PasswordTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  PasswordTabHelper* helper_ = nullptr;
+  raw_ptr<PasswordTabHelper> helper_ = nullptr;
   id dispatcher_;
 };
 
@@ -83,7 +84,7 @@ TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -113,7 +114,7 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongLink) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -141,7 +142,7 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongTransition) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();

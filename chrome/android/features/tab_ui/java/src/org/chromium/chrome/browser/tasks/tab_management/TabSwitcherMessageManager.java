@@ -325,7 +325,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         MessageCardProviderMediator.Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
-        if (nextMessage == null || !shouldAppendMessage(nextMessage.model)) return;
+        if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
         if (messageType == MessageService.MessageType.PRICE_MESSAGE) {
             mTabListCoordinator.addSpecialListItem(
                     mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
@@ -343,7 +343,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
-            if (!shouldAppendMessage(messages.get(i).model)) continue;
+            if (!shouldAppendMessage(messages.get(i))) continue;
             if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) {
                 mTabListCoordinator.addSpecialListItem(
                         index, TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
@@ -375,7 +375,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
     }
 
-    private boolean shouldAppendMessage(PropertyModel messageModel) {
+    private boolean shouldAppendMessage(MessageCardProviderMediator.Message message) {
+        if (mTabListCoordinator.specialItemExists(message.type)) return false;
+        PropertyModel messageModel = message.model;
+
         Integer messageCardVisibilityControlValue =
                 messageModel.get(
                         MessageCardViewProperties
@@ -420,7 +423,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
-            if (!shouldAppendMessage(messages.get(i).model)) continue;
+            if (!shouldAppendMessage(messages.get(i))) continue;
             // The restore of PRICE_MESSAGE is handled in the restorePriceWelcomeMessage() below.
             if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) {
                 continue;

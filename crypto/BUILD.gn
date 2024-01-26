@@ -68,32 +68,12 @@ component("crypto") {
   ]
 
   if (is_apple) {
-    sources += [
-      "apple_keychain.h",
-
-      # TODO(brettw): these mocks should be moved to a test_support_crypto
-      # target if possible.
-      "mock_apple_keychain.cc",
-      "mock_apple_keychain.h",
-    ]
+    sources += [ "apple_keychain.h" ]
 
     if (is_mac) {
-      sources += [
-        "apple_keychain_mac.cc",
-
-        # TODO(brettw): these mocks should be moved to a test_support_crypto
-        # target if possible.
-        "mock_apple_keychain_mac.cc",
-      ]
-    }
-    if (is_ios) {
-      sources += [
-        "apple_keychain_ios.mm",
-
-        # TODO(brettw): these mocks should be moved to a test_support_crypto
-        # target if possible.
-        "mock_apple_keychain_ios.cc",
-      ]
+      sources += [ "apple_keychain_mac.cc" ]
+    } else if (is_ios) {
+      sources += [ "apple_keychain_ios.mm" ]
     }
 
     frameworks = [
@@ -146,6 +126,26 @@ component("crypto") {
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
+}
+
+if (is_apple) {
+  source_set("mock_apple_keychain") {
+    sources = [
+      "mock_apple_keychain.cc",
+      "mock_apple_keychain.h",
+    ]
+
+    if (is_mac) {
+      sources += [ "mock_apple_keychain_mac.cc" ]
+    } else if (is_ios) {
+      sources += [ "mock_apple_keychain_ios.cc" ]
+    }
+
+    deps = [
+      ":crypto",
+      "//base",
+    ]
+  }
 }
 
 test("crypto_unittests") {

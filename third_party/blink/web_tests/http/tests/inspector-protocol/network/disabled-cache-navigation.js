@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that browser-initiated navigation honors Network.setCacheDisabled\n`);
 

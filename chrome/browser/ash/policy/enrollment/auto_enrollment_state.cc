@@ -7,6 +7,7 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -20,11 +21,13 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
       return "No enrollment";
     case AutoEnrollmentResult::kDisabled:
       return "Device disabled";
+    case AutoEnrollmentResult::kSuggestedEnrollment:
+      return "Suggested enrollment";
   }
 }
 
 std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return std::string("Safeguard timeout");

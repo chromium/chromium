@@ -87,6 +87,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         waitForActiveShellToBeDoneLoading();
         setupTestFramework();
         setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         sendReadyForTestSignal();
     }
 
@@ -148,20 +152,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /** Helper method to tear down our tests so we can start the next test clean. */
     @After
     public void tearDown() {
-        mTracker = null;
-        mNodeProvider = null;
-
         // Always reset our max events for good measure.
         if (mWcax != null) {
             mWcax.setMaxContentChangedEventsToFireForTesting(-1);
-            mWcax = null;
         }
 
-        // Reset our test data.
         AccessibilityContentShellTestData.resetData();
-
-        FeatureList.resetTestCanUseDefaultsForTesting();
-        FeatureList.setTestFeatures(null);
     }
 
     /**

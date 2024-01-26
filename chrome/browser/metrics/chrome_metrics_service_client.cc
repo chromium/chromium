@@ -160,6 +160,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/keyboard_backlight_color_metrics_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_metrics_provider.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
@@ -168,11 +169,17 @@
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
-#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
+#else
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"  // nogncheck
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -571,8 +578,18 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::PerUserStateManagerChromeOS::RegisterPrefs(registry);
-  metrics::structured::StructuredMetricsService::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+  metrics::structured::StructuredMetricsService::RegisterPrefs(registry);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::ChromeStructuredMetricsRecorder::RegisterLocalState(
+      registry);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+        // BUILDFLAG(IS_MAC)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -721,18 +738,7 @@ void ChromeMetricsServiceClient::Initialize() {
 
   observers_active_ = RegisterObservers();
 
-// TODO(b/309122738): Implement Structured Metrics Service for Windows, Linux,
-// and Mac.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  cros_system_profile_provider_ =
-      std::make_unique<ChromeOSSystemProfileProvider>();
-
-  structured_metrics_service_ =
-      std::make_unique<metrics::structured::StructuredMetricsService>(
-          this, local_state,
-          std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
-              cros_system_profile_provider_.get()));
-#endif
+  CreateStructuredMetricsService();
 
   RegisterMetricsServiceProviders();
 
@@ -760,10 +766,13 @@ void ChromeMetricsServiceClient::Initialize() {
 
     RegisterUKMProviders();
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
   AsyncInitSystemProfileProvider();
 
@@ -972,6 +981,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<PersonalizationAppThemeMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ash::settings::OsSettingsMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<WallpaperMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1162,10 +1173,10 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
     return true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Begin initializing the structured metrics system, which is currently
-  // only implemented for Chrome OS. Initialization must wait until a
-  // profile is added, because it reads keys stored within the user's
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  // Begin initializing the structured metrics system. Initialization must wait
+  // until a profile is added, because it reads keys stored within the user's
   // cryptohome. We only initialize for profiles that are valid candidates
   // for metrics collection, ignoring the sign-in profile, lock screen app
   // profile, and guest sessions.
@@ -1176,7 +1187,10 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   // component.
   metrics::structured::Recorder::GetInstance()->ProfileAdded(
       profile->GetPath());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+       // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the device is in Demo Mode, observe the sync service to enable UKM to
   // collect app data and return true.
   if (IsDeviceInDemoMode()) {
@@ -1481,7 +1495,7 @@ void ChromeMetricsServiceClient::InitPerUserMetrics() {
   }
 }
 
-absl::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
+std::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
     const {
   if (per_user_state_manager_) {
     DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
@@ -1489,17 +1503,17 @@ absl::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
         ->GetCurrentUserReportingConsentIfApplicable();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
+std::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
     const {
   if (per_user_state_manager_) {
     DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
     return per_user_state_manager_->GetCurrentUserId();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1522,4 +1536,37 @@ void ChromeMetricsServiceClient::ResetClientStateWhenMsbbOrAppConsentIsRevoked(
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
   }
 #endif
+}
+
+void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
+  PrefService* local_state = g_browser_process->local_state();
+  std::unique_ptr<metrics::structured::StructuredMetricsRecorder> recorder;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  cros_system_profile_provider_ =
+      std::make_unique<ChromeOSSystemProfileProvider>();
+
+  recorder =
+      std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
+          cros_system_profile_provider_.get());
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
+  // Make sure that Structured Metrics recording delegates have been created
+  // before the service is created. This is handled in other places for ChromeOS
+  // and Lacros but isn't needed for the other platforms. So here is fine.
+  metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
+  if (base::FeatureList::IsEnabled(::features::kChromeStructuredMetrics)) {
+    recorder =
+        std::make_unique<metrics::structured::ChromeStructuredMetricsRecorder>(
+            local_state);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Only create the Structured Metrics Service if there is a recorder. It will
+  // not be created on Windows, Mac, and Linux if the kChromeStructuredMetrics
+  // feature is disabled. It will always be created on ChromeOS and Lacros.
+  if (recorder) {
+    structured_metrics_service_ =
+        std::make_unique<metrics::structured::StructuredMetricsService>(
+            this, local_state, std::move(recorder));
+  }
 }

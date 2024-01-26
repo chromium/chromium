@@ -203,6 +203,30 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="WEBUI_REQUEST"/>
   <int value="16" label="APPROVE_CONSENT"/>
   <int value="17" label="DECLINE_CONSENT"/>
+  <int value="18" label="FEATURE_BLOCKED"/>
+  <int value="19" label="FEATURE_BLOCKED_BY_UNSUPPORTED_REGION"/>
+  <int value="20" label="FEATURE_BLOCKED_BY_MANAGED_STATUS"/>
+  <int value="21" label="FEATURE_BLOCKED_BY_CONSENT"/>
+  <int value="22" label="FEATURE_BLOCKED_BY_SETTING"/>
+  <int value="23" label="FEATURE_BLOCKED_BY_TEXT_LENGTH"/>
+  <int value="24" label="FEATURE_BLOCKED_BY_URL"/>
+  <int value="25" label="FEATURE_BLOCKED_BY_APP"/>
+  <int value="26" label="FEATURE_BLOCKED_BY_INPUT_METHOD"/>
+  <int value="27" label="FEATURE_BLOCKED_BY_INPUT_TYPE"/>
+  <int value="28" label="FEATURE_BLOCKED_BY_APP_TYPE"/>
+  <int value="29" label="FEATURE_BLOCKED_BY_INVALID_FORM_FACTOR"/>
+  <int value="30" label="FEATURE_BLOCKED_BY_NETWORK_STATUS"/>
+  <int value="31" label="ERROR_UNKNOWN"/>
+  <int value="32" label="ERROR_INVALID_ARGUMENT"/>
+  <int value="33" label="ERROR_RESOURCE_EXHAUSTED"/>
+  <int value="34" label="ERROR_BACKEND_FAILURE"/>
+  <int value="35" label="ERROR_NO_INTERNET_CONNECTION"/>
+  <int value="36" label="ERROR_UNSUPPORTED_LANGUAGE"/>
+  <int value="37" label="ERROR_BLOCKED_OUTPUTS"/>
+  <int value="38" label="ERROR_RESTRICTED_REGION"/>
+  <int value="39" label="PROMO_CARD_IMPRESSION"/>
+  <int value="40" label="PROMO_CARD_EXPLICIT_DISMISSAL"/>
+  <int value="41" label="CONSENT_SCREEN_IMPRESSION"/>
 </enum>
 
 <enum name="IMEGrammarActions">

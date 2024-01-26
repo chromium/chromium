@@ -806,13 +806,13 @@ def make_tov8_function(cg_context):
 
     func_decl = CxxFuncDeclNode(name="ToV8",
                                 arg_decls=["ScriptState* script_state"],
-                                return_type="v8::MaybeLocal<v8::Value>",
+                                return_type="v8::Local<v8::Value>",
                                 const=True,
                                 override=True)
 
     func_def = CxxFuncDefNode(name="ToV8",
                               arg_decls=["ScriptState* script_state"],
-                              return_type="v8::MaybeLocal<v8::Value>",
+                              return_type="v8::Local<v8::Value>",
                               class_name=cg_context.class_name,
                               const=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
@@ -836,7 +836,7 @@ def make_tov8_function(cg_context):
         branches,
         EmptyNode(),
         TextNode("NOTREACHED();"),
-        TextNode("return v8::MaybeLocal<v8::Value>();"),
+        TextNode("return v8::Local<v8::Value>();"),
     ])
 
     return func_decl, func_def

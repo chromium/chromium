@@ -47,6 +47,7 @@ class ReadWriteCardsManager;
 
 namespace crosapi {
 class ClipboardHistoryLacros;
+class DebugInterfaceLacros;
 class DeskProfilesLacros;
 class SearchControllerLacros;
 class TaskManagerLacros;
@@ -219,6 +220,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Observers network updates from the NetworkSettingsService.
   std::unique_ptr<NetworkSettingsObserver> network_settings_observer_;
+
+  // Handles debug commands sent from ash-chrome.
+  std::unique_ptr<crosapi::DebugInterfaceLacros> debug_interface_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

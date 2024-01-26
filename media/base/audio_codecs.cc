@@ -40,6 +40,8 @@ std::string GetCodecName(AudioCodec codec) {
       return "gsm_ms";
     case AudioCodec::kOpus:
       return "opus";
+    case AudioCodec::kIAMF:
+      return "iamf";
     case AudioCodec::kPCM_ALAW:
       return "pcm_alaw";
     case AudioCodec::kEAC3:
@@ -67,6 +69,10 @@ std::string GetProfileName(AudioCodecProfile profile) {
       return "unknown";
     case AudioCodecProfile::kXHE_AAC:
       return "xhe-aac";
+    case AudioCodecProfile::kIAMF_SIMPLE:
+      return "iamf-simple";
+    case AudioCodecProfile::kIAMF_BASE:
+      return "iamf-base";
   }
 }
 
@@ -106,6 +112,10 @@ AudioCodec StringToAudioCodec(const std::string& codec_id) {
     return AudioCodec::kVorbis;
   if (base::StartsWith(codec_id, "mp4a.40.", base::CompareCase::SENSITIVE))
     return AudioCodec::kAAC;
+  if (codec_id == "iamf" ||
+      base::StartsWith(codec_id, "iamf.", base::CompareCase::SENSITIVE)) {
+    return AudioCodec::kIAMF;
+  }
   return AudioCodec::kUnknown;
 }
 
@@ -212,4 +222,115 @@ bool ParseDolbyAc4CodecId(const std::string& codec_id,
   return true;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+bool ParseIamfCodecId(std::string_view codec_id,
+                      uint8_t* primary_profilec,
+                      uint8_t* additional_profilec) {
+  // Reference: Immersive Audio Model and Formats;
+  //            v1.0.0
+  //            6.3. Codecs Parameter String
+  // (https://aomediacodec.github.io/iamf/v1.0.0.html#codecsparameter)
+  if (!codec_id.starts_with("iamf")) {
+    return false;
+  }
+
+  // For test purposes only, just "iamf" is acceptable.
+  if (codec_id == "iamf") {
+    return true;
+  }
+
+  constexpr int kMaxIamfCodecIdLength =
+      4     // FOURCC string "iamf".
+      + 1   // delimiting period.
+      + 3   // primary_profile as 3 digit string.
+      + 1   // delimiting period.
+      + 3   // additional_profile as 3 digit string.
+      + 1   // delimiting period.
+      + 9;  // The remaining string is one of
+            // "opus", "mp4a.40.2", "flac", "ipcm".
+
+  if (codec_id.size() > kMaxIamfCodecIdLength) {
+    DVLOG(4) << __func__ << ": Codec id is too long (" << codec_id << ")";
+    return false;
+  }
+
+  std::vector<std::string> elem = base::SplitString(
+      codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (elem.size() < 4) {
+    DVLOG(4) << __func__ << ": invalid IAMF codec id:" << codec_id;
+    return false;
+  }
+
+  DCHECK_EQ(elem[0], "iamf");
+
+  if (StringToAudioCodec(elem[0]) != AudioCodec::kIAMF) {
+    DVLOG(4) << __func__ << ": invalid IAMF codec id:" << codec_id;
+    return false;
+  }
+
+  // The primary profile string should be three digits, and should be between 0
+  // and 255 inclusive.
+  uint32_t primary_profile = 0;
+  if (elem[1].size() != 3 || !base::StringToUint(elem[1], &primary_profile) ||
+      primary_profile > 0xFF) {
+    DVLOG(4) << __func__ << ": invalid IAMF primary profile: " << elem[1];
+    return false;
+  }
+
+  // The additional profile string should be three digits, and should be between
+  // 0 and 255 inclusive.
+  uint32_t additional_profile = 0;
+  if (elem[2].size() != 3 ||
+      !base::StringToUint(elem[2], &additional_profile) ||
+      additional_profile > 0xFF) {
+    DVLOG(4) << __func__ << ": invalid IAMF additional profile: " << elem[2];
+    return false;
+  }
+
+  // The codec string should be one of "opus", "mp4a", "flac", or "ipcm".
+  std::string codec = base::ToLowerASCII(elem[3]);
+  if (codec.size() != 4 || ((codec != "opus") && (codec != "mp4a") &&
+                            (codec != "flac") && (codec != "ipcm"))) {
+    DVLOG(4) << __func__ << ": invalid IAMF stream codec: " << elem[3];
+    return false;
+  }
+
+  if (codec == "mp4a") {
+    if (elem.size() != 6) {
+      DVLOG(4) << __func__
+               << ": incorrect mp4a codec string syntax:" << codec_id;
+      return false;
+    }
+
+    // The fields following "mp4a" should be "40" and "2" to signal AAC-LC.
+    uint32_t object_type_indication = 0;
+    if (elem[4].size() != 2 ||
+        !base::HexStringToUInt(elem[4], &object_type_indication) ||
+        object_type_indication != 0x40) {
+      DVLOG(4) << __func__
+               << ": invalid mp4a Object Type Indication:" << codec_id;
+      return false;
+    }
+
+    uint32_t audio_object_type = 0;
+    if (elem[5].size() != 1 ||
+        !base::HexStringToUInt(elem[5], &audio_object_type) ||
+        audio_object_type != 0x02) {
+      DVLOG(4) << __func__ << ": invalid mp4a Audio Object Type:" << codec_id;
+      return false;
+    }
+  }
+
+  if (primary_profilec) {
+    *primary_profilec = primary_profile;
+  }
+
+  if (additional_profilec) {
+    *additional_profilec = additional_profile;
+  }
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 }  // namespace media

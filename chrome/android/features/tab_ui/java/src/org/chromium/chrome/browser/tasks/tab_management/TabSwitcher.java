@@ -43,8 +43,9 @@ public interface TabSwitcher {
     /** Called when native initialization is completed. */
     void initWithNative();
 
-    // TODO(crbug/1322733): Remove the following interfaces when we find a better way to notify the
-    // layout that the GTS animation is finished.
+    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
+    // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** An observer that is notified when the TabSwitcher view state changes. */
     interface TabSwitcherViewObserver {
         /** Called when tab switcher starts showing. */
@@ -60,6 +61,9 @@ public interface TabSwitcher {
         void finishedHiding();
     }
 
+    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
+    // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** Interface to control the TabSwitcher. */
     interface Controller extends BackPressHandler {
         /**
@@ -142,6 +146,9 @@ public interface TabSwitcher {
      */
     Controller getController();
 
+    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
+    // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** Interface to access the Tab List. */
     interface TabListDelegate {
         /** Returns the dynamic resource ID of the TabSwitcher RecyclerView. */
@@ -233,4 +240,11 @@ public interface TabSwitcher {
 
     /** Set the tab switcher's current RecyclerViewPosition. */
     void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
+
+    /**
+     * Show the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     */
+    void showQuickDeleteAnimation(Runnable onAnimationEnd);
 }

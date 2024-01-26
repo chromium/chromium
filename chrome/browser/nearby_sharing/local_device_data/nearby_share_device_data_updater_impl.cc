@@ -100,11 +100,11 @@ void NearbyShareDeviceDataUpdaterImpl::OnRpcFailure(
   timer_.Stop();
   client_.reset();
   RecordResultMetrics(ash::nearby::NearbyHttpErrorToResult(error));
-  FinishAttempt(/*response=*/absl::nullopt);
+  FinishAttempt(/*response=*/std::nullopt);
 }
 
 void NearbyShareDeviceDataUpdaterImpl::OnTimeout() {
   client_.reset();
   RecordResultMetrics(ash::nearby::NearbyHttpResult::kTimeout);
-  FinishAttempt(/*response=*/absl::nullopt);
+  FinishAttempt(/*response=*/std::nullopt);
 }

@@ -5,10 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-
 #include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
 #include "build/build_config.h"
 

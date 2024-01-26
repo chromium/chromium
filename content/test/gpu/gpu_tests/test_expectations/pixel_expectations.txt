@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -365,18 +366,6 @@ crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationCle
 
 crbug.com/1517110 [ win10 nvidia-0x2184 renderer-skia-gl ] Pixel_Video_* [ RetryOnFailure ]
 
-# Fails / flaky on Linux AMD RX 5500 XT
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
-crbug.com/1478354 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_SVGHuge [ RetryOnFailure ]
 
 # Lacros consistent failures on CrOS devices, skip to save some time
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -398,7 +387,6 @@ crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUDisplayP3
 crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUToDataURL [ Failure ]
 
 crbug.com/1469875 [ mac graphite-enabled amd release no-asan ] Pixel_SVGHuge [ Failure ]
-crbug.com/1469875 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
 
@@ -427,6 +415,8 @@ crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLGre
 crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ Failure ]
 crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
 
+# Broadly flaky unsymbolized crashes on Jacuzzi
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

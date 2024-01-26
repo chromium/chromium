@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
+
 #include <memory>
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
@@ -84,9 +88,23 @@ class GlanceablesTasksViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
   }
 
+  const IconButton* GetHeaderIconView() const {
+    return views::AsViewClass<IconButton>(
+        view_
+            ->GetViewByID(
+                base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView))
+            ->GetViewByID(base::to_underlying(
+                GlanceablesViewId::kTasksBubbleHeaderIcon)));
+  }
+
   const views::View* GetTaskItemsContainerView() const {
     return views::AsViewClass<views::View>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
+  }
+
+  const views::View* GetEditInBrowserButton() const {
+    return views::AsViewClass<views::View>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel)));
   }
 
   const views::LabelButton* GetAddNewTaskButton() const {
@@ -113,6 +131,10 @@ class GlanceablesTasksViewTest : public AshTestBase {
     return fake_glanceables_tasks_client_.get();
   }
 
+  const GlanceablesTestNewWindowDelegate* new_window_delegate() const {
+    return &new_window_delegate_;
+  }
+
   GlanceablesTasksView* view() const { return view_; }
 
   void MenuSelectionAt(int index) {
@@ -125,6 +147,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   raw_ptr<GlanceablesTasksView> view_;
   std::unique_ptr<views::Widget> widget_;
+
+  const GlanceablesTestNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileLoadingTasks) {
@@ -346,6 +370,21 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
 }
 
+TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
+  base::UserActionTester user_actions;
+
+  // Add a task with blank title.
+  GestureTapOn(GetAddNewTaskButton());
+
+  GestureTapOn(GetHeaderIconView());
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
+
+  // Simulate that the widget is hidden safely after opening a browser window.
+  view()->GetWidget()->Hide();
+  EXPECT_FALSE(view()->GetWidget()->GetNativeWindow()->IsVisible());
+}
+
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   tasks_client()->set_paused(true);
   tasks_client()->set_run_with_errors(true);
@@ -399,6 +438,42 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
 
   // TODO(b/308446582): Confirm if the title needs to be reverted back in case
   // of error.
+}
+
+TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromHeaderView) {
+  base::UserActionTester user_actions;
+  const auto* const header_icon_button = GetHeaderIconView();
+  GestureTapOn(header_icon_button);
+  EXPECT_EQ(new_window_delegate()->GetLastOpenedUrl(),
+            "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Glanceables_Tasks_ActiveTaskListChanged"));
+}
+
+TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
+  base::UserActionTester user_actions;
+  const auto* const title_label = views::AsViewClass<views::Label>(
+      GetTaskItemsContainerView()->children()[0]->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+
+  // Tap the title label to enter the edit mode. The enter in browser button
+  // should be visible.
+  GestureTapOn(title_label);
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+  const auto* const edit_in_browser_button = GetEditInBrowserButton();
+  ASSERT_TRUE(edit_in_browser_button);
+  EXPECT_TRUE(edit_in_browser_button->GetVisible());
+
+  // Verify that tapping on the button will record the action.
+  GestureTapOn(edit_in_browser_button);
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
+
+  // Simulate that the widget is hidden safely after opening a browser window.
+  view()->GetWidget()->Hide();
+  EXPECT_FALSE(view()->GetWidget()->GetNativeWindow()->IsVisible());
 }
 
 }  // namespace ash

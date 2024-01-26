@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
@@ -286,6 +286,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kImport:
     case StyleRule::kMedia:
     case StyleRule::kPage:
+    case StyleRule::kPageMargin:
     case StyleRule::kKeyframes:
     case StyleRule::kKeyframe:
     case StyleRule::kFontFeatureValues:

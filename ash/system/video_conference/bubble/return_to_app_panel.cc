@@ -77,8 +77,8 @@ void StartRecordAnimationSmoothness(
   }
 
   tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
-  tracker->Start(
-      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+  tracker->Start(ash::metrics_util::ForSmoothnessV3(
+      base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(
             "Ash.VideoConference.ReturnToAppPanel.BoundsChange."
             "AnimationSmoothness",
@@ -103,7 +103,7 @@ void FadeInView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &StartReportLayerAnimationSmoothness, animation_histogram_name)));
 
   views::AnimationBuilder()
@@ -137,7 +137,7 @@ void FadeOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &StartReportLayerAnimationSmoothness, animation_histogram_name)));
 
   view->SetVisible(true);

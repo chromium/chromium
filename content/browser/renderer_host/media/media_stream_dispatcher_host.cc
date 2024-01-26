@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
@@ -177,6 +178,28 @@ bool AllowedStreamTypeCombination(
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool IsValidZoomLevel(int zoom_level) {
+  if (blink::kPresetZoomFactors.size() == 0u) {
+    return false;
+  }
+
+  if (zoom_level ==
+      static_cast<int>(std::ceil(100 * blink::kPresetZoomFactors[0]))) {
+    return true;
+  }
+
+  for (size_t i = 1; i < blink::kPresetZoomFactors.size(); ++i) {
+    if (zoom_level ==
+        static_cast<int>(std::floor(100 * blink::kPresetZoomFactors[i]))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 int MediaStreamDispatcherHost::next_requester_id_ = 0;
@@ -303,6 +326,20 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
 }
 
+void MediaStreamDispatcherHost::OnZoomLevelChange(
+    const std::string& label,
+    const blink::MediaStreamDevice& device,
+    int zoom_level) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(device.display_media_info);
+
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+    return;
+  }
+
+  GetMediaStreamDeviceObserver()->OnZoomLevelChange(label, device, zoom_level);
+}
+
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -327,7 +364,9 @@ void MediaStreamDispatcherHost::OnWebContentsFocused() {
             weak_factory_.GetWeakPtr()),
         base::BindRepeating(
             &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                            weak_factory_.GetWeakPtr()));
     pending_requests_.pop_front();
   }
 }
@@ -518,7 +557,9 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void MediaStreamDispatcherHost::CancelRequest(int page_request_id) {
@@ -677,14 +718,14 @@ void MediaStreamDispatcherHost::SendWheel(
     SendWheelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(render_frame_host_id_.child_id,
-                       bad_message::MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
-  if (!action || action->x < 0 || action->y < 0) {
+  if (!action || action->relative_x < 0.0 || action->relative_x >= 1.0 ||
+      action->relative_y < 0.0 || action->relative_y >= 1.0) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SEND_WHEEL_INVALID_ACTION);
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
@@ -700,10 +741,8 @@ void MediaStreamDispatcherHost::GetZoomLevel(
     GetZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(
-        render_frame_host_id_.child_id,
-        bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(std::nullopt,
                             CapturedSurfaceControlResult::kUnknownError);
     return;
@@ -718,18 +757,13 @@ void MediaStreamDispatcherHost::SetZoomLevel(
     int32_t zoom_level,
     SetZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(
-        render_frame_host_id_.child_id,
-        bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
-  if (zoom_level <
-          static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)) ||
-      static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor)) <
-          zoom_level) {
+  if (!IsValidZoomLevel(zoom_level)) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL);
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
@@ -822,7 +856,9 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                          weak_factory_.GetWeakPtr()));
 }
 
 std::optional<bad_message::BadMessageReason>

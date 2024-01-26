@@ -92,6 +92,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // service negotiation.
     virtual void OnTermsRetryClicked() = 0;
 
+    // Called when terms of service page is loaded or fails to load.
+    virtual void OnTermsLoadResult(bool success) = 0;
+
    protected:
     virtual ~TermsOfServiceDelegate() = default;
   };

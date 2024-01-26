@@ -12,8 +12,6 @@ example_value: tls1.2
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: TLS 1.0
   name: TLSv1

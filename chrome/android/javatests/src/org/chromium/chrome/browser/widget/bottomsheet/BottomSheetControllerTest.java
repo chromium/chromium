@@ -30,6 +30,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,8 +48,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -690,7 +690,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress() {
+    public void testHandleBackPress() {
         requestContentInSheet(mBackInterceptingContent, true);
 
         // Fake a back button press on the controller.
@@ -721,7 +721,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_Refactored() {
+    public void testHandleBackPress_Refactored() {
         requestContentInSheet(mBackInterceptingContent, true);
         mActivity.getBackPressManagerForTesting().resetLastCalledHandlerForTesting();
 
@@ -754,7 +754,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_sheetOpen() {
+    public void testHandleBackPress_sheetOpen() {
         requestContentInSheet(mBackInterceptingContent, true);
         expandSheet();
 
@@ -780,7 +780,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_sheetOpen_Refactored() {
+    public void testHandleBackPress_sheetOpen_Refactored() {
         requestContentInSheet(mBackInterceptingContent, true);
         mActivity.getBackPressManagerForTesting().resetLastCalledHandlerForTesting();
         expandSheet();
@@ -821,7 +821,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_noIntercept() {
+    public void testHandleBackPress_noIntercept() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBackInterceptingContent.setHandleBackPress(false));
         requestContentInSheet(mBackInterceptingContent, true);
@@ -842,7 +842,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_noIntercept_Refactored() {
+    public void testHandleBackPress_noIntercept_Refactored() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBackInterceptingContent.setHandleBackPress(false));
         requestContentInSheet(mBackInterceptingContent, true);
@@ -864,7 +864,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_noIntercept_sheetOpen() {
+    public void testHandleBackPress_noIntercept_sheetOpen() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBackInterceptingContent.setHandleBackPress(false));
         requestContentInSheet(mBackInterceptingContent, true);
@@ -895,7 +895,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testHandleBackpress_noIntercept_sheetOpen_Refactored() {
+    public void testHandleBackPress_noIntercept_sheetOpen_Refactored() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBackInterceptingContent.setHandleBackPress(false));
         mActivity.getBackPressManagerForTesting().resetLastCalledHandlerForTesting();

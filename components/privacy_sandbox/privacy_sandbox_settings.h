@@ -227,22 +227,32 @@ class PrivacySandboxSettings : public KeyedService {
   // Determines whether Shared Storage is allowable in a particular context.
   // `top_frame_origin` can be the same as `accessing_origin` in the case of a
   // top-level document calling Shared Storage.
+  //
+  // If non-null, `out_debug_message` is updated in this call to relay details
+  // back to the caller about how the returned boolean result was obtained.
+  //
   // If provided, `console_frame` is used to log errors to the console upon
   // attestation failure.
   virtual bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
   // Controls whether Shared Storage SelectURL is allowable for
   // `accessing_origin` in the context of `top_frame_origin`. Does not override
   // a false return value from IsSharedStorageAllowed.
+  //
+  // If non-null, `out_debug_message` is updated in this call to relay details
+  // back to the caller about how the returned boolean result was obtained.
+  //
   // TODO(crbug.com/1378703): This just redirects to the general
   // IsSharedStorageAllowed(). The implementation needs to be updated to reflect
   // the M1 preferences when release 4 is enabled.
   virtual bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin) const = 0;
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) const = 0;
 
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the

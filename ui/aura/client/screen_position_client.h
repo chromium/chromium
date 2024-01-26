@@ -8,8 +8,11 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 
-namespace gfx {
+namespace display {
 class Display;
+}  // namespace display
+
+namespace gfx {
 class Rect;
 }
 

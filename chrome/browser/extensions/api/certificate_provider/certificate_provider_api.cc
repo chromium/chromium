@@ -109,7 +109,7 @@ class RequestPinExceptFirstQuotaBucketMapper final
     const base::Value::Dict* details = args.front().GetIfDict();
     if (!details)
       return;
-    absl::optional<int> sign_request_id = details->FindInt("signRequestId");
+    std::optional<int> sign_request_id = details->FindInt("signRequestId");
     if (!sign_request_id.has_value())
       return;
     if (*sign_request_id > biggest_request_id_) {
@@ -284,7 +284,7 @@ CertificateProviderInternalReportCertificatesFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportCertificatesFunction::Run() {
-  absl::optional<api_cpi::ReportCertificates::Params> params =
+  std::optional<api_cpi::ReportCertificates::Params> params =
       api_cpi::ReportCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -337,7 +337,7 @@ CertificateProviderStopPinRequestFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderStopPinRequestFunction::Run() {
-  absl::optional<api_cp::StopPinRequest::Params> params =
+  std::optional<api_cp::StopPinRequest::Params> params =
       api_cp::StopPinRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -437,7 +437,7 @@ void CertificateProviderRequestPinFunction::GetQuotaLimitHeuristics(
 }
 
 ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
-  absl::optional<api_cp::RequestPin::Params> params =
+  std::optional<api_cp::RequestPin::Params> params =
       api_cp::RequestPin::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -522,7 +522,7 @@ CertificateProviderSetCertificatesFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderSetCertificatesFunction::Run() {
-  absl::optional<api_cp::SetCertificates::Params> params =
+  std::optional<api_cp::SetCertificates::Params> params =
       api_cp::SetCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -575,7 +575,7 @@ CertificateProviderInternalReportSignatureFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportSignatureFunction::Run() {
-  absl::optional<api_cpi::ReportSignature::Params> params =
+  std::optional<api_cpi::ReportSignature::Params> params =
       api_cpi::ReportSignature::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -604,7 +604,7 @@ CertificateProviderReportSignatureFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderReportSignatureFunction::Run() {
-  absl::optional<api_cp::ReportSignature::Params> params =
+  std::optional<api_cp::ReportSignature::Params> params =
       api_cp::ReportSignature::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

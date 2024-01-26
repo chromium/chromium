@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1105362920864247682">Șterge datele de navigare din Chrome.</translation>
 <translation id="1113057722807951993">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.
@@ -40,13 +41,13 @@ De reținut:
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adaugă adresele URL introduse la marcajele din Chrome.</translation>
+<translation id="1799920918471566157">Sfaturi Chrome</translation>
 <translation id="1830634592642484976">Această adresă se salvează momentan în Chrome. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Folosește automat Chrome când atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="1910975740091000991">Chrome pentru iOS</translation>
 <translation id="1917964099031477364">Acest cont și toate datele nesalvate vor fi eliminate din Chrome și din alte aplicații Google de pe acest dispozitiv.</translation>
 <translation id="1965935827552890526">Termină ce făceai în cealaltă fereastră Chrome deschisă.</translation>
 <translation id="1987779152850321833">Finalizează mai jos aceste acțiuni sugerate, pentru a profita din plin de Chrome.</translation>
-<translation id="2008357574463816229">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Poți să faci mai multe cu browserul Google Chrome, simplu, sigur și mai rapid ca oricând.</translation>
 <translation id="2120238739383482109">Deschide marcajele Chrome.</translation>
 <translation id="2147651015520127414">Chrome s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
@@ -75,6 +76,7 @@ De reținut:
 <translation id="2702250627063295552">Adaugă un element din Lista de lecturi în Chrome</translation>
 <translation id="2736805085127235148">Notificările din Chrome sunt momentan dezactivate în setările dispozitivului.</translation>
 <translation id="2767464022270041271">Nu există parole salvate. Managerul de parole Google îți poate verifica parolele atunci când le salvezi.</translation>
+<translation id="2789947168960170215">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Șterge datele de navigare din Chrome</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
 <translation id="2876628302275096482">Află mai multe despre <ph name="BEGIN_LINK" />cum îți păstrează Chrome datele private<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3503014945441706099">Obține și Navigare sigură îmbunătățită pentru acest profil Chrome</translation>
 <translation id="3522659714780527202">Activează sincronizarea ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="3577555362230509265">Folosește Chrome în alte aplicații.</translation>
-<translation id="3594076341410558780">Ascunde opțiunea Profită la maximum de Chrome</translation>
 <translation id="364480321352456989">Chrome este învechit.</translation>
 <translation id="3646736009628185125">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chrome și să-și sincronizeze parolele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Aceasta înseamnă că Chrome va solicita de fiecare dată site-ul mobil.</translation>
@@ -204,7 +205,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="686691656039982452">Poți <ph name="BEGIN_LINK" />gestiona ce date Chrome se salvează<ph name="END_LINK" /> în Contul Google.
 
 Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chrome, accesează <ph name="BEGIN_LINK" />Servicii Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Datele tale vor fi trimise la Google pentru a oferi această funcție și a îmbunătăți serviciul Cumpărături pentru toată lumea. Poți modifica această opțiune în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Căutarea vocală în Chrome</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="6975725306479268850">Alege Chrome pentru completarea automată</translation>

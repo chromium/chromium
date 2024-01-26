@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -130,7 +131,7 @@ void Canvas2DLayerBridge::Hibernate() {
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
   // 'this' does not already have a surface.
-  DCHECK(!resource_host_->ResourceProvider()->HasRecordedDrawOps());
+  DCHECK(!resource_host_->ResourceProvider()->Recorder().HasRecordedDrawOps());
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
@@ -139,8 +140,9 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  hibernation_handler_.TakeHibernationImage(
-      snapshot->PaintImageForCurrentFrame().GetSwSkImage());
+  hibernation_handler_.SaveForHibernation(
+      snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
+      resource_host_->ResourceProvider()->ReleaseRecorder());
 
   ResetResourceProvider();
   resource_host_->ClearLayerTexture();
@@ -238,6 +240,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
   resource_provider->RestoreBackBuffer(builder.TakePaintImage());
+  resource_provider->SetRecorder(hibernation_handler_.ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler_.Clear();
   DCHECK(!IsHibernating());
@@ -256,7 +259,7 @@ cc::PaintCanvas* Canvas2DLayerBridge::GetPaintCanvas() {
   // does not need to be valid here since only the recording canvas is used.
   if (!ResourceProvider() && !GetOrCreateResourceProvider())
     return nullptr;
-  return ResourceProvider()->Canvas();
+  return &ResourceProvider()->Canvas();
 }
 
 void Canvas2DLayerBridge::PageVisibilityChanged() {
@@ -320,7 +323,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   if (x <= 0 && y <= 0 &&
       x + orig_info.width() >= resource_host_->Size().width() &&
       y + orig_info.height() >= resource_host_->Size().height()) {
-    provider->SkipQueuedDrawCommands();
+    provider->Recorder().SkipQueuedDrawCommands();
   } else {
     FlushRecording(FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
@@ -333,7 +336,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   CHECK(resource_host_);
   CanvasResourceProvider* provider = GetOrCreateResourceProvider();
-  if (!provider || !provider->HasRecordedDrawOps()) {
+  if (!provider || !provider->Recorder().HasRecordedDrawOps()) {
     return;
   }
 

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "extensions/browser/extension_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -55,7 +56,7 @@ void ExtensionInstallEventRouter::StartObserving() {
 void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
     const extensions::Extension* extension,
     const char* extension_action) {
-  absl::optional<ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(

@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 
 import java.util.Arrays;
 

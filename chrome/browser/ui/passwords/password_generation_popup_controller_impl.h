@@ -150,6 +150,8 @@ class PasswordGenerationPopupControllerImpl
     kNone = 0,
     kUseStrongPassword = 1,
     kEditPassword = 2,
+    kNudgePasswordAcceptButton = 3,
+    kNudgePasswordCancelButton = 4,
   };
 
   // AutofillPopupViewDelegate implementation:
@@ -173,6 +175,8 @@ class PasswordGenerationPopupControllerImpl
   GenerationUIState state() const override;
   bool password_selected() const override;
   bool edit_password_selected() const override;
+  bool accept_button_selected() const override;
+  bool cancel_button_selected() const override;
   const std::u16string& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
@@ -180,8 +184,6 @@ class PasswordGenerationPopupControllerImpl
   void HideImpl();
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
-  bool HandleNudgePasswordKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event);
 
   // Whether the elements of popup are selectable (true in generation state).
   bool IsSelectable() const;

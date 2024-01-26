@@ -53,7 +53,7 @@ void SavedTabOrGroupExistsChecker::SavedTabGroupAddedFromSync(
 
 void SavedTabOrGroupExistsChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 
@@ -96,7 +96,7 @@ void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupRemovedFromSync(
 
 void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 
@@ -139,7 +139,7 @@ void SavedTabGroupMatchesChecker::SavedTabGroupAddedFromSync(
 
 void SavedTabGroupMatchesChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 
@@ -183,7 +183,7 @@ void SavedTabMatchesChecker::SavedTabGroupAddedFromSync(
 
 void SavedTabMatchesChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 
@@ -232,7 +232,7 @@ void GroupOrderChecker::SavedTabGroupRemovedFromSync(
 
 void GroupOrderChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 
@@ -283,7 +283,7 @@ void TabOrderChecker::SavedTabGroupAddedFromSync(const base::Uuid& uuid) {
 
 void TabOrderChecker::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_uuid,
-    const absl::optional<base::Uuid>& tab_uuid) {
+    const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
 }  // namespace saved_tab_groups_helper

@@ -22,7 +22,9 @@ bool HasRunToCompletion(
     case PasswordStoreBackendMetricsRecorder::SuccessStatus::kSuccess:
     case PasswordStoreBackendMetricsRecorder::SuccessStatus::kError:
       return true;
-    case PasswordStoreBackendMetricsRecorder::SuccessStatus::kCancelled:
+    case PasswordStoreBackendMetricsRecorder::SuccessStatus::kCancelledTimeout:
+    case PasswordStoreBackendMetricsRecorder::SuccessStatus::
+        kCancelledPwdSyncStateChanged:
       return false;
   }
   NOTREACHED();
@@ -59,9 +61,13 @@ void PasswordStoreBackendMetricsRecorder::RecordMetrics(
   if (HasRunToCompletion(success_status)) {
     RecordLatency();
     RecordRequestStatus(StoreBackendRequestStatus::kCompleted);
-  } else {
+  } else if (success_status == SuccessStatus::kCancelledTimeout) {
     RecordRequestStatus(StoreBackendRequestStatus::kTimeout);
+  } else if (success_status == SuccessStatus::kCancelledPwdSyncStateChanged) {
+    RecordRequestStatus(
+        StoreBackendRequestStatus::kCancelledPwdSyncStateChanged);
   }
+
   if (error.has_value()) {
     DCHECK_NE(success_status, SuccessStatus::kSuccess);
     if (absl::holds_alternative<AndroidBackendError>(error.value())) {

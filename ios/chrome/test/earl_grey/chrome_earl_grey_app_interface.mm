@@ -89,7 +89,7 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "ui/base/device_form_factor.h"
 
@@ -174,10 +174,8 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)killWebKitNetworkProcess {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  if (@available(iOS 15, *)) {
-    [[WKWebsiteDataStore defaultDataStore]
-        performSelector:@selector(_terminateNetworkProcess)];
-  }
+  [[WKWebsiteDataStore defaultDataStore]
+      performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 }
 
@@ -1533,12 +1531,6 @@ int watchRunNumber = 0;
 + (void)copyURLToPasteBoard {
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
-}
-
-#pragma mark - Default Search Engine Choice Screen Utilities
-
-+ (BOOL)IsSearchEngineChoiceScreenEnabledFre {
-  return ios::first_run::IsSearchEngineChoiceScreenEnabledFre();
 }
 
 #pragma mark - First Run Utilities

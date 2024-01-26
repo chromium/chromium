@@ -430,7 +430,8 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
             account_id, button_remapping_list_pref,
             std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
                 mouse.settings->button_remappings,
-                mouse.customization_restriction)));
+                mouse.customization_restriction,
+                /*redact_button_names=*/true)));
   }
 }
 

@@ -25,6 +25,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/mp4_status.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/mp4_muxer.h"
@@ -34,7 +35,6 @@
 #include "media/muxers/webm_muxer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -170,7 +170,7 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
   if (codecs_str.Find("pcm") != kNotFound)
     return AudioTrackRecorder::CodecId::kPcm;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (codecs_str.Find("aac") != kNotFound) {
+  if (codecs_str.Find("mp4a.40.2") != kNotFound) {
     return AudioTrackRecorder::CodecId::kAac;
   }
 #endif
@@ -186,7 +186,7 @@ bool CanSupportVideoType(const String& type) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
-    return EqualIgnoringASCIICase(type, "video/mp4");
+    return EqualStringView(type, "video/mp4");
   }
 #endif
   return false;
@@ -200,7 +200,7 @@ bool CanSupportAudioType(const String& type) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
-    return EqualIgnoringASCIICase(type, "audio/mp4");
+    return EqualStringView(type, "audio/mp4");
   }
 #endif
   return false;
@@ -266,14 +266,15 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   auto* const* relevant_codecs_end =
       video ? std::end(kVideoCodecs) : std::end(kAudioCodecs);
 
+  bool mp4_mime_type = false;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (IsAllowedMp4Type(type)) {
+  mp4_mime_type = IsAllowedMp4Type(type);
+  if (mp4_mime_type) {
     static const char* const kVideoCodecsForMP4[] = {
-        "h264",
         "avc1",
-        "aac",
+        "mp4a.40.2",
     };
-    static const char* const kAudioCodecsForMp4[] = {"aac"};
+    static const char* const kAudioCodecsForMp4[] = {"mp4a.40.2"};
 
     relevant_codecs_begin =
         video ? std::begin(kVideoCodecsForMP4) : std::begin(kAudioCodecsForMp4);
@@ -284,30 +285,46 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
 
   std::vector<std::string> codecs_list;
   media::SplitCodecs(web_codecs.Utf8(), &codecs_list);
-  media::StripCodecs(&codecs_list);
+
+  // Only the mp4a.40.2 codec for aac is supported by the platform,
+  // it retains the entire input string when dealing with an mp4 container.
+  if (!mp4_mime_type) {
+    media::StripCodecs(&codecs_list);
+  }
+
   for (const auto& codec : codecs_list) {
     String codec_string = String::FromUTF8(codec);
-    if (std::none_of(relevant_codecs_begin, relevant_codecs_end,
-                     [&codec_string](const char* name) {
-                       if (!EqualIgnoringASCIICase(codec_string, name)) {
-                         return false;
-                       }
-                       std::string_view name_str(name);
-                       if (name_str == "av01" || name_str == "av1") {
-                         base::UmaHistogramBoolean(
-                             "Media.MediaRecorder.HasCorrectAV1CodecString",
-                             name_str == "av01");
-                       }
-                       return true;
-                     })) {
+
+    bool match =
+        std::any_of(relevant_codecs_begin, relevant_codecs_end,
+                    [&codec_string, &mp4_mime_type](const char* name) {
+                      if (mp4_mime_type) {
+                        return EqualStringView(codec_string, name);
+                      } else {
+                        return EqualIgnoringASCIICase(codec_string, name);
+                      }
+                    });
+
+    if (!match && mp4_mime_type && video) {
+      // `avc1` is a special case for video, it allows `avc1.<profile>.<level>`.
+      auto parsed_result =
+          media::ParseVideoCodecString(type.Ascii(), codec_string.Ascii(),
+                                       /*allow_ambiguous_matches=*/false);
+      match =
+          parsed_result && (parsed_result->codec == media::VideoCodec::kH264);
+    }
+
+    if (!match) {
       return false;
     }
 
-#if !BUILDFLAG(ENABLE_LIBAOM)
-    // The software encoder is unable to process the kAV1 codec if
-    // ENABLE_LIBAOM is not defined. It verifies hardware encoding supports is
-    // doable.
     if (codec_string == "av01" || codec_string == "av1") {
+      base::UmaHistogramBoolean("Media.MediaRecorder.HasCorrectAV1CodecString",
+                                codec_string == "av01");
+#if !BUILDFLAG(ENABLE_LIBAOM)
+      // The software encoder is unable to process the kAV1 codec if
+      // ENABLE_LIBAOM is not defined. It verifies hardware encoding supports is
+      // doable.
       if (!VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
               // The CanUseAcceleratedEncoder function requires a frame size for
               // validation. However, at this point, we don’t have the frame
@@ -318,8 +335,8 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
               video_track_recorder::kVEAEncoderMinResolutionHeight)) {
         return false;
       }
-    }
 #endif
+    }
   }
   return true;
 }
@@ -707,7 +724,7 @@ String MediaRecorderHandler::ActualMimeType() {
         mime_type.Append("pcm");
         break;
       case AudioTrackRecorder::CodecId::kAac:
-        mime_type.Append("m4a.40.2");
+        mime_type.Append("mp4a.40.2");
         break;
       case AudioTrackRecorder::CodecId::kLast:
         DCHECK_NE(video_codec_profile_.codec_id,
@@ -749,6 +766,12 @@ void MediaRecorderHandler::OnEncodedVideo(
 
   if (invalidated_)
     return;
+
+  if (encoded_data.empty() && encoded_alpha.empty()) {
+    // An encoder drops a frame. This can happen with VideoToolBox encoder as
+    // there is no way to disallow the frame dropping with it.
+    return;
+  }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // TODO(crbug.com/1441395). Once Encoder supports VideoEncoder, then the

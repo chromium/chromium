@@ -56,7 +56,7 @@ class ExtensionRequestNotificationTest
     return GetParam();
   }
 
-  absl::optional<message_center::Notification> GetNotification() {
+  std::optional<message_center::Notification> GetNotification() {
     return display_service_tester_->GetNotification(
         kNotificationIds[GetNotifyType()]);
   }
@@ -92,7 +92,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   request_notification.Show(base::BindOnce(&OnNotificationClosed, true));
   show_run_loop.Run();
 
-  absl::optional<message_center::Notification> notification = GetNotification();
+  std::optional<message_center::Notification> notification = GetNotification();
   ASSERT_TRUE(notification.has_value());
 
   EXPECT_THAT(base::UTF16ToUTF8(notification->title()),
@@ -105,7 +105,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
       close_run_loop.QuitClosure());
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationIds[GetNotifyType()],
-      absl::optional<int>(), absl::optional<std::u16string>());
+      std::optional<int>(), std::optional<std::u16string>());
   close_run_loop.Run();
 
   EXPECT_FALSE(GetNotification().has_value());
@@ -125,7 +125,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {
   request_notification.Show(base::BindOnce(&OnNotificationClosed, false));
   show_run_loop.Run();
 
-  absl::optional<message_center::Notification> notification = GetNotification();
+  std::optional<message_center::Notification> notification = GetNotification();
   ASSERT_TRUE(notification.has_value());
 
   base::RunLoop close_run_loop;

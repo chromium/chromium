@@ -48,6 +48,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -831,10 +832,10 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   // CopyOutputRequest and will eventually make it back to the client
   // that issued that request. Thus, the usage here needs to capture the variety
   // of clients' eventual allowed usages. Note that CopyOutputRequests are not
-  // writable via GLES2 (by contract).
+  // writable via raster or GLES2 (by contract).
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                              gpu::SHARED_IMAGE_USAGE_RASTER |
+                              gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 

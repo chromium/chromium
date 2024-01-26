@@ -24,7 +24,7 @@ namespace {
 
 // Returns true if we can make a request for hints for |prediction|.
 bool IsAllowedToFetchForNavigationPrediction(
-    const absl::optional<NavigationPredictorKeyedService::Prediction>
+    const std::optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK(prediction);
 
@@ -34,7 +34,7 @@ bool IsAllowedToFetchForNavigationPrediction(
     // We only support predictions from page anchors.
     return false;
   }
-  const absl::optional<GURL> source_document_url =
+  const std::optional<GURL> source_document_url =
       prediction->source_document_url();
   if (!source_document_url || source_document_url->is_empty())
     return false;
@@ -93,7 +93,7 @@ void ChromeHintsManager::Shutdown() {
 }
 
 void ChromeHintsManager::OnPredictionUpdated(
-    const absl::optional<NavigationPredictorKeyedService::Prediction>
+    const std::optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(prediction);

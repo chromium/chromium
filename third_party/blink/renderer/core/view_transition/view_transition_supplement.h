@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -118,8 +118,7 @@ class CORE_EXPORT ViewTransitionSupplement
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 
-  mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in_ =
-      mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
+  mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in_;
 };
 
 }  // namespace blink

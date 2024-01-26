@@ -302,9 +302,9 @@ class SamlTestBase : public OobeBaseTest {
   void SetupAuthFlowChangeListener() {
     content::ExecuteScriptAsync(
         GetLoginUI()->GetWebContents(),
-        "$('gaia-signin').authenticator_.addEventListener('authFlowChange',"
+        "$('gaia-signin').authenticator.addEventListener('authFlowChange',"
         "    function f() {"
-        "      $('gaia-signin').authenticator_.removeEventListener("
+        "      $('gaia-signin').authenticator.removeEventListener("
         "          'authFlowChange', f);"
         "      window.domAutomationController.send("
         "          $('gaia-signin').isSamlAuthFlowForTesting() ?"
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
   // Make sure that the password is scraped correctly.
   ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
-      "$('gaia-signin').authenticator_.addEventListener('authCompleted',"
+      "$('gaia-signin').authenticator.addEventListener('authCompleted',"
       "    function(e) {"
       "      var password = e.detail.password;"
       "      window.domAutomationController.send(password);"
@@ -982,14 +982,14 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, NoticeUpdatedOnRedirect) {
       "  var processEventsAndSendIfHostFound = function() {"
       "    window.setTimeout(function() {"
       "      if (sendIfHostFound()) {"
-      "        $('gaia-signin').authenticator_.removeEventListener("
+      "        $('gaia-signin').authenticator.removeEventListener("
       "            'authDomainChange',"
       "            processEventsAndSendIfHostFound);"
       "      }"
       "    }, 0);"
       "  };"
       "  if (!sendIfHostFound()) {"
-      "    $('gaia-signin').authenticator_.addEventListener("
+      "    $('gaia-signin').authenticator.addEventListener("
       "        'authDomainChange',"
       "        processEventsAndSendIfHostFound);"
       "  }"
@@ -1127,7 +1127,7 @@ class SAMLEnrollmentTest : public SamlTestBase {
 
 SAMLEnrollmentTest::SAMLEnrollmentTest() {
   gaia_frame_parent_ = "authView";
-  authenticator_id_ = "$('enterprise-enrollment').authenticator_";
+  authenticator_id_ = "$('enterprise-enrollment').authenticator";
 }
 
 SAMLEnrollmentTest::~SAMLEnrollmentTest() = default;
@@ -1382,7 +1382,7 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   ASSERT_TRUE(content::ExecJs(
       GetLoginUI()->GetWebContents(),
-      "$('gaia-signin').authenticator_.addEventListener('ready', function() {"
+      "$('gaia-signin').authenticator.addEventListener('ready', function() {"
       "  window.domAutomationController.send('ready');"
       "});"));
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());

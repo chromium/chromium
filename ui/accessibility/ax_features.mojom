@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom.features;
+
+// This feature can be used as an emergency kill switch to disable Screen AI
+// Main Content Extraction service in case of security or other issues.
+feature kScreenAIMainContentExtractionEnabled {
+  const string name = "ScreenAIMainContentExtractionEnabled";
+  const bool default_state = true;
+};
+
+// This feature can be used as an emergency kill switch to disable Screen AI
+// OCR service in case of security or other issues.
+feature kScreenAIOCREnabled {
+  const string name = "ScreenAIOCREnabled";
+  const bool default_state = true;
+};

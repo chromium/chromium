@@ -161,7 +161,7 @@ public class CustomTabsIntentTestUtils {
                         0,
                         callbackIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
-                                | IntentUtils.getPendingIntentMutabilityFlag(true));
+                                | IntentUtils.getPendingIntentMutabilityFlag(false));
         ArrayList<Bundle> menuItems = new ArrayList<>();
         for (int i = 0; i < numEntries; i++) {
             Bundle bundle = new Bundle();

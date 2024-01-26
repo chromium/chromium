@@ -121,6 +121,11 @@ class MockChromeOsCdmContext : public chromeos::ChromeOsCdmContext {
   MOCK_METHOD2(AllocateSecureBuffer,
                void(uint32_t,
                     chromeos::ChromeOsCdmContext::AllocateSecureBufferCB));
+  MOCK_METHOD4(ParseEncryptedSliceHeader,
+               void(uint64_t,
+                    uint32_t,
+                    const std::vector<uint8_t>&,
+                    ParseEncryptedSliceHeaderCB));
 };
 // A real implementation of this class would actually hold onto a reference of
 // the owner of the CdmContext to ensure it is not destructed before the

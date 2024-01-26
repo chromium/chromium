@@ -216,8 +216,10 @@ absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   return ret;
 }
 
-ServiceWorkerRouterSource RouterSourceEnumToBlink(
-    V8RouterSourceEnum v8_source_enum) {
+absl::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
+    V8RouterSourceEnum v8_source_enum,
+    mojom::blink::ServiceWorkerFetchHandlerType fetch_handler_type,
+    ExceptionState& exception_state) {
   switch (v8_source_enum.AsEnum()) {
     case V8RouterSourceEnum::Enum::kNetwork: {
       ServiceWorkerRouterSource source;
@@ -232,6 +234,12 @@ ServiceWorkerRouterSource RouterSourceEnumToBlink(
       return source;
     }
     case V8RouterSourceEnum::Enum::kFetchEvent: {
+      if (fetch_handler_type ==
+          mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler) {
+        exception_state.ThrowTypeError(
+            "fetch-event source is specified without a fetch handler");
+        return absl::nullopt;
+      }
       ServiceWorkerRouterSource source;
       source.type = ServiceWorkerRouterSource::Type::kFetchEvent;
       source.fetch_event_source.emplace();
@@ -268,11 +276,13 @@ absl::optional<ServiceWorkerRouterSource> RouterSourceToBlink(
 
 absl::optional<ServiceWorkerRouterSource> RouterSourceInputToBlink(
     const V8RouterSourceInput* router_source_input,
+    mojom::blink::ServiceWorkerFetchHandlerType fetch_handler_type,
     ExceptionState& exception_state) {
   switch (router_source_input->GetContentType()) {
     case blink::V8RouterSourceInput::ContentType::kRouterSourceEnum:
       return RouterSourceEnumToBlink(
-          router_source_input->GetAsRouterSourceEnum());
+          router_source_input->GetAsRouterSourceEnum(), fetch_handler_type,
+          exception_state);
     case blink::V8RouterSourceInput::ContentType::kRouterSource:
       return RouterSourceToBlink(router_source_input->GetAsRouterSource(),
                                  exception_state);
@@ -285,6 +295,7 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
     v8::Isolate* isolate,
     const RouterRule* input,
     const KURL& url_pattern_base_url,
+    mojom::blink::ServiceWorkerFetchHandlerType fetch_handler_type,
     ExceptionState& exception_state) {
   if (!input) {
     exception_state.ThrowTypeError("Invalid Input");
@@ -319,7 +330,8 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // are set. The current IDL has been implemented for this level, but
   // the mojo IPC has been implemented to support the final form.
   const absl::optional<ServiceWorkerRouterSource> source =
-      RouterSourceInputToBlink(input->source(), exception_state);
+      RouterSourceInputToBlink(input->source(), fetch_handler_type,
+                               exception_state);
   if (!source.has_value()) {
     CHECK(exception_state.HadException());
     return absl::nullopt;

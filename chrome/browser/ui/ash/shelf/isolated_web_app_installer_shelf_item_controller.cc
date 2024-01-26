@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -17,15 +18,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace {
-
-gfx::ImageSkia GetDefaultInstallerShelfIcon() {
+// static
+gfx::ImageSkia
+IsolatedWebAppInstallerShelfItemController::GetDefaultInstallerShelfIcon() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // TODO(crbug.com/1515460): Replace the placeholder default icon.
   return *rb.GetImageSkiaNamed(IDR_SETTINGS_LOGO_192);
 }
-
-}  // namespace
 
 IsolatedWebAppInstallerShelfItemController::
     IsolatedWebAppInstallerShelfItemController(const ash::ShelfID& shelf_id)
@@ -36,7 +35,12 @@ IsolatedWebAppInstallerShelfItemController::
 }
 
 IsolatedWebAppInstallerShelfItemController::
-    ~IsolatedWebAppInstallerShelfItemController() {}
+    ~IsolatedWebAppInstallerShelfItemController() {
+  if (window_) {
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+  }
+}
 
 void IsolatedWebAppInstallerShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
@@ -72,11 +76,7 @@ void IsolatedWebAppInstallerShelfItemController::Close() {
     return;
   }
 
-  // Post a task to delete later to avoid dangling raw_ptr.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ash::window_util::CloseWidgetForWindow, window_));
-  window_ = nullptr;
+  ash::window_util::CloseWidgetForWindow(window_);
 }
 
 void IsolatedWebAppInstallerShelfItemController::AddWindow(
@@ -85,8 +85,18 @@ void IsolatedWebAppInstallerShelfItemController::AddWindow(
   // window. However, multiple `AddWindow()` calls are allowed with the same
   // `window`.
   CHECK(!window_ || window_ == window);
-  window_ = window;
+  if (!window_) {
+    window_ = window;
+    window_->AddObserver(this);
+  }
   UpdateShelfItem();
+}
+
+void IsolatedWebAppInstallerShelfItemController::OnWindowDestroying(
+    aura::Window* window) {
+  CHECK(window_);
+  window_->RemoveObserver(this);
+  window_ = nullptr;
 }
 
 void IsolatedWebAppInstallerShelfItemController::UpdateShelfItem() {

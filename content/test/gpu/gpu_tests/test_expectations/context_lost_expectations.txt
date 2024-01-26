@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -189,17 +190,14 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
 # Fails on Linux AMD RX 5500 XT with RADV 20.0.8
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_OriginalWebGLNotBlocked [ Failure ]
 
-crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 crbug.com/1505662 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+
+# Broadly flaky unsymbolized crashes on Jacuzzi
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] ContextLost_* [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

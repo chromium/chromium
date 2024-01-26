@@ -14,5 +14,5 @@ include_rules = [
   "+ios/chrome/browser/ui/start_surface",
   "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
   "+ios/chrome/browser/ui/toolbar/public",
-  "+ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
+  "+ios/chrome/browser/ui/push_notification"
 ]

@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -259,10 +260,54 @@ class BookmarkModel final : public BookmarkUndoProvider,
   [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
   GetNodesByURL(const GURL& url) const;
 
-  // Returns the node with the given UUID or null if no node exists with this
-  // UUID. Please note that this doesn't return account bookmarks.
-  // TODO(crbug.com/1494120): Add support for account bookmarks.
-  const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid) const;
+  // Enum determining a subset of bookmark nodes within a BookmarkModel for the
+  // purpose of issuing UUID-based lookups. It is needed because, in some
+  // advanced scenarios, the same UUID may be used by two BookmarkNode-s, in
+  // particular if a bookmark duplicate exists as a result of Sync having left
+  // behind a copy of the data.
+  //
+  // Below some guidance about the use of this enum:
+  // 1. For callers that don't particularly mind the nature of the bookmark
+  //    node, a sensible default is to issue two lookups, starting with
+  //    `kAccountNodes` and (if the first returns null) following up with
+  //    `kLocalOrSyncableNodes`.
+  //
+  // 2. For callers that specifically need to identify bookmarks that are saved
+  //    (sync-ed) to the user's server-side account, it might be required to
+  //    only conditionally issue the second lookup (`kLocalOrSyncableNodes`),
+  //    based on whether user-facing Sync is on (exposed outside
+  //    components/bookmarks, namely in SyncService).
+  //
+  // 3. For callers that specifically need the opposite, that is, identify
+  //    bookmarks that are local-only, a lookup using `kLocalOrSyncableNodes`
+  //    is sufficient, but it should also be done conditionally to the
+  //    user-facing Sync being off (exposed outside components/bookmarks, namely
+  //    in SyncService).
+  //
+  // In doubt, please reach out to components/bookmarks owners for guidance.
+  enum class NodeTypeForUuidLookup {
+    // Local or syncable nodes include all bookmark nodes that are not
+    // descendants of account permanent folders (e.g. as returned by
+    // account_bookmark_bar_node()). On platforms where
+    // BookmarkClient::AreFoldersForAccountStorageAllowed() returns false, which
+    // most notably includes iOS, this includes all bookmark nodes.
+    kLocalOrSyncableNodes,
+    // Account nodes include all bookmarks that are descendants of account
+    // permanent folders (e.g. as returned by account_bookmark_bar_node()). On
+    // platforms where BookmarkClient::AreFoldersForAccountStorageAllowed()
+    // returns false, which most notably includes iOS, these bookmarks don't
+    // exist.
+    kAccountNodes,
+  };
+
+  // Returns the node with the given `uuid` among the subset of nodes determined
+  // by `type`. Returns null if no node exists matching `uuid`.
+  //
+  // WARNING: UUID-based lookups are subtle and should be done with care, please
+  // see details above in `NodeTypeForUuidLookup` and in doubt please reach out
+  // to components/bookmarks owners for guidance.
+  const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid,
+                                    NodeTypeForUuidLookup type) const;
 
   // Returns the most recently added user node for the `url`; urls from any
   // nodes that are not editable by the user are never returned by this call.
@@ -426,6 +471,13 @@ class BookmarkModel final : public BookmarkUndoProvider,
                           size_t index,
                           std::unique_ptr<BookmarkNode> node) override;
 
+  // Given a node that is already part of the model, it determines the
+  // corresponding type for the purpose of understanding uniqueness properties
+  // of its UUID. That is, which subset of nodes this UUID is guaranteed to be
+  // unique among.
+  NodeTypeForUuidLookup DetermineTypeForUuidLookupForExistingNode(
+      const BookmarkNode* node) const;
+
   // Notifies the observers for adding every descendant of `node`.
   void NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
                                         bool added_by_user);
@@ -447,11 +499,13 @@ class BookmarkModel final : public BookmarkUndoProvider,
   BookmarkNode* AddNode(BookmarkNode* parent,
                         size_t index,
                         std::unique_ptr<BookmarkNode> node,
-                        bool added_by_user = false);
+                        bool added_by_user,
+                        NodeTypeForUuidLookup type_for_uuid_lookup);
 
   // Adds `node` to all lookups indices and recursively invokes this for all
   // children.
-  void AddNodeToIndicesRecursive(const BookmarkNode* node);
+  void AddNodeToIndicesRecursive(const BookmarkNode* node,
+                                 NodeTypeForUuidLookup type_for_uuid_lookup);
 
   // Removes `node` and notifies its observers, returning and transferring
   // ownership of the node removed. The caller is responsible for allowing undo,
@@ -462,7 +516,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // the node is a url, its url is added to removed_urls.
   //
   // This does NOT delete the node.
-  void RemoveNodeFromIndicesRecursive(BookmarkNode* node);
+  void RemoveNodeFromIndicesRecursive(
+      BookmarkNode* node,
+      NodeTypeForUuidLookup type_for_uuid_lookup);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
@@ -551,8 +607,10 @@ class BookmarkModel final : public BookmarkUndoProvider,
 
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
 
-  // All nodes indexed by UUID.
-  UuidIndex uuid_index_;
+  // All nodes indexed by UUID. An independent index exists for each value in
+  // NodeTypeForUuidLookup, because UUID uniqueness is guaranteed only within
+  // the scope of each NodeTypeForUuidLookup value.
+  base::flat_map<NodeTypeForUuidLookup, UuidIndex> uuid_index_;
 
   scoped_refptr<UrlIndex> url_index_;
 

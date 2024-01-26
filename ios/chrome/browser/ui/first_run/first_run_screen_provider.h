@@ -9,13 +9,6 @@
 
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 
-namespace ios {
-namespace first_run {
-// Whether the choice screen must be displayed in the FRE.
-bool IsSearchEngineChoiceScreenEnabledFre();
-}  // namespace first_run
-}  // namespace ios
-
 class ChromeBrowserState;
 
 // The class that provides a list of first run screens.

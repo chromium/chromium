@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -41,17 +42,10 @@ namespace blink {
 class DocumentFragment;
 class TemplateContentDocumentFragment;
 
-// TODO(crbug.com/1379513, crbug.com/1396384) Only three of these should be
-// needed at a time, depending on the state of the StreamingDeclarativeShadowDOM
-// feature and whether the `shadowroot` or `shadowrootmode` attribute is used.
-// For a given template, either kNone/kOpen/kClosed or
-// kNone/kStreamingOpen/kStreamingClosed are used.
 enum class DeclarativeShadowRootType {
   kNone,
   kOpen,
-  kStreamingOpen,
   kClosed,
-  kStreamingClosed,
 };
 
 class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
@@ -67,35 +61,22 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   DocumentFragment* content() const;
 
-  // This gives direct access to ContentInternal, and should *only*
+  // This just retrieves existing content, and will not construct a content
+  // DocumentFragment if one does not exist.
+  DocumentFragment* getContent() const {
+    CHECK(!declarative_shadow_root_ || !content_);
+    return content_;
+  }
+
+  // This retrieves either a currently-being-parsed declarative shadow root,
+  // or the content fragment for a "regular" template element. This should only
   // be used by HTMLConstructionSite.
-  DocumentFragment* TemplateContentForHTMLConstructionSite() const {
-    if (declarative_shadow_root_) {
-      return declarative_shadow_root_.Get();
-    }
-    return ContentInternal();
-  }
-
-  // TODO(crbug.com/1396384) Eventually remove this.
-  bool IsNonStreamingDeclarativeShadowRoot() const;
-  // TODO(crbug.com/1396384) Eventually remove this.
-  DocumentFragment* DeclarativeShadowContent() const;
-
-  void SetDeclarativeShadowRootType(DeclarativeShadowRootType val) {
-    declarative_shadow_root_type_ = val;
-  }
-  DeclarativeShadowRootType GetDeclarativeShadowRootType() const {
-    return declarative_shadow_root_type_;
-  }
-  bool IsDeclarativeShadowRoot() const {
-    return declarative_shadow_root_type_ != DeclarativeShadowRootType::kNone;
+  DocumentFragment* TemplateContentOrDeclarativeShadowRoot() const {
+    return declarative_shadow_root_ ? declarative_shadow_root_.Get()
+                                    : content();
   }
 
   void SetDeclarativeShadowRoot(ShadowRoot& shadow) {
-    DCHECK(declarative_shadow_root_type_ ==
-               DeclarativeShadowRootType::kStreamingOpen ||
-           declarative_shadow_root_type_ ==
-               DeclarativeShadowRootType::kStreamingClosed);
     declarative_shadow_root_ = &shadow;
   }
 
@@ -104,32 +85,10 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
                                        NodeCloningData&) override;
   void DidMoveToNewDocument(Document& old_document) override;
 
-  DocumentFragment* ContentInternal() const;
-
   mutable Member<TemplateContentDocumentFragment> content_;
 
   Member<ShadowRoot> declarative_shadow_root_;
-  DeclarativeShadowRootType declarative_shadow_root_type_;
 };
-
-// TODO(crbug.com/1396384) Remove this entire function when the older version
-// of declarative shadow DOM is removed.
-ALWAYS_INLINE bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot()
-    const {
-  switch (declarative_shadow_root_type_) {
-    case DeclarativeShadowRootType::kNone:
-      return false;
-    case DeclarativeShadowRootType::kOpen:
-    case DeclarativeShadowRootType::kClosed:
-      DCHECK(!declarative_shadow_root_);
-      CHECK(RuntimeEnabledFeatures::
-                DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
-      return true;
-    case DeclarativeShadowRootType::kStreamingOpen:
-    case DeclarativeShadowRootType::kStreamingClosed:
-      return false;
-  }
-}
 
 }  // namespace blink
 

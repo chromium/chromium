@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -163,6 +164,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // will be moved to the previous generation.
   void SavePageResourceStrongReferences(HeapVector<Member<Resource>> resources);
 
+  void SaveStrongReference(Resource* resource);
+
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
 
@@ -192,8 +195,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void PruneResources(PruneStrategy);
   void PruneNow(PruneStrategy);
 
-  void RemovePageResourceStrongReference(
-      const base::UnguessableToken& saved_page_token);
+  void PruneStrongReferences();
+  void ClearStrongReferences();
 
   bool in_prune_resources_ = false;
   bool prune_pending_ = false;
@@ -207,18 +210,21 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   base::TimeDelta delay_before_live_decoded_prune_;
 
   // The number of bytes currently consumed by resources in the cache.
-  size_t size_;
+  size_t size_ = 0;
 
-  // The size of strong reference to resources is not limited.
-  // The strong references will be removed when memory pressure is signaled.
-  HeapHashMap<String, Member<HeapVector<Member<Resource>>>>
-      saved_page_resources_;
+  // An LRU linked list. The tail contains the most recent items. When
+  // an item is accessed via `ResourceAccessed` it is moved to the end
+  // of the list. This list is pruned from the front based on size and
+  // age.
+  HeapLinkedHashSet<Member<Resource>> strong_references_;
+  base::TimeTicks strong_references_prune_time_;
+  base::TimeDelta strong_references_prune_duration_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   friend class MemoryCacheTest;
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, ResourceTimeout);
-  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, SaveSinglePage);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, LRU);
 };
 
 // Sets the global cache, used to swap in a test instance. Returns the old

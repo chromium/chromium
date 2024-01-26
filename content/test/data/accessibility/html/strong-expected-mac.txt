@@ -1,3 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXStaticText AXValue='Strong text'
+++++AXGroup AXSubrole=AXStrongStyleGroup
+++++++AXStaticText AXValue='Strong text'

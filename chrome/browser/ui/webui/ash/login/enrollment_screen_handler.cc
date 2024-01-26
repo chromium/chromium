@@ -429,7 +429,6 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           // LOCK_NOT_READY is transient, if retries are given up, LOCK_TIMEOUT
           // is reported instead.  This piece of code is unreached.
           LOG(FATAL) << "Invalid lock status.";
-          return;
         case InstallAttributes::LOCK_TIMEOUT:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_TIMEOUT,
                     /*retry=*/false);

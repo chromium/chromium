@@ -135,15 +135,16 @@ std::optional<std::u16string> GetExtraText(
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 std::optional<MediaCoordinator::ViewType> ComputePreviewType(
-    bool has_camera_request,
-    bool has_mic_request) {
-  if (has_camera_request && has_mic_request) {
+    std::vector<std::string> requested_audio_capture_device_ids,
+    std::vector<std::string> requested_video_capture_device_ids) {
+  if (!requested_audio_capture_device_ids.empty() &&
+      !requested_video_capture_device_ids.empty()) {
     return MediaCoordinator::ViewType::kBoth;
   }
-  if (has_camera_request) {
+  if (!requested_video_capture_device_ids.empty()) {
     return MediaCoordinator::ViewType::kCameraOnly;
   }
-  if (has_mic_request) {
+  if (!requested_audio_capture_device_ids.empty()) {
     return MediaCoordinator::ViewType::kMicOnly;
   }
   return std::nullopt;
@@ -161,6 +162,8 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
                                      delegate,
                                      permission_requested_time,
                                      prompt_style) {
+  std::vector<std::string> requested_audio_capture_device_ids;
+  std::vector<std::string> requested_video_capture_device_ids;
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       visible_requests = GetVisibleRequests(*delegate.get());
 
@@ -176,24 +179,38 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
 
   CreatePermissionButtons(GetAllowAlwaysText(visible_requests));
 
-  bool has_camera_request = false;
-  bool has_mic_request = false;
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
     if (visible_requests[i]->request_type() ==
         permissions::RequestType::kCameraStream) {
-      has_camera_request = true;
+      requested_video_capture_device_ids =
+          visible_requests[i]->GetRequestedVideoCaptureDeviceIds();
     } else if (visible_requests[i]->request_type() ==
                permissions::RequestType::kMicStream) {
-      has_mic_request = true;
+      requested_audio_capture_device_ids =
+          visible_requests[i]->GetRequestedAudioCaptureDeviceIds();
     }
   }
-  MaybeAddMediaPreview(has_camera_request, has_mic_request,
+  MaybeAddMediaPreview(requested_audio_capture_device_ids,
+                       requested_video_capture_device_ids,
                        visible_requests.size());
 }
 
 PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
+
+void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  auto button = GetPermissionDialogButton(button_id);
+  if (button == PermissionDialogButton::kAccept ||
+      button == PermissionDialogButton::kAcceptOnce) {
+    if (media_preview_coordinator_.has_value()) {
+      media_preview_coordinator_->UpdateDevicePreferenceRanking();
+    }
+  }
+#endif
+  PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
+}
 
 void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
     views::View* child) {
@@ -238,21 +255,27 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
 }
 
 void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
-    bool has_camera_request,
-    bool has_mic_request,
+
+    std::vector<std::string> requested_audio_capture_device_ids,
+    std::vector<std::string> requested_video_capture_device_ids,
     size_t index) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
     return;
   }
 
-  auto view_type = ComputePreviewType(has_camera_request, has_mic_request);
+  auto view_type = ComputePreviewType(requested_audio_capture_device_ids,
+                                      requested_video_capture_device_ids);
   if (!view_type) {
     return;
   }
 
-  media_preview_coordinator_.emplace(view_type.value(), *this, index,
-                                     /*is_subsection=*/false,
-                                     MediaCoordinator::EligibleDevices{});
+  media_preview_coordinator_.emplace(
+      view_type.value(), *this, index,
+      /*is_subsection=*/false,
+      MediaCoordinator::EligibleDevices{
+          /*cameras=*/requested_video_capture_device_ids,
+          /*mics=*/requested_audio_capture_device_ids},
+      *browser_->profile()->GetPrefs());
 #endif
 }

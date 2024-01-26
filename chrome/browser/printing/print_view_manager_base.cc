@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -166,6 +167,10 @@ std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace
+
+BASE_FEATURE(kCheckPrintRfhIsActive,
+             "CheckPrintRfhIsActive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
     : PrintManager(web_contents),
@@ -435,7 +440,7 @@ void PrintViewManagerBase::StartLocalPrintJob(
                      ? PrintScanningContext::kSystemPrintBeforePrintDocument
                      : PrintScanningContext::kNormalPrintBeforePrintDocument;
 
-  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+  std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
       scanning_data = enterprise_data_protection::GetPrintAnalysisData(
           web_contents(), context);
 
@@ -646,6 +651,15 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
     GetDefaultPrintSettingsReply(std::move(callback), nullptr);
     return;
   }
+
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
+  if (base::FeatureList::IsEnabled(kCheckPrintRfhIsActive) &&
+      !render_frame_host->IsActive()) {
+    // Only active RFHs should show UI elements.
+    GetDefaultPrintSettingsReply(std::move(callback), nullptr);
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (ShouldPrintJobOop() &&
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -657,7 +671,6 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   }
 #endif
 
-  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   content::RenderProcessHost* render_process_host =
       render_frame_host->GetProcess();
   auto callback_wrapper =
@@ -702,7 +715,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
-  absl::optional<int> printer_type_value =
+  std::optional<int> printer_type_value =
       job_settings.FindInt(kSettingPrinterType);
   if (!printer_type_value) {
     std::move(callback).Run(nullptr);
@@ -815,7 +828,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   }
 #endif
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+  std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
       scanning_data = enterprise_data_protection::GetPrintAnalysisData(
           web_contents(), enterprise_data_protection::PrintScanningContext::
                               kBeforeSystemDialog);

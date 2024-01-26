@@ -69,10 +69,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           })");
 
-absl::optional<ash::nearby::NearbyHttpStatus> HttpStatusFromUrlLoader(
+std::optional<ash::nearby::NearbyHttpStatus> HttpStatusFromUrlLoader(
     const network::SimpleURLLoader* loader) {
   if (!loader)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ash::nearby::NearbyHttpStatus(loader->NetError(),
                                        loader->ResponseInfo());
@@ -80,7 +80,7 @@ absl::optional<ash::nearby::NearbyHttpStatus> HttpStatusFromUrlLoader(
 
 void LogReceiveResult(
     bool success,
-    const absl::optional<ash::nearby::NearbyHttpStatus>& http_status,
+    const std::optional<ash::nearby::NearbyHttpStatus>& http_status,
     const std::string& request_id) {
   std::stringstream ss;
   ss << "Instant messaging receive express "
@@ -298,7 +298,7 @@ void ReceiveMessagesExpress::DelegateMessage(
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fast_path_ready_timeout_timer_.Stop();
-  absl::optional<ash::nearby::NearbyHttpStatus> http_status =
+  std::optional<ash::nearby::NearbyHttpStatus> http_status =
       HttpStatusFromUrlLoader(url_loader_.get());
 
   CD_LOG(VERBOSE, Feature::NS)
@@ -332,7 +332,7 @@ void ReceiveMessagesExpress::OnFastPathReady() {
   CD_LOG(VERBOSE, Feature::NS) << __func__;
   fast_path_ready_timeout_timer_.Stop();
   if (start_receiving_messages_callback_) {
-    LogReceiveResult(/*success=*/true, /*http_status=*/absl::nullopt,
+    LogReceiveResult(/*success=*/true, /*http_status=*/std::nullopt,
                      request_id_);
     std::move(start_receiving_messages_callback_)
         .Run(true, std::move(self_pending_remote_));

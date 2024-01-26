@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_IPP_PARSER_PUBLIC_CPP_IPP_CONVERTER_H_
 #define CHROME_SERVICES_IPP_PARSER_PUBLIC_CPP_IPP_CONVERTER_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
 #include "printing/backend/cups_ipp_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This namespace is filled with helpful (conversion) functions for working with
 // arbitrary byte buffers representing IPP requests.
@@ -37,12 +37,12 @@ const char kIppSentinel[] = "\x03";
 // Request line converters
 // Parses |status_line| into vector of 3, individual terms, returns empty
 // Optional on failure.
-absl::optional<std::vector<std::string>> ParseRequestLine(
+std::optional<std::vector<std::string>> ParseRequestLine(
     base::StringPiece status_line);
 
 // Builds valid HTTP Request line from input span of 3 |terms|, returns empty
 // Optional on failure.
-absl::optional<std::vector<uint8_t>> BuildRequestLine(
+std::optional<std::vector<uint8_t>> BuildRequestLine(
     base::StringPiece method,
     base::StringPiece endpoint,
     base::StringPiece http_version);
@@ -50,13 +50,12 @@ absl::optional<std::vector<uint8_t>> BuildRequestLine(
 // Headers converters
 // Parsed |headers_slice| into vector of HTTP header name/value pairs.
 // Returns empty Optional on failure.
-absl::optional<std::vector<HttpHeader>> ParseHeaders(
+std::optional<std::vector<HttpHeader>> ParseHeaders(
     base::StringPiece headers_slice);
 
 // Builds valid HTTP headers from input vector of header name/value pairs.
 // Returns empty Optional on failure.
-absl::optional<std::vector<uint8_t>> BuildHeaders(
-    std::vector<HttpHeader> terms);
+std::optional<std::vector<uint8_t>> BuildHeaders(std::vector<HttpHeader> terms);
 
 // IPP message converters
 // Reads |ipp_slice| into wrapped ipp_t*, using libCUPS APIs.
@@ -66,19 +65,19 @@ printing::ScopedIppPtr ParseIppMessage(base::span<const uint8_t> ipp_slice);
 // Builds valid IPP message from |ipp|, using libCUPS APIs.
 // Returns empty Optional on failure.
 // Note: Does not take ownership of |ipp|.
-absl::optional<std::vector<uint8_t>> BuildIppMessage(ipp_t* ipp);
+std::optional<std::vector<uint8_t>> BuildIppMessage(ipp_t* ipp);
 
 // Often used helper wrapping the above commands for building a complete IPP
 // request. Overloaded for cases without ipp_data.
 // Returns empty Optional on any failure.
-absl::optional<std::vector<uint8_t>> BuildIppRequest(
+std::optional<std::vector<uint8_t>> BuildIppRequest(
     base::StringPiece method,
     base::StringPiece endpoint,
     base::StringPiece http_version,
     std::vector<HttpHeader> terms,
     ipp_t* ipp,
     std::vector<uint8_t> ipp_data);
-absl::optional<std::vector<uint8_t>> BuildIppRequest(
+std::optional<std::vector<uint8_t>> BuildIppRequest(
     base::StringPiece method,
     base::StringPiece endpoint,
     base::StringPiece http_version,

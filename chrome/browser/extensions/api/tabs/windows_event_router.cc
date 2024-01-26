@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -26,7 +27,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserContext;
 
@@ -67,7 +67,7 @@ bool WillDispatchWindowEvent(
     mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    absl::optional<base::Value::List>& event_args_out,
+    std::optional<base::Value::List>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   bool has_filter =
       listener_filter &&
@@ -98,7 +98,7 @@ bool WillDispatchWindowFocusedEvent(
     mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    absl::optional<base::Value::List>& event_args_out,
+    std::optional<base::Value::List>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   int window_id = extension_misc::kUnknownWindowId;
   Profile* new_active_context = nullptr;

@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -318,6 +319,7 @@ public class BookmarkFolderPickerMediatorTest {
 
         // Setup BookmarkUiPrefs
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
 
         mMediator =
                 new BookmarkFolderPickerMediator(
@@ -426,14 +428,6 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
-    public void testRootFolder() {
-        mMediator.populateFoldersForParentId(mRootFolderId);
-        assertEquals(4, mModelList.size());
-        assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
-    }
-
-    @Test
     public void testOptionsItemSelected_BackPressed() {
         mMediator.optionsItemSelected(android.R.id.home);
         assertEquals(
@@ -488,6 +482,27 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
+    public void testRootFolders() {
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkId id =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        0,
+                        "title",
+                        new GURL("https://google.com"));
+        remakeMediator(bookmarkModel, id);
+
+        mMediator.populateFoldersForParentId(bookmarkModel.getRootFolderId());
+        assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(
+                mModelList,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testRootFolders_withAccount() {
         BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
@@ -501,13 +516,29 @@ public class BookmarkFolderPickerMediatorTest {
 
         mMediator.populateFoldersForParentId(bookmarkModel.getRootFolderId());
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        BookmarkModelListTestUtil.verifyModelListHaViewTypes(
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(
                 mModelList,
                 ViewType.SECTION_HEADER,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.SECTION_HEADER,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
+        BookmarkModelListTestUtil.verifyModelListHasBookmarkIds(
+                mModelList,
+                null,
+                bookmarkModel.getAccountOtherFolderId(),
+                bookmarkModel.getAccountDesktopFolderId(),
+                bookmarkModel.getAccountMobileFolderId(),
+                bookmarkModel.getAccountReadingListFolder(),
+                null,
+                bookmarkModel.getOtherFolderId(),
+                bookmarkModel.getDesktopFolderId(),
+                bookmarkModel.getMobileFolderId(),
+                bookmarkModel.getLocalOrSyncableReadingListFolder());
     }
 }

@@ -36,11 +36,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineView;
-import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
+import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -289,9 +288,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
 
         adapter.registerType(
-                OmniboxSuggestionUiType.DIVIDER_LINE,
-                parent -> new DividerLineView(parent.getContext()),
-                DividerLineViewBinder::bind);
+                OmniboxSuggestionUiType.GROUP_SEPARATOR,
+                parent -> new GroupSeparatorView(parent.getContext()),
+                (m, v, p) -> {});
 
         adapter.registerType(
                 OmniboxSuggestionUiType.QUERY_TILES,

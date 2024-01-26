@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -16,24 +15,12 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/history_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/search_engines/template_url_starter_pack_data.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
-// Scored higher than history URL provider suggestions since inputs like '@b'
-// would default 'bing.com' instead (history URL provider seems to ignore '@'
-// prefix in the input).
-const int BuiltinProvider::kStarterPackRelevance = 1450;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -54,33 +41,9 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
     DoBuiltinAutocompletion(input.text());
     UpdateRelevanceScores(input);
   }
-
-  DoStarterPackAutocompletion(input);
 }
 
 BuiltinProvider::~BuiltinProvider() = default;
-
-void BuiltinProvider::DoStarterPackAutocompletion(
-    const AutocompleteInput& input) {
-  // Custom search engines is not enabled on mobile.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // When the user's input begins with '@', we want to prioritize providing
-  // suggestions for all active starter pack search engines.
-  bool starts_with_starter_pack_symbol = base::StartsWith(
-      input.text(), u"@", base::CompareCase::INSENSITIVE_ASCII);
-
-  if (starts_with_starter_pack_symbol) {
-    TemplateURLService::TemplateURLVector matches;
-    template_url_service_->AddMatchingKeywords(input.text(), false, &matches);
-    for (TemplateURL* match : matches) {
-      if (match->starter_pack_id() > 0 &&
-          match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        AddStarterPackMatch(*match, input);
-      }
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-}
 
 void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
   const size_t kAboutSchemeLength = strlen(url::kAboutScheme);
@@ -202,53 +165,6 @@ void BuiltinProvider::AddBuiltinMatch(const std::u16string& match_string,
   match.destination_url = GURL(match_string);
   match.contents = match_string;
   match.contents_class = styles;
-  matches_.push_back(match);
-}
-
-void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
-                                          const AutocompleteInput& input) {
-  // The history starter pack engine is disabled in incognito mode.
-  if (client_->IsOffTheRecord() &&
-      template_url.starter_pack_id() == TemplateURLStarterPackData::kHistory) {
-    return;
-  }
-
-  // The starter pack relevance score is currently ranked above
-  // search-what-you-typed suggestion to avoid the keyword mode chip attaching
-  // to the search suggestion instead of these Builtin suggestions.
-  // TODO(yoangela): This should be updated so the keyword chip only attaches to
-  //  STARTER_PACK type suggestions rather than rely on out-scoring all other
-  //  suggestions.
-  AutocompleteMatch match(this, kStarterPackRelevance, false,
-                          AutocompleteMatchType::STARTER_PACK);
-
-  const std::u16string destination_url =
-      TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
-          template_url.starter_pack_id());
-  match.fill_into_edit = template_url.keyword();
-  match.inline_autocompletion =
-      match.fill_into_edit.substr(input.text().length());
-  match.destination_url = GURL(destination_url);
-  match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      input.current_page_classification() !=
-          metrics::OmniboxEventProto::NTP_REALBOX &&
-      template_url.keyword().starts_with(u'@')) {
-    match.description = l10n_util::GetStringFUTF16(
-        IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
-    match.description_class.emplace_back(0, ACMatchClassification::NONE);
-    match.contents =
-        l10n_util::GetStringUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_HELP);
-    match.contents_class.emplace_back(0, ACMatchClassification::DIM);
-    match.allowed_to_be_default_match = false;
-    match.keyword = template_url.keyword();
-  } else {
-    match.description = template_url.short_name();
-    match.description_class.emplace_back(0, ACMatchClassification::NONE);
-    match.contents = destination_url;
-    match.contents_class.emplace_back(0, ACMatchClassification::URL);
-    match.SetAllowedToBeDefault(input);
-  }
   matches_.push_back(match);
 }
 

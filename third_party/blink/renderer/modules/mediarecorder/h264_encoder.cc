@@ -90,11 +90,13 @@ H264Encoder::H264Encoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     VideoTrackRecorder::CodecProfile codec_profile,
     uint32_t bits_per_second,
+    bool is_screencast,
     const VideoTrackRecorder::OnErrorCB on_error_cb)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second),
       codec_profile_(codec_profile),
+      is_screencast_(is_screencast),
       on_error_cb_(on_error_cb) {
   DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::kH264);
 }
@@ -207,7 +209,8 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
 
   SEncParamExt init_params;
   openh264_encoder_->GetDefaultParams(&init_params);
-  init_params.iUsageType = CAMERA_VIDEO_REAL_TIME;
+  init_params.iUsageType =
+      is_screencast_ ? SCREEN_CONTENT_REAL_TIME : CAMERA_VIDEO_REAL_TIME;
 
   DCHECK_EQ(AUTO_REF_PIC_COUNT, init_params.iNumRefFrame);
   DCHECK(!init_params.bSimulcastAVC);

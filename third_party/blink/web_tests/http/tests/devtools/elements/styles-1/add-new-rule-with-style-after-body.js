@@ -41,7 +41,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   function step2() {
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var newProperty = section.addNewBlankProperty();
-    newProperty.startEditing();
+    newProperty.startEditingName();
     newProperty.nameElement.textContent = 'color';
     newProperty.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     newProperty.valueElement.textContent = 'maroon';

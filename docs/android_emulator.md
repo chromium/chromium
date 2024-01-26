@@ -12,6 +12,10 @@ target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 
 ## Running an Emulator
 
+### Googler-only Emulator Instructions
+
+See http://go/clank-emulator/
+
 ### Using Prebuilt CIPD packages
 
 Chromium has a set of prebuilt images stored as CIPD packages. These are used
@@ -61,7 +65,7 @@ You can use these configuration files to run the same emulator images locally.
      $ newgrp kvm
    ```
 
-   You need to log out and log back in so the new groups take effect. 
+   You need to log out and log back in so the new groups take effect.
 
 #### Running via the test runner
 

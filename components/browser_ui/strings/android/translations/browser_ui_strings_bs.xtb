@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1434873037477293673">kartica pada cijene</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Web lokacije vam mogu prikazati upite za prijavu koji potiču od usluga identiteta.</translation>
 <translation id="2790501146643349491">Kada je postavka uključena, nedavno zatvorene web lokacije mogu završiti slanje i primanje podataka. Kada je postavka isključena, nedavno zatvorene web lokacije ne mogu završiti slanje ni primanje podataka.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva odobrenja web lokacije za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2874939134665556319">Prethodna numera</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
+<translation id="6452138246455930388">Pad cijene na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="652937045869844725">Pokušajte dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Pomjeri nadolje</translation>
 <translation id="6749077623962119521">Poništiti odobrenja?</translation>
 <translation id="6766622839693428701">Prevucite prema dolje da zatvorite.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Odaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može očitavati NFC</translation>
+<translation id="6867014948848323204">S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokirajte web lokacijama čitanje teksta i pregled slika u međumemoriji</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6950072572526089586">Web lokacija koju posjetite može sačuvati informacije o tome šta radite kako bi funkcionirala prema očekivanjima – naprimjer, da ostanete prijavljeni na web lokaciju ili sačuvate artikle u kolica za kupovinu. Web lokacije često privremeno pohranjuju te informacije na vaš uređaj.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
 <translation id="7684642910516280563">Nemojte dozvoliti web lokaciji da koristi kolačiće treće strane</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
+<translation id="7770832849480336015">Sakrij "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

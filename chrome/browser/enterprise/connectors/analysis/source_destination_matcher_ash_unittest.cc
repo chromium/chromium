@@ -36,7 +36,7 @@ namespace {
 
 struct VolumeInfo {
   file_manager::VolumeType type;
-  absl::optional<guest_os::VmType> vm_type;
+  std::optional<guest_os::VmType> vm_type;
   const char* fs_config_string;
 };
 
@@ -54,25 +54,25 @@ base::FilePath GetBasePathForVolume(base::FilePath path,
 }
 
 constexpr std::array kVolumeInfos{
-    VolumeInfo{file_manager::VOLUME_TYPE_TESTING, absl::nullopt, "TESTING"},
-    VolumeInfo{file_manager::VOLUME_TYPE_GOOGLE_DRIVE, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_TESTING, std::nullopt, "TESTING"},
+    VolumeInfo{file_manager::VOLUME_TYPE_GOOGLE_DRIVE, std::nullopt,
                "GOOGLE_DRIVE"},
-    VolumeInfo{file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, std::nullopt,
                "MY_FILES"},
-    VolumeInfo{file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-               absl::nullopt, "REMOVABLE"},
-    VolumeInfo{file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, std::nullopt,
+               "REMOVABLE"},
+    VolumeInfo{file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE, std::nullopt,
                "TESTING"},
-    VolumeInfo{file_manager::VOLUME_TYPE_PROVIDED, absl::nullopt, "PROVIDED"},
-    VolumeInfo{file_manager::VOLUME_TYPE_MTP, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_PROVIDED, std::nullopt, "PROVIDED"},
+    VolumeInfo{file_manager::VOLUME_TYPE_MTP, std::nullopt,
                "DEVICE_MEDIA_STORAGE"},
-    VolumeInfo{file_manager::VOLUME_TYPE_MEDIA_VIEW, absl::nullopt, "ARC"},
-    VolumeInfo{file_manager::VOLUME_TYPE_CROSTINI, absl::nullopt, "CROSTINI"},
-    VolumeInfo{file_manager::VOLUME_TYPE_ANDROID_FILES, absl::nullopt, "ARC"},
-    VolumeInfo{file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_MEDIA_VIEW, std::nullopt, "ARC"},
+    VolumeInfo{file_manager::VOLUME_TYPE_CROSTINI, std::nullopt, "CROSTINI"},
+    VolumeInfo{file_manager::VOLUME_TYPE_ANDROID_FILES, std::nullopt, "ARC"},
+    VolumeInfo{file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, std::nullopt,
                "ARC"},
-    VolumeInfo{file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SMB"},
-    VolumeInfo{file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, absl::nullopt,
+    VolumeInfo{file_manager::VOLUME_TYPE_SMB, std::nullopt, "SMB"},
+    VolumeInfo{file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, std::nullopt,
                "UNKNOWN"},
     VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::TERMINA,
                "CROSTINI"},
@@ -84,7 +84,7 @@ constexpr std::array kVolumeInfos{
                "BRUSCHETTA"},
     VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::UNKNOWN,
                "UNKNOWN_VM"},
-    VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, absl::nullopt, "UNKNOWN_VM"},
+    VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, std::nullopt, "UNKNOWN_VM"},
     VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::ARCVM,
                "ARC"}};
 

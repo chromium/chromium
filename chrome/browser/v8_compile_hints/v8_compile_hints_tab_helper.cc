@@ -4,6 +4,8 @@
 
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -13,7 +15,6 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace v8_compile_hints {

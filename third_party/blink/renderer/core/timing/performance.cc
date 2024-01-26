@@ -432,9 +432,7 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
         entries, long_animation_frame_buffer_, maybe_name);
   }
 
-  if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled(
-          GetExecutionContext()) &&
-      visibility_state_buffer_.size()) {
+  if (visibility_state_buffer_.size()) {
     entries = MergePerformanceEntryVectors(entries, visibility_state_buffer_,
                                            maybe_name);
   }
@@ -936,6 +934,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                   ("mark_fully_visible"));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_interactive,
                                   ("mark_interactive"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_feature_usage,
+                                  ("mark_feature_usage"));
   if (mark_options &&
       (mark_options->hasStartTime() || mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
@@ -973,10 +973,61 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             .SetUserTimingMarkInteractive(
                 base::Milliseconds(performance_mark->startTime()));
       }
+    } else if (mark_name == mark_feature_usage && mark_options->hasDetail()) {
+      if (RuntimeEnabledFeatures::PerformanceMarkFeatureUsageEnabled()) {
+        ProcessUserFeatureMark(mark_options);
+      }
     }
     NotifyObserversOfEntry(*performance_mark);
   }
   return performance_mark;
+}
+
+void Performance::ProcessUserFeatureMark(
+    const PerformanceMarkOptions* mark_options) {
+  const ExecutionContext* exec_context = GetExecutionContext();
+  if (!exec_context) {
+    return;
+  }
+
+  const ScriptValue& detail = mark_options->detail();
+  if (!detail.IsObject()) {
+    return;
+  }
+
+  v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::Local<v8::Object> object;
+  if (!detail.V8Value()->ToObject(current_context).ToLocal(&object)) {
+    return;
+  }
+
+  v8::Local<v8::Value> user_feature_name_val;
+  if (!object->Get(current_context, V8AtomicString(isolate, "feature"))
+           .ToLocal(&user_feature_name_val) ||
+      user_feature_name_val->IsUndefined()) {
+    return;
+  }
+
+  v8::Local<v8::String> user_feature_name;
+  if (!user_feature_name_val->ToString(current_context)
+           .ToLocal(&user_feature_name)) {
+    return;
+  }
+
+  String blink_user_feature_name =
+      ToBlinkString<String>(isolate, user_feature_name, kDoNotExternalize);
+
+  // Check if the user feature name is mapped to an allowed WebFeature.
+  auto maybe_web_feature =
+      PerformanceMark::GetWebFeatureForUserFeatureName(blink_user_feature_name);
+  if (!maybe_web_feature.has_value()) {
+    // We have no matching WebFeature translation yet, skip.
+    return;
+  }
+
+  // Tick the corresponding use counter.
+  UseCounter::Count(GetExecutionContext(), maybe_web_feature.value());
 }
 
 void Performance::clearMarks(const AtomicString& mark_name) {

@@ -346,7 +346,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           use_new_window ? 0 : browser->tab_strip_model()->active_index() + 1;
       web_contents = chrome::AddRestoredTab(
           browser, tab.navigations, tab_index, selected_index,
-          tab.extension_app_id, absl::nullopt,
+          tab.extension_app_id, std::nullopt,
           disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB,  // selected
           tab.pinned, base::TimeTicks(), nullptr, tab.user_agent_override,
           tab.extra_data, true /* from_session_restore */);
@@ -868,7 +868,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
     // Relabel group IDs to prevent duplicating groups. See crbug.com/1202102.
-    absl::optional<tab_groups::TabGroupId> new_group;
+    std::optional<tab_groups::TabGroupId> new_group;
     if (tab.group) {
       auto it = new_group_ids->find(*tab.group);
       if (it == new_group_ids->end()) {

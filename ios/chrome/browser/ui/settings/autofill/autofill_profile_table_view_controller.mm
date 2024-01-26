@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -49,7 +50,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
@@ -76,9 +77,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     AutofillProfileEditCoordinatorDelegate,
     PersonalDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge> _observer;
 
   // Deleting profiles updates PersonalDataManager resulting in an observer

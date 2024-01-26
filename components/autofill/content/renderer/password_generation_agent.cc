@@ -418,14 +418,8 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
 
   // Mark the input element as |has_been_password_for_autofill_|.
   if (mark_generation_element_) {
-    if (!render_frame())
-      return;
-    WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-    if (doc.IsNull())
-      return;
     WebFormControlElement new_password_input =
-        form_util::FindFormControlByRendererId(doc,
-                                               form.new_password_renderer_id);
+        form_util::FindFormControlByRendererId(form.new_password_renderer_id);
     if (!new_password_input.IsNull()) {
       // Mark the input element with renderer id
       // |form.new_password_renderer_id|.
@@ -482,17 +476,15 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       generation_enabled_fields_, last_focused_password_element_id);
 
   if (!is_automatic_generation_available) {
-    WebFormElement form = last_focused_password_element.Form();
-    std::vector<WebFormControlElement> control_elements;
-    if (!form.IsNull()) {
-      control_elements = form_util::ExtractAutofillableElementsInForm(form);
-    } else {
-      const WebLocalFrame& frame = *render_frame()->GetWebFrame();
-      blink::WebDocument doc = frame.GetDocument();
-      if (doc.IsNull())
-        return false;
-      control_elements = form_util::GetUnownedFormFieldElements(doc);
+    blink::WebDocument document =
+        render_frame() ? render_frame()->GetWebFrame()->GetDocument()
+                       : WebDocument();
+    if (document.IsNull()) {
+      return false;
     }
+    WebFormElement form = last_focused_password_element.Form();
+    std::vector<WebFormControlElement> control_elements =
+        form_util::GetAutofillableFormControlElements(document, form);
 
     MaybeCreateCurrentGenerationItem(
         last_focused_password_element,
@@ -534,18 +526,19 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
   }
 
   if (current_generation_item_->password_is_generated_) {
-    if (current_generation_item_->generation_element_.Value().length() <
-        kMinimumLengthForEditedPassword) {
+    size_t password_length =
+        current_generation_item_->generation_element_.Value().length();
+    if (password_length < kMinimumLengthForEditedPassword) {
+      // Password is too short to be considered generated.
       PasswordNoLongerGenerated();
-      MaybeOfferAutomaticGeneration();
-      if (current_generation_item_->generation_element_.Value().IsEmpty())
+      if (password_length == 0) {
         current_generation_item_->generation_element_.SetShouldRevealPassword(
             false);
-    } else {
-      current_generation_item_->generation_element_.SetShouldRevealPassword(
-          true);
-      ShowEditingPopup();
+      }
+      return MaybeOfferAutomaticGeneration();
     }
+    current_generation_item_->generation_element_.SetShouldRevealPassword(true);
+    ShowEditingPopup();
     return true;
   }
 
@@ -554,8 +547,7 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
   // typing their password and display the password suggestion.
   if (!element.IsReadOnly() && element.IsEnabled() &&
       element.Value().length() <= kMaximumCharsForGenerationOffer) {
-    MaybeOfferAutomaticGeneration();
-    return true;
+    return MaybeOfferAutomaticGeneration();
   }
 
   return false;
@@ -648,11 +640,13 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
   return true;
 }
 
-void PasswordGenerationAgent::MaybeOfferAutomaticGeneration() {
+bool PasswordGenerationAgent::MaybeOfferAutomaticGeneration() {
   // TODO(crbug.com/852309): Add this check to the generation element class.
-  if (!current_generation_item_->is_manually_triggered_) {
-    AutomaticGenerationAvailable();
+  if (current_generation_item_->is_manually_triggered_) {
+    return false;
   }
+  AutomaticGenerationAvailable();
+  return true;
 }
 
 void PasswordGenerationAgent::AutomaticGenerationAvailable() {
@@ -757,8 +751,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
   std::vector<blink::WebInputElement> passwords = {generation_element};
 
   WebFormControlElement confirmation_password =
-      form_util::FindFormControlByRendererId(generation_element.GetDocument(),
-                                             confirmation_password_renderer_id);
+      form_util::FindFormControlByRendererId(confirmation_password_renderer_id);
 
   if (!confirmation_password.IsNull()) {
     WebInputElement input = confirmation_password.DynamicTo<WebInputElement>();

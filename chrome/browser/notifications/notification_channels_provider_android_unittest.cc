@@ -159,7 +159,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingWhenChannelsShouldNotBeUsed_ReturnsFalse) {
   this->InitChannelsProvider(false /* should_use_channels */);
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -172,7 +172,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -195,7 +195,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -218,12 +218,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -246,12 +246,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -273,13 +273,13 @@ TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingDefault_DeletesRule) {
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
   bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
@@ -301,7 +301,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 TEST_F(NotificationChannelsProviderAndroidTest, NoRulesInIncognito) {
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -326,12 +326,14 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
   channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      abc_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      xyz_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -362,10 +364,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                                  _, _, ContentSettingsType::NOTIFICATIONS));
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://example.com"),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Emulate user blocking the channel.
   fake_bridge_->SetChannelStatus("https://example.com",
@@ -400,12 +403,14 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(xyz_url);
   channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      abc_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      xyz_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_NE(base::Time(), content_settings::TestUtils::GetLastModified(
@@ -442,12 +447,14 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
   channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      abc_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      xyz_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->ClearAllContentSettingsRules(
@@ -488,7 +495,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern(),
+      GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -519,7 +526,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   ContentSettingsPattern first_pattern =
       ContentSettingsPattern::FromString(first_origin.spec());
   channels_provider_->SetWebsiteSetting(
-      first_pattern, ContentSettingsPattern(),
+      first_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -535,11 +542,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   clock.Advance(base::Seconds(3));
   base::Time t2 = clock.Now();
   channels_provider_->SetWebsiteSetting(
-      first_pattern, ContentSettingsPattern(),
+      first_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->SetWebsiteSetting(
-      first_pattern, ContentSettingsPattern(),
+      first_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
@@ -555,7 +562,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   std::string second_origin = "https://other.com";
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString(second_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
@@ -725,7 +732,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   // Set up TemplateURLService with a default search engine.
-  TemplateURLService* template_url_service = new TemplateURLService(NULL, 0);
+  TemplateURLService* template_url_service = new TemplateURLService(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData data;
   data.SetURL("https://default-search-engine.com/url?bar={searchTerms}");
   TemplateURL* template_url =

@@ -121,7 +121,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     ~BiddingAndAuctionDataConstructionState();
 
     base::TimeTicks start_time;
-    BiddingAndAuctionData data;
+    std::unique_ptr<BiddingAndAuctionServerKey> key;
+    std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
     url::Origin seller;
     std::optional<url::Origin> coordinator;
@@ -171,12 +172,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
 
-  void OnGotAuctionData(BiddingAndAuctionDataConstructionState state,
-                        BiddingAndAuctionData data);
+  // On failing to fetch ad auction data, call the first callback in
+  // ba_data_callbacks_ & start loading the next following request in
+  // ba_data_callbacks_.
+  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string msg);
+  void LoadAuctionDataAndKeyForNextQueuedRequest();
+  void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
-      BiddingAndAuctionDataConstructionState state,
+      base::Uuid request_id,
       scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
+  void OnGotAuctionDataAndKey(base::Uuid request_id);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
 
@@ -229,6 +235,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   bool has_logged_private_aggregation_web_features_ = false;
   bool has_logged_extended_private_aggregation_web_feature_ = false;
   bool has_logged_private_aggregation_enable_debug_mode_web_feature_ = false;
+
+  // Track the state of GetInterestGroupAdAuctionData calls. One request will be
+  // handled at a time (the first in the queue). The first
+  // BiddingAndAuctionDataConstructionState's data and key will be edited in
+  // place as they are loaded.
+  base::queue<BiddingAndAuctionDataConstructionState> ba_data_callbacks_;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };

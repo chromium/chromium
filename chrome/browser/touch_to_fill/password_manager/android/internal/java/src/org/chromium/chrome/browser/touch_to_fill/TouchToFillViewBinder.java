@@ -44,6 +44,8 @@ import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.webauthn.CredManSupport;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -236,7 +238,8 @@ class TouchToFillViewBinder {
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getUsername());
             TextView descriptionText = view.findViewById(R.id.password_or_context);
-            descriptionText.setText(R.string.touch_to_fill_sheet_webauthn_credential_context);
+
+            descriptionText.setText(getPasskeyDescriptionTextId());
 
             String label =
                     view.getContext()
@@ -389,6 +392,12 @@ class TouchToFillViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    private static int getPasskeyDescriptionTextId() {
+        return CredManSupportProvider.getCredManSupport() == CredManSupport.PARALLEL_WITH_FIDO_2
+                ? R.string.touch_to_fill_sheet_passkey_credential_context
+                : R.string.touch_to_fill_sheet_webauthn_credential_context;
     }
 
     private TouchToFillViewBinder() {}

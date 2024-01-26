@@ -4,12 +4,12 @@
 
 #include "chrome/services/media_gallery_util/media_parser_android.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
 #include "chrome/services/media_gallery_util/video_thumbnail_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

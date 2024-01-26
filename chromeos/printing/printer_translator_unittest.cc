@@ -399,10 +399,19 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidPpdResource) {
           .Set("uri", "ipp://uri")
           .SetByDottedPath("ppd_resource.autoconf", true)
           .SetByDottedPath("ppd_resource.effective_model", "model");
+  auto printer_user_supplied_ppd_and_model =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri")
+          .SetByDottedPath("ppd_resource.effective_model", "model")
+          .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                           "http://ppd-uri");
 
   EXPECT_FALSE(ManagedPrinterToPrinter(printer_without_ppd_resource));
   EXPECT_FALSE(ManagedPrinterToPrinter(printer_no_autoconf_and_no_model));
   EXPECT_FALSE(ManagedPrinterToPrinter(printer_autoconf_and_model));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_user_supplied_ppd_and_model));
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithAutoconf) {
@@ -432,11 +441,41 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithModel) {
 
   std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
 
+  ASSERT_TRUE(printer);
   EXPECT_EQ(printer->id(), "1");
   EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
   EXPECT_FALSE(printer->ppd_reference().autoconf);
   EXPECT_EQ(printer->ppd_reference().effective_make_and_model, "model");
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithUserSuppliedPpdUri) {
+  auto managed_printer =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri:1234")
+          .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                           "https://ppd-uri");
+
+  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+
+  ASSERT_TRUE(printer);
+  EXPECT_EQ(printer->id(), "1");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
+  EXPECT_FALSE(printer->ppd_reference().autoconf);
+  EXPECT_EQ(printer->ppd_reference().user_supplied_ppd_url, "https://ppd-uri");
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidUserSuppliedPpdUri) {
+  auto printer = base::Value::Dict()
+                     .Set("guid", "1")
+                     .Set("display_name", "name")
+                     .Set("uri", "ipp://uri:1234")
+                     .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                                      "ftp://scheme-not-allowed");
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterOptionalFieldsSet) {

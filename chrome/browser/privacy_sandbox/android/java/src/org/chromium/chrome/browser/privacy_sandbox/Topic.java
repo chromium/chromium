@@ -14,11 +14,17 @@ public final class Topic {
     private final int mTopicId;
     private final int mTaxonomyVersion;
     private final String mName;
+    private final String mDescription;
 
     public Topic(int topicId, int taxonomyVersion, String name) {
+        this(topicId, taxonomyVersion, name, "");
+    }
+
+    public Topic(int topicId, int taxonomyVersion, String name, String description) {
         mTopicId = topicId;
         mTaxonomyVersion = taxonomyVersion;
         mName = name;
+        mDescription = description;
     }
 
     public int getTopicId() {
@@ -31,6 +37,10 @@ public final class Topic {
 
     public String getName() {
         return mName;
+    }
+
+    public String getDescription() {
+        return mDescription;
     }
 
     /**

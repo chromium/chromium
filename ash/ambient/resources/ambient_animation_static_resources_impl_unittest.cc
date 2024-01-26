@@ -4,6 +4,8 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 
+#include <string_view>
+
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
@@ -40,7 +42,7 @@ TEST(AmbientAnimationStaticResourcesTest, LoadsStaticAssets) {
           personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
       /*serializable=*/false);
   ASSERT_THAT(resources, NotNull());
-  for (base::StringPiece asset_id :
+  for (std::string_view asset_id :
        ambient::resources::kAllFeelTheBreezeStaticAssets) {
     gfx::ImageSkia image_original = resources->GetStaticImageAsset(asset_id);
     ASSERT_FALSE(image_original.isNull());

@@ -3,17 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
+
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "extensions/common/extension_features.h"
 
 ExtensionsToolbarContainerViewController::
     ExtensionsToolbarContainerViewController(
-        Profile* profile,
+        Browser* browser,
         ExtensionsToolbarContainer* extensions_container)
-    : profile_(profile), extensions_container_(extensions_container) {
-  model_observation_.Observe(ToolbarActionsModel::Get(profile_));
+    : browser_(browser), extensions_container_(extensions_container) {
+  model_observation_.Observe(ToolbarActionsModel::Get(browser_->profile()));
   permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(profile_));
+      extensions::PermissionsManager::Get(browser_->profile()));
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
 ExtensionsToolbarContainerViewController::
@@ -21,6 +29,88 @@ ExtensionsToolbarContainerViewController::
   extensions_container_ = nullptr;
   model_observation_.Reset();
   permissions_manager_observation_.Reset();
+}
+
+void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
+  // IPH is only shown for the kExtensionsMenuAccessControl feature.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
+  CHECK(browser_->window());
+
+  // Display IPH, with priority order.
+  ExtensionsRequestAccessButton* request_access_button =
+      extensions_container_->GetRequestAccessButton();
+  if (request_access_button->GetVisible()) {
+    const int extensions_size = request_access_button->GetExtensionsCount();
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+    params.body_params = extensions_size;
+    params.title_params = extensions_size;
+    browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  }
+
+  if (extensions_container_->GetExtensionsButton()->state() ==
+      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHExtensionsMenuFeature);
+  }
+}
+
+void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (tab_strip_model->empty() || !selection.active_tab_changed()) {
+    return;
+  }
+
+  // Close Extensions menu IPH if it is open.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature);
+
+  extensions::MaybeShowExtensionControlledNewTabPage(browser_,
+                                                     selection.new_contents);
+
+  // Request access button confirmation is tab-specific. Therefore, we need to
+  // reset if the active tab changes.
+  if (extensions_container_->GetRequestAccessButton()) {
+    extensions_container_->CollapseConfirmation();
+  }
+
+  MaybeShowIPH();
+}
+
+void ExtensionsToolbarContainerViewController::TabChangedAt(
+    content::WebContents* contents,
+    int index,
+    TabChangeType change_type) {
+  // Ignore changes that don't affect all the tab contents (e.g loading
+  // changes).
+  if (change_type != TabChangeType::kAll) {
+    return;
+  }
+
+  // Close Extensions menu IPH if it is open.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature);
+
+  // Request access button confirmation is tab-specific for a specific origin.
+  // Therefore, we need to reset it if it's currently showing, we are on the
+  // same tab and we have navigated to another origin.
+  // Note: When we switch tabs, `OnTabStripModelChanged` is called before
+  // `TabChangedAt` and takes care of resetting the confirmation if shown.
+  ExtensionsRequestAccessButton* request_access_button =
+      extensions_container_->GetRequestAccessButton();
+  if (request_access_button && request_access_button->IsShowingConfirmation() &&
+      !request_access_button->IsShowingConfirmationFor(
+          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    extensions_container_->CollapseConfirmation();
+  }
+
+  MaybeShowIPH();
 }
 
 void ExtensionsToolbarContainerViewController::OnToolbarActionAdded(
@@ -78,7 +168,8 @@ void ExtensionsToolbarContainerViewController::OnExtensionDismissedRequests(
   CHECK(extensions_container_);
   auto* web_contents = extensions_container_->GetCurrentWebContents();
   extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(profile_)->GetUserSiteSetting(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
 }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {page, session, dp} = await testRunner.startBlank(
       'Tests whether a heap snapshot contains any "InternalNode" or "blink::" objects. This test is useful to check that cppgc_enable_object_names gn arg is enabled.');
 

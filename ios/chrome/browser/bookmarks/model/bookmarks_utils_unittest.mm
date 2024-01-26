@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -34,10 +35,10 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
         local_or_syncable_bookmark_model_, account_bookmark_model_);
   }
 
-  PrefService* prefs_ = nullptr;
-  const bookmarks::BookmarkNode* mobile_node_ = nullptr;
-  const bookmarks::BookmarkNode* folder_node_ = nullptr;
-  const bookmarks::BookmarkNode* bookmark_node_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode> mobile_node_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode> folder_node_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode> bookmark_node_ = nullptr;
 };
 
 // Tests GetDefaultBookmarkFolder() when not default folder was set.

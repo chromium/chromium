@@ -228,7 +228,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1882814835921407042">Walang mobile network</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">I-unlock gamit ang fingerprint</translation>
-<translation id="1888656773939766144">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ginawang <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
@@ -267,7 +266,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2075520525463668108">I-toggle ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Mag-swipe pakanan gamit ang apat na daliri para lumipat sa susunod na desk</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Buksan ang Picker ng Emoji</translation>
@@ -283,7 +281,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2149229036084364364">Pumunta sa nakaraang track</translation>
 <translation id="2152895518047545149">Mukhang wala namang nawawala. Magaling!</translation>
 <translation id="2161132820593978283">Subukan ang camera framing para mapunta ka sa gitna ng screen sa mga video call. I-on ito sa Mga Mabilisang Setting.</translation>
-<translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="2185166372312820725">Pumunta sa nakaraang tab</translation>
 <translation id="2185444992308415167">Tingnan ang tab 1 hanggang 8</translation>
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
@@ -412,10 +409,12 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2726420622004325180">Dapat na mayroong mobile data ang iyong telepono para makapagbigay ito ng hotspot</translation>
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
+<translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"I-delete"</translation>
 <translation id="2750941250130734256">Naka-undock ang aktibong window.</translation>
 <translation id="2761723519669354964">Buksan ang naka-highlight na item sa shelf</translation>
+<translation id="2762000892062317888">ngayon lang</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hanggang <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
@@ -624,6 +623,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3580650856351781466">Nagda-download ng mga speech file</translation>
 <translation id="3585296979871889131">Tingnan ang mga kamakailang larawan, media, notification, at app ng iyong telepono</translation>
+<translation id="3590441166907930941">Button sa Gilid</translation>
 <translation id="3593039967545720377">I-access ang history ng iyong clipboard sa pamamagitan ng pagpindot sa <ph name="SHORTCUT_KEY_NAME" /> + V para tingnan ang clipboard mo. Kumopya ng item para magsimula.</translation>
 <translation id="3593646411856133110">Mag-swipe pataas at i-hold para makita ang mga nakabukas na app</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
@@ -732,6 +732,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3986082989454912832">Sagutin</translation>
 <translation id="3990002060657467458">Nasa Mga Mabilisang Setting ang mga madalas gamiting kontrol tulad ng Wi-Fi, Bluetooth, at volume. Puwede ka rin pumunta rito para kumuha ng mga screenshot.</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
+<translation id="4002066346123236978">Pamagat</translation>
 <translation id="40062176907008878">Sulat-kamay</translation>
 <translation id="4011112806063830608">Naka-on ang Huwag Istorbohin.</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
@@ -1035,6 +1036,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5163434717504750796">Kalagayan ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">I-save ang bilang template</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
+<translation id="5168753792967365150">Mag-edit sa Google Tasks</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
 <translation id="5187627942836026988">Ipakita ang mga detalye ng hotspot. Na-block ng iyong administrator ang hotspot.</translation>
@@ -1304,6 +1306,8 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6168622430237609329">Ang iyong mga naka-install na app</translation>
 <translation id="6173151025443907148">Hindi sinusuportahan ang pag-sign in ng pangalawang user kung naka-enable ang Lacros. Gumamit na lang ng pangalawang profile ng browser sa Lacros o i-disable ang Lacros at subukan ulit.</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
+<translation id="6180193585172850042">Button na Bumalik</translation>
+<translation id="6180651297859206670">Button na Pa-forward</translation>
 <translation id="6182592640011875895">Buksan ang desk</translation>
 <translation id="6185696379715117369">Pataas sa pahina</translation>
 <translation id="619335566042889110">Ganap na i-charge ngayon</translation>
@@ -1692,7 +1696,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7850320739366109486">Huwag Istorbohin</translation>
 <translation id="7851039877802112575">Ilipat ang focus sa mga pop-up at dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Mag-swipe pataas gamit ang tatlong daliri para makapasok sa Overview</translation>
 <translation id="7862292329216937261">Para gamitin ang device bilang bisita, kailangan mong mag-sign out at pagkatapos ay piliin ang Mag-browse bilang Bisita sa ibaba ng screen.</translation>
 <translation id="7866482334467279021">naka-on</translation>
 <translation id="7872786842639831132">Naka-off</translation>
@@ -1803,7 +1806,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8262312463845990408">I-toggle ang pag-playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang oras}one{Ibalik sa nakaraang bersyon ang device sa loob ng # oras}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na oras}}</translation>
 <translation id="8277261673056602147">I-highlight ang text sa iyong screen</translation>
-<translation id="8284362522226889623">Mag-swipe pakaliwa gamit ang apat na daliri para lumipat sa nakaraang desk</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>

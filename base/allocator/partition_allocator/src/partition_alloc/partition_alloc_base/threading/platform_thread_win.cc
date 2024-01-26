@@ -4,11 +4,11 @@
 
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
-#include <stddef.h>
+#include <windows.h>
+
+#include <cstddef>
 
 #include "partition_alloc/partition_alloc_base/time/time_override.h"
-
-#include <windows.h>
 
 namespace partition_alloc::internal::base {
 

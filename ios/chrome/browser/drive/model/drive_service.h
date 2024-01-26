@@ -26,15 +26,11 @@ class DriveService : public KeyedService {
   virtual bool IsSupported() const = 0;
 
   // Returns a DriveFileUploader to perform queries on the Drive of `identity`.
-  // TODO(crbug.com/1495354): Remove implementation once subclasses provide
-  // their own.
   virtual std::unique_ptr<DriveFileUploader> CreateFileUploader(
-      id<SystemIdentity> identity);
+      id<SystemIdentity> identity) = 0;
 
   // Returns a name suggestion for the folder in which to add uploaded files.
-  // TODO(crbug.com/1495354): Remove implementation once subclasses provide
-  // their own.
-  virtual std::string GetSuggestedFolderName() const;
+  virtual std::string GetSuggestedFolderName() const = 0;
 };
 
 }  // namespace drive

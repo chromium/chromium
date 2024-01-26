@@ -23,7 +23,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PageVisibility} from '../page_visibility.js';
+import type {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 

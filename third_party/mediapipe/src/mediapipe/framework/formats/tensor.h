@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
+#include <memory>
 #include <numeric>
 #include <tuple>
 #include <type_traits>
@@ -28,6 +29,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/formats/tensor/internal.h"
+#include "mediapipe/framework/memory_manager.h"
 #include "mediapipe/framework/port.h"
 
 // Supported use cases for tensor_ahwb:
@@ -46,6 +48,7 @@
 #include <EGL/eglext.h>
 
 #include "mediapipe/framework/formats/hardware_buffer.h"
+#include "mediapipe/framework/formats/hardware_buffer_pool.h"
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
 #include "mediapipe/gpu/gl_base.h"
@@ -100,10 +103,10 @@ class Tensor {
     // Non-copyable.
     View(const View&) = delete;
     View& operator=(const View&) = delete;
-    View(View&& src) = default;
 
    protected:
-    View(std::unique_ptr<absl::MutexLock>&& lock) : lock_(std::move(lock)) {}
+    explicit View(std::unique_ptr<absl::MutexLock>&& lock)
+        : lock_(std::move(lock)) {}
     std::unique_ptr<absl::MutexLock> lock_;
   };
 
@@ -146,9 +149,11 @@ class Tensor {
     int zero_point = 0;
   };
 
-  Tensor(ElementType element_type, const Shape& shape);
   Tensor(ElementType element_type, const Shape& shape,
-         const QuantizationParameters& quantization_parameters);
+         MemoryManager* memory_manager = nullptr);
+  Tensor(ElementType element_type, const Shape& shape,
+         const QuantizationParameters& quantization_parameters,
+         MemoryManager* memory_manager = nullptr);
 
   // Non-copyable.
   Tensor(const Tensor&) = delete;
@@ -167,7 +172,7 @@ class Tensor {
       return static_cast<typename std::tuple_element<
           std::is_const<T>::value, std::tuple<P*, const P*> >::type>(buffer_);
     }
-    CpuView(CpuView&& src) : View(std::move(src)) {
+    CpuView(CpuView&& src) : View(std::move(src.lock_)) {
       buffer_ = std::exchange(src.buffer_, nullptr);
       release_callback_ = std::exchange(src.release_callback_, nullptr);
     }
@@ -199,7 +204,8 @@ class Tensor {
     AHardwareBuffer* handle() const {
       return hardware_buffer_->GetAHardwareBuffer();
     }
-    AHardwareBufferView(AHardwareBufferView&& src) : View(std::move(src)) {
+    AHardwareBufferView(AHardwareBufferView&& src)
+        : View(std::move(src.lock_)) {
       hardware_buffer_ = std::move(src.hardware_buffer_);
       file_descriptor_ = src.file_descriptor_;
       fence_fd_ = std::exchange(src.fence_fd_, nullptr);
@@ -258,8 +264,8 @@ class Tensor {
    public:
     GLuint name() const { return name_; }
     OpenGlTexture2dView(OpenGlTexture2dView&& src)
-        : View(std::move(src)), name_(src.name_) {
-      src.name_ = GL_INVALID_INDEX;
+        : View(std::move(src.lock_)) {
+      name_ = std::exchange(src.name_, GL_INVALID_INDEX);
     }
     // To fit a tensor into a texture two layouts are used:
     // 1. Aligned. Width of the texture = tensor_width * num_slices, where slice
@@ -289,7 +295,7 @@ class Tensor {
    public:
     GLuint name() const { return name_; }
 
-    OpenGlBufferView(OpenGlBufferView&& src) : View(std::move(src)) {
+    OpenGlBufferView(OpenGlBufferView&& src) : View(std::move(src.lock_)) {
       name_ = std::exchange(src.name_, GL_INVALID_INDEX);
       ssbo_read_ = std::exchange(src.ssbo_read_, nullptr);
     }
@@ -391,7 +397,10 @@ class Tensor {
   mutable std::unique_ptr<MtlResources> mtl_resources_;
 
 #ifdef MEDIAPIPE_TENSOR_USE_AHWB
-  mutable std::unique_ptr<HardwareBuffer> ahwb_;
+  mutable std::shared_ptr<HardwareBuffer> ahwb_;
+  // Allocates and pools HardwareBuffer instances. Holding the shared_ptr to the
+  // pool ensures it outlives the internal ahwb_.
+  std::shared_ptr<HardwareBufferPool> hardware_buffer_pool_;
   // Signals when GPU finished writing into SSBO so AHWB can be used then. Or
   // signals when writing into AHWB has been finished so GPU can read from SSBO.
   // Sync and FD are bound together.

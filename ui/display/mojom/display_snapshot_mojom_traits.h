@@ -7,13 +7,45 @@
 
 #include "ui/display/mojom/display_constants_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
-#include "ui/display/mojom/display_snapshot.mojom.h"
+#include "ui/display/mojom/display_snapshot.mojom-shared.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
+
+template <>
+struct StructTraits<display::mojom::DisplaySnapshotColorInfoDataView,
+                    display::DisplaySnapshot::ColorInfo> {
+  static const gfx::ColorSpace& color_space(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.color_space;
+  }
+  static const SkColorSpacePrimaries& edid_primaries(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.edid_primaries;
+  }
+  static float edid_gamma(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.edid_gamma;
+  }
+  static const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.hdr_static_metadata;
+  }
+  static bool supports_color_temperature_adjustment(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.supports_color_temperature_adjustment;
+  }
+  static uint32_t bits_per_channel(
+      const display::DisplaySnapshot::ColorInfo& color_info) {
+    return color_info.bits_per_channel;
+  }
+
+  static bool Read(display::mojom::DisplaySnapshotColorInfoDataView data,
+                   display::DisplaySnapshot::ColorInfo* out);
+};
 
 template <>
 struct StructTraits<display::mojom::DisplaySnapshotDataView,
@@ -88,24 +120,9 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->has_content_protection_key();
   }
 
-  static bool has_color_correction_matrix(
+  static const display::DisplaySnapshot::ColorInfo& color_info(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->has_color_correction_matrix();
-  }
-
-  static const gfx::ColorSpace& color_space(
-      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->color_space();
-  }
-
-  static uint32_t bits_per_channel(
-      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->bits_per_channel();
-  }
-
-  static const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
-      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->hdr_static_metadata();
+    return snapshot->color_info();
   }
 
   static std::string display_name(

@@ -36,7 +36,9 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kAggressiveSkiaGpuResourcePurge);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
+#if !BUILDFLAG(IS_ANDROID)
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
+#endif
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
 

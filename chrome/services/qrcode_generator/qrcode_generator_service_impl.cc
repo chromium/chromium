@@ -291,7 +291,7 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     }
   }
 
-  absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;
+  std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;
   {
     base::TimeTicks start_time = base::TimeTicks::Now();
     // The QR version (i.e. size) must be >= 5 because otherwise the dino

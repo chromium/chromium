@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/unique_ptr_adapters.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -173,9 +174,9 @@ class SafeBrowsingTabHelper
     MainFrameRedirectChainDecision();
 
     // The URL check query manager.
-    SafeBrowsingQueryManager* query_manager_;
+    raw_ptr<SafeBrowsingQueryManager> query_manager_;
     // The safe browsing client.
-    SafeBrowsingClient* client_ = nullptr;
+    raw_ptr<SafeBrowsingClient> client_ = nullptr;
     // The pending query for the main frame navigation, if any.
     std::optional<MainFrameUrlQuery> pending_main_frame_query_;
     // The previous query for main frame, navigation, if any. This is tracked
@@ -208,8 +209,8 @@ class SafeBrowsingTabHelper
     void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) override;
 
-    web::WebState* web_state_ = nullptr;
-    PolicyDecider* policy_decider_ = nullptr;
+    raw_ptr<web::WebState> web_state_ = nullptr;
+    raw_ptr<PolicyDecider> policy_decider_ = nullptr;
     base::ScopedObservation<SafeBrowsingQueryManager,
                             SafeBrowsingQueryManager::Observer>
         scoped_observation_{this};
@@ -234,7 +235,7 @@ class SafeBrowsingTabHelper
         web::NavigationContext* navigation_context) override;
     void WebStateDestroyed(web::WebState* web_state) override;
 
-    PolicyDecider* policy_decider_ = nullptr;
+    raw_ptr<PolicyDecider> policy_decider_ = nullptr;
     base::ScopedObservation<web::WebState, web::WebStateObserver>
         scoped_observation_{this};
   };

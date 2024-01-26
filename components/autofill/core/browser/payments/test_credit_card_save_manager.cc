@@ -11,10 +11,8 @@ namespace autofill {
 TestCreditCardSaveManager::TestCreditCardSaveManager(
     AutofillDriver* driver,
     AutofillClient* client,
-    payments::TestPaymentsNetworkInterface* payments_network_interface,
     PersonalDataManager* personal_data_manager)
     : CreditCardSaveManager(client,
-                            payments_network_interface,
                             "en-US",
                             personal_data_manager) {}
 

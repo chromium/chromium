@@ -7,7 +7,7 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/test/web_test_with_web_controller.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

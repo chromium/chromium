@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 class Browser;
 @class SceneState;
 @class ManageAccountsDelegateBridge;
@@ -51,15 +53,15 @@ class AccountConsistencyBrowserAgent
   // `base_view_controller` is the view controller which UI will be presented
   // from.
   AccountConsistencyBrowserAgent(Browser* browser,
-                                 UIViewController* base_view_controller,
-                                 id<ApplicationCommands> handler);
+                                 UIViewController* base_view_controller);
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
   UIViewController* base_view_controller_;
-  id<ApplicationCommands> handler_;
-  Browser* browser_;
+  id<ApplicationCommands> application_handler_;
+  id<ApplicationSettingsCommands> settings_handler_;
+  raw_ptr<Browser> browser_;
 
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;

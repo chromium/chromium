@@ -198,6 +198,11 @@ std::u16string manage_passwords_str() {
       IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK);
 }
 
+std::u16string manage_passwords_and_passkeys_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_AND_PASSKEYS_LINK);
+}
+
 std::u16string generate_password_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
@@ -1203,10 +1208,10 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_empty_str(kExampleDomain))
-          .AppendFooterCommand(manage_passwords_str(),
-                               autofill::AccessoryAction::MANAGE_PASSWORDS)
           .AppendFooterCommand(cross_device_passkeys_str(),
                                autofill::AccessoryAction::CROSS_DEVICE_PASSKEY)
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
 
   EXPECT_CALL(*webauthn_credentials_delegate(), ShowAndroidHybridSignIn);
@@ -1243,7 +1248,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
                                   passwords_title_str(kExampleDomain))
           .AddPasskeySection(kTestPasskey.username(),
                              kTestPasskey.credential_id())
-          .AppendFooterCommand(manage_passwords_str(),
+          .AppendFooterCommand(manage_passwords_and_passkeys_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
 

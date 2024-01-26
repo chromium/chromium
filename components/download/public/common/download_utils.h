@@ -153,6 +153,13 @@ COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetOverwrittenDownloadDeleteTime();
 
 // Returns the size of the file buffer that reads data from the data pipe.
 COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
+
+// Utility function to determine whether an interrupted download should be
+// auto-resumable.
+COMPONENTS_DOWNLOAD_EXPORT
+bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
+                                        int auto_resumption_size_limit);
+
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_

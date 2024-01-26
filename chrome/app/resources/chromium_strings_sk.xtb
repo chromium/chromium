@@ -90,6 +90,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2583187216237139145">Všetky údaje prehliadača Chromium vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="259935314519650377">Stiahnutý inštalátor sa nepodarilo uložiť do vyrovnávacej pamäte. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Prehliadač Chromium je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní (odporúčané)</translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="2661879430930417727">Ak zdieľate zariadenie s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať samostatne a tiež si ho nastaviť podľa vlastných požiadaviek</translation>
 <translation id="268602741124540128">Vitajte v prehliadači Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="3258596308407688501">Prehliadač Chromium nemôže čítať ani zapisovať do adresára s údajmi:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 je nástroj skriptov JavaScript a WebAssembly prehliadača Chromium, ktorý zlepšuje výkonnosť webov</translation>
 <translation id="3283186697780795848">Máte nainštalovaný Chromium verzie <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Reštartovať</translation>
 <translation id="328888136576916638">Chýbajú kľúče rozhrania Google API. Niektoré funkcie prehliadača Google Chromium budú zakázané.</translation>
@@ -142,7 +144,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="3533435340678213462">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chromium posudzovať.</translation>
 <translation id="3567254597502212821">Vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou prehliadača Chromium v tomto zariadení.</translation>
 <translation id="3593091352817399191">Už je prihlásený iný účet. Ak chcete oddeliť svoje prehliadanie, Chromium vám môže vytvoriť vlastný profil.</translation>
-<translation id="363078681319665186">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.13.</translation>
 <translation id="3639635944603682591">Dáta prehliadania tejto osoby sa odstránia z tohto zariadenia. Ak ich chcete obnoviť, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{K dispozícii je aktualizácia pre Chromium, ktorá bude použitá po najbližšom novom spustení.}=1{K dispozícii je aktualizácia pre Chromium, ktorá bude použitá po najbližšom novom spustení. Vaše okno inkognito sa neotvorí.}few{K dispozícii je aktualizácia pre Chromium, ktorá bude použitá po najbližšom novom spustení. Vaše # okná inkognito sa neotvoria.}many{K dispozícii je aktualizácia pre Chromium, ktorá bude použitá po najbližšom novom spustení. Your # Incognito windows won't reopen.}other{K dispozícii je aktualizácia pre Chromium, ktorá bude použitá po najbližšom novom spustení. Vašich # okien inkognito sa neotvorí.}}</translation>
 <translation id="3651803019964686660">Ak chcete z webu <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do prehliadača Chromium.</translation>
@@ -159,7 +160,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Získať pomoc so systémom Chromium OS</translation>
 <translation id="3871664619793219264">Získajte údaje prehliadača Chromium z účtu <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.14.</translation>
 <translation id="388648406173476553">Prispôsobte a ovládajte Chromium. Vyžaduje sa vaša pozornosť. Podrobnosti získate kliknutím.</translation>
 <translation id="3889543394854987837">Ak chcete otvoriť prehliadač Chromium a začať prehliadať, kliknite na svoje meno.</translation>
 <translation id="390528597099634151">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu prehliadača Chromium prihlásený. Ak chcete oddeliť svoje prehliadanie, Chromium vám môže vytvoriť vlastný profil.</translation>
@@ -220,6 +220,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4814736265800133385">Použiť Chromium bez účtu</translation>
 <translation id="4888717733111232871">Pravidlo pre prichádzajúce prenosy pre prehliadač Chromium, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="4893347770495441059">Znova spustiť a aktualizovať Chromium</translation>
+<translation id="4942295735032723435">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 11 alebo novší. V tomto počítači používate macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium je v režime na pozadí.</translation>
 <translation id="4987820182225656817">Hostia môžu používať prehliadač Chromium bez toho, aby po sebe zanechali akékoľvek informácie.</translation>
 <translation id="4994636714258228724">Pridajte si účet do prehliadača Chromium</translation>
@@ -248,7 +249,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
 <translation id="5643865575100044307">Pred zavretím prehliadača Chromium vždy odstraňujte dáta webov zo zariadenia</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
-<translation id="5675598751761067447">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak zadáte heslo, Chromium môže tento stiahnutý súbor skontrolovať (vaše heslo zostane v zariadení)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
 <translation id="569897634095159764">Nepodarilo sa pripojiť k internetu. Proxy server vyžaduje overenie.</translation>
@@ -409,6 +409,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8105840573057009683">Chromium vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="8133124826068723441">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
+<translation id="8166782796394721554">Zapnúť dodatočnú ochranu v nástroji skriptov JavaScript a WebAssembly v prehliadači Chromium</translation>
 <translation id="81770708095080097">Tento súbor je nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
 <translation id="8213374284266571500">Chromium zablokoval tento súbor, pretože tento typ súboru je nebezpečný</translation>
 <translation id="8248265253516264921">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>

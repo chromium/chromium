@@ -28,9 +28,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Tests {@link CustomTabActivity} filters touch events from overlay activity. */
 @RunWith(BaseRobolectricTestRunner.class)

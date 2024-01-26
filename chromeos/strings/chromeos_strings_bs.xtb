@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interna greška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">pomnožite</translation>
 <translation id="1145018782460575098">Prozor ažuriranja firmvera za vanjski uređaj je otvoren. Dostupan je sljedeći broj ažuriranja: <ph name="NUM_UPDATES" /></translation>
 <translation id="1145516343487477149">Pronađite članke za pomoć i odgovore na uobičajena pitanja o Chromebooku</translation>
 <translation id="1154390310959620237">Možete prilagoditi samo 5 prečica. Izbrišite jednu prečicu da dodate novu.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
 <translation id="1367951781824006909">Odaberite fajl</translation>
+<translation id="1371650399987522809">Povratne informacije za pozadinsku sliku koju omogućava Google AI</translation>
 <translation id="1387854245479784695">Ovo je agregacija svih jezgara</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije kućišta.</translation>
 <translation id="1397738625398125236">Pristupnik se može provjeriti pingom</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">Dodirna podloga</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
 <translation id="1565038567006703504">Nije moguće ažurirati uređaj <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">podijelite</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinsku sliku</translation>
 <translation id="1578784163189013834">Odaberite pozadinu čuvara ekrana</translation>
 <translation id="160633243685262989">Slika pregleda</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1615335640928990664">Prijenos podataka od datuma <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generiranje slika…</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
+<translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korištenja funkcijske tipke i tipke <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
 <translation id="1643449475550628585">Dnevna promjena pozadinske slike</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">Isključi tamni način rada</translation>
 <translation id="1885577615937958993">premotavanje medija naprijed</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
-<translation id="1897672602657312171">Prečica bez tipke za pretraživanje možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke za pretraživanje.</translation>
 <translation id="1904932688895783618">Evo još nekih korisnih izvora:</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
 <translation id="1908234395526491708">Greške UDP zahtjeva</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059">Broj fotografija: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">izbornik emoji sličica</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Vaš administrator je postavio automatsko pokretanje aplikacije <ph name="APP_NAME_1" /> svaki put kada se prijavite.}=2{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> svaki put kada se prijavite.}=3{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> svaki put kada se prijavite.}one{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # aplikacije svaki put kada se prijavite.}few{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # aplikacija svaki put kada se prijavite.}other{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # aplikacija svaki put kada se prijavite.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Pokušaj ponovo</translation>
 <translation id="215916044711630446">Dugme za dodavanje APN-a je sada onemogućeno</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">Uredite detalje APN-a</translation>
 <translation id="2209788852729124853">Poništi brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrješavanje naziva</translation>
+<translation id="2215920961700443347">Nema internetske veze. Povežite se s internetom i pokušajte ponovo.</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
 <translation id="2224337661447660594">Nema internetske veze</translation>
 <translation id="222447520299472966">Morate odabrati najmanje jedan album Umjetničke galerije</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193">Slika: <ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
+<translation id="2465272316171730950">Dostigli smo maksimalni kapacitet. Vratite se uskoro.</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
 <translation id="2491955442992294626">Ključevi se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Vaše najbolje fotografije, automatski odabrane</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">Osvježavanje trenutne pozadinske slike</translation>
 <translation id="2512979179176933762">prikazivanje prozora</translation>
 <translation id="2513396635448525189">Slika prilikom prijave</translation>
-<translation id="2515109918609218604">Prečica nije dostupna. Pritisnite novu prečicu bez korištenja funkcijskih tipki i tipki za pretraživanje.</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2521835766824839541">prethodna numera</translation>
 <translation id="2526590354069164005">Radna površina</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="2880569433548999039">Čuvar ekrana s oblacima</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
+<translation id="2938573842839598578">Za približan rezultat <ph name="OPERATOR_TEXT" /> vrijednost <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Nije moguće testirati uređaj. Ponovo otvorite poklopac da testirate.</translation>
 <translation id="2941112035454246133">Niska</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Ažuriranje ChromeOS-a</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dozvoljeni IP protokoli</translation>
 <translation id="3569407787324516067">Čuvar ekrana</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4130035430755296270">Postavite i zadržite pokazivač miša iznad za više opcija rasporeda</translation>
+<translation id="4130750466177569591">Slažem se</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# aplikacija je automatski pokrenuto}}</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">smanjivanje osvjetljenja</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Upravljačka ploča</translation>
-<translation id="4185315616950253617">Prečica s tipkama u gornjem redu mora uključivati tipku za pretraživanje.</translation>
 <translation id="420283545744377356">Isključite čuvara ekrana</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
 <translation id="4227825898293920515">Lozinka će isteći za <ph name="TIME" /></translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Ponovno pokretanje uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">prilagođavanje tastature</translation>
+<translation id="4403262788869804671">Prečica bez tipke <ph name="META_KEY" /> možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Trenutni avatar</translation>
+<translation id="4417830657741848074">Administrator je postavio automatsko pokretanje određenih aplikacija. Neke od tih aplikacija se možda neće zatvoriti.</translation>
 <translation id="4422041425070339732">strelica nadolje</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">Čuvar ekrana sa Zemljom</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
+<translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica ulijevo</translation>
 <translation id="4507392511610824664">povećavanje osvjetljenja</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4839698083503556542">Kreirajte vlastiti film</translation>
+<translation id="48409034532829769">Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />". Aplikacija se možda neće zatvoriti.</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4847902821209177679">Odabrano: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Pritisnite Enter da odaberete albume usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS rezolucija</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">Podijeli</translation>
 <translation id="4972592110715526173">promjena načina rada</translation>
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Vodite računa da ima dovoljno prostora na uređaju da sačuvate skenirane fajlove.</translation>
+<translation id="4982627662315910959">Prečica nije dostupna. Pritisnite novu prečicu koristeći Shift i još 1 modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">Raspored tamne teme</translation>
 <translation id="5229344016299762883">Izlaz iz prikaza preko cijelog ekrana</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />" prilikom svake prijave.}=2{Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />" i još 1 aplikacije prilikom svake prijave.}one{Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />" i još # aplikacije prilikom svake prijave.}few{Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />" i još # aplikacija prilikom svake prijave.}other{Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />" i još # aplikacija prilikom svake prijave.}}</translation>
 <translation id="5252456968953390977">Roming</translation>
 <translation id="5257811368506016604">Omogućavanje načina rada u svijetloj boji</translation>
 <translation id="5264277876637023664">Pokreni test CPU-a</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7184043045742675738">Kliknite na bilo koju tipku da prilagodite dugme. Premjestite tipku mišem ili tipkama sa strelicama.</translation>
+<translation id="7206979415662233817">Uslovi korištenja usluge</translation>
 <translation id="7212547870105584639">Upravljajte mrežnim postavkama za APN. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ažuriranja firmvera za vanjske uređaje</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Odabir e-poruke</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
-<translation id="7273347807225967898">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift, tipku za pretraživanje ili pokretač).</translation>
+<translation id="7271932918253517778">Prečica s tipkama u gornjem redu mora uključivati tipku <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osjetite povjetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadinskih slika</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">boja tastature</translation>
 <translation id="7317831949569936035">Školska prijava</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Morate imati najmanje 18 godina i prihvatiti da je vaše korištenje AI pozadinskih slika podložno <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googleovim Uslovima korištenja usluge<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> i <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Dodatnim uslovima korištenja usluge za generativni AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Možete kreirati pozadinske slike putem AI-ja samo u lične i nekomercijalne svrhe. Kada dobijete pomoć za pozadinsku sliku, tekst se šalje na servere Google AI-ja radi generiranja prijedloga pozadinske slike podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; pritisnite tipku za pretraživanje i tipku za razmak da vidite rezultat u Google Pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. rezultat pretraživanja od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da odete na prečicu.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">Opće kontrole</translation>
 <translation id="7977800524392185497">Da se pridružite <ph name="NETWORK_NAME" /> mreži, idite u Postavke</translation>
 <translation id="7978412674231730200">Privatni ključ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija "<ph name="APP_NAME_1" />" je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# aplikacija je automatski pokrenuto}}</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8017679124341497925">Prečica je uređena</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">Promijeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Googleu da vam šalje e-poruke o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
-<translation id="8111706652656628199">Prečica nije dostupna. Pritisnite novu prečicu koristeći Shift i još jednu modifikacijsku tipku (Ctrl, Alt, Shift, tipku za pretraživanje ili pokretač).</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može provjeriti pingom</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>

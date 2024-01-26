@@ -33,14 +33,14 @@ class IbanAccessManager {
   explicit IbanAccessManager(AutofillClient* client);
   IbanAccessManager(const IbanAccessManager&) = delete;
   IbanAccessManager& operator=(const IbanAccessManager&) = delete;
-  ~IbanAccessManager();
+  virtual ~IbanAccessManager();
 
   // Returns the full IBAN value corresponding to the input `suggestion`.
   // As this may require a network round-trip for server IBANs,
   //`on_iban_fetched` is run once the value is fetched. For local IBANs, value
   // will be filled immediately.
-  void FetchValue(const Suggestion& suggestion,
-                  OnIbanFetchedCallback on_iban_fetched);
+  virtual void FetchValue(const Suggestion& suggestion,
+                          OnIbanFetchedCallback on_iban_fetched);
 
  private:
   // Called when an UnmaskIban call is completed. The full IBAN value will be

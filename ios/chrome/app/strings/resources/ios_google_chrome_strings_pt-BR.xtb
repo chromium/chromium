@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1105362920864247682">Limpar dados de navegação no Chrome.</translation>
 <translation id="1113057722807951993">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
@@ -40,13 +41,13 @@ Considerações:
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
+<translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Use o Chrome automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1965935827552890526">Termine o que você estava fazendo na outra janela aberta no Chrome.</translation>
 <translation id="1987779152850321833">Para aproveitar o Chrome ao máximo, siga as sugestões abaixo.</translation>
-<translation id="2008357574463816229">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2120238739383482109">Abre os favoritos do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
@@ -75,6 +76,7 @@ Considerações:
 <translation id="2702250627063295552">Adicionar item da Lista de leitura ao Chrome</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
+<translation id="2789947168960170215">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para acessar suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="3577555362230509265">Use o Chrome em outros apps.</translation>
-<translation id="3594076341410558780">Ocultar "Aproveite o Chrome ao máximo"</translation>
 <translation id="364480321352456989">O Chrome está desatualizado.</translation>
 <translation id="3646736009628185125">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chrome e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
@@ -204,7 +205,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="686691656039982452">Você pode <ph name="BEGIN_LINK" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK" /> na sua Conta do Google.
 
 Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrará atualizações de pacotes na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos. Isso pode ser modificado nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
 <translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>

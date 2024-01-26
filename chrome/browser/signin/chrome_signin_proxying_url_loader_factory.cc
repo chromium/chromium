@@ -134,7 +134,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
@@ -156,7 +156,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
 
@@ -197,7 +197,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
   GURL referrer_;
   // The origin that initiated the request. May be empty for browser-initiated
   // requests. See network::ResourceRequest::request_initiator for details.
-  absl::optional<url::Origin> request_initiator_;
+  std::optional<url::Origin> request_initiator_;
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
@@ -291,7 +291,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
 
   GURL GetUrl() const override { return in_progress_request_->response_url_; }
 
-  absl::optional<url::Origin> GetRequestInitiator() const override {
+  std::optional<url::Origin> GetRequestInitiator() const override {
     return in_progress_request_->request_initiator_;
   }
 
@@ -381,7 +381,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers_ext,
     const net::HttpRequestHeaders& modified_headers_ext,
     const net::HttpRequestHeaders& modified_cors_exempt_headers_ext,
-    const absl::optional<GURL>& opt_new_url) {
+    const std::optional<GURL>& opt_new_url) {
   std::vector<std::string> removed_headers = removed_headers_ext;
   net::HttpRequestHeaders modified_headers = modified_headers_ext;
   net::HttpRequestHeaders modified_cors_exempt_headers =
@@ -407,7 +407,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Even though |head| is const we can get a non-const pointer to the headers
   // and modifications we made are passed to the target client.
   ProxyResponseAdapter adapter(this, head->headers.get());

@@ -131,8 +131,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)reloadButton {
   UIImage* reloadImage =
       CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* reloadButton = [[ToolbarButton alloc]
-      initWithImage:[reloadImage imageFlippedForRightToLeftLayoutDirection]];
+  ToolbarButton* reloadButton =
+      [[ToolbarButton alloc] initWithImage:reloadImage];
   [self configureButton:reloadButton width:kAdaptiveToolbarButtonWidth];
   reloadButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_RELOAD);

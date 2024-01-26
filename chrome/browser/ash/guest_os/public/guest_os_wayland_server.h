@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_WAYLAND_SERVER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -64,8 +64,7 @@ class GuestOsWaylandServer : public ash::ConciergeClient::Observer {
     base::WeakPtr<GuestOsSecurityDelegate> security_delegate_;
   };
 
-  using ResponseCallback =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+  using ResponseCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
   using ServersByName =
       base::flat_map<std::string, std::unique_ptr<ScopedServer>>;

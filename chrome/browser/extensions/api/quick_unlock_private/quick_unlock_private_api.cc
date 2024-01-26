@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -202,13 +202,13 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   return profile;
 }
 
-absl::optional<std::string> CheckTokenValidity(
+std::optional<std::string> CheckTokenValidity(
     content::BrowserContext* browser_context,
     const std::string& token) {
   if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
     return kAuthTokenExpired;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -223,7 +223,7 @@ QuickUnlockPrivateGetAuthTokenFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
-  absl::optional<quick_unlock_private::GetAuthToken::Params> params =
+  std::optional<quick_unlock_private::GetAuthToken::Params> params =
       quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -239,8 +239,8 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
 }
 
 void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
-    absl::optional<api::quick_unlock_private::TokenInfo> token_info,
-    absl::optional<ash::AuthenticationError> error) {
+    std::optional<api::quick_unlock_private::TokenInfo> token_info,
+    std::optional<ash::AuthenticationError> error) {
   if (!token_info.has_value()) {
     DCHECK(error.has_value());
     Respond(Error(kInvalidCredential));
@@ -264,7 +264,7 @@ ExtensionFunction::ResponseAction
 QuickUnlockPrivateSetLockScreenEnabledFunction::Run() {
   auto params =
       quick_unlock_private::SetLockScreenEnabled::Params::Create(args());
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       CheckTokenValidity(browser_context(), params->token);
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
@@ -292,7 +292,7 @@ QuickUnlockPrivateSetPinAutosubmitEnabledFunction::Run() {
   auto params =
       quick_unlock_private::SetPinAutosubmitEnabled::Params::Create(args());
 
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       CheckTokenValidity(browser_context(), params->token);
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
@@ -400,7 +400,7 @@ QuickUnlockPrivateCheckCredentialFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateCheckCredentialFunction::Run() {
-  absl::optional<CheckCredential::Params> params_ =
+  std::optional<CheckCredential::Params> params_ =
       CheckCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
@@ -449,7 +449,7 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
-  absl::optional<GetCredentialRequirements::Params> params_ =
+  std::optional<GetCredentialRequirements::Params> params_ =
       GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
@@ -498,7 +498,7 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   if (params_->modes.size() > 1)
     return RespondNow(Error(kMultipleModesNotSupported));
 
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       CheckTokenValidity(browser_context(), params_->token);
   if (error.has_value()) {
     return RespondNow(Error(error.value()));

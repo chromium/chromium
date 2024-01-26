@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 class DesktopMediaListObserver;
@@ -117,7 +117,7 @@ class DesktopMediaList {
   // Set or clear the id of a single source which needs a preview image
   // generating in addition to its thumbnail.
   virtual void SetPreviewedSource(
-      const absl::optional<content::DesktopMediaID>& id) = 0;
+      const std::optional<content::DesktopMediaID>& id) = 0;
 
   // Returns true if this DesktopMediaList wraps some other object (usually a
   // DesktopCapturer), that takes responsibility for showing its own source

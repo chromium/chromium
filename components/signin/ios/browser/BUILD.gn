@@ -26,7 +26,6 @@ source_set("browser") {
   ]
 
   public_deps = [
-    ":active_state_manager",
     ":features",
     "//base",
     "//components/keyed_service/core",
@@ -46,29 +45,14 @@ source_set("features") {
   deps = [ "//components/signin/public/base" ]
 }
 
-source_set("active_state_manager") {
-  sources = [
-    "active_state_manager.h",
-    "active_state_manager_impl.h",
-    "active_state_manager_impl.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//ios/web",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "account_consistency_service_unittest.mm",
-    "active_state_manager_impl_unittest.mm",
     "wait_for_network_callback_helper_ios_unittest.cc",
   ]
 
   deps = [
-    ":active_state_manager",
     ":browser",
     "//base",
     "//components/content_settings/core/browser",

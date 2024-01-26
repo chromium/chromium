@@ -100,7 +100,6 @@ class CreditCardSaveManager {
   // The parameters should outlive the CreditCardSaveManager.
   CreditCardSaveManager(
       AutofillClient* client,
-      payments::PaymentsNetworkInterface* payments_network_interface,
       const std::string& app_locale,
       PersonalDataManager* personal_data_manager);
 
@@ -347,10 +346,6 @@ class CreditCardSaveManager {
   }
 
   const raw_ptr<AutofillClient> client_;
-
-  // Handles Payments service requests. Weak ref. In Chrome, it's owned by
-  // ChromeAutofillClient and ChromeAutofillClientIOS.
-  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   std::string app_locale_;
 

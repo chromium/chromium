@@ -92,7 +92,6 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
     return false;
   }
 
-  // Don't show the prompt if max strike count was reached.
   if (GetLocalCardMigrationStrikeDatabase()->ShouldBlockFeature()) {
     switch (credit_card_import_type_) {
       case FormDataImporter::CreditCardImportType::kLocalCard:
@@ -347,7 +346,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
     personal_data_manager_->DeleteLocalCreditCards(migrated_cards);
   }
 
-  client_->ShowLocalCardMigrationResults(
+  client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationResults(
       result != AutofillClient::PaymentsRpcResult::kSuccess,
       base::UTF8ToUTF16(display_text), migratable_credit_cards_,
       base::BindRepeating(
@@ -401,7 +400,7 @@ void LocalCardMigrationManager::ShowMainMigrationDialog() {
   autofill_metrics::LogLocalCardMigrationPromptMetric(
       local_card_migration_origin_, autofill_metrics::MAIN_DIALOG_SHOWN);
   // Pops up a larger, modal dialog showing the local cards to be uploaded.
-  client_->ConfirmMigrateLocalCardToCloud(
+  client_->GetPaymentsAutofillClient()->ConfirmMigrateLocalCardToCloud(
       legal_message_lines_,
       personal_data_manager_->GetAccountInfoForPaymentsServer().email,
       migratable_credit_cards_,

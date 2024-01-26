@@ -94,9 +94,6 @@ struct CaptureOptions {
   MatchQuantifier quantifier = MatchQuantifier::kRequired;
 };
 
-// Returns true if honorific prefixes are enabled.
-bool HonorificPrefixEnabled();
-
 // A cache for compiled RE2 regular expressions.
 class Re2RegExCache {
  public:

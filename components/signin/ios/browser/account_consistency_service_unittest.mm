@@ -32,7 +32,7 @@
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -321,8 +321,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Properties available for tests.
-  // Creates test threads, necessary for ActiveStateManager that needs a UI
-  // thread.
   web::WebTaskEnvironment task_environment_;
   web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;

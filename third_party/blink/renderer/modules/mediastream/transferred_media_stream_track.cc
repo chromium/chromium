@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
@@ -317,7 +317,10 @@ void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void TransferredMediaStreamTrack::SendWheel(
-    CapturedWheelAction* action,
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
     base::OnceCallback<void(bool, const String&)> callback) {
   NOTREACHED_NORETURN();
 }
@@ -362,9 +365,12 @@ bool TransferredMediaStreamTrack::HasPendingActivity() const {
 }
 
 std::unique_ptr<AudioSourceProvider>
-TransferredMediaStreamTrack::CreateWebAudioSource(int context_sample_rate) {
+TransferredMediaStreamTrack::CreateWebAudioSource(
+    int context_sample_rate,
+    uint32_t context_buffer_size) {
   if (track_) {
-    return track_->CreateWebAudioSource(context_sample_rate);
+    return track_->CreateWebAudioSource(context_sample_rate,
+                                        context_buffer_size);
   }
   // TODO(https://crbug.com/1288839): Create one based on transferred data?
   return nullptr;

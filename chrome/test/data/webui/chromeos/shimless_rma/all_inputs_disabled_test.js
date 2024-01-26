@@ -4,7 +4,7 @@
 
 import {CriticalErrorPage} from 'chrome://shimless-rma/critical_error_page.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
+import {populateFakeShimlessRmaService, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingChooseDestinationPageElement} from 'chrome://shimless-rma/onboarding_choose_destination_page.js';
 import {OnboardingChooseWpDisableMethodPage} from 'chrome://shimless-rma/onboarding_choose_wp_disable_method_page.js';
 import {OnboardingEnterRsuWpDisableCodePage} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
@@ -38,46 +38,13 @@ suite('allInputsDisabledTest', function() {
   setup(() => {
     document.body.innerHTML = trustedTypes.emptyHTML;
     service = new FakeShimlessRmaService();
+    populateFakeShimlessRmaService(service);
     setShimlessRmaServiceForTesting(service);
-    setupFakeService();
   });
 
   teardown(() => {
     service.reset();
   });
-
-  // Sets the bare minimum junk data on the fake service so the components can
-  // load.
-  function setupFakeService() {
-    // kUpdateOs
-    service.setGetCurrentOsVersionResult(null);
-
-    // kEnterRSUWPDisableCode
-    service.setGetRsuDisableWriteProtectChallengeResult('');
-    service.setGetRsuDisableWriteProtectHwidResult('');
-    service.setGetRsuDisableWriteProtectChallengeQrCodeResponse([]);
-
-    // kUpdateDeviceInformation
-    service.setGetOriginalSerialNumberResult('');
-    service.setGetRegionListResult([]);
-    service.setGetOriginalRegionResult(0);
-    service.setGetCustomLabelListResult([]);
-    service.setGetOriginalCustomLabelResult(0);
-    service.setGetSkuListResult([]);
-    service.setGetOriginalSkuResult(0);
-    service.setGetOriginalDramPartNumberResult('');
-
-    // kCheckCalibration
-    service.setGetCalibrationComponentListResult([]);
-
-    // kSetupCalibration
-    service.setGetCalibrationSetupInstructionsResult(
-        CalibrationSetupInstruction
-            .kCalibrationInstructionPlaceBaseOnFlatSurface);
-
-    // kConfigureNetwork
-    service.setCheckForOsUpdatesResult('fake version');
-  }
 
   // Test that the set of inputs specified in |INPUT_TYPES| are disabled on each
   // page when |allButtonsDisabled| is set.

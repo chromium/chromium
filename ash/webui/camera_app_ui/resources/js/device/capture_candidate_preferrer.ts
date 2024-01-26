@@ -661,6 +661,8 @@ export class CaptureCandidatePreferrer {
         resolution: new Resolution(640, 360),
       },
     ];
+    resolutions.sort((r1, r2) => r2.area - r1.area);
+
     let matches: VideoLevelResolution[] = [];
     if (!expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       for (const resolution of resolutions) {
@@ -676,7 +678,6 @@ export class CaptureCandidatePreferrer {
       }
     }
     if (matches.length === 0) {
-      resolutions.sort((r1, r2) => r2.area - r1.area);
       const threshold = resolutions[0].area * 0.6;
       const splitIndex = resolutions.findIndex((r) => r.area < threshold);
       if (splitIndex === -1) {

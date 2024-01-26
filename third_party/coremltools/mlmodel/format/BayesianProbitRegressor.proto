@@ -1,0 +1,148 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * A Bayesian probit regressor.
+ *
+ * The probit regression model is superficially similar to the more commonly
+ * known logistic regression, with sampling distribution of the model given by
+ *
+ *    P(y=+1|x,w) = Φ(<w,x>/β)
+ *
+ * where w are the set of weights,
+ *       x are the set of features for the given event,
+ *       β is a model hyper-parameter, and
+ *       Φ is the link function, defined to be the CDF of the normal
+ * distribution. The weights w[i,j] are Gaussian distributed, with mean μ[i,j]
+ * and precision 1/(σ[i,j])^2 (where i indexes over features and j indexes over
+ * the values for the feature). The parameter β scales the steepness of the
+ * inverse link function.
+ *
+ * (see https://en.wikipedia.org/wiki/Probit_model and
+ * https://en.wikipedia.org/wiki/Logistic_regression for more details on probit
+ * model and logistic regression, respectively)
+ *
+ * Input: X
+ *   x represents a set of features, each taking on a discrete value (note that
+ * continuous values would first need to be discretized). x can be represented
+ * as a vector where the index i is the feature id and x[i] is the feature
+ * value. Alternatively, x can be represented as a matrix with 2 columns where
+ * the first column indicates the feature id and the second column contains the
+ * feature values, i.e. x[i,0] is the feature id and x[i,1] is the feature
+ * value.
+ *
+ *   additional input features:
+ *   - "optimism": apply a mean shift to the probability, i.e. shift regression
+ * mean by o*stdev, where o is the "optimism" parameter (see additional output
+ * features)
+ *   - "samplingScale": for sampling from posterior, multiply standard deviation
+ * by this factor
+ *   - "samplingTruncation": for sampling from posterior, truncate sampling
+ * distribution at given multiple of std from mean
+ *
+ * Output: Y
+ *   probability P(y|x,w)
+ *
+ *   additional output features:
+ *   - mean (regression output before applying link function)
+ *   - variance (regression output variance before applying link function)
+ *   - pessimistic probability: P(y|x,w) with a mean shift parameterized by
+ * "optimism" feature
+ *   - sampled probability: p ~ P(y|x,w) with standard deviation scaling
+ * parametrized by "samplingScale" feature and distribution truncated at
+ * multiple of standard deviation, where multiple parameterized by
+ * "samplingTruncation" feature.
+ *
+ */
+
+message BayesianProbitRegressor {
+  /*
+   * Parameterization of a Gaussian distribution
+   */
+  message Gaussian {
+    double mean = 1;
+    double precision = 2;  // inverse of the variance
+  }
+
+  /*
+   * Weight for a specific feature value
+   * The weight is represented as a Gaussian distribution
+   * with a mean and precision (1/variance) to capture
+   * uncertainty in the weight
+   */
+  message FeatureValueWeight {
+    uint32 featureValue = 1;
+    Gaussian featureWeight = 2;
+  }
+
+  /*
+   * Feature with associated weights (for different values)
+   * Each feature has a set of weights for the (discrete) values
+   * it can take
+   */
+  message FeatureWeight {
+    uint32 featureId = 1;
+    repeated FeatureValueWeight weights = 2;
+  }
+
+  uint32 numberOfFeatures = 1;
+
+  Gaussian bias = 2;  // bias term
+
+  /*
+   * Set of features with associated weights
+   */
+  repeated FeatureWeight features = 3;  // feature weights
+
+  /*
+   * Set this name to be the same as input feature of type multi-array (1D)
+   * in the model description you want to use as the regression input
+   */
+  string regressionInputFeatureName = 10;
+
+  /*
+   * Set this name to be the same as optional input feature of type double
+   * in the model description you want to use as the optimism input
+   */
+  string optimismInputFeatureName = 11;
+
+  /*
+   * Set this name to be the same as optional input feature of type double
+   * in the model description you want to use as the samplingScale input
+   */
+  string samplingScaleInputFeatureName = 12;
+
+  /*
+   * Set this name to be the same as optional input feature of type double
+   * in the model description you want to use as the samplingBounds input
+   */
+  string samplingTruncationInputFeatureName = 13;
+
+  /*
+   * name of 'mean' output feature
+   */
+  string meanOutputFeatureName = 20;
+
+  /*
+   * name of 'variance' output feature
+   */
+  string varianceOutputFeatureName = 21;
+
+  /*
+   * name of 'pessimistic' output feature
+   */
+  string pessimisticProbabilityOutputFeatureName = 22;
+
+  /*
+   * name of 'sampled' output feature: samples from the scaled posterior
+   * probability distribuiton
+   */
+  string sampledProbabilityOutputFeatureName = 23;
+}

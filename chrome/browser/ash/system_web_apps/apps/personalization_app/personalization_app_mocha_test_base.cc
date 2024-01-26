@@ -27,8 +27,6 @@ scoped_feature_list_.InitWithFeatures(
       {
           ::ash::features::kFeatureManagementTimeOfDayScreenSaver,
           ::ash::features::kFeatureManagementTimeOfDayWallpaper,
-          ::ash::features::kTimeOfDayScreenSaver,
-          ::ash::features::kTimeOfDayWallpaper,
       },
       {});
   set_test_loader_host(

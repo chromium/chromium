@@ -21,56 +21,74 @@ interface SettingAndType {
   type: chrome.settingsPrivate.PrefType;
 }
 
+const PrefType = chrome.settingsPrivate.PrefType;
+
 // Sorted and grouped by page alphabetically.
 const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
+  // Date and time settings
+  'settings.clock.use_24hour_clock': {
+    setting: Setting.k24HourClock,
+    type: PrefType.BOOLEAN,
+  },
+  'generated.resolve_timezone_by_geolocation_on_off': {
+    setting: Setting.kChangeTimeZone,
+    type: PrefType.BOOLEAN,
+  },
+
+  // Startup settings
+  'settings.restore_apps_and_pages': {
+    setting: Setting.kRestoreAppsAndPages,
+    type: PrefType.NUMBER,
+  },
+
   // device_page/audio.ts
   'ash.low_battery_sound.enabled': {
     setting: Setting.kLowBatterySound,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   'ash.charging_sounds.enabled': {
     setting: Setting.kChargingSounds,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   // device_page/keyboard.ts
   'settings.language.send_function_keys': {
     setting: Setting.kKeyboardFunctionKeys,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   // device_page/pointers.ts
   'settings.touchpad.sensitivity2': {
     setting: Setting.kTouchpadSpeed,
-    type: chrome.settingsPrivate.PrefType.NUMBER,
+    type: PrefType.NUMBER,
   },
   // os_a11y_page/display_and_magnification_subpage.ts
   'settings.a11y.screen_magnifier_focus_following': {
     setting: Setting.kFullscreenMagnifierFocusFollowing,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   'settings.a11y.screen_magnifier_mouse_following_mode': {
     setting: Setting.kFullscreenMagnifierMouseFollowingMode,
-    type: chrome.settingsPrivate.PrefType.NUMBER,
+    type: PrefType.NUMBER,
   },
   'settings.a11y.color_filtering.enabled': {
     setting: Setting.kColorCorrectionEnabled,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   'settings.a11y.color_filtering.color_vision_deficiency_type': {
     setting: Setting.kColorCorrectionFilterType,
-    type: chrome.settingsPrivate.PrefType.NUMBER,
+    type: PrefType.NUMBER,
   },
   'settings.a11y.color_filtering.color_vision_correction_amount': {
     setting: Setting.kColorCorrectionFilterAmount,
-    type: chrome.settingsPrivate.PrefType.NUMBER,
+    type: PrefType.NUMBER,
   },
   // os_privacy_page/os_privacy_page.js
   'cros.device.peripheral_data_access_enabled': {
     setting: Setting.kPeripheralDataAccessProtection,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
   'cros.reven.enable_hw_data_usage': {
     setting: Setting.kRevenEnableHwDataUsage,
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    type: PrefType.BOOLEAN,
   },
 };
 
@@ -86,11 +104,11 @@ export function convertPrefToSettingMetric(
 
   const {type, setting} = settingAndType;
   switch (type) {
-    case chrome.settingsPrivate.PrefType.BOOLEAN:
+    case PrefType.BOOLEAN:
       assert(typeof prefValue === 'boolean');
       return {setting, value: {boolValue: prefValue}};
 
-    case chrome.settingsPrivate.PrefType.NUMBER:
+    case PrefType.NUMBER:
       assert(typeof prefValue === 'number');
       return {setting, value: {intValue: prefValue}};
 

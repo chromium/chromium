@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
@@ -42,7 +43,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   bool IsClipboardReadAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size) override;
+      const std::optional<size_t> size) override;
   void PasteIfAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
@@ -148,9 +149,9 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   struct LastReportedEndpoints {
     LastReportedEndpoints();
     ~LastReportedEndpoints();
-    absl::optional<ui::DataTransferEndpoint> data_src;
-    absl::optional<ui::DataTransferEndpoint> data_dst;
-    absl::optional<bool> is_warning_proceeded;
+    std::optional<ui::DataTransferEndpoint> data_src;
+    std::optional<ui::DataTransferEndpoint> data_dst;
+    std::optional<bool> is_warning_proceeded;
     base::TimeTicks time;
   } last_reported_;
 

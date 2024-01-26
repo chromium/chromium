@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {tabTargetSession} = await testRunner.startBlankWithTabTarget('Tests IO streams are available in the tab target.');
 
   const childTargetManager = new TestRunner.ChildTargetManager(testRunner, tabTargetSession);

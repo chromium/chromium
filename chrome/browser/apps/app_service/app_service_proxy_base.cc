@@ -181,7 +181,7 @@ void AppServiceProxyBase::OnPublisherNotReadyForLaunch(
     const std::string& app_id,
     std::unique_ptr<LaunchParams> launch_request) {
   if (launch_request && !launch_request->call_back_.is_null()) {
-    std::move(launch_request->call_back_).Run(LaunchResult(State::FAILED));
+    std::move(launch_request->call_back_).Run(LaunchResult(State::kFailed));
   }
   return;
 }
@@ -360,7 +360,7 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
     }
 
     if (MaybeShowLaunchPreventionDialog(update)) {
-      std::move(callback).Run(LaunchResult(State::FAILED));
+      std::move(callback).Run(LaunchResult(State::kFailed));
       return;
     }
 
@@ -553,8 +553,8 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     if (!update.HandlesIntents().value_or(false)) {
       return;
     }
-    if (exclude_browser_tab_apps &&
-        update.WindowMode() == WindowMode::kBrowser) {
+    if (ShouldExcludeBrowserTabApps(exclude_browser_tab_apps,
+                                    update.WindowMode())) {
       return;
     }
     // |activity_label| -> {index, is_generic}
@@ -591,6 +591,12 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     }
   });
   return intent_launch_info;
+}
+
+bool AppServiceProxyBase::ShouldExcludeBrowserTabApps(
+    bool exclude_browser_tab_apps,
+    WindowMode window_mode) {
+  return (exclude_browser_tab_apps && window_mode == WindowMode::kBrowser);
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForFiles(

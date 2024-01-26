@@ -18,6 +18,7 @@ namespace segmentation_platform::processing {
 class CustomInputProcessor;
 class FeatureProcessorState;
 class InputDelegateHolder;
+struct Data;
 
 // SqlFeatureProcessor takes a list of SqlFeature type of input, fetches samples
 // from the UKMDatabase, and computes an input tensor to use when executing the

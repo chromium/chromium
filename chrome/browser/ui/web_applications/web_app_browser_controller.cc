@@ -621,8 +621,7 @@ std::u16string WebAppBrowserController::GetAppShortName() const {
 }
 
 std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensions)) {
+  if (registrar().GetScopeExtensions(app_id()).empty()) {
     return FormatUrlOrigin(GetAppStartUrl());
   }
 

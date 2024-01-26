@@ -326,7 +326,7 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
   internals::PostShortcutIOTaskAndReplyWithResult(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
                      std::move(shortcut_data_dir), std::move(old_name),
-                     /*user_specified_locations=*/absl::nullopt),
+                     /*user_specified_locations=*/std::nullopt),
       std::move(shortcut_info), std::move(update_finished_callback));
 }
 

@@ -263,6 +263,20 @@
           'isolated_scripts': 'linux_chromeos_isolated_scripts',
         },
       },
+      'linux-chromeos-chrome-with-lacros': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-jammy',
+        ],
+        'swarming': {
+          'dimensions': {
+            'ssd': '0',
+          },
+        },
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_browser_tests_require_lacros',
+        },
+      },
       'mac-chrome': {
         'additional_compile_targets': [
           'chrome',
@@ -504,7 +518,7 @@
           },
         },
         'additional_compile_targets': [
-          'monochrome_static_initializers',
+          'check_chrome_static_initializers',
         ],
         'test_suites': {
           'gtest_tests': 'android_10_rel_gtests',
@@ -570,6 +584,19 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_13_emulator_gtests',
+        }
+      },
+      'android-14-x64-rel': {
+        'mixins': [
+          '14-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_14_emulator_gtests',
         }
       },
       'android-arm64-proguard-rel': {
@@ -1188,7 +1215,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_trichrome_64_cts_hostside_tests',
+          'gtest_tests': 'webview_trichrome_64_cts_hostside_gtests',
         }
       },
       'android-webview-13-x64-dbg-tests': {
@@ -1458,21 +1485,6 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
-      'chromeos-amd64-generic-rel-renamed': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-amd64-generic',
-        ],
-        'os_type': 'chromeos',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests_and_tast',
-          'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-      },
       'chromeos-amd64-generic-rel-tast': {
         'browser_config': 'cros-chrome',
         'mixins': [
@@ -1522,6 +1534,17 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-amd64-generic-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
+      'lacros-amd64-generic-rel-gtest': {
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_gtest',
+        },
+        'os_type': 'chromeos'
+      },
       'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -1532,12 +1555,9 @@
         },
         'os_type': 'chromeos'
       },
-      'lacros-amd64-generic-rel-renamed': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
+      'lacros-amd64-generic-rel-tast': {
         'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_tast',
         },
         'os_type': 'chromeos'
       },
@@ -1577,6 +1597,7 @@
       'linux-cfm-rel': {
         'mixins': [
           'linux-jammy',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',
@@ -1584,6 +1605,7 @@
       },
       'linux-chromeos-dbg': {
         'mixins': [
+          'x86-64',
           'linux-jammy',
         ],
         'test_suites': {
@@ -1593,6 +1615,7 @@
       },
       'linux-chromeos-rel': {
         'mixins': [
+          'x86-64',
           'isolate_profile_data',
           'linux-jammy',
         ],
@@ -1614,6 +1637,7 @@
         'mixins': [
           'isolate_profile_data',
           'linux-jammy',
+          'x86-64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -3913,30 +3937,6 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      # Due to disk shortage on Mac, we build 'chrome' instead of 'all'.
-      # See crbug.com/899425
-      'Chromium Mac Goma RBE Staging': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Chromium Mac Goma RBE Staging (dbg)': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       # ChromeOS (simple chrome) builders.
       # Note:
       # chromeos-amd64-generic-rel-goma-* builders mirror targets of
@@ -3952,28 +3952,6 @@
     'name': 'chromium.goma.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Mac Builder (dbg) Goma RBE Canary (clobber)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-      },
-      'Mac M1 Builder (dbg) Goma RBE Canary (clobber)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
-        },
-	      'swarming': {
-          'dimensions': {
-            'cpu': 'arm-64',
-            'os': 'Mac-11',
-          },
-	      },
-      },
       # Note:
       # chromeos-amd64-generic-rel-goma-* builders mirror targets of
       # chromeos-amd64-generic-rel.
@@ -3981,11 +3959,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-      },
-      'ios-device-goma-rbe-canary-clobber': {
-        'additional_compile_targets': [
-          'all',
-        ]
       },
       'linux-archive-rel-goma-rbe-ats-canary': {
         'additional_compile_targets': [
@@ -4007,16 +3980,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'goma_gtests',
-        },
-      },
-      'mac-archive-rel-goma-rbe-canary': {
-        'additional_compile_targets': [
-          # Due to disk shortage, we build 'chrome' instead of 'all'.
-          # See crbug.com/899425
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_mac_gtests',
         },
       },
     },
@@ -4145,6 +4108,24 @@
       'timeout_30m',
     ],
     'machines': {
+      'Android FYI Experimental Release (Pixel 6)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'android_u',
+          'has_native_resultdb_integration',
+          'oriole',
+          'gpu-swarming-pool',
+          'limited_capacity_bot',
+        ],
+        # If the experimental configuration is the same as stable, this should
+        # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
+        # should be running the same tests as 'Android FYI Release (Pixel 6)'.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',
@@ -4625,7 +4606,9 @@
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (NVIDIA)'
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
+          'isolated_scripts': 'gpu_fyi_win_optional_isolated_scripts',
         },
       },
       'Win10 FYI x64 Experimental Release (Intel)': {
@@ -5051,6 +5034,7 @@
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         'mixins': [
+          'x86-64',
           'linux-jammy',
         ],
         'test_suites': {
@@ -5164,6 +5148,7 @@
       },
       'linux-lacros-asan-lsan-rel': {
         'mixins': [
+          'x86-64',
           'isolate_profile_data',
           'linux-jammy',
         ],
@@ -5242,6 +5227,17 @@
         ],
         'test_suites': {
           'gtest_tests': 'mac_lsan_fyi_gtests',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
+      },
+      'mac-ubsan-fyi-rel': {
+        'mixins': [
+          'mac_default_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
         },
         'args': [
           '--test-launcher-print-test-stdio=always',
@@ -6669,7 +6665,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
         },
         'os_type': 'cros',
       },
@@ -6683,7 +6679,8 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'linux',
@@ -6698,7 +6695,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6713,7 +6710,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6728,7 +6725,8 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'win',
@@ -6744,7 +6742,8 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
 
         },

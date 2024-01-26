@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -50,7 +50,7 @@ class IsolatedWebAppInstallationManager {
   using MaybeInstallIsolatedWebAppCommandSuccess =
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
   using MaybeIwaLocation =
-      base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
+      base::expected<std::optional<IsolatedWebAppLocation>, std::string>;
 
   explicit IsolatedWebAppInstallationManager(Profile& profile);
   ~IsolatedWebAppInstallationManager();
@@ -126,7 +126,7 @@ class IsolatedWebAppInstallationManager {
   void OnGetIsolatedWebAppLocationFromCommandLine(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
+      base::expected<std::optional<IsolatedWebAppLocation>, std::string>
           location);
 
   void OnGetIsolatedWebAppUrlInfo(

@@ -79,7 +79,7 @@ class TestPrintJob : public PrintJob {
     PrintJob::OnPdfPageConverted(page_index, scale_factor, std::move(metafile));
   }
 
-  absl::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
+  std::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

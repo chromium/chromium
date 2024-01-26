@@ -146,6 +146,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
 <translation id="1796666869097395659">Minimizar la pestaña para volver a ella más tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807709131360304325">Abrir una ventana nueva</translation>
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
@@ -189,6 +190,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2056878612599315956">Sitio web en pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se ha podido descargar 1 archivo}other{No se han podido descargar # archivos}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2079545284768500474">Deshacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Mostrando vista compacta</translation>
 <translation id="2093731487903423814">los últimos 15 minutos</translation>
@@ -218,7 +220,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="223356358902285214">Actividad en la Web y en Aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2239812875700136898">Controla tus historias con el botón Opciones de Discover</translation>
-<translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2247789808226901522">Tarjeta caducada</translation>
 <translation id="2248941474044011069">Tus contraseñas se cifran en tu dispositivo antes de guardarse en el Gestor de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
@@ -233,7 +234,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2318045970523081853">Toca para llamar</translation>
 <translation id="2321086116217818302">Preparando contraseñas…</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio web</translation>
-<translation id="2327226657832576859">¿Abrir PDFs automáticamente?</translation>
 <translation id="2328985652426384049">No se puede iniciar sesión</translation>
 <translation id="2341410551640223969">No se ha podido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Datos totales utilizados por Chrome, incluidos los marcadores, las cuentas y la configuración guardada</translation>
@@ -316,6 +316,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">ha fallado</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
+<translation id="2789486458103222910">Aceptar</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Menú de tarjeta de feed a media altura</translation>
@@ -354,7 +355,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2946420957526726953">Actualizando Chrome para establecer conexión con otros dispositivos</translation>
 <translation id="2951071800649516099">Añade páginas a tu lista de lectura para más tarde</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
-<translation id="2961210776189273067">Título</translation>
 <translation id="296370266220139811">Ahorra tiempo y escribe menos</translation>
 <translation id="2977350910003566746">Ordenados por última apertura</translation>
 <translation id="297771753501244313">Ordenar: último abierto</translation>
@@ -600,6 +600,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
+<translation id="4311652497846705514">¿Abrir PDF?</translation>
 <translation id="4320177379694898372">No hay conexión a Internet</translation>
 <translation id="433213510553688132">Siguiendo...</translation>
 <translation id="4335835283689002019">La función Navegación segura está desactivada</translation>
@@ -639,7 +640,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4523326818319942067">la última hora</translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4532845899244822526">Seleccionar carpeta</translation>
-<translation id="4541505619120536051">Abrir siempre</translation>
 <translation id="4543131175509360848">No hay ninguna hoja de llaves de acceso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4554077758708533499">Conectado con cable USB</translation>
@@ -831,7 +831,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5486841595534124508">Logotipo del aviso de privacidad del centro de estadísticas de la página que redirige a la página Mi Actividad.</translation>
 <translation id="5487521232677179737">Borrar datos</translation>
 <translation id="5492637351392383067">Cifrado en el dispositivo</translation>
-<translation id="5509866835115085009">Chrome puede abrir automáticamente los archivos PDF cuando los descargues.</translation>
 <translation id="5514904542973294328">Inhabilitada por el administrador de este dispositivo</translation>
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
 <translation id="5517095782334947753">Tienes marcadores, historial, contraseñas y otros ajustes de <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5966233851250124270">Chrome recordará tu elección</translation>
+<translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="5995726099713306770">¿Volver a descargar esta página?</translation>
 <translation id="6000066717592683814">Mantener Google como motor de búsqueda predeterminado</translation>
@@ -989,7 +989,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6341580099087024258">Preguntar dónde guardar los archivos</translation>
 <translation id="6342069812937806050">Justo ahora</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
-<translation id="6344622098450209924">Protección frente al seguimiento</translation>
+<translation id="6344622098450209924">Protección Antirrastreo</translation>
 <translation id="6345878117466430440">Marcar como leído</translation>
 <translation id="6356893102071098867">Comprueba que has elegido la cuenta correcta.</translation>
 <translation id="6357653805084533597">Puedes usar este teléfono para iniciar sesión en el dispositivo donde se muestra este código QR.</translation>
@@ -1302,6 +1302,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de página completa</translation>
+<translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en la Función de cambio de pestaña</translation>
 <translation id="7822705602465980873">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
 <translation id="78270725016672455">Tu ordenador quiere registrar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="7844171778363018843">No hay datos seleccionados para sincronizar</translation>
@@ -1329,6 +1330,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
+<translation id="7951102827450076904">Abrir siempre los PDFs descargados</translation>
 <translation id="7957413488482743710">Una tarjeta virtual oculta tu tarjeta real para protegerte frente a posibles fraudes. <ph name="BEGIN_LINK1" />Más información sobre tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botón para volver de las estadísticas de la página</translation>
 <translation id="7961926449547174351">Has inhabilitado el acceso al almacenamiento; ve a Ajustes para habilitarlo.</translation>

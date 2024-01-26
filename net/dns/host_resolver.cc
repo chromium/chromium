@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/resolve_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -91,9 +91,9 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return ResolveErrorInfo(error_);
   }
 
-  const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
+  const std::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
-    static const absl::optional<HostCache::EntryStaleness> nullopt_result;
+    static const std::optional<HostCache::EntryStaleness> nullopt_result;
     return nullopt_result;
   }
 
@@ -362,7 +362,7 @@ std::unique_ptr<HostResolver> HostResolver::CreateResolver(
 // static
 std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
     NetLog* net_log,
-    absl::optional<ManagerOptions> options,
+    std::optional<ManagerOptions> options,
     base::StringPiece host_mapping_rules,
     bool enable_caching) {
   std::unique_ptr<ContextHostResolver> resolver =
@@ -381,7 +381,7 @@ std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
 std::unique_ptr<ContextHostResolver>
 HostResolver::CreateStandaloneContextResolver(
     NetLog* net_log,
-    absl::optional<ManagerOptions> options,
+    std::optional<ManagerOptions> options,
     bool enable_caching) {
   auto resolve_context = std::make_unique<ResolveContext>(
       nullptr /* url_request_context */, enable_caching);
@@ -398,7 +398,7 @@ std::unique_ptr<HostResolver>
 HostResolver::CreateStandaloneNetworkBoundResolver(
     NetLog* net_log,
     handles::NetworkHandle target_network,
-    absl::optional<ManagerOptions> options,
+    std::optional<ManagerOptions> options,
     base::StringPiece host_mapping_rules,
     bool enable_caching) {
 #if BUILDFLAG(IS_ANDROID)
@@ -530,6 +530,31 @@ bool HostResolver::AllProtocolEndpointsHaveEch(
   // Either there were no SVCB/HTTPS records (should be SVCB-optional), or there
   // were and all supported ECH (should be SVCB-reliant).
   return has_svcb;
+}
+
+// static
+base::StringPiece HostResolver::GetHostname(
+    const absl::variant<url::SchemeHostPort, std::string>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
+    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
+    if (hostname.size() >= 2 && hostname.front() == '[' &&
+        hostname.back() == ']') {
+      hostname = hostname.substr(1, hostname.size() - 2);
+    }
+    return hostname;
+  }
+
+  return absl::get<std::string>(host);
+}
+
+// static
+bool HostResolver::MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
+                                             HostResolverSource source,
+                                             const IPAddress& ip_address) {
+  return !(flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6) &&
+         ip_address.IsValid() && ip_address.IsIPv4() &&
+         base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
+         (source != HostResolverSource::LOCAL_ONLY);
 }
 
 HostResolver::HostResolver() = default;

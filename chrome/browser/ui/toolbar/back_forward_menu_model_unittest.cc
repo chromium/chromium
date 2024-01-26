@@ -40,23 +40,35 @@ using content::WebContentsTester;
 
 namespace {
 
-class FaviconDelegate : public ui::MenuModelDelegate {
+class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
  public:
-  explicit FaviconDelegate(base::OnceClosure quit_closure)
-      : was_called_(false), quit_closure_(std::move(quit_closure)) {}
+  explicit TestBackForwardMenuDelegate(base::OnceClosure quit_closure)
+      : was_icon_changed_called_(false),
+        was_menu_model_changed_called_(false),
+        quit_closure_(std::move(quit_closure)) {}
 
-  FaviconDelegate(const FaviconDelegate&) = delete;
-  FaviconDelegate& operator=(const FaviconDelegate&) = delete;
+  TestBackForwardMenuDelegate(const TestBackForwardMenuDelegate&) = delete;
+  TestBackForwardMenuDelegate& operator=(const TestBackForwardMenuDelegate&) =
+      delete;
 
   void OnIconChanged(int command_id) override {
-    was_called_ = true;
+    was_icon_changed_called_ = true;
     std::move(quit_closure_).Run();
   }
 
-  bool was_called() const { return was_called_; }
+  void OnMenuStructureChanged() override {
+    was_menu_model_changed_called_ = true;
+    std::move(quit_closure_).Run();
+  }
+
+  bool was_icon_changed_called() const { return was_icon_changed_called_; }
+  bool was_menu_model_changed_called() const {
+    return was_menu_model_changed_called_;
+  }
 
  private:
-  bool was_called_;
+  bool was_icon_changed_called_;
+  bool was_menu_model_changed_called_;
   base::OnceClosure quit_closure_;
 };
 
@@ -531,12 +543,12 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
   base::RunLoop loop;
-  FaviconDelegate favicon_delegate(loop.QuitWhenIdleClosure());
+  TestBackForwardMenuDelegate delegate(loop.QuitWhenIdleClosure());
 
   BackForwardMenuModel back_model(browser.get(),
                                   BackForwardMenuModel::ModelType::kBackward);
   back_model.set_test_web_contents(web_contents());
-  back_model.SetMenuModelDelegate(&favicon_delegate);
+  back_model.SetMenuModelDelegate(&delegate);
 
   SkBitmap new_icon_bitmap(gfx::test::CreateBitmap(/*size=*/16, SK_ColorRED));
 
@@ -562,11 +574,11 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   ui::ImageModel default_icon = back_model.GetIconAt(0);
 
   // Make the favicon service run GetFavIconForURL,
-  // FaviconDelegate.OnIconChanged will be called.
+  // MenuModelDelegate.OnIconChanged will be called.
   loop.Run();
 
   // Verify that the callback executed.
-  EXPECT_TRUE(favicon_delegate.was_called());
+  EXPECT_TRUE(delegate.was_icon_changed_called());
 
   // Verify the bitmaps match.
   // This time we will get the new favicon returned.
@@ -586,6 +598,36 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
 
   // Make sure the browser deconstructor doesn't have problems.
   browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(BackFwdMenuModelTest, NavigationWhenMenuShownTest) {
+  Browser::CreateParams native_params(profile(), true);
+  std::unique_ptr<Browser> browser(
+      CreateBrowserWithTestWindowForParams(native_params));
+  base::RunLoop loop;
+  TestBackForwardMenuDelegate delegate(loop.QuitWhenIdleClosure());
+
+  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
+      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  back_model->set_test_web_contents(web_contents());
+  back_model->SetMenuModelDelegate(&delegate);
+
+  EXPECT_EQ(0u, back_model->GetItemCount());
+
+  LoadURLAndUpdateState("http://www.a.com/1", "A1");
+  LoadURLAndUpdateState("http://www.a.com/2", "A2");
+
+  EXPECT_EQ(3u, back_model->GetItemCount());
+  back_model->MenuWillShow();
+
+  // Trigger a navigation while the menu is open
+  LoadURLAndUpdateState("http://www.b.com", "B");
+
+  // Confirm delegate is notified about menu contents has changed
+  loop.Run();
+  EXPECT_TRUE(delegate.was_menu_model_changed_called());
+
+  EXPECT_EQ(4u, back_model->GetItemCount());
 }
 
 // Test to check the menu in Incognito mode.

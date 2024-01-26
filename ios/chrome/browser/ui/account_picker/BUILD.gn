@@ -10,6 +10,7 @@ source_set("account_picker") {
   ]
   deps = [
     ":account_picker_configuration",
+    ":account_picker_consumer",
     ":account_picker_layout",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -32,6 +33,10 @@ source_set("account_picker") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+}
+
+source_set("account_picker_consumer") {
+  sources = [ "account_picker_consumer.h" ]
 }
 
 source_set("account_picker_configuration") {

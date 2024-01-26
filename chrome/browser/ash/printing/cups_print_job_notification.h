@@ -47,6 +47,8 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override;
 
+  message_center::Notification* GetNotificationDataForTesting();
+
  private:
   // Update the notification based on the print job's status.
   void UpdateNotification();

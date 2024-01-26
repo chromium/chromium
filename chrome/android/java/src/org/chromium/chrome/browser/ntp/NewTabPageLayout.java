@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleCoordinator;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -67,6 +69,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -237,7 +240,8 @@ public class NewTabPageLayout extends LinearLayout {
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
             boolean isTablet,
-            ObservableSupplier<Integer> tabStripHeightSupplier) {
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            SuggestionClickCallback suggestionClickCallback) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -313,7 +317,7 @@ public class NewTabPageLayout extends LinearLayout {
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
-        initializeTabResumptionModuleCoordinator(profile);
+        initializeTabResumptionModuleCoordinator(profile, suggestionClickCallback);
         initializeLayoutChangeListener();
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
@@ -324,6 +328,12 @@ public class NewTabPageLayout extends LinearLayout {
         if (mIsSurfacePolishEnabled) {
             setBackground(
                     AppCompatResources.getDrawable(mContext, R.drawable.home_surface_background));
+        }
+    }
+
+    public void reload() {
+        if (mTabResumptionModuleCoordinator != null) {
+            mTabResumptionModuleCoordinator.reload();
         }
     }
 
@@ -365,6 +375,29 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
         mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
+
+        // @TODO(crbug.com/1519592): Add test case for search box OnDragListener.
+        mSearchBoxCoordinator.setSearchBoxDragListener(
+                new OnDragListener() {
+                    @Override
+                    public boolean onDrag(View view, DragEvent dragEvent) {
+                        // Disable search box EditText when tab is dropped.
+                        if (dragEvent.getClipDescription() == null
+                                || !dragEvent
+                                        .getClipDescription()
+                                        .hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+                            return false;
+                        } else {
+                            if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                                view.setEnabled(false);
+                            } else if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+                                view.setEnabled(true);
+                            }
+                        }
+                        return false;
+                    }
+                });
+
         mSearchBoxCoordinator.setSearchBoxTextWatcher(
                 new EmptyTextWatcher() {
                     @Override
@@ -397,11 +430,15 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.end(TAG + ".initializeLensButton()");
     }
 
-    private void initializeTabResumptionModuleCoordinator(Profile profile) {
+    private void initializeTabResumptionModuleCoordinator(
+            Profile profile, SuggestionClickCallback suggestionClickCallback) {
         TraceEvent.begin(TAG + ".initializeTabResumptionModuleCoordinator()");
         mTabResumptionModuleCoordinator =
                 TabResumptionModuleUtils.mayCreateTabResumptionModuleCoordinator(
-                        this, profile, R.id.tab_resumption_module_container_stub);
+                        this,
+                        suggestionClickCallback,
+                        profile,
+                        R.id.tab_resumption_module_container_stub);
         TraceEvent.end(TAG + ".initializeTabResumptionModuleCoordinator()");
     }
 

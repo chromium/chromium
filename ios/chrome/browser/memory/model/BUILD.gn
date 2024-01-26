@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//ios/build/chrome_build.gni")
+
+buildflag_header("features") {
+  header = "features.h"
+  flags = [ "IOS_ENABLE_MEMORY_DEBUGGING=$ios_enable_memory_debugging" ]
+}
+
 source_set("model") {
   sources = [
     "memory_debugger.h",

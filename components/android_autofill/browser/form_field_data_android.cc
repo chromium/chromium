@@ -4,7 +4,6 @@
 
 #include "components/android_autofill/browser/form_field_data_android.h"
 
-#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -20,6 +19,12 @@ namespace autofill {
 using base::android::ScopedJavaLocalRef;
 
 FormFieldDataAndroid::FieldTypes::FieldTypes() = default;
+
+FormFieldDataAndroid::FieldTypes::FieldTypes(AutofillType type)
+    : heuristic_type(type),
+      server_type(type),
+      computed_type(type),
+      server_predictions({std::move(type)}) {}
 
 FormFieldDataAndroid::FieldTypes::FieldTypes(
     AutofillType heuristic_type,
@@ -37,6 +42,16 @@ FormFieldDataAndroid::FieldTypes& FormFieldDataAndroid::FieldTypes::operator=(
     FieldTypes&&) = default;
 
 FormFieldDataAndroid::FieldTypes::~FieldTypes() = default;
+
+bool FormFieldDataAndroid::FieldTypes::operator==(
+    const AutofillType& type) const {
+  std::string_view target = type.ToStringView();
+  return heuristic_type.ToStringView() == target &&
+         server_type.ToStringView() == target &&
+         computed_type.ToStringView() == target &&
+         server_predictions.size() == 1 &&
+         server_predictions[0].ToStringView() == target;
+}
 
 FormFieldDataAndroid::FormFieldDataAndroid(FormFieldData* field)
     : bridge_(AndroidAutofillBridgeFactory::GetInstance()

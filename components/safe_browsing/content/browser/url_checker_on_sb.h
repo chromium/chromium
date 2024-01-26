@@ -59,11 +59,13 @@ class UrlCheckerOnSB final {
         bool proceed,
         bool showed_interstitial,
         bool has_post_commit_interstitial_skipped,
-        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+        bool all_checks_completed);
     bool proceed;
     bool showed_interstitial;
     bool has_post_commit_interstitial_skipped;
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
+    bool all_checks_completed;
   };
 
   using OnCompleteCheckCallback =
@@ -104,10 +106,17 @@ class UrlCheckerOnSB final {
   // Replaces the current |complete_callback_| with the new |callback|.
   void SwapCompleteCallback(OnCompleteCheckCallback callback);
 
+  // Returns a list of URLs that are checked by |url_checker_|.
+  const std::vector<GURL>& GetRedirectChain();
+
   void SetUrlCheckerForTesting(
       std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
 
+  absl::optional<int64_t> navigation_id() { return navigation_id_; }
+
   bool IsRealTimeCheckForTesting();
+
+  void AddUrlInRedirectChainForTesting(const GURL& url);
 
   base::WeakPtr<UrlCheckerOnSB> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -145,8 +154,11 @@ class UrlCheckerOnSB final {
   bool can_urt_check_subresource_url_ = false;
   bool can_check_db_ = true;
   bool can_check_high_confidence_allowlist_ = true;
+  size_t pending_checks_ = 0;
   std::string url_lookup_service_metric_suffix_;
   GURL last_committed_url_;
+  // A list of URLs that are checked by |url_checker_|.
+  std::vector<GURL> redirect_chain_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
   base::WeakPtr<HashRealTimeService> hash_realtime_service_;
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =

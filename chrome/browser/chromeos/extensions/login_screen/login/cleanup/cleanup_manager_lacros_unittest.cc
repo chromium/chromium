@@ -52,7 +52,7 @@ class CleanupManagerLacrosUnittest : public testing::Test {
 TEST_F(CleanupManagerLacrosUnittest, Cleanup) {
   auto no_error_callback =
       [](chromeos::CleanupHandler::CleanupHandlerCallback callback) {
-        std::move(callback).Run(absl::nullopt);
+        std::move(callback).Run(std::nullopt);
       };
   std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler =
       std::make_unique<chromeos::MockCleanupHandler>();
@@ -66,8 +66,8 @@ TEST_F(CleanupManagerLacrosUnittest, Cleanup) {
 
   base::RunLoop run_loop;
   manager_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
-        EXPECT_EQ(absl::nullopt, error);
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
+        EXPECT_EQ(std::nullopt, error);
         run_loop.QuitClosure().Run();
       }));
   run_loop.Run();
@@ -90,7 +90,7 @@ TEST_F(CleanupManagerLacrosUnittest, CleanupError) {
 
   base::RunLoop run_loop;
   manager_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
         EXPECT_EQ("Handler: Error", error);
         run_loop.QuitClosure().Run();
       }));

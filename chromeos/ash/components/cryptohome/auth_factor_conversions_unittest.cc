@@ -52,7 +52,7 @@ TEST_F(AuthFactorConversionsTest, MetadataConversion) {
   const AuthFactor password(
       AuthFactorRef(AuthFactorType::kPassword, KeyLabel("password")),
       AuthFactorCommonMetadata(),
-      PasswordMetadata::Create(SystemSalt(kHashInfoSalt)));
+      PasswordMetadata::CreateForLocalPassword(SystemSalt(kHashInfoSalt)));
   user_data_auth::AuthFactor password_proto;
   SerializeAuthFactor(password, &password_proto);
   ASSERT_TRUE(password_proto.has_password_metadata());
@@ -62,6 +62,7 @@ TEST_F(AuthFactorConversionsTest, MetadataConversion) {
   EXPECT_EQ(password_hash_info_proto.algorithm(),
             KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF);
   EXPECT_EQ(password_hash_info_proto.salt(), kHashInfoSalt);
+  EXPECT_TRUE(password_hash_info_proto.should_generate_key_store());
   const AuthFactor reconstructed_password =
       DeserializeAuthFactor(password_proto,
                             /*fallback_type=*/AuthFactorType::kPassword);
@@ -71,19 +72,46 @@ TEST_F(AuthFactorConversionsTest, MetadataConversion) {
   EXPECT_EQ(password_hash_info->algorithm,
             KnowledgeFactorHashAlgorithmWrapper::kSha256TopHalf);
   EXPECT_EQ(password_hash_info->salt, kHashInfoSalt);
+  EXPECT_TRUE(password_hash_info->should_generate_key_store);
+
+  // Test password metadata conversion without generating key store.
+  const AuthFactor password2(
+      AuthFactorRef(AuthFactorType::kPassword, KeyLabel("password2")),
+      AuthFactorCommonMetadata(),
+      PasswordMetadata::CreateForOnlinePassword(SystemSalt(kHashInfoSalt)));
+  user_data_auth::AuthFactor password_proto2;
+  SerializeAuthFactor(password2, &password_proto2);
+  ASSERT_TRUE(password_proto2.has_password_metadata());
+  ASSERT_TRUE(password_proto2.password_metadata().has_hash_info());
+  user_data_auth::KnowledgeFactorHashInfo password_hash_info_proto2 =
+      password_proto2.password_metadata().hash_info();
+  EXPECT_EQ(password_hash_info_proto2.algorithm(),
+            KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF);
+  EXPECT_EQ(password_hash_info_proto2.salt(), kHashInfoSalt);
+  EXPECT_FALSE(password_hash_info_proto2.should_generate_key_store());
+  const AuthFactor reconstructed_password2 =
+      DeserializeAuthFactor(password_proto2,
+                            /*fallback_type=*/AuthFactorType::kPassword);
+  const std::optional<KnowledgeFactorHashInfo>& password_hash_info2 =
+      reconstructed_password2.GetPasswordMetadata().hash_info();
+  ASSERT_TRUE(password_hash_info2.has_value());
+  EXPECT_EQ(password_hash_info2->algorithm,
+            KnowledgeFactorHashAlgorithmWrapper::kSha256TopHalf);
+  EXPECT_EQ(password_hash_info2->salt, kHashInfoSalt);
+  EXPECT_FALSE(password_hash_info2->should_generate_key_store);
 
   // Test password metadata conversion without salt.
-  const AuthFactor online_password(
-      AuthFactorRef(AuthFactorType::kPassword, KeyLabel("online-password")),
+  const AuthFactor password3(
+      AuthFactorRef(AuthFactorType::kPassword, KeyLabel("password3")),
       AuthFactorCommonMetadata(), PasswordMetadata::CreateWithoutSalt());
-  user_data_auth::AuthFactor online_password_proto;
-  SerializeAuthFactor(online_password, &online_password_proto);
-  ASSERT_TRUE(online_password_proto.has_password_metadata());
-  EXPECT_FALSE(online_password_proto.password_metadata().has_hash_info());
-  const AuthFactor reconstructed_online_password =
-      DeserializeAuthFactor(online_password_proto,
+  user_data_auth::AuthFactor password3_proto;
+  SerializeAuthFactor(password3, &password3_proto);
+  ASSERT_TRUE(password3_proto.has_password_metadata());
+  EXPECT_FALSE(password3_proto.password_metadata().has_hash_info());
+  const AuthFactor reconstructed_password3 =
+      DeserializeAuthFactor(password3_proto,
                             /*fallback_type=*/AuthFactorType::kPassword);
-  EXPECT_EQ(reconstructed_online_password.GetPasswordMetadata().hash_info(),
+  EXPECT_EQ(reconstructed_password3.GetPasswordMetadata().hash_info(),
             std::nullopt);
 
   // Test PIN metadata conversion.

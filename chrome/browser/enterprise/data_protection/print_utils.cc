@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 
 #include <cstring>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -15,7 +16,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/printing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_data_protection {
 
@@ -154,7 +154,7 @@ void PrintIfAllowedByPolicy(
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
-absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
 GetPrintAnalysisData(content::WebContents* web_contents,
                      PrintScanningContext context) {
   enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
@@ -191,7 +191,7 @@ GetPrintAnalysisData(content::WebContents* web_contents,
     return scanning_data;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace enterprise_data_protection

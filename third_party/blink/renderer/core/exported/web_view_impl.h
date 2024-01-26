@@ -635,6 +635,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
 
+  // Returns true if the page supports app-region: drag/no-drag.
+  bool SupportsAppRegion();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,
@@ -994,6 +997,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   absl::optional<base::debug::StackTrace> close_task_posted_stack_trace_;
   absl::optional<base::debug::StackTrace> close_called_stack_trace_;
   absl::optional<base::debug::StackTrace> close_window_called_stack_trace_;
+
+  // Indicates whether the page supports draggable regions via the app-region
+  // CSS property.
+  bool supports_app_region_ = false;
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;

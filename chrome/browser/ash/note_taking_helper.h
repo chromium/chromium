@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -186,7 +186,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
 
   // arc::ArcIntentHelperObserver:
   void OnIntentFiltersUpdated(
-      const absl::optional<std::string>& package_name) override;
+      const std::optional<std::string>& package_name) override;
 
   // arc::ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;

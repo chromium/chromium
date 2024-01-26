@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // Data structure for the comprehensive testing. Each AudioNode can have
   // an unique constructor pattern and also can have a different set of
   // AudioParams. Each data entry has:

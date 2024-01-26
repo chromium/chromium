@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.WindowAndroid;
@@ -78,7 +79,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param toolbarContainerView @{link View} passed to @{link StripLayoutHelper} to support tab
      *     drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
-     * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param toolbarManager The {@link ToolbarManager} instance.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -99,7 +100,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ToolbarManager toolbarManager) {
         super(
                 host,
                 contentContainer,
@@ -128,7 +129,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         tabContentManagerSupplier,
                         browserControlsStateProvider,
                         windowAndroid,
-                        tabStripHeightSupplier);
+                        toolbarManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 

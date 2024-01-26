@@ -24,6 +24,9 @@ struct StructTraits<audio::mojom::AudioDeviceDescriptionDataView,
   static std::string group_id(const media::AudioDeviceDescription& input) {
     return input.group_id;
   }
+  static bool is_system_default(const media::AudioDeviceDescription& input) {
+    return input.is_system_default;
+  }
 
   static bool Read(audio::mojom::AudioDeviceDescriptionDataView data,
                    media::AudioDeviceDescription* output);

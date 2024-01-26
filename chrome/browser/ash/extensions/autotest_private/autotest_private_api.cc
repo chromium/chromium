@@ -3732,7 +3732,7 @@ AutotestPrivateClearAllowedPrefFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateClearAllowedPrefFunction::Run() {
-  absl::optional<api::autotest_private::ClearAllowedPref::Params> params =
+  std::optional<api::autotest_private::ClearAllowedPref::Params> params =
       api::autotest_private::ClearAllowedPref::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!ClearAllowedPref(Profile::FromBrowserContext(browser_context()),
@@ -4993,6 +4993,7 @@ AutotestPrivateActivateAcceleratorFunction::Run() {
   auto* accelerator_controller = ash::AcceleratorController::Get();
   accelerator_controller->GetAcceleratorHistory()->StoreCurrentAccelerator(
       accelerator);
+  accelerator_controller->ApplyAcceleratorForTesting(accelerator);  // IN-TEST
 
   if (!accelerator_controller->IsRegistered(accelerator)) {
     // If it's not ash accelerator, try aplication's accelerator.
@@ -5873,9 +5874,10 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
   timeout_timer_.AbandonAndStop();
 
   api::autotest_private::DisplaySmoothnessData result_data;
-  result_data.frames_expected = frame_data.frames_expected;
-  result_data.frames_produced = frame_data.frames_produced;
-  result_data.jank_count = frame_data.jank_count;
+  result_data.frames_expected = frame_data.frames_expected_v3;
+  result_data.frames_produced =
+      frame_data.frames_expected_v3 - frame_data.frames_dropped_v3;
+  result_data.jank_count = frame_data.jank_count_v3;
   result_data.throughput = std::move(throughput);
 
   Respond(ArgumentList(
@@ -6077,9 +6079,10 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
     animation_data.stop_offset_ms =
         (data.stop_tick - g_last_start_throughput_data_collection_tick)
             .InMilliseconds();
-    animation_data.frames_expected = data.smoothness_data.frames_expected;
-    animation_data.frames_produced = data.smoothness_data.frames_produced;
-    animation_data.jank_count = data.smoothness_data.jank_count;
+    animation_data.frames_expected = data.smoothness_data.frames_expected_v3;
+    animation_data.frames_produced = data.smoothness_data.frames_expected_v3 -
+                                     data.smoothness_data.frames_dropped_v3;
+    animation_data.jank_count = data.smoothness_data.jank_count_v3;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(
@@ -6110,9 +6113,10 @@ AutotestPrivateGetThroughputTrackerDataFunction::Run() {
     animation_data.stop_offset_ms =
         (data.stop_tick - g_last_start_throughput_data_collection_tick)
             .InMilliseconds();
-    animation_data.frames_expected = data.smoothness_data.frames_expected;
-    animation_data.frames_produced = data.smoothness_data.frames_produced;
-    animation_data.jank_count = data.smoothness_data.jank_count;
+    animation_data.frames_expected = data.smoothness_data.frames_expected_v3;
+    animation_data.frames_produced = data.smoothness_data.frames_expected_v3 -
+                                     data.smoothness_data.frames_dropped_v3;
+    animation_data.jank_count = data.smoothness_data.jank_count_v3;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(ArgumentList(
@@ -6886,6 +6890,31 @@ void AutotestPrivateGetArcWakefulnessModeFunction::OnGetWakefulnessStateRespond(
     arc::mojom::WakefulnessMode mode) {
   return Respond(
       WithArguments(api::autotest_private::ToString(GetWakefulnessMode(mode))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSetDeviceLanguageFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateSetDeviceLanguageFunction::
+    AutotestPrivateSetDeviceLanguageFunction() = default;
+
+AutotestPrivateSetDeviceLanguageFunction::
+    ~AutotestPrivateSetDeviceLanguageFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateSetDeviceLanguageFunction::Run() {
+  std::optional<api::autotest_private::SetDeviceLanguage::Params> params =
+      api::autotest_private::SetDeviceLanguage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateSetDeviceLanguageFunction " << params->locale;
+
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  // Note that this only change the prefs, a restart would be required for the
+  // change to take effect.
+  profile->ChangeAppLocale(params->locale,
+                           Profile::APP_LOCALE_CHANGED_VIA_SETTINGS);
+  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

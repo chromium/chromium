@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -117,6 +118,9 @@ public interface AccountSelectionComponent {
 
     /** Gets the sheet's subtitle, if any, or null.. */
     String getSubtitle();
+
+    /** Show the given URL in a popup window. */
+    void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url);
 
     /**
      * Shows a modal dialog with the given url. Returns the WebContents of the new dialog.

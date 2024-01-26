@@ -42,6 +42,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -140,7 +141,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mProfileProviderSupplier.set(mProfileProvider);
         mTabModelFilterSupplier.set(mTabModelFilter);
-        mIsVisibleSupplier.set(true);
+        mIsVisibleSupplier.set(false);
         mIsAnimatingSupplier.set(false);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
@@ -156,6 +157,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mRootView.addView(mCoordinatorView);
         activity.setContentView(mRootView);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSwitcher.SetupRecyclerView.Time");
         mCoordinator =
                 new TabSwitcherPaneCoordinator(
                         activity,
@@ -176,9 +180,13 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        TabListMode.GRID);
+                        TabListMode.GRID,
+                        /* supportsEmptyState= */ true);
+        watcher.assertExpected();
 
         mCoordinator.initWithNative();
+
+        mIsVisibleSupplier.set(true);
     }
 
     @After
@@ -202,16 +210,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         assertFalse(handlesBackPressSupplier.get());
 
         assertNull(mActivity.findViewById(R.id.selectable_list));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetSnackbarParentView() {
-        mCoordinator.setSnackbarParentView(mContainerView);
-        verify(mSnackbarManager).setParentView(mContainerView);
-
-        mCoordinator.setSnackbarParentView(null);
-        verify(mSnackbarManager).setParentView(null);
     }
 
     @Test
@@ -270,12 +268,12 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCustomViewManager() {
-        TabSwitcherCustomViewManager customViewManager =
-                mCoordinator.getTabSwitcherCustomViewManager();
-        assertNotNull(customViewManager);
+        TabSwitcherCustomViewManager.Delegate customViewManagerDelegate =
+                mCoordinator.getTabSwitcherCustomViewManagerDelegate();
+        assertNotNull(customViewManagerDelegate);
 
         FrameLayout customView = new FrameLayout(mActivity);
-        customViewManager.requestView(customView, null, false);
+        customViewManagerDelegate.addCustomView(customView, null, false);
         boolean found = false;
         for (int i = 0; i < mContainerView.getChildCount(); i++) {
             if (mContainerView.getChildAt(i) == customView) {
@@ -284,7 +282,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         }
         assertTrue("Did not find added custom view.", found);
 
-        assertTrue(customViewManager.releaseView());
+        customViewManagerDelegate.removeCustomView(customView);
         found = false;
         for (int i = 0; i < mContainerView.getChildCount(); i++) {
             if (mContainerView.getChildAt(i) == customView) {
@@ -316,15 +314,17 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         TabListRecyclerView recyclerView =
                 (TabListRecyclerView) mActivity.findViewById(R.id.tab_list_recycler_view);
-        // Manually size the view so that the children get added.
+        // Manually size the view so that the children get added this is to work around robolectric
+        // view testing limitations.
         recyclerView.measure(0, 0);
         recyclerView.layout(0, 0, 100, 1000);
 
         assertEquals(1, recyclerView.getAdapter().getItemCount());
         assertEquals(1, recyclerView.getChildCount());
-        // This gets called twice initially due to thumbnail size and the fetcher independently
-        // making requests in the view binder.
-        verify(mTabContentManager, times(2))
+        // This gets called three times
+        // 1) Once when the fetcher is set.
+        // 2) Twice due to thumbnail size changes on initial and repeat layout.
+        verify(mTabContentManager, times(3))
                 .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
 
         TabThumbnailView thumbnailView =

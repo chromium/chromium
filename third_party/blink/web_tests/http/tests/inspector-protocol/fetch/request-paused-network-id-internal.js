@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'resources/hello-world.html',
       `Verifies that requestPaused does not have a networkId for internal requests`);

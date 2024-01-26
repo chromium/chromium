@@ -73,7 +73,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // so append new values to the end and do not change the meaning of existing
   // values.
   enum class Type {
-    kPinnedFile = 0,
+    kMinValue = 0,
+    kPinnedFile = kMinValue,
     kScreenshot = 1,
     kDownload = 2,
     kNearbyShare = 3,
@@ -166,49 +167,56 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // `Deserialize()`.
   void Initialize(const HoldingSpaceFile& file);
 
-  // Sets the `file` backing the item, returning `true` if a change occurred or
-  // `false` to indicate no-op.
-  bool SetBackingFile(const HoldingSpaceFile& file);
+  // Sets the `file` backing the item, returning the previous value if a change
+  // occurred or `std::nullopt` to indicate no-op.
+  std::optional<HoldingSpaceFile> SetBackingFile(const HoldingSpaceFile& file);
 
   // Returns `text_`, falling back to the lossy display name of the item's
   // backing file if absent.
   std::u16string GetText() const;
 
-  // Sets the text that should be shown for the item, returning `true` if a
-  // change occurred or `false` to indicate no-op. If absent, the lossy display
-  // name of the item's backing file will be used.
-  bool SetText(const std::optional<std::u16string>& text);
+  // Sets the text that should be shown for the item, returning the previous
+  // value if a change occurred or `std::nullopt` to indicate no-op. If
+  // `std::nullopt` is provided, text will fall back to the lossy display name
+  // of the item's backing file.
+  std::optional<std::optional<std::u16string>> SetText(
+      const std::optional<std::u16string>& text);
 
-  // Sets the secondary text that should be shown for the item, returning `true`
-  // if a change occurred or `false` to indicate no-op.
-  bool SetSecondaryText(const std::optional<std::u16string>& secondary_text);
+  // Sets the secondary text that should be shown for the item, returning the
+  // previous value if a change occurred or `std::nullopt` to indicate no-op.
+  std::optional<std::optional<std::u16string>> SetSecondaryText(
+      const std::optional<std::u16string>& secondary_text);
 
   // Sets the color id for the secondary text that should be shown for the item,
-  // returning `true` if a change occurred or `false` to indicate no-op. If
-  // `std::nullopt` is provided, secondary text color will fallback to default.
-  bool SetSecondaryTextColorId(
+  // returning the previous value if a change occurred or `std::nullopt` to
+  // indicate no-op. If `std::nullopt` is provided, secondary text color will
+  // fall back to default.
+  std::optional<std::optional<ui::ColorId>> SetSecondaryTextColorId(
       const std::optional<ui::ColorId>& secondary_text_color_id);
 
   // Returns `accessible_name_`, falling back to a concatenation of primary
   // and secondary text if absent.
   std::u16string GetAccessibleName() const;
 
-  // Sets the accessible name that should be used for the item, returning `true`
-  // if a change occurred or `false` to indicate no-op. Note that if the
-  // accessible name is absent, `GetAccessibleName()` will fallback to a
+  // Sets the accessible name that should be used for the item, returning the
+  // previous value if a change occurred or `std::nullopt` to indicate no-op. If
+  // `std::nullopt` is provided, accessible name will fall back to a
   // concatenation of primary and secondary text.
-  bool SetAccessibleName(const std::optional<std::u16string>& accessible_name);
+  std::optional<std::optional<std::u16string>> SetAccessibleName(
+      const std::optional<std::u16string>& accessible_name);
 
   // Sets the commands for an in-progress item which are shown in the item's
   // context menu and possibly, in the case of cancel/pause/resume, as primary/
-  // secondary actions on the item view itself.
-  bool SetInProgressCommands(
+  // secondary actions on the item view itself. Returns the previous value if a
+  // change occurred or `std::nullopt` to indicate no-op.
+  std::optional<std::vector<InProgressCommand>> SetInProgressCommands(
       std::vector<InProgressCommand> in_progress_commands);
 
-  // Sets the `progress_` of the item, returning `true` if a change occurred or
-  // `false` to indicate no-op.
+  // Sets the `progress_` of the item, returning the previous value if a change
+  // occurred or `std::nullopt` to indicate no-op.
   // NOTE: Progress can only be updated for in progress items.
-  bool SetProgress(const HoldingSpaceProgress& progress);
+  std::optional<HoldingSpaceProgress> SetProgress(
+      const HoldingSpaceProgress& progress);
 
   // Invalidates the current holding space image, so fresh image representations
   // are loaded when the image is next needed.

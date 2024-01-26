@@ -40,8 +40,9 @@ class PinnedTabServiceTest : public BrowserWithTestWindowTest {
   PinnedTabServiceTest& operator=(const PinnedTabServiceTest&) = delete;
 
  protected:
-  TestingProfile* CreateProfile() override {
-    TestingProfile* profile = BrowserWithTestWindowTest::CreateProfile();
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    TestingProfile* profile =
+        BrowserWithTestWindowTest::CreateProfile(profile_name);
     pinned_tab_service_ = BuildForProfile(profile);
     return profile;
   }

@@ -209,7 +209,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   if (!resource_provider)
     return nullptr;
 
-  resource_provider->Canvas()->scale(device_scale_factor, device_scale_factor);
+  resource_provider->Canvas().scale(device_scale_factor, device_scale_factor);
 
   const float kDragLabelRadius = 5;
 
@@ -220,7 +220,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   SkRRect rrect;
   rrect.setRectXY(SkRect::MakeWH(image_size.width(), image_size.height()),
                   kDragLabelRadius, kDragLabelRadius);
-  resource_provider->Canvas()->drawRRect(rrect, background_paint);
+  resource_provider->Canvas().drawRRect(rrect, background_paint);
 
   // Draw the text
   cc::PaintFlags text_paint;
@@ -234,7 +234,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
         image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
-    url_font.DrawText(resource_provider->Canvas(), TextRunPaintInfo(text_run),
+    url_font.DrawText(&resource_provider->Canvas(), TextRunPaintInfo(text_run),
                       text_pos, device_scale_factor, text_paint);
   }
 
@@ -253,7 +253,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     int available_width = image_size.width() - kDragLabelBorderX * 2;
     text_pos.set_x(available_width - ceilf(text_width));
   }
-  label_font.DrawBidiText(resource_provider->Canvas(),
+  label_font.DrawBidiText(&resource_provider->Canvas(),
                           TextRunPaintInfo(text_run), gfx::PointF(text_pos),
                           Font::kDoNotPaintIfFontNotReady, text_paint);
 

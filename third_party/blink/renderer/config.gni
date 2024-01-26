@@ -47,7 +47,7 @@ declare_args() {
 
   # TODO(https://crbug.com/1407201): temporarily disabled on platforms that
   # are concerned about binary size. Figure out way to use everywhere.
-  use_inner_html_parser_fast_path = !is_fuchsia
+  use_inner_html_parser_fast_path = true
 }
 
 # feature_defines_list ---------------------------------------------------------

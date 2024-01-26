@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(
       SearchPrefetchServiceFactory::GetForProfile(Profile::FromBrowserContext(
           GetActiveWebContents()->GetBrowserContext()));
   ASSERT_NE(search_prefetch_service, nullptr);
-  absl::optional<SearchPrefetchStatus> prefetch_status =
+  std::optional<SearchPrefetchStatus> prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           canonical_search_url);
   ASSERT_TRUE(prefetch_status.has_value());
@@ -1222,7 +1222,7 @@ class PrerenderOmniboxReferrerChainUIBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  absl::optional<size_t> FindNavigationEventIndex(
+  std::optional<size_t> FindNavigationEventIndex(
       const GURL& target_url,
       content::GlobalRenderFrameHostId outermost_main_frame_id) {
     return observer_manager_->navigation_event_list()->FindNavigationEvent(

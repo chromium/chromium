@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
-import {LayoutOptions, ViewportRect} from './viewport.js';
+import type {LayoutOptions, ViewportRect} from './viewport.js';
 
 export interface DocumentDimensionsMessageData {
   type: string;

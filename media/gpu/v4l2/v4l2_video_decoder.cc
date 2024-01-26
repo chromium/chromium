@@ -477,7 +477,8 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
              << GetProfileName(profile_)
              << " and fourcc: " << FourccToString(input_format_fourcc_);
     backend_ = std::make_unique<V4L2StatelessVideoDecoderBackend>(
-        this, device_, profile_, color_space_, decoder_task_runner_);
+        this, device_, profile_, color_space_, decoder_task_runner_,
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
   }
 
   if (!backend_->Initialize()) {

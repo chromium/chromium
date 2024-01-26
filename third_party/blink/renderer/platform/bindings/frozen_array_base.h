@@ -26,11 +26,11 @@ class PLATFORM_EXPORT FrozenArrayBase : public ScriptWrappable {
  public:
   ~FrozenArrayBase() override = default;
 
-  v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state) const;
-  v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state);
+  v8::Local<v8::Value> ToV8(ScriptState* script_state) const;
+  v8::Local<v8::Value> ToV8(ScriptState* script_state);
 
   // ScriptWrappable overrides:
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState* script_state) override;
+  v8::Local<v8::Value> Wrap(ScriptState* script_state) override;
   [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
       const WrapperTypeInfo* wrapper_type_info,
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT FrozenArrayBase : public ScriptWrappable {
   // `FrozenArray<T>` overrides `MakeV8ArrayToBeFrozen` and implements the
   // type-T-dependent part of the wrapper creation (which doesn't include
   // "freeze").
-  virtual v8::MaybeLocal<v8::Value> MakeV8ArrayToBeFrozen(
+  virtual v8::Local<v8::Value> MakeV8ArrayToBeFrozen(
       ScriptState* script_state) const = 0;
 };
 

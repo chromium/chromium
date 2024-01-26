@@ -34,6 +34,8 @@ namespace v2 {{
 HEADER_PROJECT_TEMPLATE = """\
 namespace {project.namespace} {{
 
+{enum_code} \
+
 {event_code}\
 }}  // namespace {project.namespace}
 

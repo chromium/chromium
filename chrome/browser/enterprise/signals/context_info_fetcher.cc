@@ -55,12 +55,12 @@ namespace enterprise_signals {
 
 namespace {
 
-absl::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
+std::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactory::GetForProfile(profile);
   if (profile_id_service)
     return profile_id_service->GetProfileId();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -318,7 +318,7 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
 #if BUILDFLAG(IS_POSIX)
   std::unique_ptr<net::ScopedResState> res = net::ResolvReader().GetResState();
   if (res) {
-    absl::optional<std::vector<net::IPEndPoint>> nameservers =
+    std::optional<std::vector<net::IPEndPoint>> nameservers =
         net::GetNameservers(res->state());
     if (nameservers) {
       // If any name server is 0.0.0.0, assume the configuration is invalid.
@@ -331,8 +331,8 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
     }
   }
 #elif BUILDFLAG(IS_WIN)
-  absl::optional<std::vector<net::IPEndPoint>> nameservers;
-  absl::optional<net::WinDnsSystemSettings> settings =
+  std::optional<std::vector<net::IPEndPoint>> nameservers;
+  std::optional<net::WinDnsSystemSettings> settings =
       net::ReadWinSystemDnsSettings();
   if (settings.has_value()) {
     nameservers = settings->GetAllNameservers();

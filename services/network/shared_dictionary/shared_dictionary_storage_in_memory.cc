@@ -4,7 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 
-#include "base/containers/cxx20_erase_map.h"
+#include <map>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
@@ -68,14 +69,14 @@ void SharedDictionaryStorageInMemory::ClearData(
     base::Time end_time,
     base::RepeatingCallback<bool(const GURL&)> url_matcher) {
   for (auto& it : dictionary_info_map_) {
-    base::EraseIf(it.second, [start_time, end_time, url_matcher](auto& it2) {
+    std::erase_if(it.second, [start_time, end_time, url_matcher](auto& it2) {
       const DictionaryInfo& dict = it2.second;
       return (dict.response_time() >= start_time) &&
              (dict.response_time() < end_time) &&
              (!url_matcher || url_matcher.Run(dict.url().GetWithEmptyPath()));
     });
   }
-  base::EraseIf(dictionary_info_map_,
+  std::erase_if(dictionary_info_map_,
                 [](auto& it) { return it.second.empty(); });
 }
 

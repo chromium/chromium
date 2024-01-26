@@ -167,7 +167,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                             /* singleTabCardClickedCallback= */ null,
                             /* snapshotParentViewRunnable= */ null,
                             mTabContentManager,
-                            null);
+                            /* uiConfig= */ null,
+                            /* moduleDelegate= */ null);
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {

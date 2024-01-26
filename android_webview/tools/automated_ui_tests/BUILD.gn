@@ -5,8 +5,9 @@
 import("//build/config/android/rules.gni")
 import("//testing/test.gni")
 
+testonly = true
+
 group("webview_ui_test_app") {
-  testonly = true
   deps = [
     ":webview_ui_test_app_apk",
     ":webview_ui_test_app_test_apk",

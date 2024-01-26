@@ -44,7 +44,6 @@ class IsolatedWebAppInstallerView : public views::View {
   class Delegate {
    public:
     virtual void OnSettingsLinkClicked() = 0;
-    virtual void OnManageProfilesLinkClicked() = 0;
     virtual void OnChildDialogCanceled() = 0;
     virtual void OnChildDialogAccepted() = 0;
   };
@@ -73,7 +72,7 @@ class IsolatedWebAppInstallerView : public views::View {
       const SignedWebBundleMetadata& bundle_metadata) = 0;
 
   virtual void ShowDialog(
-      const IsolatedWebAppInstallerModel::DialogContent& dialog_content) = 0;
+      const IsolatedWebAppInstallerModel::Dialog& dialog) = 0;
 };
 
 }  // namespace web_app

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/headless/headless_mode_browsertest.h"
-
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/headless/headless_mode_browsertest.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
 #include "components/headless/test/bitmap_utils.h"
@@ -34,7 +34,6 @@
 #include "pdf/pdf.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -66,11 +65,13 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   }
 
  protected:
+  virtual std::string GetTargetPage() { return "/hello.html"; }
+
   GURL GetTargetUrl(const std::string& url) {
     return embedded_test_server()->GetURL(url);
   }
 
-  absl::optional<HeadlessCommandHandler::Result> ProcessCommands() {
+  std::optional<HeadlessCommandHandler::Result> ProcessCommands() {
     if (!test_complete_) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
@@ -91,8 +92,19 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool test_complete_ = false;
-  absl::optional<HeadlessCommandHandler::Result> result_;
+  std::optional<HeadlessCommandHandler::Result> result_;
 };
+
+#define HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(                \
+    test_fixture, test_name, target_url)                                   \
+  class HeadlessModeCommandBrowserTest_##test_name : public test_fixture { \
+   public:                                                                 \
+    HeadlessModeCommandBrowserTest_##test_name() = default;                \
+    std::string GetTargetPage() override {                                 \
+      return target_url;                                                   \
+    }                                                                      \
+  };                                                                       \
+  IN_PROC_BROWSER_TEST_F(HeadlessModeCommandBrowserTest_##test_name, test_name)
 
 class HeadlessModeCommandBrowserTestWithTempDir
     : public HeadlessModeCommandBrowserTest {
@@ -132,8 +144,6 @@ class HeadlessModeDumpDomCommandBrowserTest
 
     capture_stdout_.StartCapture();
   }
-
-  virtual std::string GetTargetPage() { return "/hello.html"; }
 
  protected:
   CaptureStdOut capture_stdout_;
@@ -287,7 +297,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     HeadlessDumpDomWithSubResourceTimeout) {
-  absl::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
+  std::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
@@ -307,6 +317,16 @@ IN_PROC_BROWSER_TEST_P(
                     "<html><head></head><body><divid=\"thediv\">REPLACED</"
                     "div><scriptsrc=\"./script.js\"></script></body></html>"));
   }
+}
+HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
+    HeadlessModeDumpDomCommandBrowserTest,
+    DumpDomWithBeforeUnloadPreventDefault,
+    "/before_unload_prevent_default.html") {
+  // Make sure that 'beforeunload' that prevents default action does not stall
+  // the command processing. The "Leave site" popup should not appear because
+  // command target was not user activated.
+  EXPECT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 }
 
 // Screenshot command tests -------------------------------------------

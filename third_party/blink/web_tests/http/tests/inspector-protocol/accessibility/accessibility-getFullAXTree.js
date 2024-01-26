@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div>Some text in a div, also a <a href='https://www.example.com'>link</a></div>
     <button>Hello Button</button>

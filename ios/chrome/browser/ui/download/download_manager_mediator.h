@@ -67,6 +67,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Converts web::DownloadTask::State to DownloadManagerState.
   DownloadManagerState GetDownloadManagerState() const;
 
+  // Returns whether Drive should be presented as a destination for downloads.
+  bool IsSaveToDriveAvailable() const;
+
  private:
   // Updates consumer from web::DownloadTask.
   void UpdateConsumer();
@@ -75,8 +78,14 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
                                        bool file_exists);
 
+  // Removes the downloaded file if it exists.
+  void RemoveIfFileExists(base::FilePath task_path, bool file_exists);
+
   // Checks if the move has been completed.
   void MoveComplete(bool move_completed);
+
+  // Checks if the remove has been completed.
+  void RemoveComplete(bool remove_completed);
 
   // Converts DownloadTask progress [0;100] to float progress [0.0f;1.0f].
   float GetDownloadManagerProgress() const;

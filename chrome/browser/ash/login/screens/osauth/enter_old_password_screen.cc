@@ -89,7 +89,7 @@ void EnterOldPasswordScreen::OnPasswordAuthentication(
   if (error.has_value()) {
     context()->user_context = std::move(user_context);
     if (cryptohome::ErrorMatches(
-            error->get_cryptohome_code(),
+            error->get_cryptohome_error(),
             user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
       view_->ShowWrongPasswordError();
       return;

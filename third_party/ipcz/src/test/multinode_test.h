@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/ref_counted.h"
 
 namespace ipcz::test {

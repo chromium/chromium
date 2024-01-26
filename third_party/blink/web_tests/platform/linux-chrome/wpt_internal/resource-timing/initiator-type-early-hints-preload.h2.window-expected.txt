@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Ensure initiatorType is set to 'early-hints'
-  internals is not defined
-Harness: the test ran to completion.

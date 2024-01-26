@@ -25,6 +25,7 @@ export class AppLanguageSelectionItemElement extends PolymerElement {
 
   static get properties() {
     return {
+      index: Number,
       item: Object,
       selected: {
         type: Boolean,
@@ -33,6 +34,7 @@ export class AppLanguageSelectionItemElement extends PolymerElement {
     };
   }
 
+  index: number;
   item: Locale;
   selected: boolean;
 
@@ -48,6 +50,10 @@ export class AppLanguageSelectionItemElement extends PolymerElement {
       name += ' - ' + this.item.nativeDisplayName;
     }
     return name;
+  }
+
+  private getAriaSelected_(): string {
+    return this.selected ? 'true' : 'false';
   }
 }
 

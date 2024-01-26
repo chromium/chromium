@@ -12,7 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
+import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export class TabSearchAppElement extends PolymerElement {
   static get is() {

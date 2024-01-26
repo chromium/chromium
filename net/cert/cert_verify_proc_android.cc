@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -13,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/android/network_library.h"
@@ -292,9 +292,9 @@ bool VerifyFromAndroidTrustManager(
 
   // Save the verified chain.
   if (!verified_chain.empty()) {
-    std::vector<base::StringPiece> verified_chain_pieces(verified_chain.size());
+    std::vector<std::string_view> verified_chain_pieces(verified_chain.size());
     for (size_t i = 0; i < verified_chain.size(); i++) {
-      verified_chain_pieces[i] = base::StringPiece(verified_chain[i]);
+      verified_chain_pieces[i] = std::string_view(verified_chain[i]);
     }
     scoped_refptr<X509Certificate> verified_cert =
         X509Certificate::CreateFromDERCertChain(verified_chain_pieces);
@@ -308,7 +308,7 @@ bool VerifyFromAndroidTrustManager(
   // roots. Walk from the end of the chain (root) to leaf, to optimize for
   // known root checks.
   for (const auto& cert : base::Reversed(verified_chain)) {
-    base::StringPiece spki_bytes;
+    std::string_view spki_bytes;
     if (!asn1::ExtractSPKIFromDERCert(cert, &spki_bytes)) {
       verify_result->cert_status |= CERT_STATUS_INVALID;
       continue;

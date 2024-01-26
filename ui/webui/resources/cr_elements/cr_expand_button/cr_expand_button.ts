@@ -45,7 +45,6 @@ export class CrExpandButtonElement extends PolymerElement {
         type: Boolean,
         value: false,
         notify: true,
-        observer: 'onExpandedChange_',
       },
 
       /**
@@ -71,14 +70,14 @@ export class CrExpandButtonElement extends PolymerElement {
       expandIcon: {
         type: String,
         value: 'cr:expand-more',
-        observer: 'onIconChange_',
       },
 
       collapseIcon: {
         type: String,
         value: 'cr:expand-less',
-        observer: 'onIconChange_',
       },
+
+      icon_: String,
 
       expandTitle: String,
       collapseTitle: String,
@@ -97,10 +96,14 @@ export class CrExpandButtonElement extends PolymerElement {
   collapseIcon: string;
   expandTitle: string;
   collapseTitle: string;
+  private icon_: string;
   private tooltipText_: string;
 
   static get observers() {
-    return ['updateAriaExpanded_(disabled, expanded)'];
+    return [
+      'updateAriaExpanded_(disabled, expanded)',
+      'updateIcon_(collapseIcon, expandIcon, expanded)',
+    ];
   }
 
   override ready() {
@@ -130,16 +133,8 @@ export class CrExpandButtonElement extends PolymerElement {
     }
   }
 
-  private onExpandedChange_() {
-    this.updateIcon_();
-  }
-
-  private onIconChange_() {
-    this.updateIcon_();
-  }
-
   private updateIcon_() {
-    this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
+    this.icon_ = this.expanded ? this.collapseIcon : this.expandIcon;
   }
 
   private toggleExpand_(event: Event) {

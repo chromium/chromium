@@ -228,7 +228,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella dactilar</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> no admite el valor de resolución <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz), por lo que se cambió a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" /> se restablecerá la configuración anterior.</translation>
 <translation id="1908992311423394684">Nueva instalación</translation>
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1918022425394817322">Se ajustó la cámara a la esquina superior derecha</translation>
@@ -267,7 +266,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2064048859448024834">Se muestra la vista previa de la cámara</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2075520525463668108">Activar o desactivar <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>
-<translation id="2078034614700056995">Para cambiar al siguiente escritorio, desliza cuatro dedos hacia la derecha.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" />:</translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
@@ -283,7 +281,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2149229036084364364">Ir a la pista anterior</translation>
 <translation id="2152895518047545149">Parece que no tienes nada pendiente. ¡Buen trabajo!</translation>
 <translation id="2161132820593978283">Prueba el encuadre de la cámara para estar en el centro de la pantalla en las videollamadas. Actívalo en la Configuración rápida.</translation>
-<translation id="2170530631236737939">Para salir de la Vista general, desliza tres dedos hacia abajo.</translation>
 <translation id="2185166372312820725">Ir a la pestaña anterior</translation>
 <translation id="2185444992308415167">Ir de la pestaña 1 a la 8, una por una</translation>
 <translation id="2198625180564913276">Se está agregando un perfil. Es posible que este proceso demore unos minutos.</translation>
@@ -412,10 +409,12 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
+<translation id="2744221223678373668">Compartidas</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Borrar"</translation>
 <translation id="2750941250130734256">Se desancló la ventana activa.</translation>
 <translation id="2761723519669354964">Abrir el elemento destacado de la barra</translation>
+<translation id="2762000892062317888">recién</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + búsqueda + s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
@@ -624,6 +623,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3580650856351781466">Descargando archivos de voz</translation>
 <translation id="3585296979871889131">Ver las fotos, el contenido multimedia, las notificaciones y las apps recientes de tu teléfono</translation>
+<translation id="3590441166907930941">Botón lateral</translation>
 <translation id="3593039967545720377">Presiona <ph name="SHORTCUT_KEY_NAME" /> + V para acceder al historial del portapapeles. Copia un elemento para comenzar.</translation>
 <translation id="3593646411856133110">Desliza hacia arriba y mantén presionado para ver las apps abiertas</translation>
 <translation id="3595596368722241419">Batería completa</translation>
@@ -733,6 +733,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
 <translation id="4011112806063830608">La función No interrumpir está activada.</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
@@ -1036,6 +1037,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5163434717504750796">Estado de la batería <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Conteo de ciclos <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Guardar escritorio como plantilla</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
+<translation id="5168753792967365150">Editar en Google Tasks</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
 <translation id="5187627942836026988">Mostrar detalles del hotspot. El administrador bloqueó el hotspot.</translation>
@@ -1281,7 +1283,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6074087755403037157">Canal beta</translation>
 <translation id="6093867385179428431">El administrador lo inhabilitó</translation>
-<translation id="6095008505822982596">Velocidad de voz</translation>
+<translation id="6095008505822982596">Velocidad de habla</translation>
 <translation id="6095425951508823973">Agregar conexión con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
 <translation id="6103838137565245112">sistema</translation>
@@ -1305,6 +1307,8 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6168622430237609329">Tus apps instaladas</translation>
 <translation id="6173151025443907148">No se admite el acceso a un segundo usuario si Lacros está habilitado. En su lugar, usa un segundo perfil de navegador en Lacros, o inhabilita Lacros y vuelve a intentarlo.</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
+<translation id="6180193585172850042">Botón Atrás</translation>
+<translation id="6180651297859206670">Botón Adelante</translation>
 <translation id="6182592640011875895">Abrir el escritorio</translation>
 <translation id="6185696379715117369">Retroceder página</translation>
 <translation id="619335566042889110">Cargar por completo ahora</translation>
@@ -1694,7 +1698,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7850320739366109486">No interrumpir</translation>
 <translation id="7851039877802112575">Mover el foco a ventanas emergentes y diálogos</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Para ingresar a la Vista general, desliza tres dedos hacia arriba.</translation>
 <translation id="7862292329216937261">Para usar el dispositivo como invitado, tienes que salir y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7872786842639831132">No</translation>
@@ -1805,7 +1808,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
-<translation id="8284362522226889623">Para cambiar al escritorio anterior, desliza cuatro dedos hacia la izquierda.</translation>
 <translation id="828708037801473432">No</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8308637677604853869">Menú anterior</translation>

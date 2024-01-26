@@ -39,16 +39,16 @@ namespace {
 constexpr std::wstring_view kUninstallSurveyUrl(
     L"https://support.google.com/chrome?p=chrome_uninstall_survey");
 
-bool NavigateToUrlWithEdge(const std::wstring& url) {
-  std::wstring protocol_url = L"microsoft-edge:" + url;
+// Launches the url directly with the user's default handler for |url|.
+bool NavigateToUrlWithHttps(const std::wstring& url) {
   SHELLEXECUTEINFO info = {sizeof(info)};
   info.fMask = SEE_MASK_NOASYNC;
   info.lpVerb = L"open";
-  info.lpFile = protocol_url.c_str();
+  info.lpFile = url.c_str();
   info.nShow = SW_SHOWNORMAL;
   if (::ShellExecuteEx(&info))
     return true;
-  PLOG(ERROR) << "Failed to launch Edge for uninstall survey";
+  PLOG(ERROR) << "Failed to launch default browser for uninstall survey";
   return false;
 }
 
@@ -83,7 +83,7 @@ bool IsMetricsEnabled(const base::FilePath& file_path) {
   if (!root || !root->is_dict())
     return false;
 
-  const absl::optional<bool> value = root->GetDict().FindBoolByDottedPath(
+  const std::optional<bool> value = root->GetDict().FindBoolByDottedPath(
       metrics::prefs::kMetricsReportingEnabled);
 
   return value.value_or(false);
@@ -205,7 +205,7 @@ void DoPostUninstallOperations(const base::Version& version,
   }
 
   if (os_info->version() < base::win::Version::WIN10 ||
-      !NavigateToUrlWithEdge(url)) {
+      !NavigateToUrlWithHttps(url)) {
     NavigateToUrlWithIExplore(url);
   }
 }

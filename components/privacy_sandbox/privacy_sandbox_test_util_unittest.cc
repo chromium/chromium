@@ -394,9 +394,10 @@ TEST_F(PrivacySandboxTestUtilTest, OutputKey_IsSharedStorageAllowed) {
       url::Origin::Create(GURL("https://storage.com"));
   url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://top-frame.com"));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_settings(),
-      IsSharedStorageAllowed(kTopFrameOrigin, kAccessingOrigin, nullptr))
+  EXPECT_CALL(*mock_privacy_sandbox_settings(),
+              IsSharedStorageAllowed(kTopFrameOrigin, kAccessingOrigin,
+                                     /*out_debug_message=*/nullptr,
+                                     /*console_frame=*/nullptr))
       .WillOnce(testing::Return(true));
 
   CheckOutput({{InputKey::kAccessingOrigin, kAccessingOrigin},
@@ -409,9 +410,9 @@ TEST_F(PrivacySandboxTestUtilTest, OutputKey_IsSharedStorageSelectURLAllowed) {
       url::Origin::Create(GURL("https://storage.com"));
   url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://top-frame.com"));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_settings(),
-      IsSharedStorageSelectURLAllowed(kTopFrameOrigin, kAccessingOrigin))
+  EXPECT_CALL(*mock_privacy_sandbox_settings(),
+              IsSharedStorageSelectURLAllowed(kTopFrameOrigin, kAccessingOrigin,
+                                              /*out_debug_message=*/nullptr))
       .WillOnce(testing::Return(true));
 
   CheckOutput({{InputKey::kAccessingOrigin, kAccessingOrigin},
@@ -464,6 +465,55 @@ TEST_F(PrivacySandboxTestUtilTest, OutputKey_TopicsConsentStringIdentifiers) {
 
   CheckOutput({}, {OutputKey::kTopicsConsentStringIdentifiers,
                    std::vector<int>{identifier}});
+}
+
+TEST_F(PrivacySandboxTestUtilTest,
+       OutputKey_IsSharedStorageAllowedDebugMessage) {
+  url::Origin kAccessingOrigin =
+      url::Origin::Create(GURL("https://storage.com"));
+  url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://top-frame.com"));
+  std::string actual_out_debug_message;
+  EXPECT_CALL(
+      *mock_privacy_sandbox_settings(),
+      IsSharedStorageAllowed(kTopFrameOrigin, kAccessingOrigin,
+                             /*out_debug_message=*/&actual_out_debug_message,
+                             /*console_frame=*/nullptr))
+      .WillOnce(testing::Return(true));
+
+  // The expected debug message is a non-null empty string here because we using
+  // a mock method.
+  std::string expected_out_debug_message;
+  CheckOutput(
+      {{InputKey::kAccessingOrigin, kAccessingOrigin},
+       {InputKey::kTopFrameOrigin, kTopFrameOrigin},
+       {InputKey::kOutSharedStorageDebugMessage, &actual_out_debug_message}},
+      {OutputKey::kIsSharedStorageAllowedDebugMessage,
+       &expected_out_debug_message});
+}
+
+TEST_F(PrivacySandboxTestUtilTest,
+       OutputKey_IsSharedStorageSelectURLAllowedDebugMessage) {
+  url::Origin kAccessingOrigin =
+      url::Origin::Create(GURL("https://storage.com"));
+  url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://top-frame.com"));
+  std::string actual_out_debug_message;
+  EXPECT_CALL(*mock_privacy_sandbox_settings(),
+              IsSharedStorageSelectURLAllowed(
+                  kTopFrameOrigin, kAccessingOrigin,
+                  /*out_debug_message=*/&actual_out_debug_message))
+      .WillOnce(testing::Return(true));
+
+  // The expected debug message is a non-null empty string here because we using
+  // a mock method.
+  std::string expected_out_debug_message;
+  CheckOutput({{InputKey::kAccessingOrigin, kAccessingOrigin},
+               {InputKey::kTopFrameOrigin, kTopFrameOrigin},
+               {InputKey::kOutSharedStorageSelectURLDebugMessage,
+                &actual_out_debug_message}},
+              {OutputKey::kIsSharedStorageSelectURLAllowedDebugMessage,
+               &expected_out_debug_message});
 }
 
 }  // namespace privacy_sandbox_test_util

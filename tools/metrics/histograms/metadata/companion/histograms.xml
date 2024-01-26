@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.FullLoad.Latency" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.HasNavigatedToExpsSuccessPagePref.OnChanged"
-    enum="Boolean" expires_after="2024-05-12">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.NavigationLoad.Latency" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.SidePanel.ShowUiSuccess" enum="BooleanSuccess"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mercerd@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

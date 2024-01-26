@@ -80,6 +80,15 @@ struct RawPtrCountingImplForTest : public base::internal::RawPtrNoOpImpl {
     return SuperImpl::UnsafelyUnwrapPtrForDuplication(wrapped_ptr);
   }
 
+  template <typename T>
+  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {
+    SuperImpl::Trace(owner_id, wrapped_ptr);
+  }
+
+  static constexpr void Untrace(uint64_t owner_id) {
+    SuperImpl::Untrace(owner_id);
+  }
+
   static void ClearCounters() {
     wrap_raw_ptr_cnt = 0;
     release_wrapped_ptr_cnt = 0;

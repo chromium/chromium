@@ -194,10 +194,9 @@ class OfflineContentProviderObserver final
   }
 
   void OnItemRemoved(const ContentId& id) override {}
-  void OnItemUpdated(
-      const OfflineItem& item,
-      const absl::optional<offline_items_collection::UpdateDelta>& update_delta)
-      override {
+  void OnItemUpdated(const OfflineItem& item,
+                     const std::optional<offline_items_collection::UpdateDelta>&
+                         update_delta) override {
     if (item.state != offline_items_collection::OfflineItemState::IN_PROGRESS &&
         item.state != offline_items_collection::OfflineItemState::PENDING &&
         item.state != offline_items_collection::OfflineItemState::PAUSED &&
@@ -229,9 +228,7 @@ class OfflineContentProviderObserver final
   const OfflineItem& latest_item() const { return latest_item_; }
 
  private:
-  void Resume(const ContentId& id) {
-    delegate_->ResumeDownload(id, false /* has_user_gesture */);
-  }
+  void Resume(const ContentId& id) { delegate_->ResumeDownload(id); }
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;

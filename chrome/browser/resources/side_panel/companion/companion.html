@@ -35,15 +35,10 @@
       <input type="hidden" id="image-downscaled-dimensions"
           name="processed_image_dimensions">
     </form>
-    <!--
-      Requires display-capture permission which is limited to the origin
-      defined in the WebUI in order to request screenshot of the side
-      panel tab.
-    -->
     <iframe name="companion"
             id="content"
             allow="cross-origin-isolated;
-                   display-capture $i18n{companion_origin};
+                   display-capture;
                    geolocation;
                    microphone;"
             frameBorder="0"></iframe>

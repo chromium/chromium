@@ -147,7 +147,6 @@ AutofillProfile ConstructCompleteProfile() {
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
 
-  profile.SetRawInfo(NAME_HONORIFIC_PREFIX, u"");
   profile.SetRawInfo(NAME_FULL, u"John K. Doe, Jr.");
   profile.SetRawInfo(NAME_FIRST, u"John");
   profile.SetRawInfo(NAME_MIDDLE, u"K.");
@@ -186,7 +185,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_use_count(7);
   specifics.set_use_date(1423182152);
 
-  specifics.add_name_honorific("");
   specifics.add_name_first("John");
   specifics.add_name_middle("K.");
   specifics.add_name_last("Doe");
@@ -195,9 +193,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.add_name_last_conjunction("o");
   specifics.add_name_last_second("e");
 
-  specifics.add_name_honorific_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.add_name_first_status(
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);

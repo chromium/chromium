@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -54,6 +53,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -73,8 +74,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -176,9 +175,9 @@ public class InstantStartTabSwitcherTest {
 
         onViewWaiting(
                 allOf(
-                        withParent(
+                        isDescendantOfA(
                                 withId(
-                                        TabUiTestHelper.getTabSwitcherParentId(
+                                        TabUiTestHelper.getTabSwitcherAncestorId(
                                                 mActivityTestRule.getActivity()))),
                         withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)));
         Assert.assertFalse(cta.findViewById(org.chromium.chrome.test.R.id.url_bar).isFocused());
@@ -191,8 +190,9 @@ public class InstantStartTabSwitcherTest {
         INSTANT_START_TEST_BASE_PARAMS,
         FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH
     })
-    // TODO(https://crbug.com/1500080): Fix this test with "start surface refactor" enabled.
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
+    // TODO(https://crbug.com/1500080): Fix this test with "start surface refactor" enabled. Hub
+    // is disabled because it requires "start surface refactor" to be enabled.
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.ANDROID_HUB})
     public void testScrollToSelectedTab() throws Exception {
         StartSurfaceTestUtils.createTabStatesAndMetadataFile(
                 new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
@@ -205,12 +205,12 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
 
-        int tabSwitcherParentViewId = TabUiTestHelper.getTabSwitcherParentId(cta);
+        int tabSwitcherAncestorId = TabUiTestHelper.getTabSwitcherAncestorId(cta);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         onView(
                         allOf(
                                 withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                                withParent(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
@@ -233,12 +233,12 @@ public class InstantStartTabSwitcherTest {
         onView(
                         allOf(
                                 withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                                withParent(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .perform(swipeUp());
         onView(
                         allOf(
                                 withTagValue(is(SHADOW_VIEW_TAG)),
-                                isDescendantOfA(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .check(matches(isDisplayed()));
     }
 

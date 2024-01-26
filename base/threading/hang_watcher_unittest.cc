@@ -76,7 +76,8 @@ class HangWatcherEnabledInZygoteChildTest
                                                 disabled_features);
     HangWatcher::InitializeOnMainThread(
         HangWatcher::ProcessType::kUtilityProcess,
-        /*is_zygote_child=*/std::get<1>(GetParam()));
+        /*is_zygote_child=*/std::get<1>(GetParam()),
+        /*emit_crashes=*/true);
   }
 
   void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
@@ -164,7 +165,8 @@ class HangWatcherTest : public testing::Test {
   HangWatcherTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false);
+        HangWatcher::ProcessType::kBrowserProcess, false,
+        /*emit_crashes=*/true);
 
     hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
@@ -563,7 +565,8 @@ class HangWatcherSnapshotTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false);
+        HangWatcher::ProcessType::kBrowserProcess, false,
+        /*emit_crashes=*/true);
 
     // The monitoring loop behavior is not verified in this test so we want to
     // trigger monitoring manually.
@@ -825,7 +828,8 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
  public:
   HangWatcherPeriodicMonitoringTest() {
     hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false);
+        HangWatcher::ProcessType::kBrowserProcess, false,
+        /*emit_crashes=*/true);
 
     hang_watcher_.SetMonitoringPeriodForTesting(kMonitoringPeriod);
     hang_watcher_.SetOnHangClosureForTesting(base::BindRepeating(
@@ -982,7 +986,8 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
   WatchHangsInScopeBlockingTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false);
+        HangWatcher::ProcessType::kBrowserProcess, false,
+        /*emit_crashes=*/true);
 
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();

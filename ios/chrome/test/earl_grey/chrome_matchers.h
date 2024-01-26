@@ -559,6 +559,9 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton();
 // be used to validate that the tab grid normal mode is active.
 id<GREYMatcher> TabGridNormalModePageControl();
 
+// Returns a matcher for the Inactive Tabs button of the tab grid.
+id<GREYMatcher> TabGridInactiveTabsButton();
+
 // Returns a matcher for the tab grid background.
 id<GREYMatcher> TabGridBackground();
 

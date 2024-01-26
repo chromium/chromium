@@ -39,7 +39,7 @@ Status FedCmTracker::OnEvent(DevToolsClient* client,
   const std::string* str = params.FindString("title");
   last_title_ = str ? *str : "";
   str = params.FindString("subtitle");
-  last_subtitle_ = str ? absl::make_optional(*str) : absl::nullopt;
+  last_subtitle_ = str ? std::make_optional(*str) : std::nullopt;
   str = params.FindString("dialogType");
   last_dialog_type_ = str ? *str : "";
   const base::Value::List* accounts = params.FindList("accounts");

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1066101356081285416">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。為提供此功能，系統會將包裹追蹤編號和網站名稱傳送給 Google，為所有人改善購物功能。你可隨時在「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」進行更新。</translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1105362920864247682">清除 Chrome 中的瀏覽資料。</translation>
 <translation id="1113057722807951993">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">同步處理 Chromium 資料</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">將輸入的網址新增至 Chrome 書籤。</translation>
+<translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="1843217788865538014">當您輕按訊息、文件和其他應用程式中的連結時，自動使用 Chrome 開啟網頁。</translation>
 <translation id="1910975740091000991">Chrome iOS 版</translation>
 <translation id="1917964099031477364">此帳戶和所有未儲存的資料將從 Chrome 和此裝置上的其他 Google 應用程式中移除。</translation>
 <translation id="1965935827552890526">請完成您在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
 <translation id="1987779152850321833">完成下列建議動作，充分運用 Chrome 的各項功能。</translation>
-<translation id="2008357574463816229">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2056123005618757196">Google Chrome 比以前更簡便、安全而快速，讓您事半功倍。</translation>
 <translation id="2120238739383482109">開啟 Chrome 書籤。</translation>
 <translation id="2147651015520127414">Chrome 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">將閱讀清單項目新增至 Chrome</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
 <translation id="2767464022270041271">沒有已儲存的密碼。當您儲存密碼時，「Google 密碼管理工具」可檢查您的密碼。</translation>
+<translation id="2789947168960170215">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2868822340714096138">清除 Chrome 中的瀏覽資料</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3577555362230509265">在其他應用程式中使用 Chrome。</translation>
-<translation id="3594076341410558780">隱藏「充分運用 Chrome 的功能」</translation>
 <translation id="364480321352456989">Chrome 版本過舊。</translation>
 <translation id="3646736009628185125">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">這代表 Chrome 每次都會要求取得流動網站。</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">你可前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chrome 資料<ph name="END_LINK" />。
 
 如需其他會運用資料提升 Chrome 體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
-<translation id="687586529977635009">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。系統將與 Google 分享你的資料，以提供此功能，並為所有使用者改善「購物」功能。你可前往「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」中作出變更。</translation>
 <translation id="6916015246697034114">在 Chromium 中使用語音搜尋</translation>
 <translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>

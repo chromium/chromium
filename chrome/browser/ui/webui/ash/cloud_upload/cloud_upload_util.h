@@ -347,6 +347,8 @@ void GetODFSEntryMetadata(
     const base::FilePath& path,
     GetODFSEntryMetadataCallback callback);
 
+bool PathIsOnDriveFS(Profile* profile, const base::FilePath& file_path);
+
 // Get the first task error that is not `base::File::Error::FILE_OK`.
 std::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status);

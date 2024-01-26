@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+// @ts-nocheck
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 // @ts-ignore: error TS2792: Cannot find module

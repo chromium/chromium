@@ -404,6 +404,19 @@ bool FlossDBusClient::ReadDBusParam(
   return struct_reader.ReadDBusParam(reader, vpi);
 }
 
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    FlossAdapterClient::BtAddressType* type) {
+  uint32_t val;
+  bool success;
+
+  success = reader->PopUint32(&val);
+  *type = static_cast<FlossAdapterClient::BtAddressType>(val);
+
+  return success;
+}
+
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const FlossDeviceId& device) {
@@ -546,6 +559,11 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<FlossAdapterClient::BtAddressType> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

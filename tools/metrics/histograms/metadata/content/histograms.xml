@@ -77,6 +77,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
+    enum="Boolean" expires_after="2024-06-20">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>The status of the push notifications client for Content.</summary>
+</histogram>
+
 <histogram name="ContentNotifications.Promo.Prompt.Action"
     enum="ContentNotificationPromptAction" expires_after="2024-06-20">
   <owner>tinazwang@chromium.org</owner>
@@ -282,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2024-05-19">
+    enum="StrongPopupBlockerAction" expires_after="2024-07-21">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -355,13 +362,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.{RegularProfileFiltered}DefaultCookiesSetting"
-    enum="ContentSetting" expires_after="2023-02-26">
+    enum="ContentSetting" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The default cookies setting at profile open.
 
     This histogram is only recorded {RegularProfileFiltered}.
+
+    This histogram was allowed to expire between 2023-02-26 and 2024-01-23.
   </summary>
   <token key="RegularProfileFiltered">
     <variant name="RegularProfile."
@@ -788,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
-    expires_after="2024-01-21">
+    expires_after="2024-05-21">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -799,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
-    enum="Boolean" expires_after="2024-01-21">
+    enum="Boolean" expires_after="2024-05-21">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -811,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
-    expires_after="2024-01-21">
+    expires_after="2024-05-21">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -822,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
-    enum="Boolean" expires_after="2024-01-21">
+    enum="Boolean" expires_after="2024-05-21">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -927,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
-    units="ms" expires_after="2024-05-19">
+    units="ms" expires_after="2024-07-21">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -941,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2024-05-12">
+    enum="FeedLoadStreamStatus" expires_after="2024-07-14">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1075,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1704,7 +1715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Activity.ByProvider"
-    enum="FeedActivityBucket" expires_after="2024-04-28">
+    enum="FeedActivityBucket" expires_after="2024-07-14">
   <owner>guiperez@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

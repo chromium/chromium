@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/rename_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Contains various utility methods for conversions between DownloadItem and
 // OfflineItem.

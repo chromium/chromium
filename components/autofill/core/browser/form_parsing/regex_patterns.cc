@@ -32,13 +32,13 @@ base::span<const MatchPatternRef> GetMatchPatterns(
   CHECK(it != kPatternMap.end());
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   switch (pattern_source) {
-    case PatternSource::kDefault:
-      return it->second[0];
-    case PatternSource::kExperimental:
-      return it->second[1];
-    case PatternSource::kNextGen:
-      return it->second[2];
     case PatternSource::kLegacy:
+      return it->second[0];
+    case PatternSource::kDefault:
+      return it->second[1];
+    case PatternSource::kExperimental:
+      return it->second[2];
+    case PatternSource::kNextGen:
       return it->second[3];
   }
 #else
@@ -91,6 +91,12 @@ MatchingPattern MatchPatternRef::operator*() const {
                              : p.match_field_attributes,
       .form_control_types = p.form_control_types,
   };
+}
+
+bool AreMatchingPatternsEqual(PatternSource a,
+                              PatternSource b,
+                              LanguageCode language_code) {
+  return AreMatchingPatternsEqualImpl(a, b, language_code);
 }
 
 }  // namespace autofill

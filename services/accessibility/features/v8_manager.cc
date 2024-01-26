@@ -4,6 +4,8 @@
 
 #include "services/accessibility/features/v8_manager.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -68,8 +70,17 @@ using v8::ModuleRequest;
 // The index into the global template's internal fields that
 // stores a pointer to this V8Environment. This allows any class with
 // a v8::Context to access this V8Environment.
-
 static const int kV8ContextWrapperIndex = 0;
+
+// Initial size of the module map to store modules.
+static const size_t kModuleMapSize = 10;
+
+// Returns the directory part of `path` and removes the trailing '/'.
+std::string DirName(const std::string& path) {
+  size_t last_slash = path.find_last_of('/');
+  CHECK(last_slash != std::string::npos) << "Path must contain at least one /";
+  return path.substr(0, last_slash);
+}
 
 std::string ToSTLString(v8::Isolate* isolate, Local<v8::String> v8_str) {
   v8::String::Utf8Value utf8(isolate, v8_str);
@@ -86,8 +97,14 @@ MaybeLocal<Module> ResolveModuleCallback(
     Local<v8::Module> referrer) {
   V8Environment* v8_env = V8Environment::GetFromContext(context);
   CHECK(v8_env);
-  return v8_env->GetModuleFromSpecifier(
-      ToSTLString(context->GetIsolate(), specifier));
+
+  v8::Isolate* isolate = context->GetIsolate();
+  std::optional<std::string> referrer_identifier =
+      v8_env->GetIdentifierFromModule(v8::Global<Module>(isolate, referrer));
+  CHECK(referrer_identifier.has_value());
+  std::string normalized_identifier = V8Environment::NormalizeRelativePath(
+      ToSTLString(isolate, specifier), DirName(*referrer_identifier));
+  return v8_env->GetModuleFromIdentifier(normalized_identifier);
 }
 
 }  // namespace
@@ -134,6 +151,8 @@ V8Environment::V8Environment(
     base::WeakPtr<V8Manager> manager)
     : main_runner_(std::move(main_runner)), manager_(std::move(manager)) {
   CreateIsolate();
+  module_to_identifier_map_ = std::make_unique<ModuleToIdentifierMap>(
+      kModuleMapSize, ModuleGlobalHash(isolate_holder_->isolate()));
 }
 
 V8Environment::~V8Environment() {
@@ -144,9 +163,11 @@ V8Environment::~V8Environment() {
   NotifyIsolateWillDestroy();
   isolate_holder_->isolate()->TerminateExecution();
 
-  // Devtools agent and module map must be destroyed before context and isolate.
+  // These maps must be destroyed before context and isolate because they hold
+  // references to global objects.
   devtools_agent_.reset();
-  module_map_.clear();
+  identifier_to_module_map_.clear();
+  module_to_identifier_map_.reset();
 
   context_holder_.reset();
   isolate_holder_.reset();
@@ -246,9 +267,14 @@ void V8Environment::OnFileLoaded(std::string module_identifier,
   }
   num_unloaded_modules_--;
 
-  CHECK(module_map_
-            .insert(std::make_pair(std::move(module_identifier),
+  const std::string module_directory_name = DirName(module_identifier);
+  CHECK(identifier_to_module_map_
+            .insert(std::make_pair(module_identifier,
                                    v8::Global<Module>(GetIsolate(), module)))
+            .second);
+  CHECK(module_to_identifier_map_
+            ->insert(std::make_pair(v8::Global<Module>(GetIsolate(), module),
+                                    module_identifier))
             .second);
 
   Local<v8::FixedArray> module_requests = module->GetModuleRequests();
@@ -258,12 +284,12 @@ void V8Environment::OnFileLoaded(std::string module_identifier,
     Local<v8::String> v8_specifier = module_request->GetSpecifier();
     std::string specifier = ToSTLString(GetIsolate(), v8_specifier);
 
-    // TODO(b:313692879): we need to normalize the specifier here since they can
-    // contain ../ or other types of paths.
-    auto it = module_map_.find(specifier);
-    if (it == module_map_.end()) {
+    std::string normalized_identifier =
+        NormalizeRelativePath(specifier, module_directory_name);
+    auto it = identifier_to_module_map_.find(normalized_identifier);
+    if (it == identifier_to_module_map_.end()) {
       num_unloaded_modules_++;
-      RequestModuleContents(base::FilePath(specifier));
+      RequestModuleContents(base::FilePath(normalized_identifier));
     }
   }
 
@@ -279,8 +305,9 @@ void V8Environment::EvaluateModule() {
   Context::Scope context_scope(context);
   v8::TryCatch trycatch(GetIsolate());
 
-  auto root_module_it = module_map_.find(*root_module_identifier_);
-  CHECK(root_module_it != module_map_.end());
+  auto root_module_it =
+      identifier_to_module_map_.find(*root_module_identifier_);
+  CHECK(root_module_it != identifier_to_module_map_.end());
   Local<Module> root_module = root_module_it->second.Get(GetIsolate());
 
   MaybeLocal<v8::Value> maybe_result;
@@ -331,10 +358,55 @@ void V8Environment::HandleModuleError(const std::string& message) {
   HandleError(message);
 }
 
-MaybeLocal<Module> V8Environment::GetModuleFromSpecifier(
-    const std::string& specifier) {
-  auto it = module_map_.find(specifier);
-  if (it != module_map_.end()) {
+// static
+std::string V8Environment::NormalizeRelativePath(
+    const std::string& relative_path,
+    const std::string& base_dir) {
+  CHECK(!(!relative_path.empty() && relative_path[0] == '/'))
+      << "Relative path can't be an absolute path.";
+  CHECK(!base_dir.empty())
+      << "The base directory to resolve relative path can't be empty.";
+  CHECK(*base_dir.rbegin() != '/')
+      << "The base directory name can't end with a /.";
+  const int base_dir_depth =
+      1 + std::count(base_dir.begin(), base_dir.end(), '/');
+
+  std::string path = base_dir + '/' + relative_path;
+  std::vector<std::string> parts;
+  std::istringstream part_stream(path);
+  std::string part;
+  int relative_path_parents = 0;
+  while (std::getline(part_stream, part, '/')) {
+    if (part == "..") {
+      relative_path_parents++;
+      CHECK(relative_path_parents <= base_dir_depth)
+          << "The relative path can't reference a parent of the base "
+             "directory.";
+      if (!parts.empty()) {
+        parts.pop_back();
+      }
+    } else if (part != ".") {
+      parts.push_back(part);
+    }
+  }
+
+  std::ostringstream os;
+
+  // At least we need the file name and some directory, since `base_dir` can't
+  // be empty.
+  CHECK(parts.size() > 1);
+  std::copy(parts.begin(), parts.end() - 1,
+            std::ostream_iterator<std::string>(os, "/"));
+
+  // Copies the file name potion of the path.
+  os << *parts.rbegin();
+  return os.str();
+}
+
+MaybeLocal<Module> V8Environment::GetModuleFromIdentifier(
+    const std::string& identifier) {
+  auto it = identifier_to_module_map_.find(identifier);
+  if (it != identifier_to_module_map_.end()) {
     return it->second.Get(GetIsolate());
   }
 
@@ -343,6 +415,15 @@ MaybeLocal<Module> V8Environment::GetModuleFromSpecifier(
   // that an error occurred, but allows the `Instantiate` function to finish, at
   // the same time throwing the appropriate js error.
   return MaybeLocal<Module>();
+}
+
+std::optional<std::string> V8Environment::GetIdentifierFromModule(
+    v8::Global<v8::Module> module) {
+  auto identifier_it = module_to_identifier_map_->find(module);
+  if (identifier_it != module_to_identifier_map_->end()) {
+    return identifier_it->second;
+  }
+  return std::nullopt;
 }
 
 v8::Isolate* V8Environment::GetIsolate() const {

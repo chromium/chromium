@@ -82,6 +82,14 @@ void StructuredMetricsRecorder::OnKeyReady() {
   }
 }
 
+void StructuredMetricsRecorder::AddEventsObserver(Observer* watcher) {
+  watchers_.AddObserver(watcher);
+}
+
+void StructuredMetricsRecorder::RemoveEventsObserver(Observer* watcher) {
+  watchers_.RemoveObserver(watcher);
+}
+
 void StructuredMetricsRecorder::ProvideUmaEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
   // no-op
@@ -159,7 +167,6 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
   }
 
   RecordEvent(event);
-
   test_callback_on_record_.Run();
 }
 
@@ -238,9 +245,12 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   LogEventSerializedSizeBytes(event_proto.ByteSizeLong());
 
   Recorder::GetInstance()->OnEventRecorded(&event_proto);
+  NotifyEventRecorded(event_proto);
 
   // Add new event to storage.
   event_storage_->AddEvent(std::move(event_proto));
+
+  test_callback_on_record_.Run();
 }
 
 void StructuredMetricsRecorder::InitializeEventProto(
@@ -327,8 +337,11 @@ void StructuredMetricsRecorder::AddMetricsToProto(
       case Event::MetricType::kDouble:
         metric_proto->set_value_double(value.GetDouble());
         break;
-      // Not supported yet.
+      // Represents an enum.
       case Event::MetricType::kInt:
+        metric_proto->set_value_int64(value.GetInt());
+        break;
+      // Not supported yet.
       case Event::MetricType::kBoolean:
         break;
     }
@@ -339,14 +352,14 @@ void StructuredMetricsRecorder::HashUnhashedEventsAndPersist() {
   if (IsInitialized()) {
     LogNumEventsRecordedBeforeInit(unhashed_events_.size());
     while (!unhashed_events_.empty()) {
-      RecordEvent(unhashed_events_.front());
+      OnEventRecord(unhashed_events_.front());
       unhashed_events_.pop_front();
     }
   }
   if (IsProfileInitialized()) {
     LogNumEventsRecordedBeforeInit(unhashed_profile_events_.size());
     while (!unhashed_profile_events_.empty()) {
-      RecordEvent(unhashed_profile_events_.front());
+      OnEventRecord(unhashed_profile_events_.front());
       unhashed_profile_events_.pop_front();
     }
   }
@@ -446,6 +459,13 @@ bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
 
 bool StructuredMetricsRecorder::CanProvideMetrics() {
   return recording_enabled() && (IsInitialized() || IsProfileInitialized());
+}
+
+void StructuredMetricsRecorder::NotifyEventRecorded(
+    const StructuredEventProto& event) {
+  for (Observer& watcher : watchers_) {
+    watcher.OnEventRecorded(event);
+  }
 }
 
 }  // namespace metrics::structured

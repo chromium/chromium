@@ -53,7 +53,6 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
-  bool ShouldRunInTransportOnlyMode() const override;
   PreconditionState GetPreconditionState() const override;
 
   // IdentityManager::Observer overrides.

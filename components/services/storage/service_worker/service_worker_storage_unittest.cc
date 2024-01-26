@@ -475,8 +475,7 @@ class ServiceWorkerStorageTest : public testing::Test {
     const std::string kHttpBody = "Hello";
 
     std::string headers(kHttpHeaders, std::size(kHttpHeaders));
-    mojo_base::BigBuffer body(
-        base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
+    mojo_base::BigBuffer body(base::as_byte_span(kHttpBody));
 
     mojo::Remote<mojom::ServiceWorkerResourceWriter> writer;
     storage()->CreateResourceWriter(id, writer.BindNewPipeAndPassReceiver());
@@ -518,8 +517,7 @@ class ServiceWorkerStorageTest : public testing::Test {
   }
 
   int WriteResponseMetadata(int64_t id, const std::string& metadata) {
-    mojo_base::BigBuffer buffer(
-        base::as_bytes(base::make_span(metadata.data(), metadata.length())));
+    mojo_base::BigBuffer buffer(base::as_byte_span(metadata));
 
     mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer;
     storage()->CreateResourceMetadataWriter(

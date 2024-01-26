@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Upakuaji umesitishwa</translation>
 <translation id="1415402041810619267">URL imepunguzwa</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
+<translation id="1434873037477293673">kadi ya kushuka kwa bei</translation>
 <translation id="1448064542941920355">Punguza ukuzaji</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Tovuti <ph name="SITE_COUNT" />}other{Tovuti <ph name="SITE_COUNT" />}}</translation>
 <translation id="1510341833810331442">Tovuti haziruhusiwi kuhifadhi data kwenye kifaa chako</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
 <translation id="2790501146643349491">Kikiwashwa, tovuti zilizofungwa hivi karibuni zinaweza kumaliza kutuma na kupokea data. Kikizimwa, tovuti zilizofungwa hivi karibuni haziwezi kumaliza kutuma au kupokea data.</translation>
 <translation id="2822354292072154809">Una uhakika ungependa kubadilisha ruhusa zote za tovuti ya <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Omba mwonekano wa kifaa cha mkononi</translation>
 <translation id="2870560284913253234">Tovuti</translation>
 <translation id="2874939134665556319">Wimbo uliotangulia</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Zuia tovuti zisitumie data na vifaa vyako vya uhalisia pepe</translation>
 <translation id="6447842834002726250">Vidakuzi</translation>
+<translation id="6452138246455930388">Punguzo la bei kwenye kichupo chako kilichofunguliwa, kutoka <ph name="OLD_PRICE" /> hadi <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Iwapo dirisha ni nyembamba, omba mwonekano wa kifaa cha mkononi</translation>
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="652937045869844725">Jaribu kuruhusu vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Songa chini</translation>
 <translation id="6749077623962119521">Ungependa kubadilisha ruhusa?</translation>
 <translation id="6766622839693428701">Telezesha chini ili ufunge.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Kwenye <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Teua chaguo la <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
+<translation id="6867014948848323204">Kwenye <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Zuia tovuti zisisome maandishi na picha kutoka ubao wa kunakili</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6950072572526089586">Tovuti unayoitembelea inaweza kuhifadhi taarifa kuhusu shughuli unazofanya ili itekeleze kama unavyotarajia, kwa mfano, ili kukufanya usalie ukiwa umeingia katika akaunti kwenye tovuti au kuhifadhi bidhaa katika kikapu chako cha ununuzi. Mara nyingi tovuti huhifadhi taarifa hizi kwa muda mfupi katika kifaa chako.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Usiruhusu tovuti itumie vidakuzi vya washirika wengine</translation>
 <translation id="7719367874908701697">Kuza ukurasa</translation>
+<translation id="7770832849480336015">Ficha "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="780301667611848630">Hapana</translation>

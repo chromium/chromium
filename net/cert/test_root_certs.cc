@@ -5,6 +5,7 @@
 #include "net/cert/test_root_certs.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "net/cert/x509_certificate.h"
@@ -72,8 +73,8 @@ bool TestRootCerts::IsEmpty() const {
 
 bool TestRootCerts::IsKnownRoot(base::span<const uint8_t> der_cert) const {
   return test_known_roots_.find(
-             base::StringPiece(reinterpret_cast<const char*>(der_cert.data()),
-                               der_cert.size())) != test_known_roots_.end();
+             std::string_view(reinterpret_cast<const char*>(der_cert.data()),
+                              der_cert.size())) != test_known_roots_.end();
 }
 
 TestRootCerts::TestRootCerts() {

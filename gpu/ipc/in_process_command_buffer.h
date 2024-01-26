@@ -59,13 +59,10 @@ namespace gfx {
 struct GpuFenceHandle;
 }
 
-namespace viz {
-class GpuTaskSchedulerHelper;
-}
-
 namespace gpu {
 class SharedContextState;
 class GpuProcessShmCount;
+class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class SyncPointClientState;
 struct ContextCreationAttribs;
@@ -307,7 +304,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Pointer to the SingleTaskSequence that actually does the scheduling.
   raw_ptr<SingleTaskSequence> task_sequence_;
-  std::unique_ptr<SharedImageInterfaceInProcess> shared_image_interface_;
+  scoped_refptr<SharedImageInterfaceInProcess> shared_image_interface_;
 
   // The group of contexts that share namespaces with this context.
   scoped_refptr<gles2::ContextGroup> context_group_;

@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -155,7 +155,8 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
     base::span<const MatchPatternRef> patterns =
         GetMatchPatterns(condition.regex_reference_match.value(),
                          context.page_language, context.pattern_source);
-    if (!FormField::FieldMatchesMatchPatternRef(context, patterns, field)) {
+    if (!FormFieldParser::FieldMatchesMatchPatternRef(context, patterns,
+                                                      field)) {
       return false;
     }
   }
@@ -266,52 +267,86 @@ void ApplyRationalizationEngineRules(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     LogManager* log_manager) {
   auto create_rules = [] {
-    return std::to_array(
-        {RationalizationRuleBuilder()
-             // A name for the rule (for logging purposes).
-             .SetRuleName("Fix colonia as address-line2 in MX")
+    return std::to_array({
+        RationalizationRuleBuilder()
+            // A name for the rule (for logging purposes).
+            .SetRuleName("Fix colonia as address-line2 in MX")
 
-             // Only if the requirements specified in the environment are all
-             // met, the RationalizationRule is executed.
-             .SetEnvironmentCondition(
-                 EnvironmentConditionBuilder()
-                     .SetCountryList({GeoIpCountryCode("MX")})
-                     .SetFeature(
-                         &features::kAutofillEnableRationalizationEngineForMX)
-                     .Build())
+            // Only if the requirements specified in the environment are all
+            // met, the RationalizationRule is executed.
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("MX")})
+                    .SetFeature(
+                        &features::kAutofillEnableRationalizationEngineForMX)
+                    .Build())
 
-             // This is the core field to which the rule applies.
-             .SetTriggerField(FieldCondition{
-                 // The trigger field needs to be an ADDRESS_HOME_LINE2.
-                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
-                 // Lookup in legacy_regex_patterns.
-                 .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
-             })
+            // This is the core field to which the rule applies.
+            .SetTriggerField(FieldCondition{
+                // The trigger field needs to be an ADDRESS_HOME_LINE2.
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
+                // Lookup in legacy_regex_patterns.
+                .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
+            })
 
-             // All of the following conditions need to be met for actions to be
-             // executed. The .location specifies which fields to consider. It
-             // also binds the fields to a label that is later referenced in
-             // actions.
-             .SetOtherFieldConditions({
-                 FieldCondition{
-                     .location = FieldLocation::kLastClassifiedPredecessor,
-                     .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
-                 },
-             })
+            // All of the following conditions need to be met for actions to be
+            // executed. The .location specifies which fields to consider. It
+            // also binds the fields to a label that is later referenced in
+            // actions.
+            .SetOtherFieldConditions({
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
+                },
+            })
 
-             // What actions to perform on the trigger fields and other fields
-             // that had conditions.
-             .SetActions({
-                 SetTypeAction{
-                     .target = FieldLocation::kLastClassifiedPredecessor,
-                     .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
-                 },
-                 SetTypeAction{
-                     .target = FieldLocation::kTriggerField,
-                     .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
-                 },
-             })
-             .Build()});
+            // What actions to perform on the trigger fields and other fields
+            // that had conditions.
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kLastClassifiedPredecessor,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix address-overflow as address-line2 in DE")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("DE")})
+                    .SetFeature(&features::kAutofillUseDEAddressModel)
+                    .Build())
+
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
+                .regex_reference_match = "OVERFLOW",  // In the case of Germany,
+                                                      // overflow references the
+                                                      // Adresszusatz field.
+            })
+            .SetOtherFieldConditions({
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_LINE1,
+                                     ADDRESS_HOME_STREET_ADDRESS},
+                },
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kLastClassifiedPredecessor,
+                    .set_overall_type = ADDRESS_HOME_STREET_LOCATION,
+                },
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_OVERFLOW,
+                },
+            })
+            .Build(),
+    });
   };
   static const base::NoDestructor<decltype(create_rules())>
       kRationalizationRules(create_rules());

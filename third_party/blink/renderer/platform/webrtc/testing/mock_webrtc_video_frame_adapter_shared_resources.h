@@ -23,13 +23,10 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
                const gfx::Size& natural_size,
                base::TimeDelta timestamp));
 
-  MOCK_METHOD(std::unique_ptr<std::vector<uint8_t>>,
-              CreateTemporaryVectorBuffer,
-              ());
-
-  MOCK_METHOD(void,
-              ReleaseTemporaryVectorBuffer,
-              (std::unique_ptr<std::vector<uint8_t>>));
+  MOCK_METHOD(media::EncoderStatus,
+              ConvertAndScale,
+              (const media::VideoFrame& src_frame,
+               media::VideoFrame& dest_frame));
 
   MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
               GetRasterContextProvider,
@@ -54,21 +51,13 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
             }));
   }
 
-  void ExpectCreateTemporaryVectorBufferWithRealImplementation() {
-    EXPECT_CALL(*this, CreateTemporaryVectorBuffer)
-        .WillOnce(testing::Invoke([this]() {
-          return WebRtcVideoFrameAdapter::SharedResources::
-              CreateTemporaryVectorBuffer();
+  void ExpectConvertAndScaleWithRealImplementation() {
+    EXPECT_CALL(*this, ConvertAndScale)
+        .WillOnce(testing::Invoke([this](const media::VideoFrame& src_frame,
+                                         media::VideoFrame& dest_frame) {
+          return WebRtcVideoFrameAdapter::SharedResources::ConvertAndScale(
+              src_frame, dest_frame);
         }));
-  }
-
-  void ExpectReleaseTemporaryVectorBufferWithRealImplementation() {
-    EXPECT_CALL(*this, ReleaseTemporaryVectorBuffer)
-        .WillOnce(testing::Invoke(
-            [this](std::unique_ptr<std::vector<uint8_t>> buffer) {
-              return WebRtcVideoFrameAdapter::SharedResources::
-                  ReleaseTemporaryVectorBuffer(std::move(buffer));
-            }));
   }
 
  private:

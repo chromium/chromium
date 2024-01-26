@@ -89,14 +89,11 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
                            satisfy_connection_type && http_get_method &&
                            can_support_parallel_requests;
 
-  if (base::FeatureList::IsEnabled(features::kDownloadRange)) {
-    // Don't use parallel download if the caller wants to fetch with range
-    // request explicitly.
-    bool arbitrary_range_request =
-        create_info.save_info &&
-        create_info.save_info->IsArbitraryRangeRequest();
-    is_parallelizable = is_parallelizable && !arbitrary_range_request;
-  }
+  // Don't use parallel download if the caller wants to fetch with range
+  // request explicitly.
+  bool arbitrary_range_request =
+      create_info.save_info && create_info.save_info->IsArbitraryRangeRequest();
+  is_parallelizable = is_parallelizable && !arbitrary_range_request;
 
   return is_parallelizable;
 }

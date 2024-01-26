@@ -108,7 +108,7 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
   EXPECT_EQ(status, COMMAND_STATUS_INIT);
   DWORD exit_code = 0;
-  EXPECT_HRESULT_FAILED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
 
   ASSERT_HRESULT_SUCCEEDED(
       app_command_web->execute(base::win::ScopedVariant::kEmptyVariant,
@@ -171,7 +171,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
                                base::win::ScopedVariant::kEmptyVariant));
 
   DWORD exit_code = 0;
-  EXPECT_HRESULT_FAILED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {

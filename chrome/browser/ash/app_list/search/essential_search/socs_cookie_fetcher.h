@@ -5,7 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_ESSENTIAL_SEARCH_SOCS_COOKIE_FETCHER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ESSENTIAL_SEARCH_SOCS_COOKIE_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace network {
+class SimpleURLLoader;
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace app_list {
 
@@ -14,11 +23,23 @@ namespace app_list {
 // SocsCookieFetcher is still WIP.
 class SocsCookieFetcher final {
  public:
+  enum class Status {
+    kOk,
+    kRequestBodyNotSerialized,
+    kServerError,
+    kEmptyResponse,
+    kJsonParseFailure,
+    kNotJsonDict,
+    kFetchNoCookie,
+    kInvalidCookie
+  };
+
   class Consumer {
    public:
     Consumer();
     virtual ~Consumer();
     virtual void OnCookieFetched(const std::string& cookie_header) = 0;
+    virtual void OnApiCallFailed(Status status) = 0;
   };
 
   SocsCookieFetcher(
@@ -33,10 +54,16 @@ class SocsCookieFetcher final {
   void StartFetching();
 
  private:
+  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void ProcessValidTokenResponse(base::Value::Dict json_response);
+
   // `consumer_` to call back when this request completes.
   const raw_ptr<Consumer> consumer_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   base::WeakPtrFactory<SocsCookieFetcher> weak_ptr_factory_{this};
 };

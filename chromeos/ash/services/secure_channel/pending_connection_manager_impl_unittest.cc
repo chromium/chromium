@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/to_vector.h"
@@ -323,15 +322,12 @@ class FakePendingBleInitiatorConnectionRequestFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ClientConnectionParameters*
+  raw_ptr<ClientConnectionParameters, DanglingUntriaged>
       expected_client_connection_parameters_ = nullptr;
   std::optional<ConnectionPriority> expected_connection_priority_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakePendingConnectionRequest<BleInitiatorFailureType>*
+  raw_ptr<FakePendingConnectionRequest<BleInitiatorFailureType>,
+          DanglingUntriaged>
       last_created_instance_ = nullptr;
 };
 
@@ -383,9 +379,8 @@ class FakePendingBleListenerConnectionRequestFactory
       expected_client_connection_parameters_ = nullptr;
   std::optional<ConnectionPriority> expected_connection_priority_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakePendingConnectionRequest<BleListenerFailureType>*
+  raw_ptr<FakePendingConnectionRequest<BleListenerFailureType>,
+          DanglingUntriaged>
       last_created_instance_ = nullptr;
 };
 
@@ -433,15 +428,12 @@ class FakePendingNearbyInitiatorConnectionRequestFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ClientConnectionParameters*
+  raw_ptr<ClientConnectionParameters, DanglingUntriaged>
       expected_client_connection_parameters_ = nullptr;
   std::optional<ConnectionPriority> expected_connection_priority_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakePendingConnectionRequest<NearbyInitiatorFailureType>*
+  raw_ptr<FakePendingConnectionRequest<NearbyInitiatorFailureType>,
+          DanglingUntriaged>
       last_created_instance_ = nullptr;
 };
 

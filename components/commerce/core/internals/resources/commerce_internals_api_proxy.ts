@@ -4,7 +4,7 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter, ShoppingListEligibleDetail} from './commerce_internals.mojom-webui.js';
+import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter, ShoppingListEligibleDetail, Subscription} from './commerce_internals.mojom-webui.js';
 import {ProductInfo} from './shopping_list.mojom-webui.js';
 
 export class CommerceInternalsApiProxy {
@@ -44,6 +44,10 @@ export class CommerceInternalsApiProxy {
 
   getCallbackRouter(): CommerceInternalsPageCallbackRouter {
     return this.callbackRouter;
+  }
+
+  getSubscriptionDetails(): Promise<{subscriptions: Subscription[]}> {
+    return this.handler.getSubscriptionDetails();
   }
 }
 

@@ -203,6 +203,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
+            "content_transfer_method",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
   }
@@ -236,13 +237,13 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
-            "filePasswordProtected", 12345, result);
+            "filePasswordProtected", "content_transfer_method", 12345, result);
   }
 
   void TriggerOnLoginEvent(
       const GURL& url,
       const std::u16string& login_user_name,
-      absl::optional<url::Origin> federated_origin = absl::nullopt) {
+      std::optional<url::Origin> federated_origin = std::nullopt) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnLoginEvent(url, federated_origin.has_value(),
                        federated_origin.has_value() ? federated_origin.value()

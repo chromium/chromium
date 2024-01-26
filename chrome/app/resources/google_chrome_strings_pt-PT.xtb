@@ -70,7 +70,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2130870084309816036">Não é possível estabelecer ligação à Internet. Se usar uma firewall, adicione <ph name="PRODUCT_EXE_NAME" /> à lista de autorizações.</translation>
 <translation id="2131230230468101642">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="2139300032719313227">Reinicie o ChromeOS</translation>
-<translation id="2146761408396054429">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chrome pode verificar esta transferência se facultar a palavra-passe. A palavra-passe permanece no seu dispositivo</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2174917724755363426">Instalação não concluída. Tem a certeza de que quer cancelar?</translation>
 <translation id="2190166659037789668">Erro na verificação de atualizações: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -87,7 +86,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chrome estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chrome estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chrome estão a aceder a # dispositivos HID}}</translation>
-<translation id="2424440923901031101">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="2424440923901031101">Esta extensão viola a Política da Chrome Web Store e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="2472092250898121027">Esta extensão contém software malicioso e não é segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2472163211318554013">Inicie sessão para tirar o máximo partido do Chrome</translation>
@@ -162,6 +161,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3426646014273736870">A Poupança de memória tornou o Chrome mais rápido</translation>
 <translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="3434246496373299699">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
+<translation id="3450887623636316740">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chrome pode verificar esta transferência se facultar a palavra-passe. As informações sobre o ficheiro são enviadas para a Navegação Segura do Google, mas o conteúdo do ficheiro e a palavra-passe permanecem no seu dispositivo.</translation>
 <translation id="3451115285585441894">A adicionar ao Chrome...</translation>
 <translation id="345171907106878721">Adicionar-se ao Chrome</translation>
 <translation id="3453763134178591239">Termos do ChromeOS</translation>
@@ -195,6 +195,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="4106587138345390261">O Chrome está a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
+<translation id="4128488089242627000">O Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
 <translation id="4147555960264124640">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">A instalar...</translation>
 <translation id="4149882025268051530">Houve uma falha no programa de instalação ao descompactar o arquivo. Descarregue de novo o Google Chrome.</translation>
@@ -217,7 +218,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4343195214584226067">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chrome</translation>
 <translation id="4384570495110188418">O Chrome não consegue verificar as suas palavras-passe porque não tem sessão iniciada.</translation>
 <translation id="4389991535395284064">Ao navegar no Modo de navegação anónima, o Chrome envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
-<translation id="4393248995085527349">Para obter atualizações futuras do Google Chrome, precisa do macOS 10.15 posterior. Este computador está a usar o macOS 10.13.</translation>
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4450664632294415862">Chrome – Início de sessão na rede – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Está em curso outra operação no Google Chrome. Tente mais tarde.</translation>
@@ -232,7 +232,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4627412468266359539">Opcional: ajude a melhorar as funcionalidades e o desempenho do ChromeOS Flex ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="4633000520311261472">Para tornar o Chrome mais seguro, desativámos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenham sido adicionadas sem o seu conhecimento.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
-<translation id="469553575393225953">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda que apenas os instale a partir da Web Store do Chrome</translation>
+<translation id="469553575393225953">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda que apenas os instale a partir da Chrome Web Store</translation>
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo não suportado.</translation>
 <translation id="4728575227883772061">Houve uma falha na instalação devido a um erro não especificado. Se o Google Chrome estiver atualmente em execução, feche-o e tente de novo.</translation>
 <translation id="4747730611090640388">O Chrome pode estimar os seus interesses.  Posteriormente, um site que visitar pode pedir ao Chrome para ver os seus interesses para personalizar os anúncios que vê.</translation>
@@ -242,6 +242,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4793679854893018356">Saiba como o Chrome mantém a sua segurança</translation>
 <translation id="4828579605166583682">O Google Chrome está a tentar substituir as palavras-passe existentes. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="4842397268809523050">O ChromeOS Flex não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
+<translation id="4873692836499071887">Para receber atualizações futuras do Google Chrome, precisa do macOS 11 ou posterior. Este computador está a usar o macOS 10.15.</translation>
 <translation id="4873783916118289636">Reveja os principais controlos de privacidade e segurança no Chrome</translation>
 <translation id="4891791193823137474">Permitir que o Google Chrome seja executado em segundo plano</translation>
 <translation id="4895437082222824641">Abrir link num novo &amp;separador do Chrome</translation>
@@ -301,7 +302,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Tornar o Google Chrome no browser padrão.</translation>
 <translation id="6003112304606738118">A transferir… Falta(m) <ph name="HOURS" /> hora(s)</translation>
-<translation id="6010556343189461180">Para obter atualizações futuras do Google Chrome, precisa do macOS 10.15 posterior. Este computador está a usar o macOS 10.14.</translation>
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
 <translation id="6022659036123304283">Personalize o Google Chrome</translation>
 <translation id="6025087594896450715">O Google Chrome vai ser reiniciado dentro de <ph name="REMAINING_TIME" /></translation>
@@ -347,6 +347,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="677276454032249905">Quer sair do Chrome mesmo assim?</translation>
 <translation id="6794858689789885890">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chrome</translation>
 <translation id="683440813066116847">Regra de importação para o Google Chrome Canary permitir o tráfego mDNS.</translation>
+<translation id="6851981911629679515">Ative a proteção adicional no motor WebAssembly e JavaScript do Chrome</translation>
 <translation id="6881299373831449287">A atualizar o Chrome</translation>
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
@@ -468,6 +469,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="873133009373065397">O Google Chrome não consegue determinar ou definir o navegador predefinido</translation>
 <translation id="8765470054473112089">Quando escreve na barra de endereço ou caixa de pesquisa, o Chrome envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">O V8 é o motor JavaScript e WebAssembly do Chrome usado para melhorar o desempenho do site</translation>
 <translation id="8821043148920470810">Para obter atualizações futuras do Google Chrome, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 7.</translation>
 <translation id="8823341990149967727">O Chrome Está Desatualizado</translation>
 <translation id="8825634023950448068">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Além disso, pode remover um interesse se o Chrome se enganar ou caso não queira ver determinados anúncios.</translation>

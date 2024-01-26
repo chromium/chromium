@@ -6,6 +6,7 @@
 #define PRINTING_TEST_PRINTING_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -14,10 +15,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <optional>
-#endif
 
 namespace printing {
 
@@ -56,6 +53,10 @@ class TestPrintingContext : public PrintingContext {
   // indicated device.
   void SetDeviceSettings(const std::string& device_name,
                          std::unique_ptr<PrintSettings> settings);
+
+  // Provide the job ID which should be used once a new document is created.
+  // Only applicable for process behaviors that can make system calls.
+  void SetNewDocumentJobId(int job_id);
 
   // Provide the settings which should be applied to mimic a user's choices
   // during AskUserForSettings().
@@ -163,6 +164,10 @@ class TestPrintingContext : public PrintingContext {
   // Called every time `NewDocument()` is called.  Provides a copy of the
   // effective device context settings.
   OnNewDocumentCallback on_new_document_callback_;
+
+  // The job ID to assign once `NewDocument()` is called, if the process
+  // behavior allows for system calls to be made.
+  std::optional<int> new_document_job_id_;
 };
 
 }  // namespace printing

@@ -180,6 +180,9 @@ class AcceleratorConfigurationProvider
     return non_configurable_actions_mapping_;
   }
 
+  std::vector<ui::Accelerator> GetDefaultAcceleratorsForId(
+      uint32_t action_id) const;
+
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
       const NonConfigurableAcceleratorDetails& details) const;
 

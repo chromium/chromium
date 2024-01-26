@@ -498,10 +498,6 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [4240],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/chromebox_for_meetings/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
-    "includes": [4260],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/healthd_internals/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [4280],
@@ -775,7 +771,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [5640],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/diagnostics_ui/resources/ash_diagnostics_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/diagnostics_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [5660],
   },
@@ -792,7 +788,7 @@
     "includes": [5720],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
-    "META": {"sizes": {"includes": [800]}},
+    "META": {"sizes": {"includes": [1000]}},
     "includes": [5760],
   },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {

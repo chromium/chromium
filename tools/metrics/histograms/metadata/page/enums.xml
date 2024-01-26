@@ -190,13 +190,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Prerender Activation Navigation"/>
 </enum>
 
-<enum name="PageLoadPrerenderForegroundCheckResult">
-  <int value="0" label="Activated in background"/>
-  <int value="1" label="No event time"/>
-  <int value="2" label="Backgrounded before the event"/>
-  <int value="3" label="Passed the check"/>
-</enum>
-
 <enum name="PageLoadPrerenderObserverEvent">
   <int value="0" label="OnPrerenderStart"/>
   <int value="1" label="DidActivatePrerenderedPage"/>
@@ -293,8 +286,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ThirdPartyCookieAllowMechanism">
   <int value="0" label="No allow mechanism apply (Not recorded)"/>
   <int value="1"
-      label="Allow by explicit cookie content setting (e.g. Enterprise
-             Policy: CookiesAllowedForUrls, UserBypass)"/>
+      label="Allow by explicit cookie content setting (e.g. UserBypass)"/>
   <int value="2"
       label="Allow by global 3p cookie setting setting (e.g. Enterprise
              Policy: BlockThirdPartyCookies, UX, Default allow)"/>
@@ -306,6 +298,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Allow by Storage access API"/>
   <int value="7" label="Allow by top-level Storage access API"/>
   <int value="8" label="Allow by opting into CORS protections"/>
+  <int value="9" label="Allow by Enterprise Policy: CookiesAllowedForUrls"/>
 </enum>
 
 </enums>

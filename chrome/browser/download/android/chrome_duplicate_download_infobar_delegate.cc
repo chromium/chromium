@@ -5,6 +5,7 @@
 #include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/path_utils.h"
 #include "base/functional/bind.h"
@@ -18,7 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace android {
 
@@ -85,7 +86,7 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Cancel() {
     return true;
 
   std::move(file_selected_callback_)
-      .Run(DownloadConfirmationResult::CANCELED, base::FilePath());
+      .Run(DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo());
   return true;
 }
 
@@ -97,7 +98,7 @@ void ChromeDuplicateDownloadInfoBarDelegate::InfoBarDismissed() {
   Cancel();
 }
 
-absl::optional<Profile::OTRProfileID>
+std::optional<Profile::OTRProfileID>
 ChromeDuplicateDownloadInfoBarDelegate::GetOTRProfileID() const {
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download_item_);
@@ -107,7 +108,7 @@ ChromeDuplicateDownloadInfoBarDelegate::GetOTRProfileID() const {
     return Profile::FromBrowserContext(browser_context)->GetOTRProfileID();
   }
   // If belongs to the regular profile, then OTRProfileID should be null.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace android

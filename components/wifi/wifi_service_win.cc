@@ -4,7 +4,9 @@
 
 #include "components/wifi/wifi_service.h"
 
+// clang-format off
 #include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
 
 #include <iphlpapi.h>
 #include <objbase.h>

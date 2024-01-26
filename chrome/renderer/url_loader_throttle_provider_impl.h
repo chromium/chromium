@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +22,10 @@
 #include "extensions/renderer/extension_throttle_manager.h"
 #endif
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 class ChromeContentRendererClient;
 
 // Instances must be constructed on the render main thread, and then used and
@@ -28,10 +33,22 @@ class ChromeContentRendererClient;
 // thread.
 class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
  public:
-  URLLoaderThrottleProviderImpl(
-      blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
+  static std::unique_ptr<blink::URLLoaderThrottleProvider> Create(
       blink::URLLoaderThrottleProviderType type,
-      ChromeContentRendererClient* chrome_content_renderer_client);
+      ChromeContentRendererClient* chrome_content_renderer_client,
+      blink::ThreadSafeBrowserInterfaceBrokerProxy* broker);
+
+  URLLoaderThrottleProviderImpl(
+      blink::URLLoaderThrottleProviderType type,
+      ChromeContentRendererClient* chrome_content_renderer_client,
+      mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+          pending_safe_browsing,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+          pending_extension_web_request_reporter,
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+      base::PassKey<URLLoaderThrottleProviderImpl>);
 
   URLLoaderThrottleProviderImpl& operator=(
       const URLLoaderThrottleProviderImpl&) = delete;
@@ -46,9 +63,12 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
   void SetOnline(bool is_online) override;
 
  private:
-  // This copy constructor works in conjunction with Clone(), not intended for
-  // general use.
-  URLLoaderThrottleProviderImpl(const URLLoaderThrottleProviderImpl& other);
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+  CloneSafeBrowsingPendingRemote();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+  CloneExtensionWebRequestReporterPendingRemote();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   blink::URLLoaderThrottleProviderType type_;
   const raw_ptr<ChromeContentRendererClient, ExperimentalRenderer>
@@ -66,7 +86,11 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
 
   std::unique_ptr<extensions::ExtensionThrottleManager>
       extension_throttle_manager_;
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // Set only when `this` was created on the main thread, or cloned from a
+  // provider which was created on the main thread.
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

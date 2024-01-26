@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/printing_context.h"
 #include "printing/printing_features.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -150,7 +151,7 @@ PrintBackendServiceManager::RegisterQueryClient() {
   return *RegisterClient(ClientType::kQuery, kEmptyPrinterName);
 }
 
-absl::optional<PrintBackendServiceManager::ClientId>
+std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterQueryWithUiClient() {
   return RegisterClient(ClientType::kQueryWithUi, kEmptyPrinterName);
 }
@@ -171,8 +172,8 @@ PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
 
 void PrintBackendServiceManager::UnregisterClient(ClientId id) {
   // Determine which client type has this ID, and remove it once found.
-  absl::optional<ClientType> client_type;
-  absl::optional<RemoteId> remote_id;
+  std::optional<ClientType> client_type;
+  std::optional<RemoteId> remote_id;
   if (query_clients_.erase(id) != 0) {
     client_type = ClientType::kQuery;
   } else if (query_with_ui_clients_.erase(id) != 0) {
@@ -201,7 +202,7 @@ void PrintBackendServiceManager::UnregisterClient(ClientId id) {
   if (!remote_id.has_value()) {
     remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
   }
-  absl::optional<base::TimeDelta> new_timeout =
+  std::optional<base::TimeDelta> new_timeout =
       DetermineIdleTimeoutUpdateOnUnregisteredClient(client_type.value(),
                                                      remote_id.value());
   if (new_timeout.has_value())
@@ -442,7 +443,7 @@ void PrintBackendServiceManager::StartPrinting(
     int document_cookie,
     const std::u16string& document_name,
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-    absl::optional<PrintSettings> settings,
+    std::optional<PrintSettings> settings,
 #endif
     mojom::PrintBackendService::StartPrintingCallback callback) {
   ServiceAndCallbackContext result =
@@ -677,7 +678,7 @@ PrintBackendServiceManager::GetRemoteIdForPrintDocumentClientId(
   NOTREACHED_NORETURN();
 }
 
-absl::optional<PrintBackendServiceManager::ClientId>
+std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterClient(
     ClientType client_type,
     absl::variant<std::string, RemoteId> destination) {
@@ -697,7 +698,7 @@ PrintBackendServiceManager::RegisterClient(
     case ClientType::kQueryWithUi:
 #if !BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
       if (!query_with_ui_clients_.empty())
-        return absl::nullopt;
+        return std::nullopt;
 #endif
       query_with_ui_clients_.insert({client_id, remote_id});
       break;
@@ -724,7 +725,7 @@ PrintBackendServiceManager::RegisterClient(
     // Service already existed, possibly was recently marked for being reset
     // with a short timeout or is already in use for other client types.
     // Determine if any adjustment to the timeout is actually necessary.
-    absl::optional<base::TimeDelta> new_timeout =
+    std::optional<base::TimeDelta> new_timeout =
         DetermineIdleTimeoutUpdateOnRegisteredClient(client_type, remote_id);
     if (new_timeout.has_value())
       UpdateServiceIdleTimeoutByRemoteId(remote_id, new_timeout.value());
@@ -946,7 +947,7 @@ size_t PrintBackendServiceManager::GetPrintDocumentClientsCountForRemoteId(
   return 0;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
     ClientType registered_client_type,
     const RemoteId& remote_id) const {
@@ -958,11 +959,11 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
       // any of them have clients.
       if (!query_with_ui_clients_.empty() ||
           HasPrintDocumentClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       if (query_clients_.size() > 1)
-        return absl::nullopt;
+        return std::nullopt;
 
       // First client of type and no others will need an update.
       break;
@@ -971,7 +972,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
 #if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
       // No need to update if there were other query with UI clients.
       if (query_with_ui_clients_.size() > 1)
-        return absl::nullopt;
+        return std::nullopt;
 #else
       // A modal system dialog, of which there should only ever be at most one
       // of these.
@@ -981,7 +982,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
       // This is the longest timeout.  No need to update if there is a similarly
       // long timeout due to a printing client.
       if (HasPrintDocumentClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       break;
 
@@ -992,19 +993,19 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
       // No need to update if there were other printing clients for same remote
       // ID.
       if (clients_count > 1)
-        return absl::nullopt;
+        return std::nullopt;
 
       // This is the longest timeout.  No need to update if there is a similarly
       // long timeout due to query with UI.
       if (!query_with_ui_clients_.empty())
-        return absl::nullopt;
+        return std::nullopt;
       break;
   }
 
   return GetClientTypeIdleTimeout(registered_client_type);
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
     ClientType unregistered_client_type,
     const RemoteId& remote_id) const {
@@ -1014,11 +1015,11 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
       // any of them have clients.
       if (HasQueryWithUiClientForRemoteId(remote_id) ||
           HasPrintDocumentClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       if (!query_clients_.empty())
-        return absl::nullopt;
+        return std::nullopt;
 
       // No remaining clients, can switch to short timeout for quick
       // reclamation.
@@ -1028,7 +1029,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
 #if BUILDFLAG(IS_LINUX)
       // No need to update if there were other query with UI clients.
       if (HasQueryWithUiClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 #else
       // A modal system dialog, of which there should only ever be at most one
@@ -1039,7 +1040,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
       // This is the longest timeout, so no need to update if there is a
       // printing client for this `remote_id`.
       if (HasPrintDocumentClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // New timeout depends upon existence of other queries.
@@ -1051,7 +1052,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
       // UI clients for same remote ID.
       if (HasQueryWithUiClientForRemoteId(remote_id) ||
           HasPrintDocumentClientForRemoteId(remote_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // New timeout depends upon existence of other queries.
@@ -1155,7 +1156,7 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacks(GetRemoteSavedStartPrintingCallbacks(sandboxed), remote_id,
-                    mojom::ResultCode::kFailed);
+                    mojom::ResultCode::kFailed, PrintingContext::kNoPrintJobId);
 #if BUILDFLAG(IS_WIN)
   RunSavedCallbacks(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
                     remote_id, mojom::ResultCode::kFailed);
@@ -1417,11 +1418,12 @@ void PrintBackendServiceManager::OnDidUpdatePrintSettings(
 
 void PrintBackendServiceManager::OnDidStartPrinting(
     const CallbackContext& context,
-    mojom::ResultCode result) {
+    mojom::ResultCode result,
+    int job_id) {
   LogCallbackFromRemote("StartPrinting", context);
   ServiceCallbackDone(
       GetRemoteSavedStartPrintingCallbacks(context.is_sandboxed),
-      context.remote_id, context.saved_callback_id, result);
+      context.remote_id, context.saved_callback_id, result, job_id);
 }
 
 #if BUILDFLAG(IS_WIN)

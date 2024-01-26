@@ -224,6 +224,17 @@ void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
   }
 }
 
+void MediaStreamDeviceObserver::OnZoomLevelChange(
+    const String& label,
+    const MediaStreamDevice& device,
+    int zoom_level) {
+  DVLOG(1) << __func__ << " label=" << label << " device_id=" << device.id;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK_GT(zoom_level, 0);
+
+  // TODO(crbug.com/1466247): Implement
+}
+
 void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
     mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver) {
   receiver_.reset();

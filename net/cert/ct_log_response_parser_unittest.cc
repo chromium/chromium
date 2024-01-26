@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
@@ -68,7 +69,7 @@ TEST(CTLogResponseParserTest, FailsToParseIncorrectLengthRootHash) {
 
   std::string too_long_hash;
   base::Base64Decode(
-      base::StringPiece("/WHFMgXtI/umKKuACJIN0Bb73TcILm9WkeU6qszvoArK\n"),
+      std::string_view("/WHFMgXtI/umKKuACJIN0Bb73TcILm9WkeU6qszvoArK\n"),
       &too_long_hash);
   absl::optional<base::Value> too_long_hash_json =
       base::JSONReader::Read(CreateSignedTreeHeadJsonString(
@@ -78,7 +79,7 @@ TEST(CTLogResponseParserTest, FailsToParseIncorrectLengthRootHash) {
 
   std::string too_short_hash;
   base::Base64Decode(
-      base::StringPiece("/WHFMgXtI/umKKuACJIN0Bb73TcILm9WkeU6qszvoA==\n"),
+      std::string_view("/WHFMgXtI/umKKuACJIN0Bb73TcILm9WkeU6qszvoA==\n"),
       &too_short_hash);
   absl::optional<base::Value> too_short_hash_json =
       base::JSONReader::Read(CreateSignedTreeHeadJsonString(

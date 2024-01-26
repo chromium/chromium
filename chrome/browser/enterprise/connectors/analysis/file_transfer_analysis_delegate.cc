@@ -161,7 +161,7 @@ namespace enterprise_connectors {
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::Allowed() {
   return FileTransferAnalysisResult(
-      Verdict::ALLOWED, /*final_result=*/absl::nullopt, /*tag=*/std::string());
+      Verdict::ALLOWED, /*final_result=*/std::nullopt, /*tag=*/std::string());
 }
 
 // static
@@ -176,7 +176,7 @@ FileTransferAnalysisDelegate::FileTransferAnalysisResult::Blocked(
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::Unknown() {
   return FileTransferAnalysisResult(
-      Verdict::UNKNOWN, /*final_result=*/absl::nullopt, /*tag=*/std::string());
+      Verdict::UNKNOWN, /*final_result=*/std::nullopt, /*tag=*/std::string());
 }
 
 const std::string&
@@ -184,7 +184,7 @@ FileTransferAnalysisDelegate::FileTransferAnalysisResult::tag() const {
   return tag_;
 }
 
-const absl::optional<FinalContentAnalysisResult>
+const std::optional<FinalContentAnalysisResult>
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::final_result() const {
   return final_result_;
 }
@@ -192,7 +192,7 @@ FileTransferAnalysisDelegate::FileTransferAnalysisResult::final_result() const {
 FileTransferAnalysisDelegate::FileTransferAnalysisResult::
     FileTransferAnalysisResult(
         Verdict verdict,
-        absl::optional<FinalContentAnalysisResult> final_result,
+        std::optional<FinalContentAnalysisResult> final_result,
         const std::string& tag)
     : verdict_(verdict), final_result_(final_result), tag_(tag) {}
 
@@ -253,7 +253,7 @@ void FileTransferAnalysisDelegate::SetFactorForTesting(
 }
 
 // static
-std::vector<absl::optional<AnalysisSettings>>
+std::vector<std::optional<AnalysisSettings>>
 FileTransferAnalysisDelegate::IsEnabledVec(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& source_urls,
@@ -269,7 +269,7 @@ FileTransferAnalysisDelegate::IsEnabledVec(
     return {};
   }
 
-  std::vector<absl::optional<AnalysisSettings>> settings(source_urls.size());
+  std::vector<std::optional<AnalysisSettings>> settings(source_urls.size());
 
   bool at_least_one_enabled = false;
   for (size_t i = 0; i < source_urls.size(); ++i) {
@@ -371,7 +371,7 @@ FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
 }
 
 void FileTransferAnalysisDelegate::BypassWarnings(
-    absl::optional<std::u16string> user_justification) {
+    std::optional<std::u16string> user_justification) {
   if (!warned_file_indices_.empty()) {
     request_handler_->ReportWarningBypass(user_justification);
     warning_is_bypassed_ = true;
@@ -382,28 +382,28 @@ void FileTransferAnalysisDelegate::Cancel(bool warning) {
   // TODO(crbug.com/1340313)
 }
 
-absl::optional<std::u16string> FileTransferAnalysisDelegate::GetCustomMessage(
+std::optional<std::u16string> FileTransferAnalysisDelegate::GetCustomMessage(
     const std::string& tag) const {
   auto it = settings_.tags.find(tag);
   if (it == settings_.tags.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::u16string& message = it->second.custom_message.message;
   if (message.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return message;
 }
 
-absl::optional<GURL> FileTransferAnalysisDelegate::GetCustomLearnMoreUrl(
+std::optional<GURL> FileTransferAnalysisDelegate::GetCustomLearnMoreUrl(
     const std::string& tag) const {
   auto it = settings_.tags.find(tag);
   if (it == settings_.tags.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const GURL& learn_more_url = it->second.custom_message.learn_more_url;
   if (!learn_more_url.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return learn_more_url;
 }
@@ -447,7 +447,8 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
       // User action id and tab title are only needed for local content
       // analysis, leave them empty here.
       /*user_action_id=*/std::string(), /*tab_title=*/std::string(),
-      access_point_, ContentAnalysisRequest::UNKNOWN, std::move(paths),
+      /*content_transfer_method=*/std::string(), access_point_,
+      ContentAnalysisRequest::UNKNOWN, std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

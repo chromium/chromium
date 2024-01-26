@@ -4,6 +4,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -135,7 +136,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_features.h"
@@ -172,7 +172,7 @@ class NavigateTabMessageHandler {
 
  private:
   void HandleNavigateTabMessage(const std::string& message) {
-    absl::optional<base::Value> command = base::JSONReader::Read(message);
+    std::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
       base::Value::Dict* data = command->GetDict().FindDict("navigate");
       if (data) {
@@ -238,11 +238,10 @@ base::Value ExecuteScriptAndReturnValue(const ExtensionId& extension_id,
       BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
 }
 
-absl::optional<bool> ExecuteScriptAndReturnBool(
-    const ExtensionId& extension_id,
-    content::BrowserContext* context,
-    const std::string& script) {
-  absl::optional<bool> result;
+std::optional<bool> ExecuteScriptAndReturnBool(const ExtensionId& extension_id,
+                                               content::BrowserContext* context,
+                                               const std::string& script) {
+  std::optional<bool> result;
   base::Value script_result =
       ExecuteScriptAndReturnValue(extension_id, context, script);
   if (script_result.is_bool())
@@ -250,11 +249,11 @@ absl::optional<bool> ExecuteScriptAndReturnBool(
   return result;
 }
 
-absl::optional<std::string> ExecuteScriptAndReturnString(
+std::optional<std::string> ExecuteScriptAndReturnString(
     const ExtensionId& extension_id,
     content::BrowserContext* context,
     const std::string& script) {
-  absl::optional<std::string> result;
+  std::optional<std::string> result;
   base::Value script_result =
       ExecuteScriptAndReturnValue(extension_id, context, script);
   if (script_result.is_string())
@@ -2116,7 +2115,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // and given content.
   auto make_browser_request =
       [](network::mojom::URLLoaderFactory* url_loader_factory, const GURL& url,
-         const absl::optional<std::string>& expected_response,
+         const std::optional<std::string>& expected_response,
          int expected_net_code) {
         auto request = std::make_unique<network::ResourceRequest>();
         request->url = url;
@@ -2306,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       frame->GetProcess()->GetBrowserContext(), frame,
       frame->GetProcess()->GetID(),
       content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      absl::nullopt, ukm::kInvalidSourceIdObj, &pending_receiver, nullptr,
+      std::nullopt, ukm::kInvalidSourceIdObj, &pending_receiver, nullptr,
       nullptr));
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
@@ -2581,7 +2580,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionWebRequestAPITest,
   // "fake_ntp_script.js".
   auto was_script_request_intercepted =
       [this](const ExtensionId& extension_id) {
-        const absl::optional<bool> result = ExecuteScriptAndReturnBool(
+        const std::optional<bool> result = ExecuteScriptAndReturnBool(
             extension_id, profile(), "getAndResetRequestIntercepted();");
         DCHECK(result);
         return *result;
@@ -2728,7 +2727,7 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
   // |one_google_bar_url()|.
   auto was_script_request_intercepted =
       [this](const ExtensionId& extension_id) {
-        absl::optional<bool> result = ExecuteScriptAndReturnBool(
+        std::optional<bool> result = ExecuteScriptAndReturnBool(
             extension_id, profile(), "getAndResetRequestIntercepted();");
         DCHECK(result);
         return *result;
@@ -3438,7 +3437,7 @@ class ServiceWorkerWebRequestApiTest
   }
 
   void RegisterServiceWorker(const std::string& worker_path,
-                             const absl::optional<std::string>& scope) {
+                             const std::optional<std::string>& scope) {
     GURL url = embedded_test_server()->GetURL(
         "/service_worker/create_service_worker.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3459,7 +3458,7 @@ class ServiceWorkerWebRequestApiTest
     InstallRequestHeaderModifyingExtension();
 
     // Register a service worker and navigate to a page it controls.
-    RegisterServiceWorker(worker_script_name, absl::nullopt);
+    RegisterServiceWorker(worker_script_name, std::nullopt);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/service_worker/fetch_from_page.html")));
@@ -3816,8 +3815,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
+// TODO(crbug.com/1520416): enable this flaky test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_Initiator_SpanningIncognito DISABLED_Initiator_SpanningIncognito
+#else
+#define MAYBE_Initiator_SpanningIncognito Initiator_SpanningIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       Initiator_SpanningIncognito) {
+                       MAYBE_Initiator_SpanningIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -3845,7 +3850,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   )";
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  absl::optional<std::string> result =
+  std::optional<std::string> result =
       ExecuteScriptAndReturnString(extension_id, profile(), kScript);
   ASSERT_TRUE(result);
   EXPECT_EQ(base::StringPrintf("[\"%s\"]", url_origin.c_str()), *result);
@@ -3914,7 +3919,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_normal));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url_incognito));
-  absl::optional<std::string> result =
+  std::optional<std::string> result =
       ExecuteScriptAndReturnString(extension->id(), profile(), kScript);
   ASSERT_TRUE(result);
   EXPECT_EQ(base::StringPrintf("[\"%s\"]", origin_normal.c_str()), *result);
@@ -5197,7 +5202,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   EXPECT_EQ(redirected_url, web_contents->GetLastCommittedURL());
 
   // Check the parameters passed to the URLLoaderFactory.
-  absl::optional<network::ResourceRequest> resource_request =
+  std::optional<network::ResourceRequest> resource_request =
       monitor.GetRequestInfo(redirected_url);
   ASSERT_TRUE(resource_request.has_value());
   EXPECT_TRUE(resource_request->site_for_cookies.IsFirstParty(redirected_url));
@@ -5244,7 +5249,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   ASSERT_EQ(redirected_url, child_frame->GetLastCommittedURL());
 
   // Check the parameters passed to the URLLoaderFactory.
-  absl::optional<network::ResourceRequest> resource_request =
+  std::optional<network::ResourceRequest> resource_request =
       monitor.GetRequestInfo(redirected_url);
   ASSERT_TRUE(resource_request.has_value());
   EXPECT_TRUE(
@@ -6417,6 +6422,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
               const response = await fetch($1);
               if (response.ok) {
                  chrome.test.assertTrue(didInterceptAuth);
+                 chrome.test.succeed();
               } else {
                  chrome.test.fail();
               }
@@ -6431,9 +6437,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
   ResultCatcher result_catcher;
   LoadExtensionWithAdditionalJs(additional_js);
 
-  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
-  // an ASSERT_TRUE.
-  ASSERT_FALSE(result_catcher.GetNextResult());
+  ASSERT_TRUE(result_catcher.GetNextResult());
 }
 
 // This test is similar to TestOnAuthRequiredExtensionServiceWorker but the
@@ -6455,9 +6459,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
       content::EvalJs(web_contents,
                       content::JsReplace("doFetchInWorker($1);", MakeAuthUrl()))
           .ExtractString();
-  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
-  // an EXPECT_THAT with a different value.
-  EXPECT_THAT(fetch_response, testing::HasSubstr("Denied"));
+  EXPECT_THAT(fetch_response, testing::HasSubstr("<title>"));
 }
 
 // Tests the behavior of an extension that registers an event listener

@@ -97,7 +97,7 @@ std::string CreateBoundSessionParamsValidJson(std::string_view domain,
                             path.data());
 }
 
-absl::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
 SignatureAlgorithmFromString(std::string_view algorithm) {
   if (algorithm == "ES256") {
     return crypto::SignatureVerifier::ECDSA_SHA256;
@@ -105,7 +105,7 @@ SignatureAlgorithmFromString(std::string_view algorithm) {
     return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<std::string> GetDefaultCookiesAttributesLines(const GURL& url) {
@@ -288,12 +288,11 @@ class FakeServer {
   }
 
   [[nodiscard]] AssertionResult VerifyRegistrationJwt(std::string_view jwt) {
-    absl::optional<base::Value::Dict> header =
-        signin::ExtractHeaderFromJwt(jwt);
+    std::optional<base::Value::Dict> header = signin::ExtractHeaderFromJwt(jwt);
     if (!header) {
       return AssertionFailure() << "JWT header not found";
     }
-    absl::optional<base::Value::Dict> payload =
+    std::optional<base::Value::Dict> payload =
         signin::ExtractPayloadFromJwt(jwt);
     if (!payload) {
       return AssertionFailure() << "JWT payload not found";
@@ -309,7 +308,7 @@ class FakeServer {
     if (!algorithm_str) {
       return AssertionFailure() << "\"alg\" field is missing";
     }
-    absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+    std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
         SignatureAlgorithmFromString(*algorithm_str);
     if (!algorithm) {
       return AssertionFailure()

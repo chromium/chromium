@@ -53,8 +53,7 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   const KURL& ObservedUrl() const;
 
  private:
-  using ResponseReadyProperty =
-      ScriptPromiseProperty<Member<Response>, Member<DOMException>>;
+  using ResponseReadyProperty = ScriptPromiseProperty<Response, DOMException>;
 
   // Resolves a pending |response_ready_property_| with |response|, if it's not
   // null.

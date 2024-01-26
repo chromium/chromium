@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 public class LocationPermissionUpdater {
     private static final String TAG = "TWALocations";
 
-    private static final @ContentSettingsType int TYPE = ContentSettingsType.GEOLOCATION;
+    private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.GEOLOCATION;
 
     private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;

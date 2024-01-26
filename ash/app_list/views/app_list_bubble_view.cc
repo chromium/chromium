@@ -405,7 +405,7 @@ void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.Open", value);
       })));
@@ -479,7 +479,7 @@ void AppListBubbleView::StartHideAnimation(
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.Close", value);
       })));

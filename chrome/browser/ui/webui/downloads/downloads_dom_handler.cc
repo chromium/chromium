@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -184,6 +185,12 @@ void MaybeTriggerTrustSafetySurvey(download::DownloadItem* file,
   }
 }
 
+void RecordDownloadsPageValidatedHistogram(download::DownloadItem* item) {
+  base::UmaHistogramEnumeration(
+      "Download.UserValidatedDangerousDownload.DownloadsPage",
+      item->GetDangerType(), download::DOWNLOAD_DANGER_TYPE_MAX);
+}
+
 }  // namespace
 
 DownloadsDOMHandler::DownloadsDOMHandler(
@@ -314,6 +321,9 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
                             WarningAction::PROCEED);
     MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOADS_PAGE,
                                   WarningAction::PROCEED);
+
+    RecordDownloadsPageValidatedHistogram(file);
+
     // `file` is potentially deleted.
     file->ValidateDangerousDownload();
   }
@@ -357,6 +367,8 @@ void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
                           WarningAction::PROCEED);
   MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOAD_PROMPT,
                                 WarningAction::PROCEED);
+
+  RecordDownloadsPageValidatedHistogram(file);
 
   // `file` is potentially deleted.
   file->ValidateDangerousDownload();
@@ -711,6 +723,8 @@ void DownloadsDOMHandler::DangerPromptDone(
     item->ValidateInsecureDownload();
     return;
   }
+
+  RecordDownloadsPageValidatedHistogram(item);
 
   item->ValidateDangerousDownload();
 }

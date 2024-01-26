@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <random>
 #include <set>
@@ -65,7 +66,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -544,7 +544,7 @@ std::string GetOsIntegrationSubManagersTestName(
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                      WebAppManagement::Type source_type) {
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
@@ -560,7 +560,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   RandomHelper random(params.seed, params.non_zero);
 
   const std::string seed_str = base::NumberToString(params.seed);
-  absl::optional<std::string> relative_manifest_id;
+  std::optional<std::string> relative_manifest_id;
   if (random.next_bool()) {
     std::string path = "manifest_id_" + seed_str;
     if (random.next_bool()) {
@@ -577,11 +577,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
-  const absl::optional<SkColor> theme_color = random.next_uint();
-  absl::optional<SkColor> dark_mode_theme_color;
-  const absl::optional<SkColor> background_color = random.next_uint();
-  absl::optional<SkColor> dark_mode_background_color;
-  const absl::optional<SkColor> synced_theme_color = random.next_uint();
+  const std::optional<SkColor> theme_color = random.next_uint();
+  std::optional<SkColor> dark_mode_theme_color;
+  const std::optional<SkColor> background_color = random.next_uint();
+  std::optional<SkColor> dark_mode_background_color;
+  const std::optional<SkColor> synced_theme_color = random.next_uint();
   auto app = std::make_unique<WebApp>(app_id);
   std::vector<WebAppManagement::Type> management_types;
 
@@ -665,7 +665,20 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   const mojom::UserDisplayMode user_display_modes[3] = {
       mojom::UserDisplayMode::kBrowser, mojom::UserDisplayMode::kStandalone,
       mojom::UserDisplayMode::kTabbed};
-  app->SetUserDisplayMode(user_display_modes[random.next_uint(3)]);
+  // Explicitly set a UserDisplayMode for each platform (instead of calling
+  // `SetUserDisplayMode` which sets the current platform's value only) so the
+  // test expectations are consistent across platforms.
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    if (random.next_bool()) {
+      app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+    }
+    // Must have at least one platform's UserDisplayMode set.
+    if (!app->user_display_mode_non_cros().has_value() || random.next_bool()) {
+      app->SetUserDisplayModeCrOS(user_display_modes[random.next_uint(3)]);
+    }
+  } else {
+    app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+  }
 
   app->SetLastBadgingTime(random.next_time());
 
@@ -821,7 +834,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     // Use a separate random generator for CrOS so the result is deterministic
     // across cros and non-cros builds.
     RandomHelper cros_random(params.seed, params.non_zero);
-    auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
+    auto chromeos_data = std::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = cros_random.next_bool();
     chromeos_data->show_in_search_and_shelf = cros_random.next_bool();
     chromeos_data->show_in_management = cros_random.next_bool();
@@ -1042,7 +1055,7 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
 
 void SynchronizeOsIntegration(Profile* profile,
                               const webapps::AppId& app_id,
-                              absl::optional<SynchronizeOsOptions> options) {
+                              std::optional<SynchronizeOsOptions> options) {
   base::test::TestFuture<void> sync_future;
   WebAppProvider::GetForTest(profile)->scheduler().SynchronizeOsIntegration(
       app_id, sync_future.GetCallback(), options);

@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +24,10 @@
 struct event_base;
 struct event;
 namespace base {
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+BASE_EXPORT BASE_DECLARE_FEATURE(kMessagePumpEpoll);
+#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 
 class MessagePumpEpoll;
 
@@ -173,13 +178,6 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   };
 
   MessagePumpLibevent();
-
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-  // Constructs a MessagePumpLibevent which is forced to use epoll directly
-  // instead of libevent.
-  enum { kUseEpoll };
-  explicit MessagePumpLibevent(decltype(kUseEpoll));
-#endif
 
   MessagePumpLibevent(const MessagePumpLibevent&) = delete;
   MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;

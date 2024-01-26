@@ -353,6 +353,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayWithoutDrive")
             .DontMountVolumes()
             .NewDirectoryTree(),
+        TestCase("fileDisplayWithoutDriveThenDisable")
+            .DontMountVolumes()
+            .NewDirectoryTree(),
         TestCase("fileDisplayWithHiddenVolume").NewDirectoryTree(),
         TestCase("fileDisplayMountWithFakeItemSelected").NewDirectoryTree(),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected")
@@ -407,8 +410,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .DontMountVolumes(),
         TestCase("fileDisplayWithoutVolumesThenMountDrive").DontMountVolumes(),
         TestCase("fileDisplayWithoutDrive").DontMountVolumes(),
-        // Test is failing (crbug.com/1097013)
-        // TestCase("fileDisplayWithoutDriveThenDisable").DontMountVolumes(),
+        TestCase("fileDisplayWithoutDriveThenDisable").DontMountVolumes(),
         TestCase("fileDisplayWithHiddenVolume"),
         TestCase("fileDisplayMountWithFakeItemSelected"),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected"),

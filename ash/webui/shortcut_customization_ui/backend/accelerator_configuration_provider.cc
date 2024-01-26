@@ -712,30 +712,9 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
 // Get the default accelerators for the given accelerator id. The
 // accelerators are filtered and aliased accelerators are included.
 void AcceleratorConfigurationProvider::GetDefaultAcceleratorsForId(
-    uint32_t actionId,
+    uint32_t action_id,
     GetDefaultAcceleratorsForIdCallback callback) {
-  const std::vector<ui::Accelerator>& raw_default_accelerators =
-      ash_accelerator_configuration_->GetDefaultAcceleratorsForId(actionId);
-
-  std::vector<ui::Accelerator> default_accelerators;
-  for (const auto& accelerator : raw_default_accelerators) {
-    // Filter the hidden accelerators.
-    if (IsAcceleratorHidden(actionId, accelerator)) {
-      continue;
-    }
-    // Get the alias accelerators.
-    std::vector<ui::Accelerator> accelerator_aliases =
-        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
-    // Return early if there are no alias accelerators. This will filter the
-    // disabled accelerators due to unavailable keys.
-    if (accelerator_aliases.empty()) {
-      continue;
-    }
-    for (const auto& accelerator_alias : accelerator_aliases) {
-      default_accelerators.push_back(accelerator_alias);
-    }
-  }
-  std::move(callback).Run(default_accelerators);
+  std::move(callback).Run(GetDefaultAcceleratorsForId(action_id));
 }
 
 void AcceleratorConfigurationProvider::GetAccelerators(
@@ -843,7 +822,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   // Validate the source and action, if no errors then validate the accelerator.
   std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
       source, action_id, ash_accelerator_configuration_);
-  if (!error_result.has_value()) {
+  if (!error_result.has_value() &&
+      !base::Contains(GetDefaultAcceleratorsForId(action_id), accelerator)) {
     error_result = ValidateAccelerator(accelerator);
   }
 
@@ -972,7 +952,9 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
       source, action_id, ash_accelerator_configuration_);
-  if (!error_result.has_value()) {
+  if (!error_result.has_value() &&
+      !base::Contains(GetDefaultAcceleratorsForId(action_id),
+                      new_accelerator)) {
     error_result = ValidateAccelerator(new_accelerator);
   }
 
@@ -1357,6 +1339,12 @@ AcceleratorConfigurationProvider::MaybeHandleNonSearchAccelerator(
     const ui::Accelerator& accelerator,
     mojom::AcceleratorSource source,
     AcceleratorActionId action_id) {
+  // Disable non-search accelerator warning when re-adding the default
+  // accelerator.
+  if (base::Contains(GetDefaultAcceleratorsForId(action_id), accelerator)) {
+    return AcceleratorConflictErrorState::kStandby;
+  }
+
   if (conflict_error_state_ !=
       AcceleratorConflictErrorState::kAwaitingNonSearchConfirmation) {
     pending_accelerator_.reset();
@@ -1383,6 +1371,33 @@ void AcceleratorConfigurationProvider::SetLayoutDetailsMapForTesting(
     accelerator_layout_lookup_[GetUuid(layout.source, layout.action_id)] =
         layout;
   }
+}
+
+std::vector<ui::Accelerator>
+AcceleratorConfigurationProvider::GetDefaultAcceleratorsForId(
+    uint32_t action_id) const {
+  const std::vector<ui::Accelerator>& raw_default_accelerators =
+      ash_accelerator_configuration_->GetDefaultAcceleratorsForId(action_id);
+
+  std::vector<ui::Accelerator> default_accelerators;
+  for (const auto& accelerator : raw_default_accelerators) {
+    // Filter the hidden accelerators.
+    if (IsAcceleratorHidden(action_id, accelerator)) {
+      continue;
+    }
+    // Get the alias accelerators.
+    std::vector<ui::Accelerator> accelerator_aliases =
+        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+    // Return early if there are no alias accelerators. This will filter the
+    // disabled accelerators due to unavailable keys.
+    if (accelerator_aliases.empty()) {
+      continue;
+    }
+    for (const auto& accelerator_alias : accelerator_aliases) {
+      default_accelerators.push_back(accelerator_alias);
+    }
+  }
+  return default_accelerators;
 }
 
 mojom::TextAcceleratorPropertiesPtr

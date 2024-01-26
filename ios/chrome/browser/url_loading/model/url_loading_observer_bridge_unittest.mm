@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/rand_util.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -36,7 +37,7 @@ class UrlLoadingObserverBridgeTest : public PlatformTest {
         std::make_unique<base::ScopedObservation<UrlLoadingNotifierBrowserAgent,
                                                  UrlLoadingObserver>>(
             observer_bridge_.get());
-    scoped_observation_->Observe(url_loading_notifier_);
+    scoped_observation_->Observe(url_loading_notifier_.get());
   }
 
   // Returns URL loading notifier.
@@ -53,7 +54,7 @@ class UrlLoadingObserverBridgeTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   // Test dependencies.
-  UrlLoadingNotifierBrowserAgent* url_loading_notifier_;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   id observer_;
   std::unique_ptr<UrlLoadingObserverBridge> observer_bridge_;
   std::unique_ptr<base::ScopedObservation<UrlLoadingNotifierBrowserAgent,

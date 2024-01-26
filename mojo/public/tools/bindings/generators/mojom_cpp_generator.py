@@ -231,7 +231,6 @@ class Generator(generator.Generator):
           mojom.IsDoubleKind(kind) or mojom.IsFloatKind(kind) or
           mojom.IsAnyHandleKind(kind) or
           mojom.IsInterfaceKind(kind) or
-          mojom.IsInterfaceRequestKind(kind) or
           mojom.IsAssociatedKind(kind) or
           mojom.IsPendingRemoteKind(kind) or
           mojom.IsPendingReceiverKind(kind)):
@@ -713,9 +712,6 @@ class Generator(generator.Generator):
     if mojom.IsInterfaceKind(kind):
       return "%sPtrInfo" % self._GetNameForKind(
           kind, add_same_module_namespaces=add_same_module_namespaces)
-    if mojom.IsInterfaceRequestKind(kind):
-      return "%sRequest" % self._GetNameForKind(
-          kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsPendingRemoteKind(kind):
       return "::mojo::PendingRemote<%s>" % self._GetNameForKind(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
@@ -727,12 +723,6 @@ class Generator(generator.Generator):
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsPendingAssociatedReceiverKind(kind):
       return "::mojo::PendingAssociatedReceiver<%s>" % self._GetNameForKind(
-          kind.kind, add_same_module_namespaces=add_same_module_namespaces)
-    if mojom.IsAssociatedInterfaceKind(kind):
-      return "%sAssociatedPtrInfo" % self._GetNameForKind(
-          kind.kind, add_same_module_namespaces=add_same_module_namespaces)
-    if mojom.IsAssociatedInterfaceRequestKind(kind):
-      return "%sAssociatedRequest" % self._GetNameForKind(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsStringKind(kind):
       if self.for_blink:
@@ -842,8 +832,7 @@ class Generator(generator.Generator):
     return False
 
   def _IsReceiverKind(self, kind):
-    return (mojom.IsPendingReceiverKind(kind) or
-            mojom.IsInterfaceRequestKind(kind))
+    return mojom.IsPendingReceiverKind(kind)
 
   def _IsCopyablePassByValue(self, kind):
     if not self._IsTypemappedKind(kind):
@@ -896,13 +885,11 @@ class Generator(generator.Generator):
                self._GetCppFieldType(kind.value_kind)))
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return "mojo::internal::Interface_Data"
-    if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
+    if mojom.IsPendingReceiverKind(kind):
       return "mojo::internal::Handle_Data"
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+    if mojom.IsPendingAssociatedRemoteKind(kind):
       return "mojo::internal::AssociatedInterface_Data"
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if mojom.IsPendingAssociatedReceiverKind(kind):
       return "mojo::internal::AssociatedEndpointHandle_Data"
     if mojom.IsEnumKind(kind):
       return "int32_t"
@@ -1087,19 +1074,15 @@ class Generator(generator.Generator):
       return "mojo::StringDataView"
     if mojom.IsInterfaceKind(kind):
       return "%sPtrDataView" % _GetName(kind)
-    if mojom.IsInterfaceRequestKind(kind):
-      return "%sRequestDataView" % _GetName(kind.kind)
     if mojom.IsPendingRemoteKind(kind):
       return ("mojo::InterfacePtrDataView<%sInterfaceBase>" %
               _GetName(kind.kind))
     if mojom.IsPendingReceiverKind(kind):
       return ("mojo::InterfaceRequestDataView<%sInterfaceBase>" %
               _GetName(kind.kind))
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+    if mojom.IsPendingAssociatedRemoteKind(kind):
       return "%sAssociatedPtrInfoDataView" % _GetName(kind.kind)
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if mojom.IsPendingAssociatedReceiverKind(kind):
       return "%sAssociatedRequestDataView" % _GetName(kind.kind)
     if mojom.IsGenericHandleKind(kind):
       return "mojo::ScopedHandle"

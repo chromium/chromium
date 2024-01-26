@@ -5,10 +5,12 @@
 #include "pdf/pdfium/pdfium_print.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <utility>
 
 #include "build/build_config.h"
+#include "pdf/flatten_pdf_result.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -43,9 +45,13 @@ bool ShouldDoNup(int pages_per_sheet) {
   return pages_per_sheet > 1;
 }
 
-// Returns the valid, positive page count, or 0 on failure.
-int GetDocumentPageCount(FPDF_DOCUMENT doc) {
-  return std::max(FPDF_GetPageCount(doc), 0);
+// Returns the valid, positive page count, or std::nullopt on failure.
+std::optional<uint32_t> GetDocumentPageCount(FPDF_DOCUMENT doc) {
+  const int32_t page_count = FPDF_GetPageCount(doc);
+  if (page_count <= 0) {
+    return std::nullopt;
+  }
+  return page_count;
 }
 
 // Set the destination page size and content area in points based on source
@@ -216,11 +222,11 @@ ScopedFPDFDocument CreateNupPdfDocument(ScopedFPDFDocument doc,
 std::vector<uint8_t> ConvertDocToBuffer(ScopedFPDFDocument doc) {
   DCHECK(doc);
 
-  std::vector<uint8_t> buffer;
   PDFiumMemBufferFileWrite output_file_write;
-  if (FPDF_SaveAsCopy(doc.get(), &output_file_write, 0))
-    buffer = output_file_write.TakeBuffer();
-  return buffer;
+  if (!FPDF_SaveAsCopy(doc.get(), &output_file_write, 0)) {
+    return std::vector<uint8_t>();
+  }
+  return output_file_write.TakeBuffer();
 }
 
 int GetBlockForJpeg(void* param,
@@ -234,17 +240,23 @@ int GetBlockForJpeg(void* param,
   return 1;
 }
 
-bool FlattenPrintData(FPDF_DOCUMENT doc) {
+// On success returns the number of flattened pages.
+// On failure returns std::nullopt.
+std::optional<uint32_t> FlattenPrintData(FPDF_DOCUMENT doc) {
   DCHECK(doc);
 
-  int page_count = FPDF_GetPageCount(doc);
-  for (int i = 0; i < page_count; ++i) {
+  std::optional<uint32_t> page_count = GetDocumentPageCount(doc);
+  if (!page_count) {
+    return std::nullopt;
+  }
+  for (uint32_t i = 0; i < *page_count; ++i) {
     ScopedFPDFPage page(FPDF_LoadPage(doc, i));
     DCHECK(page);
-    if (FPDFPage_Flatten(page.get(), FLAT_PRINT) == FLATTEN_FAIL)
-      return false;
+    if (FPDFPage_Flatten(page.get(), FLAT_PRINT) == FLATTEN_FAIL) {
+      return std::nullopt;
+    }
   }
-  return true;
+  return *page_count;
 }
 
 gfx::RectF CSSPixelsToPoints(const gfx::RectF& rect) {
@@ -269,10 +281,17 @@ PDFiumPrint::~PDFiumPrint() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
-  if (!FlattenPrintData(doc.get()))
-    return std::vector<uint8_t>();
-  return ConvertDocToBuffer(std::move(doc));
+std::optional<FlattenPdfResult> PDFiumPrint::CreateFlattenedPdf(
+    ScopedFPDFDocument doc) {
+  std::optional<uint32_t> pages_flattened = FlattenPrintData(doc.get());
+  if (!pages_flattened) {
+    return std::nullopt;
+  }
+  std::vector<uint8_t> buffer = ConvertDocToBuffer(std::move(doc));
+  if (buffer.empty()) {
+    return std::nullopt;
+  }
+  return FlattenPdfResult(std::move(buffer), *pages_flattened);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -284,9 +303,8 @@ std::vector<uint8_t> PDFiumPrint::CreateNupPdf(
     const gfx::Rect& printable_area) {
   ScopedFPDFDocument nup_doc = CreateNupPdfDocument(
       std::move(doc), pages_per_sheet, page_size, printable_area);
-  if (!nup_doc)
-    return std::vector<uint8_t>();
-  return ConvertDocToBuffer(std::move(nup_doc));
+  return nup_doc ? ConvertDocToBuffer(std::move(nup_doc))
+                 : std::vector<uint8_t>();
 }
 
 // static
@@ -314,16 +332,14 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
     const std::vector<int>& page_numbers,
     const blink::WebPrintParams& print_params) {
-  std::vector<uint8_t> buffer;
   ScopedFPDFDocument output_doc = CreatePrintPdf(page_numbers, print_params);
   if (print_params.rasterize_pdf) {
     output_doc =
         CreateRasterPdf(std::move(output_doc), print_params.printer_dpi);
   }
-
-  if (GetDocumentPageCount(output_doc.get()))
-    buffer = ConvertDocToBuffer(std::move(output_doc));
-  return buffer;
+  return GetDocumentPageCount(output_doc.get())
+             ? ConvertDocToBuffer(std::move(output_doc))
+             : std::vector<uint8_t>();
 }
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
@@ -365,15 +381,16 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
 
 ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(ScopedFPDFDocument doc,
                                                 int dpi) {
-  int page_count = GetDocumentPageCount(doc.get());
-  if (page_count == 0)
+  std::optional<uint32_t> page_count = GetDocumentPageCount(doc.get());
+  if (!page_count) {
     return nullptr;
+  }
 
   ScopedFPDFDocument rasterized_doc(FPDF_CreateNewDocument());
   DCHECK(rasterized_doc);
   FPDF_CopyViewerPreferences(rasterized_doc.get(), doc.get());
 
-  for (int i = 0; i < page_count; ++i) {
+  for (uint32_t i = 0; i < *page_count; ++i) {
     ScopedFPDFPage pdf_page(FPDF_LoadPage(doc.get(), i));
     if (!pdf_page)
       return nullptr;

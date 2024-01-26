@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="1415402041810619267">URL కుదించబడింది</translation>
 <translation id="1426410128494586442">అవును</translation>
+<translation id="1434873037477293673">ధర తగ్గింపు కార్డ్</translation>
 <translation id="1448064542941920355">జూమ్ స్థాయిని తగ్గించండి</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> సైట్}other{<ph name="SITE_COUNT" /> సైట్‌లు}}</translation>
 <translation id="1510341833810331442">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌లకు అనుమతి లేదు</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">గుర్తింపు సర్వీస్‌ల నుండి సైన్-ఇన్ ప్రాంప్ట్‌లను సైట్‌లు చూపగలవు.</translation>
 <translation id="2790501146643349491">ఆన్‌లో ఉన్నప్పుడు, ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడం, స్వీకరించడం పూర్తి చేయగలవు. ఆఫ్‌లో ఉన్నప్పుడు, ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడం లేదా స్వీకరించడం పూర్తి చేయడం సాధ్యం కాదు.</translation>
 <translation id="2822354292072154809">మీరు <ph name="CHOSEN_OBJECT_NAME" /> కోసం అన్ని సైట్ అనుమతులను ఖచ్చితంగా రీసెట్ చేయాలనుకుంటున్నారా ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">మొబైల్ వీక్షణను రిక్వెస్ట్ చేయండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
+<translation id="6452138246455930388"><ph name="DOMAIN_NAME" />‌కు చెందిన <ph name="PRODUCT_NAME" /> ధర <ph name="OLD_PRICE" /> నుండి <ph name="NEW_PRICE" />‌కు తగ్గింది, ఆ ధర తెరిచిన మీ ట్యాబ్‌లో చూపబడింది</translation>
 <translation id="6500423977866688905">విండో కుదించుకు పోయినప్పుడు, మొబైల్ వీక్షణను రిక్వెస్ట్ చేయండి</translation>
 <translation id="6527303717912515753">షేర్ చేయండి</translation>
 <translation id="652937045869844725">థర్డ్-పార్టీ కుక్కీలను అనుమతించడానికి ట్రై చేయండి, అంటే తక్కువ రక్షణ ఉంటుంది కానీ సైట్ ఫీచర్‌లు పని చేసే అవకాశం ఎక్కువగా ఉంటుంది</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">క్రిందికి తరలించు</translation>
 <translation id="6749077623962119521">అనుమతులను రీసెట్ చేయాలా?</translation>
 <translation id="6766622839693428701">మూసివేయడానికి దిగువకు స్వైప్ చేయండి.</translation>
+<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> నుండి <ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> కోసం ఒక ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6818926723028410516">అంశాలను ఎంచుకోండి</translation>
 <translation id="6864395892908308021">ఈ పరికరం NFCని రీడ్ చేయదు</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> నుండి</translation>
 <translation id="6912998170423641340">క్లిప్‌బోర్డ్ నుండి వచనం మరియు చిత్రాలను చదవకుండా సైట్‌లు బ్లాక్ చేయబడతాయి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6950072572526089586">మీరు ఏం చేస్తున్నారు అనే దానికి సంబంధించిన సమాచారాన్ని మీరు చూసిన సైట్ సేవ్ చేయగలదు, తద్వారా అది మీరు ఊహించిన విధంగా పని చేయగలదు — ఉదాహరణకు, సైట్‌లో మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడానికి లేదా మీ షాపింగ్ కార్ట్‌లో ఐటెమ్‌లను సేవ్ చేయడానికి. తరచుగా సైట్‌లు ఈ సమాచారాన్ని మీ పరికరంలో తాత్కాలికంగా సేవ్ చేస్తాయి.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">ది వండర్‌ఫుల్ విజర్డ్ ఆఫ్ ఆజ్</translation>
 <translation id="7684642910516280563">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించడానికి సైట్‌ను అనుమతించవద్దు</translation>
 <translation id="7719367874908701697">పేజీ జూమ్</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />"ను దాచండి</translation>
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>

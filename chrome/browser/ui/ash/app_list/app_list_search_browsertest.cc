@@ -11,7 +11,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "base/memory/raw_ptr.h"
+#include "ash/test/active_window_waiter.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
@@ -20,49 +20,16 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/app_constants/constants.h"
 #include "content/public/test/browser_test.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
-
-// Waits for a window to be activated and returns it via the Wait() method.
-class ActiveWindowWaiter : public wm::ActivationChangeObserver {
- public:
-  explicit ActiveWindowWaiter(aura::Window* root_window)
-      : root_window_(root_window) {
-    wm::GetActivationClient(root_window_)->AddObserver(this);
-  }
-
-  ~ActiveWindowWaiter() override {
-    if (!found_window_) {
-      wm::GetActivationClient(root_window_)->RemoveObserver(this);
-    }
-  }
-
-  aura::Window* Wait() {
-    run_loop_.Run();
-    return found_window_;
-  }
-
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
-    if (gained_active) {
-      found_window_ = gained_active;
-      wm::GetActivationClient(root_window_)->RemoveObserver(this);
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> root_window_ = nullptr;
-  raw_ptr<aura::Window> found_window_ = nullptr;
-};
 
 class AppListSearchBrowserTest : public InProcessBrowserTest {
  public:
@@ -70,6 +37,12 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
     // No need for a browser window.
     set_launch_browser_for_testing(nullptr);
   }
+};
+
+class AppListSearchWithAppShortcutsBrowserTest
+    : public AppListSearchBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kCrosWebAppShortcutUiUpdate};
 };
 
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
@@ -108,48 +81,105 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
   results_changed_waiter.Wait();
   results_waiter.Wait();
 
-  // The search result should exist in the view hierarchy.
-  AppListTestHelper helper;
-  AppListSearchView* search_view = helper.GetBubbleAppListSearchView();
-  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
-      result_containers = search_view->result_container_views_for_test();
-  // The result is of type "App", in container index 2.
-  ASSERT_GE(result_containers.size(), 2u);
+  // Search UI updates are scheduled by posting a task on the main thread, run
+  // loop to run scheduled result update tasks.
+  base::RunLoop().RunUntilIdle();
 
-  bool found_apps = false;
-  // Check that one of the `result_containers` is kApps.
-  for (SearchResultContainerView* container : result_containers) {
-    SearchResultListView* list_view =
-        static_cast<SearchResultListView*>(container);
-    if (list_view && list_view->list_type_for_test() ==
-                         SearchResultListView::SearchResultListType::kApps) {
-      found_apps = true;
+  SearchResultListView* top_result_list =
+      AppListTestApi().GetTopVisibleSearchResultListView();
+  ASSERT_TRUE(top_result_list);
+  EXPECT_EQ(top_result_list->list_type_for_test(),
+            SearchResultListView::SearchResultListType::kApps);
+  SearchResultView* top_result_view = top_result_list->GetResultViewAt(0);
+  ASSERT_TRUE(top_result_view);
+  ASSERT_TRUE(top_result_view->result());
 
-      // The result is the first entry in the container.
-      SearchResultView* result_view = list_view->GetResultViewAt(0);
-      EXPECT_TRUE(result_view);
+  EXPECT_EQ(u"Settings", top_result_view->result()->title());
 
-      break;
-    }
-  }
-  EXPECT_TRUE(found_apps);
-
-  // Open the search result. In tests, the result view doesn't have a "result"
-  // associated with it so the test cannot directly activate the view. Activate
-  // at the client level instead.
   ActiveWindowWaiter window_waiter(primary_root_window);
-  AppListModelUpdater* model_updater = ::test::GetModelUpdater(client);
-  ASSERT_TRUE(model_updater);
-  client->OpenSearchResult(model_updater->model_id(), app_id, ui::EF_NONE,
-                           AppListLaunchedFrom::kLaunchedFromSearchBox,
-                           AppListLaunchType::kAppSearchResult, 0,
-                           /*launch_as_default=*/false);
+
+  // Open the search result by clicking on it.
+  ui::test::EventGenerator event_generator(primary_root_window);
+  event_generator.MoveMouseTo(
+      top_result_view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
 
   // Wait for the OS Settings window to activate.
   aura::Window* app_window = window_waiter.Wait();
   ASSERT_TRUE(app_window);
   EXPECT_EQ(
       app_id,
+      ShelfID::Deserialize(app_window->GetProperty(ash::kShelfIDKey)).app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(AppListSearchWithAppShortcutsBrowserTest,
+                       SearchWebAppShortcut) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  ASSERT_TRUE(profile);
+  // Associate `client` with the current profile.
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  client->UpdateProfile();
+
+  // Show the launcher.
+  aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  AppListTestApi().WaitForBubbleWindowInRootWindow(
+      primary_root_window,
+      /*wait_for_opening_animation=*/true);
+
+  // The search box should be active.
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  ASSERT_TRUE(search_box_view);
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+
+  // Install a web based app shortcut.
+  GURL shortcut_url = GURL("http://example.org/");
+  std::u16string shortcut_name = u"Example";
+  web_app::test::InstallShortcut(
+      profile, base::UTF16ToUTF8(shortcut_name), shortcut_url,
+      /*create_default_icon =*/true, /*is_policy_install=*/false);
+
+  // Search for the shortcut and wait for the result.
+  const std::u16string app_query = u"Example";
+  app_list::SearchResultsChangedWaiter results_changed_waiter(
+      AppListClientImpl::GetInstance()->search_controller(),
+      {app_list::ResultType::kAppShortcutV2});
+  app_list::ResultsWaiter results_waiter(app_query);
+
+  AppListTestApi().SimulateSearch(app_query);
+
+  results_changed_waiter.Wait();
+  results_waiter.Wait();
+
+  // Search UI updates are scheduled by posting a task on the main thread, run
+  // loop to run scheduled result update tasks.
+  base::RunLoop().RunUntilIdle();
+
+  SearchResultListView* top_result_list =
+      AppListTestApi().GetTopVisibleSearchResultListView();
+  ASSERT_TRUE(top_result_list);
+  EXPECT_EQ(top_result_list->list_type_for_test(),
+            SearchResultListView::SearchResultListType::kAppShortcuts);
+  SearchResultView* top_result_view = top_result_list->GetResultViewAt(0);
+  ASSERT_TRUE(top_result_view);
+  ASSERT_TRUE(top_result_view->result());
+
+  EXPECT_EQ(u"Example", top_result_view->result()->title());
+
+  ActiveWindowWaiter window_waiter(primary_root_window);
+
+  // Open the search result by clicking on it.
+  ui::test::EventGenerator event_generator(primary_root_window);
+  event_generator.MoveMouseTo(
+      top_result_view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  // Wait for the app shortcut window to activate.
+  aura::Window* app_window = window_waiter.Wait();
+  ASSERT_TRUE(app_window);
+  EXPECT_EQ(
+      app_constants::kChromeAppId,
       ShelfID::Deserialize(app_window->GetProperty(ash::kShelfIDKey)).app_id);
 }
 

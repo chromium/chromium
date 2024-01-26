@@ -38,7 +38,7 @@ enum ComponentsColorIds : ui::ColorId {
 
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
-#include "ui/color/color_id_macros.inc"
+#include "ui/color/color_id_macros.inc"  // NOLINT(build/include)
 
 // clang-format on
 

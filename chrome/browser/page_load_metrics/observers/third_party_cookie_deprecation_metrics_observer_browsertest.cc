@@ -69,7 +69,7 @@ struct Allow3PCMechanismBrowserTestCase {
   bool tracking_protection_onboard = false;
 };
 
-// Skip complex test cases setting for TPCD_SUPPORT and TPCD_HEURISTICS since
+// Skip complex test cases setting for TPCD_TRIAL and TPCD_HEURISTICS since
 // they have similar logics to TPCD_METADATA.
 const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
     {

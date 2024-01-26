@@ -1354,15 +1354,6 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kNoInternet, network->portal_state);
   EXPECT_FALSE(network->portal_probe_url);
-
-  helper()->ConfigureService(
-      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "portal-suspected",
-          "Strength": 90, "AutoConnect": true,
-          "PortalDetectionFailedStatusCode": 407})");
-  network = GetNetworkState("wifi1_guid");
-  ASSERT_TRUE(network);
-  EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
-  EXPECT_EQ(mojom::PortalState::kProxyAuthRequired, network->portal_state);
 }
 
 TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {

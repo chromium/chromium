@@ -86,7 +86,6 @@ void VolumeMap::LoadVolumeMap(
 
   if (new_map.empty()) {
     LOG(FATAL) << "No entries in volume map.";
-    return;
   }
 
   if (new_map[0].level > 0.0) {

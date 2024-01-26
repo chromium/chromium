@@ -25,12 +25,15 @@ namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
 
+namespace ash::common {
+class SeaPenProvider;
+}  // namespace ash::common
+
 namespace ash::personalization_app {
 
 class PersonalizationAppUI;
 class PersonalizationAppAmbientProvider;
 class PersonalizationAppKeyboardBacklightProvider;
-class PersonalizationAppSeaPenProvider;
 class PersonalizationAppThemeProvider;
 class PersonalizationAppWallpaperProvider;
 class PersonalizationAppUserProvider;
@@ -53,7 +56,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
       std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
       std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
           keyboard_backlight_provider,
-      std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider,
+      std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider,
       std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
       std::unique_ptr<PersonalizationAppUserProvider> user_provider,
       std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider);
@@ -102,7 +105,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
       keyboard_backlight_provider_;
-  std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider_;
+  std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider_;
   std::unique_ptr<PersonalizationAppThemeProvider> theme_provider_;
   std::unique_ptr<PersonalizationAppUserProvider> user_provider_;
   std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider_;

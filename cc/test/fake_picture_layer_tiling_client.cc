@@ -84,10 +84,6 @@ FakePictureLayerTilingClient::GetPaintWorkletRecords() const {
   return paint_worklet_records_;
 }
 
-bool FakePictureLayerTilingClient::IsDirectlyCompositedImage() const {
-  return false;
-}
-
 bool FakePictureLayerTilingClient::ScrollInteractionInProgress() const {
   return false;
 }

@@ -61,7 +61,9 @@ enum NotificationTypeDetailed : int {
   PHONEHUB_PRIORITY_ZERO = 41,
   PHONEHUB_PRIORITY_ONE = 42,
   PHONEHUB_PRIORITY_TWO = 43,
-  kMaxValue = PHONEHUB_PRIORITY_TWO,
+  CHROME_APP_PRIORITY_OTHER = 44,
+  CROSTINI = 45,
+  kMaxValue = CROSTINI,
 };
 
 // These are the types of notification view that we are interested in recording

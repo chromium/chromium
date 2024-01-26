@@ -35,7 +35,7 @@ class PlatformAuthPolicyObserverTest : public InProcessBrowserTest {
  protected:
   PlatformAuthPolicyObserverTest() = default;
 
-  absl::optional<PlatformAuthPolicyObserver> platform_auth_policy_observer_;
+  std::optional<PlatformAuthPolicyObserver> platform_auth_policy_observer_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 

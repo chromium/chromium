@@ -23,7 +23,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"

@@ -55,9 +55,11 @@ struct KeyboardPolicies {
   //   DeviceSwitchFunctionKeysBehaviorEnabled.yaml
   InputDeviceSettingsPolicy? enable_meta_fkey_rewrites_policy;
   // This policy is defined at components/policy/resources/templates/
-  //   policy_definitions/Miscellaneous/
-  //   DeviceExtendedFkeysModifier.yaml
-  InputDeviceSettingsFkeyPolicy? extended_fkeys_policy;
+  //   policy_definitions/Miscellaneous/F11KeyModifier.yaml
+  InputDeviceSettingsFkeyPolicy? f11_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/F12KeyModifier.yaml
+  InputDeviceSettingsFkeyPolicy? f12_key_policy;
 };
 
 // Represents the current set of mouse enterprise policies. All members are

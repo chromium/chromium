@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sessions/core/tab_restore_service_impl.h"
-
 #include <stddef.h>
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,6 +37,7 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_client.h"
+#include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -50,7 +50,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 typedef sessions::TabRestoreService::Entry Entry;
@@ -102,7 +101,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD0(GetExtraDataForWindow,
                      std::map<std::string, std::string>());
   MOCK_CONST_METHOD1(GetTabGroupForTab,
-                     absl::optional<tab_groups::TabGroupId>(int index));
+                     std::optional<tab_groups::TabGroupId>(int index));
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
                      const tab_groups::TabGroupVisualData*(
                          const tab_groups::TabGroupId& group));
@@ -120,7 +119,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
                int,
                int,
                (const std::string&),
-               absl::optional<tab_groups::TabGroupId>,
+               std::optional<tab_groups::TabGroupId>,
                (const tab_groups::TabGroupVisualData&),
                bool,
                bool,
@@ -133,7 +132,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_METHOD(sessions::LiveTab*,
               ReplaceRestoredTab,
               ((const std::vector<SerializedNavigationEntry>&),
-               absl::optional<tab_groups::TabGroupId>,
+               std::optional<tab_groups::TabGroupId>,
                int,
                (const std::string&),
                (const sessions::PlatformSpecificTabData*),
@@ -280,10 +279,10 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   // |group_visual_data| is also present, sets |group|'s visual data.
   void AddWindowWithOneTabToSessionService(
       bool pinned,
-      absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
-      absl::optional<tab_groups::TabGroupVisualData> group_visual_data =
-          absl::nullopt,
-      absl ::optional<ExtraData> extra_data = absl::nullopt) {
+      std::optional<tab_groups::TabGroupId> group = std::nullopt,
+      std::optional<tab_groups::TabGroupVisualData> group_visual_data =
+          std::nullopt,
+      absl ::optional<ExtraData> extra_data = std::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -414,7 +413,7 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
   EXPECT_EQ(url3_, tab->navigations[2].virtual_url());
   EXPECT_EQ(user_agent_override_.ua_string_override,
             tab->user_agent_override.ua_string_override);
-  absl::optional<blink::UserAgentMetadata> client_hints_override =
+  std::optional<blink::UserAgentMetadata> client_hints_override =
       blink::UserAgentMetadata::Demarshal(
           tab->user_agent_override.opaque_ua_metadata_override);
   EXPECT_EQ(user_agent_override_.ua_metadata_override, client_hints_override);

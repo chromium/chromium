@@ -7,9 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString* const kDownloadManagerDownloadToFilesAccessibilityIdentifier;
-extern NSString* const kDownloadManagerDownloadToDriveAccessibilityIdentifier;
+extern NSString* const kDownloadManagerDownloadAccessibilityIdentifier;
 extern NSString* const kDownloadManagerOpenInAccessibilityIdentifier;
+extern NSString* const kDownloadManagerOpenInDriveAccessibilityIdentifier;
+extern NSString* const kDownloadManagerInstallAppAccessibilityIdentifier;
 extern NSString* const kDownloadManagerTryAgainAccessibilityIdentifier;
 
 // Duration for all animations used in Download Manager.

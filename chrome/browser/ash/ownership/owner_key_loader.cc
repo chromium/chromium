@@ -417,7 +417,7 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
   }
 
   // If the policies are empty, check the local state PrefService.
-  absl::optional<std::string> owner_email =
+  std::optional<std::string> owner_email =
       user_manager::UserManager::Get()->GetOwnerEmail();
 
   if (owner_email.has_value() &&

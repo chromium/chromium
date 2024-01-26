@@ -4,6 +4,8 @@
 
 #include "net/cert/asn1_util.h"
 
+#include <string_view>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
@@ -157,7 +159,7 @@ bool SeekToExtensions(bssl::der::Input in,
 // successful. |*out_extension_present| will be true iff the extension was
 // found. In the case where it was found, |*out_extension| will describe the
 // extension, or is undefined on parse error or if the extension is missing.
-bool ExtractExtensionWithOID(base::StringPiece cert,
+bool ExtractExtensionWithOID(std::string_view cert,
                              bssl::der::Input extension_oid,
                              bool* out_extension_present,
                              bssl::ParsedExtension* out_extension) {
@@ -191,8 +193,8 @@ bool ExtractExtensionWithOID(base::StringPiece cert,
 
 }  // namespace
 
-bool ExtractSubjectFromDERCert(base::StringPiece cert,
-                               base::StringPiece* subject_out) {
+bool ExtractSubjectFromDERCert(std::string_view cert,
+                               std::string_view* subject_out) {
   bssl::der::Parser parser;
   if (!SeekToSubject(bssl::der::Input(cert), &parser)) {
     return false;
@@ -204,8 +206,7 @@ bool ExtractSubjectFromDERCert(base::StringPiece cert,
   return true;
 }
 
-bool ExtractSPKIFromDERCert(base::StringPiece cert,
-                            base::StringPiece* spki_out) {
+bool ExtractSPKIFromDERCert(std::string_view cert, std::string_view* spki_out) {
   bssl::der::Parser parser;
   if (!SeekToSPKI(bssl::der::Input(cert), &parser)) {
     return false;
@@ -217,8 +218,8 @@ bool ExtractSPKIFromDERCert(base::StringPiece cert,
   return true;
 }
 
-bool ExtractSubjectPublicKeyFromSPKI(base::StringPiece spki,
-                                     base::StringPiece* spk_out) {
+bool ExtractSubjectPublicKeyFromSPKI(std::string_view spki,
+                                     std::string_view* spk_out) {
   // From RFC 5280, Section 4.1
   //   SubjectPublicKeyInfo  ::=  SEQUENCE  {
   //     algorithm            AlgorithmIdentifier,
@@ -248,7 +249,7 @@ bool ExtractSubjectPublicKeyFromSPKI(base::StringPiece spki,
   return true;
 }
 
-bool HasCanSignHttpExchangesDraftExtension(base::StringPiece cert) {
+bool HasCanSignHttpExchangesDraftExtension(std::string_view cert) {
   // kCanSignHttpExchangesDraftOid is the DER encoding of the OID for
   // canSignHttpExchangesDraft defined in:
   // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html
@@ -270,9 +271,9 @@ bool HasCanSignHttpExchangesDraftExtension(base::StringPiece cert) {
 }
 
 bool ExtractSignatureAlgorithmsFromDERCert(
-    base::StringPiece cert,
-    base::StringPiece* cert_signature_algorithm_sequence,
-    base::StringPiece* tbs_signature_algorithm_sequence) {
+    std::string_view cert,
+    std::string_view* cert_signature_algorithm_sequence,
+    std::string_view* tbs_signature_algorithm_sequence) {
   // From RFC 5280, section 4.1
   //    Certificate  ::=  SEQUENCE  {
   //      tbsCertificate       TBSCertificate,
@@ -323,14 +324,14 @@ bool ExtractSignatureAlgorithmsFromDERCert(
   return true;
 }
 
-bool ExtractExtensionFromDERCert(base::StringPiece cert,
-                                 base::StringPiece extension_oid,
+bool ExtractExtensionFromDERCert(std::string_view cert,
+                                 std::string_view extension_oid,
                                  bool* out_extension_present,
                                  bool* out_extension_critical,
-                                 base::StringPiece* out_contents) {
+                                 std::string_view* out_contents) {
   *out_extension_present = false;
   *out_extension_critical = false;
-  *out_contents = base::StringPiece();
+  *out_contents = std::string_view();
 
   bssl::ParsedExtension extension;
   if (!ExtractExtensionWithOID(cert, bssl::der::Input(extension_oid),

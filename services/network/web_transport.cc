@@ -41,6 +41,19 @@ base::TimeDelta ToTimeDelta(absl::Duration duration) {
   return base::Microseconds(absl::ToInt64Microseconds(duration));
 }
 
+mojom::WebTransportStatsPtr StatsToMojom(
+    const webtransport::SessionStats& stats) {
+  mojom::WebTransportStatsPtr result = mojom::WebTransportStats::New();
+  result->timestamp = base::Time::Now();
+  result->min_rtt = ToTimeDelta(stats.min_rtt);
+  result->smoothed_rtt = ToTimeDelta(stats.smoothed_rtt);
+  result->rtt_variation = ToTimeDelta(stats.rtt_variation);
+  result->estimated_send_rate_bps = stats.estimated_send_rate_bps;
+  result->datagrams_expired_outgoing = stats.datagram_stats.expired_outgoing;
+  result->datagrams_lost_outgoing = stats.datagram_stats.lost_outgoing;
+  return result;
+}
+
 }  // namespace
 
 class WebTransport::Stream final {
@@ -562,7 +575,8 @@ void WebTransport::OnConnected(
 
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
-      client_.BindNewPipeAndPassReceiver(), std::move(response_headers));
+      client_.BindNewPipeAndPassReceiver(), std::move(response_headers),
+      StatsToMojom(transport_->session()->GetSessionStats()));
 
   handshake_client_.reset();
   // We set the disconnect handler for `receiver_`, not `client_`, in order
@@ -601,7 +615,11 @@ void WebTransport::OnClosed(
       close_info_to_pass = mojom::WebTransportCloseInfo::New(
           close_info->code, close_info->reason);
     }
-    client_->OnClosed(std::move(close_info_to_pass));
+    mojom::WebTransportStatsPtr final_stats;
+    if (transport_ != nullptr && transport_->session() != nullptr) {
+      final_stats = StatsToMojom(transport_->session()->GetSessionStats());
+    }
+    client_->OnClosed(std::move(close_info_to_pass), std::move(final_stats));
   }
 
   TearDown();
@@ -742,15 +760,7 @@ void WebTransport::GetStats(GetStatsCallback callback) {
   }
 
   webtransport::SessionStats stats = session->GetSessionStats();
-  mojom::WebTransportStatsPtr result = mojom::WebTransportStats::New();
-  result->timestamp = base::Time::Now();
-  result->min_rtt = ToTimeDelta(stats.min_rtt);
-  result->smoothed_rtt = ToTimeDelta(stats.smoothed_rtt);
-  result->rtt_variation = ToTimeDelta(stats.rtt_variation);
-  result->estimated_send_rate_bps = stats.estimated_send_rate_bps;
-  result->datagrams_expired_outgoing = stats.datagram_stats.expired_outgoing;
-  result->datagrams_lost_outgoing = stats.datagram_stats.lost_outgoing;
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(StatsToMojom(stats));
 }
 
 void WebTransport::TearDown() {

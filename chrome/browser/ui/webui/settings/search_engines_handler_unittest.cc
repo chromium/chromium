@@ -19,6 +19,7 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -112,7 +113,11 @@ class SearchEnginesHandlerParametrizedTest
  public:
   SearchEnginesHandlerParametrizedTest() {
     if (WithSearchEnginesChoiceEnabled()) {
-      feature_list()->InitAndEnableFeature(switches::kSearchEngineChoice);
+      feature_list()->InitAndEnableFeature(
+          switches::kSearchEngineChoiceTrigger);
+    } else {
+      feature_list()->InitAndDisableFeature(
+          switches::kSearchEngineChoiceTrigger);
     }
   }
 
@@ -120,13 +125,13 @@ class SearchEnginesHandlerParametrizedTest
     SearchEnginesHandlerTestBase::SetUp();
 
     if (WithSearchEnginesChoiceEnabled()) {
-      PrefService* pref_service = profile()->GetPrefs();
       // The search engine choice feature is only enabled for countries in the
       // EEA region.
       const int kBelgiumCountryId =
           country_codes::CountryCharsToCountryID('B', 'E');
-      pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                               kBelgiumCountryId);
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+          switches::kSearchEngineChoiceCountry,
+          country_codes::CountryIDToCountryString(kBelgiumCountryId));
     }
   }
 
@@ -194,19 +199,19 @@ class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
     : public SearchEnginesHandlerTestBase {
  public:
   SearchEnginesHandlerTestWithSearchEngineChoiceEnabled() {
-    feature_list()->InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list()->InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   }
 
   void SetUp() override {
     SearchEnginesHandlerTestBase::SetUp();
 
-    PrefService* pref_service = profile()->GetPrefs();
     // The search engine choice feature is only enabled for countries in the
     // EEA region.
     const int kBelgiumCountryId =
         country_codes::CountryCharsToCountryID('B', 'E');
-    pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                             kBelgiumCountryId);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::CountryIDToCountryString(kBelgiumCountryId));
   }
 };
 
@@ -217,8 +222,9 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
   // region.
   const int kBelgiumCountryId =
       country_codes::CountryCharsToCountryID('B', 'E');
-  pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                           kBelgiumCountryId);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry,
+      country_codes::CountryIDToCountryString(kBelgiumCountryId));
 
   EXPECT_FALSE(pref_service->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -243,15 +249,15 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
 
 TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
        RecordingSearchEngineShouldBeDoneAfterSettingDefault) {
-  PrefService* pref_service = profile()->GetPrefs();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
   // The search engine choice feature is only enabled for countries in the EEA
   // region.
   const int kBelgiumCountryId =
       country_codes::CountryCharsToCountryID('B', 'E');
-  pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                           kBelgiumCountryId);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry,
+      country_codes::CountryIDToCountryString(kBelgiumCountryId));
 
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();

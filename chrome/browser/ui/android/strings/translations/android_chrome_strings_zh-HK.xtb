@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1807709131360304325">開啟新視窗</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1829244130665387512">喺網頁度搵</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">網站已暫停</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 項下載操作失敗}other{# 項下載操作失敗}}</translation>
 <translation id="2067805253194386918">文字</translation>
+<translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
 <translation id="2091863218454846791">顯示緊密集檢視</translation>
 <translation id="2093731487903423814">過去 15 分鐘</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
 <translation id="2234827758954819389">私隱權指南</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
-<translation id="2241634353105152135">只此一次</translation>
 <translation id="2247789808226901522">信用卡過期</translation>
 <translation id="2248941474044011069">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資料</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
-<translation id="2327226657832576859">要自動開啟 PDF 嗎？</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">尚餘 1 秒</translation>
+<translation id="2789486458103222910">確定</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">正在更新 Chrome 以連接其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
-<translation id="2961210776189273067">標題</translation>
 <translation id="296370266220139811">無需重複輸入網址，節省寶貴時間</translation>
 <translation id="2977350910003566746">根據上次打開嘅日期排序</translation>
 <translation id="297771753501244313">按上次開啟日期排序</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4307992518367153382">基本</translation>
+<translation id="4311652497846705514">要開啟 PDF 嗎？</translation>
 <translation id="4320177379694898372">沒有互聯網連線</translation>
 <translation id="433213510553688132">正在設定為追蹤…</translation>
 <translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">過去 1 小時</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
-<translation id="4541505619120536051">一律開啟</translation>
 <translation id="4543131175509360848">冇密鑰嘅工作表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">選擇頁面數據分析中心的私隱聲明標誌後，會重新導向至我的活動頁面。</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="5492637351392383067">在裝置上加密</translation>
-<translation id="5509866835115085009">Chrome 可在下載 PDF 後自動開啟檔案。</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5966233851250124270">Chrome 會記住您的選擇</translation>
+<translation id="5977976211062815271">在此裝置上</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
+<translation id="7821130663268546430">你可在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="78270725016672455">您的電腦想註冊此裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
+<translation id="7951102827450076904">一律開啟已下載的 PDF</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">頁面分析資料的返回按鈕</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>

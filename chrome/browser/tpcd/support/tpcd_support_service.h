@@ -12,38 +12,38 @@ namespace content {
 class BrowserContext;
 }
 
-namespace tpcd::support {
+namespace tpcd::trial {
 
-// A profile-keyed service that maintains TPCD_SUPPORT content settings based on
+// A profile-keyed service that maintains TPCD_TRIAL content settings based on
 // the state of the associated origin trial for a given
 // `origin`-`partition_site` pair.
-class TpcdSupportService
+class TpcdTrialService
     : public content::OriginTrialsControllerDelegate::Observer,
       public KeyedService {
  public:
-  explicit TpcdSupportService(content::BrowserContext* browser_context);
-  ~TpcdSupportService() override;
-  TpcdSupportService(const TpcdSupportService&) = delete;
-  TpcdSupportService& operator=(const TpcdSupportService&) = delete;
+  explicit TpcdTrialService(content::BrowserContext* browser_context);
+  ~TpcdTrialService() override;
+  TpcdTrialService(const TpcdTrialService&) = delete;
+  TpcdTrialService& operator=(const TpcdTrialService&) = delete;
 
   // KeyedService overrides:
   void Shutdown() override;
 
-  void Update3pcdSupportSettingsForTesting(const url::Origin& origin,
-                                           const std::string& partition_site,
-                                           bool match_subdomains,
-                                           bool enabled);
+  void Update3pcdTrialSettingsForTesting(const url::Origin& origin,
+                                         const std::string& partition_site,
+                                         bool match_subdomains,
+                                         bool enabled);
 
  private:
-  // Updates `ContentSettingsForOneType::TPCD_SUPPORT` to reflect
+  // Updates `ContentSettingsForOneType::TPCD_TRIAL` to reflect
   // the status of the trial for `origin` (when embedded by `partition_site`).
   // If `match_subdomains` is true, a custom scope is used for the content
   // setting to match all subdomains of `origin`.
-  void Update3pcdSupportSettings(const url::Origin& origin,
-                                 const std::string& partition_site,
-                                 bool match_subdomains,
-                                 bool enabled);
-  void ClearTpcdSupportSettings();
+  void Update3pcdTrialSettings(const url::Origin& origin,
+                               const std::string& partition_site,
+                               bool match_subdomains,
+                               bool enabled);
+  void ClearTpcdTrialSettings();
 
   // content::OriginTrialsControllerDelegate::Observer overrides:
   void OnStatusChanged(const url::Origin& origin,
@@ -57,6 +57,6 @@ class TpcdSupportService
   raw_ptr<content::BrowserContext> browser_context_;
 };
 
-}  // namespace tpcd::support
+}  // namespace tpcd::trial
 
 #endif  // CHROME_BROWSER_TPCD_SUPPORT_TPCD_SUPPORT_SERVICE_H_

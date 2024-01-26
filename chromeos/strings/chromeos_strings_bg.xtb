@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
+<translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Изключване на тъмния режим</translation>
 <translation id="1885577615937958993">превъртане на мултимедията напред</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
-<translation id="1897672602657312171">Клавишната комбинация без клавиша „търсене“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „търсене“.</translation>
 <translation id="1904932688895783618">Ето някои други полезни ресурси:</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
 <translation id="2157660087437850958">инструмент за избор на емоджи</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Администраторът ви е задал <ph name="APP_NAME_1" /> да се стартира автоматично всеки път, когато влезете в профила си.}=2{Администраторът ви е задал <ph name="APP_NAME_1" /> и <ph name="APP_NAME_2" /> да се стартират автоматично всеки път, когато влезете в профила си.}=3{Администраторът ви е задал <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да се стартират автоматично всеки път, когато влезете в профила си.}other{Администраторът ви е задал <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и още # приложения да се стартират автоматично всеки път, когато влезете в профила си.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="215916044711630446">Бутонът за добавяне на име на точката за достъп (APN) вече е деактивиран</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Редактиране на подробностите за името на точката за достъп (APN)</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
+<translation id="2215920961700443347">Не сте онлайн. Свържете се с интернет и опитайте отново.</translation>
 <translation id="2217935453350629363">Текуща скорост</translation>
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="222447520299472966">Трябва да изберете поне един албум от художествената галерия</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Изображение <ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2465272316171730950">Капацитетът ни е достигнат. Заповядайте отново след малко.</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
 <translation id="2491955442992294626">Клавишите не се тестват, когато използвате друг прозорец</translation>
 <translation id="2493126929778606526">Автоматично избиране на най-добрите ви снимки</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Опресняване на текущото изображение на тапета</translation>
 <translation id="2512979179176933762">показване на прозорците</translation>
 <translation id="2513396635448525189">Изображение при влизане в профила</translation>
-<translation id="2515109918609218604">Клавишната комбинация не е налице. Натиснете друга, без да използвате функционалните клавиши и клавиша „търсене“.</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2526590354069164005">Работен плот</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
 <translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
+<translation id="4130750466177569591">Приемам</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Приложението <ph name="APP_NAME_1" /> бе стартирано автоматично}other{# приложения бяха стартирани автоматично}}</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
 <translation id="4150201353443180367">Екран</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">намаляване на яркостта</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4176659219503619100">Контролен панел</translation>
-<translation id="4185315616950253617">Комбинацията с клавиши от най-горния ред трябва да включва клавиша „търсене“.</translation>
 <translation id="420283545744377356">Изключване на скрийнсейвъра</translation>
 <translation id="4213104098953699324">Клавиатура с USB</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Деактивиране</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> се рестартира</translation>
 <translation id="4395835743215824109">персонализиране на клавиатурата</translation>
+<translation id="4403262788869804671">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“.</translation>
 <translation id="4415951057168511744">Текущ аватар</translation>
+<translation id="4417830657741848074">Администраторът ви е настроил някои приложения така, че да се стартират автоматично. Част от тях не могат да бъдат затворени.</translation>
 <translation id="4422041425070339732">стрелка за надолу</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е изключена</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Скрийнсейвър със Земята</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
+<translation id="4500722292849917410">Клавишната комбинация не е налице. Използвайте друга, като натиснете модифициращ клавиш (Ctrl, Alt, Shift или „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Цвят на интерфейса</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
 <translation id="4507392511610824664">увеличаване на яркостта</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
 <translation id="4839698083503556542">Създайте свой филм</translation>
+<translation id="48409034532829769">Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично. Приложението не може да бъде затворено.</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4847902821209177679">Избрахте опцията <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Натиснете Enter, за да посочите албуми от <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Разделяне</translation>
 <translation id="4972592110715526173">промяна на режима</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
+<translation id="4982627662315910959">Клавишната комбинация не е налице. Използвайте друга, като натиснете Shift и още 1 модифициращ клавиш (Ctrl, Alt или „<ph name="META_KEY" />“).</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">График за тъмната тема</translation>
 <translation id="5229344016299762883">Изход от режима на цял екран</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично всеки път, когато влезете в профила си.}=2{Администраторът ви е настроил <ph name="APP_NAME" /> и още 1 приложение така, че да се стартират автоматично всеки път, когато влезете в профила си.}other{Администраторът ви е настроил <ph name="APP_NAME" /> и още # приложения така, че да се стартират автоматично всеки път, когато влезете в профила си.}}</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5257811368506016604">Активиране на режима за светли цветове</translation>
 <translation id="5264277876637023664">Тестване на процесора</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="725133483556299729">Избиране на имейл адрес</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
-<translation id="7273347807225967898">Клавишната комбинация не е налице. Използвайте друга, като натиснете модифициращ клавиш (Ctrl, Alt, Shift, „търсене“ или „стартов панел“).</translation>
+<translation id="7271932918253517778">Комбинацията с клавиши от най-горния ред трябва да включва клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Лек полъх</translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Общи контроли</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Приложението <ph name="APP_NAME_1" /> бе стартирано автоматично}other{# приложения бяха стартирани автоматично}}</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8017679124341497925">Прекият път бе редактиран</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
-<translation id="8111706652656628199">Клавишната комбинация не е налице. Използвайте друга, като натиснете Shift и още 1 модифициращ клавиш (Ctrl, Alt, „търсене“ или „стартов панел“).</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>

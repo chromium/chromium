@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
 #include "base/containers/lru_cache.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -22,14 +23,17 @@ class HarfBuzzFontCache;
 
 // FontGlobalContext contains non-thread-safe, thread-specific data used for
 // font formatting.
-class PLATFORM_EXPORT FontGlobalContext {
-  USING_FAST_MALLOC(FontGlobalContext);
-
+class PLATFORM_EXPORT FontGlobalContext
+    : public GarbageCollected<FontGlobalContext> {
  public:
+  using PassKey = base::PassKey<FontGlobalContext>;
+  explicit FontGlobalContext(PassKey);
   ~FontGlobalContext();
 
   static FontGlobalContext& Get();
   static FontGlobalContext* TryGet();
+
+  void Trace(Visitor* visitor) const { visitor->Trace(font_cache_); }
 
   FontGlobalContext(const FontGlobalContext&) = delete;
   FontGlobalContext& operator=(const FontGlobalContext&) = delete;
@@ -51,8 +55,6 @@ class PLATFORM_EXPORT FontGlobalContext {
   static void Init();
 
  private:
-  FontGlobalContext();
-
   FontCache font_cache_;
   std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;

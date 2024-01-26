@@ -27,6 +27,12 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
+namespace network {
+namespace mojom {
+class NetworkContext;
+}  // namespace mojom
+}  // namespace network
+
 namespace content {
 
 class BackgroundSyncContext;
@@ -38,10 +44,6 @@ class HostZoomMap;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class ZoomLevelDelegate;
-
-namespace mojom {
-class NetworkContext;
-}  // namespace mojom
 
 // Fake implementation of StoragePartition.
 class TestStoragePartition : public StoragePartition {

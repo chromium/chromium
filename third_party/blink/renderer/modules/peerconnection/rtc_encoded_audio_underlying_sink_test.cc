@@ -105,8 +105,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     return ScriptValue(
         script_state->GetIsolate(),
         ToV8Traits<RTCEncodedAudioFrame>::ToV8(
-            script_state, CreateEncodedAudioFrame(script_state, direction))
-            .ToLocalChecked());
+            script_state, CreateEncodedAudioFrame(script_state, direction)));
   }
 
  protected:
@@ -154,7 +153,9 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDataFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* sink = CreateSink(script_state);
-  ScriptValue v8_integer = ScriptValue::From(script_state, 0);
+  ScriptValue v8_integer =
+      ScriptValue(script_state->GetIsolate(),
+                  v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not an RTCEncodedAudioFrame integer to the sink
   // should fail.
@@ -194,8 +195,7 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest,
   sink->write(
       script_state,
       ScriptValue(script_state->GetIsolate(),
-                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
-                      .ToLocalChecked()),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)),
       /*controller=*/nullptr, dummy_exception_state);
   EXPECT_FALSE(dummy_exception_state.HadException());
 }
@@ -213,8 +213,7 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteTooLargeFrameFails) {
   sink->write(
       script_state,
       ScriptValue(script_state->GetIsolate(),
-                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
-                      .ToLocalChecked()),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)),
       /*controller=*/nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
@@ -232,8 +231,7 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteOfUnmodifiedLargeFrameSucceeds) {
   sink->write(
       script_state,
       ScriptValue(script_state->GetIsolate(),
-                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
-                      .ToLocalChecked()),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)),
       /*controller=*/nullptr, dummy_exception_state);
   EXPECT_FALSE(dummy_exception_state.HadException());
 }
@@ -255,8 +253,7 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest,
   sink->write(
       script_state,
       ScriptValue(script_state->GetIsolate(),
-                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
-                      .ToLocalChecked()),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)),
       /*controller=*/nullptr, dummy_exception_state);
   EXPECT_FALSE(dummy_exception_state.HadException());
 }

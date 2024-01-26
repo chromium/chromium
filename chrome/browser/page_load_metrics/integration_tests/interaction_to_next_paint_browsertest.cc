@@ -13,9 +13,9 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-using absl::optional;
 using base::Bucket;
 using base::Value;
+using std::optional;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
 using trace_analyzer::TraceEventVector;

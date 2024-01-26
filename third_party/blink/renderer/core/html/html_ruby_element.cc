@@ -19,8 +19,7 @@ HTMLRubyElement::HTMLRubyElement(Document& document)
 
 LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style) {
   if (RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
-    if (style.Display() == EDisplay::kBlock &&
-        RuntimeEnabledFeatures::BlockRubyConsoleMessageEnabled()) {
+    if (style.Display() == EDisplay::kBlock) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kRubyElementWithDisplayBlock);
       if (Traversal<HTMLRTElement>::FirstChild(*this)) {
@@ -39,22 +38,20 @@ LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style) {
     return LayoutObject::CreateObject(this, style);
   }
   if (style.Display() == EDisplay::kInline)
-    return MakeGarbageCollected<LayoutRubyAsInline>(this);
+    return MakeGarbageCollected<LayoutRuby>(this);
   if (style.Display() == EDisplay::kBlock) {
     UseCounter::Count(GetDocument(), WebFeature::kRubyElementWithDisplayBlock);
     if (Traversal<HTMLRTElement>::FirstChild(*this)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kRubyElementWithDisplayBlockAndRt);
     }
-    if (RuntimeEnabledFeatures::BlockRubyConsoleMessageEnabled()) {
-      GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
-              "A <ruby> with `display: block` won't render its ruby annotation "
-              "correctly with future versions of the browser. A workaround is "
-              "to specify `display: block; display: block ruby;`."),
-          /* discard_duplicates */ true);
-    }
+    GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
+            "A <ruby> with `display: block` won't render its ruby annotation "
+            "correctly with future versions of the browser. A workaround is "
+            "to specify `display: block; display: block ruby;`."),
+        /* discard_duplicates */ true);
     return MakeGarbageCollected<LayoutRubyAsBlock>(this);
   }
   return LayoutObject::CreateObject(this, style);

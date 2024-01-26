@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -14,7 +15,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

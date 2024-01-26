@@ -9,6 +9,7 @@
 #import "base/check_is_test.h"
 #import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -178,15 +179,21 @@ void IdleService::MaybeRunActionsForState(LastState last_state) {
     return;
   }
 
+  last_action_set_ = GetActionSet(
+      browser_state_->GetPrefs(),
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_));
+
   if (last_state == LastState::kIdleOnBackground) {
-    // TODO: check if data will be cleared.
+    metrics::RecordIdleTimeoutCase(metrics::IdleTimeoutCase::kBackground);
     for (auto& observer : observer_list_) {
       // Show loading UI on re-foreground right away if data will be cleared.
       observer.OnIdleTimeoutOnStartup();
     }
     RunActions();
   } else {
+    metrics::RecordIdleTimeoutCase(metrics::IdleTimeoutCase::kForeground);
     idle_timeout_dialog_pending_ = !observer_list_.empty();
+    idle_trigger_time_ = base::Time::Now();
     for (auto& observer : observer_list_) {
       // Confirm that the user is not active by showing dialog before running
       // actions.
@@ -233,6 +240,14 @@ void IdleService::OnActionsCompleted() {
   for (auto& observer : observer_list_) {
     observer.OnIdleTimeoutActionsCompleted();
   }
+}
+
+base::Time IdleService::GetIdleTriggerTime() {
+  return idle_trigger_time_;
+}
+
+ActionSet IdleService::GetLastActionSet() {
+  return last_action_set_;
 }
 
 void IdleService::OnIdleTimeoutDialogPresented() {

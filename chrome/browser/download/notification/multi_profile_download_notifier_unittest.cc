@@ -87,10 +87,8 @@ class MultiProfileDownloadNotifierTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
   }
 
-  TestingProfile* CreateProfile() override {
-    const std::string kProfileName = "profile";
-    TestingProfile* profile =
-        profile_manager()->CreateTestingProfile(kProfileName);
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
     SetUpDownloadManager(profile);
     return profile;
   }

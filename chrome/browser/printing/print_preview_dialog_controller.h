@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/printing/common/print.mojom.h"
 
@@ -27,16 +26,19 @@ namespace printing {
 // This class manages print preview dialog creation and destruction, and keeps
 // track of the 1:1 relationship between initiator tabs and print preview
 // dialogs.
-class PrintPreviewDialogController
-    : public base::RefCounted<PrintPreviewDialogController>,
-      public WebContentsCollection::Observer {
+class PrintPreviewDialogController : public WebContentsCollection::Observer {
  public:
+  // Should only be used by `BrowserProcess`-like classes. Call `GetInstance()`
+  // to get the active instance.
   PrintPreviewDialogController();
 
   PrintPreviewDialogController(const PrintPreviewDialogController&) = delete;
   PrintPreviewDialogController& operator=(const PrintPreviewDialogController&) =
       delete;
 
+  ~PrintPreviewDialogController() override;
+
+  // Returns the existing instance in the global `BrowserProcess`.
   static PrintPreviewDialogController* GetInstance();
 
   // Returns true if `url` is a Print Preview dialog URL (has `chrome://print`
@@ -100,8 +102,6 @@ class PrintPreviewDialogController
   }
 
  private:
-  friend class base::RefCounted<PrintPreviewDialogController>;
-
   // Tracks the initiator, as well as some of its Print Preview properties.
   struct InitiatorData {
     raw_ptr<content::WebContents> initiator;
@@ -112,8 +112,6 @@ class PrintPreviewDialogController
   // Key: Print preview dialog.
   // Value: Initiator data.
   using PrintPreviewDialogMap = std::map<content::WebContents*, InitiatorData>;
-
-  ~PrintPreviewDialogController() override;
 
   // WebContentsCollection::Observer:
   // Handles the closing of the RenderProcessHost. This is observed when the

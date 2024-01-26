@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_ANDROID_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +16,6 @@
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -74,6 +75,17 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       jboolean incognito,
       jboolean by_user);
 
+  // Called by the Java implementation when the user commits to unsubscribing
+  // from notification from this origin.
+  void OnNotificationDisablePermission(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      const base::android::JavaParamRef<jstring>& java_notification_id,
+      jint java_notification_type,
+      const base::android::JavaParamRef<jstring>& java_origin,
+      const base::android::JavaParamRef<jstring>& java_profile_id,
+      jboolean incognito);
+
   // NotificationPlatformBridge implementation.
   void Display(NotificationHandler::Type notification_type,
                Profile* profile,
@@ -109,11 +121,11 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
     RegeneratedNotificationInfo();
     RegeneratedNotificationInfo(
         const GURL& service_worker_scope,
-        const absl::optional<std::string>& webapk_package);
+        const std::optional<std::string>& webapk_package);
     ~RegeneratedNotificationInfo();
 
     GURL service_worker_scope;
-    absl::optional<std::string> webapk_package;
+    std::optional<std::string> webapk_package;
   };
 
   // Mapping of notification id to renegerated notification info.

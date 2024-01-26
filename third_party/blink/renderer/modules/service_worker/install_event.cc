@@ -94,9 +94,10 @@ ScriptPromise InstallEvent::registerRouter(
 
   blink::ServiceWorkerRouterRules rules;
   ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
-                                  global_scope->BaseURL(), rules);
+                                  global_scope->BaseURL(),
+                                  global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    ScriptPromise::Reject(script_state, exception_state);
+    return ScriptPromise::Reject(script_state, exception_state);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -135,9 +136,10 @@ ScriptPromise InstallEvent::addRoutes(
 
   blink::ServiceWorkerRouterRules rules;
   ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
-                                  global_scope->BaseURL(), rules);
+                                  global_scope->BaseURL(),
+                                  global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    ScriptPromise::Reject(script_state, exception_state);
+    return ScriptPromise::Reject(script_state, exception_state);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -152,11 +154,12 @@ void InstallEvent::ConvertServiceWorkerRouterRules(
     const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
     ExceptionState& exception_state,
     const KURL& base_url,
+    mojom::blink::ServiceWorkerFetchHandlerType fetch_handler_type,
     blink::ServiceWorkerRouterRules& rules) {
   if (v8_rules->IsRouterRule()) {
     auto r = ConvertV8RouterRuleToBlink(script_state->GetIsolate(),
                                         v8_rules->GetAsRouterRule(), base_url,
-                                        exception_state);
+                                        fetch_handler_type, exception_state);
     if (!r) {
       CHECK(exception_state.HadException());
       return;
@@ -170,8 +173,9 @@ void InstallEvent::ConvertServiceWorkerRouterRules(
       return;
     }
     for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
-      auto r = ConvertV8RouterRuleToBlink(script_state->GetIsolate(), rule,
-                                          base_url, exception_state);
+      auto r =
+          ConvertV8RouterRuleToBlink(script_state->GetIsolate(), rule, base_url,
+                                     fetch_handler_type, exception_state);
       if (!r) {
         CHECK(exception_state.HadException());
         return;

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
@@ -37,7 +38,6 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
@@ -58,7 +58,7 @@ base::Value::List RunTabsQueryFunction(content::BrowserContext* browser_context,
                                        const std::string& query_info) {
   scoped_refptr<TabsQueryFunction> function(new TabsQueryFunction());
   function->set_extension(extension);
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), query_info, browser_context,
           api_test_utils::FunctionMode::kNone);
@@ -203,7 +203,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     scoped_refptr<TabsUpdateFunction> function =
         base::MakeRefCounted<TabsUpdateFunction>();
     function->set_extension(extension);
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, profile(),
             api_test_utils::FunctionMode::kNone);
@@ -319,7 +319,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
 
   const base::Value& third_tab_info = tabs_list_with_permission[0];
   ASSERT_TRUE(third_tab_info.is_dict());
-  absl::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
+  std::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
 
   while (!browser()->tab_strip_model()->empty())
@@ -371,7 +371,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 
     const base::Value& third_tab_info = tabs_list_with_permission[0];
     ASSERT_TRUE(third_tab_info.is_dict());
-    absl::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
+    std::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
     EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
   }
 
@@ -391,11 +391,11 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[0]));
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[2]));
 
-    absl::optional<int> first_tab_id = first_tab_info.GetDict().FindInt("id");
+    std::optional<int> first_tab_id = first_tab_info.GetDict().FindInt("id");
     ASSERT_TRUE(first_tab_id);
     EXPECT_TRUE(base::Contains(expected_tabs_ids, *first_tab_id));
 
-    absl::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
+    std::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
     ASSERT_TRUE(third_tab_id);
     EXPECT_TRUE(base::Contains(expected_tabs_ids, *third_tab_id));
   }
@@ -834,7 +834,7 @@ TEST_F(TabsApiUnitTest, TabsGroupWithinWindow) {
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[1]);
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[3]);
 
-  absl::optional<tab_groups::TabGroupId> group =
+  std::optional<tab_groups::TabGroupId> group =
       tab_strip_model->GetTabGroupForTab(0);
   EXPECT_TRUE(group.has_value());
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1));
@@ -888,7 +888,7 @@ TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[3]);
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[4]);
 
-  absl::optional<tab_groups::TabGroupId> group =
+  std::optional<tab_groups::TabGroupId> group =
       tab_strip_model->GetTabGroupForTab(1);
   EXPECT_TRUE(group.has_value());
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(0));
@@ -1086,7 +1086,7 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[3]);
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[4]);
 
-  absl::optional<tab_groups::TabGroupId> new_group =
+  std::optional<tab_groups::TabGroupId> new_group =
       tab_strip_model->GetTabGroupForTab(0);
   EXPECT_TRUE(new_group.has_value());
   EXPECT_EQ(new_group, tab_strip_model->GetTabGroupForTab(1));

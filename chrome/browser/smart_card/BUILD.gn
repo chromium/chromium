@@ -11,8 +11,18 @@ source_set("smart_card") {
       "chromeos_smart_card_delegate.h",
       "get_smart_card_context_factory.cc",
       "get_smart_card_context_factory.h",
+      "smart_card_permission_context.cc",
+      "smart_card_permission_context.h",
+      "smart_card_permission_context_factory.cc",
+      "smart_card_permission_context_factory.h",
       "smart_card_permission_request.cc",
       "smart_card_permission_request.h",
+      "smart_card_reader_tracker.cc",
+      "smart_card_reader_tracker.h",
+      "smart_card_reader_tracker_factory.cc",
+      "smart_card_reader_tracker_factory.h",
+      "smart_card_reader_tracker_impl.cc",
+      "smart_card_reader_tracker_impl.h",
     ]
 
     if (!is_chromeos_device) {
@@ -28,6 +38,7 @@ source_set("smart_card") {
 
     deps = [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
       "//components/permissions",
       "//components/strings:components_strings_grit",
@@ -35,4 +46,41 @@ source_set("smart_card") {
     ]
   }
   # TODO(crbug.com/1386175): Add chrome_smart_card_delegate.* for Win/Mac/Linux
+  # and move smart_card_* out of the is_chromeos guard.
 }
+
+if (is_chromeos) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "smart_card_permission_context_unittest.cc",
+      "smart_card_reader_tracker_impl_unittest.cc",
+    ]
+    deps = [
+      ":smart_card",
+      "//chrome/browser/permissions",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    # From test("interactive_ui_tests")
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "smart_card_permission_uitest.cc" ]
+    deps = [
+      ":smart_card",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/permissions:permissions_common",
+      "//content/test:test_support",
+    ]
+  }
+}  # is_chromeos

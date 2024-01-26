@@ -222,9 +222,9 @@ void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
 }
 
 bool ValidateCookieApiPartitionKey(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key,
-    absl::optional<net::CookiePartitionKey>& net_partition_key,
+    std::optional<net::CookiePartitionKey>& net_partition_key,
     std::string& error_message) {
   if (partition_key &&
       base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
@@ -249,7 +249,7 @@ bool CookieMatchesPartitionKeyCollection(
 }
 
 bool CookieMatchesPartitionKeyInDetails(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key,
     const net::CanonicalCookie& cookie) {
   if (!partition_key) {
@@ -268,7 +268,7 @@ bool CookieMatchesPartitionKeyInDetails(
 
 net::CookiePartitionKeyCollection
 CookiePartitionKeyCollectionFromApiPartitionKey(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key) {
   if (!partition_key) {
     return net::CookiePartitionKeyCollection();
@@ -278,7 +278,7 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
     return net::CookiePartitionKeyCollection::ContainsAll();
   }
 
-  absl::optional<net::CookiePartitionKey> net_partition_key;
+  std::optional<net::CookiePartitionKey> net_partition_key;
   if (!net::CookiePartitionKey::Deserialize(
           partition_key->top_level_site.value(), net_partition_key)) {
     return net::CookiePartitionKeyCollection();

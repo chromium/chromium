@@ -15,11 +15,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../base_mixin.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './file_system_site_details.html.js';
-import {FileSystemGrant, OriginFileSystemGrants} from './file_system_site_list.js';
+import type {FileSystemGrant, OriginFileSystemGrants} from './file_system_site_list.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 declare global {

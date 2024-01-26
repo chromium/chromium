@@ -306,6 +306,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
     gn_args = gn_args.config(
@@ -538,6 +539,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -587,6 +589,7 @@ ci.builder(
                 "mb",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -626,6 +629,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
@@ -674,6 +678,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
@@ -725,6 +730,7 @@ ci.builder(
                 "mb",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
@@ -763,6 +769,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -814,6 +821,7 @@ ci.builder(
                 "mb",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -853,6 +861,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -905,6 +914,7 @@ ci.builder(
                 "mb",
             ],
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(

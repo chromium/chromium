@@ -171,10 +171,7 @@ class MediaKeySession final
   bool is_closed_ = false;
 
   // Keep track of the closed promise.
-  // absl::optional<> is needed because V8MediaKeySessionClosedReason's default
-  // constructor is private.
-  typedef ScriptPromiseProperty<absl::optional<V8MediaKeySessionClosedReason>,
-                                Member<DOMException>>
+  typedef ScriptPromiseProperty<V8MediaKeySessionClosedReason, DOMException>
       ClosedPromise;
   Member<ClosedPromise> closed_promise_;
 

@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1434873037477293673">картичка за намалување на цената</translation>
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
 <translation id="1510341833810331442">На сајтовите не им е дозволено да зачувуваат податоци на вашиот уред</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација.</translation>
 <translation id="2790501146643349491">Кога е вклучено, неодамна затворените сајтови може да го завршат испраќањето и примањето податоци. Кога е исклучено, неодамна затворените сајтови не може да го завршат испраќањето и примањето податоци.</translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Барање приказ на мобилен</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Не дозволувај сајтовите да ги користат уредот и податоците за виртуелна реалност</translation>
 <translation id="6447842834002726250">Колачиња</translation>
+<translation id="6452138246455930388">Намалување на цената на вашата отворена картичка, од <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Кога е тесен прозорецот, побарајте приказ на мобилен</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="652937045869844725">Обидете се со дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> од <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Изберете опција за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>
 <translation id="6864395892908308021">Уредов не може да чита NFC</translation>
+<translation id="6867014948848323204">Од <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Блокирај го читањето текст и слики од привремената меморија за сајтовите</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6950072572526089586">Сајтот што го отворате може да зачувува податоци за тоа што го правите за да функционира според очекувањата, на пример, за да ве задржи најавени на сајт или да ги зачува ставките во вашата кошничка за купување. Честопати сајтовите ги зачувуваат податоциве привремено на вашиот уред.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Чудесниот волшебник од Оз</translation>
 <translation id="7684642910516280563">Не дозволувајте му на сајт да користи колачиња од трети страни</translation>
 <translation id="7719367874908701697">Зумирање страница</translation>
+<translation id="7770832849480336015">Скриј „<ph name="TITLE_OF_MODULE" />“</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, фала</translation>

@@ -9,6 +9,8 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -476,13 +478,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {
         // Remove tasks that do not exist any more from the task map
-        Set<Integer> validTasks = getAllChromeTasks();
+        ActivityManager activityManager =
+                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        List<AppTask> allTasks = activityManager.getAppTasks();
+        Set<Integer> validTasks = getAllChromeTasks(allTasks);
         Map<String, Integer> taskMap =
                 ChromeSharedPreferences.getInstance()
                         .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         List<String> tasksRemoved = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
             if (!validTasks.contains(entry.getValue())) {
+                checkInvalidTaskNotInAllTasks(allTasks, entry.getValue());
                 tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
                 ChromeSharedPreferences.getInstance().removeKey(entry.getKey());
                 if (ChromeFeatureList.sMultiInstanceApplicationStatusCleanup.isEnabled()
@@ -526,17 +532,37 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected Set<Integer> getAllChromeTasks() {
+    protected Set<Integer> getAllChromeTasks(List<AppTask> allTasks) {
         Set<Integer> results = new HashSet<>();
-        ActivityManager activityManager =
-                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
-        for (AppTask task : activityManager.getAppTasks()) {
+        for (AppTask task : allTasks) {
             String baseActivity = MultiWindowUtils.getActivityNameFromTask(task);
             if (!TextUtils.equals(baseActivity, ChromeTabbedActivity.class.getName())) continue;
             ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
             if (info != null) results.add(info.id);
         }
         return results;
+    }
+
+    private void checkInvalidTaskNotInAllTasks(List<AppTask> allTasks, int removedTaskId) {
+        if (!BuildConfig.ENABLE_ASSERTS || VERSION.SDK_INT < VERSION_CODES.Q) return;
+
+        for (AppTask task : allTasks) {
+            ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+            if (info != null && (info.id == removedTaskId || info.taskId == removedTaskId)) {
+                String message =
+                        "Removed instance data for Task still available in all app tasks. " + info;
+                Log.i(TAG_MULTI_INSTANCE, message);
+                if (info != null && info.isRunning) {
+                    String crashMessage =
+                            "This is not a crash. Removed instance data for running Task still"
+                                    + " available in all app tasks. "
+                                    + info;
+                    ChromePureJavaExceptionReporter.reportJavaException(
+                            new Throwable(crashMessage));
+                }
+                break;
+            }
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

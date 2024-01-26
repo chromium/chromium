@@ -4,6 +4,8 @@
 
 module compose.mojom;
 
+import "components/compose/core/browser/compose_enums.mojom";
+
 // Interface for setting up connection to allow calls between the compose dialog
 // web page and native code.
 interface ComposeSessionPageHandlerFactory {
@@ -26,26 +28,6 @@ enum Length {
   kUnset,
   kShorter,
   kLonger,
-};
-
-// Status code used in compose responses.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
-// ComposeResponseStatus in src/tools/metrics/histograms/enums.xml.
-enum ComposeStatus {
-  kOk = 0,
-  // Generic error, not specified.
-  kError = 1,
-  // Request was unable to be processed.
-  kNotSuccessful = 2,
-  // Server may have not responded.
-  kTryAgain = 3,
-  // Server is likely overloaded, cannot handle a response right now.
-  kTryAgainLater = 4,
-  // If the feature is somehow disabled.
-  kMisconfiguration = 5,
-  // If permission is denied (e.g. user is not logged in.)
-  kPermissionDenied = 6,
 };
 
 // Configuration parameters used in rewrite requests, specifying how the
@@ -124,6 +106,8 @@ enum CloseReason {
   kInsertButton,
   // The MSBB dialog was shown and dismissed.
   kMSBBCloseButton,
+  // The main app dialog lost focus.
+  kLostFocus,
 };
 
 //TODO(b/311697865) move this to a common location.
@@ -186,9 +170,8 @@ interface ComposeSessionPageHandler {
   // survey.
   OpenFeedbackSurveyLink();
 
-  // Asks the Browser to open a new tab navigated to the Compose-related Chrome
-  // settings page.
-  OpenComposeSettings();
+  // Asks the Browser to open a new tab navigated to the sign in page.
+  OpenSignInPage();
 
   // Asks the native handler to store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
@@ -203,6 +186,9 @@ interface ComposeClientPageHandler {
   CloseUI(CloseReason reason);
   // Notifies the browser that the FRE was completed.
   CompleteFirstRun();
+  // Asks the Browser to open a new tab navigated to the Compose-related Chrome
+  // settings page.
+  OpenComposeSettings();
 };
 
 // Interface for calls from the Browser process into Compose dialog JS.

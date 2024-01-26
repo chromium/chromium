@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -114,9 +115,28 @@ class OnDeviceModelServiceController
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
 
+  class SafetyModelInfo {
+   public:
+    SafetyModelInfo(
+        const ModelInfo& model_info,
+        uint32_t num_output_categories,
+        base::flat_map<proto::ModelExecutionFeature,
+                       proto::FeatureTextSafetyConfiguration> feature_configs);
+    ~SafetyModelInfo();
+
+    const ModelInfo model_info;
+    const uint32_t num_output_categories;
+    base::flat_map<proto::ModelExecutionFeature,
+                   proto::FeatureTextSafetyConfiguration>
+        feature_configs;
+  };
+
+  bool InitializeSafetyModelInfo(const ModelInfo& model_info);
+
   // Sets the base model directory and initializes the on-device model
   // controller with the parameters, to be ready to load models and execute.
-  void SetModelPath(const base::FilePath& model_path);
+  void SetModelPath(const base::FilePath& model_path,
+                    const std::string& component_version);
   void ClearModelPath();
 
   // Makes sure the service is running and starts a mojo session.
@@ -139,12 +159,22 @@ class OnDeviceModelServiceController
   // idle.
   void OnRemoteIdle();
 
+  // Gets the model versions based on the current model paths set.
+  proto::OnDeviceModelVersions GetModelVersions(
+      const std::string& component_version) const;
+
+  // Returns the text safety configuration for `feature`.
+  std::optional<proto::FeatureTextSafetyConfiguration>
+  GetFeatureTextSafetyConfigForFeature(proto::ModelExecutionFeature feature);
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
   std::optional<on_device_model::ModelAssetPaths> model_paths_;
-  std::optional<ModelInfo> safety_model_info_;
+  std::optional<proto::OnDeviceModelVersions> model_versions_;
+  // Can be null if no safey model available.
+  std::unique_ptr<SafetyModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;

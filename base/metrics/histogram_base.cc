@@ -250,7 +250,7 @@ void HistogramBase::WriteAscii(std::string* output) const {
 }
 
 // static
-char const* HistogramBase::GetPermanentName(const std::string& name) {
+char const* HistogramBase::GetPermanentName(std::string_view name) {
   // A set of histogram names that provides the "permanent" lifetime required
   // by histogram objects for those strings that are not already code constants
   // or held in persistent memory.
@@ -258,7 +258,7 @@ char const* HistogramBase::GetPermanentName(const std::string& name) {
   static base::NoDestructor<Lock> permanent_names_lock;
 
   AutoLock lock(*permanent_names_lock);
-  auto result = permanent_names->insert(name);
+  auto result = permanent_names->insert(std::string(name));
   return result.first->c_str();
 }
 

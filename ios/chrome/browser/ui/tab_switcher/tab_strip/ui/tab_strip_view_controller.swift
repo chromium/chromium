@@ -25,11 +25,6 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
 
-  // Separator views that encapsulate the collection view. They are visible
-  // when the collection view can be scrolled.
-  private let leadingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
-  private let trailingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
-
   // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
   private var draggedItem: TabSwitcherItem?
@@ -62,8 +57,6 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     }
 
     layout.dataSource = diffableDataSource
-    layout.leadingSeparatorView = leadingSeparatorView
-    layout.trailingSeparatorView = trailingSeparatorView
   }
 
   required init?(coder: NSCoder) {
@@ -75,43 +68,31 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.backgroundColor = UIColor(named: kGrey200Color)
 
     collectionView.translatesAutoresizingMaskIntoConstraints = false
-    collectionView.clipsToBounds = false
+    collectionView.clipsToBounds = true
     view.layer.masksToBounds = true
 
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
 
-    // Mirror the layer.
-    trailingSeparatorView.layer.transform = CATransform3DMakeScale(-1, 1, 1)
-    view.addSubview(leadingSeparatorView)
-    view.addSubview(trailingSeparatorView)
-
     newTabButton.delegate = self
     view.addSubview(newTabButton)
 
     NSLayoutConstraint.activate([
+      /// `collectionView` constraints.
       collectionView.leadingAnchor.constraint(
-        equalTo: view.leadingAnchor, constant: TabStripConstants.CollectionView.horizontalInset),
+        equalTo: view.leadingAnchor),
       collectionView.topAnchor.constraint(
-        equalTo: view.topAnchor, constant: TabStripConstants.CollectionView.topInset),
+        equalTo: view.topAnchor),
       collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
+      /// `newTabButton` constraints.
       newTabButton.leadingAnchor.constraint(
-        equalTo: collectionView.trailingAnchor,
-        constant: TabStripConstants.CollectionView.horizontalInset),
+        equalTo: collectionView.trailingAnchor),
       newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
       newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
-
-      leadingSeparatorView.trailingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-      trailingSeparatorView.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
-      leadingSeparatorView.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor),
-      trailingSeparatorView.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor),
     ])
-
   }
 
   // MARK: - TabStripConsumer
@@ -123,9 +104,23 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
+
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
     selectItem(selectedItem)
+
+    /// Scroll to the end of the collection view if an item has been added.
+    if layout.lastUpdateAction == .insert {
+      let isRTL: Bool = self.collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+      if !isRTL {
+        let scrollOffset = self.collectionView.contentSize.width - self.collectionView.frame.width
+        if scrollOffset > 0 {
+          self.collectionView.setContentOffset(
+            CGPoint(x: scrollOffset, y: 0),
+            animated: true)
+        }
+      }
+    }
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
@@ -141,12 +136,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     else { return }
     layout.selectedIndexPath = indexPath
 
-    /// `.centeredHorizontally` is needed when the selected cell is not dequeued.
-    /// If the item is dequeued `.centeredVertically` will not update the layout.
-    let scrollPosition: UICollectionView.ScrollPosition =
-      collectionView.cellForItem(at: indexPath) != nil
-      ? .centeredVertically : .centeredHorizontally
-    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: scrollPosition)
+    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
 
     /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
     collectionView.collectionViewLayout.invalidateLayout()
@@ -328,6 +318,17 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
 
   func collectionView(
     _ collectionView: UICollectionView,
+    contextMenuConfiguration configuration: UIContextMenuConfiguration,
+    highlightPreviewForItemAt indexPath: IndexPath
+  ) -> UITargetedPreview? {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
+      return nil
+    }
+    return UITargetedPreview(view: cell, parameters: cell.dragPreviewParameters)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
     contextMenuConfigurationForItemAt indexPath: IndexPath,
     point: CGPoint
   ) -> UIContextMenuConfiguration? {
@@ -380,10 +381,10 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragPreviewParametersForItemAt indexPath: IndexPath
   ) -> UIDragPreviewParameters? {
-    guard let draggedCell = (collectionView.cellForItem(at: indexPath) as? TabStripCell) else {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
       return nil
     }
-    return draggedCell.dragPreviewParameters
+    return cell.dragPreviewParameters
   }
 
   func collectionView(

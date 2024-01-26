@@ -11,7 +11,7 @@ BROWSER_USER_DATA_KEY_IMPL(WebStateUpdateBrowserAgent)
 
 WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
     : web_state_list_(browser->GetWebStateList()) {
-  web_state_list_observation_.Observe(web_state_list_);
+  web_state_list_observation_.Observe(web_state_list_.get());
 
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.

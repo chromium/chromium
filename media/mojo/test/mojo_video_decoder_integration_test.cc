@@ -35,7 +35,7 @@
 #include "media/mojo/services/mojo_video_decoder_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
@@ -229,7 +229,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
 
   mojo::PendingRemote<mojom::VideoDecoder> CreateRemoteVideoDecoder() {
     mojo::PendingRemote<mojom::VideoDecoder> remote_video_decoder;
-    mojo::MakeSelfOwnedReceiver(
+    video_decoder_receivers_.Add(
         std::make_unique<MojoVideoDecoderService>(
             &mojo_media_client_, &mojo_cdm_service_context_,
             mojo::PendingRemote<stable::mojom::StableVideoDecoder>()),
@@ -352,6 +352,8 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
   // MediaLog that the service has provided to |decoder_|. This should be
   // proxied to |client_media_log_|.
   raw_ptr<MediaLog, AcrossTasksDanglingUntriaged> decoder_media_log_ = nullptr;
+
+  mojo::UniqueReceiverSet<mojom::VideoDecoder> video_decoder_receivers_;
 
  private:
   // Passes |decoder_| to the service.

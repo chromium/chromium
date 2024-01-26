@@ -26,7 +26,7 @@ PepperFileRefRendererHost::PepperFileRefRendererHost(
     return;
   ResourceHost* fs_host = host->GetPpapiHost()->GetResourceHost(file_system);
   if (fs_host && fs_host->IsFileSystemHost()) {
-    fs_host_ = base::AsWeakPtr(static_cast<PepperFileSystemHost*>(fs_host));
+    fs_host_ = static_cast<PepperFileSystemHost*>(fs_host)->AsWeakPtr();
     file_system_type_ = fs_host_->GetType();
   }
 }

@@ -33,7 +33,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
 
 namespace {
@@ -1091,6 +1091,10 @@ void NavigationManagerImpl::Restore(
   }
 
   RestoreNativeSession();
+
+  RestoreItemsState(RestoreItemListType::kBackList, std::move(back_items));
+  RestoreItemsState(RestoreItemListType::kForwardList,
+                    std::move(forward_items));
 }
 
 bool NavigationManagerImpl::IsRestoreSessionInProgress() const {

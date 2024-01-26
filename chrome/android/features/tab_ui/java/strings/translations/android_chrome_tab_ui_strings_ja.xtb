@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">通知を受け取る</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
+<translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
+<translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{最近使用していないタブが <ph name="TABS_COUNT_ONE" /> 個あります}other{最近使用していないタブが <ph name="TABS_COUNT_MANY" /> 個あります}}</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>

@@ -244,7 +244,7 @@ HistoryFunctionWithCallback::HistoryFunctionWithCallback() {}
 HistoryFunctionWithCallback::~HistoryFunctionWithCallback() {}
 
 ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
-  absl::optional<GetVisits::Params> params = GetVisits::Params::Create(args());
+  std::optional<GetVisits::Params> params = GetVisits::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL url;
@@ -275,7 +275,7 @@ void HistoryGetVisitsFunction::QueryComplete(history::QueryURLResult result) {
 }
 
 ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
-  absl::optional<Search::Params> params = Search::Params::Create(args());
+  std::optional<Search::Params> params = Search::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::u16string search_text = base::UTF8ToUTF16(params->query.text);
@@ -313,7 +313,7 @@ void HistorySearchFunction::SearchComplete(history::QueryResults results) {
 }
 
 ExtensionFunction::ResponseAction HistoryAddUrlFunction::Run() {
-  absl::optional<AddUrl::Params> params = AddUrl::Params::Create(args());
+  std::optional<AddUrl::Params> params = AddUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL url;
@@ -329,7 +329,7 @@ ExtensionFunction::ResponseAction HistoryAddUrlFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction HistoryDeleteUrlFunction::Run() {
-  absl::optional<DeleteUrl::Params> params = DeleteUrl::Params::Create(args());
+  std::optional<DeleteUrl::Params> params = DeleteUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -360,7 +360,7 @@ ExtensionFunction::ResponseAction HistoryDeleteUrlFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction HistoryDeleteRangeFunction::Run() {
-  absl::optional<DeleteRange::Params> params =
+  std::optional<DeleteRange::Params> params =
       DeleteRange::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

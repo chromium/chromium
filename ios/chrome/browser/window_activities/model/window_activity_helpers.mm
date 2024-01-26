@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/window_activities/model/move_tab_activity_type_buildflags.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 // Activity types.
 NSString* const kLoadURLActivityType = @"org.chromium.load.url";

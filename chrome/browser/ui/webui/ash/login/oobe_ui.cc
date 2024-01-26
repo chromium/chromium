@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
@@ -541,6 +542,7 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<UserCreationScreenHandler>());
 
   AddScreenHandler(std::make_unique<TpmErrorScreenHandler>());
+  AddScreenHandler(std::make_unique<InstallAttributesErrorScreenHandler>());
 
   AddScreenHandler(std::make_unique<ParentalHandoffScreenHandler>());
 

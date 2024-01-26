@@ -234,7 +234,6 @@ std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
   return app_args ? app_args->install_data_index : std::string();
 }
 
-// The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
 std::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
   const std::optional<base::FilePath> log_dir = GetInstallDirectory(scope);
   if (log_dir) {

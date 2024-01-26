@@ -90,6 +90,10 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // Invalidations for topics with no corresponding handler are dropped.
   void DispatchInvalidationToHandlers(const Invalidation& invalidation);
 
+  // Dispatches a notification that the client has successfully subscribed to
+  // `topic` to handlers.
+  void DispatchSuccessfullySubscribedToHandlers(const Topic& topic);
+
   // Updates the invalidator state to the given one and then notifies
   // all handlers.  Note that the order is important; handlers that
   // call GetInvalidatorState() when notified will see the new state.

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #import "ios/web/public/web_state.h"
@@ -50,7 +51,7 @@ class PageloadForegroundDurationTabHelper
   // Last time when recording started.
   base::TimeTicks last_time_shown_;
   // WebState reference.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // Scoped observer that facilitates observing the WebState.
   base::ScopedObservation<web::WebState, WebStateObserver> scoped_observation_{
       this};

@@ -16,6 +16,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -267,6 +268,12 @@ bool ExtractNavigationEntries(
                << ").";
     return false;
   }
+
+  // TODO(https://crbug.com/1520963): Remove this once we have enough data to
+  // conclude whether V0 and V1 are still used.
+  constexpr size_t kHighestVersion = 3;
+  UMA_HISTOGRAM_EXACT_LINEAR("Android.WebContentsState.SavedStateVersion",
+                             saved_state_version, kHighestVersion);
 
   if (!saved_state_version) {
     // When |saved_state_version| is 0, it predates our notion of each tab
@@ -562,7 +569,7 @@ WebContentsState::CreateSingleNavigationStateAsByteBuffer(
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
           GURL(base::android::ConvertJavaStringToUTF8(env, url)), referrer,
-          initiator_origin, /* initiator_base_url= */ absl::nullopt,
+          initiator_origin, /* initiator_base_url= */ std::nullopt,
           ui::PAGE_TRANSITION_LINK,
           true,  // is_renderer_initiated
           "",    // extra_headers

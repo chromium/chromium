@@ -242,9 +242,11 @@ js_library("network_list_item") {
     ":network_list_types",
     ":onc_mojo",
     "//ash/webui/common/resources:focus_row_behavior",
-    "//ash/webui/common/resources/cellular_setup:cellular_types",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//ash/webui/common/resources/cellular_setup/cellular_types_externs.js",
   ]
 }
 

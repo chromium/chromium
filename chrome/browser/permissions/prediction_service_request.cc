@@ -26,6 +26,6 @@ PredictionServiceRequest::~PredictionServiceRequest() = default;
 void PredictionServiceRequest::LookupReponseReceived(
     bool lookup_succesful,
     bool response_from_cache,
-    const absl::optional<permissions::GeneratePredictionsResponse>& response) {
+    const std::optional<permissions::GeneratePredictionsResponse>& response) {
   std::move(callback_).Run(lookup_succesful, response_from_cache, response);
 }

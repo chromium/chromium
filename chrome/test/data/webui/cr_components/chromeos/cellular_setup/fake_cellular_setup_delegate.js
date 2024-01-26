@@ -2,7 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CellularSetupDelegate} from 'chrome://resources/ash/common/cellular_setup/cellular_setup_delegate.js';
+// Remove the class declaration once migrate the test to TS.
+class CellularSetupDelegate {
+  /**
+   * @return {boolean} true if base page title text should be visible.
+   */
+  shouldShowPageTitle() {}
+
+  /**
+   * @return {boolean} true if cancel button should be visible.
+   */
+  shouldShowCancelButton() {}
+}
 
 /** @implements {CellularSetupDelegate} */
 export class FakeCellularSetupDelegate {

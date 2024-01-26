@@ -11,6 +11,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -24,7 +25,6 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/installer/util/util_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class WorkItemList;
 
@@ -111,7 +111,7 @@ class InstallUtil {
 
   // Returns the highest Chrome version that was installed prior to a downgrade,
   // or no value if Chrome was not previously downgraded from a newer version.
-  static absl::optional<base::Version> GetDowngradeVersion();
+  static std::optional<base::Version> GetDowngradeVersion();
 
   // Returns pairs of registry key paths and value names where the enrollment
   // token is stored for machine level user cloud policies. The locations are

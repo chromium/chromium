@@ -11,6 +11,8 @@
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
+struct skcms_Matrix3x3;
+
 namespace ui {
 
 // Helper function that finds the property with the specified name.
@@ -32,6 +34,7 @@ ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
 // significant bit is the sign.
 // |color_matrix| represents a 3x3 matrix in vector form.
 ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix);
+ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix);
 
 // Creates a FB Damage Clip Blob
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);

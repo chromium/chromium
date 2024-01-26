@@ -1403,10 +1403,7 @@
   },
   'chrome_all_tast_tests': {
     'modifications': {
-      'chromeos-amd64-generic-rel-renamed': {
-        'swarming': {
-          'shards': 7,
-        },
+      'chromeos-amd64-generic-rel-tast': {
         'args': [
           '--tast-shard-method=hash',
         ],
@@ -1484,10 +1481,8 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
         ],
-        # TODO(crbug.com/1439624): Remove experiment and ci_only
-        # once the test suite is stable.
+        # TODO(crbug.com/1439624): Remove ci_only once the test suite is stable.
         'ci_only': True,
-        'experiment_percentage': 100,
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
@@ -1646,6 +1641,7 @@
       'android-chrome-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',
+          '--timeout-multiplier=4',
         ],
       },
     },
@@ -1787,9 +1783,9 @@
         },
       },
       'win-asan': {
-        # With a single shard seems to hit time limit.
+        # TODO(crbug.com/1518411): With a single shard seems to hit time limit.
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
       'win10-code-coverage': {
@@ -2430,6 +2426,34 @@
       },
     },
   },
+  'dawn_end2end_implicit_device_sync_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
+  'dawn_end2end_no_dxc_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
   'dawn_end2end_skip_validation_tests': {
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
@@ -2439,6 +2463,32 @@
       'Dawn Android arm64 DEPS Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
+  'dawn_end2end_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
   },
   'dawn_end2end_validation_layers_tests': {
     'remove_from': [
@@ -2459,6 +2509,18 @@
       'Dawn Android arm64 DEPS Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
   },
   'dawn_perf_tests': {
     'remove_from': [
@@ -2928,6 +2990,13 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
+      'Win10 FYI x64 Exp Release (NVIDIA)': {
+        'args': [
+          # TODO(crbug.com/1505895): Remove this filter when these tests no
+          # longer crash on the newer driver.
+          '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
+        ],
+      },
       'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',
@@ -3053,6 +3122,12 @@
           'shards': 12,
         },
       },
+      'Linux CFI': {
+        # Slow on certain debug builders, see crbug.com/1513713.
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
@@ -3089,7 +3164,7 @@
       },
       'Linux Tests (dbg)(1)': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
@@ -3581,6 +3656,12 @@
         },
       },
     },
+  },
+  'net_unittests BRYA_RELEASE_LKGM': {
+    # TODO(b/319364912): vpython cannot be delivered via CIPD on skylab builders
+    'remove_from': [
+      'chromeos-brya-chrome-skylab',
+    ],
   },
   'not_site_per_process_blink_web_tests': {
     'remove_from': [
@@ -4179,6 +4260,7 @@
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',
+          '--timeout-multiplier=4',
         ],
       },
     },
@@ -4838,16 +4920,6 @@
       },
     },
   },
-  'webgl_conformance_tests': {
-    'modifications': {
-      'chromeos-amd64-generic-rel-renamed': {
-        'args': [
-          # Added to debug crbug.com/1293967.
-          '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization --disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
-        ],
-      },
-    },
-  },
   'webgpu_blink_web_tests': {
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
@@ -4941,6 +5013,12 @@
       },
       'Dawn Android arm64 Release (Pixel 6)': {
         'ci_only': True,
+      },
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        # ASAN builds taking a bit longer so needs extra shards to not timeout.
+        'swarming': {
+          'shards': 10,
+        }
       },
       # These tests must run with a GPU.
       'linux-code-coverage': {
@@ -5178,6 +5256,15 @@
     'remove_from': [
       'android-12-x64-rel', # These tests are not ready to run on a non FYI CI.
     ]
+  },
+  'webview_trichrome_64_cts_hostside_tests full_mode': {
+    'modifications': {
+      'android-webview-13-x64-dbg-hostside': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+    },
   },
   'webview_ui_test_app_test_apk': {
     'remove_from': [

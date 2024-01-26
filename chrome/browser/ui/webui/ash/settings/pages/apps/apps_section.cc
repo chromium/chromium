@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
@@ -483,10 +482,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appManagementAppLanguageLabel", IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddBoolean(
-      "appManagementAppDetailsEnabled",
-      base::FeatureList::IsEnabled(::features::kAppManagementAppDetails));
 
   html_source->AddBoolean("appManagementArcReadOnlyPermissions",
                           arc::IsReadOnlyPermissionsEnabled());

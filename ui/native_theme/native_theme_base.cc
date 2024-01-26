@@ -370,13 +370,14 @@ void NativeThemeBase::PaintArrowButton(
     Part direction,
     State state,
     ColorScheme color_scheme,
-    const ScrollbarArrowExtraParams& arrow) const {
+    const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
 
   // Calculate button color.
   SkScalar track_hsv[3];
-  SkColorToHSV(arrow.track_color.value_or(GetColor(kTrackColor, color_scheme)),
-               track_hsv);
+  SkColorToHSV(
+      extra_params.track_color.value_or(GetColor(kTrackColor, color_scheme)),
+      track_hsv);
   SkColor button_color = SaturateAndBrighten(track_hsv, 0, 0.2f);
   SkColor background_color = button_color;
   if (state == kPressed) {
@@ -448,8 +449,8 @@ void NativeThemeBase::PaintArrowButton(
 
   // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
   const SkColor arrow_color =
-      arrow.thumb_color.has_value()
-          ? arrow.thumb_color.value()
+      extra_params.thumb_color.has_value()
+          ? extra_params.thumb_color.value()
           : GetArrowColor(state, color_scheme, color_provider);
   PaintArrow(canvas, rect, direction, arrow_color);
 }

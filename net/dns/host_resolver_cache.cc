@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
@@ -42,7 +42,7 @@ HostResolverCache::Key::~Key() = default;
 
 HostResolverCache::StaleLookupResult::StaleLookupResult(
     const HostResolverInternalResult& result,
-    absl::optional<base::TimeDelta> expired_by,
+    std::optional<base::TimeDelta> expired_by,
     bool stale_by_generation)
     : result(result),
       expired_by(expired_by),
@@ -66,7 +66,7 @@ const HostResolverInternalResult* HostResolverCache::Lookup(
     const NetworkAnonymizationKey& network_anonymization_key,
     DnsQueryType query_type,
     HostResolverSource source,
-    absl::optional<bool> secure) const {
+    std::optional<bool> secure) const {
   std::vector<EntryMap::const_iterator> candidates = LookupInternal(
       domain_name, network_anonymization_key, query_type, source, secure);
 
@@ -94,13 +94,13 @@ const HostResolverInternalResult* HostResolverCache::Lookup(
   return most_secure_result;
 }
 
-absl::optional<HostResolverCache::StaleLookupResult>
+std::optional<HostResolverCache::StaleLookupResult>
 HostResolverCache::LookupStale(
     base::StringPiece domain_name,
     const NetworkAnonymizationKey& network_anonymization_key,
     DnsQueryType query_type,
     HostResolverSource source,
-    absl::optional<bool> secure) const {
+    std::optional<bool> secure) const {
   std::vector<EntryMap::const_iterator> candidates = LookupInternal(
       domain_name, network_anonymization_key, query_type, source, secure);
 
@@ -143,9 +143,9 @@ HostResolverCache::LookupStale(
   }
 
   if (best_match == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   } else {
-    absl::optional<base::TimeDelta> expired_by;
+    std::optional<base::TimeDelta> expired_by;
     if (best_match_time_until_expiration.is_negative()) {
       expired_by = best_match_time_until_expiration.magnitude();
     }
@@ -205,14 +205,14 @@ bool HostResolverCache::RestoreFromValue(const base::Value& value) {
     }
 
     const base::Value* source_value = dict->Find(kSourceKey);
-    absl::optional<HostResolverSource> source =
-        source_value == nullptr ? absl::nullopt
+    std::optional<HostResolverSource> source =
+        source_value == nullptr ? std::nullopt
                                 : HostResolverSourceFromValue(*source_value);
     if (!source.has_value()) {
       return false;
     }
 
-    absl::optional<bool> secure = dict->FindBool(kSecureKey);
+    std::optional<bool> secure = dict->FindBool(kSecureKey);
     if (!secure.has_value()) {
       return false;
     }
@@ -291,7 +291,7 @@ HostResolverCache::LookupInternal(
     const NetworkAnonymizationKey& network_anonymization_key,
     DnsQueryType query_type,
     HostResolverSource source,
-    absl::optional<bool> secure) const {
+    std::optional<bool> secure) const {
   auto matches = std::vector<EntryMap::const_iterator>();
 
   if (entries_.empty()) {
@@ -384,7 +384,7 @@ void HostResolverCache::EvictEntries() {
 
   bool stale_found = false;
   base::TimeDelta soonest_time_till_expriation = base::TimeDelta::Max();
-  absl::optional<EntryMap::const_iterator> best_for_removal;
+  std::optional<EntryMap::const_iterator> best_for_removal;
 
   auto it = entries_.cbegin();
   while (it != entries_.cend()) {

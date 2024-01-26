@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -106,6 +107,96 @@ bool ShouldInstallOverwriteUserDisplayMode(
       return false;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// When web apps are added to sync on ChromeOS the value of
+// user_display_mode_non_cros should be set in certain cases to avoid poor sync
+// install states on devices with kSeparateUserDisplayModeForCrOS disabled
+// (including all pre-M122 devices) and non-CrOS devices with particular web
+// apps.
+// See switch for specific cases being mitigated against.
+// See go/udm-desync#bookmark=id.cg753kjyrruo for design doc.
+// TODO(b/320771282): Add automated tests.
+void ApplyUserDisplayModeSyncMitigations(
+    const WebAppInstallFinalizer::FinalizeOptions& options,
+    WebApp& web_app) {
+  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    return;
+  }
+
+  // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
+  CHECK(web_app.user_display_mode_cros().has_value(),
+        base::NotFatalUntil::M125);
+
+  // Don't mitigate installations from sync, this is only for installs that will
+  // be newly uploaded to sync.
+  if (options.install_surface == webapps::WebappInstallSource::SYNC) {
+    return;
+  }
+
+  // Only mitigate if web app is being added to sync.
+  if (options.source != WebAppManagement::Type::kSync) {
+    return;
+  }
+
+  // Don't override existing non CrOS value.
+  if (web_app.user_display_mode_non_cros().has_value()) {
+    return;
+  }
+
+  switch (web_app.user_display_mode_cros().value()) {
+    case mojom::UserDisplayMode::kBrowser:
+      if (!base::FeatureList::IsEnabled(
+              kUserDisplayModeSyncBrowserMitigation)) {
+        break;
+      }
+
+      // CrOS devices with kSeparateUserDisplayModeForCrOS disabled (including
+      // pre-M122 devices) use the user_display_mode_non_cros sync field instead
+      // of user_display_mode_cros. If user_display_mode_non_cros is ever unset
+      // they will fallback to using kStandalone even if user_display_mode_cros
+      // is set to kBrowser. This mitigation esures user_display_mode_non_cros
+      // is set to kBrowser for these devices.
+      // Example user journey:
+      // - Install web app as browser shortcut on post-M122 CrOS device.
+      // - Sync installation to pre-M122 CrOS device.
+      // - Check that it is synced as a browser shortcut.
+      // TODO(b/321617981): Remove when there are sufficiently few pre-M122 CrOS
+      // devices in circulation.
+      web_app.SetUserDisplayModeNonCrOS(mojom::UserDisplayMode::kBrowser);
+      break;
+
+    case mojom::UserDisplayMode::kStandalone: {
+      if (!base::FeatureList::IsEnabled(
+              kUserDisplayModeSyncStandaloneMitigation)) {
+        break;
+      }
+
+      // Ensure standalone averse apps don't get defaulted to kStandalone on
+      // non-CrOS devices via sync.
+      // Example user journey:
+      // - Install Google Docs as a standalone web app.
+      // - Sync installation to non-CrOS device.
+      // - Check that it is synced as a browser shortcut.
+      // TODO(b/321617972): Remove when Windows/Mac/Linux support for tabbed web
+      // apps is in sufficient circulation.
+      bool is_standalone_averse_app = web_app.app_id() == kGoogleDocsAppId ||
+                                      web_app.app_id() == kGoogleSheetsAppId ||
+                                      web_app.app_id() == kGoogleSlidesAppId;
+      if (!is_standalone_averse_app) {
+        break;
+      }
+      web_app.SetUserDisplayModeNonCrOS(mojom::UserDisplayMode::kBrowser);
+      break;
+    }
+
+    case mojom::UserDisplayMode::kTabbed:
+      // This can only be reached when kDesktopPWAsTabStripSettings is enabled,
+      // this is only for testing and is planned to be removed.
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -233,6 +324,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     DCHECK(web_app_info.user_display_mode.has_value());
     web_app->SetUserDisplayMode(*web_app_info.user_display_mode);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  ApplyUserDisplayModeSyncMitigations(options, *web_app);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // `WebApp::chromeos_data` has a default value already. Only override if the
   // caller provided a new value.
@@ -242,7 +336,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   if (provider_->policy_manager().IsWebAppInDisabledList(app_id) &&
       web_app->chromeos_data().has_value() &&
       !web_app->chromeos_data()->is_disabled) {
-    absl::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
+    std::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
     cros_data->is_disabled = true;
     web_app->SetWebAppChromeOsData(std::move(cros_data));
   }
@@ -391,6 +485,9 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
+  // TODO(crbug/1279315): Turn WebAppInstallFinalizer into a command so it can
+  // properly call callbacks on shutdown instead of dropping them on shutdown.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
@@ -410,7 +507,7 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
       location, version, controlled_frame_partitions,
       // Always reset `pending_update_info`, because reaching this point means
       // that an install or update just succeeded.
-      /*pending_update_info=*/absl::nullopt));
+      /*pending_update_info=*/std::nullopt));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

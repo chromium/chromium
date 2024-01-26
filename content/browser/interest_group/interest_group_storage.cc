@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/interest_group/interest_group_ad.pb.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -86,6 +87,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 20 - 2023/11 - crrev.com/c/5050989
 // Version 21 - 2023/11 - crrev.com/c/5063314
 // Version 22 - 2023/12 - crrev.com/c/5063589
+// Version 23 - 2024/01 - crrev.com/c/5173733
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -117,11 +119,12 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 22 adds id column to the debug report lockout table, and changes
 // starting and duration columns to starting_time and type columns to the debug
 // report cooldown table.
-const int kCurrentVersionNumber = 22;
+// Version 23 adds trusted bidding signals URL length limit.
+const int kCurrentVersionNumber = 23;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 22;
+const int kCompatibleVersionNumber = 23;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -776,7 +779,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV22Schema(sql::Database& db) {
+bool CreateV23Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -806,6 +809,7 @@ bool CreateV22Schema(sql::Database& db) {
         "trusted_bidding_signals_url TEXT NOT NULL,"
         "trusted_bidding_signals_keys TEXT NOT NULL,"
         "trusted_bidding_signals_slot_size_mode INTEGER NOT NULL,"
+        "max_trusted_bidding_signals_url_length INTEGER NOT NULL,"
         "user_bidding_signals TEXT,"
         "ads_pb BLOB NOT NULL,"
         "ad_components_pb BLOB NOT NULL,"
@@ -930,6 +934,106 @@ bool CreateV22Schema(sql::Database& db) {
   }
 
   return true;
+}
+
+bool UpgradeV22SchemaToV23(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kInterestGroupTableSql[] =
+      // clang-format off
+    "CREATE TABLE new_interest_groups("
+    "expiration INTEGER NOT NULL,"
+    "last_updated INTEGER NOT NULL,"
+    "next_update_after INTEGER NOT NULL,"
+    "owner TEXT NOT NULL,"
+    "joining_origin TEXT NOT NULL,"
+    "exact_join_time INTEGER NOT NULL,"
+    "name TEXT NOT NULL,"
+    "priority DOUBLE NOT NULL,"
+    "enable_bidding_signals_prioritization INTEGER NOT NULL,"
+    "priority_vector TEXT NOT NULL,"
+    "priority_signals_overrides TEXT NOT NULL,"
+    "seller_capabilities TEXT NOT NULL,"
+    "all_sellers_capabilities INTEGER NOT NULL,"
+    "execution_mode INTEGER NOT NULL,"
+    "joining_url TEXT NOT NULL,"
+    "bidding_url TEXT NOT NULL,"
+    "bidding_wasm_helper_url TEXT NOT NULL,"
+    "update_url TEXT NOT NULL,"
+    "trusted_bidding_signals_url TEXT NOT NULL,"
+    "trusted_bidding_signals_keys TEXT NOT NULL,"
+    "trusted_bidding_signals_slot_size_mode INTEGER NOT NULL,"
+    "max_trusted_bidding_signals_url_length INTEGER NOT NULL,"
+    "user_bidding_signals TEXT,"
+    "ads_pb BLOB NOT NULL,"
+    "ad_components_pb BLOB NOT NULL,"
+    "ad_sizes TEXT NOT NULL,"
+    "size_groups TEXT NOT NULL,"
+    "auction_server_request_flags INTEGER NOT NULL,"
+    "additional_bid_key BLOB NOT NULL,"
+    "aggregation_coordinator_origin TEXT,"
+    "storage_size INTEGER NOT NULL, "
+    "PRIMARY KEY(owner,name))";
+
+  // clang-format on
+  if (!db.Execute(kInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kCopyInterestGroupTableSql[] =
+      // clang-format off
+      "INSERT INTO new_interest_groups "
+      "SELECT expiration,"
+      "last_updated,"
+      "next_update_after,"
+      "owner,"
+      "joining_origin,"
+      "exact_join_time,"
+      "name,"
+      "priority,"
+      "enable_bidding_signals_prioritization,"
+      "priority_vector,"
+      "priority_signals_overrides,"
+      "seller_capabilities,"
+      "all_sellers_capabilities,"
+      "execution_mode,"
+      "joining_url,"
+      "bidding_url,"
+      "bidding_wasm_helper_url,"
+      "update_url,"
+      "trusted_bidding_signals_url,"
+      "trusted_bidding_signals_keys,"
+      "trusted_bidding_signals_slot_size_mode,"
+      "0," // max_trusted_bidding_signals_url_length
+      "user_bidding_signals,"
+      "ads_pb,"
+      "ad_components_pb,"
+      "ad_sizes,"
+      "size_groups,"
+      "auction_server_request_flags,"
+      "additional_bid_key,"
+      "aggregation_coordinator_origin,"
+      "storage_size "
+      "FROM interest_groups";
+  // clang-format on
+
+  if (!db.Execute(kCopyInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kDropInterestGroupTableSql[] = "DROP TABLE interest_groups";
+  if (!db.Execute(kDropInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kRenameInterestGroupTableSql[] =
+      // clang-format off
+    "ALTER TABLE new_interest_groups "
+    "RENAME TO interest_groups";
+  // clang-format on
+  if (!db.Execute(kRenameInterestGroupTableSql)) {
+    return false;
+  }
+
+  return CreateInterestGroupIndices(db);
 }
 
 bool UpgradeV21SchemaToV22(sql::Database& db, sql::MetaTable& meta_table) {
@@ -2219,6 +2323,7 @@ bool DoLoadInterestGroup(sql::Database& db,
           "trusted_bidding_signals_url,"
           "trusted_bidding_signals_keys,"
           "trusted_bidding_signals_slot_size_mode,"
+          "max_trusted_bidding_signals_url_length,"
           "user_bidding_signals,"  // opaque data
           "ads_pb,"
           "ad_components_pb,"
@@ -2275,21 +2380,22 @@ bool DoLoadInterestGroup(sql::Database& db,
   group.trusted_bidding_signals_slot_size_mode =
       static_cast<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>(
           load.ColumnInt(16));
-  if (load.GetColumnType(17) != sql::ColumnType::kNull) {
-    group.user_bidding_signals = load.ColumnString(17);
+  group.max_trusted_bidding_signals_url_length = load.ColumnInt(17);
+  if (load.GetColumnType(18) != sql::ColumnType::kNull) {
+    group.user_bidding_signals = load.ColumnString(18);
   }
   group.ads =
-      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(18));
-  group.ad_components =
       DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(19));
-  group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(20));
-  group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(21));
+  group.ad_components =
+      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(20));
+  group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(21));
+  group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(22));
   group.auction_server_request_flags =
-      DeserializeAuctionServerRequestFlags(load.ColumnInt64(22));
-  group.additional_bid_key = DeserializeAdditionalBidKey(load.ColumnBlob(23));
-  if (load.GetColumnType(24) != sql::ColumnType::kNull) {
+      DeserializeAuctionServerRequestFlags(load.ColumnInt64(23));
+  group.additional_bid_key = DeserializeAdditionalBidKey(load.ColumnBlob(24));
+  if (load.GetColumnType(25) != sql::ColumnType::kNull) {
     group.aggregation_coordinator_origin =
-        DeserializeOrigin(load.ColumnString(24));
+        DeserializeOrigin(load.ColumnString(25));
   }
   return true;
 }
@@ -2414,6 +2520,7 @@ bool DoJoinInterestGroup(sql::Database& db,
           "trusted_bidding_signals_url,"
           "trusted_bidding_signals_keys,"
           "trusted_bidding_signals_slot_size_mode,"
+          "max_trusted_bidding_signals_url_length,"
           "user_bidding_signals,"  // opaque data
           "ads_pb,"
           "ad_components_pb,"
@@ -2423,7 +2530,8 @@ bool DoJoinInterestGroup(sql::Database& db,
           "additional_bid_key,"
           "aggregation_coordinator_origin,"
           "storage_size) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        ));
 
   // clang-format on
   if (!join_group.is_valid()) {
@@ -2452,23 +2560,24 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(19, Serialize(data.trusted_bidding_signals_keys));
   join_group.BindInt(
       20, static_cast<int>(data.trusted_bidding_signals_slot_size_mode));
+  join_group.BindInt(21, data.max_trusted_bidding_signals_url_length);
   if (data.user_bidding_signals) {
-    join_group.BindString(21, data.user_bidding_signals.value());
+    join_group.BindString(22, data.user_bidding_signals.value());
   } else {
-    join_group.BindNull(21);
+    join_group.BindNull(22);
   }
-  join_group.BindBlob(22, Serialize(data.ads));
-  join_group.BindBlob(23, Serialize(data.ad_components));
-  join_group.BindString(24, Serialize(data.ad_sizes));
-  join_group.BindString(25, Serialize(data.size_groups));
-  join_group.BindInt64(26, Serialize(data.auction_server_request_flags));
-  join_group.BindBlob(27, Serialize(data.additional_bid_key));
+  join_group.BindBlob(23, Serialize(data.ads));
+  join_group.BindBlob(24, Serialize(data.ad_components));
+  join_group.BindString(25, Serialize(data.ad_sizes));
+  join_group.BindString(26, Serialize(data.size_groups));
+  join_group.BindInt64(27, Serialize(data.auction_server_request_flags));
+  join_group.BindBlob(28, Serialize(data.additional_bid_key));
   if (data.aggregation_coordinator_origin) {
-    join_group.BindString(28, Serialize(*data.aggregation_coordinator_origin));
+    join_group.BindString(29, Serialize(*data.aggregation_coordinator_origin));
   } else {
-    join_group.BindNull(28);
+    join_group.BindNull(29);
   }
-  join_group.BindInt64(29, data.EstimateSize());
+  join_group.BindInt64(30, data.EstimateSize());
 
   if (!join_group.Run()) {
     return false;
@@ -2507,6 +2616,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
             "trusted_bidding_signals_url=?,"
             "trusted_bidding_signals_keys=?,"
             "trusted_bidding_signals_slot_size_mode=?,"
+            "max_trusted_bidding_signals_url_length=?,"
             "user_bidding_signals=?,"
             "ads_pb=?,"
             "ad_components_pb=?,"
@@ -2541,27 +2651,28 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindString(13, Serialize(group.trusted_bidding_signals_keys));
   store_group.BindInt(
       14, static_cast<int>(group.trusted_bidding_signals_slot_size_mode));
+  store_group.BindInt(15, group.max_trusted_bidding_signals_url_length);
   if (group.user_bidding_signals) {
-    store_group.BindString(15, group.user_bidding_signals.value());
+    store_group.BindString(16, group.user_bidding_signals.value());
   } else {
-    store_group.BindNull(15);
+    store_group.BindNull(16);
   }
-  store_group.BindBlob(16, Serialize(group.ads));
-  store_group.BindBlob(17, Serialize(group.ad_components));
-  store_group.BindString(18, Serialize(group.ad_sizes));
-  store_group.BindString(19, Serialize(group.size_groups));
-  store_group.BindInt64(20, Serialize(group.auction_server_request_flags));
-  store_group.BindBlob(21, Serialize(group.additional_bid_key));
+  store_group.BindBlob(17, Serialize(group.ads));
+  store_group.BindBlob(18, Serialize(group.ad_components));
+  store_group.BindString(19, Serialize(group.ad_sizes));
+  store_group.BindString(20, Serialize(group.size_groups));
+  store_group.BindInt64(21, Serialize(group.auction_server_request_flags));
+  store_group.BindBlob(22, Serialize(group.additional_bid_key));
   if (group.aggregation_coordinator_origin) {
-    store_group.BindString(22,
+    store_group.BindString(23,
                            Serialize(*group.aggregation_coordinator_origin));
   } else {
-    store_group.BindNull(22);
+    store_group.BindNull(23);
   }
-  store_group.BindInt64(23, group.EstimateSize());
+  store_group.BindInt64(24, group.EstimateSize());
 
-  store_group.BindString(24, Serialize(group.owner));
-  store_group.BindString(25, group.name);
+  store_group.BindString(25, Serialize(group.owner));
+  store_group.BindString(26, group.name);
 
   return store_group.Run();
 }
@@ -2641,6 +2752,10 @@ bool DoUpdateInterestGroup(sql::Database& db,
   if (update.trusted_bidding_signals_slot_size_mode) {
     stored_group.trusted_bidding_signals_slot_size_mode =
         *update.trusted_bidding_signals_slot_size_mode;
+  }
+  if (update.max_trusted_bidding_signals_url_length) {
+    stored_group.max_trusted_bidding_signals_url_length =
+        std::move(update.max_trusted_bidding_signals_url_length.value());
   }
   if (update.user_bidding_signals) {
     stored_group.user_bidding_signals = std::move(update.user_bidding_signals);
@@ -3948,6 +4063,12 @@ base::FilePath DBPath(const base::FilePath& base) {
   return base.Append(kDatabasePath);
 }
 
+sql::DatabaseOptions GetDatabaseOptions() {
+  return sql::DatabaseOptions{
+      .wal_mode = base::FeatureList::IsEnabled(
+          features::kFledgeEnableWALForInterestGroupStorage)};
+}
+
 }  // namespace
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
@@ -3968,7 +4089,7 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
           blink::features::kInterestGroupStorageMaxStoragePerOwner.Get()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
-      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
+      db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
       db_maintenance_timer_(FROM_HERE,
                             kIdlePeriod,
                             this,
@@ -4004,7 +4125,7 @@ bool InterestGroupStorage::EnsureDBInitialized() {
 bool InterestGroupStorage::InitializeDB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{});
+  db_ = std::make_unique<sql::Database>(GetDatabaseOptions());
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
   db_->set_histogram_tag("InterestGroups");
@@ -4071,7 +4192,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV22Schema(*db_);
+    return CreateV23Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -4170,6 +4291,11 @@ bool InterestGroupStorage::InitializeSchema() {
         ABSL_FALLTHROUGH_INTENDED;
       case 21:
         if (!UpgradeV21SchemaToV22(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 22:
+        if (!UpgradeV22SchemaToV23(*db_, meta_table)) {
           return false;
         }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {

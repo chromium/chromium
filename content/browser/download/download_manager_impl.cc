@@ -34,6 +34,7 @@
 #include "components/download/public/common/download_item_factory.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
@@ -369,10 +370,10 @@ void DownloadManagerImpl::GetNextId(GetNextIdCallback callback) {
   if (!is_history_download_id_retrieved_ && id_callbacks_.size() == 1u) {
     if (delegate_) {
       delegate_->GetNextId(
-          base::BindOnce(&DownloadManagerImpl::OnHistoryNextIdRetrived,
+          base::BindOnce(&DownloadManagerImpl::OnHistoryNextIdRetrieved,
                          weak_factory_.GetWeakPtr()));
     } else {
-      OnHistoryNextIdRetrived(download::DownloadItem::kInvalidId);
+      OnHistoryNextIdRetrieved(download::DownloadItem::kInvalidId);
     }
   }
 }
@@ -462,7 +463,7 @@ DownloadManagerImpl::SerializedEmbedderDownloadDataToStoragePartitionConfig(
   return config;
 }
 
-void DownloadManagerImpl::OnHistoryNextIdRetrived(uint32_t next_id) {
+void DownloadManagerImpl::OnHistoryNextIdRetrieved(uint32_t next_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   is_history_download_id_retrieved_ = true;
   if (next_id == download::DownloadItem::kInvalidId)
@@ -479,21 +480,15 @@ StoragePartitionConfig DownloadManagerImpl::GetStoragePartitionConfigForSiteUrl(
 
 void DownloadManagerImpl::DetermineDownloadTarget(
     download::DownloadItemImpl* item,
-    DownloadTargetCallback callback) {
-  // Note that this next call relies on
-  // DownloadItemImplDelegate::DownloadTargetCallback and
-  // DownloadManagerDelegate::DownloadTargetCallback having the same
-  // type.  If the types ever diverge, gasket code will need to
-  // be written here.
+    download::DownloadTargetCallback callback) {
   if (!delegate_ || !delegate_->DetermineDownloadTarget(item, &callback)) {
     base::FilePath target_path = item->GetForcedFilePath();
     // TODO(asanka): Determine a useful path if |target_path| is empty.
-    std::move(callback).Run(
-        target_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
-        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-        download::DownloadItem::InsecureDownloadStatus::UNKNOWN, target_path,
-        base::FilePath(), std::string() /*mime_type*/,
-        download::DOWNLOAD_INTERRUPT_REASON_NONE);
+    download::DownloadTargetInfo target_info;
+    target_info.target_path = target_path;
+    target_info.intermediate_path = target_path;
+
+    std::move(callback).Run(std::move(target_info));
   }
 }
 

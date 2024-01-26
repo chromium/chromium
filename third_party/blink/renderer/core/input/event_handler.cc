@@ -31,6 +31,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
@@ -69,9 +70,12 @@
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
@@ -84,8 +88,10 @@
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
@@ -98,6 +104,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/windows_keyboard_codes.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
@@ -179,10 +186,6 @@ gfx::Point DetermineHotSpot(const Image& image,
 // Returns whether the hit element contains a title and isn't a SVGUseElement or
 // part of an SVGUseElement.
 bool HasTitleAndNotSVGUseElement(const HitTestResult& hovered_node_result) {
-  // TODO(crbug.com/1473774): Remove flag check if no issues arise.
-  if (!RuntimeEnabledFeatures::SkipShadowHostWhenHoveringForTooltipEnabled()) {
-    return false;
-  }
   Node* inner_node = hovered_node_result.InnerNode();
   if (!inner_node) {
     return false;
@@ -198,6 +201,41 @@ bool HasTitleAndNotSVGUseElement(const HitTestResult& hovered_node_result) {
     return false;
   }
   return true;
+}
+
+// Get the entire style of scrollbar to get the cursor style of scrollbar
+const ComputedStyle* GetComputedStyleFromScrollbar(
+    const LayoutObject& layout_object,
+    const HitTestResult& result) {
+  if (result.IsOverScrollCorner()) {
+    PaintLayerScrollableArea* scrollable_area =
+        To<LayoutBox>(layout_object).GetScrollableArea();
+
+    // For a frame, hit tests over scroll controls are considered to be over
+    // the document element, but the scrollable area belongs to the LayoutView,
+    // not the document element's LayoutObject.
+    if (layout_object.IsDocumentElement()) {
+      scrollable_area = layout_object.View()->GetScrollableArea();
+    }
+
+    CHECK(scrollable_area);
+    LayoutCustomScrollbarPart* scroll_corner_layout_object =
+        scrollable_area->ScrollCorner();
+    if (scroll_corner_layout_object) {
+      return scroll_corner_layout_object->Style();
+    }
+  }
+
+  if (result.GetScrollbar() && result.GetScrollbar()->IsCustomScrollbar()) {
+    const auto& custom_scroll_bar = To<CustomScrollbar>(*result.GetScrollbar());
+
+    if (const ComputedStyle* style =
+            custom_scroll_bar.GetScrollbarPartStyleForCursor(
+                custom_scroll_bar.HoveredPart())) {
+      return style;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -351,7 +389,8 @@ HitTestResult EventHandler::HitTestResultAtLocation(
     const HitTestLocation& location,
     HitTestRequest::HitTestRequestType hit_type,
     const LayoutObject* stop_node,
-    bool no_lifecycle_update) {
+    bool no_lifecycle_update,
+    std::optional<HitTestRequest::HitNodeCb> hit_node_cb) {
   TRACE_EVENT0("blink", "EventHandler::HitTestResultAtLocation");
 
   // We always send HitTestResultAtLocation to the main frame if we have one,
@@ -392,7 +431,7 @@ HitTestResult EventHandler::HitTestResultAtLocation(
   // HitTestResultAtLocation is specifically used to hitTest into all frames,
   // thus it always allows child frame content.
   HitTestRequest request(hit_type | HitTestRequest::kAllowChildFrameContent,
-                         stop_node);
+                         stop_node, std::move(hit_node_cb));
   HitTestResult result(request, location);
   PerformHitTest(location, result, no_lifecycle_update);
   return result;
@@ -529,8 +568,9 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
   if (scroll_manager_->MiddleClickAutoscrollInProgress())
     return absl::nullopt;
 
-  if (result.GetScrollbar() && !result.GetScrollbar()->IsCustomScrollbar())
+  if (result.GetScrollbar() && !result.GetScrollbar()->IsCustomScrollbar()) {
     return PointerCursor();
+  }
 
   Node* node = result.InnerPossiblyPseudoNode();
   if (!node || !node->GetLayoutObject()) {
@@ -569,7 +609,12 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
     }
   }
 
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle* scrollbar_style =
+      GetComputedStyleFromScrollbar(layout_object, result);
+
+  const ComputedStyle& style =
+      scrollbar_style ? *scrollbar_style : layout_object.StyleRef();
+
   if (const CursorList* cursors = style.Cursors()) {
     for (const auto& cursor : *cursors) {
       const StyleImage* style_image = cursor.GetImage();

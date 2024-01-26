@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Download paused</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1434873037477293673">price drop card</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Sites can show sign-in prompts from identity services.</translation>
 <translation id="2790501146643349491">When on, recently closed sites can finish sending and receiving data. When off, recently closed sites can't finish sending or receiving data.</translation>
 <translation id="2822354292072154809">Are you sure that you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Request mobile view</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Previous track</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Price drop on your open tab, from <ph name="OLD_PRICE" /> to <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="652937045869844725">Try allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
 <translation id="6766622839693428701">Swipe down to close.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> From <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Select an option for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
+<translation id="6867014948848323204">From <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Block sites from reading text and images from the clipboard</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Don't allow a site to use third-party cookies</translation>
 <translation id="7719367874908701697">Page zoom</translation>
+<translation id="7770832849480336015">Hide '<ph name="TITLE_OF_MODULE" />'</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>

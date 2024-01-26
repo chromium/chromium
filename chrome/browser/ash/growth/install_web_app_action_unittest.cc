@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
@@ -21,7 +22,6 @@
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kTestProfileName[] = "user@gmail.com";
@@ -107,7 +107,7 @@ class InstallWebAppActionPerformerTest : public testing::Test {
 
   void InstallWebAppActionPerformerCallback(
       growth::ActionResult result,
-      absl::optional<growth::ActionResultReason> reason) {
+      std::optional<growth::ActionResultReason> reason) {
     if (result == growth::ActionResult::kSuccess) {
       std::move(app_installed_closure_).Run();
     } else {

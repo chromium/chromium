@@ -251,7 +251,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
-        web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt, start_url);
+        web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
     EXPECT_EQ(0, static_cast<int>(

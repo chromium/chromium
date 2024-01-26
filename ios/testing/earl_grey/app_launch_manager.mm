@@ -278,9 +278,7 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
                    relaunchPolicy:configuration.relaunch_policy];
 
   if ([self appIsLaunched]) {
-    if (@available(iOS 14, *)) {
-      [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
-    }
+    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
 
 #if !TARGET_IPHONE_SIMULATOR
     if (@available(iOS 17, *)) {

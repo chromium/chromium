@@ -45,10 +45,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
@@ -118,7 +119,7 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This is called when ImageLoaderClient::RegisterComponent() is done.
-void OnImageRegistered(absl::optional<bool> result) {
+void OnImageRegistered(std::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // `result` is false if the component fails verification, nullopt if an error
@@ -158,7 +159,7 @@ void RegisterImage(const std::string& version,
 // at the top level, binary in "_platform_specific/<platform>"). If the image
 // was successfully loaded, register it with Chrome via the hint file so that
 // it can be loaded next time ChromeOS restarts.
-void OnImageLoaded(absl::optional<std::string> image_dir) {
+void OnImageLoaded(std::optional<std::string> image_dir) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Mounting should not fail, but if it does simply log a message. This will

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_context_partition
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
+Harness: the test ran to completion.

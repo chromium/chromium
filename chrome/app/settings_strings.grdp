@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required."></message>
+  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
 
   <!-- Shared across multiple pages -->
   <message name="IDS_SETTINGS_CONTINUE" desc="Label for 'Continue' buttons.">
@@ -406,9 +406,6 @@
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL" desc="This is the label for the field that lets a user modify the email address that will be used when auto-filling forms on the web.">
     Email
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL" desc="This is the label for the field that lets the user modify the title that will be used when auto-filling forms on the web. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi." meaning="Honorific">
-    Title
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_DETAIL" desc="Description of what toggling the 'Autofill' setting does. Immediately underneath IDS_SETTINGS_AUTOFILL">
     Enable Autofill to fill out forms in a single click
@@ -1608,9 +1605,6 @@
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2" desc="2 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
     Chrome limits the total amount of data that sites can share through the browser to measure ad performance
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3" desc="3 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
-    Your Android device may include a similar setting. If Ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across web sites you visit and apps you use.
-  </message>
 
   <!-- Privacy Guide -->
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the 'Privacy Guide'. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
@@ -2229,6 +2223,9 @@
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR" desc="Error text for a custom secure DNS provider entry to which a probe connection fails">
     Please verify that this is a valid provider or try again later
   </message>
+  <message name="IDS_SETTINGS_SECURITY_V8_LINK_TITLE" desc="Title for the link row to the V8 security settings.">
+    Manage V8 security
+  </message>
   <message name="IDS_SETTINGS_CONTENT_SETTINGS" desc="Text of the button that takes a user to settings page thats allows users to modify site settings. Also the title of that settings page.">
     Content settings
   </message>
@@ -2330,6 +2327,11 @@
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
     Search engine used in the address bar.
   </message>
+  <if expr="is_chromeos">
+    <message name="IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE" desc="Explanation for the search engine dropdown setting in the primary profile.">
+      Search engine used in the address bar and the launcher.
+    </message>
+  </if>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
     Learn more about default search engines
   </message>
@@ -2747,6 +2749,21 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript content setting.">
     Not allowed to use JavaScript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED" desc="Label for the enabled option of the JavaScript optimizer content setting.">
+    Sites can use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED" desc="Label for the disabled option of the JavaScript optimizer content setting.">
+    Don’t allow sites to use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
+    Reduces performance but makes V8 more resistant to attacks
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the JavaScript optimizer content setting.">
+    Always allowed to use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript optimizer content setting.">
+    Not allowed to use V8 optimizer
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -3872,8 +3889,8 @@
     </message>
   </if>
   <if expr="not is_chromeos">
-    <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via hardware acceleration (GPU) when available.">
-      Use hardware acceleration when available
+    <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via graphics acceleration (GPU) when available.">
+      Use graphics acceleration when available
     </message>
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL" desc="Label for the control that opens the system network proxy settings. These settings apply to the entire computer.">
       Open your computer's proxy settings
@@ -4345,31 +4362,31 @@
   </message>
 
   <!-- Experimental settings strings -->
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental AI settings" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_TITLE" desc="Title of page holding experimental AI settings">
     Experimental AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_LABEL" desc="Toggle primary description" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_LABEL" desc="Toggle primary description">
     Try out experimental AI features
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_SUBLABEL" desc="Toggle secondary description" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL" desc="Toggle secondary description">
     These features use AI, are in early development, and won’t always get it right.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_LABEL" desc="The primary description for the 'Help me write' feature." translateable="false">
+  <message name="IDS_SETTINGS_AI_COMPOSE_LABEL" desc="The primary description for the 'Help me write' feature.">
     Help me write
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature." translateable="false">
+  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature.">
     Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description" translateable="false">
-    Tab Organizer
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">
+    Tab organizer
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description" translateable="false">
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description">
     Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature." translateable="false">
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature.">
     Create themes with AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature." translateable="false">
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature.">
     Creates custom themes based on the subject, mood, visual style, and color that you choose. To use this feature, open a new tab and click Customize Chrome.
   </message>
 </grit-part>

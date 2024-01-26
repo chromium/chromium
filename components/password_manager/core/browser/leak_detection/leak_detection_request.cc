@@ -64,6 +64,18 @@ google::internal::identity::passwords::leak::check::v1::
       return google::internal::identity::passwords::leak::check::v1::
           LookupSingleLeakRequest::ClientUseCase::
               LookupSingleLeakRequest_ClientUseCase_IGA_BULK_SYNCED_PASSWORDS_CHECK;
+    case LeakDetectionInitiator::kClientUseCaseUnspecified:
+      return google::internal::identity::passwords::leak::check::v1::
+          LookupSingleLeakRequest::ClientUseCase::
+              LookupSingleLeakRequest_ClientUseCase_CLIENT_USE_CASE_UNSPECIFIED;
+    case LeakDetectionInitiator::kDesktopProactivePasswordCheckup:
+      return google::internal::identity::passwords::leak::check::v1::
+          LookupSingleLeakRequest::ClientUseCase::
+              LookupSingleLeakRequest_ClientUseCase_CHROME_DESKTOP_SIGNED_IN_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP;
+    case LeakDetectionInitiator::kIosProactivePasswordCheckup:
+      return google::internal::identity::passwords::leak::check::v1::
+          LookupSingleLeakRequest::ClientUseCase::
+              LookupSingleLeakRequest_ClientUseCase_CHROME_IOS_SIGNED_IN_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP;
   }
   NOTREACHED_NORETURN();
 }

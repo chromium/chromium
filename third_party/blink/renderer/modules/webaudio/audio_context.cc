@@ -985,6 +985,12 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   return callback_metric_;
 }
 
+uint32_t AudioContext::PlatformBufferSize() const {
+  return (static_cast<RealtimeAudioDestinationHandler&>(
+              destination()->GetAudioDestinationHandler()))
+      .GetCallbackBufferSize();
+}
+
 void AudioContext::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   microphone_permission_status_ = status;

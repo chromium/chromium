@@ -63,7 +63,7 @@ struct WebSandboxFlagsParsingResult {
 // or from the network process. See: docs/security/rule-of-2.md.
 COMPONENT_EXPORT(NETWORK_CPP)
 WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
-    const std::string_view& input,
+    std::string_view input,
     mojom::WebSandboxFlags ignored_flags);
 
 }  // namespace network

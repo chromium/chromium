@@ -5,11 +5,15 @@
 #ifndef ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_
 #define ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_
 
+#include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 
 namespace views {
+class MenuItemView;
+class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
 
@@ -21,6 +25,39 @@ namespace ash {
 class DeskActionContextMenu : public views::ContextMenuController,
                               public ui::SimpleMenuModel::Delegate {
  public:
+  // Config for the menu. Determines what the context menu will show.
+  struct Config {
+    Config();
+    Config(Config&&);
+    ~Config();
+    Config& operator=(Config&&);
+
+    views::MenuAnchorPosition anchor_position;
+
+    // A list of the currently available lacros profiles. When this has two or
+    // more elements, the menu will show the profiles, as well as an entry for
+    // bringing up the profile manager.
+    std::vector<LacrosProfileSummary> profiles;
+
+    // Identifies the currently selected lacros profile. Only used when lacros
+    // profiles are shown.
+    uint64_t current_lacros_profile_id = 0;
+
+    // Invoked with the lacros profile id if the user picks a profile.
+    base::RepeatingCallback<void(uint64_t)> set_lacros_profile_id;
+
+    // If the menu option to combine desks is to be shown, then this, as well as
+    // the callback, need to be set.
+    std::optional<std::u16string> combine_desks_target_name;
+    base::RepeatingClosure combine_desks_callback;
+
+    // If set, the option to close all windows on the desk is shown.
+    base::RepeatingClosure close_all_callback;
+
+    // Optional, invoked when the menu is closed.
+    base::RepeatingClosure on_context_menu_closed_callback;
+  };
+
   // An enum with identifiers to link context menu items to their associated
   // functions.
   enum CommandId {
@@ -29,16 +66,14 @@ class DeskActionContextMenu : public views::ContextMenuController,
     // Saves target desk in DesksController and gives user option to undo the
     // desk before the desk is fully removed and its windows are closed.
     kCloseAll,
+    // Shows the lacros profile manager. Only available when desk profiles is
+    // enabled.
+    kShowProfileManager,
+    // Start of dynamic IDs used for lacros profiles.
+    kDynamicProfileStart,
   };
 
-  // If `combine_desks_target_name` is not set, the option to combine desks will
-  // not be visible.
-  DeskActionContextMenu(
-      const std::optional<std::u16string>& combine_desks_target_name,
-      const views::MenuAnchorPosition anchor_position,
-      base::RepeatingClosure combine_desks_callback,
-      base::RepeatingClosure close_all_callback,
-      base::RepeatingClosure on_context_menu_closed_callback);
+  explicit DeskActionContextMenu(Config config);
   DeskActionContextMenu(const DeskActionContextMenu&) = delete;
   DeskActionContextMenu& operator=(const DeskActionContextMenu&) = delete;
   ~DeskActionContextMenu() override;
@@ -53,21 +88,23 @@ class DeskActionContextMenu : public views::ContextMenuController,
  private:
   friend class DesksTestApi;
 
+  // Invokes `config_.set_lacros_profile_id` if `command_id` refers to a lacros
+  // profile.
+  void MaybeSetLacrosProfileId(int command_id);
+
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
-  const views::MenuAnchorPosition anchor_position_;
-
-  // Callbacks to run when the combine desks option is selected, when the close
-  // desk and windows option is selected, and when the menu is closed.
-  base::RepeatingClosure combine_desks_callback_;
-  base::RepeatingClosure close_all_callback_;
-  base::RepeatingClosure on_context_menu_closed_callback_;
+  Config config_;
 
   ui::SimpleMenuModel context_menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+
+  // The root menu item view. Cached for testing.
+  raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
 };
 
 }  // namespace ash

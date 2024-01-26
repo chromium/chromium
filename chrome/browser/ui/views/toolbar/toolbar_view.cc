@@ -47,9 +47,9 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -119,6 +119,7 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -390,7 +391,7 @@ void ToolbarView::Init() {
     extensions_container_ =
         container_view_->AddChildView(std::move(extensions_container));
     extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser_->profile(),
+        std::make_unique<ExtensionsToolbarCoordinator>(browser_,
                                                        extensions_container_);
   }
 
@@ -815,10 +816,14 @@ void ToolbarView::Layout() {
     }
   }
 
-  // Use two-pass layout solution to avoid overflow button being interfere with
+  // Use two-pass solution to avoid overflow button being interfere with
   // toolbar elements space allocation. The button itself should just be an
   // indicator of overflow not the cause. (See crbug.com/1484294)
-  // In the first pass turn off overflow button right before each layout.
+  // In the first pass hide overflow button and calculate other buttons'
+  // visibility to determine if overflow button should show. Do NOT explicit
+  // call Layout() in the first pass to prevent an animation conflicts with the
+  // 2nd pass kicks off (crbug.com/1517065) 2nd pass layout will account for the
+  // visibility of the overflow button determined by the 1st pass.
   // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
     // TODO(crbug.com/1499021) Move this logic into LayoutManager.
@@ -827,12 +832,11 @@ void ToolbarView::Layout() {
         toolbar_controller_->overflow_button()->GetVisible();
     manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                      true);
-    AccessiblePaneView::Layout();
-    if (toolbar_controller_->ShouldShowOverflowButton()) {
+
+    if (toolbar_controller_->ShouldShowOverflowButton(size())) {
       // This is the second pass layout that shows overflow button if necessary.
       manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                        false);
-      AccessiblePaneView::Layout();
       if (!was_overflow_button_visible) {
         base::RecordAction(
             base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
@@ -843,11 +847,11 @@ void ToolbarView::Layout() {
             base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
       }
     }
-  } else {
-    // Call super implementation to ensure layout manager and child layouts
-    // happen.
-    AccessiblePaneView::Layout();
   }
+
+  // Call super implementation to ensure layout manager and child layouts
+  // happen.
+  AccessiblePaneView::Layout();
 }
 
 void ToolbarView::OnThemeChanged() {
@@ -861,19 +865,42 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
+// The implementation of this method is subtle.
+// The goal is to create rounded corners in the top-left and top-right corners,
+// allowing background_view_left_ and background_view_right_ to peek through. In
+// order for the corners to look good, we must use antialiasing on the clip
+// paths. When there are fractional device scale factors (e.g. 1.5), it's easy
+// (common even) to have straight edges of the clip path end up on non-integral
+// boundaries (e.g. y=68.5). This is unavoidable. Antialiasing turns these
+// non-integral boundary clip paths into 2-pixel "fuzzy" boundaries, which in
+// turn causes misalignment with other views::Views which assume the boundaries
+// are exact. Solving this problem completely will require a rethink of how we
+// implement fractional device scale factors in Chrome. In the meanwhile, the
+// implementation of this method minimizes the length of straight edges of the
+// clip path to minimize issues. To do this we carve out the two corners, and
+// then take the inverse as our clip path.
 void ToolbarView::UpdateClipPath() {
   const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   SkPath path;
   const gfx::Rect local_bounds = GetLocalBounds();
-  path.moveTo(0, local_bounds.height());
+
+  // Carve out top-left.
+  path.moveTo(0, 0);
   path.lineTo(0, corner_radius);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, corner_radius, 0);
-  path.lineTo(local_bounds.width() - corner_radius, 0);
+  path.lineTo(0, 0);
+
+  // Carve out top-right.
+  path.moveTo(local_bounds.width() - corner_radius, 0);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, local_bounds.width(), corner_radius);
-  path.lineTo(local_bounds.width(), local_bounds.height());
-  path.lineTo(0, local_bounds.height());
+  path.lineTo(local_bounds.width(), 0);
+  path.lineTo(local_bounds.width() - corner_radius, 0);
+
+  // Take the inverse so we keep everything else. Artifacts are confined to the
+  // corners.
+  path.setFillType(SkPathFillType::kInverseWinding);
   container_view_->SetClipPath(path);
 }
 
@@ -958,15 +985,13 @@ void ToolbarView::InitLayout() {
   }
 
   if (pinned_toolbar_actions_container_) {
-    const views::FlexSpecification toolbar_actions_flex_rule =
+    pinned_toolbar_actions_container_->SetProperty(
+        views::kFlexBehaviorKey,
         views::FlexSpecification(
-            static_cast<views::FlexLayout*>(
-                pinned_toolbar_actions_container_->GetLayoutManager())
-                ->GetDefaultFlexRule())
-            .WithOrder(kToolbarActionsFlexOrder);
-
-    pinned_toolbar_actions_container_->SetProperty(views::kFlexBehaviorKey,
-                                                   toolbar_actions_flex_rule);
+            base::BindRepeating(
+                &PinnedToolbarActionsContainer::CustomFlexRule,
+                base::Unretained(pinned_toolbar_actions_container_)))
+            .WithOrder(kToolbarActionsFlexOrder));
   } else if (side_panel_container_) {
     const views::FlexSpecification side_panel_flex_rule =
         views::FlexSpecification(

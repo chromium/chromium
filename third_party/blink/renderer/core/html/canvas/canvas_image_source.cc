@@ -76,8 +76,8 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
 
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    resource_provider->Canvas()->drawImage(paint_image, 0, 0,
-                                           SkSamplingOptions(), &paint);
+    resource_provider->Canvas().drawImage(paint_image, 0, 0,
+                                          SkSamplingOptions(), &paint);
     return resource_provider->Snapshot(reason,
                                        image->CurrentFrameOrientation());
   }

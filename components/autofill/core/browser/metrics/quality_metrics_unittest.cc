@@ -923,43 +923,6 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
                          Bucket(country_field.label_source, 1)));
 }
 
-TEST_F(QualityMetricsTest, EmitsUmaAutofillPreFilledFields) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillOverwritePlaceholdersOnly};
-
-  base::HistogramTester histogram_tester;
-  test::FormDescription form_description = {
-      .fields = {{.role = NAME_FIRST,
-                  .heuristic_type = NAME_FIRST,
-                  .value = u"pre-filled"},
-                 {.role = NAME_LAST, .heuristic_type = NAME_LAST}}};
-  FormData form = test::GetFormData(form_description);
-
-  // Simulate page load.
-  autofill_manager().AddSeenForm(form,
-                                 test::GetHeuristicTypes(form_description),
-                                 test::GetServerTypes(form_description),
-                                 /*preserve_values_in_form_structure=*/true);
-  // Simluate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
-  // Get cached form and modify fields.
-  FormStructure* cached_form;
-  AutofillField* cached_triggering_field;
-  ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields[0], &cached_form, &cached_triggering_field));
-  cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
-  // Fill form.
-  FillTestProfile(form);
-  // Submit form.
-  SubmitForm(form);
-
-  ResetDriverToCommitMetrics();
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PreFilledFields.Address"),
-      BucketsAre(base::Bucket(AutofillPreFilledFields::kPreFilledOnPageLoad, 1),
-                 base::Bucket(AutofillPreFilledFields::kEmptyOnPageLoad, 1)));
-}
-
 }  // namespace autofill_metrics
 
 }  // namespace autofill

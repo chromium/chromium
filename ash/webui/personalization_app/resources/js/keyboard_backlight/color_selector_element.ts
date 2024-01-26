@@ -257,7 +257,7 @@ export class ColorSelectorElement extends WithPersonalizationStore {
 
   private getColorIconElement_(button: HTMLElement): HTMLElement {
     return this.shadowRoot!.getElementById(button.id)!.querySelector(
-               'color-icon') as HTMLElement;
+        'color-icon')!;
   }
 
   private getColorSelectorAriaLabel_(): string {

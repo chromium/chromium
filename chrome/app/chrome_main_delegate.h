@@ -6,6 +6,7 @@
 #define CHROME_APP_CHROME_MAIN_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -15,7 +16,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "components/memory_system/memory_system.h"
 #include "content/public/app/content_main_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -51,7 +51,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
  protected:
   // content::ContentMainDelegate:
-  absl::optional<int> BasicStartupComplete() override;
+  std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   void SandboxInitialized(const std::string& process_type) override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
@@ -63,8 +63,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
                           delegates) override;
   void ZygoteForked() override;
 #endif
-  absl::optional<int> PreBrowserMain() override;
-  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+  std::optional<int> PreBrowserMain() override;
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_WIN)

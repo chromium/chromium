@@ -551,7 +551,7 @@ TEST_P(ParameterizedStyleResolverTest, BackgroundImageFetch) {
 
   GetDocument()
       .getElementById(AtomicString("host"))
-      ->AttachShadowRootInternal(ShadowRootType::kOpen);
+      ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   auto* none = GetDocument().getElementById(AtomicString("none"));
@@ -984,7 +984,7 @@ TEST_P(ParameterizedStyleResolverTest, EnsureComputedStyleSlotFallback) {
   ShadowRoot& shadow_root =
       GetDocument()
           .getElementById(AtomicString("host"))
-          ->AttachShadowRootInternal(ShadowRootType::kOpen);
+          ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <style>
       slot { color: red }
@@ -1161,7 +1161,7 @@ TEST_P(ParameterizedStyleResolverTest, TreeScopedReferences) {
 
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
-  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  ShadowRoot& root = host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   root.setInnerHTML(R"HTML(
     <style>
       ::slotted(span) { animation-name: anim-slotted }
@@ -1175,7 +1175,7 @@ TEST_P(ParameterizedStyleResolverTest, TreeScopedReferences) {
   Element* inner_host = root.getElementById(AtomicString("inner-host"));
   ASSERT_TRUE(inner_host);
   ShadowRoot& inner_root =
-      inner_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      inner_host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   inner_root.setInnerHTML(R"HTML(
     <style>
       ::slotted(span) { animation-name: anim-inner-slotted }
@@ -1946,7 +1946,6 @@ TEST_P(ParameterizedStyleResolverTest, BodyPropagationLayoutImageContain) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, IsInertWithAttributeAndDialog) {
-  ScopedInertAttributeForTest enabled_scope(true);
   Document& document = GetDocument();
   NonThrowableExceptionState exception_state;
 
@@ -3735,6 +3734,28 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(pseudo_rules->size(), 1u);
   EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
             "#target::before { content: \"X\"; color: green; }");
+}
+
+TEST_P(ParameterizedStyleResolverTest, ResizeAutoInUANotCounted) {
+  SetBodyInnerHTML(R"HTML(<textarea></textarea>)HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSResizeAuto))
+      << "resize:auto UA rule for textarea should not be counted";
+}
+
+TEST_P(ParameterizedStyleResolverTest, ResizeAutoCounted) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #resize {
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+        resize: auto;
+      }
+    </style>
+    <div id="resize"></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSResizeAuto))
+      << "Author style resize:auto applied to div should be counted";
 }
 
 }  // namespace blink

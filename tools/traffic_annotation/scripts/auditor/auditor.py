@@ -196,10 +196,11 @@ class Annotation:
     if annotation.needs_two_ids():
       annotation.second_id = archived.second_id
 
-    util.fill_proto_with_bogus(annotation.proto.semantics,
+    util.fill_proto_with_bogus(annotation.unique_id, annotation.proto.semantics,
                                archived.semantics_fields)
 
-    util.fill_proto_with_bogus(annotation.proto.policy, archived.policy_fields)
+    util.fill_proto_with_bogus(annotation.unique_id, annotation.proto.policy,
+                               archived.policy_fields)
 
     # cookies_allowed is a special field: negative values indicate NO, and
     # positive values indicate YES.
@@ -276,6 +277,26 @@ class Annotation:
               "Annotations contain different semantics::destination values",
               None, 0, self.unique_id, completing_annotation.unique_id)
       ]
+
+    # Merge 'internal::contacts' and 'user_data' fields.
+    combination.proto.semantics.internal.contacts.extend(
+        other.proto.semantics.internal.contacts)
+
+    combination.proto.semantics.user_data.type.extend(
+        other.proto.semantics.user_data.type)
+
+    # Merge 'last_reviewed' field.
+    if (self.proto.semantics.last_reviewed
+        and other.proto.semantics.last_reviewed):
+      return combination, [
+          AuditorError(
+              ErrorType.MERGE_FAILED,
+              "Both annotations contain semantics::last_reviewed values", None,
+              0, self.unique_id, completing_annotation.unique_id)
+      ]
+    elif other.proto.semantics.last_reviewed:
+      combination.proto.semantics.last_reviewed = (
+          other.proto.semantics.last_reviewed)
 
     # Copy TrafficPolicy.
     policy_string_fields = [

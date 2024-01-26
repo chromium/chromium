@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,9 +28,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link HubPaneHostMediator}. */
@@ -40,7 +40,7 @@ public class HubPaneHostMediatorUnitTest {
 
     private @Mock Pane mPane;
     private @Mock FullButtonData mButtonData;
-    private @Mock View mRootView;
+    private @Mock ViewGroup mRootView;
 
     private ObservableSupplierImpl<Pane> mPaneSupplier;
     private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;

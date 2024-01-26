@@ -51,13 +51,15 @@ class SoftNavigationHeuristicsTest : public testing::Test {
 TEST_F(SoftNavigationHeuristicsTest,
        EarlyReturnOnInvalidPendingInteractionTimestamp) {
   auto* test_heuristics = CreateSoftNavigationHeuristicsForTest();
+  // NextId() required so that the first task ID is non-zero (because we hash on
+  // key).
+  Persistent<scheduler::TaskAttributionInfo> task =
+      MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+          scheduler::TaskAttributionId().NextId(), nullptr);
+
   test_heuristics->InteractionCallbackCalled(
-      GetScriptStateForTest(), SoftNavigationHeuristics::EventScopeType::kClick,
-      true);
-  // Since pending_interaction_timestamp_ is not set, the execution of
-  // InteractionCallbackCalled would return early. As a result, the
-  // initial_interaction_encountered_ would not be set true.
-  ASSERT_FALSE(test_heuristics->GetInitialInteractionEncounteredForTest());
+      *task, SoftNavigationHeuristics::EventScopeType::kClick, true);
+  ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, UmaHistogramRecording) {

@@ -154,7 +154,11 @@ public class NotificationUmaTracker {
         ActionType.PRICE_DROP_VISIT_SITE,
         ActionType.PRICE_DROP_TURN_OFF_ALERT,
         ActionType.WEB_APK_ACTION_BACK_TO_SITE,
-        ActionType.WEB_APK_ACTION_RETRY
+        ActionType.WEB_APK_ACTION_RETRY,
+        ActionType.PRE_UNSUBSCRIBE,
+        ActionType.UNDO_UNSUBSCRIBE,
+        ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
+        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -217,7 +221,22 @@ public class NotificationUmaTracker {
         // Retry button on WebAPK install error notification.
         int WEB_APK_ACTION_RETRY = 29;
 
-        int NUM_ENTRIES = 30;
+        // The one-tap "Unsubscribe" button, used only for persistent web notifications in lieu of
+        // the `SETTINGS` button.
+        int PRE_UNSUBSCRIBE = 30;
+
+        // The "Undo" button to revert `PRE_UNSUBSCRIBE`.
+        int UNDO_UNSUBSCRIBE = 31;
+
+        // The "Okay" button to affirmatively commit `PRE_UNSUBSCRIBE`.
+        int COMMIT_UNSUBSCRIBE_EXPLICIT = 32;
+
+        // The "Provisionally Unsubscribed" service notification is dismissed or times out, leading
+        // to implicitly committing `PRE_UNSUBSCRIBE`.
+        int COMMIT_UNSUBSCRIBE_IMPLICIT = 33;
+
+        // Number of real entries, excluding `UNKNWON`.
+        int NUM_ENTRIES = 34;
     }
 
     /**

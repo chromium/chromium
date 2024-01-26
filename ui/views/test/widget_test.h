@@ -231,7 +231,7 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
 
  private:
   raw_ptr<Widget> widget_;
-  raw_ptr<View, AcrossTasksDanglingUntriaged> contents_view_ = nullptr;
+  raw_ptr<View> contents_view_ = nullptr;
   int window_closing_count_ = 0;
   gfx::Rect initial_bounds_ = gfx::Rect(100, 100, 200, 200);
   bool can_close_ = true;
@@ -327,7 +327,6 @@ class WidgetVisibleWaiter : public WidgetObserver {
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
   void OnWidgetDestroying(Widget* widget) override;
 
-  const raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_;
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };

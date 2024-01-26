@@ -4490,8 +4490,8 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
       /*delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
-      base::Time(), base::Time(), false, false, net::CookieSameSite::LAX_MODE,
-      net::COOKIE_PRIORITY_LOW);
+      base::Time(), base::Time(), false, false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW);
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   net::CookieInclusionStatus status;
@@ -4738,16 +4738,16 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         net::PrivacyMode::PRIVACY_MODE_ENABLED,
         partition_connections ? network_anonymization_key
                               : net::NetworkAnonymizationKey(),
-        net::SecureDnsPolicy::kAllow);
+        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
     const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
     ASSERT_TRUE(server_http_url.SchemeIs(url::kHttpScheme));
-    net::ClientSocketPool::GroupId group(url::SchemeHostPort(server_http_url),
-                                         net::PrivacyMode::PRIVACY_MODE_ENABLED,
-                                         partition_connections
-                                             ? network_anonymization_key
-                                             : net::NetworkAnonymizationKey(),
-                                         net::SecureDnsPolicy::kAllow);
+    net::ClientSocketPool::GroupId group(
+        url::SchemeHostPort(server_http_url),
+        net::PrivacyMode::PRIVACY_MODE_ENABLED,
+        partition_connections ? network_anonymization_key
+                              : net::NetworkAnonymizationKey(),
+        net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
     network_context->PreconnectSockets(1, server_http_url,
                                        /*allow_credentials=*/false,
@@ -4892,11 +4892,11 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   url::SchemeHostPort destination(test_server.base_url());
   net::ClientSocketPool::GroupId group_id1(
       destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kNak1,
-      net::SecureDnsPolicy::kAllow);
+      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   EXPECT_EQ(1, GetSocketCountForGroup(network_context.get(), group_id1));
   net::ClientSocketPool::GroupId group_id2(
       destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kNak2,
-      net::SecureDnsPolicy::kAllow);
+      net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   EXPECT_EQ(2, GetSocketCountForGroup(network_context.get(), group_id2));
 }
 

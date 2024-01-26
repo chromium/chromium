@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -68,7 +69,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  ChromeAccountManagerService* account_manager_;
+  raw_ptr<ChromeAccountManagerService> account_manager_;
 };
 
 // Tests to get identities when the restricted pattern is not set.

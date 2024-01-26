@@ -32,14 +32,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
   std::u16string GetLocalizedString(int resource_id) const override;
   void SetHardwareKeyboardLayoutForTesting(const std::string& layout) override;
 
-  void set_hardware_keyboard_layout(const std::string& value) {
-    hardware_keyboard_layout_ = value;
-  }
-
-  void set_active_locale(const std::string& value) {
-    active_locale_ = value;
-  }
-
   void set_get_localized_string_callback(
       const GetLocalizedStringCallback& callback) {
     get_localized_string_callback_ = callback;
@@ -47,7 +39,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
 
  private:
   std::string hardware_keyboard_layout_;
-  std::string active_locale_;
   GetLocalizedStringCallback get_localized_string_callback_;
 };
 

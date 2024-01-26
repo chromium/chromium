@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_cookie_path[/]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_path[/some_path]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_path[/some/nested/path]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_path[None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+Harness: the test ran to completion.

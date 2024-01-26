@@ -591,7 +591,9 @@ TEST_F(TaskEnvironmentTest, SuspendedAdvanceClockDoesNotRunTasks) {
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockSchedulesRipeDelayedTasks) {
-  TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
+  TaskEnvironment task_environment(
+      TaskEnvironment::TimeSource::MOCK_TIME,
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
   bool ran = false;
 
@@ -606,7 +608,9 @@ TEST_F(TaskEnvironmentTest, AdvanceClockSchedulesRipeDelayedTasks) {
 }
 
 TEST_F(TaskEnvironmentTest, SuspendedAdvanceClockSchedulesRipeDelayedTasks) {
-  TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
+  TaskEnvironment task_environment(
+      TaskEnvironment::TimeSource::MOCK_TIME,
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
   bool ran = false;
 

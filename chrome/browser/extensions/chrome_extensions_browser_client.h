@@ -130,6 +130,10 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       std::vector<EarlyExtensionPrefsObserver*>* observers) const override;
   ProcessManagerDelegate* GetProcessManagerDelegate() const override;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  GetControlledFrameEmbedderURLLoader(
+      int frame_tree_node_id,
+      content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;
   void PermitExternalProtocolHandler() override;
@@ -248,7 +252,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::SiteInstance* owner_site_instance,
       const std::string& partition_name,
       bool in_memory,
-      base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+      base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback) override;
   void CreatePasswordReuseDetectionManager(
       content::WebContents* web_contents) const override;

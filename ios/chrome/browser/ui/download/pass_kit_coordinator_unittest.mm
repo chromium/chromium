@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -72,7 +73,7 @@ class PassKitCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   PassKitCoordinator* coordinator_;
   // Weak pointer to the test web state; browser_'s web state list owns it.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   FakeWebContentHandler* handler_;
   ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<web::NavigationManager> test_navigation_manager_;

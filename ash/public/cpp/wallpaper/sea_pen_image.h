@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "components/manta/proto/manta.pb.h"
 
 namespace ash {
 
@@ -16,9 +15,7 @@ namespace ash {
 // for SeaPen wallpaper.
 // @see //components/manta
 struct ASH_PUBLIC_EXPORT SeaPenImage {
-  SeaPenImage(std::string jpg_bytes,
-              uint32_t id,
-              manta::proto::ImageResolution resolution);
+  SeaPenImage(std::string jpg_bytes, uint32_t id);
 
   SeaPenImage(SeaPenImage&& other);
   SeaPenImage& operator=(SeaPenImage&& other);
@@ -33,9 +30,6 @@ struct ASH_PUBLIC_EXPORT SeaPenImage {
 
   // A unique identifier for this image. Set by the Manta API.
   uint32_t id;
-
-  // The resolution of this image.
-  manta::proto::ImageResolution resolution;
 };
 
 }  // namespace ash

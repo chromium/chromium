@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/scoped_multi_source_observation.h"
@@ -135,6 +135,8 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, SetOomScoreAdj);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, TestDiscardedTabsAreSkipped);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, ReportProcesses);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestTargetMemoryToFreeIsRespected);
 
   using OptionalArcProcessList = arc::ArcProcessService::OptionalArcProcessList;
 
@@ -331,12 +333,8 @@ class TabManagerDelegate::Candidate {
   // Derive process type for this candidate. Used to initialize |process_type_|.
   ProcessType GetProcessTypeInternal() const;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION LifecycleUnit* lifecycle_unit_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION const arc::ArcProcess* app_ = nullptr;
+  raw_ptr<LifecycleUnit, DanglingUntriaged> lifecycle_unit_ = nullptr;
+  raw_ptr<const arc::ArcProcess, DanglingUntriaged> app_ = nullptr;
   ProcessType process_type_ = GetProcessTypeInternal();
 };
 

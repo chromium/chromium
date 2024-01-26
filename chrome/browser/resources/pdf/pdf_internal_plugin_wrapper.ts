@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Point} from './constants.js';
-import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
-import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
-import {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
+import type {Point} from './constants.js';
+import type {PinchEventDetail} from './gesture_detector.js';
+import {GestureDetector} from './gesture_detector.js';
+import type {SwipeDirection} from './swipe_detector.js';
+import {SwipeDetector} from './swipe_detector.js';
+import type {ViewportInterface} from './viewport_scroller.js';
+import {ViewportScroller} from './viewport_scroller.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any): void;

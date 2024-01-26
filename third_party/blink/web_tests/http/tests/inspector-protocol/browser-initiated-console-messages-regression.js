@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp, page} = await testRunner.startBlank(
       `Check that multiple attached sessions don't crash the Log domain.`);
   const url = 'https://localhost';

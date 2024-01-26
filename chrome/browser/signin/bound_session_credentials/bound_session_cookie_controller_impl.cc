@@ -56,7 +56,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
 
-  absl::optional<base::TimeDelta> cookie_rotation_delay =
+  std::optional<base::TimeDelta> cookie_rotation_delay =
       bound_session_credentials::GetCookieRotationDelayIfSetByCommandLine();
 
   if (cookie_rotation_delay) {

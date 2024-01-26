@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ഗുണിക്കുക</translation>
 <translation id="1145018782460575098">'ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്‌ഡേറ്റ് ചെയ്യുക' വിൻഡോ തുറന്നിരിക്കുന്നു. <ph name="NUM_UPDATES" /> അപ്ഡേറ്റുകൾ ലഭ്യമാണ്.</translation>
 <translation id="1145516343487477149">Chromebook-മായി ബന്ധപ്പെട്ട പൊതുവായ ചോദ്യങ്ങൾക്കുള്ള സഹായ ലേഖനങ്ങളും ഉത്തരങ്ങളും കണ്ടെത്തുക</translation>
 <translation id="1154390310959620237">നിങ്ങൾക്ക് 5 കുറുക്കുവഴികൾ മാത്രമേ ഇഷ്ടാനുസൃതമാക്കാനാകൂ. പുതിയൊരെണ്ണം ചേർക്കാൻ ഒരു കുറുക്കുവഴി ഇല്ലാതാക്കുക.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="1566493343215789965">ഹരിക്കുക</translation>
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="1578784163189013834">സ്ക്രീൻ സേവർ പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
+<translation id="1615576200479539465">ചിത്രങ്ങൾ സൃഷ്‌ടിക്കുന്നു...</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
+<translation id="1626590945318984973">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും <ph name="META_KEY" /> കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">ഡാർക്ക് മോഡ് ഓഫാക്കുക</translation>
 <translation id="1885577615937958993">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
-<translation id="1897672602657312171">തിരയൽ കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ തിരയൽ കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക.</translation>
 <translation id="1904932688895783618">സഹായകരമായ മറ്റ് ചില ഉറവിടങ്ങൾ ഇതാ:</translation>
 <translation id="1905710495812624430">അനുവദനീയമായ പരമാവധി ശ്രമങ്ങൾ നടത്തിക്കഴിഞ്ഞു.</translation>
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ഫോട്ടോകൾ</translation>
 <translation id="2157660087437850958">ഇമോജി പിക്കർ</translation>
 <translation id="2157959690810728433">ക്യൂവിലാണ്</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്നതിനായി നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME_1" /> സജ്ജീകരിച്ചിരിക്കുന്നു.}=2{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്നതിനായി നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> എന്നിവ സജ്ജീകരിച്ചിരിക്കുന്നു.}=3{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്നതിനായി നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> എന്നിവ സജ്ജീകരിച്ചിരിക്കുന്നു.}other{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്നതിനായി നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> എന്നിവയും മറ്റ് # ആപ്പുകളും സജ്ജീകരിച്ചിരിക്കുന്നു.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="215916044711630446">APN സംരക്ഷിക്കുക ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APN വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
+<translation id="2215920961700443347">ഇന്റർനെറ്റ് ഇല്ല. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
 <translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="222447520299472966">കുറഞ്ഞത് ഒരു ആർട്ട് ഗാലറി ആൽബമെങ്കിലും തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" />-ാമത്തെ ചിത്രം</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
+<translation id="2465272316171730950">ഞങ്ങളുടെ പരമാവധി ശേഷിയിലെത്തി. അൽപ്പ സമയം കഴിഞ്ഞ് തിരികെ വരിക.</translation>
 <translation id="248546197012830854">ഉപകരണം ഓഫ്‌ലൈനാണ്. സഹായ ഉള്ളടക്കം കാണാൻ വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="2491955442992294626">നിങ്ങൾ മറ്റൊരു വിൻഡോ ഉപയോഗിക്കുമ്പോൾ കീകൾ പരിശോധിക്കില്ല</translation>
 <translation id="2493126929778606526">സ്വയമേവ തിരഞ്ഞെടുത്ത നിങ്ങളുടെ ഏറ്റവും മികച്ച ഫോട്ടോകൾ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">നിലവിലെ വാൾപേപ്പർ ചിത്രം റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="2512979179176933762">വിൻഡോകൾ കാണിക്കുക</translation>
 <translation id="2513396635448525189">ലോഗിൻ ചിത്രം</translation>
-<translation id="2515109918609218604">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും തിരയൽ കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2521835766824839541">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="2880569433548999039">ക്ലൗഡ് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="2938573842839598578">ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലിഡ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
+<translation id="3547264467365135390">ഫോർമുല</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
 <translation id="3569407787324516067">സ്ക്രീൻ സേവർ</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്ക്<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ആക്സസ് ഉണ്ട്</translation>
 <translation id="4117637339509843559">ഡാർക്ക് മോഡ്</translation>
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
+<translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> സ്വയമേവ ആരംഭിച്ചു}other{# ആപ്പുകൾ സ്വയമേവ ആരംഭിച്ചു}}</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4176659219503619100">നിയന്ത്രണ പാനൽ</translation>
-<translation id="4185315616950253617">മുകൾ വരിയിലെ കീകൾ ഉള്ള കുറുക്കുവഴിയിൽ തിരയൽ കീ ഉൾപ്പെടുത്തേണ്ടതുണ്ട്.</translation>
 <translation id="420283545744377356">സ്ക്രീൻ സേവർ ഓഫാക്കുക</translation>
 <translation id="4213104098953699324">USB കീബോർഡ്</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> റീസ്റ്റാർട്ട് ചെയ്യുന്നു</translation>
 <translation id="4395835743215824109">കീബോർഡ് ഇഷ്‌ടാനുസൃതമാക്കൽ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക.</translation>
 <translation id="4415951057168511744">നിലവിലെ അവതാർ</translation>
+<translation id="4417830657741848074">സ്വയമേവ ആരംഭിക്കുന്നതിന് നിങ്ങളുടെ അഡ്‌മിൻ ചില ആപ്പുകൾ സജ്ജീകരിച്ചിരിക്കുന്നു. ഈ ആപ്പുകളിൽ ചിലത് അടച്ചേക്കില്ല.</translation>
 <translation id="4422041425070339732">താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ഓഫാണ്</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">എർത്ത് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
+<translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4507392511610824664">തെളിച്ചം കൂട്ടുക</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4839698083503556542">സ്വന്തം സിനിമ സൃഷ്ടിക്കൂ</translation>
+<translation id="48409034532829769">സ്വയമേവ ആരംഭിക്കുന്നതിന് നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" സജ്ജീകരിച്ചിരിക്കുന്നു. ഈ ആപ്പ് അടച്ചേക്കില്ല.</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുത്തു, <ph name="TOPIC_SOURCE" /> ആൽബങ്ങൾ തിരഞ്ഞെടുക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="484790837831576105">(Android) DNS റെസല്യൂഷൻ</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">വിഭജിക്കുക</translation>
 <translation id="4972592110715526173">മോഡ് മാറ്റം</translation>
 <translation id="498186245079027698">സ്കാനർ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. സ്കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിക്കാൻ മതിയായ ലോക്കൽ സ്പെയ്‍സ് ഉണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
+<translation id="4982627662315910959">കുറുക്കുവഴി ലഭ്യമല്ല. shift-ഉം ഒരു മോഡിഫയർ കീയും (ctrl, alt അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
 <translation id="4987769320337599931">ഫയർവാൾ</translation>
 <translation id="4988526792673242964">പേജുകള്‍</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ഡാർക്ക് തീം ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="5229344016299762883">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്ന തരത്തിൽ നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" സജ്ജീകരിച്ചിരിക്കുന്നു.}=2{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്ന തരത്തിൽ നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" എന്നതും മറ്റൊരു ആപ്പും സജ്ജീകരിച്ചിരിക്കുന്നു.}other{നിങ്ങൾ ഓരോ തവണ ലോഗിൻ ചെയ്യുമ്പോഴും സ്വയമേവ ആരംഭിക്കുന്ന തരത്തിൽ നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" എന്നതും മറ്റ് # ആപ്പുകളും സജ്ജീകരിച്ചിരിക്കുന്നു.}}</translation>
 <translation id="5252456968953390977">റോമിംഗ്</translation>
 <translation id="5257811368506016604">ലൈറ്റ് കളർ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5264277876637023664">CPU ടെസ്‌റ്റ് റണ്‍ ചെയ്യുക</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7180865173735832675">ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="7184043045742675738">നിങ്ങളുടെ ബട്ടൺ ഇഷ്ടാനുസൃതമാക്കാൻ ഏതെങ്കിലും കീയിൽ ക്ലിക്ക് ചെയ്യുക. മൗസ് അല്ലെങ്കിൽ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് കീയുടെ സ്ഥാനം മാറ്റുക.</translation>
+<translation id="7206979415662233817">സേവന നിബന്ധനകൾ</translation>
 <translation id="7212547870105584639">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="725133483556299729">ഇമെയിൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="7273347807225967898">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift, തിരയൽ, അല്ലെങ്കിൽ ലോഞ്ചർ) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
+<translation id="7271932918253517778">മുകൾ വരിയിലെ കീകൾ ഉള്ള കുറുക്കുവഴിയിൽ <ph name="META_KEY" /> കീ ഉൾപ്പെടുത്തേണ്ടതുണ്ട്.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ഇളം കാറ്റ് അനുഭവിക്കൂ</translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">കീബോർഡിന്റെ നിറം</translation>
 <translation id="7317831949569936035">സ്‌കൂൾ എൻറോൾമെന്റ്</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">നിങ്ങൾക്ക് കുറഞ്ഞത് 18 വയസ്സ് പ്രായമുണ്ടായിരിക്കണം, കൂടാതെ നിങ്ങളുടെ AI വാൾപേപ്പറുകളുടെ ഉപയോഗം <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google സേവന നിബന്ധനകൾ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />, <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ജനറേറ്റീവ് AI അധിക സേവന നിബന്ധനകൾ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> എന്നിവയ്ക്ക് വിധേയമാണെന്ന് സമ്മതിക്കുകയും വേണം.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          വ്യക്തിപരവും വാണിജ്യേതരവുമായ ഉപയോഗത്തിനായി നിങ്ങൾക്ക് AI ഉപയോഗിച്ച് മാത്രമേ വാൾപേപ്പറുകൾ സൃഷ്ടിക്കാനാകൂ. നിങ്ങൾക്ക് വാൾപേപ്പറുമായി ബന്ധപ്പെട്ട സഹായം ലഭിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി വാൾപേപ്പർ നിർദ്ദേശങ്ങൾ സൃഷ്ടിക്കാൻ Google AI സെർവറുകളിലേക്ക് ടെക്‌സ്‌റ്റ് അയയ്‌ക്കും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-ൽ ഫലം കാണാൻ Search+space അമർത്തുക.</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> തിരയൽ ഫലങ്ങളിൽ <ph name="LIST_POSITION" />-ാമത്തേത്: <ph name="SEARCH_RESULT_TEXT" />. കുറുക്കുവഴിയിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ Enter അമർത്തുക.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">പൊതുവായ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="7978412674231730200">സ്വകാര്യ കീ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" സ്വയമേവ ആരംഭിച്ചു}other{# ആപ്പുകൾ സ്വയമേവ ആരംഭിച്ചു}}</translation>
 <translation id="7994702968232966508">EAP രീതി</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8017679124341497925">കുറുക്കുവഴി എഡിറ്റ് ചെയ്‌തു</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
-<translation id="8111706652656628199">കുറുക്കുവഴി ലഭ്യമല്ല. shift-ഉം ഒരു മോഡിഫയർ കീയും (ctrl, alt, തിരയൽ അല്ലെങ്കിൽ ലോഞ്ചർ) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>

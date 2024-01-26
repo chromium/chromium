@@ -77,7 +77,7 @@ void ExtensionCleanupHandler::UninstallExtensions() {
 
   // Exit cleanup handler in case no extensions need to be uninstalled.
   if (extensions_to_be_uninstalled_.empty()) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
@@ -129,7 +129,7 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
   extension_service_->component_loader()->AddDefaultComponentExtensions(
       /*skip_session_components=*/false);
 
-  std::move(callback_).Run(absl::nullopt);
+  std::move(callback_).Run(std::nullopt);
 }
 
 std::unordered_set<std::string>

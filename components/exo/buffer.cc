@@ -221,12 +221,15 @@ Buffer::Texture::Texture(
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // These SharedImages are used over the raster interface as both the source
-  // and destination of writes. Add GLES2 usage as they will be used by
-  // RasterImplementationGLES if OOP-R is not enabled.
-  // NOTE: After OOP-R ships GLES2 usage can be removed here.
-  const uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  // and destination of writes. Add GLES2 usage as they might be used by
+  // RasterImplementationGLES.
+  // TODO(crbug.com/1508447): Remove GLES2 usage once the browser main thread
+  // using the RasterDecoder implementation has definitively landed.
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   shared_image_ = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
@@ -260,10 +263,16 @@ Buffer::Texture::Texture(
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
-  // Add GLES2 usage as it is used by RasterImplementationGLES.
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  // These SharedImages are used over the raster interface as both the source
+  // and destination of writes. Add GLES2 usage as they might be used by
+  // RasterImplementationGLES.
+  // TODO(crbug.com/1508447): Remove GLES2 usage once the browser main thread
+  // using the RasterDecoder implementation has definitively landed.
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

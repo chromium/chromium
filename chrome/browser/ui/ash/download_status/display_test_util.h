@@ -18,15 +18,14 @@ namespace ash::download_status {
 crosapi::mojom::DownloadStatusPtr CreateDownloadStatus(
     Profile* profile,
     crosapi::mojom::DownloadState state,
-    const std::optional<int64_t>& received_bytes,
-    const std::optional<int64_t>& target_bytes);
+    crosapi::mojom::DownloadProgressPtr progress);
 
-// Creates a download status that indicates an in progress download associated
+// Creates a download status that indicates an in-progress download associated
 // with a file under the downloads directory of `profile`.
 crosapi::mojom::DownloadStatusPtr CreateInProgressDownloadStatus(
     Profile* profile,
-    const std::optional<int64_t>& received_bytes,
-    const std::optional<int64_t>& target_bytes);
+    int64_t received_bytes,
+    const std::optional<int64_t>& total_bytes = std::nullopt);
 
 }  // namespace ash::download_status
 

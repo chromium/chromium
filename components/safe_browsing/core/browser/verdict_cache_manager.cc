@@ -1068,12 +1068,18 @@ void VerdictCacheManager::CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kUnsafeUrlFlag);
-  if (phishing_url_string.empty()) {
+  CacheArtificialRealTimeUrlVerdict(phishing_url_string, /*is_unsafe=*/true);
+}
+
+void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
+    const std::string& url_string,
+    bool is_unsafe) {
+  if (url_string.empty()) {
     return;
   }
 
-  GURL artificial_unsafe_url(phishing_url_string);
-  if (!artificial_unsafe_url.is_valid()) {
+  GURL artificial_url(url_string);
+  if (!artificial_url.is_valid()) {
     return;
   }
 
@@ -1081,16 +1087,20 @@ void VerdictCacheManager::CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch() {
 
   RTLookupResponse response;
   RTLookupResponse::ThreatInfo* threat_info = response.add_threat_info();
-  threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
-  threat_info->set_threat_type(
-      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  if (is_unsafe) {
+    threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+    threat_info->set_threat_type(
+        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  } else {
+    threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::SAFE);
+  }
   threat_info->set_cache_duration_sec(3000);
   threat_info->set_cache_expression_using_match_type(
-      artificial_unsafe_url.GetContent());
+      artificial_url.GetContent());
   threat_info->set_cache_expression_match_type(
       RTLookupResponse::ThreatInfo::EXACT_MATCH);
   RemoveContentSettingsOnURLsDeleted(/*all_history=*/false,
-                                     {history::URLRow(artificial_unsafe_url)});
+                                     {history::URLRow(artificial_url)});
   CacheRealTimeUrlVerdict(response, base::Time::Now());
 }
 

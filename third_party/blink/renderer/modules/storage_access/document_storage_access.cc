@@ -46,6 +46,10 @@ class RequestExtendedStorageAccess final : public ScriptFunction::Callable,
 }  // namespace
 
 // static
+const char DocumentStorageAccess::kNoAccessRequested[] =
+    "You must request access for at least one storage/communication medium.";
+
+// static
 const char DocumentStorageAccess::kSupplementName[] = "DocumentStorageAccess";
 
 // static
@@ -68,6 +72,13 @@ ScriptPromise DocumentStorageAccess::requestStorageAccess(
                                              storage_access_types);
 }
 
+// static
+ScriptPromise DocumentStorageAccess::hasUnpartitionedCookieAccess(
+    ScriptState* script_state,
+    Document& document) {
+  return From(document).hasUnpartitionedCookieAccess(script_state);
+}
+
 DocumentStorageAccess::DocumentStorageAccess(Document& document)
     : Supplement<Document>(document) {}
 
@@ -78,12 +89,34 @@ void DocumentStorageAccess::Trace(Visitor* visitor) const {
 ScriptPromise DocumentStorageAccess::requestStorageAccess(
     ScriptState* script_state,
     const StorageAccessTypes* storage_access_types) {
+  if (!storage_access_types->all() && !storage_access_types->cookies() &&
+      !storage_access_types->sessionStorage() &&
+      !storage_access_types->localStorage() &&
+      !storage_access_types->indexedDB() && !storage_access_types->locks() &&
+      !storage_access_types->caches() &&
+      !storage_access_types->getDirectory() &&
+      !storage_access_types->estimate() &&
+      !storage_access_types->createObjectURL() &&
+      !storage_access_types->revokeObjectURL() &&
+      !storage_access_types->broadcastChannel()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kSecurityError,
+                          DocumentStorageAccess::kNoAccessRequested));
+  }
   return GetSupplementable()
-      ->requestStorageAccess(script_state)
+      ->RequestStorageAccessImpl(
+          script_state,
+          storage_access_types->all() || storage_access_types->cookies())
       .Then(MakeGarbageCollected<ScriptFunction>(
           script_state,
           MakeGarbageCollected<RequestExtendedStorageAccess>(
               *GetSupplementable()->domWindow(), storage_access_types)));
+}
+
+ScriptPromise DocumentStorageAccess::hasUnpartitionedCookieAccess(
+    ScriptState* script_state) {
+  return GetSupplementable()->hasStorageAccess(script_state);
 }
 
 }  // namespace blink

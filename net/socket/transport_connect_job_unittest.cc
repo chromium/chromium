@@ -59,7 +59,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             &ssl_client_context_,
@@ -70,7 +70,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr) {}
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr) {}
 
   ~TransportConnectJobTest() override = default;
 
@@ -97,8 +98,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  SSLClientContext ssl_client_context_{&ssl_config_service_,
-                                       &cert_verifier_,
+  SSLClientContext ssl_client_context_{&ssl_config_service_, &cert_verifier_,
                                        &transport_security_state_,
                                        /*ssl_client_session_cache=*/nullptr,
                                        /*sct_auditing_delegate=*/nullptr};
@@ -193,8 +193,9 @@ TEST_F(TransportConnectJobTest, ConnectionTimeout) {
     EXPECT_FALSE(test_delegate.has_result());
 
     // In the async case, the host resolution completes now.
-    if (!host_resolution_synchronous)
+    if (!host_resolution_synchronous) {
       host_resolver_.ResolveOnlyRequestNow();
+    }
 
     // After (almost) the second half of timeout, just before the full timeout
     // period, the ConnectJob is still live.

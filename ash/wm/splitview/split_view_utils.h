@@ -220,6 +220,24 @@ int GetDividerPositionUpperLimit(aura::Window* root_window);
 // Returns the minimum length of the window according to the screen orientation.
 int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 
+// Returns the target divider position for `root_window` for `snap_ratio` at
+// `snap_position`. If `account_for_divider_width` is true, it will subtract the
+// split view divider width.
+int CalculateDividerPosition(SnapPosition snap_position,
+                             aura::Window* root_window,
+                             float snap_ratio,
+                             bool account_for_divider_width);
+
+// Returns the divider position, the origin of where `window` is divided on the
+// work area. This will be the window length if it is physically left or top, or
+// the work area length - window length if it is physically right or bottom. If
+// `account_for_divider_width` is true, it will also subtract
+// `kSplitviewDividerShortSideLength / 2` from the window length if is
+// physically left or top, or add `kSplitviewDividerShortSideLength / 2` to the
+// window length if it is physically right or bottom.
+int GetEquivalentDividerPosition(aura::Window* window,
+                                 bool account_for_divider_width);
+
 // Returns the bounds of a snapped window at `snap_position`, where
 // `divider_position` is the end of the primary window width, `divider_width` is
 // the width of the split view divider if any exists, and

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {session, dp} = await testRunner.startBlank('Tests for certain commands are only available at the top-level target');
 
     await dp.Page.enable();

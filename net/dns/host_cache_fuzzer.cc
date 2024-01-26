@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -16,7 +17,6 @@
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -69,7 +69,7 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
   if (env.kDumpNativeInput)
     LOG(INFO) << "native_input: " << native_input;
 
-  absl::optional<base::Value> value = base::JSONReader::Read(native_input);
+  std::optional<base::Value> value = base::JSONReader::Read(native_input);
   if (!value || !value->is_list())
     return;
   ++valid_json_count;

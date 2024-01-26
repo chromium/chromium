@@ -30,19 +30,8 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
     scoped_refptr<FakePictureLayer> content_layer =
         FakePictureLayer::Create(&client_);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(100, 100));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 100, 90), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 90, 100, 10), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    scoped_refptr<FakePictureLayer> mask_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    mask_client_.set_fill_with_nonsolid_color(true);
+    auto mask_layer = FakePictureLayer::Create(&mask_client_);
     content_layer->SetMaskLayer(mask_layer);
 
     gfx::Size layer_size(100, 100);
@@ -50,6 +39,7 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
 
     gfx::Size mask_size(100, 100);
     mask_layer->SetBounds(mask_size);
+    mask_client_.set_bounds(mask_size);
     mask_layer_id_ = mask_layer->id();
 
     scoped_refptr<Layer> clip_layer = Layer::Create();
@@ -106,6 +96,7 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
+  FakeContentLayerClient mask_client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -135,23 +126,13 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOriginWithLayerList
     SetScrollOffset(scroll, gfx::PointF(50, 50));
 
     client_.set_bounds(root->bounds());
+    client_.set_fill_with_nonsolid_color(true);
     auto content_layer = FakePictureLayer::Create(&client_);
     content_layer->SetBounds(layer_size);
     CopyProperties(scroll, content_layer.get());
     root->AddChild(content_layer);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(100, 100));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 100, 90), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 90, 100, 10), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    auto mask_layer = FakePictureLayer::CreateWithRecordingSource(
-        &client_, std::move(recording_source));
+    auto mask_layer = FakePictureLayer::Create(&client_);
     SetupMaskProperties(content_layer.get(), mask_layer.get());
     root->AddChild(mask_layer);
 
@@ -213,19 +194,8 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
         FakePictureLayer::Create(&client_);
     content_layer->AddChild(content_child_layer);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(50, 50));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 50, 40), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 40, 50, 10), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    scoped_refptr<FakePictureLayer> mask_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    mask_client_.set_fill_with_nonsolid_color(true);
+    auto mask_layer = FakePictureLayer::Create(&mask_client_);
     content_layer->SetMaskLayer(mask_layer);
 
     gfx::Size root_size(100, 100);
@@ -248,6 +218,7 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
 
     gfx::Size mask_size(50, 50);
     mask_layer->SetBounds(mask_size);
+    mask_client_.set_bounds(mask_size);
     mask_layer_id_ = mask_layer->id();
 
     layer_tree_host()->SetRootLayer(root);
@@ -292,6 +263,7 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
+  FakeContentLayerClient mask_client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -318,19 +290,8 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
         FakePictureLayer::Create(&client_);
     content_layer->AddChild(content_child_layer);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(50, 50));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 50, 40), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 40, 50, 10), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    scoped_refptr<FakePictureLayer> mask_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    mask_client_.set_fill_with_nonsolid_color(true);
+    auto mask_layer = FakePictureLayer::Create(&mask_client_);
     content_layer->SetMaskLayer(mask_layer);
 
     gfx::Size root_size(100, 100);
@@ -357,6 +318,7 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
 
     gfx::Size mask_size(50, 50);
     mask_layer->SetBounds(mask_size);
+    mask_client_.set_bounds(mask_size);
     mask_layer_id_ = mask_layer->id();
 
     layer_tree_host()->SetRootLayer(root);
@@ -407,6 +369,7 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
+  FakeContentLayerClient mask_client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -431,19 +394,8 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
         FakePictureLayer::Create(&client_);
     scaling_layer->AddChild(content_layer);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(100, 100));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 100, 10), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 10, 100, 90), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    scoped_refptr<FakePictureLayer> mask_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    mask_client_.set_fill_with_nonsolid_color(true);
+    auto mask_layer = FakePictureLayer::Create(&mask_client_);
     content_layer->SetMaskLayer(mask_layer);
 
     gfx::Size root_size(100, 100);
@@ -457,6 +409,7 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
 
     content_layer->SetBounds(scaling_layer_size);
     mask_layer->SetBounds(scaling_layer_size);
+    mask_client_.set_bounds(scaling_layer_size);
 
     layer_tree_host()->SetRootLayer(root);
     LayerTreeTest::SetupTree();
@@ -522,6 +475,7 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
   }
 
   FakeContentLayerClient client_;
+  FakeContentLayerClient mask_client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeTestMaskLayerWithScaling);
@@ -537,19 +491,8 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
         FakePictureLayer::Create(&client_);
     root->AddChild(content_layer);
 
-    std::unique_ptr<RecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(gfx::Size(100, 100));
-    PaintFlags paint1, paint2;
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 0, 100, 90), paint1);
-    static_cast<FakeRecordingSource*>(recording_source.get())
-        ->add_draw_rect_with_flags(gfx::Rect(0, 90, 100, 10), paint2);
-    client_.set_fill_with_nonsolid_color(true);
-    static_cast<FakeRecordingSource*>(recording_source.get())->Rerecord();
-
-    scoped_refptr<FakePictureLayer> mask_layer =
-        FakePictureLayer::CreateWithRecordingSource(
-            &client_, std::move(recording_source));
+    mask_client_.set_fill_with_nonsolid_color(true);
+    auto mask_layer = FakePictureLayer::Create(&mask_client_);
     content_layer->SetMaskLayer(mask_layer);
 
     gfx::Size root_size(100, 100);
@@ -561,6 +504,7 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
     gfx::Size mask_size(100, 100);
     gfx::Size mask_texture_size(120, 150);
     mask_layer->SetBounds(mask_size);
+    mask_client_.set_bounds(mask_size);
     mask_layer->set_fixed_tile_size(mask_texture_size);
 
     layer_tree_host()->SetRootLayer(root);
@@ -602,6 +546,7 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
+  FakeContentLayerClient mask_client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeTestMaskWithNonExactTextureSize);

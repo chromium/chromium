@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
@@ -37,7 +39,8 @@ class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, EcheApp) {
   const GURL url(ash::eche_app::kChromeUIEcheAppURL);
   EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(ash::SystemWebAppType::ECHE, url, "Eche App"));
+      ExpectSystemWebAppValid(ash::SystemWebAppType::ECHE, url,
+                              l10n_util::GetStringUTF8(IDS_ECHE_APP_NAME)));
 }
 
 // Test that the Eche App has a default bounds is always 16:9 portrait aspect

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1105362920864247682">清除 Chrome 中的浏览数据。</translation>
 <translation id="1113057722807951993">口令加密不涵盖 Google Pay 中的付款方式和地址。若要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -38,13 +39,13 @@
 <translation id="1682483655351012182">同步 Chrome 数据</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">将输入的网址添加到您在 Chrome 中保存的书签。</translation>
+<translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="1843217788865538014">当您点按消息、文档和其他应用内的链接时，系统会自动使用 Chrome 打开链接。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
 <translation id="1987779152850321833">请完成下面这些建议的操作，以便充分利用 Chrome。</translation>
-<translation id="2008357574463816229">如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2056123005618757196">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
 <translation id="2120238739383482109">打开 Chrome 书签。</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
@@ -73,6 +74,7 @@
 <translation id="2702250627063295552">将阅读清单项添加到 Chrome</translation>
 <translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
+<translation id="2789947168960170215">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />清除账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2868822340714096138">清除 Chrome 中的浏览数据</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
@@ -96,7 +98,6 @@
 <translation id="3503014945441706099">同时也为这份 Chrome 个人资料启用“增强型安全浏览”功能</translation>
 <translation id="3522659714780527202">要查看您在其他设备上用 Chrome 打开的标签页，请开启同步功能</translation>
 <translation id="3577555362230509265">在其他应用中使用 Chrome。</translation>
-<translation id="3594076341410558780">隐藏“充分利用 Chrome”</translation>
 <translation id="364480321352456989">您的 Chrome 版本过旧。</translation>
 <translation id="3646736009628185125">您的家庭成员目前无法接收密码。请让他们更新 Chrome 并同步其密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
@@ -200,7 +201,6 @@
 <translation id="686691656039982452">您可以<ph name="BEGIN_LINK" />管理要将哪些 Chrome 数据保存<ph name="END_LINK" />到您的 Google 账号。
 
 如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
-<translation id="687586529977635009">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。您可在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6916015246697034114">在 Chrome 中使用语音搜索</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>

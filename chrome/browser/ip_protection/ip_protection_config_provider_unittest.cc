@@ -127,7 +127,7 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
 class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
  public:
   explicit MockIpProtectionConfigHttp(
-      absl::optional<std::vector<std::vector<std::string>>> proxy_list)
+      std::optional<std::vector<std::vector<std::string>>> proxy_list)
       : IpProtectionConfigHttp(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
         proxy_list_(proxy_list) {}
@@ -163,7 +163,7 @@ class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
   }
 
  private:
-  absl::optional<std::vector<std::vector<std::string>>> proxy_list_;
+  std::optional<std::vector<std::vector<std::string>>> proxy_list_;
 };
 
 enum class PrimaryAccountBehavior {
@@ -206,8 +206,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
         /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
-        std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt),
-        bsa_.get());
+        std::make_unique<MockIpProtectionConfigHttp>(std::nullopt), bsa_.get());
   }
 
   void TearDown() override { getter_->Shutdown(); }
@@ -303,7 +302,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
   // `try_again_after` at the given delta from the current time.
   void ExpectTryGetAuthTokensResultFailed(base::TimeDelta try_again_delta) {
     auto& [bsa_tokens, try_again_after] = tokens_future_.Get();
-    EXPECT_EQ(bsa_tokens, absl::nullopt);
+    EXPECT_EQ(bsa_tokens, std::nullopt);
     if (!bsa_tokens) {
       EXPECT_EQ(*try_again_after, base::Time::Now() + try_again_delta);
     }
@@ -331,12 +330,12 @@ class IpProtectionConfigProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::TestFuture<
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
-      absl::optional<base::Time>>
+      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      std::optional<base::Time>>
       tokens_future_;
 
   base::test::TestFuture<
-      const absl::optional<std::vector<std::vector<std::string>>>&>
+      const std::optional<std::vector<std::vector<std::string>>>&>
       proxy_list_future_;
 
   // Test environment for IdentityManager. This must come after the
@@ -653,13 +652,13 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   base::test::TestFuture<
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
-      absl::optional<base::Time>>
+      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      std::optional<base::Time>>
       tokens_future;
   getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
                             tokens_future.GetCallback());
-  const absl::optional<base::Time>& try_again_after =
-      tokens_future.Get<absl::optional<base::Time>>();
+  const std::optional<base::Time>& try_again_after =
+      tokens_future.Get<std::optional<base::Time>>();
   ASSERT_TRUE(try_again_after);
   EXPECT_EQ(*try_again_after, base::Time::Max());
 
@@ -673,8 +672,8 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
                             tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
-  const absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&
-      tokens = tokens_future.Get<absl::optional<
+  const std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&
+      tokens = tokens_future.Get<std::optional<
           std::vector<network::mojom::BlindSignedAuthTokenPtr>>>();
   ASSERT_TRUE(tokens);
 }
@@ -684,7 +683,7 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   using enum IpProtectionTryGetAuthTokensResult;
 
   auto check = [&](IpProtectionTryGetAuthTokensResult result,
-                   absl::optional<base::TimeDelta> backoff, bool exponential) {
+                   std::optional<base::TimeDelta> backoff, bool exponential) {
     SCOPED_TRACE(::testing::Message()
                  << "result: " << static_cast<int>(result));
     EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
@@ -696,7 +695,7 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
     }
   };
 
-  check(kSuccess, absl::nullopt, false);
+  check(kSuccess, std::nullopt, false);
   check(kFailedNotEligible, getter_->kNotEligibleBackoff, false);
   check(kFailedBSA400, getter_->kBugBackoff, true);
   check(kFailedBSA401, getter_->kBugBackoff, true);
@@ -737,7 +736,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFirstHopHostnames) {
       std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
 
   base::test::TestFuture<
-      const absl::optional<std::vector<std::vector<std::string>>>&>
+      const std::optional<std::vector<std::vector<std::string>>>&>
       proxy_list_future;
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
@@ -775,7 +774,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
       std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
 
   base::test::TestFuture<
-      const absl::optional<std::vector<std::vector<std::string>>>&>
+      const std::optional<std::vector<std::vector<std::string>>>&>
       proxy_list_future;
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
@@ -804,7 +803,7 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
       std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
 
   base::test::TestFuture<
-      const absl::optional<std::vector<std::vector<std::string>>>&>
+      const std::optional<std::vector<std::vector<std::string>>>&>
       proxy_list_future;
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
@@ -815,11 +814,11 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   base::test::TestFuture<
-      const absl::optional<std::vector<std::vector<std::string>>>&>
+      const std::optional<std::vector<std::vector<std::string>>>&>
       proxy_list_future;
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
-  EXPECT_EQ(proxy_list_future.Get(), absl::nullopt);
+  EXPECT_EQ(proxy_list_future.Get(), std::nullopt);
 }
 
 // Do a basic check of the token formats.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -36,7 +37,6 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -59,7 +59,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Different types of extension's lazy background contexts used in some tests.
   enum class ContextType {
     // TODO(crbug.com:/1241220): Get rid of this value when we can use
-    // absl::optional in the LoadOptions struct.
+    // std::optional in the LoadOptions struct.
     // No specific context type.
     kNone,
     // A non-persistent background page/JS based extension.
@@ -215,7 +215,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // 1 means you expect a new install, 0 means you expect an upgrade, -1 means
   // you expect a failed upgrade.
   const Extension* InstallExtension(const base::FilePath& path,
-                                    absl::optional<int> expected_change) {
+                                    std::optional<int> expected_change) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change));
   }
@@ -223,7 +223,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Same as above, but an install source other than
   // mojom::ManifestLocation::kInternal can be specified.
   const Extension* InstallExtension(const base::FilePath& path,
-                                    absl::optional<int> expected_change,
+                                    std::optional<int> expected_change,
                                     mojom::ManifestLocation install_source) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change), install_source);
@@ -234,7 +234,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // the time - otherwise the extension installs in a disabled state.
   const Extension* InstallExtensionWithPermissionsGranted(
       const base::FilePath& file_path,
-      absl::optional<int> expected_change) {
+      std::optional<int> expected_change) {
     return InstallOrUpdateExtension(
         std::string(), file_path, INSTALL_UI_TYPE_NONE,
         std::move(expected_change), mojom::ManifestLocation::kInternal,
@@ -244,13 +244,13 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Installs extension as if it came from the Chrome Webstore.
   const Extension* InstallExtensionFromWebstore(
       const base::FilePath& path,
-      absl::optional<int> expected_change);
+      std::optional<int> expected_change);
 
   // Same as above but passes an id to CrxInstaller and does not allow a
   // privilege increase.
   const Extension* UpdateExtension(const std::string& id,
                                    const base::FilePath& path,
-                                   absl::optional<int> expected_change) {
+                                   std::optional<int> expected_change) {
     return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change));
   }
@@ -259,11 +259,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   const Extension* UpdateExtensionWaitForIdle(
       const std::string& id,
       const base::FilePath& path,
-      absl::optional<int> expected_change);
+      std::optional<int> expected_change);
 
   const Extension* InstallExtensionWithUIAutoConfirm(
       const base::FilePath& path,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       Browser* browser) {
     return InstallOrUpdateExtension(
         std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM,
@@ -272,7 +272,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
       Extension::InitFromValueFlags creation_flags) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
@@ -409,29 +409,28 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     INSTALL_UI_TYPE_AUTO_CONFIRM,
   };
 
+  const Extension* InstallOrUpdateExtension(const std::string& id,
+                                            const base::FilePath& path,
+                                            InstallUIType ui_type,
+                                            std::optional<int> expected_change);
   const Extension* InstallOrUpdateExtension(
       const std::string& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change);
-  const Extension* InstallOrUpdateExtension(
-      const std::string& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags);
   const Extension* InstallOrUpdateExtension(
       const std::string& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source);
   const Extension* InstallOrUpdateExtension(
       const std::string& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags,

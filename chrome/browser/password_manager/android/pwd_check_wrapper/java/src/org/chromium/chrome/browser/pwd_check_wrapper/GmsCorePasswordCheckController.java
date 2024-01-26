@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
+import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
+
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.ref.WeakReference;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -21,67 +22,76 @@ import java.util.concurrent.CompletableFuture;
  */
 class GmsCorePasswordCheckController
         implements PasswordCheckController, PasswordStoreBridge.PasswordStoreObserver {
-    private SyncService mSyncService;
-    private PasswordStoreBridge mPasswordStoreBridge;
-    private CompletableFuture<Integer> mPasswordsTotalCount;
-    private CompletableFuture<PasswordCheckResult> mPasswordCheckResult;
+    private final SyncService mSyncService;
+    private final PrefService mPrefService;
+    private final PasswordStoreBridge mPasswordStoreBridge;
+    private final CompletableFuture<Integer> mPasswordsCountAccountStorage;
+    private final CompletableFuture<Integer> mPasswordsCountLocalStorage;
 
-    public GmsCorePasswordCheckController(
-            SyncService syncService, PasswordStoreBridge passwordStoreBridge) {
+    GmsCorePasswordCheckController(
+            SyncService syncService,
+            PrefService prefService,
+            PasswordStoreBridge passwordStoreBridge) {
         mSyncService = syncService;
+        mPrefService = prefService;
         mPasswordStoreBridge = passwordStoreBridge;
-        // TODO(b/312930046): Is it enough to fetch passwords only once here or is it needed to be
-        // done on each checkPasswords() call?
-        mPasswordsTotalCount = new CompletableFuture<>();
+        mPasswordsCountAccountStorage = new CompletableFuture<>();
+        mPasswordsCountLocalStorage = new CompletableFuture<>();
         mPasswordStoreBridge.addObserver(this, true);
     }
 
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(
-            @PasswordStoreType int passwordStoreType) {
+            @PasswordStorageType int passwordStorageType) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
-        mPasswordCheckResult = new CompletableFuture<>();
+        CompletableFuture<PasswordCheckResult> passwordCheckResult = new CompletableFuture<>();
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStoreType),
+                PasswordCheckController.getAccountNameForPasswordStorageType(
+                        passwordStorageType, mSyncService),
                 unused -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.getBreachedCredentialsCount(passwordStoreType);
+                    controller.getBreachedCredentialsCount(
+                            passwordStorageType, passwordCheckResult);
                 },
                 error -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.onPasswordCheckFailed(error);
+                    controller.onPasswordCheckFailed(error, passwordCheckResult);
                 });
-        return mPasswordCheckResult;
+        return passwordCheckResult;
     }
 
     @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            @PasswordStoreType int passwordStoreType) {
-        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
-        if (mPasswordCheckResult == null || mPasswordCheckResult.isDone()) {
-            mPasswordCheckResult = new CompletableFuture<>();
-        }
+            @PasswordStorageType int passwordStorageType) {
+        return getBreachedCredentialsCount(passwordStorageType, new CompletableFuture<>());
+    }
 
+    private CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
+            @PasswordStorageType int passwordStorageType,
+            CompletableFuture<PasswordCheckResult> passwordCheckResult) {
+        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStoreType),
+                PasswordCheckController.getAccountNameForPasswordStorageType(
+                        passwordStorageType, mSyncService),
                 count -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.onBreachedCredentialsObtained(count);
+                    controller.onBreachedCredentialsObtained(
+                            passwordStorageType, count, passwordCheckResult);
                 },
                 error -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
-                    controller.onPasswordCheckFailed(error);
+                    controller.onPasswordCheckFailed(error, passwordCheckResult);
                 });
-        return mPasswordCheckResult;
+        return passwordCheckResult;
     }
 
     @Override
@@ -96,35 +106,47 @@ class GmsCorePasswordCheckController
      *
      * @param breachedCount the number of breached credentials
      */
-    private void onBreachedCredentialsObtained(int breachedCount) {
-        mPasswordsTotalCount.thenAccept(
+    private void onBreachedCredentialsObtained(
+            @PasswordStorageType int passwordStorageType,
+            int breachedCount,
+            CompletableFuture<PasswordCheckResult> passwordCheckResult) {
+        CompletableFuture<Integer> passwordsTotalCount =
+                passwordStorageType == PasswordStorageType.ACCOUNT_STORAGE
+                        ? mPasswordsCountAccountStorage
+                        : mPasswordsCountLocalStorage;
+        // If passwordsTotalCount is already completed, the code after `thenAccept` is executed
+        // immediately.
+        passwordsTotalCount.thenAccept(
                 totalCount ->
-                        mPasswordCheckResult.complete(
+                        passwordCheckResult.complete(
                                 new PasswordCheckResult(totalCount, breachedCount)));
     }
 
-    private void onPasswordCheckFailed(Exception error) {
-        mPasswordCheckResult.complete(new PasswordCheckResult(error));
-    }
-
-    private Optional<String> getAccountNameForStorageType(
-            @PasswordStoreType int passwordStoreType) {
-        switch (passwordStoreType) {
-            case PasswordStoreType.PROFILE_STORE:
-                return Optional.empty();
-            case PasswordStoreType.ACCOUNT_STORE:
-                return Optional.of(CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()));
-        }
-        assert false : "Unknown PasswordStorageType: " + passwordStoreType;
-        return null;
+    private void onPasswordCheckFailed(
+            Exception error, CompletableFuture<PasswordCheckResult> passwordCheckResult) {
+        passwordCheckResult.complete(new PasswordCheckResult(error));
     }
 
     @Override
     public void onSavedPasswordsChanged(int count) {
-        // TODO(b/312930046): Password store bridge needs to be changed to return per-store password
-        // count. Right now it returns the total count from all password stores combined.
+        // The count here is the total count for both account and local storage. If this method is
+        // called, this means that the passwords for both account and profile stores have been
+        // fetched and can be requested.
         mPasswordStoreBridge.removeObserver(this);
-        mPasswordsTotalCount.complete(count);
+
+        // If using split stores and UPM for local passwords is enabled, the local passwords are
+        // stored in the profile store.
+        if (usesSplitStoresAndUPMForLocal(mPrefService)) {
+            mPasswordsCountAccountStorage.complete(
+                    mPasswordStoreBridge.getPasswordStoreCredentialsCountForAccountStore());
+            mPasswordsCountLocalStorage.complete(
+                    mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore());
+            return;
+        }
+        // If using split stores is disabled, all passwords reside in the profile store.
+        mPasswordsCountAccountStorage.complete(
+                mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore());
+        mPasswordsCountLocalStorage.complete(0);
     }
 
     /** Not relevant for this controller. */

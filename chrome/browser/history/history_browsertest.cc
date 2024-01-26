@@ -70,7 +70,7 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
               (history::HistoryService*,
                const history::URLRow&,
                const history::VisitRow&,
-               absl::optional<int64_t>),
+               std::optional<int64_t>),
               (override));
 };
 
@@ -168,6 +168,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     history_service->GetAnnotatedVisits(
         options,
         /*compute_redirect_chain_start_properties=*/true,
+        /*get_unclustered_visits_only*/ false,
         base::BindLambdaForTesting(
             [&](std::vector<history::AnnotatedVisit> visits) {
               annotated_visits = std::move(visits);
@@ -947,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
       .WillOnce(testing::SaveArg<1>(&url_row));
   EXPECT_CALL(observer, OnURLVisitedWithNavigationId(
                             history_service, _, _,
-                            testing::Not(testing::Eq(absl::nullopt))))
+                            testing::Not(testing::Eq(std::nullopt))))
       .WillOnce(testing::SaveArg<1>(&url_row2));
 
   GURL url = GetTestFileURL("landing.html");
@@ -961,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
       .WillOnce(testing::SaveArg<1>(&url_row));
   EXPECT_CALL(observer, OnURLVisitedWithNavigationId(
                             history_service, _, _,
-                            testing::Not(testing::Eq(absl::nullopt))))
+                            testing::Not(testing::Eq(std::nullopt))))
       .WillOnce(testing::SaveArg<1>(&url_row2));
 
   GURL url2 = GetTestFileURL("target.html");

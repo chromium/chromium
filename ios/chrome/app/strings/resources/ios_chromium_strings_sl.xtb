@@ -81,7 +81,6 @@
 <translation id="3366305173356742781">Podatki v Chromiumu v vašem računu</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. To lahko vključuje zgodovino in samodejno izpolnjevanje.}one{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. To lahko vključuje zgodovino in samodejno izpolnjevanje.}two{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuti. To lahko vključuje zgodovino in samodejno izpolnjevanje.}few{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minute. To lahko vključuje zgodovino in samodejno izpolnjevanje.}other{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minut. To lahko vključuje zgodovino in samodejno izpolnjevanje.}}</translation>
 <translation id="3472200483164753384">Ni podprto v Chromiumu Canary</translation>
-<translation id="3478750326643748149">Skrijte možnost »Izkoristite Chromium na najboljši način«</translation>
 <translation id="347967311580159871">Če želite več nastavitev, ki zaradi izboljšanja izkušnje v Chromiumu uporabljajo podatke, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chromium. Nato poskusite znova.</translation>
 <translation id="3554027294407525061">Brisanje podatkov brskanja v Chromiumu.</translation>
@@ -101,9 +100,9 @@
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Odpiranje Chromiuma v poljubni aplikaciji</translation>
-<translation id="4002314982058020967">Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Odpre in izvede varnostno preverjanje v Chromiumu.</translation>
 <translation id="4043291146360695975">Gesla so shranjena v upravitelju gesel samo v tej napravi.</translation>
+<translation id="4076589763479456892">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ni podprto v Chromiumu Beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kot <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4408912345039114853">Zagon varnostnega preverjanja v Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se, če želite čim bolje izkoristiti Chromium.</translation>
 <translation id="4445228361214254027">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromiumu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
-<translation id="4485517920713468480">Chromium zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Vaši podatki bodo deljeni z Googlom zaradi zagotavljanja te funkcije in izboljšanja Nakupovanja za vse. To lahko spremenite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Doda vnesene URL-je na bralni seznam v Chromiumu.</translation>
 <translation id="452436063477828504">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromiumu</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5534584691915394889">To bo uporabljeno za ustvarjanje dogodkov v koledarju Apple Calendar s Chromiumom in Googlom Lens.</translation>
 <translation id="5571094606370987472">Odpiranje nedavnih zavihkov v Chromiumu.</translation>
 <translation id="5623083843656850677">Zaklepanje anonimnih zavihkov, ko zapustite Chromium ali preklopite na drugo aplikacijo.</translation>
+<translation id="5671188105328420281">Nasveti za Chromium</translation>
 <translation id="5688047395118852662">Na tej kartici so prikazani predlogi, kako izkoristiti Chromium na najboljši način.</translation>
 <translation id="5700709190537129682">Chromium ne more preveriti vaših gesel</translation>
 <translation id="5777187867430702742">Stran Chromiuma</translation>
@@ -286,6 +285,7 @@ Kaj je treba upoštevati:
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
 <translation id="88376265765385899">Odpre zaznamke v Chromiumu.</translation>
 <translation id="8860548555286245440">Odpiranje URL-jev v Chromiumu v anonimnem načinu</translation>
+<translation id="8866191443434488382">Chromium zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Številka za sledenje paketu in ime spletnega mesta se pošljeta v Chromium zaradi zagotavljanja te funkcije in izboljšanja funkcij nakupovanja za vse. To lahko kadar koli posodobite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium za iOS</translation>
 <translation id="8924617840944134898">Odpiranje anonimnega zavihka v Chromiumu</translation>
 <translation id="894437814105052438">Če se odjavite, Chromium ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>

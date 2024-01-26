@@ -313,6 +313,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
       }
       WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme(
           is_dark_mode);
+      GetWebViewImpl()->GetPage()->EmulateForcedColors(is_dark_mode);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
@@ -321,9 +322,11 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
       forced_colors_override_ = true;
       WebThemeEngineHelper::GetNativeThemeEngine()->SetForcedColors(
           ForcedColors::kNone);
+      GetWebViewImpl()->GetPage()->DisableEmulatedForcedColors();
     } else if (forced_colors_override_) {
       WebThemeEngineHelper::GetNativeThemeEngine()->ResetToSystemColors(
           initial_system_color_info_state_);
+      GetWebViewImpl()->GetPage()->DisableEmulatedForcedColors();
     }
 
     for (const WTF::String& feature : emulated_media_features_.Keys()) {

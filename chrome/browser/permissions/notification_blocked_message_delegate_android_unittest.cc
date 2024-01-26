@@ -29,7 +29,7 @@ class MockDelegate : public NotificationBlockedMessageDelegate::Delegate {
   MOCK_METHOD(void, Closing, (), (override));
 
   MOCK_METHOD(bool, ShouldUseQuietUI, (), (override));
-  MOCK_METHOD(absl::optional<QuietUiReason>,
+  MOCK_METHOD(std::optional<QuietUiReason>,
               ReasonForUsingQuietUi,
               (),
               (override));
@@ -154,7 +154,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
       .WillRepeatedly(testing::Return(
-          absl::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
+          std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
 
   ExpectEnqueued();
 
@@ -177,7 +177,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
       .WillRepeatedly(testing::Return(
-          absl::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
+          std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
 
   ExpectEnqueued();
 

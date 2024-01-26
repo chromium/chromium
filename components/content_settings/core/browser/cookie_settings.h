@@ -261,7 +261,7 @@ class CookieSettings
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      content_settings::SettingInfo* info = nullptr) const override;
+      content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
   bool IsStorageAccessApiEnabled() const override;
@@ -286,7 +286,7 @@ class CookieSettings
   const scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const bool is_incognito_;
   const char* extension_scheme_;  // Weak.
 

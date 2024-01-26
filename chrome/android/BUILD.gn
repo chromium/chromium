@@ -182,6 +182,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feedback/android:java_resources",
       "//chrome/browser/image_descriptions:java_resources",
       "//chrome/browser/lens:java_resources",
+      "//chrome/browser/magic_stack/android:java_resources",
       "//chrome/browser/mandatory_reauth/android/internal:java_resources",
       "//chrome/browser/password_check/android:java_resources",
       "//chrome/browser/password_manager/android:java_resources",
@@ -302,6 +303,7 @@ if (current_toolchain == default_toolchain) {
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
       "//cc/mojom:mojom_java",
+      "//chrome/android/features/jank_tracker:jank_tracker_java",
       "//chrome/android/features/keyboard_accessory:public_java",
       "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
@@ -362,6 +364,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/fullscreen/android:java",
       "//chrome/browser/gesturenav/android:java",
       "//chrome/browser/gsa:java",
+      "//chrome/browser/history:java",
       "//chrome/browser/history_clusters:java",
       "//chrome/browser/history_clusters:java_resources",
       "//chrome/browser/hub:factory_java",
@@ -372,6 +375,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/language/android:java",
       "//chrome/browser/lens:java",
       "//chrome/browser/locale:java",
+      "//chrome/browser/magic_stack/android:java",
       "//chrome/browser/notifications/chime/android:java",
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/optimization_guide/android:java",
@@ -583,6 +587,7 @@ if (current_toolchain == default_toolchain) {
       "//components/sync/android:sync_java",
       "//components/sync/protocol:protocol_java",
       "//components/sync_device_info:sync_device_info_java",
+      "//components/tab_groups:tab_groups_java",
       "//components/thin_webview:factory_java",
       "//components/thin_webview:java",
       "//components/translate/content/android:java",
@@ -999,6 +1004,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/lens:java",
       "//chrome/browser/loading_modal/android:junit",
       "//chrome/browser/locale:java",
+      "//chrome/browser/magic_stack/android:java",
       "//chrome/browser/magic_stack/android:junit",
       "//chrome/browser/mandatory_reauth/android/internal:junit",
       "//chrome/browser/notifications:java",
@@ -1198,6 +1204,7 @@ if (current_toolchain == default_toolchain) {
       "//components/sync/android:sync_java",
       "//components/sync/protocol:protocol_java",
       "//components/sync_device_info:sync_device_info_java",
+      "//components/tab_groups:tab_groups_java",
       "//components/translate/content/android:junit",
       "//components/ukm/android:java",
       "//components/url_formatter/android:url_formatter_java",
@@ -1626,6 +1633,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/language/android:javatests",
       "//chrome/browser/lens:java",
       "//chrome/browser/locale:java",
+      "//chrome/browser/magic_stack/android:java",
       "//chrome/browser/notifications:java",
       "//chrome/browser/notifications:javatests",
       "//chrome/browser/omaha/android:java",
@@ -2931,6 +2939,8 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
+      "//chrome/browser/hub/internal:java",
+      "//chrome/browser/hub/internal:java_resources",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
@@ -3047,21 +3057,28 @@ if (current_toolchain == default_toolchain) {
     extra_args = _bundle_smoke_test_extra_args
   }
 
-  if (defined(expected_static_initializer_32bit_count)) {
-    _verify_32bit_static_initializers =
-        !android_64bit_target_cpu || !skip_secondary_abi_for_cq
-    _verify_64bit_static_initializers = android_64bit_target_cpu
+  _verify_32bit_static_initializers =
+      defined(expected_static_initializer_32bit_count) &&
+      !skip_secondary_abi_for_cq
+  _verify_64bit_static_initializers =
+      defined(expected_static_initializer_64bit_count) &&
+      android_64bit_target_cpu
+  if (_verify_32bit_static_initializers || _verify_64bit_static_initializers) {
+    # Old name alias to be removed after migration is done.
     group("monochrome_static_initializers") {
+      deps = [ ":check_chrome_static_initializers" ]
+    }
+    group("check_chrome_static_initializers") {
       deps = []
       if (_verify_32bit_static_initializers) {
-        deps += [ ":chrome_32_static_initializers" ]
+        deps += [ ":check_chrome_32_static_initializers" ]
       }
       if (_verify_64bit_static_initializers) {
-        deps += [ ":chrome_64_static_initializers" ]
+        deps += [ ":check_chrome_64_static_initializers" ]
       }
     }
     if (_verify_32bit_static_initializers) {
-      action_with_pydeps("chrome_32_static_initializers") {
+      action_with_pydeps("check_chrome_32_static_initializers") {
         script = "//build/android/gyp/assert_static_initializers.py"
         if (android_64bit_target_cpu) {
           _lib_abi_toolchain = "($android_secondary_abi_toolchain)"
@@ -3084,7 +3101,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
     if (_verify_64bit_static_initializers) {
-      action_with_pydeps("chrome_64_static_initializers") {
+      action_with_pydeps("check_chrome_64_static_initializers") {
         script = "//build/android/gyp/assert_static_initializers.py"
         deps = [ ":libmonochrome_64" ]
         inputs = [ "$root_build_dir/lib.unstripped/libmonochrome_64.so" ]
@@ -3597,6 +3614,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/download/DownloadMessageBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
     "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/download/OpenDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
@@ -3637,6 +3655,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",
     "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
+    "java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
     "java/src/org/chromium/chrome/browser/notifications/PushMessagingServiceBridge.java",
     "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
@@ -3661,6 +3680,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordGenerationDialogBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordGenerationPopupBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
@@ -3702,7 +3722,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
     "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
     "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
-    "java/src/org/chromium/chrome/browser/usage_stats/NotificationSuspender.java",
     "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
@@ -3758,6 +3777,7 @@ group("jni_headers") {
     "//chrome/browser/enterprise/util:jni_headers",
     "//chrome/browser/feature_engagement:jni_headers",
     "//chrome/browser/flags:jni_headers",
+    "//chrome/browser/history:jni_headers",
     "//chrome/browser/history_clusters:jni_headers",
     "//chrome/browser/image_descriptions:jni_headers",
     "//chrome/browser/incognito:jni_headers",

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -94,7 +94,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
     const ui::ClipboardData& data) {
   // This code should not be reached if `data` doesn't contain file system data.
   std::u16string sources;
-  std::vector<base::StringPiece16> source_list;
+  std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();

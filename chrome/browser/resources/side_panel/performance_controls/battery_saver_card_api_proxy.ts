@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatterySaverCardCallbackRouter, BatterySaverCardHandlerFactory, BatterySaverCardHandlerInterface, BatterySaverCardHandlerRemote} from './performance.mojom-webui.js';
+import type {BatterySaverCardHandlerInterface} from './performance.mojom-webui.js';
+import {BatterySaverCardCallbackRouter, BatterySaverCardHandlerFactory, BatterySaverCardHandlerRemote} from './performance.mojom-webui.js';
 
 let instance: BatterySaverCardApiProxy|null = null;
 

@@ -10,7 +10,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests Statistics view of detailed heap snapshots.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   function createHeapSnapshot() {
     var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();

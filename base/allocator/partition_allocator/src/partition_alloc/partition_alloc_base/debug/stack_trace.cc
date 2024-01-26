@@ -4,13 +4,13 @@
 
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
+#include <cstdint>
+
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/process/process_handle.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
-
-#include <stdint.h>
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;

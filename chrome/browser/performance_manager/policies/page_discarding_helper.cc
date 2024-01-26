@@ -115,12 +115,12 @@ void PageDiscardingHelper::DiscardAPage(
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
-  DiscardMultiplePages(absl::nullopt, false, std::move(post_discard_cb),
+  DiscardMultiplePages(std::nullopt, false, std::move(post_discard_cb),
                        discard_reason, minimum_time_in_background);
 }
 
 void PageDiscardingHelper::DiscardMultiplePages(
-    absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
+    std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,
@@ -491,7 +491,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
 }
 
 void PageDiscardingHelper::PostDiscardAttemptCallback(
-    absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
+    std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,

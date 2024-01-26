@@ -31,11 +31,13 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
@@ -74,6 +76,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "content/public/test/mock_captured_surface_controller.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace gfx {
 class Point;
@@ -555,9 +561,7 @@ class ToRenderFrameHost {
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 };
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);
@@ -1707,8 +1711,8 @@ class TestNavigationManager : public WebContentsObserver {
   void ResumeIfPaused();
 
   const GURL url_;
-  // This field is not a raw_ptr<> because of incompatibilities with tracing
-  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
+  // RAW_PTR_EXCLUSION: Incompatible with tracing (TRACE_EVENT*),
+  // perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
   RAW_PTR_EXCLUSION NavigationRequest* request_ = nullptr;
   bool navigation_paused_ = false;
   NavigationState current_state_ = NavigationState::INITIAL;
@@ -2395,6 +2399,14 @@ RegisterWebContentsCreationCallback(
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
 #endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Set the global factory for CapturedSurfaceController objects.
+void SetCapturedSurfaceControllerFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+        GlobalRenderFrameHostId,
+        WebContentsMediaCaptureId)> factory);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
 

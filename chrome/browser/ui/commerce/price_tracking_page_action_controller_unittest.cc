@@ -208,13 +208,15 @@ TEST_F(PriceTrackingPageActionControllerUnittest,
                            IdentifierType::kProductClusterId, "12345",
                            ManagementType::kUserManaged);
 
-  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   shopping_service_->SetIsSubscribedCallbackValue(true);
   controller.OnSubscribe(sub, true);
+  base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   shopping_service_->SetIsSubscribedCallbackValue(false);
   controller.OnUnsubscribe(sub, true);
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller.ShouldShowForNavigation().has_value());
   ASSERT_TRUE(controller.ShouldShowForNavigation().value());

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="1105362920864247682">Išvalyti naršymo duomenis naršyklėje „Chrome“.</translation>
 <translation id="1113057722807951993">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
@@ -40,13 +41,13 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1682483655351012182">Sinchronizuoti „Chrome“ duomenis</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Pridedami įvesti URL prie žymių naršyklėje „Chrome“.</translation>
+<translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1830634592642484976">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="1843217788865538014">Automatiškai naudokite „Chrome“ palietę nuorodą pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="1910975740091000991">„Chrome“, skirta „iOS“</translation>
 <translation id="1917964099031477364">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chrome“ bei kitų šiame įrenginyje įdiegtų „Google“ programų.</translation>
 <translation id="1965935827552890526">Pabaikite tai, ką darėte, kitame atidarytame „Chrome“ lange.</translation>
 <translation id="1987779152850321833">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
-<translation id="2008357574463816229">Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Google Chrome“.</translation>
 <translation id="2120238739383482109">Atidaromos „Chrome“ žymės.</translation>
 <translation id="2147651015520127414">„Chrome“ patvirtino, kad „<ph name="ISSUER" />“ išdavė šį svetainės sertifikatą.</translation>
@@ -75,6 +76,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2702250627063295552">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
 <translation id="2736805085127235148">„Chrome“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>
 <translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
+<translation id="2789947168960170215">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Išvalyti naršymo duomenis naršyklėje „Chrome“</translation>
 <translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3503014945441706099">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chrome“ profilyje</translation>
 <translation id="3522659714780527202">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, įjunkite sinchronizavimą</translation>
 <translation id="3577555362230509265">Naudokite „Chrome“ kitose programose.</translation>
-<translation id="3594076341410558780">Slėpti parinktį „Išnaudokite visas „Chrome“ galimybes“</translation>
 <translation id="364480321352456989">Jūsų „Chrome“ pasenusi.</translation>
 <translation id="3646736009628185125">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chrome“ ir sinchronizuoti slaptažodžius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks svetainės mobiliesiems užklausą.</translation>
@@ -204,7 +205,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="686691656039982452">Galite <ph name="BEGIN_LINK" />tvarkyti, kokie „Chrome“ duomenys išsaugomi<ph name="END_LINK" /> „Google“ paskyroje.
 
 Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems. Tai galite pakeisti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Paieška balsu naršyklėje „Chrome“</translation>
 <translation id="6964931465519938134">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>

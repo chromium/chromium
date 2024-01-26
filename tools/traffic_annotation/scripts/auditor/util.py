@@ -120,7 +120,8 @@ def merge_string_field(src: Message, dst: Message, field: str):
       setattr(dst, field, getattr(src, field))
 
 
-def fill_proto_with_bogus(proto: Message, field_numbers: List[int]):
+def fill_proto_with_bogus(unique_id: str, proto: Message,
+                          field_numbers: List[int]):
   """Fill proto with bogus values for the fields identified by field_numbers.
   Uses reflection to fill the proto with the right types."""
   descriptor = proto.DESCRIPTOR
@@ -142,9 +143,14 @@ def fill_proto_with_bogus(proto: Message, field_numbers: List[int]):
       setattr(proto, field.name, field.enum_type.values[1].number)
     elif field.type == FieldDescriptor.TYPE_MESSAGE and repeated:
       getattr(proto, field.name).add()
+    elif field.type == FieldDescriptor.TYPE_MESSAGE:
+      # Non-repeated message, nothing to do.
+      pass
     else:
-      raise NotImplementedError("Unimplemented proto field type {} ({})".format(
-          field.type, "repeated" if repeated else "non-repeated"))
+      raise NotImplementedError(
+          "Unimplemented proto field {} of type {} ({}) in {}".format(
+              field.name, field.type,
+              "repeated" if repeated else "non-repeated", unique_id))
 
 
 def extract_annotation_id(line: str) -> Optional[UniqueId]:

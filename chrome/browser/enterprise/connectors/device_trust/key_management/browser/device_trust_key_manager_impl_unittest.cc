@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 
 #include <array>
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_forward.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -148,7 +148,7 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
   void ExpectManagerHandlesRequests() {
     base::RunLoop run_loop;
     key_manager_->ExportPublicKeyAsync(base::BindLambdaForTesting(
-        [&run_loop](absl::optional<std::string> value) {
+        [&run_loop](std::optional<std::string> value) {
           EXPECT_TRUE(value);
           EXPECT_FALSE(value->empty());
           run_loop.Quit();
@@ -212,7 +212,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, SignString_HardwareKey) {
   InitializeWithKey();
   EXPECT_FALSE(key_manager()->HasPermanentFailure());
 
-  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> sign_future;
   key_manager()->SignStringAsync("test string", sign_future.GetCallback());
 
   EXPECT_TRUE(sign_future.Get());
@@ -251,8 +251,8 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   // The manager should now respond to the callback as soon as the key is
   // loaded.
   base::RunLoop run_loop;
-  key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-      [&run_loop](absl::optional<std::string> value) {
+  key_manager()->ExportPublicKeyAsync(
+      base::BindLambdaForTesting([&run_loop](std::optional<std::string> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         run_loop.Quit();
@@ -297,8 +297,8 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   // The manager should now respond to the callback as soon as the key is
   // loaded.
   base::RunLoop run_loop;
-  key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-      [&run_loop](absl::optional<std::string> value) {
+  key_manager()->ExportPublicKeyAsync(
+      base::BindLambdaForTesting([&run_loop](std::optional<std::string> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         run_loop.Quit();
@@ -344,7 +344,7 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   // client requests.
   base::RunLoop fail_loop;
   key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-      [&fail_loop](absl::optional<std::string> value) {
+      [&fail_loop](std::optional<std::string> value) {
         EXPECT_FALSE(value);
         fail_loop.Quit();
       }));
@@ -355,7 +355,7 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   SetUpKeyLoadAndSync(DTCLoadKeyResult(kSuccessUploadCode, test_key_pair()));
   base::RunLoop success_loop;
   key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-      [&success_loop](absl::optional<std::string> value) {
+      [&success_loop](std::optional<std::string> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         success_loop.Quit();
@@ -399,7 +399,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, NoKey_LoadKeyResult_MayTriggerCreation) {
       base::RepeatingClosure side_effect =
           base::BindLambdaForTesting([&run_loop, this]() {
             key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-                [&run_loop](absl::optional<std::string> value) {
+                [&run_loop](std::optional<std::string> value) {
                   EXPECT_FALSE(value);
                   run_loop.Quit();
                 }));
@@ -467,7 +467,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_CreateFails_Retry) {
   // by a successful key loading.
   base::RunLoop request_loop;
   key_manager()->ExportPublicKeyAsync(base::BindLambdaForTesting(
-      [&request_loop](absl::optional<std::string> value) {
+      [&request_loop](std::optional<std::string> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         request_loop.Quit();
@@ -530,7 +530,7 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   auto export_key_counter = 0;
   auto export_key_callback =
       base::BindLambdaForTesting([&export_key_counter, &barrier_closure](
-                                     absl::optional<std::string> value) {
+                                     std::optional<std::string> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         ++export_key_counter;
@@ -540,7 +540,7 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   auto sign_string_counter = 0;
   auto sign_string_callback = base::BindLambdaForTesting(
       [&sign_string_counter,
-       &barrier_closure](absl::optional<std::vector<uint8_t>> value) {
+       &barrier_closure](std::optional<std::vector<uint8_t>> value) {
         ASSERT_TRUE(value);
         EXPECT_FALSE(value->empty());
         ++sign_string_counter;
@@ -594,7 +594,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Success) {
             rotate_key_loop.Quit();
           }));
 
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -634,7 +634,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed) {
             rotate_key_loop.Quit();
           }));
 
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -675,7 +675,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed_Key_Conflict) {
             rotate_key_loop.Quit();
           }));
 
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -720,7 +720,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed_OS_Failure) {
             rotate_key_loop.Quit();
           }));
 
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -763,17 +763,17 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Cancel_Success) {
           }));
 
   // Create callback parameters for all calls.
-  absl::optional<KeyRotationResult> first_captured_result;
+  std::optional<KeyRotationResult> first_captured_result;
   auto first_completion_callback = base::BindLambdaForTesting(
       [&first_captured_result](KeyRotationResult result) {
         first_captured_result = result;
       });
-  absl::optional<KeyRotationResult> second_captured_result;
+  std::optional<KeyRotationResult> second_captured_result;
   auto second_completion_callback = base::BindLambdaForTesting(
       [&second_captured_result](KeyRotationResult result) {
         second_captured_result = result;
       });
-  absl::optional<KeyRotationResult> third_captured_result;
+  std::optional<KeyRotationResult> third_captured_result;
   auto third_completion_callback = base::BindLambdaForTesting(
       [&third_captured_result](KeyRotationResult result) {
         third_captured_result = result;
@@ -873,12 +873,12 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
         }));
 
     // Create callback parameters for all calls.
-    absl::optional<KeyRotationResult> first_captured_result;
+    std::optional<KeyRotationResult> first_captured_result;
     auto first_completion_callback = base::BindLambdaForTesting(
         [&first_captured_result](KeyRotationResult result) {
           first_captured_result = result;
         });
-    absl::optional<KeyRotationResult> second_captured_result;
+    std::optional<KeyRotationResult> second_captured_result;
     auto second_completion_callback = base::BindLambdaForTesting(
         [&second_captured_result](KeyRotationResult result) {
           second_captured_result = result;
@@ -948,7 +948,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -999,7 +999,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
-  absl::optional<KeyRotationResult> captured_result;
+  std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
@@ -1101,11 +1101,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, CreateKey_PermanentFailures) {
     key_manager()->RotateKey(kFakeNonce, rotate_future.GetCallback());
     EXPECT_EQ(rotate_future.Get(), KeyRotationResult::FAILURE);
 
-    base::test::TestFuture<absl::optional<std::string>> export_future;
+    base::test::TestFuture<std::optional<std::string>> export_future;
     key_manager()->ExportPublicKeyAsync(export_future.GetCallback());
     EXPECT_FALSE(export_future.Get());
 
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>> sign_future;
     key_manager()->SignStringAsync("test string", sign_future.GetCallback());
     EXPECT_FALSE(sign_future.Get());
 

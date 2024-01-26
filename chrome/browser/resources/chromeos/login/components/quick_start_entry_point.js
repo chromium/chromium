@@ -62,22 +62,6 @@ export class QuickStartEntryPoint extends QuickStartEntryPointBase {
     }));
   }
 
-  showQuickStartBluetoothDialog() {
-    this.$.quickStartBluetoothDialog.showDialog();
-  }
-
-  cancelBluetoothDialog_() {
-    this.$.quickStartBluetoothDialog.hideDialog();
-  }
-
-  turnOnBluetooth_() {
-    this.$.quickStartBluetoothDialog.hideDialog();
-    this.dispatchEvent(new CustomEvent('activate-quick-start', {
-      bubbles: true,
-      composed: true,
-      detail: {enableBluetooth: true},
-    }));
-  }
 }
 
 customElements.define(QuickStartEntryPoint.is, QuickStartEntryPoint);

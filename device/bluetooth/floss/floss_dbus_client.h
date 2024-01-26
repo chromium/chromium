@@ -78,6 +78,8 @@ inline constexpr char kSetName[] = "SetName";
 inline constexpr char kGetDiscoverable[] = "GetDiscoverable";
 inline constexpr char kGetDiscoverableTimeout[] = "GetDiscoverableTimeout";
 inline constexpr char kSetDiscoverable[] = "SetDiscoverable";
+inline constexpr char kIsLeExtendedAdvertisingSupported[] =
+    "IsLeExtendedAdvertisingSupported";
 inline constexpr char kStartDiscovery[] = "StartDiscovery";
 inline constexpr char kCancelDiscovery[] = "CancelDiscovery";
 inline constexpr char kCreateBond[] = "CreateBond";
@@ -88,8 +90,10 @@ inline constexpr char kGetRemoteClass[] = "GetRemoteClass";
 inline constexpr char kGetRemoteAppearance[] = "GetRemoteAppearance";
 inline constexpr char kGetRemoteVendorProductInfo[] =
     "GetRemoteVendorProductInfo";
+inline constexpr char kGetRemoteAddressType[] = "GetRemoteAddressType";
 inline constexpr char kGetConnectionState[] = "GetConnectionState";
 inline constexpr char kGetRemoteUuids[] = "GetRemoteUuids";
+inline constexpr char kFetchRemoteUuids[] = "FetchRemoteUuids";
 inline constexpr char kGetBondState[] = "GetBondState";
 inline constexpr char kConnectAllEnabledProfiles[] =
     "ConnectAllEnabledProfiles";

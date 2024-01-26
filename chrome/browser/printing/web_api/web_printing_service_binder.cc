@@ -15,9 +15,32 @@
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 #include "chrome/browser/printing/web_api/web_printing_service_chromeos.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #endif
 
 namespace printing {
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+std::optional<std::string> InferAssociatedAppId(
+    content::RenderFrameHost* render_frame_host) {
+  if (auto* web_app_id = web_app::WebAppTabHelper::GetAppId(
+          content::WebContents::FromRenderFrameHost(render_frame_host))) {
+    // If this is a web app, return its id.
+    return *web_app_id;
+  }
+  auto* extension =
+      extensions::ExtensionRegistry::Get(render_frame_host->GetBrowserContext())
+          ->enabled_extensions()
+          .GetExtensionOrAppByURL(render_frame_host->GetLastCommittedURL());
+  if (extension && extension->is_platform_app()) {
+    // If this is a chrome app, return its id.
+    return extension->id();
+  }
+  return std::nullopt;
+}
+#endif
 
 void CreateWebPrintingServiceForFrame(
     content::RenderFrameHost* render_frame_host,
@@ -47,9 +70,15 @@ void CreateWebPrintingServiceForFrame(
   }
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+  std::optional<std::string> app_id = InferAssociatedAppId(render_frame_host);
+  if (!app_id) {
+    mojo::ReportBadMessage("Web Printing API is only available inside apps.");
+    return;
+  }
   // This class inherits from content::DocumentService<> -- its lifetime is
   // bound to the associated `render_frame_host`.
-  new WebPrintingServiceChromeOS(render_frame_host, std::move(receiver));
+  new WebPrintingServiceChromeOS(render_frame_host, std::move(receiver),
+                                 *app_id);
 #else
   mojo::ReportBadMessage(
       "WebPrinting API is currently supported only on ChromeOS with CUPS "

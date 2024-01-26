@@ -10,7 +10,7 @@ var KeyType = keyModule.KeyType;
 var KeyUsage = keyModule.KeyUsage;
 
 /**
- * Implementation of WebCrypto.KeyPair used in enterprise.platformKeys.
+ * Implementation of WebCrypto.CryptoKeyPair used in enterprise.platformKeys.
  * @param {ArrayBuffer} publicKeySpki The Subject Public Key Info in DER
  *   encoding.
  * @param {KeyAlgorithm} algorithm The algorithm identifier.
@@ -18,16 +18,12 @@ var KeyUsage = keyModule.KeyUsage;
  * @constructor
  */
 function KeyPairImpl(publicKeySpki, algorithm, usages) {
-  this.publicKey = new Key(KeyType.public,
-                           publicKeySpki,
-                           algorithm,
-                           intersect([KeyUsage.verify], usages),
-                           true /* extractable */);
-  this.privateKey = new Key(KeyType.private,
-                            publicKeySpki,
-                            algorithm,
-                            intersect([KeyUsage.sign], usages),
-                            false /* not extractable */);
+  this.publicKey = new Key(
+      KeyType.public, publicKeySpki, algorithm,
+      intersect([KeyUsage.verify], usages), /*extractable=*/ true);
+  this.privateKey = new Key(
+      KeyType.private, publicKeySpki, algorithm,
+      intersect([KeyUsage.sign], usages), /*extractable=*/ false);
 }
 $Object.setPrototypeOf(KeyPairImpl.prototype, null);
 

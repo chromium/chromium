@@ -28,7 +28,7 @@ std::unique_ptr<WebAppUninstallCommand>
 WebAppUninstallCommand::CreateForRemoveInstallUrl(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    absl::optional<webapps::AppId> app_id,
+    std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url,
     UninstallJob::Callback callback) {
@@ -63,7 +63,7 @@ WebAppUninstallCommand::CreateForRemoveWebApp(
 WebAppUninstallCommand::WebAppUninstallCommand(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    absl::optional<webapps::AppId> app_id,
+    std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url,
     UninstallJob::Callback callback)

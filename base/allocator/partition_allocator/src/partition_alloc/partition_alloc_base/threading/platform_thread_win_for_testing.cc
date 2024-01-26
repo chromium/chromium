@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include <windows.h>
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "build/build_config.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
-
-#include <windows.h>
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/starscan/pcscan.h"

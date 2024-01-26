@@ -193,9 +193,7 @@ class TurnSyncOnHelperBrowserTestWithParam
           std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool>> {
  public:
   TurnSyncOnHelperBrowserTestWithParam()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
 
  protected:
   bool should_remove_initial_account() const {
@@ -205,9 +203,6 @@ class TurnSyncOnHelperBrowserTestWithParam
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -215,12 +210,17 @@ class TurnSyncOnHelperBrowserTestWithParam
 IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
                        PrimaryAccountResetAfterSyncOptInFlowAborted) {
   Profile* profile = GetProfile();
-  auto accounts_info = SetAccountsCookiesAndTokens(
-      {"first@gmail.com", "second@gmail.com", "third@gmail.com"});
-  AccountInfo first_account_info = accounts_info[0];
-  AccountInfo second_account_info = accounts_info[1];
-  AccountInfo third_account_info = accounts_info[2];
-  CoreAccountId first_account_id = first_account_info.account_id;
+  CoreAccountInfo primary_account_info = signin::MakeAccountAvailable(
+      identity_manager(), identity_test_env()
+                              ->CreateAccountAvailabilityOptionsBuilder()
+                              .AsPrimary(signin::ConsentLevel::kSignin)
+                              .WithCookie()
+                              .Build("first@gmail.com"));
+  auto secondary_accounts_info =
+      SetAccountsCookiesAndTokens({"second@gmail.com", "third@gmail.com"});
+  AccountInfo second_account_info = secondary_accounts_info[0];
+  AccountInfo third_account_info = secondary_accounts_info[1];
+  CoreAccountId first_account_id = primary_account_info.account_id;
   CoreAccountId second_account_id = second_account_info.account_id;
 
   ASSERT_EQ(signin::ConsentLevel::kSignin,
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         // Second account removed, first account is still primary.
         EXPECT_THAT(
             identity_manager()->GetAccountsWithRefreshTokens(),
-            UnorderedElementsAre(first_account_info, third_account_info));
+            UnorderedElementsAre(primary_account_info, third_account_info));
         EXPECT_EQ(signin::ConsentLevel::kSignin,
                   signin::GetPrimaryAccountConsentLevel(identity_manager()));
         EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         // First account is still primary, second account was not removed.
         EXPECT_THAT(
             identity_manager()->GetAccountsWithRefreshTokens(),
-            UnorderedElementsAre(first_account_info, second_account_info,
+            UnorderedElementsAre(primary_account_info, second_account_info,
                                  third_account_info));
         EXPECT_EQ(signin::ConsentLevel::kSignin,
                   signin::GetPrimaryAccountConsentLevel(identity_manager()));
@@ -327,25 +327,20 @@ INSTANTIATE_TEST_SUITE_P(
 class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
   TurnSyncOnHelperBrowserTest()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
 };
 
 // Regression test for https://crbug.com/1404961
 IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   Profile* profile = GetProfile();
-  auto accounts_info = SetAccountsCookiesAndTokens({"account@gmail.com"});
-  AccountInfo account_info = accounts_info[0];
-  CoreAccountId account_id = account_info.account_id;
 
-  ASSERT_EQ(signin::ConsentLevel::kSignin,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  CoreAccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(), identity_test_env()
+                              ->CreateAccountAvailabilityOptionsBuilder()
+                              .AsPrimary(signin::ConsentLevel::kSignin)
+                              .WithCookie()
+                              .Build("account@gmail.com"));
+  CoreAccountId account_id = account_info.account_id;
 
   base::RunLoop run_loop;
   Delegate::Choices choices = {.sync_optin_choice = std::nullopt};
@@ -451,15 +446,17 @@ IN_PROC_BROWSER_TEST_F(
     PrimaryAccountResetAfterSyncOptInFlowAbortedForSecondaryAccount) {
   Profile* profile = GetProfile();
   // Set up the primary account.
-  AccountInfo first_account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          "first@gmail.com", signin::ConsentLevel::kSignin);
-  identity_test_env()->UpdateAccountInfoForAccount(first_account_info);
-  auto accounts_info = SetAccountsCookiesAndTokens(
-      {"first@gmail.com", "second@gmail.com", "third@gmail.com"});
-  AccountInfo second_account_info = accounts_info[1];
-  AccountInfo third_account_info = accounts_info[2];
-  CoreAccountId first_account_id = first_account_info.account_id;
+  CoreAccountInfo primary_account_info = signin::MakeAccountAvailable(
+      identity_manager(), identity_test_env()
+                              ->CreateAccountAvailabilityOptionsBuilder()
+                              .AsPrimary(signin::ConsentLevel::kSignin)
+                              .WithCookie()
+                              .Build("first@gmail.com"));
+  auto secondary_accounts_info =
+      SetAccountsCookiesAndTokens({"second@gmail.com", "third@gmail.com"});
+  AccountInfo second_account_info = secondary_accounts_info[0];
+  AccountInfo third_account_info = secondary_accounts_info[1];
+  CoreAccountId first_account_id = primary_account_info.account_id;
   CoreAccountId second_account_id = second_account_info.account_id;
 
   ASSERT_EQ(signin::ConsentLevel::kSignin,
@@ -495,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // First account is still primary, second account was not removed.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
-              UnorderedElementsAre(first_account_info, second_account_info,
+              UnorderedElementsAre(primary_account_info, second_account_info,
                                    third_account_info));
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
@@ -511,14 +508,16 @@ IN_PROC_BROWSER_TEST_F(
   Profile* profile = GetProfile();
 
   // Set up the primary account.
-  AccountInfo first_account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          "first@gmail.com", signin::ConsentLevel::kSignin);
-  identity_test_env()->UpdateAccountInfoForAccount(first_account_info);
-  CoreAccountId first_account_id = first_account_info.account_id;
-  auto accounts_info =
-      SetAccountsCookiesAndTokens({"first@gmail.com", "second@gmail.com"});
-  AccountInfo second_account_info = accounts_info[1];
+  CoreAccountInfo primary_account_info = signin::MakeAccountAvailable(
+      identity_manager(), identity_test_env()
+                              ->CreateAccountAvailabilityOptionsBuilder()
+                              .AsPrimary(signin::ConsentLevel::kSignin)
+                              .WithCookie()
+                              .Build("first@gmail.com"));
+  CoreAccountId first_account_id = primary_account_info.account_id;
+  auto secondary_accounts_info =
+      SetAccountsCookiesAndTokens({"second@gmail.com"});
+  AccountInfo second_account_info = secondary_accounts_info[0];
   CoreAccountId second_account_id = second_account_info.account_id;
 
   ASSERT_EQ(signin::ConsentLevel::kSignin,
@@ -553,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // First account is still primary, second account was removed.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
-              UnorderedElementsAre(first_account_info));
+              UnorderedElementsAre(primary_account_info));
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(

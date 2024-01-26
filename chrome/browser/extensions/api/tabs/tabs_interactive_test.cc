@@ -209,8 +209,8 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   int GetTabId(const base::Value::Dict& dict) const;
 
-  absl::optional<base::Value> RunFunction(ExtensionFunction* function,
-                                          const std::string& params);
+  std::optional<base::Value> RunFunction(ExtensionFunction* function,
+                                         const std::string& params);
 
   const Extension* extension() { return extension_.get(); }
 
@@ -292,7 +292,7 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 
-absl::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
+std::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
     ExtensionFunction* function,
     const std::string& params) {
   function->set_extension(extension_.get());

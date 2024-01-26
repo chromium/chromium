@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -58,7 +59,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 namespace ash::platform_keys {
@@ -373,14 +373,14 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   // Verify the token-specific attribute value for the key on each token.
   for (TokenId token_id : GetParam().token_ids) {
     // Get key attribute.
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>, Status>
         get_attr_waiter;
     platform_keys_service()->GetAttributeForKey(
         token_id, spki_der, kAttributeType, get_attr_waiter.GetCallback());
     ASSERT_TRUE(get_attr_waiter.Wait());
 
     EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
-    const absl::optional<std::vector<uint8_t>>& attr = get_attr_waiter.Get<0>();
+    const std::optional<std::vector<uint8_t>>& attr = get_attr_waiter.Get<0>();
     ASSERT_TRUE(attr.has_value());
     EXPECT_EQ(attr.value(), token_to_value[token_id]);
   }
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_EQ(set_attr_waiter.Get<Status>(), Status::kSuccess);
 
   // Get key attribute.
-  base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>, Status>
       get_attr_waiter;
   platform_keys_service()->GetAttributeForKey(token_id, public_key_spki_der,
                                               kAttributeType,
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(get_attr_waiter.Wait());
 
   EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
-  absl::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
+  std::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
   ASSERT_TRUE(attr.has_value());
   EXPECT_EQ(attr.value(), kAttributeValue);
 }
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> kNonExistingPublicKey = {1, 2, 3};
 
   // Get key attribute.
-  base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>, Status>
       get_attr_waiter;
   platform_keys_service()->GetAttributeForKey(token_id, kNonExistingPublicKey,
                                               kAttributeType,
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(get_attr_waiter.Wait());
 
   EXPECT_NE(get_attr_waiter.Get<Status>(), Status::kSuccess);
-  EXPECT_FALSE(get_attr_waiter.Get<absl::optional<std::vector<uint8_t>>>());
+  EXPECT_FALSE(get_attr_waiter.Get<std::optional<std::vector<uint8_t>>>());
 }
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,

@@ -4,6 +4,12 @@
 
 #include "services/on_device_model/ml/on_device_model_executor.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -11,6 +17,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -69,37 +76,43 @@ class Responder : public base::SupportsWeakPtr<Responder> {
 
   ChromeMLCancelFn* GetCancelFn() { return &cancel_; }
 
-  ChromeMLOutputFn CreateOutputFn() {
-    return CreateWeakCallbackFn(&Responder::OnResponse, this);
-  }
+  ChromeMLExecutionOutputFn CreateOutputFn() {
+    return [weak_ptr = AsWeakPtr(),
+            task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
+               const ChromeMLExecutionOutput* output) {
+      std::optional<std::string> text;
+      std::optional<std::vector<float>> ts_scores;
+      switch (output->status) {
+        case ChromeMLExecutionStatus::kInProgress:
+          CHECK(output->text);
+          text.emplace(output->text);
+          break;
+        case ChromeMLExecutionStatus::kComplete:
+          DCHECK(!output->text);
+          break;
+      }
 
-  ChromeMLCompletionFn CreateCompletionFn() {
-    return CreateWeakCallbackFn(&Responder::OnComplete, this);
+      if (output->ts_scores) {
+        ts_scores.emplace(output->ts_scores,
+                          output->ts_scores + output->num_ts_scores);
+      }
+
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&Responder::OnOutput, weak_ptr,
+                                    std::move(text), std::move(ts_scores)));
+    };
   }
 
  private:
-  void OnResponse(const std::optional<std::string>& token) {
-    if (token.has_value()) {
+  void OnOutput(std::optional<std::string> text,
+                std::optional<std::vector<float>> ts_scores) {
+    if (text) {
       num_tokens_++;
       if (first_token_time_ == base::TimeTicks()) {
         first_token_time_ = base::TimeTicks::Now();
       }
-      responder_->OnResponse(*token);
-    } else {
-      // If the model invokes OnResponse() with no token, this implies
-      // completion without retraction.
-      OnComplete(ChromeMLExecutionResult{.retracted = false});
-    }
-  }
-
-  void OnComplete(const ChromeMLExecutionResult& result) {
-    if (!responder_) {
-      return;
-    }
-
-    using ResponseStatus = on_device_model::mojom::ResponseStatus;
-    if (result.retracted) {
-      responder_->OnComplete(ResponseStatus::kRetracted);
+      responder_->OnResponse(
+          on_device_model::mojom::ResponseChunk::New(*text, ts_scores));
     } else {
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Output",
                                     num_tokens_);
@@ -111,7 +124,8 @@ class Responder : public base::SupportsWeakPtr<Responder> {
             CalculateTokensPerSecond(
                 num_tokens_ - 1, base::TimeTicks::Now() - first_token_time_));
       }
-      responder_->OnComplete(ResponseStatus::kOk);
+      responder_->OnComplete(
+          on_device_model::mojom::ResponseSummary::New(ts_scores));
     }
   }
 
@@ -216,16 +230,19 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
                    response) override {
     responder_ = std::make_unique<Responder>(std::move(response));
-    ChromeMLOutputFn output_fn = responder_->CreateOutputFn();
-    ChromeMLCompletionFn completion_fn = responder_->CreateCompletionFn();
+    ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
+    int32_t ts_interval = -1;
+    if (input->ts_interval.has_value()) {
+      ts_interval = base::saturated_cast<int32_t>(input->ts_interval.value());
+    }
     ChromeMLExecuteOptions options{
         .prompt = input->text.c_str(),
         .context_mode = GetContextMode(*input),
         .max_tokens = input->max_tokens.value_or(0),
         .token_offset = input->token_offset.value_or(0),
         .max_output_tokens = input->max_output_tokens.value_or(0),
-        .output_fn = &output_fn,
-        .completion_fn = &completion_fn,
+        .score_ts_interval = ts_interval,
+        .execution_output_fn = &output_fn,
     };
     chrome_ml_->api().ExecuteModel(model_, &options, responder_->GetCancelFn());
   }
@@ -348,6 +365,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .max_tokens = params->max_tokens,
       .temperature = static_cast<float>(kTemperature.Get()),
       .top_k = kTopK.Get(),
+      .ts_dimension = params->ts_dimension.value_or(0),
   };
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());

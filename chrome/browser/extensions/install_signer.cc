@@ -128,12 +128,12 @@ bool ValidateExpireDateFormat(const std::string& input) {
   return id_list;
 }
 
-[[nodiscard]] absl::optional<ExtensionIdSet> ExtensionIdSetFromList(
+[[nodiscard]] std::optional<ExtensionIdSet> ExtensionIdSetFromList(
     const base::Value::List& list) {
   ExtensionIdSet ids;
   for (const base::Value& value : list) {
     if (!value.is_string())
-      return absl::nullopt;
+      return std::nullopt;
     ids.insert(value.GetString());
   }
   return ids;
@@ -191,8 +191,8 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   if (!ids_list || !invalid_ids_list)
     return nullptr;
 
-  absl::optional<ExtensionIdSet> ids = ExtensionIdSetFromList(*ids_list);
-  absl::optional<ExtensionIdSet> invalid_ids =
+  std::optional<ExtensionIdSet> ids = ExtensionIdSetFromList(*ids_list);
+  std::optional<ExtensionIdSet> invalid_ids =
       ExtensionIdSetFromList(*invalid_ids_list);
   if (!ids || !invalid_ids)
     return nullptr;
@@ -375,7 +375,7 @@ void InstallSigner::ParseFetchResponse(
   // where |invalid_ids| is a list of ids from the original request that
   // could not be verified to be in the webstore.
 
-  absl::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
+  std::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
   bool json_success = parsed && parsed->is_dict();
   if (!json_success) {
     ReportErrorViaCallback();

@@ -29,7 +29,6 @@ struct OverflowMenuActionToggleStyle: ToggleStyle {
 }
 
 /// A view that displays an action in the overflow menu.
-@available(iOS 15, *)
 struct OverflowMenuActionRow: View {
   /// Remove some of the default padding on the row, as it is too large by
   /// default.

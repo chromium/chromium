@@ -42,18 +42,17 @@ ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(ukm::SourceId source_id) {
 
 // Runs the given query and returns the result as float value. See
 // RunReadonlyQueries() for more info.
-absl::optional<float> RunQueryAndGetResult(
-    UkmDatabase* database,
-    UkmDatabase::CustomSqlQuery&& query) {
-  absl::optional<float> output;
+std::optional<float> RunQueryAndGetResult(UkmDatabase* database,
+                                          UkmDatabase::CustomSqlQuery&& query) {
+  std::optional<float> output;
   UkmDatabase::QueryList queries;
   queries.emplace(0, std::move(query));
   base::RunLoop wait_for_query;
   database->RunReadonlyQueries(
       std::move(queries),
       base::BindOnce(
-          [](base::OnceClosure quit, absl::optional<float>* output,
-             bool success, processing::IndexedTensors tensor) {
+          [](base::OnceClosure quit, std::optional<float>* output, bool success,
+             processing::IndexedTensors tensor) {
             if (success) {
               EXPECT_EQ(1u, tensor.size());
               EXPECT_EQ(1u, tensor.at(0).size());
@@ -177,7 +176,7 @@ void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url,
 bool UkmDataManagerTestUtils::IsUrlInDatabase(const GURL& url) {
   UkmDatabase::CustomSqlQuery query("SELECT 1 FROM urls WHERE url=?",
                                     {processing::ProcessedValue(url.spec())});
-  absl::optional<float> result = RunQueryAndGetResult(
+  std::optional<float> result = RunQueryAndGetResult(
       ukm_database_client_->GetUkmDataManager()->GetUkmDatabase(),
       std::move(query));
   return !!result;

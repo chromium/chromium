@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/timing/not_restored_reason_details.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -17,17 +18,15 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit NotRestoredReasons(String prevented,
-                              String src,
-                              String id,
-                              String name,
-                              String url,
-                              Vector<String>* reasons,
-                              HeapVector<Member<NotRestoredReasons>>* children);
+  explicit NotRestoredReasons(
+      String src,
+      String id,
+      String name,
+      String url,
+      HeapVector<Member<NotRestoredReasonDetails>>* reasons,
+      HeapVector<Member<NotRestoredReasons>>* children);
 
   NotRestoredReasons(const NotRestoredReasons&);
-
-  const String preventedBackForwardCache() const { return prevented_; }
 
   const String src() const { return src_; }
 
@@ -37,7 +36,8 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
 
   const String url() const { return url_; }
 
-  const absl::optional<Vector<String>> reasons() const;
+  const absl::optional<HeapVector<Member<NotRestoredReasonDetails>>> reasons()
+      const;
 
   const absl::optional<HeapVector<Member<NotRestoredReasons>>> children() const;
 
@@ -46,12 +46,11 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  String prevented_;
   String src_;
   String id_;
   String name_;
   String url_;
-  Vector<String> reasons_;
+  HeapVector<Member<NotRestoredReasonDetails>> reasons_;
   HeapVector<Member<NotRestoredReasons>> children_;
 };
 

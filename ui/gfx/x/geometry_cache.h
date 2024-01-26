@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
 
   void OnParentChanged(Window parent, const gfx::Point& position);
   void OnGeometryChanged(const gfx::Rect& geometry);
+  void OnPositionChanged(const gfx::Point& origin);
 
   bool Ready() const;
 

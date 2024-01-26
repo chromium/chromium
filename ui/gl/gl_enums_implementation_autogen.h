@@ -1005,10 +1005,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_RGB_YCRCB_420_CHROMIUM",
     },
     {
-        0x78FB,
-        "GL_RGB_YCBCR_422_CHROMIUM",
-    },
-    {
         0x78FC,
         "GL_RGB_YCBCR_420V_CHROMIUM",
     },
@@ -4886,7 +4882,7 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     },
     {
         0x90EA,
-        "GL_DEPTH_STENCIL_TEXTURE_MODE",
+        "GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE",
     },
     {
         0x90EB,

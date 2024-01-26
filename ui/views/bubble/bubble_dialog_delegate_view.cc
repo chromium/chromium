@@ -459,7 +459,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
       DialogContentType::kText, DialogContentType::kText));
   set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
   set_footnote_margins(
-      layout_provider->GetInsetsMetric(INSETS_DIALOG_SUBSECTION));
+      layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE));
 
   RegisterWidgetInitializedCallback(base::BindOnce(
       [](BubbleDialogDelegate* bubble_delegate) {

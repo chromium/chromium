@@ -5,7 +5,8 @@
 /**
  * @fileoverview Manages logging state, enable/disable, etc.
  */
-import {AsyncUtil} from '../../../common/async_util.js';
+import {AsyncUtil} from '/common/async_util.js';
+
 import {TreeDumper} from '../../common/tree_dumper.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 

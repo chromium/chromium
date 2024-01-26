@@ -628,7 +628,7 @@
     Language
   </message>
   <message name="IDS_KEYBOARD_DROPDOWN_TITLE" desc="Title of keyboard selection dropdown menu" meaning="Small title near keyboard dropdown menu suggesting that this is a keyboard layout selector.">
-    Keyboard
+    Input method
   </message>
   <message name="IDS_COUNTRY_DROPDOWN_TITLE" desc="Title of country selection dropdown menu" meaning="Small title near country dropdown menu suggesting that this is a country selector.">
     Country
@@ -643,7 +643,7 @@
     Select language and keyboard button. Currently selected language is <ph name="LANGUAGE">$1<ex>English (United States)</ex></ph>.
   </message>
   <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select ChromeOS UI language and default keyboard layout during initial device setup.">
-    Choose your language &amp; keyboard
+    Language and input method
   </message>
   <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
     Language files are shared among users to save disk space.
@@ -1642,9 +1642,6 @@
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_INCORRECT_OLD_PASSWORD" desc="Error that is shown when incorrect old password was supplied for user cryptohome migration.">
     Incorrect password
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_PROCEED_ANYWAY_BUTTON" desc="Button to proceed without providing old password on the password changed dialog.">
-    Proceed anyway
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_TITLE" desc="Title for the password changed dialog box">
     To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password.
@@ -3790,6 +3787,17 @@
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>
   </message>
 
+  <!-- Device health display strings-->
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_TITLE" desc="Title of the screen notifying user about install attributes error.">
+    Something went wrong with setting up the device
+  </message>
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESTART" desc="Suggestion to restart the device in case of the install attributes error.">
+    The device encountered an error. Please restart your device and try again.
+  </message>
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESET" desc="Suggestion to reset the device in case of the install attributes error.">
+    The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.
+  </message>
+
   <!-- Set time/date UI display strings -->
   <message name="IDS_SET_TIME_TITLE" desc="Title of the set time/date UI.">
     Check your system time
@@ -4596,7 +4604,7 @@
     Can't load Google Play Terms of Service
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_MESSAGE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
-    Make sure your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is connected to the internet and try again. You can also visit play.google.com/about/play-terms on another device.
+    Make sure your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is connected to the internet and try again. You can also visit play.google/play-terms on another device.
   </message>
 
   <!-- Guest ToS Screen -->
@@ -4805,12 +4813,6 @@
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE" desc="Message of the print job notification for a single page.">
     1 page to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>
-  </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_CANCEL_BUTTON" desc="Text on the button for the user to cancel the current print job.">
-    Cancel printing
-  </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_GET_HELP_BUTTON" desc="Text on the button for the user to get help about the current print job.">
-    Get help
   </message>
 
   <!-- USB Printer Installation Notification -->
@@ -5563,6 +5565,9 @@
   </message>
 
   <!-- Strings for EcheApp -->
+  <message name="IDS_ECHE_APP_NAME" desc="Public facing name for the Eche App.">
+    App Streaming
+  </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
     Settings
   </message>
@@ -7058,6 +7063,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR" desc="Label for the button that uses the offline editor fallback to open the office file.">
     Open in offline editor
   </message>
+
   <message name="IDS_OFFICE_FALLBACK_TITLE_OFFLINE" desc="Title for a dialog that appears when an office file is unable to be opened due to the system being offline.">
     Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when offline
   </message>
@@ -7065,6 +7071,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> isn’t available offline.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is offline.">
+    Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_TITLE_METERED" desc="Title for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> while on a metered connection
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_REASON_METERED" desc="Explanation for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+    Can't upload files while on a metered connection.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is on a metered network (network where bandwidth usage incurs cost to the user).">
     Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">

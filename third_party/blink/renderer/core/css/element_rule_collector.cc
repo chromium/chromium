@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
@@ -1084,6 +1085,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
              AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
          .valid_property_filter =
              rule_data->GetValidPropertyFilter(matching_ua_rules_),
+         .signal = rule_data->Selector().GetSignal(),
          .layer_order = matched_rule.LayerOrder(),
          .is_inline_style = is_vtt_embedded_style});
   }

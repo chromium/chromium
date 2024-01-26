@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -34,7 +35,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -58,7 +58,7 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
  protected:
   // Override the GetInstalledExtensions method to return a set of extensions
   // for tests.
-  absl::optional<extensions::ExtensionSet> GetInstalledExtensions(
+  std::optional<extensions::ExtensionSet> GetInstalledExtensions(
       Profile* profile) override {
     extensions::ExtensionSet extensions;
     extensions.Insert(extensions::ExtensionBuilder()

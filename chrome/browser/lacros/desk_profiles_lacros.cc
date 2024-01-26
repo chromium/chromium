@@ -69,6 +69,11 @@ void DeskProfilesLacros::OnProfileAvatarChanged(
   SendProfileUpsert(profile_path);
 }
 
+void DeskProfilesLacros::OnProfileHighResAvatarLoaded(
+    const base::FilePath& profile_path) {
+  SendProfileUpsert(profile_path);
+}
+
 void DeskProfilesLacros::OnProfileManagerDestroying() {
   // To avoid danging pointer errors on shutdown.
   profile_manager_ = nullptr;

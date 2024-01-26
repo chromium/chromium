@@ -67,10 +67,13 @@ class PLATFORM_EXPORT Font {
   Font();
   explicit Font(const FontDescription&);
   Font(const FontDescription&, FontSelector*);
-  ~Font();
 
-  Font(const Font&);
-  Font& operator=(const Font&);
+  Font(const Font&) = default;
+  Font(Font&&) = default;
+  Font& operator=(const Font&) = default;
+  Font& operator=(Font&&) = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(font_fallback_list_); }
 
   bool operator==(const Font& other) const;
   bool operator!=(const Font& other) const { return !(*this == other); }
@@ -248,11 +251,9 @@ class PLATFORM_EXPORT Font {
   // TODO(xiaochengh): The function not only initializes null FontFallbackList,
   // but also syncs invalid FontFallbackList. Rename it for better readability.
   FontFallbackList* EnsureFontFallbackList() const;
-  void RevalidateFontFallbackList() const;
-  void ReleaseFontFallbackListRef() const;
 
   FontDescription font_description_;
-  mutable scoped_refptr<FontFallbackList> font_fallback_list_;
+  mutable Member<FontFallbackList> font_fallback_list_;
 };
 
 inline const SimpleFontData* Font::PrimaryFont() const {

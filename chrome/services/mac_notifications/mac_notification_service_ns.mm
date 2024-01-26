@@ -211,7 +211,7 @@ void MacNotificationServiceNS::DisplayNotification(
 
 void MacNotificationServiceNS::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
-    const absl::optional<GURL>& origin,
+    const std::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   std::vector<mojom::NotificationIdentifierPtr> notifications;
   // Note: |profile| might be null if we want all notifications.
@@ -292,7 +292,7 @@ void MacNotificationServiceNS::CloseAllNotifications() {
 void MacNotificationServiceNS::OkayToTerminateService(
     OkayToTerminateServiceCallback callback) {
   GetDisplayedNotifications(
-      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      /*profile=*/nullptr, /*origin=*/std::nullopt,
       base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
                             notifications) {
         return notifications.empty();
@@ -325,7 +325,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
       GetNotificationOperationFromNotification(notification);
   int buttonIndex = GetActionButtonIndexFromNotification(notification);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -342,7 +342,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
   auto operation = NotificationOperation::kClose;
   int buttonIndex = kNotificationInvalidButtonIndex;
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -359,7 +359,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
     auto operation = NotificationOperation::kClose;
     int buttonIndex = kNotificationInvalidButtonIndex;
     auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-        std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+        std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
     _handler->OnNotificationAction(std::move(actionInfo));
   }
 }

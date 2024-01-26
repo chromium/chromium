@@ -269,7 +269,7 @@ absl::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
   }
 
   base::span<const uint8_t> cbor_bytes =
-      base::make_span(bytes_.data(), bytes_.size() - kTruncatedHashBytes);
+      base::span(bytes_).first(bytes_.size() - kTruncatedHashBytes);
   absl::optional<cbor::Value> cbor = cbor::Reader::Read(cbor_bytes);
   if (!cbor || !cbor->is_array()) {
     return absl::nullopt;
@@ -302,7 +302,7 @@ LargeBlobArrayFragment LargeBlobArrayWriter::Pop(size_t length) {
 
   LargeBlobArrayFragment fragment{
       fido_parsing_utils::Materialize(
-          base::make_span(bytes_.data() + offset_, length)),
+          base::span(bytes_).subspan(offset_, length)),
       offset_};
   offset_ += length;
   return fragment;

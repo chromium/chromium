@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
@@ -61,6 +63,8 @@ import java.util.List;
 /** Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes. */
 public class TabListCoordinator
         implements PriceMessageService.PriceWelcomeMessageProvider, DestroyObserver {
+    private static final String TAG = "TabListCoordinator";
+
     /**
      * Modes of showing the list of tabs.
      *
@@ -86,9 +90,9 @@ public class TabListCoordinator
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
     private final @TabListMode int mMode;
-    private final Rect mThumbnailLocationOfCurrentTab = new Rect();
     private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
     private final @UiType int mItemType;
     private final ViewGroup mRootView;
@@ -105,6 +109,9 @@ public class TabListCoordinator
     private int mEmptyStateHeadingResId;
     private int mEmptyStateSubheadingResId;
     private boolean mIsEmptyViewInitialized;
+
+    private @Nullable Runnable mAwaitingLayoutRunnable;
+    private int mAwaitingTabId = Tab.INVALID_TAB_ID;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -211,6 +218,7 @@ public class TabListCoordinator
         mItemType = itemType;
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mRootView = rootView;
@@ -378,7 +386,13 @@ public class TabListCoordinator
 
             if (mMode == TabListMode.GRID) {
                 GridLayoutManager gridLayoutManager =
-                        new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_COMPACT);
+                        new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_COMPACT) {
+                            @Override
+                            public void onLayoutCompleted(RecyclerView.State state) {
+                                super.onLayoutCompleted(state);
+                                checkAwaitingLayout();
+                            }
+                        };
                 mRecyclerView.setLayoutManager(gridLayoutManager);
                 mMediator.registerOrientationListener(gridLayoutManager);
                 mMediator.updateSpanCount(
@@ -392,13 +406,20 @@ public class TabListCoordinator
                 updateGridCardLayout(frame.width());
             } else if (mMode == TabListMode.STRIP
                     || mMode == TabListMode.LIST) {
-                mRecyclerView.setLayoutManager(
+                LinearLayoutManager layoutManager =
                         new LinearLayoutManager(
                                 context,
                                 mMode == TabListMode.LIST
                                         ? LinearLayoutManager.VERTICAL
                                         : LinearLayoutManager.HORIZONTAL,
-                                false));
+                                false) {
+                            @Override
+                            public void onLayoutCompleted(RecyclerView.State state) {
+                                super.onLayoutCompleted(state);
+                                checkAwaitingLayout();
+                            }
+                        };
+                mRecyclerView.setLayoutManager(layoutManager);
             }
             mMediator.setRecyclerViewItemAnimationToggle(mRecyclerView::setDisableItemAnimations);
         }
@@ -436,13 +457,52 @@ public class TabListCoordinator
     @NonNull
     Rect getThumbnailLocationOfCurrentTab() {
         // TODO(crbug.com/964406): calculate the location before the real one is ready.
-        return mThumbnailLocationOfCurrentTab;
+        Rect rect =
+                mRecyclerView.getRectOfCurrentThumbnail(
+                        mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
+        if (rect == null) return new Rect();
+        rect.offset(0, getTabListTopOffset());
+        return rect;
+    }
+
+    /**
+     * @param tabId The tab ID to get a rect for.
+     * @return a {@link Rect} for the tab's thumbnail (may be an empty rect if the tab is not
+     *     found).
+     */
+    @NonNull
+    Rect getTabThumbnailRect(int tabId) {
+        int index = getIndexForTabId(tabId);
+        if (index == TabModel.INVALID_TAB_INDEX) return new Rect();
+
+        return mRecyclerView.getRectOfTabThumbnail(
+                index, mModel.get(index).model.get(TabProperties.TAB_ID));
     }
 
     @NonNull
     Size getThumbnailSize() {
         Size size = mMediator.getDefaultGridCardSize();
         return TabUtils.deriveThumbnailSize(size, mContext);
+    }
+
+    void waitForLayoutWithTab(int tabId, Runnable r) {
+        // Very fast navigations to/from the tab list may not have time for a layout to reach a
+        // completed state. Since this is primarily used for cancellable or skippable animations
+        // where the runnable will not be serviced downstream, dropping the runnable altogether is
+        // safe.
+        if (mAwaitingLayoutRunnable != null) {
+            Log.d(TAG, "Dropping AwaitingLayoutRunnable for " + mAwaitingTabId);
+            mAwaitingLayoutRunnable = null;
+            mAwaitingTabId = Tab.INVALID_TAB_ID;
+        }
+        int index = getIndexForTabId(tabId);
+        if (index == TabModel.INVALID_TAB_INDEX) {
+            r.run();
+            return;
+        }
+        mAwaitingLayoutRunnable = r;
+        mAwaitingTabId = mModel.get(index).model.get(TabProperties.TAB_ID);
+        runAnimationOnNextLayout(this::checkAwaitingLayout);
     }
 
     @NonNull
@@ -548,20 +608,6 @@ public class TabListCoordinator
         }
     }
 
-    /**
-     * Update the location of the selected thumbnail.
-     * @return Whether a valid {@link Rect} is obtained.
-     */
-    boolean updateThumbnailLocation() {
-        Rect rect =
-                mRecyclerView.getRectOfCurrentThumbnail(
-                        mMediator.indexOfTab(mMediator.selectedTabId()), mMediator.selectedTabId());
-        if (rect == null) return false;
-        rect.offset(0, getTabListTopOffset());
-        mThumbnailLocationOfCurrentTab.set(rect);
-        return true;
-    }
-
     private void updateGridCardLayout(int viewWidth) {
         // Determine and set span count
         final GridLayoutManager layoutManager =
@@ -649,10 +695,6 @@ public class TabListCoordinator
         return resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
     }
 
-    int indexOfTab(int tabId) {
-        return mMediator.indexOfTab(tabId);
-    }
-
     void softCleanup() {
         mMediator.softCleanup();
     }
@@ -684,6 +726,12 @@ public class TabListCoordinator
     void prepareTabSwitcherView() {
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherView();
+        mMediator.registerOnScrolledListener(mRecyclerView);
+    }
+
+    void prepareTabSwitcherPaneView() {
+        registerLayoutChangeListener();
+        mRecyclerView.prepareTabSwitcherPaneView();
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
@@ -816,5 +864,42 @@ public class TabListCoordinator
 
     int getTabListModelSize() {
         return mModel.size();
+    }
+
+    /**
+     * @see TabListMediator#specialItemExistsInModel(int)
+     */
+    boolean specialItemExists(@MessageService.MessageType int itemIdentifier) {
+        return mMediator.specialItemExistsInModel(itemIdentifier);
+    }
+
+    private void checkAwaitingLayout() {
+        if (mAwaitingLayoutRunnable != null) {
+            SimpleRecyclerViewAdapter.ViewHolder holder =
+                    (SimpleRecyclerViewAdapter.ViewHolder)
+                            mRecyclerView.findViewHolderForAdapterPosition(
+                                    mModel.indexFromId(mAwaitingTabId));
+            if (holder == null) return;
+            assert holder.model.get(TabProperties.TAB_ID) == mAwaitingTabId;
+            Runnable r = mAwaitingLayoutRunnable;
+            mAwaitingTabId = Tab.INVALID_TAB_ID;
+            mAwaitingLayoutRunnable = null;
+            r.run();
+        }
+    }
+
+    private int getIndexForTabId(int tabId) {
+        int index = mModel.indexFromId(tabId);
+        if (index != TabModel.INVALID_TAB_INDEX) return index;
+
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        Tab tab = TabModelUtils.getTabById(tabModel, tabId);
+        if (tab == null) return TabModel.INVALID_TAB_INDEX;
+
+        return mMediator.getIndexForTabWithRelatedTabs(tab);
+    }
+
+    void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        mMediator.showQuickDeleteAnimation(onAnimationEnd, mRecyclerView);
     }
 }

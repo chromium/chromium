@@ -62,3 +62,7 @@ EmbeddedPermissionPromptShowSystemPromptView::GetButtonsConfiguration() const {
   // This view has no buttons.
   return std::vector<ButtonConfiguration>();
 }
+
+bool EmbeddedPermissionPromptShowSystemPromptView::ShowLoadingIcon() const {
+  return true;
+}

@@ -140,10 +140,14 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   last_size_ = buffer_size;
 
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+
+  // These SharedImages will be written to via GLES2 to render the scene,
+  // followed by having their underlying GMBHandle sent off to be displayed in
+  // an overlay.
   client_shared_image_ = sii_->CreateSharedImage(
       format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+      gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
       "VRGraphicsDelegate", gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
   if (!client_shared_image_) {

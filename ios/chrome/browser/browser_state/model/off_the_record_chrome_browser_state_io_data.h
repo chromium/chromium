@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/net/model/net_types.h"
@@ -68,9 +69,9 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
     // ProfileIOData instance is deleted.
     mutable scoped_refptr<IOSChromeURLRequestContextGetter>
         main_request_context_getter_;
-    OffTheRecordChromeBrowserStateIOData* const io_data_;
+    const raw_ptr<OffTheRecordChromeBrowserStateIOData> io_data_;
 
-    ChromeBrowserState* const browser_state_;
+    const raw_ptr<ChromeBrowserState> browser_state_;
 
     mutable bool initialized_;
   };

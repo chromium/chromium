@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/overlays/model/public/common/placeholder_request_config.h"
 
+#import "base/memory/raw_ptr.h"
+
 namespace infobars {
 class InfoBar;
 }
@@ -25,7 +27,7 @@ class InfobarBannerPlaceholderRequestConfig
   // OverlayUserData:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
-  infobars::InfoBar* infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_INFOBAR_BANNER_PLACEHOLDER_REQUEST_CONFIG_H_

@@ -80,7 +80,7 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   bool needs_network_screen_skip_check_ = false;
 
   std::string gaia_frame_parent_ = "signin-frame";
-  std::string authenticator_id_ = "$('gaia-signin').authenticator_";
+  std::string authenticator_id_ = "$('gaia-signin').authenticator";
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
   // Waits for login_screen_load_observer_ and resets it afterwards.

@@ -73,7 +73,8 @@ class NtpCustomBackgroundService : public KeyedService,
   virtual void SelectLocalBackgroundImage(const base::FilePath& path);
 
   // Set bool pref for local background and set id.
-  virtual void SetBackgroundToLocalResourceWithId(const base::Token& id);
+  virtual void SetBackgroundToLocalResourceWithId(const base::Token& id,
+                                                  bool is_inspiration_image);
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
@@ -85,7 +86,7 @@ class NtpCustomBackgroundService : public KeyedService,
   void ConfirmBackgroundChanges();
 
   // Virtual for testing.
-  virtual absl::optional<CustomBackground> GetCustomBackground();
+  virtual std::optional<CustomBackground> GetCustomBackground();
 
   // Adds/Removes NtpCustomBackgroundServiceObserver observers.
   virtual void AddObserver(NtpCustomBackgroundServiceObserver* observer);
@@ -162,7 +163,7 @@ class NtpCustomBackgroundService : public KeyedService,
 
   // Used to track information for previous background when a background is
   // being previewed.
-  absl::optional<base::Value> previous_background_info_;
+  std::optional<base::Value> previous_background_info_;
   bool previous_local_background_ = false;
 
   base::WeakPtrFactory<NtpCustomBackgroundService> weak_ptr_factory_{this};

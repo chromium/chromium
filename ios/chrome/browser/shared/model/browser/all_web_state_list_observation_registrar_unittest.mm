@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -64,9 +65,9 @@ class AllWebStateListObservationRegistrarTest : public PlatformTest {
   // Unique pointer to an observer moved into the registrar under test.
   std::unique_ptr<TestRegisteredWebStateListObserver> owned_observer_;
   // Weak pointer to the the moved observer
-  TestRegisteredWebStateListObserver* observer_;
+  raw_ptr<TestRegisteredWebStateListObserver> observer_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
 };
 
 // Test

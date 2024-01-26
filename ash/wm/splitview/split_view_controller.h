@@ -289,6 +289,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   int CalculateDividerPosition(SnapPosition snap_position,
                                float snap_ratio) const;
 
+  // Returns true if we should consider the width of the split view divider.
+  bool ShouldConsiderDivider() const;
+
   // Returns true during the divider snap animation.
   bool IsDividerAnimating() const;
 
@@ -458,9 +461,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
-  // Ends overview if the divider position is outside the fixed positions.
-  void MaybeEndOverviewOnWindowResize(aura::Window* window);
-
   // Returns the closest fixed location to `divider_position`.
   int GetClosestFixedDividerPosition(int divider_position);
 
@@ -629,16 +629,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Backdrop layers that may be visible below windows when resizing.
   std::unique_ptr<ui::Layer> left_resize_backdrop_layer_;
   std::unique_ptr<ui::Layer> right_resize_backdrop_layer_;
-
-  // The distance between the origin of the `split_view_divider_` and the origin
-  // of the current display's work area in screen coordinates.
-  //     |<---     divider_position_    --->|
-  //     ---------------------------------------------------------------
-  //     |                                  | |                        |
-  //     |        primary_window_           | |   secondary_window_    |
-  //     |                                  | |                        |
-  //     ---------------------------------------------------------------
-  int divider_position_ = -1;
 
   // The closest position ratio of divider among kFixedPositionRatios,
   // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current

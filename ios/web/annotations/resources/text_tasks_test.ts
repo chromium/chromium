@@ -30,9 +30,9 @@ class TestTextTasks extends TestSuite {
     }, 300);
     // Regardless of the number of tasks, only one timer should run.
     expectEq(timer.timers.size, 1, 'number of timers :');
-    timer.moveAhead(10, 20);  // -> 200
+    timer.moveAhead(/* ms= */ 10, /* times= */ 20);  // -> 200ms total
     expectEq(runCount, 2, 'timer run count :');
-    timer.moveAhead(10, 15);  // -> 350
+    timer.moveAhead(/* ms= */ 10, /* times= */ 15);  // -> 350ms total
     expectEq(runCount, 3, 'timer run count :');
     // No task, no timer.
     expectEq(timer.timers.size, 0, 'number of timers :');
@@ -56,11 +56,11 @@ class TestTextTasks extends TestSuite {
     }, 110);
     // Regardless of the number of tasks, only one timer should run.
     expectEq(timer.timers.size, 1, 'number of timers :');
-    timer.moveAhead(10, 12);  // -> 120
+    timer.moveAhead(/* ms= */ 10, /* times= */ 12);  // -> 120ms total
     expectEq(runCount, 1, 'timer run count :');
     const event = new Event('scroll');
     window.dispatchEvent(event);
-    timer.moveAhead(10, 13);  // -> 250
+    timer.moveAhead(/* ms= */ 10, /* times= */ 13);  // -> 250ms total
     expectEq(runCount, 2, 'timer run count :');
     // No task, no timer.
     expectEq(timer.timers.size, 0, 'number of timers :');
@@ -80,22 +80,22 @@ class TestTextTasks extends TestSuite {
       expectEq(timer.now(), 50, 'time at task 1:');
       runCount++;
     }, 50);
-    timer.moveAhead(10, 10);  // -> 100
+    timer.moveAhead(/* ms= */ 10, /* times= */ 10);  // -> 100ms total
     expectEq(runCount, 1, 'timer run count :');
     expectEq(timer.timers.size, 0, 'number of timers :');
 
     // Now start prechecks for activity with nothing scheduled.
     tracker.startActivityListeners();
-    timer.moveAhead(10, 2);  // -> 120
+    timer.moveAhead(/* ms= */ 10, /* times= */ 2);  // -> 120ms total
     window.dispatchEvent(event);
-    timer.moveAhead(10, 3);  // -> 150
+    timer.moveAhead(/* ms= */ 10, /* times= */ 3);  // -> 150ms total
     // Schedule task for 200ms (150 + 50).
     tracker.schedule(() => {
       // But considering the activity at 120ms, this should run at 220ms.
       expectEq(timer.now(), 220, 'time at task 2:');
       runCount++;
     }, 50);
-    timer.moveAhead(10, 10);  // -> 250
+    timer.moveAhead(/* ms= */ 10, /* times= */ 10);  // -> 250ms total
     expectEq(runCount, 2, 'timer run count :');
     // No task, no timer.
     expectEq(timer.timers.size, 0, 'number of timers :');
@@ -107,7 +107,7 @@ class TestTextTasks extends TestSuite {
       expectEq(timer.now(), 300, 'time at task 3:');
       runCount++;
     }, 50);
-    timer.moveAhead(10, 7);  // -> 320
+    timer.moveAhead(/* ms= */ 10, /* times= */ 7);  // -> 320ms total
     expectEq(runCount, 3, 'timer run count :');
     // No task, no timer.
     expectEq(timer.timers.size, 0, 'number of timers :');
@@ -120,9 +120,9 @@ class TestTextTasks extends TestSuite {
     tracker.schedule(() => {
       fail('task should not run');
     }, 50);
-    timer.moveAhead(10, 4);  // -> 40
+    timer.moveAhead(/* ms= */ 10, /* times= */ 4);  // -> 40ms total
     tracker.shutdown();
-    timer.moveAhead(10, 6);  // -> 100
+    timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 100ms total
     expectEq(timer.timers.size, 0, 'number of timers :');
   }
 }

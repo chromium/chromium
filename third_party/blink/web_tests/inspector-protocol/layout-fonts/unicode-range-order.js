@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var page = await testRunner.createPage();
   await page.loadHTML(`
     <style>

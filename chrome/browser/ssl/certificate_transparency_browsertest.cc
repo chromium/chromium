@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/browser_process.h"
@@ -31,7 +33,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -64,7 +65,7 @@ class CertificateTransparencyBrowserTest : public CertVerifierBrowserTest {
 
   ~CertificateTransparencyBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 
   void SetUpOnMainThread() override {

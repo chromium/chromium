@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -325,7 +326,8 @@ TEST_F(MemorySaverChipViewWithPerformanceSidePanelTest, OpensSidePanel) {
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionIconView()->GetVisible());
 
-  ASSERT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+  ASSERT_FALSE(SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+                   ->IsSidePanelShowing());
 
   PageActionIconView* memory_saver_chip = GetPageActionIconView();
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -333,8 +335,6 @@ TEST_F(MemorySaverChipViewWithPerformanceSidePanelTest, OpensSidePanel) {
   views::test::ButtonTestApi test_api(memory_saver_chip);
   test_api.NotifyClick(e);
 
-  ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-  ASSERT_EQ(
-      SidePanelUI::GetSidePanelUIForBrowser(browser())->GetCurrentEntryId(),
-      SidePanelEntry::Id::kPerformance);
+  ASSERT_TRUE(SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+                  ->IsSidePanelShowing());
 }

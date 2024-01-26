@@ -590,8 +590,12 @@ class HistoryBackendTest : public HistoryBackendTestBase {
         GURL("https://google.com/" + base::NumberToString(relative_seconds)),
         GetRelativeTime(relative_seconds), /*referring_visit=*/0,
         /*external_referrer_url=*/GURL(),
-        ui::PageTransition::PAGE_TRANSITION_FIRST, false, SOURCE_BROWSED, false,
-        false, true);
+        // Must set this so that the visit is considered 'visible'.
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_CHAIN_START |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/false, SOURCE_BROWSED, /*should_increment_typed_count=*/true,
+        /*opener_visit=*/0, /*consider_for_ntp_most_visited=*/true);
     backend_->AddContextAnnotationsForVisit(ids.second, {});
   }
 
@@ -3913,21 +3917,23 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*title=*/absl::nullopt, /*top_level_url*/ absl::nullopt,
       /*opener=*/absl::nullopt,
-      /*bookmark_id=*/absl::nullopt, context_annotations);
+      /*bookmark_id=*/absl::nullopt, /*app_id=*/absl::nullopt,
+      context_annotations);
   backend_->AddPage(request);
 
   // Read the visit back from the DB and make sure the annotations are there.
   history::QueryOptions query_options;
   query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   std::vector<AnnotatedVisit> annotated_visits = backend_->GetAnnotatedVisits(
-      query_options, /*compute_redirect_chain_start_properties=*/false);
+      query_options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), 1u);
 
   EXPECT_EQ(context_annotations,
             annotated_visits[0].context_annotations.on_visit);
 }
 
-TEST_F(HistoryBackendTest, AnnotatedVisits) {
+TEST_F(HistoryBackendTest, GetAnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   const auto add_url_and_visit = [&](std::string url) {
     // Each visit should have a unique `visit_time` to avoid deduping visits to
@@ -3969,7 +3975,8 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(
       backend_
           ->GetAnnotatedVisits(query_options,
-                               /*compute_redirect_chain_start_properties=*/true)
+                               /*compute_redirect_chain_start_properties=*/true,
+                               /*get_unclustered_visits_only=*/false)
           .size(),
       3u);
 
@@ -3979,7 +3986,8 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(
       backend_
           ->GetAnnotatedVisits(query_options,
-                               /*compute_redirect_chain_start_properties=*/true)
+                               /*compute_redirect_chain_start_properties=*/true,
+                               /*get_unclustered_visits_only=*/false)
           .size(),
       3u);
 
@@ -3990,7 +3998,8 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(
       backend_
           ->GetAnnotatedVisits(query_options,
-                               /*compute_redirect_chain_start_properties=*/true)
+                               /*compute_redirect_chain_start_properties=*/true,
+                               /*get_unclustered_visits_only=*/false)
           .size(),
       4u);
 
@@ -4002,14 +4011,16 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(
       backend_
           ->GetAnnotatedVisits(query_options,
-                               /*compute_redirect_chain_start_properties=*/true)
+                               /*compute_redirect_chain_start_properties=*/true,
+                               /*get_unclustered_visits_only=*/false)
           .size(),
       4u);
 
   // Verify only the correct annotated visits are retrieved ordered recent
   // visits first.
   auto annotated_visits = backend_->GetAnnotatedVisits(
-      query_options, /*compute_redirect_chain_start_properties=*/true);
+      query_options, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), 4u);
   EXPECT_EQ(annotated_visits[0].url_row.id(), 3);
   EXPECT_EQ(annotated_visits[0].url_row.url(), "http://3.com/");
@@ -4042,13 +4053,44 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   // Annotated visits should be unfetchable if their associated URL or visit is
   // removed.
   annotated_visits = backend_->GetAnnotatedVisits(
-      query_options, /*compute_redirect_chain_start_properties=*/true);
+      query_options, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), 1u);
   EXPECT_EQ(annotated_visits[0].url_row.id(), 1);
   EXPECT_EQ(annotated_visits[0].url_row.url(), "http://1.com/");
   EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 1);
   EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
+}
+
+TEST_F(HistoryBackendTest, GetAnnotatedVisits_Unclustered) {
+  // Add 1 cluster with multiple visits.
+  AddAnnotatedVisit(50);
+  AddAnnotatedVisit(20);
+  AddAnnotatedVisit(60);
+  backend_->ReplaceClusters({}, CreateClusters({{1, 2, 3}}));
+
+  // Add another three visits, but only cluster the last one.
+  AddAnnotatedVisit(10);
+  AddAnnotatedVisit(70);
+  AddAnnotatedVisit(80);
+  backend_->ReplaceClusters({}, CreateClusters({{6}}));
+
+  history::QueryOptions query_options;
+  query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  auto result = backend_->GetAnnotatedVisits(
+      query_options, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/false);
+  EXPECT_EQ(6U, result.size());
+
+  // Visits 4 and 5 should be unclustered.
+  result = backend_->GetAnnotatedVisits(
+      query_options, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/true);
+  ASSERT_EQ(2U, result.size());
+  EXPECT_EQ(5, result[0].visit_row.visit_id);
+  EXPECT_EQ(4, result[1].visit_row.visit_id);
 }
 
 TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
@@ -4087,7 +4129,8 @@ TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
   history::QueryOptions query_options;
   query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   std::vector<AnnotatedVisit> annotated_visits = backend_->GetAnnotatedVisits(
-      query_options, /*compute_redirect_chain_start_properties=*/false);
+      query_options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), 1u);
 
   VisitContextAnnotations annotations_out =
@@ -4113,7 +4156,8 @@ TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
   annotations_expected.on_visit = annotations_in.on_visit;
 
   annotated_visits = backend_->GetAnnotatedVisits(
-      query_options, /*compute_redirect_chain_start_properties=*/false);
+      query_options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), 1u);
 
   annotations_out = annotated_visits[0].context_annotations;
@@ -4577,7 +4621,8 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   queryOptions.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   queryOptions.visit_order = QueryOptions::OLDEST_FIRST;
   auto annotated_visits = backend_->GetAnnotatedVisits(
-      queryOptions, /*compute_redirect_chain_start_properties=*/true);
+      queryOptions, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits.size(), expectations.size());
   for (size_t i = 0; i < expectations.size(); ++i) {
     VisitID visit_id = i + 1;
@@ -4608,7 +4653,8 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
 
   // Now, explicitly do not set the redirect chain start.
   auto annotated_visits_no_redirect = backend_->GetAnnotatedVisits(
-      queryOptions, /*compute_redirect_chain_start_properties=*/false);
+      queryOptions, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false);
   ASSERT_EQ(annotated_visits_no_redirect.size(), expectations.size());
   for (size_t i = 0; i < expectations.size(); ++i) {
     VisitID visit_id = i + 1;

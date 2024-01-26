@@ -19,7 +19,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableCardArtServerSideStretching);
 BASE_DECLARE_FEATURE(kAutofillEnableCardBenefits);
 BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);
 BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
-BASE_DECLARE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath);
 BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 
@@ -29,7 +28,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableIbanAndroidBottomSheet);
 
 BASE_DECLARE_FEATURE(kAutofillEnableManualFallbackForVirtualCards);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest);
-BASE_DECLARE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering);
 BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop);
 BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank);
 BASE_DECLARE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages);
@@ -38,6 +36,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet);
+BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail);
 #endif
 
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauth);
@@ -48,6 +47,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableServerIban);
 BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
 BASE_DECLARE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter);
+BASE_DECLARE_FEATURE(kAutofillEnableVcn3dsAuthentication);
 BASE_DECLARE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);

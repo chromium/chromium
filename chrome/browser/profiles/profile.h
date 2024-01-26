@@ -8,6 +8,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -506,19 +506,19 @@ class Profile : public content::BrowserContext {
   void set_theme_service(ThemeService* theme_service) {
     theme_service_ = theme_service;
   }
-  const absl::optional<raw_ptr<ThemeService>>& theme_service() {
+  const std::optional<raw_ptr<ThemeService>>& theme_service() {
     return theme_service_;
   }
   void set_template_url_service(TemplateURLService* template_url_service) {
     template_url_service_ = template_url_service;
   }
-  const absl::optional<raw_ptr<TemplateURLService>>& template_url_service() {
+  const std::optional<raw_ptr<TemplateURLService>>& template_url_service() {
     return template_url_service_;
   }
   void set_instant_service(InstantService* instant_service) {
     instant_service_ = instant_service;
   }
-  const absl::optional<raw_ptr<InstantService>>& instant_service() {
+  const std::optional<raw_ptr<InstantService>>& instant_service() {
     return instant_service_;
   }
 
@@ -554,9 +554,9 @@ class Profile : public content::BrowserContext {
 
   // Experimental objects to gauge the performance of caching frequently used
   // KeyedServices in a Profile pointer.
-  absl::optional<raw_ptr<ThemeService>> theme_service_;
-  absl::optional<raw_ptr<TemplateURLService>> template_url_service_;
-  absl::optional<raw_ptr<InstantService>> instant_service_;
+  std::optional<raw_ptr<ThemeService>> theme_service_;
+  std::optional<raw_ptr<TemplateURLService>> template_url_service_;
+  std::optional<raw_ptr<InstantService>> instant_service_;
 
   base::ObserverList<ProfileObserver,
                      /*check_empty=*/true,

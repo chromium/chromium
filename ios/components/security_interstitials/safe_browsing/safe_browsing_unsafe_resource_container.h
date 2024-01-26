@@ -5,6 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_UNSAFE_RESOURCE_CONTAINER_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_UNSAFE_RESOURCE_CONTAINER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -52,7 +53,7 @@ class SafeBrowsingUnsafeResourceContainer
   WEB_STATE_USER_DATA_KEY_DECL();
 
   // The WebState whose unsafe resources are managed by this container.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // The pending UnsafeResource for the main frame navigation.
   PendingUnsafeResourceStorage main_frame_unsafe_resource_;
 };

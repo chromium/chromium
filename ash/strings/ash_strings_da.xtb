@@ -228,7 +228,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1882814835921407042">Intet mobilnetværk</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik på Bekræft for at anvende ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Installeret for nylig</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1918022425394817322">Kameraet er fastgjort til hjørnet øverst til højre</translation>
@@ -267,7 +266,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2064048859448024834">Forhåndsvisning af kamera er slået til</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
 <translation id="2075520525463668108">Slå <ph name="CAPTURE_MEDIUM" /> til/fra. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Stryg mod højre med fire fingre for at skifte til næste skrivebord</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Åbn emojivælger</translation>
@@ -283,7 +281,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2149229036084364364">Gå til forrige nummer</translation>
 <translation id="2152895518047545149">Det ser ikke ud til, at der mangler noget. Sådan!</translation>
 <translation id="2161132820593978283">Prøv automatisk zoom, så du centreres på skærmen under videoopkald. Aktivér funktionen i kvikmenuen.</translation>
-<translation id="2170530631236737939">Stryg nedad med tre fingre for at lukke oversigten</translation>
 <translation id="2185166372312820725">Gå til forrige fane</translation>
 <translation id="2185444992308415167">Gå gennem fane 1 til 8</translation>
 <translation id="2198625180564913276">Profilen tilføjes. Dette kan tage et par minutter.</translation>
@@ -412,10 +409,12 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2726420622004325180">Din telefon skal have mobildata for at fungere som hotspot</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilsluttet en oplader med lav kraft. Batteriopladningen er muligvis ikke pålidelig.</translation>
+<translation id="2744221223678373668">Delte</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Slet"</translation>
 <translation id="2750941250130734256">Det aktive vindue er frigjort.</translation>
 <translation id="2761723519669354964">Åbn det fremhævede element på hylden</translation>
+<translation id="2762000892062317888">lige nu</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+søgetast+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3580650856351781466">Downloader talefiler</translation>
 <translation id="3585296979871889131">Se din telefons seneste billeder, medier, notifikationer og apps</translation>
+<translation id="3590441166907930941">Sideknap</translation>
 <translation id="3593039967545720377">Tryk på <ph name="SHORTCUT_KEY_NAME" />+V for at gå til din udklipsholders historik. Kopiér et element for at komme i gang.</translation>
 <translation id="3593646411856133110">Stryg opad, og hold fingeren nede for at se åbne apps</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
@@ -732,6 +732,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3986082989454912832">Svar</translation>
 <translation id="3990002060657467458">Du finder ofte anvendte styringselementer såsom Wi-Fi, Bluetooth og lydstyrke i kvikmenuen. Du kan også tage screenshots her.</translation>
 <translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="40062176907008878">Håndskrift</translation>
 <translation id="4011112806063830608">Forstyr ikke er aktiveret.</translation>
 <translation id="4017989525502048489">Lasermarkør</translation>
@@ -1035,6 +1036,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5163434717504750796">Batteriets tilstand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Antal cyklusser: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Gem skrivebord som en skabelon</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
+<translation id="5168753792967365150">Rediger i Google Huskeliste</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5176318573511391780">Optag dele af skærmen</translation>
 <translation id="5187627942836026988">Vis oplysninger om hotspot. Hotspot er blokeret af din administrator.</translation>
@@ -1304,6 +1306,8 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="6168622430237609329">Dine installerede apps</translation>
 <translation id="6173151025443907148">Det er ikke muligt at logge ind med en yderligere bruger, hvis Lacros er aktiveret. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan deaktivere Lacros og prøve igen.</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
+<translation id="6180193585172850042">Knappen Tilbage</translation>
+<translation id="6180651297859206670">Knappen Frem</translation>
 <translation id="6182592640011875895">Åbn skrivebord</translation>
 <translation id="6185696379715117369">Gå en side op</translation>
 <translation id="619335566042889110">Oplad helt nu</translation>
@@ -1693,7 +1697,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7850320739366109486">Vil ikke forstyrres</translation>
 <translation id="7851039877802112575">Flyt fokus til pop op-vinduer og dialogbokse</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Stryg opad med tre fingre for at åbne oversigten</translation>
 <translation id="7862292329216937261">Hvis du vil bruge enheden som gæst, skal du logge ud og derefter vælge Anvend som gæst nederst på skærmen.</translation>
 <translation id="7866482334467279021">til</translation>
 <translation id="7872786842639831132">Fra</translation>
@@ -1804,7 +1807,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8262312463845990408">Håndter afspilning</translation>
 <translation id="8270450402312105425">{0,plural, =1{Skift til en tidligere version af enheden inden for en time}one{Skift til en tidligere version af enheden inden for # time}other{Skift til en tidligere version af enheden inden for # timer}}</translation>
 <translation id="8277261673056602147">Fremhæv tekst på din skærm</translation>
-<translation id="8284362522226889623">Stryg mod venstre med fire fingre for at skifte til forrige skrivebord</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Forrige menu</translation>

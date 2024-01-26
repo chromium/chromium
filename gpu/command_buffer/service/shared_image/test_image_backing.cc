@@ -218,6 +218,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                          surface_origin,
                          alpha_type,
                          usage,
+                         "TestBacking",
                          estimated_size,
                          /*is_thread_safe=*/false),
       service_id_(texture_id) {
@@ -343,7 +344,8 @@ std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   return std::make_unique<TestDawnImageRepresentation>(manager, this, tracker);
 }
 

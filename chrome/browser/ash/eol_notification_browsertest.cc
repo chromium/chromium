@@ -407,7 +407,7 @@ class ChildUserEolNotificationTest
       embedded_test_server(),
       this,
       /*should_launch_browser=*/true,
-      /*account_id=*/absl::nullopt,
+      /*account_id=*/std::nullopt,
       /*include_initial_user=*/true,
       /*use_embedded_policy_server=*/false};
 
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
   if (NotificationHasClaimButton()) {
     notification_display_service->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_index=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/std::nullopt);
     content::WebContents* active_contents =
         chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
@@ -510,12 +510,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest,
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_FALSE(notification);
 }
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
   if (NotificationHasClaimButton()) {
     notification_display_service->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_index=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/std::nullopt);
     content::WebContents* active_contents =
         chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
@@ -622,13 +622,13 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
 
   // Verify quick settings notice still shows.
   EXPECT_EQ(
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, RecentEolNotificationNotReshown) {
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_EQ(GetParam() == TestCase::kIncentivesDisabled, !!notification);
 }
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_FALSE(notification);
 }
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_FALSE(notification);
 }
@@ -912,7 +912,7 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoEolPassedNotification) {
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   ASSERT_TRUE(notification);
 
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_EQ(SuppressFirstWarningEnabled(), !notification);
 }
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
 
   base::RunLoop().RunUntilIdle();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
   EXPECT_TRUE(notification);
 }

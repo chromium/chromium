@@ -126,13 +126,13 @@ struct GlobalData {
   // reserved so that functions can still return that to indicate an error.
   jlong instance_num = 1;
 
-  absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
+  std::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
   raw_ptr<network::mojom::NetworkContext> network_context = nullptr;
 
   // event_to_record_if_stopped contains an event to record with UMA if the
   // activity is stopped. This is updated as a transaction progresses.
-  absl::optional<CableV2MobileEvent> event_to_record_if_stopped;
+  std::optional<CableV2MobileEvent> event_to_record_if_stopped;
 
   // registration is a non-owning pointer to the global |Registration|.
   raw_ptr<device::cablev2::authenticator::Registration> registration = nullptr;
@@ -144,24 +144,24 @@ struct GlobalData {
   // pending_make_credential_callback holds the callback that the
   // |Authenticator| expects to be run once a makeCredential operation has
   // completed.
-  absl::optional<
+  std::optional<
       device::cablev2::authenticator::Platform::MakeCredentialCallback>
       pending_make_credential_callback;
   // pending_get_assertion_callback holds the callback that the
   // |Authenticator| expects to be run once a getAssertion operation has
   // completed.
-  absl::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
+  std::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
       pending_get_assertion_callback;
 
   // usb_callback holds the callback that receives data from a USB connection.
-  absl::optional<
-      base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>>
+  std::optional<
+      base::RepeatingCallback<void(std::optional<base::span<const uint8_t>>)>>
       usb_callback;
 
   // server_link_tunnel_id contains the derived tunnel ID for server–link
   // transactions. May be |nullopt| if the current transaction is not
   // server-linked. This is used as an event ID when logging.
-  absl::optional<std::array<uint8_t, device::cablev2::kTunnelIdSize>>
+  std::optional<std::array<uint8_t, device::cablev2::kTunnelIdSize>>
       server_link_tunnel_id;
 };
 
@@ -321,7 +321,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
                                      static_cast<int>(status));
   }
 
-  void OnCompleted(absl::optional<Error> maybe_error) override {
+  void OnCompleted(std::optional<Error> maybe_error) override {
     LOG(ERROR) << __func__ << " "
                << (maybe_error ? static_cast<int>(*maybe_error) : -1);
     GlobalData& global_data = GetGlobalData();
@@ -400,7 +400,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
  private:
   const raw_ptr<JNIEnv> env_;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
-  absl::optional<base::ElapsedTimer> tunnel_server_connect_time_;
+  std::optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
   // is_usb_ is true if this object was created in order to respond to a client
   // connected over USB.
@@ -426,7 +426,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 
   // GetCallback returns callback which will be called repeatedly with data from
   // the USB connection, forwarded via the Java code.
-  base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>
+  base::RepeatingCallback<void(std::optional<base::span<const uint8_t>>)>
   GetCallback() {
     return base::BindRepeating(&USBTransport::OnData,
                                weak_factory_.GetWeakPtr());
@@ -444,7 +444,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
   }
 
  private:
-  void OnData(absl::optional<base::span<const uint8_t>> data) {
+  void OnData(std::optional<base::span<const uint8_t>> data) {
     if (!data) {
       callback_.Run(Disconnected::kDisconnected);
     } else {
@@ -536,7 +536,7 @@ static jlong JNI_CableAuthenticator_StartQR(
   RecordEvent(&global_data, CableV2MobileEvent::kQRRead);
 
   const std::string& qr_string = ConvertJavaStringToUTF8(qr_uri);
-  absl::optional<device::cablev2::qr::Components> decoded_qr(
+  std::optional<device::cablev2::qr::Components> decoded_qr(
       device::cablev2::qr::Parse(qr_string));
   if (!decoded_qr) {
     FIDO_LOG(ERROR) << "Failed to decode QR: " << qr_string;
@@ -560,7 +560,7 @@ static jlong JNI_CableAuthenticator_StartQR(
           global_data.network_context, *global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
           decoded_qr->peer_identity,
-          link ? global_data.registration->contact_id() : absl::nullopt);
+          link ? global_data.registration->contact_id() : std::nullopt);
 
   return ++global_data.instance_num;
 }
@@ -616,7 +616,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, dummy_root_secret,
-          dummy_authenticator_name, qr_secret, peer_identity, absl::nullopt);
+          dummy_authenticator_name, qr_secret, peer_identity, std::nullopt);
 
   return ++global_data.instance_num;
 }
@@ -769,7 +769,7 @@ static void JNI_USBHandler_OnUSBData(JNIEnv* env,
   }
 
   if (!usb_data) {
-    global_data.usb_callback->Run(absl::nullopt);
+    global_data.usb_callback->Run(std::nullopt);
   } else {
     global_data.usb_callback->Run(JavaByteArrayToByteVector(env, usb_data));
   }

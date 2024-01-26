@@ -101,6 +101,7 @@ H264Decoder::H264Accelerator::Status
 H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
     const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
+    uint64_t secure_handle,
     H264SliceHeader* slice_header_out) {
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
@@ -1323,8 +1324,8 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
                                              prior_cencv1_subsamples_.end());
   all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
                         subsamples.end());
-  auto rv = accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
-                                                    curr_slice_hdr_.get());
+  auto rv = accelerator_->ParseEncryptedSliceHeader(
+      spans, all_subsamples, secure_handle_, curr_slice_hdr_.get());
   // Return now if this isn't fully processed and don't store the NALU info
   // since we will get called again in the kTryAgain case, and on an error we
   // want to exist.

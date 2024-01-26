@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandBrowserTest, RetrieveWebAppSize) {
   // sequence to this procress, it requires multiple events. Due to all of this,
   // we are resorting to polling for non-zero values.
   while (true) {
-    base::test::TestFuture<absl::optional<ComputedAppSize>> app_size;
+    base::test::TestFuture<std::optional<ComputedAppSize>> app_size;
     provider().scheduler().ComputeAppSize(app_id, app_size.GetCallback());
     if (app_size.Get().value().app_size_in_bytes != 0u &&
         app_size.Get().value().data_size_in_bytes != 0u) {

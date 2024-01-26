@@ -10,6 +10,7 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /** The id attribute of the dismiss button in the educational banner. */
+// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
 async function getDismissButtonId(appId) {
   return await remoteCall.isCrosComponents(appId) ? 'dismiss-button' :
                                                     'dismiss-button-old';
@@ -18,6 +19,8 @@ async function getDismissButtonId(appId) {
 /**
  * Tests the focus behavior of the search box.
  */
+// @ts-ignore: error TS4111: Property 'tabindexSearchBoxFocus' comes from an
+// index signature, so it must be accessed with ['tabindexSearchBoxFocus'].
 testcase.tabindexSearchBoxFocus = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -46,12 +49,16 @@ testcase.tabindexSearchBoxFocus = async () => {
 
   // Check that the focus moves to the next button: #view-button.
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'view-button'));
 };
 
 /**
  * Tests the tab focus behavior of the Files app when no file is selected.
  */
+// @ts-ignore: error TS4111: Property 'tabindexFocus' comes from an index
+// signature, so it must be accessed with ['tabindexFocus'].
 testcase.tabindexFocus = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -71,22 +78,40 @@ testcase.tabindexFocus = async () => {
   // Send Tab key events to cycle through the tabbable elements.
   chrome.test.assertTrue(
       // format: directory-tree#<tree item label>
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'directory-tree#My Drive'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'search-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'view-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'boolean'.
   chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
       appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
 
@@ -94,6 +119,8 @@ testcase.tabindexFocus = async () => {
  * Tests the tab focus behavior of the Files app when no file is selected in
  * Downloads directory.
  */
+// @ts-ignore: error TS4111: Property 'tabindexFocusDownloads' comes from an
+// index signature, so it must be accessed with ['tabindexFocusDownloads'].
 testcase.tabindexFocusDownloads = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -110,28 +137,49 @@ testcase.tabindexFocusDownloads = async () => {
   // Send Tab key events to cycle through the tabbable elements.
   chrome.test.assertTrue(
       // format: directory-tree#<tree item label>
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'directory-tree#Downloads'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'breadcrumbs'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'search-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'view-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'boolean'.
   chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
       appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
 
 /**
  * Tests the tab focus behavior of the Files app when a directory is selected.
  */
+// @ts-ignore: error TS4111: Property 'tabindexFocusDirectorySelected' comes
+// from an index signature, so it must be accessed with
+// ['tabindexFocusDirectorySelected'].
 testcase.tabindexFocusDirectorySelected = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -175,28 +223,52 @@ testcase.tabindexFocusDirectorySelected = async () => {
   // Send Tab key events to cycle through the tabable elements.
   chrome.test.assertTrue(
       // format: directory-tree#<tree item label>
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'directory-tree#My Drive'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, pinnedToggleId));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sharesheet-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'delete-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'search-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'view-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'boolean'.
   chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
       appId, await getDismissButtonId(appId)));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'boolean'.
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 
   // Remove fakes.
@@ -208,14 +280,14 @@ testcase.tabindexFocusDirectorySelected = async () => {
 /**
  * Tests the tab focus in the dialog and closes the dialog.
  *
- * @param {!Object} dialogParams Dialog parameters to be passed to
- *     chrome.fileSystem.chooseEntry.
+ * @param {!Record<string, string>} dialogParams Dialog parameters to be passed
+ *     to chrome.fileSystem.chooseEntry.
  * @param {string} volumeType Volume icon type passed to the
  *     openAndWaitForClosingDialog function.
  * @param {!Array<TestEntryInfo>} expectedSet Expected set of the entries.
- * @param {?function(string):(!Promise|Object)} initialize Initialization before
- *     test runs. The window ID is passed as an argument. If null, do nothing as
- *     initialization.
+ * @param {?((appId: string) => !Promise<void>)} initialize Initialization
+ *     before test runs. The window ID is passed as an argument. If null, do
+ *     nothing as initialization.
  * @param {!Array<string>} initialElements Selectors of the elements which
  *     shows the Files app is ready. After all the elements show up, the
  *     tabfocus tests starts.
@@ -231,10 +303,13 @@ async function tabindexFocus(
     addEntries(['drive'], BASIC_DRIVE_ENTRY_SET),
   ]);
 
+  // @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
   const selectAndCheckAndClose = async (appId) => {
     const directoryTree =
         await DirectoryTreePageObject.create(appId, remoteCall);
 
+    // @ts-ignore: error TS4111: Property 'type' comes from an index signature,
+    // so it must be accessed with ['type'].
     if (dialogParams.type === 'saveFile') {
       await remoteCall.waitForElement(
           appId, ['#filename-input-textbox:focus-within']);
@@ -251,6 +326,8 @@ async function tabindexFocus(
     }
 
     // Wait for Files app to finish loading.
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
     if (initialize) {
@@ -265,6 +342,8 @@ async function tabindexFocus(
     // Checks tabfocus.
     for (const className of await getExpectedTabOrder(appId)) {
       chrome.test.assertTrue(
+          // @ts-ignore: error TS2345: Argument of type 'void' is not assignable
+          // to parameter of type 'boolean'.
           await remoteCall.checkNextTabFocus(appId, className), className);
     }
     // Closes the window by pressing Escape.
@@ -279,6 +358,9 @@ async function tabindexFocus(
 /**
  * Tests the tab focus behavior of Open Dialog (Downloads).
  */
+// @ts-ignore: error TS4111: Property 'tabindexOpenDialogDownloads' comes from
+// an index signature, so it must be accessed with
+// ['tabindexOpenDialogDownloads'].
 testcase.tabindexOpenDialogDownloads = async () => {
   return tabindexFocus(
       {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET,
@@ -308,6 +390,8 @@ testcase.tabindexOpenDialogDownloads = async () => {
 /**
  * Tests the tab focus behavior of Open Dialog (Drive).
  */
+// @ts-ignore: error TS4111: Property 'tabindexOpenDialogDrive' comes from an
+// index signature, so it must be accessed with ['tabindexOpenDialogDrive'].
 testcase.tabindexOpenDialogDrive = async () => {
   return tabindexFocus(
       {type: 'openFile'}, 'drive', BASIC_DRIVE_ENTRY_SET,
@@ -334,6 +418,9 @@ testcase.tabindexOpenDialogDrive = async () => {
 /**
  * Tests the tab focus behavior of Save File Dialog (Downloads).
  */
+// @ts-ignore: error TS4111: Property 'tabindexSaveFileDialogDownloads' comes
+// from an index signature, so it must be accessed with
+// ['tabindexSaveFileDialogDownloads'].
 testcase.tabindexSaveFileDialogDownloads = async () => {
   return tabindexFocus(
       {
@@ -361,6 +448,9 @@ testcase.tabindexSaveFileDialogDownloads = async () => {
 /**
  * Tests the tab focus behavior of Save File Dialog (Drive).
  */
+// @ts-ignore: error TS4111: Property 'tabindexSaveFileDialogDrive' comes from
+// an index signature, so it must be accessed with
+// ['tabindexSaveFileDialogDrive'].
 testcase.tabindexSaveFileDialogDrive = async () => {
   return tabindexFocus(
       {

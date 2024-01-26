@@ -131,7 +131,7 @@ syncer::DeviceInfo CreateDeviceInfo() {
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::TimeDelta(),
       /*send_tab_to_self_receiving_enabled=*/false,
-      /*sharing_info=*/absl::nullopt, std::move(paask_info),
+      /*sharing_info=*/std::nullopt, std::move(paask_info),
       /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet());
 }
 
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
 
   // The newly added passkey should be added to the popup. The request needs
   // time to restart, poll the popup until the new entry shows up.
-  absl::optional<autofill::Suggestion> webauthn_entry;
+  std::optional<autofill::Suggestion> webauthn_entry;
   size_t suggestion_index;
   while (!webauthn_entry) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");

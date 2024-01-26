@@ -17,15 +17,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.AppMenuFacility;
 import org.chromium.chrome.test.transit.BasePageStation;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.TabSwitcherStation;
@@ -39,6 +41,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@DisableFeatures(ChromeFeatureList.ANDROID_HUB)
 public class TabSwitcherActionMenuPTTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -93,7 +96,7 @@ public class TabSwitcherActionMenuPTTest {
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         BasePageStation page = mTransitEntryPoints.startOnBlankPage();
 
-        AppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openAppMenu();
         page = appMenu.openNewIncognitoTab();
 
         appMenu = page.openAppMenu();

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_ANALYSIS_SERVICE_SETTINGS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/url_matcher/url_matcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class FileSystemURL;
@@ -34,12 +34,12 @@ class AnalysisServiceSettings {
   AnalysisServiceSettings(AnalysisServiceSettings&&);
   ~AnalysisServiceSettings();
 
-  // Get the settings to apply to a specific analysis. absl::nullopt implies no
+  // Get the settings to apply to a specific analysis. std::nullopt implies no
   // analysis should take place.
-  absl::optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
+  std::optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<AnalysisSettings> GetAnalysisSettings(
+  std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url) const;
@@ -51,10 +51,10 @@ class AnalysisServiceSettings {
   // Get the default_action setting if the settings are valid.
   bool ShouldBlockByDefault() const;
 
-  // Get the custom message/learn more URL. Returns absl::nullopt if the
+  // Get the custom message/learn more URL. Returns std::nullopt if the
   // settings are invalid or if the message/URL are empty.
-  absl::optional<std::u16string> GetCustomMessage(const std::string& tag);
-  absl::optional<GURL> GetLearnMoreUrl(const std::string& tag);
+  std::optional<std::u16string> GetCustomMessage(const std::string& tag);
+  std::optional<GURL> GetLearnMoreUrl(const std::string& tag);
   bool GetBypassJustificationRequired(const std::string& tag);
 
   std::string service_provider_name() const { return service_provider_name_; }
@@ -84,7 +84,7 @@ class AnalysisServiceSettings {
       std::map<base::MatcherStringPattern::ID, URLPatternSettings>;
 
   // Accessors for the pattern setting maps.
-  static absl::optional<URLPatternSettings> GetPatternSettings(
+  static std::optional<URLPatternSettings> GetPatternSettings(
       const PatternSettings& patterns,
       base::MatcherStringPattern::ID match);
 
@@ -93,7 +93,7 @@ class AnalysisServiceSettings {
       std::map<std::string, TagSettings> tags) const;
 
   // Returns true if the settings were initialized correctly. If this returns
-  // false, then GetAnalysisSettings will always return absl::nullopt.
+  // false, then GetAnalysisSettings will always return std::nullopt.
   bool IsValid() const;
 
   // Updates the states of `matcher_`, `enabled_patterns_settings_` and/or

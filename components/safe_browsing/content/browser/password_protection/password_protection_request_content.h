@@ -28,8 +28,6 @@
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class GURL;
-class PasswordProtectionServiceBase;
-class RequestCanceler;
 
 namespace content {
 class WebContents;
@@ -38,6 +36,8 @@ class WebContents;
 namespace safe_browsing {
 
 class PasswordProtectionCommitDeferringCondition;
+class PasswordProtectionServiceBase;
+class RequestCanceler;
 
 using password_manager::metrics_util::PasswordType;
 

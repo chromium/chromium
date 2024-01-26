@@ -49,7 +49,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1239792311949352652">Del hurtigt denne side. Gå til Indstillinger for at redigere denne genvej.</translation>
 <translation id="1240190568154816272">Tips til Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> indlæses</translation>
-<translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Flere sprog</translation>
 <translation id="1241792820757384812">Dine adgangskoder slettes fra Google Adgangskodeadministrator for <ph name="CHROME_CHANNEL" />. Du kan beholde den adgangskodefil, du lige har downloadet.</translation>
 <translation id="1242883863226959074">enhed</translation>
@@ -82,7 +82,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384704387250346179">Oversæt billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
-<translation id="13931502444227376">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />servicevilkår<ph name="END_LINK1" />.</translation>
+<translation id="13931502444227376">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />servicevilkår<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
@@ -146,6 +146,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1792959175193046959">Du kan til enhver tid skifte standardplaceringen for downloads</translation>
 <translation id="1796666869097395659">Minimer fanen, så du kan vende tilbage til den senere</translation>
 <translation id="1807246157184219062">Lys</translation>
+<translation id="1807709131360304325">Åbn et nyt vindue</translation>
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan ikke fortsætte med at bruge <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Find på siden</translation>
@@ -176,7 +177,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1986685561493779662">Navnet findes allerede</translation>
-<translation id="1995884366040846621">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
+<translation id="1995884366040846621">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
 <translation id="2009341475524975924">Med henblik på at måle en annonces effektivitet kan der deles begrænsede typer data mellem websites, f.eks. det tidspunkt på dagen, hvor annoncen blev vist til dig.</translation>
 <translation id="201060170519281460">Din profillås beskytter dine oplysninger i bilen, bl.a. synkroniserede adgangskoder og betalinger.</translation>
@@ -189,6 +190,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2056878612599315956">Websitet er sat på pause</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislykkedes}one{# download mislykkedes}other{# downloads mislykkedes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2079545284768500474">Fortryd</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Meget tæt visning anvendes</translation>
 <translation id="2093731487903423814">de seneste 15 minutter</translation>
@@ -218,7 +220,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="223356358902285214">Web- og appaktivitet</translation>
 <translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2239812875700136898">Administrer dine historier ved hjælp af knappen Indstillinger for Discover</translation>
-<translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2247789808226901522">Kortet er udløbet</translation>
 <translation id="2248941474044011069">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
 <translation id="2249635629516220541">Tilpas de oplysninger, som websites kan bruge til at vise dig annoncer</translation>
@@ -233,7 +234,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2318045970523081853">Tryk for at ringe op</translation>
 <translation id="2321086116217818302">Forbereder adgangskoder…</translation>
 <translation id="2323763861024343754">Websitelagerplads</translation>
-<translation id="2327226657832576859">Vil du åbne PDF-filer automatisk?</translation>
 <translation id="2328985652426384049">Det er ikke muligt at logge ind</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> kunne ikke installeres.</translation>
 <translation id="2349710944427398404">Samlet mængde data, som Chrome anvender, herunder konti, bogmærker og gemte indstillinger</translation>
@@ -316,6 +316,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="2779651927720337254">mislykkedes</translation>
 <translation id="2781151931089541271">1 sekund tilbage</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> lukkes</translation>
 <translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feedkortmenu i halv højde</translation>
@@ -354,7 +355,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2946420957526726953">Chrome opdateres for at oprette forbindelse til andre enheder</translation>
 <translation id="2951071800649516099">Føj sider til din læseliste, så du kan læse dem senere</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Spar tid, og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
@@ -600,6 +600,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Adgangskodeadministrator</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
+<translation id="4311652497846705514">Vil du åbne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
 <translation id="433213510553688132">Følger...</translation>
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
@@ -639,7 +640,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4523326818319942067">den seneste time</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
-<translation id="4541505619120536051">Åbn altid</translation>
 <translation id="4543131175509360848">Feltet "Ingen tilgængelige adgangsnøgler"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4554077758708533499">Tilsluttet via USB-kabel</translation>
@@ -810,7 +810,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5368227114232678694">Hvis du vil bruge nettet privat på denne enhed, kan du prøve at bruge inkognitotilstand</translation>
 <translation id="5375577065097716013">Søg efter billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="539881862970320163">En stærk adgangskode anbefales. Tastaturet er skjult.</translation>
-<translation id="5401851137404501592">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website.</translation>
+<translation id="5401851137404501592">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website.</translation>
 <translation id="5409881200985013443">Vil du angive <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificerer...</translation>
 <translation id="5423934151118863508">Dine mest besøgte sider vises her</translation>
@@ -831,7 +831,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5486841595534124508">Logo for privatlivsmeddelelse for platform med sideindsigt, som omdirigerer til siden Min aktivitet.</translation>
 <translation id="5487521232677179737">Ryd data</translation>
 <translation id="5492637351392383067">Kryptering på enheden</translation>
-<translation id="5509866835115085009">Chrome kan åbne en PDF-fil automatisk, når du downloader den.</translation>
 <translation id="5514904542973294328">Deaktiveret af administratoren af denne enhed</translation>
 <translation id="5515439363601853141">Lås op for at se din adgangskode</translation>
 <translation id="5517095782334947753">Du har bogmærker, historik, adgangskoder og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5966233851250124270">Chrome husker dit valg</translation>
+<translation id="5977976211062815271">På denne enhed</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="5995726099713306770">Vil du downloade siden igen?</translation>
 <translation id="6000066717592683814">Behold Google</translation>
@@ -1302,6 +1302,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7810647596859435254">Åbn med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}one{Alle filer, # fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>
+<translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="78270725016672455">Din computer anmoder om at registrere denne enhed til login på et website</translation>
 <translation id="7844171778363018843">Der er ikke valgt nogen data til synkronisering</translation>
@@ -1329,6 +1330,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er forældet.</translation>
 <translation id="7944772052836377867">Synkronisering skal verificere din identitet</translation>
 <translation id="7947953824732555851">Acceptér og log ind</translation>
+<translation id="7951102827450076904">Åbn altid downloadede PDF-filer</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler dit faktiske kort og beskytter dig på den måde mod potentiel svindel. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Knappen Tilbage på arket med sideindsigt</translation>
 <translation id="7961926449547174351">Du har deaktiveret adgangen til lagerplads. Gå til Indstillinger for at aktivere den.</translation>

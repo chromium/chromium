@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -49,8 +49,8 @@ class ChromeKioskExternalLoaderBroker {
   void CallPrimaryAppObserver();
   void CallSecondaryAppObserver();
 
-  absl::optional<crosapi::mojom::AppInstallParams> primary_app_data_;
-  absl::optional<std::vector<std::string>> secondary_app_ids_;
+  std::optional<crosapi::mojom::AppInstallParams> primary_app_data_;
+  std::optional<std::vector<std::string>> secondary_app_ids_;
 
   // Handle to the primary app external loader.
   InstallDataChangeCallback primary_app_observer_;

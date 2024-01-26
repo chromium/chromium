@@ -5,13 +5,13 @@
 #include "remoting/host/client_session.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <utility>
 
 #include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -656,7 +656,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
   // This will also delete any video-stream for the single-stream case, because
   // it is stored with a key chosen to not be a valid monitor ID.
   const auto& displays = desktop_display_info_.displays();
-  base::EraseIf(video_streams_, [displays](const auto& id_stream_pair) {
+  std::erase_if(video_streams_, [displays](const auto& id_stream_pair) {
     webrtc::ScreenId id = id_stream_pair.first;
     bool keep = base::Contains(
         displays, id, [](const DisplayGeometry& geo) { return geo.id; });

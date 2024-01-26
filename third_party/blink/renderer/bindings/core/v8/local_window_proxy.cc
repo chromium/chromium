@@ -38,7 +38,7 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
@@ -347,7 +347,7 @@ void LocalWindowProxy::UpdateDocumentProperty() {
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
   v8::Local<v8::Value> document_wrapper =
-      ToV8(GetFrame()->GetDocument(), context->Global(), GetIsolate());
+      ToV8Traits<Document>::ToV8(script_state_, GetFrame()->GetDocument());
   DCHECK(document_wrapper->IsObject());
 
   // Update the cached accessor for window.document.
@@ -482,12 +482,15 @@ static v8::Local<v8::Value> GetNamedProperty(
     HTMLElement* element = items->Item(0);
     DCHECK(element);
     if (auto* iframe = DynamicTo<HTMLIFrameElement>(*element)) {
-      if (Frame* frame = iframe->ContentFrame())
-        return ToV8(frame->DomWindow(), creation_context, isolate);
+      if (Frame* frame = iframe->ContentFrame()) {
+        return ToV8Traits<DOMWindow>::ToV8(isolate, frame->DomWindow(),
+                                           creation_context);
+      }
     }
-    return ToV8(element, creation_context, isolate);
+    return ToV8Traits<HTMLElement>::ToV8(isolate, element, creation_context);
   }
-  return ToV8(items, creation_context, isolate);
+  return ToV8Traits<DocumentNameCollection>::ToV8(isolate, items,
+                                                  creation_context);
 }
 
 static void Getter(v8::Local<v8::Name> property,

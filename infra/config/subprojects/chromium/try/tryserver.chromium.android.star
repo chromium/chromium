@@ -26,6 +26,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -98,7 +99,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -111,7 +111,6 @@ try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -139,6 +138,22 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-14-x64-rel",
+    description_html = "Run chromium tests on Android 14 emulators.",
+    mirrors = [
+        "ci/android-14-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-14-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -175,9 +190,10 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -189,7 +205,6 @@ try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 # TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
@@ -240,7 +255,9 @@ try_.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
-            "android_low_end",
+            # Allows the bot to measure low-end arm32 and high-end arm64 using
+            # a single build.
+            "android_low_end_secondary_toolchain",
         ],
     ),
     builderless = not settings.is_main,
@@ -255,13 +272,12 @@ try_.builder(
                 "//tools/binary_size:binary_size_trybot_py",
             ],
             "compile_targets": [
-                "monochrome_static_initializers",
+                "check_chrome_static_initializers",
                 "trichrome_32_minimal_apks",
                 "validate_expectations",
             ],
         },
     },
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -870,7 +886,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -885,7 +900,6 @@ try_.compilator_builder(
     cores = 64 if settings.is_main else 32,
     contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -973,7 +987,6 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -1001,7 +1014,6 @@ try_.builder(
     ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -1114,7 +1126,6 @@ try_.builder(
     builderless = not settings.is_main,
     contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 

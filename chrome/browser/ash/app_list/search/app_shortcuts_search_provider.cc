@@ -24,7 +24,6 @@ namespace {
 constexpr size_t kMinQueryLength = 3u;
 constexpr double kRelevanceThreshold = 0.79;
 
-constexpr char kAppShortcutSearchPrefix[] = "appshortcutsearch://";
 
 using FuzzyTokenizedStringMatch =
     ::ash::string_matching::FuzzyTokenizedStringMatch;
@@ -32,8 +31,12 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 
 }  // namespace
 
-AppShortcutsSearchProvider::AppShortcutsSearchProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kAppShortcuts), profile_(profile) {
+AppShortcutsSearchProvider::AppShortcutsSearchProvider(
+    Profile* profile,
+    AppListControllerDelegate* app_list_controller)
+    : SearchProvider(ControlCategory::kAppShortcuts),
+      profile_(profile),
+      app_list_controller_(app_list_controller) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "AppShortcutsSearchProvider";
@@ -110,13 +113,14 @@ std::unique_ptr<AppShortcutSearchResult> AppShortcutsSearchProvider::MakeResult(
     const apps::ShortcutView& app_shortcut,
     double relevance) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "id: " << kAppShortcutSearchPrefix + app_shortcut->name.value()
+  DVLOG(1) << "id: " << app_shortcut->shortcut_id.value()
            << " name: " << app_shortcut->name.value()
            << " query: " << last_query_ << " rl: " << relevance;
 
   auto result = std::make_unique<AppShortcutSearchResult>(
-      /*id*/ kAppShortcutSearchPrefix + app_shortcut->name.value(),
-      base::UTF8ToUTF16(app_shortcut->name.value()), profile_, relevance);
+      /*shorcut_id=*/app_shortcut->shortcut_id,
+      base::UTF8ToUTF16(app_shortcut->name.value()), profile_,
+      app_list_controller_, relevance);
   return result;
 }
 

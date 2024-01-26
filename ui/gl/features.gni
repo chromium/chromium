@@ -28,7 +28,8 @@ declare_args() {
 
   enable_validating_command_decoder =
       !is_win && !is_apple &&
-      !(is_linux && !is_castos && !is_chromeos_lacros) && !is_fuchsia
+      !(is_linux && !is_castos && !is_chromeos_lacros) && !is_fuchsia &&
+      !is_chromeos
 }
 
 declare_args() {

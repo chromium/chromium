@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -87,11 +87,11 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
           cast_message.client_id(), session->destination_id()));
 }
 
-absl::optional<int> AppActivity::SendMediaRequestToReceiver(
+std::optional<int> AppActivity::SendMediaRequestToReceiver(
     const CastInternalMessage& cast_message) {
   CastSession* session = GetSession();
   if (!session)
-    return absl::nullopt;
+    return std::nullopt;
   return message_handler_->SendMediaRequest(
       cast_channel_id(), cast_message.v2_message_body(),
       cast_message.client_id(), session->destination_id());
@@ -107,7 +107,7 @@ void AppActivity::SendSetVolumeRequestToReceiver(
 
 void AppActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
-    absl::optional<int> request_id) {
+    std::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
   if (media_controller_)
     media_controller_->SetMediaStatus(media_status);
@@ -162,7 +162,7 @@ void AppActivity::OnInternalMessage(
   // client. Media status messages are handled by SendMediaStatusToClients().
   if (message.message_namespace == cast_channel::kMediaNamespace &&
       !IsMediaStatusMessage(message)) {
-    absl::optional<int> request_id =
+    std::optional<int> request_id =
         cast_channel::GetRequestIdFromResponse(message.message);
     auto client_it = connected_clients_.find(message.destination_id);
     // Okay to drop messages for clients that have gone away.

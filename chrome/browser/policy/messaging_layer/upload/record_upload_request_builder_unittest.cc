@@ -172,7 +172,7 @@ TEST_F(RecordUploadRequestBuilderTest,
   sequence_info.set_sequencing_id(0);
 
   EXPECT_THAT(SequenceInformationDictionaryBuilder(sequence_info).Build(),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -357,7 +357,7 @@ TEST_P(RecordUploadRequestBuilderTest,
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  absl::optional<base::Value::Dict> compressionless_payload =
+  std::optional<base::Value::Dict> compressionless_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressionless_record),
                                        record_reservation)
           .Build();
@@ -376,7 +376,7 @@ TEST_P(RecordUploadRequestBuilderTest, IncludeCompressionRequest) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  absl::optional<base::Value::Dict> compressed_record_payload =
+  std::optional<base::Value::Dict> compressed_record_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressed_record),
                                        record_reservation)
           .Build();

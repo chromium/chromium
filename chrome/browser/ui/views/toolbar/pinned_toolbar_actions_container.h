@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
@@ -96,6 +96,8 @@ class PinnedToolbarActionsContainer
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   void UpdateAllIcons();
+  gfx::Size CustomFlexRule(const views::View* view,
+                           const views::SizeBounds& size_bounds);
 
   // views::View:
   void OnThemeChanged() override;
@@ -129,6 +131,8 @@ class PinnedToolbarActionsContainer
   // ToolbarController::PinnedActionsDelegate:
   actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override;
   bool IsOverflowed(const actions::ActionId& id) override;
+  views::View* GetContainerView() override;
+  bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override;
 
   bool IsActionPinned(const actions::ActionId& id);
 
@@ -145,6 +149,11 @@ class PinnedToolbarActionsContainer
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
+  // Returns the size based on the layout manager's default flex specification.
+  gfx::Size DefaultFlexRule(const views::SizeBounds& size_bounds);
+  // Returns the total width of the `popped_out_buttons_` including margins
+  // between them.
+  int CalculatePoppedOutButtonsWidth();
 
   // Sorts child views to display them in the correct order.
   void ReorderViews();

@@ -39,6 +39,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -71,8 +73,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -435,7 +435,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void getFooterResourceId_dseOn_returnsWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         assertEquals(
                 "Footer Resource ID should be web_feed_main_menu_item.",
@@ -448,7 +447,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void getFooterResourceId_signedOutUser_dseOn_doesNotReturnWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         assertNotEquals(
                 "Footer Resource ID should not be web_feed_main_menu_item.",
@@ -462,6 +460,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {

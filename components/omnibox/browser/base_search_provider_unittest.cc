@@ -111,11 +111,13 @@ class BaseSearchProviderTestFixture {
  protected:
   void SetUp() {
     auto template_url_service = std::make_unique<TemplateURLService>(
-        nullptr /* PrefService */, std::make_unique<SearchTermsData>(),
-        nullptr /* KeywordWebDataService */,
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+        std::make_unique<SearchTermsData>(),
+        /*web_data_service=*/nullptr,
         std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , false /* for_lacros_main_profile */
+                                                         ,
+        /*for_lacros_main_profile=*/false
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
 

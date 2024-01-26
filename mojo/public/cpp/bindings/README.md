@@ -715,7 +715,7 @@ LOG(INFO) << "Value is " << value->get_string_value();  // DCHECK!
 
 ### Features
 
-Mojom `feature` generates a `base::FeatureList` with the given `name` and
+Mojom `feature` generates a `base::Feature` with the given `name` and
 `default_state` (`true` => `ENABLED_BY_DEFAULT`). The feature can be accessed
 and tested in C++ using the mapped name even if it is not used to mark any
 interfaces or methods.

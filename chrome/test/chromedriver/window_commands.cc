@@ -340,8 +340,8 @@ Status ExecuteTouchEvent(Session* session,
                          WebView* web_view,
                          TouchEventType type,
                          const base::Value::Dict& params) {
-  absl::optional<int> x = params.FindInt("x");
-  absl::optional<int> y = params.FindInt("y");
+  std::optional<int> x = params.FindInt("x");
+  std::optional<int> y = params.FindInt("y");
   if (!x)
     return Status(kInvalidArgument, "'x' must be an integer");
   if (!y)
@@ -377,11 +377,11 @@ Status WindowViewportSize(Session* session,
   if (!status.IsOk())
     return status;
   const base::Value::Dict& view_attrib = value->GetDict();
-  absl::optional<int> maybe_inner_width = view_attrib.FindInt("view_width");
+  std::optional<int> maybe_inner_width = view_attrib.FindInt("view_width");
   if (maybe_inner_width)
     *inner_width = *maybe_inner_width;
 
-  absl::optional<int> maybe_inner_height = view_attrib.FindInt("view_height");
+  std::optional<int> maybe_inner_height = view_attrib.FindInt("view_height");
   if (maybe_inner_height)
     *inner_height = *maybe_inner_height;
   return Status(kOk);
@@ -627,27 +627,27 @@ Status ParsePageRanges(const base::Value::Dict& params,
 //    unexpected type.
 // 3. Optional with value from dictionary.
 template <typename T>
-absl::optional<T> ParseIfInDictionary(
+std::optional<T> ParseIfInDictionary(
     const base::Value::Dict& dict,
     base::StringPiece key,
     T default_value,
-    absl::optional<T> (base::Value::*getterIfType)() const) {
+    std::optional<T> (base::Value::*getterIfType)() const) {
   const auto* val = dict.Find(key);
   if (!val)
-    return absl::make_optional(default_value);
+    return std::make_optional(default_value);
   return (val->*getterIfType)();
 }
 
-absl::optional<double> ParseDoubleIfInDictionary(const base::Value::Dict& dict,
-                                                 base::StringPiece key,
-                                                 double default_value) {
+std::optional<double> ParseDoubleIfInDictionary(const base::Value::Dict& dict,
+                                                base::StringPiece key,
+                                                double default_value) {
   return ParseIfInDictionary(dict, key, default_value,
                              &base::Value::GetIfDouble);
 }
 
-absl::optional<int> ParseIntIfInDictionary(const base::Value::Dict& dict,
-                                           base::StringPiece key,
-                                           int default_value) {
+std::optional<int> ParseIntIfInDictionary(const base::Value::Dict& dict,
+                                          base::StringPiece key,
+                                          int default_value) {
   return ParseIfInDictionary(dict, key, default_value, &base::Value::GetIfInt);
 }
 }  // namespace
@@ -1094,8 +1094,8 @@ Status ExecuteMouseMoveTo(Session* session,
     element_id = *maybe_element_id;
     has_element = true;
   }
-  absl::optional<int> x_offset = params.FindInt("xoffset");
-  absl::optional<int> y_offset = params.FindInt("yoffset");
+  std::optional<int> x_offset = params.FindInt("xoffset");
+  std::optional<int> y_offset = params.FindInt("yoffset");
   bool has_offset = x_offset.has_value() && y_offset.has_value();
   if (!has_element && !has_offset)
     return Status(kInvalidArgument,
@@ -1252,10 +1252,10 @@ Status ExecuteTouchScroll(Session* session,
     if (status.IsError())
       return status;
   }
-  absl::optional<int> xoffset = params.FindInt("xoffset");
+  std::optional<int> xoffset = params.FindInt("xoffset");
   if (!xoffset)
     return Status(kInvalidArgument, "'xoffset' must be an integer");
-  absl::optional<int> yoffset = params.FindInt("yoffset");
+  std::optional<int> yoffset = params.FindInt("yoffset");
   if (!yoffset)
     return Status(kInvalidArgument, "'yoffset' must be an integer");
   return web_view->SynthesizeScrollGesture(location.x, location.y, *xoffset,
@@ -1463,10 +1463,10 @@ Status ProcessInputActionSequence(Session* session,
           action_dict.Set("button", button_str);
         }
       } else if (*subtype == "pointerMove" || *subtype == "scroll") {
-        absl::optional<int> x = action_item.FindInt("x");
+        std::optional<int> x = action_item.FindInt("x");
         if (!x.has_value())
           return Status(kInvalidArgument, "'x' must be an int");
-        absl::optional<int> y = action_item.FindInt("y");
+        std::optional<int> y = action_item.FindInt("y");
         if (!y.has_value())
           return Status(kInvalidArgument, "'y' must be an int");
         action_dict.Set("x", *x);
@@ -1504,10 +1504,10 @@ Status ProcessInputActionSequence(Session* session,
           return status;
 
         if (*subtype == "scroll") {
-          absl::optional<int> delta_x = action_item.FindInt("deltaX");
+          std::optional<int> delta_x = action_item.FindInt("deltaX");
           if (!delta_x)
             return Status(kInvalidArgument, "'delta x' must be an int");
-          absl::optional<int> delta_y = action_item.FindInt("deltaY");
+          std::optional<int> delta_y = action_item.FindInt("deltaY");
           if (!delta_y)
             return Status(kInvalidArgument, "'delta y' must be an int");
           action_dict.Set("deltaX", *delta_x);
@@ -1520,8 +1520,8 @@ Status ProcessInputActionSequence(Session* session,
       }
 
       // Process Pointer Event's properties.
-      absl::optional<double> maybe_double_value;
-      absl::optional<int> maybe_int_value;
+      std::optional<double> maybe_double_value;
+      std::optional<int> maybe_int_value;
 
       maybe_double_value = ParseDoubleIfInDictionary(action_item, "width", 1);
       if (!maybe_double_value.has_value() || maybe_double_value.value() < 0)
@@ -1676,11 +1676,11 @@ Status ExecutePerformActions(Session* session,
                 session, web_view, &viewport_width, &viewport_height);
             if (status.IsError())
               return status;
-            absl::optional<int> maybe_init_x = input_state->FindInt("x");
+            std::optional<int> maybe_init_x = input_state->FindInt("x");
             if (maybe_init_x)
               init_x = *maybe_init_x;
 
-            absl::optional<int> maybe_init_y = input_state->FindInt("y");
+            std::optional<int> maybe_init_y = input_state->FindInt("y");
             if (maybe_init_y)
               init_y = *maybe_init_y;
             action_locations.insert(
@@ -1995,7 +1995,7 @@ Status ExecuteSendCommandFromWebSocket(Session* session,
   if (!cmd_params) {
     return Status(kInvalidArgument, "params not passed");
   }
-  absl::optional<int> client_cmd_id = params.FindInt("id");
+  std::optional<int> client_cmd_id = params.FindInt("id");
   if (!client_cmd_id || !CommandId::IsClientCommandId(*client_cmd_id)) {
     return Status(kInvalidArgument, "command id must be negative");
   }
@@ -2522,19 +2522,19 @@ Status ExecuteSetLocation(Session* session,
   if (!location)
     return Status(kInvalidArgument, "missing or invalid 'location'");
 
-  absl::optional<double> maybe_latitude = location->FindDouble("latitude");
+  std::optional<double> maybe_latitude = location->FindDouble("latitude");
   if (!maybe_latitude.has_value())
     return Status(kInvalidArgument, "missing or invalid 'location.latitude'");
   geoposition.latitude = maybe_latitude.value();
 
-  absl::optional<double> maybe_longitude = location->FindDouble("longitude");
+  std::optional<double> maybe_longitude = location->FindDouble("longitude");
   if (!maybe_longitude.has_value())
     return Status(kInvalidArgument, "missing or invalid 'location.longitude'");
   geoposition.longitude = maybe_longitude.value();
 
   // |accuracy| is not part of the WebDriver spec yet, so if it is not given
   // default to 100 meters accuracy.
-  absl::optional<double> maybe_accuracy =
+  std::optional<double> maybe_accuracy =
       ParseDoubleIfInDictionary(*location, "accuracy", 100);
   if (!maybe_accuracy.has_value())
     return Status(kInvalidArgument, "invalid 'accuracy'");
@@ -2564,7 +2564,7 @@ Status ExecuteSetNetworkConditions(Session* session,
   } else if (const base::Value::Dict* conditions =
                  params.FindDict("network_conditions")) {
     // |latency| is required.
-    absl::optional<double> maybe_latency = conditions->FindDouble("latency");
+    std::optional<double> maybe_latency = conditions->FindDouble("latency");
     if (!maybe_latency.has_value())
       return Status(kInvalidArgument,
                     "invalid 'network_conditions' is missing 'latency'");
@@ -2573,7 +2573,7 @@ Status ExecuteSetNetworkConditions(Session* session,
     // Either |throughput| or the pair |download_throughput| and
     // |upload_throughput| is required.
     if (conditions->Find("throughput")) {
-      absl::optional<double> maybe_throughput =
+      std::optional<double> maybe_throughput =
           conditions->FindDouble("throughput");
       if (!maybe_throughput.has_value())
         return Status(kInvalidArgument, "invalid 'throughput'");
@@ -2581,9 +2581,9 @@ Status ExecuteSetNetworkConditions(Session* session,
       network_conditions->download_throughput = maybe_throughput.value();
     } else if (conditions->Find("download_throughput") &&
                conditions->Find("upload_throughput")) {
-      absl::optional<double> maybe_download_throughput =
+      std::optional<double> maybe_download_throughput =
           conditions->FindDouble("download_throughput");
-      absl::optional<double> maybe_upload_throughput =
+      std::optional<double> maybe_upload_throughput =
           conditions->FindDouble("upload_throughput");
 
       if (!maybe_download_throughput.has_value() ||

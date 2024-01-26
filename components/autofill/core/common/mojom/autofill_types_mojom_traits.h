@@ -347,6 +347,36 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
+                    autofill::FormFieldData::FillData> {
+  static const std::u16string& value(
+      const autofill::FormFieldData::FillData& r) {
+    return r.value;
+  }
+
+  static autofill::FieldRendererId unique_renderer_id(
+      const autofill::FormFieldData::FillData& r) {
+    return r.unique_renderer_id;
+  }
+
+  static bool is_autofilled(const autofill::FormFieldData::FillData& r) {
+    return r.is_autofilled;
+  }
+
+  static const autofill::Section& section(
+      const autofill::FormFieldData::FillData& r) {
+    return r.section;
+  }
+
+  static bool Read(autofill::mojom::FormFieldData_FillDataDataView data,
+                   autofill::FormFieldData::FillData* out);
+
+  static bool force_override(const autofill::FormFieldData::FillData& r) {
+    return r.force_override;
+  }
+};
+
+template <>
 struct StructTraits<autofill::mojom::ButtonTitleInfoDataView,
                     autofill::ButtonTitleInfo> {
   static const std::u16string& title(const autofill::ButtonTitleInfo& r) {
@@ -421,6 +451,23 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 
   static bool Read(autofill::mojom::FormDataDataView data,
                    autofill::FormData* out);
+};
+
+template <>
+struct StructTraits<autofill::mojom::FormData_FillDataDataView,
+                    autofill::FormData::FillData> {
+  static autofill::FormRendererId unique_renderer_id(
+      const autofill::FormData::FillData& r) {
+    return r.unique_renderer_id;
+  }
+
+  static const std::vector<autofill::FormFieldData::FillData>& fields(
+      const autofill::FormData::FillData& r) {
+    return r.fields;
+  }
+
+  static bool Read(autofill::mojom::FormData_FillDataDataView data,
+                   autofill::FormData::FillData* out);
 };
 
 template <>

@@ -179,7 +179,7 @@ void HistoryClustersPageHandler::ShowJourneysSidePanel(
 
 void HistoryClustersPageHandler::OpenUrlsInTabGroup(
     const std::vector<GURL>& urls,
-    const absl::optional<std::string>& tab_group_name) {
+    const std::optional<std::string>& tab_group_name) {
   // This method is different from HistoryClustersHandler::OpenUrlsInTabGroup:
   //  - It takes over the current tab instead of opening new background tabs.
   //  - It inserts the new tabs into the location of the current tab.

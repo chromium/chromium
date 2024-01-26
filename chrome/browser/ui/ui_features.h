@@ -46,8 +46,6 @@ BASE_DECLARE_FEATURE(kAccessCodeCastUI);
 BASE_DECLARE_FEATURE(kCameraMicPreview);
 #endif
 
-BASE_DECLARE_FEATURE(kDisplayOpenLinkAsProfile);
-
 BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -107,8 +105,6 @@ extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
 BASE_DECLARE_FEATURE(kTabGroupsSave);
-
-BASE_DECLARE_FEATURE(kTabHoverCardImageSettings);
 
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
 

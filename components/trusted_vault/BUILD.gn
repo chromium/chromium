@@ -24,10 +24,15 @@ static_library("trusted_vault") {
       "download_keys_response_handler.h",
       "features.cc",
       "features.h",
+      "frontend_trusted_vault_connection.cc",
+      "frontend_trusted_vault_connection.h",
       "proto_string_bytes_conversion.cc",
       "proto_string_bytes_conversion.h",
       "proto_time_conversion.cc",
       "proto_time_conversion.h",
+      "recovery_key_store_connection.h",
+      "recovery_key_store_connection_impl.cc",
+      "recovery_key_store_connection_impl.h",
       "securebox.cc",
       "securebox.h",
       "standalone_trusted_vault_backend.cc",
@@ -74,6 +79,7 @@ if (!is_android) {
       "download_keys_response_handler_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
+      "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
@@ -87,6 +93,7 @@ if (!is_android) {
     configs += [ "//build/config:precompiled_headers" ]
 
     deps = [
+      ":test_support",
       ":trusted_vault",
       "//components/os_crypt/sync",
       "//components/os_crypt/sync:test_support",
@@ -104,6 +111,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "test/fake_trusted_vault_access_token_fetcher.cc",
+    "test/fake_trusted_vault_access_token_fetcher.h",
     "test/fake_trusted_vault_client.cc",
     "test/fake_trusted_vault_client.h",
   ]

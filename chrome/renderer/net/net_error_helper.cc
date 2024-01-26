@@ -39,6 +39,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "net/base/net_errors.h"
+#include "base/feature_list.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -89,7 +91,7 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return true;
+  return  base::FeatureList::IsEnabled(features::kOfflineContentOnNetError);
 }
 #else   // BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
@@ -99,7 +101,7 @@ bool IsOfflineContentOnNetErrorFeatureEnabled() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
-  return true;
+  return  base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
 }
 #else   // BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {

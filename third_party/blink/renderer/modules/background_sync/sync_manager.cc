@@ -148,7 +148,7 @@ void SyncManager::GetRegistrationsCallback(
       for (const auto& r : registrations) {
         tags.push_back(r->tag);
       }
-      resolver->Resolve(tags);
+      resolver->Resolve<IDLSequence<IDLString>>(tags);
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:

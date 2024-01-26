@@ -272,17 +272,22 @@ TEST_F(ScrollJankUkmReporterTest, NoPredictorJank) {
                                      base_time_ + base::Milliseconds(135));
 
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
+  scroll_jank_ukm_reporter_->EmitPredictorJankUkm();
 
-  auto entries = test_ukm_recorder_->GetEntriesByName(
+  auto scroll_entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Event_Scroll::kEntryName);
-  EXPECT_EQ(1u, entries.size());
+  EXPECT_EQ(1u, scroll_entries.size());
 
   test_ukm_recorder_->ExpectEntryMetric(
-      entries.back(),
+      scroll_entries.back(),
       ukm::builders::Event_Scroll::kPredictorJankyFrameCountName, 0);
+
+  auto predictor_entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Event_ScrollJank_PredictorJank::kEntryName);
+  EXPECT_EQ(0u, predictor_entries.size());
 }
 
-TEST_F(ScrollJankUkmReporterTest, PredictorJank) {
+TEST_F(ScrollJankUkmReporterTest, PredictorJankMissedVsync) {
   ReportFramesToPredictorJankTracker(10, base_time_,
                                      base_time_ + base::Milliseconds(103));
   ReportFramesToPredictorJankTracker(50, base_time_,
@@ -291,6 +296,7 @@ TEST_F(ScrollJankUkmReporterTest, PredictorJank) {
                                      base_time_ + base::Milliseconds(151));
 
   scroll_jank_ukm_reporter_->EmitScrollJankUkm();
+  scroll_jank_ukm_reporter_->EmitPredictorJankUkm();
 
   auto entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Event_Scroll::kEntryName);
@@ -299,6 +305,66 @@ TEST_F(ScrollJankUkmReporterTest, PredictorJank) {
   test_ukm_recorder_->ExpectEntryMetric(
       entries.back(),
       ukm::builders::Event_Scroll::kPredictorJankyFrameCountName, 1);
+
+  auto predictor_entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Event_ScrollJank_PredictorJank::kEntryName);
+  EXPECT_EQ(1u, predictor_entries.size());
+
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::kMaxDeltaName, 44);
+
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::
+          kScrollUpdate_MissedVsync_FrameAboveJankyThreshold2Name,
+      355);
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::
+          kScrollUpdate_NoMissedVsync_FrameAboveJankyThreshold2Name,
+      0);
+}
+
+TEST_F(ScrollJankUkmReporterTest, PredictorJankNoMissedVsync) {
+  ReportFramesToPredictorJankTracker(50, base::TimeTicks::Now(),
+                                     base::TimeTicks::Now());
+  ReportFramesToPredictorJankTracker(
+      10, base::TimeTicks::Now(),
+      base::TimeTicks::Now() + base::Milliseconds(16));
+  ReportFramesToPredictorJankTracker(
+      50, base::TimeTicks::Now(),
+      base::TimeTicks::Now() + base::Milliseconds(32));
+
+  scroll_jank_ukm_reporter_->EmitScrollJankUkm();
+  scroll_jank_ukm_reporter_->EmitPredictorJankUkm();
+
+  auto entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Event_Scroll::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  test_ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::Event_Scroll::kPredictorJankyFrameCountName, 1);
+
+  auto predictor_entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Event_ScrollJank_PredictorJank::kEntryName);
+  EXPECT_EQ(1u, predictor_entries.size());
+
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::kMaxDeltaName, 44);
+
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::
+          kScrollUpdate_MissedVsync_FrameAboveJankyThreshold2Name,
+      0);
+  test_ukm_recorder_->ExpectEntryMetric(
+      predictor_entries.back(),
+      ukm::builders::Event_ScrollJank_PredictorJank::
+          kScrollUpdate_NoMissedVsync_FrameAboveJankyThreshold2Name,
+      355);
 }
 
 }  // namespace cc

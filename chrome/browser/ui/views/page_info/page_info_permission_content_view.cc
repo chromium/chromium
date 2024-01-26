@@ -131,7 +131,13 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
-PageInfoPermissionContentView::~PageInfoPermissionContentView() = default;
+PageInfoPermissionContentView::~PageInfoPermissionContentView() {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (active_devices_media_preview_coordinator_) {
+    active_devices_media_preview_coordinator_->UpdateDevicePreferenceRanking();
+  }
+#endif
+}
 
 void PageInfoPermissionContentView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,

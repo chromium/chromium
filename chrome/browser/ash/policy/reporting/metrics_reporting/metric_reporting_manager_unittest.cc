@@ -1134,6 +1134,27 @@ TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
                   _, Destination::KIOSK_HEARTBEAT_EVENTS, _, _, _, _, _, _))
       .Times(0);
 
+  // Ignore any other call to CreatePeriodicCollector because it's irrelevant to
+  // this test.
+  EXPECT_CALL(
+      *mock_delegate_ptr,
+      CreatePeriodicCollector(_, Not(Pointer(heartbeat_queue_ptr_.get())), _, _,
+                              _, _, _, _, _))
+      .Times(AnyNumber());
+  // PeriodicCollector should be not be created as disabled.
+  EXPECT_CALL(
+      *mock_delegate_ptr,
+      CreatePeriodicCollector(
+          /*sampler=*/_,
+          /*queue=*/heartbeat_queue_ptr_.get(),
+          /*report_settings=*/_,
+          /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+          /*setting_enabled_default_value=*/
+          metrics::kHeartbeatTelemetryDefaultValue,
+          /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
+          /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate))
+      .Times(0);
+
   metric_reporting_manager->OnLogin(profile());
 }
 

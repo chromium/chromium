@@ -934,6 +934,12 @@ void ServiceWorkerContextWrapper::WarmUpServiceWorker(
     return;
   }
 
+  // Only warm-up http or https URLs. Do not warm-up extensions and others.
+  if (!document_url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run();
+    return;
+  }
+
   context_core_->AddWarmUpRequest(document_url, key, std::move(callback));
 
   // If a service worker warm-up process is already running, do not call

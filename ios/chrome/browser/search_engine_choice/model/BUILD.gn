@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "search_engine_choice_util.h",
+    "search_engine_choice_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/ui/search_engine_choice:ui_util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

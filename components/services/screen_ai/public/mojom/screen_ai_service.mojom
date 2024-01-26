@@ -5,6 +5,7 @@
 module screen_ai.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
+import "ui/accessibility/ax_features.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -45,13 +46,17 @@ struct LineBox {
   // Line bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
 
+  // Rotation angle (in degrees, clockwise) of the line bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
   // Line bounding box relative to the original image with bottom edge
   // representing estimated baseline of text.
   gfx.mojom.Rect baseline_box;
 
-  // Angle of rotation of (in degrees, clockwise is positive) of the box about
-  // the top-left corner.
-  float angle;
+  // Rotation angle (in degrees, clockwise) of the line baseline box about its
+  // top-left corner.
+  float baseline_box_angle;
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -73,12 +78,17 @@ struct WordBox {
   // Word bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
 
+  // Rotation angle (in degrees, clockwise) of the word bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
   // The direction of the script contained in the word.
   Direction direction;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI
 // service.
+[RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
   // Receives an image, such as a screenshot or a canvas content, as well as the
   // ID of the accessibility tree that contains the image (`parent_tree_id`).
@@ -130,12 +140,14 @@ interface Screen2xMainContentExtractor {
 // initializes it for OCR.
 // OCR service can receive multiple annotator pipelines and provide results for
 // them separately.
+[RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface OCRService {
   // Binds a new annotator to the service.
-  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+  BindAnnotator(pending_receiver<ScreenAIAnnotator>? annotator);
 
   // Binds a client to receive update messages for annotation service.
-  BindAnnotatorClient(pending_remote<ScreenAIAnnotatorClient> annotator_client);
+  BindAnnotatorClient(
+    pending_remote<ScreenAIAnnotatorClient>? annotator_client);
 };
 
 // Provides an interface to the Main Content Extraction functionalities of the
@@ -144,8 +156,9 @@ interface OCRService {
 // initializes for Main Content Extraction.
 // Main Content Extraction service can receive multiple annotator pipelines and
 // provide results for them separately.
+[RuntimeFeature=ax.mojom.features.kScreenAIMainContentExtractionEnabled]
 interface MainContentExtractionService {
   // Binds a new main content extractor to the service.
-  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
+  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>?
     main_content_extractor);
 };

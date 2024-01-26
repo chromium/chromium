@@ -79,7 +79,7 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   auto shared_image =
       sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                            gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                           gpu::SHARED_IMAGE_USAGE_RASTER);
+                                           gpu::SHARED_IMAGE_USAGE_RASTER_READ);
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource

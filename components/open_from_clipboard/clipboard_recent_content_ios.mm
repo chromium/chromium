@@ -16,7 +16,7 @@
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

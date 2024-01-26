@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
-
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
 #include <mach/thread_switch.h>
-#include <stddef.h>
 #include <sys/resource.h>
 
 #include <algorithm>
 #include <atomic>
+#include <cstddef>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 
 namespace partition_alloc::internal::base {
 

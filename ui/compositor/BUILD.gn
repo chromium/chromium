@@ -127,6 +127,8 @@ static_library("test_support") {
   sources = [
     "test/animation_throughput_reporter_test_base.cc",
     "test/animation_throughput_reporter_test_base.h",
+    "test/begin_main_frame_waiter.cc",
+    "test/begin_main_frame_waiter.h",
     "test/direct_layer_tree_frame_sink.cc",
     "test/direct_layer_tree_frame_sink.h",
     "test/draw_waiter_for_test.cc",

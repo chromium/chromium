@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ਐਪਲੀਕੇਸ਼ਨ ਵਰਜਨ</translation>
 <translation id="1428770807407000502">ਕੀ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="1435593198351412143">PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1436784010935106834">ਹਟਾਈਆਂ ਗਈਆਂ</translation>
 <translation id="1437543266176261764">ਇਹ ਸਰਗਰਮੀ <ph name="APP_NAME" /> ਵਿੱਚ ਚੱਲ ਰਹੀ ਹੈ</translation>
 <translation id="1448440926884431741">Bookmarks ਵਿੱਚ ਆਪਣੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -146,6 +147,7 @@
 <translation id="1792959175193046959">ਕਿਸੇ ਵੇਲੇ ਵੀ ਡਾਊਨਲੋਡ ਦਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਟਿਕਾਣਾ ਬਦਲੋ</translation>
 <translation id="1796666869097395659">ਬਾਅਦ ਵਿੱਚ ਟੈਬ 'ਤੇ ਵਾਪਸ ਆਉਣ ਲਈ ਇਸਨੂੰ ਛੋਟਾ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
+<translation id="1807709131360304325">ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1810845389119482123">ਸ਼ੁਰੂਆਤੀ ਸਿੰਕ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਨਹੀਂ ਰੱਖ ਸਕਦਾ</translation>
 <translation id="1829244130665387512">ਸਫ਼ੇ ਵਿੱਚ ਲੱਭੋ</translation>
@@ -189,6 +191,7 @@
 <translation id="2056878612599315956">ਸਾਈਟ ਰੋਕੀ ਗਈ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}one{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}other{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਹੇ}}</translation>
 <translation id="2067805253194386918">ਲਿਖਤ</translation>
+<translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ਦਾ <ph name="RESULT_NUMBER" /> ਨਤੀਜਾ</translation>
 <translation id="2091863218454846791">ਸੰਖਿਪਤ ਦ੍ਰਿਸ਼ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2093731487903423814">ਪਿਛਲੇ 15 ਮਿੰਟ</translation>
@@ -218,7 +221,6 @@
 <translation id="223356358902285214">ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ</translation>
 <translation id="2234827758954819389">ਪਰਦੇਦਾਰੀ ਗਾਈਡ</translation>
 <translation id="2239812875700136898">'ਡਿਸਕਵਰ' ਬਟਨ ਲਈ 'ਵਿਕਲਪ' ਤੋਂ ਆਪਣੀਆਂ ਕਹਾਣੀਆਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
-<translation id="2241634353105152135">ਸਿਰਫ ਇੱਕ ਵਾਰ</translation>
 <translation id="2247789808226901522">ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="2248941474044011069">Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2249635629516220541">ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਸਾਈਟਾਂ ਵੱਲੋਂ ਵਰਤੀ ਜਾਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -233,7 +235,6 @@
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
-<translation id="2327226657832576859">ਕੀ PDF ਫ਼ਾਈਲ ਨੂੰ ਆਪਣੇ ਆਪ ਖੋਲ੍ਹਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2328985652426384049">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="2349710944427398404">Chrome ਵੱਲੋਂ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਕੁੱਲ ਡਾਟਾ, ਜਿਸ ਵਿੱਚ ਖਾਤੇ, ਬੁੱਕਮਾਰਕ, ਅਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਸੈਟਿੰਗਾਂ ਸ਼ਾਮਲ ਹਨ</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ਸਕਿੰਟ ਬਾਕੀ</translation>
 <translation id="2779651927720337254">ਅਸਫਲ</translation>
 <translation id="2781151931089541271">1 ਸਕਿੰਟ ਬਾਕੀ</translation>
+<translation id="2789486458103222910">ਠੀਕ ਹੈ</translation>
 <translation id="2800066122460699237">ਟੈਬ <ph name="TAB_TITLE" /> ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2827278682606527653">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਅੱਧਾ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
@@ -340,6 +342,7 @@
 <translation id="2894821468041866720">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਜਾਂ ਡੀਵਾਈਸ ਨੂੰ ਹੌਲੀ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="2900528713135656174">ਇਵੈਂਟ ਬਣਾਓ</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ਲਈ ਸੁਝਾਅ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
+<translation id="2904300462646366554">ਡਾਊਨਲੋਡ ਕੀਤੀ PDF ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ PDF ਵਿਊਅਰਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਇੱਕ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੁੱਲ੍ਹ ਜਾਂਦੀਆਂ ਹਨ</translation>
 <translation id="2904414404539560095">ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="2908243544703713905">ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
@@ -354,7 +357,6 @@
 <translation id="2946420957526726953">ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2951071800649516099">ਬਾਅਦ 'ਚ ਪੜ੍ਹਨ ਲਈ ਪੰਨਿਆਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹੇ ਪੰਨੇ}}</translation>
-<translation id="2961210776189273067">ਸਿਰਲੇਖ</translation>
 <translation id="296370266220139811">ਸਮਾਂ ਬਚਾਓ ਅਤੇ ਘੱਟ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2977350910003566746">ਪਿਛਲੀ ਵਾਰ ਖੋਲ੍ਹੇ ਜਾਣ ਦੀ ਤਾਰੀਖ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨਾ</translation>
 <translation id="297771753501244313">ਪਿਛਲੀ ਵਾਰ ਖੋਲ੍ਹਣ ਦੀ ਤਾਰੀਖ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
@@ -600,6 +602,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="4307992518367153382">ਮੂਲ</translation>
+<translation id="4311652497846705514">ਕੀ PDF ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?</translation>
 <translation id="4320177379694898372">ਕੋਈ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ</translation>
 <translation id="433213510553688132">ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4335835283689002019">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਬੰਦ ਹੈ</translation>
@@ -639,7 +642,6 @@
 <translation id="4523326818319942067">ਪਿਛਲਾ ਘੰਟਾ</translation>
 <translation id="452750746583162491">ਆਪਣੇ ਸਿੰਕ ਕੀਤੇ ਡਾਟਾ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="4532845899244822526">ਫੋਲਡਰ ਚੁਣੋ</translation>
-<translation id="4541505619120536051">ਹਮੇਸ਼ਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4543131175509360848">ਕਿਸੇ ਵੀ ਪਾਸਕੀ ਸ਼ੀਟ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਟੈਬ}one{<ph name="TAB_COUNT_MANY" /> ਟੈਬ, <ph name="TAB_COUNT_INCOGNITO" /> ਇਨਕੋਗਨਿਟੋ}other{<ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ, <ph name="TAB_COUNT_INCOGNITO" /> ਇਨਕੋਗਨਿਟੋ}}</translation>
 <translation id="4554077758708533499">USB ਕੇਬਲ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
@@ -831,7 +833,6 @@
 <translation id="5486841595534124508">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੇ ਹੱਬ ਲਈ ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ ਦਾ ਲੋਗੋ ਜੋ 'ਮੇਰੀ ਸਰਗਰਮੀ' ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5487521232677179737">ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5492637351392383067">ਡੀਵਾਈਸ 'ਤੇ ਇਨਕ੍ਰਿਪਸ਼ਨ</translation>
-<translation id="5509866835115085009">PDF ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ 'ਤੇ, Chrome ਉਸਨੂੰ ਆਪਣੇ ਆਪ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5514904542973294328">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5515439363601853141">ਆਪਣਾ ਪਾਸਵਰਡ ਦੇਖਣ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="5517095782334947753">ਤੁਹਾਡੇ ਕੋਲ <ph name="FROM_ACCOUNT" /> ਤੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਹਨ।</translation>
@@ -897,9 +898,11 @@
 <translation id="5810288467834065221">ਕਾਪੀਰਾਈਟ <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="5814749351757353073">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਸਾਈਟਾਂ ਦਾ ਅਨੁਸਰਣ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5822875253699806474">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5833984609253377421">ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">ਕੀ PDF ਫ਼ਾਈਲ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਖੋਲ੍ਹਣਾ ਹੈ?</translation>
 <translation id="5853623416121554550">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="5855546874025048181">ਸੋਧੋ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। 'ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ' ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
@@ -925,6 +928,7 @@
 <translation id="5962718611393537961">ਸਮੇਟਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5964869237734432770">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="5966233851250124270">Chrome ਤੁਹਾਡੀ ਚੋਣ ਨੂੰ ਯਾਦ ਰੱਖੇਗਾ</translation>
+<translation id="5977976211062815271">ਇਸ ਡੀਵਾਈਸ 'ਤੇ</translation>
 <translation id="5979084224081478209">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5995726099713306770">ਕੀ ਪੰਨਾ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
@@ -1302,6 +1306,7 @@
 <translation id="7810647596859435254">ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ 1 ਫ਼ਾਈਲ ਹੈ}one{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਫ਼ਾਈਲ ਹੈ}other{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਫ਼ਾਈਲਾਂ ਹਨ}}</translation>
 <translation id="7815484226266492798">ਲੰਬਾ ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
+<translation id="7821130663268546430">ਤੁਸੀਂ ਟੈਬ ਸਵਿੱਚਰ ਵਿੱਚ ਸਾਰੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="7822705602465980873">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਇਹ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਲਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾ ਸਕੇ, ਉਦਾਹਰਨ ਲਈ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਘਟਨਾ ਤੋਂ ਬਾਅਦ Gmail ਵਿੱਚ ਸੁਰੱਖਿਆ ਵਧਾਉਣਾ।</translation>
 <translation id="78270725016672455">ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਰਜਿਸਟਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="7844171778363018843">ਸਿੰਕ ਲਈ ਕੋਈ ਵੀ ਡਾਟਾ ਨਹੀਂ ਚੁਣਿਆ ਗਿਆ</translation>
@@ -1329,6 +1334,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ਪੁਰਾਣਾ ਹੈ।</translation>
 <translation id="7944772052836377867">ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7947953824732555851">ਸਵੀਕਾਰ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="7951102827450076904">ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪਣੇ ਆਪ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7957413488482743710">ਤੁਹਾਨੂੰ ਸੰਭਾਵੀ ਧੋਖਾਧੜੀ ਤੋਂ ਬਚਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਆਭਾਸੀ ਕਾਰਡ ਤੁਹਾਡੇ ਅਸਲ ਕਾਰਡ ਨੂੰ ਲੁਕਾ ਦਿੰਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਸੰਬੰਧੀ 'ਪਿੱਛੇ' ਬਟਨ</translation>
 <translation id="7961926449547174351">ਤੁਸੀਂ ਸਟੋਰੇਜ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
@@ -1379,6 +1385,7 @@
 <translation id="8127542551745560481">ਹੋਮਪੇਜ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="8130309322784422030">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੀ ਸਾਈਨ-ਇਨ ਜਾਣਕਾਰੀ ਸ਼ਾਇਦ ਪੁਰਾਣੀ ਹੋਵੇ</translation>
 <translation id="813082847718468539">ਸਾਈਟ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
+<translation id="8135406045838672858">ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ PDF ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="8137562778192957619">ਤੁਹਾਨੂੰ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਪਵੇਗੀ। ਇਸਨੂੰ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ਫ਼ਾਈਲਾਂ ਬਾਕੀ</translation>
 <translation id="8190358571722158785">1 ਦਿਨ ਬਾਕੀ</translation>

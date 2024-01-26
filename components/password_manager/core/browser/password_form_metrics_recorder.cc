@@ -321,9 +321,13 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     // Record the filling assistance for the single username case without
     // considering the `submit_result_` because submission success is only
     // calculated for forms that have password fields.
+    SingleUsernameFillingAssistance filling_assistance =
+        absl::get<SingleUsernameFillingAssistance>(filling_assistance_);
     UMA_HISTOGRAM_ENUMERATION(
         "PasswordManager.FillingAssistanceForSingleUsername",
-        absl::get<SingleUsernameFillingAssistance>(filling_assistance_));
+        filling_assistance);
+    ukm_entry_builder_.SetManagerFill_AssistanceForSingleUsername(
+        static_cast<int64_t>(filling_assistance));
   }
 
   if (submit_result_ == SubmitResult::kPassed &&

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank('Basic test for LayoutShift support in PerformanceTimeline');
   const unstableFields = ['frameId'];
 

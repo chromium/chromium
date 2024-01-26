@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,6 +21,7 @@
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/test/test_event_storage.h"
@@ -188,8 +190,10 @@ TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
   Wait();
 
   OnRecordingEnabled();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 2);
   ExpectNoErrors();
@@ -200,8 +204,10 @@ TEST_F(StructuredMetricsProviderTest, NoIndependentUploadsBeforeInitialized) {
   // Verify the recorder is not initialized.
   EXPECT_FALSE(RecorderInitialized());
 
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_three::TestEventFour().SetTestMetricFour(1)));
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 0);
   ExpectNoErrors();

@@ -9,7 +9,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
@@ -20,6 +20,7 @@ namespace allocator_shim {
 
 // Set to true if the link-time magic has successfully hooked into the CRT's
 // heap initialization.
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 extern bool g_is_win_shim_layer_initialized;
 
 // Thin wrappers to implement the standard C allocation semantics on the

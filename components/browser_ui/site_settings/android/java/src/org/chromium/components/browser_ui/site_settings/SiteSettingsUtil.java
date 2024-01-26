@@ -61,20 +61,20 @@ public class SiteSettingsUtil {
     /**
      * @param types A list of ContentSettingsTypes
      * @return The highest priority permission that is available in SiteSettings. Returns DEFAULT
-     *         when called with empty list or only with entries not represented in this UI.
+     *     when called with empty list or only with entries not represented in this UI.
      */
-    public static @ContentSettingsType int getHighestPriorityPermission(
-            @ContentSettingsType @NonNull int[] types) {
-        for (@ContentSettingsType int setting : SETTINGS_ORDER) {
-            for (@ContentSettingsType int type : types) {
+    public static @ContentSettingsType.EnumType int getHighestPriorityPermission(
+            @ContentSettingsType.EnumType @NonNull int[] types) {
+        for (@ContentSettingsType.EnumType int setting : SETTINGS_ORDER) {
+            for (@ContentSettingsType.EnumType int type : types) {
                 if (setting == type) {
                     return type;
                 }
             }
         }
 
-        for (@ContentSettingsType int setting : CHOOSER_PERMISSIONS) {
-            for (@ContentSettingsType int type : types) {
+        for (@ContentSettingsType.EnumType int setting : CHOOSER_PERMISSIONS) {
+            for (@ContentSettingsType.EnumType int type : types) {
                 if (type == ContentSettingsType.BLUETOOTH_CHOOSER_DATA
                         && !ContentFeatureMap.isEnabled(
                                 ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
@@ -86,8 +86,8 @@ public class SiteSettingsUtil {
             }
         }
 
-        for (@ContentSettingsType int setting : EMBEDDED_PERMISSIONS) {
-            for (@ContentSettingsType int type : types) {
+        for (@ContentSettingsType.EnumType int setting : EMBEDDED_PERMISSIONS) {
+            for (@ContentSettingsType.EnumType int type : types) {
                 if (setting == type) {
                     return type;
                 }

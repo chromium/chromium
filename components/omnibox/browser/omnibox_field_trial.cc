@@ -596,6 +596,17 @@ bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
                                                  /*default_value=*/false);
 }
 
+bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kOnDeviceHeadProviderNonIncognito,
+             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
+             /*default_value=*/false) ||
+         base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kOnDeviceHeadProviderIncognito,
+             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
+             /*default_value=*/false);
+}
+
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
     const std::string& locale) {
   if (IsKoreanLocale(locale) &&
@@ -785,6 +796,7 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
+const char OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix[] = "SelectionFix";
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
@@ -1029,9 +1041,33 @@ MLConfig::MLConfig() {
       kMlUrlScoringUnlimitedNumCandidates.Get();
   ml_url_scoring_max_matches_by_provider =
       kMlUrlScoringMaxMatchesByProvider.Get();
-  stable_search_ranking =
-      base::FeatureParam<bool>(&omnibox::kMlUrlScoring, "stable_search_ranking",
-                               false)
+
+  // `kMlUrlSearchBlending` parameters.
+  stable_search_blending =
+      base::FeatureParam<bool>(&omnibox::kMlUrlSearchBlending,
+                               "MlUrlSearchBlending_StableSearchBlending",
+                               stable_search_blending)
+          .Get();
+  mapped_search_blending =
+      base::FeatureParam<bool>(&omnibox::kMlUrlSearchBlending,
+                               "MlUrlSearchBlending_MappedSearchBlending",
+                               mapped_search_blending)
+          .Get();
+  mapped_search_blending_min =
+      base::FeatureParam<int>(&omnibox::kMlUrlSearchBlending,
+                              "MlUrlSearchBlending_MappedSearchBlendingMin",
+                              mapped_search_blending_min)
+          .Get();
+  mapped_search_blending_max =
+      base::FeatureParam<int>(&omnibox::kMlUrlSearchBlending,
+                              "MlUrlSearchBlending_MappedSearchBlendingMax",
+                              mapped_search_blending_max)
+          .Get();
+  mapped_search_blending_grouping_threshold =
+      base::FeatureParam<int>(
+          &omnibox::kMlUrlSearchBlending,
+          "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold",
+          mapped_search_blending_grouping_threshold)
           .Get();
 
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);

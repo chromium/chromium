@@ -14,6 +14,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -88,6 +89,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -122,8 +125,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -154,9 +155,8 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@EnableFeatures({
-    ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION,
-})
+@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
+@DisableFeatures({ChromeFeatureList.ANDROID_HUB})
 @Restriction({
     UiRestriction.RESTRICTION_TYPE_PHONE,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
@@ -2069,9 +2069,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(isDisplayed()));
     }
@@ -2109,9 +2109,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(not(isDisplayed())));
 
@@ -2131,9 +2131,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(isDisplayed()));
     }
@@ -2141,10 +2141,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
-        ChromeFeatureList.HIDE_TAB_ON_TAB_SWITCHER
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testHideTabOnTabSwitcher(boolean isStartSurfaceRefactorEnabled) throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -2386,9 +2383,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     private Matcher<View> tabSwitcherViewMatcher() {
         return allOf(
-                withParent(
+                isDescendantOfA(
                         withId(
-                                TabUiTestHelper.getTabSwitcherParentId(
+                                TabUiTestHelper.getTabSwitcherAncestorId(
                                         mActivityTestRule.getActivity()))),
                 withId(R.id.tab_list_recycler_view));
     }

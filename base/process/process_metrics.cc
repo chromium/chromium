@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"

@@ -283,11 +283,10 @@ class ProtocolV2 : public ProtocolV1 {
   static void* KDF(const void* in, size_t in_len, void* out, size_t* out_len) {
     static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH, "");
     DCHECK_GE(*out_len, static_cast<size_t>(kSharedKeyLength));
-    auto hmac_key_out =
-        base::make_span(reinterpret_cast<uint8_t*>(out),
-                        static_cast<size_t>(SHA256_DIGEST_LENGTH));
+    auto hmac_key_out = base::make_span(
+        static_cast<uint8_t*>(out), static_cast<size_t>(SHA256_DIGEST_LENGTH));
     auto aes_key_out =
-        base::make_span(reinterpret_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
+        base::make_span(static_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
                         static_cast<size_t>(SHA256_DIGEST_LENGTH));
 
     constexpr uint8_t kHMACKeyInfo[] = "CTAP2 HMAC key";

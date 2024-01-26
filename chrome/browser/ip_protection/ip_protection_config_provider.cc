@@ -101,14 +101,14 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
     TryGetAuthTokensComplete(
-        absl::nullopt, std::move(callback),
+        std::nullopt, std::move(callback),
         IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
 
   if (!CanRequestOAuthToken()) {
     TryGetAuthTokensComplete(
-        absl::nullopt, std::move(callback),
+        std::nullopt, std::move(callback),
         IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
@@ -135,7 +135,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   }
 
   if (!CanRequestOAuthToken()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   auto request_token_callback =
@@ -204,7 +204,7 @@ void IpProtectionConfigProvider::
                "error: "
             << static_cast<int>(error.state());
     TryGetAuthTokensComplete(
-        absl::nullopt, std::move(callback),
+        std::nullopt, std::move(callback),
         error.IsTransientError()
             ? IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient
             : IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent);
@@ -225,7 +225,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
   if (error.state() != GoogleServiceAuthError::NONE) {
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompletedForGetProxyConfig failed: "
             << static_cast<int>(error.state());
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -242,7 +242,7 @@ void IpProtectionConfigProvider::CallGetProxyConfig(
              absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
             if (!response.ok()) {
               VLOG(2) << "IPATP::GetProxyList failed: " << response.status();
-              std::move(callback).Run(absl::nullopt);
+              std::move(callback).Run(std::nullopt);
               return;
             }
             std::vector<std::vector<std::string>> proxy_list;
@@ -331,14 +331,14 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     }
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted got an error: "
             << static_cast<int>(result);
-    TryGetAuthTokensComplete(absl::nullopt, std::move(callback), result);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback), result);
     return;
   }
 
   if (tokens.value().size() == 0) {
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted called with no tokens";
     TryGetAuthTokensComplete(
-        absl::nullopt, std::move(callback),
+        std::nullopt, std::move(callback),
         IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
     return;
   }
@@ -349,7 +349,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
         CreateBlindSignedAuthToken(token);
     if (converted_token->token.empty()) {
       TryGetAuthTokensComplete(
-          absl::nullopt, std::move(callback),
+          std::nullopt, std::move(callback),
           IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
       return;
     }
@@ -360,7 +360,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
                           current_time - bsa_get_tokens_start_time);
 
-  TryGetAuthTokensComplete(absl::make_optional(std::move(bsa_tokens)),
+  TryGetAuthTokensComplete(std::make_optional(std::move(bsa_tokens)),
                            std::move(callback),
                            IpProtectionTryGetAuthTokensResult::kSuccess);
 }
@@ -394,15 +394,15 @@ IpProtectionConfigProvider::CreateBlindSignedAuthToken(
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
-    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
         bsa_tokens,
     TryGetAuthTokensCallback callback,
     IpProtectionTryGetAuthTokensResult result) {
   base::UmaHistogramEnumeration(
       "NetworkService.IpProtection.TryGetAuthTokensResult", result);
 
-  absl::optional<base::TimeDelta> backoff = CalculateBackoff(result);
-  absl::optional<base::Time> try_again_after;
+  std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
+  std::optional<base::Time> try_again_after;
   if (backoff) {
     if (*backoff == base::TimeDelta::Max()) {
       try_again_after = base::Time::Max();
@@ -426,9 +426,9 @@ void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
   }
 }
 
-absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
+std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     IpProtectionTryGetAuthTokensResult result) {
-  absl::optional<base::TimeDelta> backoff;
+  std::optional<base::TimeDelta> backoff;
   bool exponential = false;
   switch (result) {
     case IpProtectionTryGetAuthTokensResult::kSuccess:
@@ -607,5 +607,6 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
 }
 
 void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
-  // TODO(brgoldstein): Update IP protection state based on user settings.
+  // TODO(https://crbug.com/1521138): Update IP protection state based on user
+  // settings.
 }

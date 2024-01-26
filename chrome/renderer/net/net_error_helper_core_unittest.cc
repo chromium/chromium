@@ -167,7 +167,7 @@ class NetErrorHelperCoreTest : public testing::Test,
 #if BUILDFLAG(IS_ANDROID)
   // State of auto fetch, as reported to Delegate. Unset if SetAutoFetchState
   // was not called.
-  absl::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
+  std::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
   auto_fetch_state() const {
     return auto_fetch_state_;
   }
@@ -303,7 +303,7 @@ class NetErrorHelperCoreTest : public testing::Test,
   std::string offline_content_json_;
   std::string offline_content_summary_json_;
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
+  std::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
       auto_fetch_state_;
 #endif
   bool offline_content_feature_enabled_ = false;

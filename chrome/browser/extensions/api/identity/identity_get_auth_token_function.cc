@@ -115,7 +115,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
     return RespondNow(Error(error.ToString()));
   }
 
-  absl::optional<api::identity::GetAuthToken::Params> params =
+  std::optional<api::identity::GetAuthToken::Params> params =
       api::identity::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ComputeInteractivityStatus(params->details);
@@ -743,7 +743,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
 }
 
 void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
-    const absl::optional<std::string>& access_token,
+    const std::optional<std::string>& access_token,
     base::Time expiration_time,
     const GoogleServiceAuthError& error) {
   // By the time we get here we should no longer have an outstanding access
@@ -775,7 +775,7 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
 #if BUILDFLAG(IS_CHROMEOS)
 void IdentityGetAuthTokenFunction::OnAccessTokenForDeviceAccountFetchCompleted(
     crosapi::mojom::AccessTokenResultPtr result) {
-  absl::optional<std::string> access_token;
+  std::optional<std::string> access_token;
   base::Time expiration_time;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   if (result->is_access_token_info()) {
@@ -801,7 +801,7 @@ void IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted(
                              access_token_info.expiration_time,
                              GoogleServiceAuthError::AuthErrorNone());
   } else {
-    OnGetAccessTokenComplete(absl::nullopt, base::Time(), error);
+    OnGetAccessTokenComplete(std::nullopt, base::Time(), error);
   }
 }
 
@@ -937,7 +937,7 @@ std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
 }
 
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
-    const absl::optional<api::identity::TokenDetails>& details) {
+    const std::optional<api::identity::TokenDetails>& details) {
   bool interactive = details && details->interactive.value_or(false);
   if (!interactive) {
     interactivity_status_for_consent_ = InteractivityStatus::kNotRequested;

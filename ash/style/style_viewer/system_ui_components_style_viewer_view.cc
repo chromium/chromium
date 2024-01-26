@@ -36,7 +36,8 @@ namespace {
 
 // The width and height of viewer contents.
 constexpr int kContentWidth = 960;
-constexpr int kContentHeight = 480;
+constexpr int kContentHeight = 496;
+constexpr int kBottomSpacing = 16;
 // The width of components menu.
 constexpr int kMenuWidth = 160;
 // The height of component button.
@@ -134,6 +135,8 @@ SystemUIComponentsStyleViewerView::SystemUIComponentsStyleViewerView()
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
 
   // Set menu scroll view.
   menu_scroll_view_->SetPreferredSize(gfx::Size(kMenuWidth, kContentHeight));

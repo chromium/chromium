@@ -56,6 +56,11 @@ message SecurityDomainMember {
   }
 
   MemberType member_type = 4;
+
+  message MemberMetadata {
+    bool usable_for_retrieval = 1;
+  }
+  MemberMetadata member_metadata = 6;
 }
 
 message JoinSecurityDomainsRequest {
@@ -71,6 +76,11 @@ message JoinSecurityDomainsResponse {
 
 message JoinSecurityDomainsErrorDetail {
   JoinSecurityDomainsResponse already_exists_response = 1;
+}
+
+message ListSecurityDomainMembersResponse {
+  repeated SecurityDomainMember security_domain_members = 1;
+  string next_page_token = 2;
 }
 
 // TODO(crbug.com/1234719): figure out how to link google.protobuf.Any and use

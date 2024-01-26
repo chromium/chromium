@@ -27,8 +27,9 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     kWebGPUUsages;
 }
@@ -175,7 +176,8 @@ bool GLTextureImageBackingFactory::IsSupported(
   if (gr_context_type != GrContextType::kGL &&
       ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
        (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
     return false;
   }
 
@@ -206,17 +208,17 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
   const bool for_framebuffer_attachment =
-      (usage & (SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+      (usage &
+       (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      use_passthrough_);
+      std::move(debug_label), use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
-                              progress_reporter_, framebuffer_attachment_angle,
-                              std::move(debug_label));
+                              progress_reporter_, framebuffer_attachment_angle);
 
   return std::move(result);
 }

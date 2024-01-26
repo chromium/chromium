@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_DETERMINER_DELEGATE_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_DETERMINER_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace base {
 class FilePath;
@@ -46,13 +47,11 @@ class DownloadTargetDeterminerDelegate {
       download::DownloadPathReservationTracker::ReservedPathCallback;
 
   // Callback to be invoked when RequestConfirmation() completes.
-  // |virtual_path|: The path chosen by the user. If the user cancels the file
-  //    selection, then this parameter will be the empty path. On Chrome OS,
-  //    this path may contain virtual mount points if the user chose a virtual
-  //    path (e.g. Google Drive).
+  // |selected_file_info|: The file chosen by the user, or a value with an empty
+  // path if the user cancels the file selection.
   using ConfirmationCallback =
       base::OnceCallback<void(DownloadConfirmationResult,
-                              const base::FilePath& virtual_path)>;
+                              const ui::SelectedFileInfo& selected_file_info)>;
 
   // Callback to be invoked when RequestIncognitoWarningConfirmation()
   // completes.

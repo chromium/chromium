@@ -48,7 +48,8 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   static const int kWebAudioRenderBufferSize;
 
   explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
-                                        int context_sample_rate);
+                                        int context_sample_rate,
+                                        uint32_t context_buffer_size);
 
   WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
   WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =

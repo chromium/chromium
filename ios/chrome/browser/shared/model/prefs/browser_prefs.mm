@@ -87,10 +87,10 @@
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -179,6 +179,14 @@ const char kAutofillBrandingKeyboardAccessoriesTapped[] =
 // Deprecated 12/2023.
 const char kSigninLastAccounts[] = "ios.signin.last_accounts";
 const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
+
+// Deprecated 01/2024.
+const char kAppStoreRatingTotalDaysOnChromeKey[] =
+    "AppStoreRatingTotalDaysOnChrome";
+const char kAppStoreRatingActiveDaysInPastWeekKey[] =
+    "AppStoreRatingActiveDaysInPastWeek";
+const char kAppStoreRatingLastShownPromoDayKey[] =
+    "AppStoreRatingLastShownPromoDay";
 
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
@@ -280,6 +288,22 @@ void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
+// Helper function migrating the `string` preference from LocalState prefs to
+// BrowserState prefs.
+void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      local_pref_service->FindPreference(pref_name.data());
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    pref_service->SetString(pref_name.data(),
+                            local_pref_service->GetString(pref_name.data()));
+    local_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -296,7 +320,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   set_up_list_prefs::RegisterPrefs(registry);
-  tab_resumption_prefs::RegisterPrefs(registry);
+  tab_resumption_prefs::RegisterLocalStatePrefs(registry);
   safety_check_prefs::RegisterPrefs(registry);
   RegisterParcelTrackingPrefs(registry);
   update_client::RegisterPrefs(registry);
@@ -310,7 +334,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());
-  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 1);
+  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
   registry->RegisterListPref(prefs::kBrowserStatesLastActive);
 
   [MemoryDebuggerManager registerLocalState:registry];
@@ -468,6 +492,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
+  registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -510,6 +535,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   unified_consent::UnifiedConsentService::RegisterPrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
+  tab_resumption_prefs::RegisterProfilePrefs(registry);
 
   [BookmarkMediator registerBrowserStatePrefs:registry];
   [BookmarkPathCache registerBrowserStatePrefs:registry];
@@ -528,7 +554,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
   registry->RegisterBooleanPref(kDataSaverEnabled, false);
   registry->RegisterBooleanPref(
-      prefs::kEnableDoNotTrack, false,
+      prefs::kEnableDoNotTrackIos, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
@@ -736,31 +762,32 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
     prefs->ClearPref(kTrialPrefName);
   }
 
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  MigrateArrayOfDatesPreferenceFromUserDefaults(
-      kAppStoreRatingActiveDaysInPastWeekKey, prefs, defaults);
-
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  MigrateIntegerPreferenceFromUserDefaults(kAppStoreRatingTotalDaysOnChromeKey,
-                                           prefs, defaults);
-
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  MigrateNSDatePreferenceFromUserDefaults(kAppStoreRatingLastShownPromoDayKey,
-                                          prefs, defaults);
-
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
 
   // Added 01/2024.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   MigrateNSStringPreferenceFromUserDefaults(kIOSChromeNextVersionKey, prefs,
                                             defaults);
   // Added 01/2024.
   MigrateNSStringPreferenceFromUserDefaults(kIOSChromeUpgradeURLKey, prefs,
                                             defaults);
+
+  // Added 01/2024.
+  MigrateNSDatePreferenceFromUserDefaults(kLastInfobarDisplayTimeKey, prefs,
+                                          defaults);
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingActiveDaysInPastWeekKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingActiveDaysInPastWeekKey)];
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingTotalDaysOnChromeKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingTotalDaysOnChromeKey)];
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingLastShownPromoDayKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingLastShownPromoDayKey)];
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -899,6 +926,13 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 12/2023.
   MigrateIntegerToTimePreferenceFromUserDefaults(kLastCookieDeletionDate, prefs,
                                                  defaults);
+
+  // Added 01/2024.
+  // Note that this key is an obsolete LocalState pref, it's here because it was
+  // moved from LocalState pref to BrowserState pref and before clearing it the
+  // BrowserState pref needs to be updated.
+  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
+      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

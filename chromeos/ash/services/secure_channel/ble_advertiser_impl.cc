@@ -15,7 +15,7 @@
 #include "chromeos/ash/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/shared_resource_scheduler.h"
-#include "chromeos/ash/services/secure_channel/timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
 
 namespace ash::secure_channel {
 
@@ -38,7 +38,7 @@ std::unique_ptr<BleAdvertiser> BleAdvertiserImpl::Factory::Create(
     Delegate* delegate,
     BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
-    TimerFactory* timer_factory,
+    cross_device::TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
   if (test_factory_) {
     return test_factory_->CreateInstance(delegate, bluetooth_helper,
@@ -65,7 +65,7 @@ BleAdvertiserImpl::BleAdvertiserImpl(
     Delegate* delegate,
     BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
-    TimerFactory* timer_factory,
+    cross_device::TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : BleAdvertiser(delegate),
       bluetooth_helper_(bluetooth_helper),

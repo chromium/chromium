@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/script/pending_script.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"

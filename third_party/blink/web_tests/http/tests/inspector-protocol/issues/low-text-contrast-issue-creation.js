@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`<div class="issue" style="color: grey; background-color: white;">text</div>`,
     'Tests that low text contrast issues are reported.');
 

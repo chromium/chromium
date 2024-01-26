@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
@@ -91,6 +92,7 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/session_util.h"
@@ -124,6 +126,7 @@
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -135,7 +138,7 @@
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
@@ -148,10 +151,6 @@
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1504753): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -275,7 +274,7 @@ class MainControllerAuthenticationServiceDelegate
   void ClearBrowsingData(ProceduralBlock completion) override;
 
  private:
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   __weak id<BrowsingDataCommands> dispatcher_ = nil;
 };
 
@@ -430,10 +429,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startUpBrowserBasicInitialization {
   _appLaunchTime = IOSChromeMain::StartTime();
   _isColdStart = YES;
-  if (@available(iOS 15, *)) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
-                          base::ios::IsApplicationPreWarmed());
-  }
+  UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
+                        base::ios::IsApplicationPreWarmed());
 
   [SetupDebugging setUpDebuggingOptions];
 
@@ -560,7 +557,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
   // Migrate the session storage based on the feature.
   const SessionRestorationServiceFactory::StorageFormat requested_format =
-      web::features::UseSessionSerializationOptimizations()
+      session::features::UseSessionSerializationOptimizations()
           ? SessionRestorationServiceFactory::kOptimized
           : SessionRestorationServiceFactory::kLegacy;
 
@@ -1470,10 +1467,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       if (willShowActivityIndicator) {
         // User interaction still needs to be disabled as a way to
         // force reload all the web states and to reset NTPs.
-        browserProviderInterface.mainBrowserProvider.userInteractionEnabled =
-            NO;
-        browserProviderInterface.incognitoBrowserProvider
-            .userInteractionEnabled = NO;
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.mainBrowserProvider.browser)
+            ->SetWebUsageEnabled(false);
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.incognitoBrowserProvider.browser)
+            ->SetWebUsageEnabled(false);
 
         if (didShowActivityIndicator &&
             browserProviderInterface.mainBrowserProvider.browser) {
@@ -1484,9 +1483,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           [handler hideActivityOverlay];
         }
       }
-      browserProviderInterface.mainBrowserProvider.userInteractionEnabled = YES;
-      browserProviderInterface.incognitoBrowserProvider.userInteractionEnabled =
-          YES;
+      WebUsageEnablerBrowserAgent::FromBrowser(
+          browserProviderInterface.mainBrowserProvider.browser)
+          ->SetWebUsageEnabled(true);
+      WebUsageEnablerBrowserAgent::FromBrowser(
+          browserProviderInterface.incognitoBrowserProvider.browser)
+          ->SetWebUsageEnabled(true);
       [browserProviderInterface.currentBrowserProvider setPrimary:YES];
     }
     // `completionBlock` is run once, not once per scene.

@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
 #import "components/dom_distiller/core/url_constants.h"
@@ -55,7 +56,7 @@ bool ShouldSyncURLImpl(const GURL& url) {
 // iOS implementation of SyncSessionsClient. Needs to be in a separate class
 // due to possible multiple inheritance issues, wherein IOSChromeSyncClient
 // might inherit from other interfaces with same methods.
-class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
+class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
  public:
   SyncSessionsClientImpl(
       const base::FilePath& browser_state_path,
@@ -115,6 +116,10 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
     return &local_session_event_router_;
   }
 
+  base::WeakPtr<SyncSessionsClient> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   raw_ptr<history::HistoryService> history_service_;
   raw_ptr<syncer::DeviceInfoSyncService> device_info_service_;
@@ -122,6 +127,7 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   IOSSyncedWindowDelegatesGetter window_delegates_getter_;
   IOSChromeLocalSessionEventRouter local_session_event_router_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
+  base::WeakPtrFactory<SyncSessionsClientImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace

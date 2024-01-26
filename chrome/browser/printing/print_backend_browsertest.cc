@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "printing/backend/print_backend.h"
+
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +36,6 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
@@ -47,7 +49,6 @@
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/emf_win.h"
@@ -230,28 +231,30 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
+    int job_id;
     GetPrintBackendService()->StartPrinting(
         context_id, kTestDocumentCookie, u"document name",
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-        /*settings=*/absl::nullopt,
+        /*settings=*/std::nullopt,
 #endif
-        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                       base::Unretained(this), std::ref(result)));
+        base::BindOnce(&PrintBackendBrowserTest::CaptureStartPrintingResult,
+                       base::Unretained(this), std::ref(result),
+                       std::ref(job_id)));
     WaitUntilCallbackReceived();
     return result;
   }
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<mojom::ResultCode> RenderPageAndWait() {
+  std::optional<mojom::ResultCode> RenderPageAndWait() {
     // Load a sample EMF file for a single page for testing handling.
     Emf metafile;
     if (!LoadMetafileDataFromFile("test1.emf", metafile))
-      return absl::nullopt;
+      return std::nullopt;
 
     base::MappedReadOnlyRegion region_mapping =
         metafile.GetDataAsSharedMemoryRegion();
     if (!region_mapping.IsValid())
-      return absl::nullopt;
+      return std::nullopt;
 
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
@@ -272,16 +275,16 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/1008222)  Include Windows once XPS print pipeline is enabled.
 #if !BUILDFLAG(IS_WIN)
-  absl::optional<mojom::ResultCode> RenderDocumentAndWait() {
+  std::optional<mojom::ResultCode> RenderDocumentAndWait() {
     // Load a sample PDF file for a single page for testing handling.
     MetafileSkia metafile;
     if (!LoadMetafileDataFromFile("embedded_images.pdf", metafile))
-      return absl::nullopt;
+      return std::nullopt;
 
     base::MappedReadOnlyRegion region_mapping =
         metafile.GetDataAsSharedMemoryRegion();
     if (!region_mapping.IsValid())
-      return absl::nullopt;
+      return std::nullopt;
 
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
@@ -359,6 +362,15 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
       mojom::PrintSettingsResultPtr& capture_print_settings,
       mojom::PrintSettingsResultPtr print_settings) {
     capture_print_settings = std::move(print_settings);
+    CheckForQuit();
+  }
+
+  void CaptureStartPrintingResult(mojom::ResultCode& capture_result,
+                                  int& capture_job_id,
+                                  mojom::ResultCode result,
+                                  int job_id) {
+    capture_result = result;
+    capture_job_id = job_id;
     CheckForQuit();
   }
 
@@ -584,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
   // default paper size.  Find a paper which is not the default, which should
   // have been given an incorrect printable area that matches the paper size.
   ASSERT_TRUE(caps_and_info->is_printer_caps_and_info());
-  absl::optional<PrinterSemanticCapsAndDefaults::Paper> non_default_paper;
+  std::optional<PrinterSemanticCapsAndDefaults::Paper> non_default_paper;
   const PrinterSemanticCapsAndDefaults::Paper& default_paper =
       caps_and_info->get_printer_caps_and_info()->printer_caps.default_paper;
   const PrinterSemanticCapsAndDefaults::Papers& papers =
@@ -729,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   ASSERT_EQ(StartPrintingAndWait(context_id, print_settings),
             mojom::ResultCode::kSuccess);
 
-  absl::optional<mojom::ResultCode> result = RenderPageAndWait();
+  std::optional<mojom::ResultCode> result = RenderPageAndWait();
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -750,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedDocument) {
   ASSERT_EQ(StartPrintingAndWait(context_id, print_settings),
             mojom::ResultCode::kSuccess);
 
-  absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
+  std::optional<mojom::ResultCode> result = RenderDocumentAndWait();
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -771,9 +783,9 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
   // TODO(crbug.com/1008222)  Include Windows coverage for RenderDocument()
   // path once XPS print pipeline is enabled.
 #if BUILDFLAG(IS_WIN)
-  absl::optional<mojom::ResultCode> result = RenderPageAndWait();
+  std::optional<mojom::ResultCode> result = RenderPageAndWait();
 #else
-  absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
+  std::optional<mojom::ResultCode> result = RenderDocumentAndWait();
 #endif
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 

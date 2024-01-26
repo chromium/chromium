@@ -8,7 +8,8 @@ typedef (FenceEvent or DOMString) ReportEventType;
 
 [Exposed=Window, RuntimeEnabled=FencedFrames]
 interface Fence {
-    [CallWith=ScriptState, RaisesException] void reportEvent(ReportEventType event);
-    [CallWith=ScriptState, RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
+    [RaisesException] void reportEvent(ReportEventType event);
+    [RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
     [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
+    [CallWith=ScriptState, RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] Promise<void> disableUntrustedNetwork();
 };

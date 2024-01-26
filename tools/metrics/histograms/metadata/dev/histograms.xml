@@ -148,9 +148,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceLoaded"
-    enum="DevToolsDeveloperResourceLoaded" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
   <summary>
     Records for each developer resource load that the DevTools front-end issues
     (e.g. to load a source map) several enum values encoding which load method
@@ -183,9 +183,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsDeveloperResourceScheme" expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
   <summary>
     Records for each developer resource load that the DevTools front-end issues
     (e.g. to load a source map) one enum value that records the scheme of the
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="DevTools.Launch" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
 <!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
 
   <owner>yangguo@chromium.org</owner>
@@ -406,24 +406,6 @@ chromium-metrics-reviews@google.com.
   <owner>paulirish@chromium.org</owner>
   <owner>cjamcl@chromium.org</owner>
   <summary>Records which Lighthouse mode was used to audit the page.</summary>
-</histogram>
-
-<histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
-    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2024-03-01">
-  <owner>bmeurer@chromium.org</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records the ways in which the Memory Inspector panel was opened.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.LinearMemoryInspector.Target"
-    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2024-03-01">
-  <owner>bmeurer@chromium.org</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records the inspection target via which the Memory Inspector was opened.
-  </summary>
 </histogram>
 
 <histogram name="DevTools.ManifestSectionSelected"
@@ -495,6 +477,15 @@ chromium-metrics-reviews@google.com.
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>Specified DevTools panel was shown.</summary>
+</histogram>
+
+<histogram name="DevTools.PanelShownInLocation"
+    enum="DevToolsPanelWithLocation" expires_after="2025-01-15">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>ergunsh@chromium.org</owner>
+  <summary>
+    Specified DevTools panel was shown in the specified location: Main or Drawer
+  </summary>
 </histogram>
 
 <histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"

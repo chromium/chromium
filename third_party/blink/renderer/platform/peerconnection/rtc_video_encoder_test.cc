@@ -278,11 +278,14 @@ class MockMojoVideoEncoderMetricsProviderFactory
 };
 }  // anonymous namespace
 
-MATCHER_P2(CheckConfig,
+MATCHER_P3(CheckConfig,
            pixel_format,
            storage_type,
-           "Check pixel format and storage type in VEAConfig") {
-  return arg.input_format == pixel_format && *arg.storage_type == storage_type;
+           drop_frame,
+           "Check pixel format, storage type and drop frame in VEAConfig") {
+  return arg.input_format == pixel_format &&
+         *arg.storage_type == storage_type &&
+         (arg.drop_frame_thresh_percentage > 0) == drop_frame;
 }
 
 MATCHER_P(CheckStatusCode, code, "Check the code of media::EncoderStatusCode") {
@@ -307,15 +310,17 @@ class RTCVideoEncoderTest {
   void ExpectCreateInitAndDestroyVEA(
       media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420,
       media::VideoEncodeAccelerator::Config::StorageType storage_type =
-          media::VideoEncodeAccelerator::Config::StorageType::kShmem) {
+          media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      bool drop_frame = false) {
     // The VEA will be owned by the RTCVideoEncoder once
     // factory.CreateVideoEncodeAccelerator() is called.
     mock_vea_ = new media::MockVideoEncodeAccelerator();
 
     EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
         .WillRepeatedly(Return(mock_vea_.get()));
-    EXPECT_CALL(*mock_vea_,
-                Initialize(CheckConfig(pixel_format, storage_type), _, _))
+    EXPECT_CALL(
+        *mock_vea_,
+        Initialize(CheckConfig(pixel_format, storage_type, drop_frame), _, _))
         .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
     EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer).Times(AtLeast(3));
     EXPECT_CALL(*mock_vea_, Destroy()).Times(1);
@@ -464,21 +469,37 @@ class RTCVideoEncoderTest {
               frame->visible_data(media::VideoFrame::kVPlane)[0]);
   }
 
-  void ReturnFrameWithTimeStamp(scoped_refptr<media::VideoFrame> frame,
-                                bool force_keyframe) {
+  void DropFrame(scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+    CHECK(!force_keyframe);
     client_->BitstreamBufferReady(
         0,
         media::BitstreamBufferMetadata(0, force_keyframe, frame->timestamp()));
+  }
+  void ReturnSvcFramesThatShouldBeDropped(
+      scoped_refptr<media::VideoFrame> frame,
+      bool force_keyframe) {
+    CHECK(!force_keyframe);
+    for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
+      const bool end_of_picture = sid + 1 == num_spatial_layers_;
+      media::BitstreamBufferMetadata metadata(0, force_keyframe,
+                                              frame->timestamp());
+      metadata.end_of_picture = end_of_picture;
+      metadata.vp9.emplace().spatial_idx = sid;
+      client_->BitstreamBufferReady(sid, metadata);
+    }
+  }
+  void ReturnFrameWithTimeStamp(scoped_refptr<media::VideoFrame> frame,
+                                bool force_keyframe) {
+    client_->BitstreamBufferReady(
+        0, media::BitstreamBufferMetadata(100, force_keyframe,
+                                          frame->timestamp()));
   }
 
   void ReturnSVCLayerFrameWithVp9Metadata(
       scoped_refptr<media::VideoFrame> frame,
       bool force_keyframe) {
-    int32_t frame_num = frame->timestamp().InMicroseconds();
+    const size_t frame_num = return_svc_layer_frame_times_;
     CHECK(0 <= frame_num && frame_num <= 4);
-    media::BitstreamBufferMetadata metadata(100u /* payload_size_bytes */,
-                                            force_keyframe, frame->timestamp());
-
     for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
       // Assume the number of TLs is three. TL structure is below.
       // TL2:      [#1]     /-[#3]
@@ -509,13 +530,18 @@ class RTCVideoEncoderTest {
           vp9.p_diffs = {4};
           break;
       }
+
+      const bool end_of_picture = sid + 1 == num_spatial_layers_;
+      media::BitstreamBufferMetadata metadata(
+          100u /* payload_size_bytes */, force_keyframe, frame->timestamp());
+
       // Assume k-SVC encoding.
       metadata.key_frame = frame_num == 0 && sid == 0;
+      metadata.end_of_picture = end_of_picture;
       vp9.spatial_idx = sid;
       vp9.reference_lower_spatial_layers = frame_num == 0 && sid != 0;
       vp9.referenced_by_upper_spatial_layers =
           frame_num == 0 && (sid + 1 != num_spatial_layers_);
-      vp9.end_of_picture = (sid + 1 == num_spatial_layers_);
       if (metadata.key_frame) {
         constexpr int kDenom[] = {4, 2, 1};
         for (size_t i = 0; i < num_spatial_layers_; ++i) {
@@ -530,6 +556,8 @@ class RTCVideoEncoderTest {
       metadata.vp9 = vp9;
       client_->BitstreamBufferReady(sid, metadata);
     }
+
+    return_svc_layer_frame_times_ += 1;
   }
 
   void VerifyTimestamp(uint32_t rtp_timestamp,
@@ -595,6 +623,7 @@ class RTCVideoEncoderTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<EncodedImageCallbackWrapper> callback_wrapper_;
   size_t num_spatial_layers_;
+  size_t return_svc_layer_frame_times_ = 0;
 };
 
 struct RTCVideoEncoderInitTestParam {
@@ -724,6 +753,7 @@ class RTCVideoEncoderEncodeTest
       disabled_features.push_back(
           features::kWebRtcInitializeEncoderOnFirstFrame);
     }
+    enabled_features.push_back(media::kWebRTCHardwareVideoEncoderFrameDrop);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -1108,6 +1138,111 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeVP9TemporalLayer) {
   }
 }
 
+TEST_P(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.SetFrameDropEnabled(/*enabled=*/true);
+  if (!InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA(
+        media::PIXEL_FORMAT_I420,
+        media::VideoEncodeAccelerator::Config::StorageType::kShmem, true);
+  }
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+  if (InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA(
+        media::PIXEL_FORMAT_I420,
+        media::VideoEncodeAccelerator::Config::StorageType::kShmem, true);
+  }
+
+  constexpr static size_t kNumEncodeFrames = 10u;
+  constexpr static size_t kDropIndices[] = {3, 4, 7};
+  class DropFrameVerifier : public webrtc::EncodedImageCallback {
+   public:
+    DropFrameVerifier() = default;
+    ~DropFrameVerifier() override = default;
+
+    void OnDroppedFrame(DropReason reason) override {
+      AddResult(EncodeResult::kDropped);
+    }
+
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      if (codec_specific_info->end_of_picture) {
+        AddResult(EncodeResult::kEncoded);
+      }
+      return Result(Result::OK);
+    }
+
+    void Verify() {
+      base::AutoLock auto_lock(lock_);
+      ASSERT_EQ(encode_results_.size(), kNumEncodeFrames);
+      for (size_t i = 0; i < kNumEncodeFrames; ++i) {
+        EncodeResult expected = EncodeResult::kEncoded;
+        if (base::Contains(kDropIndices, i)) {
+          expected = EncodeResult::kDropped;
+        }
+        EXPECT_EQ(encode_results_[i], expected);
+      }
+    }
+
+   private:
+    enum class EncodeResult {
+      kEncoded,
+      kDropped,
+    };
+
+    void AddResult(EncodeResult result) {
+      base::AutoLock auto_lock(lock_);
+      encode_results_.push_back(result);
+    }
+
+    base::Lock lock_;
+    std::vector<EncodeResult> encode_results_ GUARDED_BY(lock_);
+  };
+
+  DropFrameVerifier dropframe_verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&dropframe_verifier);
+  for (size_t i = 0; i < kNumEncodeFrames; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+    base::WaitableEvent event;
+    if (i > 0) {
+      EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_)).Times(1);
+    }
+    if (base::Contains(kDropIndices, i)) {
+      EXPECT_CALL(*mock_vea_, Encode)
+          .WillOnce(DoAll(Invoke(this, &RTCVideoEncoderTest::DropFrame),
+                          [&event]() { event.Signal(); }));
+    } else {
+      EXPECT_CALL(*mock_vea_, Encode)
+          .WillOnce(DoAll(
+              Invoke(this, &RTCVideoEncoderTest::ReturnFrameWithTimeStamp),
+              [&event]() { event.Signal(); }));
+    }
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_timestamp_rtp(0)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+  }
+  RunUntilIdle();
+  dropframe_verifier.Verify();
+  rtc_encoder_.reset();
+}
+
 TEST_P(RTCVideoEncoderEncodeTest, InitializeWithTooHighBitrateFails) {
   // We expect initialization to fail. We do not want a mock video encoder, as
   // it will not be successfully attached to the rtc_encoder_. So we do not call
@@ -1211,6 +1346,110 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
   }
   sl_verifier.Wait();
   RunUntilIdle();
+}
+
+TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  constexpr size_t kNumSpatialLayers = 3;
+  webrtc::VideoCodec sl_codec =
+      GetSVCLayerCodec(webrtc::kVideoCodecVP9, kNumSpatialLayers);
+  if (!InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&sl_codec, kVideoEncoderSettings));
+  if (InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+
+  constexpr static size_t kNumEncodeFrames = 5u;
+  constexpr static size_t kDropIndices[] = {1, 3};
+  class DropFrameVerifier : public webrtc::EncodedImageCallback {
+   public:
+    DropFrameVerifier() = default;
+    ~DropFrameVerifier() override = default;
+
+    void OnDroppedFrame(DropReason reason) override {
+      AddResult(EncodeResult::kDropped);
+    }
+
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      if (codec_specific_info->end_of_picture) {
+        AddResult(EncodeResult::kEncoded);
+      }
+      return Result(Result::OK);
+    }
+
+    void Verify() {
+      base::AutoLock auto_lock(lock_);
+      ASSERT_EQ(encode_results_.size(), kNumEncodeFrames);
+      for (size_t i = 0; i < kNumEncodeFrames; ++i) {
+        EncodeResult expected = EncodeResult::kEncoded;
+        if (base::Contains(kDropIndices, i)) {
+          expected = EncodeResult::kDropped;
+        }
+        EXPECT_EQ(encode_results_[i], expected);
+      }
+    }
+
+   private:
+    enum class EncodeResult {
+      kEncoded,
+      kDropped,
+    };
+
+    void AddResult(EncodeResult result) {
+      base::AutoLock auto_lock(lock_);
+      encode_results_.push_back(result);
+    }
+
+    base::Lock lock_;
+    std::vector<EncodeResult> encode_results_ GUARDED_BY(lock_);
+  };
+  DropFrameVerifier dropframe_verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&dropframe_verifier);
+  for (size_t i = 0; i < kNumEncodeFrames; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+    base::WaitableEvent event;
+    if (i > 0) {
+      EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_))
+          .Times(kNumSpatialLayers);
+    }
+    if (base::Contains(kDropIndices, i)) {
+      EXPECT_CALL(*mock_vea_, Encode)
+          .WillOnce(DoAll(
+              Invoke(this,
+                     &RTCVideoEncoderTest::ReturnSvcFramesThatShouldBeDropped),
+              [&event]() { event.Signal(); }));
+    } else {
+      EXPECT_CALL(*mock_vea_, Encode)
+          .WillOnce(DoAll(
+              Invoke(this,
+                     &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
+              [&event]() { event.Signal(); }));
+    }
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_timestamp_rtp(i)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+  }
+  RunUntilIdle();
+  dropframe_verifier.Verify();
+  rtc_encoder_.reset();
 }
 
 TEST_P(RTCVideoEncoderEncodeTest, CreateAndInitVP9ThreeLayerSvc) {
@@ -1360,21 +1599,22 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_EQ(metadata.vp9->spatial_layer_resolutions.size(), 2u);
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    // Incorrectly mark last spatial layer with eop = false.
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    // Incorrectly mark last spatial layer with eop = false.
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1428,12 +1668,13 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_layer_resolutions = {gfx::Size(
         tl_codec.spatialLayers[0].width, tl_codec.spatialLayers[0].height)};
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
   });
 
@@ -1488,22 +1729,23 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_EQ(metadata.vp9->spatial_layer_resolutions.size(), 2u);
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 2;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1530,7 +1772,8 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Microseconds(1));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Microseconds(1));
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = true;
@@ -1540,7 +1783,6 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
     };
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 1;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
   });
   frame_types[0] = webrtc::VideoFrameType::kVideoFrameDelta;
@@ -1562,7 +1804,9 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Microseconds(2));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Microseconds(2));
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = true;
@@ -1574,14 +1818,13 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
     };
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 2;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->inter_pic_predicted = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
@@ -1658,27 +1901,27 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
         /*payload_size_bytes=*/100u,
         /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_THAT(metadata.vp9->spatial_layer_resolutions, SizeIs(3));
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 3;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 2;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/2, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1717,7 +1960,6 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->reference_lower_spatial_layers = false;
     metadata.vp9->inter_pic_predicted = true;
-    metadata.vp9->end_of_picture = true;
     metadata.vp9->spatial_layer_resolutions = {
         gfx::Size(tl_codec.spatialLayers[1].width,
                   tl_codec.spatialLayers[1].height),
@@ -1749,10 +1991,10 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     media::BitstreamBufferMetadata metadata(
         /*payload_size_bytes=*/100u,
         /*keyframe=*/true, /*timestamp=*/base::Microseconds(2));
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = false;
-    metadata.vp9->end_of_picture = false;
     metadata.vp9->spatial_layer_resolutions = {
         gfx::Size(tl_codec.spatialLayers[0].width,
                   tl_codec.spatialLayers[0].height),
@@ -1764,11 +2006,11 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->inter_pic_predicted = true;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
@@ -1820,7 +2062,7 @@ TEST_P(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
                              /*is_hardware_encoder=*/true,
                              media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_vea_,
-              Initialize(CheckConfig(pixel_format, storage_type), _, _))
+              Initialize(CheckConfig(pixel_format, storage_type, false), _, _))
       .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
   EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer).Times(AtLeast(3));
 
@@ -1891,7 +2133,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
                              /*is_hardware_encoder=*/true,
                              media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_vea_,
-              Initialize(CheckConfig(pixel_format, storage_type), _, _))
+              Initialize(CheckConfig(pixel_format, storage_type, false), _, _))
       .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
   EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer).Times(AtLeast(3));
 
@@ -2175,7 +2417,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
       base::BindOnce(
           &media::VideoEncodeAccelerator::Client::BitstreamBufferReady,
           base::Unretained(client_), 0,
-          media::BitstreamBufferMetadata(0, false, base::Microseconds(0))));
+          media::BitstreamBufferMetadata(100, true, base::Microseconds(0))));
   dropframe_verifier.WaitEvent();
   RunUntilIdle();
   dropframe_verifier.Verify(1, 1);
@@ -2185,7 +2427,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   event.Reset();
   EXPECT_CALL(*mock_vea_, Encode).WillOnce(Invoke([this] {
     client_->BitstreamBufferReady(
-        0, media::BitstreamBufferMetadata(0, false, base::Microseconds(1)));
+        0, media::BitstreamBufferMetadata(100, false, base::Microseconds(1)));
   }));
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()

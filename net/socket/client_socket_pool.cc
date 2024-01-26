@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -13,6 +14,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
@@ -24,6 +26,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "net/ssl/ssl_config.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -60,15 +63,15 @@ OnHostResolutionCallbackResult OnHostResolution(
 }  // namespace
 
 ClientSocketPool::SocketParams::SocketParams(
-    std::unique_ptr<SSLConfig> ssl_config_for_origin)
-    : ssl_config_for_origin_(std::move(ssl_config_for_origin)) {}
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs)
+    : allowed_bad_certs_(allowed_bad_certs) {}
 
 ClientSocketPool::SocketParams::~SocketParams() = default;
 
 scoped_refptr<ClientSocketPool::SocketParams>
 ClientSocketPool::SocketParams::CreateForHttpForTesting() {
   return base::MakeRefCounted<SocketParams>(
-      /*ssl_config_for_origin=*/nullptr);
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
 }
 
 ClientSocketPool::GroupId::GroupId()
@@ -78,14 +81,16 @@ ClientSocketPool::GroupId::GroupId(
     url::SchemeHostPort destination,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy)
+    SecureDnsPolicy secure_dns_policy,
+    bool disable_cert_network_fetches)
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       network_anonymization_key_(
           NetworkAnonymizationKey::IsPartitioningEnabled()
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
-      secure_dns_policy_(secure_dns_policy) {
+      secure_dns_policy_(secure_dns_policy),
+      disable_cert_network_fetches_(disable_cert_network_fetches) {
   DCHECK(destination_.IsValid());
 
   // ClientSocketPool only expected to be used for HTTP/HTTPS/WS/WSS cases, and
@@ -125,6 +130,10 @@ std::string ClientSocketPool::GroupId::ToString() const {
     case SecureDnsPolicy::kBootstrap:
       result = "dns_bootstrap/" + result;
       break;
+  }
+
+  if (disable_cert_network_fetches_) {
+    result = "disable_cert_network_fetches/" + result;
   }
 
   return result;
@@ -184,7 +193,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
                        proxy_chain, group_id.privacy_mode(),
-                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
+                       SessionUsage::kDestination, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),
         is_for_websockets_);
@@ -209,10 +218,11 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
 
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
-      socket_params->ssl_config_for_origin(), alpn_mode, force_tunnel,
+      socket_params->allowed_bad_certs(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
-      group_id.secure_dns_policy(), common_connect_job_params_, delegate);
+      group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),
+      common_connect_job_params_, delegate);
 }
 
 }  // namespace net

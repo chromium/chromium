@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/tether_constants.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -136,6 +137,7 @@ class NetworkEventsObserverTestHelper {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
 class NetworkEventsObserverSignalStrengthTest : public ::testing::Test {

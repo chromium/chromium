@@ -50,17 +50,6 @@ SnapGroupController* SnapGroupController::Get() {
   return g_instance;
 }
 
-void SnapGroupController::OnWindowSnapped(
-    aura::Window* window,
-    WindowSnapActionSource snap_action_source) {
-  // If `window` already belongs to a snap group, do nothing.
-  if (GetSnapGroupForGivenWindow(window)) {
-    return;
-  }
-
-  window_util::MaybeStartSplitViewOverview(window, snap_action_source);
-}
-
 bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
                                                 aura::Window* window2) const {
   DCHECK(window1);

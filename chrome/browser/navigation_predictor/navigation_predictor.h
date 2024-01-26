@@ -43,6 +43,13 @@ class NavigationPredictor
   using ModelScoreCallbackForTesting = base::OnceCallback<void(
       const PreloadingModelKeyedService::Inputs& inputs)>;
 
+  // These values are persisted to logs.
+  enum FontSizeBucket : uint8_t {
+    kLessThanTen = 1,
+    kTenToSeventeen = 2,
+    kEighteenOrGreater = 3,
+  };
+
   NavigationPredictor(const NavigationPredictor&) = delete;
   NavigationPredictor& operator=(const NavigationPredictor&) = delete;
 
@@ -61,6 +68,7 @@ class NavigationPredictor
  private:
   friend class MockNavigationPredictorForTesting;
   using AnchorId = base::StrongAlias<class AnchorId, uint32_t>;
+  struct AnchorElementData;
 
   NavigationPredictor(content::RenderFrameHost& render_frame_host,
                       mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
@@ -124,6 +132,8 @@ class NavigationPredictor
       GURL url,
       PreloadingModelKeyedService::Result result);
 
+  bool IsTargetURLTheSameAsDocument(const AnchorElementData& anchor);
+
   base::TimeTicks NowTicks() const { return clock_->NowTicks(); }
 
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
@@ -134,11 +144,27 @@ class NavigationPredictor
     AnchorElementData(blink::mojom::AnchorElementMetricsPtr metrics,
                       base::TimeTicks first_report_timestamp);
     ~AnchorElementData();
-    blink::mojom::AnchorElementMetricsPtr metrics;
+
+    // The following fields mirror `blink::mojom::AnchorElementMetrics`, but
+    // unused fields are omitted and fields are arranged to minimize memory
+    // usage.
+    float ratio_distance_root_top;
+    // `ratio_area` is [0,100], so we can store this more compactly than with a
+    // float.
+    uint8_t ratio_area;
+    bool is_in_iframe : 1;
+    bool contains_image : 1;
+    bool is_same_host : 1;
+    bool is_url_incremented_by_one : 1;
+    bool has_text_sibling : 1;
+    bool is_bold_font : 1;
+    FontSizeBucket font_size;
+    GURL target_url;
+
     // Following fields are used for computing timing inputs of the ML model.
     base::TimeTicks first_report_timestamp;
-    absl::optional<base::TimeTicks> pointer_over_timestamp;
-    absl::optional<base::TimeTicks> entered_viewport_timestamp;
+    std::optional<base::TimeTicks> pointer_over_timestamp;
+    std::optional<base::TimeTicks> entered_viewport_timestamp;
     size_t pointer_hovering_over_count = 0u;
   };
   std::unordered_map<AnchorId, AnchorElementData, typename AnchorId::Hasher>
@@ -146,10 +172,10 @@ class NavigationPredictor
   // It is the anchor element that the user has recently interacted
   // with and is a good candidate for the ML model to predict the next user
   // click.
-  absl::optional<AnchorId> ml_model_candidate_;
+  std::optional<AnchorId> ml_model_candidate_;
 
   // The time between navigation start and the last time user clicked on a link.
-  absl::optional<base::TimeDelta> navigation_start_to_click_;
+  std::optional<base::TimeDelta> navigation_start_to_click_;
 
   // Mapping between the anchor ID for the anchors that we track and the index
   // that this anchor will have in the UKM logs.

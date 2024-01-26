@@ -1,5 +1,5 @@
 // TODO(crbug.com/924486) This test can be deleted once non-standard CSS appearance values are removed.
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startBlank(`Tests that non-standard -webkit-appearance values trigger a deprecation issue.`);
   await dp.Audits.enable();
 

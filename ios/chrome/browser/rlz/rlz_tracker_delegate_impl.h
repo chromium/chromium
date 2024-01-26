@@ -43,6 +43,7 @@ class RLZTrackerDelegateImpl : public rlz::RLZTrackerDelegate {
   bool ClearReferral() override;
   void SetOmniboxSearchCallback(base::OnceClosure callback) override;
   void SetHomepageSearchCallback(base::OnceClosure callback) override;
+  void RunHomepageSearchCallback() override;
   bool ShouldUpdateExistingAccessPointRlz() override;
 
   // Called when user open an URL from the Omnibox.

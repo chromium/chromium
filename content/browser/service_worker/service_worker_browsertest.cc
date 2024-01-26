@@ -55,6 +55,7 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
+#include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -4550,6 +4551,54 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerTwice) {
+  StartServerAndNavigateToSetup();
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+
+  // Warm-up ServiceWorker.
+  EXPECT_FALSE(version->IsWarmedUp());
+  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
+  EXPECT_TRUE(version->IsWarmedUp());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+
+  // Warm-up ServiceWorker again.
+  EXPECT_FALSE(version->IsWarmedUp());
+  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
+  EXPECT_TRUE(version->IsWarmedUp());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+}
+
 // This is a test class to verify an optimization to speculatively
 // warm-up a service worker.
 class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
@@ -4682,6 +4731,58 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
   } else {
     NOTREACHED();
   }
+}
+
+class ServiceWorkerWarmUpBrowserOnStoppedTest
+    : public ServiceWorkerWarmUpBrowserTestBase {
+ public:
+  ServiceWorkerWarmUpBrowserOnStoppedTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSpeculativeServiceWorkerWarmUp,
+          {{blink::features::kSpeculativeServiceWorkerWarmUpOnStopped.name,
+            "true"}}}},
+        {features::kSpeculativeServiceWorkerStartup});
+  }
+  ~ServiceWorkerWarmUpBrowserOnStoppedTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpBrowserOnStoppedTest,
+                       WarmUpOnStopped) {
+  base::HistogramTester histogram_tester;
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  // Automatically warm-up service worker.
+  base::RunLoop run_loop;
+  while (!version->IsWarmedUp()) {
+    run_loop.RunUntilIdle();
+  }
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
 }
 
 // Pointer triggered ServiceWorkerWarmUp is not currently available on Android.
@@ -5310,8 +5411,8 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
           {{"strategy", "optin"},
            {"bypass_for", "all_with_race_network_request"}}}},
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
   ~ServiceWorkerRaceNetworkRequestBrowserTest() override = default;
 
@@ -6255,14 +6356,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 class ServiceWorkerAutoPreloadBrowserTest
-    : public ServiceWorkerRaceNetworkRequestBrowserTest {
+    : public ServiceWorkerRaceNetworkRequestBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ServiceWorkerAutoPreloadBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kServiceWorkerAutoPreload},
-        {features::kServiceWorkerBypassFetchHandler});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerAutoPreload,
+          {{"use_two_phase_write", GetParam() ? "true" : "false"}}}},
+        {{features::kServiceWorkerBypassFetchHandler}});
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
   ~ServiceWorkerAutoPreloadBrowserTest() override = default;
@@ -6271,7 +6374,11 @@ class ServiceWorkerAutoPreloadBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6304,7 +6411,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -6328,7 +6435,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        PassThrough_LargeData) {
   SetupAndRegisterServiceWorker();
   const std::string relative_url =
@@ -6353,7 +6460,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequest_Wins_FetchHandler_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6375,7 +6482,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        FetchHandler_Wins_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6396,7 +6503,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadBrowserTest,
     Subresource_NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
   SetupAndRegisterServiceWorker();
@@ -6419,7 +6526,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6440,7 +6547,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_PassThrough_LargeData) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6460,7 +6567,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6478,7 +6585,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6503,7 +6610,8 @@ class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kServiceWorkerAutoPreload,
-             {{"blocked_hosts", blocked_host()}}},
+             {{"blocked_hosts", blocked_host()},
+              {"use_two_phase_write", GetParam() ? "true" : "false"}}},
         },
         {});
   }
@@ -6525,7 +6633,11 @@ class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
                        BlockedHosts) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6551,20 +6663,24 @@ class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
  public:
   ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kServiceWorkerAutoPreload,
-             {{"enable_subresource_preload", "false"}}},
-        },
+        {{features::kServiceWorkerAutoPreload,
+          {{"enable_subresource_preload", "false"},
+           {"use_two_phase_write", GetParam() ? "true" : "false"}}}},
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ALL,
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
     Disabled) {
   SetupAndRegisterServiceWorker();
@@ -6608,20 +6724,24 @@ class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest
  public:
   ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kServiceWorkerAutoPreload,
-             {{"enable_only_when_service_worker_not_running", "true"}}},
-        },
+        {{features::kServiceWorkerAutoPreload,
+          {{"enable_only_when_service_worker_not_running", "true"},
+           {"use_two_phase_write", GetParam() ? "true" : "false"}}}},
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ALL,
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
     NotRunning) {
   // Ensure the ServiceWorker is stopped.
@@ -6648,7 +6768,7 @@ IN_PROC_BROWSER_TEST_F(
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
     Running) {
   // Ensure the ServiceWorker is running.
@@ -7399,6 +7519,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                                               "response.text())"));
   // Due to the cache miss, the result should be got from the network.
   EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       FetchEventShouldBeUsedWithFetchHandler) {
+  StartServerAndNavigateToSetup();
+
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+
+  WorkerRunningStatusObserver observer1(public_context());
+  ASSERT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  ASSERT_EQ("DONE",
+            EvalJs(GetPrimaryMainFrame(),
+                   "register('/service_worker/static_router_no_handler.js')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  // Expected to raise during addRoutes.
+  // No route should be added.
+  EXPECT_FALSE(version->router_evaluator());
 }
 
 // Test class for static routing API, if disables starting the ServiceWorker

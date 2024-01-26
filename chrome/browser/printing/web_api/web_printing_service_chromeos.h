@@ -29,10 +29,10 @@ class RenderFrameHost;
 
 namespace printing {
 
-class MetafileSkia;
 class PdfBlobDataFlattener;
 class PrintJobController;
 class PrintSettings;
+struct FlattenPdfResult;
 struct PrinterSemanticCapsAndDefaults;
 struct PrintJobCreatedInfo;
 
@@ -42,7 +42,8 @@ class WebPrintingServiceChromeOS
  public:
   WebPrintingServiceChromeOS(
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver);
+      mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver,
+      const std::string& app_id);
   ~WebPrintingServiceChromeOS() override;
 
   // blink::mojom::WebPrintingService:
@@ -77,9 +78,10 @@ class WebPrintingServiceChromeOS
       const std::string& printer_id,
       std::optional<PrinterSemanticCapsAndDefaults> printer_attributes);
 
-  void OnPdfReadAndFlattened(std::unique_ptr<PrintSettings> settings,
-                             PrintCallback callback,
-                             std::unique_ptr<MetafileSkia> flattened_pdf);
+  void OnPdfReadAndFlattened(
+      std::unique_ptr<PrintSettings> settings,
+      PrintCallback callback,
+      std::unique_ptr<FlattenPdfResult> flatten_pdf_result);
 
   void OnPrintJobCreated(
       mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
@@ -87,6 +89,9 @@ class WebPrintingServiceChromeOS
 
   // Stores browser-side endpoints for blink-side Printer objects.
   mojo::ReceiverSet<blink::mojom::WebPrinter, PrinterId> printers_;
+
+  // The id of the app that owns this service.
+  const std::string app_id_;
 
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
   std::unique_ptr<PdfBlobDataFlattener> pdf_flattener_;

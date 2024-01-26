@@ -29,8 +29,8 @@ constexpr std::wstring_view kExtendedChannel = L"extended";
 const wchar_t kTokenSeparator = L'-';
 
 // Returns null if the value was not found or otherwise could not be read.
-absl::optional<std::wstring> ReadAdditionalParameters() {
-  absl::optional<std::wstring> result;
+std::optional<std::wstring> ReadAdditionalParameters() {
+  std::optional<std::wstring> result;
   base::win::RegKey key;
 
   if (key.Open(install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
@@ -47,7 +47,7 @@ absl::optional<std::wstring> ReadAdditionalParameters() {
 // Writes `value` to the "ap" value in the registry, or deletes the "ap" value
 // if `value` is null. Returns false and sets the Windows last-error code on
 // failure; otherwise, returns true.
-bool WriteAdditionalParameters(const absl::optional<std::wstring>& value) {
+bool WriteAdditionalParameters(const std::optional<std::wstring>& value) {
   base::win::RegKey key;
   LONG result = ERROR_SUCCESS;
 
@@ -82,7 +82,7 @@ bool WriteAdditionalParameters(const absl::optional<std::wstring>& value) {
   return false;
 }
 
-bool HasFullSuffix(const absl::optional<std::wstring>& value) {
+bool HasFullSuffix(const std::optional<std::wstring>& value) {
   return value ? base::EndsWith(*value, kFullSuffix) : false;
 }
 
@@ -121,7 +121,7 @@ struct ChannelParseState {
 // bool indicating whether or not the identifier also includes an architecture
 // specification.
 ChannelParseState MakeChannelParseState(
-    const absl::optional<std::wstring>& value) {
+    const std::optional<std::wstring>& value) {
   if (!value)  // No value means stable channel.
     return {std::wstring(), std::wstring_view(), /*includes_arch=*/false};
 

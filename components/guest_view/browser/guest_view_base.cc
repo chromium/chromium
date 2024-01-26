@@ -875,18 +875,12 @@ bool GuestViewBase::IsOwnedByControlledFrameEmbedder() const {
 }
 
 void GuestViewBase::SetOwnerHost() {
-  const GURL& url = GetOwnerLastCommittedURL();
   if (IsOwnedByExtension()) {
-    owner_host_ = url.host();
+    owner_host_ = GetOwnerLastCommittedURL().host();
   } else if (IsOwnedByWebUI()) {
     owner_host_ = std::string();
   } else if (IsOwnedByControlledFrameEmbedder()) {
-    // TODO(cmp): This function must return an empty string currently since
-    // events that pass a non-empty string are validated and will break
-    // Controlled Frame. A future CL will modify the validation to support the
-    // Controlled Frame case and allow us to use the following:
-    // owner_host_ = url.spec();
-    owner_host_ = std::string();
+    owner_host_ = owner_rfh()->GetLastCommittedOrigin().Serialize();
   } else {
     owner_host_ = std::string();
   }

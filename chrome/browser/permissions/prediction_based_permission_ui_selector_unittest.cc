@@ -77,7 +77,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   Decision SelectUiToUseAndGetDecision(
       PredictionBasedPermissionUiSelector* selector,
       permissions::RequestType request_type) {
-    absl::optional<Decision> actual_decision;
+    std::optional<Decision> actual_decision;
     base::RunLoop run_loop;
 
     permissions::MockPermissionRequest request(

@@ -178,7 +178,7 @@
         Close player.
       </message>
       <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
-        “Listen to this page” player.
+        “Listen to this page” player
       </message>
       <message name="IDS_READALOUD_PLAYER_OPENED_AT_FULL_HEIGHT" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet expands to its full height.">
         “Listen to this page” player opened at full height.
@@ -222,23 +222,80 @@
       <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR_DESCRIPTION" desc="Description message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
         Unfortunately, playback is unavailable for this page at this time. Please try again later.
       </message>
-       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
+      <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
       </message>
        <message name="IDS_READALOUD_VOICE_MENU_TITLE" desc="Voice menu title in options menu.">
         Voice
       </message>
-       <message name="IDS_READALOUD_TRANSLATE_MENU_TITLE" desc="Translate menu title in options menu.">
+      <message name="IDS_READALOUD_TRANSLATE_MENU_TITLE" desc="Translate menu title in options menu.">
         Translate
       </message>
        <message name="IDS_READALOUD_HIGHLIGHT_TOGGLE_NAME" desc="Highlight toggle name in options menu.">
         Highlight text &amp; auto scroll
       </message>
-       <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
+      <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
         Options
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_TITLE" desc="Playback speed menu title.">
+        Playback Speed
       </message>
       <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
         Scrub Playback
+      </message>
+      <message name="IDS_READALOUD_OPTIONS_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Options menu
+      </message>
+      <message name="IDS_READALOUD_VOICE_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Voice menu
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_DESCRIPTION" desc="Accessibility string announced when the playback speed menu is opened.">
+        Playback speed menu
+      </message>
+      <message name="IDS_READALOUD_PITCH_LOW" desc="Words to show that a voice is low-pitched, as would be typically recognized as male, included in the voice description.">
+        Low-pitch
+      </message>
+      <message name="IDS_READALOUD_PITCH_MID" desc="Words to show that a voice is medium-pitched, as would be typically recognized as female, included in the voice description.">
+        Mid-pitch
+      </message>
+      <message name="IDS_READALOUD_TONE_BOLD" desc="Word to show that a voice has a bold tone, included in the voice description.">
+        Bold
+      </message>
+      <message name="IDS_READALOUD_TONE_CALM" desc="Word to show that a voice has a calm tone, included in the voice description.">
+        Calm
+      </message>
+      <message name="IDS_READALOUD_TONE_STEADY" desc="Word to show that a voice has a steady tone, included in the voice description.">
+        Steady
+      </message>
+      <message name="IDS_READALOUD_TONE_SMOOTH" desc="Word to show that a voice has a smooth tone, included in the voice description.">
+        Smooth
+      </message>
+      <message name="IDS_READALOUD_TONE_RELAXED" desc="Word to show that a voice has a relaxed tone, included in the voice description.">
+        Relaxed
+      </message>
+      <message name="IDS_READALOUD_TONE_WARM" desc="Word to show that a voice has a warm tone, included in the voice description.">
+        Warm
+      </message>
+      <message name="IDS_READALOUD_TONE_SERENE" desc="Word to show that a voice has a serene tone, included in the voice description.">
+        Serene
+      </message>
+      <message name="IDS_READALOUD_TONE_GENTLE" desc="Word to show that a voice has a gentle tone, included in the voice description.">
+        Gentle
+      </message>
+      <message name="IDS_READALOUD_TONE_BRIGHT" desc="Word to show that a voice has a bright tone, included in the voice description.">
+        Bright
+      </message>
+      <message name="IDS_READALOUD_TONE_BREEZY" desc="Word to show that a voice has a breezy tone, included in the voice description.">
+        Breezy
+      </message>
+      <message name="IDS_READALOUD_TONE_SOOTHING" desc="Word to show that a voice has a soothing tone, included in the voice description.">
+        Soothing
+      </message>
+      <message name="IDS_READALOUD_TONE_PEACEFUL" desc="Word to show that a voice has a peaceful tone, included in the voice description.">
+        Peaceful
+      </message>
+      <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
+        <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
       </message>
     </messages>
   </release>

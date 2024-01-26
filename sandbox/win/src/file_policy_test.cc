@@ -44,9 +44,10 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
     base::win::ScopedHandle file2(CreateFile(
         argv[1], FILE_EXECUTE, kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
 
-    if (file1.IsValid() == file2.IsValid())
-      return file1.IsValid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
-    return file1.IsValid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
+    if (file1.is_valid() == file2.is_valid()) {
+      return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
+    }
+    return file1.is_valid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
 
   } else if (operation == L"Write") {
     base::win::ScopedHandle file1(
@@ -56,9 +57,10 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
         CreateFile(argv[1], GENERIC_READ | FILE_WRITE_DATA, kSharing, nullptr,
                    OPEN_EXISTING, 0, nullptr));
 
-    if (file1.IsValid() == file2.IsValid())
-      return file1.IsValid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
-    return file1.IsValid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
+    if (file1.is_valid() == file2.is_valid()) {
+      return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
+    }
+    return file1.is_valid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
 
   } else if (operation == L"ReadCreate") {
     base::win::ScopedHandle file2(CreateFile(argv[1], GENERIC_READ, kSharing,
@@ -66,9 +68,10 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
     base::win::ScopedHandle file1(CreateFile(
         argv[1], GENERIC_READ, kSharing, nullptr, CREATE_ALWAYS, 0, nullptr));
 
-    if (file1.IsValid() == file2.IsValid())
-      return file1.IsValid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
-    return file1.IsValid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
+    if (file1.is_valid() == file2.is_valid()) {
+      return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
+    }
+    return file1.is_valid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
   }
 
   return SBOX_TEST_INVALID_PARAMETER;

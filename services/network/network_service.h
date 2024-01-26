@@ -50,6 +50,7 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
+#include "services/network/public/mojom/network_annotation_monitor.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -66,7 +67,6 @@
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 namespace net {
-class CookieCryptoDelegate;
 class FileNetLogObserver;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
@@ -143,6 +143,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void CreateNetLogEntriesForActiveObjects(
       net::NetLog::ThreadSafeObserver* observer);
 
+  void SetNetworkAnnotationMonitor(
+      mojo::PendingRemote<network::mojom::NetworkAnnotationMonitor> remote)
+      override;
+
+  void NotifyNetworkRequestWithAnnotation(
+      net::NetworkTrafficAnnotationTag traffic_annotation);
+
   // mojom::NetworkService implementation:
   void SetParams(mojom::NetworkServiceParamsPtr params) override;
   void StartNetLog(base::File file,
@@ -168,8 +175,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_params) override;
   void SetRawHeadersAccess(int32_t process_id,
                            const std::vector<url::Origin>& origins) override;
-  // TODO(https://crbug.com/1491092): Rename to SetMaxConnectionsPerProxyChain.
-  void SetMaxConnectionsPerProxy(int32_t max_connections) override;
+  void SetMaxConnectionsPerProxyChain(int32_t max_connections) override;
   void GetNetworkChangeManager(
       mojo::PendingReceiver<mojom::NetworkChangeManager> receiver) override;
   void GetNetworkQualityEstimatorManager(
@@ -227,9 +233,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<mojom::GssapiLibraryLoadObserver>
           gssapi_library_load_observer) override;
 #endif  // BUILDFLAG(IS_LINUX)
-  void SetCookieEncryptionProvider(
-      mojo::PendingRemote<mojom::CookieEncryptionProvider> provider) override;
-
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,
@@ -274,10 +277,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
   HttpAuthCacheCopier* http_auth_cache_copier() {
     return http_auth_cache_copier_.get();
-  }
-
-  net::CookieCryptoDelegate* cookie_crypto_delegate() {
-    return cookie_crypto_delegate_.get();
   }
 
   FirstPartySetsManager* first_party_sets_manager() const {
@@ -375,6 +374,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     SetTestDohConfigForTesting,
   };
 
+  mojo::Remote<network::mojom::NetworkAnnotationMonitor>
+      network_annotation_monitor_;
+
   std::unique_ptr<RestrictedCookieManager::UmaMetricsUpdater> metrics_updater_;
 
   FunctionTag dns_config_overrides_set_by_ = FunctionTag::None;
@@ -414,11 +416,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<net::HostResolverManager> host_resolver_manager_;
   std::unique_ptr<net::HostResolver::Factory> host_resolver_factory_;
   std::unique_ptr<HttpAuthCacheCopier> http_auth_cache_copier_;
-
-  // Contains the instance of crypto delegate for this network service, if
-  // cookie encryption is enabled, and the 'default' delegate from
-  // components/cookie_config is not being used.
-  std::unique_ptr<net::CookieCryptoDelegate> cookie_crypto_delegate_;
 
   // Members that would store the http auth network_service related params.
   // These Params are later used by NetworkContext to create

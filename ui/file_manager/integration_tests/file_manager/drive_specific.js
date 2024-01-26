@@ -31,6 +31,7 @@ const ENABLE_DOCS_OFFLINE_MESSAGE =
     'available offline.';
 
 /** The id attribute of the dismiss button in the educational banner. */
+// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
 async function getDismissButtonId(appId) {
   return await remoteCall.isCrosComponents(appId) ? '#dismiss-button' :
                                                     '#dismiss-button-old';
@@ -59,6 +60,7 @@ async function openAndWaitForEnableDocsOfflineDialog(appId) {
  */
 async function waitForLastDriveDialogResult(expectedResult) {
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const result = await sendTestMessage({name: 'getLastDriveDialogResult'});
     if (result !== expectedResult) {
@@ -94,6 +96,8 @@ async function waitForNotification(notification_id) {
  * should be shown. "Available offline" entries are hosted documents and the
  * entries cached by DriveCache.
  */
+// @ts-ignore: error TS4111: Property 'driveOpenSidebarOffline' comes from an
+// index signature, so it must be accessed with ['driveOpenSidebarOffline'].
 testcase.driveOpenSidebarOffline = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -112,11 +116,21 @@ testcase.driveOpenSidebarOffline = async () => {
  * icon, and checks contents of the file list. Only the entries labeled with
  * "shared-with-me" should be shown.
  */
+// @ts-ignore: error TS4111: Property 'driveOpenSidebarSharedWithMe' comes from
+// an index signature, so it must be accessed with
+// ['driveOpenSidebarSharedWithMe'].
 testcase.driveOpenSidebarSharedWithMe = async () => {
   // Open Files app on Drive containing "Shared with me" file entries.
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS2769: No overload matches this call.
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        // @ts-ignore: error TS4111: Property 'sharedWithMeDirectory' comes from
+        // an index signature, so it must be accessed with
+        // ['sharedWithMeDirectory'].
         ENTRIES.sharedWithMeDirectory,
+        // @ts-ignore: error TS4111: Property 'sharedWithMeDirectoryFile' comes
+        // from an index signature, so it must be accessed with
+        // ['sharedWithMeDirectoryFile'].
         ENTRIES.sharedWithMeDirectoryFile,
       ]));
 
@@ -132,6 +146,9 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   await remoteCall.waitForFiles(
       appId,
       TestEntryInfo.getExpectedRows(
+          // @ts-ignore: error TS4111: Property 'sharedWithMeDirectory' comes
+          // from an index signature, so it must be accessed with
+          // ['sharedWithMeDirectory'].
           SHARED_WITH_ME_ENTRY_SET.concat([ENTRIES.sharedWithMeDirectory])));
 
   // Navigate to the directory within Shared with me.
@@ -145,6 +162,9 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   // Verify the file list.
   await remoteCall.waitForFiles(
       appId,
+      // @ts-ignore: error TS4111: Property 'sharedWithMeDirectoryFile' comes
+      // from an index signature, so it must be accessed with
+      // ['sharedWithMeDirectoryFile'].
       TestEntryInfo.getExpectedRows([ENTRIES.sharedWithMeDirectoryFile]));
 };
 
@@ -152,6 +172,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
  * Tests that pressing enter after typing a search shows all of
  * the results for that query.
  */
+// @ts-ignore: error TS4111: Property 'drivePressEnterToSearch' comes from an
+// index signature, so it must be accessed with ['drivePressEnterToSearch'].
 testcase.drivePressEnterToSearch = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -179,6 +201,8 @@ testcase.drivePressEnterToSearch = async () => {
  * Tests that pressing the clear search button announces an a11y message and
  * shows all files/folders.
  */
+// @ts-ignore: error TS4111: Property 'drivePressClearSearch' comes from an
+// index signature, so it must be accessed with ['drivePressClearSearch'].
 testcase.drivePressClearSearch = async () => {
   // Open Files app on Drive.
   const appId =
@@ -217,6 +241,8 @@ testcase.drivePressClearSearch = async () => {
  * Tests that pinning multiple files affects the pin action of individual
  * files.
  */
+// @ts-ignore: error TS4111: Property 'drivePinMultiple' comes from an index
+// signature, so it must be accessed with ['drivePinMultiple'].
 testcase.drivePinMultiple = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -237,6 +263,8 @@ testcase.drivePinMultiple = async () => {
 
   // Additionally select hello.txt.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
   await remoteCall.waitForElement(appId, '[file-name="hello.txt"][selected]');
 
@@ -284,6 +312,8 @@ testcase.drivePinMultiple = async () => {
  * Tests that pinning hosted files without the required extensions is disabled,
  * and that it does not affect multiple selections with non-hosted files.
  */
+// @ts-ignore: error TS4111: Property 'drivePinHosted' comes from an index
+// signature, so it must be accessed with ['drivePinHosted'].
 testcase.drivePinHosted = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -305,6 +335,8 @@ testcase.drivePinHosted = async () => {
 
   // Additionally select hello.txt.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
   await remoteCall.waitForElement(appId, '[file-name="hello.txt"][selected]');
 
@@ -349,12 +381,16 @@ testcase.drivePinHosted = async () => {
  * Tests pinning a file to a mobile network.
  * TODO(b/296960734): Fix this test once the notification has been fixed.
  */
+// @ts-ignore: error TS4111: Property 'drivePinFileMobileNetwork' comes from an
+// index signature, so it must be accessed with ['drivePinFileMobileNetwork'].
 testcase.drivePinFileMobileNetwork = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
   const caller = getCaller();
   await sendTestMessage({name: 'useCellularNetwork'});
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await repeatUntil(() => {
+    // @ts-ignore: error TS2339: Property 'connection' does not exist on type
+    // 'Navigator'.
     return navigator.connection.type !== 'cellular' ?
         pending(caller, 'Network state is not changed to cellular.') :
         null;
@@ -406,6 +442,9 @@ testcase.drivePinFileMobileNetwork = async () => {
  * Tests that the pinned toggle in the toolbar updates on pinned state changes
  * within fake entries.
  */
+// @ts-ignore: error TS4111: Property 'drivePinToggleUpdatesInFakeEntries' comes
+// from an index signature, so it must be accessed with
+// ['drivePinToggleUpdatesInFakeEntries'].
 testcase.drivePinToggleUpdatesInFakeEntries = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -459,6 +498,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
  * Tests that pressing Ctrl+A (select all files) from the search box doesn't
  * put the Files App into check-select mode (crbug.com/849253).
  */
+// @ts-ignore: error TS4111: Property 'drivePressCtrlAFromSearch' comes from an
+// index signature, so it must be accessed with ['drivePressCtrlAFromSearch'].
 testcase.drivePressCtrlAFromSearch = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -480,7 +521,9 @@ testcase.drivePressCtrlAFromSearch = async () => {
 };
 
 // Match the way the production version formats dates.
+// @ts-ignore: error TS7006: Parameter 'date' implicitly has an 'any' type.
 function formatDate(date) {
+  // @ts-ignore: error TS7006: Parameter 'i' implicitly has an 'any' type.
   const padAndConvert = i => {
     return (i < 10 ? '0' : '') + i.toString();
   };
@@ -497,6 +540,9 @@ function formatDate(date) {
  * Verify that "Available Offline" is not available from the gear menu for a
  * drive file.
  */
+// @ts-ignore: error TS4111: Property 'driveAvailableOfflineGearMenu' comes from
+// an index signature, so it must be accessed with
+// ['driveAvailableOfflineGearMenu'].
 testcase.driveAvailableOfflineGearMenu = async () => {
   const pinnedMenuQuery = '#file-context-menu:not([hidden]) ' +
       'cr-menu-item[command="#toggle-pinned"]:not([disabled])';
@@ -526,6 +572,8 @@ testcase.driveAvailableOfflineGearMenu = async () => {
   // hidden via a display:none css rule, so check that.
   const e = await remoteCall.waitForElementStyles(
       appId, pinnedMenuQuery, ['display']);
+  // @ts-ignore: error TS4111: Property 'display' comes from an index signature,
+  // so it must be accessed with ['display'].
   chrome.test.assertEq('none', e.styles.display);
 };
 
@@ -533,6 +581,9 @@ testcase.driveAvailableOfflineGearMenu = async () => {
  * Verify that "Available Offline" is not available from the gear menu for a
  * drive directory.
  */
+// @ts-ignore: error TS4111: Property 'driveAvailableOfflineDirectoryGearMenu'
+// comes from an index signature, so it must be accessed with
+// ['driveAvailableOfflineDirectoryGearMenu'].
 testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   const pinnedMenuQuery = '#file-context-menu:not([hidden]) ' +
       'cr-menu-item[command="#toggle-pinned"]:not([disabled])';
@@ -562,6 +613,8 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   // hidden via a display:none css rule, so check that.
   const e = await remoteCall.waitForElementStyles(
       appId, pinnedMenuQuery, ['display']);
+  // @ts-ignore: error TS4111: Property 'display' comes from an index signature,
+  // so it must be accessed with ['display'].
   chrome.test.assertEq('none', e.styles.display);
 };
 
@@ -569,6 +622,9 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
  * Verify that the "Available Offline" toggle in the action bar appears and
  * changes according to the selection.
  */
+// @ts-ignore: error TS4111: Property 'driveAvailableOfflineActionBar' comes
+// from an index signature, so it must be accessed with
+// ['driveAvailableOfflineActionBar'].
 testcase.driveAvailableOfflineActionBar = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -669,15 +725,34 @@ testcase.driveAvailableOfflineActionBar = async () => {
 /**
  * Tests following links to folders.
  */
+// @ts-ignore: error TS4111: Property 'driveLinkToDirectory' comes from an index
+// signature, so it must be accessed with ['driveLinkToDirectory'].
 testcase.driveLinkToDirectory = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS2769: No overload matches this call.
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+        // signature, so it must be accessed with ['directoryA'].
         ENTRIES.directoryA,
+        // @ts-ignore: error TS4111: Property 'directoryB' comes from an index
+        // signature, so it must be accessed with ['directoryB'].
         ENTRIES.directoryB,
+        // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+        // signature, so it must be accessed with ['directoryC'].
         ENTRIES.directoryC,
-        ENTRIES.deeplyBurriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'deeplyBuriedSmallJpeg' comes from
+        // an index signature, so it must be accessed with
+        // ['deeplyBuriedSmallJpeg'].
+        ENTRIES.deeplyBuriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'linkGtoB' comes from an index
+        // signature, so it must be accessed with ['linkGtoB'].
         ENTRIES.linkGtoB,
+        // @ts-ignore: error TS4111: Property 'linkHtoFile' comes from an index
+        // signature, so it must be accessed with ['linkHtoFile'].
         ENTRIES.linkHtoFile,
+        // @ts-ignore: error TS4111: Property 'linkTtoTransitiveDirectory' comes
+        // from an index signature, so it must be accessed with
+        // ['linkTtoTransitiveDirectory'].
         ENTRIES.linkTtoTransitiveDirectory,
       ]));
 
@@ -693,32 +768,59 @@ testcase.driveLinkToDirectory = async () => {
       await remoteCall.callRemoteTestUtil('openFile', appId, ['G']));
 
   // Check the contents of current directory.
+  // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+  // signature, so it must be accessed with ['directoryC'].
   await remoteCall.waitForFiles(appId, [ENTRIES.directoryC.getExpectedRow()]);
 };
 
 /**
  * Tests opening files through folder links.
  */
+// @ts-ignore: error TS4111: Property 'driveLinkOpenFileThroughLinkedDirectory'
+// comes from an index signature, so it must be accessed with
+// ['driveLinkOpenFileThroughLinkedDirectory'].
 testcase.driveLinkOpenFileThroughLinkedDirectory = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS2769: No overload matches this call.
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+        // signature, so it must be accessed with ['directoryA'].
         ENTRIES.directoryA,
+        // @ts-ignore: error TS4111: Property 'directoryB' comes from an index
+        // signature, so it must be accessed with ['directoryB'].
         ENTRIES.directoryB,
+        // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+        // signature, so it must be accessed with ['directoryC'].
         ENTRIES.directoryC,
-        ENTRIES.deeplyBurriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'deeplyBuriedSmallJpeg' comes from
+        // an index signature, so it must be accessed with
+        // ['deeplyBuriedSmallJpeg'].
+        ENTRIES.deeplyBuriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'linkGtoB' comes from an index
+        // signature, so it must be accessed with ['linkGtoB'].
         ENTRIES.linkGtoB,
+        // @ts-ignore: error TS4111: Property 'linkHtoFile' comes from an index
+        // signature, so it must be accessed with ['linkHtoFile'].
         ENTRIES.linkHtoFile,
+        // @ts-ignore: error TS4111: Property 'linkTtoTransitiveDirectory' comes
+        // from an index signature, so it must be accessed with
+        // ['linkTtoTransitiveDirectory'].
         ENTRIES.linkTtoTransitiveDirectory,
       ]));
 
   // Navigate through link.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['G']));
+  // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+  // signature, so it must be accessed with ['directoryC'].
   await remoteCall.waitForFiles(appId, [ENTRIES.directoryC.getExpectedRow()]);
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['C']));
   await remoteCall.waitForFiles(
-      appId, [ENTRIES.deeplyBurriedSmallJpeg.getExpectedRow()]);
+      // @ts-ignore: error TS4111: Property 'deeplyBuriedSmallJpeg' comes from
+      // an index signature, so it must be accessed with
+      // ['deeplyBuriedSmallJpeg'].
+      appId, [ENTRIES.deeplyBuriedSmallJpeg.getExpectedRow()]);
 
   await sendTestMessage(
       {name: 'expectFileTask', fileNames: ['deep.jpg'], openType: 'launch'});
@@ -732,15 +834,35 @@ testcase.driveLinkOpenFileThroughLinkedDirectory = async () => {
 /**
  * Tests opening files through transitive links.
  */
+// @ts-ignore: error TS4111: Property 'driveLinkOpenFileThroughTransitiveLink'
+// comes from an index signature, so it must be accessed with
+// ['driveLinkOpenFileThroughTransitiveLink'].
 testcase.driveLinkOpenFileThroughTransitiveLink = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS2769: No overload matches this call.
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+        // signature, so it must be accessed with ['directoryA'].
         ENTRIES.directoryA,
+        // @ts-ignore: error TS4111: Property 'directoryB' comes from an index
+        // signature, so it must be accessed with ['directoryB'].
         ENTRIES.directoryB,
+        // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+        // signature, so it must be accessed with ['directoryC'].
         ENTRIES.directoryC,
-        ENTRIES.deeplyBurriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'deeplyBuriedSmallJpeg' comes from
+        // an index signature, so it must be accessed with
+        // ['deeplyBuriedSmallJpeg'].
+        ENTRIES.deeplyBuriedSmallJpeg,
+        // @ts-ignore: error TS4111: Property 'linkGtoB' comes from an index
+        // signature, so it must be accessed with ['linkGtoB'].
         ENTRIES.linkGtoB,
+        // @ts-ignore: error TS4111: Property 'linkHtoFile' comes from an index
+        // signature, so it must be accessed with ['linkHtoFile'].
         ENTRIES.linkHtoFile,
+        // @ts-ignore: error TS4111: Property 'linkTtoTransitiveDirectory' comes
+        // from an index signature, so it must be accessed with
+        // ['linkTtoTransitiveDirectory'].
         ENTRIES.linkTtoTransitiveDirectory,
       ]));
 
@@ -748,7 +870,10 @@ testcase.driveLinkOpenFileThroughTransitiveLink = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['T']));
   await remoteCall.waitForFiles(
-      appId, [ENTRIES.deeplyBurriedSmallJpeg.getExpectedRow()]);
+      // @ts-ignore: error TS4111: Property 'deeplyBuriedSmallJpeg' comes from
+      // an index signature, so it must be accessed with
+      // ['deeplyBuriedSmallJpeg'].
+      appId, [ENTRIES.deeplyBuriedSmallJpeg.getExpectedRow()]);
 
   await sendTestMessage(
       {name: 'expectFileTask', fileNames: ['deep.jpg'], openType: 'launch'});
@@ -762,6 +887,8 @@ testcase.driveLinkOpenFileThroughTransitiveLink = async () => {
 /**
  * Tests that the welcome banner appears when a Drive volume is opened.
  */
+// @ts-ignore: error TS4111: Property 'driveWelcomeBanner' comes from an index
+// signature, so it must be accessed with ['driveWelcomeBanner'].
 testcase.driveWelcomeBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -793,6 +920,8 @@ testcase.driveWelcomeBanner = async () => {
  * Tests that the Drive offline info banner appears when a Drive volume is
  * opened.
  */
+// @ts-ignore: error TS4111: Property 'driveOfflineInfoBanner' comes from an
+// index signature, so it must be accessed with ['driveOfflineInfoBanner'].
 testcase.driveOfflineInfoBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -827,16 +956,24 @@ testcase.driveOfflineInfoBanner = async () => {
  * Tests that the encryption badge appears next to the CSE file when a Drive
  *  volume is opened.
  */
+// @ts-ignore: error TS4111: Property 'driveEncryptionBadge' comes from an index
+// signature, so it must be accessed with ['driveEncryptionBadge'].
 testcase.driveEncryptionBadge = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'testCSEFile' comes from an index
+      // signature, so it must be accessed with ['testCSEFile'].
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.testCSEFile]);
 
   // Check: encrypted file has a badge.
   const encrypted = await remoteCall.waitForElementStyles(
       appId, '#file-list [file-name="test-encrypted.txt"] .encrypted-icon',
       ['display', 'visibility']);
+  // @ts-ignore: error TS4111: Property 'display' comes from an index signature,
+  // so it must be accessed with ['display'].
   chrome.test.assertNe('none', encrypted.styles.display);
+  // @ts-ignore: error TS4111: Property 'visibility' comes from an index
+  // signature, so it must be accessed with ['visibility'].
   chrome.test.assertEq('visible', encrypted.styles.visibility);
 
   // Check: the badge is included in accessibility labels.
@@ -844,6 +981,7 @@ testcase.driveEncryptionBadge = async () => {
       appId, '#file-list [file-name="test-encrypted.txt"]',
       ['aria-labelledby', 'display', 'visibility']);
   const ariaLabelledBy = row.attributes['aria-labelledby'];
+  // @ts-ignore: error TS18048: 'ariaLabelledBy' is possibly 'undefined'.
   const encryptedBadgeId = ariaLabelledBy.split(/ +/).filter(
       (id) => id.indexOf('encrypted') !== -1)[0];
   chrome.test.assertTrue(
@@ -867,10 +1005,17 @@ testcase.driveEncryptionBadge = async () => {
  * Drive" as the file starts syncing then disappears as it finishes syncing
  * (i.e., the file reaches 100% progress).
  */
+// @ts-ignore: error TS4111: Property
+// 'driveInlineSyncStatusSingleFileProgressEvents' comes from an index
+// signature, so it must be accessed with
+// ['driveInlineSyncStatusSingleFileProgressEvents'].
 testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
   const toBeUploaded = new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'video.ogv',
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and 'thumbnailFileName' does not exist in type
+    // 'TestEntryInfoOptions'.
     thumbnailFileName: 'image.png',
     targetPath: 'toBeUploaded.ogv',
     mimeType: 'video/ogg',
@@ -915,6 +1060,10 @@ testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
  * folders containing entries and that child entries' statuses are aggregated
  * respecting the order of precedence (failed > in progress > completed).
  */
+// @ts-ignore: error TS4111: Property
+// 'driveInlineSyncStatusParentFolderProgressEvents' comes from an index
+// signature, so it must be accessed with
+// ['driveInlineSyncStatusParentFolderProgressEvents'].
 testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
   const parentDir = new TestEntryInfo({
     type: EntryType.DIRECTORY,
@@ -928,6 +1077,9 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
   const toBeUploaded = new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'video.ogv',
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and 'thumbnailFileName' does not exist in type
+    // 'TestEntryInfoOptions'.
     thumbnailFileName: 'image.png',
     targetPath: 'some_folder/toBeUploaded.ogv',
     mimeType: 'video/ogg',
@@ -941,6 +1093,9 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
   const toFailUploading = new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'video.ogv',
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and 'thumbnailFileName' does not exist in type
+    // 'TestEntryInfoOptions'.
     thumbnailFileName: 'image.png',
     targetPath: 'some_folder/toFailUploading.ogv',
     mimeType: 'video/ogg',
@@ -1020,6 +1175,9 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
 /**
  * Tests that the Enable Docs Offline dialog appears in the Files App.
  */
+// @ts-ignore: error TS4111: Property 'driveEnableDocsOfflineDialog' comes from
+// an index signature, so it must be accessed with
+// ['driveEnableDocsOfflineDialog'].
 testcase.driveEnableDocsOfflineDialog = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -1055,6 +1213,9 @@ testcase.driveEnableDocsOfflineDialog = async () => {
  * Tests that the Enable Docs Offline dialog launches a Chrome notification if
  * there are no Files App windows open.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveEnableDocsOfflineDialogWithoutWindow' comes from an index signature, so
+// it must be accessed with ['driveEnableDocsOfflineDialogWithoutWindow'].
 testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
   // Wait for the background page to listen to events from the browser.
   await remoteCall.callRemoteTestUtil('waitForBackgroundReady', null, []);
@@ -1123,6 +1284,9 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
  * Tests that the Enable Docs Offline dialog appears in the focused window if
  * there are more than one Files App windows open.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveEnableDocsOfflineDialogMultipleWindows' comes from an index signature,
+// so it must be accessed with ['driveEnableDocsOfflineDialogMultipleWindows'].
 testcase.driveEnableDocsOfflineDialogMultipleWindows = async () => {
   // Open two Files app windows on Drive, and the second one should be focused.
   const appId1 = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -1146,6 +1310,10 @@ testcase.driveEnableDocsOfflineDialogMultipleWindows = async () => {
 /**
  * Tests that the Enable Docs Offline dialog disappears when Drive is unmounted.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveEnableDocsOfflineDialogDisappearsOnUnmount' comes from an index
+// signature, so it must be accessed with
+// ['driveEnableDocsOfflineDialogDisappearsOnUnmount'].
 testcase.driveEnableDocsOfflineDialogDisappearsOnUnmount = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -1165,6 +1333,10 @@ testcase.driveEnableDocsOfflineDialogDisappearsOnUnmount = async () => {
  * permanent deletion (as the files aren't pemanently deleted but go to Google
  * Drive trash instead).
  */
+// @ts-ignore: error TS4111: Property
+// 'driveDeleteDialogDoesntMentionPermanentDelete' comes from an index
+// signature, so it must be accessed with
+// ['driveDeleteDialogDoesntMentionPermanentDelete'].
 testcase.driveDeleteDialogDoesntMentionPermanentDelete = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
@@ -1201,6 +1373,9 @@ testcase.driveDeleteDialogDoesntMentionPermanentDelete = async () => {
  * Tests that Google One offer banner appears if a user navigates to Drive
  * volume.
  */
+// @ts-ignore: error TS4111: Property 'driveGoogleOneOfferBannerEnabled' comes
+// from an index signature, so it must be accessed with
+// ['driveGoogleOneOfferBannerEnabled'].
 testcase.driveGoogleOneOfferBannerEnabled = async () => {
   const userActionShown = 'FileBrowser.GoogleOneOffer.Shown';
   const userActionGetPerk = 'FileBrowser.GoogleOneOffer.GetPerk';
@@ -1235,6 +1410,9 @@ testcase.driveGoogleOneOfferBannerEnabled = async () => {
  * Tests that Google One offer banner does not appear if the flag is off, which
  * is the default.
  */
+// @ts-ignore: error TS4111: Property 'driveGoogleOneOfferBannerDisabled' comes
+// from an index signature, so it must be accessed with
+// ['driveGoogleOneOfferBannerDisabled'].
 testcase.driveGoogleOneOfferBannerDisabled = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -1248,6 +1426,9 @@ testcase.driveGoogleOneOfferBannerDisabled = async () => {
  * Test that Google One offer banner can get dismissed with a click of Dismiss
  * button.
  */
+// @ts-ignore: error TS4111: Property 'driveGoogleOneOfferBannerDismiss' comes
+// from an index signature, so it must be accessed with
+// ['driveGoogleOneOfferBannerDismiss'].
 testcase.driveGoogleOneOfferBannerDismiss = async () => {
   const userActionDismiss = 'FileBrowser.GoogleOneOffer.Dismiss';
 
@@ -1273,6 +1454,10 @@ testcase.driveGoogleOneOfferBannerDismiss = async () => {
  * should not be visible. When the preference is updated, the toggle should
  * reappear.
  */
+// @ts-ignore: error TS4111: Property
+// 'drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled' comes from an index
+// signature, so it must be accessed with
+// ['drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled'].
 testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -1319,9 +1504,16 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
  * Tests that "Shared with me" which is outside "My drive" retains the pinned
  * property and it is not updated when bulk pinning is enabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled' comes from an index
+// signature, so it must be accessed with
+// ['driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled'].
 testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
   // Open Files app on Drive containing "Shared with me" file entries.
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'sharedWithMeDirectory' comes from
+      // an index signature, so it must be accessed with
+      // ['sharedWithMeDirectory'].
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.sharedWithMeDirectory]);
 
   // Enable the bulk pinning preference first.
@@ -1366,6 +1558,10 @@ testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
  * Tests that when bulk pinning is enabled, the "Available offline" toggle
  * should still be visible in the Shared with me section.
  */
+// @ts-ignore: error TS4111: Property
+// 'drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled' comes from an
+// index signature, so it must be accessed with
+// ['drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled'].
 testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
     async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
@@ -1427,9 +1623,15 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
  * applied to them. When they go back to being able to be pinned (e.g. from Docs
  * offline coming back online) then ensure the inline icon is updated.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin' comes from an
+// index signature, so it must be accessed with
+// ['driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin'].
 testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
     async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'cantPinFile' comes from an index
+      // signature, so it must be accessed with ['cantPinFile'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.cantPinFile]);
 
   // Ensure the `cant_pin.txt` file has the cant-pin class.
@@ -1449,6 +1651,10 @@ testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
  * Tests that items that are cached outside of their virtual list get their
  * inline sync status updated when they get attached back to the DOM.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveItemsOutOfViewportShouldUpdateTheirSyncStatus' comes from an index
+// signature, so it must be accessed with
+// ['driveItemsOutOfViewportShouldUpdateTheirSyncStatus'].
 testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
   const entries = [];
   const emptyFile = createTestFile('text.txt');
@@ -1464,6 +1670,7 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
 
   // Update the second file's metadata to "not pinnable" and wait for the
   // corresponding icon to be displayed.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const secondFileName = entries[1].nameText;
   await sendTestMessage(
       {name: 'setCanPin', path: `/root/${secondFileName}`, canPin: false});
@@ -1471,6 +1678,7 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
       appId, `#file-list [file-name="${secondFileName}"].cant-pin`);
 
   // Wait for the first entry to appear in the file list.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const firstFileName = entries[0].nameText;
   await remoteCall.waitForElement(
       appId, `#file-list [file-name="${firstFileName}"]`);
@@ -1482,6 +1690,7 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
 
   await remoteCall.waitForElementLost(
       appId, `#file-list [file-name="${firstFileName}"]`);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const lastFileName = entries[entries.length - 1].nameText;
   await remoteCall.waitForElement(
       appId, `#file-list [file-name="${lastFileName}"]`);
@@ -1501,6 +1710,8 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
     progress: 50,
   });
 
+  // @ts-ignore: error TS7006: Parameter 'fileName' implicitly has an 'any'
+  // type.
   const inlineSyncSelector = fileName => `#file-list [file-name="${
       fileName}"] xf-inline-status[sync-status=in_progress]`;
 
@@ -1513,6 +1724,7 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
 
   // Send a "completed" sync progress event for the second last file and wait
   // for its effect.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const secondLastFileName = entries[entries.length - 2].nameText;
   await sendTestMessage({
     name: 'setDriveSyncProgress',
@@ -1556,6 +1768,10 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
  * Tests that when bulk pinning is enabled the queued state is shown for all
  * files that the PinningManager is tracking but has not yet pinned.
  */
+// @ts-ignore: error TS4111: Property
+// 'driveAllItemsShouldBeQueuedIfTrackedByPinningManager' comes from an index
+// signature, so it must be accessed with
+// ['driveAllItemsShouldBeQueuedIfTrackedByPinningManager'].
 testcase.driveAllItemsShouldBeQueuedIfTrackedByPinningManager = async () => {
   // Stop the PinningManager from pinning files.
   await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: false});
@@ -1596,10 +1812,15 @@ testcase.driveAllItemsShouldBeQueuedIfTrackedByPinningManager = async () => {
  * Tests that items that have the `dirty` metadata flag set to true have their
  * sync_status property returned as "QUEUED".
  */
+// @ts-ignore: error TS4111: Property 'driveDirtyItemsShouldBeDisplayedAsQueued'
+// comes from an index signature, so it must be accessed with
+// ['driveDirtyItemsShouldBeDisplayedAsQueued'].
 testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
   // Add a single test file with the dirty metadata set to "true" and load Files
   // app up at the Drive root.
   const appId =
+      // @ts-ignore: error TS4111: Property 'dirty' comes from an index
+      // signature, so it must be accessed with ['dirty'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.dirty]);
 
   // The file should be displayed as "queued" despite it not having received any
@@ -1611,6 +1832,8 @@ testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
   // Fake the file starting to sync.
   await sendTestMessage({
     name: 'setDriveSyncProgress',
+    // @ts-ignore: error TS4111: Property 'dirty' comes from an index signature,
+    // so it must be accessed with ['dirty'].
     path: `/root/${ENTRIES.dirty.targetPath}`,
     progress: 50,
   });
@@ -1625,6 +1848,9 @@ testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
  * Tests that the Drive bulk pinning banner is disabled (i.e. doesn't appear
  * between the Drive welcome banner but before the Holding space banner).
  */
+// @ts-ignore: error TS4111: Property 'driveBulkPinningBannerDisabled' comes
+// from an index signature, so it must be accessed with
+// ['driveBulkPinningBannerDisabled'].
 testcase.driveBulkPinningBannerDisabled = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -1651,6 +1877,9 @@ testcase.driveBulkPinningBannerDisabled = async () => {
  * Tests that the Drive bulk pinning banner is enabled (i.e. it appears directly
  * after the Drive welcome banner).
  */
+// @ts-ignore: error TS4111: Property 'driveBulkPinningBannerEnabled' comes from
+// an index signature, so it must be accessed with
+// ['driveBulkPinningBannerEnabled'].
 testcase.driveBulkPinningBannerEnabled = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
@@ -1676,6 +1905,8 @@ testcase.driveBulkPinningBannerEnabled = async () => {
 /*
  * Checks that we cannot open Google Doc without network connection.
  */
+// @ts-ignore: error TS4111: Property 'openDriveDocWhenOffline' comes from an
+// index signature, so it must be accessed with ['openDriveDocWhenOffline'].
 testcase.openDriveDocWhenOffline = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.testDocument,
@@ -1729,6 +1960,9 @@ testcase.openDriveDocWhenOffline = async () => {
  * indicator displays as "completed" and is dismissed about 300ms
  * later.
  */
+// @ts-ignore: error TS4111: Property 'completedSyncStatusDismissesAfter300Ms'
+// comes from an index signature, so it must be accessed with
+// ['completedSyncStatusDismissesAfter300Ms'].
 testcase.completedSyncStatusDismissesAfter300Ms = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.hello,
@@ -1759,6 +1993,9 @@ testcase.completedSyncStatusDismissesAfter300Ms = async () => {
  * Tests that when the organization limit has exceeded (not the user storage)
  * the out of organization space banner appears.
  */
+// @ts-ignore: error TS4111: Property 'driveOutOfOrganizationSpaceBanner' comes
+// from an index signature, so it must be accessed with
+// ['driveOutOfOrganizationSpaceBanner'].
 testcase.driveOutOfOrganizationSpaceBanner = async () => {
   await remoteCall.setPooledStorageQuotaUsage(
       1 * 1024 * 1024, 2 * 1024 * 1024, true);
@@ -1773,6 +2010,9 @@ testcase.driveOutOfOrganizationSpaceBanner = async () => {
  * Tests that copy operation of a directory will start, but a error message will
  * appear when encrypted files within that directory were skipped.
  */
+// @ts-ignore: error TS4111: Property 'copyDirectoryWithEncryptedFile' comes
+// from an index signature, so it must be accessed with
+// ['copyDirectoryWithEncryptedFile'].
 testcase.copyDirectoryWithEncryptedFile = async () => {
   const dir = ENTRIES.testCSEDirectory;
   const file = ENTRIES.testCSEFileInDirectory;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -10,9 +11,9 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -129,10 +130,13 @@ TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
+  // "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=" is the base64 encoding of
+  // the first 6 bytes of sha256 of the App ID
+  // ("ckmbeioemjmabdoddhjadagkjknpeigi").
   auto expected_config = content::StoragePartitionConfig::Create(
       &testing_profile,
       /*partition_domain=*/
-      "iwa-aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+      "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=",
       /*partition_name=*/"",
       /*in_memory=*/false);
   EXPECT_THAT(url_info->storage_partition_config(&testing_profile),

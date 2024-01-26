@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_store_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -169,7 +169,7 @@ void OfflinePageAutoFetcherService::AutoFetchComplete(
     const OfflinePageItem* page) {
   if (!page)
     return;
-  absl::optional<auto_fetch::ClientIdMetadata> metadata =
+  std::optional<auto_fetch::ClientIdMetadata> metadata =
       auto_fetch::ExtractMetadata(page->client_id);
   if (!metadata)
     return;

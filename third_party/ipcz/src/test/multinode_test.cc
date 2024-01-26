@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <map>
+#include <optional>
 #include <string>
 #include <thread>
 
@@ -18,8 +19,6 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/abseil-cpp/absl/strings/str_split.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
 #include "reference_drivers/file_descriptor.h"
@@ -106,7 +105,7 @@ class InProcessTestNodeController : public TestNode::TestNodeController {
   }
 
   TestNode& source_;
-  absl::optional<std::thread> client_thread_;
+  std::optional<std::thread> client_thread_;
 };
 
 class InProcessTestDriverBase : public TestDriver {
@@ -240,7 +239,7 @@ class ChildProcessTestNodeController : public TestNode::TestNodeController {
 
   TestNode& source_;
   const pid_t pid_;
-  absl::optional<bool> result_;
+  std::optional<bool> result_;
 };
 
 class MultiprocessTestDriver : public TestDriver {

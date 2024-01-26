@@ -155,7 +155,7 @@ std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
   auto it = name_type_map.find(type);
   if (it == name_type_map.end()) {
     NOTIMPLEMENTED() << " field name and label is missing for "
-                     << AutofillType(type).ToString();
+                     << AutofillType(type).ToStringView();
     return {std::string(), std::string()};
   }
   return it->second;
@@ -495,11 +495,9 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
   MockCreditCardSaveManager(
       AutofillDriver* driver,
       AutofillClient* client,
-      payments::TestPaymentsNetworkInterface* payments_network_interface,
       PersonalDataManager* personal_data_manager)
       : TestCreditCardSaveManager(driver,
                                   client,
-                                  payments_network_interface,
                                   personal_data_manager) {}
   MOCK_METHOD(bool,
               AttemptToOfferCvcLocalSave,
@@ -570,7 +568,7 @@ class FormDataImporterTest : public testing::Test {
         .set_virtual_card_enrollment_manager(
             std::move(virtual_card_enrollment_manager));
     auto credit_card_save_manager = std::make_unique<MockCreditCardSaveManager>(
-        nullptr, autofill_client_.get(), nullptr, personal_data_manager_.get());
+        nullptr, autofill_client_.get(), personal_data_manager_.get());
     test_api(form_data_importer())
         .set_credit_card_save_manager(std::move(credit_card_save_manager));
   }
@@ -3093,7 +3091,7 @@ TEST_F(FormDataImporterTest,
 
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   const std::string guid = personal_data_manager_->AddAsLocalIban(iban);
   // Should set identifier and record_type manually here as `iban` has been
   // passed by value above in `AddAsLocalIban`, and `AddAsLocalIban` method sets
@@ -3912,13 +3910,8 @@ TEST_F(FormDataImporterTest, FormAssociator) {
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// ac=unrecognized fields have a prediction, but are not imported.
+// Tests that ac=unrecognized fields have a prediction, but are not imported.
 TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a `form_structure` where the email field has ac=unrecognized.
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -3985,7 +3978,7 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   personal_data_manager_->AddAsLocalIban(iban);
 
   // Simulate a form submission with the same IBAN. The IBAN should not be

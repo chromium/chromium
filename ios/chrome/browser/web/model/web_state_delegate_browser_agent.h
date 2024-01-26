@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -111,13 +112,13 @@ class WebStateDelegateBrowserAgent
   void SetWebStateDelegate(web::WebState* web_state);
   void ClearWebStateDelegate(web::WebState* web_state);
 
-  WebStateList* web_state_list_ = nullptr;
-  TabInsertionBrowserAgent* tab_insertion_agent_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
+  raw_ptr<TabInsertionBrowserAgent> tab_insertion_agent_ = nullptr;
 
   OverlayJavaScriptDialogPresenter java_script_dialog_presenter_;
 
   // The browser associated with this agent.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // Scoped observations of Browser, WebStateList and WebStates.
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};

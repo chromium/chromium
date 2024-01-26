@@ -439,7 +439,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void AddAgentGroupScheduler(AgentGroupSchedulerImpl*);
 
   struct AgentGroupSchedulerScope {
-    std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverride>
+    std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
         single_thread_task_runner_current_handle_override;
     WeakPersistent<AgentGroupScheduler> previous_agent_group_scheduler;
     WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler;

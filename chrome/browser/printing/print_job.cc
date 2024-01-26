@@ -27,6 +27,8 @@
 #include "printing/printed_document.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
@@ -40,7 +42,6 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #endif
 
@@ -345,7 +346,7 @@ class PrintJob::PdfConversionState {
  public:
   PdfConversionState(const gfx::Size& page_size,
                      const gfx::Rect& content_area,
-                     const absl::optional<bool>& use_skia,
+                     const std::optional<bool>& use_skia,
                      const GURL& url)
       : page_size_(page_size),
         content_area_(content_area),
@@ -386,7 +387,7 @@ class PrintJob::PdfConversionState {
   int pages_in_progress_ = 0;
   const gfx::Size page_size_;
   const gfx::Rect content_area_;
-  const absl::optional<bool> use_skia_;
+  const std::optional<bool> use_skia_;
   const GURL url_;
   std::unique_ptr<PdfConverter> converter_;
 };

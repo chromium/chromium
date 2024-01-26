@@ -41,10 +41,10 @@ class PictureInPictureBoundsCache
   //
   // This will also set up the cache to allow additional calls to
   // `UpdateCachedBounds()` to succeed.  This must be called first.
-  static absl::optional<gfx::Rect> GetBoundsForNewWindow(
+  static std::optional<gfx::Rect> GetBoundsForNewWindow(
       content::WebContents* web_contents,
       const display::Display& display,
-      absl::optional<gfx::Size> requested_content_size);
+      std::optional<gfx::Size> requested_content_size);
 
   // Updates the cache for `web_contents` to reflect `most_recent_bounds` as the
   // window (not content) bounds.  `GetBoundsForNewWindow()` must be called
@@ -60,9 +60,9 @@ class PictureInPictureBoundsCache
   // Given a new request for a pip window of the given requested size, on the
   // given display, initial the cache and return cached window bounds if they
   // match what's in the cache.
-  absl::optional<gfx::Rect> GetBoundsForNewWindow(
+  std::optional<gfx::Rect> GetBoundsForNewWindow(
       const display::Display& display,
-      const absl::optional<gfx::Size>& requested_content_size);
+      const std::optional<gfx::Size>& requested_content_size);
 
   // Update the cache to reflect the most recent size of the window.
   void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
@@ -80,12 +80,12 @@ class PictureInPictureBoundsCache
   int64_t display_id_ = -1;
 
   // This is the most recent site-requested contents size, if any.
-  absl::optional<gfx::Size> requested_content_size_;
+  std::optional<gfx::Size> requested_content_size_;
 
   // This is the most recent bounds for the pip window, which might differ if
   // it's resized / moved by the user.  Can be unset if we haven't been given
   // any bounds for the pip window yet.
-  absl::optional<gfx::Rect> most_recent_bounds_;
+  std::optional<gfx::Rect> most_recent_bounds_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

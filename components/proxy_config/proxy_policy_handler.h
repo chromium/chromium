@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PROXY_CONFIG_PROXY_POLICY_HANDLER_H_
 #define COMPONENTS_PROXY_CONFIG_PROXY_POLICY_HANDLER_H_
 
-#include <string>
-
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/proxy_config/proxy_config_export.h"
 
@@ -44,17 +42,6 @@ class PROXY_CONFIG_EXPORT ProxyPolicyHandler
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  const base::Value* GetProxyPolicyValue(const base::Value* value,
-                                         const char* policy_name);
-
-  // Converts the deprecated ProxyServerMode policy value to a ProxyMode value
-  // and places the result in |mode_value|. Returns whether the conversion
-  // succeeded.
-  bool CheckProxyModeAndServerMode(const base::Value* proxy_settings,
-                                   policy::PolicyErrorMap* errors,
-                                   std::string* mode_value);
 };
 
 }  // namespace proxy_config

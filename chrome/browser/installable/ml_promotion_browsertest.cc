@@ -274,7 +274,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
         {"origin", ProcessedValue(url::Origin::Create(site_url).GetURL())},
         {"site_url", ProcessedValue(site_url)},
         {"manifest_id", ProcessedValue(manifest_id)}};
-    EXPECT_CALL(*GetMockSegmentation(custom_web_contents),
+    EXPECT_CALL(*GetMockSegmentation(),
                 GetClassificationResult(
                     segmentation_platform::kWebAppInstallationPromoKey, _,
                     Pointee(testing::Field(&InputContext::metadata_args,
@@ -291,7 +291,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     if (!custom_web_contents) {
       custom_web_contents = web_contents();
     }
-    EXPECT_CALL(*GetMockSegmentation(custom_web_contents),
+    EXPECT_CALL(*GetMockSegmentation(),
                 CollectTrainingData(
                     segmentation_platform::proto::SegmentId::
                         OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO,

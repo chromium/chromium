@@ -59,6 +59,8 @@ public class NotificationIntentInterceptor {
         int CONTENT_INTENT = 0;
         int ACTION_INTENT = 1;
         int DELETE_INTENT = 2;
+
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -126,14 +128,15 @@ public class NotificationIntentInterceptor {
      * and dismiss events for metrics purpose.
      *
      * @param intentType The type of the pending intent to intercept.
-     * @param intentId The unique ID of the {@link PendingIntent}, used to distinguish action
-     *     intents.
+     * @param actionType Distinguishes actions for `ACTION_INTENT` {@link IntentType}, both for
+     *     metrics recording purposes, as well as for ensuring that the wrapper {@link
+     *     PendingIntent} will be unique.
      * @param metadata The metadata including notification id, tag, type, etc.
      * @param pendingIntentProvider Provides the {@link PendingIntent} to launch Chrome.
      */
     public static PendingIntent createInterceptPendingIntent(
             @IntentType int intentType,
-            int intentId,
+            @NotificationUmaTracker.ActionType int actionType,
             NotificationMetadata metadata,
             @Nullable PendingIntentProvider pendingIntentProvider) {
         PendingIntent pendingIntent = null;
@@ -146,7 +149,13 @@ public class NotificationIntentInterceptor {
         // The delete intent needs to be handled by broadcast receiver from Q due to background
         // activity start restriction.
         boolean shouldUseBroadcast =
-                intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT;
+                intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
+                        || actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
+                        || actionType == NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE
+                        || actionType
+                                == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT
+                        || actionType
+                                == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT;
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent =
                 shouldUseBroadcast
@@ -159,7 +168,7 @@ public class NotificationIntentInterceptor {
         intent.putExtra(EXTRA_NOTIFICATION_TYPE, metadata.type);
         intent.putExtra(EXTRA_CREATE_TIME, System.currentTimeMillis());
         if (intentType == IntentType.ACTION_INTENT) {
-            intent.putExtra(EXTRA_ACTION_TYPE, intentId);
+            intent.putExtra(EXTRA_ACTION_TYPE, actionType);
         }
 
         // This flag ensures the TrampolineActivity won't trigger ChromeActivity's auto enter
@@ -175,7 +184,7 @@ public class NotificationIntentInterceptor {
         // Use request code to distinguish different PendingIntents on Android.
         int originalRequestCode =
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
-        int requestCode = computeHashCode(metadata, intentType, intentId, originalRequestCode);
+        int requestCode = computeHashCode(metadata, intentType, actionType, originalRequestCode);
 
         return shouldUseBroadcast
                 ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)
@@ -191,7 +200,7 @@ public class NotificationIntentInterceptor {
     public static PendingIntent getDefaultDeletePendingIntent(NotificationMetadata metadata) {
         return NotificationIntentInterceptor.createInterceptPendingIntent(
                 NotificationIntentInterceptor.IntentType.DELETE_INTENT,
-                /* intentId= */ 0,
+                /* actionType= */ NotificationUmaTracker.ActionType.UNKNOWN,
                 metadata,
                 /* pendingIntentProvider= */ null);
     }
@@ -224,20 +233,22 @@ public class NotificationIntentInterceptor {
      *
      * @param metadata Notification metadata including notification id, tag, etc.
      * @param intentType The type of the {@link PendingIntent}.
-     * @param intentId The unique ID of the {@link PendingIntent}, used to distinguish action
-     *     intents.
+     * @param actionType Distinguishes actions for `ACTION_INTENT` {@link IntentType}, both for
+     *     metrics recording purposes, as well as for ensuring that the wrapper {@link
+     *     PendingIntent} will be unique.
      * @param requestCode The request code of the {@link PendingIntent}.
      * @return The hashcode for the intercept {@link PendingIntent}.
      */
     private static int computeHashCode(
             NotificationMetadata metadata,
             @IntentType int intentType,
-            int intentId,
+            @NotificationUmaTracker.ActionType int actionType,
             int requestCode) {
         assert metadata != null;
+        // Use perfect hashing on the first three, low-entropy, attributes to avoid collisions.
         int hashcode = metadata.type;
-        hashcode = hashcode * 31 + intentType;
-        hashcode = hashcode * 31 + intentId;
+        hashcode = hashcode * (IntentType.NUM_ENTRIES + 1) + intentType;
+        hashcode = hashcode * (NotificationUmaTracker.ActionType.NUM_ENTRIES + 1) + actionType;
         hashcode = hashcode * 31 + (metadata.tag == null ? 0 : metadata.tag.hashCode());
         hashcode = hashcode * 31 + metadata.id;
         hashcode = hashcode * 31 + requestCode;

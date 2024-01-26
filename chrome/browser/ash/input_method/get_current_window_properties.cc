@@ -6,20 +6,21 @@
 
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"
 
+#include <optional>
+
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace input_method {
 namespace {
 
-absl::optional<GURL> GetAshChromeUrl() {
+std::optional<GURL> GetAshChromeUrl() {
   Browser* browser = chrome::FindLastActive();
   // Ash chrome will return true for browser->window()->IsActive() if the
   // user is currently typing in an ash browser tab. IsActive() will return
@@ -32,7 +33,7 @@ absl::optional<GURL> GetAshChromeUrl() {
         ->GetLastCommittedURL();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void GetLacrosChromeUrl(GetFocusedTabUrlCallback callback) {
@@ -46,13 +47,13 @@ void GetLacrosChromeUrl(GetFocusedTabUrlCallback callback) {
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace
 
 void GetFocusedTabUrl(GetFocusedTabUrlCallback callback) {
-  absl::optional<GURL> ash_url = GetAshChromeUrl();
+  std::optional<GURL> ash_url = GetAshChromeUrl();
   if (ash_url.has_value()) {
     std::move(callback).Run(ash_url);
     return;

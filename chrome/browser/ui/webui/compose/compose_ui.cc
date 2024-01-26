@@ -18,6 +18,7 @@
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -45,7 +46,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"firstRunMainTop", IDS_COMPOSE_FRE_MAIN_TOP},
       {"firstRunMainMid", IDS_COMPOSE_FRE_MAIN_MID},
       {"firstRunMainBottom", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
-      {"firstRunLetsGoButton", IDS_COMPOSE_FRE_LETS_GO_BUTTON},
+      {"firstRunOkButton", IDS_COMPOSE_FRE_OK_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
       {"inputPlaceholderTitle", IDS_COMPOSE_INPUT_PLACEHOLDER_TITLE},
       {"inputPlaceholderLine1", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1},
@@ -68,9 +69,11 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
-      {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorFiltered", IDS_COMPOSE_ERROR_FILTERED},
+      {"errorUnsupportedLanguage", IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
-      {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
+      {"errorRequestThrottled", IDS_COMPOSE_ERROR_REQUEST_THROTTLED},
+      {"errorOffline", IDS_COMPOSE_ERROR_OFFLINE},
       {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
@@ -78,6 +81,8 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"resubmit", IDS_COMPOSE_RESUBMIT},
       {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
       {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
+      {"savedText", IDS_COMPOSE_SUGGESTION_SAVED_TEXT},
+      {"savedLabel", IDS_COMPOSE_SUGGESTION_SAVED_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",
@@ -87,6 +92,14 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
+  source->AddBoolean(
+      "enableSavedStateNotification",
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification));
+
+  const compose::Config& config = compose::GetComposeConfig();
+  source->AddInteger("savedStateTimeoutInMilliseconds",
+                     config.saved_state_timeout_milliseconds);
 }
 
 ComposeUI::~ComposeUI() = default;

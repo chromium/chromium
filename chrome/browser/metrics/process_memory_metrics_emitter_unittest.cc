@@ -85,7 +85,7 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
     }
   }
 
-  absl::optional<base::TimeDelta> GetProcessUptime(
+  std::optional<base::TimeDelta> GetProcessUptime(
       base::TimeTicks now,
       base::ProcessId pid) override {
     switch (pid) {
@@ -432,7 +432,7 @@ MetricMap GetExpectedGpuMetrics() {
 
 void PopulateUtilityMetrics(GlobalMemoryDumpPtr& global_dump,
                             MetricMap& metrics_mb,
-                            const absl::optional<std::string>& service_name) {
+                            const std::optional<std::string>& service_name) {
   auto pmd(memory_instrumentation::mojom::ProcessMemoryDump::New());
   pmd->process_type = ProcessType::UTILITY;
   if (service_name.has_value()) {
@@ -494,7 +494,7 @@ void PopulateMetrics(GlobalMemoryDumpPtr& global_dump,
   switch (ptype) {
     case HistogramProcessType::kAudioService:
       PopulateUtilityMetrics(global_dump, metrics_mb,
-                             /*service_name=*/absl::nullopt);
+                             /*service_name=*/std::nullopt);
       return;
     case HistogramProcessType::kBrowser:
       PopulateBrowserMetrics(global_dump, metrics_mb);

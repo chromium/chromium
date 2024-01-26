@@ -21,9 +21,6 @@ namespace borealis {
 
 namespace {
 
-// A prime number chosen to give ~0.1s of wait time on my DUT.
-constexpr unsigned kHashIterations = 100129;
-
 // Returns the Board's name according to /etc/lsb-release. Strips any variant
 // except the "-borealis" variant.
 //
@@ -82,8 +79,9 @@ std::string GetModelName() {
   // models with hyphens in the name.
   base::StringPiece hardware_class = hardware_class_statistic.value();
   size_t hyphen_pos = hardware_class.find('-');
-  if (hyphen_pos != std::string::npos)
+  if (hyphen_pos != std::string::npos) {
     hardware_class = hardware_class.substr(0, hyphen_pos);
+  }
   return base::ToLowerASCII(hardware_class);
 }
 
@@ -100,13 +98,11 @@ std::string RemoveNonBorealisSuffix(const std::string& board) {
 
 }  // namespace
 
-TokenHardwareChecker::Data::Data(std::string token_hash,
-                                 std::string board,
+TokenHardwareChecker::Data::Data(std::string board,
                                  std::string model,
                                  std::string cpu,
                                  uint64_t memory)
-    : token_hash(std::move(token_hash)),
-      board(std::move(board)),
+    : board(std::move(board)),
       model(std::move(model)),
       cpu(std::move(cpu)),
       memory(memory) {}
@@ -115,59 +111,24 @@ TokenHardwareChecker::Data::Data(const Data& other) = default;
 
 TokenHardwareChecker::Data::~Data() = default;
 
-// The below mechanism is not secure, and is not intended to be. It is a
-// temporary measure that does not warrant any more effort. You might say
-// it can be gamed 😎.
-//
-// Reminder: Don't Roll Your Own Crypto! Security should be left to the
-// experts.
-//
-// TODO(b/218403711): This mechanism is temporary. It exists to allow borealis
-// developers to verify that borealis functions correctly on the target
-// platforms before releasing borealis broadly. We only need it because the
-// boards we are targeting are publicly available, and going forward we will
-// verify borealis is functioning on hardware before its public release.
-std::string TokenHardwareChecker::H(std::string input,
-                                    const std::string& salt) {
-  // Hashing is not strictly "blocking" since the cpu is probably busy, but best
-  // not to call this method if you're on a thread that disallows blocking.
-  base::ScopedBlockingCall sbc(FROM_HERE, base::BlockingType::WILL_BLOCK);
-  std::string ret = std::move(input);
-  for (unsigned i = 0; i < kHashIterations; ++i) {
-    std::string raw_sha = crypto::SHA256HashString(ret + salt);
-    ret = base::Base64Encode(raw_sha);
-  }
-  return ret;
-}
-
-void TokenHardwareChecker::GetData(std::string token_hash,
-                                   base::OnceCallback<void(Data)> callback) {
+void TokenHardwareChecker::GetData(base::OnceCallback<void(Data)> callback) {
   ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-          [](base::OnceCallback<void(Data)> callback, std::string token_hash) {
+          [](base::OnceCallback<void(Data)> callback) {
             base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, base::MayBlock(),
-                base::BindOnce(
-                    [](std::string token_hash) -> Data {
-                      return Data(
-                          std::move(token_hash), GetBoardName(), GetModelName(),
-                          base::CPU::GetInstanceNoAllocation().cpu_brand(),
-                          base::SysInfo::AmountOfPhysicalMemory());
-                    },
-                    std::move(token_hash)),
+                FROM_HERE, base::MayBlock(), base::BindOnce([]() -> Data {
+                  return Data(GetBoardName(), GetModelName(),
+                              base::CPU::GetInstanceNoAllocation().cpu_brand(),
+                              base::SysInfo::AmountOfPhysicalMemory());
+                }),
                 std::move(callback));
           },
-          std::move(callback), std::move(token_hash)));
+          std::move(callback)));
 }
 
 TokenHardwareChecker::TokenHardwareChecker(
     TokenHardwareChecker::Data token_hardware)
     : token_hardware_(std::move(token_hardware)) {}
-
-bool TokenHardwareChecker::TokenHashMatches(const std::string& salt,
-                                            const std::string& expected) const {
-  return H(token_hardware_.token_hash, salt) == expected;
-}
 
 bool TokenHardwareChecker::IsBoard(const std::string& board) const {
   return RemoveNonBorealisSuffix(token_hardware_.board) == board;

@@ -88,10 +88,33 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function setAudioGain() {
-        await chrome.os.management.setAudioGain({
-          nodeId: 1,
+        const result = await chrome.os.management.setAudioGain({
+          nodeId: 30054771072,
           gain: 100,
         });
+        chrome.test.assertTrue(result);
+        chrome.test.succeed();
+      }
+    ]);
+    )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
+                       SetAudioVolume) {
+  {
+    auto fake_service_impl = std::make_unique<FakeTelemetryManagementService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function setAudioVolume() {
+        const result = await chrome.os.management.setAudioVolume({
+          nodeId: 21474836480,
+          volume: 100,
+          isMuted: false,
+        });
+        chrome.test.assertTrue(result);
         chrome.test.succeed();
       }
     ]);

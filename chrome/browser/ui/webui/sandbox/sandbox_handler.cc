@@ -93,8 +93,6 @@ base::Value::List FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kWinSboxWarmupProcessPrng));
   features.Append(
       FeatureToValue(sandbox::policy::features::kWinSboxZeroAppShim));
-  features.Append(
-      FeatureToValue(sandbox::policy::features::kWinSboxFsctlLockdown));
   return features;
 }
 

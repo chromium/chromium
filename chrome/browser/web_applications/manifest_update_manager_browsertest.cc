@@ -7,6 +7,7 @@
 #include <ios>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -102,7 +103,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -121,6 +121,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -287,7 +291,7 @@ class UpdateCheckResultAwaiter {
  private:
   const GURL url_;
   base::RunLoop run_loop_;
-  absl::optional<ManifestUpdateResult> result_;
+  std::optional<ManifestUpdateResult> result_;
 };
 
 void WaitForUpdatePendingCallback(const GURL& url) {
@@ -621,7 +625,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   webapps::AppId InstallWebAppFromSync(const GURL& start_url) {
     const webapps::AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+        GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
     std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
     {
@@ -659,12 +663,10 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   // Simulates what AppLauncherHandler::HandleInstallAppLocally() does.
   void InstallAppLocally(const WebApp* web_app) {
-    // Doesn't call GetProvider().os_integration_manager().InstallOsHooks() to
-    // suppress OS hooks.
-    GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        web_app->app_id(), true);
-    GetProvider().sync_bridge_unsafe().SetAppFirstInstallTime(
-        web_app->app_id(), base::Time::Now());
+    base::test::TestFuture<void> future;
+    GetProvider().scheduler().InstallAppLocally(web_app->app_id(),
+                                                future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   void SetTimeOverride(base::Time time_override) {
@@ -698,7 +700,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   void ResetAutomatedAppIdentityUpdateDialogBehavior() {
     update_dialog_scope_ =
-        SetIdentityUpdateDialogActionForTesting(absl::nullopt);
+        SetIdentityUpdateDialogActionForTesting(std::nullopt);
   }
 
  protected:
@@ -710,12 +712,12 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<base::RunLoop> shortcut_run_loop_;
+  std::optional<base::RunLoop> shortcut_run_loop_;
   // A vector mapping image sizes to shortcut colors. Note that the top left
   // pixel color for each size is used as the representation color for that
   // size, even if the image is multi-colored.
   std::vector<std::pair<int, SkColor>> updated_colors_;
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
 enum class UpdateDialogParam {
@@ -848,6 +850,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        TriggersAfterLoadingNewManifestUrl) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Shortcuts do not manifest update when Shortstand is enabled.";
+  }
+#endif
+
   // Install an app with no manifest, trigger an update by navigation.
   GURL no_manifest_url = GetAppURLWithoutManifest();
   const webapps::AppId app_id = InstallWebAppWithoutManifest();
@@ -1020,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       "start_url": ".",
       "scope": "/",
       "display": "standalone",
-      "icons": $1,
+      "icons": $1
       $2
     }
   )";
@@ -1049,8 +1058,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   webapps::AppId app_id = InstallWebApp();
 
-  GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(app_id,
-                                                                        false);
+  // TODO(https://crbug.com/1517947): Instead of doing this, just install the
+  // app from sync in the first place to have it 'not locally installed' in the
+  // beginning.
+  GetProvider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(
+      app_id);
   EXPECT_FALSE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
@@ -4477,6 +4489,13 @@ class ManifestUpdateManagerAppIdentityBrowserTest
 // update the name back to the manifest app name.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        CheckShortcutAppDoesntPromptForUpdates) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Shortcuts do not manifest update when Shortstand is enabled.";
+  }
+#endif
+
   constexpr char kAppName[] = "Test app";
   constexpr char kOverrideName[] = "Override name";
 
@@ -4562,7 +4581,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   // Simulate the user accepting the App Identity update dialog (when it
   // appears).
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope =
       SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   // Setup the web app, install it and immediately update the manifest.
@@ -4680,7 +4699,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 // sends the right signal back.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        VerifyCallbackUpgradeAllowed) {
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope =
       SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   constexpr char kManifestTemplate[] = R"(
@@ -5763,8 +5782,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ManifestUpdateResult::kShortcutIgnoresManifest,
             std::move(result_awaiter).AwaitNextResult());
 
-  histogram_tester_.ExpectBucketCount(
-      kUpdateHistogramName, ManifestUpdateResult::kShortcutIgnoresManifest, 1);
+  ManifestUpdateResult expected_result =
+      ManifestUpdateResult::kShortcutIgnoresManifest;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    // When Shortstand is enabled, Shortcuts do not count as in scope and
+    // therefore do not manifest update.
+    expected_result = ManifestUpdateResult::kNoAppInScope;
+  }
+#endif
+
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName, expected_result, 1);
 }
 
 }  // namespace web_app

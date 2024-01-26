@@ -104,6 +104,8 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(tab_stats_tracker_ != nullptr);
   }
 
+  void TearDownOnMainThread() override { tab_stats_tracker_ = nullptr; }
+
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }

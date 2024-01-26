@@ -58,7 +58,7 @@ void AbslAbortHook(const char* file,
   // This simulates that a CHECK(false) was done at file:line instead of here.
   // This is used instead of base::ImmediateCrash() to give better error
   // messages locally (printed stack for one).
-  logging::LogMessage check_failure(file, line, logging::LOGGING_FATAL);
+  logging::LogMessageFatal check_failure(file, line, logging::LOGGING_FATAL);
   check_failure.stream() << "Check failed: false. " << prefix_end;
 }
 

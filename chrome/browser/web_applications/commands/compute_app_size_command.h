@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -19,7 +20,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -32,12 +32,12 @@ struct ComputedAppSize {
 
 // ComputeAppSizeCommand calculates the app and data size of a given app
 class ComputeAppSizeCommand
-    : public WebAppCommand<AppLock, absl::optional<ComputedAppSize>> {
+    : public WebAppCommand<AppLock, std::optional<ComputedAppSize>> {
  public:
   ComputeAppSizeCommand(
       const webapps::AppId& app_id,
       Profile* profile,
-      base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback);
+      base::OnceCallback<void(std::optional<ComputedAppSize>)> callback);
 
   ~ComputeAppSizeCommand() override;
 

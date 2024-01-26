@@ -102,14 +102,19 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     // cleared again immediately before dispatching to any registered interests,
     // so long as this entry isn't destroyed in the interim.
     raw_ptr<epoll_event> active_event = nullptr;
+
+    // If the file descriptor is disconnected and no active `interests`, remove
+    // it from the epoll interest list to avoid unconditionally epoll_wait
+    // return, and prevent any future update on this `EpollEventEntry`.
+    bool stopped = false;
   };
 
   // State which lives on the stack within Run(), to support nested run loops.
   struct RunState {
     explicit RunState(Delegate* delegate) : delegate(delegate) {}
 
-    // `delegate` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
+    // profiler data and tab_search:top100:2020).
     RAW_PTR_EXCLUSION Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
@@ -118,6 +123,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
 
   void AddEpollEvent(EpollEventEntry& entry);
   void UpdateEpollEvent(EpollEventEntry& entry);
+  void StopEpollEvent(EpollEventEntry& entry);
   void UnregisterInterest(const scoped_refptr<Interest>& interest);
   bool WaitForEpollEvents(TimeDelta timeout, Delegate* delegate);
   void OnEpollEvent(EpollEventEntry& entry, uint32_t events);
@@ -132,6 +138,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+
+  // This flag is set if epoll has processed I/O events.
+  bool processed_io_events_ = false;
 
   // Mapping of all file descriptors currently watched by this message pump.
   // std::map was chosen because (1) the number of elements can vary widely,

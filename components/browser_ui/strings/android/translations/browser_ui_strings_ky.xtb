@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Жүктөп алуу тындырылды</translation>
 <translation id="1415402041810619267">URL кесилди</translation>
 <translation id="1426410128494586442">Ооба</translation>
+<translation id="1434873037477293673">Баасы арзандады картасы</translation>
 <translation id="1448064542941920355">Масштабды кичирейтүү</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
 <translation id="1510341833810331442">Сайттарга түзмөгүңүзгө маалымат сактоого тыюу салынган</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Сайттар идентификациялык кызматтарда кирүү сурамдарын көрсөтүшү мүмкүн.</translation>
 <translation id="2790501146643349491">Бул параметр күйүп турганда, жакында жабылган сайттар маалымат жөнөтүүнү жана алууну аягына чыгара алат. Бул параметр өчүп турганда, жакында жабылган сайттар маалымат жөнөтүүнү жана алууну уланта алышпайт.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> үчүн сайттагы бардык уруксаттар баштапкы абалга келтирилсинби?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Мобилдик версияны көрсөтүүнү сурануу</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Мурунку трек</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
+<translation id="6452138246455930388">Ачылган өтмөктө баа арзандады. <ph name="PRODUCT_NAME" /> баасы <ph name="OLD_PRICE" /> ордуна <ph name="NEW_PRICE" /> болуп калды. Домен: <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Терезе тар болсо, мобилдик версияны сураңыз</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="652937045869844725">Үчүнчү тараптын cookie файлдарына уруксат берип көрүңүз. Мында коопсуздугуңуз азыраак корголот, бирок сайттын функциялары иштеши мүмкүн</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Төмөн жылдыруу</translation>
 <translation id="6749077623962119521">Уруксаттарды баштапкы абалга келтиресизби?</translation>
 <translation id="6766622839693428701">Жабуу үчүн ылдый сүрүңүз.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> баштап</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> үчүн параметр тандаңыз</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6818926723028410516">Элементтерди тандоо</translation>
 <translation id="6864395892908308021">Бул түзмөк NFC'ни окуй албайт</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> баштап</translation>
 <translation id="6912998170423641340">Сайттарда алмашуу буфериндеги тексттер жана сүрөттөрдү окуу бөгөттөлсүн</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="6950072572526089586">Сиз кирген сайт ойдогудай иштөө, мисалы, сайтка кирип туруу же товарларды арабага сактооңуз үчүн аракеттериңиз тууралуу маалыматты сакташы мүмкүн. Көбүнчө сайттар бул маалыматты түзмөгүңүзгө убактылуу сактап турат.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Оз өлкөсүнүн ажайып сыйкырчысы</translation>
 <translation id="7684642910516280563">Сайтка үчүнчү тараптын cookie файлдарын колдонууга тыюу салыңыз</translation>
 <translation id="7719367874908701697">Бетти чоңойтуп/кичирейтүү</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" функциясын жашыруу</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>

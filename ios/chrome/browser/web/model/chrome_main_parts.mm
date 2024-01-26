@@ -175,7 +175,7 @@ void IOSChromeMainParts::PreCreateThreads() {
   base::FilePath local_state_path;
   CHECK(base::PathService::Get(ios::FILE_LOCAL_STATE, &local_state_path));
   application_context_.reset(new ApplicationContextImpl(
-      local_state_task_runner.get(), parsed_command_line_,
+      local_state_task_runner.get(), *parsed_command_line_,
       l10n_util::GetLocaleOverride(),
       base::SysNSStringToUTF8(
           [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode])));

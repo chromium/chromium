@@ -26,25 +26,29 @@ class CC_BASE_EXPORT TilingData {
  public:
   TilingData();
   TilingData(const gfx::Size& max_texture_size,
-             const gfx::Size& tiling_size,
-             bool has_border_texels);
-  TilingData(const gfx::Size& max_texture_size,
-             const gfx::Size& tiling_size,
+             const gfx::Rect& tiling_rect,
              int border_texels);
+  TilingData(const gfx::Size& max_texture_size,
+             const gfx::Rect& tiling_rect,
+             bool has_border_texels) = delete;
 
-  gfx::Size tiling_size() const { return tiling_size_; }
-  void SetTilingSize(const gfx::Size& tiling_size);
+  const gfx::Rect& tiling_rect() const { return tiling_rect_; }
+  void SetTilingRect(const gfx::Rect& tiling_rect);
 
   gfx::Size max_texture_size() const { return max_texture_size_; }
   void SetMaxTextureSize(const gfx::Size& max_texture_size);
 
   int border_texels() const { return border_texels_; }
-  void SetHasBorderTexels(bool has_border_texels);
-  void SetBorderTexels(int border_texels);
 
   bool has_empty_bounds() const { return !num_tiles_x_ || !num_tiles_y_; }
   int num_tiles_x() const { return num_tiles_x_; }
   int num_tiles_y() const { return num_tiles_y_; }
+
+  // The following functions map between tile indices and tile geometries.
+  // All positions and bounds of tiles are in layer coordinates. Tiles are
+  // created within `tiling_rect`, so a tile with index 0 in x/y direction
+  // means its x/y position is tiling_rect_.x/y() (instead of 0).
+
   // Return the tile index whose non-border texels include src_position.
   int TileXIndexFromSrcCoord(int src_position) const;
   int TileYIndexFromSrcCoord(int src_position) const;
@@ -172,7 +176,7 @@ class CC_BASE_EXPORT TilingData {
   void RecomputeNumTiles();
 
   gfx::Size max_texture_size_;
-  gfx::Size tiling_size_;
+  gfx::Rect tiling_rect_;
   int border_texels_;
 
   // These are computed values.

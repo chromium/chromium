@@ -341,6 +341,10 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Cancel button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)
     testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry_SyncToSigninEnabled {
+  // TODO(crbug.com/1521690): Test fails on iPhone device and simulator.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
+  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

@@ -171,8 +171,7 @@ class GPUDevice final : public EventTarget,
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
  private:
-  using LostProperty =
-      ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
+  using LostProperty = ScriptPromiseProperty<GPUDeviceLostInfo, IDLUndefined>;
 
   // Used by USING_PRE_FINALIZER.
   void Dispose();

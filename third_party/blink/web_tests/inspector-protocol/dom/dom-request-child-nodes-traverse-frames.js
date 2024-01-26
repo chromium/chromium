@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('resources/dom-request-child-nodes-traverse-frames.html', 'Tests how DOM.requestChildNodes pierces through frames.');
 
   var response = await dp.DOM.getDocument();

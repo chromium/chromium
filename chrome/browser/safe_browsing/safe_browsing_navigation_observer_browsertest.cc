@@ -528,7 +528,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
         .get();
   }
 
-  absl::optional<size_t> FindNavigationEventIndex(
+  std::optional<size_t> FindNavigationEventIndex(
       const GURL& target_url,
       content::GlobalRenderFrameHostId outermost_main_frame_id) {
     return observer_manager_->navigation_event_list()->FindNavigationEvent(

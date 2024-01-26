@@ -151,7 +151,7 @@ void ExtensionSyncService::WaitUntilReadyToSync(base::OnceClosure done) {
   system_->ready().Post(FROM_HERE, std::move(done));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ExtensionSyncService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -191,7 +191,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   if (type == syncer::APPS)
     system_->app_sorting()->FixNTPOrdinalCollisions();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ExtensionSyncService::StopSyncing(syncer::ModelType type) {
@@ -216,7 +216,7 @@ syncer::SyncDataList ExtensionSyncService::GetAllSyncDataForTesting(
   return ToSyncerSyncDataList(sync_data_list);
 }
 
-absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
+std::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   for (const syncer::SyncChange& sync_change : change_list) {
@@ -228,7 +228,7 @@ absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
 
   system_->app_sorting()->FixNTPOrdinalCollisions();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<syncer::SyncableService> ExtensionSyncService::AsWeakPtr() {

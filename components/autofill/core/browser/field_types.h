@@ -325,8 +325,7 @@ enum FieldType {
   // The floor number within a building.
   ADDRESS_HOME_FLOOR = 116,
 
-  // The full name including the honorific prefix.
-  NAME_FULL_WITH_HONORIFIC_PREFIX = 117,
+  // NAME_FULL_WITH_HONORIFIC_PREFIX value 117 is deprecated.
 
   // Types to represent a birthdate.
   BIRTHDATE_DAY = 118,
@@ -393,6 +392,20 @@ enum FieldType {
 
   // Combination of types ADDRESS_HOME_BETWEEN_STREETS or ADDRESS_HOME_LANDMARK.
   ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK = 144,
+
+  // Combination of types ADDRESS_HOME_STREET_LOCATION and
+  // ADDRESS_HOME_DEPENDENT_LOCALITY.
+  ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY = 145,
+
+  // Combination of types ADDRESS_HOME_STREET_LOCATION and
+  // ADDRESS_HOME_LANDMARK.
+  // One of the synthesized types in the address model in India.
+  ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK = 146,
+
+  // Combination of types ADDRESS_HOME_DEPENDENT_LOCALITY and
+  // ADDRESS_HOME_LANDMARK.
+  // One of the synthesized types in the address model in India.
+  ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 150,
 
   // The meaning of the field is the same as ADDRESS_HOME_BETWEEN_STREETS. The
   // field type should be used for "Entre calle 1" in MX forms which also
@@ -544,9 +557,10 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // UPI VPA type (value 102) is deprecated.
            !(t == 102) &&
            // Reserved for server-side only use.
-           !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
-           t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
-           t != 153 && t != 155 && t != 158 && t != 159 && t != 161;
+           !(111 <= t && t <= 113) && t != 117 && t != 127 &&
+           !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
+           !(147 <= t && t <= 149) && t != 153 && t != 155 && t != 158 &&
+           t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;

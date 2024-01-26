@@ -1628,18 +1628,21 @@ concepts, then enforcing them on template arguments.
 ### Default comparisons <sup>[allowed]</sup>
 
 ```c++
-struct S : public T {
-  bool operator==(const S&) const = default;  // Compares `T` bases, then `x`,
-                                              // then `y`, short-circuiting.
+class S : public T {
+  // Non-member equality operator with access to private members.
+  // Compares `T` bases, then `x`, then `y`, short-circuiting.
+  friend bool operator==(const S&, const S&) = default;
+
   int x;
   bool y;
 };
 ```
 
-**Description:** Requests that the compiler generate the implementation of any
-comparison operator, including `<=>`. Defaulting `<=>` and not declaring `==`
-implicitly defaults `==`, which together are sufficient to allow any comparison
-as long as callers do not need to take the address of any non-declared operator.
+**Description:** Requests that the compiler generate the implementation of
+any comparison operator, including `<=>`. Prefer non-member comparison
+operators. When defaulting `<=>`, also explicitly default `==`. Together these
+are sufficient to allow any comparison as long as callers do not need to take
+the address of any non-declared operator.
 
 **Documentation:**
 [Default comparisons](https://en.cppreference.com/w/cpp/language/default_comparisons)

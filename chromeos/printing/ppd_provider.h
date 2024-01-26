@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -181,6 +182,9 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
       std::unique_ptr<PpdMetadataManager> metadata_manager,
       std::unique_ptr<PrinterConfigCache> config_cache,
       std::unique_ptr<RemotePpdFetcher> remote_ppd_fetcher);
+
+  // Return a printable name for |code|.
+  static std::string_view CallbackResultCodeName(CallbackResultCode code);
 
   // Get all manufacturers for which we have drivers.  Keys of the map will be
   // localized in the default browser locale or the closest available fallback.

@@ -102,7 +102,7 @@ class DefaultProvider : public ObservableProvider {
   // thread safety.
   mutable base::Lock lock_;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.

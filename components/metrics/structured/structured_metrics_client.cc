@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "base/system/sys_info.h"
 #include "components/metrics/structured/event.h"
 
 namespace metrics::structured {
@@ -20,7 +21,17 @@ StructuredMetricsClient* StructuredMetricsClient::Get() {
   return client.get();
 }
 
+// static
 void StructuredMetricsClient::Record(Event&& event) {
+  StructuredMetricsClient::Get()->RecordEvent(std::move(event));
+}
+
+void StructuredMetricsClient::RecordEvent(Event&& event) {
+  // Records uptime if event sequence type and it has not been explicitly set.
+  if (event.IsEventSequenceType() && !event.has_system_uptime()) {
+    event.SetRecordedTimeSinceBoot(base::SysInfo::Uptime());
+  }
+
   if (delegate_ && delegate_->IsReadyToRecord()) {
     delegate_->RecordEvent(std::move(event));
   }

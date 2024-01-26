@@ -1,0 +1,188 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AcceptLanguageAndContentLanguageUsage">
+  <int value="0" label="Empty Content-Language string"/>
+  <int value="1" label="Content-Language value is wildcard"/>
+  <int value="2" label="Content-Language matches any Accept-Language"/>
+  <int value="3" label="Content-Language matches primary Accept-Language"/>
+  <int value="4"
+      label="Child frame's Content-Language differs from parent frame"/>
+</enum>
+
+<enum name="AcceptLanguageAndXmlHtmlLangUsage">
+  <int value="0" label="xml:lang value is empty"/>
+  <int value="1" label="xml:lang value is wildcard"/>
+  <int value="2"
+      label="xml:lang value matches any non-primary Accept-Language"/>
+  <int value="3" label="xml:lang value matches primary Accept-Language"/>
+  <int value="4" label="html lang tag is absent or value is empty"/>
+  <int value="5" label="html lang value is wildcard"/>
+  <int value="6"
+      label="html lang value matches any non-primary Accept-Language"/>
+  <int value="7" label="html lang value matches primary Accept-Language"/>
+</enum>
+
+<enum name="BooleanDeferred">
+  <int value="0" label="Not deferred"/>
+  <int value="1" label="Deferred"/>
+</enum>
+
+<enum name="LanguageDetectionModelState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model File Invalid"/>
+  <int value="2" label="Model File Valid and Available"/>
+</enum>
+
+<enum name="LanguageSettingsActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Click on the 'Add Language' button">
+    Removed from Android in M89 and Desktop in M90. Still on iOS.
+  </int>
+  <int value="2" label="Content Language added"/>
+  <int value="3" label="Content Language removed"/>
+  <int value="4" label="Disable global 'Offer to translate' by switch"/>
+  <int value="5" label="Enable global 'Offer to translate' by switch"/>
+  <int value="6" label="Disable 'Offer to translate' for single language"/>
+  <int value="7" label="Enable 'Offer to translate' for single language"/>
+  <int value="8" label="Language list reordered"/>
+  <int value="9" label="Change Chrome Language">Windows and Android only</int>
+  <int value="10" label="Change Target Language"/>
+  <int value="11" label="Remove language from 'Never Translate' list"/>
+  <int value="12" label="Add language to 'Never Translate' list"/>
+  <int value="13" label="Remove language from 'Always Translate' list"/>
+  <int value="14" label="Add language to 'Always Translate' list"/>
+  <int value="15" label="Remove site from 'Never translate sites' list"/>
+  <int value="16" label="Restart Chrome for split install"/>
+  <int value="17" label="Spell check enabled globally"/>
+  <int value="18" label="Spell check disabled globally"/>
+  <int value="19" label="Spell check enabled for a language"/>
+  <int value="20" label="Spell check disabled for a language"/>
+  <int value="21" label="Basic spell check selected"/>
+  <int value="22" label="Enhanced spell check selected"/>
+</enum>
+
+<enum name="LanguageSettingsAppLanguagePromptAction">
+  <int value="0" label="Dismissed via cancel button"/>
+  <int value="1" label="Dismissed via system back"/>
+  <int value="2" label="Ok button changed language"/>
+  <int value="3" label="Ok button same language"/>
+  <int value="4" label="Other"/>
+</enum>
+
+<enum name="LanguageSettingsPageType">
+  <int value="0" label="Main"/>
+  <int value="1" label="Content Languages Add Language"/>
+  <int value="2" label="Language Details">iOS only.</int>
+  <int value="3" label="Select Chrome Language">Android only</int>
+  <int value="4" label="Advanced Language Settings"/>
+  <int value="5" label="Select Target Language">Android only</int>
+  <int value="6" label="Language Overflow Menu Opened"/>
+  <int value="7" label="View Never Translate Languages">Android only</int>
+  <int value="8" label="Never Translate Add Language"/>
+  <int value="9" label="View Always Translate Languages">Android only</int>
+  <int value="10" label="Always Translate Add Language"/>
+  <int value="11" label="View Never Translate Sites"/>
+</enum>
+
+<enum name="LanguageSettingsSplitInstallStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already Installed"/>
+  <int value="2" label="Canceled"/>
+  <int value="3" label="Downloaded">
+    Downloaded but not installed. Split Compat most likely not available.
+  </int>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Unexpected status">
+    Not a final split install session status.
+  </int>
+</enum>
+
+<enum name="LanguageUsage.UI.Android.Availability">
+  <int value="0" label="Top Available">Top Android language is available.</int>
+  <int value="1" label="Only Default Available">
+    Top Android language is not available but another one is.
+  </int>
+  <int value="2" label="None Available"/>
+  <int value="3" label="Overridden">
+    Overridden languages must be avaliable.
+  </int>
+</enum>
+
+<enum name="LanguageUsage.UI.Android.Correctness">
+  <int value="0" label="Correct"/>
+  <int value="1" label="Incorrect"/>
+  <int value="2" label="Not Available">
+    Languages that are not available cannot be correct.
+  </int>
+  <int value="3" label="Only Java Correct">
+    The Java UI language is correct but native UI language not.
+  </int>
+</enum>
+
+<enum name="LanguageUsage.UI.Android.LocaleUpdateStatus">
+  <int value="0" label="No change"/>
+  <int value="1" label="Override language changed"/>
+  <int value="2" label="Overriden system locales changed"/>
+  <int value="3" label="No override top locale changed"/>
+  <int value="4" label="No override other locales changed"/>
+  <int value="5" label="First run, locales initiated"/>
+</enum>
+
+<enum name="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage">
+  <int value="0" label="Different base language"/>
+  <int value="1" label="Same base language"/>
+  <int value="2" label="Exact match"/>
+  <int value="3" label="No override"/>
+</enum>
+
+<enum name="ULPInitiationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not supported"/>
+  <int value="2" label="Timed out"/>
+  <int value="3" label="Failure, exception"/>
+</enum>
+
+<enum name="ULPLanguageStatus">
+  <int value="0" label="Top ULP language (Exact Match)"/>
+  <int value="1" label="In ULP, not top language (Exact Match)"/>
+  <int value="2" label="Language not in ULP"/>
+  <int value="3" label="Top ULP language (Base Match)"/>
+  <int value="4" label="In ULP, not top language (Base Match)"/>
+  <int value="5" label="Language empty"/>
+</enum>
+
+<enum name="ULPTopLanguageMatch">
+  <int value="0" label="No"/>
+  <int value="1" label="Yes"/>
+  <int value="2" label="ULP Empty"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

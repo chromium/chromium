@@ -18,7 +18,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
@@ -162,14 +161,14 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
     model_type_state.set_authenticated_account_id(
         activation_request_.authenticated_account_id.ToString());
     // For passwords, the bridge re-downloads all passwords to obtain any
-    // potential notes on the sync server but have ignored by earlier version of
-    // the browser that didn't support notes. This should be done first when the
-    // browser is upgraded to a version that support passwords notes. Store in
-    // the model type store that the this redownload has happened already to
-    // ensure it happens only once.
+    // potential notes from the sync server that were ignored by earlier
+    // versions of the browser that didn't support notes. This should be done
+    // first when the browser is upgraded to a version that support passwords
+    // notes. Store in the model type store that this redownload has happened
+    // already to ensure it happens only once.
     if (type_ == PASSWORDS) {
       model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
-          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+          true);
     }
 
     if (CommitOnlyTypes().Has(type_)) {

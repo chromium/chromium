@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #ifndef ASH_AMBIENT_TEST_AMBIENT_TEST_UTIL_H_
 #define ASH_AMBIENT_TEST_AMBIENT_TEST_UTIL_H_
 
-#include "base/strings/string_piece.h"
+#include <string>
+#include <string_view>
 
 namespace ash {
 
@@ -19,7 +18,7 @@ std::string GenerateLottieCustomizableIdForTesting(int unique_id);
 
 // Generates a lottie dynamic image asset id for testing purposes (see
 // ParseDynamicLottieAssetId() for details).
-std::string GenerateLottieDynamicAssetIdForTesting(base::StringPiece position,
+std::string GenerateLottieDynamicAssetIdForTesting(std::string_view position,
                                                    int idx);
 
 // Returns an AmbientPhotoConfig for a lottie animation with the number of

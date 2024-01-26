@@ -223,6 +223,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
 
   // Token binding challenge from the last server response or an empty string if
   // the response didn't contain any challenge.
+  bool seen_token_binding_challenge_ = false;
   std::string token_binding_challenge_;
 
   // Variables that store fetch results.
@@ -352,6 +353,13 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
     const GoogleServiceAuthError& error) {
   if (error.state() == GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED) {
     token_binding_challenge_ = error.GetTokenBindingChallenge();
+    if (!seen_token_binding_challenge_) {
+      seen_token_binding_challenge_ = true;
+      // The server wants us to sign a challenge. Retry immediately if this is
+      // the first attempt to pass a challenge.
+      Start();
+      return true;
+    }
   } else {
     token_binding_challenge_.clear();
   }

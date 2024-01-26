@@ -957,22 +957,20 @@ IN_PROC_BROWSER_TEST_P(
                     {}, {}, {}, FROM_HERE);
 
   auto subframe_result = MatchesNotRestoredReasons(
-      blink::mojom::BFCacheBlocked::kYes,
       /*id=*/"", /*name=*/"", /*src=*/url_a_no_store.spec(),
+      /*reasons=*/
+      {"JsNetworkRequestReceivedCacheControlNoStoreResource",
+       "MainResourceHasCacheControlNoStore"},
       MatchesSameOriginDetails(
           /*url=*/url_a_no_store.spec(),
-          /*reasons=*/
-          {"JsNetworkRequestReceivedCacheControlNoStoreResource",
-           "MainResourceHasCacheControlNoStore"},
           /*children=*/{}));
   EXPECT_THAT(
       current_frame_host()->NotRestoredReasonsForTesting(),
       MatchesNotRestoredReasons(
-          blink::mojom::BFCacheBlocked::kYes,
           /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/std::nullopt,
+          /*reasons=*/{"MainResourceHasCacheControlNoStore"},
           MatchesSameOriginDetails(
               /*url=*/url_a_no_store.spec(),
-              /*reasons=*/{"MainResourceHasCacheControlNoStore"},
               /*children=*/
               {subframe_result})));
 }

@@ -59,9 +59,9 @@ class UserEducationInternalsCardElement extends PolymerElement {
 
   private clearData_() {
     if (confirm(
-            'Clear Feature Promo data?\n' +
-            'Note: this will not clear Feature Engagement data, ' +
-            'so this promo may still not be able to show normally.')) {
+            'Clear Feature Promo data and Feature Enagement events?\n' +
+            'Note: because of session tracking and event constraints, ' +
+            'Feature Engagement may still disallow this promo.')) {
       this.dispatchEvent(new CustomEvent(
           CLEAR_PROMO_DATA_EVENT,
           {bubbles: true, composed: true, detail: this.promo.internalName}));

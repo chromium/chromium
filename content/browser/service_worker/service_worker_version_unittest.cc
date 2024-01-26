@@ -2040,6 +2040,8 @@ TEST_P(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
       helper_->context()->registry(), registration_.get(),
       GURL("https://www.example.com/test/service_worker.js"),
       blink::mojom::ScriptType::kClassic);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
 
   // The router_evaluator should be unset on setup.
   EXPECT_FALSE(version->router_evaluator());

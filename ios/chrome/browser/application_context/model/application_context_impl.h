@@ -97,6 +97,11 @@ class ApplicationContextImpl : public ApplicationContext {
 
   base::ThreadChecker thread_checker_;
 
+  // Used internally for tracking whether the call to StartTearDown() has
+  // happened already, to avoid recreating lazily-constructed objects after they
+  // have already been destroyed.
+  bool tearing_down_ = false;
+
   // Logger which observers and logs application wide events to breadcrumbs.
   // Will be null if breadcrumbs feature is not enabled.
   std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;

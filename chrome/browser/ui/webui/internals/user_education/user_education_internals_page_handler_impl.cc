@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
 
 #include <stdint.h>
+
 #include <concepts>
 #include <sstream>
 #include <string>
@@ -14,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,10 +25,12 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -264,19 +268,25 @@ template <typename T>
 auto FormatDemoPageData(const char* key,
                         const T& value,
                         bool is_constant = false) {
-  std::string strvalue;
-  if constexpr (std::same_as<T, base::Time>) {
-    strvalue =
-        base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(value));
-  } else {
-    std::ostringstream oss;
-    oss << value;
-    strvalue = oss.str();
-    if (is_constant) {
-      strvalue = RemovePrefixAndCamelCase(strvalue, "k");
-    }
+  std::ostringstream oss;
+  oss << value;
+  std::string strvalue = oss.str();
+  if (is_constant) {
+    strvalue = RemovePrefixAndCamelCase(strvalue, "k");
   }
   return FeaturePromoDemoPageData::New(key, strvalue);
+}
+
+auto FormatDemoPageData(const char* key, bool value) {
+  return FeaturePromoDemoPageData::New(key, value ? "yes" : "no");
+}
+
+auto FormatDemoPageData(const char* key, base::Time value) {
+  auto result = value.is_null()
+                    ? "unknown"
+                    : base::UTF16ToUTF8(
+                          base::TimeFormatShortDateAndTimeWithTimeZone(value));
+  return FeaturePromoDemoPageData::New(key, result);
 }
 
 auto GetPromoData(
@@ -307,17 +317,27 @@ auto GetPromoData(
           result.emplace_back(FormatDemoPageData("Last snooze time",
                                                  promo_data->last_snooze_time));
         }
-        result.emplace_back(FormatDemoPageData(
-            "Dismissed?", promo_data->is_dismissed ? "yes" : "no"));
+        result.emplace_back(
+            FormatDemoPageData("Dismissed?", promo_data->is_dismissed));
         result.emplace_back(FormatDemoPageData("Last dismissed by",
                                                promo_data->last_dismissed_by,
                                                /*is_constant=*/true));
       }
     }
   }
-  result.emplace_back(FormatDemoPageData(
-      "Blocked by Feature Engagement?",
-      tracker->WouldTriggerHelpUI(*spec.feature()) ? "no" : "yes"));
+  const bool is_enabled = base::FeatureList::IsEnabled(*spec.feature());
+  result.emplace_back(FormatDemoPageData("Feature enabled?", is_enabled));
+  for (const auto& [config, count] : tracker->ListEvents(*spec.feature())) {
+    std::ostringstream oss;
+    oss << "Required condition: " << config.name << config.comparator
+        << " Actual:";
+    result.emplace_back(FormatDemoPageData(oss.str().c_str(), count));
+  }
+  if (is_enabled) {
+    result.emplace_back(
+        FormatDemoPageData("Feature Engagement Tracker OK?",
+                           tracker->WouldTriggerHelpUI(*spec.feature())));
+  }
   return result;
 }
 
@@ -413,6 +433,29 @@ void UserEducationInternalsPageHandlerImpl::StartTutorial(
   std::move(callback).Run(result);
 }
 
+void UserEducationInternalsPageHandlerImpl::GetSessionData(
+    GetSessionDataCallback callback) {
+  std::vector<FeaturePromoDemoPageDataPtr> data;
+
+  auto* const storage_service = GetStorageService(profile_);
+  if (storage_service) {
+    const auto session_data = storage_service->ReadSessionData();
+    data.emplace_back(
+        FormatDemoPageData("Session start", session_data.start_time));
+    data.emplace_back(FormatDemoPageData("Last active at",
+                                         session_data.most_recent_active_time));
+    const auto policy_data = storage_service->ReadPolicyData();
+    data.emplace_back(FormatDemoPageData(
+        "Last heavyweight promo at", policy_data.last_heavyweight_promo_time));
+  }
+  if (!base::FeatureList::IsEnabled(
+          user_education::features::kUserEducationExperienceVersion2)) {
+    data.emplace_back(FormatDemoPageData(
+        "(Feature Engagement session data not available.)", ""));
+  }
+  return std::move(callback).Run(std::move(data));
+}
+
 void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
     GetFeaturePromosCallback callback) {
   std::vector<FeaturePromoDemoPageInfoPtr> info_list;
@@ -493,14 +536,39 @@ void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(
     return;
   }
 
+  auto* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (!tracker || !tracker->IsInitialized()) {
+    std::move(callback).Run(std::string("Feature Engagement not ready."));
+  }
+
   auto* const storage_service = GetStorageService(profile_);
   if (!storage_service) {
     std::move(callback).Run(std::string("No storage service."));
     return;
   }
 
-  // TODO(dfried): Clear FE tracker data.
-
+  tracker->ClearEventData(*feature);
   storage_service->Reset(*feature);
+  std::move(callback).Run(std::string());
+}
+
+void UserEducationInternalsPageHandlerImpl::ClearSessionData(
+    ClearSessionDataCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+
+  storage_service->ResetPolicy();
+
+  // Create a session with start time well in the past to avoid grace period,
+  // and most recent active time as now to prevent a new session from
+  // immediately starting.
+  user_education::FeaturePromoSessionData session_data;
+  session_data.most_recent_active_time = storage_service->GetCurrentTime();
+  storage_service->SaveSessionData(session_data);
+
   std::move(callback).Run(std::string());
 }

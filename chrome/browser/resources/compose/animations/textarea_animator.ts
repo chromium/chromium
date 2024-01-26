@@ -5,12 +5,58 @@
 import {Animator, STANDARD_EASING} from './animator.js';
 
 export class ComposeTextareaAnimator extends Animator {
-  transitionToReadonly(): Animation[] {
+  transitionToEditable(): Animation[] {
+    return this.fadeIn('#editButtonContainer', {duration: 100});
+  }
+
+  transitionToEditing(bodyHeight: number): Animation[] {
     const dimensionsAnimation = this.animate(
         '#inputContainer textarea, #readonlyContainer',
         [
           {
-            height: 'var(--compose-textarea-input-height)',
+            height: 'var(--compose-textarea-readonly-height)',
+            padding: 'var(--compose-textarea-readonly-padding)',
+          },
+          {
+            height: `${bodyHeight}px`,
+            padding: 'var(--compose-textarea-input-padding)',
+          },
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    const colorAnimation = this.animate(
+        '#inputContainer textarea, #readonlyContainer',
+        [
+          {
+            background: 'var(--compose-textarea-readonly-background)',
+            outlineColor: 'transparent',
+          },
+          {
+            background: 'transparent',
+          },
+        ],
+        {delay: 100, duration: 100, easing: 'linear'});
+
+    return [
+      dimensionsAnimation,
+      colorAnimation,
+
+      // Fade out edit button and keep it faded out for rest of animations.
+      this.fadeOut('#editButton', {duration: 100}),
+      this.maintainStyles(
+          '#editButton', {opacity: 0},
+          {delay: 100, duration: 100, fill: 'none'}),
+    ].flat();
+  }
+
+  transitionToReadonly(fromHeight?: number): Animation[] {
+    const fromHeightValue =
+        fromHeight ? `${fromHeight}px` : 'var(--compose-textarea-input-height)';
+    const dimensionsAnimation = this.animate(
+        '#inputContainer textarea, #readonlyContainer',
+        [
+          {
+            height: fromHeightValue,
             padding: 'var(--compose-textarea-input-padding)',
           },
           {

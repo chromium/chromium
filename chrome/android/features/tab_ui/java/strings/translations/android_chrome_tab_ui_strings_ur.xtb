@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">اطلاع حاصل کریں</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
+<translation id="427987768447457592">نیا ٹیب گروپ</translation>
 <translation id="4648718555153979859">آپ کے ٹیبز کو ایک ساتھ یہاں گروپ بند کیا گیا ہے</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> جائزہ)}other{(<ph name="REVIEWS_COUNT_MANY" /> جائزے)}}</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">پوری اسکرین گرڈ کو چھپائیں</translation>
 <translation id="5076161749301278626">اسٹور کے جائزے دیکھیں؟</translation>
 <translation id="5082793167783849073">ایک گروپ بنا کر صفحات کا فوری طور پر موازنہ کریں۔ شروع کرنے کیلئے، کسی لنک کو ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{آپ کے پاس <ph name="TABS_COUNT_ONE" /> ٹیب ہے جس کا آپ نے حال ہی میں استعمال نہیں کیا ہے}other{آپ کے پاس <ph name="TABS_COUNT_MANY" /> ٹیبز ہیں جن کا آپ نے حال ہی میں استعمال نہیں کیا ہے}}</translation>
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>

@@ -26,8 +26,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.test.util.browser.Features;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate

@@ -32,9 +32,6 @@ class Browser;
 @property(nonatomic, readonly) UIViewController* viewController;
 // Only used once by MainController when clearing browsing data.
 - (void)setPrimary:(BOOL)primary;
-// Only used by MainController when clearing browsing data AND by app state on
-// shutdown.
-@property(nonatomic) BOOL userInteractionEnabled;
 
 @end
 

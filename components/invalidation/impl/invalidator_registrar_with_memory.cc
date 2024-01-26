@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -133,11 +134,18 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
 
 InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(registered_handler_to_topics_map_.empty() && handlers_.empty())
-      << "Registered handlers during destruction: "
-      << DumpRegisteredHandlers(handlers_) << ". Handlers listening to topics: "
-      << DumpRegisteredHandlersToTopics(registered_handler_to_topics_map_)
-      << ".";
+  if (!registered_handler_to_topics_map_.empty() || !handlers_.empty()) {
+    // TODO(crbug.com/1475104) figure out with these logs.
+    // Note: This can't be just a `CHECK(...) << ...` because `CHECK` eats the
+    // message in production builds.
+    LOG(ERROR) << "Registered handlers during destruction: "
+               << DumpRegisteredHandlers(handlers_)
+               << ". Handlers listening to topics: "
+               << DumpRegisteredHandlersToTopics(
+                      registered_handler_to_topics_map_)
+               << ".";
+    NOTREACHED_NORETURN();
+  }
 }
 
 void InvalidatorRegistrarWithMemory::AddObserver(InvalidationHandler* handler) {
@@ -250,6 +258,25 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
         continue;
       }
       handler->OnIncomingInvalidation(invalidation);
+    }
+  }
+}
+
+void InvalidatorRegistrarWithMemory::DispatchSuccessfullySubscribedToHandlers(
+    const Topic& topic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If we have no handlers, there's nothing to do.
+  if (handlers_.empty()) {
+    return;
+  }
+
+  for (const auto& [handler, registered_topics] :
+       registered_handler_to_topics_map_) {
+    for (const auto& registered_topic : registered_topics) {
+      if (topic != registered_topic.name) {
+        continue;
+      }
+      handler->OnSuccessfullySubscribed(topic);
     }
   }
 }

@@ -26,10 +26,11 @@ const tooltipShowTimeout = 500;  // ms
  *
  * @param {string} appId The Files app windowId.
  * @param {string} id The element id.
- * @return {!Promise}
+ * @return {!Promise<void>}
  */
 function getActiveElementById(appId, id) {
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   return repeatUntil(async () => {
     const element =
         await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
@@ -42,8 +43,12 @@ function getActiveElementById(appId, id) {
 /**
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipFocus' comes from an index
+// signature, so it must be accessed with ['filesTooltipFocus'].
 testcase.filesTooltipFocus = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -82,8 +87,12 @@ testcase.filesTooltipFocus = async () => {
 /**
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipLabelChange' comes from an
+// index signature, so it must be accessed with ['filesTooltipLabelChange'].
 testcase.filesTooltipLabelChange = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -113,8 +122,12 @@ testcase.filesTooltipLabelChange = async () => {
 /**
  * Tests that tooltips display when hovering an element that has a tooltip.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipMouseOver' comes from an
+// index signature, so it must be accessed with ['filesTooltipMouseOver'].
 testcase.filesTooltipMouseOver = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -149,8 +162,13 @@ testcase.filesTooltipMouseOver = async () => {
 /**
  * Tests that tooltips stay open when hovering over the tooltip.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipMouseOverStaysOpen' comes
+// from an index signature, so it must be accessed with
+// ['filesTooltipMouseOverStaysOpen'].
 testcase.filesTooltipMouseOverStaysOpen = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -185,8 +203,12 @@ testcase.filesTooltipMouseOverStaysOpen = async () => {
 /**
  * Tests that tooltip is hidden when clicking on body (or anything else).
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipClickHides' comes from an
+// index signature, so it must be accessed with ['filesTooltipClickHides'].
 testcase.filesTooltipClickHides = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -212,8 +234,12 @@ testcase.filesTooltipClickHides = async () => {
 /**
  * Tests that card tooltip is hidden when clicking on body (or anything else).
  */
+// @ts-ignore: error TS4111: Property 'filesCardTooltipClickHides' comes from an
+// index signature, so it must be accessed with ['filesCardTooltipClickHides'].
 testcase.filesCardTooltipClickHides = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Click the 'Android files' volume tab in the directory tree.
@@ -252,8 +278,13 @@ testcase.filesCardTooltipClickHides = async () => {
 /**
  * Tests that the tooltip should hide when the window resizes.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipHidesOnWindowResize' comes
+// from an index signature, so it must be accessed with
+// ['filesTooltipHidesOnWindowResize'].
 testcase.filesTooltipHidesOnWindowResize = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -279,6 +310,9 @@ testcase.filesTooltipHidesOnWindowResize = async () => {
 /**
  * Tests that the tooltip is hidden after the delete confirm dialog closes.
  */
+// @ts-ignore: error TS4111: Property 'filesTooltipHidesOnDeleteDialogClosed'
+// comes from an index signature, so it must be accessed with
+// ['filesTooltipHidesOnDeleteDialogClosed'].
 testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);

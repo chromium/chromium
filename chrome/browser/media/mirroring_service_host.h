@@ -33,7 +33,7 @@ class MirroringServiceHost {
 
   // Replies back with the current tab source id of the active mirroring
   // session if exist. Doesn't need to be called on UI thread.
-  virtual absl::optional<int> GetTabSourceId() const = 0;
+  virtual std::optional<int> GetTabSourceId() const = 0;
 
   // Fetches the statistics of the current mirroring sessions.
   virtual void GetMirroringStats(
@@ -69,7 +69,7 @@ class MirroringServiceHostFactory {
       int32_t frame_tree_node_id) = 0;
 
   virtual std::unique_ptr<MirroringServiceHost> GetForDesktop(
-      const absl::optional<std::string>& media_id) = 0;
+      const std::optional<std::string>& media_id) = 0;
 
   virtual std::unique_ptr<MirroringServiceHost> GetForOffscreenTab(
       const GURL& presentation_url,

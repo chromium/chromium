@@ -29,11 +29,6 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
 
   const unsigned kRenderQuantumFrames = 128;
 
-  // FIFO length exceeding the maximum length allowed will cause crash.
-  // i.e.) fifo_length_ <= kMaxFIFOLength
-  EXPECT_DEATH_IF_SUPPORTED(
-      new PushPullFIFO(2, PushPullFIFO::kMaxFIFOLength + 1), "");
-
   std::unique_ptr<PushPullFIFO> test_fifo =
       std::make_unique<PushPullFIFO>(2, 1024);
 

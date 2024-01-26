@@ -50,7 +50,8 @@ public class XrHostActivity extends Activity {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        assert (XrSessionCoordinator.onXrHostActivityReady(this));
+        boolean result = XrSessionCoordinator.onXrHostActivityReady(this);
+        assert (result);
     }
 
     @Override

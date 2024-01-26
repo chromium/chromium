@@ -29,6 +29,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
 
 import java.time.Duration;
@@ -38,6 +39,7 @@ import java.time.Duration;
 public class FeedFeaturesTest {
     @Rule public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
+    @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
 
     private FeatureList.TestValues mParamsTestValues;
@@ -72,11 +74,11 @@ public class FeedFeaturesTest {
 
     @Test
     public void testAlwaysResetByDefault() {
-        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
+        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
         assertEquals(StreamTabId.FOR_YOU, mPrefStoredTab);
         // Simulates a Following tab selection.
-        FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
-        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
+        FeedFeatures.setLastSeenFeedTabId(mProfile, StreamTabId.FOLLOWING);
+        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
         assertEquals(StreamTabId.FOR_YOU, mPrefStoredTab);
     }
 
@@ -88,12 +90,12 @@ public class FeedFeaturesTest {
                 "reset_upon_chrome_restart");
         FeatureList.setTestValues(mParamsTestValues);
 
-        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
+        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
         assertEquals(StreamTabId.FOR_YOU, mPrefStoredTab);
         // Simulates a Following tab selection.
-        FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
-        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore());
-        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore());
+        FeedFeatures.setLastSeenFeedTabId(mProfile, StreamTabId.FOLLOWING);
+        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore(mProfile));
+        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore(mProfile));
     }
 
     @Test
@@ -102,12 +104,12 @@ public class FeedFeaturesTest {
                 ChromeFeatureList.WEB_FEED, "feed_tab_stickiness_logic", "indefinitely_persisted");
         FeatureList.setTestValues(mParamsTestValues);
 
-        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore());
+        assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore(mProfile));
         assertEquals(StreamTabId.FOLLOWING, mPrefStoredTab);
         // Simulates a For You tab selection.
-        FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOR_YOU);
-        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
-        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
+        FeedFeatures.setLastSeenFeedTabId(mProfile, StreamTabId.FOR_YOU);
+        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
+        assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
     }
 
     @Test
@@ -120,7 +122,7 @@ public class FeedFeaturesTest {
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
                 .thenReturn("" + System.currentTimeMillis());
 
-        assertTrue(FeedFeatures.shouldUseNewIndicator());
+        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 
     @Test
@@ -132,7 +134,7 @@ public class FeedFeaturesTest {
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(true);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME)).thenReturn("0");
 
-        assertFalse(FeedFeatures.shouldUseNewIndicator());
+        assertFalse(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 
     @Test
@@ -145,7 +147,7 @@ public class FeedFeaturesTest {
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
                 .thenReturn("" + System.currentTimeMillis());
 
-        assertFalse(FeedFeatures.shouldUseNewIndicator());
+        assertFalse(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 
     @Test
@@ -159,7 +161,7 @@ public class FeedFeaturesTest {
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
                 .thenReturn("" + (System.currentTimeMillis() - Duration.ofDays(1).toMillis()));
 
-        assertTrue(FeedFeatures.shouldUseNewIndicator());
+        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 
     @Test
@@ -172,6 +174,6 @@ public class FeedFeaturesTest {
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
                 .thenReturn("" + (System.currentTimeMillis() + Duration.ofDays(1).toMillis()));
 
-        assertTrue(FeedFeatures.shouldUseNewIndicator());
+        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 }

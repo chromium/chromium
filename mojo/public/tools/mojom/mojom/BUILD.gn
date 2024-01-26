@@ -9,6 +9,7 @@ group("mojom") {
     "fileutil.py",
     "generate/__init__.py",
     "generate/check.py",
+    "generate/compatibility_checker.py",
     "generate/generator.py",
     "generate/module.py",
     "generate/pack.py",

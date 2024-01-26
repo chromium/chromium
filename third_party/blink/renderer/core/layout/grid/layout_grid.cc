@@ -115,11 +115,11 @@ const MinMaxSizes& LayoutGrid::CachedMinMaxSizes() const {
   return *cached_min_max_sizes_;
 }
 
-void LayoutGrid::SetCachedMinMaxSizes(MinMaxSizes&& min_max_sizes) {
+void LayoutGrid::SetMinMaxSizesCache(MinMaxSizes&& min_max_sizes) {
   cached_min_max_sizes_ = std::move(min_max_sizes);
 }
 
-void LayoutGrid::InvalidateCachedMinMaxSizes() {
+void LayoutGrid::InvalidateMinMaxSizesCache() {
   cached_min_max_sizes_.reset();
 }
 

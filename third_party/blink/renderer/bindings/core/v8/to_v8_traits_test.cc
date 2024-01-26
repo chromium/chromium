@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
@@ -31,12 +32,8 @@ void TestToV8Traits(const V8TestingScope& scope,
                     T value,
                     const char* path,
                     int line_number) {
-  v8::Local<v8::Value> actual;
-  if (!ToV8Traits<IDLType>::ToV8(scope.GetScriptState(), value)
-           .ToLocal(&actual)) {
-    ADD_FAILURE_AT(path, line_number) << "ToV8 throws an exception.";
-    return;
-  }
+  v8::Local<v8::Value> actual =
+      ToV8Traits<IDLType>::ToV8(scope.GetScriptState(), value);
   String actual_string =
       ToCoreString(scope.GetIsolate(),
                    actual->ToString(scope.GetContext()).ToLocalChecked());
@@ -53,16 +50,13 @@ TEST(ToV8TraitsTest, Any) {
   const V8TestingScope scope;
   ScriptValue value(scope.GetIsolate(),
                     v8::Number::New(scope.GetIsolate(), 1234.0));
-  v8::Local<v8::Value> actual1;
-  ASSERT_TRUE(ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), value)
-                  .ToLocal(&actual1));
-  EXPECT_FALSE(actual1.IsEmpty());
+  v8::Local<v8::Value> actual1 =
+      ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), value);
   double actual_as_number1 = actual1.As<v8::Number>()->Value();
   EXPECT_EQ(1234.0, actual_as_number1);
 
-  v8::Local<v8::Value> actual2;
-  ASSERT_TRUE(ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), actual1)
-                  .ToLocal(&actual2));
+  v8::Local<v8::Value> actual2 =
+      ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), actual1);
   EXPECT_EQ(actual1, actual2);
 }
 
@@ -275,9 +269,8 @@ TEST(ToV8TraitsTest, Object) {
                     ToV8Traits<IDLSequence<IDLString>>::ToV8(
                         scope.GetScriptState(), string_vector));
   TEST_TOV8_TRAITS(scope, IDLObject, "hello,world", value);
-  v8::Local<v8::Value> actual;
-  ASSERT_TRUE(ToV8Traits<IDLObject>::ToV8(scope.GetScriptState(), value)
-                  .ToLocal(&actual));
+  v8::Local<v8::Value> actual =
+      ToV8Traits<IDLObject>::ToV8(scope.GetScriptState(), value);
   EXPECT_TRUE(actual->IsObject());
 }
 
@@ -396,11 +389,9 @@ TEST(ToV8TraitsTest, StringVectorVector) {
   TEST_TOV8_TRAITS(scope, IDLSequence<IDLSequence<IDLString>>, "foo,bar,quux",
                    compound_vector);
 
-  v8::Local<v8::Value> actual;
-  ASSERT_TRUE(ToV8Traits<IDLSequence<IDLSequence<IDLString>>>::ToV8(
-                  scope.GetScriptState(), compound_vector)
-                  .ToLocal(&actual))
-      << "ToV8 throws an exception.";
+  v8::Local<v8::Value> actual =
+      ToV8Traits<IDLSequence<IDLSequence<IDLString>>>::ToV8(
+          scope.GetScriptState(), compound_vector);
   v8::Local<v8::Object> result =
       actual->ToObject(scope.GetContext()).ToLocalChecked();
   v8::Local<v8::Value> vector1 =
@@ -425,19 +416,17 @@ TEST(ToV8TraitsTest, ArrayAndSequence) {
   HeapVector<Member<DOMPointInit>> dom_point_init_vector;
   dom_point_init_vector.push_back(dom_point_init1);
   dom_point_init_vector.push_back(dom_point_init2);
-  v8::Local<v8::Value> v8_dom_point_init3;
-  ASSERT_TRUE(
-      ToV8Traits<DOMPointInit>::ToV8(scope.GetScriptState(), dom_point_init3)
-          .ToLocal(&v8_dom_point_init3));
-  bool is_value_set;
+  v8::Local<v8::Value> v8_dom_point_init3 =
+      ToV8Traits<DOMPointInit>::ToV8(scope.GetScriptState(), dom_point_init3);
 
   // Frozen array
   TEST_TOV8_TRAITS(scope, IDLArray<DOMPointInit>,
                    "[object Object],[object Object]", dom_point_init_vector);
-  v8::Local<v8::Value> v8_frozen_array;
-  ASSERT_TRUE(ToV8Traits<IDLArray<DOMPointInit>>::ToV8(scope.GetScriptState(),
-                                                       dom_point_init_vector)
-                  .ToLocal(&v8_frozen_array));
+  v8::Local<v8::Value> v8_frozen_array =
+      ToV8Traits<IDLArray<DOMPointInit>>::ToV8(scope.GetScriptState(),
+                                               dom_point_init_vector);
+
+  bool is_value_set;
   ASSERT_TRUE(v8_frozen_array.As<v8::Object>()
                   ->Set(scope.GetContext(), 0, v8_dom_point_init3)
                   .To(&is_value_set));
@@ -452,10 +441,9 @@ TEST(ToV8TraitsTest, ArrayAndSequence) {
   // Sequence
   TEST_TOV8_TRAITS(scope, IDLSequence<DOMPointInit>,
                    "[object Object],[object Object]", dom_point_init_vector);
-  v8::Local<v8::Value> v8_sequence;
-  ASSERT_TRUE(ToV8Traits<IDLSequence<DOMPointInit>>::ToV8(
-                  scope.GetScriptState(), dom_point_init_vector)
-                  .ToLocal(&v8_sequence));
+  v8::Local<v8::Value> v8_sequence =
+      ToV8Traits<IDLSequence<DOMPointInit>>::ToV8(scope.GetScriptState(),
+                                                  dom_point_init_vector);
   ASSERT_TRUE(v8_sequence.As<v8::Object>()
                   ->Set(scope.GetContext(), 0, v8_dom_point_init3)
                   .To(&is_value_set));
@@ -474,10 +462,8 @@ TEST(ToV8TraitsTest, PairVector) {
   pair_vector.push_back(std::make_pair("two", 2));
   using ByteRecord = IDLRecord<IDLString, IDLByte>;
   TEST_TOV8_TRAITS(scope, ByteRecord, "[object Object]", pair_vector);
-  v8::Local<v8::Value> actual;
-  ASSERT_TRUE(ToV8Traits<ByteRecord>::ToV8(scope.GetScriptState(), pair_vector)
-                  .ToLocal(&actual))
-      << "ToV8 throws an exception.";
+  v8::Local<v8::Value> actual =
+      ToV8Traits<ByteRecord>::ToV8(scope.GetScriptState(), pair_vector);
   v8::Local<v8::Object> result =
       actual->ToObject(scope.GetContext()).ToLocalChecked();
   v8::Local<v8::Value> one =
@@ -501,11 +487,8 @@ TEST(ToV8TraitsTest, PairHeapVector) {
       "two", MakeGarbageCollected<GarbageCollectedScriptWrappable>("bar")));
   using HeapRecord = IDLRecord<IDLString, GarbageCollectedScriptWrappable>;
   TEST_TOV8_TRAITS(scope, HeapRecord, "[object Object]", pair_heap_vector);
-  v8::Local<v8::Value> actual;
-  ASSERT_TRUE(
-      ToV8Traits<HeapRecord>::ToV8(scope.GetScriptState(), pair_heap_vector)
-          .ToLocal(&actual))
-      << "ToV8 throws an exception.";
+  v8::Local<v8::Value> actual =
+      ToV8Traits<HeapRecord>::ToV8(scope.GetScriptState(), pair_heap_vector);
   v8::Local<v8::Object> result =
       actual->ToObject(scope.GetContext()).ToLocalChecked();
   v8::Local<v8::Value> one =
@@ -544,13 +527,21 @@ TEST(ToV8TraitsTest, Nullable) {
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLUnsignedLong>, "0",
                    absl::optional<uint32_t>(0));
   // Nullable Float
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null", absl::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null",
+                   absl::optional<float>());
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "0.5",
                    absl::optional<float>(0.5));
   // Nullable Double
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null", absl::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null",
+                   absl::optional<double>());
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "3.14",
                    absl::optional<double>(3.14));
+  // Nullable DOMHighResTimeStamp
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDOMHighResTimeStamp>, "null",
+                   absl::optional<base::Time>());
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDOMHighResTimeStamp>, "123.456",
+                   absl::optional<base::Time>(
+                       base::Time::FromMillisecondsSinceUnixEpoch(123.456)));
 }
 
 TEST(ToV8TraitsTest, NullableString) {
@@ -582,10 +573,8 @@ TEST(ToV8TraitsTest, NullableObject) {
                     ToV8Traits<IDLNullable<IDLSequence<IDLOctet>>>::ToV8(
                         scope.GetScriptState(), uint8_vector));
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLObject>, "0,255", value);
-  v8::Local<v8::Value> actual;
-  ASSERT_TRUE(
-      ToV8Traits<IDLNullable<IDLObject>>::ToV8(scope.GetScriptState(), value)
-          .ToLocal(&actual));
+  v8::Local<v8::Value> actual =
+      ToV8Traits<IDLNullable<IDLObject>>::ToV8(scope.GetScriptState(), value);
   EXPECT_TRUE(actual->IsObject());
 }
 
@@ -663,11 +652,8 @@ TEST(ToV8TraitsTest, NullableDate) {
   base::Time expected_date;
   EXPECT_TRUE(
       base::Time::FromString("Fri, 01 Jan 2021 00:00:00 GMT", &expected_date));
-  v8::Local<v8::Value> result;
-  ASSERT_TRUE(
-      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          scope.GetScriptState(), absl::optional<base::Time>(expected_date))
-          .ToLocal(&result));
+  v8::Local<v8::Value> result = ToV8Traits<IDLNullable<IDLDate>>::ToV8(
+      scope.GetScriptState(), absl::optional<base::Time>(expected_date));
   String actual_string =
       ToCoreString(scope.GetIsolate(),
                    result->ToString(scope.GetContext()).ToLocalChecked());

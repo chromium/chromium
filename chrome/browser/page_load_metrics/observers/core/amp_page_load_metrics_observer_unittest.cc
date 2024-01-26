@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::NavigationSimulator;
@@ -67,7 +67,7 @@ class AMPPageLoadMetricsObserverTest
 
   void ValidateHistogramsFor(const std::string& histogram,
                              const char* view_type,
-                             const absl::optional<base::TimeDelta>& event,
+                             const std::optional<base::TimeDelta>& event,
                              bool expect_histograms) {
     const size_t kTypeOffset = strlen("PageLoad.Clients.AMP.");
     std::string view_type_histogram = histogram;

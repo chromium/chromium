@@ -51,7 +51,7 @@ class ClickToCallUiControllerTest : public testing::Test {
         }));
     ClickToCallUiController::ShowDialog(
         web_contents_.get(),
-        /*initiating_origin=*/absl::nullopt,
+        /*initiating_origin=*/std::nullopt,
         /*initiator_document=*/content::WeakDocumentPtr(),
         GURL(base::StrCat({"tel:", kPhoneNumber})), false, u"TestApp");
     controller_ = ClickToCallUiController::GetOrCreateFromWebContents(
@@ -81,7 +81,7 @@ MATCHER_P(ProtoEquals, message, "") {
 
 // Check the call to sharing service when a device is chosen.
 TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
-  auto device_info = std::make_unique<SharingTargetDeviceInfo>(
+  auto device_info = SharingTargetDeviceInfo(
       kReceiverGuid, kReceiverName, SharingDevicePlatform::kUnknown,
       /*pulse_interval=*/base::TimeDelta(),
       syncer::DeviceInfo::FormFactor::kUnknown,
@@ -95,7 +95,7 @@ TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
       SendMessageToDevice(
           Property(&SharingTargetDeviceInfo::guid, kReceiverGuid),
           Eq(kSharingMessageTTL), ProtoEquals(sharing_message), testing::_));
-  controller_->OnDeviceChosen(*device_info.get());
+  controller_->OnDeviceChosen(device_info);
 }
 
 // Check the call to sharing service to get all synced devices.

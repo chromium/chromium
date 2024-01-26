@@ -10,6 +10,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,13 +44,11 @@ namespace {
 // If non-zero this amount of delay is added before the response is sent.
 base::TimeDelta g_execute_delay = base::TimeDelta();
 
-// Status code supplied to OnComplete().
-on_device_model::mojom::ResponseStatus g_on_complete_response_type =
-    on_device_model::mojom::ResponseStatus::kOk;
-
 // If non-empty, used as the output from Execute().
-std::string g_model_execute_result;
+std::vector<std::string> g_model_execute_result;
 
+// Used as the ts_scores output.
+std::optional<std::vector<float>> g_ts_scores;
 }  // namespace
 
 std::vector<std::string> ConcatResponses(
@@ -65,17 +65,16 @@ std::vector<std::string> ConcatResponses(
 constexpr proto::ModelExecutionFeature kFeature =
     proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
 
-class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
-                            public on_device_model::mojom::Session {
+class FakeOnDeviceSession final : public on_device_model::mojom::Session {
  public:
   // on_device_model::mojom::Session:
   void AddContext(on_device_model::mojom::InputOptionsPtr input,
                   mojo::PendingRemote<on_device_model::mojom::ContextClient>
                       client) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeOnDeviceSession::AddContextInternal, AsWeakPtr(),
-                       std::move(input), std::move(client)));
+        FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AddContextInternal,
+                                  weak_factory_.GetWeakPtr(), std::move(input),
+                                  std::move(client)));
   }
 
   void Execute(on_device_model::mojom::InputOptionsPtr input,
@@ -87,8 +86,9 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&FakeOnDeviceSession::ExecuteImpl, AsWeakPtr(),
-                       std::move(input), std::move(response)),
+        base::BindOnce(&FakeOnDeviceSession::ExecuteImpl,
+                       weak_factory_.GetWeakPtr(), std::move(input),
+                       std::move(response)),
         g_execute_delay);
   }
 
@@ -100,14 +100,32 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     mojo::Remote<on_device_model::mojom::StreamingResponder> remote(
         std::move(response));
     for (const std::string& context : context_) {
-      remote->OnResponse("Context: " + context + "\n");
+      auto chunk = on_device_model::mojom::ResponseChunk::New();
+      chunk->text = "Context: " + context + "\n";
+      remote->OnResponse(std::move(chunk));
     }
-    remote->OnResponse("Input: " +
-                       (g_model_execute_result.empty()
-                            ? input->text
-                            : g_model_execute_result) +
-                       "\n");
-    remote->OnComplete(g_on_complete_response_type);
+
+    if (g_model_execute_result.empty()) {
+      auto chunk = on_device_model::mojom::ResponseChunk::New();
+      chunk->text = "Input: " + input->text + "\n";
+      chunk->ts_scores = g_ts_scores;
+      remote->OnResponse(std::move(chunk));
+    } else {
+      int ts_interval = input->ts_interval.value_or(1);
+      int n = 0;
+      for (const auto& text : g_model_execute_result) {
+        n++;
+        auto chunk = on_device_model::mojom::ResponseChunk::New();
+        chunk->text = text;
+        if ((n % ts_interval) == 0) {
+          chunk->ts_scores = g_ts_scores;
+        }
+        remote->OnResponse(std::move(chunk));
+      }
+    }
+    auto summary = on_device_model::mojom::ResponseSummary::New();
+    summary->ts_scores = g_ts_scores;
+    remote->OnComplete(std::move(summary));
   }
 
   void AddContextInternal(
@@ -138,6 +156,7 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
   }
 
   std::vector<std::string> context_;
+  base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };
 
 class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
@@ -247,8 +266,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_model_execute_result.clear();
+    g_ts_scores = std::nullopt;
     g_execute_delay = base::TimeDelta();
-    g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel,
@@ -445,6 +464,18 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result,
                   std::unique_ptr<ModelQualityLogEntry> log_entry) {
     log_entry_received_ = std::move(log_entry);
+    if (log_entry_received_) {
+      // Make sure that an execution ID is always generated if we return a log
+      // entry.
+      ASSERT_FALSE(log_entry_received_->log_ai_data_request()
+                       ->model_execution_info()
+                       .execution_id()
+                       .empty());
+      EXPECT_TRUE(base::StartsWith(log_entry_received_->log_ai_data_request()
+                                       ->model_execution_info()
+                                       .execution_id(),
+                                   "on-device"));
+    }
     if (!result.has_value()) {
       response_error_ = result.error().error();
       return;
@@ -497,15 +528,16 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(*provided_by_on_device_);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
   EXPECT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos(0)
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  EXPECT_EQ(logged_on_device_model_execution_info.model_versions()
+                .on_device_model_service_version()
+                .component_version(),
+            "0.0.1");
+  EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
+  EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
                 .response()
                 .on_device_model_service_response()
                 .status(),
@@ -591,6 +623,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
   Initialize();
+  g_execute_delay = base::Seconds(10);
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -598,7 +631,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   AddContext(*session, "this is long context");
   // ExecuteModel() directly after AddContext() should only load first chunk.
   ExecuteModel(*session, "foo");
+
+  // Give time to make sure we don't process the optional context.
   task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(g_execute_delay + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(response_received_);
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:this i off:0 max:10\n",
@@ -681,6 +719,99 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
       OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
+  Initialize();
+
+  // Safety model info is valid but no metadata.
+  {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoMetadata, 1);
+  }
+
+  // Safety model info is valid but metadata is of wrong type.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::Any any;
+    any.set_type_url("garbagetype");
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kMetadataWrongType, 1);
+  }
+
+  // Safety model info is valid but no feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoFeatureConfigs, 1);
+  }
+
+  // Safety model info is valid and metadata has feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        kFeature);
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+  }
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
@@ -701,20 +832,65 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
   }
 
-  // Safety model info is valid, session created successfully.
+  // Safety model info is valid but no config for feature, session not created
+  // successfully.
   {
     base::HistogramTester histogram_tester;
 
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        proto::MODEL_EXECUTION_FEATURE_TEST);
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetAdditionalFiles(
                 {temp_dir().Append(kTsDataFile),
                  temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    EXPECT_FALSE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature, 1);
+  }
+
+  // Safety model info is valid, session created successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        kFeature);
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
     EXPECT_TRUE(
         test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
 
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
@@ -734,6 +910,11 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+    // No model. Shouldn't even record this histogram.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        0);
   }
 
   // Safety model reset to invalid, session no longer created successfully.
@@ -752,7 +933,192 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+    // No required model files. Shouldn't even record this histogram.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        0);
   }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
+  Initialize();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_must_use_safety_model", "true"},
+       {"on_device_retract_unsafe_content", "true"}});
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
+  safety_config->set_feature(kFeature);
+  auto* threshold1 = safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 = safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_TRUE(session);
+
+  // Scores never provided even on complete.
+  {
+    base::HistogramTester histogram_tester;
+    g_ts_scores = std::nullopt;
+    ExecuteModel(*session, "foo");
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(response_received_);
+    ASSERT_TRUE(response_error_);
+    EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+        ExecuteModelResult::kResponseCompleteButNoRequiredSafetyScores, 1);
+  }
+
+  // Score exceeds threshold.
+  {
+    g_ts_scores = {0.7, 0.3};
+    ExecuteModel(*session, "foo");
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(response_received_);
+    ASSERT_TRUE(response_error_);
+    EXPECT_EQ(
+        *response_error_,
+        OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+    // Make sure T&S logged.
+    ASSERT_TRUE(log_entry_received_);
+    const auto logged_on_device_model_execution_info =
+        log_entry_received_->log_ai_data_request()
+            ->model_execution_info()
+            .on_device_model_execution_info();
+    const auto num_execution_infos =
+        logged_on_device_model_execution_info.execution_infos_size();
+    EXPECT_GE(num_execution_infos, 2);
+    auto ts_log = logged_on_device_model_execution_info.execution_infos(
+        num_execution_infos - 1);
+    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+                ElementsAre(0.7, 0.3));
+    EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+  }
+
+  // Invalid model output according to config.
+  {
+    g_ts_scores = {0.3};
+    ExecuteModel(*session, "foo");
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(response_received_);
+    ASSERT_TRUE(response_error_);
+    EXPECT_EQ(
+        *response_error_,
+        OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+    // Make sure T&S logged.
+    ASSERT_TRUE(log_entry_received_);
+    const auto logged_on_device_model_execution_info =
+        log_entry_received_->log_ai_data_request()
+            ->model_execution_info()
+            .on_device_model_execution_info();
+    const auto num_execution_infos =
+        logged_on_device_model_execution_info.execution_infos_size();
+    EXPECT_GE(num_execution_infos, 2);
+    auto ts_log = logged_on_device_model_execution_info.execution_infos(
+        num_execution_infos - 1);
+    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+                ElementsAre(0.3));
+    EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+  }
+
+  // Score below threshold. Text safety check passes.
+  {
+    g_ts_scores = {0.3, 0.3};
+    ExecuteModel(*session, "foo");
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(response_received_);
+    // Make sure T&S logged.
+    ASSERT_TRUE(log_entry_received_);
+    const auto logged_on_device_model_execution_info =
+        log_entry_received_->log_ai_data_request()
+            ->model_execution_info()
+            .on_device_model_execution_info();
+    const auto num_execution_infos =
+        logged_on_device_model_execution_info.execution_infos_size();
+    EXPECT_GE(num_execution_infos, 2);
+    auto ts_log = logged_on_device_model_execution_info.execution_infos(
+        num_execution_infos - 1);
+    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+                ElementsAre(0.3, 0.3));
+    EXPECT_FALSE(ts_log.response().text_safety_model_response().is_unsafe());
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
+  Initialize();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_must_use_safety_model", "true"}});
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
+  safety_config->set_feature(kFeature);
+  auto* threshold1 = safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 = safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_TRUE(session);
+
+  // Score exceeds threshold. Would not pass but not retracting.
+  g_ts_scores = {0.7, 0.3};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+
+  // Make sure T&S logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
+  auto ts_log = logged_on_device_model_execution_info.execution_infos(
+      logged_on_device_model_execution_info.execution_infos_size() - 1);
+  EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+              ElementsAre(0.7, 0.3));
+  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
@@ -1270,57 +1636,6 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
                          kFeature, base::DoNothing(), &logger_));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
-  Initialize();
-  g_on_complete_response_type =
-      on_device_model::mojom::ResponseStatus::kRetracted;
-  auto session =
-      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
-  ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
-  base::HistogramTester histogram_tester;
-  task_environment_.RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-      ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
-  Initialize();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  g_on_complete_response_type =
-      on_device_model::mojom::ResponseStatus::kRetracted;
-  auto session =
-      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
-  ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
-  EXPECT_EQ(
-      *response_error_,
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  // Although we send an error, we should be sending a log entry back so the
-  // filtering can be logged.
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos(0)
-                .response()
-                .on_device_model_service_response()
-                .status(),
-            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   PopulateConfigForFeatureWithRedactRule(config, "bar");
@@ -1349,7 +1664,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response2));
 
   // Output contains redacted text (and  input doesn't), so redact.
-  g_model_execute_result = "abarx";
+  g_model_execute_result = {"Input: abarx\n"};
   response_received_.reset();
   streamed_responses_.clear();
   auto session3 =
@@ -1408,7 +1723,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   Initialize({.config = config});
 
   // Force 'bar' to be returned from model.
-  g_model_execute_result = "bar";
+  g_model_execute_result = {"Input: bar\n"};
 
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
@@ -1428,7 +1743,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   Initialize({.config = config});
 
   // Output contains redacted text (and  input doesn't), so redact.
-  g_model_execute_result = "abarx";
+  g_model_execute_result = {"Input: abarx\n"};
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   ASSERT_TRUE(session);
@@ -1438,5 +1753,278 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   EXPECT_EQ(*response_received_, expected_response);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
 }
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "true"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kResponseHadRepeats, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",   " some more repeating", " text",
+      " some more ", "repeating text",       " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating",
+      " text",
+      " some more ",
+      "repeating text",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_FALSE(log_entry_received_->log_ai_data_request()
+                   ->model_execution_info()
+                   .on_device_model_execution_info()
+                   .execution_infos(0)
+                   .response()
+                   .on_device_model_service_response()
+                   .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      false, 1);
+}
+
+class OnDeviceModelServiceControllerTsIntervalTest
+    : public OnDeviceModelServiceControllerTest,
+      public ::testing::WithParamInterface<int> {};
+
+TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
+       DetectsRepeatsWithSafetyModel) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_retract_repeats", "false"}}},
+       {features::kTextSafetyClassifier,
+        {{"on_device_must_use_safety_model", "true"},
+         {"on_device_retract_unsafe_content", "true"},
+         {"on_device_text_safety_token_interval",
+          base::NumberToString(GetParam())}}}},
+      {});
+
+  Initialize();
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
+  safety_config->set_feature(kFeature);
+  auto* threshold1 = safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 = safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_TRUE(session);
+
+  g_ts_scores = {0.3, 0.3};
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_,
+            "some text some more repeating text some more repeating text");
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(OnDeviceModelServiceControllerTsIntervalTests,
+                         OnDeviceModelServiceControllerTsIntervalTest,
+                         testing::ValuesIn<int>({1, 2, 3, 4, 10}));
 
 }  // namespace optimization_guide

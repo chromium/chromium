@@ -72,7 +72,7 @@ views::Widget::InitParams CreateWidgetInitParams(
 
 SplitViewDivider::SplitViewDivider(LayoutDividerController* controller,
                                    int divider_position)
-    : controller_(controller) {
+    : controller_(controller), divider_position_(divider_position) {
   // Observe currently snapped windows.
   for (aura::Window* window : controller_->GetLayoutWindows()) {
     AddObservedWindow(window);
@@ -140,6 +140,16 @@ aura::Window* SplitViewDivider::GetRootWindow() const {
   return divider_widget_->GetNativeWindow()->GetRootWindow();
 }
 
+void SplitViewDivider::UpdateDividerPosition(
+    const gfx::Point& location_in_screen) {
+  if (IsLayoutHorizontal(GetRootWindow())) {
+    divider_position_ += location_in_screen.x() - previous_event_location_.x();
+  } else {
+    divider_position_ += location_in_screen.y() - previous_event_location_.y();
+  }
+  divider_position_ = std::max(0, divider_position_);
+}
+
 void SplitViewDivider::StartResizeWithDivider(
     const gfx::Point& location_in_screen) {
   // `is_resizing_with_divider_` may be true here, because you can start
@@ -191,6 +201,10 @@ void SplitViewDivider::ResizeWithDivider(const gfx::Point& location_in_screen) {
   gfx::Point modified_location_in_screen =
       GetBoundedPosition(location_in_screen, work_area_bounds);
 
+  // Order here matters: we first update `divider_position_`, then the
+  // LayoutDividerController will transform and update the window and divider
+  // bounds in `UpdateResizeWithDivider()`.
+  UpdateDividerPosition(modified_location_in_screen);
   controller_->UpdateResizeWithDivider(modified_location_in_screen);
 
   previous_event_location_ = modified_location_in_screen;
@@ -208,6 +222,11 @@ void SplitViewDivider::EndResizeWithDivider(
       GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
   gfx::Point modified_location_in_screen =
       GetBoundedPosition(location_in_screen, work_area_bounds);
+
+  // Order here matters: we first update `divider_position_`, then the
+  // LayoutDividerController will transform and update the window and divider
+  // bounds in `EndResizeWithDivider()`.
+  UpdateDividerPosition(modified_location_in_screen);
   controller_->EndResizeWithDivider(modified_location_in_screen);
 }
 

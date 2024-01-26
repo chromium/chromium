@@ -171,6 +171,7 @@ grit("media_app_bundle_resources") {
         "//ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd"
   } else {
     source = "//ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd"
+    deps = [ "//ash/webui/media_app_ui/resources/mock/js:build_ts" ]
   }
 
   use_brotli = true
@@ -184,11 +185,6 @@ grit("media_app_bundle_resources") {
     "chromeos_media_app_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-}
-
-ash_generated_grit("diagnostics_app_resources") {
-  source = "$root_gen_dir/ash/webui/diagnostics_ui/resources/ash_diagnostics_app_resources.grd"
-  deps = [ "//ash/webui/diagnostics_ui/resources:build_grd" ]
 }
 
 # Resources used by chrome-untrusted://projector SWA.

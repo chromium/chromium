@@ -63,9 +63,8 @@ class SavePackage;
 // saved. Each file is represented by a SaveItem, and all SaveItems are owned
 // by the SavePackage. SaveItems are created when a user initiates a page
 // saving job, and exist for the duration of one contents's life time.
-class CONTENT_EXPORT SavePackage
-    : public base::RefCountedThreadSafe<SavePackage>,
-      public base::SupportsWeakPtr<SavePackage> {
+class CONTENT_EXPORT SavePackage final
+    : public base::RefCountedThreadSafe<SavePackage> {
  public:
   enum WaitState {
     // State when created but not initialized.
@@ -333,8 +332,7 @@ class CONTENT_EXPORT SavePackage
       const base::FilePath& download_save_dir);
   void ContinueGetSaveInfo(bool can_save_as_complete,
                            const base::FilePath& suggested_path);
-  void OnPathPicked(const base::FilePath& final_name,
-                    SavePageType type,
+  void OnPathPicked(SavePackagePathPickedParams params,
                     SavePackageDownloadCreatedCallback cb);
 
   // The number of in process SaveItems.
@@ -442,6 +440,12 @@ class CONTENT_EXPORT SavePackage
   // Type about saving page as only-html or complete-html.
   SavePageType save_type_ = SAVE_PAGE_TYPE_UNKNOWN;
 
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags_;
+#endif
+
   // Number of all need to be saved resources.
   size_t all_save_items_count_ = 0;
 
@@ -461,6 +465,8 @@ class CONTENT_EXPORT SavePackage
   // UKM IDs for reporting.
   ukm::SourceId ukm_source_id_;
   uint64_t ukm_download_id_;
+
+  base::WeakPtrFactory<SavePackage> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -27,6 +27,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -180,7 +181,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Assign TemporalID by state machine(based on SVC Spec).
   int AssignTemporalIdBySvcSpec(uint32_t frame_id);
 
-  bool IsTemporaScalabilityCoding() const { return num_temporal_layers_ > 1; }
+  bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output.
   void ProcessOutput();
@@ -230,6 +231,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t input_since_keyframe_count_ = 0;
+
+  // Each time we get a non-keyframe with temporal layer index equals to 0,
+  // zero_layer_counter_ increases.
+  uint32_t zero_layer_counter_ = 0;
 
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ = kUninitialized;
@@ -310,8 +315,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Preferred adapter for DXGIDeviceManager.
   const CHROME_LUID luid_;
 
-  // A buffer used as a scratch space for I420 to NV12 conversion
-  std::vector<uint8_t> resize_buffer_;
+  // Used for frame format conversion.
+  VideoFrameConverter frame_converter_;
 
   FlushCallback flush_callback_;
 

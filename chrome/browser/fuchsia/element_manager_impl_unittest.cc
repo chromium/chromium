@@ -7,6 +7,8 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/fuchsia/process_context.h"
@@ -14,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -92,7 +93,7 @@ class ElementManagerImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   base::TestComponentContextForProcess test_context_;
-  absl::optional<base::CommandLine> received_command_line_;
+  std::optional<base::CommandLine> received_command_line_;
   ElementManagerImpl element_manager_;
   int browser_count_ = 0;
 };
@@ -110,7 +111,7 @@ TEST_F(ElementManagerImplTest, CorrectSpec) {
     spec.set_component_url(url);
 
     base::RunLoop run_loop;
-    absl::optional<fuchsia::element::Manager_ProposeElement_Result>
+    std::optional<fuchsia::element::Manager_ProposeElement_Result>
         received_result;
     element_manager->ProposeElement(
         std::move(spec), {},
@@ -140,7 +141,7 @@ TEST_F(ElementManagerImplTest, IncorrectSpec) {
     spec.set_component_url(url);
 
     base::RunLoop run_loop;
-    absl::optional<fuchsia::element::Manager_ProposeElement_Result>
+    std::optional<fuchsia::element::Manager_ProposeElement_Result>
         received_result;
     element_manager->ProposeElement(
         std::move(spec), {},

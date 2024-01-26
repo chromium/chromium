@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -33,15 +32,16 @@
 #include "chromeos/ash/services/secure_channel/fake_nearby_connection_manager.h"
 #include "chromeos/ash/services/secure_channel/fake_pending_connection_manager.h"
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_disconnector.h"
-#include "chromeos/ash/services/secure_channel/fake_timer_factory.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_initializer.h"
-#include "chromeos/ash/services/secure_channel/timer_factory_impl.h"
+#include "components/cross_device/timer_factory/fake_timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -54,31 +54,6 @@ namespace ash::secure_channel {
 namespace {
 
 const size_t kNumTestDevices = 6;
-
-class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
- public:
-  FakeTimerFactoryFactory() = default;
-
-  FakeTimerFactoryFactory(const FakeTimerFactoryFactory&) = delete;
-  FakeTimerFactoryFactory& operator=(const FakeTimerFactoryFactory&) = delete;
-
-  ~FakeTimerFactoryFactory() override = default;
-
-  FakeTimerFactory* instance() { return instance_; }
-
- private:
-  // TimerFactoryImpl::Factory:
-  std::unique_ptr<TimerFactory> CreateInstance() override {
-    EXPECT_FALSE(instance_);
-    auto instance = std::make_unique<FakeTimerFactory>();
-    instance_ = instance.get();
-    return instance;
-  }
-
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeTimerFactory* instance_ = nullptr;
-};
 
 class TestRemoteDeviceCacheFactory
     : public multidevice::RemoteDeviceCache::Factory {
@@ -106,9 +81,8 @@ class TestRemoteDeviceCacheFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION multidevice::RemoteDeviceCache* instance_ = nullptr;
+  raw_ptr<multidevice::RemoteDeviceCache, DanglingUntriaged> instance_ =
+      nullptr;
 };
 
 class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
@@ -166,9 +140,7 @@ class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeBleSynchronizer* instance_ = nullptr;
+  raw_ptr<FakeBleSynchronizer, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeBleScannerFactory : public BleScannerImpl::Factory {
@@ -230,9 +202,7 @@ class FakeSecureChannelDisconnectorFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSecureChannelDisconnector* instance_ = nullptr;
+  raw_ptr<FakeSecureChannelDisconnector, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeBleConnectionManagerFactory
@@ -244,15 +214,13 @@ class FakeBleConnectionManagerFactory
       FakeBleSynchronizerFactory* fake_ble_synchronizer_factory,
       FakeBleScannerFactory* fake_ble_scanner_factory,
       FakeSecureChannelDisconnectorFactory*
-          fake_secure_channel_disconnector_factory,
-      FakeTimerFactoryFactory* fake_timer_factory_factory)
+          fake_secure_channel_disconnector_factory)
       : expected_bluetooth_adapter_(expected_bluetooth_adapter),
         fake_bluetooth_helper_factory_(fake_bluetooth_helper_factory),
         fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory),
         fake_ble_scanner_factory_(fake_ble_scanner_factory),
         fake_secure_channel_disconnector_factory_(
-            fake_secure_channel_disconnector_factory),
-        fake_timer_factory_factory_(fake_timer_factory_factory) {}
+            fake_secure_channel_disconnector_factory) {}
 
   FakeBleConnectionManagerFactory(const FakeBleConnectionManagerFactory&) =
       delete;
@@ -271,7 +239,7 @@ class FakeBleConnectionManagerFactory
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
       SecureChannelDisconnector* secure_channel_disconnector,
-      TimerFactory* timer_factory,
+      cross_device::TimerFactory* timer_factory,
       base::Clock* clock) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_bluetooth_adapter_, bluetooth_adapter.get());
@@ -280,7 +248,6 @@ class FakeBleConnectionManagerFactory
     EXPECT_EQ(fake_ble_scanner_factory_->instance(), ble_scanner);
     EXPECT_EQ(fake_secure_channel_disconnector_factory_->instance(),
               secure_channel_disconnector);
-    EXPECT_EQ(fake_timer_factory_factory_->instance(), timer_factory);
 
     auto instance = std::make_unique<FakeBleConnectionManager>();
     instance_ = instance.get();
@@ -293,7 +260,6 @@ class FakeBleConnectionManagerFactory
   raw_ptr<FakeBleScannerFactory> fake_ble_scanner_factory_;
   raw_ptr<FakeSecureChannelDisconnectorFactory>
       fake_secure_channel_disconnector_factory_;
-  raw_ptr<FakeTimerFactoryFactory> fake_timer_factory_factory_;
 
   raw_ptr<FakeBleConnectionManager, DanglingUntriaged> instance_ = nullptr;
 };
@@ -410,9 +376,7 @@ class FakeActiveConnectionManagerFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeActiveConnectionManager* instance_ = nullptr;
+  raw_ptr<FakeActiveConnectionManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 class TestSecureChannelInitializerFactory
@@ -483,8 +447,9 @@ class FakeClientConnectionParametersFactory
   // ClientConnectionParametersImpl::Factory:
   std::unique_ptr<ClientConnectionParameters> CreateInstance(
       const std::string& feature,
-      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote)
-      override {
+      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger) override {
     auto instance = std::make_unique<FakeClientConnectionParameters>(
         feature, base::BindOnce(
                      &FakeClientConnectionParametersFactory::OnInstanceDeleted,
@@ -549,9 +514,8 @@ class SecureChannelServiceTest : public testing::Test {
 
     fake_nearby_connector_ = std::make_unique<FakeNearbyConnector>();
 
-    fake_timer_factory_factory_ = std::make_unique<FakeTimerFactoryFactory>();
-    TimerFactoryImpl::Factory::SetFactoryForTesting(
-        fake_timer_factory_factory_.get());
+    cross_device::TimerFactoryImpl::Factory::SetFactoryForTesting(
+        std::make_unique<cross_device::FakeTimerFactory::Factory>());
 
     test_remote_device_cache_factory_ =
         std::make_unique<TestRemoteDeviceCacheFactory>();
@@ -585,8 +549,7 @@ class SecureChannelServiceTest : public testing::Test {
             mock_adapter_.get(), fake_bluetooth_helper_factory_.get(),
             fake_ble_synchronizer_factory_.get(),
             fake_ble_scanner_factory_.get(),
-            fake_secure_channel_disconnector_factory_.get(),
-            fake_timer_factory_factory_.get());
+            fake_secure_channel_disconnector_factory_.get());
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_ble_connection_manager_factory_.get());
 
@@ -626,7 +589,7 @@ class SecureChannelServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    TimerFactoryImpl::Factory::SetFactoryForTesting(nullptr);
+    cross_device::TimerFactoryImpl::Factory::SetFactoryForTesting(nullptr);
     multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(nullptr);
     BluetoothHelperImpl::Factory::SetFactoryForTesting(nullptr);
     BleSynchronizer::Factory::SetFactoryForTesting(nullptr);
@@ -774,8 +737,9 @@ class SecureChannelServiceTest : public testing::Test {
     EXPECT_EQ(ActiveConnectionManager::ConnectionState::kActiveConnectionExists,
               std::get<0>(metadata));
     EXPECT_EQ(fake_authenticated_channel_raw, std::get<1>(metadata).get());
-    for (size_t i = 0; i < moved_client_list.size(); ++i)
+    for (size_t i = 0; i < moved_client_list.size(); ++i) {
       EXPECT_EQ(moved_client_list[i], std::get<2>(metadata)[i].get());
+    }
   }
 
   void SimulateConnectionStartingDisconnecting(
@@ -808,8 +772,9 @@ class SecureChannelServiceTest : public testing::Test {
 
     // If there were no pending metadata, there is no need to make additional
     // verifications.
-    if (pending_metadata_list.empty())
+    if (pending_metadata_list.empty()) {
       return;
+    }
 
     size_t num_handled_requests_start_index =
         fake_pending_connection_manager()->handled_requests().size() -
@@ -1076,6 +1041,8 @@ class SecureChannelServiceTest : public testing::Test {
                          ConnectionPriority connection_priority,
                          bool is_listener) {
     FakeConnectionDelegate fake_connection_delegate;
+    FakeSecureChannelStructuredMetricsLogger
+        fake_secure_channel_structured_metrics_logger;
 
     if (is_listener) {
       secure_channel_remote_->ListenForConnectionFromDevice(
@@ -1084,7 +1051,8 @@ class SecureChannelServiceTest : public testing::Test {
     } else {
       secure_channel_remote_->InitiateConnectionToDevice(
           device_to_connect, local_device, feature, connection_medium,
-          connection_priority, fake_connection_delegate.GenerateRemote());
+          connection_priority, fake_connection_delegate.GenerateRemote(),
+          fake_secure_channel_structured_metrics_logger.GenerateRemote());
     }
 
     secure_channel_remote_.FlushForTesting();
@@ -1109,7 +1077,6 @@ class SecureChannelServiceTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   std::unique_ptr<FakeNearbyConnector> fake_nearby_connector_;
 
-  std::unique_ptr<FakeTimerFactoryFactory> fake_timer_factory_factory_;
   std::unique_ptr<TestRemoteDeviceCacheFactory>
       test_remote_device_cache_factory_;
   std::unique_ptr<FakeBluetoothHelperFactory> fake_bluetooth_helper_factory_;

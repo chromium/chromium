@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
 #define CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefRegistrySimple;
@@ -29,7 +30,7 @@ class BrowserFeaturePromoStorageService
 
   // FeaturePromoStorageService:
   void Reset(const base::Feature& iph_feature) override;
-  absl::optional<user_education::FeaturePromoData> ReadPromoData(
+  std::optional<user_education::FeaturePromoData> ReadPromoData(
       const base::Feature& iph_feature) const override;
   void SavePromoData(
       const base::Feature& iph_feature,

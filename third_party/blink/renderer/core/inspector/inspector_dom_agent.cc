@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -1870,12 +1871,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
-      // The inspector should not try to access the .content() property of
-      // declarative Shadow DOM <template> elements, because it will be null.
-      if (!template_element->IsDeclarativeShadowRoot() &&
-          template_element->content()) {
-        value->setTemplateContent(BuildObjectForNode(
-            template_element->content(), 0, pierce, nodes_map, flatten_result));
+      if (DocumentFragment* content = template_element->content()) {
+        value->setTemplateContent(
+            BuildObjectForNode(content, 0, pierce, nodes_map, flatten_result));
         force_push_children = true;
       }
     }

@@ -21,6 +21,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
@@ -96,6 +97,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         type: Array,
         computed:
             'computeBreadcrumbs_(path, collections_, collectionId, albums_, albumsShared_, googlePhotosAlbumId, seaPenTemplates_, seaPenTemplateId, topicSource)',
+        observer: 'onBreadcrumbsChanged_',
       },
 
       collections_: {
@@ -146,6 +148,23 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     this.watch(
         'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
     this.updateFromStore();
+  }
+
+  private onBreadcrumbsChanged_() {
+    requestAnimationFrame(() => {
+      // Note that only 1 breadcrumb is focusable at any given time. When
+      // breadcrumbs change, the previously selected breadcrumb might not be in
+      // DOM anymore. To allow keyboard users to focus the breadcrumbs again, we
+      // add the first breadcrumb back to tab order.
+      const allBreadcrumbs = this.$.selector.items as HTMLElement[];
+      const hasFocusableBreadcrumb =
+          allBreadcrumbs.some(el => el.getAttribute('tabindex') === '0');
+
+      if (!hasFocusableBreadcrumb && allBreadcrumbs.length > 0) {
+        this.$.selector.selectIndex(0);
+        allBreadcrumbs[0].setAttribute('tabindex', '0');
+      }
+    });
   }
 
   /** Handle keyboard navigation. */
@@ -230,7 +249,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         breadcrumbs.push(this.i18n('seaPenLabel'));
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
-              template => template.id === this.seaPenTemplateId);
+              template => template.id.toString() === this.seaPenTemplateId);
           if (template) {
             breadcrumbs.push(template.title);
           }
@@ -286,6 +305,13 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         PersonalizationRouterElement.instance().goToRoute(newPath as Paths);
       }
     }
+    // If the user clicks the last breadcrumb and the sea pen dropdown is
+    // present, open the dropdown.
+    const targetElement = e.currentTarget as HTMLElement;
+    if (index === this.breadcrumbs_.length - 1 &&
+        !!targetElement.querySelector('#seaPenDropdown')) {
+      this.onClickMenuIcon_(e);
+    }
   }
 
   private onClickMenuIcon_(e: Event) {
@@ -304,6 +330,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     assert(!!templateId, 'templateId is required');
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId});
+    this.closeOptionMenu_();
+  }
+
+  private closeOptionMenu_() {
+    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    menuElement!.close();
   }
 
   private shouldShowSeaPenDropdown_(path: string, breadcrumb: string): boolean {
@@ -316,9 +348,9 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     return path === Paths.SEA_PEN_RESULTS && !!template;
   }
 
-  private getAriaSelected_(templateId: string, seaPenTemplateId: string):
-      'true'|'false' {
-    return templateId === seaPenTemplateId ? 'true' : 'false';
+  private getAriaSelected_(
+      templateId: SeaPenTemplateId, seaPenTemplateId: string): 'true'|'false' {
+    return templateId.toString() === seaPenTemplateId ? 'true' : 'false';
   }
 
   private onHomeIconClick_() {

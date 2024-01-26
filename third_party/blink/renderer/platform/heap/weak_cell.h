@@ -108,6 +108,8 @@ class WeakCellFactory {
     return weak_cell_.Get();
   }
 
+  bool HasWeakCells() const { return weak_cell_; }
+
   // Invalidates the previous `WeakCell<T>` so that `previous_cell->Get()`
   // returns null. Future calls to `GetWeakCell()` will return a *new* and
   // *non-null* cell.

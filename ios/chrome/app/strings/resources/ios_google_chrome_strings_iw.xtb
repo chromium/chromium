@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="1105362920864247682">‏ניקוי נתוני הגלישה ב-Chrome.</translation>
 <translation id="1113057722807951993">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">‏סנכרון נתוני Chrome שלך</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chrome.</translation>
+<translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">‏Chrome ייפתח באופן אוטומטי כשמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="1910975740091000991">‏Chrome ל-iOS</translation>
 <translation id="1917964099031477364">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chrome ומאפליקציות אחרות של Google במכשיר הזה.</translation>
 <translation id="1965935827552890526">‏יש לסיים את הפעילות בחלון Chrome הפתוח הנוסף.</translation>
 <translation id="1987779152850321833">‏השלמת הפעולות הבאות תעזור לך להשתמש ב-Chrome בדרך היעילה ביותר.</translation>
-<translation id="2008357574463816229">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">‏Google Chrome מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="2120238739383482109">‏פתיחת הסימניות ב-Chrome.</translation>
 <translation id="2147651015520127414">‏Chrome אימת ש-<ph name="ISSUER" /> הנפיק את האישור של אתר זה.</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">‏הוספת פריט מרשימת הקריאה ל-Chrome</translation>
 <translation id="2736805085127235148">‏ההתראות מ-Chrome מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="2767464022270041271">‏אין סיסמאות שמורות. למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
+<translation id="2789947168960170215">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">‏ניקוי נתוני הגלישה ב-Chrome</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">‏אפשר לקבל את הגרסה המשופרת של הגלישה הבטוחה גם לפרופיל Chrome הזה</translation>
 <translation id="3522659714780527202">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להפעיל את הסנכרון</translation>
 <translation id="3577555362230509265">‏שימוש ב-Chrome באפליקציות אחרות.</translation>
-<translation id="3594076341410558780">‏הסתרת האפשרות 'נהנים מהמיטב של Chrome'</translation>
 <translation id="364480321352456989">‏Chrome לא מעודכן.</translation>
 <translation id="3646736009628185125">‏בן המשפחה שלך לא יכול לקבל סיסמאות כרגע. צריך לבקש ממנו לעדכן את Chrome ולסנכרן את הסיסמאות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">‏כלומר, Chrome תמיד יבקש את האתר לנייד.</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">‏אפשר <ph name="BEGIN_LINK" />לקבוע אילו נתונים מ-Chrome יישמרו<ph name="END_LINK" /> בחשבון Google.
 
 כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. כדי שניתן יהיה לספק את התכונה הזו, וגם לשפר את שופינג לכולם, הנתונים שלך ישותפו עם Google. אפשר לשנות את זה <ph name="BEGIN_LINK" />בהגדרות של המעקב אחר חבילות<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">‏חיפוש באמצעות הקול ב-Chrome</translation>
 <translation id="6964931465519938134">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="6975725306479268850">‏בחירת Chrome למילוי אוטומטי</translation>

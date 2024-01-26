@@ -46,7 +46,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -60,7 +59,6 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
-using ::testing::VariantWith;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
@@ -153,7 +151,7 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     return results;
   }
 
-  // GMock matcher expecting that a given QueryResult variant contains a
+  // GMock matcher expecting that a given QueryResults object contains a
   // CPUTimeResult with cumulative_cpu `last_measurements_[context] +
   // expected_delta`. That is, since the last time `context` was tested, expect
   // that `expected_delta` was added to its CPU measurement, which was taken at
@@ -170,11 +168,10 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
     if (last_it != last_measurements_.end()) {
-      expected_cpu += absl::get<CPUTimeResult>(last_it->second).cumulative_cpu;
-      expected_start_time =
-          absl::get<CPUTimeResult>(last_it->second).start_time;
+      expected_cpu += last_it->second.cpu_time_result->cumulative_cpu;
+      expected_start_time = last_it->second.cpu_time_result->start_time;
     }
-    return VariantWith<CPUTimeResult>(AllOf(
+    return QueryResultsMatch<CPUTimeResult>(AllOf(
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
         // `start_time` should not change. If this was the first measurement,
         // allow any non-null `start_time`. Note Conditional() doesn't
@@ -200,10 +197,10 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
         expected_algorithm);
   }
 
-  // GMock matcher expecting that a given QueryResult variant contains a
+  // GMock matcher expecting that a given QueryResults object contains a
   // CPUTimeResult with the given `expected_start_time`.
   auto StartTimeMatches(base::TimeTicks expected_start_time) const {
-    return VariantWith<CPUTimeResult>(
+    return QueryResultsMatch<CPUTimeResult>(
         Field("start_time", &CPUTimeResult::start_time, expected_start_time));
   }
 
@@ -218,8 +215,8 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   // Cached results from UpdateAndGetCPUMeasurements(). Most tests will validate
   // the difference between the "last" and "current" measurements, which is
   // easier to follow than the full cumulative measurements at any given time.
-  std::map<ResourceContext, QueryResult> last_measurements_;
-  std::map<ResourceContext, QueryResult> current_measurements_;
+  QueryResultMap last_measurements_;
+  QueryResultMap current_measurements_;
 };
 
 // Tests that renderers created at various points around CPU measurement
@@ -1392,11 +1389,13 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
       CreateFrameNodeAutoId(process_40.get(), page_node.get());
   auto add_fake_result = [&](QueryResultMap results,
                              base::TimeTicks measurement_time) {
-    results[frame8->GetResourceContext()] = QueryResults{CPUTimeResult{
-        .metadata = {.measurement_time = measurement_time},
-        .start_time = half_first_interval,
-        .cumulative_cpu = (measurement_time - half_first_interval) * 0.4,
-    }};
+    results[frame8->GetResourceContext()] = QueryResults{
+        .cpu_time_result = CPUTimeResult{
+            .metadata = ResultMetadata(
+                measurement_time, MeasurementAlgorithm::kDirectMeasurement),
+            .start_time = half_first_interval,
+            .cumulative_cpu = (measurement_time - half_first_interval) * 0.4,
+        }};
     return results;
   };
   EXPECT_EQ(expected_results2,
@@ -1609,9 +1608,9 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   LetTimePass();
 
   auto get_cumulative_cpu =
-      [](std::map<ResourceContext, QueryResult> measurements,
+      [](const QueryResultMap& measurements,
          const ResourceContext& context) -> base::TimeDelta {
-    return absl::get<CPUTimeResult>(measurements.at(context)).cumulative_cpu;
+    return measurements.at(context).cpu_time_result->cumulative_cpu;
   };
 
   base::TimeDelta cumulative_process_cpu;

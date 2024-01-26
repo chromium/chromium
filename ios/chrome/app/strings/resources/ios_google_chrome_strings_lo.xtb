@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1066101356081285416">Chrome ຈະກວດຫາໝາຍເລກການຕິດຕາມຢູ່ເວັບໄຊຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນອັບເດດກ່ຽວກັບພັດສະດຸໃຫ້ທ່ານເຫັນຢູ່ໜ້າແຖບໃໝ່. ລະບົບຈະສົ່ງໝາຍເລກຕິດຕາມພັດສະດຸ ແລະ ຊື່ເວັບໄຊໄປຫາ Google ເພື່ອໃຫ້ບໍລິການຄຸນສົມບັດນີ້ ແລະ ເພື່ອປັບປຸງຄຸນສົມບັດຕ່າງໆກ່ຽວກັບການຊື້ເຄື່ອງຂອງ Google ສຳລັບທຸກຄົນ. ທ່ານສາມາດອັບເດດຂໍ້ມູນນີ້ໄດ້ທຸກເວລາໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຕິດຕາມພັດສະດຸ<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="1105362920864247682">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບໃນ Chrome.</translation>
 <translation id="1113057722807951993">ການເຂົ້າລະຫັດດ້ວຍລະຫັດຜ່ານບໍ່ຮວມເຖິງວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay.
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">ຊິ້ງຂໍ້ມູນ Chrome ຂອງທ່ານ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ບຸກມາກຂອງທ່ານໃນ Chrome.</translation>
+<translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1830634592642484976">ປັດຈຸບັນທີ່ຢູ່ນີ້ຖືກບັນທຶກໃສ່ Chrome ແລ້ວ. ເພື່ອໃຊ້ມັນທົ່ວຜະລິດຕະພັນ Google, ໃຫ້ບັນທຶກມັນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">ໃຊ້ Chrome ໂດຍອັດຕະໂນມັດເມື່ອທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="1910975740091000991">Chrome ສໍາລັບ iOS</translation>
 <translation id="1917964099031477364">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chrome ແລະ ແອັບອື່ນຂອງ Google ໃນອຸປະກອນນີ້.</translation>
 <translation id="1965935827552890526">ສຳເລັດສິ່ງທີ່ທ່ານກຳລັງເຮັດໃນໜ້າຈໍອື່ນຂອງ Chrome ທີ່ີເປີດຢູ່.</translation>
 <translation id="1987779152850321833">ເຮັດສຳເລັດການກະທຳທີ່ແນະນຳຕໍ່ໄປນີ້ເພື່ອຮັບປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
-<translation id="2008357574463816229">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້<ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Google Chrome ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="2120238739383482109">ເປີດບຸກມາກ Chrome.</translation>
 <translation id="2147651015520127414">Chrome ກວດ​ສອບ​ວ່າ <ph name="ISSUER" /> ​ໄດ້​ອອກ​ໃບ​ຢັ້ງຢືນ​ຂອງ​ເວັບ​ໄຊ​ນີ້.</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">ເພີ່ມລາຍການລາຍຊື່ການອ່ານໃສ່ Chrome</translation>
 <translation id="2736805085127235148">ຕອນນີ້ການແຈ້ງເຕືອນ Chrome ປິດຢູ່ໃນການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2767464022270041271">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ທ່ານບັນທຶກພວກມັນໄດ້.</translation>
+<translation id="2789947168960170215">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບໃນ Chrome</translation>
 <translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="2876628302275096482">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ວິທີທີ່ Chrome ຮັກສາຂໍ້ມູນຂອງທ່ານໃຫ້ເປັນສ່ວນຕົວ<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">ຮັບSafe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chrome ນີ້ນຳ</translation>
 <translation id="3522659714780527202">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="3577555362230509265">ໃຊ້ Chrome ໃນແອັບອື່ນໆ.</translation>
-<translation id="3594076341410558780">ເຊື່ອງ “ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome”</translation>
 <translation id="364480321352456989">Chrome ຂອງທ່ານເປັນເວີຊັນເກົ່າ.</translation>
 <translation id="3646736009628185125">ສະມາຊິກຄອບຄົວຂອງທ່ານບໍ່ສາມາດຮັບລະຫັດຜ່ານໄດ້ໃນຕອນນີ້. ໃຫ້ຂໍໃຫ້ເຂົາເຈົ້າໃຫ້ອັບເດດ Chrome ແລະ ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງເຂົາເຈົ້າ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊເດັສທັອບທຸກເທື່ອ.</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">ທ່ານສາມາດ <ph name="BEGIN_LINK" />ຈັດການວ່າຈະບັນທຶກຂໍ້ມູນ Chrome ໃດ<ph name="END_LINK" /> ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້.
 
 ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chrome ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome ຈະກວດຫາໝາຍເລກການຕິດຕາມຢູ່ເວັບໄຊຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ສະແດງອັບເດດພັດສະດຸໃຫ້ທ່ານເຫັນຢູ່ໜ້າແຖບໃໝ່. ຂໍ້ມູນຂອງທ່ານຈະຖືກແບ່ງປັນກັບ Google ເພື່ອສະໜອງຄຸນສົມບັດນີ້ ແລະ ເພື່ອປັບປຸງ Shopping ສຳລັບທຸກຄົນ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຕິດຕາມພັດສະດຸ<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">ຊອກຫາດ້ວຍສຽງໃນ Chrome</translation>
 <translation id="6964931465519938134">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chrome ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
 <translation id="6975725306479268850">ເລືອກ Chrome ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>

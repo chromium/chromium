@@ -132,7 +132,7 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
               (history::HistoryService*,
                const history::URLRow&,
                const history::VisitRow&,
-               absl::optional<int64_t>),
+               std::optional<int64_t>),
               (override));
 };
 
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       .WillOnce(testing::SaveArg<2>(&visit_row));
   EXPECT_CALL(mock_observer,
               OnURLVisitedWithNavigationId(history_service, _, _,
-                                           testing::Eq(absl::nullopt)))
+                                           testing::Eq(std::nullopt)))
       .WillOnce(testing::SaveArg<2>(&visit_row2));
 
   // Turn on Sync - this should cause the remote URL to get downloaded.

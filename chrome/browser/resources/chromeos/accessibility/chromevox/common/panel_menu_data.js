@@ -7,7 +7,7 @@
  * the background context to the panel context.
  */
 
-import {AutomationPredicate} from '../../common/automation_predicate.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
 
 import {BridgeCallbackId} from './bridge_callback_manager.js';
 

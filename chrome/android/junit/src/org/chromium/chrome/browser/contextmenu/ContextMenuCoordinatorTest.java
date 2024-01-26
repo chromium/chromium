@@ -36,6 +36,9 @@ import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
@@ -44,9 +47,6 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.Contex
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;

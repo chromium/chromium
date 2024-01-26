@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('./resources/dom-request-document-with-child-nodes.html', 'Tests how DOM.getDocument reports all child nodes when asked.');
   var response = await dp.DOM.getDocument({depth: -1});
   var iframeOwner = response.result.root.children[0].children[1].children[0].children[0].children[0].children[0];

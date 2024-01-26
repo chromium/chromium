@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -100,7 +101,7 @@ class SadTabTabHelperTest : public PlatformTest {
   UIView* web_state_view_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_;
   id application_;
   SadTabTabHelperTestDelegate* sad_tab_delegate_;
 };

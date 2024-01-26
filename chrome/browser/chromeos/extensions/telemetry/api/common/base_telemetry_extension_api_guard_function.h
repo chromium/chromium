@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_BASE_TELEMETRY_EXTENSION_API_GUARD_FUNCTION_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_BASE_TELEMETRY_EXTENSION_API_GUARD_FUNCTION_H_
 
+#include <optional>
 #include <string>
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -40,7 +40,7 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
-  void OnCanAccessApi(absl::optional<std::string> error);
+  void OnCanAccessApi(std::optional<std::string> error);
 
   std::unique_ptr<ApiGuardDelegate> api_guard_delegate_;
 };

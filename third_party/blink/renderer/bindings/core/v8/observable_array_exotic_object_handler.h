@@ -207,12 +207,9 @@ class ObservableArrayExoticObjectHandler {
           V8SetReturnValue(info, v8::Undefined(isolate));
           return;
         }
-        v8::Local<v8::Value> v8_element;
         ScriptState* script_state = ScriptState::From(current_context);
-        if (!ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index])
-                 .ToLocal(&v8_element)) {
-          return;
-        }
+        v8::Local<v8::Value> v8_element =
+            ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index]);
         V8SetReturnValue(info, v8_element);
         return;
       }
@@ -255,12 +252,9 @@ class ObservableArrayExoticObjectHandler {
           V8SetReturnValue(info, v8::Undefined(isolate));
           return;
         }
-        v8::Local<v8::Value> v8_element;
         ScriptState* script_state = ScriptState::From(current_context);
-        if (!ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index])
-                 .ToLocal(&v8_element)) {
-          return;
-        }
+        v8::Local<v8::Value> v8_element =
+            ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index]);
         v8::PropertyDescriptor prop_desc(v8_element, true);
         prop_desc.set_configurable(true);
         prop_desc.set_enumerable(true);
@@ -347,12 +341,9 @@ class ObservableArrayExoticObjectHandler {
     keys_vector.ReserveInitialCapacity(backing_list.size());
     for (uint32_t index = 0; index < backing_list.size(); ++index)
       keys_vector.push_back(String::Number(index));
-    v8::Local<v8::Value> own_keys_as_value;
-    if (!ToV8Traits<IDLSequence<IDLString>>::ToV8(
-             ScriptState::From(current_context), keys_vector)
-             .ToLocal(&own_keys_as_value)) {
-      return;
-    }
+    v8::Local<v8::Value> own_keys_as_value =
+        ToV8Traits<IDLSequence<IDLString>>::ToV8(
+            ScriptState::From(current_context), keys_vector);
     v8::Local<v8::Array> own_keys = own_keys_as_value.As<v8::Array>();
 
     // 6. Extend keys with ! O.[[OwnPropertyKeys]]().

@@ -92,7 +92,7 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
   bool AllProfilesHaveSameWebAppIds() {
-    absl::optional<base::flat_set<webapps::AppId>> app_ids;
+    std::optional<base::flat_set<webapps::AppId>> app_ids;
     for (Profile* profile : GetAllProfiles()) {
       base::flat_set<webapps::AppId> profile_app_ids(
           GetRegistrar(profile).GetAppIds());

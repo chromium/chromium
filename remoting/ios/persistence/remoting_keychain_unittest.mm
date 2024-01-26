@@ -9,6 +9,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
+#import "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +67,7 @@ class RemotingKeychainTest : public testing::Test {
                       const std::string& expected_data);
   void RemoveKeychainAndVerify(Keychain::Key key, const std::string& account);
 
-  RemotingKeychain* keychain_;
+  raw_ptr<RemotingKeychain> keychain_;
 };
 
 void RemotingKeychainTest::SetUp() {

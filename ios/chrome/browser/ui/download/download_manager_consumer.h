@@ -38,14 +38,15 @@ enum class DownloadFileDestination {
 // kDownloadManagerStateNotStarted.
 - (void)setState:(DownloadManagerState)state;
 
-@optional
 // Sets visible state to Install Google Drive button.
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated;
 
-// Sets the visibility of the "Drive" button (which downloads the file and then
-// uploads it to Drive). The button will only be visible if the current download
-// task has also not started.
-- (void)setDownloadToDriveButtonVisible:(BOOL)visible;
+@optional
+
+// Sets whether multiple destinations are available. If so, the download button
+// should contain an ellipsis to indicate that a destination needs to be
+// selected before the download can actually start.
+- (void)setMultipleDestinationsAvailable:(BOOL)multipleDestinationsAvailable;
 
 // Sets the destination for the downloaded file e.g. Files or Drive.
 - (void)setDownloadFileDestination:(DownloadFileDestination)destination;

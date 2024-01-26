@@ -79,6 +79,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyUrlCategory[];
   static const char kKeyAction[];
   static const char kKeyTabUrl[];
+  static constexpr char kKeyContentTransferMethod[] = "contentTransferMethod";
 
   // All new event names should be added to the array
   // `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
@@ -158,6 +159,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const std::string& scan_id,
+      const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
@@ -174,10 +176,11 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const std::string& scan_id,
+      const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
-      absl::optional<std::u16string> user_justification);
+      std::optional<std::u16string> user_justification);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
   void OnUnscannedFileEvent(const GURL& url,
@@ -190,6 +193,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
                             const std::string& trigger,
                             safe_browsing::DeepScanAccessPoint access_point,
                             const std::string& reason,
+                            const std::string& content_transfer_method,
                             const int64_t content_size,
                             safe_browsing::EventResult event_result);
 
@@ -283,7 +287,8 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& malware_family,
       const std::string& malware_category,
       const std::string& evidence_locker_filepath,
-      const std::string& scan_id);
+      const std::string& scan_id,
+      const std::string& content_transfer_method);
 
   // Notifies listeners that the analysis connector detected a violation.
   void OnSensitiveDataEvent(
@@ -296,6 +301,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const std::string& scan_id,
+      const std::string& content_transfer_method,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       safe_browsing::EventResult event_result);

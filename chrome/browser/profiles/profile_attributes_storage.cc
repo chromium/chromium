@@ -288,7 +288,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
     base::Value::Dict& info = kv.second.GetDict();
     std::string* name = info.FindString(ProfileAttributesEntry::kNameKey);
 
-    absl::optional<bool> using_default_name =
+    std::optional<bool> using_default_name =
         info.FindBool(ProfileAttributesEntry::kIsUsingDefaultNameKey);
     if (!using_default_name.has_value()) {
       // If the preference hasn't been set, and the name is default, assume

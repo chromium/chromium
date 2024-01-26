@@ -12,6 +12,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
@@ -77,7 +78,8 @@ ScriptContext* NativeExtensionBindingsSystemUnittest::CreateScriptContext(
     const Extension* extension,
     mojom::ContextType context_type) {
   auto script_context = std::make_unique<ScriptContext>(
-      v8_context, nullptr, extension, context_type, extension, context_type);
+      v8_context, nullptr, GenerateHostIdFromExtension(extension), extension,
+      context_type, extension, context_type);
   script_context->SetModuleSystem(
       std::make_unique<ModuleSystem>(script_context.get(), source_map()));
   ScriptContext* raw_script_context = script_context.get();

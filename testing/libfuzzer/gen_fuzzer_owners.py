@@ -3,10 +3,18 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Generate owners (.owners file) by looking at commit author for
-libfuzzer test.
+"""Generates a `foo.owners` file for a `fuzzer_test("foo", ...)` GN target.
 
-Invoked by GN from fuzzer_test.gni.
+By default, the closest `OWNERS` file is located and copied, except for
+`//OWNERS` and `//third_party/OWNERS` for fear of spamming top-level owners with
+fuzzer bugs they know nothing about.
+
+If no such file can be located, then we attempt to use `git blame` to identify
+the author of the main fuzzer `.cc` file. Note that this does not work for code
+in git submodules (e.g. most code in `third_party/`), in which case we generate
+an empty file.
+
+Invoked by GN from `fuzzer_test.gni`.
 """
 
 import argparse
@@ -14,6 +22,8 @@ import os
 import re
 import subprocess
 import sys
+
+from typing import Optional
 
 AUTHOR_REGEX = re.compile('author-mail <(.+)>')
 CHROMIUM_SRC_DIR = os.path.dirname(
@@ -40,35 +50,45 @@ def GetGitCommand():
   return 'git.bat' if sys.platform == 'win32' else 'git'
 
 
-def GetOwnersIfThirdParty(source):
-  """Return owners using the closest OWNERS file if in third_party."""
-  match_index = source.find(THIRD_PARTY_SEARCH_STRING)
-  if match_index == -1:
-    # Not in third_party, skip.
-    return None
+def GetOwnersFromOwnersFile(source: str) -> Optional[str]:
+  """Finds the owners of `source` from the closest OWNERS file.
 
-  path_prefix = source[:match_index + len(THIRD_PARTY_SEARCH_STRING)]
-  path_after_third_party = source[len(path_prefix):].split(os.path.sep)
+  Both //OWNERS or */third_party/OWNERS are ignored so as not to spam top-level
+  owners with unowned fuzzer bugs.
 
-  # Test all the paths after third_party/<libname>, making sure that we don't
-  # test third_party/OWNERS itself, otherwise we'd default to CCing them for
-  # all fuzzer issues without OWNERS, which wouldn't be nice.
-  while path_after_third_party:
-    owners_file_path = path_prefix + \
-        os.path.join(*(path_after_third_party + [OWNERS_FILENAME]))
+  Args:
+    source: Relative path from the chromium src directory to the target source
+      file.
 
+  Returns:
+    The entire contents of the closest OWNERS file. That is, the first OWNERS
+    file encountered while walking up through the ancestor directories of the
+    target source file.
+  """
+  # TODO(https://crbug.com/1513729): Use `pathlib` instead of `os.path` for
+  # better ergonomics and robustness.
+  dirs = source.split(os.path.sep)[:-1]
+
+  # Note: We never test for //OWNERS, i.e. when `dirs` is empty.
+  while dirs:
+    # Never return the contents of */third_party/OWNERS, and stop searching.
+    if dirs[-1] == THIRD_PARTY:
+      break
+
+    owners_file_path = os.path.join(CHROMIUM_SRC_DIR, *dirs, OWNERS_FILENAME)
     if os.path.exists(owners_file_path):
+      # TODO(https://crbug.com/1513729): OWNERS files can reference others,
+      # have per-file directives, etc. We should be cleverer than this.
       return open(owners_file_path).read()
 
-    path_after_third_party.pop()
+    dirs.pop()
 
   return None
 
-# pylint: disable=inconsistent-return-statements
 def GetOwnersForFuzzer(sources):
   """Return owners given a list of sources as input."""
   if not sources:
-    return
+    return None
 
   for source in sources:
     full_source_path = os.path.join(CHROMIUM_SRC_DIR, source)
@@ -83,14 +103,20 @@ def GetOwnersForFuzzer(sources):
         source_content):
       # Found the fuzzer source (and not dependency of fuzzer).
 
+      # Try finding the closest OWNERS file first.
+      owners = GetOwnersFromOwnersFile(source)
+      if owners:
+        return owners
+
       git_dir = os.path.join(CHROMIUM_SRC_DIR, '.git')
       git_command = GetGitCommand()
       is_git_file = bool(subprocess.check_output(
           [git_command, '--git-dir', git_dir, 'ls-files', source],
           cwd=CHROMIUM_SRC_DIR))
       if not is_git_file:
-        # File is not in working tree. Return owners for third_party.
-        return GetOwnersIfThirdParty(full_source_path)
+        # File is not in working tree. If no OWNERS file was found, we cannot
+        # tell who it belongs to.
+        return None
 
       # `git log --follow` and `--reverse` don't work together and using just
       # `--follow` is too slow. Make a best estimate with an assumption that the
@@ -106,7 +132,6 @@ def GetOwnersForFuzzer(sources):
       return GetAuthorFromGitBlame(blame_output)
 
   return None
-# pylint: enable=inconsistent-return-statements
 
 def FindGroupsAndDepsInDeps(deps_list, build_dir):
   """Return list of groups, as well as their deps, from a list of deps."""

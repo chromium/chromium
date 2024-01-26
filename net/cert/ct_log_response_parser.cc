@@ -5,11 +5,11 @@
 #include "net/cert/ct_log_response_parser.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/json/json_value_converter.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/cert/ct_serialization.h"
@@ -31,17 +31,17 @@ struct JsonSignedTreeHead {
       base::JSONValueConverter<JsonSignedTreeHead>* converted);
 };
 
-bool ConvertSHA256RootHash(base::StringPiece s, std::string* result) {
+bool ConvertSHA256RootHash(std::string_view s, std::string* result) {
   return base::Base64Decode(s, result) && result->size() == kSthRootHashLength;
 }
 
-bool ConvertTreeHeadSignature(base::StringPiece s, DigitallySigned* result) {
+bool ConvertTreeHeadSignature(std::string_view s, DigitallySigned* result) {
   std::string tree_head_signature;
   if (!base::Base64Decode(s, &tree_head_signature)) {
     return false;
   }
 
-  base::StringPiece sp(tree_head_signature);
+  std::string_view sp(tree_head_signature);
   return DecodeDigitallySigned(&sp, result);
 }
 

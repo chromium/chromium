@@ -13,7 +13,10 @@
 #include "ui/views/controls/separator.h"
 
 class ToolbarActionView;
+
+namespace content {
 class WebContents;
+}  // namespace content
 
 // Dialog that displays a hover card with extensions information.
 class ToolbarActionHoverCardBubbleView

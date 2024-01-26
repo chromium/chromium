@@ -48,12 +48,6 @@ void NativeThemeFluent::PaintArrowButton(
     State state,
     ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& extra_params) const {
-  // If Forced Colors are enabled, css colors should not be present.
-  if (InForcedColorsMode()) {
-    CHECK(!extra_params.thumb_color.has_value());
-    CHECK(!extra_params.track_color.has_value());
-  }
-
   PaintButton(canvas, color_provider, rect, direction, color_scheme,
               extra_params);
   PaintArrow(canvas, color_provider, rect, direction, state, color_scheme,
@@ -68,8 +62,6 @@ void NativeThemeFluent::PaintScrollbarTrack(
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  // If Forced Colors are enabled, css colors should not be present.
-  CHECK(!InForcedColorsMode() || !extra_params.track_color.has_value());
   gfx::Rect track_fill_rect = rect;
   if (InForcedColorsMode()) {
     gfx::Insets edge_insets;
@@ -98,8 +90,10 @@ void NativeThemeFluent::PaintScrollbarTrack(
     constexpr gfx::Insets fill_insets(kFluentScrollbarTrackOutlineWidth);
     track_fill_rect.Inset(fill_insets + edge_insets);
   }
-  const SkColor track_color = extra_params.track_color.value_or(
-      color_provider->GetColor(kColorWebNativeControlScrollbarTrack));
+  const SkColor track_color =
+      extra_params.track_color.has_value()
+          ? extra_params.track_color.value()
+          : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(track_color);
   canvas->drawIRect(gfx::RectToSkIRect(track_fill_rect), flags);
@@ -113,8 +107,6 @@ void NativeThemeFluent::PaintScrollbarThumb(
     const gfx::Rect& rect,
     const ScrollbarThumbExtraParams& extra_params,
     ColorScheme color_scheme) const {
-  // If Forced Colors are enabled, css colors should not be present.
-  CHECK(!InForcedColorsMode() || !extra_params.thumb_color.has_value());
   DCHECK_NE(state, NativeTheme::kDisabled);
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
@@ -153,8 +145,10 @@ void NativeThemeFluent::PaintScrollbarCorner(
     const ScrollbarTrackExtraParams& extra_params,
     ColorScheme color_scheme) const {
   cc::PaintFlags flags;
-  const SkColor corner_color = extra_params.track_color.value_or(
-      color_provider->GetColor(kColorWebNativeControlScrollbarCorner));
+  const SkColor corner_color =
+      extra_params.track_color.has_value()
+          ? extra_params.track_color.value()
+          : color_provider->GetColor(kColorWebNativeControlScrollbarCorner);
   flags.setColor(corner_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
@@ -194,8 +188,10 @@ void NativeThemeFluent::PaintButton(
     ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
-  const SkColor button_color = extra_params.track_color.value_or(
-      color_provider->GetColor(kColorWebNativeControlScrollbarTrack));
+  const SkColor button_color =
+      extra_params.track_color.has_value()
+          ? extra_params.track_color.value()
+          : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
   flags.setColor(button_color);
   gfx::Rect button_fill_rect = rect;
   if (InForcedColorsMode()) {
@@ -254,8 +250,9 @@ void NativeThemeFluent::PaintArrow(
           ? kColorWebNativeControlScrollbarArrowForegroundPressed
           : kColorWebNativeControlScrollbarArrowForeground;
   // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
-  const SkColor arrow_color = extra_params.thumb_color.value_or(
-      color_provider->GetColor(arrow_color_id));
+  const SkColor arrow_color = extra_params.thumb_color.has_value()
+                                  ? extra_params.thumb_color.value()
+                                  : color_provider->GetColor(arrow_color_id);
   cc::PaintFlags flags;
   flags.setColor(arrow_color);
 
@@ -316,10 +313,11 @@ gfx::RectF NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
 }
 
 int NativeThemeFluent::GetArrowSideLength(State state) const {
-  if (state == NativeTheme::kPressed)
+  if (state == NativeTheme::kPressed) {
     return ArrowIconsAvailable()
                ? kFluentScrollbarPressedArrowRectLength
                : kFluentScrollbarPressedArrowRectFallbackLength;
+  }
 
   return kFluentScrollbarArrowRectLength;
 }

@@ -472,6 +472,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   const gfx::Rect bounds_for_testing() const { return bounds_; }
   float scroll_offset_for_testing() const { return scroll_offset_; }
+  views::Widget* pine_widget_for_testing() const { return pine_widget_.get(); }
 
  private:
   friend class DesksTemplatesTest;
@@ -581,6 +582,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void AddDropTargetImpl(OverviewItemBase* dragged_item,
                          size_t position,
                          bool animate);
+
+  // Creates and shows the `pine_widget_`. The given `pine_image` will be shown
+  // if it exists, otherwise some other data like apps info will be shown
+  // instead.
+  void CreateAndShowPine(const gfx::ImageSkia& pine_image);
 
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop

@@ -16,10 +16,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "media/audio/apple/audio_io_stream_client.h"
+#include "media/audio/apple/audio_auhal.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
-#include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
 
 namespace base {
@@ -82,14 +81,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   void ReleaseOutputStream(AudioOutputStream* stream) override;
   void ReleaseInputStream(AudioInputStream* stream) override;
 
-  // Called by AUHALStream::Close() before releasing the stream.
-  // This method is a special contract between the real stream and the audio
-  // manager and it ensures that we only try to increase the IO buffer size
-  // for real streams and not for fake or mocked streams.
-  void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                          AudioDeviceID device_id) override;
-  void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) override;
-
   // Changes the I/O buffer size for |device_id| if |desired_buffer_size| is
   // lower than the current device buffer size. The buffer size can also be
   // modified under other conditions. See comments in the corresponding cc-file
@@ -100,7 +91,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
   base::TimeDelta GetDeferStreamStartTimeout() const override;
-  base::SingleThreadTaskRunner* GetTaskRunnerForStreamClient() const override;
   void StopAmplitudePeakTrace() override;
 
   // Implementation of AudioManagerApple
@@ -235,9 +225,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // sample rate has changed, otherwise does nothing.
   void HandleDeviceChanges();
 
-  // Returns true if any active input stream is using the specified |device_id|.
-  bool AudioDeviceIsUsedForInput(AudioDeviceID device_id);
-
   // Helper function to check if the volume control is available on specific
   // channel of a device.
   static bool IsVolumeSettableOnChannel(AudioDeviceID device_id, int channel);
@@ -266,9 +253,9 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // We no longer close the streams, so we may be able to get rid of these
   // member variables. They are currently used by MaybeChangeBufferSize().
   // Investigate if we can remove these.
-  std::list<AudioInputStream*> basic_input_streams_;
-  std::list<AUAudioInputStream*> low_latency_input_streams_;
-  std::list<AUHALStream*> output_streams_;
+  std::unordered_set<AudioInputStream*> basic_input_streams_;
+  std::unordered_set<AUAudioInputStream*> low_latency_input_streams_;
+  std::unordered_set<AUHALStream*> output_streams_;
 
   // Used to swizzle SCStreamManager when performing loopback capture.
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>

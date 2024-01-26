@@ -499,7 +499,7 @@ bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
 }
 
 void WindowRestoreController::MaybeStartPineOverviewSession() {
-  if (!features::IsPineEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return;
   }
 

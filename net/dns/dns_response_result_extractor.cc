@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -46,7 +47,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -213,7 +213,7 @@ RecordsOrError ExtractResponseRecords(
   DCHECK_EQ(response.question_count(), 1u);
 
   std::vector<std::unique_ptr<const RecordParsed>> data_records;
-  absl::optional<base::TimeDelta> response_ttl;
+  std::optional<base::TimeDelta> response_ttl;
 
   DnsRecordParser parser = response.Parser();
 
@@ -267,7 +267,7 @@ RecordsOrError ExtractResponseRecords(
         alias.second->rdata<CnameRecordRdata>()->cname()));
   }
 
-  absl::optional<base::TimeDelta> error_ttl;
+  std::optional<base::TimeDelta> error_ttl;
   for (unsigned i = 0; i < response.authority_count(); ++i) {
     DnsResourceRecord record;
     if (!parser.ReadRecord(&record)) {

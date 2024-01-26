@@ -902,15 +902,11 @@ class ExtensionsToolbarContainerFeatureUITest
   }
 
   ExtensionsRequestAccessButton* request_access_button() {
-    return GetExtensionsToolbarContainer()
-        ->GetExtensionsToolbarControls()
-        ->request_access_button();
+    return GetExtensionsToolbarContainer()->GetRequestAccessButton();
   }
 
   ExtensionsToolbarButton* extensions_toolbar_button() {
-    return GetExtensionsToolbarContainer()
-        ->GetExtensionsToolbarControls()
-        ->extensions_button();
+    return GetExtensionsToolbarContainer()->GetExtensionsButton();
   }
 
   ExtensionsMenuCoordinator* extensions_menu_coordinator() {

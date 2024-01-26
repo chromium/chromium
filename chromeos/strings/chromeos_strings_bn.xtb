@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
+<translation id="1626590945318984973">শর্টকাট উপলভ্য নেই। ফাংশন ও <ph name="META_KEY" /> 'কী' ব্যবহার না করেই একটি নতুন শর্টকাটে প্রেস করুন।</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
 <translation id="1885577615937958993">মিডিয়া ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
-<translation id="1897672602657312171">সার্চ বোতাম ছাড়া শর্টকার্ট কিছু অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা সার্চ বোতাম ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন।</translation>
 <translation id="1904932688895783618">এখানে কিছু অন্যান্য সহায়ক রিসোর্স রয়েছে:</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="2157660087437850958">ইমোজি চয়নকারি</translation>
 <translation id="2157959690810728433">সারিতে আছে</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" /> সেট করেছেন।}=2{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" /> ও <ph name="APP_NAME_2" /> সেট করেছেন।}=3{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও <ph name="APP_NAME_3" /> সেট করেছেন।}one{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও অন্য #টি অ্যাপ সেট করেছেন।}other{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও অন্য #টি অ্যাপ সেট করেছেন।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="215916044711630446">'APN যোগ করুন' বোতাম এখন বন্ধ আছে</translation>
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN সম্পর্কিত বিবরণ এডিট করুন</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
 <translation id="2212733584906323460">নামের রেজোলিউশন</translation>
+<translation id="2215920961700443347">ইন্টারনেট কানেকশন নেই। ইন্টারনেটের সাথে কানেক্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="2217935453350629363">বর্তমান স্পিড</translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="222447520299472966">কমপক্ষে একটি আর্ট গ্যালারি অ্যালবাম বেছে নিতে হবে</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" /> নম্বর ছবি</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
+<translation id="2465272316171730950">আমরা আর সাহায্য করতে পারছি না। একটু পরে আবার চেষ্টা করুন।</translation>
 <translation id="248546197012830854">ডিভাইস অফলাইন আছে। সহায়তা কন্টেন্ট দেখতে ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করুন।</translation>
 <translation id="2491955442992294626">অন্য উইন্ডো ব্যবহার করার সময় কী পরীক্ষা করা হয়না</translation>
 <translation id="2493126929778606526">আপনার সেরা ফটোগুলি অটোমেটিক বেছে নেওয়া হয়</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">বর্তমান ওয়ালপেপারের ছবি রিফ্রেশ করুন</translation>
 <translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2513396635448525189">'লগ-ইন'-এর ছবি</translation>
-<translation id="2515109918609218604">শর্টকাট উপলভ্য নেই। ফাংশন ও সার্চ কী ব্যবহার না করেই একটি নতুন শর্টকাটে প্রেস করুন।</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2521835766824839541">আগের ট্র্যাক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপারে<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আপনার অ্যাকশন রয়েছে</translation>
 <translation id="4117637339509843559">'ডার্ক মোড'</translation>
 <translation id="4130035430755296270">আরও লেআউট বিকল্পের জন্য ঘোরাতে থাকুন</translation>
+<translation id="4130750466177569591">আমি সম্মত</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> অটোমেটিক চালু হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু হয়েছে}}</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">উজ্জ্বলতা কমান</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
 <translation id="4176659219503619100">কন্ট্রোল প্যানেল</translation>
-<translation id="4185315616950253617">একেবারে উপরের সারির 'কী' সহ শর্টকাটে 'search কী' অন্তর্ভুক্ত করতে হবে।</translation>
 <translation id="420283545744377356">স্ক্রিন সেভার বন্ধ করুন</translation>
 <translation id="4213104098953699324">ইউএসবি কীবোর্ড</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">বন্ধ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> রিস্টার্ট করা হচ্ছে</translation>
 <translation id="4395835743215824109">কীবোর্ড কাস্টমাইজেশন</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> 'কী' ছাড়া শর্টকার্ট, কিছু অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা <ph name="KEY" /> 'কী' ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন।</translation>
 <translation id="4415951057168511744">বর্তমান অবতার</translation>
+<translation id="4417830657741848074">অটোমেটিক চালু করার জন্য আপনার অ্যাডমিনিস্ট্রেটর কিছু অ্যাপ সেট-আপ করেছেন। এইসব অ্যাপের কিছু বন্ধ নাও হতে পারে।</translation>
 <translation id="4422041425070339732">নিচের দিকের তীরচিহ্ন</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> বন্ধ আছে</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">আর্থ ফ্লো স্ক্রিন সেভার</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
+<translation id="4500722292849917410">শর্টকাট উপলভ্য নেই। 'পরিবর্তক কী' (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="4500966230243561393">ইন্টারফেসের রঙ</translation>
 <translation id="4503223151711056411">বাঁদিকে তীরচিহ্ন</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বাড়ান</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
 <translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
 <translation id="4839698083503556542">নিজের সিনেমা তৈরি করুন</translation>
+<translation id="48409034532829769">অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" সেট-আপ করেছেন। এই অ্যাপ বন্ধ নাও হতে পারে।</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বেছে নেওয়া হয়েছে, <ph name="TOPIC_SOURCE" />-এর অ্যালবামগুলি বেছে নিতে Enter কী প্রেস করুন</translation>
 <translation id="484790837831576105">(Android) DNS রেজোলিউশন</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">স্প্লিট করুন</translation>
 <translation id="4972592110715526173">মোড পাল্টান</translation>
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
+<translation id="4982627662315910959">শর্টকাট উপলভ্য নেই। shift ও আরও ১টি 'পরিবর্তক কী' (ctrl, alt, অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="4985509611418653372">চালান</translation>
 <translation id="4987769320337599931">ফায়ারওয়াল</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">ডার্ক থিমের শিডিউল</translation>
 <translation id="5229344016299762883">ফুল স্ক্রিন স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" সেট আপ করেছেন।}=2{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য ১টি অ্যাপ সেট আপ করেছেন।}one{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}other{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}}</translation>
 <translation id="5252456968953390977">রোমিং</translation>
 <translation id="5257811368506016604">'লাইট কালার' মোড চালু করুন</translation>
 <translation id="5264277876637023664">সিপিইউ টেস্ট করুন</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
 <translation id="725133483556299729">ইমেল বেছে নিন</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
-<translation id="7273347807225967898">শর্টকাট উপলভ্য নেই। 'পরিবর্তক কী' (ctrl, alt, shift, search অথবা launcher) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
+<translation id="7271932918253517778">একেবারে উপরের সারির 'কী' সহ শর্টকাটে <ph name="META_KEY" /> 'কী' অন্তর্ভুক্ত করতে হবে।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">নিশ্চিন্ত থাকুন</translation>
 <translation id="7287310195820267359">ওয়ালপেপারের সংগ্রহ</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">সাধারণ কন্ট্রোল</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" অটোমেটিক চালু হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু হয়েছে}}</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8017679124341497925">শর্টকাট এডিট করা হয়েছে</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
-<translation id="8111706652656628199">শর্টকাট উপলভ্য নেই। Shift ও আরও ১টি 'পরিবর্তক কী' (ctrl, alt, search অথবা launcher) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>

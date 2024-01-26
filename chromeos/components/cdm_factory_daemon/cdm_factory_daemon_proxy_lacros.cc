@@ -98,6 +98,21 @@ void CdmFactoryDaemonProxyLacros::AllocateSecureBuffer(
   }
 }
 
+void CdmFactoryDaemonProxyLacros::ParseEncryptedSliceHeader(
+    uint64_t secure_handle,
+    uint32_t offset,
+    const std::vector<uint8_t>& stream_data,
+    ParseEncryptedSliceHeaderCallback callback) {
+  if (ash_remote_) {
+    // This should always be bound unless it became disconnected in the middle
+    // of setting things up.
+    ash_remote_->ParseEncryptedSliceHeader(secure_handle, offset, stream_data,
+                                           std::move(callback));
+  } else {
+    std::move(callback).Run(false, {});
+  }
+}
+
 void CdmFactoryDaemonProxyLacros::EstablishAshConnection(
     base::OnceClosure callback) {
   // This may have happened already.

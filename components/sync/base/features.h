@@ -35,25 +35,6 @@ inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
 BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
 #endif
 
-// Enables adding, displaying and modifying extra notes to stored credentials.
-// When enabled, "PasswordViewPageInSettings" feature in the password manager
-// codebase is ignored and the new password view subpage is force enabled. When
-// enabled, Sync machinery will read and writes password notes to the
-// `encrypted_notes_backup` field inside the PasswordSpecifics proto. Together
-// with the logic on the server. this protects against notes being overwritten
-// by legacy clients not supporting password notes.
-// This feature is added here instead of the password manager codebase to avoid
-// cycle dependencies.
-// This feature is used in Credential Provider Extension on iOS. Keep the
-// default value in sync with the default value in
-// ios/chrome/credential_provider_extension/ui/feature_flags.mm.
-BASE_DECLARE_FEATURE(kPasswordNotesWithBackup);
-// Decides how long the user does not require reuathentication after
-// successfully authenticated.
-inline constexpr base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
-    &kPasswordNotesWithBackup, "authentication_validity_duration",
-    base::Minutes(5)};
-
 // Controls whether to enable bootstrapping Public-private keys in Nigori
 // key-bag.
 BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);
@@ -142,6 +123,7 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // in separate permanent folders in BookmarkModel. The flag has to be in the
 // sync namespace as it controls whether BOOKMARKS datatype is enabled in the
 // transport mode.
+// TODO(crbug.com/1503127): Remove this.
 BASE_DECLARE_FEATURE(kEnableBookmarkFoldersForAccountStorage);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
@@ -220,6 +202,11 @@ inline constexpr base::FeatureParam<double>
 // If enabled, SyncSchedulerImpl uses a WallClockTimer instead of a OneShotTimer
 // to schedule poll requests.
 BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
+
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, shows identity errors for signed-in non-syncing users.
+BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace syncer
 

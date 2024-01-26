@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -184,13 +185,14 @@ class AppLauncherTabHelperTest : public PlatformTest {
       NSString* url_string,
       bool target_frame_is_main,
       bool target_frame_is_cross_origin,
-      bool has_user_gesture,
+      bool is_user_initiated,
+      bool user_tapped_recently,
       ui::PageTransition transition_type =
           ui::PageTransition::PAGE_TRANSITION_LINK) {
     NSURL* url = [NSURL URLWithString:url_string];
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,
-        has_user_gesture);
+        is_user_initiated, user_tapped_recently);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -234,7 +236,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type,
         /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/true);
+        /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -258,12 +260,12 @@ class AppLauncherTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   bool incognito_ = false;
-  FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<FakeNavigationManager> navigation_manager_ = nullptr;
   FakeAppLauncherAbuseDetector* abuse_detector_ = nil;
   FakeAppLauncherTabHelperDelegate delegate_;
   FakeAppLauncherTabHelperBrowserPresentationProvider*
       browser_presentation_provider_;
-  AppLauncherTabHelper* tab_helper_ = nullptr;
+  raw_ptr<AppLauncherTabHelper> tab_helper_ = nullptr;
 };
 
 // Tests that a valid URL launches app.
@@ -280,7 +282,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
 }
@@ -304,7 +307,8 @@ TEST_F(AppLauncherTabHelperTest,
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   // App launch should not be completed yet.
   EXPECT_TRUE(delegate_.IsAppLaunchCompletionPending());
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
@@ -315,7 +319,7 @@ TEST_F(AppLauncherTabHelperTest,
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
       /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
       web::WebStatePolicyDecider::PolicyDecision::Cancel();
@@ -370,7 +374,8 @@ TEST_F(AppLauncherTabHelperTest,
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   // App launch should not be completed yet.
   EXPECT_TRUE(delegate_.IsAppLaunchCompletionPending());
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
@@ -381,7 +386,7 @@ TEST_F(AppLauncherTabHelperTest,
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
       /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
       web::WebStatePolicyDecider::PolicyDecision::Cancel();
@@ -428,7 +433,8 @@ TEST_F(AppLauncherTabHelperTest,
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   // App launch should not be completed yet.
   EXPECT_TRUE(delegate_.IsAppLaunchCompletionPending());
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
@@ -439,7 +445,7 @@ TEST_F(AppLauncherTabHelperTest,
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
       /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
       web::WebStatePolicyDecider::PolicyDecision::Cancel();
@@ -475,7 +481,8 @@ TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyBlockedForValidUrl) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAlertShownCount());
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
@@ -489,7 +496,8 @@ TEST_F(AppLauncherTabHelperTest, AppLaunchingFails) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   // App launch should not be completed yet.
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(0U, delegate_.GetAlertShownCount());
@@ -513,11 +521,22 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AppLaunchingFailsWithoutUserGesture) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
+                                      /*is_user_initiated=*/false,
+                                      /*user_tapped_recently=*/false));
   // App launch should not be completed yet.
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
   // Two alerts (no user gesture + app launch failed).
   EXPECT_EQ(2U, delegate_.GetAlertShownCount());
+  // Should not allow navigation request with App-URL.
+  EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/false,
+                                      /*user_tapped_recently=*/true));
+  // App launch should not be completed yet.
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
+  // Two more alerts (no user gesture + app launch failed).
+  EXPECT_EQ(4U, delegate_.GetAlertShownCount());
 }
 
 // Tests that a valid URL shows an alert and launches app when launch policy is
@@ -534,7 +553,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlPromptUserAccepts) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
 
   EXPECT_EQ(1U, delegate_.GetAlertShownCount());
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
@@ -548,7 +568,8 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlPromptUserRejects) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -565,7 +586,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlNotLinkTransition) {
       @"valid://1234",
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*is_user_initiated=*/true,
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true,
       /*transition_type=*/ui::PageTransition::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(1U, delegate_.GetAlertShownCount());
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
@@ -584,7 +605,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_iTunesURL) {
   EXPECT_FALSE(TestShouldAllowRequest(/*url_string=*/url_string,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAlertShownCount());
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
@@ -601,24 +623,28 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ShouldAllowRequestWithAppUrl) {
   NSString* url_string = @"valid://1234";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/false));
+                                      /*is_user_initiated=*/false,
+                                      /*user_tapped_recently=*/false));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/false));
+                                      /*is_user_initiated=*/false,
+                                      /*user_tapped_recently=*/false));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 }
 
@@ -628,23 +654,27 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
   EXPECT_TRUE(TestShouldAllowRequest(
       @"http://itunes.apple.com/us/app/appname/id123",
       /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
-      /*is_user_initiated=*/true));
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"file://a/b/c",
                                      /*target_frame_is_main=*/true,
                                      /*target_frame_is_cross_origin=*/false,
-                                     /*is_user_initiated=*/true));
+                                     /*is_user_initiated=*/true,
+                                     /*user_tapped_recently=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"about://test",
                                      /*target_frame_is_main=*/false,
                                      /*target_frame_is_cross_origin=*/false,
-                                     /*is_user_initiated=*/true));
+                                     /*is_user_initiated=*/true,
+                                     /*user_tapped_recently=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"data://test",
                                      /*target_frame_is_main=*/false,
                                      /*target_frame_is_cross_origin=*/false,
-                                     /*is_user_initiated=*/true));
+                                     /*is_user_initiated=*/true,
+                                     /*user_tapped_recently=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"blob://test",
                                      /*target_frame_is_main=*/false,
                                      /*target_frame_is_cross_origin=*/false,
-                                     /*is_user_initiated=*/true));
+                                     /*is_user_initiated=*/true,
+                                     /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -653,11 +683,13 @@ TEST_F(AppLauncherTabHelperTest, InvalidUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(/*url_string=*/@"",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_FALSE(TestShouldAllowRequest(@"invalid",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -674,14 +706,16 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_WebStateNotShown) {
   NSString* url_string = @"valid://1234";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   // WebState hidden.
   web_state_.WasHidden();
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   // Browser not visible.
@@ -689,14 +723,16 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_WebStateNotShown) {
   browser_presentation_provider_.presentingUI = YES;
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   // Base case to check.
   browser_presentation_provider_.presentingUI = NO;
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 }
 
@@ -719,14 +755,16 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlInvalidCommittedURL) {
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   navigation_manager_->SetLastCommittedItem(nullptr);
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
@@ -735,7 +773,8 @@ TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(@"app-settings://",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -751,26 +790,37 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/true,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/true,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/true,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/false,
+                                      /*user_tapped_recently=*/true));
+  EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on main frames and
@@ -790,20 +840,23 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   // Verify that the URL is blocked on main frames.
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -862,7 +915,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
   EXPECT_FALSE(
       TestShouldAllowRequest(sms_url_string, /*target_frame_is_main=*/true,
                              /*target_frame_is_cross_origin=*/false,
-                             /*is_user_initiated=*/true, page_transition));
+                             /*is_user_initiated=*/true,
+                             /*user_tapped_recently=*/true, page_transition));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
@@ -900,7 +954,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;
-  PolicyBlocklistService* policy_blocklist_service_;
+  raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 };
 
 // Tests that URLs to blocked domains do not open native apps.
@@ -908,7 +962,8 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
@@ -924,7 +979,8 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
 }
@@ -951,7 +1007,8 @@ TEST_F(IncognitoAppLauncherTabHelperTest, MAYBE_ValidUrlPromptUserAccepts) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(1U, delegate_.GetAlertShownCount());
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
@@ -971,7 +1028,8 @@ TEST_F(IncognitoAppLauncherTabHelperTest, MAYBE_AppLaunchFails) {
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
-                                      /*is_user_initiated=*/true));
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
   EXPECT_EQ(2U, delegate_.GetAlertShownCount());
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }

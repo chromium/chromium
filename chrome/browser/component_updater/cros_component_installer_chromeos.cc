@@ -100,7 +100,7 @@ const ComponentConfig* FindConfig(const std::string& name) {
   return config;
 }
 
-void LogCustomUninstall(absl::optional<bool> result) {}
+void LogCustomUninstall(std::optional<bool> result) {}
 
 void FinishCustomUninstallOnUIThread(const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -575,7 +575,7 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
   }
 
   // Update the cache to indicate the request is being queued.
-  load_cache_[name].success = absl::nullopt;
+  load_cache_[name].success = std::nullopt;
 
   const base::FilePath path = GetCompatiblePath(name);
   DCHECK(!path.empty());
@@ -588,8 +588,9 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
                                         const std::string& name,
-                                        absl::optional<base::FilePath> result) {
-  bool success = result.has_value();
+                                        std::optional<base::FilePath> result) {
+  // ImageLoader returns an empty path if mount failed.
+  bool success = result.has_value() && !result.value().empty();
   base::FilePath path;
   if (success) {
     path = result.value();
@@ -613,7 +614,7 @@ void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
 
 void CrOSComponentInstaller::FinishGetVersion(
     base::OnceCallback<void(const base::Version&)> version_callback,
-    absl::optional<std::string> result) const {
+    std::optional<std::string> result) const {
   std::move(version_callback).Run(base::Version(result.value_or("")));
 }
 

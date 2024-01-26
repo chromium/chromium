@@ -5,6 +5,8 @@
 //! Configures gnrt behavior. Types match `gnrt_config.toml` fields. Currently
 //! only used for std bindings.
 
+use crate::group::Group;
+
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use serde::Deserialize;
@@ -133,7 +135,7 @@ pub struct CrateConfig {
     #[serde(default)]
     pub build_script_outputs: Vec<std::path::PathBuf>,
     #[serde(default)]
-    pub group: Option<String>,
+    pub group: Option<Group>,
     #[serde(default)]
     pub security_critical: Option<bool>,
     #[serde(default)]

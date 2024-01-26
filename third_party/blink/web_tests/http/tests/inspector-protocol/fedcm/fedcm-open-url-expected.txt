@@ -1,0 +1,36 @@
+Check that opening account URLs works
+msg.params: {
+    accounts : [
+        [0] : {
+            accountId : 1234
+            email : john_doe@idp.example
+            givenName : John
+            idpConfigUrl : https://127.0.0.1:8443/resources/fedcm/fedcm.json
+            idpLoginUrl : https://127.0.0.1:8443/resources/fedcm/signin.html
+            loginState : SignIn
+            name : John Doe
+            pictureUrl : https://idp.example/profile/123
+        }
+        [1] : {
+            accountId : 5678
+            email : aisha@idp.example
+            givenName : Aisha
+            idpConfigUrl : https://127.0.0.1:8443/resources/fedcm/fedcm.json
+            idpLoginUrl : https://127.0.0.1:8443/resources/fedcm/signin.html
+            loginState : SignUp
+            name : Aisha Ahmad
+            pictureUrl : https://idp.example/profile/567
+            privacyPolicyUrl : https://rp.example/privacy_policy.html
+            termsOfServiceUrl : https://rp.example/terms_of_service.html
+        }
+    ]
+    dialogId : <string>
+    dialogType : AccountChooser
+    title : Sign in
+}
+{
+    code : -32602
+    message : Account does not have requested URL
+}
+Opened URL: https://rp.example/terms_of_service.html
+

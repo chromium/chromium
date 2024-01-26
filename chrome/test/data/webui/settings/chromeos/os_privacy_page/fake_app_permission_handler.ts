@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {appPermissionHandlerMojom} from 'chrome://os-settings/os_settings.js';
-import {Permission, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {createApp} from './privacy_hub_app_permission_test_util.js';
 
 const {AppPermissionsObserverRemote} = appPermissionHandlerMojom;
 
@@ -26,6 +28,9 @@ export class FakeAppPermissionHandler implements
     this.resolverMap_ = new Map();
     this.resolverMap_.set('addObserver', new PromiseResolver());
     this.resolverMap_.set('getApps', new PromiseResolver());
+    this.resolverMap_.set('getSystemAppsThatUseCamera', new PromiseResolver());
+    this.resolverMap_.set(
+        'getSystemAppsThatUseMicrophone', new PromiseResolver());
     this.resolverMap_.set('openNativeSettings', new PromiseResolver());
     this.resolverMap_.set('setPermission', new PromiseResolver());
     this.appPermissionsObserverRemote_ = new AppPermissionsObserverRemote();
@@ -75,6 +80,22 @@ export class FakeAppPermissionHandler implements
   getApps(): Promise<{apps: App[]}> {
     this.methodCalled('getApps');
     return Promise.resolve({apps: []});
+  }
+
+  getSystemAppsThatUseCamera(): Promise<{apps: App[]}> {
+    this.methodCalled('getSystemAppsThatUseCamera');
+    return Promise.resolve({
+      apps: [createApp(
+          'app1_id', 'app1_name', PermissionType.kCamera, TriState.kAllow)],
+    });
+  }
+
+  getSystemAppsThatUseMicrophone(): Promise<{apps: App[]}> {
+    this.methodCalled('getSystemAppsThatUseMicrophone');
+    return Promise.resolve({
+      apps: [createApp(
+          'app1_id', 'app1_name', PermissionType.kMicrophone, TriState.kAllow)],
+    });
   }
 
   setPermission(id: string, permission: Permission):

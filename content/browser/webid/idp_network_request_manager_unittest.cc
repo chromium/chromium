@@ -1563,7 +1563,8 @@ TEST_F(IdpNetworkRequestManagerTest,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl, *error_dialog_type());
-  EXPECT_FALSE(error_url_type());
+  ASSERT_TRUE(error_url_type());
+  EXPECT_EQ(ErrorUrlType::kCrossSite, *error_url_type());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
@@ -1590,7 +1591,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
   EXPECT_FALSE(error_url_type());
 }
 
-TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestServerError) {
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse200NonParsable) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);
 
@@ -1598,6 +1599,26 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestServerError) {
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({}})");
+
+  EXPECT_TRUE(token_result.error);
+  EXPECT_EQ("", token_result.error->code);
+  EXPECT_EQ(GURL(), token_result.error->url);
+  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+            token_response_type());
+  EXPECT_TRUE(error_dialog_type());
+  EXPECT_EQ(ErrorDialogType::kGenericEmptyWithoutUrl, *error_dialog_type());
+  EXPECT_FALSE(error_url_type());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse500NonParsable) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_INTERNAL_SERVER_ERROR, "application/json",
+      R"({}})");
 
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("server_error", token_result.error->code);

@@ -130,6 +130,9 @@ export class FakeReadingMode {
   onFontSizeChanged(_increase: boolean) {}
   onFontSizeReset() {}
 
+  // Called when a user toggles links via the webui toolbar.
+  onLinksEnabledToggled() {}
+
   // Called when the letter spacing is changed via the webui toolbar.
   onStandardLetterSpacing() {}
   onWideLetterSpacing() {}
@@ -199,8 +202,9 @@ export class FakeReadingMode {
 
   // Set the theme. Used by tests only.
   setThemeForTesting(
-      _fontName: string, _fontSize: number, _foregroundColor: number,
-      _backgroundColor: number, _lineSpacing: number, _letterSpacing: number) {}
+      _fontName: string, _fontSize: number, _linksEnabled: boolean,
+      _foregroundColor: number, _backgroundColor: number, _lineSpacing: number,
+      _letterSpacing: number) {}
 
   // Sets the default language. Used by tests only.
   setLanguageForTesting(_code: string) {}

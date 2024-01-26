@@ -106,6 +106,8 @@ String XnnStatusToString(xnn_status status) {
       return "xnn_status_unsupported_hardware";
     case xnn_status_out_of_memory:
       return "xnn_status_out_of_memory";
+    case xnn_status_reallocation_required:
+      return "xnn_status_reallocation_required";
   }
 }
 
@@ -151,6 +153,8 @@ DOMExceptionCode XnnStatusToDOMExceptionCode(xnn_status status) {
       return DOMExceptionCode::kNotSupportedError;
     case xnn_status_out_of_memory:
       return DOMExceptionCode::kQuotaExceededError;
+    case xnn_status_reallocation_required:
+      return DOMExceptionCode::kDataError;
   }
 }
 
@@ -253,7 +257,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   static scoped_refptr<XnnRuntimeWrapper> Create(
       XnnSubgraphPtr subgraph,
       scoped_refptr<SharedXnnpackContext> xnn_context,
-      Vector<DataBufferPtr> static_data_buffers,
+      Vector<DataBuffer> static_data_buffers,
       uint32_t num_threads,
       String& error_message) {
     ScopedMLTrace scoped_trace("XnnRuntimeWrapper::Create");
@@ -341,7 +345,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   XnnRuntimeWrapper(xnn_runtime_t xnn_runtime,
                     pthreadpool_t pthreadpool,
                     scoped_refptr<SharedXnnpackContext> xnn_context,
-                    Vector<DataBufferPtr> static_data_buffers)
+                    Vector<DataBuffer> static_data_buffers)
       : xnn_context_(std::move(xnn_context)),
         static_data_buffers_(std::move(static_data_buffers)),
         xnn_external_values_(std::make_unique<Vector<xnn_external_value>>()),
@@ -355,7 +359,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
 
   // Holds the static data of XNNPACK Values for MLGraph's constant operands.
   // The data must outlive XNNPACK Subgraph and Runtime objects using them.
-  Vector<DataBufferPtr> static_data_buffers_;
+  Vector<DataBuffer> static_data_buffers_;
 
   // Holds the XNNPACK external values (value ID and data pointer) used for
   // Runtime setup. It is used to avoid unnecessary Runtime setup if no pointers
@@ -418,7 +422,7 @@ Vector<size_t> GetXnnDimensions(const Vector<uint32_t>& operand_dimensions) {
 // static_data_buffers_ member, it would outlive the XNNPACK Value who uses it.
 xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
                           const MLOperand* operand,
-                          const DataBufferPtr& data,
+                          const DataBuffer& data,
                           uint32_t external_value_id,
                           uint32_t& value_id,
                           String& error_message) {
@@ -435,7 +439,7 @@ xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
   uint32_t flags = 0;
   if (external_value_id != XNN_INVALID_VALUE_ID) {
     // External Values should not be initialized with static data.
-    DCHECK(!data);
+    CHECK(data.empty());
     switch (operand->Kind()) {
       case MLOperand::OperandKind::kInput:
         flags = XNN_VALUE_FLAG_EXTERNAL_INPUT;
@@ -450,11 +454,18 @@ xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
     }
   }
 
+  // The data buffer should have extra bytes if it is present.
+  // `operand->ByteLength() + XNN_EXTRA_BYTES` won't overflow because that is
+  // validated before creating data buffer.
+  if (!data.empty()) {
+    CHECK_EQ(data.size(), operand->ByteLength() + XNN_EXTRA_BYTES);
+  }
+
   switch (datatype) {
     case xnn_datatype_fp32:
     case xnn_datatype_fp16:
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_tensor_value(
-          subgraph, datatype, dims.size(), dims.data(), data.get(),
+          subgraph, datatype, dims.size(), dims.data(), data.data(),
           external_value_id, flags, &value_id));
       break;
     default:
@@ -477,8 +488,8 @@ xnn_status DefineExternalXnnValue(xnn_subgraph_t subgraph,
                                   uint32_t& value_id,
                                   String& error_message) {
   DCHECK_NE(external_value_id, XNN_INVALID_VALUE_ID);
-  return DefineXnnValue(subgraph, operand, DataBufferPtr(nullptr),
-                        external_value_id, value_id, error_message);
+  return DefineXnnValue(subgraph, operand, DataBuffer(), external_value_id,
+                        value_id, error_message);
 }
 
 // Define an internal XNNPACK Value given a WebNN graph's intermediate
@@ -489,8 +500,8 @@ xnn_status DefineInternalXnnValue(xnn_subgraph_t subgraph,
                                   String& error_message) {
   // Set external_value_id to XNN_INVALID_VALUE_ID, so an internal ID will be
   // created for the Value and value_id will be set to that internal ID.
-  return DefineXnnValue(subgraph, operand, DataBufferPtr(nullptr),
-                        XNN_INVALID_VALUE_ID, value_id, error_message);
+  return DefineXnnValue(subgraph, operand, DataBuffer(), XNN_INVALID_VALUE_ID,
+                        value_id, error_message);
 }
 
 // Define a static XNNPACK Value given a WebNN graph's constant operand and its
@@ -498,14 +509,32 @@ xnn_status DefineInternalXnnValue(xnn_subgraph_t subgraph,
 // the Subgraph object, and of any Runtime objects created from the Subgraph.
 xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
                                 const MLOperand* operand,
-                                const DataBufferPtr& data,
+                                const DataBuffer& data,
                                 uint32_t& value_id,
                                 String& error_message) {
-  DCHECK(data);
+  CHECK(!data.empty());
   // Set external_value_id to XNN_INVALID_VALUE_ID, so an internal ID will be
   // created for the Value and value_id will be set to that internal ID.
   return DefineXnnValue(subgraph, operand, data, XNN_INVALID_VALUE_ID, value_id,
                         error_message);
+}
+
+// XNNPACK requires input and static data buffers to have `XNN_EXTRA_BYTES`
+// bytes at the end. This method allocates a buffer with `XNN_EXTRA_BYTES` bytes
+// and copies the content of array buffer into the new buffer.
+absl::optional<DataBuffer> MakeBufferWithExtraBytes(
+    const DOMArrayBufferView* array_buffer_view) {
+  CHECK(!array_buffer_view->IsDetached());
+  // Allocate an initialized buffer with `XNN_EXTRA_BYTES` extra bytes.
+  auto buffer_size =
+      base::MakeCheckedNum(array_buffer_view->byteLength()) + XNN_EXTRA_BYTES;
+  if (!buffer_size.IsValid()) {
+    return absl::nullopt;
+  }
+  auto buffer = DataBuffer::WithSize(buffer_size.ValueOrDie());
+  memcpy(buffer.data(), array_buffer_view->BaseAddress(),
+         array_buffer_view->byteLength());
+  return buffer;
 }
 
 uint32_t GetOperatorInputValueId(const MLOperator* op,
@@ -1213,14 +1242,21 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
 
   // Set window sizes of XNNPACK pooling 2d Node.
   uint32_t input_height, input_width;
+  uint32_t output_height, output_width;
   uint32_t filter_height, filter_width;
   bool global_pooling = false;
   switch (options->layout().AsEnum()) {
     case V8MLInputOperandLayout::Enum::kNhwc: {
       const auto* input = pool2d->Inputs()[0].Get();
-      DCHECK(input);
+      CHECK(input);
       input_height = input->Dimensions()[1];
       input_width = input->Dimensions()[2];
+
+      const auto* output = pool2d->Outputs()[0].Get();
+      CHECK(output);
+      output_height = output->Dimensions()[1];
+      output_width = output->Dimensions()[2];
+
       if (options->hasWindowDimensions()) {
         filter_height = options->windowDimensions()[0];
         filter_width = options->windowDimensions()[1];
@@ -1245,9 +1281,27 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   }
 
   // Set or calculate padding sizes of XNNPACK pooling 2d Node.
-  const auto padding = GetXnnPadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width);
+  auto padding = GetXnnPadding2D(options, input_height, input_width,
+                                 filter_height, filter_width, stride_height,
+                                 stride_width, dilation_height, dilation_width);
+
+  // Since XNNPACK doesn't support ceil rounding, add bottom and right padding
+  // to bring the output to the sizes after ceil rounding.
+  if (options->roundingType().AsEnum() == V8MLRoundingType::Enum::kCeil &&
+      !options->hasOutputSizes()) {
+    auto checked_padding_bottom =
+        base::MakeCheckedNum<uint32_t>(output_height - 1) * stride_height +
+        (filter_height - 1) * dilation_height + 1 - input_height - padding.top;
+    auto checked_padding_right =
+        base::MakeCheckedNum<uint32_t>(output_width - 1) * stride_width +
+        (filter_width - 1) * dilation_width + 1 - input_width - padding.left;
+
+    if (!checked_padding_bottom.AssignIfValid(&padding.bottom) ||
+        !checked_padding_right.AssignIfValid(&padding.right)) {
+      error_message = "The padding size is too large.";
+      return xnn_status_invalid_parameter;
+    }
+  }
 
   // Define XNNPACK average or max pooling 2d Node for the Subgraph object.
   const float output_min = -std::numeric_limits<float>::infinity();
@@ -1939,7 +1993,7 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     return;
   }
 
-  Vector<DataBufferPtr> static_data_buffers;
+  Vector<DataBuffer> static_data_buffers;
   XnnSubgraphPtr subgraph(nullptr, &xnn_delete_subgraph);
   xnn_status status = CreateXnnSubgraph(*named_outputs, subgraph,
                                         static_data_buffers, error_message);
@@ -1966,7 +2020,7 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
     ScopedMLTrace scoped_trace,
     XnnSubgraphPtr subgraph,
     scoped_refptr<SharedXnnpackContext> xnn_context,
-    Vector<DataBufferPtr> static_data_buffers,
+    Vector<DataBuffer> static_data_buffers,
     CrossThreadHandle<MLGraphXnnpack> graph,
     uint32_t num_threads,
     CrossThreadHandle<ScriptPromiseResolver> resolver,
@@ -2012,7 +2066,7 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(ScriptState* script_state,
         XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message);
     return nullptr;
   }
-  Vector<DataBufferPtr> static_data_buffers;
+  Vector<DataBuffer> static_data_buffers;
   XnnSubgraphPtr subgraph(nullptr, &xnn_delete_subgraph);
   xnn_status status = CreateXnnSubgraph(named_outputs, subgraph,
                                         static_data_buffers, error_message);
@@ -2041,10 +2095,20 @@ void MLGraphXnnpack::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
                                       ScriptPromiseResolver* resolver,
                                       ExceptionState& exception_state) {
   scoped_trace.AddStep("MLGraphXnnpack::TransferNamedArrayBufferViews");
-
   // `MLNamedArrayBufferViews` objects should be accessed on the thread owning
   // the heap before transferring.
-  auto external_values = CreateExternalValues(inputs, outputs);
+  //
+  // The input buffers should be passed along with external values to background
+  // thread where the XNNPACK runtime uses them.
+  auto external_values_and_input_buffers =
+      CreateExternalValues(inputs, outputs);
+  if (!external_values_and_input_buffers) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Failed to create input buffers."));
+    return;
+  }
+  auto [external_values, input_buffers] =
+      std::move(external_values_and_input_buffers.value());
 
   // Transfer the `MLNamedArrayBufferViews` to `NamedArrayBufferViewsInfo` which
   // is safe to be posted to a worker thread.
@@ -2071,9 +2135,9 @@ void MLGraphXnnpack::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
   PostCrossThreadTask(
       *xnnpack_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&ComputeOnBackgroundThread, std::move(scoped_trace),
-                          xnn_runtime_wrapper_, std::move(external_values),
-                          std::move(inputs_info), std::move(outputs_info),
-                          MakeCrossThreadHandle(this),
+                          xnn_runtime_wrapper_, std::move(input_buffers),
+                          std::move(external_values), std::move(inputs_info),
+                          std::move(outputs_info), MakeCrossThreadHandle(this),
                           MakeCrossThreadHandle(resolver),
                           resolver_task_runner_));
 }
@@ -2082,6 +2146,7 @@ void MLGraphXnnpack::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
 void MLGraphXnnpack::ComputeOnBackgroundThread(
     ScopedMLTrace scoped_trace,
     scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
+    Vector<DataBuffer> input_buffers,
     XnnExternalValuesPtr external_values,
     NamedArrayBufferViewsInfoPtr inputs_info,
     NamedArrayBufferViewsInfoPtr outputs_info,
@@ -2126,7 +2191,15 @@ void MLGraphXnnpack::OnDidCompute(ScopedMLTrace scoped_trace,
 void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                                      const MLNamedArrayBufferViews& outputs,
                                      ExceptionState& exception_state) {
-  auto external_values = CreateExternalValues(inputs, outputs);
+  auto external_values_and_input_buffers =
+      CreateExternalValues(inputs, outputs);
+  if (!external_values_and_input_buffers) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Failed to create input buffers.");
+    return;
+  }
+  auto [external_values, input_buffers] =
+      std::move(external_values_and_input_buffers.value());
   String error_message;
   xnn_status status =
       xnn_runtime_wrapper_->Invoke(std::move(external_values), error_message);
@@ -2139,7 +2212,7 @@ void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
 xnn_status MLGraphXnnpack::CreateXnnSubgraph(
     const MLNamedOperands& named_outputs,
     XnnSubgraphPtr& out_subgraph,
-    Vector<DataBufferPtr>& out_static_data_buffers,
+    Vector<DataBuffer>& out_static_data_buffers,
     String& error_message) {
   ScopedMLTrace scoped_trace("MLGraphXnnpack::CreateXnnSubgraph");
 
@@ -2159,7 +2232,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   XnnSubgraphPtr subgraph(subgraph_ptr, &xnn_delete_subgraph);
 
   // Holds the static data of XNNPACK Values for MLGraph's constant operands.
-  Vector<DataBufferPtr> static_data_buffers;
+  Vector<DataBuffer> static_data_buffers;
   // Map the operand to its XNNPACK Value ID.
   OperandValueIdMap operand_value_id_map;
   // The ID is used to define an external XNNPACK Value. It should be increased
@@ -2224,19 +2297,17 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
           // The contents of this constant operand are copied from the array
           // buffer into the newly-allocated buffer and it is used to initialize
           // the XNNPACK Value.
-          const auto* array_buffer_view = operand->ArrayBufferView();
-          CHECK(array_buffer_view);
-          CHECK(!array_buffer_view->IsDetached());
-          auto data =
-              std::make_unique<uint8_t[]>(array_buffer_view->byteLength());
-          DCHECK(data);
-          memcpy(data.get(), array_buffer_view->BaseAddress(),
-                 array_buffer_view->byteLength());
+          auto buffer = MakeBufferWithExtraBytes(operand->ArrayBufferView());
+          if (!buffer) {
+            error_message = "The constant is too large.";
+            return xnn_status_invalid_parameter;
+          }
           uint32_t value_id;
-          XNN_CHECK_STATUS(DefineStaticXnnValue(subgraph.get(), operand, data,
-                                                value_id, error_message));
+          XNN_CHECK_STATUS(DefineStaticXnnValue(subgraph.get(), operand,
+                                                buffer.value(), value_id,
+                                                error_message));
           operand_value_id_map.insert(operand.Get(), value_id);
-          static_data_buffers.push_back(std::move(data));
+          static_data_buffers.push_back(std::move(buffer.value()));
           break;
         }
         case MLOperand::OperandKind::kOutput:
@@ -2272,30 +2343,38 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   return xnn_status_success;
 }
 
-XnnExternalValuesPtr MLGraphXnnpack::CreateExternalValues(
+absl::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+MLGraphXnnpack::CreateExternalValues(
     const MLNamedArrayBufferViews& inputs,
     const MLNamedArrayBufferViews& outputs) const {
+  Vector<DataBuffer> input_buffers;
+  input_buffers.reserve(inputs.size());
   auto external_values = std::make_unique<Vector<xnn_external_value>>();
-  external_values->reserve((inputs.size() + outputs.size()));
-  // Although XNNPACK doesn't validate the pointers, the base address and the
-  // byte length of the array buffer views are already validated by
-  // ValidateNamedArrayBufferViews(). It should be safe to setup XNNPACK Runtime
-  // object with them.
+  external_values->reserve(inputs.size() + outputs.size());
   for (const auto& [name, array_buffer_view] : inputs) {
-    DCHECK(input_external_value_id_map_.Contains(name));
+    auto buffer = MakeBufferWithExtraBytes(array_buffer_view.Get());
+    if (!buffer) {
+      return absl::nullopt;
+    }
     external_values->emplace_back(
         xnn_external_value{.id = input_external_value_id_map_.at(name),
-                           .data = array_buffer_view->BaseAddress()});
+                           .data = buffer.value().data()});
+    input_buffers.emplace_back(std::move(buffer.value()));
   }
+  // Although XNNPACK doesn't validate the pointers, the base address and
+  // the byte length of the array buffer views are already validated by
+  // ValidateNamedArrayBufferViews(). It should be safe to setup XNNPACK
+  // Runtime object with them.
   for (const auto& [name, array_buffer_view] : outputs) {
-    DCHECK(output_external_value_id_map_.Contains(name));
+    // It's safe to set external value data to base address of array buffer,
+    // because XNNPACK never writes beyond the array bounds.
     external_values->emplace_back(
         xnn_external_value{.id = output_external_value_id_map_.at(name),
                            .data = array_buffer_view->BaseAddress()});
   }
   base::ranges::sort(*external_values, base::ranges::less{},
                      &xnn_external_value::id);
-  return external_values;
+  return std::make_pair(std::move(external_values), std::move(input_buffers));
 }
 
 }  // namespace blink

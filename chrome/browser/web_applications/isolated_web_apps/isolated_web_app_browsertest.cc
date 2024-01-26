@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -56,7 +58,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
@@ -659,8 +660,8 @@ var kApplicationServerKey = new Uint8Array([
 
   BrowserWaiter browser_waiter(nullptr);
   notification_tester_->SimulateClick(NotificationHandler::Type::WEB_PERSISTENT,
-                                      notifications[0].id(), absl::nullopt,
-                                      absl::nullopt);
+                                      notifications[0].id(), std::nullopt,
+                                      std::nullopt);
 
   // Check that the click resulted in a new isolated web app window that runs in
   // the same isolated non-default storage partition.

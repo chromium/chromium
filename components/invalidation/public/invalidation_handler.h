@@ -26,6 +26,15 @@ class INVALIDATION_EXPORT InvalidationHandler : public base::CheckedObserver {
   // Called when the invalidator state changes.
   virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
 
+  // Called when the client has successfully subscribed to invalidations for
+  // `topic`. This can be relevant for invalidation handlers because
+  // invalidations published before the client has subscribed to the
+  // corresponding topic will not be delivered. This can be called multiple
+  // times because the subscription may need to be re-created in rare cases.
+  // Child classes should override this if they're interested in this
+  // notification - the default implementation does nothing.
+  virtual void OnSuccessfullySubscribed(const Topic& invalidation) {}
+
   // Called when an invalidation is received. Note that this may be called
   // regardless of the current invalidator state.
   virtual void OnIncomingInvalidation(const Invalidation& invalidation) = 0;

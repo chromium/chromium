@@ -50,7 +50,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // GraphImpl::OnInitializationComplete method.
   static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
                              ComPtr<IDMLDevice> dml_device,
-                             const mojom::GraphInfoPtr& graph_info,
+                             mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback);
 
   GraphImpl(const GraphImpl&) = delete;

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/services/mac_notifications/notification_category_manager.h"
+
 #import <Foundation/NSUserNotification.h>
 
+#include <optional>
 #include <string>
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
-#import "chrome/services/mac_notifications/notification_category_manager.h"
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace mac_notifications {
@@ -111,7 +112,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
 TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
   NSString* category_id = manager_->GetOrCreateCategory(
       "notification_id",
-      /*buttons=*/{{u"Button1", /*placeholder=*/absl::nullopt}},
+      /*buttons=*/{{u"Button1", /*placeholder=*/std::nullopt}},
       /*settings_button=*/true);
   ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
   UNNotificationCategory* category =
@@ -167,11 +168,11 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
 }
 
 TEST_F(NotificationCategoryManagerTest, TestNotificationTwoButtons) {
-  NSString* category_id = manager_->GetOrCreateCategory(
-      "notification_id", /*buttons=*/
-      {{u"Button1", /*placeholder=*/absl::nullopt},
-       {u"Button2", u"placeholder"}},
-      /*settings_button=*/true);
+  NSString* category_id =
+      manager_->GetOrCreateCategory("notification_id", /*buttons=*/
+                                    {{u"Button1", /*placeholder=*/std::nullopt},
+                                     {u"Button2", u"placeholder"}},
+                                    /*settings_button=*/true);
   ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
   UNNotificationCategory* category =
       [[fake_notification_center_ categories] anyObject];
@@ -267,8 +268,8 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionNoButtons) {
 TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionTwoButtons) {
   NSString* category_id = manager_->GetOrCreateCategory(
       "notification_id", /*buttons=*/
-      {{u"Button1", /*placeholder=*/absl::nullopt},
-       {u"Button2", /*placeholder=*/absl::nullopt}},
+      {{u"Button1", /*placeholder=*/std::nullopt},
+       {u"Button2", /*placeholder=*/std::nullopt}},
       /*settings_button=*/false);
   ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
   UNNotificationCategory* category =

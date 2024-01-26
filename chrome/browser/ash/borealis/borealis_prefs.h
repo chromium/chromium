@@ -14,11 +14,6 @@ namespace prefs {
 // on the device.
 extern const char kBorealisInstalledOnDevice[];
 
-// A string pref which records the user's current "insert_coin" guess. We record
-// the hash of that guess here, and the hash of this will be used to check the
-// token (i.e. we double-hash whatever the user typed in).
-extern const char kBorealisVmTokenHash[];
-
 // A boolean preference for managing whether borealis is allowed for the user
 // (mainly used by enterprises).
 extern const char kBorealisAllowedForUser[];

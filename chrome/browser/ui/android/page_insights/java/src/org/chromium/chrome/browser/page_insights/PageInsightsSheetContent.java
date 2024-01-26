@@ -24,6 +24,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -92,12 +93,16 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
      * Constructor.
      *
      * @param context An Android context.
+     * @param intentParams params specified in the custom tabs intent
      * @param layoutView the top-level view for the Window
      * @param onPrivacyNoticeLinkClickCallback callback for use on privacy notice
+     * @param onBackPressHandler back press handler
+     * @param willHandleBackPressSupplier supplier of whether we will handle back presses
      * @param onBottomSheetTouchHandler handler for touches on bottom sheet
      */
     public PageInsightsSheetContent(
             Context context,
+            PageInsightsIntentParams intentParams,
             View layoutView,
             Callback<View> onPrivacyNoticeLinkClickCallback,
             OnBackPressHandler onBackPressHandler,
@@ -110,17 +115,21 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                                 PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM,
                                 DEFAULT_FULL_HEIGHT_RATIO);
         mPeekHeightRatio =
-                (float)
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                                PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
-                                DEFAULT_PEEK_HEIGHT_RATIO);
+                intentParams.hasPeekHeightRatio()
+                        ? intentParams.getPeekHeightRatio()
+                        : (float)
+                                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                        PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
+                                        DEFAULT_PEEK_HEIGHT_RATIO);
         mPeekWithPrivacyHeightRatio =
-                (float)
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                                PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
-                                DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
+                intentParams.hasPeekWithNoticeHeightRatio()
+                        ? intentParams.getPeekWithNoticeHeightRatio()
+                        : (float)
+                                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                        PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
+                                        DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
         mLayoutView = layoutView;
         mToolbarView =
                 (ViewGroup)

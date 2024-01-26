@@ -80,6 +80,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         public final @Nullable String mCallbackDescriptor;
         public final int mRegisterMethodId;
         public final int mSignMethodId;
+        public final int mIsUserVerifyingPlatformAuthenticatorAvailableMethodId;
         public final @Nullable Fido2Api.Calls mMethodInterfaces;
 
         Fido2ApiCallParams(
@@ -88,12 +89,15 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                 String callbackDescriptor,
                 int registerMethodId,
                 int signMethodId,
+                int isUserVerifyingPlatformAuthenticatorAvailableMethodId,
                 Fido2Api.Calls methodInterfaces) {
             mApi = api;
             mDescriptor = descriptor;
             mCallbackDescriptor = callbackDescriptor;
             mRegisterMethodId = registerMethodId;
             mSignMethodId = signMethodId;
+            mIsUserVerifyingPlatformAuthenticatorAvailableMethodId =
+                    isUserVerifyingPlatformAuthenticatorAvailableMethodId;
             mMethodInterfaces = methodInterfaces;
         }
     }
@@ -198,6 +202,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                     APP_CALLBACK_DESCRIPTOR,
                     METHOD_APP_REGISTER,
                     METHOD_APP_SIGN,
+                    METHOD_APP_ISUVPAA,
                     APP_INTERFACES);
 
     static final Fido2ApiCallParams BROWSER_API =
@@ -213,6 +218,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                     BROWSER_CALLBACK_DESCRIPTOR,
                     METHOD_BROWSER_REGISTER,
                     METHOD_BROWSER_SIGN,
+                    METHOD_BROWSER_ISUVPAA,
                     BROWSER_INTERFACES);
 
     public static final Fido2ApiCallParams FIRST_PARTY_API =
@@ -228,6 +234,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                     /* callbackDescriptor */ null,
                     /* registerMethodId */ 0,
                     /* signMethodId */ 0,
+                    /* isUserVerifyingPlatformAuthenticatorAvailable */ 0,
                     /* methodInterfaces */ null);
 
     private final String mDescriptor;
@@ -238,7 +245,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param context the Android {@link Context} for the current process.
      */
     public Fido2ApiCall(Context context) {
-        this(context, BROWSER_API);
+        this(context, WebauthnModeProvider.getInstance().getFido2ApiCallParams());
     }
 
     /**

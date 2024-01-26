@@ -24,6 +24,7 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "components/performance_manager/resource_attribution/context_collection.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"

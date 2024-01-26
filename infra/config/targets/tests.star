@@ -1195,6 +1195,10 @@ targets.tests.isolated_script_test(
     args = [
         "--flag-specific=enable-skia-graphite",
         "--skipped=always",
+        # Since there are random timeouts, we have to increase the timeout
+        # threshold for now.
+        # TODO(https://crbug.com/1517847): Remove this once we resolve the timeouts.
+        "--timeout-ms=20000",
         # layout test failures are retried 3 times when '--test-list' is not
         # passed, but 0 times when '--test-list' is passed. We want to always
         # retry 3 times, so we explicitly specify it.
@@ -1214,6 +1218,10 @@ targets.tests.isolated_script_test(
     args = [
         "--flag-specific=enable-skia-graphite",
         "--skipped=always",
+        # Since there are random timeouts, we have to increase the timeout
+        # threshold for now.
+        # TODO(https://crbug.com/1517847): Remove this once we resolve the timeouts.
+        "--timeout-ms=20000",
         # layout test failures are retried 3 times when '--test-list' is not
         # passed, but 0 times when '--test-list' is passed. We want to always
         # retry 3 times, so we explicitly specify it.
@@ -1663,6 +1671,10 @@ targets.tests.gtest_test(
         "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
     ],
     binary = "components_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "optimization_guide_gpu_unittests",
 )
 
 targets.tests.gtest_test(

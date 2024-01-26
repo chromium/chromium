@@ -9,6 +9,7 @@ import android.graphics.Point;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.url.GURL;
@@ -26,9 +27,7 @@ public interface ModuleDelegateHost {
 
     /** Gets the instance of {@link UiConfig} of the host surface. */
     @Nullable
-    default UiConfig getUiConfig() {
-        return null;
-    }
+    UiConfig getUiConfig();
 
     /**
      * Called when the user clicks a module to open a URL.
@@ -58,4 +57,12 @@ public interface ModuleDelegateHost {
      * offset of the recyclerview item.
      */
     int getStartMargin();
+
+    /**
+     * Returns the tab that the home surface is tracking. It is non-null on NTP home surface only.
+     */
+    @Nullable
+    default Tab getTrackingTab() {
+        return null;
+    }
 }

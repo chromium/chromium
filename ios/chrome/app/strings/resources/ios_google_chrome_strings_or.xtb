@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1066101356081285416">Chrome ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଏବଂ ସମସ୍ତଙ୍କ ପାଇଁ Google ସପିଂ ଫିଚରଗୁଡ଼ିକ ଉନ୍ନତ କରିବାକୁ ପେକେଜ ଟ୍ରାକିଂ ନମ୍ବର ଓ ୱେବସାଇଟ ନାମ Googleକୁ ପଠାଯିବ। ଆପଣ <ph name="BEGIN_LINK" />ପେକେଜ ଟ୍ରାକିଂ ସେଟିଂସ<ph name="END_LINK" />ରେ ଏହାକୁ ଯେ କୌଣସି ସମୟରେ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="1085696779717592361">Chromeକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1105362920864247682">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="1113057722807951993">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନ Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">ଆପଣଙ୍କର Chrome ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeରେ ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକରେ ଇନପୁଟ ହୋଇଥିବା URLଗୁଡ଼ିକ ଯୋଗ କରେ।</translation>
+<translation id="1799920918471566157">Chrome ଟିପ୍ସ</translation>
 <translation id="1830634592642484976">ଏହି ଠିକଣାକୁ ବର୍ତ୍ତମାନ Chromeରେ ସେଭ କରାଯାଇଛି। ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="1843217788865538014">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ ଟାପ କଲେ ଏଗୁଡ଼ିକ ସ୍ୱତଃ Chromeକୁ ବ୍ୟବହାର କରେ।</translation>
 <translation id="1910975740091000991">iOS ପାଇଁ Chrome</translation>
 <translation id="1917964099031477364">ଏହି ଆକାଉଣ୍ଟ ଏବଂ ଯେ କୌଣସି ସେଭ୍ କରାଯାଇନଥିବା ଡାଟା Chromeରୁ ଏବଂ ଏହି ଡିଭାଇସରେ ଥିବା ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="1965935827552890526">ଆପଣ ଆପଣଙ୍କ ଅନ୍ୟ ଖୋଲା ଥିବା Chrome ୱିଣ୍ଡୋରେ ଯାହା କରୁଛନ୍ତି ତାହା ସମାପ୍ତ କରନ୍ତୁ।</translation>
 <translation id="1987779152850321833">Chromeରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବା ପାଇଁ ନିମ୍ନରେ ଏହି ପ୍ରସ୍ତାବିତ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>
-<translation id="2008357574463816229">ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2056123005618757196">ସରଳ, ସୁରକ୍ଷିତ ଏବଂ ପୂର୍ବ-ଅପେକ୍ଷା-ଅଧିକ-ଦ୍ରୁତ Google Chrome ସହ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="2120238739383482109">Chrome ବୁକମାର୍କଗୁଡ଼ିକ ଖୋଲେ।</translation>
 <translation id="2147651015520127414">Chromium ଯାଞ୍ଚ କରିଛି ଯେ, <ph name="ISSUER" />ଏହିୱେବ୍‍ସାଇଟ୍‍‌ର ସାର୍ଟିଫିକେଟ୍ ଜାରି କରିଛନ୍ତି।</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chromeରେ ପଢ଼ିବା ତାଲିକା ଆଇଟମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2736805085127235148">ଆପଣଙ୍କ ଡିଭାଇସ ସେଟିଂସରେ Chrome ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ବନ୍ଦ ଅଛି।</translation>
 <translation id="2767464022270041271">ସେଭ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Google Password Manager ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
+<translation id="2789947168960170215">ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2868822340714096138">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2869959624320573933">Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପ୍ରାଇଭେଟ ରଖେ<ph name="END_LINK" /> ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">ଏହି Chrome ପ୍ରୋଫାଇଲ ପାଇଁ ମଧ୍ୟ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପାଆନ୍ତୁ</translation>
 <translation id="3522659714780527202">ଆପଣ Chrome ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3577555362230509265">ଅନ୍ୟ ଆପ୍ସରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="3594076341410558780">"Chromeରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ"କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="364480321352456989">ଆପଣଙ୍କ Chrome ପୁରୁଣା ଅଟେ।</translation>
 <translation id="3646736009628185125">ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟ ଏବେ ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇପାରିବେ ନାହିଁ। Chrome ଅପଡେଟ କରି ତାଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସିଙ୍କ କରିବାକୁ ତାଙ୍କୁ କୁହନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chrome ଏକ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ <ph name="BEGIN_LINK" />କେଉଁ Chrome ଡାଟାକୁ ସେଭ କରାଯିବ ତାହା ଆପଣ ପରିଚାଳନା<ph name="END_LINK" /> କରିପାରିବେ।
 
 ଆପଣଙ୍କ Chrome ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟା ବ୍ୟବହାର କରୁଥିବା ଅଧିକ ସେଟିଂସ ନିମନ୍ତେ <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଯାଆନ୍ତୁ।</translation>
-<translation id="687586529977635009">Chrome ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଓ ସମସ୍ତଙ୍କ ପାଇଁ Shoppingକୁ ଉନ୍ନତ କରିବାକୁ Google ସହ ଆପଣଙ୍କ ଡାଟାକୁ ସେୟାର କରାଯିବ। ଆପଣ ଏହାକୁ <ph name="BEGIN_LINK" />ପେକେଜ ଟ୍ରାକିଂ ସେଟିଂସ<ph name="END_LINK" />ରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="6916015246697034114">Chromeରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6964931465519938134">ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି ଏବେ Chrome ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="6975725306479268850">ଅଟୋଫିଲ ପାଇଁ Chrome ବାଛନ୍ତୁ</translation>

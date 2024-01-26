@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
@@ -113,7 +112,8 @@ void IDBObjectStore::setName(const String& name,
 }
 
 ScriptValue IDBObjectStore::keyPath(ScriptState* script_state) const {
-  return ScriptValue::From(script_state, Metadata().key_path);
+  return ScriptValue(script_state->GetIsolate(),
+                     Metadata().key_path.ToV8(script_state));
 }
 
 DOMStringList* IDBObjectStore::indexNames() const {

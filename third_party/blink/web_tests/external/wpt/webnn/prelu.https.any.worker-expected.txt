@@ -13,6 +13,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Expected all dimensions of slope to be 1 except the last dimension.
 [FAIL] prelu float32 broadcast 4D x 4D slope / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The input and slope should have the same last dimension.
+[FAIL] prelu float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] prelu float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] prelu float32 2D tensors / async

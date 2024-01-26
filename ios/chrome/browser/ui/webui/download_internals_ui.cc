@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "components/download/public/background_service/background_download_service.h"
@@ -148,7 +149,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
     download_service_->StartDownload(std::move(params));
   }
 
-  download::BackgroundDownloadService* download_service_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService> download_service_ = nullptr;
 
   base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_{
       this};

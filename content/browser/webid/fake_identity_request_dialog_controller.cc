@@ -24,6 +24,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     const std::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
+    blink::mojom::RpMode rp_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
@@ -74,7 +75,8 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
-    const blink::mojom::RpContext& rp_context,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode,
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
     LoginToIdPCallback login_callback) {
@@ -85,7 +87,8 @@ void FakeIdentityRequestDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
-    const blink::mojom::RpContext& rp_context,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode,
     const IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error,
     DismissCallback dismiss_callback,
@@ -96,6 +99,18 @@ void FakeIdentityRequestDialogController::ShowErrorDialog(
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
+}
+
+void FakeIdentityRequestDialogController::ShowUrl(LinkType link_type,
+                                                  const GURL& url) {
+  if (!web_contents_) {
+    return;
+  }
+
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
+  web_contents_->GetDelegate()->OpenURLFromTab(web_contents_, params);
 }
 
 content::WebContents* FakeIdentityRequestDialogController::ShowModalDialog(

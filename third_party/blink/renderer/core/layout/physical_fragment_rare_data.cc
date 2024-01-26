@@ -20,7 +20,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalBoxStrut* padding,
     absl::optional<PhysicalRect> inflow_bounds,
     BoxFragmentBuilder& builder,
-    wtf_size_t num_fields) {
+    wtf_size_t num_fields)
+    : table_collapsed_borders_(builder.table_collapsed_borders_),
+      mathml_paint_info_(builder.mathml_paint_info_) {
   field_list_.ReserveInitialCapacity(num_fields);
 
   // Each field should be processed in order of FieldId to avoid vector
@@ -42,10 +44,6 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   if (builder.frame_set_layout_data_) {
     SetField(FieldId::kFrameSetLayoutData).frame_set_layout_data =
         std::move(builder.frame_set_layout_data_);
-  }
-  if (builder.mathml_paint_info_) {
-    SetField(FieldId::kMathMLPaintInfo).mathml_paint_info =
-        std::move(builder.mathml_paint_info_);
   }
   if (builder.table_grid_rect_) {
     SetField(FieldId::kTableGridRect).table_grid_rect =
@@ -70,7 +68,6 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     SetField(FieldId::kPageName).page_name = builder.page_name_;
   }
 
-  table_collapsed_borders_ = builder.table_collapsed_borders_;
   if (!builder.table_column_geometries_.empty()) {
     table_column_geometries_ =
         MakeGarbageCollected<TableFragmentData::ColumnGeometries>(
@@ -106,7 +103,6 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   SET_IF_EXISTS(kPadding, padding, other);
   SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
   CLONE_IF_EXISTS(kFrameSetLayoutData, frame_set_layout_data, other);
-  CLONE_IF_EXISTS(kMathMLPaintInfo, mathml_paint_info, other);
   SET_IF_EXISTS(kTableGridRect, table_grid_rect, other);
   CLONE_IF_EXISTS(kTableCollapsedBordersGeometry,
                   table_collapsed_borders_geometry, other);
@@ -134,7 +130,6 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
     FUNC(kPadding, padding);                                                \
     FUNC(kInflowBounds, inflow_bounds);                                     \
     FUNC(kFrameSetLayoutData, frame_set_layout_data);                       \
-    FUNC(kMathMLPaintInfo, mathml_paint_info);                              \
     FUNC(kTableGridRect, table_grid_rect);                                  \
     FUNC(kTableCollapsedBordersGeometry, table_collapsed_borders_geometry); \
     FUNC(kTableCellColumnIndex, table_cell_column_index);                   \

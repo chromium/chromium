@@ -6,9 +6,12 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("../login.gni")
 
 group("web_components") {
   public_deps = [
+    ":copy_ts",
+    ":generate_web_component_html_wrapper_files",
     ":html_wrapper_files",
     ":web_components_local",
     "./behaviors:copy_js",
@@ -17,6 +20,15 @@ group("web_components") {
     "./dialogs:web_components",
     "./oobe_vars:css_wrapper_files",
   ]
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(components_html_files, "./components", ".")
+}
+
+copy("copy_ts") {
+  sources = rebase_path(components_ts_files, "./components", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 group("closure_compile") {
@@ -29,8 +41,6 @@ group("closure_compile") {
     # Local targets
     ":api_keys_notice",
     ":display_manager_types",
-    ":gaia_button",
-    ":gaia_dialog",
     ":hd_iron_icon",
     ":keyboard_utils",
     ":keyboard_utils_oobe",
@@ -38,7 +48,6 @@ group("closure_compile") {
     ":network_select_login",
     ":notification_card",
     ":oobe_a11y_option",
-    ":oobe_apps_list",
     ":oobe_carousel",
     ":oobe_cr_lottie",
     ":oobe_display_size_selector",
@@ -76,30 +85,6 @@ js_library("display_manager_types") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.js" ]
   deps = []
   extra_deps = [ ":copy_js" ]
-}
-
-js_library("gaia_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("gaia_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.js" ]
-  deps = [
-    ":oobe_types",
-    "./behaviors:oobe_dialog_host_behavior",
-    "./behaviors:oobe_i18n_behavior",
-    "./dialogs:oobe_content_dialog",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/resources/gaia_auth_host:authenticator",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("hd_iron_icon") {
@@ -143,12 +128,6 @@ js_library("notification_card") {
 
 js_library("oobe_a11y_option") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.js" ]
-  deps = []
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_apps_list") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_apps_list.js" ]
   deps = []
   extra_deps = [ ":web_components" ]
 }
@@ -323,23 +302,20 @@ copy("copy_js") {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = [
-    "oobe_icons.html",
-    "oobe_illo_icons.html",
-    "oobe_network_icons.html",
-  ]
+               "oobe_icons.html",
+               "oobe_illo_icons.html",
+               "oobe_network_icons.html",
+             ] + rebase_path(components_html_files, "./components", ".")
   use_js = true
 }
 
 html_to_js("web_components_local") {
   js_files = [
     "api_keys_notice.js",
-    "gaia_button.js",
-    "gaia_dialog.js",
     "hd_iron_icon.js",
     "network_select_login.js",
     "notification_card.js",
     "oobe_a11y_option.js",
-    "oobe_apps_list.js",
     "oobe_carousel.js",
     "oobe_cr_lottie.js",
     "oobe_display_size_selector.js",

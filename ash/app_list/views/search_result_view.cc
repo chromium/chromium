@@ -32,6 +32,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/services/app_service/public/cpp/app_shortcut_image.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -112,10 +113,11 @@ constexpr int kAnswerCardFocusBarVerticalOffset =
 // For the App Shortcuts.
 // TODO(b/306295113): Refactor to a better location suitable with search
 // provider.
+constexpr int kSearchListShortcutContainerRadiusDimension = 14;
 constexpr int kSearchListShortcutIconDimension = 24;
-constexpr int kSearchListShortcutIconContainerDimension = 28;
 constexpr int kSearchListShortcutHostBadgeContainerDimension = 14;
 constexpr int kSearchListShortcutHostBadgeDimension = 10;
+constexpr int kSearchListShortcutTeardropRadiusDimension = 6;
 
 // The superscript container has a 3px top margin to shift the text up so the
 // it lines up with the text in `big_title_main_text_container_`.
@@ -937,7 +939,7 @@ SearchResultView::SetupContainerViewForTextVector(
 }
 
 void SearchResultView::UpdateIconAndBadgeIcon() {
-  // Updates `icon_view_` and `badge_icon_view_`.
+  // Updates `icon_view_`.
   // Note: this might leave `icon_view_` with an old icon image. But it is
   // needed to avoid flash when a SearchResult's icon is loaded asynchronously.
   // In this case, it looks nicer to keep the stale icon for a little while on
@@ -959,33 +961,14 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
 
   const gfx::ImageSkia& icon_image =
       result()->icon().icon.Rasterize(color_provider);
-
   const gfx::Size icon_size = use_webapp_shortcut_style_
                                   ? gfx::Size(kSearchListShortcutIconDimension,
                                               kSearchListShortcutIconDimension)
                                   : CalculateRegularIconImageSize(icon_image);
 
-  if (use_webapp_shortcut_style_) {
-    // Icon needs to add a halo if using shortcut style.
-    gfx::ImageSkia resized_icon_image =
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            icon_image, skia::ImageOperations::RESIZE_BEST,
-            std::move(icon_size));
-
-    gfx::ImageSkia icon_with_background =
-        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kSearchListShortcutIconContainerDimension / 2, background_color,
-            std::move(resized_icon_image));
-
-    SetIconImage(std::move(icon_with_background), icon_view_,
-                 gfx::Size(kSearchListShortcutIconContainerDimension,
-                           kSearchListShortcutIconContainerDimension));
-  } else {
-    SetIconImage(std::move(icon_image), icon_view_, std::move(icon_size));
-  }
-  icon_view_->set_shape(result()->icon().shape);
-
   if (result()->badge_icon().IsEmpty()) {
+    SetIconImage(std::move(icon_image), icon_view_, std::move(icon_size));
+    icon_view_->set_shape(result()->icon().shape);
     badge_icon_view_->SetVisible(false);
     return;
   }
@@ -1002,19 +985,34 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
 
   gfx::ImageSkia resized_badge_icon_image =
       gfx::ImageSkiaOperations::CreateResizedImage(
-          std::move(badge_icon_image), skia::ImageOperations::RESIZE_BEST,
-          std::move(badge_icon_size));
+          badge_icon_image, skia::ImageOperations::RESIZE_BEST,
+          badge_icon_size);
 
-  if (use_webapp_shortcut_style_ || result()->use_badge_icon_background()) {
-    // Badge icon needs to add a halo if using shortcut style or needs a
-    // background.
+  if (use_webapp_shortcut_style_) {
+    gfx::ImageSkia resized_icon_image =
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            icon_image, skia::ImageOperations::RESIZE_BEST, icon_size);
+    SetIconImage(
+        apps::AppShortcutImage::CreateImageWithBadgeAndTeardropBackground(
+            kSearchListShortcutContainerRadiusDimension,
+            kSearchListShortcutTeardropRadiusDimension,
+            kSearchListShortcutHostBadgeContainerDimension / 2,
+            background_color, resized_icon_image, resized_badge_icon_image),
+        icon_view_, std::move(icon_size));
+
+    badge_icon_view_->SetVisible(false);
+    icon_view_->set_shape(result()->icon().shape);
+  } else if (result()->use_badge_icon_background()) {
+    // Badge icon that isn't part of App Shortcuts needs to add an independent
+    // halo if using background.
     gfx::ImageSkia badge_icon_with_background =
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
             kSearchListShortcutHostBadgeContainerDimension / 2,
             background_color, std::move(resized_badge_icon_image));
     badge_icon_view_->SetImage(std::move(badge_icon_with_background));
   } else {
-    // Badge icon needs to add shadows if not using shortcut style.
+    // Badge icon that isn't part of App Shortcuts or using background needs to
+    // add shadows.
     gfx::ShadowValues shadow_values = {
         gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
                          SkColorSetARGB(0x33, 0, 0, 0)),
@@ -1026,7 +1024,6 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
             std::move(resized_badge_icon_image), std::move(shadow_values));
     badge_icon_view_->SetImage(std::move(badge_icon_with_shadow));
   }
-  badge_icon_view_->SetVisible(true);
 }
 
 void SearchResultView::UpdateBigTitleContainer() {

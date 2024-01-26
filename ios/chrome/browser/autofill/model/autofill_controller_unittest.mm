@@ -338,8 +338,7 @@ void AutofillControllerTest::SetUp() {
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
-      ->personal_data_manager_cleaner_for_testing()
-      ->alternative_state_name_map_updater_for_testing()
+      ->get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state_.Get());
 
   std::string locale("en");

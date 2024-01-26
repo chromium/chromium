@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -165,7 +167,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+  std::optional<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
 #endif
 
   net::EmbeddedTestServer primary_server_;
@@ -412,6 +414,12 @@ constexpr char kTestManifestBody[] = R"({
     }
   ]
 })";
+constexpr char kTestAssociatedOrigin[] = "https://test.com/";
+constexpr char kTestOriginAssociationFile[] = R"({
+  "web_apps": [{
+    "web_app_identity": "http://127.0.0.1:8000/"
+  }]
+})";
 
 // Generated from script:
 // $ tools/origin_trials/generate_token.py http://127.0.0.1:8000
@@ -428,6 +436,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
                        OriginTrial) {
   ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting
       bypass_window_close_waiting;
+  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
 
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
@@ -454,19 +463,31 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
         }
         return false;
       }));
+  auto origin_association_fetcher =
+      std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+  origin_association_fetcher->SetData(
+      {{url::Origin::Create(GURL(kTestAssociatedOrigin)),
+        kTestOriginAssociationFile}});
+  provider.origin_association_manager().SetFetcherForTest(
+      std::move(origin_association_fetcher));
 
   // Install web app with origin trial token.
   webapps::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
   // Origin trial should grant the app access.
-  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
-
   base::flat_set<ScopeExtensionInfo> expected_scope_extensions = {
-      ScopeExtensionInfo(url::Origin::Create(GURL("https://test.com")),
+      ScopeExtensionInfo(url::Origin::Create(GURL(kTestAssociatedOrigin)),
                          /*has_origin_wildcard=*/false)};
   EXPECT_EQ(expected_scope_extensions,
-            provider.registrar_unsafe().GetScopeExtensions(app_id));
+            provider.registrar_unsafe().GetValidatedScopeExtensions(app_id));
+  EXPECT_TRUE(provider.registrar_unsafe().IsUrlInAppExtendedScope(
+      GURL(kTestAssociatedOrigin), app_id));
+
+  // Out of scope bar should not be shown for extended scope.
+  Browser* app_browser = LaunchWebAppToURL(browser()->profile(), app_id,
+                                           GURL(kTestAssociatedOrigin));
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // Open the page again with the token missing.
   {
@@ -479,6 +500,8 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
   // The app should update to no longer parsing scope_extensions without the
   // origin trial active.
   EXPECT_TRUE(provider.registrar_unsafe().GetScopeExtensions(app_id).empty());
+  EXPECT_FALSE(provider.registrar_unsafe().IsUrlInAppExtendedScope(
+      GURL(kTestAssociatedOrigin), app_id));
 }
 
 }  // namespace web_app

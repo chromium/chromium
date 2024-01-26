@@ -12,12 +12,14 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "ash/root_window_controller.h"
@@ -132,14 +134,6 @@ std::string GetAccessibleName(const views::View* view) {
   std::string a11y_name;
   a11y_data.GetStringAttribute(ax::mojom::StringAttribute::kName, &a11y_name);
   return a11y_name;
-}
-
-// Returns all holding space item types.
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
-  return types;
 }
 
 // Flushes the message loop by posting a task and waiting for it to run.
@@ -887,8 +881,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, PinAndUnpinItems) {
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Add an item of every type. For downloads, also add an in-progress item.
-  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     AddItem(GetProfile(), type, CreateFile());
+  }
   AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload, CreateFile(),
           HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
@@ -1027,8 +1022,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Populate holding space with items of all types.
-  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     AddItem(GetProfile(), type, CreateFile());
+  }
 
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -2838,12 +2834,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -2923,12 +2918,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // updated in the holding space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
   test::Click(secondary_action_container);

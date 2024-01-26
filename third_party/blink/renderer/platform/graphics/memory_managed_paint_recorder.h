@@ -37,43 +37,43 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   class Client {
    public:
     virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
+    virtual void RecordingCleared() = 0;
   };
 
-  // `client` can't be nullptr and must outlive this object.
-  explicit MemoryManagedPaintRecorder(Client* client);
+  // If specified, `client` is notified for events from this object. `client`
+  // must outlive this `MemoryManagedPaintRecorder`.
+  explicit MemoryManagedPaintRecorder(gfx::Size size, Client* client);
   ~MemoryManagedPaintRecorder();
 
-  cc::PaintCanvas* beginRecording(const gfx::Size& size);
+  void SetClient(Client* client);
+
   cc::PaintRecord finishRecordingAsPicture();
 
-  bool HasRecordedDrawOps() const {
-    DCHECK(canvas_);
-    return canvas_->HasRecordedDrawOps();
-  }
-  size_t TotalOpCount() const {
-    DCHECK(canvas_);
-    return canvas_->TotalOpCount();
-  }
-  size_t OpBytesUsed() const {
-    DCHECK(canvas_);
-    return canvas_->OpBytesUsed();
-  }
-  size_t ImageBytesUsed() const {
-    return canvas_ == nullptr ? 0 : canvas_->ImageBytesUsed();
-  }
+  // Drops all draw ops from the recording while preserving the layer and matrix
+  // clip stack. This is done by discarding the whole recording and rebuilding
+  // the layer and matrix clip stack. If the recording contains no draw calls,
+  // the flush and stack rebuild is optimized out.
+  void SkipQueuedDrawCommands();
 
-  // Only valid while recording.
-  cc::PaintCanvas* getRecordingCanvas() const {
-    DCHECK(!is_recording_ || canvas_);
-    return is_recording_ ? canvas_.get() : nullptr;
-  }
+  // Restarts the whole recording. This will rebuild the layer and matrix clip
+  // stack, but since this function is meant to be called after resetting the
+  // canvas state stack, the matrix clip stack should be rebuilt to it's default
+  // initial state.
+  void RestartRecording();
+
+  bool HasRecordedDrawOps() const { return canvas_.HasRecordedDrawOps(); }
+  size_t TotalOpCount() const { return canvas_.TotalOpCount(); }
+  size_t OpBytesUsed() const { return canvas_.OpBytesUsed(); }
+  size_t ImageBytesUsed() const { return canvas_.ImageBytesUsed(); }
+
+  MemoryManagedPaintCanvas& getRecordingCanvas() { return canvas_; }
 
  private:
-  // Unowned, must not be nullptr.
-  raw_ptr<MemoryManagedPaintRecorder::Client, ExperimentalRenderer> client_;
-  bool is_recording_ = false;
-  gfx::Size size_;
-  std::unique_ptr<MemoryManagedPaintCanvas> canvas_;
+  // Pointer to the client interested in events from this
+  // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
+  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
+
+  MemoryManagedPaintCanvas canvas_;
 };
 
 }  // namespace blink

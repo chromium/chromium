@@ -20,7 +20,7 @@ namespace extensions {
 
 namespace {
 signin::ConsentLevel GetConsentLevelFromProfileDetails(
-    const absl::optional<api::identity::ProfileDetails>& details) {
+    const std::optional<api::identity::ProfileDetails>& details) {
   api::identity::AccountStatus account_status =
       details ? details->account_status : api::identity::AccountStatus::kNone;
 
@@ -49,7 +49,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
     return RespondNow(Error(identity_constants::kOffTheRecord));
   }
 
-  absl::optional<api::identity::GetProfileUserInfo::Params> params =
+  std::optional<api::identity::GetProfileUserInfo::Params> params =
       api::identity::GetProfileUserInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

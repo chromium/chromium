@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/enterprise_connectors_policy_handler.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/json/json_reader.h"
@@ -16,7 +17,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -102,7 +102,7 @@ class EnterpriseConnectorsPolicyHandlerTestBase {
  public:
   virtual const char* policy() const = 0;
 
-  absl::optional<base::Value> policy_value() const {
+  std::optional<base::Value> policy_value() const {
     return base::JSONReader::Read(policy(), base::JSON_ALLOW_TRAILING_COMMAS);
   }
 };

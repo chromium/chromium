@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-
 #include <cert.h>
 #include <certdb.h>
 #include <cryptohi.h>
@@ -16,6 +14,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -28,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -49,7 +49,6 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 namespace ash::platform_keys {
@@ -121,7 +120,7 @@ using GetCertDBCallback =
     base::OnceCallback<void(net::NSSCertDatabase* cert_db)>;
 
 // Called on the UI thread with certificate database.
-void DidGetCertDbOnUiThread(absl::optional<TokenId> token_id,
+void DidGetCertDbOnUiThread(std::optional<TokenId> token_id,
                             GetCertDBCallback callback,
                             NSSOperationState* state,
                             net::NSSCertDatabase* cert_db) {
@@ -159,7 +158,7 @@ void DidGetCertDbOnUiThread(absl::optional<TokenId> token_id,
 // Asynchronously fetches the NSSCertDatabase using |delegate| and, if
 // |token_id| is not empty, the slot for |token_id|. Stores the slot in |state|
 // and passes the database to |callback|. Will run |callback| on the IO thread.
-void GetCertDatabase(absl::optional<TokenId> token_id,
+void GetCertDatabase(std::optional<TokenId> token_id,
                      GetCertDBCallback callback,
                      PlatformKeysServiceImplDelegate* delegate,
                      NSSOperationState* state) {
@@ -650,11 +649,11 @@ class GetAttributeForKeyState : public NSSOperationState {
   ~GetAttributeForKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*attribute_value=*/absl::nullopt, status);
+    CallBack(from, /*attribute_value=*/std::nullopt, status);
   }
 
   void OnSuccess(const base::Location& from,
-                 absl::optional<std::vector<uint8_t>> attribute_value) {
+                 std::optional<std::vector<uint8_t>> attribute_value) {
     CallBack(from, std::move(attribute_value), Status::kSuccess);
   }
 
@@ -664,7 +663,7 @@ class GetAttributeForKeyState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                absl::optional<std::vector<uint8_t>> attribute_value,
+                std::optional<std::vector<uint8_t>> attribute_value,
                 Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_),
                                          std::move(attribute_value), status);
@@ -689,7 +688,7 @@ class IsKeyOnTokenState : public NSSOperationState {
   ~IsKeyOnTokenState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*on_token=*/absl::nullopt, status);
+    CallBack(from, /*on_token=*/std::nullopt, status);
   }
 
   void OnSuccess(const base::Location& from, bool on_token) {
@@ -701,7 +700,7 @@ class IsKeyOnTokenState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                absl::optional<bool> on_token,
+                std::optional<bool> on_token,
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), on_token, status);
@@ -1486,7 +1485,7 @@ void GetAttributeForKeyWithDbOnWorkerThread(
     // to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      state->OnSuccess(FROM_HERE, /*attribute_value=*/absl::nullopt);
+      state->OnSuccess(FROM_HERE, /*attribute_value=*/std::nullopt);
       return;
     }
 
@@ -1575,7 +1574,7 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
 }
 
 void PlatformKeysServiceImpl::SignRsaPkcs1(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
@@ -1602,7 +1601,7 @@ void PlatformKeysServiceImpl::SignRsaPkcs1(
 }
 
 void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     SignCallback callback) {
@@ -1628,7 +1627,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
 }
 
 void PlatformKeysServiceImpl::SignEcdsa(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
@@ -1799,7 +1798,7 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
   // Get the pointer to |state| before transferring ownership of |state| to the
   // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
-  GetCertDatabase(/*token_id=*/absl::nullopt /* don't get any specific slot */,
+  GetCertDatabase(/*token_id=*/std::nullopt /* don't get any specific slot */,
                   base::BindOnce(&GetTokensWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
@@ -1820,7 +1819,7 @@ void PlatformKeysServiceImpl::GetKeyLocations(
   // Get the pointer to |state| before transferring ownership of |state| to the
   // callback's bound arguments.
   GetCertDatabase(
-      /*token_id=*/absl::nullopt /* don't get any specific slot */,
+      /*token_id=*/std::nullopt /* don't get any specific slot */,
       base::BindOnce(&GetKeyLocationsWithDB, std::move(state)), delegate_.get(),
       state_ptr);
 }

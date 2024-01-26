@@ -132,20 +132,7 @@ bool IsLazyWebUILoadingEnabled() {
         ash::prefs::kLoginScreenWebUILazyLoading);
   }
 
-  // Feature override.
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kEnableLazyLoginWebUILoading.name)) {
-    return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
-  }
-
-  // Disable for stable and beta.
-  if ((chrome::GetChannel() == version_info::Channel::STABLE) ||
-      (chrome::GetChannel() == version_info::Channel::BETA)) {
-    return false;
-  }
-
-  // Enable for dev builds.
-  return true;
+  return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
 }
 
 void UpdatePinAuthAvailability(const AccountId& account_id) {
@@ -745,7 +732,6 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
     LOG(FATAL) << "Incorrect Active Directory user type "
                << user_context.GetUserType();
-    user_context.SetIsUsingOAuth(false);
   }
 
   existing_user_controller_->Login(user_context, SigninSpecifics());

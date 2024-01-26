@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_view_controller.h"
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_util.h"
 #import "ios/web/public/download/download_task.h"
@@ -30,6 +31,7 @@
   SaveToDriveMediator* _mediator;
   AccountPickerCoordinator* _accountPickerCoordinator;
   id<SystemIdentity> _selectedIdentity;
+  FileDestinationPickerViewController* _destinationPicker;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -58,13 +60,22 @@
                          browser:self.browser
                    configuration:accountPickerConfiguration];
   _accountPickerCoordinator.delegate = self;
+  _destinationPicker = [[FileDestinationPickerViewController alloc] init];
+  _accountPickerCoordinator.accountConfirmationChildViewController =
+      _destinationPicker;
   [_accountPickerCoordinator start];
+
+  _destinationPicker.actionDelegate = _mediator;
+  _mediator.accountPickerConsumer = _accountPickerCoordinator;
+  _mediator.destinationPickerConsumer = _destinationPicker;
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-
+  [_destinationPicker willMoveToParentViewController:nil];
+  [_destinationPicker removeFromParentViewController];
+  _destinationPicker = nil;
   [_accountPickerCoordinator stop];
   _accountPickerCoordinator = nil;
 }
@@ -119,7 +130,7 @@
 
   // If an identity was selected, start the download and save to Drive.
   if (_selectedIdentity) {
-    [_mediator startDownloadAndSaveToDriveWithIdentity:_selectedIdentity];
+    [_mediator startDownloadWithIdentity:_selectedIdentity];
   }
 
   id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(

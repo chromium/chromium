@@ -5,6 +5,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
@@ -149,10 +150,10 @@ class TestUrlCheckerClient {
   bool url_is_unsafe_ = false;
   safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check_ =
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown;
-  SafeBrowsingService* safe_browsing_service_;
+  raw_ptr<SafeBrowsingService> safe_browsing_service_;
   web::FakeWebState web_state_;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker_;
-  SafeBrowsingClient* safe_browsing_client_;
+  raw_ptr<SafeBrowsingClient> safe_browsing_client_;
 };
 
 }  // namespace
@@ -164,16 +165,16 @@ class SafeBrowsingServiceTest : public PlatformTest {
         browser_state_(new web::FakeBrowserState()) {
     store_factory_ = new safe_browsing::TestV4StoreFactory();
     safe_browsing::V4Database::RegisterStoreFactoryForTest(
-        base::WrapUnique(store_factory_));
+        base::WrapUnique(store_factory_.get()));
 
     v4_db_factory_ = new safe_browsing::TestV4DatabaseFactory();
     safe_browsing::V4Database::RegisterDatabaseFactoryForTest(
-        base::WrapUnique(v4_db_factory_));
+        base::WrapUnique(v4_db_factory_.get()));
 
     v4_get_hash_factory_ =
         new safe_browsing::TestV4GetHashProtocolManagerFactory();
     safe_browsing::V4GetHashProtocolManager::RegisterFactory(
-        base::WrapUnique(v4_get_hash_factory_));
+        base::WrapUnique(v4_get_hash_factory_.get()));
 
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -315,11 +316,12 @@ class SafeBrowsingServiceTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
 
   // Owned by V4Database.
-  safe_browsing::TestV4DatabaseFactory* v4_db_factory_;
+  raw_ptr<safe_browsing::TestV4DatabaseFactory> v4_db_factory_;
   // Owned by V4GetHashProtocolManager.
-  safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
+  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory>
+      v4_get_hash_factory_;
   // Owned by V4Database.
-  safe_browsing::TestV4StoreFactory* store_factory_;
+  raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
   std::unique_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;

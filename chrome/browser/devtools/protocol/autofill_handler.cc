@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 
+#include <optional>
+
 #include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +28,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 using autofill::AutofillField;
@@ -42,11 +43,11 @@ using protocol::Response;
 
 namespace {
 
-absl::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
+std::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
     autofill::ContentAutofillDriver* driver,
     autofill::FieldGlobalId id) {
   if (!driver) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (const auto& [key, form] :
        driver->GetAutofillManager().form_structures()) {
@@ -56,7 +57,7 @@ absl::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -128,7 +129,7 @@ void AutofillHandler::FinishTrigger(
       frame_token, autofill::FieldRendererId(field_id)};
 
   autofill::ContentAutofillDriver* autofill_driver = nullptr;
-  absl::optional<std::pair<FormData, FormFieldData>> field_data;
+  std::optional<std::pair<FormData, FormFieldData>> field_data;
   while (frame_rfh) {
     autofill_driver =
         autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
@@ -137,7 +138,7 @@ void AutofillHandler::FinishTrigger(
     // between the real Autofill flow triggered manually and Autofill triggered
     // over CDP. We should change how we find the form data and use the same
     // logic as used by AutofillDriverRouter.
-    if (absl::optional<std::pair<FormData, FormFieldData>> rfh_field_data =
+    if (std::optional<std::pair<FormData, FormFieldData>> rfh_field_data =
             FindFieldWithFormData(autofill_driver, global_field_id)) {
       field_data = std::move(rfh_field_data);
     }
@@ -197,7 +198,7 @@ void AutofillHandler::SetAddresses(
     profiles.Append(std::move(address_fields));
   }
 
-  absl::optional<std::vector<autofill::AutofillProfile>> autofill_profiles =
+  std::optional<std::vector<autofill::AutofillProfile>> autofill_profiles =
       autofill::AutofillProfilesFromJSON(&profiles);
   if (autofill_profiles) {
     for (const autofill::AutofillProfile& profile : *autofill_profiles) {
@@ -285,10 +286,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
-            .SetFieldId(base::FeatureList::IsEnabled(
-                            blink::features::kAutofillUseDomNodeIdForRendererId)
-                            ? autofill_field->unique_renderer_id.value()
-                            : 0)
+            .SetFieldId(autofill_field->unique_renderer_id.value())
             .Build());
   }
 

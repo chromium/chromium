@@ -16,7 +16,6 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -99,12 +98,14 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
 
+namespace {
 using ::testing::AllOf;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
+}  // namespace
 
 MATCHER_P(IsInIwaRandomDir, profile_directory, "") {
   *result_listener << "where the profile directory is " << profile_directory;
@@ -149,8 +150,6 @@ MATCHER_P2(PendingUpdateInfoIs, location, version, "") {
                 version))),
       arg, result_listener);
 }
-
-std::string BitmapAsPng(const SkBitmap& bitmap);
 
 }  // namespace test
 

@@ -2,6 +2,8 @@ include_rules = [
   "+components/autofill",
   "+components/password_manager/core/browser/password_form.h",
   "+components/password_manager/core/browser/form_parsing",
+  "+components/prefs",
+  "+components/user_prefs",
   "+content/public/android",
   "+content/public/browser",
   "+ui",

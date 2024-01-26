@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_NATIVE_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {

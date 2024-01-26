@@ -53,6 +53,7 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   void ClickRetryButton();
   void ClickSendFeedbackButton();
   void ClickRunNetworkTestsButton();
+  void TosLoadResult(bool success);
 
   bool metrics_mode() const { return metrics_mode_; }
   bool backup_and_restore_managed() const {

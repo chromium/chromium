@@ -707,15 +707,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                         || mNtpDelegate.isCurrentlyVisible()
                         || isInOverviewAndShowingOmnibox();
 
-        boolean useUpdatedConnectionSecurityIndicators =
-                mOmniboxUpdatedConnectionSecurityIndicatorsEnabled
-                        && !(hasTab() && mTab.isCustomTab());
-
         return SecurityStatusIcon.getSecurityIconResource(
                 securityLevel,
                 isSmallDevice,
                 skipIconForNeutralState,
-                useUpdatedConnectionSecurityIndicators);
+                mOmniboxUpdatedConnectionSecurityIndicatorsEnabled);
     }
 
     @Override

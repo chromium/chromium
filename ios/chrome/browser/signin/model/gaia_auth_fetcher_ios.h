@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_bridge.h"
 #include "net/base/net_errors.h"
@@ -62,7 +63,7 @@ class GaiaAuthFetcherIOS
                        net::Error net_error,
                        int response_code) override;
 
-  web::BrowserState* browser_state_;
+  raw_ptr<web::BrowserState> browser_state_;
   std::unique_ptr<GaiaAuthFetcherIOSBridge> bridge_;
 };
 

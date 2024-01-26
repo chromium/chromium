@@ -35,8 +35,8 @@ ChildNodePart* ChildNodePart::Create(PartRootUnion* root_union,
 ChildNodePart::ChildNodePart(PartRoot& root,
                              Node& previous_sibling,
                              Node& next_sibling,
-                             const Vector<String> metadata)
-    : Part(root, metadata),
+                             Vector<String> metadata)
+    : Part(root, std::move(metadata)),
       previous_sibling_(previous_sibling),
       next_sibling_(next_sibling) {
   CHECK(IsAcceptableNodeType(previous_sibling));
@@ -190,7 +190,7 @@ ContainerNode* ChildNodePart::rootContainer() const {
 Part* ChildNodePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
   ChildNodePart* clone = MakeGarbageCollected<ChildNodePart>(
-      data.CurrentPartRoot(), node_clone, node_clone, metadata());
+      data.CurrentPartRoot(), node_clone, node_clone, metadata().AsVector());
   data.PushPartRoot(*clone);
   return clone;
 }

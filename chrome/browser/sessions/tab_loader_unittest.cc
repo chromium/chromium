@@ -118,7 +118,7 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
     ResourceCoordinatorTabHelper::CreateForWebContents(raw_contents);
     restored_tabs_.push_back(
         RestoredTab(raw_contents, is_active /* is_active */, false /* is_app */,
-                    false /* is_pinned */, absl::nullopt /* group */));
+                    false /* is_pinned */, std::nullopt /* group */));
 
     // Add the contents to the tab strip model, which becomes the owner.
     auto* tab_strip_model = browser()->tab_strip_model();

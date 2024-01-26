@@ -258,8 +258,8 @@ class TranslateManagerRenderViewHostTest
 
     // Reset
     fake_agent_.called_translate_ = false;
-    fake_agent_.source_lang_ = absl::nullopt;
-    fake_agent_.target_lang_ = absl::nullopt;
+    fake_agent_.source_lang_ = std::nullopt;
+    fake_agent_.target_lang_ = std::nullopt;
 
     return true;
   }

@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ضرب دیں</translation>
 <translation id="1145018782460575098">خارجی آلات کے لیے فرم ویئر کو اپ ڈیٹ کریں کا ونڈو کھلا ہے۔ <ph name="NUM_UPDATES" /> اپ ڈیٹس دستیاب ہیں۔</translation>
 <translation id="1145516343487477149">‏امدادی مضامین اور Chromebook سے متعلق عام سوالات کے جوابات تلاش کریں</translation>
 <translation id="1154390310959620237">آپ صرف 5 شارٹ کٹس کو حسب ضرورت بنا سکتے ہیں۔ ایک نیا شارکٹ شامل کرنے کے لیے موجودہ کسی شارکٹ کو حذف کریں۔</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">اسکین کرنے کی جگہ تک فٹ کریں</translation>
 <translation id="1367951781824006909">ایک فائل منتخب کریں</translation>
+<translation id="1371650399987522809">‏Google AI سے تقویت یافتہ وال پیپر کے لیے تاثرات</translation>
 <translation id="1387854245479784695">یہ سبھی کورز کا مجموعہ ہے</translation>
 <translation id="1394661041439318933">آلے کے کیس میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="1397738625398125236">گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ٹچ پیڈ</translation>
 <translation id="1561927818299383735">بیک لٹ کا رنگ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> کو اپ ڈیٹ نہیں کر سکتے</translation>
+<translation id="1566493343215789965">تقسیم کریں</translation>
 <translation id="1567064801249837505">البمز</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="1578784163189013834">اسکرین سیور کا پس منظر منتخب کریں</translation>
 <translation id="160633243685262989">تصویر کا پیش منظر دیکھیں</translation>
 <translation id="1611649489706141841">فارورڈ کریں</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
+<translation id="1615576200479539465">تصاویر تخلیق کی جا رہی ہیں...</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
+<translation id="1626590945318984973">شارٹ کٹ دستیاب نہیں ہے۔ فنکشن اور <ph name="META_KEY" /> کی کلیدیں استعمال کیے بغیر نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1643449475550628585">وال پیپر کی تصویر کو روزانہ تبدیل کریں</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">تاریک وضع آف کریں</translation>
 <translation id="1885577615937958993">فاسٹ فارورڈ میڈیا</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
-<translation id="1897672602657312171">تلاش کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں، یا تلاش کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="1904932688895783618">کچھ دوسرے مددگار وسائل یہ ہیں:</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
 <translation id="2157660087437850958">ایموجی منتخب کنندہ</translation>
 <translation id="2157959690810728433">قطار بند</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{آپ کے منتظم نے <ph name="APP_NAME_1" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}=2{آپ کے منتظم نے <ph name="APP_NAME_1" /> اور <ph name="APP_NAME_2" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}=3{آپ کے منتظم نے <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" /> اور <ph name="APP_NAME_3" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}other{آپ کے منتظم نے <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" /> اور # دیگر ایپس کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="215916044711630446">‏APN شامل کریں بٹن اب غیر فعال ہے</translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">‏APN کی تفصیلات میں ترمیم کریں</translation>
 <translation id="2209788852729124853">ٹریفک کاؤنٹرز ری سیٹ کریں</translation>
 <translation id="2212733584906323460">ریزولیوشن کا نام دیں</translation>
+<translation id="2215920961700443347">انٹرنیٹ نہیں ہے۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2217935453350629363">موجودہ رفتار</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> میں سے تصویر <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
+<translation id="2465272316171730950">ہماری گنجائش ختم ہو گئی ہے۔ براہ کرم تھوڑی دیر میں واپس آجائیں۔</translation>
 <translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
 <translation id="2491955442992294626">آپ کے دوسری ونڈو کا استعمال کرنے کے دوران کلیدوں کی جانچ نہیں کی جاتی ہیں</translation>
 <translation id="2493126929778606526">آپ کی بہترین تصاویر، خودکار طور پر منتخب کی گئیں</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">وال پیپر کی موجودہ تصویر کو ریفریش کریں</translation>
 <translation id="2512979179176933762">ونڈوز دکھائیں</translation>
 <translation id="2513396635448525189">لاگ ان کی تصویر</translation>
-<translation id="2515109918609218604">شارٹ کٹ دستیاب نہیں ہے۔ فنکشن اور تلاش کی کلیدیں استعمال کیے بغیر نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2521835766824839541">پچھلا ٹریک</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> ڈسچارج ہوئی۔</translation>
 <translation id="2880569433548999039">کلاؤڈ فلو اسکرین سیور</translation>
 <translation id="2926057806159140518">‏اپنا صارف نام اور پاس ورڈ درج کریں یا اپنا QR کوڈ اسکین کریں</translation>
+<translation id="2938573842839598578">ایک تخمینی نتیجے کے لیے، <ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے پپوٹوں کو دوبارہ کھولیں۔</translation>
 <translation id="2941112035454246133">کم</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
+<translation id="3547264467365135390">فارمولہ</translation>
 <translation id="3557205324756024651">مقامی شناخت (اختیاری)</translation>
 <translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
 <translation id="3569407787324516067">اسکرین سیور</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4130035430755296270">لے آؤٹ کے مزید اختیارات کیلئے اسکرول کرتے رہیں</translation>
+<translation id="4130750466177569591">میں متفق ہوں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> خودکار طور پر شروع ہو گیا}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
 <translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">چمک کم کریں</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
 <translation id="4176659219503619100">کنٹرول پینل</translation>
-<translation id="4185315616950253617">اوپر والی قطار والے شارٹ کٹ میں تلاش کی کلید شامل کرنے کی ضرورت ہے۔</translation>
 <translation id="420283545744377356">اسکرین سیور آف کریں</translation>
 <translation id="4213104098953699324">‏USB کی بورڈ</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">غیر فعال کریں</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ری اسٹارٹ ہو رہا ہے</translation>
 <translation id="4395835743215824109">کی بورڈ کو حسب ضرورت بنانا</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4415951057168511744">موجودہ اوتار</translation>
+<translation id="4417830657741848074">آپ کے منتظم نے کچھ ایپس کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔ ان میں سے کچھ ایپس کو بند نہیں کیا جا سکتا۔</translation>
 <translation id="4422041425070339732">نیچے کی طرف تیر کا نشان</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> آف ہے</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">ارتھ فلو اسکرین سیور</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4507392511610824664">چمک بڑھائیں</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4835901797422965222">کوئی فعال نیٹ ورک نہیں</translation>
 <translation id="4839698083503556542">اپنی خود کی مووی بنائیں</translation>
+<translation id="48409034532829769">آپ کے منتظم نے "<ph name="APP_NAME" />" کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔ اس ایپ کو بند نہیں کیا جا سکتا۔</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4847902821209177679">‏<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کیا گیا، <ph name="TOPIC_SOURCE" /> البمز منتخب کرنے کے لیے Enter دبائیں</translation>
 <translation id="484790837831576105">‏‎(Android) DNS ریزولیوشن</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">اسپلٹ</translation>
 <translation id="4972592110715526173">وضع میں تبدیلی</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
+<translation id="4982627662315910959">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl, alt یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="4987769320337599931">فائروال</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">گہری تھیم شیڈول کریں</translation>
 <translation id="5229344016299762883">مکمل اسکرین سے باہر نکلیں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}=2{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" اور 1 دیگر ایپ کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}other{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" اور # دیگر ایپس کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}}</translation>
 <translation id="5252456968953390977">رومنگ</translation>
 <translation id="5257811368506016604">ہلکے رنگ کے موڈ کو فعال کریں</translation>
 <translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7180865173735832675">حسب ضرورت بنائیں</translation>
 <translation id="7184043045742675738">اپنے بٹن کو حسب ضرورت بنانے کے لیے کسی بھی کلید پر کلک کریں۔ ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ کلید کی پوزیشن تبدیل کریں۔</translation>
+<translation id="7206979415662233817">سروس کی شرائط</translation>
 <translation id="7212547870105584639">‏نیٹ ورک APN کی ترتیبات کا نظم کریں۔ APNs سیلولر نیٹ ورک اور انٹرنیٹ کے درمیان رابطہ قائم کرتے ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">بیرونی آلات کیلئے فرم ویئر اپ ڈیٹس</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
 <translation id="725133483556299729">ای میل منتخب کریں</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="7273347807225967898">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt، shift، search یا launcher) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
+<translation id="7271932918253517778">اوپر والی قطار کی کلیدوں والے شارٹ کٹ میں <ph name="META_KEY" /> کلید شامل کرنے کی ضرورت ہے۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ہوا کا جھونکا محسوس کریں</translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">کی بورڈ کا رنگ</translation>
 <translation id="7317831949569936035">اسکول میں اندراج</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">‏آپ کی عمر کم از کم 18 سال ہونی چاہیے اور اس بات سے اتفاق کرتے ہیں کہ آپ کا AI وال پیپرز کا استعمال <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google کی سروس کی شرائط<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> اور <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />تخلیق کر سکنے والے AI نظام کی سروس کی اضافی شرائط<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> کے ساتھ مشروط ہے۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          آپ صرف ذاتی اور غیر تجارتی استعمال کے لیے AI کے ساتھ وال پیپرز بنا سکتے ہیں۔ جب آپ وال پیپر کی مدد حاصل کرتے ہیں تو <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> کے ساتھ مشروط وال پیپر کی تجاویز تیار کرنے کے لیے Google AI سرورز ٹیکسٹ پیغام بھیجا جاتا ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7353413232959255829">‏<ph name="LIST_SIZE" /> میں سے <ph name="LIST_POSITION" /> تلاش کا نتیجہ: <ph name="SEARCH_RESULT_TEXT" />۔ شارٹ کٹ پر نیویگیٹ کرنے کے لیے Enter دبائیں۔</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">عام کنٹرولز</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" خودکار طور پر شروع ہو گئی}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
-<translation id="8111706652656628199">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl، alt، search، یا launcher) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>

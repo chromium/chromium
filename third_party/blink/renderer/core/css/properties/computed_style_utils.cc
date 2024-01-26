@@ -4162,7 +4162,7 @@ ComputedStyleUtils::CrossThreadStyleValueFromCSSStyleValue(
           To<CSSUnsupportedColor>(style_value)->Value());
     case CSSStyleValue::StyleValueType::kUnparsedType:
       return std::make_unique<CrossThreadUnparsedValue>(
-          To<CSSUnparsedValue>(style_value)->ToString());
+          To<CSSUnparsedValue>(style_value)->ToUnparsedString());
     default:
       return std::make_unique<CrossThreadUnsupportedValue>(
           style_value->toString());

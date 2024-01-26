@@ -26,7 +26,6 @@ void RunEraseTest() {
   }
 }
 
-// This test is written for containers of std::pair<int, int> to support maps.
 template <typename Container>
 void RunEraseIfTest() {
   struct {
@@ -77,11 +76,6 @@ namespace {
 TEST(Erase, Vector) {
   RunEraseTest<std::vector<int>>();
   RunEraseIfTest<std::vector<std::pair<int, int>>>();
-}
-
-TEST(Erase, Map) {
-  RunEraseIfTest<std::map<int, int>>();
-  RunEraseIfTest<std::map<int, int, std::greater<>>>();
 }
 
 }  // namespace

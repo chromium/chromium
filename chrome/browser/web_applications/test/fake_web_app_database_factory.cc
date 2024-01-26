@@ -38,7 +38,7 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
   base::RunLoop run_loop;
 
   GetStore()->ReadAllData(base::BindLambdaForTesting(
-      [&](const absl::optional<syncer::ModelError>& error,
+      [&](const std::optional<syncer::ModelError>& error,
           std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
         DCHECK(!error);
 
@@ -85,7 +85,7 @@ void FakeWebAppDatabaseFactory::WriteProtos(
   GetStore()->CommitWriteBatch(
       std::move(write_batch),
       base::BindLambdaForTesting(
-          [&](const absl::optional<syncer::ModelError>& error) {
+          [&](const std::optional<syncer::ModelError>& error) {
             DCHECK(!error);
             run_loop.Quit();
           }));

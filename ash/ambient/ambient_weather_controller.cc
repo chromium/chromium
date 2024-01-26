@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 namespace {
@@ -94,9 +95,13 @@ AmbientWeatherController::~AmbientWeatherController() {
 }
 
 void AmbientWeatherController::OnGeolocationPermissionChanged(bool enabled) {
-  // When system permission is blocked, stop scheduling new requests.
+  // When system permission is blocked, stop scheduling new requests and drop
+  // all pending requests. Also clears the weather model cache for privacy
+  // reasons.
   if (!enabled) {
     weather_refresh_timer_.Stop();
+    weak_factory_.InvalidateWeakPtrs();
+    ClearAmbientWeatherModel();
     return;
   }
 
@@ -111,8 +116,7 @@ void AmbientWeatherController::OnGeolocationPermissionChanged(bool enabled) {
 std::unique_ptr<AmbientWeatherController::ScopedRefresher>
 AmbientWeatherController::CreateScopedRefresher() {
   ++num_active_scoped_refreshers_;
-  if (!weather_refresh_timer_.IsRunning() &&
-      location_permission_provider_->IsGeolocationUsageAllowedForSystem()) {
+  if (!weather_refresh_timer_.IsRunning() && IsGeolocationUsageAllowed()) {
     FetchWeather();
     weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
                                  &AmbientWeatherController::FetchWeather);
@@ -171,6 +175,14 @@ void AmbientWeatherController::OnWeatherConditionIconDownloaded(
     return;
 
   weather_model_->UpdateWeatherInfo(icon, temp_f, show_celsius);
+}
+
+bool AmbientWeatherController::IsGeolocationUsageAllowed() {
+  return location_permission_provider_->IsGeolocationUsageAllowedForSystem();
+}
+
+void AmbientWeatherController::ClearAmbientWeatherModel() {
+  weather_model_->UpdateWeatherInfo(gfx::ImageSkia(), 0.0f, true);
 }
 
 void AmbientWeatherController::OnScopedRefresherDestroyed() {

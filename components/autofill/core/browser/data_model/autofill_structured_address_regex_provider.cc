@@ -478,20 +478,6 @@ std::string ParseHouseNumberStreetNameExpression() {
            },
            CaptureOptions{.quantifier = MatchQuantifier::kOptional})});
 }
-
-// Returns a regular expression to parse a name with a honorific into the prefix
-// and the full name.
-std::string ParsePrefixedName() {
-  return CaptureTypeWithPattern(
-      NAME_FULL_WITH_HONORIFIC_PREFIX,
-      {CaptureTypeWithPattern(
-           NAME_HONORIFIC_PREFIX, kHonorificPrefixRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-       CaptureTypeWithPattern(
-           NAME_FULL, ".+",
-           CaptureOptions{.quantifier = MatchQuantifier::kRequired})});
-}
-
 }  // namespace
 
 StructuredAddressesRegExProvider::StructuredAddressesRegExProvider() = default;
@@ -545,8 +531,6 @@ std::string StructuredAddressesRegExProvider::GetPattern(
       return ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression();
     case RegEx::kParseStreetNameHouseNumber:
       return ParseStreetNameHouseNumberExpression();
-    case RegEx::kParsePrefixedName:
-      return ParsePrefixedName();
   }
   NOTREACHED();
 }

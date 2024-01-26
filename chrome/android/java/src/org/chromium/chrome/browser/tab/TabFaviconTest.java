@@ -27,8 +27,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 

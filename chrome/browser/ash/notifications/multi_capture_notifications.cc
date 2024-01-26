@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/notifications/multi_capture_notifications.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -31,7 +32,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -47,7 +47,7 @@ constexpr char kNotifierMultiCaptureOnLogin[] = "ash.multi_capture_on_login";
 
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 
-absl::optional<bool> g_is_multi_capture_allowed_for_testing;
+std::optional<bool> g_is_multi_capture_allowed_for_testing;
 
 // This function makes sure that on login all data required to check whether a
 // notification is needed is propagated from the policy to the

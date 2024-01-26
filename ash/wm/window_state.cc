@@ -5,6 +5,7 @@
 #include "ash/wm/window_state.h"
 
 #include <absl/cleanup/cleanup.h>
+#include <optional>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -536,6 +537,7 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     // Save `event` requested snap ratio.
     const float target_snap_ratio = snap_event->snap_ratio();
     snap_ratio_ = std::make_optional(target_snap_ratio);
+    snap_action_source_ = std::make_optional(snap_event->snap_action_source());
     if (IsPartial(target_snap_ratio)) {
       partial_start_time_ = base::TimeTicks::Now();
     } else {
@@ -561,20 +563,8 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   }
 
   if (snap_event && IsSnapped()) {
-    const WindowSnapActionSource snap_action_source =
-        snap_event->snap_action_source();
-    if (features::IsFasterSplitScreenSetupEnabled() &&
-        !Shell::Get()->IsInTabletMode()) {
-      // SplitViewController will start the partial overview session, no need
-      // for SplitViewOverviewSession.
-      // TODO(sophiewen): See if checking tablet mode is necessary.
-      window_util::MaybeStartSplitViewOverview(window_, snap_action_source);
-      return;
-    }
-
-    if (IsSnapGroupEnabledInClamshellMode()) {
-      SnapGroupController::Get()->OnWindowSnapped(window_, snap_action_source);
-    }
+    window_util::MaybeStartSplitViewOverview(window_,
+                                             snap_event->snap_action_source());
   }
 }
 

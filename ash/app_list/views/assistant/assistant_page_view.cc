@@ -278,7 +278,7 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
 
     ui::AnimationThroughputReporter reporter(
         settings->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
           base::UmaHistogramPercentage(
               "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView",
               value);

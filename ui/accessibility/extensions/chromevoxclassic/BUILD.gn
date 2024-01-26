@@ -389,7 +389,7 @@ template("generate_deps_js") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_deps.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_deps.py"
     inputs = jsbundler_modules
     sources = invoker.sources
     outputs = [ invoker.output_file ]
@@ -471,7 +471,7 @@ if (is_chromeos_ash) {
   }
 
   action("chromevox_test_messages_js") {
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_test_messages.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_test_messages.py"
     sources = [ "$chromevox_out_dir/_locales/en/messages.json.gz" ]
     output_file = "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/host/testing/test_messages.js"
     outputs = [ output_file ]

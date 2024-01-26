@@ -33,6 +33,10 @@ class FakeTelemetryManagementService
   void SetAudioGain(uint64_t node_id,
                     int32_t gain,
                     SetAudioGainCallback callback) override;
+  void SetAudioVolume(uint64_t node_id,
+                      int32_t volume,
+                      bool is_muted,
+                      SetAudioVolumeCallback callback) override;
 
  private:
   mojo::Receiver<crosapi::mojom::TelemetryManagementService> receiver_{this};

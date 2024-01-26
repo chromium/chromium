@@ -42,11 +42,6 @@ void ObjectPaintInvalidator::InvalidateDisplayItemClient(
                        "client", client.DebugName().Utf8(), "reason",
                        PaintInvalidationReasonToString(reason));
   client.Invalidate(reason);
-
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      &client == &object_ && IsLayoutPaintInvalidationReason(reason)) {
-    object_.GetMutableForPainting().InvalidateIntersectionObserverCachedRects();
-  }
 }
 
 DISABLE_CFI_PERF

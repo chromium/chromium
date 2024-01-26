@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1066101356081285416">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para a Google para oferecer esta funcionalidade e melhorar as funcionalidades do Google Shopping para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use o Chrome por predefinição</translation>
 <translation id="1105362920864247682">Limpe os dados de navegação no Chrome.</translation>
 <translation id="1113057722807951993">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas do Google Pay.
@@ -40,13 +41,13 @@ Aspetos a considerar:
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs introduzidos aos marcadores no Chrome.</translation>
+<translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1830634592642484976">Esta morada está atualmente guardada no Chrome. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Use automaticamente o Chrome quando toca em links de mensagens, documentos e outras apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1917964099031477364">Esta conta e quaisquer dados não guardados serão removidos do Chrome e de outras apps Google neste dispositivo.</translation>
 <translation id="1965935827552890526">Termine o que estava a fazer na outra janela do Chrome aberta.</translation>
 <translation id="1987779152850321833">Conclua as ações sugeridas abaixo para tirar o máximo partido do Chrome.</translation>
-<translation id="2008357574463816229">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Faça mais com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2120238739383482109">Abre os marcadores do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome confirmou que <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
@@ -75,6 +76,7 @@ Aspetos a considerar:
 <translation id="2702250627063295552">Adicione o item da Lista de leitura ao Chrome</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão atualmente desativadas nas Definições do dispositivo.</translation>
 <translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
+<translation id="2789947168960170215">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, ative a sincronização.</translation>
 <translation id="3577555362230509265">Use o Chrome noutras apps.</translation>
-<translation id="3594076341410558780">Oculte a mensagem "Tire o máximo partido do Chrome"</translation>
 <translation id="364480321352456989">O Chrome está desatualizado.</translation>
 <translation id="3646736009628185125">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chrome e sincronizar as respetivas palavras-passe. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Isto significa que o Chrome irá pedir sempre o site para dispositivos móveis.</translation>
@@ -204,7 +205,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="686691656039982452">Pode <ph name="BEGIN_LINK" />gerir que dados do Chrome são guardados<ph name="END_LINK" /> na sua Conta Google.
 
 Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos. Pode alterar esta opção nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pesquise com a voz no Chrome</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>

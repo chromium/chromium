@@ -93,7 +93,7 @@ bool TestSafeBrowsingService::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
-    absl::optional<bool> show_download_in_folder) {
+    std::optional<bool> show_download_in_folder) {
   auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(report_type);
   report->set_download_verdict(

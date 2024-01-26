@@ -1,11 +1,13 @@
 <style include="md-select">
   :host {
+    --compose-loading-body-and-footer-height: 136px;
     --gap-between-sections_: 16px;
     --padding_: 20px;
     display: grid;
     grid-template-areas: "dialog";
     grid-auto-columns: 100%;
     align-items: start;
+    user-select: none;
   }
 
   a {
@@ -17,6 +19,7 @@
   }
 
   .dialog {
+    width: 448px;
     display: flex;
     flex-direction: column;
     gap: var(--gap-between-sections_);
@@ -99,6 +102,40 @@
     display: flex;
     flex-direction: column;
     padding: 0 20px;
+  }
+
+  #savedStateDialog {
+    display: flex;
+    align-items: center;
+    min-width: 180px;
+    padding: 10px var(--padding_);
+  }
+
+  #savedStateIconContainer {
+    color: var(--cr-secondary-text-color);
+    margin-inline-end: var(--gap-between-sections_);
+    min-width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: top left;
+  }
+
+  #savedStateIconContainer iron-icon {
+    --iron-icon-width: 20px;
+    --iron-icon-height: 20px;
+  }
+
+  #savedStateTextContainer {
+    color: var(--cr-primary-text-color);
+    font: inherit;
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  #savedStateLabel {
+    color: var(--cr-secondary-text-color);
   }
 
   #heading {
@@ -213,7 +250,7 @@
   :host([loading-indicator-shown_]) #bodyAndFooter {
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
-    height: 136px;
+    height: var(--compose-loading-body-and-footer-height);
   }
 
   :host([loading-indicator-shown_]) #body {
@@ -243,8 +280,10 @@
   }
 
   .result-container {
+    --compose-result-text-color-while-loading: var(--cr-primary-text-color);
+    --compose-result-text-color: var(--cr-primary-text-color);
     border-radius: 8px;
-    padding: 16px;
+    display: flex;
     box-sizing: border-box;
     background: var(--results-background_);
     color: var(--cr-primary-text-color);
@@ -253,13 +292,24 @@
   }
 
   :host-context([chrome-refresh-2023]) .result-container {
-    color: var(--color-compose-dialog-result-foreground);
+    --compose-result-text-color-while-loading: var(
+        --color-compose-dialog-result-foreground-while-loading);
+    --compose-result-text-color: var(--color-compose-dialog-result-foreground);
     line-height: 16px;
+  }
+
+  #resultContainerInner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
   }
 
   .result-text {
     white-space: pre-wrap;
     word-wrap: break-word;
+    user-select: text;
   }
 
   #resultOptions {
@@ -275,6 +325,9 @@
 
   #resultOptions .md-select {
     --md-select-bg-color: transparent;
+    min-height: 36px;
+    min-width: 96px;
+    height: auto;
     width: auto;
   }
 
@@ -311,8 +364,12 @@
     justify-content: flex-end;
   }
 
+  #submitFooter {
+    gap:35px;
+  }
+
   #resultFooter {
-    gap:86px;
+    gap:45px;
   }
 
   .footer-text {
@@ -321,17 +378,13 @@
     gap: 8px;
     margin-inline-end: auto;
     color: var(--cr-secondary-text-color);
-    font-size: 12px;
-    line-height: 20px;
+    font-size: 11px;
+    line-height: 16px;
   }
 
   :host-context([chrome-refresh-2023]) .footer-text {
     color: var(--color-compose-dialog-foreground-subtle);
     line-height: 16px;
-  }
-
-  .footer-text a {
-    font-weight: bold;
   }
 
   .footer-text .icon-buttons-row {
@@ -341,6 +394,10 @@
 
   .footer cr-button {
     margin-inline-start: 8px;
+  }
+
+  #errorFooter {
+    user-select: text;
   }
 
   :host-context([is-editing-submitted-input_]) #body,
@@ -389,7 +446,9 @@
    */
   .dialog[hidden],
   .footer[hidden],
+  .result-container[hidden],
   #loading[hidden],
+  #savedStateDialog[hidden],
   #editContainer[hidden] {
     display: none;
   }
@@ -415,9 +474,9 @@
   </div>
 
   <div id="firstRunFooter" class="footer">
-    <cr-button id="firstRunLetsGoButton" class="action-button"
-      on-click="onfirstRunLetsGoButtonClick_">
-      $i18n{firstRunLetsGoButton}
+    <cr-button id="firstRunOkButton" class="action-button"
+      on-click="onFirstRunOkButtonClick_">
+      $i18n{firstRunOkButton}
     </cr-button>
   </div>
 </div>
@@ -476,41 +535,43 @@
       <div id="resultContainer" class="result-container"
           hidden="[[!hasPartialOrCompleteResponse_(response_,
               partialResponse_)]]">
-        <div class="result-text"
-            hidden="[[hasPartialResponse_(partialResponse_)]]"
-            >[[getTrimmedResult_(response_.result)]]</div>
-        <div id="partialResultText" class="result-text"
-            hidden="[[!hasPartialResponse_(partialResponse_)]]"
-            >[[getTrimmedPartialResult_(partialResponse_)]]</div>
-        <div id="resultOptions"
-            inert$="[[hasPartialResponse_(partialResponse_)]]">
-          <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-              aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
-            <template is="dom-repeat" items="[[lengthOptions_]]">
-              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                  selected$="[[item.isDefault]]">
-                [[item.label]]
-              </option>
-            </template>
-          </select>
-          <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-              aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
-            <template is="dom-repeat" items="[[toneOptions_]]">
-              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                  selected$="[[item.isDefault]]">
-                [[item.label]]
-              </option>
-            </template>
-          </select>
+        <div id="resultContainerInner">
+          <div class="result-text"
+              hidden="[[hasPartialResponse_(partialResponse_)]]"
+              >[[getTrimmedResult_(response_.result)]]</div>
+          <div id="partialResultText" class="result-text"
+              hidden="[[!hasPartialResponse_(partialResponse_)]]"
+              >[[getTrimmedPartialResult_(partialResponse_)]]</div>
+          <div id="resultOptions"
+              inert$="[[hasPartialResponse_(partialResponse_)]]">
+            <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
+              <template is="dom-repeat" items="[[lengthOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
+            <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
+              <template is="dom-repeat" items="[[toneOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
 
-          <div class="icon-buttons-row">
-            <cr-icon-button id="undoButton" iron-icon="compose:undo"
-              title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
-              on-click="onUndoClick_">
-            </cr-icon-button>
-            <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-              title="$i18n{resubmit}" on-click="onRefresh_">
-            </cr-icon-button>
+            <div class="icon-buttons-row">
+              <cr-icon-button id="undoButton" iron-icon="compose:undo"
+                title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
+                on-click="onUndoClick_">
+              </cr-icon-button>
+              <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+                title="$i18n{resubmit}" on-click="onRefresh_">
+              </cr-icon-button>
+            </div>
           </div>
         </div>
       </div>
@@ -539,7 +600,10 @@
               >$i18nRaw{onDeviceUsedFooter}
 
           </b>
-          <span inner-h-t-m-l="[[getResultFooterText_()]]"></span>
+          <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{dogfoodFooter}</span>
+          <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{resultFooter}</span>
         </div>
         <cr-feedback-buttons
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"
@@ -553,7 +617,14 @@
 
     <div id="errorFooter" class="footer"
         hidden="[[!hasFailedResponse_(response_)]]">
-      <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
+      <div on-click="onFooterClick_" class="footer-text">
+        <span hidden="[[hasErrorWithLink_(response_)]]"
+          >[[failedResponseErrorText_(response_)]]</span>
+        <span hidden="[[!hasUnsupportedLanguageResponse_(response_)]]"
+          >$i18nRaw{errorUnsupportedLanguage}</span>
+        <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
+          >$i18nRaw{errorPermissionDenied}</span>
+      </div>
     </div>
 
     <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
@@ -572,5 +643,17 @@
         </cr-button>
       </div>
     </div>
+  </div>
+</div>
+
+
+<div id="savedStateDialog" hidden="[[!showSavedStateDialog_]]"
+  on-click="onSavedStateDialogClick_">
+  <div id="savedStateIconContainer">
+    <iron-icon icon="compose:compose"></iron-icon>
+  </div>
+  <div id="savedStateTextContainer">
+    <div id="savedStateText">$i18n{savedText}</div>
+    <div id="savedStateLabel">$i18n{savedLabel}</div>
   </div>
 </div>

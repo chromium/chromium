@@ -27,7 +27,8 @@ class CreditCard;
 // `java_object_`.
 class TouchToFillCreditCardController
     : public TouchToFillCreditCardViewController,
-      public ContentAutofillDriverFactory::Observer {
+      public ContentAutofillDriverFactory::Observer,
+      public content::WebContentsObserver {
  public:
   explicit TouchToFillCreditCardController(
       ContentAutofillClient* autofill_client);
@@ -36,6 +37,11 @@ class TouchToFillCreditCardController
   TouchToFillCreditCardController& operator=(
       const TouchToFillCreditCardController&) = delete;
   ~TouchToFillCreditCardController() override;
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

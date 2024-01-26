@@ -24,7 +24,6 @@ after discussions on the right group.
       <annotation id="chrome_variations_android"/>
       <annotation id="customtabs_parallel_request"/>
       <annotation id="download_bitmap"/>
-      <annotation id="download_manager_service_retry"/>
       <annotation id="minidump_uploader_android"/>
       <annotation id="oma_download_handler_android"/>
       <annotation id="partner_bookmarks_reader_get_favicon"/>
@@ -171,8 +170,6 @@ after discussions on the right group.
       <annotation id="indexed_db_internals_handler"/>
       <annotation id="navigation_url_loader"/>
       <annotation id="url_prevision_fetcher"/>
-      <annotation id="pepper_tcp_socket"/>
-      <annotation id="pepper_udp_socket"/>
       <annotation id="service_worker_navigation_preload"/>
       <annotation id="service_worker_update_checker"/>
       <annotation id="service_worker_script_load"/>
@@ -255,7 +252,6 @@ after discussions on the right group.
       <annotation id="chromeos_emoji_picker_categories_fetcher"/>
       <annotation id="chromeos_emoji_picker_featured_fetcher"/>
       <annotation id="chromeos_emoji_picker_search_fetcher"/>
-      <annotation id="app_preload_service_web_installer"/>
       <annotation id="network_diagnostics_stun"/>
       <annotation id="network_diagnostics_tls"/>
       <annotation id="chromeos_emoji_picker_posts_fetcher"/>
@@ -286,8 +282,6 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
-      <annotation id="customize_chrome_page_handler"/>
-      <annotation id="customize_chrome_page_handler_image"/>
       <annotation id="almanac_icon_cache"/>
       <annotation id="blink_fetch_later_manager"/>
       <annotation id="carrier_lock_manager_fetch_configuration"/>
@@ -303,6 +297,18 @@ after discussions on the right group.
       <annotation id="prewarm_http_disk_cache"/>
       <annotation id="admin_specified_ppd_fetch"/>
       <annotation id="shopping_list_ui_image_fetcher"/>
+      <annotation id="wallpaper_search_handler_descriptors_fetcher"/>
+      <annotation id="wallpaper_search_handler_inspirations_fetcher"/>
+      <annotation id="wallpaper_search_handler_inspiration_image_downloader"/>
+      <annotation id="model_quality_logging"/>
+      <annotation id="wallpaper_create_themes_model_execution"/>
+      <annotation id="tab_organizer_model_execution"/>
+      <annotation id="help_me_write_model_execution"/>
+      <annotation id="controlled_frame_content_scripts_download"/>
+      <annotation id="essential_search_manager"/>
+      <annotation id="pepper_tcp_socket"/>
+      <annotation id="pepper_udp_socket"/>
+      <annotation id="app_install_service_web_app_installer"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

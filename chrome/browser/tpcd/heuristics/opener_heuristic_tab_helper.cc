@@ -332,7 +332,7 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
     const ukm::SourceId& source_id,
     const content::CookieAccessDetails& details,
-    absl::optional<PopupsStateValue> value) {
+    std::optional<PopupsStateValue> value) {
   if (!value.has_value()) {
     return;
   }

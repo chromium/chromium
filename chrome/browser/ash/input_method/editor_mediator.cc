@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
@@ -11,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/ash/input_method/editor_text_query_provider_for_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -29,9 +30,11 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       panel_manager_(this),
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
+      metrics_recorder_(
+          std::make_unique<EditorMetricsRecorder>(GetEditorOpportunityMode())),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
-                                               editor_switch_.get())) {
+                                               metrics_recorder_.get())) {
   editor_switch_->OnTabletModeUpdated(
       display::Screen::GetScreen()->InTabletMode());
 }
@@ -63,7 +66,7 @@ void EditorMediator::SetUpNewEditorService() {
         this);
     text_query_provider_ = std::make_unique<TextQueryProviderForOrca>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        profile_, editor_switch_.get());
+        profile_, metrics_recorder_.get());
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
         editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
     editor_event_proxy_ = std::make_unique<EditorEventProxy>(
@@ -152,8 +155,8 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
-  HandleTrigger(/*preset_query_id=*/absl::nullopt,
-                /*freeform_text=*/absl::nullopt);
+  HandleTrigger(/*preset_query_id=*/std::nullopt,
+                /*freeform_text=*/std::nullopt);
 }
 
 void EditorMediator::ShowUI() {
@@ -173,21 +176,23 @@ void EditorMediator::OnPromoCardDeclined() {
 }
 
 void EditorMediator::HandleTrigger(
-    absl::optional<std::string_view> preset_query_id,
-    absl::optional<std::string_view> freeform_text) {
+    std::optional<std::string_view> preset_query_id,
+    std::optional<std::string_view> freeform_text) {
+  metrics_recorder_->SetTone(preset_query_id, freeform_text);
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kNativeRequest, EditorMode::kRewrite);
+      metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kNativeRequest, EditorMode::kWrite);
+      metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
+      metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kBlocked:
       mako_bubble_coordinator_.CloseUI();
@@ -222,8 +227,16 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
+EditorMetricsRecorder* EditorMediator::GetMetricsRecorder() {
+  return metrics_recorder_.get();
+}
+
 EditorOpportunityMode EditorMediator::GetEditorOpportunityMode() const {
   return editor_switch_->GetEditorOpportunityMode();
+}
+
+std::vector<EditorBlockedReason> EditorMediator::GetBlockedReasons() const {
+  return editor_switch_->GetBlockedReasons();
 }
 
 void EditorMediator::Shutdown() {

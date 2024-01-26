@@ -70,23 +70,16 @@ void RecordOpenedActionForConfidence(
   }
 }
 
-void RecordOpenedActionForStatus(CookieControlsStatus status) {
-  switch (status) {
-    case CookieControlsStatus::kEnabled:
-      // Cookie blocking is enabled.
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesBlocked.Opened"));
-      break;
-    case CookieControlsStatus::kDisabled:
-    case CookieControlsStatus::kDisabledForSite:
-      // Cookie blocking is disabled.
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesAllowed.Opened"));
-      break;
-    case CookieControlsStatus::kUninitialized:
-      base::RecordAction(
-          base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-      break;
+void RecordOpenedAction(bool icon_visible, bool protections_on) {
+  if (!icon_visible) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
+  } else if (protections_on) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesBlocked.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesAllowed.Opened"));
   }
 }
 
@@ -105,9 +98,6 @@ CookieControlsIconView::CookieControlsIconView(
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
   bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
@@ -154,7 +144,7 @@ bool CookieControlsIconView::MaybeShowIPH() {
   const base::Feature* feature = nullptr;
   if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
     // Only show the reminder IPH if cookies are blocked on the current site.
-    if (status_ != CookieControlsStatus::kEnabled) {
+    if (!protections_on_) {
       return false;
     }
     // UB reminder IPH in 3PCD experiment.
@@ -183,7 +173,7 @@ void CookieControlsIconView::OnIPHClosed() {
 }
 
 void CookieControlsIconView::SetLabelAndTooltip() {
-  auto icon_label = GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP);
+  int icon_label = GetLabelForStatus();
   // Only use "Tracking Protection" and verbose accessibility description if the
   // label is hidden.
   if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
@@ -198,6 +188,8 @@ void CookieControlsIconView::SetLabelAndTooltip() {
   SetLabel(l10n_util::GetStringUTF16(icon_label));
 }
 
+// TODO(b/317883749): Break out the animation logic to its own function
+// `OnHighlightUserBypass`.
 void CookieControlsIconView::UpdateVisibilityAndAnimate(
     bool confidence_changed) {
   bool should_be_visible = ShouldBeVisible();
@@ -206,19 +198,15 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (!MaybeShowIPH() &&
           confidence_ == CookieControlsBreakageConfidenceLevel::kHigh &&
-          status_ == CookieControlsStatus::kEnabled) {
-        auto label = GetLabelForStatus();
-        if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
-            status_ == CookieControlsStatus::kEnabled) {
+          protections_on_) {
+        int label = GetLabelForStatus();
+        if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
           label = IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL;
         }
         AnimateIn(label);
 // VoiceOver on Mac already announces this text.
 #if !BUILDFLAG(IS_MAC)
-        if (label.has_value()) {
-          GetViewAccessibility().AnnounceText(
-              l10n_util::GetStringUTF16(label.value()));
-        }
+        GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(label));
 #endif
         if (controller_) {
           controller_->OnEntryPointAnimated();
@@ -241,33 +229,13 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
   }
 }
 
-std::optional<int> CookieControlsIconView::GetLabelForStatus() const {
-  switch (status_) {
-    case CookieControlsStatus::kDisabledForSite:
-      ABSL_FALLTHROUGH_INTENDED;
-    case CookieControlsStatus::kDisabled:  // Cookies are not blocked
-      return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
-    case CookieControlsStatus::kEnabled:  // Cookies are blocked
-      if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
-        return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL;
-      } else {
-        return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
-      }
-    case CookieControlsStatus::kUninitialized:
-      DLOG(ERROR) << "CookieControl status is not initialized";
-      return std::nullopt;
-  }
-}
-
-void CookieControlsIconView::OnStatusChanged(
-    CookieControlsStatus status,
-    CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration) {
-  if (status_ != status || blocking_status_ != blocking_status) {
-    status_ = status;
-    blocking_status_ = blocking_status;
-    UpdateVisibilityAndAnimate();
+int CookieControlsIconView::GetLabelForStatus() const {
+  if (!protections_on_) {
+    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
+  } else if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
+    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL;
+  } else {
+    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
   }
 }
 
@@ -277,11 +245,27 @@ void CookieControlsIconView::OnSitesCountChanged(
   // The icon doesn't update if sites count changes.
 }
 
+// TODO(b/317883749): Remove usage of this function and
+// `CookiesControlsBreakageConfidenceLevel`.
 void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
     CookieControlsBreakageConfidenceLevel level) {
   if (confidence_ != level) {
     confidence_ = level;
     UpdateVisibilityAndAnimate(/*confidence_changed=*/true);
+  }
+}
+
+void CookieControlsIconView::OnUserBypassIconStatusChanged(
+    bool icon_visible,
+    bool protections_on,
+    CookieBlocking3pcdStatus blocking_status) {
+  if (icon_visible != icon_visible_ || protections_on != protections_on_ ||
+      blocking_status != blocking_status_) {
+    icon_visible_ = icon_visible;
+    protections_on_ = protections_on;
+    blocking_status_ = blocking_status;
+    // TODO(b/317883749): Remove this call and move relevant logic here.
+    UpdateVisibilityAndAnimate();
   }
 }
 
@@ -308,8 +292,7 @@ bool CookieControlsIconView::ShouldBeVisible() const {
     return false;
   }
 
-  if (status_ == CookieControlsStatus::kDisabled) {
-    // Don't show the icon if third-party cookies are enabled by default.
+  if (!icon_visible_) {
     return false;
   }
 
@@ -335,7 +318,7 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
       feature_engagement::kIPHCookieControlsFeature);
   browser_->window()->NotifyFeatureEngagementEvent(
       feature_engagement::events::kCookieControlsBubbleShown);
-  RecordOpenedActionForStatus(status_);
+  RecordOpenedAction(icon_visible_, protections_on_);
   RecordOpenedActionForConfidence(confidence_);
 }
 
@@ -350,14 +333,11 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    return status_ == CookieControlsStatus::kDisabledForSite
-               ? views::kEyeRefreshIcon
-               : views::kEyeCrossedRefreshIcon;
+    return protections_on_ ? views::kEyeCrossedRefreshIcon
+                           : views::kEyeRefreshIcon;
   }
 
-  return status_ == CookieControlsStatus::kDisabledForSite
-             ? views::kEyeIcon
-             : views::kEyeCrossedIcon;
+  return protections_on_ ? views::kEyeCrossedIcon : views::kEyeIcon;
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}

@@ -59,7 +59,7 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
       env, java_webapp_id, java_url, java_scope_url, java_user_title, java_name,
       java_short_name, java_best_primary_icon_url, java_bitmap,
       info.is_primary_icon_maskable, static_cast<int>(info.display),
-      static_cast<int>(info.orientation), info.source,
+      static_cast<int>(info.orientation),
       ui::OptionalSkColorToJavaColor(info.theme_color),
       ui::OptionalSkColorToJavaColor(info.background_color));
 
@@ -90,7 +90,7 @@ void AddShortcutWithSkBitmap(const webapps::ShortcutInfo& info,
     java_bitmap = gfx::ConvertToJavaBitmap(icon_bitmap);
   Java_ShortcutHelper_addShortcut(env, java_id, java_url, java_user_title,
                                   java_bitmap, info.is_primary_icon_maskable,
-                                  info.source, java_best_primary_icon_url);
+                                  java_best_primary_icon_url);
 }
 
 void RecordAddToHomeScreenUKM(

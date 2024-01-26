@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -18,7 +19,6 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -61,8 +61,12 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
   }
   // New session should override an existing one.
   if (cookie_controller_) {
-    session_params_storage_->ClearParams(cookie_controller_->url().spec(),
-                                         cookie_controller_->session_id());
+    bool clear_params = cookie_controller_->url().spec() != params.site() ||
+                        cookie_controller_->session_id() != params.session_id();
+    if (clear_params) {
+      session_params_storage_->ClearParams(cookie_controller_->url().spec(),
+                                           cookie_controller_->session_id());
+    }
     cookie_controller_.reset();
     RecordSessionTerminationTrigger(
         SessionTerminationTrigger::kSessionOverride);
@@ -166,7 +170,7 @@ void BoundSessionCookieRefreshServiceImpl::RemoveObserver(
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
-    absl::optional<bound_session_credentials::BoundSessionParams>
+    std::optional<bound_session_credentials::BoundSessionParams>
         bound_session_params) {
   if (bound_session_params.has_value()) {
     RegisterNewBoundSession(*bound_session_params);

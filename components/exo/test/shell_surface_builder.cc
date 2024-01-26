@@ -202,6 +202,14 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetFrame(SurfaceFrameType type) {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetFrameColors(SkColor active,
+                                                         SkColor inactive) {
+  DCHECK(!built_);
+  active_frame_color_ = active;
+  inactive_frame_color_ = inactive;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetApplicationId(
     const std::string& application_id) {
   DCHECK(!built_);
@@ -334,7 +342,7 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
 
   auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
-  auto shell_surface = std::make_unique<ShellSurface>(
+  auto shell_surface = std::make_unique<XdgShellSurface>(
       holder->root_surface, origin_, can_minimize_, GetContainer());
 
   if (!configure_callback_.is_null()) {
@@ -503,6 +511,11 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (type_.has_value()) {
     shell_surface->root_surface()->SetFrame(type_.value());
+  }
+
+  if (active_frame_color_.has_value()) {
+    shell_surface->root_surface()->SetFrameColors(
+        active_frame_color_.value(), inactive_frame_color_.value());
   }
 
   if (system_modal_) {

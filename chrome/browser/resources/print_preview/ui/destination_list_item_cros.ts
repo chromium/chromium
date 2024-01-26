@@ -16,7 +16,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import type {Destination} from '../data/destination.js';
+import {DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, getStatusTextColorClass, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {getTemplate} from './destination_list_item_cros.html.js';

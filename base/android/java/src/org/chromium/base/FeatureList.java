@@ -108,14 +108,6 @@ public class FeatureList {
         ResettersForTesting.register(() -> sTestCanUseDefaults = false);
     }
 
-    /**
-     * We reset the value to false after the instrumentation test to avoid any unwanted
-     * persistence of the state. This is invoked by Features#reset().
-     */
-    public static void resetTestCanUseDefaultsForTesting() {
-        sTestCanUseDefaults = false;
-    }
-
     /** Sets the feature flags to use in JUnit tests, since native calls are not available there. */
     @VisibleForTesting
     public static void setTestFeatures(Map<String, Boolean> testFeatures) {

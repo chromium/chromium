@@ -86,12 +86,9 @@ UIImage* MakeSymbolMonochrome(UIImage* symbol) {
 }
 
 UIImage* MakeSymbolMulticolor(UIImage* symbol) {
-  if (@available(iOS 15, *)) {
-    return [symbol
-        imageByApplyingSymbolConfiguration:
-            [UIImageSymbolConfiguration configurationPreferringMulticolor]];
-  }
-  return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  return [symbol
+      imageByApplyingSymbolConfiguration:
+          [UIImageSymbolConfiguration configurationPreferringMulticolor]];
 }
 
 UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors) {

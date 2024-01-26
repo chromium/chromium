@@ -74,6 +74,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "HistoryCluster";
     case TYPE_CALCULATOR:
       return "Calculator";
+    case TYPE_FEATURED_SEARCH:
+      return "FeaturedSearch";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
@@ -153,6 +155,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       //   launch, log as search provider to avoid the adding then deprecating
       //   the provider in the proto and histograms.
       return metrics::OmniboxEventProto::SEARCH;
+    case TYPE_FEATURED_SEARCH:
+      return metrics::OmniboxEventProto::FEATURED_SEARCH;
     default:
       // TODO(crbug.com/1499235) This was a NOTREACHED that we converted to help
       //   debug crbug.com/1499235 since NOTREACHED's don't log their message in

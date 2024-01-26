@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Šalji obavještenja</translation>
 <translation id="4133493477912226187">Čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>
 <translation id="4212246570487010370">Nastavite pregledati</translation>
+<translation id="427987768447457592">Nova grupa kartica</translation>
 <translation id="4648718555153979859">Vaše kartice su grupisane ovdje</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Sakrij mrežu cijelog ekrana</translation>
 <translation id="5076161749301278626">Želite li pogledati recenzije trgovine?</translation>
 <translation id="5082793167783849073">Kreirajte grupu i brzo uporedite stranice. Da započnete, dodirnite i držite link.</translation>
+<translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> karticu koju niste nedavno koristili}one{Imate <ph name="TABS_COUNT_MANY" /> karticu koju niste nedavno koristili}few{Imate <ph name="TABS_COUNT_MANY" /> kartice koje niste nedavno koristili}other{Imate <ph name="TABS_COUNT_MANY" /> kartica koje niste nedavno koristili}}</translation>
 <translation id="5339733443032484186">Posljednja kartica</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>

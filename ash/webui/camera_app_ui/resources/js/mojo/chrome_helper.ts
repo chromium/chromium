@@ -27,6 +27,7 @@ import {
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   ToteMetricFormat,
+  WifiConfig,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
 
@@ -225,6 +226,8 @@ export abstract class ChromeHelper {
 
   abstract openStorageManagement(): void;
 
+  abstract openWifiDialog(config: WifiConfig): void;
+
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     existing instance.
@@ -362,13 +365,13 @@ class ChromeHelperImpl extends ChromeHelper {
       Promise<void> {
     const {result} = await this.remote.monitorFileDeletion(name);
     switch (result) {
-      case FileMonitorResult.DELETED:
+      case FileMonitorResult.kDeleted:
         callback();
         return;
-      case FileMonitorResult.CANCELED:
+      case FileMonitorResult.kCanceled:
         // Do nothing if it is canceled by another monitor call.
         return;
-      case FileMonitorResult.ERROR:
+      case FileMonitorResult.kError:
         throw new Error('Error happens when monitoring file deletion');
       default:
         assertNotReached();
@@ -404,9 +407,9 @@ class ChromeHelperImpl extends ChromeHelper {
     const buffer = new Uint8Array(await blob.arrayBuffer());
     let outputFormat;
     if (mimeType === MimeType.JPEG) {
-      outputFormat = DocumentOutputFormat.JPEG;
+      outputFormat = DocumentOutputFormat.kJpeg;
     } else if (mimeType === MimeType.PDF) {
-      outputFormat = DocumentOutputFormat.PDF;
+      outputFormat = DocumentOutputFormat.kPdf;
     } else {
       throw new Error(`Output mimetype unsupported: ${mimeType}`);
     }
@@ -437,9 +440,9 @@ class ChromeHelperImpl extends ChromeHelper {
         wrapEndpoint(new StorageMonitorCallbackRouter());
     storageCallbackRouter.update.addListener(
         (newStatus: StorageMonitorStatus) => {
-          if (newStatus === StorageMonitorStatus.ERROR) {
+          if (newStatus === StorageMonitorStatus.kError) {
             throw new Error('Error occurred while monitoring storage.');
-          } else if (newStatus !== StorageMonitorStatus.CANCELED) {
+          } else if (newStatus !== StorageMonitorStatus.kCanceled) {
             onChange(newStatus);
           }
         });
@@ -447,8 +450,8 @@ class ChromeHelperImpl extends ChromeHelper {
     const {initialStatus} = await this.remote.startStorageMonitor(
         storageCallbackRouter.$.bindNewPipeAndPassRemote());
     // Should not get canceled status at initial time.
-    if (initialStatus === StorageMonitorStatus.ERROR ||
-        initialStatus === StorageMonitorStatus.CANCELED) {
+    if (initialStatus === StorageMonitorStatus.kError ||
+        initialStatus === StorageMonitorStatus.kCanceled) {
       throw new Error('Failed to start storage monitoring.');
     }
     return initialStatus;
@@ -460,5 +463,9 @@ class ChromeHelperImpl extends ChromeHelper {
 
   override openStorageManagement(): void {
     this.remote.openStorageManagement();
+  }
+
+  override openWifiDialog(config: WifiConfig): void {
+    this.remote.openWifiDialog(config);
   }
 }

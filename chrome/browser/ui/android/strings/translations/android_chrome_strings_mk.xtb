@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Променете ја стандардната локација за преземање во секое време</translation>
 <translation id="1796666869097395659">Минимизирајте ја картичката за да се вратите на неа подоцна</translation>
 <translation id="1807246157184219062">Светла</translation>
+<translation id="1807709131360304325">Отвори нов прозорец</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продолжи со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Најди на страница</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">Сајтот е паузиран</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 неуспешно преземање}one{# неуспешно преземање}other{# неуспешни преземања}}</translation>
 <translation id="2067805253194386918">текст</translation>
+<translation id="2079545284768500474">Врати</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Избран е „Компактен приказ“</translation>
 <translation id="2093731487903423814">минатите 15 минути</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">Активност на веб и апликации</translation>
 <translation id="2234827758954819389">Водич за приватност</translation>
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
-<translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2247789808226901522">Картичката е истечена</translation>
 <translation id="2248941474044011069">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="2249635629516220541">Приспособете ги податоците што ги користат сајтовите за да ви прикажуваат реклами</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="2321086116217818302">Се подготвуваат лозинките…</translation>
 <translation id="2323763861024343754">Достапен простор на сајтот</translation>
-<translation id="2327226657832576859">Да се отвораат PDF-датотеките автоматски?</translation>
 <translation id="2328985652426384049">Не може да се најавите</translation>
 <translation id="2341410551640223969">Не можеше да се инсталира <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
+<translation id="2789486458103222910">Во ред</translation>
 <translation id="2800066122460699237">Картичката <ph name="TAB_TITLE" /> ќе се затвори</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Менито на картичката за активност е отворено на половина екран</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">Се ажурира Chrome за да се поврзете со други уреди</translation>
 <translation id="2951071800649516099">Додајте страници во списокот за читање за подоцна</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
-<translation id="2961210776189273067">Наслов</translation>
 <translation id="296370266220139811">Штедење време и пишување помалку</translation>
 <translation id="2977350910003566746">Се подредува според последно отворање</translation>
 <translation id="297771753501244313">Подреди по посл. отвор.</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4307992518367153382">Основи</translation>
+<translation id="4311652497846705514">Да се отвори PDF-датотеката?</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
 <translation id="433213510553688132">Се следи…</translation>
 <translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">минатиот час</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4532845899244822526">Избери папка</translation>
-<translation id="4541505619120536051">Секогаш отворај</translation>
 <translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4554077758708533499">Поврзано со USB-кабел</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">Лого на „Известувањето за приватност“ за „Центар за увиди во страница“ што пренасочува на страницата со „Моја активност“.</translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
 <translation id="5492637351392383067">Шифрирање на уредот</translation>
-<translation id="5509866835115085009">Chrome може да ги отвора PDF-датотеките автоматски кога ќе ги преземете.</translation>
 <translation id="5514904542973294328">Оневозможено од администраторот на уредов</translation>
 <translation id="5515439363601853141">Отклучете за да ја прикажете лозинката</translation>
 <translation id="5517095782334947753">Имате обележувачи, историја, лозинки и други поставки од <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
 <translation id="5966233851250124270">Chrome ќе го запомни вашиот избор</translation>
+<translation id="5977976211062815271">На уредов</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
 <translation id="5995726099713306770">Да се преземе страницата повторно?</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">Отвори со…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Сите датотеки, 1 датотека во список}one{Сите датотеки, # датотека во список}other{Сите датотеки, # датотеки во список}}</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
+<translation id="7821130663268546430">Може да ги најдете сите отворени картички во „Менувачот на картички“</translation>
 <translation id="7822705602465980873">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="78270725016672455">Компјутерот сака да го регистрира уредов за најавување на сајт</translation>
 <translation id="7844171778363018843">Не се избрани податоци за синхронизација</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7947953824732555851">Прифати и најави се</translation>
+<translation id="7951102827450076904">Секогаш отворај ги преземените PDF-датотеки</translation>
 <translation id="7957413488482743710">Виртуелната картичка ја сокрива вашата актуелна картичка за да ја заштити од потенцијална измама. <ph name="BEGIN_LINK1" />Дознајте повеќе за виртуелните картички<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Копче за назад на „Увиди за страници“</translation>
 <translation id="7961926449547174351">Сте го оневозможиле пристапот до „Капацитет“, одете во „Поставки“ за да го овозможите.</translation>

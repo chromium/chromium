@@ -22,6 +22,7 @@ class EmptyDataSharingService : public DataSharingService {
 
   // DataSharingService implementation.
   bool IsEmptyService() override;
+  DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
 };
 
 }  // namespace data_sharing

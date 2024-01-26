@@ -75,10 +75,13 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual bool BrowserSupportsTabGroups();
   virtual bool BrowserSupportsCustomizeChromeSidePanel();
   virtual bool DefaultSearchProviderIsGoogle();
+  virtual bool BrowserSupportsSavedTabGroups();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserCommandHandlerTest,
                            StartPasswordManagerTutorialCommand);
+  FRIEND_TEST_ALL_PREFIXES(BrowserCommandHandlerTest,
+                           StartSavedTabGroupTutorialCommand);
 
   virtual void NavigateToURL(const GURL& url,
                              WindowOpenDisposition disposition);
@@ -93,6 +96,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();
+  void StartSavedTabGroupTutorial();
 
   FeedbackCommandSettings feedback_settings_;
   raw_ptr<Profile, DanglingUntriaged> profile_;

@@ -24,7 +24,7 @@
 namespace {
 
 net::ProxyConfigWithAnnotation GetConfigOrDirect(
-    const absl::optional<net::ProxyConfigWithAnnotation>& optional_config,
+    const std::optional<net::ProxyConfigWithAnnotation>& optional_config,
     Profile* profile,
     bool proxy_controlled_by_extension) {
   DCHECK(profile);

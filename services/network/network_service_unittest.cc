@@ -4,6 +4,7 @@
 
 #include "services/network/network_service.h"
 
+#include <cstdint>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -68,6 +69,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
+#include "services/network/public/mojom/network_annotation_monitor.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -85,6 +87,14 @@
 #if BUILDFLAG(USE_KERBEROS)
 #include "net/http/http_auth_handler_negotiate.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "services/network/mock_mojo_dhcp_wpad_url_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "services/network/test_mojo_proxy_resolver_factory.h"
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 namespace network {
 
@@ -996,40 +1006,40 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-static int GetGlobalMaxConnectionsPerProxy() {
+static int GetGlobalMaxConnectionsPerProxyChain() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL);
 }
 
-// Tests that NetworkService::SetMaxConnectionsPerProxy() (1) modifies globals
-// in net::ClientSocketPoolManager (2) saturates out of bound values.
-TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxy) {
+// Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
+// globals in net::ClientSocketPoolManager (2) saturates out of bound values.
+TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
   const int kDefault = net::kDefaultMaxSocketsPerProxyChain;
   const int kMin = 6;
   const int kMax = 99;
 
   // Starts off at default value.
   EXPECT_EQ(net::kDefaultMaxSocketsPerProxyChain,
-            GetGlobalMaxConnectionsPerProxy());
+            GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything less than kMin saturates to kMin.
-  service()->SetMaxConnectionsPerProxy(kMin - 1);
-  EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(kMin - 1);
+  EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything larger than kMax saturates to kMax
-  service()->SetMaxConnectionsPerProxy(kMax + 1);
-  EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(kMax + 1);
+  EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything in between kMin and kMax should be set exactly.
-  service()->SetMaxConnectionsPerProxy(58);
-  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(58);
+  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxyChain());
 
   // Negative values select the default.
-  service()->SetMaxConnectionsPerProxy(-2);
-  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(-2);
+  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
 
   // Restore the default value to minize sideffects.
-  service()->SetMaxConnectionsPerProxy(kDefault);
+  service()->SetMaxConnectionsPerProxyChain(kDefault);
 }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -1104,13 +1114,15 @@ class NetworkServiceCookieTest
 // SetCookieEncryptionProvider is called with a provider, and
 // enable_encrypted_cookies is on, then the GetEncryptor method is called and
 // the returned Encryptor is used for encryption.
-TEST_P(NetworkServiceCookieTest, SetCookieEncryptionProvider) {
+TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
   const auto cookie_path = base::FilePath(FILE_PATH_LITERAL("Cookies"));
   testing::StrictMock<TestCookieEncryptionProvider> provider;
   std::optional<base::ScopedClosureRunner> maybe_teardown_os_crypt;
 
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+
   if (ShouldSetEncryptionProvider()) {
-    service()->SetCookieEncryptionProvider(provider.BindRemote());
+    params->cookie_encryption_provider = provider.BindRemote();
     if (IsEncryptionEnabled()) {
       EXPECT_CALL(provider, GetEncryptor)
           .WillOnce(
@@ -1133,7 +1145,6 @@ TEST_P(NetworkServiceCookieTest, SetCookieEncryptionProvider) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
   params->enable_encrypted_cookies = IsEncryptionEnabled();
   params->file_paths->data_directory = temp_dir.GetPath();
   params->file_paths->cookie_database_name = cookie_path;
@@ -1643,9 +1654,8 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
 
   ~NetworkServiceNetworkDelegateTest() override = default;
 
-  void CreateNetworkContext() {
-    mojom::NetworkContextParamsPtr context_params =
-        mojom::NetworkContextParams::New();
+  void CreateNetworkContext(mojom::NetworkContextParamsPtr context_params =
+                                mojom::NetworkContextParams::New()) {
     // Use a dummy CertVerifier that always passes cert verification, since
     // these unittests don't need to test CertVerifier behavior.
     context_params->cert_verifier_params =
@@ -1853,6 +1863,88 @@ TEST_F(NetworkServiceNetworkDelegateTest, HandleClearSiteDataHeaders) {
   }
 }
 
+class TestNetworkAnnotationMonitor : public mojom::NetworkAnnotationMonitor {
+ public:
+  mojo::PendingRemote<mojom::NetworkAnnotationMonitor> GetClient() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  TestNetworkAnnotationMonitor() : expected_hash_code_(0) {}
+
+  // Alternative constructor which allows waiting for `expected_hash_code` to be
+  // reported via `WaitForHashCode()`.
+  explicit TestNetworkAnnotationMonitor(int32_t expected_hash_code)
+      : expected_hash_code_(expected_hash_code) {}
+
+  void Report(int32_t hash_code) override {
+    reported_hash_codes_.push_back(hash_code);
+    if (hash_code == expected_hash_code_) {
+      run_loop_.Quit();
+    }
+  }
+
+  void WaitForHashCode() { run_loop_.Run(); }
+
+  const std::vector<int32_t> reported_hash_codes() {
+    return reported_hash_codes_;
+  }
+
+ private:
+  mojo::Receiver<mojom::NetworkAnnotationMonitor> receiver_{this};
+  std::vector<int32_t> reported_hash_codes_;
+  const int32_t expected_hash_code_;
+  base::RunLoop run_loop_;
+};
+
+TEST_F(NetworkServiceNetworkDelegateTest, NetworkAnnotationMonitor) {
+  CreateNetworkContext();
+
+  TestNetworkAnnotationMonitor monitor;
+  service()->SetNetworkAnnotationMonitor(monitor.GetClient());
+  LoadURL(https_server()->GetURL("/foo"));
+  task_environment()->RunUntilIdle();
+
+  std::vector<int32_t> expected_hash_codes = {
+      TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code};
+  EXPECT_EQ(expected_hash_codes, monitor.reported_hash_codes());
+}
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+// Verify that network requests without a loader are reported to Network
+// Annotation Monitor. This test uses a PAC fetch as an example of such request.
+TEST_F(NetworkServiceNetworkDelegateTest,
+       NetworkAnnotationMonitorWithoutLoader) {
+  net::NetworkTrafficAnnotationTag kTestPacFetchAnnotation =
+      net::DefineNetworkTrafficAnnotation("test_pac_fetch", "");
+  TestNetworkAnnotationMonitor monitor(
+      kTestPacFetchAnnotation.unique_id_hash_code);
+  service()->SetNetworkAnnotationMonitor(monitor.GetClient());
+
+  // Setup NetworkContext with proxy config. This will enable PAC fetch.
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  TestMojoProxyResolverFactory proxy_resolver_factory;
+  context_params->proxy_resolver_factory =
+      proxy_resolver_factory.CreateFactoryRemote();
+  context_params->initial_proxy_config =
+      net::ProxyConfigWithAnnotation(net::ProxyConfig::CreateFromCustomPacURL(
+                                         GURL("https://not.a.real.proxy.test")),
+                                     kTestPacFetchAnnotation);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  context_params->dhcp_wpad_url_client =
+      network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
+          std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateNetworkContext(std::move(context_params));
+
+  // Load an arbitrary URL. This should trigger the PAC fetch.
+  LoadURL(https_server()->GetURL("/foo"));
+
+  // Verify PAC fetch annotation was reported.
+  monitor.WaitForHashCode();
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
 class NetworkServiceTestWithSystemDnsResolver
     : public NetworkServiceTestWithService {
  public:
@@ -1941,6 +2033,22 @@ TEST_F(NetworkServiceTestWithSystemDnsResolver,
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(NetworkServiceTest, NetworkAnnotationMonitor) {
+  TestNetworkAnnotationMonitor monitor;
+
+  // Hash codes should not be reported until NetworkAnnotationMonitor is set.
+  service()->NotifyNetworkRequestWithAnnotation(TRAFFIC_ANNOTATION_FOR_TESTS);
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(monitor.reported_hash_codes(), testing::IsEmpty());
+
+  service()->SetNetworkAnnotationMonitor(monitor.GetClient());
+  service()->NotifyNetworkRequestWithAnnotation(TRAFFIC_ANNOTATION_FOR_TESTS);
+  task_environment()->RunUntilIdle();
+  std::vector<int32_t> expected_hash_codes = {
+      TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code};
+  EXPECT_EQ(expected_hash_codes, monitor.reported_hash_codes());
 }
 
 }  // namespace

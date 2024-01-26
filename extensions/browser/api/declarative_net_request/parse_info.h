@@ -70,9 +70,7 @@ class ParseInfo {
     return ruleset_checksum_;
   }
 
-  base::span<const uint8_t> GetBuffer() const {
-    return base::make_span(buffer_.data(), buffer_.size());
-  }
+  base::span<const uint8_t> GetBuffer() const { return buffer_; }
 
  private:
   bool has_error_ = false;

@@ -86,8 +86,8 @@ artifact_zip("updater_zip") {
       ] + get_target_outputs(":signing")
   deps = [
     ":signing",
-    "//chrome/updater/app/server/win:updater_idl_idl",
-    "//chrome/updater/app/server/win:updater_internal_idl_idl",
+    "//chrome/updater/app/server/win:updater_idl",
+    "//chrome/updater/app/server/win:updater_internal_idl",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",

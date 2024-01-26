@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "components/download/public/background_service/background_download_service.h"
-#include "components/download/public/common/auto_resumption_handler.h"
+#include "components/download/public/common/android/auto_resumption_handler.h"
 #include "content/public/browser/browser_context.h"
 
 using base::android::JavaParamRef;

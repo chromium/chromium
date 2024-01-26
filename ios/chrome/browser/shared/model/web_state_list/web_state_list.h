@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -333,7 +333,7 @@ class WebStateList {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The WebStateList delegate.
-  WebStateListDelegate* delegate_ = nullptr;
+  raw_ptr<WebStateListDelegate> delegate_ = nullptr;
 
   // Wrappers to the WebStates hosted by the WebStateList.
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;

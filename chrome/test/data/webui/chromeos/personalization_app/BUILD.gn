@@ -44,6 +44,7 @@ build_webui_tests("build_webui_tests") {
     "sea_pen_recent_wallpapers_element_test.ts",
     "sea_pen_router_element_test.ts",
     "sea_pen_template_query_element_test.ts",
+    "sea_pen_templates_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",

@@ -1845,40 +1845,30 @@ class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
 #endif
 };
 
-// This test verifies the SetCookieEncryptionProvider API on the network service
-// results in a call to the GetEncryptor method on the CookieEncryptionProvider.
+// This test verifies that when a cookie encryption provider is set when
+// creating a network context, then it results in a call to the GetEncryptor
+// method on the CookieEncryptionProvider.
 IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
-                       SetCookieEncryptionProvider) {
+                       CookieEncryptionProvider) {
   const auto data_path =
       shell()->web_contents()->GetBrowserContext()->GetPath();
-  auto create_params = [&data_path](
-                           const base::FilePath::StringPieceType sub_path) {
-    network::mojom::NetworkContextParamsPtr context_params =
-        network::mojom::NetworkContextParams::New();
-    context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-    context_params->file_paths->data_directory = data_path.Append(sub_path);
-    context_params->file_paths->cookie_database_name =
-        base::FilePath(FILE_PATH_LITERAL("Cookies"));
-    context_params->cert_verifier_params = GetCertVerifierParams(
-        cert_verifier::mojom::CertVerifierCreationParams::New());
-    context_params->enable_encrypted_cookies = true;
-    return context_params;
-  };
+  auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->data_directory =
+      data_path.Append(FILE_PATH_LITERAL("TestContext"));
+  context_params->file_paths->cookie_database_name =
+      base::FilePath(FILE_PATH_LITERAL("Cookies"));
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->enable_encrypted_cookies = true;
 
   testing::StrictMock<TestCookieEncryptionProvider> provider;
+  context_params->cookie_encryption_provider = provider.BindRemote();
 
-  GURL test_url = embedded_test_server()->GetURL("foo.com", "/echo");
-
-  mojo::Remote<network::mojom::NetworkContext> first_network_context;
+  mojo::Remote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
-      first_network_context.BindNewPipeAndPassReceiver(),
-      create_params(FILE_PATH_LITERAL("TestContext1")));
-  ASSERT_EQ(net::OK, LoadBasicRequest(first_network_context.get(), test_url));
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
 
-  // Enable Cookie Encryption provider for future network contexts.
-  GetNetworkService()->SetCookieEncryptionProvider(provider.BindRemote());
-
-  // This should only be called once, by the second network context created.
   EXPECT_CALL(provider, GetEncryptor)
       .WillOnce(
           [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
@@ -1887,12 +1877,17 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
                 os_crypt_async::GetTestEncryptorForTesting());
           });
 
-  mojo::Remote<network::mojom::NetworkContext> second_network_context;
-  content::CreateNetworkContextInNetworkService(
-      second_network_context.BindNewPipeAndPassReceiver(),
-      create_params(FILE_PATH_LITERAL("TestContext2")));
+  // Cookie here needs to be non-session to be written to the Cookies file.
+  GURL test_url = embedded_test_server()->GetURL(
+      "foo.com", "/cookies/set_persistent_cookie.html");
 
-  ASSERT_EQ(net::OK, LoadBasicRequest(second_network_context.get(), test_url));
+  // This artificial delay verifies https://crbug.com/1511730 is fixed.
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  network_context->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+  cookie_manager->SetPreCommitCallbackDelayForTesting(base::Seconds(3));
+
+  ASSERT_EQ(net::OK, LoadBasicRequest(network_context.get(), test_url));
 }
 
 }  // namespace

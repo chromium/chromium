@@ -8,10 +8,10 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/models/image_model.h"
 
@@ -138,7 +138,7 @@ ASH_EXPORT bool ContainsFileSystemData(const ui::ClipboardData& data);
 // referenced by `source_list` to reduce memory copies.
 ASH_EXPORT void GetSplitFileSystemData(
     const ui::ClipboardData& data,
-    std::vector<base::StringPiece16>* source_list,
+    std::vector<std::u16string_view>* source_list,
     std::u16string* sources);
 
 // Returns the count of copied files contained by the clipboard data.

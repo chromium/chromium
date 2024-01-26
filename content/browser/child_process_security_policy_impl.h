@@ -50,7 +50,6 @@ class BrowserContext;
 class IsolationContext;
 class ProcessLock;
 class ResourceContext;
-class SiteInstance;
 struct UrlInfo;
 
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl

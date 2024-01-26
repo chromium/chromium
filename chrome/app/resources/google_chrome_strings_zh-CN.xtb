@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">无法连接到互联网。如果您使用防火墙，请将 <ph name="PRODUCT_EXE_NAME" /> 加入许可名单。</translation>
 <translation id="2131230230468101642">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chrome 考虑范围的兴趣。</translation>
 <translation id="2139300032719313227">重启 Chrome 操作系统</translation>
-<translation id="2146761408396054429">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码（密码会保存在您的设备上），Chrome 可为您检查此下载内容</translation>
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="2190166659037789668">更新检查错误：<ph name="UPDATE_CHECK_ERROR" />。</translation>
@@ -84,7 +83,7 @@
 <translation id="234869673307233423">Chrome 无法检查您的密码。请稍后重试。</translation>
 <translation id="235650106824528204">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chrome 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">继续</translation>
-<translation id="2401189691232800402">Chrome 操作系统系统</translation>
+<translation id="2401189691232800402">ChromeOS 系统</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2424440923901031101">此扩展程序违反了 Chrome 应用商店政策，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2467438592969358367">Google Chrome 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
@@ -104,7 +103,7 @@
 <translation id="2597976513418770460">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chrome 浏览器信息</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2622559029861875898">Chrome 无法检查是否有更新。请检查您的互联网连接。</translation>
-<translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何内容需要您审核，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
@@ -194,6 +193,7 @@
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="4106587138345390261">Chrome 团队正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
+<translation id="4128488089242627000">提高 Chrome 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
 <translation id="4147555960264124640">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
@@ -216,7 +216,6 @@
 <translation id="4343195214584226067">“<ph name="EXTENSION_NAME" />”已添加到 Chrome</translation>
 <translation id="4384570495110188418">Chrome 无法检查您的密码，因为您未登录</translation>
 <translation id="4389991535395284064">当您在无痕模式下浏览内容时，Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
-<translation id="4393248995085527349">若要接收后续 Google Chrome 更新，您需使用 macOS 10.15 或更高版本。该计算机目前使用的是 macOS 10.13。</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
@@ -241,6 +240,7 @@
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
+<translation id="4873692836499071887">若要接收后续 Google Chrome 更新，您需使用 macOS 11 或更高版本。该计算机目前使用的是 macOS 10.15。</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
@@ -300,7 +300,6 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">将 Google Chrome 浏览器设为默认浏览器</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
-<translation id="6010556343189461180">若要接收后续 Google Chrome 更新，您需使用 macOS 10.15 或更高版本。该计算机目前使用的是 macOS 10.14。</translation>
 <translation id="6014316319780893079">借助 <ph name="BEGIN_LINK" />Chrome 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 将在 <ph name="REMAINING_TIME" />后重启</translation>
@@ -346,9 +345,10 @@
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
+<translation id="6851981911629679515">开启 Chrome 的 JavaScript 和 WebAssembly 引擎额外保护功能</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
-<translation id="6933858244219479645">Chrome 操作系统系统</translation>
+<translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
 <translation id="6967962315388095737">Google Chrome 测试版的入站规则，允许 mDNS 流量。</translation>
@@ -467,6 +467,7 @@
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8825634023950448068">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。如果 Chrome 的推测不准确，或者您不想看到某些广告，可以移除某项兴趣。</translation>

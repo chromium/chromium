@@ -125,7 +125,7 @@ void RunExternalProtocolDialogWithDelegate(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name,
     ExternalProtocolHandler::Delegate* delegate) {
@@ -207,7 +207,7 @@ void OnDefaultSchemeClientWorkerFinished(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     ExternalProtocolHandler::Delegate* delegate,
     shell_integration::DefaultWebClientState state,
@@ -370,7 +370,7 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
           allowed_origin_protocol_pairs.FindDict(
               initiating_origin->Serialize());
       if (allowed_protocols_for_origin) {
-        absl::optional<bool> allow =
+        std::optional<bool> allow =
             allowed_protocols_for_origin->FindBool(scheme);
         if (allow.has_value() && allow.value()) {
           base::UmaHistogramEnumeration(kBlockStateMetric,
@@ -437,7 +437,7 @@ void ExternalProtocolHandler::LaunchUrl(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document
 #if BUILDFLAG(IS_ANDROID)
     ,
@@ -500,7 +500,7 @@ void ExternalProtocolHandler::LaunchUrl(
   }
   return;
 #else
-  absl::optional<url::Origin> initiating_origin_or_precursor;
+  std::optional<url::Origin> initiating_origin_or_precursor;
   if (initiating_origin) {
     // Transform the initiating origin to its precursor origin if it is
     // opaque. |initiating_origin| is shown in the UI to attribute the external

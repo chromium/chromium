@@ -475,7 +475,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface;
   if (gpu_channel_host) {
     shared_image_interface =
         gpu_channel_host->CreateClientSharedImageInterface();
@@ -507,15 +507,19 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   DCHECK(!is_gpu_compositing_disabled_);
 
-  if (!gpu_channel_host) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Chrome OS can't fallback to software compositing so treat this as a
-    // transient failure and retry initializing GPU channel.
-    return gpu::ContextResult::kTransientFailure;
-#else
+  // Chrome OS can't fallback to software compositing so retry up to 4 more
+  // times to initialize the GPU channel.
+  constexpr int kNumRetriesEstablishChannel = 4;
+  for (int i = 0; i < kNumRetriesEstablishChannel && !gpu_channel_host; i++) {
+    gpu_channel_host =
+        gpu_channel_establish_factory_->EstablishGpuChannelSync();
+  }
+#endif
+
+  if (!gpu_channel_host) {
     // Fallback to software compositing if there is no IPC channel.
     return gpu::ContextResult::kFatalFailure;
-#endif
   }
 
   const auto& gpu_feature_info = gpu_channel_host->gpu_feature_info();
@@ -533,15 +537,15 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     worker_context_provider_wrapper_.reset();
   }
 
+  const bool enable_gpu_rasterization =
+      features::IsUiGpuRasterizationEnabled() &&
+      gpu_feature_info
+              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled;
+
   if (!worker_context_provider_wrapper_) {
     // If the worker context supports GPU rasterization then UI tiles will be
     // rasterized on the GPU.
-    bool enable_gpu_rasterization =
-        features::IsUiGpuRasterizationEnabled() &&
-        gpu_feature_info
-                .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-            gpu::kGpuFeatureStatusEnabled;
-
     auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, /*supports_locking=*/true,
         /*supports_gles2_interface=*/false, enable_gpu_rasterization,
@@ -568,9 +572,12 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
   if (!main_context_provider_) {
     bool supports_gles2 = !UseRasterDecoderForBrowserContext();
 
+    // The main thread context is not used for UI tile rasterization. Other UI
+    // code can use the main thread context for GPU rasterization if it's
+    // enabled for tiles.
     main_context_provider_ = CreateContextProvider(
         std::move(gpu_channel_host), /*supports_locking=*/false, supports_gles2,
-        /*supports_gpu_rasterization=*/false,
+        enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_MAIN_THREAD);
     main_context_provider_->SetDefaultTaskRunner(resize_task_runner_);
 

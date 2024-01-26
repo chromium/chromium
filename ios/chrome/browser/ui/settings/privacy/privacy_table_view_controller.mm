@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -105,7 +106,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                                           PrefObserverDelegate,
                                           PopoverLabelViewControllerDelegate,
                                           SyncObserverModelBridge> {
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;

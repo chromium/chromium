@@ -7,8 +7,10 @@
 #include <limits>
 
 #include "base/check.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -68,8 +70,8 @@ void CalculatorProvider::Stop(bool clear_cached_results,
 }
 
 void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
-  auto it = base::ranges::find_if(Cache(), [&](const auto& cached_match) {
-    return cached_match.destination_url == match.destination_url;
+  auto it = base::ranges::find_if(Cache(), [&](const auto& cached) {
+    return cached.match.destination_url == match.destination_url;
   });
   if (it != Cache().end()) {
     Cache().erase(it);
@@ -102,7 +104,9 @@ void CalculatorProvider::UpdateFromSearch() {
 }
 
 void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
-  match.provider = this;
+  // Set provider to null so the cache doesn't contain dangling pointers if this
+  // provider is deleted (i.e. the window it belongs to is closed).
+  match.provider = nullptr;
   match.deletable = true;
   match.allowed_to_be_default_match = false;
   match.additional_info.clear();
@@ -116,9 +120,9 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
     Cache().pop_back();
 
   // Remove duplicates to avoid a repeated match reducing cache capacity.
-  auto duplicate = base::ranges::find_if(
-      Cache(), [&](const auto& cached) { return cached == match.contents; },
-      &AutocompleteMatch::contents);
+  auto duplicate = base::ranges::find_if(Cache(), [&](const auto& cached) {
+    return cached.match.contents == match.contents;
+  });
   if (duplicate != Cache().end())
     Cache().erase(duplicate);
 
@@ -127,19 +131,30 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
     Cache().erase(Cache().begin());
   }
 
-  Cache().push_back(std::move(match));
+  Cache().push_back({std::move(match), base::TimeTicks::Now()});
   last_calc_input_ = input_;
   since_last_calculator_suggestion_ = 0;
 }
 
 void CalculatorProvider::AddMatches() {
+  // Expire old cached matches.
+  const auto now = base::TimeTicks::Now();
+  base::EraseIf(Cache(), [&](const auto& cached) {
+    return now - cached.time > base::Hours(1);
+  });
+
   matches_.clear();
   // Score sequentially so they're ranked sequentially.
   // TODO(manukh) Consider enforcing hard grouping (e.g. search v URL).
   int relevance = omnibox_feature_configs::CalcProvider::Get().score;
-  for (auto& match : Cache())
+  // Use copies instead of references to avoid dangling pointers. This provider
+  // might be deleted before the cache (i.e. the window this provider belongs to
+  // might be closed).
+  for (auto [match, _] : Cache()) {
     match.relevance = relevance++;
-  matches_ = Cache();
+    match.provider = this;
+    matches_.push_back(match);
+  }
 }
 
 bool CalculatorProvider::Show() {
@@ -155,6 +170,7 @@ bool CalculatorProvider::Show() {
              omnibox_feature_configs::CalcProvider::Get().num_non_calc_inputs;
 }
 
-std::vector<AutocompleteMatch>& CalculatorProvider::Cache() {
+std::vector<ProviderStateService::CachedAutocompleteMatch>&
+CalculatorProvider::Cache() {
   return client_->GetProviderStateService()->calculator_provider_cache;
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -43,6 +44,10 @@ namespace printing {
 
 class PrintQueriesQueue;
 class PrinterQuery;
+
+// TODO(crbug.com/1514866): Remove this emergency off switch after a safe
+// rollout.
+BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
 
 // Base class for managing the print commands for a WebContents.
 class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
@@ -373,7 +378,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Client ID with the print backend service manager for system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
+  std::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

@@ -7,6 +7,7 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -25,7 +26,7 @@
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
 @implementation OverlayRequestCoordinatorFactory {
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   OverlayModality _modality;
 }
 

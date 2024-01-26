@@ -24,18 +24,15 @@ err = messageValidator.validateMapPointer({{offset}}, {{field|validate_map_param
 // validate {{name}}
 err = messageValidator.validateInterface({{offset}}, {{field|validate_nullable_params}});
 {{_check_err()}}
-{%-   elif field.kind|is_interface_request_kind or
-           field.kind|is_pending_receiver_kind %}
+{%-   elif field.kind|is_pending_receiver_kind %}
 // validate {{name}}
 err = messageValidator.validateInterfaceRequest({{offset}}, {{field|validate_nullable_params}})
 {{_check_err()}}
-{%-   elif field.kind|is_associated_interface_kind or
-           field.kind|is_pending_associated_remote_kind %}
+{%-   elif field.kind|is_pending_associated_remote_kind %}
 // validate {{name}}
 err = messageValidator.validateAssociatedInterface({{offset}}, {{field|validate_nullable_params}});
 {{_check_err()}}
-{%-   elif field.kind|is_associated_interface_request_kind or
-           field.kind|is_pending_associated_receiver_kind %}
+{%-   elif field.kind|is_pending_associated_receiver_kind %}
 // validate {{name}}
 err = messageValidator.validateAssociatedInterfaceRequest({{offset}}, {{field|validate_nullable_params}})
 {{_check_err()}}

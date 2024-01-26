@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_OFFER_NOTIFICATION_HANDLER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
@@ -26,7 +26,7 @@ class OfferNotificationHandler {
   ~OfferNotificationHandler();
 
   // Dismisses or updates the offer notification.
-  void UpdateOfferNotificationVisibility(AutofillClient* client);
+  void UpdateOfferNotificationVisibility(AutofillClient& client);
 
   // Clears and set the |shown_notification_ids_| set. Only for tests.
   void ClearShownNotificationIdForTesting();
@@ -37,7 +37,7 @@ class OfferNotificationHandler {
   // Updates the offer notification for a ShoppingService offer if a
   // ShoppingService offer is available.
   void UpdateOfferNotificationForShoppingServiceOffer(
-      AutofillClient* client,
+      AutofillClient& client,
       const GURL& url,
       const AutofillOfferData& offer);
 
@@ -46,7 +46,7 @@ class OfferNotificationHandler {
       const AutofillOfferData& offer);
 
   // The reference to the offer manager that owns |this|.
-  raw_ptr<AutofillOfferManager> offer_manager_;
+  raw_ref<AutofillOfferManager> offer_manager_;
 
   // This set includes the unique id of shown offer notifications in the
   // current browser context. It serves as a cross-tab status tracker for the

@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -73,6 +72,18 @@ class V8Environment : public BindingsIsolateHolder {
   // Gets a pointer to the V8 manager that belongs to this `context`.
   static V8Environment* GetFromContext(v8::Local<v8::Context> context);
 
+  // Resolves `relative_path` to `base_dir` and performs some normalizations:
+  // * Removes references to current directory;
+  // * Replaces '..'with the directory name.
+  //
+  // Notes:
+  // * This function will fail if `relative_path` is an absolute path;
+  // * `relative_path` must be a relative path of `base_dir` and does not
+  // reference any parents of `base_dir`;
+  // * `base_dir`is not empty.
+  static std::string NormalizeRelativePath(const std::string& relative_path,
+                                           const std::string& base_dir);
+
   V8Environment(const V8Environment&) = delete;
   V8Environment& operator=(const V8Environment&) = delete;
 
@@ -106,14 +117,29 @@ class V8Environment : public BindingsIsolateHolder {
   void BindInterface(const std::string& interface_name,
                      mojo::GenericPendingReceiver pending_receiver);
 
-  // `specifier` that represents a module. For now, this is the name of the file
-  // only.
-  // TODO(b:313692879): module identifiers here are the file name, but should be
-  // a normalized relative path.
-  v8::MaybeLocal<v8::Module> GetModuleFromSpecifier(
-      const std::string& specifier);
+  // `identifier` that represents a module. The identifier is composed of the
+  // normalized resolved path of the directory name of the root module relative
+  // path concatenated with the module specifier (which may be a file name or a
+  // relative path of the root module).
+  v8::MaybeLocal<v8::Module> GetModuleFromIdentifier(
+      const std::string& identifier);
+
+  std::optional<std::string> GetIdentifierFromModule(
+      v8::Global<v8::Module> module);
 
  private:
+  // Provides a hash function for a Global Module object.
+  class ModuleGlobalHash {
+   public:
+    explicit ModuleGlobalHash(v8::Isolate* isolate) : isolate_(isolate) {}
+    size_t operator()(const v8::Global<v8::Module>& module) const {
+      return module.Get(isolate_)->GetIdentityHash();
+    }
+
+   private:
+    raw_ptr<v8::Isolate> isolate_;
+  };
+
   void CreateIsolate();
 
   // Loads the file contents of the module referenced by `file_pat`, invoking
@@ -168,9 +194,11 @@ class V8Environment : public BindingsIsolateHolder {
   unsigned int num_unloaded_modules_ = 0;
 
   // Module identifier to Module object.
-  // TODO(b:313692879): module identifiers here are the file name, but should be
-  // a normalized relative path.
-  std::map<std::string, v8::Global<v8::Module>> module_map_;
+  std::map<std::string, v8::Global<v8::Module>> identifier_to_module_map_;
+
+  using ModuleToIdentifierMap =
+      std::unordered_map<v8::Global<v8::Module>, std::string, ModuleGlobalHash>;
+  std::unique_ptr<ModuleToIdentifierMap> module_to_identifier_map_;
 
   std::unique_ptr<OSDevToolsAgent> devtools_agent_;
 };

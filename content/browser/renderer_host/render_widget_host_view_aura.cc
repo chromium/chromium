@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -54,7 +53,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -819,7 +817,7 @@ void RenderWidgetHostViewAura::WindowTitleChanged() {
       base::UTF16ToUTF8(window_->GetTitle()));
 }
 
-bool RenderWidgetHostViewAura::IsMouseLocked() {
+bool RenderWidgetHostViewAura::IsPointerLocked() {
   return event_handler_->mouse_locked();
 }
 
@@ -1271,21 +1269,22 @@ void RenderWidgetHostViewAura::SetMainFrameAXTreeID(ui::AXTreeID id) {
   window_->SetProperty(ui::kChildAXTreeID, id.ToString());
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAura::LockMouse(
+blink::mojom::PointerLockResult RenderWidgetHostViewAura::LockPointer(
     bool request_unadjusted_movement) {
-  return event_handler_->LockMouse(request_unadjusted_movement);
+  return event_handler_->LockPointer(request_unadjusted_movement);
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAura::ChangeMouseLock(
+blink::mojom::PointerLockResult RenderWidgetHostViewAura::ChangePointerLock(
     bool request_unadjusted_movement) {
-  return event_handler_->ChangeMouseLock(request_unadjusted_movement);
+  return event_handler_->ChangePointerLock(request_unadjusted_movement);
 }
 
-void RenderWidgetHostViewAura::UnlockMouse() {
-  event_handler_->UnlockMouse();
+void RenderWidgetHostViewAura::UnlockPointer() {
+  event_handler_->UnlockPointer();
 }
 
-bool RenderWidgetHostViewAura::GetIsMouseLockedUnadjustedMovementForTesting() {
+bool RenderWidgetHostViewAura::
+    GetIsPointerLockedUnadjustedMovementForTesting() {
   return event_handler_->mouse_locked_unadjusted_movement();
 }
 
@@ -1967,8 +1966,9 @@ void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
 }
 
 gfx::NativeCursor RenderWidgetHostViewAura::GetCursor(const gfx::Point& point) {
-  if (IsMouseLocked())
+  if (IsPointerLocked()) {
     return ui::mojom::CursorType::kNone;
+  }
   return current_cursor_.GetNativeCursor();
 }
 
@@ -2305,7 +2305,7 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
   if (window_) {
     if (window_->GetHost())
       window_->GetHost()->RemoveObserver(this);
-    UnlockMouse();
+    UnlockPointer();
     wm::SetTooltipText(window_, nullptr);
 
     // This call is usually no-op since |this| object is already removed from
@@ -2602,8 +2602,9 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
 #if BUILDFLAG(IS_WIN)
   UpdateLegacyWin();
 
-  if (IsMouseLocked())
+  if (IsPointerLocked()) {
     UpdateMouseLockRegion();
+  }
 #endif
 }
 
@@ -2727,13 +2728,8 @@ void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
   auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
   if (!event.skip_if_unhandled && linux_ui && event.os_event &&
-      linux_ui->GetTextEditCommandsForEvent(
-          *event.os_event,
-          base::FeatureList::IsEnabled(
-              blink::features::kArrowKeysInVerticalWritingModes)
-              ? GetTextInputFlags()
-              : ui::TEXT_INPUT_FLAG_NONE,
-          &commands)) {
+      linux_ui->GetTextEditCommandsForEvent(*event.os_event,
+                                            GetTextInputFlags(), &commands)) {
     // Transform from ui/ types to content/ types.
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
     for (std::vector<ui::TextEditCommandAuraLinux>::const_iterator it =

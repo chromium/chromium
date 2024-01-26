@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.OptionalInt;
@@ -21,11 +25,11 @@ public interface PasswordCheckController {
      * PROFILE_STORE is the store associated with local non-syncing passwords in GMS core.
      * ACCOUNT_STORE is the store associated with the user's account set up on the phone.
      */
-    @IntDef({PasswordStoreType.PROFILE_STORE, PasswordStoreType.ACCOUNT_STORE})
+    @IntDef({PasswordStorageType.LOCAL_STORAGE, PasswordStorageType.ACCOUNT_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface PasswordStoreType {
-        int PROFILE_STORE = 1;
-        int ACCOUNT_STORE = 2;
+    @interface PasswordStorageType {
+        int LOCAL_STORAGE = 1;
+        int ACCOUNT_STORAGE = 2;
     }
 
     public static class PasswordCheckResult {
@@ -55,15 +59,30 @@ public interface PasswordCheckController {
         }
     }
 
+    static String getAccountNameForPasswordStorageType(
+            @PasswordStorageType int passwordStorageType, SyncService syncService) {
+        switch (passwordStorageType) {
+            case PasswordStorageType.LOCAL_STORAGE:
+                return null;
+            case PasswordStorageType.ACCOUNT_STORAGE:
+                assert PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                        : "The account storage is only available if password sync is on.";
+                return CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
+        }
+        assert false : "Unknown PasswordStorageType: " + passwordStorageType;
+        return null;
+    }
+
     /** Triggers the password check. */
-    CompletableFuture<PasswordCheckResult> checkPasswords(@PasswordStoreType int passwordStoreType);
+    CompletableFuture<PasswordCheckResult> checkPasswords(
+            @PasswordStorageType int passwordStorageType);
 
     /**
      * Requests the breached credentials count. It doesn't do the actual password check, only
      * returns the cached value of the previous check.
      */
     CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            @PasswordStoreType int passwordStoreType);
+            @PasswordStorageType int passwordStorageType);
 
     /** Cancels pending password check and removes any registered observers. */
     void destroy();

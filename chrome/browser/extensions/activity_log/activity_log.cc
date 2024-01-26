@@ -648,7 +648,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
     base::Value::Dict& other = action->mutable_other();
-    absl::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
+    std::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
       other.Set(constants::kActionDomVerb, DomActionType::XHR);
   }

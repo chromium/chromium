@@ -327,7 +327,7 @@ void MetricIntegrationTest::ExpectMetricInLastUKMUpdateTraceEventNear(
 
   base::Value::Dict arg_dict;
   last_update_event->GetArgAsDict("ukm_page_load_timing_update", &arg_dict);
-  absl::optional<double> metric_value = arg_dict.FindDouble(metric_name);
+  std::optional<double> metric_value = arg_dict.FindDouble(metric_name);
   ASSERT_TRUE(metric_value.has_value());
 
   EXPECT_NEAR(expected_value, *metric_value, epsilon);

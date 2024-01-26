@@ -223,7 +223,7 @@ class SingleClientPreferencesWithAccountStorageSyncTest
     return base::PathExists(file_path);
   }
 
-  absl::optional<base::Value> GetAccountPreferencesFileContent() const {
+  std::optional<base::Value> GetAccountPreferencesFileContent() const {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     base::FilePath file_path =
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  absl::optional<base::Value> file_content = GetAccountPreferencesFileContent();
+  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
   ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
 
   std::string* value = file_content->GetDict().FindString(
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  absl::optional<base::Value> file_content = GetAccountPreferencesFileContent();
+  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
   ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
 
   std::string* value = file_content->GetDict().FindString(

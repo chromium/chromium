@@ -116,6 +116,7 @@ class DownloadBubbleContentsView : public views::View,
   std::unique_ptr<DownloadBubbleContentsViewInfo> info_;
 
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_;
+  base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_;
 
   // TODO(crbug.com/1346369): The delegate should outlive the views.
   // Currently, the delegate is deleted in OnNativeWidetDestroyed(),

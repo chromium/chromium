@@ -203,7 +203,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEn
   const int number_of_methods = std::size(kMethods_org_jni_1zero_GEN_1JNI);
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-      base::android::GetClass(env, "org/jni_zero/GEN_JNI");
+      jni_zero::GetClass(env, "org/jni_zero/GEN_JNI");
   if (env->RegisterNatives(
       native_clazz.obj(),
       kMethods_org_jni_1zero_GEN_1JNI,

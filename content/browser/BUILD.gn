@@ -1198,6 +1198,7 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet.h",
     "interest_group/debuggable_auction_worklet_tracker.cc",
     "interest_group/debuggable_auction_worklet_tracker.h",
+    "interest_group/devtools_enums.h",
     "interest_group/header_direct_from_seller_signals.cc",
     "interest_group/header_direct_from_seller_signals.h",
     "interest_group/interest_group_auction.cc",
@@ -2735,16 +2736,16 @@ source_set("browser") {
       "media/capture/web_contents_video_capture_device.cc",
       "media/capture/web_contents_video_capture_device.h",
     ]
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       sources += [
         "media/capture/desktop_capture_device.cc",
         "media/capture/desktop_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller.cc",
         "media/capture/mouse_cursor_overlay_controller.h",
-        "renderer_host/media/captured_surface_control_permission_manager.cc",
-        "renderer_host/media/captured_surface_control_permission_manager.h",
-        "renderer_host/media/captured_surface_controller.cc",
-        "renderer_host/media/captured_surface_controller.h",
+        "media/captured_surface_control_permission_manager.cc",
+        "media/captured_surface_control_permission_manager.h",
+        "media/captured_surface_controller.cc",
+        "media/captured_surface_controller.h",
       ]
       public_deps += [ "//ui/base/cursor" ]
       deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
@@ -3183,6 +3184,8 @@ source_set("browser") {
       "media/session/media_session_android.h",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
+      "navigation_transitions/back_forward_transition_animation_manager_android.cc",
+      "navigation_transitions/back_forward_transition_animation_manager_android.h",
       "navigation_transitions/physics_model.cc",
       "navigation_transitions/physics_model.h",
       "renderer_host/compositor_dependencies_android.cc",
@@ -3246,6 +3249,7 @@ source_set("browser") {
       "//ui/android",
       "//ui/android:ui_android_jni_headers",
       "//ui/compositor",
+      "//ui/gfx/animation/keyframe",
       "//url",
     ]
     if (enable_vulkan) {

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -94,7 +95,7 @@ class FollowTabHelper : public web::WebStateObserver,
   // Presents the Follow in-product help (IPH) for `recommended_url`.
   void PresentFollowIPH(NSURL* recommended_url);
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Presenter for follow in-product help (IPH).
   __weak id<FollowIPHPresenter> follow_iph_presenter_ = nil;

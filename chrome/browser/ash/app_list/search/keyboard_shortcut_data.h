@@ -29,7 +29,9 @@ class KeyboardShortcutData {
  public:
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);
   // For testing purposes.
-  explicit KeyboardShortcutData(const std::u16string description);
+  explicit KeyboardShortcutData(const std::u16string description,
+                                int description_message_id,
+                                int shortcut_message_id);
   KeyboardShortcutData(const KeyboardShortcutData&);
   KeyboardShortcutData& operator=(const KeyboardShortcutData&) = default;
 

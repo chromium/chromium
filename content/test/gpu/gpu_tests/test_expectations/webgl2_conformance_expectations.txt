@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -135,7 +136,7 @@ crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ S
 
 # Extensions unavailable on Android.
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
@@ -147,7 +148,7 @@ crbug.com/1473838 [ android passthrough angle-opengles ] WebglExtension_WEBGL_re
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
 # Extensions only available via passthrough decoder.
-[ no-passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ no-passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
@@ -196,7 +197,6 @@ crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_
 
 # Not available on Mesa older than 21.3.0
 crbug.com/1473838 [ linux intel passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
-crbug.com/1473838 [ linux amd-0x7340 angle-opengl passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
@@ -224,7 +224,7 @@ crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExt
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic angle-opengles passthrough ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Extensions not available on jacuzzi ChromeOS devices.
-crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
@@ -385,7 +385,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough an
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -426,9 +426,6 @@ crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-# finder:disable-narrowing Intentionally broad to suppress failures until validating decoder is removed.
-crbug.com/1473838 [ no-passthrough ] conformance2/extensions/ext-blend-func-extended.html [ Failure ]
-# finder:enable-narrowing
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -529,7 +526,6 @@ crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
-crbug.com/1435021 [ mac amd-0x67ef angle-metal graphite-disabled ] conformance/textures/misc/texture-active-bind-2.html [ RetryOnFailure ]
 crbug.com/1421437 [ mac amd-0x67ef angle-metal ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/1421437 [ mac amd-0x679e angle-metal ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/1487266 [ amd-0x679e angle-metal monterey passthrough release ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Failure ]
@@ -539,7 +535,6 @@ crbug.com/1513193 [ amd-0x67ef angle-metal passthrough ventura graphite-enabled 
 # NOTE: When removing this line, the suppression for the same test above
 # should have `graphite-disabled` removed.
 crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
-crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 ## Metal Intel ##
@@ -602,6 +597,7 @@ crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/can
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
+crbug.com/1518884 [ mac nvidia ] conformance2/transform_feedback/transform_feedback.html [ Slow ]
 
 ## Mac AMD ##
 
@@ -730,13 +726,7 @@ crbug.com/1502174 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/
 
 ## Linux AMD RX 5500 XT ##
 
-crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
-crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html [ RetryOnFailure ]
-crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ RetryOnFailure ]
-crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ RetryOnFailure ]
-crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ RetryOnFailure ]
-crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/uniformapi/value_assigned.html [ RetryOnFailure ]
 
 ####################
 # Android failures #
@@ -873,6 +863,10 @@ crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functiona
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
 crbug.com/1500045 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
+# Broadly flaky unsymbolized crashes on Jacuzzi
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/* [ RetryOnFailure ]
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
 ## Volteer ##
 crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]

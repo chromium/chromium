@@ -230,22 +230,22 @@ class ShortcutSubManagerExecuteTest
         OsIntegrationTestOverrideImpl::Get();
 
 #if BUILDFLAG(IS_WIN)
-    absl::optional<SkColor> desktop_color =
+    std::optional<SkColor> desktop_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->desktop(), app_id, app_name);
-    absl::optional<SkColor> application_menu_icon_color =
+    std::optional<SkColor> application_menu_icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->application_menu(), app_id, app_name);
     EXPECT_EQ(desktop_color.value(), application_menu_icon_color.value());
     return desktop_color.value();
 #elif BUILDFLAG(IS_MAC)
-    absl::optional<SkColor> icon_color =
+    std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->chrome_apps_folder(), app_id, app_name);
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #elif BUILDFLAG(IS_LINUX)
-    absl::optional<SkColor> icon_color =
+    std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->desktop(), app_id, app_name,
             kLauncherIconSize);
@@ -574,8 +574,8 @@ TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
         profile(), app_id, app_name));
   }
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      scoped_supress = absl::nullopt;
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
   scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
   // Shortcuts should still be there.

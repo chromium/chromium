@@ -50,7 +50,6 @@ class Lexer:
       'DEFAULT',
       'ARRAY',
       'MAP',
-      'ASSOCIATED',
       'PENDING_REMOTE',
       'PENDING_RECEIVER',
       'PENDING_ASSOCIATED_REMOTE',

@@ -8,3 +8,55 @@ source_set("presenters") {
     "notifications_confirmation_presenter.h",
   ]
 }
+
+source_set("opt_in_alert_coordinator") {
+  sources = [
+    "notifications_opt_in_alert_coordinator.h",
+    "notifications_opt_in_alert_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "scoped_notification_auth_swizzler.h",
+    "scoped_notification_auth_swizzler.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "push_notification_egtest.mm" ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}

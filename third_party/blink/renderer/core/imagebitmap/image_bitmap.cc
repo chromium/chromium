@@ -271,20 +271,20 @@ scoped_refptr<StaticBitmapImage> FlipImageVertically(
   if (!resource_provider)
     return nullptr;
 
-  auto* canvas = resource_provider->Canvas();
+  cc::PaintCanvas& canvas = resource_provider->Canvas();
   // Since rotation is applied after flip, vertical flips becomes horizontal
   // flips for oritation 5-8. So we flip the images horizontally instead.
   if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
-    canvas->scale(-1, 1);
-    canvas->translate(-input->width(), 0);
+    canvas.scale(-1, 1);
+    canvas.translate(-input->width(), 0);
   } else {
-    canvas->scale(1, -1);
-    canvas->translate(0, -input->height());
+    canvas.scale(1, -1);
+    canvas.translate(0, -input->height());
   }
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(input->PaintImageForCurrentFrame(), 0, 0,
-                    SkSamplingOptions(), &paint);
+  canvas.drawImage(input->PaintImageForCurrentFrame(), 0, 0,
+                   SkSamplingOptions(), &paint);
   return resource_provider->Snapshot(FlushReason::kNon2DCanvas,
                                      input->CurrentFrameOrientation());
 }
@@ -309,7 +309,7 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
               parsed_options.resize_quality);
       cc::PaintFlags paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      resource_provider->Canvas()->drawImageRect(
+      resource_provider->Canvas().drawImageRect(
           image->PaintImageForCurrentFrame(),
           SkRect::MakeWH(src_image_info.width(), src_image_info.height()),
           SkRect::MakeWH(parsed_options.resize_width,
@@ -403,11 +403,11 @@ scoped_refptr<StaticBitmapImage> BakeOrientation(
     return nullptr;
   }
 
-  auto* canvas = resource_provider->Canvas();
+  cc::PaintCanvas& canvas = resource_provider->Canvas();
   ImageOrientation orientation = input->CurrentFrameOrientation();
   auto affineTransform =
       orientation.TransformToDefault(gfx::SizeF(src_rect.size()));
-  canvas->concat(AffineTransformToSkM44(affineTransform));
+  canvas.concat(AffineTransformToSkM44(affineTransform));
 
   gfx::Rect dst_rect = src_rect;
   // The destination rect will have its width and height already reversed
@@ -419,7 +419,7 @@ scoped_refptr<StaticBitmapImage> BakeOrientation(
 
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImageRect(
+  canvas.drawImageRect(
       std::move(paint_image), gfx::RectFToSkRect(gfx::RectF(src_rect)),
       gfx::RectFToSkRect(gfx::RectF(dst_rect)), SkSamplingOptions(), &paint,
       WebCoreClampingModeToSkiaRectConstraint(
@@ -468,15 +468,15 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
                        true /* fallback_to_software*/);
     if (!resource_provider)
       return nullptr;
-    cc::PaintCanvas* canvas = resource_provider->Canvas();
+    cc::PaintCanvas& canvas = resource_provider->Canvas();
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    canvas->drawImageRect(paint_image,
-                          SkRect::MakeXYWH(src_rect.x(), src_rect.y(),
-                                           src_rect.width(), src_rect.height()),
-                          SkRect::MakeWH(src_rect.width(), src_rect.height()),
-                          SkSamplingOptions(), &paint,
-                          SkCanvas::kStrict_SrcRectConstraint);
+    canvas.drawImageRect(paint_image,
+                         SkRect::MakeXYWH(src_rect.x(), src_rect.y(),
+                                          src_rect.width(), src_rect.height()),
+                         SkRect::MakeWH(src_rect.width(), src_rect.height()),
+                         SkSamplingOptions(), &paint,
+                         SkCanvas::kStrict_SrcRectConstraint);
     result = resource_provider->Snapshot(FlushReason::kNon2DCanvas,
                                          image->CurrentFrameOrientation());
   }
@@ -876,11 +876,11 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
       if (!resource_provider)
         return nullptr;
 
-      auto* canvas = resource_provider->Canvas();
+      cc::PaintCanvas& canvas = resource_provider->Canvas();
       cc::PaintFlags paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      canvas->drawImage(image_->PaintImageForCurrentFrame(), 0, 0,
-                        SkSamplingOptions(), &paint);
+      canvas.drawImage(image_->PaintImageForCurrentFrame(), 0, 0,
+                       SkSamplingOptions(), &paint);
       image_ = resource_provider->Snapshot(FlushReason::kNon2DCanvas,
                                            image_->CurrentFrameOrientation());
     }
@@ -1008,8 +1008,7 @@ ScriptPromise ImageBitmap::CreateAsync(
     if (bitmap->BitmapImage()) {
       bitmap->BitmapImage()->SetOriginClean(!image->WouldTaintOrigin());
       return ScriptPromise::Cast(
-          script_state,
-          ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap).ToLocalChecked());
+          script_state, ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap));
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,

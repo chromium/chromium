@@ -23,8 +23,8 @@ schema:
     type: string
     enum:
     - usage
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:123-
 tags:
 - admin-sharing
 type: string-enum-list

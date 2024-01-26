@@ -46,6 +46,21 @@ void TestPersonalDataManager::RecordUseOf(
   }
 }
 
+void TestPersonalDataManager::RecordUseOfIban(Iban& iban) {
+  std::unique_ptr<Iban> updated_iban = std::make_unique<Iban>(iban);
+  std::vector<std::unique_ptr<Iban>>& container =
+      iban.record_type() == Iban::kLocalIban ? local_ibans_ : server_ibans_;
+  auto it =
+      base::ranges::find(container,
+                         iban.record_type() == Iban::kLocalIban
+                             ? GetIbanByGUID(iban.guid())
+                             : GetIbanByInstrumentId(iban.instrument_id()),
+                         &std::unique_ptr<Iban>::get);
+  if (it != container.end()) {
+    it->get()->RecordAndLogUse();
+  }
+}
+
 std::string TestPersonalDataManager::SaveImportedCreditCard(
     const CreditCard& imported_credit_card) {
   num_times_save_imported_credit_card_called_++;

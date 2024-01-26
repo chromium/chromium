@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -133,6 +133,10 @@ class CORE_EXPORT PreloadRequest {
   void SetRenderBlockingBehavior(
       RenderBlockingBehavior render_blocking_behavior) {
     render_blocking_behavior_ = render_blocking_behavior;
+  }
+
+  RenderBlockingBehavior GetRenderBlockingBehavior() {
+    return render_blocking_behavior_;
   }
 
   bool IsAttributionReportingEligibleImgOrScript() const {

@@ -221,6 +221,11 @@ TestMediaController::CreateMediaControllerRemote() {
   return remote;
 }
 
+void TestMediaController::BindMediaControllerReceiver(
+    mojo::PendingReceiver<mojom::MediaController> receiver) {
+  receiver_.Bind(std::move(receiver));
+}
+
 void TestMediaController::Suspend() {
   ++suspend_count_;
 }
@@ -271,11 +276,11 @@ void TestMediaController::SkipAd() {
 }
 
 void TestMediaController::EnterPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement EnterPictureInPicture.
+  ++enter_picture_in_picture_count_;
 }
 
 void TestMediaController::ExitPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement ExitPictureInPicture.
+  ++exit_picture_in_picture_count_;
 }
 
 void TestMediaController::Raise() {
@@ -312,6 +317,16 @@ void TestMediaController::SimulateMediaSessionMetadataChanged(
 
 void TestMediaController::Flush() {
   observers_.FlushForTesting();
+}
+
+int TestMediaController::GetActiveObserverCount() {
+  int count = 0;
+  for (auto& observer : observers_) {
+    if (observer.is_connected()) {
+      count++;
+    }
+  }
+  return count;
 }
 
 }  // namespace test

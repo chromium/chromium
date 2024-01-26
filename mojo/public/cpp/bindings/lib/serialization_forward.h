@@ -5,9 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 
+#include <optional>
 #include <type_traits>
 
-#include <optional>
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"

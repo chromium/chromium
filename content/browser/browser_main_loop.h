@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
@@ -399,6 +400,7 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   // Members initialized in |PreMainMessageLoopRun()| --------------------------
   scoped_refptr<responsiveness::Watcher> responsiveness_watcher_;
+  base::CallbackListSubscription idle_callback_subscription_;
 
   // Members not associated with a specific phase.
   std::unique_ptr<SmsProvider> sms_provider_;

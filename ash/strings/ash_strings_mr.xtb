@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
 <translation id="1885785240814121742">फिंगरप्रिंटने अनलॉक करा</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ला सपोर्ट करत नाही. रिझोल्युशन बदलून <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="1908992311423394684">नवीन इंस्टॉल केले आहे</translation>
 <translation id="1915307458270490472">बंद करा</translation>
 <translation id="1918022425394817322">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">कॅमेराचे पूर्वावलोकन सुरू आहे</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टॉगल करा. <ph name="CAPTURE_MEDIUM" /> हा <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">पुढील डेस्कवर स्विच करण्यासाठी चार बोटांनी उजवीकडे स्‍वाइप करा</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2083190527011054446">शुभ रात्री <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">इमोजी पिकर उघडा</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">मागील ट्रॅकवर जा</translation>
 <translation id="2152895518047545149">असे दिसते, की सर्व असाइनमेंट पूर्ण केल्या आहेत. छान!</translation>
 <translation id="2161132820593978283">कॅमेरा फ्रेमिंग वापरून पहा, जेणेकरून व्हिडिओ कॉलवर तुम्ही स्क्रीनच्या मध्यभागी राहाल. ते क्विक सेटिंग्जमध्ये सुरू करा.</translation>
-<translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
 <translation id="2185444992308415167">एक ते आठ टॅबमधून जा</translation>
 <translation id="2198625180564913276">प्रोफाइल जोडत आहे. याला काही मिनिटे लागू शकतात.</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">हॉटस्पॉट पुरवण्यासाठी तुमच्या फोनमध्ये मोबाइल डेटा असणे आवश्यक आहे</translation>
 <translation id="2727175239389218057">उत्तर द्या</translation>
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
+<translation id="2744221223678373668">शेअर</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"हटवा"</translation>
 <translation id="2750941250130734256">अ‍ॅक्टिव्ह विंडो अनडॉक केली आहे.</translation>
 <translation id="2761723519669354964">शेल्फमधील हायलाइट केलेला आयटम उघडा</translation>
+<translation id="2762000892062317888">आत्ताच</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ते <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3580650856351781466">स्पीच फाइल डाउनलोड होत आहेत</translation>
 <translation id="3585296979871889131">तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि अ‍ॅप्स पहा</translation>
+<translation id="3590441166907930941">बाजूचे बटण</translation>
 <translation id="3593039967545720377">तुमचे क्लिपबोर्ड पाहण्यासाठी, <ph name="SHORTCUT_KEY_NAME" /> + V प्रेस करून तुमचा क्लिपबोर्ड इतिहास ॲक्सेस करा. सुरुवात करण्यासाठी आयटम कॉपी करा.</translation>
 <translation id="3593646411856133110">उघडी अ‍ॅप्स पाहण्यासाठी वर स्वाइप करा आणि धरून ठेवा</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">उत्तर</translation>
 <translation id="3990002060657467458">वाय-फाय, ब्लूटूथ आणि व्हॉल्यूम यांसारखी वारंवार वापरली जाणारी नियंत्रणे क्विक सेटिंग्जमध्ये आहेत. तुम्ही येथे जाऊन स्क्रीनशॉटदेखील घेऊ शकता.</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
 <translation id="4011112806063830608">व्यत्यय आणू नका सुरू आहे.</translation>
 <translation id="4017989525502048489">लेझर पॉइंट</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">बॅटरीची स्थिती <ph name="BATTERY_HEALTH_PERCENTAGE" />% | सायकल संख्या <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">डेस्‍कला टेंप्लेट म्हणून सेव्ह करा</translation>
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
+<translation id="5168753792967365150">Google Tasks मध्ये संपादित करा</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
 <translation id="5187627942836026988">हॉटस्पॉटचे तपशील दाखवा. तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट ब्लॉक केला आहे.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">तुमची इंस्टॉल केलेली ॲप्स</translation>
 <translation id="6173151025443907148">Lacros सुरू असल्यास दुसर्‍या वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
+<translation id="6180193585172850042">मागे जा बटण</translation>
+<translation id="6180651297859206670">फॉरवर्ड करा बटण</translation>
 <translation id="6182592640011875895">डेस्‍क उघडा</translation>
 <translation id="6185696379715117369">पेज अप</translation>
 <translation id="619335566042889110">आता पूर्णपणे चार्ज करा</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">व्यत्यय आणू नका</translation>
 <translation id="7851039877802112575">पॉपअप आणि डायलॉगवर फोकस हलवा</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">अवलोकन मध्ये एंटर करण्यासाठी तीन बोटांनी वर स्‍वाइप करा</translation>
 <translation id="7862292329216937261">अतिथी म्हणून डिव्हाइस वापरण्यासाठी, तुम्हाला साइन आउट करून नंतर स्क्रीनच्या तळाशी अतिथी म्हणून ब्राउझ करणे निवडावे लागेल.</translation>
 <translation id="7866482334467279021">सुरू</translation>
 <translation id="7872786842639831132">बंद करा</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">प्लेबॅक टॉगल करा</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक तासामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# तासांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="8277261673056602147">तुमच्या स्क्रीनवरील मजकूर हायलाइट करा</translation>
-<translation id="8284362522226889623">मागील डेस्कवर स्विच करण्यासाठी चार बोटांनी डावीकडे स्‍वाइप करा</translation>
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>

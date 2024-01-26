@@ -107,11 +107,11 @@ bool IsForceInstalledExtension(const ExtensionId& extension_id,
 bool IsLoginScreenExtension(
     ExtensionId extension_id,
     content::BrowserContext* context,
-    absl::optional<bool> is_policy_installed = absl::nullopt) {
+    std::optional<bool> is_policy_installed = std::nullopt) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the force-installed extension list if no value for
   // `is_policy_installed` was passed.
-  if (is_policy_installed == absl::nullopt) {
+  if (is_policy_installed == std::nullopt) {
     is_policy_installed = IsForceInstalledExtension(extension_id, context);
   }
   Profile* profile = Profile::FromBrowserContext(context);

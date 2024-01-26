@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_THROTTLE_CONFIG_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_THROTTLE_CONFIG_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -20,13 +21,13 @@ struct ThrottleConfig {
   // Support a custom suppression duration(in days) for the notification.
   // If client sets this field, it will override |suppression_duration| in
   // global config.
-  absl::optional<base::TimeDelta> suppression_duration;
+  std::optional<base::TimeDelta> suppression_duration;
 
   // Maxmium number of consecutive negative actions to trigger negative
   // impression event.
   // If client sets this field, it will override |dismiss_count| in global
   // config.
-  absl::optional<int> negative_action_count_threshold;
+  std::optional<int> negative_action_count_threshold;
 };
 
 }  // namespace notifications

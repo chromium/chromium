@@ -208,12 +208,6 @@ int main(int argc, char **argv) {
 #include <libxml/debugXML.h>
 
 /*
-  We manually define xmlErrMemory because it's normal declaration
-  is "hidden" by #ifdef IN_LIBXML
-*/
-void xmlErrMemory(xmlParserCtxtPtr ctxt, const char *extra);
-
-/*
  We need some "remote" addresses, but want to avoid getting into
  name resolution delays, so we use these
 */

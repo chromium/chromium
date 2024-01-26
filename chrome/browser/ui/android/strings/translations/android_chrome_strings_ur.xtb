@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ایپلیکیشن ورژن</translation>
 <translation id="1428770807407000502">مطابقت پذیری کو آف کریں؟</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
+<translation id="1435593198351412143">‏خودکار طور پر PDFs کھولیں</translation>
 <translation id="1436784010935106834">ہٹا دیا گیا</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> میں چل رہا ہے</translation>
 <translation id="1448440926884431741">اپنے ٹریک کردہ پروڈکٹس کو بُک مارکس میں منظم کریں</translation>
@@ -146,6 +147,7 @@
 <translation id="1792959175193046959">ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="1796666869097395659">بعد میں ٹیب پر واپس آنے کے لیے اسے چھوٹا کریں</translation>
 <translation id="1807246157184219062">روشنی</translation>
+<translation id="1807709131360304325">نئی ونڈو کھولیں</translation>
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کا استعمال جاری نہیں رکھ سکتا</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
@@ -189,6 +191,7 @@
 <translation id="2056878612599315956">سائٹ رک گئی</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہوگیا}other{# ڈاؤن لوڈز ناکام ہو گئے}}</translation>
 <translation id="2067805253194386918">متن</translation>
+<translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">مختصر منظر دکھایا جا رہا ہے</translation>
 <translation id="2093731487903423814">آخری 15 منٹ</translation>
@@ -218,7 +221,6 @@
 <translation id="223356358902285214">ویب اور ایپ سرگرمی</translation>
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
 <translation id="2239812875700136898">‏اختیارات برائے Discover بٹن سے اپنی کہانیاں کنٹرول کریں</translation>
-<translation id="2241634353105152135">بس ایک بار</translation>
 <translation id="2247789808226901522">کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="2248941474044011069">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو جاتے ہیں</translation>
 <translation id="2249635629516220541">سائٹس کے ذریعے استعمال کردہ معلومات کو حسب ضرورت بنائیں تاکہ آپ کو اشتہارات دکھایا جا سکے</translation>
@@ -233,7 +235,6 @@
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
 <translation id="2321086116217818302">پاس ورڈز تیار کیے جا رہے ہيں…</translation>
 <translation id="2323763861024343754">سائٹ اسٹوریج</translation>
-<translation id="2327226657832576859">‏خودکار طور پر PDFs کھولیں؟</translation>
 <translation id="2328985652426384049">سائن نہیں کیا جا سکتا ہے</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> انسٹال نہیں کی جا سکی۔</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
+<translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ٹیب کو بند کر دیا جائے گا</translation>
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2827278682606527653">نصف اونچائی پر فیڈ کارڈ مینیو</translation>
@@ -340,6 +342,7 @@
 <translation id="2894821468041866720">آپ کے براؤزر یا آلے کو واضح طور پر سست نہیں کرتا ہے۔</translation>
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
+<translation id="2904300462646366554">‏ڈاؤن لوڈ کردہ PDFs آپ کے آلے پر PDF ویورز میں سے ایک ساتھ خودکار طور پر کھلتے ہیں</translation>
 <translation id="2904414404539560095">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="2908243544703713905">نہ پڑھی ہوئی کہانیاں تیار ہیں</translation>
 <translation id="2909615210195135082">‏Google اطلاعات پلیٹ فارم</translation>
@@ -354,7 +357,6 @@
 <translation id="2946420957526726953">‏دیگر آلات سے منسلک ہونے کیلئے Chrome کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="2951071800649516099">بعد کیلئے اپنی پڑھنے کی فہرست میں صفحات شامل کریں</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> نہ پڑھا ہوا صفحہ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> نہ پڑھے ہوئے صفحات}}</translation>
-<translation id="2961210776189273067">عنوان</translation>
 <translation id="296370266220139811">وقت کی بچت کریں اور کم ٹائپ کریں</translation>
 <translation id="2977350910003566746">آخری بار کھولا گیا کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="297771753501244313">بلحاظ آخری بار کھولا گیا سے ترتیب دیں</translation>
@@ -600,6 +602,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
+<translation id="4311652497846705514">‏PDF کھولیں؟</translation>
 <translation id="4320177379694898372">کوئی انٹرنیٹ کنکشن نہیں ہے</translation>
 <translation id="433213510553688132">پیروی جاری ہے...</translation>
 <translation id="4335835283689002019">محفوظ براؤزنگ آف ہے</translation>
@@ -639,7 +642,6 @@
 <translation id="4523326818319942067">پچھلا گھنٹہ</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4532845899244822526">فولڈر منتخب کریں</translation>
-<translation id="4541505619120536051">ہمیشہ کھولیں</translation>
 <translation id="4543131175509360848">کوئی پاسکیز شیٹ نہیں ہے</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
 <translation id="4554077758708533499">‏USB کیبل کے ساتھ منسلک ہے</translation>
@@ -831,7 +833,6 @@
 <translation id="5486841595534124508">صفحے کی بصیرتوں کے ہب کیلئے رازداری کے نوٹس کا لوگو جو 'میری سرگرمی' صفحے پر ری ڈائریکٹ کرتا ہے۔</translation>
 <translation id="5487521232677179737">ڈیٹا صاف کریں</translation>
 <translation id="5492637351392383067">آلے پر مرموزکاری</translation>
-<translation id="5509866835115085009">‏جب آپ PDF ڈاؤن لوڈ کرتے ہیں تو Chrome خودکار طور پر اسے کھول سکتا ہے۔</translation>
 <translation id="5514904542973294328">اس آلہ کے منتظم نے غیر فعال کر دیا</translation>
 <translation id="5515439363601853141">اپنا پاس ورڈ دیکھنے کیلئے غیر مقفل کریں</translation>
 <translation id="5517095782334947753">آپ کے پاس <ph name="FROM_ACCOUNT" /> کی جانب سے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات ہیں۔</translation>
@@ -897,9 +898,11 @@
 <translation id="5810288467834065221">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="5814749351757353073">اپنی پسندیدہ سائٹس سے باخبر رہیں</translation>
 <translation id="5822875253699806474">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے، اپنے ٹیبز اور سرگزشت کو سِنک کریں</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> میں محفوظ ہو گیا</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5833984609253377421">لنک کا اشتراک کریں</translation>
 <translation id="5839058148541733625">‏Chrome ڈائنوسار گیم</translation>
+<translation id="5848257610304005265">‏<ph name="APP_NAME" /> کے ساتھ PDF کھولیں؟</translation>
 <translation id="5853623416121554550">موقوف ہو گیا</translation>
 <translation id="5855546874025048181">بہتر بنائیں: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">کچھ غلط ہو گیا۔ قیمت ٹریک کریں کو اپ ڈیٹ نہیں کیا جا سکا۔</translation>
@@ -925,6 +928,7 @@
 <translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
 <translation id="5966233851250124270">‏Chrome آپ کے انتخاب کو یاد رکھے گا</translation>
+<translation id="5977976211062815271">اس آلے پر</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="5995726099713306770">صفحے کو دوبارہ لوڈ کریں؟</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
@@ -1302,6 +1306,7 @@
 <translation id="7810647596859435254">اس کے ساتھ کھولیں…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{تمام فائلز، فہرست میں 1 فائل}other{تمام فائلز، فہرست میں # فائلز}}</translation>
 <translation id="7815484226266492798">طویل اسکرین شاٹ</translation>
+<translation id="7821130663268546430">آپ ٹیب سوئچر میں تمام کھلے ٹیبز تلاش کر سکتے ہیں</translation>
 <translation id="7822705602465980873">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک کر دیا جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="78270725016672455">آپ کا کمپیوٹر کسی سائٹ میں سائن ان کرنے کیلئے اس آلے کو رجسٹر کرنا چاہتا ہے</translation>
 <translation id="7844171778363018843">مطابقت پذیری کے ليے کوئی ڈیٹا منتخب نہیں کیا گیا</translation>
@@ -1329,6 +1334,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> پرانا ہے۔</translation>
 <translation id="7944772052836377867">مطابقت پذیری کو آپ کی شناخت کی توثیق کرنے کی ضرورت ہے</translation>
 <translation id="7947953824732555851">قبول و سائن ان کریں</translation>
+<translation id="7951102827450076904">‏ہمیشہ ڈاؤن لوڈ کردہ PDFs کھولیں</translation>
 <translation id="7957413488482743710">ورچوئل کارڈ آپ کے اصل کارڈ کو چھپاتا ہے تاکہ آپ کی ممکنہ دھوکہ دہی سے حفاظت کرنے میں مدد کر سکے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">صفحے کی بصیرتوں کا پیچھے جانے کا بٹن</translation>
 <translation id="7961926449547174351">آپ نے اسٹوریج تک رسائی کو غیر فعال کر دیا ہے، براہ کرم اسے فعال کرنے کے لیے ترتیبات پر جائیں۔</translation>
@@ -1379,6 +1385,7 @@
 <translation id="8127542551745560481">ہوم صفحہ میں ترمیم کریں</translation>
 <translation id="8130309322784422030">آپ کی اسٹور کردہ سائن ان کی معلومات پرانی ہو سکتی ہے</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
+<translation id="8135406045838672858">‏ڈاؤن لوڈ کردہ PDFs خودکار طور پر <ph name="APP_NAME" /> کے ساتھ کھلتے ہیں</translation>
 <translation id="8137562778192957619">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فائلیں باقی ہیں</translation>
 <translation id="8190358571722158785">1 دن باقی</translation>

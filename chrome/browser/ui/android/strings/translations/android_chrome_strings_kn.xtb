@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ಅಪ್ಲಿಕೇಶನ್ ಆವೃತ್ತಿ</translation>
 <translation id="1428770807407000502">ಸಿಂಕ್‌ ಆಫ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
+<translation id="1435593198351412143">PDF ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1436784010935106834">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ನಲ್ಲಿ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1448440926884431741">ನಿಮ್ಮ ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳನ್ನು Bookmarks ನಲ್ಲಿ ಆಯೋಜಿಸಿ</translation>
@@ -146,6 +147,7 @@
 <translation id="1792959175193046959">ಡಿಫಾಲ್ಟ್ ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳವನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1796666869097395659">ನಂತರ ಹಿಂತಿರುಗಲು ಟ್ಯಾಬ್ ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
+<translation id="1807709131360304325">ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1810845389119482123">ಆರಂಭಿಕ ಸಿಂಕ್ ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಅನ್ನು ಬಳಸಿಕೊಂಡು <ph name="SITE_ETLD_PLUS_ONE" /> ಮುಂದುವರಿಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -189,6 +191,7 @@
 <translation id="2056878612599315956">ಸೈಟ್ ಅನ್ನು ಅಮಾನತುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್‌ ವಿಫಲವಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ}}</translation>
 <translation id="2067805253194386918">ಪಠ್ಯ</translation>
+<translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ರಲ್ಲಿ <ph name="RESULT_NUMBER" /> ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="2091863218454846791">ಕಾಂಪ್ಯಾಕ್ಟ್ ವೀಕ್ಷಣೆಯನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2093731487903423814">ಹಿಂದಿನ 15 ನಿಮಿಷಗಳು</translation>
@@ -218,7 +221,6 @@
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="2234827758954819389">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
 <translation id="2239812875700136898">ಡಿಸ್ಕವರ್‌ಗಾಗಿ ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ನಿಮ್ಮ ಕಥೆಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
-<translation id="2241634353105152135">ಕೇವಲ ಒಂದು ಬಾರಿ</translation>
 <translation id="2247789808226901522">ಕಾರ್ಡ್ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="2248941474044011069">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2249635629516220541">ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಸೈಟ್‌ಗಳು ಬಳಸುವ ಮಾಹಿತಿಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -233,7 +235,6 @@
 <translation id="2318045970523081853">ಕರೆ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2321086116217818302">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2323763861024343754">ಸೈಟ್ ಸಂಗ್ರಹಣೆ</translation>
-<translation id="2327226657832576859">PDF ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುವುದೇ?</translation>
 <translation id="2328985652426384049">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="2349710944427398404">ಖಾತೆಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ Chrome ಬಳಸಿದ ಒಟ್ಟು ಡೇಟಾ</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
+<translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="281504910091592009">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಲ್ಲಿ<ph name="END_LINK" /> ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2827278682606527653">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ</translation>
@@ -340,6 +342,7 @@
 <translation id="2894821468041866720">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅಥವಾ ಸಾಧನವನ್ನು ಗಮನಾರ್ಹವಾಗಿ ನಿಧಾನಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ಗಾಗಿ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2904300462646366554">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ PDF ವೀಕ್ಷಕದೊಂದಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಲ್ಪಡುತ್ತವೆ</translation>
 <translation id="2904414404539560095">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="2908243544703713905">ಓದದಿರುವ ಸ್ಟೋರಿಗಳು ಸಿದ್ಧವಾಗಿವೆ</translation>
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
@@ -354,7 +357,6 @@
 <translation id="2946420957526726953">Chrome ಅನ್ನು ಇತರ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2951071800649516099">ನಂತರದಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ಓದದಿರುವ ಪುಟ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}}</translation>
-<translation id="2961210776189273067">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="296370266220139811">ಸಮಯ ಉಳಿಸಿ ಮತ್ತು ಟೈಪಿಂಗ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="2977350910003566746">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಎಂಬ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="297771753501244313">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
@@ -600,6 +602,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4307992518367153382">ಬೇಸಿಕ್ಸ್</translation>
+<translation id="4311652497846705514">PDF ತೆರೆಯಬೇಕೆ?</translation>
 <translation id="4320177379694898372">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ</translation>
 <translation id="433213510553688132">ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4335835283689002019">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಆಫ್ ಆಗಿದೆ</translation>
@@ -638,7 +641,6 @@
 <translation id="4523326818319942067">ಒಂದು ಗಂಟೆಯ ಹಿಂದೆ</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="4541505619120536051">ಯಾವಾಗಲೂ ತೆರೆದಿರುತ್ತದೆ</translation>
 <translation id="4543131175509360848">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಇಲ್ಲ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4554077758708533499">USB ಕೇಬಲ್ ಬಳಸಿ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -797,7 +799,7 @@
 <translation id="5304593522240415983">ಈ ಕ್ಷೇತ್ರವು ಖಾಲಿಯಾಗಿರುವಂತಿಲ್ಲ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5316947901395241499">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಪಾಸ್‌ವರ್ಡ್ ಸೇವ್ ಮಾಡುವಿಕೆಯನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
-<translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="5320351714793324716">ನೀವು ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದರೆ, ಪ್ರಿಲೋಡ್ ಮಾಡುವಾಗ Chrome ಅವುಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="5326921373682845375">ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿದ ಪುಟಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ, ಮತ್ತು ಪುಟಗಳಿಗೆ ಲಿಂಕ್ ಮಾಡುತ್ತಿರುವ ಸೈಟ್ Google ಸೈಟ್ ಆಗಿರುವುದರಿಂದ, ಈ ಪುಟಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ, ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡುವಾಗ Google ಸರ್ವರ್‌ಗಳು ಹೊಸ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯುವುದಿಲ್ಲ.</translation>
@@ -830,7 +832,6 @@
 <translation id="5486841595534124508">ನನ್ನ ಚಟುವಟಿಕೆ ಪುಟಕ್ಕೆ ರೀಡೈರೆಕ್ಟ್ ಮಾಡುವ ಪುಟದ ಒಳನೋಟಗಳ ಹಬ್‌ಗೆ ಗೌಪ್ಯತೆ ಸೂಚನೆಯ ಲೋಗೋ.</translation>
 <translation id="5487521232677179737">ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="5492637351392383067">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
-<translation id="5509866835115085009">ನೀವು PDF ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ Chrome ಅದನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಬಹುದು.</translation>
 <translation id="5514904542973294328">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5515439363601853141">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಅನ್‌ಲಾಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5517095782334947753">ನೀವು <ph name="FROM_ACCOUNT" /> ರಿಂದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
@@ -896,9 +897,11 @@
 <translation id="5810288467834065221">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="5814749351757353073">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="5822875253699806474">ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಹಿಂತಿರುಗಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5833984609253377421">ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> ಮೂಲಕ PDF ತೆರೆಯಬೇಕೆ?</translation>
 <translation id="5853623416121554550">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5855546874025048181">ಪರಿಷ್ಕರಿಸಿ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಟ್ರ್ಯಾಕ್ ಬೆಲೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
@@ -924,6 +927,7 @@
 <translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5964869237734432770">ಚಿತ್ರ ವಿವರಣೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5966233851250124270">ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು Chrome ನೆನಪಿಟ್ಟುಕೊಳ್ಳುತ್ತದೆ</translation>
+<translation id="5977976211062815271">ಈ ಸಾಧನದಲ್ಲಿರುವವು</translation>
 <translation id="5979084224081478209">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5995726099713306770">ಪುಟವನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6000066717592683814">Google ಇರಿಸಿಕೊಳ್ಳಿ</translation>
@@ -1301,6 +1305,7 @@
 <translation id="7810647596859435254">ಇದರೊಂದಿಗೆ ತೆರೆಯಿರಿ...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ 1 ಫೈಲ್}one{ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಫೈಲ್‌ಗಳು}other{ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="7815484226266492798">ದೀರ್ಘ ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
+<translation id="7821130663268546430">ನೀವು ಟ್ಯಾಬ್ ಸ್ವಿಚರ್‌ನಲ್ಲಿ ಎಲ್ಲಾ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕಾಣಬಹುದು</translation>
 <translation id="7822705602465980873">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ, ಉದಾಹರಣೆಗೆ, ಭದ್ರತಾ ಅಪಾಯದ ನಂತರ Gmail ನಲ್ಲಿ ರಕ್ಷಣೆಯನ್ನು ಹೆಚ್ಚಿಸುವುದು.</translation>
 <translation id="78270725016672455">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್, ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಈ ಸಾಧನವನ್ನು ನೋಂದಾಯಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="7844171778363018843">ಸಿಂಕ್ ಮಾಡಲು ಯಾವುದೇ ಡೇಟಾವನ್ನು ಆಯ್ಕೆಮಾಡಿಲ್ಲ</translation>
@@ -1328,6 +1333,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ನ ಅವಧಿ ಮುಗಿದಿದೆ.</translation>
 <translation id="7944772052836377867">ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಿಂಕ್‌ಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7947953824732555851">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
+<translation id="7951102827450076904">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗಳನ್ನು ಯಾವಾಗಲೂ ತೆರೆಯಿರಿ</translation>
 <translation id="7957413488482743710">ಸಂಭವನೀಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ಪುಟದ ಒಳನೋಟಗಳಿಗೆ ಹಿಂತಿರುಗುವ ಬಟನ್</translation>
 <translation id="7961926449547174351">ನೀವು ಸಂಗ್ರಹಣೆಯ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ, ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -1378,6 +1384,7 @@
 <translation id="8127542551745560481">ಮುಖಪುಟವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8130309322784422030">ನೀವು ಸಂಗ್ರಹಿಸಿದ ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯು ಹಳೆಯದಾಗಿರಬಹುದು</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="8135406045838672858"><ph name="APP_NAME" /> ಮೂಲಕ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ PDF ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="8137562778192957619">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಫೈಲ್‌ಗಳು</translation>
 <translation id="8190358571722158785">1 ದಿನ ಉಳಿದಿದೆ</translation>

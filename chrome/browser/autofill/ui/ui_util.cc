@@ -17,7 +17,7 @@ std::optional<AccountInfo> GetPrimaryAccountInfoFromBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   CoreAccountInfo core_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);

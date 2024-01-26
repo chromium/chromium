@@ -16,6 +16,8 @@ export class StringUtil {
 
   /**
    * Returns the length of the longest common prefix of two strings.
+   * TODO(b/319783585): This doesn't work well if there's a character
+   * represented with a surrogate pair.
    * @param first The first string.
    * @param second The second string.
    * @return The length of the longest common prefix, which may be 0
@@ -26,6 +28,27 @@ export class StringUtil {
     let i;
     for (i = 0; i < limit; ++i) {
       if (first.charAt(i) !== second.charAt(i)) {
+        break;
+      }
+    }
+    return i;
+  }
+
+  /**
+   * Returns the length of the longest common suffix of two strings.
+   * TODO(b/319783585): This doesn't work well if there's a character
+   * represented with a surrogate pair.
+   * @param first The first string.
+   * @param second The second string.
+   * @return The length of the longest common suffix, which may be 0
+   *     for an empty common suffix.
+   */
+  static longestCommonSuffixLength(first: string, second: string): number {
+    const limit = Math.min(first.length, second.length);
+    let i;
+    for (i = 0; i < limit; ++i) {
+      if (first.charAt(first.length - i - 1) !==
+          second.charAt(second.length - i - 1)) {
         break;
       }
     }

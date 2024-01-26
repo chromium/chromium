@@ -82,6 +82,7 @@ FilesRequestHandler::FilesRequestHandler(
     const std::string& destination,
     const std::string& user_action_id,
     const std::string& tab_title,
+    const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
     ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
@@ -98,6 +99,7 @@ FilesRequestHandler::FilesRequestHandler(
                          access_point,
                          reason),
       paths_(paths),
+      content_transfer_method_(content_transfer_method),
       callback_(std::move(callback)) {
   results_.resize(paths_.size());
   file_info_.resize(paths_.size());
@@ -114,6 +116,7 @@ std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
     const std::string& destination,
     const std::string& user_action_id,
     const std::string& tab_title,
+    const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
     ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
@@ -121,14 +124,14 @@ std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
   if (GetFactoryStorage()->is_null()) {
     return base::WrapUnique(new FilesRequestHandler(
         upload_service, profile, analysis_settings, url, source, destination,
-        user_action_id, tab_title, access_point, reason, paths,
-        std::move(callback)));
+        user_action_id, tab_title, content_transfer_method, access_point,
+        reason, paths, std::move(callback)));
   } else {
     // Use the factory to create a fake FilesRequestHandler.
-    return GetFactoryStorage()->Run(upload_service, profile, analysis_settings,
-                                    url, source, destination, user_action_id,
-                                    tab_title, access_point, reason, paths,
-                                    std::move(callback));
+    return GetFactoryStorage()->Run(
+        upload_service, profile, analysis_settings, url, source, destination,
+        user_action_id, tab_title, content_transfer_method, access_point,
+        reason, paths, std::move(callback));
   }
 }
 
@@ -146,7 +149,7 @@ void FilesRequestHandler::ResetFactoryForTesting() {
 FilesRequestHandler::~FilesRequestHandler() = default;
 
 void FilesRequestHandler::ReportWarningBypass(
-    absl::optional<std::u16string> user_justification) {
+    std::optional<std::u16string> user_justification) {
   // Report a warning bypass for each previously warned file.
   for (const auto& warning : file_warnings_) {
     size_t index = warning.first;
@@ -155,8 +158,8 @@ void FilesRequestHandler::ReportWarningBypass(
         profile_, url_, url_, source_, destination_,
         paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
         file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
-        access_point_, file_info_[index].size, warning.second,
-        user_justification);
+        content_transfer_method_, access_point_, file_info_[index].size,
+        warning.second, user_justification);
   }
 }
 
@@ -334,8 +337,9 @@ void FilesRequestHandler::FileRequestCallback(
   MaybeReportDeepScanningVerdict(
       profile_, url_, url_, source_, destination_, path.AsUTF8Unsafe(),
       file_info_[index].sha256, file_info_[index].mime_type,
-      AccessPointToTriggerString(access_point_), access_point_,
-      file_info_[index].size, upload_result, response,
+      AccessPointToTriggerString(access_point_), content_transfer_method_,
+
+      access_point_, file_info_[index].size, upload_result, response,
       CalculateEventResult(*analysis_settings_, request_handler_result.complies,
                            result_is_warning));
 

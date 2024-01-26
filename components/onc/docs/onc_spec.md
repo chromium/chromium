@@ -1949,6 +1949,7 @@ that reference APNs contained in **AdminAPNList**.
 * **Authentication**
     * (optional) - **string**
     * Type of authentication protocol for sending username and password.
+      Possible values are "", "PAP", or "CHAP".
 
 * **Language**
     * (optional, required if **LocalizedName** is provided) - **string**

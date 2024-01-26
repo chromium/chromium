@@ -1192,6 +1192,10 @@ class CONTENT_EXPORT InterestGroupAuction
   static data_decoder::DataDecoder* GetDataDecoder(
       base::WeakPtr<InterestGroupAuction> instance);
 
+  // For associating various events with a particular auction. Note that
+  // component auctions have their own.
+  const std::string devtools_auction_id_;
+
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace event lasts for the combined lifetime of `this`
   // and a possible InterestGroupAuctionReporter. Sequential events that

@@ -166,7 +166,7 @@ class TestBrowserWindow : public BrowserWindow {
       bool show_stay_in_chrome,
       bool show_remember_selection,
       apps::IntentPickerBubbleType bubble_type,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -238,7 +238,7 @@ class TestBrowserWindow : public BrowserWindow {
 
   void SetCloseCallback(base::OnceClosure close_callback);
 
-  void CreateTabSearchBubble(const int tab_index = -1) override {}
+  void CreateTabSearchBubble(int tab_index = -1) override {}
   void CloseTabSearchBubble() override {}
 
   user_education::FeaturePromoController* GetFeaturePromoController() override;

@@ -140,7 +140,8 @@ def _rotation(name):
     )
 
 # Sheriff rotations that a builder can be added to (only takes effect on trunk)
-# Arbitrary elements can't be added, new rotations must be added in SoM code
+# New rotations can be added, but won't automatically show up in SoM without
+# changes to SoM code.
 sheriff_rotations = struct(
     ANDROID = _rotation("android"),
     ANGLE = _rotation("angle"),
@@ -151,6 +152,8 @@ sheriff_rotations = struct(
     CHROMIUM_CLANG = _rotation("chromium.clang"),
     CHROMIUM_GPU = _rotation("chromium.gpu"),
     IOS = _rotation("ios"),
+    # This group is not on SoM.
+    CHROMIUMOS = _rotation("chromiumos"),
 )
 
 def xcode_enum(version):

@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
@@ -53,7 +54,9 @@ void AppServicePromiseAppItem::ExecuteLaunchCommand(int event_flags) {
 }
 
 void AppServicePromiseAppItem::Activate(int event_flags) {
-  // Promise app items should not be activated.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->PromiseAppService()
+      ->UpdateInstallPriority(package_id_.ToString());
 }
 
 const char* AppServicePromiseAppItem::GetItemType() const {

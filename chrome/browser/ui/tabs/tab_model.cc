@@ -36,7 +36,7 @@ void TabModel::OnRemovedFromModel() {
   // TODO(tbergquist): Decide whether to stick with this approach or not.
   pinned_ = false;
   blocked_ = false;
-  group_ = absl::nullopt;
+  group_ = std::nullopt;
 }
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {

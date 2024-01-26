@@ -21,21 +21,17 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 // Set presentation style of a half sheet modal.
 void SetModalPresentationStyle(UIViewController* view_controller) {
-  if (@available(iOS 15, *)) {
-    view_controller.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentation_controller =
-        view_controller.sheetPresentationController;
-    presentation_controller.prefersEdgeAttachedInCompactHeight = YES;
-    presentation_controller.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentation_controller.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent,
-    ];
-    presentation_controller.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    view_controller.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
+  view_controller.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentation_controller =
+      view_controller.sheetPresentationController;
+  presentation_controller.prefersEdgeAttachedInCompactHeight = YES;
+  presentation_controller.widthFollowsPreferredContentSizeWhenEdgeAttached =
+      YES;
+  presentation_controller.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent,
+  ];
+  presentation_controller.preferredCornerRadius = kHalfSheetCornerRadius;
 }
 
 }  // namespace

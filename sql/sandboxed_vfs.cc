@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "sql/initialization.h"
 #include "sql/sandboxed_vfs_file.h"
+#include "sql/vfs_wrapper.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -152,7 +153,7 @@ void SandboxedVfs::Register(const char* name,
                             bool make_default) {
   static base::NoDestructor<std::vector<SandboxedVfs*>>
       registered_vfs_instances;
-  sql::EnsureSqliteInitialized();
+  sql::EnsureSqliteInitialized(/*create_wrapper=*/false);
   registered_vfs_instances->push_back(
       new SandboxedVfs(name, std::move(delegate), make_default));
 }
@@ -279,6 +280,11 @@ SandboxedVfs::SandboxedVfs(const char* name,
       sqlite_epoch_(SqliteEpoch()),
       delegate_(std::move(delegate)),
       last_error_(base::File::FILE_OK) {
+  if (make_default) {
+    // This shouldn't override the VFS wrapper.
+    DCHECK_NE(std::string_view(sqlite3_vfs_find(nullptr)->zName),
+              kVfsWrapperName);
+  }
   // The register function returns a SQLite status as an int. The status is
   // ignored here. If registration fails, we'd want to report the error while
   // attempting to open a database. This is exactly what will happen, because

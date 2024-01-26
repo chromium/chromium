@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(``,
     "Verifies that overlay of an iframe element doesn't crash.");
 

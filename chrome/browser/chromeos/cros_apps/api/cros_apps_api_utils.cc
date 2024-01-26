@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 bool IsUrlEligibleForCrosAppsApis(const GURL& url) {
   // TODO(b/311528206): Decide if this scheme check should be removed.

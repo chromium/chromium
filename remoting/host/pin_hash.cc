@@ -48,7 +48,6 @@ bool VerifyHostPinHash(const std::string& hash,
   std::string hash_parsed;
   if (!ParsePinHashFromConfig(hash, host_id, &hash_parsed)) {
     LOG(FATAL) << "Failed to parse PIN hash.";
-    return false;
   }
   std::string hash_calculated = protocol::GetSharedSecretHash(host_id, pin);
   return hash_calculated == hash_parsed;

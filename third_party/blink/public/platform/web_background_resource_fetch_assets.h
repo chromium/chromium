@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BACKGROUND_RESOURCE_FETCH_ASSETS_H_
 
 #include "base/memory/ref_counted.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace base {
@@ -30,6 +32,10 @@ class BLINK_PLATFORM_EXPORT WebBackgroundResourceFetchAssets
   // Returns a SharedURLLoaderFactory for resource fetching. Must be called on
   // the background thread.
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactory() = 0;
+
+  virtual URLLoaderThrottleProvider* GetThrottleProvider() = 0;
+
+  virtual const blink::LocalFrameToken& GetLocalFrameToken() = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<WebBackgroundResourceFetchAssets>;

@@ -108,6 +108,7 @@ include_rules = [
   "+components/webapps",
   "+components/webauthn/android",
   "+components/webdata_services",
+  "+components/web_package",
   "+components/zoom",
   "+device/bluetooth/dbus",
   "+extensions",

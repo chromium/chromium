@@ -135,6 +135,16 @@
     width: 28px;
   }
 
+  @media (forced-colors: active) {
+    #descriptorMenuD button {
+      border: solid 1px ButtonBorder;
+    }
+
+    .descriptor-d {
+      forced-color-adjust: none;
+    }
+  }
+
   #colorPickerIcon {
     -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
     -webkit-mask-repeat: no-repeat;
@@ -253,18 +263,40 @@
   }
 
   .inspirations-content {
-    margin: 8px 16px 8px;
+    margin-bottom: 8px;
+    margin-inline-end: 16px;
+    margin-inline-start: 16px;
   }
 
-  .inspirations-title {
-    /* TODO(b/317382384): Replace color variable with something
-    specific to Inspirations. */
-    color: var(--color-side-panel-filter-chip-icon);
+  .inspirations-content h3 {
+    margin: 0;
+  }
+
+  .inspiration-title {
+    color: var(--color-side-panel-wallpaper-search-inspiration-descriptors);
+    cursor: pointer;
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
     width: 100%;
     margin-bottom: 8px;
+    margin-top: 8px;
+  }
+
+  #inspirationCard .tile {
+    margin-bottom: 8px;
+  }
+
+  #inspirationToggle {
+    --cr-icon-button-size: 16px;
+  }
+
+  .collapse-carets {
+    --cr-icon-image: url(icons/collapse_carets.svg);
+  }
+
+  .expand-carets {
+    --cr-icon-image: url(icons/expand_carets.svg);
   }
 </style>
 <div class="sp-card">
@@ -287,7 +319,8 @@
           label="$i18n{wallpaperSearchSubjectLabel}"
           default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
           items="[[comboboxItems_.a]]"
-          value="{{selectedDescriptorA_}}">
+          value="{{selectedDescriptorA_}}"
+          on-value-changed="onSubjectDescriptorChange_">
       </customize-chrome-combobox>
       <div id="optionalDetails">
         <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
@@ -295,13 +328,15 @@
             label="$i18n{wallpaperSearchStyleLabel}"
             default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
             items="[[comboboxItems_.b]]"
-            value="{{selectedDescriptorB_}}">
+            value="{{selectedDescriptorB_}}"
+            on-value-changed="onStyleDescriptorChange_">
         </customize-chrome-combobox>
         <customize-chrome-combobox id="descriptorComboboxC"
             label="$i18n{wallpaperSearchMoodLabel}"
             default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
             items="[[comboboxItems_.c]]"
-            value="{{selectedDescriptorC_}}" right-align-dropbox>
+            value="{{selectedDescriptorC_}}" right-align-dropbox
+            on-value-changed="onMoodDescriptorChange_">
         </customize-chrome-combobox>
         <cr-grid columns="6" id="descriptorMenuD">
           <template is="dom-repeat" items="[[descriptorD_]]">
@@ -417,30 +452,52 @@
   </div>
 </div>
 <template is="dom-if" if="[[inspirationCardEnabled_]]">
-  <hr class="sp-cards-separator">
-  <div class="sp-card" id="inspirationCard">
+  <hr class="sp-cards-separator" hidden$="[[!shouldShowInspiration_]]">
+  <div class="sp-card" id="inspirationCard"
+      hidden$="[[!shouldShowInspiration_]]">
     <sp-heading hide-back-button>
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
+      <cr-icon-button id="inspirationToggle" class$="[[inspirationToggleIcon_]]"
+          aria-label="$i18n{showInspirationCardToggle}"
+          title="$i18n{showInspirationCardToggle}" slot="buttons"
+          on-click="onInspirationToggleClick_"
+          aria-expanded="[[openInspirations_]]">
+      </cr-icon-button>
     </sp-heading>
-    <div class="inspirations-content">
-      <div class="inspirations-title">
-        $i18n{wallpaperSearchMeadowInspirationTitle}
-      </div>
-      <cr-grid columns="3" disable-arrow-navigation>
-        <template is="dom-repeat" items="[[inspirations_.inspirationA]]">
-          <div class="tile result" tabindex="0" role="button">
-            <div class="image-container">
-            <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
+    <iron-collapse opened="[[openInspirations_]]">
+      <div class="inspirations-content">
+        <template is="dom-repeat" items="[[inspirationGroups_]]">
+          <h3>
+            <div class="inspiration-title" role="button" tabindex="0"
+                on-click="onInspirationGroupTitleClick_"
+                on-keydown="onInspirationGroupTitleKeydown_"
+                aria-current$="[[getInspirationDescriptorsCheckedStatus_(item.descriptors, selectedDescriptorA_, selectedDescriptorB_, selectedDescriptorC_, selectedDefaultColor_)]]">
+              [[getInspirationGroupTitle_(item.descriptors)]]
             </div>
-          </div>
+          </h3>
+          <cr-grid columns="3" disable-arrow-navigation>
+            <template is="dom-repeat" items="[[item.inspirations]]">
+              <div class="tile result" on-click="onInspirationImageClick_"
+                  tabindex="0" role="button"
+                  aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]"
+                  aria-label="[[item.description]]">
+                <customize-chrome-check-mark-wrapper class="image-check-mark"
+                  checked="[[isBackgroundSelected_(item.id, theme_)]]">
+                  <div class="image-container">
+                    <img is="cr-auto-img"
+                        auto-src="[[item.thumbnailUrl.url]]"></img>
+                  </div>
+                </customize-chrome-check-mark-wrapper>
+              </div>
+            </template>
+          </cr-grid>
         </template>
-      </cr-grid>
-    </div>
+      </div>
+    </iron-collapse>
   </div>
 </template>
-<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
-<div class="sp-card" id="historyCard"
-    hidden$="[[!shouldShowHistory_(history_)]]">
+<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_]]">
+<div class="sp-card" id="historyCard" hidden$="[[!shouldShowHistory_]]">
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>

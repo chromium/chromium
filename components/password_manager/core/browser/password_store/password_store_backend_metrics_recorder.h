@@ -29,7 +29,12 @@ using BackendInfix = base::StrongAlias<struct BackendNameTag, std::string>;
 // assumption.
 class PasswordStoreBackendMetricsRecorder {
  public:
-  enum class SuccessStatus { kSuccess, kError, kCancelled };
+  enum class SuccessStatus {
+    kSuccess,
+    kError,
+    kCancelledTimeout,
+    kCancelledPwdSyncStateChanged,
+  };
 
   PasswordStoreBackendMetricsRecorder();
   // Constructs a new recorder and immediately calls `RecordRequestStatus()` to
@@ -58,7 +63,11 @@ class PasswordStoreBackendMetricsRecorder {
     kRequestIssued = 0,
     kTimeout = 1,
     kCompleted = 2,
-    kMaxValue = kCompleted
+    // Recorded when a request was cancelled because the sync/sign-in status
+    // changed, causing the destination storage of the request to become
+    // invalid.
+    kCancelledPwdSyncStateChanged = 3,
+    kMaxValue = kCancelledPwdSyncStateChanged,
   };
 
   // Records a broad status for an ongoing request:

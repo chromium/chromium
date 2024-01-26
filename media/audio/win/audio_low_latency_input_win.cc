@@ -500,16 +500,6 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   if (started_)
     return;
 
-  // Check if the master volume level of the opened audio session is set to
-  // zero and store the information for a UMA histogram generated in Stop().
-  // Valid volume levels are in the range 0.0 to 1.0.
-  // See http://crbug.com/1014443 for details why this is needed.
-  if (GetVolume() == 0.0) {
-    SendLogMessage("%s => (WARNING: Input audio session starts at zero volume)",
-                   __func__);
-    audio_session_starts_at_zero_volume_ = true;
-  }
-
   if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId &&
       system_audio_volume_) {
     BOOL muted = false;
@@ -562,10 +552,6 @@ void WASAPIAudioInputStream::Stop() {
   if (!started_)
     return;
 
-  // Only upload UMA histogram for the case when AGC is enabled, i.e., for
-  // WebRTC based audio input streams.
-  const bool add_uma_histogram = GetAutomaticGainControl();
-
   // We have muted system audio for capturing, so we need to unmute it when
   // capturing stops.
   if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId &&
@@ -597,14 +583,6 @@ void WASAPIAudioInputStream::Stop() {
     SetEvent(stop_capture_event_.Get());
     capture_thread_->Join();
     capture_thread_.reset();
-  }
-
-  // Upload UMA histogram to track down possible issue that can lead to a
-  // "no audio" state. See http://crbug.com/1014443.
-  if (add_uma_histogram) {
-    base::UmaHistogramBoolean("Media.Audio.InputVolumeStartsAtZeroWin",
-                              audio_session_starts_at_zero_volume_);
-    audio_session_starts_at_zero_volume_ = false;
   }
 
   SendLogMessage(

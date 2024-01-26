@@ -19,7 +19,7 @@ include_rules = [
   "+net/url_request",
   "+net/test/embedded_test_server",
   "+net/traffic_annotation",
-  "+net/base/mac",
+  "+net/base/apple",
   "+net/http",
   "+services/network/network_context.h",
   "+services/network/public",

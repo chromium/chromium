@@ -303,9 +303,8 @@ class WaylandWindow : public PlatformWindow,
 
   // Notifies about drag/drop session events. |point| is in DIP as wayland
   // sends coordinates in "surface-local" coordinates.
-  virtual void OnDragEnter(const gfx::PointF& point,
-                           std::unique_ptr<OSExchangeData> data,
-                           int operation);
+  virtual void OnDragEnter(const gfx::PointF& point, int operation);
+  virtual void OnDragDataAvailable(std::unique_ptr<OSExchangeData> data);
   virtual int OnDragMotion(const gfx::PointF& point, int operation);
   virtual void OnDragDrop();
   virtual void OnDragLeave();

@@ -144,17 +144,9 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
             .expected_result = NAME_FIRST}));
 
-// Tests for type predictions of ac=unrecognized fields when
-// `kAutofillPredictionsForAutocompleteUnrecognized` is enabled:
-// By default, address Autofill suppresses type predictions for ac=unrecognized
-// fields. Consequently, no suggestions are shown for such fields and the fields
-// cannot be filled.
-// With `kAutofillPredictionsForAutocompleteUnrecognized`, predictions are no
-// longer suppressed. Suggestions for ac=unrecognized fields remain suppressed
-// and the fields are not filled.
-// `AutofillField::ShouldSuppressSuggestionsAndFillingByDefault()` indicates
-// that the field should receive special treatment in the suggestion and filling
-// logic.
+// Tests ensuring that ac=unrecognized fields receive predictions.
+// For such fields, suggestions and filling is suppressed, which is indicated by
+// a function `AutofillField::ShouldSuppressSuggestionsAndFillingByDefault()`.
 // Every test specifies the predicted type for a field and what the expected
 // return value of the aforementioned function is.
 struct AutocompleteUnrecognizedTypeTestCase {
@@ -168,14 +160,7 @@ struct AutocompleteUnrecognizedTypeTestCase {
 };
 
 class AutocompleteUnrecognizedTypeTest
-    : public testing::TestWithParam<AutocompleteUnrecognizedTypeTestCase> {
- public:
-  AutocompleteUnrecognizedTypeTest()
-      : feature_(features::kAutofillPredictionsForAutocompleteUnrecognized) {}
-
- private:
-  base::test::ScopedFeatureList feature_;
-};
+    : public testing::TestWithParam<AutocompleteUnrecognizedTypeTestCase> {};
 
 TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
   // Create a field with ac=unrecognized and the specified predicted type.

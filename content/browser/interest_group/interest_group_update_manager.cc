@@ -349,6 +349,35 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+// Copies the maxTrustedBiddingSignalsURLLength JSON field into
+// `max_trusted_bidding_signals_url_length`.
+[[nodiscard]] bool TryToCopyMaxTrustedBiddingSignalsURLLength(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_max_trusted_bidding_signals_url_length =
+      dict.Find("maxTrustedBiddingSignalsURLLength");
+
+  if (!maybe_max_trusted_bidding_signals_url_length) {
+    return true;
+  }
+
+  // `max_trusted_bidding_signals_url_length` must be a valid 32-bit integer.
+  if (!maybe_max_trusted_bidding_signals_url_length->is_int()) {
+    return false;
+  }
+  int32_t max_trusted_bidding_signals_url_length =
+      maybe_max_trusted_bidding_signals_url_length->GetInt();
+
+  // `max_trusted_bidding_signals_url_length` must not be negative.
+  if (max_trusted_bidding_signals_url_length < 0) {
+    return false;
+  }
+
+  interest_group_update.max_trusted_bidding_signals_url_length =
+      max_trusted_bidding_signals_url_length;
+  return true;
+}
+
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] std::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
     const base::Value::List& ads_list,
@@ -683,6 +712,10 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!TryToCopyTrustedBiddingSignalsSlotSizeMode(*dict,
                                                   interest_group_update)) {
     return std::nullopt;
+  }
+  if (!TryToCopyMaxTrustedBiddingSignalsURLLength(*dict,
+                                                  interest_group_update)) {
+    return absl::nullopt;
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return std::nullopt;

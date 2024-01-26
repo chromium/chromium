@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 #import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "base/supports_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -133,6 +135,14 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_list_destroyed_ = false;
   base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
       observation_{this};
+};
+
+class MockWebStateObserver : public web::WebStateObserver {
+ public:
+  MockWebStateObserver() {}
+  ~MockWebStateObserver() override {}
+
+  MOCK_METHOD1(WebStateDestroyed, void(web::WebState*));
 };
 
 // A fake NavigationManager used to test opener-opened relationship in the
@@ -885,6 +895,55 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinnedWithActiveWebState) {
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_TRUE(observer_.web_state_activated());
   EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all webstates (non-pinned) to verify WebStateObserver function
+// invocation ordering (which can have performance implications).
+TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+
+  ASSERT_EQ(2, web_state_list_.count());
+
+  web::WebState* web_state1 = web_state_list_.GetWebStateAt(0);
+  web::WebState* web_state2 = web_state_list_.GetWebStateAt(1);
+
+  MockWebStateObserver observer1;
+  MockWebStateObserver observer2;
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver> observation1(
+      &observer1);
+  base::ScopedObservation<web::WebState, web::WebStateObserver> observation2(
+      &observer2);
+
+  observation1.Observe(web_state1);
+  observation2.Observe(web_state2);
+
+  EXPECT_CALL(observer1, WebStateDestroyed(web_state1))
+      .WillOnce([&](web::WebState*) {
+        // All webstates should be dettached before invoking WebStateDestroyed
+        // for any of them.
+        EXPECT_EQ(0, web_state_list_.count());
+        EXPECT_TRUE(observer_.web_state_detached());
+        EXPECT_TRUE(observer_.batch_operation_started());
+        EXPECT_FALSE(observer_.batch_operation_ended());
+        observation1.Reset();
+      });
+
+  EXPECT_CALL(observer2, WebStateDestroyed(web_state2))
+      .WillOnce([&](web::WebState*) {
+        // All webstates should be dettached before invoking WebStateDestroyed
+        // for any of them.
+        EXPECT_EQ(0, web_state_list_.count());
+        EXPECT_TRUE(observer_.web_state_detached());
+        EXPECT_TRUE(observer_.batch_operation_started());
+        EXPECT_FALSE(observer_.batch_operation_ended());
+        observation2.Reset();
+      });
+
+  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 

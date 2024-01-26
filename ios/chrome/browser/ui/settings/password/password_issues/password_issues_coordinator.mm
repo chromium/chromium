@@ -7,8 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -74,7 +74,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   PasswordDetailsCoordinator* _passwordDetails;
 
   // Password check manager to power mediator.
-  IOSChromePasswordCheckManager* _manager;
+  raw_ptr<IOSChromePasswordCheckManager> _manager;
 
   // Type of insecure credentials issues to display.
   password_manager::WarningType _warningType;

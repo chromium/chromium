@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
-import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -65,6 +64,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -72,6 +73,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
@@ -124,6 +126,7 @@ public class StripLayoutHelperManager
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
+    // Tab strip transition constants.
     @VisibleForTesting
     static final Interpolator TAB_STRIP_TRANSITION_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
@@ -154,14 +157,16 @@ public class StripLayoutHelperManager
     private int mOrientation;
     private TintedCompositorButton mModelSelectorButton;
     private Context mContext;
-    private boolean mBrowserScrimShowing;
+    private boolean mTabStripObscured;
     private boolean mIsHidden;
     private boolean mIsTransitioning;
+    private final ToolbarManager mToolbarManager;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final ViewStub mTabHoverCardViewStub;
     private float mModelSelectorWidth;
+
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
@@ -287,13 +292,13 @@ public class StripLayoutHelperManager
         @Override
         public void onStartedShowing(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            mBrowserScrimShowing = true;
+            mTabStripObscured = true;
         }
 
         @Override
         public void onStartedHiding(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            mBrowserScrimShowing = false;
+            mTabStripObscured = false;
         }
     }
 
@@ -323,7 +328,7 @@ public class StripLayoutHelperManager
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
-     * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param toolbarManager The {@link ToolbarManager} instance.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -340,7 +345,9 @@ public class StripLayoutHelperManager
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            // TODO(crbug.com/1498252): Avoid passing the ToolbarManager instance. Potentially
+            // implement an interface to manage strip transition states.
+            @NonNull ToolbarManager toolbarManager) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -425,22 +432,25 @@ public class StripLayoutHelperManager
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
-        mBrowserScrimShowing = false;
+        mTabStripObscured = false;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
         if (TabUiFeatureUtilities.isTabDragEnabled()) {
             mTabDragSource =
                     new TabDragSource(
                             context,
-                            () -> getActiveStripLayoutHelper(),
+                            this::getActiveStripLayoutHelper,
+                            () -> !mTabStripObscured,
                             tabContentManagerSupplier,
                             mLayerTitleCacheSupplier,
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider,
                             windowAndroid,
-                            tabStripHeightSupplier);
+                            toolbarManager.getTabStripHeightSupplier());
         }
+
+        mToolbarManager = toolbarManager;
 
         mNormalHelper =
                 new StripLayoutHelper(
@@ -610,10 +620,16 @@ public class StripLayoutHelperManager
                 yOffset,
                 selectedTabId,
                 hoveredTabId,
-                // TODO(crbug.com/1498252): Use the toolbar background color for scrim.
-                getBackgroundColor(),
+                getStripTransitionScrimColor(),
                 scrimOpacity);
         return mTabStripTreeProvider;
+    }
+
+    private int getStripTransitionScrimColor() {
+        if (!ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue()) {
+            return getBackgroundColor();
+        }
+        return mToolbarManager.getPrimaryColor();
     }
 
     @Override
@@ -715,7 +731,7 @@ public class StripLayoutHelperManager
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (mBrowserScrimShowing) return;
+        if (mTabStripObscured) return;
         if (duringTabStripTransition() || mIsHidden) return;
         // Remove the a11y views when top controls is partially invisible.
         if (mBrowserControlsStateProvider.getTopControlOffset() < 0) return;

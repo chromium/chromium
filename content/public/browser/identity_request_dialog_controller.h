@@ -56,7 +56,7 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
-                       const blink::mojom::RpContext& rp_context,
+                       blink::mojom::RpContext rp_context,
                        bool request_permission,
                        bool has_login_status_mismatch);
   IdentityProviderData(const IdentityProviderData& other);
@@ -93,6 +93,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
     kMaxValue = kMoreDetailsButton,
   };
+
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
+  enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
   using AccountSelectionCallback =
       base::OnceCallback<void(const GURL& idp_config_url,
@@ -133,6 +138,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
@@ -145,7 +151,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       DismissCallback dismiss_callback,
       LoginToIdPCallback login_callback);
@@ -155,7 +162,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       const std::optional<IdentityCredentialTokenError>& error,
       DismissCallback dismiss_callback,
@@ -167,6 +175,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
+
+  // Open a popup or similar that shows the specified URL.
+  virtual void ShowUrl(LinkType type, const GURL& url);
 
   // Show a modal dialog that loads content from the IdP.
   virtual WebContents* ShowModalDialog(const GURL& url,

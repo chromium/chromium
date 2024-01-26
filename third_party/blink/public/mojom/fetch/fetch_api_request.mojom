@@ -44,6 +44,7 @@ enum RequestContextType {
   IMAGE,
   IMAGE_SET,
   INTERNAL,
+  JSON,
   LOCATION,
   MANIFEST,
   OBJECT,

@@ -58,7 +58,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
 
-  const absl::optional<base::StringPiece> hwclass =
+  const std::optional<base::StringPiece> hwclass =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   if (!hwclass) {
     LOG(ERROR) << "Failed to get machine information";

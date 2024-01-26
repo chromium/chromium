@@ -81,6 +81,44 @@ Validated declarations:
         value : var(--in)
     }
 ]
+Pseudo Elements:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 35
+            startColumn : 4
+            startLine : 35
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 36
+            startColumn : 4
+            startLine : 36
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
 Keyframes:
 [
     [0] : {
@@ -274,4 +312,42 @@ Adding a rule:
     ]
     styleSheetId : <string>
 }
+Pseudo Elements:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 22
+            startColumn : 4
+            startLine : 22
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 23
+            startColumn : 4
+            startLine : 23
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
 

@@ -27,6 +27,17 @@ namespace ash {
 
 using PersistentWindowControllerTest = AshTestBase;
 
+display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
+                                              const gfx::Rect& bounds) {
+  display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
+  // Each display should have at least one native mode.
+  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                   /*is_interlaced=*/true,
+                                   /*native=*/true);
+  info.SetManagedDisplayModes({mode});
+  return info;
+}
+
 TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   UpdateDisplay("500x600,500x600");
 
@@ -82,7 +93,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   // A third id which is different from primary and secondary.
   const int64_t third_id = secondary_id + 1;
   display::ManagedDisplayInfo third_info =
-      display::CreateDisplayInfo(third_id, gfx::Rect(0, 501, 600, 500));
+      CreateDisplayInfo(third_id, gfx::Rect(0, 501, 600, 500));
   // Connects another secondary display with |third_id|.
   display_info_list.push_back(third_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -339,9 +350,6 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
 
-  // Spin a run loop to ensure shelf is deleted. https://crbug.com/810807.
-  base::RunLoop().RunUntilIdle();
-
   // Enters locked session state and reconnects secondary display.
   GetSessionControllerClient()->SetSessionState(SessionState::LOCKED);
   display_info_list.push_back(secondary_info);
@@ -402,10 +410,9 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
   const display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(internal_display_id,
-                                 gfx::Rect(0, 0, 500, 600));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 500, 600));
   const display::ManagedDisplayInfo secondary_display_info =
-      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 500));
+      CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 500));
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(native_display_info);

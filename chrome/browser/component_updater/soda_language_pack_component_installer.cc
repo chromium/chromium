@@ -54,7 +54,7 @@ SodaLanguagePackComponentInstallerPolicy::
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
-  absl::optional<speech::SodaLanguagePackComponentConfig> config =
+  std::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
 
   if (config) {

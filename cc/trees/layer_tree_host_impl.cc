@@ -266,15 +266,9 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
   ImageDecodeCacheHolder(const ImageDecodeCacheHolder&) = delete;
   ImageDecodeCacheHolder& operator=(const ImageDecodeCacheHolder&) = delete;
 
-  ~ImageDecodeCacheHolder() {
-    image_decode_cache_ptr_ = nullptr;
-    image_decode_cache_.reset();
-  }
-
  private:
-  raw_ptr<ImageDecodeCache, DanglingUntriaged> image_decode_cache_ptr_ =
-      nullptr;
   std::unique_ptr<ImageDecodeCache> image_decode_cache_;
+  raw_ptr<ImageDecodeCache> image_decode_cache_ptr_ = nullptr;
 };
 
 void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
@@ -571,23 +565,12 @@ const InputHandler& LayerTreeHostImpl::GetInputHandler() const {
   return static_cast<const InputHandler&>(*input_delegate_.get());
 }
 
-void LayerTreeHostImpl::DidSendBeginMainFrame(const viz::BeginFrameArgs& args) {
-  frame_trackers_.NotifyBeginMainFrame(args);
-}
-
 void LayerTreeHostImpl::BeginMainFrameAborted(
     CommitEarlyOutReason reason,
     std::vector<std::unique_ptr<SwapPromise>> swap_promises,
     const viz::BeginFrameArgs& args,
     bool next_bmf,
     bool scroll_and_viewport_changes_synced) {
-  if (reason == CommitEarlyOutReason::kAbortedNotVisible ||
-      reason == CommitEarlyOutReason::kFinishedNoUpdates) {
-    frame_trackers_.NotifyMainFrameCausedNoDamage(args, true);
-  } else {
-    frame_trackers_.NotifyMainFrameProcessed(args);
-  }
-
   // If the begin frame data was handled, then scroll and scale set was applied
   // by the main thread, so the active tree needs to be updated as if these sent
   // values were applied and committed.
@@ -619,7 +602,6 @@ void LayerTreeHostImpl::ReadyToCommit(
     bool scroll_and_viewport_changes_synced,
     const BeginMainFrameMetrics* begin_main_frame_metrics,
     bool commit_timeout) {
-  frame_trackers_.NotifyMainFrameProcessed(commit_args);
   if (!is_measuring_smoothness_ &&
       ((begin_main_frame_metrics &&
         begin_main_frame_metrics->should_measure_smoothness) ||
@@ -2517,10 +2499,6 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
 
   if (frame->has_no_damage) {
     DCHECK(!resourceless_software_draw_);
-
-    frame_trackers_.NotifyImplFrameCausedNoDamage(frame->begin_frame_ack);
-    frame_trackers_.NotifyMainFrameCausedNoDamage(
-        frame->origin_begin_main_frame_args, false);
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
     active_tree()->ResetAllChangeTracking();
@@ -2582,15 +2560,6 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     DCHECK_EQ(bfargs.frame_id, begin_frame_ack_frame_id);
   }
 #endif
-
-  // In some cases (e.g. for android-webviews), the frame-submission happens
-  // outside of begin-impl frame pipeline. Avoid notifying the trackers in such
-  // cases.
-  if (impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME) {
-    frame_trackers_.NotifySubmitFrame(frame_token, frame->has_missing_content,
-                                      frame->begin_frame_ack,
-                                      frame->origin_begin_main_frame_args);
-  }
 
   if (!mutator_host_->NextFrameHasPendingRAF())
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kRAF);
@@ -2907,7 +2876,10 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
     // because we don't need to communicate the actual ordering as the code all
     // assumes the native skia format.
     raster_caps_.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
-    raster_caps_.ui_rgba_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps_.ui_rgba_format =
+        layer_tree_frame_sink_->shared_image_interface()
+            ? viz::SinglePlaneFormat::kBGRA_8888
+            : viz::SinglePlaneFormat::kRGBA_8888;
     return;
   }
 
@@ -3084,24 +3056,6 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                            FrameSkippedReason reason) {
   if (layer_tree_frame_sink_)
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
-
-  // If a frame was not submitted because there was no damage, or the scheduler
-  // hit the frame-deadline while waiting for the main-thread, notify the
-  // trackers.
-  if (reason != FrameSkippedReason::kRecoverLatency &&
-      impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME) {
-    // It is possible that |ack| is for a 'future frame', i.e. for the next
-    // frame from the one currently being handled by the compositor (represented
-    // by the BeginFrameArgs instance in |current_begin_frame_tracker_|). This
-    // can happen, for example, when a frame is skipped early for
-    // latency-recovery, while the previous frame is still being processed.
-    // Notify the trackers only when this is *not* the case (since the trackers
-    // are not notified about the start of the future frame either).
-    const auto& args = current_begin_frame_tracker_.Current();
-    if (args.frame_id == ack.frame_id) {
-      frame_trackers_.NotifyImplFrameCausedNoDamage(ack);
-    }
-  }
 }
 
 void LayerTreeHostImpl::SynchronouslyInitializeAllTiles() {
@@ -3731,7 +3685,6 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
       caps.max_copy_texture_chromium_size;
   return std::make_unique<OneCopyRasterBufferProvider>(
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
-      layer_tree_frame_sink_->gpu_memory_buffer_manager(),
       max_copy_texture_chromium_size, settings_.use_partial_raster,
       settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
 }
@@ -4662,11 +4615,11 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // For software compositing, shared memory will be allocated and the
   // UIResource will be copied into it.
   base::MappedReadOnlyRegion shm;
-  base::WritableSharedMemoryMapping mapping;
+  base::WritableSharedMemoryMapping shared_mapping;
   viz::SharedBitmapId shared_bitmap_id;
   bool overlay_candidate = false;
-  bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  // Use sharedImage for software composition;
+  bool use_shared_image = layer_tree_frame_sink_->shared_image_interface();
 
   if (layer_tree_frame_sink_->context_provider()) {
     viz::RasterContextProvider* context_provider =
@@ -4692,29 +4645,15 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    const size_t buffer_size = gfx::BufferSizeForBufferFormat(
-        upload_size, gfx::BufferFormat::RGBA_8888);
-    auto shared_memory_region =
-        base::UnsafeSharedMemoryRegion::Create(buffer_size);
-    mapping = shared_memory_region.Map();
-    CHECK(shared_memory_region.IsValid() && mapping.IsValid());
-
-    gfx::GpuMemoryBufferHandle handle;
-    handle.type = gfx::SHARED_MEMORY_BUFFER;
-    handle.offset = 0;
-    handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
-        upload_size.width(), gfx::BufferFormat::RGBA_8888, 0));
-    handle.region = std::move(shared_memory_region);
-
-    client_shared_image = sii->CreateSharedImage(
+    auto shared_image_mapping = sii->CreateSharedImage(
         format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
-        std::move(handle));
+        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource");
+    client_shared_image = std::move(shared_image_mapping.shared_image);
+    shared_mapping = std::move(shared_image_mapping.mapping);
     CHECK(client_shared_image);
-    shared_bitmap_id = client_shared_image->mailbox();
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
-    mapping = std::move(shm.mapping);
+    shared_mapping = std::move(shm.mapping);
     shared_bitmap_id = viz::SharedBitmap::GenerateId();
   }
 
@@ -4736,9 +4675,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(source_size));
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-
       sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-          dst_info, mapping.memory(), dst_info.minRowBytes());
+          dst_info, shared_mapping.memory(), dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
           bitmap.row_bytes(), 0, 0);
@@ -4774,7 +4712,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurfaces::WrapPixels(dst_info, mapping.memory(),
+      scaled_surface = SkSurfaces::WrapPixels(dst_info, shared_mapping.memory(),
                                               dst_info.minRowBytes());
       CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
@@ -4823,7 +4761,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
     transferable = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id, sync_token, upload_size, format,
+        client_shared_image->mailbox(), sync_token, upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
@@ -4844,10 +4782,9 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
   UIResourceData data;
   data.opaque = bitmap.GetOpaque();
-  data.format = format;
   if (!use_shared_image) {
     data.shared_bitmap_id = shared_bitmap_id;
-    data.shared_mapping = std::move(mapping);
+    data.shared_mapping = std::move(shared_mapping);
   }
   data.shared_image = std::move(client_shared_image);
   data.resource_id_for_export = id;
@@ -5263,8 +5200,6 @@ void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
     std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks,
     const viz::FrameTimingDetails& details) {
-  frame_trackers_.NotifyFramePresented(frame_token,
-                                       details.presentation_feedback);
   for (auto& callback : callbacks)
     std::move(callback).Run(details.presentation_feedback.timestamp);
 }

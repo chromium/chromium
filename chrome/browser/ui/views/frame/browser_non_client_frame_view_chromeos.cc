@@ -350,13 +350,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
   GetWidget()->OnSizeConstraintsChanged();
 }
 
-void BrowserNonClientFrameViewChromeOS::OnBrowserViewInitViewsComplete() {
-  // We need to wait till browser views are fully initialized to apply rounded
-  // corners on the frame. This ensure that NativeViewHosts hosting browser's
-  // web contents are initialized.
-  UpdateWindowRoundedCorners();
-}
-
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // The ClientView must be flush with the top edge of the widget so that the
   // web contents can take up the entire screen in immersive fullscreen (with
@@ -1050,7 +1043,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   }
 
   if (chromeos::features::IsRoundedWindowsEnabled()) {
-    GetWidget()->client_view()->UpdateWindowRoundedCorners();
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 }
 

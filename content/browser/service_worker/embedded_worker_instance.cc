@@ -492,8 +492,6 @@ void EmbeddedWorkerInstance::Stop() {
   // stopped.
   inflight_start_info_.reset();
 
-  pause_initializing_global_scope_ = false;
-
   // Don't send the StopWorker message if the StartWorker message hasn't
   // been sent.
   if (status_ == blink::EmbeddedWorkerStatus::kStarting &&
@@ -503,6 +501,15 @@ void EmbeddedWorkerInstance::Stop() {
       observer.OnStopped(
           blink::EmbeddedWorkerStatus::kStarting /* old_status */);
     return;
+  }
+
+  warm_up_on_stopped_ = false;
+  if (status_ == blink::EmbeddedWorkerStatus::kRunning && context_ &&
+      base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) &&
+      blink::features::kSpeculativeServiceWorkerWarmUpOnStopped.Get() &&
+      owner_version_->scope().SchemeIsHTTPOrHTTPS()) {
+    warm_up_on_stopped_ = true;
   }
 
   client_->StopWorker();
@@ -730,6 +737,23 @@ void EmbeddedWorkerInstance::OnStarted(
 }
 
 void EmbeddedWorkerInstance::OnStopped() {
+  if (warm_up_on_stopped_) {
+    // We need to wait for the complete stop before warming up the service
+    // worker otherwise WarmUpServiceWorker() keeps the service worker running.
+    // Also, we need to post a task before ReleaseProcess(). Hence we are
+    // posting a task here.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<ServiceWorkerContextCore> context,
+               const GURL scope, const blink::StorageKey key) {
+              if (context) {
+                context->wrapper()->WarmUpServiceWorker(scope, key,
+                                                        base::DoNothing());
+              }
+            },
+            context_, owner_version_->scope(), owner_version_->key()));
+  }
   blink::EmbeddedWorkerStatus old_status = status_;
   ReleaseProcess();
   for (auto& observer : listener_list_)
@@ -860,7 +884,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           rph, origin, storage_key.ToPartialNetIsolationInfo(),
           std::move(coep_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-              ->CreateAuthCertObserverForServiceWorker(),
+              ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           std::move(client_security_state),
           "EmbeddedWorkerInstance::CreateFactoryBundle");
@@ -1026,6 +1050,7 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   // re-added at this stage.
   status_ = blink::EmbeddedWorkerStatus::kStopping;
   pause_initializing_global_scope_ = false;
+  warm_up_on_stopped_ = false;
   NotifyForegroundServiceWorkerRemoved();
 
   instance_host_receiver_.reset();

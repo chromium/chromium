@@ -286,8 +286,7 @@ void AbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   }
   // TODO(layout-dev): Add support for IndividualCharacterRanges to
   // ShapeResultView to avoid the copy below.
-  scoped_refptr<ShapeResult> shape_result =
-      shape_result_view->CreateShapeResult();
+  ShapeResult* shape_result = shape_result_view->CreateShapeResult();
   Vector<CharacterRange> ranges;
   shape_result->IndividualCharacterRanges(&ranges);
   widths.reserve(ranges.size());

@@ -323,7 +323,7 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
            << "extension pref does not exist " << msg;
   }
 
-  absl::optional<bool> val = pref->FindBoolByDottedPath(pref_path);
+  std::optional<bool> val = pref->FindBoolByDottedPath(pref_path);
   if (!val.has_value()) {
     return testing::AssertionFailure()
            << pref_path << " pref not found " << msg;
@@ -405,7 +405,7 @@ void ExtensionServiceTestBase::TearDown() {
 #endif
 }
 
-void ExtensionServiceTestBase::SetUpTestCase() {
+void ExtensionServiceTestBase::SetUpTestSuite() {
   // Safe to call multiple times.
   LoadErrorReporter::Init(false);  // no noisy errors.
 }

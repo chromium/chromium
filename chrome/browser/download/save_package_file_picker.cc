@@ -274,7 +274,13 @@ void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
 
   download_prefs_->SetSaveFilePath(path.DirName());
 
-  std::move(callback_).Run(path, save_type,
+  content::SavePackagePathPickedParams params;
+  params.file_path = path;
+  params.save_type = save_type;
+#if BUILDFLAG(IS_MAC)
+  params.file_tags = file.file_tags;
+#endif
+  std::move(callback_).Run(std::move(params),
                            base::BindOnce(&OnSavePackageDownloadCreated));
 }
 

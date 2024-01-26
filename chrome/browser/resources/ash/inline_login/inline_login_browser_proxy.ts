@@ -27,13 +27,6 @@ export interface InlineLoginBrowserProxy {
   completeLogin(credentials: AuthCompletedCredentials): void;
 
   /**
-   * Send 'lstFetchResults' message.
-   * @param arg The string representation of the json data returned by
-   *     the sign in dialog after it has finished the sign in process.
-   */
-  lstFetchResults(arg: string): void;
-
-  /**
    * Send 'metricsHandler:recordAction' message.
    * @param metricsAction The action to be recorded.
    */
@@ -87,10 +80,6 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
 
   completeLogin(credentials: AuthCompletedCredentials) {
     chrome.send('completeLogin', [credentials]);
-  }
-
-  lstFetchResults(arg: string) {
-    chrome.send('lstFetchResults', [arg]);
   }
 
   recordAction(metricsAction: string) {

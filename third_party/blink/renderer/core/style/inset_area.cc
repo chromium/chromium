@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 
 namespace blink {
@@ -253,6 +253,48 @@ const Length& InsetArea::UsedRight() const {
     case InsetAreaRegion::kNone:
       return Length::Auto();
   }
+}
+
+std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
+    WritingDirectionMode container_writing_direction) const {
+  ItemPosition align = ItemPosition::kStart;
+  ItemPosition align_reverse = ItemPosition::kEnd;
+  ItemPosition justify = ItemPosition::kStart;
+  ItemPosition justify_reverse = ItemPosition::kEnd;
+
+  if ((FirstStart() == InsetAreaRegion::kTop &&
+       FirstEnd() == InsetAreaRegion::kBottom) ||
+      (FirstStart() == InsetAreaRegion::kCenter &&
+       FirstEnd() == InsetAreaRegion::kCenter)) {
+    // 'center' or 'all' should align with anchor center.
+    // TODO(crbug.com/1469728): Should be kAnchorCenter when supported.
+    align = align_reverse = ItemPosition::kNormal;
+  } else {
+    // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
+    // start.
+    if (FirstStart() == InsetAreaRegion::kTop) {
+      std::swap(align, align_reverse);
+    }
+  }
+  if ((SecondStart() == InsetAreaRegion::kLeft &&
+       SecondEnd() == InsetAreaRegion::kRight) ||
+      (SecondStart() == InsetAreaRegion::kCenter &&
+       SecondEnd() == InsetAreaRegion::kCenter)) {
+    // 'center' or 'all' should align with anchor center.
+    // TODO(crbug.com/1469728): Should be kAnchorCenter when supported.
+    justify = justify_reverse = ItemPosition::kNormal;
+  } else {
+    // 'left' and 'left center' aligns with end, 'right' and 'center right' with
+    // start.
+    if (SecondStart() == InsetAreaRegion::kLeft) {
+      std::swap(justify, justify_reverse);
+    }
+  }
+
+  PhysicalToLogical converter(container_writing_direction, align,
+                              justify_reverse, align_reverse, justify);
+  return std::make_pair<ItemPosition, ItemPosition>(converter.BlockStart(),
+                                                    converter.InlineStart());
 }
 
 void InsetArea::InitializeAnchorLengths() {

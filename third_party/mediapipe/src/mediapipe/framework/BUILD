@@ -192,6 +192,7 @@ cc_library(
     hdrs = ["calculator_context.h"],
     visibility = [
         ":mediapipe_internal",
+        "//assistant/surfaces/intelligence/distance_perception/models/mediapipe/calculators:__pkg__",
         "//speech/videos/mediapipe/calculator:__pkg__",
         "//vr/stargate/starcam:__pkg__",
     ],
@@ -1420,6 +1421,24 @@ cc_test(
 )
 
 cc_test(
+    name = "calculator_graph_error_callback_test",
+    srcs = ["calculator_graph_error_callback_test.cc"],
+    deps = [
+        ":calculator_framework",
+        ":packet",
+        "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:port",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+        "@com_google_absl//absl/log:absl_check",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/synchronization",
+        "@com_google_absl//absl/time",
+    ],
+)
+
+cc_test(
     name = "calculator_runner_test",
     size = "medium",
     srcs = ["calculator_runner_test.cc"],
@@ -1763,5 +1782,26 @@ cc_test(
         "//mediapipe/framework/tool:sink",
         "//mediapipe/framework/tool/testdata:dub_quad_test_subgraph",
         "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_library(
+    name = "memory_manager",
+    hdrs = ["memory_manager.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework/formats:hardware_buffer_pool",
+        "//mediapipe/gpu:multi_pool",
+    ],
+)
+
+cc_library(
+    name = "memory_manager_service",
+    hdrs = ["memory_manager_service.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":graph_service",
+        ":memory_manager",
+        "@com_google_absl//absl/base:core_headers",
     ],
 )

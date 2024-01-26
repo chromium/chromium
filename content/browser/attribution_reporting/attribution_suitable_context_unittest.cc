@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "content/test/test_web_contents.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
@@ -63,7 +63,7 @@ class AttributionSuitableContextTest : public RenderViewHostTestHarness {
     return {blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/{origin.value()},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)};
   }
 
@@ -104,6 +104,10 @@ TEST_F(AttributionSuitableContextTest,
 
   auto context = AttributionSuitableContext::Create(subframe->GetGlobalId());
   ASSERT_TRUE(context.has_value());
+  // Can also be created by passing the pointer directly instead of the id.
+  ASSERT_TRUE(AttributionSuitableContext::Create(
+                  static_cast<RenderFrameHostImpl*>(subframe))
+                  .has_value());
 
   EXPECT_FALSE(context->is_nested_within_fenced_frame());
   EXPECT_EQ(context->root_render_frame_id(),

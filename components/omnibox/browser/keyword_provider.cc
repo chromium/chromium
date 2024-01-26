@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/search_engines/template_url.h"
@@ -68,8 +69,7 @@ class ScopedEndExtensionKeywordMode {
 
 ScopedEndExtensionKeywordMode::ScopedEndExtensionKeywordMode(
     KeywordExtensionsDelegate* delegate)
-    : delegate_(delegate) {
-}
+    : delegate_(delegate) {}
 
 ScopedEndExtensionKeywordMode::~ScopedEndExtensionKeywordMode() {
   if (delegate_)
@@ -129,7 +129,7 @@ std::u16string KeywordProvider::SplitReplacementStringFromInput(
   // And extract the replacement string.
   std::u16string remaining_input;
   SplitKeywordFromInput(trimmed_input, trim_leading_whitespace,
-      &remaining_input);
+                        &remaining_input);
   return remaining_input;
 }
 
@@ -167,8 +167,9 @@ const TemplateURL* KeywordProvider::GetSubstitutingTemplateURLForInput(
       } else {
         // If somehow the cursor was before the remaining text, set it to 0,
         // otherwise adjust it relative to the remaining text.
-        cursor_position = offset > static_cast<int>(remaining_input.length()) ?
-            0u : remaining_input.length() - offset;
+        cursor_position = offset > static_cast<int>(remaining_input.length())
+                              ? 0u
+                              : remaining_input.length() - offset;
       }
     }
     input->UpdateText(remaining_input, cursor_position, input->parts());
@@ -274,8 +275,8 @@ void KeywordProvider::DeleteMatch(const AutocompleteMatch& match) {
   base::EraseIf(matches_, pred);
 
   std::u16string keyword, remaining_input;
-  if (!ExtractKeywordFromInput(
-          keyword_input_, GetTemplateURLService(), &keyword, &remaining_input))
+  if (!ExtractKeywordFromInput(keyword_input_, GetTemplateURLService(),
+                               &keyword, &remaining_input))
     return;
   const TemplateURL* const template_url =
       GetTemplateURLService()->GetTemplateURLForKeyword(keyword);
@@ -326,8 +327,7 @@ void KeywordProvider::Start(const AutocompleteInput& input,
   // typed, if the user uses them enough and isn't obviously typing something
   // else.  In this case we'd consider all input here to be query input.
   std::u16string keyword, remaining_input;
-  if (!ExtractKeywordFromInput(input, model_, &keyword,
-                               &remaining_input))
+  if (!ExtractKeywordFromInput(input, model_, &keyword, &remaining_input))
     return;
 
   keyword_input_ = input;
@@ -355,10 +355,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     }
 
     // Prune any substituting keywords if there is no substitution.
-    if (template_url->SupportsReplacement(
-            model_->search_terms_data()) &&
-        remaining_input.empty() &&
-        !input.allow_exact_keyword_match()) {
+    if (template_url->SupportsReplacement(model_->search_terms_data()) &&
+        remaining_input.empty() && !input.allow_exact_keyword_match()) {
       i = matches.erase(i);
       continue;
     }
@@ -383,9 +381,17 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     // non-empty non-extension keyword (i.e., a regular keyword that
     // supports replacement and that has extra text following it),
     // then SearchProvider creates the exact (a.k.a. verbatim) match.
-    if (!remaining_input.empty() && !is_extension_keyword)
+    //
+    // TODO(manukh): The above comment seems to on longer be true; search won't
+    //   create keyword suggestions. So when `VitalizeAutocompletedKeywords` is
+    //   true, create them here. If `VitalizeAutocompletedKeywords` proves
+    //   useful, we should clean up the keyword provider. Otherwise, we should
+    //   consider deleting the keyword provider; it's matches are scored to low
+    //   to appear usually anyways.
+    if (!remaining_input.empty() && !is_extension_keyword &&
+        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get().enabled) {
       return;
-
+    }
     // TODO(pkasting): We should probably check that if the user explicitly
     // typed a scheme, that scheme matches the one in |template_url|.
 
@@ -454,7 +460,10 @@ int KeywordProvider::CalculateRelevance(metrics::OmniboxInputType type,
                                         bool prefer_keyword,
                                         bool allow_exact_keyword_match) {
   if (!complete) {
-    return (type == metrics::OmniboxInputType::URL) ? 700 : 450;
+    return (type == metrics::OmniboxInputType::URL)
+               ? 700
+               : omnibox_feature_configs::VitalizeAutocompletedKeywords::Get()
+                     .score;
   }
   if (!supports_replacement)
     return 1500;
@@ -471,9 +480,8 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
     int relevance,
     bool deletable) {
   DCHECK(template_url);
-  const bool supports_replacement =
-      template_url->url_ref().SupportsReplacement(
-          GetTemplateURLService()->search_terms_data());
+  const bool supports_replacement = template_url->url_ref().SupportsReplacement(
+      GetTemplateURLService()->search_terms_data());
 
   // Create an edit entry of "[keyword] [remaining input]".  This is helpful
   // even when [remaining input] is empty, as the user can select the popup
@@ -509,9 +517,14 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
   // into keyword templates.
   FillInURLAndContents(remaining_input, template_url, &match);
 
-  match.keyword = keyword;
-  match.from_keyword = true;
-  match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  // TODO(manukh) Consider not showing HISTORY_KEYWORD suggestions; i.e. not
+  //   showing keyword matches for keywords that don't support replacement; they
+  //   don't seem useful.
+  if (supports_replacement) {
+    match.keyword = keyword;
+    match.from_keyword = true;
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  }
 
   return match;
 }

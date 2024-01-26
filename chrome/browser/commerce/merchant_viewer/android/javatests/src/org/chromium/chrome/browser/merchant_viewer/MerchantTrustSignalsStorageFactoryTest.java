@@ -19,10 +19,10 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Tests for {@link MerchantTrustSignalsStorageFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)

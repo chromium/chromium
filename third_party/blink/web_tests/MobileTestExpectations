@@ -2,5 +2,5 @@
 # results: [ Timeout Crash Pass Failure Skip ]
 # conflict_resolution: Override
 
-# This is the main failure suppression file for ChromeAndroid and Chrome Webview 
+# This is the main failure suppression file for ChromeAndroid and Chrome Webview
 # Web Platform Tests.

@@ -11,11 +11,12 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
-#include "base/files/file.h"
+#include "ash/webui/common/sea_pen_provider.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/manta/manta_status.h"
+#include "components/manta/proto/manta.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -40,18 +41,22 @@ using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 // private callback functions; while the non-shared code should be put into each
 // implementation and have the protected pure virtual interface here.
 class PersonalizationAppSeaPenProviderBase
-    : public PersonalizationAppSeaPenProvider {
+    : public ::ash::common::SeaPenProvider,
+      public ::ash::personalization_app::mojom::SeaPenProvider {
  public:
   PersonalizationAppSeaPenProviderBase(
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-          wallpaper_fetcher_delegate);
+          wallpaper_fetcher_delegate,
+      manta::proto::FeatureName feature_name);
 
   ~PersonalizationAppSeaPenProviderBase() override;
 
+  // ::ash::common::SeaPenProvider:
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
+  // ::ash::personalization_app::mojom::SeaPenProvider:
   void SearchWallpaper(mojom::SeaPenQueryPtr query,
                        SearchWallpaperCallback callback) override;
 
@@ -67,6 +72,13 @@ class PersonalizationAppSeaPenProviderBase
   void GetRecentSeaPenImageThumbnail(
       const base::FilePath& path,
       GetRecentSeaPenImageThumbnailCallback callback) override;
+
+  void OpenFeedbackDialog(mojom::SeaPenFeedbackMetadataPtr metadata) override;
+
+  void ShouldShowSeaPenTermsOfServiceDialog(
+      ShouldShowSeaPenTermsOfServiceDialogCallback callback) override;
+
+  void HandleSeaPenTermsOfServiceAccepted() override;
 
  protected:
   virtual void SelectRecentSeaPenImageInternal(
@@ -84,6 +96,8 @@ class PersonalizationAppSeaPenProviderBase
       const SeaPenImage& sea_pen_image,
       const std::string& query_info,
       base::OnceCallback<void(bool success)> callback) = 0;
+
+  manta::proto::FeatureName feature_name_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;

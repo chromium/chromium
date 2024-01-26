@@ -30,8 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
@@ -189,7 +187,6 @@
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
@@ -294,10 +291,6 @@
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/webui/lens/lens_ui.h"
 #endif
-
-#if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
-#endif  // BUILDFLAG(PLATFORM_CFM)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/compose_enabling.h"
@@ -441,8 +434,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // after the host name.
   if (url.host_piece() == chrome::kChromeUIAccessibilityHost)
     return &NewWebUI<AccessibilityUI>;
-  if (url.host_piece() == chrome::kChromeUIAutofillInternalsHost)
-    return &NewWebUI<AutofillInternalsUI>;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() == chrome::kChromeUIAppDisabledHost)
@@ -512,8 +503,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
     return &NewWebUI<OptimizationGuideInternalsUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIPasswordManagerInternalsHost)
-    return &NewWebUI<PasswordManagerInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIPredictorsHost)
     return &NewWebUI<PredictorsUI>;
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
@@ -854,11 +843,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SigninReauthUI>;
   }
 #endif
-
-#if BUILDFLAG(PLATFORM_CFM)
-  if (url.host_piece() == chrome::kCfmNetworkSettingsHost)
-    return &NewWebUI<ash::cfm::NetworkSettingsDialogUi>;
-#endif  // BUILDFLAG(PLATFORM_CFM)
 
 #if !BUILDFLAG(IS_ANDROID)
   if (url.host_piece() == chrome::kChromeUIPrivacySandboxDialogHost)

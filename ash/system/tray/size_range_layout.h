@@ -5,16 +5,11 @@
 #ifndef ASH_SYSTEM_TRAY_SIZE_RANGE_LAYOUT_H_
 #define ASH_SYSTEM_TRAY_SIZE_RANGE_LAYOUT_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/layout/layout_manager.h"
-
-namespace views {
-class View;
-}  // namespace views
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -40,7 +35,9 @@ namespace ash {
 //  layout->SetSize(gfx::Size(50, 50));
 //  container->SetLayoutManager(layout);
 //
-class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
+class ASH_EXPORT SizeRangeLayout : public views::View {
+  METADATA_HEADER(SizeRangeLayout, views::View)
+
  public:
   // Create a layout with no minimum or maximum preferred size.
   SizeRangeLayout();
@@ -83,18 +80,10 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
   // to |size| as well.
   void SetMaxSize(const gfx::Size& size);
 
-  // Sets the layout manager that actually performs the layout once the bounds
-  // have been defined.
-  void SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager);
-
-  // LayoutManager:
-  void Installed(views::View* host) override;
-  void Layout(views::View* host) override;
-  gfx::Size GetPreferredSize(const views::View* host) const override;
-  int GetPreferredHeightForWidth(const views::View* host,
-                                 int width) const override;
-  void ViewAdded(views::View* host, views::View* view) override;
-  void ViewRemoved(views::View* host, views::View* view) override;
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int w) const override;
+  void ChildPreferredSizeChanged(View* child) override;
 
  private:
   friend class SizeRangeLayoutTest;
@@ -104,9 +93,6 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
 
   // The host View that this has been installed on.
   raw_ptr<views::View> host_ = nullptr;
-
-  // The layout manager that actually performs the layout.
-  std::unique_ptr<views::LayoutManager> layout_manager_;
 
   // The minimum preferred size.
   gfx::Size min_size_;

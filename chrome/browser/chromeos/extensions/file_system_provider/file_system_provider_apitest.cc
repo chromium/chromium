@@ -73,11 +73,11 @@ class NotificationButtonClicker : public RequestManager::Observer {
 
  private:
   void ClickButton() {
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         NotificationDisplayServiceTester::Get()->GetNotification(
             file_system_info_.mount_path().value());
     if (notification)
-      notification->delegate()->Click(0, absl::nullopt);
+      notification->delegate()->Click(0, std::nullopt);
   }
 
   ProvidedFileSystemInfo file_system_info_;

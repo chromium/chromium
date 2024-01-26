@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -27,9 +28,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -237,8 +238,8 @@ class SearchEngineTableViewControllerTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;
-  TemplateURLService* template_url_service_;  // weak
-  sync_preferences::TestingPrefServiceSyncable* pref_service_;
+  raw_ptr<TemplateURLService> template_url_service_;  // weak
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 };
 
 // Tests that no items are shown if TemplateURLService is empty.

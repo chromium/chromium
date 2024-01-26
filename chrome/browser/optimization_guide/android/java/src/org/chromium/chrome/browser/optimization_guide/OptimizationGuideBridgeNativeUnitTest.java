@@ -16,6 +16,7 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
+import org.chromium.components.optimization_guide.proto.HintsProto.RequestContextMetadata;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -128,6 +129,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
     public void testCanApplyOptimizationOnDemand() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
+        RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
+
         OnDemandOptimizationGuideCallback callback = new OnDemandOptimizationGuideCallback();
         bridge.canApplyOptimizationOnDemand(
                 Arrays.asList(new GURL[] {new GURL(TEST_URL), new GURL(TEST_URL2)}),
@@ -136,7 +139,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
                             OptimizationType.LOADING_PREDICTOR, OptimizationType.DEFER_ALL_SCRIPT
                         }),
                 RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
-                callback);
+                callback,
+                requestContextMetadata);
 
         Map<OptimizationType, OptimizationGuideDecisionWithMetadata> test_url_metadata =
                 callback.getDecisionMetadataForURL(new GURL(TEST_URL));

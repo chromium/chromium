@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
+<translation id="1626590945318984973">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe tastin "<ph name="META_KEY" />".</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
 <translation id="1885577615937958993">kalo median shpejt përpara</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
-<translation id="1897672602657312171">Shkurtorja pa tastin e kërkimit mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin e kërkimit.</translation>
 <translation id="1904932688895783618">Këtu janë disa burime të tjera të dobishme:</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2157660087437850958">zgjedhësi për emoji</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> të niset automatikisht sa herë që ti identifikohesh.}=2{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> dhe <ph name="APP_NAME_2" /> të nisen automatikisht sa herë që ti identifikohesh.}=3{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" /> të niset automatikisht sa herë që ti identifikohesh.}other{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe # aplikacione të tjera të nisen automatikisht sa herë që ti identifikohesh.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="215916044711630446">Butoni "Shto APN-në" është çaktivizuar tani</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Modifiko detajet e APN-së</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
+<translation id="2215920961700443347">Nuk ka internet. Lidhu me rrjetin dhe provo përsëri.</translation>
 <translation id="2217935453350629363">Shpejtësia aktuale</translation>
 <translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="222447520299472966">Duhet të zgjedhësh minimumi një album të galerisë së artit</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Imazhi <ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
+<translation id="2465272316171730950">Ne jemi në nivelin maksimal të kapacitetit. Kthehu përsëri pas pak.</translation>
 <translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
 <translation id="2491955442992294626">Çelësat nuk testohen kur ti je duke përdorur një dritare tjetër</translation>
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2512979179176933762">shfaq dritaret</translation>
 <translation id="2513396635448525189">Imazhi i identifikimit</translation>
-<translation id="2515109918609218604">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe të kërkimit.</translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2521835766824839541">pjesa muzikore e mëparshme</translation>
 <translation id="2526590354069164005">Desktopi</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modaliteti i errët</translation>
 <translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
+<translation id="4130750466177569591">Jam dakord</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4150201353443180367">Ekrani</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">ulja e ndriçimit</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4176659219503619100">Paneli i kontrollit</translation>
-<translation id="4185315616950253617">Shkurtorja me tastet e rreshtit të sipërm duhet të përfshijë tastin e kërkimit.</translation>
 <translation id="420283545744377356">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="4213104098953699324">Tastierë me USB</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
 <translation id="4395835743215824109">personalizo tastierën</translation>
+<translation id="4403262788869804671">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />".</translation>
 <translation id="4415951057168511744">Simboli aktual</translation>
+<translation id="4417830657741848074">Administratori yt ka konfiguruar disa aplikacione që të nisen automatikisht. Disa nga këto aplikacione nuk mund të mbyllen.</translation>
 <translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Mbrojtësi i ekranit për rrjedhën e tokës</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
+<translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
 <translation id="4507392511610824664">rrit ndriçimin</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
 <translation id="4839698083503556542">Krijo filmin tënd</translation>
+<translation id="48409034532829769">Administratori yt e ka konfiguruar "<ph name="APP_NAME" />" që të niset automatikisht. Ky aplikacion nuk mund të mbyllet.</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4847902821209177679">Është zgjedhur "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />". Shtyp "Enter" për të zgjedhur albumet e "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">I ndarë</translation>
 <translation id="4972592110715526173">ndryshimi i modalitetit</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
+<translation id="4982627662315910959">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur Shift dhe 1 tast tjetër modifikues (Ctrl, Alt ose "<ph name="META_KEY" />").</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>
 <translation id="4988526792673242964">Faqet</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Planifikimi i temës së errët</translation>
 <translation id="5229344016299762883">Dil nga ekrani i plotë</translation>
 <translation id="5234764350956374838">Hiq</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratori yt ka konfiguruar "<ph name="APP_NAME" />" që të niset automatikisht sa herë që identifikohesh.}=2{Administratori yt ka konfiguruar "<ph name="APP_NAME" />" dhe 1 aplikacion tjetër që të nisen automatikisht sa herë që identifikohesh.}other{Administratori yt ka konfiguruar "<ph name="APP_NAME" />" dhe # aplikacione të tjera që të nisen automatikisht sa herë që identifikohesh.}}</translation>
 <translation id="5252456968953390977">Në roaming</translation>
 <translation id="5257811368506016604">Aktivizo modalitetin e ngjyrave të çelura</translation>
 <translation id="5264277876637023664">Ekzekuto testin e njësisë CPU</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
-<translation id="7273347807225967898">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift, kërkimi ose nisësi).</translation>
+<translation id="7271932918253517778">Shkurtorja me tastet e rreshtit të sipërm duhet të përfshijë tastin "<ph name="META_KEY" />".</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Ndjeje puhizën</translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Kontrollet e përgjithshme</translation>
 <translation id="7977800524392185497">Për t'iu bashkuar një rrjeti <ph name="NETWORK_NAME" />, shko te "Cilësimet"</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
-<translation id="8111706652656628199">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur Shift dhe 1 tast tjetër modifikues (Ctrl, Alt, kërkimi ose nisësi).</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>

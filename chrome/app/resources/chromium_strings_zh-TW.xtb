@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="264613044588233783">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作 (建議)</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="3258596308407688501">Chromium 無法讀取及寫入資料目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="3283186697780795848">已安裝 Chromium <ph name="PRODUCT_VERSION" /> 版</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
@@ -140,7 +142,6 @@
 <translation id="3533435340678213462">為保護個人隱私，我們會自動刪除 4 週以上的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。或者，你可以移除不希望 Chromium 列在興趣喜好清單中的項目。</translation>
 <translation id="3567254597502212821">你的瀏覽記錄，也就是在這部裝置上透過 Chromium 造訪網站的記錄。</translation>
 <translation id="3593091352817399191">已登入另一個帳戶。如要分開保存你的瀏覽資料，建議在 Chromium 中建立專屬設定檔。</translation>
-<translation id="363078681319665186">如果之後要更新 Chromium，必須使用 macOS 10.15 以上版本。這部電腦目前的版本為 macOS 10.13。</translation>
 <translation id="3639635944603682591">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。你的無痕視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
@@ -157,7 +158,6 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">前往 Chromium OS 說明頁面</translation>
 <translation id="3871664619793219264">透過 <ph name="ACCOUNT_EMAIL" /> 存取你的 Chromium 瀏覽器資料</translation>
-<translation id="387966568917439637">如果之後要更新 Chromium，必須使用 macOS 10.15 以上版本。這部電腦目前的版本為 macOS 10.14。</translation>
 <translation id="388648406173476553">自訂及管理 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下你的名稱即可開啟 Chromium 並開始瀏覽。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入這個 Chromium 設定檔。如要分開保存你的瀏覽資料，建議在 Chromium 中建立專屬設定檔。</translation>
@@ -218,6 +218,7 @@
 <translation id="4814736265800133385">不登入帳戶使用 Chromium</translation>
 <translation id="4888717733111232871">允許 mDNS 流量的 Chromium 輸入規則。</translation>
 <translation id="4893347770495441059">重新啟動以更新 &amp;Chromium</translation>
+<translation id="4942295735032723435">如果之後要更新 Chromium，請使用 macOS 11 以上版本。這部電腦目前的版本為 macOS 10.15。</translation>
 <translation id="4943838377383847465">Chromium 正在背景模式中執行。</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
@@ -246,7 +247,6 @@
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
-<translation id="5675598751761067447">這個檔案可能含有危險內容<ph name="LINE_BREAK" />如果你提供密碼，Chromium 可以替你檢查這個下載項目，並將密碼保存在裝置上</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
 <translation id="569897634095159764">無法連線至網際網路。Proxy 伺服器需要驗證。</translation>
@@ -407,6 +407,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8105840573057009683">Chromium 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="8133124826068723441">你的網域無法使用同步功能，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="813913629614996137">正在初始化...</translation>
+<translation id="8166782796394721554">開啟 Chromium 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="81770708095080097">這個檔案並不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8213374284266571500">這個類型的檔案有安全疑慮，因此 Chromium 已封鎖這個檔案</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>

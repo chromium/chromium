@@ -7,6 +7,7 @@
 
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class AllWebStateListObservationRegistrar;
@@ -39,7 +40,7 @@ class IncognitoWebStateObserver {
     void WebStateListDidChange(WebStateList* web_state_list,
                                const WebStateListChange& change,
                                const WebStateListStatus& status) override;
-    IncognitoWebStateObserver* incognito_tracker_;
+    raw_ptr<IncognitoWebStateObserver> incognito_tracker_;
   };
 
   // Observation registrars for each browser state; each one owns an instance

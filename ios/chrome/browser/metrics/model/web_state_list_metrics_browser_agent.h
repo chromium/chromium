@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -62,10 +63,10 @@ class WebStateListMetricsBrowserAgent
                              const WebStateListStatus& status) override;
 
   // The WebStateList containing all the monitored tabs.
-  WebStateList* web_state_list_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
 
   // The object storing the metrics.
-  SessionMetrics* session_metrics_ = nullptr;
+  raw_ptr<SessionMetrics> session_metrics_ = nullptr;
 
   // Whether metric recording is paused (for session restoration).
   bool metric_collection_paused_ = false;

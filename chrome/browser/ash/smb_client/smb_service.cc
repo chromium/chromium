@@ -388,12 +388,12 @@ void SmbService::MountInternal(
   if (info.use_kerberos()) {
     if (user->IsActiveDirectoryUser()) {
       smbfs_options.kerberos_options =
-          absl::make_optional<SmbFsShare::KerberosOptions>(
+          std::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kActiveDirectory,
               user->GetAccountId().GetObjGuid());
     } else if (kerberos_credentials_updater_) {
       smbfs_options.kerberos_options =
-          absl::make_optional<SmbFsShare::KerberosOptions>(
+          std::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kKerberos,
               kerberos_credentials_updater_->active_account_name());
     } else {

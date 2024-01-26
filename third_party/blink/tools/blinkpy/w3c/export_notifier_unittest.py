@@ -304,8 +304,10 @@ class ExportNotifierTest(LoggingTestCase):
             PullRequest(
                 title='title1',
                 number=1234,
-                body='description\nWPT-Export-Revision: hash\nChange-Id: decafbad',
+                body=
+                'description\nWPT-Export-Revision: hash\nChange-Id: decafbad',
                 state='open',
+                node_id='PR_1',
                 labels=[''])
         ]
         self.notifier.wpt_github.check_runs = [

@@ -21,7 +21,8 @@
                   "goma_failfast"
                 ],
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

@@ -153,8 +153,27 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 () -> getInfoBarContainer().addAnimationListener(mListener));
     }
 
-    public void setUpUrl(final String url) {
-        loadUrl(getURL(url));
+    /**
+     * Navigates to a relative URL in relation to the embedded server host directly without going
+     * through the UrlBar. This bypasses the page preloading mechanism of the UrlBar.
+     *
+     * @param relativeUrl The relative URL for which an absolute URL will be computed and loaded in
+     *     the current tab.
+     */
+    public void setUpUrl(final String relativeUrl) {
+        loadUrl(getURL(relativeUrl));
+    }
+
+    /**
+     * Navigates to a relative URL in relation to the specified host directly without going through
+     * the UrlBar. This bypasses the page preloading mechanism of the UrlBar.
+     *
+     * @param relativeUrl The relative URL for which an absolute URL will be computed and loaded in
+     *     the current tab.
+     * @param hostName The host name which should be used.
+     */
+    public void setupUrlWithHostName(String hostName, String relativeUrl) {
+        loadUrl(getURLWithHostName(hostName, relativeUrl));
     }
 
     public String getURL(String url) {

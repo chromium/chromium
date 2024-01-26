@@ -16,7 +16,7 @@ items:
 - caption: Do not allow Smart Lock
   value: false
 owners:
-- file://chrome/browser/ash/login/easy_unlock/OWNERS
+- file://chrome/browser/ash/login/smart_lock/OWNERS
 - hansberry@chromium.org
 schema:
   type: boolean

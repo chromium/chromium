@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE(kEnableReadOnlyPermissions);
 BASE_DECLARE_FEATURE(kEnableUnifiedAudioFocusFeature);
 BASE_DECLARE_FEATURE(kEnableUnmanagedToManagedTransitionFeature);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkForData);
+BASE_DECLARE_FEATURE(kEnableVirtioBlkMultipleWorkers);
 BASE_DECLARE_FEATURE(kExternalStorageAccess);
 BASE_DECLARE_FEATURE(kGhostWindowNewStyle);
 BASE_DECLARE_FEATURE(kVirtioBlkDataConfigOverride);

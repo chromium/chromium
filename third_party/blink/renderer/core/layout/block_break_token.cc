@@ -154,8 +154,9 @@ void BlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(data_);
   // Looking up |ChildBreakTokensInternal()| in Trace() here is safe because
   // |const_num_children_| is const.
-  for (auto& child : ChildBreakTokensInternal())
-    visitor->Trace(child);
+  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
+    visitor->Trace(child_break_tokens_[i]);
+  }
   BreakToken::TraceAfterDispatch(visitor);
 }
 

@@ -358,6 +358,8 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   new_info.set_vsync_rate_min(GetVSyncRateMin(snapshot, mode_info));
   new_info.set_variable_refresh_rate_state(
       snapshot->variable_refresh_rate_state());
+  new_info.set_connection_type(snapshot->type());
+  new_info.set_physical_size(snapshot->physical_size());
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)

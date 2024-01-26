@@ -28,7 +28,7 @@ class DownloadDisplay {
     kActive,
   };
 
-  // Determines how the progress ring should be displayed in the icon.
+  // Determines how the progress ring and badge should be displayed in the icon.
   struct ProgressInfo {
     // Number of currently active downloads.
     int download_count = 0;
@@ -39,6 +39,9 @@ class DownloadDisplay {
 
     bool operator==(const ProgressInfo& other) const;
     bool operator!=(const ProgressInfo& other) const;
+
+    // Compares all fields except the percentage.
+    bool FieldsEqualExceptPercentage(const ProgressInfo& other) const;
   };
 
   // Describes updates to be made to the icon.

@@ -13,7 +13,8 @@ bool RequestInfoMatch(WebStatePolicyDecider::RequestInfo expected,
          (got.target_frame_is_main == expected.target_frame_is_main) &&
          (got.target_frame_is_cross_origin ==
           expected.target_frame_is_cross_origin) &&
-         (got.has_user_gesture == expected.has_user_gesture);
+         (got.is_user_initiated == expected.is_user_initiated) &&
+         (got.user_tapped_recently == expected.user_tapped_recently);
 }
 
 bool ResponseInfoMatch(WebStatePolicyDecider::ResponseInfo expected,

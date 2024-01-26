@@ -1209,4 +1209,8 @@ void Resource::SetIsAdResource() {
   resource_request_.SetIsAdResource();
 }
 
+void Resource::UpdateMemoryCacheLastAccessedTime() {
+  memory_cache_last_accessed_ = base::TimeTicks::Now();
+}
+
 }  // namespace blink

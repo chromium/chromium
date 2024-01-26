@@ -28,9 +28,9 @@
 #include "media/filters/source_buffer_state.h"
 #include "media/filters/source_buffer_stream.h"
 
-class MEDIA_EXPORT SourceBufferStream;
-
 namespace media {
+
+class SourceBufferStream;
 
 class AudioDecoderConfig;
 class VideoDecoderConfig;

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">შეტყობინებების მიღება</translation>
 <translation id="4133493477912226187">როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
+<translation id="427987768447457592">ჩანართების ახალი ჯგუფი</translation>
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>
 <translation id="5076161749301278626">გსურთ, ნახოთ მიმოხილვები მაღაზიიდან?</translation>
 <translation id="5082793167783849073">სწრაფად შეადარეთ გვერდები დაჯგუფების მეშვეობით. დასაწყებად ხანგრძლივად შეეხეთ ბმულს.</translation>
+<translation id="5161254044473106830">საჭიროა სათაური</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{თქვენ გაქვთ <ph name="TABS_COUNT_ONE" /> ჩანართი, რომელიც ბოლო დროს არ გამოგიყენებიათ}other{თქვენ გაქვთ <ph name="TABS_COUNT_MANY" /> ჩანართი, რომლებიც ბოლო დროს არ გამოგიყენებიათ}}</translation>
 <translation id="5339733443032484186">თქვენი ბოლო ჩანართი</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>

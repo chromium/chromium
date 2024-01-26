@@ -52,14 +52,6 @@ crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.ht
 # Sheriff 2023-04-04
 crbug.com/1430360 [ Linux ] external/wpt/custom-elements/form-associated/label-delegatesFocus.html [ Failure Pass ]
 
-# Sheriff 2023-11-22
-crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_pointers.html?mouse [ Failure Pass ]
-crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?mouse [ Failure Pass ]
-crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?pen [ Failure Pass ]
-
-# Sheriff 2023-12-25
-crbug.com/1514134 external/wpt/pointerevents/pointerevent_attributes_hoverable_pointers.html?pen [ Failure Pass ]
-
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #

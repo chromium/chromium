@@ -25,6 +25,7 @@ void SetHostDispatcher(WindowTreeHost* host,
 void DisableIME(WindowTreeHost* host);
 void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
 const base::flat_set<WindowTreeHost*>& GetThrottledHosts();
+bool AcceleratedWidgetMadeVisible(WindowTreeHost* host);
 
 }  // namespace test
 }  // namespace aura

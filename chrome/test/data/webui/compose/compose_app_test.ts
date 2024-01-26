@@ -5,8 +5,9 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeState, ComposeStatus, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -241,22 +242,22 @@ suite('ComposeApp', () => {
     assertEquals(CloseReason.kMSBBCloseButton, closeReason);
   });
 
-  test('FirstRunLetsGoButtonToMainDialog', async () => {
+  test('FirstRunOkButtonToMainDialog', async () => {
     const appWithFirstRunDialog =
         await initializeNewAppWithFirstRunAndMsbbState(false, true);
 
-    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    appWithFirstRunDialog.$.firstRunOkButton.click();
     // View state should change from FRE UI to main app UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
     assertTrue(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
-  test('FirstRunLetsGoButtonToMSBBDialog', async () => {
+  test('FirstRunOkButtonToMSBBDialog', async () => {
     const appWithFirstRunDialog =
         await initializeNewAppWithFirstRunAndMsbbState(false, false);
 
-    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    appWithFirstRunDialog.$.firstRunOkButton.click();
     // View state should change from FRE UI to MSBB UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertTrue(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
@@ -466,12 +467,50 @@ suite('ComposeApp', () => {
       assertTrue(app.$.errorFooter.textContent!.includes(errorMessage));
     }
 
-    testError(ComposeStatus.kError, 'errorGeneric');
-    testError(ComposeStatus.kNotSuccessful, 'errorRequestNotSuccessful');
-    testError(ComposeStatus.kTryAgainLater, 'errorTryAgainLater');
-    testError(ComposeStatus.kTryAgain, 'errorTryAgain');
-    testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
-    testError(ComposeStatus.kMisconfiguration, 'errorGeneric');
+    await testError(ComposeStatus.kFiltered, 'errorFiltered');
+    await testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
+    await testError(ComposeStatus.kOffline, 'errorOffline');
+    await testError(ComposeStatus.kClientError, 'errorTryAgain');
+    await testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
+    await testError(ComposeStatus.kServerError, 'errorTryAgain');
+    await testError(ComposeStatus.kInvalidRequest, 'errorTryAgain');
+    await testError(ComposeStatus.kRetryableError, 'errorTryAgain');
+    await testError(ComposeStatus.kNonRetryableError, 'errorTryAgain');
+    await testError(ComposeStatus.kDisabled, 'errorTryAgain');
+    await testError(ComposeStatus.kCancelled, 'errorTryAgain');
+    await testError(ComposeStatus.kNoResponse, 'errorTryAgain');
+  });
+
+  test('UnsupportedLanguageErrorClickable', async () => {
+    const errorMessage = `some error ${'errorUnsupportedLanguage'}`;
+    loadTimeData.overrideValues({['errorUnsupportedLanguage']: errorMessage});
+
+    mockInput('Here is my input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+    await mockResponse('', ComposeStatus.kUnsupportedLanguage);
+
+    assertTrue(isVisible(app.$.errorFooter));
+
+    // Click on the "Learn more" link part of the error.
+    (app.$.errorFooter.getElementsByTagName('A')[0] as HTMLElement).click();
+    await testProxy.whenCalled('openComposeLearnMorePage');
+  });
+
+  test('UnsupportedLanguageErrorClickable', async () => {
+    const errorMessage = `some error ${'errorPermissionDenied'}`;
+    loadTimeData.overrideValues({['errorPermissionDenied']: errorMessage});
+
+    mockInput('Here is my input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+    await mockResponse('', ComposeStatus.kPermissionDenied);
+
+    assertTrue(isVisible(app.$.errorFooter));
+
+    // Click on the "Sign in" link part of the error.
+    (app.$.errorFooter.getElementsByTagName('A')[1] as HTMLElement).click();
+    await testProxy.whenCalled('openSignInPage');
   });
 
   test('AllowsEditingPrompt', async () => {

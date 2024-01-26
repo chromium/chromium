@@ -34,8 +34,7 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(
 
 ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
                                                const std::string& str) {
-  return ToJavaByteArray(env, reinterpret_cast<const uint8_t*>(str.data()),
-                         str.size());
+  return ToJavaByteArray(env, base::as_byte_span(str));
 }
 
 ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
@@ -208,8 +207,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(
-        env, reinterpret_cast<const uint8_t*>(v[i].data()), v[i].length());
+    ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(env, v[i]);
     env->SetObjectArrayElement(joa, static_cast<jsize>(i), byte_array.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>(env, joa);
@@ -224,8 +222,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    ScopedJavaLocalRef<jbyteArray> byte_array =
-        ToJavaByteArray(env, v[i].data(), v[i].size());
+    ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(env, v[i]);
     env->SetObjectArrayElement(joa, static_cast<jsize>(i), byte_array.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>(env, joa);

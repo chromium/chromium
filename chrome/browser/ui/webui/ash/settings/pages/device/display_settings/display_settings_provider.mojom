@@ -21,6 +21,18 @@ enum DisplaySettingsType {
   kPrimaryDisplay,
 };
 
+// Available option of the display orientation. Do not change the
+// order since they are used for metrics. Keep in sync with the
+// DisplaySettingsOrientationOption enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsOrientationOption {
+  kAuto = 0,
+  k0Degree,
+  k90Degree,
+  k180Degree,
+  k270Degree,
+};
+
 // Value of the display settings.
 struct DisplaySettingsValue {
   // Whether the display is an internal display. This is optional since some
@@ -34,6 +46,10 @@ struct DisplaySettingsValue {
   // elapsed when users change settings, otherwise those metrics will not
   // be recorded.
   int64? display_id;
+
+  // The orientation of the display. This is available only when display
+  // orientation is changed.
+  DisplaySettingsOrientationOption? orientation;
 };
 
 // Implemented by clients that wish to be notified when the tablet mode is

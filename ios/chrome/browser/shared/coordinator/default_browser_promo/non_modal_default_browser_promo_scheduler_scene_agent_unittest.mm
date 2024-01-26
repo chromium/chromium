@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -56,7 +57,6 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information];
-    app_state_.mainBrowserState = chrome_browser_state.get();
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state.get()];
@@ -111,8 +111,8 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  web::FakeWebState* test_web_state_;
-  Browser* browser_;
+  raw_ptr<web::FakeWebState> test_web_state_;
+  raw_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
   NonModalDefaultBrowserPromoSchedulerSceneAgent* scheduler_;

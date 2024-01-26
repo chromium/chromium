@@ -132,6 +132,7 @@ extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
 BASE_DECLARE_FEATURE(kMlUrlScoring);
+BASE_DECLARE_FEATURE(kMlUrlSearchBlending);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
 // Inspire Me - additional suggestions based on user's location and interests.
@@ -165,6 +166,8 @@ BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
 
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
+
+BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 
 }  // namespace omnibox
 

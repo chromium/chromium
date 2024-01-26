@@ -67,7 +67,7 @@ namespace extensions {
 namespace {
 
 // Returns true if the given |item| is of the given |type|.
-bool MenuItemMatchesAction(const absl::optional<ActionInfo::Type> action_type,
+bool MenuItemMatchesAction(const std::optional<ActionInfo::Type> action_type,
                            const MenuItem* item) {
   if (!action_type)
     return false;
@@ -525,7 +525,7 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 
     // Clear out the action to avoid any possible UAF if we close the parent
     // menu.
-    action_taken_ = absl::nullopt;
+    action_taken_ = std::nullopt;
     if (source_ == ContextMenuSource::kMenuItem &&
         was_side_panel_action_taken) {
       browser_->window()->GetExtensionsContainer()->CloseOverflowMenuIfOpen();
@@ -546,10 +546,10 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
 
   extension_action_ =
       ExtensionActionManager::Get(profile_)->GetExtensionAction(*extension);
-  absl::optional<ActionInfo::Type> action_type =
+  std::optional<ActionInfo::Type> action_type =
       extension_action_
-          ? absl::optional<ActionInfo::Type>(extension_action_->action_type())
-          : absl::nullopt;
+          ? std::optional<ActionInfo::Type>(extension_action_->action_type())
+          : std::nullopt;
 
   extension_items_ = std::make_unique<ContextMenuMatcher>(
       profile_, this, this,
@@ -710,7 +710,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
                                          bool can_show_icon_in_toolbar) {
   DCHECK(extension);
 
-  absl::optional<ActionInfo::Type> action_type;
+  std::optional<ActionInfo::Type> action_type;
   extension_action_ =
       ExtensionActionManager::Get(profile_)->GetExtensionAction(*extension);
   if (extension_action_)

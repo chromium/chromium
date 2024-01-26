@@ -189,8 +189,13 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
+  if (paint_timing_detector.IsUnrelatedSoftNavigationPaint(node)) {
+    return false;
+  }
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
@@ -223,13 +228,19 @@ bool PaintTimingDetector::NotifyImagePaint(
   if (!frame_view) {
     return false;
   }
+  PaintTimingDetector& paint_timing_detector =
+      frame_view->GetPaintTimingDetector();
   ImagePaintTimingDetector& image_paint_timing_detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+      paint_timing_detector.GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
 
   Node* image_node = object.GetNode();
+  if (image_node &&
+      paint_timing_detector.IsUnrelatedSoftNavigationPaint(*image_node)) {
+    return false;
+  }
   HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
   bool is_loaded_after_mouseover =
       element && element->IsChangedShortlyAfterMouseover();
@@ -525,6 +536,11 @@ PaintTimingDetector::LatestLcpDetailsForTest() const {
   return largest_contentful_paint_calculator_->LatestLcpDetails();
 }
 
+bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
+  return (WasLCPRestarted() &&
+          !(IsSoftNavigationDetected() || node.IsModifiedBySoftNavigation()));
+}
+
 ScopedPaintTimingDetectorBlockPaintHook*
     ScopedPaintTimingDetectorBlockPaintHook::top_ = nullptr;
 
@@ -587,44 +603,4 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(potential_soft_navigation_text_record_);
 }
 
-void PaintTimingCallbackManagerImpl::
-    RegisterPaintTimeCallbackForCombinedCallbacks() {
-  DCHECK(!frame_callbacks_->empty());
-  LocalFrame& frame = frame_view_->GetFrame();
-  if (!frame.GetPage()) {
-    return;
-  }
-
-  auto combined_callback = CrossThreadBindOnce(
-      &PaintTimingCallbackManagerImpl::ReportPaintTime,
-      WrapCrossThreadWeakPersistent(this), std::move(frame_callbacks_));
-  frame_callbacks_ =
-      std::make_unique<PaintTimingCallbackManager::CallbackQueue>();
-
-  // |ReportPaintTime| on |layerTreeView| will queue a presentation-promise, the
-  // callback is called when the presentation for current render frame completes
-  // or fails to happen.
-  frame.GetPage()->GetChromeClient().NotifyPresentationTime(
-      frame, std::move(combined_callback));
-}
-
-void PaintTimingCallbackManagerImpl::ReportPaintTime(
-    std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks,
-    base::TimeTicks paint_time) {
-  // Do not report any paint timings for detached frames.
-  if (frame_view_->GetFrame().IsDetached()) {
-    return;
-  }
-
-  while (!frame_callbacks->empty()) {
-    std::move(frame_callbacks->front()).Run(paint_time);
-    frame_callbacks->pop();
-  }
-  frame_view_->GetPaintTimingDetector().UpdateLcpCandidate();
-}
-
-void PaintTimingCallbackManagerImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_view_);
-  PaintTimingCallbackManager::Trace(visitor);
-}
 }  // namespace blink

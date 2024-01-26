@@ -253,7 +253,7 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::GotExtensionSalt(
 
 void WebrtcAudioPrivateGetAssociatedSinkFunction::CalculateHMACAndReply(
     const std::string& extension_salt,
-    const absl::optional<std::string>& raw_sink_id) {
+    const std::optional<std::string>& raw_sink_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!raw_sink_id || !raw_sink_id->empty());
   // If no |raw_sink_id| is provided, the default device is used.

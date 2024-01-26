@@ -795,18 +795,9 @@
   "ZIP_CODE": {
     "en": [
       {
-        "positive_pattern": "zip|postal|post.*code|pcode|pin.?code",
-        "positive_score": 1.1,
-        "negative_pattern": "\\.zip\\b",
-        "negative_patterns_explainer": ".zip refers to a file extension. However, there are field billingAddress.zip",
-        "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
-      },
-      {
-        "positive_pattern": "address\\.zip",
+        "positive_pattern": "(?<!\\.)zip|postal|post.*code|pcode|pin.?code",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "negative_patterns_explainer": "",
         "match_field_attributes": ["LABEL", "NAME"],
         "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
       }
@@ -966,7 +957,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH", "TEXT_AREA"]
       }
     ],
     "pt": [
@@ -975,7 +966,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH", "TEXT_AREA"]
       }
     ],
     "tr": [
@@ -984,7 +975,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH", "TEXT_AREA"]
       }
     ],
     "id": [
@@ -993,7 +984,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH", "TEXT_AREA"]
       }
     ],
     "es": [
@@ -1002,7 +993,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH", "TEXT_AREA"]
       }
     ]
   },
@@ -1146,9 +1137,9 @@
   "STATE": {
     "en": [
       {
-        "positive_pattern": "state|region|province|county|principality",
+        "positive_pattern": "(?<!(united|hist|history).?)state|region|province|county|principality",
         "positive_score": 1.1,
-        "negative_pattern": "(united|hist|history).?state",
+        "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
         "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
       }
@@ -2046,6 +2037,17 @@
       }
     ]
   },
+  "CREDIT_CARD_EXP_YEAR_AFTER_MONTH_EXPERIMENTAL": {
+    "en": [
+      {
+        "positive_pattern": "^(yy|yyyy|aa|aaaa)$",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "SELECT_ONE", "SELECT_LIST", "INPUT_NUMBER", "INPUT_SEARCH"]
+      }
+    ]
+  },
   "GIFT_CARD": {
     "en": [
       {
@@ -2210,15 +2212,6 @@
         "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
       }
     ],
-    "de": [
-      {
-        "positive_pattern": "vollständiger.?name",
-        "positive_score": 0.9,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
-      }
-    ],
     "zh-CN": [
       {
         "positive_pattern": "用户名",
@@ -2242,6 +2235,15 @@
     "en": [
       {
         "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)|receiver",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT"]
+      }
+    ],
+    "de": [
+      {
+        "positive_pattern": "vollständiger.?name",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -2888,7 +2890,7 @@
   "PHONE_AREA_CODE": {
     "en": [
       {
-        "positive_pattern": "area.*code|acode|area",
+        "positive_pattern": "area.*code|acode|area|^\\($",
         "positive_score": 1.3,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

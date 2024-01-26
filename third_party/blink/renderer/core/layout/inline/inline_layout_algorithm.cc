@@ -455,7 +455,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
       // Take all used fonts into account if 'line-height: normal'.
       if (box->include_used_fonts)
-        box->AccumulateUsedFonts(item_result.shape_result.get());
+        box->AccumulateUsedFonts(item_result.shape_result.Get());
 
       DCHECK(item.TextType() == TextItemType::kNormal ||
              item.TextType() == TextItemType::kSymbolMarker);
@@ -1213,8 +1213,7 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
     if (item_result.has_only_trailing_spaces)
       break;
     if (item_result.shape_result) {
-      scoped_refptr<ShapeResult> shape_result =
-          item_result.shape_result->CreateShapeResult();
+      ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
       shape_result->ApplySpacing(spacing, item_result.StartOffset() -
@@ -1223,7 +1222,7 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
       item_result.inline_size = shape_result->SnappedWidth();
       if (UNLIKELY(item_result.is_hyphenated))
         item_result.inline_size += item_result.hyphen.InlineSize();
-      item_result.shape_result = ShapeResultView::Create(shape_result.get());
+      item_result.shape_result = ShapeResultView::Create(shape_result);
     } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
       float spacing_before = 0.0f;
       DCHECK_LE(line_text_start_offset, item_result.StartOffset());

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -79,10 +80,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 @end
 
 @implementation SaveToPhotosMediator {
-  PhotosService* _photosService;
-  PrefService* _prefService;
-  ChromeAccountManagerService* _accountManagerService;
-  signin::IdentityManager* _identityManager;
+  raw_ptr<PhotosService> _photosService;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   NSString* _imageName;
   NSData* _imageData;
   BOOL _userTappedSuccessSnackbarButton;
@@ -317,6 +318,14 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                               std::move(uploadCompletionCallback));
 }
 
+// After upload failed with `failureIdentity`, this can be called to retry an
+// upload with the same identity.
+- (void)retryUploadImageWithIdentity:(id<SystemIdentity>)failureIdentity {
+  self.identity = failureIdentity;
+  [self.delegate startValidationSpinnerForAccountPicker];
+  [self tryUploadImage];
+}
+
 // Called when the Photos service reports upload completion.
 - (void)photosServiceFinishedUploadWithResult:
     (PhotosService::UploadResult)result {
@@ -340,9 +349,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
-      weakSelf.identity = failureIdentity;
-      [weakSelf.delegate startValidationSpinnerForAccountPicker];
-      [weakSelf tryUploadImage];
+      [weakSelf retryUploadImageWithIdentity:failureIdentity];
     }];
     return;
   }

@@ -41,6 +41,7 @@ declare_args() {
   # * CertificateManagement/CACertificates.yaml
   # * CertificateManagement/CADistrustedCertificates.yaml
   # * CertificateManagement/CAHintCertificates.yaml
+  # * CertificateManagement/CAPlatformIntegrationEnabled.yaml
   #
   chrome_certificate_policies_supported = is_mac || is_win || is_linux
 

@@ -107,7 +107,7 @@ void EmitActivityTypeHistograms(ActivityType type);
 void RegisterActivityTypePrefs(PrefRegistrySimple* registry);
 
 // Retrieves the activity type from |local_state|.
-absl::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
+std::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
     PrefService* local_state);
 
 // Saves the activity type |value| to |local_state|.

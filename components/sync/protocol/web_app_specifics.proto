@@ -54,7 +54,15 @@ message WebAppSpecifics {
 
   optional string start_url = 1;
   optional string name = 2;
-  optional UserDisplayMode user_display_mode = 3;
+
+  // User-selected display setting, which may be used if no platform-specific
+  // setting is available (eg. on Windows, Mac, and Linux). If absent,
+  // user_display_mode_cros may be used as fallback (if populated). On pre-M122
+  // devices this field is used by all platforms (ie. ChromeOS, Windows, Mac,
+  // Linux) and always replaces any locally-stored value, with
+  // absent/unspecified falling back to standalone.
+  optional UserDisplayMode user_display_mode_non_cros = 3;
+
   optional uint32 theme_color = 4;
   optional string scope = 5;
   repeated WebAppIconInfo icon_infos = 6;
@@ -76,4 +84,10 @@ message WebAppSpecifics {
   // this is set to "", which means the manifest_id will be set to the origin of
   // the start_url.
   optional string relative_manifest_id = 9;
+
+  // User-selected display setting for ChromeOS.
+  // If absent, user_display_mode_non_cros may be used as fallback (if
+  // populated).
+  // Introduced in M122.
+  optional UserDisplayMode user_display_mode_cros = 10;
 }

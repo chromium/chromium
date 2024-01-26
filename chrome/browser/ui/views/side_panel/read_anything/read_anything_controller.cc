@@ -138,6 +138,17 @@ void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
       static_cast<size_t>(letter_spacing));
 }
 
+void ReadAnythingController::OnLinksEnabledChanged(bool is_enabled) {
+  model_->SetLinksEnabled(is_enabled);
+
+  PrefService* prefs = browser_->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled, is_enabled);
+}
+
+bool ReadAnythingController::GetLinksEnabled() {
+  return model_->GetLinksEnabled();
+}
+
 ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
   return model_->GetLetterSpacingModel();
 }

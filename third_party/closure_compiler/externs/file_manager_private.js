@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // @ts-nocheck
@@ -359,7 +359,7 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
 /**
  * @enum {string}
  */
-chrome.fileManagerPrivate.IOTaskState = {
+chrome.fileManagerPrivate.IoTaskState = {
   QUEUED: 'queued',
   SCANNING: 'scanning',
   IN_PROGRESS: 'in_progress',
@@ -373,7 +373,7 @@ chrome.fileManagerPrivate.IOTaskState = {
 /**
  * @enum {string}
  */
-chrome.fileManagerPrivate.IOTaskType = {
+chrome.fileManagerPrivate.IoTaskType = {
   COPY: 'copy',
   DELETE: 'delete',
   EMPTY_TRASH: 'empty_trash',
@@ -969,8 +969,8 @@ chrome.fileManagerPrivate.ResumeParams;
 
 /**
  * @typedef {{
- *   type: !chrome.fileManagerPrivate.IOTaskType,
- *   state: !chrome.fileManagerPrivate.IOTaskState,
+ *   type: !chrome.fileManagerPrivate.IoTaskType,
+ *   state: !chrome.fileManagerPrivate.IoTaskState,
  *   policyError: (!chrome.fileManagerPrivate.PolicyError|undefined),
  *   sourceName: string,
  *   numRemainingItems: number,
@@ -985,8 +985,8 @@ chrome.fileManagerPrivate.ResumeParams;
  *   errorName: string,
  *   pauseParams: (!chrome.fileManagerPrivate.PauseParams|undefined),
  *   outputs: (!Array<Entry>|undefined),
- *   destinationVolumeId: string,
- *   skippedEncryptedFiles: Array<string>
+ *   skippedEncryptedFiles: !Array<string>,
+ *   destinationVolumeId: string
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;
@@ -1448,10 +1448,10 @@ chrome.fileManagerPrivate.getProfiles = function(callback) {};
 chrome.fileManagerPrivate.openInspector = function(type) {};
 
 /**
- * Opens page in Settings window. |sub_page| Name of a sub_page to show.
- * @param {string} sub_page
+ * Opens page in Settings window. |subPage| Name of a subPage to show.
+ * @param {string} subPage
  */
-chrome.fileManagerPrivate.openSettingsSubpage = function(sub_page) {};
+chrome.fileManagerPrivate.openSettingsSubpage = function(subPage) {};
 
 /**
  * Computes an MD5 checksum for the given file. |entry| The entry of the file to
@@ -1690,7 +1690,7 @@ chrome.fileManagerPrivate.sendFeedback = function() {};
 /**
  * Starts an I/O task of type |type| on |entries|. Task type specific parameters
  * are passed via |params|.
- * @param {!chrome.fileManagerPrivate.IOTaskType} type
+ * @param {!chrome.fileManagerPrivate.IoTaskType} type
  * @param {!Array<Entry>} entries
  * @param {!chrome.fileManagerPrivate.IOTaskParams} params
  * @param {function(number): void=} callback |taskId| ID of the task that was

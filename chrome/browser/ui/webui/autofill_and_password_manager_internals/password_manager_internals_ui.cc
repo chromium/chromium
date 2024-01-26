@@ -24,3 +24,15 @@ PasswordManagerInternalsUI::PasswordManagerInternalsUI(content::WebUI* web_ui)
 }
 
 PasswordManagerInternalsUI::~PasswordManagerInternalsUI() = default;
+
+PasswordManagerInternalsUIConfig::PasswordManagerInternalsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIPasswordManagerInternalsHost) {}
+
+PasswordManagerInternalsUIConfig::~PasswordManagerInternalsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+PasswordManagerInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                        const GURL& url) {
+  return std::make_unique<PasswordManagerInternalsUI>(web_ui);
+}

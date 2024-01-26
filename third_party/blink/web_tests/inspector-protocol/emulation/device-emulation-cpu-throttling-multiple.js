@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that enabling CPU throttling in multiple pages does not crash.');
 
   const page1 = await testRunner.createPage();

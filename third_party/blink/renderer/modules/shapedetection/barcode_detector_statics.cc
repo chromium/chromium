@@ -100,7 +100,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
                        builder.GetToken())
         .Record(context->UkmRecorder());
   }
-  resolver->Resolve(results);
+  resolver->Resolve<IDLSequence<IDLString>>(results);
 }
 
 void BarcodeDetectorStatics::OnConnectionError() {
@@ -112,7 +112,7 @@ void BarcodeDetectorStatics::OnConnectionError() {
     // Return an empty list to indicate that no barcode formats are supported
     // since this connection failure indicates barcode detection is, in general,
     // not supported by the platform.
-    resolver->Resolve(Vector<String>());
+    resolver->Resolve<IDLSequence<IDLString>>(Vector<String>());
   }
 }
 

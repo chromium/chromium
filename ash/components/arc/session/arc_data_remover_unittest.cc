@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
@@ -90,6 +91,8 @@ TEST_F(ArcDataRemoverTest, NotScheduled) {
 }
 
 TEST_F(ArcDataRemoverTest, Success) {
+  base::HistogramTester histogram_tester;
+
   upstart_client()->set_arc_available(true);
 
   ArcDataRemover data_remover(prefs(), cryptohome_id());
@@ -103,9 +106,13 @@ TEST_F(ArcDataRemoverTest, Success) {
       },
       &loop));
   loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Arc.DataRemoved.Success", true, 1);
 }
 
 TEST_F(ArcDataRemoverTest, Fail) {
+  base::HistogramTester histogram_tester;
+
   ArcDataRemover data_remover(prefs(), cryptohome_id());
   data_remover.Schedule();
 
@@ -117,6 +124,8 @@ TEST_F(ArcDataRemoverTest, Fail) {
       },
       &loop));
   loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Arc.DataRemoved.Success", false, 1);
 }
 
 TEST_F(ArcDataRemoverTest, PrefPersistsAcrossInstances) {

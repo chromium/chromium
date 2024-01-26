@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -465,6 +466,7 @@ void LanguagePackManager::CheckAndUpdateDlcsForInputMethods(
 }
 
 void LanguagePackManager::ObservePrefs(PrefService* pref_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This is the main gate for the functionality of observing Prefs.
   // If this flag is false, all of the cascading logic is disabled.
   if (base::FeatureList::IsEnabled(features::kLanguagePacksInSettings)) {
@@ -476,10 +478,12 @@ void LanguagePackManager::ObservePrefs(PrefService* pref_service) {
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void LanguagePackManager::RemoveObserver(Observer* const observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
@@ -497,6 +501,7 @@ void LanguagePackManager::NotifyPackStateChanged(
 
 void LanguagePackManager::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // As of now, we only have Handwriting as a client.
   // We will check the full list once we have more than one DLC.
   const std::optional<std::string> handwriting_locale =
@@ -509,12 +514,14 @@ void LanguagePackManager::OnDlcStateChanged(
 }
 
 LanguagePackManager::LanguagePackManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!g_instance);
   g_instance = this;
   obs_.Observe(DlcserviceClient::Get());
 }
 
 LanguagePackManager::~LanguagePackManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(g_instance, this);
   pref_change_registrar_.RemoveAll();
   g_instance = nullptr;

@@ -6,7 +6,7 @@
 This document describes the status of the current implementation of the
 [**FetchLater API**][spec-pr] in Chrome, and how to enable it manually.
 
-Starting from [version 120][status], Chrome experimentally supports the
+Starting from [version 121][status], Chrome experimentally supports the
 FetchLater API,
 which allows website authors to specify one or more beacons (HTTPS requests)
 that should be sent reliably when the page is being unloaded.
@@ -42,19 +42,22 @@ in Chrome:
   (Discussed in [pending-beacon/issues/34](https://github.com/WICG/pending-beacon/issues/34))
 - Retry after network failure is not supported.
   (Discussed in [pending-beacon-/issues/40](https://github.com/WICG/pending-beacon/issues/40))
-- fetchLater requests are not observable in Chrome DevTools.
+- A fetchLater request is not observable in Chrome DevTools after its initiating
+  document is closed, which is due to the current
+  [DevTools limitation](https://chromestatus.com/feature/4654499737632768?gate=4947446974644224);
+  if the document is still alive, the request should be visible.
 
 The following features work differently than the one described in explainer and
 spec:
 
 - To address the privacy requirement (see
-  [pending-beacon/issues/30](https://github.com/WICG/pending-beacon/issues/30#issuecomment-1333869614)),
-  fetchLater requests can only be sent (staying pending) after the page becomes
-  inactive, i.e. BFCached, if BackgroundSync permission is on for the Origin;
-  otherwise, all deferred and not-yet-active fetchLater requests will be forced
-  sending out on navigating away.
-- A fetchLater request max TTL is bound by Chrome's back/forward cache TTL,
-  which is currently **10 minutes** after page goes into the cache.
+  [pending-beacon/issues/30](https://github.com/WICG/pending-beacon/issues/30#issuecomment-1888554622)),
+  any pending fetchLater requests on a document are **all flushed out** if the
+  document enters BFCache, no matter BackgroundSync permission is on or not.
+- The maximum time a fetchLater request can be pending is bound by Chrome's
+  back/forward cache TTL, which is currently **10 minutes** after page goes into
+  the cache. Note that due to the above forced-flushing behavior, in reality
+  there should be no request pending after a page being cached.
 
 ## Activation
 

@@ -5,7 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_PAGE_SIZE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_PAGE_SIZE_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 

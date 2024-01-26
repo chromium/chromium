@@ -12,6 +12,10 @@
 
 namespace user_education {
 
+ScopedTutorialState::ScopedTutorialState(ui::ElementContext context)
+    : context_(context) {}
+ScopedTutorialState::~ScopedTutorialState() = default;
+
 TutorialDescription::TutorialDescription() = default;
 TutorialDescription::TutorialDescription(TutorialDescription&&) noexcept =
     default;

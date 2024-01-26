@@ -13,8 +13,18 @@ import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInter
  * Implements a fake version of the SystemRoutineController mojo interface.
  */
 
+/**
+ * Type for methods needed for the fake SystemRoutineController implementation.
+ */
+export type FakeSystemRoutineControllerInterface =
+    SystemRoutineControllerInterface&{
+      setDelayTimeInMillisecondsForTesting(delayMilliseconds: number): void,
+      getSupportedRoutines(): Promise<{routines: RoutineType[]}>,
+      getAllRoutines(): RoutineType[],
+    };
+
 export class FakeSystemRoutineController implements
-    SystemRoutineControllerInterface {
+    FakeSystemRoutineControllerInterface {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private routineResults: Map<RoutineType, RoutineResult> = new Map();
   /**

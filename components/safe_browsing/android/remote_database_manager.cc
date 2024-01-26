@@ -149,7 +149,7 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
     // By default, we check all types except a few.
     static_assert(
         network::mojom::RequestDestination::kMaxValue ==
-            network::mojom::RequestDestination::kSpeculationRules,
+            network::mojom::RequestDestination::kJson,
         "Decide if new request destination should be skipped on mobile.");
     for (int t_int = 0;
          t_int <=
@@ -207,10 +207,6 @@ bool RemoteSafeBrowsingDatabaseManager::CanCheckRequestDestination(
 bool RemoteSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFtpScheme) ||
          url.SchemeIsWSOrWSS();
-}
-
-bool RemoteSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return true;
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(

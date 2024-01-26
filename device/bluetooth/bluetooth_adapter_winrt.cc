@@ -280,7 +280,7 @@ void PopulateServiceData(
 
     // HexEncode the bytes and add dashes as required.
     std::string uuid_str;
-    for (char c : base::HexEncode(uuid_bytes.data(), uuid_bytes.size())) {
+    for (char c : base::HexEncode(uuid_bytes)) {
       const size_t size = uuid_str.size();
       if (size == 8 || size == 13 || size == 18 || size == 23)
         uuid_str.push_back('-');

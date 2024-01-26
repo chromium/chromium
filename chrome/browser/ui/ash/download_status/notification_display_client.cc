@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 
-#include <array>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -19,21 +18,31 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skbitmap_operations.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
@@ -43,14 +52,14 @@ namespace {
 
 // Constants -------------------------------------------------------------------
 
+// A notification image's preferred size.
+constexpr gfx::Size kNotificationImagePreferredSize(/*width=*/360,
+                                                    /*height=*/240);
+
 constexpr char kNotificationNotifierId[] =
     "chrome://downloads/notification/id-notifier";
 
 constexpr char kNotificationOrigin[] = "chrome://downloads";
-
-// The commands supported by notification buttons.
-constexpr std::array<CommandType, 3> kButtonCommands = {
-    CommandType::kCancel, CommandType::kPause, CommandType::kResume};
 
 // DownloadNotificationDelegate ------------------------------------------------
 
@@ -103,38 +112,133 @@ class DownloadNotificationDelegate
 
 // Helpers ---------------------------------------------------------------------
 
+const char* GetMetricString(CommandType command) {
+  switch (command) {
+    case CommandType::kCancel:
+      return "DownloadNotificationV2.Button_Cancel";
+    case CommandType::kOpenFile:
+      return "DownloadNotificationV2.Click_Completed";
+    case CommandType::kPause:
+      return "DownloadNotificationV2.Button_Pause";
+    case CommandType::kResume:
+      return "DownloadNotificationV2.Button_Resume";
+    case CommandType::kShowInBrowser:
+      return "DownloadNotificationV2.Click_InProgress";
+    case CommandType::kShowInFolder:
+      return "DownloadNotificationV2.Button_ShowInFolder";
+  }
+}
+
+// Returns true if the execution of `command` is triggered by a click on a
+// notification body.
+bool IsBodyClickCommandType(CommandType command) {
+  switch (command) {
+    case CommandType::kOpenFile:
+    case CommandType::kShowInBrowser:
+      return true;
+    case CommandType::kCancel:
+    case CommandType::kPause:
+    case CommandType::kResume:
+    case CommandType::kShowInFolder:
+      return false;
+  }
+}
+
+// Returns true if the execution of `command` is triggered by a click on a
+// notification button.
+bool IsButtonClickCommandType(CommandType command) {
+  switch (command) {
+    case CommandType::kCancel:
+    case CommandType::kPause:
+    case CommandType::kResume:
+    case CommandType::kShowInFolder:
+      return true;
+    case CommandType::kOpenFile:
+    case CommandType::kShowInBrowser:
+      return false;
+  }
+}
+
+void RecordCommand(CommandType command) {
+  base::RecordAction(base::UserMetricsAction(GetMetricString(command)));
+}
+
 // Returns the callback that runs when the notification body associated with
-// `display_metadata` is clicked. Performs the show-in-browser command if
-// `display_metadata` contains it. Otherwise, the download file will be opened.
+// `display_metadata` is clicked.
 base::RepeatingClosure GetNotificationBodyClickCallback(
     Profile* profile,
     const DisplayMetadata& display_metadata) {
-  const std::vector<CommandInfo>& command_infos =
-      display_metadata.command_infos;
-  if (auto show_in_browser_iter = base::ranges::find(
-          command_infos, CommandType::kShowInBrowser, &CommandInfo::type);
-      show_in_browser_iter != command_infos.end()) {
-    return show_in_browser_iter->command_callback;
+  for (const auto& command : display_metadata.command_infos) {
+    if (const CommandType type = command.type; IsBodyClickCommandType(type)) {
+      return command.command_callback.Then(
+          base::BindRepeating(&RecordCommand, type));
+    }
   }
 
-  // TODO(http://b/316368295): Track successful file openings as a metric.
-  return base::BindRepeating(
-      [](const AccountId& account_id, const base::FilePath& file_path) {
-        if (Profile* const profile =
-                ProfileHelper::Get()->GetProfileByAccountId(account_id)) {
-          platform_util::OpenItem(profile, file_path,
-                                  platform_util::OpenItemType::OPEN_FILE,
-                                  /*callback=*/base::DoNothing());
-        }
-      },
-      ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId(),
-      display_metadata.file_path);
+  LOG(ERROR) << "Failed to find a notification body click callback";
+  return base::DoNothing();
 }
 
 // NOTE: This function returns a non-empty string indicating the notification
 // text, but does not guarantee the presence of a notification.
 std::string GetNotificationIdFromGuid(const std::string& guid) {
   return base::StrCat({kNotificationNotifierId, "/", guid});
+}
+
+// Returns a notification image from `original_image`. This function should be
+// called only when the image of `original_image` is not null nor empty.
+// NOTE: This function avoids using image skia operations to prevent unnecessary
+// retention of original image data.
+gfx::Image GetNotificationImage(const gfx::ImageSkia& original_image) {
+  CHECK(!original_image.isNull());
+  CHECK(!original_image.size().IsEmpty());
+
+  const float target_aspect_ratio =
+      static_cast<float>(kNotificationImagePreferredSize.width()) /
+      kNotificationImagePreferredSize.height();
+  const float original_aspect_ratio =
+      static_cast<float>(original_image.width()) / original_image.height();
+
+  // Get the largest rect from `original_image` that has `target_aspect_ratio`.
+  gfx::Rect source_rect;
+  if (original_aspect_ratio > target_aspect_ratio) {
+    const float width = original_image.height() * target_aspect_ratio;
+    source_rect = gfx::Rect(/*x=*/(original_image.width() - width) / 2,
+                            /*y=*/0, width, original_image.height());
+  } else {
+    const float height = original_image.width() / target_aspect_ratio;
+    source_rect =
+        gfx::Rect(/*x=*/0, /*y=*/(original_image.height() - height) / 2,
+                  original_image.width(), height);
+  }
+  const SkBitmap cropped_bitmap = SkBitmapOperations::CreateTiledBitmap(
+      *original_image.bitmap(), source_rect.x(), source_rect.y(),
+      source_rect.width(), source_rect.height());
+
+  // Find the largest supported scale factor for the returned image without
+  // upscaling `original_image`.
+  gfx::Size scaled_preferred_size = kNotificationImagePreferredSize;
+  float largest_scale = 1.f;
+  for (const auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
+    if (scale <= 1.f) {
+      continue;
+    }
+
+    if (const gfx::Size scaled_size =
+            gfx::ScaleToCeiledSize(kNotificationImagePreferredSize, scale);
+        gfx::Rect(original_image.size()).Contains(gfx::Rect(scaled_size))) {
+      largest_scale = scale;
+      scaled_preferred_size = scaled_size;
+    }
+  }
+
+  const SkBitmap resized_bitmap = skia::ImageOperations::Resize(
+      cropped_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
+      scaled_preferred_size.width(), scaled_preferred_size.height());
+
+  return gfx::Image(
+      gfx::ImageSkia::CreateFromBitmap(resized_bitmap, largest_scale));
 }
 
 }  // namespace
@@ -158,29 +262,36 @@ void NotificationDisplayClient::AddOrUpdate(
   std::vector<base::RepeatingClosure> button_click_callbacks;
   std::vector<message_center::ButtonInfo> buttons;
   for (const auto& command_info : display_metadata.command_infos) {
-    if (base::Contains(kButtonCommands, command_info.type)) {
-      button_click_callbacks.push_back(command_info.command_callback);
+    if (const CommandType type = command_info.type;
+        IsButtonClickCommandType(type)) {
+      button_click_callbacks.push_back(command_info.command_callback.Then(
+          base::BindRepeating(&RecordCommand, type)));
       buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
     }
   }
 
-  // Calculate progress from `display_metadata`.
-  int progress = 0;
-  const std::optional<int64_t>& received_bytes =
-      display_metadata.received_bytes;
-  const std::optional<int64_t>& total_bytes = display_metadata.total_bytes;
-  if (received_bytes >= 0 && total_bytes > 0) {
-    progress = *received_bytes * 100.f / *total_bytes;
-  } else {
-    // A negative progress value shows an indeterminate progress bar.
-    progress = -1;
+  // Calculate `progress_value` from `display_metadata`. Initialize with a
+  // negative value that shows an indeterminate progress bar.
+  int progress_value = -1;
+  const Progress& progress = display_metadata.progress;
+  const std::optional<int64_t>& received_bytes = progress.received_bytes();
+  const std::optional<int64_t>& total_bytes = progress.total_bytes();
+  const bool complete = progress.complete();
+  if (complete || (received_bytes && received_bytes == total_bytes)) {
+    // NOTE: `total_bytes` could be zero. Therefore, check the equality of
+    // `received_bytes` and `total_bytes` before division.
+    // In addition, the equality of `received_bytes` and `total_bytes` does not
+    // necessarily mean that `complete` is true.
+    progress_value = 100;
+  } else if (received_bytes >= 0 && total_bytes > 0) {
+    progress_value = *received_bytes * 100.f / *total_bytes;
   }
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons = std::move(buttons);
   rich_notification_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
-  rich_notification_data.progress = progress;
+  rich_notification_data.progress = progress_value;
   rich_notification_data.progress_status =
       display_metadata.secondary_text.value_or(std::u16string());
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
@@ -204,16 +315,21 @@ void NotificationDisplayClient::AddOrUpdate(
           .SetOptionalFields(std::move(rich_notification_data))
           .SetOriginUrl(GURL(kNotificationOrigin))
           .SetTitle(display_metadata.text.value_or(std::u16string()))
-          .SetType(message_center::NOTIFICATION_TYPE_PROGRESS)
+          .SetType(complete ? message_center::NOTIFICATION_TYPE_SIMPLE
+                            : message_center::NOTIFICATION_TYPE_PROGRESS)
           .Build(/*keep_timestamp=*/false);
+
+  if (const gfx::ImageSkia& image = display_metadata.image;
+      !image.isNull() && !image.size().IsEmpty()) {
+    notification.set_image(GetNotificationImage(image));
+    notification.set_image_path(display_metadata.file_path);
+  }
 
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, std::move(notification),
       /*metadata=*/nullptr);
 
-  // TODO(http://b/306459683): Change this code after `DisplayMetadata` uses a
-  // data structure to represent download progress.
-  if (received_bytes > 0 && received_bytes == total_bytes) {
+  if (complete) {
     // The download associated with `guid` completes. We no longer anticipate
     // receiving download updates. Therefore, remove `guid` from the collection.
     notifications_closed_by_user_guids_.erase(guid);

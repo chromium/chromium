@@ -91,8 +91,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   void Finish() {
     indexer_->Finish();
-    matcher_ = std::make_unique<IndexedRulesetMatcher>(indexer_->data(),
-                                                       indexer_->size());
+    matcher_ = std::make_unique<IndexedRulesetMatcher>(indexer_->data());
   }
 
   void Reset() {

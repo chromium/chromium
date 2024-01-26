@@ -871,13 +871,7 @@ bool IsGeneratedImage(const CSSValueID id) {
 }
 
 bool IsImageSet(const CSSValueID id) {
-  if (id == CSSValueID::kWebkitImageSet) {
-    return true;
-  }
-  if (id == CSSValueID::kImageSet) {
-    return RuntimeEnabledFeatures::CSSImageSetEnabled();
-  }
-  return false;
+  return id == CSSValueID::kWebkitImageSet || id == CSSValueID::kImageSet;
 }
 
 }  // namespace
@@ -1185,10 +1179,6 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
       case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
       case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
-        if (!RuntimeEnabledFeatures::CSSViewportUnits4Enabled()) {
-          return nullptr;
-        }
-        break;
       case CSSPrimitiveValue::UnitType::kContainerWidth:
       case CSSPrimitiveValue::UnitType::kContainerHeight:
       case CSSPrimitiveValue::UnitType::kContainerInlineSize:
@@ -3103,8 +3093,7 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
 }
 
 static CSSImageSetTypeValue* ConsumeImageSetType(CSSParserTokenRange& range) {
-  if (!RuntimeEnabledFeatures::CSSImageSetEnabled() ||
-      range.Peek().FunctionId() != CSSValueID::kType) {
+  if (range.Peek().FunctionId() != CSSValueID::kType) {
     return nullptr;
   }
 
@@ -3124,33 +3113,16 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     ConsumeGeneratedImagePolicy generated_image_policy) {
-  const ConsumeStringUrlImagePolicy string_url_image_policy =
-      RuntimeEnabledFeatures::CSSImageSetEnabled()
-          ? ConsumeStringUrlImagePolicy::kAllow
-          : ConsumeStringUrlImagePolicy::kForbid;
-  const ConsumeGeneratedImagePolicy image_set_generated_image_policy =
-      RuntimeEnabledFeatures::CSSImageSetEnabled()
-          ? generated_image_policy
-          : ConsumeGeneratedImagePolicy::kForbid;
-
-  const CSSValue* image = ConsumeImage(
-      range, context, image_set_generated_image_policy, string_url_image_policy,
-      ConsumeImageSetImagePolicy::kForbid);
+  const CSSValue* image = ConsumeImage(range, context, generated_image_policy,
+                                       ConsumeStringUrlImagePolicy::kAllow,
+                                       ConsumeImageSetImagePolicy::kForbid);
   if (!image) {
     return nullptr;
   }
 
   // Type could appear before or after resolution
   CSSImageSetTypeValue* type = ConsumeImageSetType(range);
-
-  if (!RuntimeEnabledFeatures::CSSImageSetEnabled() &&
-      range.Peek().GetType() != kDimensionToken &&
-      range.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX) {
-    return nullptr;
-  }
-
   CSSPrimitiveValue* resolution = ConsumeResolution(range, context);
-
   if (!type) {
     type = ConsumeImageSetType(range);
   }
@@ -6724,8 +6696,8 @@ CSSValue* ConsumeAutospace(CSSParserTokenRange& range) {
 // Consume the `spacing-trim` production.
 // https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
 CSSValue* ConsumeSpacingTrim(CSSParserTokenRange& range) {
-  // Currently, only `space-first` and `space-all` are supported.
-  return ConsumeIdent<CSSValueID::kSpaceFirst, CSSValueID::kSpaceAll>(range);
+  return ConsumeIdent<CSSValueID::kTrimStart, CSSValueID::kSpaceAll,
+                      CSSValueID::kSpaceFirst>(range);
 }
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,

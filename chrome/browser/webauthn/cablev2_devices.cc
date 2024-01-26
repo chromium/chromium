@@ -169,13 +169,13 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
       continue;
     }
 
-    const absl::optional<bool> is_new_impl = dict.FindBool(kPairingPrefNewImpl);
+    const std::optional<bool> is_new_impl = dict.FindBool(kPairingPrefNewImpl);
     out_pairing->from_new_implementation = is_new_impl && *is_new_impl;
     out_pairing->name = NameForDisplay(out_pairing->name);
-    const absl::optional<uint16_t> maybe_tunnel_server =
+    const std::optional<uint16_t> maybe_tunnel_server =
         dict.FindInt(kPairingPrefEncodedTunnelServer);
     if (maybe_tunnel_server) {
-      absl::optional<device::cablev2::tunnelserver::KnownDomainID>
+      std::optional<device::cablev2::tunnelserver::KnownDomainID>
           maybe_domain_id = device::cablev2::tunnelserver::ToKnownDomainID(
               *maybe_tunnel_server);
       if (!maybe_domain_id) {
@@ -224,7 +224,7 @@ std::string FindUniqueName(const std::string& orig_name,
 std::unique_ptr<Pairing> PairingFromSyncedDevice(
     const syncer::DeviceInfo* device,
     const base::Time& now) {
-  const absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
+  const std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
       maybe_paask_info = device->paask_info();
   if (!maybe_paask_info) {
     return nullptr;
@@ -243,7 +243,7 @@ std::unique_ptr<Pairing> PairingFromSyncedDevice(
   pairing->from_sync_deviceinfo = true;
   pairing->name = NameForDisplay(device->client_name());
 
-  const absl::optional<device::cablev2::tunnelserver::KnownDomainID>
+  const std::optional<device::cablev2::tunnelserver::KnownDomainID>
       tunnel_server_domain = device::cablev2::tunnelserver::ToKnownDomainID(
           paask_info.tunnel_server_domain);
   if (!tunnel_server_domain) {
@@ -390,7 +390,7 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
       if (!value.is_dict()) {
         return false;
       }
-      const absl::optional<bool> pref_new_impl =
+      const std::optional<bool> pref_new_impl =
           value.GetDict().FindBool(kPairingPrefNewImpl);
       const std::string* const pref_name =
           value.GetDict().FindString(kPairingPrefName);

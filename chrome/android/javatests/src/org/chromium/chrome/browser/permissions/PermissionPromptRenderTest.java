@@ -18,23 +18,29 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+    "ignore-certificate-errors"
+})
 public class PermissionPromptRenderTest {
 
     @ParameterAnnotations.ClassParameter
@@ -59,6 +65,7 @@ public class PermissionPromptRenderTest {
     public PermissionPromptRenderTest(boolean nightModeEnabled) {
         mNightModeEnabled = nightModeEnabled;
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+        mPermissionRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mPermissionRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
     }
 
@@ -73,6 +80,17 @@ public class PermissionPromptRenderTest {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
+    private void testPrompt(boolean isOneTime) throws TimeoutException, IOException {
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "initiate_getCurrentPosition()");
+
+        mPermissionRule.waitForDialogShownState(true);
+
+        mRenderTestRule.render(
+                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
+                isOneTime ? "oneTimePrompt" : "regularPrompt");
+    }
+
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
@@ -82,6 +100,8 @@ public class PermissionPromptRenderTest {
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
         mPermissionRule.loadUrl(mPermissionRule.getURL(TEST_FILE));
+
+        testPrompt(/* isOneTime= */ false);
         mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "initiate_getCurrentPosition()");
 
@@ -92,6 +112,8 @@ public class PermissionPromptRenderTest {
                 "regularPrompt");
     }
 
+
+
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
@@ -99,15 +121,22 @@ public class PermissionPromptRenderTest {
     public void testGeolocationOneTimePrompt() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
-
         mPermissionRule.setUpUrl(TEST_FILE);
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
-                "initiate_getCurrentPosition()");
+        testPrompt(/* isOneTime= */ true);
+    }
 
-        mPermissionRule.waitForDialogShownState(true);
+    @Test
+    @MediumTest
+    @Feature({"Prompt", "RenderTest"})
+    @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
+    public void testGeolocationOneTimePromptLongOriginWrapsToNextLineAndIsNotElided()
+            throws Exception {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
-                "oneTimePrompt");
+        mPermissionRule.setupUrlWithHostName(
+                "unelided.long.wrapping.hostname.with.subdomains.com", TEST_FILE);
+
+        testPrompt(/* isOneTime= */ true);
     }
 }

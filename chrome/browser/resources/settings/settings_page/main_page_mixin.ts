@@ -4,14 +4,16 @@
 
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
-import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
+import type {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import type {Route} from '../router.js';
+import { Router} from '../router.js';
 // clang-format on
 
 /**

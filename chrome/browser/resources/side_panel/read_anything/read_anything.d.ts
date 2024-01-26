@@ -31,6 +31,7 @@ declare namespace chrome {
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
     let fontSize: number;
+    let linksEnabled: boolean;
     let foregroundColor: number;
     let backgroundColor: number;
     let lineSpacing: number;
@@ -139,6 +140,9 @@ declare namespace chrome {
     function onFontSizeChanged(increase: boolean): void;
     function onFontSizeReset(): void;
 
+    // Called when a user toggles links via the webui toolbar.
+    function onLinksEnabledToggled(): void;
+
     // Called when the letter spacing is changed via the webui toolbar.
     function onStandardLetterSpacing(): void;
     function onWideLetterSpacing(): void;
@@ -204,12 +208,16 @@ declare namespace chrome {
 
     // Set the theme. Used by tests only.
     function setThemeForTesting(
-        fontName: string, fontSize: number, foregroundColor: number,
-        backgroundColor: number, lineSpacing: number,
+        fontName: string, fontSize: number, linksEnabled: boolean,
+        foregroundColor: number, backgroundColor: number, lineSpacing: number,
         letterSpacing: number): void;
 
     // Sets the default language. Used by tests only.
     function setLanguageForTesting(code: string): void;
+
+    // Called when the side panel has finished loading and it's safe to call
+    // SidePanelWebUIView::ShowUI
+    function shouldShowUI(): boolean;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
@@ -259,7 +267,7 @@ declare namespace chrome {
     // Gets the nodes for the previous text that should be spoken and
     // highlighted. Use getNextTextStartIndex and getNextTextEndIndex to get
     // the bounds for text associated with these nodes.
-    function getPreviousText(maxTextLength: number): number[];
+    function getPreviousText(): number[];
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

@@ -16,7 +16,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inspected');
   var section = ElementsTestRunner.inlineStyleSection();
   const treeElement = section.addNewBlankProperty(0);
-  treeElement.startEditing();
+  treeElement.startEditingName();
   await TestRunner.addSnifferPromise(UIModule.TextPrompt.TextPrompt.prototype, 'completionsReady');
 
   treeElement.nameElement.textContent = 'white-space';

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #include "ios/web/public/web_state_observer.h"
@@ -71,7 +72,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   __weak id<NewTabPageTabHelperDelegate> delegate_ = nil;
 
   // The WebState with which this object is associated.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // `true` if the current tab helper is active.
   bool active_ = false;

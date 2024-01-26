@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">No se puede conectar a Internet. Si usas un firewall, agrega <ph name="PRODUCT_EXE_NAME" /> a la lista de entidades permitidas.</translation>
 <translation id="2131230230468101642">Para proteger tu privacidad, quitamos los intereses automáticamente luego de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien, puedes quitar los intereses que no quieres que Chrome tenga en cuenta.</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
-<translation id="2146761408396054429">Este archivo puede ser peligroso<ph name="LINE_BREAK" />Chrome puede revisar esta descarga por ti si proporcionas la contraseña; la contraseña permanecerá en el dispositivo</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
 <translation id="2174917724755363426">No se completó la instalación. ¿Confirmas que quieres cancelarla?</translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -195,6 +194,7 @@
 <translation id="4053720452172726777">Personalizar y controlar Google Chrome</translation>
 <translation id="4106587138345390261">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal.</translation>
 <translation id="4110895483821904099">Configura tu nuevo perfil de Chrome</translation>
+<translation id="4128488089242627000">Chrome se ejecuta más rápido, y las funciones que usan JavaScript deberían funcionar según lo previsto (recomendado)</translation>
 <translation id="4147555960264124640">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4149882025268051530">El instalador no pudo descomprimir el archivo. Descargue Google Chrome nuevamente.</translation>
@@ -217,7 +217,6 @@
 <translation id="4343195214584226067">Se agregó <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4384570495110188418">Chrome no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
 <translation id="4389991535395284064">Cuando navegues en el modo Incógnito, Chrome te advertirá antes de que cargues un sitio con una conexión no segura</translation>
-<translation id="4393248995085527349">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.13.</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
 <translation id="4450664632294415862">Chrome: Acceso a la red - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
@@ -242,6 +241,7 @@
 <translation id="4793679854893018356">Obtén información acerca de cómo Chrome te protege</translation>
 <translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="4842397268809523050">ChromeOS Flex no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
+<translation id="4873692836499071887">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 11 o versiones posteriores. Esta computadora usa macOS 10.15.</translation>
 <translation id="4873783916118289636">Revisa los controles de seguridad y privacidad más importantes en Chrome</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="4895437082222824641">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
@@ -301,7 +301,6 @@
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>
-<translation id="6010556343189461180">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.14.</translation>
 <translation id="6014316319780893079">Con las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6025087594896450715">Google Chrome se reiniciará en <ph name="REMAINING_TIME" /></translation>
@@ -347,6 +346,7 @@
 <translation id="677276454032249905">¿Deseas salir de Chrome de todos modos?</translation>
 <translation id="6794858689789885890">Siempre borrar los datos de sitios de tu dispositivo cuando cierras Chrome</translation>
 <translation id="683440813066116847">Regla de entrada para que Google Chrome Canary permita el tráfico mDNS.</translation>
+<translation id="6851981911629679515">Activar la protección adicional en el motor de JavaScript y de WebAssembly de Chrome</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema de ChromeOS</translation>
@@ -468,6 +468,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
+<translation id="8801657293260363985">V8 es el motor JavaScript y WebAssembly de Chrome que se usa para mejorar el rendimiento del sitio</translation>
 <translation id="8821043148920470810">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no actualizado</translation>
 <translation id="8825634023950448068">Para proteger tu privacidad, quitamos los intereses automáticamente luego de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. Y si Chrome se equivoca o no quieres ver ciertos anuncios, puedes quitar un interés.</translation>

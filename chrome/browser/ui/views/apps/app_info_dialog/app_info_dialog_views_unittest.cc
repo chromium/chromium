@@ -144,7 +144,13 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
+  std::string GetDefaultProfileName() override {
+    return extension_environment_.profile()->GetProfileUserName();
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    CHECK_EQ(profile_name,
+             extension_environment_.profile()->GetProfileUserName());
     return extension_environment_.profile();
   }
 

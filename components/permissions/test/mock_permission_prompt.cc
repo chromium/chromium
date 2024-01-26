@@ -62,7 +62,10 @@ MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
 #if BUILDFLAG(IS_ANDROID)
     // For kStorageAccess, the prompt itself calculates the message text.
     if (request_type != permissions::RequestType::kStorageAccess) {
-      EXPECT_FALSE(request->GetDialogMessageText().empty());
+      EXPECT_FALSE(
+          request
+              ->GetDialogAnnotatedMessageText(delegate_->GetRequestingOrigin())
+              .text.empty());
     }
     EXPECT_NE(0, permissions::GetIconId(request_type));
 #else

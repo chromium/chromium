@@ -93,6 +93,7 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.autofill.AndroidAutofillClient;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.content_capture.OnscreenContentProvider;
@@ -485,7 +486,7 @@ public class AwContents implements SmartClipProvider {
     private float mContentWidthDip;
     private float mContentHeightDip;
 
-    private AwAutofillClient mAwAutofillClient;
+    private AndroidAutofillClient mAndroidAutofillClient;
 
     private AwPdfExporter mAwPdfExporter;
 
@@ -1336,6 +1337,7 @@ public class AwContents implements SmartClipProvider {
         controller.setActionModeCallback(new AwActionModeCallback(mContext, this, webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
         controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
+        AwSelectionDropdownMenuDelegate.maybeSetWebViewDropdownSelectionMenuDelegate(controller);
 
         // Listen for dpad events from IMEs (e.g. Samsung Cursor Control) so we know to enable
         // spatial navigation mode to allow these events to move focus out of the WebView.
@@ -3755,8 +3757,8 @@ public class AwContents implements SmartClipProvider {
      */
     public void hideAutofillPopup() {
         if (TRACE) Log.i(TAG, "%s hideAutofillPopup", this);
-        if (mAwAutofillClient != null) {
-            mAwAutofillClient.hideAutofillPopup();
+        if (mAndroidAutofillClient != null) {
+            mAndroidAutofillClient.hideAutofillPopup();
         }
         if (mAutofillProvider != null) {
             mAutofillProvider.hideDatalistPopup();
@@ -3814,7 +3816,6 @@ public class AwContents implements SmartClipProvider {
             effectiveImportance = ChildProcessImportance.NORMAL;
         } else {
             switch (mRendererPriority) {
-                case RendererPriority.INITIAL:
                 case RendererPriority.HIGH:
                     effectiveImportance = ChildProcessImportance.IMPORTANT;
                     break;
@@ -4078,14 +4079,14 @@ public class AwContents implements SmartClipProvider {
     }
 
     @CalledByNative
-    private void setAwAutofillClient(AwAutofillClient client) {
-        mAwAutofillClient = client;
+    private void setAndroidAutofillClient(AndroidAutofillClient client) {
+        mAndroidAutofillClient = client;
         client.init(mContext);
     }
 
     @VisibleForTesting
-    public AwAutofillClient getAutofillClient() {
-        return mAwAutofillClient;
+    public AndroidAutofillClient getAutofillClient() {
+        return mAndroidAutofillClient;
     }
 
     @CalledByNative

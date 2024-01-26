@@ -1,5 +1,6 @@
 caption: Control the shortcut used to trigger F11/F12
 default: null
+deprecated: true
 desc: |-
   This policy controls the selected shortcut option for remapping events to
   F11/F12 in the remap keys subpage. These settings are only applicable for
@@ -33,6 +34,6 @@ schema:
   - 3
   type: integer
 supported_on:
-- chrome_os:121-
+- chrome_os:121-122
 tags: []
 type: int-enum

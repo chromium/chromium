@@ -238,7 +238,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     // so just test once.
     ASSERT_TRUE(action->other());
     const base::Value::Dict& other = *action->other();
-    absl::optional<int> dom_verb =
+    std::optional<int> dom_verb =
         other.FindInt(activity_log_constants::kActionDomVerb);
     ASSERT_EQ(DomActionType::XHR, dom_verb);
 
@@ -276,7 +276,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       ASSERT_EQ("http://www.google.co.uk/", action->arg_url().spec());
       ASSERT_TRUE(action->other());
       const base::Value::Dict& other = *action->other();
-      absl::optional<int> dom_verb =
+      std::optional<int> dom_verb =
           other.FindInt(activity_log_constants::kActionDomVerb);
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
     }

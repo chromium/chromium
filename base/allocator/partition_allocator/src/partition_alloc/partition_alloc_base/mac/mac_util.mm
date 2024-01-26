@@ -4,11 +4,12 @@
 
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 
-#include <stddef.h>
-#include <string.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
+
+#include <cstddef>
+#include <cstring>
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/logging.h"

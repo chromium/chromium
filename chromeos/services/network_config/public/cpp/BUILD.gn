@@ -31,3 +31,14 @@ source_set("test_support") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cros_network_config_util_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//components/onc",
+    "//testing/gtest",
+  ]
+}

@@ -10,20 +10,68 @@ import("//chrome/version.gni")
 # system identities for interfaces that are decorated with `BEGIN_INTERFACE` and
 # `END_INTERFACE`.
 template("generate_user_system_idl") {
-  action(target_name + "_generate_user_system_idl") {
+  assert(defined(invoker.idl_template_filename),
+         "Need `idl_template_filename` in $target_name.")
+
+  action(target_name) {
     script = "generate_user_system_idl.py"
     inputs = [
       script,
       invoker.idl_template_filename,
     ]
-    output_file = "$target_gen_dir/" + invoker.idl_template_filename
+
+    idl_filename = invoker.idl_template_filename
+    if (invoker.generate_for != "") {
+      idl_filename = get_path_info(invoker.idl_template_filename, "name") +
+                     "_" + invoker.generate_for + "." +
+                     get_path_info(invoker.idl_template_filename, "extension")
+    }
+
+    output_file = "${target_gen_dir}/${idl_filename}"
     args = [
       "--idl_template_file",
       rebase_path(invoker.idl_template_filename, root_build_dir),
       "--idl_output_file",
       rebase_path(output_file, root_build_dir),
     ]
+    if (invoker.generate_for != "") {
+      args += [
+        "--generate_for",
+        invoker.generate_for,
+      ]
+    }
     outputs = [ output_file ]
+  }
+}
+
+template("midl_user_system_idl") {
+  assert(defined(invoker.replacement_guids),
+         "Need `replacement_guids` in $target_name for placeholder guids.")
+
+  foreach(scope,
+          [
+            "",
+            "user",
+            "system",
+          ]) {
+    midl_target_name = target_name
+    if (scope != "") {
+      midl_target_name = target_name + "_" + scope
+    }
+    target_name_generate = midl_target_name + "_gen"
+    target_name_template = target_name + ".template"
+
+    generate_user_system_idl(target_name_generate) {
+      idl_template_filename = target_name_template
+      generate_for = scope
+    }
+
+    midl(midl_target_name) {
+      dynamic_guids = "ignore_proxy_stub," + invoker.replacement_guids
+      sources = get_target_outputs(":$target_name_generate")
+      writes_tlb = true
+      deps = [ ":$target_name_generate" ]
+    }
   }
 }
 
@@ -69,18 +117,8 @@ foreach(guid, branding_only_placeholder_guids) {
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
-generate_user_system_idl("updater_idl") {
-  idl_template_filename = "updater_idl.template"
-}
-
-midl("updater_idl_idl") {
-  dynamic_guids = "ignore_proxy_stub," + uuid5_guids
-
-  sources = [ "$target_gen_dir/updater_idl.template" ]
-
-  writes_tlb = true
-
-  deps = [ ":updater_idl_generate_user_system_idl" ]
+midl_user_system_idl("updater_idl") {
+  replacement_guids = uuid5_guids
 }
 
 # These GUIDs must depend on branding and version.
@@ -103,18 +141,8 @@ foreach(guid, branding_version_placeholder_guids) {
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
-generate_user_system_idl("updater_internal_idl") {
-  idl_template_filename = "updater_internal_idl.template"
-}
-
-midl("updater_internal_idl_idl") {
-  dynamic_guids = "ignore_proxy_stub," + uuid5_guids
-
-  sources = [ "$target_gen_dir/updater_internal_idl.template" ]
-
-  writes_tlb = true
-
-  deps = [ ":updater_internal_idl_generate_user_system_idl" ]
+midl_user_system_idl("updater_internal_idl") {
+  replacement_guids = uuid5_guids
 }
 
 updater_legacy_idl_guids = [
@@ -172,18 +200,8 @@ updater_legacy_idl_guids = [
 ]
 updater_legacy_idl_guids = string_join(",", updater_legacy_idl_guids)
 
-generate_user_system_idl("updater_legacy_idl") {
-  idl_template_filename = "updater_legacy_idl.template"
-}
-
-midl("updater_legacy_idl_idl") {
-  dynamic_guids = "ignore_proxy_stub," + updater_legacy_idl_guids
-
-  sources = [ "$target_gen_dir/updater_legacy_idl.template" ]
-
-  writes_tlb = true
-
-  deps = [ ":updater_legacy_idl_generate_user_system_idl" ]
+midl_user_system_idl("updater_legacy_idl") {
+  replacement_guids = updater_legacy_idl_guids
 }
 
 # The COM server needs to work with Windows 7, so explicitly setting the defines

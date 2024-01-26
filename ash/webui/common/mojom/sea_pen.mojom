@@ -11,17 +11,25 @@ import "url/mojom/url.mojom";
 // TODO(b/318565684): Move generated code to a separate file.
 
 // The unique ID to identify a template.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum SeaPenTemplateId {
   kFlower = 0,
-  kMineral,
-  kLandscape,
-  kScifi,
-  kArt,
-  kCharacters,
-  kTerrain,
-  kCurious,
-  kDreamscapes,
-  kTranslucent,
+  kMineral = 1,
+  kArt = 2,
+  kCharacters = 3,
+  kTerrain = 4,
+  kCurious = 5,
+  kDreamscapes = 6,
+  kTranslucent = 7,
+  kScifi = 8,
+  kVcBackgroundSimple = 100,
+  kVcBackgroundOffice = 101,
+  kVcBackgroundTerrainVc = 102,
+  kVcBackgroundCafe = 103,
+  kVcBackgroundArt = 104,
+  kVcBackgroundDreamscapesVc = 105,
+  kVcBackgroundCharacters = 106,
 };
 
 // A variable in the template text that can be mapped to multiple option values.
@@ -30,8 +38,6 @@ enum SeaPenTemplateChip {
   kFlowerColor,
   kMineralName,
   kMineralColor,
-  kLandscapeBiome,
-  kLandscapeLighting,
   kScifiFeature,
   kScifiColor,
   kArtFeature,
@@ -49,6 +55,22 @@ enum SeaPenTemplateChip {
   kDreamscapesColors,
   kTranslucentItem,
   kTranslucentColor,
+  kVcBackgroundSimpleStyle,
+  kVcBackgroundSimpleTone,
+  kVcBackgroundOfficeStyle,
+  kVcBackgroundOfficeColor,
+  kVcBackgroundTerrainFeature,
+  kVcBackgroundTerrainColor,
+  kVcBackgroundCafeStyle,
+  kVcBackgroundCafeType,
+  kVcBackgroundArtFeature,
+  kVcBackgroundArtMovement,
+  kVcBackgroundDreamscapesObject,
+  kVcBackgroundDreamscapesMaterial,
+  kVcBackgroundDreamscapesColors,
+  kVcBackgroundCharactersColor,
+  kVcBackgroundCharactersSubjects,
+  kVcBackgroundCharactersBackground,
 };
 
 // The valid option values of each chip.
@@ -63,7 +85,7 @@ enum SeaPenTemplateOption {
   kFlowerTypeOrchid,
   kFlowerTypeRanunculus,
   kFlowerTypeDaisy,
-  kFlowerTypeHydrangeas,
+  kFlowerTypeHydrangea,
   // <flower_color>
   kFlowerColorPink,
   kFlowerColorPurple,
@@ -86,7 +108,6 @@ enum SeaPenTemplateOption {
   kMineralNameGalena,
   kMineralNameJasper,
   kMineralNameLabradorite,
-  kMineralNameLapisLazuli,
   kMineralNameMoonstone,
   kMineralNameOpal,
   kMineralNamePeridot,
@@ -107,24 +128,6 @@ enum SeaPenTemplateOption {
   kMineralColorNeon,
   kMineralColorTonal,
   kMineralColorGray,
-  // <landscape_biome>
-  kLandscapeBiomeTaiga,
-  kLandscapeBiomeDesert,
-  kLandscapeBiomeRainforest,
-  kLandscapeBiomeTundra,
-  kLandscapeBiomeBeach,
-  kLandscapeBiomeIcebergs,
-  kLandscapeBiomeSwamp,
-  kLandscapeBiomeGrassland,
-  kLandscapeBiomeForest,
-  // <landscape_lighting>
-  kLandscapeLightingDiffuse,
-  kLandscapeLightingNorthernLights,
-  kLandscapeLightingSunRays,
-  kLandscapeLightingGoldenHour,
-  kLandscapeLightingEarlyMorning,
-  kLandscapeLightingBlueHour,
-  kLandscapeLightingMidday,
   // <scifi_feature>
   kScifiFeatureStreet,
   kScifiFeatureSkyline,
@@ -169,17 +172,17 @@ enum SeaPenTemplateOption {
   kArtFeatureVillage,
   // <art_movement>
   kArtMovementAvantGarde,
-  kArtMovementRealism,
-  kArtMovementExpressionism,
-  kArtMovementImpressionism,
-  kArtMovementPostImpressionism,
+  kArtMovementRealist,
+  kArtMovementExpressionist,
+  kArtMovementImpressionist,
+  kArtMovementPostImpressionist,
   kArtMovementArtNouveau,
   kArtMovementBaroque,
   kArtMovementBauhaus,
-  kArtMovementClassicism,
+  kArtMovementClassicist,
   kArtMovementWatercolor,
   kArtMovementAbstract,
-  kArtMovementPointillism,
+  kArtMovementPointillist,
   kArtMovementGraphicDesign,
   kArtMovementModernArt,
   // <characters_color>
@@ -189,37 +192,20 @@ enum SeaPenTemplateOption {
   kCharactersColorBlue,
   kCharactersColorIndigo,
   kCharactersColorGreen,
-  kCharactersColorEmerald,
-  kCharactersColorTeal,
   kCharactersColorCyan,
   kCharactersColorPurple,
   kCharactersColorBrown,
   kCharactersColorGold,
-  kCharactersColorBurntOrange,
   kCharactersColorRust,
   kCharactersColorOlive,
   kCharactersColorGray,
-  kCharactersColorViolet,
   kCharactersColorWhite,
   kCharactersColorBeige,
-  kCharactersColorIvory,
-  kCharactersColorCream,
   kCharactersColorMagenta,
-  kCharactersColorLimeGreen,
-  kCharactersColorFuschia,
-  kCharactersColorElectricBlue,
-  kCharactersColorHotPink,
   kCharactersColorNeonGreen,
-  kCharactersColorSkyBlue,
-  kCharactersColorElectricPurple,
-  kCharactersColorFireEngineRed,
+  kCharactersColorLightBlue,
   kCharactersColorNeonPink,
-  kCharactersColorChartreuse,
-  kCharactersColorCobalt,
-  kCharactersColorLemonYellow,
   kCharactersColorCoralPink,
-  kCharactersColorVibrantViolet,
-  kCharactersColorPeacockBlue,
   // <characters_subjects>
   kCharactersSubjectsLemons,
   kCharactersSubjectsFlowers,
@@ -263,50 +249,33 @@ enum SeaPenTemplateOption {
   kCharactersBackgroundBlue,
   kCharactersBackgroundIndigo,
   kCharactersBackgroundGreen,
-  kCharactersBackgroundEmerald,
-  kCharactersBackgroundTeal,
   kCharactersBackgroundCyan,
   kCharactersBackgroundBrown,
   kCharactersBackgroundGold,
   kCharactersBackgroundRed,
-  kCharactersBackgroundBurntOrange,
   kCharactersBackgroundRust,
   kCharactersBackgroundOlive,
   kCharactersBackgroundPink,
   kCharactersBackgroundGray,
   kCharactersBackgroundYellow,
-  kCharactersBackgroundViolet,
   kCharactersBackgroundWhite,
   kCharactersBackgroundBeige,
-  kCharactersBackgroundIvory,
-  kCharactersBackgroundCream,
   kCharactersBackgroundMagenta,
-  kCharactersBackgroundLimeGreen,
-  kCharactersBackgroundFuschia,
-  kCharactersBackgroundElectricBlue,
-  kCharactersBackgroundHotPink,
   kCharactersBackgroundNeonGreen,
-  kCharactersBackgroundSkyBlue,
-  kCharactersBackgroundElectricPurple,
-  kCharactersBackgroundFireEngineRed,
+  kCharactersBackgroundLightBlue,
   kCharactersBackgroundNeonPink,
-  kCharactersBackgroundChartreuse,
-  kCharactersBackgroundCobalt,
-  kCharactersBackgroundLemonYellow,
   kCharactersBackgroundCoralPink,
-  kCharactersBackgroundVibrantViolet,
-  kCharactersBackgroundPeacockBlue,
   // <terrain_feature>
   kTerrainFeatureSaltLake,
   kTerrainFeatureRiver,
   kTerrainFeatureNorthernLights,
-  kTerrainFeatureWhiteDunes,
+  kTerrainFeatureSandDunes,
   kTerrainFeatureClayHills,
-  kTerrainFeatureSandyLagoons,
+  kTerrainFeatureSandyLagoon,
   kTerrainFeatureMountains,
   kTerrainFeatureBioluminescentBeach,
   kTerrainFeatureFireflyForest,
-  kTerrainFeatureSandDunes,
+  kTerrainFeatureDifferentPlanet,
   // <terrain_color>
   kTerrainColorPink,
   kTerrainColorTeal,
@@ -371,7 +340,7 @@ enum SeaPenTemplateOption {
   kDreamscapesObjectPagoda,
   kDreamscapesObjectPalace,
   kDreamscapesObjectTower,
-  kDreamscapesObjectUfo,
+  kDreamscapesObjectChair,
   // <dreamscapes_material>
   kDreamscapesMaterialFlowers,
   kDreamscapesMaterialSilk,
@@ -428,8 +397,6 @@ enum SeaPenTemplateOption {
   kTranslucentItemSunflower,
   kTranslucentItemPea,
   kTranslucentItemTulip,
-  kTranslucentItemButterfly,
-  kTranslucentItemDragonfly,
   // <translucent_color>
   kTranslucentColorPink,
   kTranslucentColorBlue,
@@ -450,6 +417,222 @@ enum SeaPenTemplateOption {
   kTranslucentColorMagenta,
   kTranslucentColorPeach,
   kTranslucentColorBlack,
+  // <simple_style>
+  kVcBackgroundSimpleStyleMinimal,
+  kVcBackgroundSimpleStyleZen,
+  kVcBackgroundSimpleStyleModern,
+  kVcBackgroundSimpleStyleMagical,
+  // <simple_tone>
+  kVcBackgroundSimpleToneNeutral,
+  kVcBackgroundSimpleToneDark,
+  kVcBackgroundSimpleToneLight,
+  // <office_style>
+  kVcBackgroundOfficeStyleModern,
+  kVcBackgroundOfficeStyleCreative,
+  kVcBackgroundOfficeStyleTraditional,
+  kVcBackgroundOfficeStyleFuturistic,
+  // <office_color>
+  kVcBackgroundOfficeColorNeutral,
+  kVcBackgroundOfficeColorDark,
+  kVcBackgroundOfficeColorColorful,
+  kVcBackgroundOfficeColorEarthy,
+  // <terrain_feature>
+  kVcBackgroundTerrainFeatureSaltLake,
+  kVcBackgroundTerrainFeatureRiver,
+  kVcBackgroundTerrainFeatureNorthernLights,
+  kVcBackgroundTerrainFeatureSandDunes,
+  kVcBackgroundTerrainFeatureClayHills,
+  kVcBackgroundTerrainFeatureSandyLagoon,
+  kVcBackgroundTerrainFeatureMountains,
+  kVcBackgroundTerrainFeatureBioluminescentBeach,
+  kVcBackgroundTerrainFeatureFireflyForest,
+  kVcBackgroundTerrainFeatureDifferentPlanet,
+  // <terrain_color>
+  kVcBackgroundTerrainColorPink,
+  kVcBackgroundTerrainColorTeal,
+  kVcBackgroundTerrainColorWhite,
+  kVcBackgroundTerrainColorPurple,
+  kVcBackgroundTerrainColorBlue,
+  kVcBackgroundTerrainColorYellow,
+  kVcBackgroundTerrainColorMaroonPink,
+  kVcBackgroundTerrainColorBluePurple,
+  kVcBackgroundTerrainColorPinkYellow,
+  kVcBackgroundTerrainColorBluePink,
+  // <cafe_style>
+  kVcBackgroundCafeStyleCozy,
+  kVcBackgroundCafeStyleNeutral,
+  kVcBackgroundCafeStyleDistressed,
+  kVcBackgroundCafeStyleClassic,
+  kVcBackgroundCafeStyleRomantic,
+  // <cafe_type>
+  kVcBackgroundCafeTypeCottage,
+  kVcBackgroundCafeTypeModern,
+  kVcBackgroundCafeTypeTeaHouse,
+  kVcBackgroundCafeTypeHighTea,
+  kVcBackgroundCafeTypeOutdoor,
+  // <art_feature>
+  kVcBackgroundArtFeatureCanyon,
+  kVcBackgroundArtFeatureMountain,
+  kVcBackgroundArtFeatureBeach,
+  kVcBackgroundArtFeatureCave,
+  kVcBackgroundArtFeatureCliff,
+  kVcBackgroundArtFeatureForest,
+  kVcBackgroundArtFeatureGlacier,
+  kVcBackgroundArtFeatureIsland,
+  kVcBackgroundArtFeatureJungle,
+  kVcBackgroundArtFeatureLake,
+  kVcBackgroundArtFeatureMeadow,
+  kVcBackgroundArtFeatureOcean,
+  kVcBackgroundArtFeatureRiver,
+  kVcBackgroundArtFeatureDune,
+  kVcBackgroundArtFeatureSwamp,
+  kVcBackgroundArtFeatureValley,
+  kVcBackgroundArtFeatureWaterfall,
+  kVcBackgroundArtFeatureField,
+  kVcBackgroundArtFeatureCityscape,
+  kVcBackgroundArtFeatureVillage,
+  // <art_movement>
+  kVcBackgroundArtMovementAvantGarde,
+  kVcBackgroundArtMovementRealist,
+  kVcBackgroundArtMovementExpressionist,
+  kVcBackgroundArtMovementImpressionist,
+  kVcBackgroundArtMovementPostImpressionist,
+  kVcBackgroundArtMovementArtNouveau,
+  kVcBackgroundArtMovementBaroque,
+  kVcBackgroundArtMovementBauhaus,
+  kVcBackgroundArtMovementClassicist,
+  kVcBackgroundArtMovementWatercolor,
+  kVcBackgroundArtMovementAbstract,
+  kVcBackgroundArtMovementPointillist,
+  kVcBackgroundArtMovementGraphicDesign,
+  kVcBackgroundArtMovementModernArt,
+  kVcBackgroundArtMovementAnime,
+  kVcBackgroundArtMovementPixelArt,
+  kVcBackgroundArtMovementCyberpunk,
+  // <dreamscapes_object>
+  kVcBackgroundDreamscapesObjectBicycle,
+  kVcBackgroundDreamscapesObjectCastle,
+  kVcBackgroundDreamscapesObjectBuilding,
+  kVcBackgroundDreamscapesObjectBoat,
+  kVcBackgroundDreamscapesObjectLamp,
+  kVcBackgroundDreamscapesObjectTable,
+  kVcBackgroundDreamscapesObjectBridge,
+  kVcBackgroundDreamscapesObjectLighthouse,
+  kVcBackgroundDreamscapesObjectPagoda,
+  kVcBackgroundDreamscapesObjectPalace,
+  kVcBackgroundDreamscapesObjectTower,
+  kVcBackgroundDreamscapesObjectChair,
+  // <dreamscapes_material>
+  kVcBackgroundDreamscapesMaterialFlowers,
+  kVcBackgroundDreamscapesMaterialSilk,
+  kVcBackgroundDreamscapesMaterialFelt,
+  kVcBackgroundDreamscapesMaterialBurlap,
+  kVcBackgroundDreamscapesMaterialChiffon,
+  kVcBackgroundDreamscapesMaterialCotton,
+  kVcBackgroundDreamscapesMaterialFur,
+  kVcBackgroundDreamscapesMaterialLace,
+  kVcBackgroundDreamscapesMaterialLinen,
+  kVcBackgroundDreamscapesMaterialOrganza,
+  kVcBackgroundDreamscapesMaterialTulle,
+  kVcBackgroundDreamscapesMaterialWool,
+  kVcBackgroundDreamscapesMaterialYarn,
+  kVcBackgroundDreamscapesMaterialFleece,
+  kVcBackgroundDreamscapesMaterialClay,
+  kVcBackgroundDreamscapesMaterialStone,
+  kVcBackgroundDreamscapesMaterialWood,
+  kVcBackgroundDreamscapesMaterialAmethyst,
+  kVcBackgroundDreamscapesMaterialLapisLuzuli,
+  kVcBackgroundDreamscapesMaterialObsidian,
+  kVcBackgroundDreamscapesMaterialOpal,
+  kVcBackgroundDreamscapesMaterialSapphire,
+  // <dreamscapes_colors>
+  kVcBackgroundDreamscapesColorsPinkPurple,
+  kVcBackgroundDreamscapesColorsCoralTan,
+  kVcBackgroundDreamscapesColorsCreamOrange,
+  kVcBackgroundDreamscapesColorsBlueIndigo,
+  kVcBackgroundDreamscapesColorsGreenTeal,
+  kVcBackgroundDreamscapesColorsBurgundyMaroon,
+  kVcBackgroundDreamscapesColorsYellowTeal,
+  // <characters_color>
+  kVcBackgroundCharactersColorYellow,
+  kVcBackgroundCharactersColorPink,
+  kVcBackgroundCharactersColorRed,
+  kVcBackgroundCharactersColorBlue,
+  kVcBackgroundCharactersColorIndigo,
+  kVcBackgroundCharactersColorGreen,
+  kVcBackgroundCharactersColorCyan,
+  kVcBackgroundCharactersColorPurple,
+  kVcBackgroundCharactersColorBrown,
+  kVcBackgroundCharactersColorGold,
+  kVcBackgroundCharactersColorRust,
+  kVcBackgroundCharactersColorOlive,
+  kVcBackgroundCharactersColorGray,
+  kVcBackgroundCharactersColorWhite,
+  kVcBackgroundCharactersColorBeige,
+  kVcBackgroundCharactersColorMagenta,
+  kVcBackgroundCharactersColorNeonGreen,
+  kVcBackgroundCharactersColorLightBlue,
+  kVcBackgroundCharactersColorNeonPink,
+  kVcBackgroundCharactersColorCoralPink,
+  // <characters_subjects>
+  kVcBackgroundCharactersSubjectsLemons,
+  kVcBackgroundCharactersSubjectsFlowers,
+  kVcBackgroundCharactersSubjectsApples,
+  kVcBackgroundCharactersSubjectsCherries,
+  kVcBackgroundCharactersSubjectsOranges,
+  kVcBackgroundCharactersSubjectsPineapples,
+  kVcBackgroundCharactersSubjectsStrawberries,
+  kVcBackgroundCharactersSubjectsWatermelons,
+  kVcBackgroundCharactersSubjectsPotatoes,
+  kVcBackgroundCharactersSubjectsSushi,
+  kVcBackgroundCharactersSubjectsBaconAndEggs,
+  kVcBackgroundCharactersSubjectsPizza,
+  kVcBackgroundCharactersSubjectsHotDogs,
+  kVcBackgroundCharactersSubjectsHamburgers,
+  kVcBackgroundCharactersSubjectsRamen,
+  kVcBackgroundCharactersSubjectsTacos,
+  kVcBackgroundCharactersSubjectsBunnies,
+  kVcBackgroundCharactersSubjectsCats,
+  kVcBackgroundCharactersSubjectsDogs,
+  kVcBackgroundCharactersSubjectsKoalas,
+  kVcBackgroundCharactersSubjectsPandas,
+  kVcBackgroundCharactersSubjectsPenguins,
+  kVcBackgroundCharactersSubjectsPigs,
+  kVcBackgroundCharactersSubjectsSloths,
+  kVcBackgroundCharactersSubjectsPonies,
+  kVcBackgroundCharactersSubjectsElephants,
+  kVcBackgroundCharactersSubjectsFoxes,
+  kVcBackgroundCharactersSubjectsOwls,
+  kVcBackgroundCharactersSubjectsCrabs,
+  kVcBackgroundCharactersSubjectsBees,
+  kVcBackgroundCharactersSubjectsButterflies,
+  kVcBackgroundCharactersSubjectsBicycles,
+  kVcBackgroundCharactersSubjectsBoats,
+  kVcBackgroundCharactersSubjectsBooks,
+  kVcBackgroundCharactersSubjectsCutlery,
+  kVcBackgroundCharactersSubjectsUmbrellas,
+  kVcBackgroundCharactersSubjectsInstruments,
+  // <characters_background>
+  kVcBackgroundCharactersBackgroundPurple,
+  kVcBackgroundCharactersBackgroundBlue,
+  kVcBackgroundCharactersBackgroundIndigo,
+  kVcBackgroundCharactersBackgroundGreen,
+  kVcBackgroundCharactersBackgroundCyan,
+  kVcBackgroundCharactersBackgroundBrown,
+  kVcBackgroundCharactersBackgroundGold,
+  kVcBackgroundCharactersBackgroundRed,
+  kVcBackgroundCharactersBackgroundRust,
+  kVcBackgroundCharactersBackgroundOlive,
+  kVcBackgroundCharactersBackgroundPink,
+  kVcBackgroundCharactersBackgroundGray,
+  kVcBackgroundCharactersBackgroundYellow,
+  kVcBackgroundCharactersBackgroundWhite,
+  kVcBackgroundCharactersBackgroundBeige,
+  kVcBackgroundCharactersBackgroundMagenta,
+  kVcBackgroundCharactersBackgroundNeonGreen,
+  kVcBackgroundCharactersBackgroundLightBlue,
+  kVcBackgroundCharactersBackgroundNeonPink,
+  kVcBackgroundCharactersBackgroundCoralPink,
 };
 // End of generated code.
 
@@ -463,6 +646,18 @@ struct SeaPenThumbnail {
     uint32 id;
 };
 
+// The query information that was recently used to search for Sea Pen
+// images including the visible prompt text and template title from the UI.
+// The strings were translated based on the localization that the user was in
+// when they ran the query.
+struct SeaPenUserVisibleQuery {
+  // The user visible prompt used to search for images.
+  string text;
+
+  // The visible title of the selected template used to search for images.
+  string template_title;
+};
+
 // The information needed to query template wallpapers. The possible `id` and
 // `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
 // are not controlled by the renderer. The browser is responsible for validating
@@ -473,6 +668,17 @@ struct SeaPenTemplateQuery {
 
   // The chips and their selected options.
   map<SeaPenTemplateChip, SeaPenTemplateOption> options;
+
+  // The visible template query information including the prompt and template
+  // title that the user selected, saved in the localization that the user
+  // was in when they ran the query.
+  SeaPenUserVisibleQuery user_visible_query;
+};
+
+// The metadata for the feedback dialog
+struct SeaPenFeedbackMetadata {
+  bool is_positive;
+  string log_id;
 };
 
 // A text or template query for constructing a Manta request.
@@ -502,7 +708,8 @@ enum MantaStatusCode {
   kBlockedOutputs = 8,
   kRestrictedCountry = 9,
   kNoIdentityManager = 10,
-  kMax = kNoIdentityManager,
+  kPerUserQuotaExceeded = 11,
+  kMax = kPerUserQuotaExceeded,
 };
 
 // Provides APIs to perform wallpaper searches. Uses APIs in
@@ -537,4 +744,13 @@ interface SeaPenProvider {
 
     // Deletes the selected Sea Pen image from Sea Pen directory.
     DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+
+    // Pops up a feedback dialog when user clicks feedback buttons.
+    OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
+
+    // Determines whether to show the reviewing Sea Pen terms of service dialog.
+    ShouldShowSeaPenTermsOfServiceDialog() => (bool should_show_dialog);
+
+    // Called when the user accepts the terms of service for Sea Pen wallpaper.
+    HandleSeaPenTermsOfServiceAccepted();
 };

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CERTIFICATE_PROVIDER_TEST_CERTIFICATE_PROVIDER_EXTENSION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace base {
@@ -110,7 +110,7 @@ class TestCertificateProviderExtension final {
   int certificate_request_count_ = 0;
   // When non-empty, contains the expected PIN; the implementation will request
   // the PIN on every signature request in this case.
-  absl::optional<std::string> required_pin_;
+  std::optional<std::string> required_pin_;
   // The number of remaining PIN attempts.
   // When equal to zero, signature requests will be failed immediately; when is
   // negative, infinite number of attempts is allowed.

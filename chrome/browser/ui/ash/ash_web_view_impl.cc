@@ -96,6 +96,10 @@ views::View* AshWebViewImpl::GetInitiallyFocusedView() {
   return web_view_;
 }
 
+void AshWebViewImpl::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
+  web_view_->holder()->SetCornerRadii(corner_radii);
+}
+
 void AshWebViewImpl::AddedToWidget() {
   UpdateMinimizeOnBackProperty();
   AshWebView::AddedToWidget();

@@ -5,6 +5,7 @@
 #include "chrome/browser/lifetime/browser_close_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -65,7 +67,6 @@
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -213,9 +214,15 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override {
-    content::DownloadTargetCallback dangerous_callback = base::BindOnce(
-        &TestDownloadManagerDelegate::SetDangerous, std::move(*callback));
+      download::DownloadTargetCallback* callback) override {
+    auto set_dangerous = [](download::DownloadTargetCallback callback,
+                            download::DownloadTargetInfo target_info) {
+      target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
+      std::move(callback).Run(std::move(target_info));
+    };
+
+    download::DownloadTargetCallback dangerous_callback =
+        base::BindOnce(set_dangerous, std::move(*callback));
     bool run = ChromeDownloadManagerDelegate::DetermineDownloadTarget(
         item, &dangerous_callback);
     // ChromeDownloadManagerDelegate::DetermineDownloadTarget() needs to run the
@@ -223,20 +230,6 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     DCHECK(run);
     DCHECK(!dangerous_callback);
     return true;
-  }
-
-  static void SetDangerous(content::DownloadTargetCallback callback,
-                           const base::FilePath& target_path,
-                           download::DownloadItem::TargetDisposition disp,
-                           download::DownloadDangerType danger_type,
-                           download::DownloadItem::InsecureDownloadStatus ids,
-                           const base::FilePath& intermediate_path,
-                           const base::FilePath& display_name,
-                           const std::string& mime_type,
-                           download::DownloadInterruptReason reason) {
-    std::move(callback).Run(target_path, disp,
-                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, ids,
-                            intermediate_path, display_name, mime_type, reason);
   }
 };
 

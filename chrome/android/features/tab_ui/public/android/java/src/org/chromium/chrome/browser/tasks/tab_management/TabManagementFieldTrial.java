@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /**
  * Common tab UI feature utils for public use.
@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 public class TabManagementFieldTrial {
     private static final String DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM = "timeout_ms";
     public static final IntCachedFieldTrialParameter DELAY_TEMP_STRIP_TIMEOUT_MS =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL,
                     DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM,
                     1000);

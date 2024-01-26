@@ -352,8 +352,8 @@ namespace net {
 class GSSAPISharedLibrary;
 class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
 class MultiThreadedProxyResolverScopedAllowJoinOnIO;
-class NetworkChangeNotifierMac;
-class NetworkConfigWatcherMacThread;
+class NetworkChangeNotifierApple;
+class NetworkConfigWatcherAppleThread;
 class ProxyConfigServiceWin;
 class ScopedAllowBlockingForSettingGetter;
 namespace internal {
@@ -439,6 +439,7 @@ namespace base {
 
 namespace android {
 class JavaHandlerThread;
+class PmfUtils;
 class ScopedAllowBlockingForImportantFileWriter;
 }  // namespace android
 
@@ -589,6 +590,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class base::ScopedAllowBlockingForProcessMetrics;
   friend class base::StackSamplingProfiler;
   friend class base::android::ScopedAllowBlockingForImportantFileWriter;
+  friend class base::android::PmfUtils;
   friend class base::debug::StackTrace;
   friend class base::subtle::PlatformSharedMemoryRegion;
   friend class base::win::ScopedAllowBlockingForUserAccountControl;
@@ -855,7 +857,7 @@ class BASE_EXPORT
   friend class media::V4L2DevicePoller;  // TODO(1513721): remove this.
   friend class mojo::SyncCallRestrictions;
   friend class mojo::core::ipcz_driver::MojoTrap;
-  friend class net::NetworkConfigWatcherMacThread;
+  friend class net::NetworkConfigWatcherAppleThread;
   friend class ui::DrmThreadProxy;
   friend class viz::ClientGpuMemoryBufferManager;
   friend class viz::HostGpuMemoryBufferManager;
@@ -876,7 +878,7 @@ class BASE_EXPORT
   friend class midi::TaskService;                   // https://crbug.com/796830
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
-  friend class net::NetworkChangeNotifierMac;         // http://crbug.com/125097
+  friend class net::NetworkChangeNotifierApple;       // http://crbug.com/125097
   friend class net::internal::AddressTrackerLinux;    // http://crbug.com/125097
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710

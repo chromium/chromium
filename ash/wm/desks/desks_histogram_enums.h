@@ -96,6 +96,8 @@ constexpr char kDeskButtonDeskBarReorderDeskHistogramName[] =
 
 constexpr char kDeskProfilesPressesHistogramName[] =
     "Ash.Desks.DeskProfiles.AvatarView.ButtonPressed";
+constexpr char kDeskProfilesOpenProfileManagerHistogramName[] =
+    "Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager";
 
 constexpr char kOverviewDeskBarActivateDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ActivateDesk";
@@ -113,6 +115,9 @@ constexpr char kOverviewDeskBarRenameDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.RenameDesk";
 constexpr char kOverviewDeskBarReorderDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ReorderDesk";
+
+constexpr char kDeskSwitchScreenshotResultHistogramName[] =
+    "Ash.Desks.DesksSwitchScreenshotResult";
 
 }  // namespace ash
 

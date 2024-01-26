@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
 <translation id="1426410128494586442">હા</translation>
+<translation id="1434873037477293673">કિંમતમાં ઘટાડાનું કાર્ડ</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
 <translation id="1510341833810331442">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપવામાં આવતી નથી</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે.</translation>
 <translation id="2790501146643349491">ચાલુ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકે છે. બંધ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકતી નથી.</translation>
 <translation id="2822354292072154809">શું તમે ખરેખર <ph name="CHOSEN_OBJECT_NAME" />ની બધી સાઇટ પસંદગીઓને રીસેટ કરવા માગો છે?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
+<translation id="6452138246455930388">તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો, <ph name="OLD_PRICE" />માંથી <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">વિન્ડો નાની હોય ત્યારે, મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="652937045869844725">ત્રીજા પક્ષની કુકીને મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે ઓછું સંરક્ષણ પરંતુ સાઇટની સુવિધાઓની કાર્ય કરવાની સંભાવના વધુ છે</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">નીચે ખસેડો</translation>
 <translation id="6749077623962119521">પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="6766622839693428701">બંધ કરવા માટે નીચેની તરફ સ્વાઇપ કરો.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> તરફથી</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> માટે કોઈ વિકલ્પ પસંદ કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6818926723028410516">આઇટમ પસંદ કરો</translation>
 <translation id="6864395892908308021">આ ડિવાઇસ NFC વાંચી શકતું નથી</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> તરફથી</translation>
 <translation id="6912998170423641340">બધી સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ વાંચવાથી બ્લૉક કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6950072572526089586">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ, તમે સાઇટ પર જે કરી રહ્યાં હો તે વિશેની માહિતી સાચવી શકે છે, જેથી તે અપેક્ષિત રીતે કામ કરી શકે — ઉદાહરણ તરીકે, તમને કોઈ સાઇટમાં સાઇન ઇન કરી રાખવા કે તમારા શૉપિંગ કાર્ટમાં આઇટમ સાચવવા માટે. સાઇટ ઘણીવાર આ માહિતીને તમારા ડિવાઇસ પર હંગામી રીતે સાચવે છે.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">ધ વન્ડરફુલ વિઝાર્ડ ઑફ ઓઝ</translation>
 <translation id="7684642910516280563">સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી ન આપો</translation>
 <translation id="7719367874908701697">પેજ નાનું-મોટું કરો</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" છુપાવો</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>

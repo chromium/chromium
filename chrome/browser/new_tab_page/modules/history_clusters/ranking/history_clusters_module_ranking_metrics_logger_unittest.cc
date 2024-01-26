@@ -31,6 +31,8 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   signals1.num_total_visits = 4;
   signals1.num_unique_hosts = 2;
   signals1.num_abandoned_carts = 1;
+  signals1.num_times_seen_last_24h = 1;
+  signals1.num_times_used_last_24h = 1;
 
   HistoryClustersModuleRankingSignals signals2;
   signals2.duration_since_most_recent_visit = base::Minutes(5);
@@ -39,6 +41,8 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   signals2.num_total_visits = 10;
   signals2.num_unique_hosts = 3;
   signals2.num_abandoned_carts = 0;
+  signals2.num_times_seen_last_24h = 0;
+  signals2.num_times_used_last_24h = 0;
 
   HistoryClustersModuleRankingSignals should_not_be_logged;
   should_not_be_logged.duration_since_most_recent_visit = base::Minutes(100);
@@ -53,6 +57,7 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   logger.SetClicked(/*cluster_id=*/1);
   logger.SetDisabled(/*cluster_id=*/1);
   logger.SetDismissed(/*cluster_id=*/1);
+  logger.SetMarkedAsDone(/*cluster_id=*/1);
   logger.SetLayoutTypeShown(ntp::history_clusters::mojom::LayoutType::kLayout1,
                             /*cluster_id=*/1);
   logger.SetLayoutTypeShown(ntp::history_clusters::mojom::LayoutType::kLayout2,
@@ -83,6 +88,12 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
       1);
   test_ukm_recorder.ExpectEntryMetric(
       entry,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesSeenLast24hName, 1);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesUsedLast24hName, 1);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 1);
   test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName,
@@ -90,6 +101,8 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::NewTabPage_HistoryClusters::kDidDismissModuleName,
       1);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kDidMarkAsDoneName, 1);
   test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::NewTabPage_HistoryClusters::kLayoutTypeShownName,
       1);
@@ -116,6 +129,12 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
       0);
   test_ukm_recorder.ExpectEntryMetric(
       entry2,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesSeenLast24hName, 0);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry2,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesUsedLast24hName, 0);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry2,
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
   test_ukm_recorder.ExpectEntryMetric(
       entry2, ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName,
@@ -123,6 +142,8 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   test_ukm_recorder.ExpectEntryMetric(
       entry2, ukm::builders::NewTabPage_HistoryClusters::kDidDismissModuleName,
       0);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry2, ukm::builders::NewTabPage_HistoryClusters::kDidMarkAsDoneName, 0);
   test_ukm_recorder.ExpectEntryMetric(
       entry2, ukm::builders::NewTabPage_HistoryClusters::kLayoutTypeShownName,
       2);

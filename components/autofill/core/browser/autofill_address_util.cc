@@ -213,8 +213,6 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       continue;
     }
     FieldType type = component.field;
-    if (type == NAME_FULL)
-      type = NAME_FULL_WITH_HONORIFIC_PREFIX;
     address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
   }
   if (include_country) {
@@ -267,8 +265,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
   static constexpr FieldType kTypeToCompare[] = {
-      NAME_FULL_WITH_HONORIFIC_PREFIX, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER};
+      NAME_FULL, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
 
   base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
@@ -304,7 +301,7 @@ std::u16string GetProfileSummaryForMigrationPrompt(
     const AutofillProfile& profile,
     const std::string& app_locale) {
   std::vector<FieldType> fields = {
-      FieldType::NAME_FULL_WITH_HONORIFIC_PREFIX, FieldType::ADDRESS_HOME_LINE1,
+      FieldType::NAME_FULL, FieldType::ADDRESS_HOME_LINE1,
       FieldType::EMAIL_ADDRESS, FieldType::PHONE_HOME_WHOLE_NUMBER};
   std::vector<std::u16string> values;
   values.reserve(fields.size());

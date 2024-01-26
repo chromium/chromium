@@ -11,18 +11,31 @@ namespace os.management {
 
   dictionary SetAudioGainArguments {
       // Node id of the audio device to be configured.
-      long nodeId;
+      double nodeId;
       // Target gain percent in [0, 100]. Sets to 0 or 100 if outside.
       long gain;
   };
 
-  callback VoidCallback = void();
+  dictionary SetAudioVolumeArguments {
+      // Node id of the audio device to be configured.
+      double nodeId;
+      // Target volume percent in [0, 100]. Sets to 0 or 100 if outside.
+      long volume;
+      // Whether to mute the device.
+      boolean isMuted;
+  };
+
+  callback OperationCallback = void(boolean isSuccess);
 
   interface Functions {
-      // Sets the specified input audio device's gain to value. No-op if
+      // Sets the specified input audio device's gain to value. Returns false if
       // |args.nodeId| is invalid.
       [supportsPromises] static void setAudioGain(
-          SetAudioGainArguments args, VoidCallback callback);
+          SetAudioGainArguments args, OperationCallback callback);
+      // Sets the specified output audio device's volume and mute state to the
+      // given value. Returns false if |args.nodeId| is invalid.
+      [supportsPromises] static void setAudioVolume(
+          SetAudioVolumeArguments args, OperationCallback callback);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

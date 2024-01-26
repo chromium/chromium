@@ -10,7 +10,11 @@
 namespace android_webview {
 
 namespace {
-const char kUserAgentClientHintFeatureName[] = "UserAgentClientHint";
+
+const char kTestFeatureName[] = "AwFieldTrialTestFeature";
+
+BASE_FEATURE(kTestFeature, kTestFeatureName, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kTestTrialName[] = "TestTrial";
 }  // namespace
 
@@ -18,8 +22,7 @@ class AwFieldTrialsTest : public testing::Test {
  public:
   AwFieldTrialsTest() {
     // Default overrides takes effect before testing other override.
-    EXPECT_TRUE(
-        base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeature));
     original_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }
 
@@ -37,14 +40,14 @@ class AwFieldTrialsTest : public testing::Test {
 
   void SetUpFeatureTrial(base::FeatureList* feature_list,
                          base::FeatureList::OverrideState override_state) {
-    // Set-up a trial enable/disable user-agent client hint feature.
+    // Set-up a trial enable/disable test feature.
     variations::EntropyProviders entropy_providers("client_id", {0, 8000});
     scoped_refptr<base::FieldTrial> trial(
         base::FieldTrialList::FactoryGetFieldTrial(
             kTestTrialName, /*total_probability=*/1000, "Default",
             entropy_providers.default_entropy()));
-    feature_list->RegisterFieldTrialOverride(kUserAgentClientHintFeatureName,
-                                             override_state, trial.get());
+    feature_list->RegisterFieldTrialOverride(kTestFeatureName, override_state,
+                                             trial.get());
   }
 
  private:
@@ -60,8 +63,7 @@ TEST_F(AwFieldTrialsTest, TrialEnableFeatureOverrides) {
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestFeature));
 }
 
 TEST_F(AwFieldTrialsTest, TrialDisableFeatureOverrides) {
@@ -72,30 +74,27 @@ TEST_F(AwFieldTrialsTest, TrialDisableFeatureOverrides) {
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeature));
 }
 
 TEST_F(AwFieldTrialsTest, CommandLineEnableFeatureOverrides) {
   AwFieldTrials aw_field_trials;
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitFromCommandLine(kUserAgentClientHintFeatureName, "");
+  feature_list->InitFromCommandLine(kTestFeatureName, "");
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestFeature));
 }
 
 TEST_F(AwFieldTrialsTest, CommandLineDisableFeatureOverrides) {
   AwFieldTrials aw_field_trials;
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitFromCommandLine("", kUserAgentClientHintFeatureName);
+  feature_list->InitFromCommandLine("", kTestFeatureName);
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeature));
 }
 
 TEST_F(AwFieldTrialsTest, OnlyRegisterFeatureOverrides) {
@@ -105,11 +104,7 @@ TEST_F(AwFieldTrialsTest, OnlyRegisterFeatureOverrides) {
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint));
-
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      blink::features::kReduceUserAgentMinorVersion));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestFeature));
 }
 
 }  // namespace android_webview

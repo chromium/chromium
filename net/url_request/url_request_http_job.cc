@@ -1738,6 +1738,46 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeCancel", total_time);
   }
 
+  // These metrics are intended to replace some of the later IP
+  // Protection-focused metrics below which require response_info_. These
+  // metrics are only concerned with data that actually hits or perhaps should
+  // have hit the network.
+  //
+  // We count towards these metrics even if the job has been aborted. Jobs
+  // aborted before an end-to-end connection is established will have both
+  // sent and received equal to zero.
+  //
+  // In addition, we don't want to ignore jobs where response_info_->was_cached
+  // is true but the network was used to trigger cache usage as part of a 304
+  // Not Modified response. However, cache hits which bypass the network
+  // entirely should not be counted.
+  //
+  // GetTotalReceivedBytes measures HTTP stream bytes, which is more
+  // comprehensive than PrefilterBytesRead, which measures (possibly compressed)
+  // content's length only.
+  const bool bypassedNetwork = response_info_ && response_info_->was_cached &&
+                               !response_info_->network_accessed &&
+                               GetTotalSentBytes() == 0 &&
+                               GetTotalReceivedBytes() == 0;
+  if (!bypassedNetwork) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.BytesSent2", GetTotalSentBytes(),
+                                1, 50000000, 50);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.BytesReceived2",
+                                GetTotalReceivedBytes(), 1, 50000000, 50);
+    // Having a transaction_ does not imply having a response_info_. This is
+    // particularly the case in some aborted/cancelled jobs. The transaction is
+    // the primary source of MDL match information.
+    if ((transaction_ && transaction_->IsMdlMatchForMetrics()) ||
+        (response_info_ && response_info_->was_mdl_match)) {
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Net.HttpJob.IpProtection.AllowListMatch.BytesSent2",
+          GetTotalSentBytes(), 1, 50000000, 50);
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2",
+          GetTotalReceivedBytes(), 1, 50000000, 50);
+    }
+  }
+
   if (response_info_) {
     // QUIC (by default) supports https scheme only, thus track https URLs only
     // for QUIC.

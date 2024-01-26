@@ -114,15 +114,14 @@ void OfflineContentAggregator::PauseDownload(const ContentId& id) {
   it->second->PauseDownload(id);
 }
 
-void OfflineContentAggregator::ResumeDownload(const ContentId& id,
-                                              bool has_user_gesture) {
+void OfflineContentAggregator::ResumeDownload(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = providers_.find(id.name_space);
 
   if (it == providers_.end())
     return;
 
-  it->second->ResumeDownload(id, has_user_gesture);
+  it->second->ResumeDownload(id);
 }
 
 void OfflineContentAggregator::GetItemById(const ContentId& id,

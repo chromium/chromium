@@ -211,7 +211,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)reportBackUserAction {
-  NOTREACHED();
+  // No-op for this view controller.
 }
 
 - (void)settingsWillBeDismissed {

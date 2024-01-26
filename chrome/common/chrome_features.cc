@@ -33,12 +33,6 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kAppManagementAppDetails,
-             "AppManagementAppDetails",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppDeduplicationServiceFondue,
              "AppDeduplicationServiceFondue",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -240,6 +234,10 @@ BASE_FEATURE(kDMServerOAuthForChildUser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kEnableWatermarkView,
+             "EnableWatermarkView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Enables migration of apps that are loaded erroneously but installed
 // correctly by policy in the web app system.
@@ -285,6 +283,11 @@ BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
              "DesktopTaskManagerEndProcessDisabledForExtension",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Controls the enablement of structured metrics on Windows, Linux, and Mac.
+BASE_FEATURE(kChromeStructuredMetrics,
+             "ChromeStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
@@ -335,7 +338,6 @@ BASE_FEATURE(kDesktopPWAsIconHealthChecks,
              "DesktopPWAsIconHealthChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDesktopPWAsLinkCapturing,
              "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -345,16 +347,10 @@ const base::FeatureParam<bool> kLinksCapturedByDefault{
 const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
     &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",
     kTotalDaysToStoreLinkCapturingIPHGuardrails};
-#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_ANDROID)
 
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings,
              "DesktopPWAsTabStripSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Adds support for web bundles, making web apps able to be launched offline.
-BASE_FEATURE(kDesktopPWAsWebBundles,
-             "DesktopPWAsWebBundles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -365,14 +361,6 @@ BASE_FEATURE(kDesktopPWAsWebBundles,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Controls whether force installed and preinstalled apps should be exempt from
-// deprecation.
-BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
-             "KeepForceInstalledPreinstalledApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls if the 'launch anyways' button is shown.
-const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
-    &kChromeAppsDeprecation, "HideLaunchAnyways", true};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA)
 
@@ -844,6 +832,13 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Changes how Chrome responds to accessibility activation signals on macOS
+// Sonoma, to avoid unnecessary changes to the screen reader state.
+BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
+             "SonomaAccessibilityActivationRefinements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1053,6 +1048,15 @@ BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
              "NotificationDurationLongForRequireInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOfflineContentOnNetError,
+             "OfflineContentOnNetError",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOfflineAutoFetch,
+             "OfflineAutoFetch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOnConnectNative,

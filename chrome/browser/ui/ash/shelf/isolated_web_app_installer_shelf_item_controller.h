@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/ash/shelf/lacros_shelf_item_controller.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 struct ShelfID;
@@ -25,12 +25,15 @@ class IsolatedWebAppInstallerContextMenu;
 // has its own IsolatedWebAppInstallerShelfItemController. This class tracks
 // the window it starts with, and prohibits tracking of additional windows.
 class IsolatedWebAppInstallerShelfItemController
-    : public LacrosShelfItemController {
+    : public LacrosShelfItemController,
+      aura::WindowObserver {
  public:
   explicit IsolatedWebAppInstallerShelfItemController(
       const ash::ShelfID& shelf_id);
 
   ~IsolatedWebAppInstallerShelfItemController() override;
+
+  static gfx::ImageSkia GetDefaultInstallerShelfIcon();
 
   // ash::ShelfItemDelegate overrides:
   void ItemSelected(std::unique_ptr<ui::Event> event,
@@ -49,6 +52,9 @@ class IsolatedWebAppInstallerShelfItemController
 
   // LacrosShelfItemController overrides:
   void AddWindow(aura::Window* window) override;
+
+  // aura::WindowObserver
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   void UpdateShelfItem();

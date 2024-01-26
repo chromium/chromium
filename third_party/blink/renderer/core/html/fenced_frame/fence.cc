@@ -12,6 +12,8 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
@@ -71,22 +73,19 @@ void Fence::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-void Fence::reportEvent(ScriptState* script_state,
-                        const V8UnionFenceEventOrString* event,
+void Fence::reportEvent(const V8UnionFenceEventOrString* event,
                         ExceptionState& exception_state) {
   switch (event->GetContentType()) {
     case V8UnionFenceEventOrString::ContentType::kString:
-      reportPrivateAggregationEvent(script_state, event->GetAsString(),
-                                    exception_state);
+      reportPrivateAggregationEvent(event->GetAsString(), exception_state);
       return;
     case V8UnionFenceEventOrString::ContentType::kFenceEvent:
-      reportEvent(script_state, event->GetAsFenceEvent(), exception_state);
+      reportEvent(event->GetAsFenceEvent(), exception_state);
       return;
   }
 }
 
-void Fence::reportEvent(ScriptState* script_state,
-                        const FenceEvent* event,
+void Fence::reportEvent(const FenceEvent* event,
                         ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
@@ -104,14 +103,13 @@ void Fence::reportEvent(ScriptState* script_state,
   if (event->hasDestinationURL() &&
       base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
-    reportEventToDestinationURL(script_state, event, exception_state);
+    reportEventToDestinationURL(event, exception_state);
   } else {
-    reportEventToDestinationEnum(script_state, event, exception_state);
+    reportEventToDestinationEnum(event, exception_state);
   }
 }
 
-void Fence::reportEventToDestinationEnum(ScriptState* script_state,
-                                         const FenceEvent* event,
+void Fence::reportEventToDestinationEnum(const FenceEvent* event,
                                          ExceptionState& exception_state) {
   if (!event->hasDestination()) {
     exception_state.ThrowTypeError("Missing required 'destination' property.");
@@ -153,8 +151,7 @@ void Fence::reportEventToDestinationEnum(ScriptState* script_state,
       event->getEventDataOr(String{""}), event->eventType(), destinations);
 }
 
-void Fence::reportEventToDestinationURL(ScriptState* script_state,
-                                        const FenceEvent* event,
+void Fence::reportEventToDestinationURL(const FenceEvent* event,
                                         ExceptionState& exception_state) {
   if (event->hasEventType()) {
     exception_state.ThrowTypeError(
@@ -212,7 +209,6 @@ void Fence::reportEventToDestinationURL(ScriptState* script_state,
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(
-    ScriptState* script_state,
     const FenceEvent* event,
     ExceptionState& exception_state) {
   if (!DomWindow()) {
@@ -297,8 +293,41 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
   return out;
 }
 
-void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
-                                          const String& event,
+ScriptPromise Fence::disableUntrustedNetwork(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
+  if (!DomWindow()) {
+    exception_state.ThrowSecurityError(
+        "May not use a Fence object associated with a Document that is not "
+        "fully active");
+    return ScriptPromise();
+  }
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
+  CHECK(frame->GetDocument()->Loader()->FencedFrameProperties().has_value());
+  bool can_disable_untrusted_network = frame->GetDocument()
+                                           ->Loader()
+                                           ->FencedFrameProperties()
+                                           ->can_disable_untrusted_network();
+  if (!can_disable_untrusted_network) {
+    exception_state.ThrowTypeError(
+        "This frame is not allowed to disable untrusted network.");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  ScriptPromise promise = resolver->Promise();
+  frame->GetLocalFrameHostRemote().DisableUntrustedNetworkInFencedFrame(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &Fence::DisableUntrustedNetworkComplete, WrapPersistent(this))));
+  return promise;
+}
+
+void Fence::DisableUntrustedNetworkComplete(ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
+}
+
+void Fence::reportPrivateAggregationEvent(const String& event,
                                           ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
       !blink::features::kPrivateAggregationApiEnabledInProtectedAudience

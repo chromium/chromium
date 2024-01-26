@@ -6,10 +6,12 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {BookmarkProductInfo, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {ShoppingServiceApiProxy} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import {ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './price_tracking_section.html.js';
@@ -39,7 +41,7 @@ export class PriceTrackingSection extends PolymerElement {
     return {
       productInfo: Object,
 
-      isProductTracked_: {
+      isProductTracked: {
         type: Boolean,
         value: false,
       },
@@ -48,7 +50,7 @@ export class PriceTrackingSection extends PolymerElement {
 
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
-  private isProductTracked_: boolean;
+  isProductTracked: boolean;
   private listenerIds_: number[] = [];
   private toggleAnnotationText_: string;
   private saveLocationStartText_: string;
@@ -78,10 +80,7 @@ export class PriceTrackingSection extends PolymerElement {
                 this.onProductBookmarkMoved(product)),
     );
 
-
-    this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
-      this.updatePriceTrackingSection_(res.tracked);
-    });
+    this.updatePriceTrackingSection_(this.isProductTracked);
   }
 
   private async updatePriceTrackingSection_(tracked: boolean) {
@@ -98,7 +97,7 @@ export class PriceTrackingSection extends PolymerElement {
           loadTimeData.getString('trackPriceSaveDescription');
     }
     this.updateSaveLocationText(this.folderName_);
-    this.isProductTracked_ = tracked;
+    this.isProductTracked = tracked;
   }
 
   private updateSaveLocationText(folderName: string) {
@@ -130,9 +129,9 @@ export class PriceTrackingSection extends PolymerElement {
 
   private onPriceTrackingToggled_() {
     this.shoppingApi_.setPriceTrackingStatusForCurrentUrl(
-        this.isProductTracked_);
+        this.isProductTracked);
     chrome.metricsPrivate.recordEnumerationValue(
-        this.isProductTracked_ ?
+        this.isProductTracked ?
             'Commerce.PriceTracking.PriceInsightsSidePanel.Track' :
             'Commerce.PriceTracking.PriceInsightsSidePanel.Untrack',
         this.priceInsightsInfo.bucket,
@@ -168,12 +167,12 @@ export class PriceTrackingSection extends PolymerElement {
     this.toggleAnnotationText_ = loadTimeData.getString('trackPriceError');
     this.folderName_ = '';
     this.updateSaveLocationText('');
-    this.isProductTracked_ = !attemptedTrack;
+    this.isProductTracked = !attemptedTrack;
   }
 
   private async onProductBookmarkMoved(product: BookmarkProductInfo) {
     if (product.info.clusterId === this.productInfo.clusterId &&
-        this.isProductTracked_) {
+        this.isProductTracked) {
       const {name} =
           await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
       this.folderName_ = decodeString16(name);

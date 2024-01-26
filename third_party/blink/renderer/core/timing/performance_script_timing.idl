@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum ScriptTimingType {
+enum ScriptInvokerType {
     "classic-script",
     "module-script",
     "execute-script",
@@ -19,7 +19,8 @@ enum ScriptWindowAttribution {
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
 [Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
 interface PerformanceScriptTiming : PerformanceEntry {
-    readonly attribute ScriptTimingType type;
+    readonly attribute ScriptInvokerType invokerType;
+    readonly attribute DOMString invoker;
     readonly attribute ScriptWindowAttribution windowAttribution;
     readonly attribute DOMHighResTimeStamp executionStart;
     readonly attribute DOMHighResTimeStamp forcedStyleAndLayoutDuration;

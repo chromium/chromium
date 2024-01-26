@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TopSitesExtensionTest, GetTopSites) {
   // Without a callback the function will not generate a result.
   get_top_sites_function->set_has_callback(true);
 
-  absl::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
       get_top_sites_function.get(), "[]", browser()->profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_GE(result->GetList().size(), top_sites_prepopulated_pages_size());

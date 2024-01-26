@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_api.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,7 +48,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -59,7 +59,7 @@ base::Value::List RunTabGroupsQueryFunction(
     const std::string& query_info) {
   auto function = base::MakeRefCounted<TabGroupsQueryFunction>();
   function->set_extension(extension);
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), query_info, browser_context,
           api_test_utils::FunctionMode::kNone);
@@ -72,7 +72,7 @@ base::Value::Dict RunTabGroupsGetFunction(
     const std::string& args) {
   auto function = base::MakeRefCounted<TabGroupsGetFunction>();
   function->set_extension(extension);
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), args, browser_context,
           api_test_utils::FunctionMode::kNone);

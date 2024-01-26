@@ -275,7 +275,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootInternal(ShadowRootType::kOpen);
+    element->AttachShadowRootForTesting(ShadowRootType::kOpen);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 open ShadowRoot.";
   }
@@ -285,7 +285,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootInternal(ShadowRootType::kClosed);
+    element->AttachShadowRootForTesting(ShadowRootType::kClosed);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 closed ShadowRoot.";
   }

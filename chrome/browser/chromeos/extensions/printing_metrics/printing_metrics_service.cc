@@ -110,7 +110,7 @@ void PrintingMetricsService::GetPrintJobs(
 }
 
 void PrintingMetricsService::OnPrintJobFinished(base::Value print_job) {
-  absl::optional<api::printing_metrics::PrintJobInfo> print_job_info =
+  std::optional<api::printing_metrics::PrintJobInfo> print_job_info =
       api::printing_metrics::PrintJobInfo::FromValue(std::move(print_job));
   DCHECK(print_job_info.has_value());
 

@@ -61,12 +61,14 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method initMessageEvent
 CONSOLE MESSAGE: interface MessagePort : EventTarget
 CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter onclose
 CONSOLE MESSAGE:     getter onmessage
 CONSOLE MESSAGE:     getter onmessageerror
 CONSOLE MESSAGE:     method close
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method postMessage
 CONSOLE MESSAGE:     method start
+CONSOLE MESSAGE:     setter onclose
 CONSOLE MESSAGE:     setter onmessage
 CONSOLE MESSAGE:     setter onmessageerror
 CONSOLE MESSAGE: interface ReadableByteStreamController

@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/net/cookies/cookie_store_ios_test_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"

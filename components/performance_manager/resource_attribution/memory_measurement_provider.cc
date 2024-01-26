@@ -18,7 +18,6 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -49,7 +48,7 @@ void MemoryMeasurementProvider::OnMemorySummary(
     MemoryMeasurementDelegate::MemorySummaryMap process_summaries) {
   using MemorySummaryMeasurement =
       MemoryMeasurementDelegate::MemorySummaryMeasurement;
-  std::map<ResourceContext, QueryResult> results;
+  QueryResultMap results;
 
   // Adds the memory from `summary` to a MemorySummaryResult for `context`.
   // Returns true if a new result was created, false if one already existed.
@@ -59,10 +58,10 @@ void MemoryMeasurementProvider::OnMemorySummary(
                                 MeasurementAlgorithm algorithm) -> bool {
     // Create a result with metadata if the key isn't in the map yet.
     const auto [it, inserted] = results.try_emplace(
-        context,
-        QueryResult(MemorySummaryResult{
-            .metadata = {.measurement_time = now, .algorithm = algorithm}}));
-    MemorySummaryResult& result = absl::get<MemorySummaryResult>(it->second);
+        context, QueryResults{.memory_summary_result = MemorySummaryResult{
+                                  .metadata = ResultMetadata(now, algorithm),
+                              }});
+    MemorySummaryResult& result = it->second.memory_summary_result.value();
     if (!inserted) {
       CHECK_LE(result.metadata.measurement_time, now);
       CHECK_EQ(result.metadata.algorithm, algorithm);
@@ -103,7 +102,7 @@ void MemoryMeasurementProvider::OnMemorySummary(
           }
         });
   }
-  std::move(callback).Run(results);
+  std::move(callback).Run(std::move(results));
 }
 
 }  // namespace performance_manager::resource_attribution

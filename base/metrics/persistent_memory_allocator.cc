@@ -1245,7 +1245,7 @@ DelayedPersistentAllocation::DelayedPersistentAllocation(
 
 DelayedPersistentAllocation::~DelayedPersistentAllocation() = default;
 
-void* DelayedPersistentAllocation::Get() const {
+span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   // Relaxed operations are acceptable here because it's not protecting the
   // contents of the allocation in any way.
   Reference ref = reference_->load(std::memory_order_acquire);
@@ -1259,8 +1259,9 @@ void* DelayedPersistentAllocation::Get() const {
 
   if (!ref) {
     ref = allocator_->Allocate(size_, type_);
-    if (!ref)
-      return nullptr;
+    if (!ref) {
+      return span<uint8_t>();
+    }
 
     // Store the new reference in its proper location using compare-and-swap.
     // Use a "strong" exchange to ensure no false-negatives since the operation
@@ -1282,7 +1283,7 @@ void* DelayedPersistentAllocation::Get() const {
     }
   }
 
-  char* mem = allocator_->GetAsArray<char>(ref, type_, size_);
+  uint8_t* mem = allocator_->GetAsArray<uint8_t>(ref, type_, size_);
   if (!mem) {
 #if !BUILDFLAG(IS_NACL)
     // TODO(crbug/1432981): Remove these. They are used to investigate
@@ -1315,15 +1316,15 @@ void* DelayedPersistentAllocation::Get() const {
           "PersistentMemoryAllocator", "ref_after",
           (reference_ + 1)->load(std::memory_order_relaxed));
       DUMP_WILL_BE_NOTREACHED_NORETURN();
-      return nullptr;
+      return span<uint8_t>();
     }
 #endif  // !BUILDFLAG(IS_NACL)
     // This should never happen but be tolerant if it does as corruption from
     // the outside is something to guard against.
     DUMP_WILL_BE_NOTREACHED_NORETURN();
-    return nullptr;
+    return span<uint8_t>();
   }
-  return mem + offset_;
+  return make_span(mem + offset_, size_ - offset_);
 }
 
 }  // namespace base

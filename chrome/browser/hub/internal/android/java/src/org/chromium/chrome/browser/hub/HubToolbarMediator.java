@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -139,6 +140,8 @@ public class HubToolbarMediator {
     }
 
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {
+        mPropertyModel.set(COLOR_SCHEME, HubColors.getColorSchemeSafe(focusedPane));
+
         @Nullable Integer focusedPaneId = focusedPane == null ? null : focusedPane.getPaneId();
         if (focusedPaneId == null) {
             mPropertyModel.set(PANE_SWITCHER_INDEX, INVALID_PANE_SWITCHER_INDEX);

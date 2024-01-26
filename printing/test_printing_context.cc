@@ -54,6 +54,10 @@ void TestPrintingContext::SetDeviceSettings(
   device_settings_.emplace(device_name, std::move(settings));
 }
 
+void TestPrintingContext::SetNewDocumentJobId(int job_id) {
+  new_document_job_id_ = job_id;
+}
+
 void TestPrintingContext::SetUserSettings(const PrintSettings& settings) {
   user_settings_ = settings;
 }
@@ -218,6 +222,11 @@ mojom::ResultCode TestPrintingContext::NewDocument(
       return mojom::ResultCode::kFailed;
     if (new_document_blocked_by_permissions_)
       return mojom::ResultCode::kAccessDenied;
+
+    // A print job is now active, so potentially update `job_id`.
+    if (new_document_job_id_.has_value()) {
+      job_id_ = new_document_job_id_.value();
+    }
   }
 
   // No-op.

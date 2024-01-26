@@ -4,9 +4,11 @@
 
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -41,6 +43,27 @@ bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
   }
 #endif
   return false;
+}
+
+apps::ShortcutSource ConvertWebAppManagementTypeToShortcutSource(
+    WebAppManagement::Type management_type) {
+  switch (management_type) {
+    case WebAppManagement::Type::kSync:
+    case WebAppManagement::Type::kWebAppStore:
+    case WebAppManagement::Type::kOneDriveIntegration:
+      return apps::ShortcutSource::kUser;
+    case WebAppManagement::Type::kPolicy:
+      return apps::ShortcutSource::kPolicy;
+    case WebAppManagement::Type::kOem:
+    case WebAppManagement::Type::kApsDefault:
+    case WebAppManagement::Type::kDefault:
+      return apps::ShortcutSource::kDefault;
+    case WebAppManagement::Type::kKiosk:
+    case WebAppManagement::Type::kSystem:
+    case WebAppManagement::Type::kCommandLine:
+    case WebAppManagement::Type::kSubApp:
+      return apps::ShortcutSource::kUnknown;
+  }
 }
 
 }  // namespace web_app

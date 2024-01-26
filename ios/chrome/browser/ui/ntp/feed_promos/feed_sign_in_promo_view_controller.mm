@@ -34,13 +34,11 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CANCEL_BUTTON);
 
-  if (@available(iOS 15, *)) {
-    self.titleTextStyle = UIFontTextStyleTitle2;
-    self.customSpacingBeforeImageIfNoNavigationBar =
-        customSpacingBeforeImageIfNoNavigationBar;
-    self.customSpacingAfterImage = 1;
-    self.topAlignedLayout = YES;
-  }
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      customSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingAfterImage = 1;
+  self.topAlignedLayout = YES;
 
   [super viewDidLoad];
 }

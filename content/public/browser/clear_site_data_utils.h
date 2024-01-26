@@ -35,7 +35,7 @@ using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
 // Has to be called on the UI thread and will execute |callback| on the UI
 // thread when done.
 CONTENT_EXPORT void ClearSiteData(
-    const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
+    base::WeakPtr<BrowserContext> browser_context,
     const std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,

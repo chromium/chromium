@@ -118,11 +118,6 @@ BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
 const base::FeatureParam<int> kPartitionAllocSchedulerLoopQuarantineCapacity{
     &kPartitionAllocSchedulerLoopQuarantine,
     "PartitionAllocSchedulerLoopQuarantineCapacity", 0};
-// Scheduler Loop Quarantine's capacity count.
-const base::FeatureParam<int>
-    kPartitionAllocSchedulerLoopQuarantineCapacityCount{
-        &kPartitionAllocSchedulerLoopQuarantine,
-        "PartitionAllocSchedulerLoopQuarantineCapacityCount", 1024};
 
 BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
              "PartitionAllocZappingByFreeFlags",
@@ -170,6 +165,7 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
     {BackupRefPtrMode::kEnabled, "enabled-with-memory-reclaimer"},
+    {BackupRefPtrMode::kEnabledInSameSlotMode, "enabled-in-same-slot-mode"},
     {BackupRefPtrMode::kDisabled, "disabled-but-2-way-split"},
     {BackupRefPtrMode::kDisabled,
      "disabled-but-2-way-split-with-memory-reclaimer"},
@@ -177,8 +173,8 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
 };
 
 const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
-    &kPartitionAllocBackupRefPtr, "brp-mode", BackupRefPtrMode::kEnabled,
-    &kBackupRefPtrModeOptions};
+    &kPartitionAllocBackupRefPtr, "brp-mode",
+    BackupRefPtrMode::kEnabledInSameSlotMode, &kBackupRefPtrModeOptions};
 
 BASE_FEATURE(kPartitionAllocMemoryTagging,
              "PartitionAllocMemoryTagging",

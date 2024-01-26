@@ -45,7 +45,7 @@ class KAnonymityTrustTokenGetter {
  public:
   // Callback where argument tells if the client has the trust token or not.
   using TryGetTrustTokenAndKeyCallback =
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>;
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>;
 
   // `identity_manager` and `answerer` must outlive the current instance
   KAnonymityTrustTokenGetter(
@@ -60,7 +60,7 @@ class KAnonymityTrustTokenGetter {
   // tries to request the trust token and key commitment. The trust token will
   // be stored in the network service, while the key commitment and non-unique
   // user ID are cached. Calls the callback with the key commitment and
-  // non-uniform user ID if successful and absl::nullopt if not successful.
+  // non-uniform user ID if successful and std::nullopt if not successful.
   // Calls to this function are serialized through the `pending_callbacks_`
   // queue to avoid making redundant requests -- since most of the request
   // results can be cached and reused. Since this function may need to get an

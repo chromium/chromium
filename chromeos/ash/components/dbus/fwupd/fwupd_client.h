@@ -18,8 +18,21 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "chromeos/dbus/common/dbus_client.h"
 
+// Enum from ash/webui/firmware_update_ui/firmware_update.mojom mirrored here
+// to avoid an illegal include from ash/webui.
+enum DeviceRequestId {
+  kDoNotPowerOff,
+  kReplugInstall,
+  kInsertUSBCable,
+  kRemoveUSBCable,
+  kPressUnlock,
+  kRemoveReplug,
+  kReplugPower,
+};
+
 namespace ash {
 using FirmwareInstallOptions = std::map<std::string, bool>;
+using FwupdStringToRequestIdMap = std::map<std::string, DeviceRequestId>;
 
 // FwupdClient is used for handling signals from the fwupd daemon.
 class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient

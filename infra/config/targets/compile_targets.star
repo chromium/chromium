@@ -261,8 +261,8 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "monochrome_static_initializers",
-    label = "//chrome/android:monochrome_static_initializers",
+    name = "check_chrome_static_initializers",
+    label = "//chrome/android:check_chrome_static_initializers",
 )
 
 targets.compile_target(

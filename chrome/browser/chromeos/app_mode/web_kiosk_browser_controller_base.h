@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_BROWSER_CONTROLLER_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 class Browser;
@@ -65,7 +65,7 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
   web_app::WebAppRegistrar& registrar() const;
 
   const raw_ref<web_app::WebAppProvider> provider_;
-  mutable absl::optional<ui::ImageModel> app_icon_;
+  mutable std::optional<ui::ImageModel> app_icon_;
 };
 
 }  // namespace chromeos

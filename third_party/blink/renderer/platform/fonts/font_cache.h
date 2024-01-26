@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -87,11 +86,6 @@ enum class AlternateFontName {
   kLastResort
 };
 
-typedef HashMap<FallbackListCompositeKey,
-                std::unique_ptr<ShapeCache>,
-                FallbackListCompositeKeyTraits>
-    FallbackListShaperCache;
-
 // "und-Zsye", the special locale for retrieving the color emoji font defined
 // in UTS #51: https://unicode.org/reports/tr51/#Emoji_Script
 extern const char kColorEmojiLocale[];
@@ -101,9 +95,8 @@ extern const char kNotoColorEmojiCompat[];
 #endif
 
 class PLATFORM_EXPORT FontCache final {
+  DISALLOW_NEW();
   friend class FontCachePurgePreventer;
-
-  USING_FAST_MALLOC(FontCache);
 
  public:
   // FontCache initialisation on Windows depends on a global FontMgr being
@@ -111,6 +104,8 @@ class PLATFORM_EXPORT FontCache final {
   // avoid early creation of a font cache when these globals have not yet
   // been set.
   static FontCache& Get();
+
+  void Trace(Visitor*) const;
 
   void ReleaseFontData(const SimpleFontData*);
 
@@ -374,13 +369,16 @@ class PLATFORM_EXPORT FontCache final {
 
   uint16_t generation_ = 0;
   bool platform_init_ = false;
-  Persistent<HeapHashSet<WeakMember<FontCacheClient>>> font_cache_clients_;
+  HeapHashSet<WeakMember<FontCacheClient>> font_cache_clients_;
   std::unique_ptr<FontPlatformDataCache> font_platform_data_cache_;
-  FallbackListShaperCache fallback_list_shaper_cache_;
+  HeapHashMap<FallbackListCompositeKey,
+              WeakMember<ShapeCache>,
+              FallbackListCompositeKeyTraits>
+      fallback_list_shaper_cache_;
 
   std::unique_ptr<FontDataCache> font_data_cache_;
 
-  Persistent<FontFallbackMap> font_fallback_map_;
+  Member<FontFallbackMap> font_fallback_map_;
 
   void PurgePlatformFontDataCache();
   void PurgeFallbackListShaperCache();
@@ -388,6 +386,7 @@ class PLATFORM_EXPORT FontCache final {
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
   friend class FontPlatformDataCache;
+  friend class FontCacheMacTest;
   FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
 };
 

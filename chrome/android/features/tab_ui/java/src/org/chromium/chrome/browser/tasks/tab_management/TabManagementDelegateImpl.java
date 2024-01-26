@@ -157,7 +157,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
         // TODO(crbug/1505772): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
@@ -184,7 +183,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             factory,
                             incongitorTabModelFilterSupplier,
                             newTabButtonOnClickListener,
-                            menuOrKeyboardActionController,
                             incognitoReauthControllerSupplier);
         } else {
             Supplier<TabModelFilter> tabModelFilterSupplier =
@@ -197,7 +195,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             factory,
                             tabModelFilterSupplier,
                             newTabButtonOnClickListener,
-                            menuOrKeyboardActionController,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector));
         }
         return Pair.create(new TabSwitcherPaneAdapter(pane), pane);

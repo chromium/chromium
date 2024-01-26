@@ -3588,9 +3588,11 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
   if (it == available_render_pass_overlay_backings_.end()) {
     // Allocate the image for render pass overlay if there is no existing
     // available one.
-    constexpr auto kOverlayUsage =
-        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_RASTER;
+    constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
@@ -3807,8 +3809,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       return;
     }
 
-    // Clear the backing to ARGB(0,0,0,0).
-    current_canvas_->clear(SkColorSetARGB(0, 0, 0, 0));
+    current_canvas_->clear(SK_ColorTRANSPARENT);
 
     // Adjust the |content_device_transform| to make sure filter extends are
     // drawn inside of the buffer.

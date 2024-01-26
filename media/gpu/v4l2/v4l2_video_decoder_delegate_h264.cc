@@ -11,10 +11,19 @@
 #include <type_traits>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// gn check does not account for BUILDFLAG(), so including this header will
+// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// for more information.
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -56,11 +65,46 @@ class V4L2H264Picture : public H264Picture {
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
 };
 
+// Structure used when we parse encrypted slice headers in secure buffers. The
+// same structure exists in the secure world code. This is all the fields we
+// need to satisfy the V4L2 interface and the needs of the H264Decoder.
+typedef struct CencV1SliceParameterBufferH264 {
+  uint8_t nal_ref_idc;
+  uint8_t idr_pic_flag;
+  uint8_t slice_type;
+  uint8_t field_pic_flag;
+  uint32_t frame_num;
+  uint32_t idr_pic_id;
+  uint32_t pic_order_cnt_lsb;
+  int32_t delta_pic_order_cnt_bottom;
+  int32_t delta_pic_order_cnt0;
+  int32_t delta_pic_order_cnt1;
+  union {
+    struct {
+      uint32_t no_output_of_prior_pics_flag : 1;
+      uint32_t long_term_reference_flag : 1;
+      uint32_t adaptive_ref_pic_marking_mode_flag : 1;
+      uint32_t dec_ref_pic_marking_count : 8;
+      uint32_t reserved : 21;
+    } bits;
+    uint32_t value;
+  } ref_pic_fields;
+  uint8_t memory_management_control_operation[32];
+  int32_t difference_of_pic_nums_minus1[32];
+  int32_t long_term_pic_num[32];
+  int32_t max_long_term_frame_idx_plus1[32];
+  int32_t long_term_frame_idx[32];
+  uint32_t dec_ref_pic_marking_bit_size;
+  uint32_t pic_order_cnt_bit_size;
+} CencV1SliceParameterBufferH264;
+
 V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(
     V4L2DecodeSurfaceHandler* surface_handler,
-    V4L2Device* device)
+    V4L2Device* device,
+    CdmContext* cdm_context)
     : surface_handler_(surface_handler),
       device_(device),
+      cdm_context_(cdm_context),
       priv_(std::make_unique<V4L2VideoDecoderDelegateH264Private>()) {
   DCHECK(surface_handler_);
 }
@@ -85,6 +129,39 @@ V4L2VideoDecoderDelegateH264::CreateH264PictureSecure(uint64_t secure_handle) {
     return nullptr;
 
   return new V4L2H264Picture(dec_surface);
+}
+
+void V4L2VideoDecoderDelegateH264::ProcessSPS(
+    const H264SPS* sps,
+    base::span<const uint8_t> sps_nalu_data) {
+  if (cdm_context_) {
+    cencv1_stream_data_.log2_max_frame_num_minus4 =
+        sps->log2_max_frame_num_minus4;
+    cencv1_stream_data_.log2_max_pic_order_cnt_lsb_minus4 =
+        sps->log2_max_pic_order_cnt_lsb_minus4;
+    cencv1_stream_data_.pic_order_cnt_type = sps->pic_order_cnt_type;
+    cencv1_stream_data_.chroma_array_type = sps->chroma_array_type;
+    cencv1_stream_data_.frame_mbs_only_flag = sps->frame_mbs_only_flag;
+    cencv1_stream_data_.delta_pic_order_always_zero_flag =
+        sps->delta_pic_order_always_zero_flag;
+  }
+}
+
+void V4L2VideoDecoderDelegateH264::ProcessPPS(
+    const H264PPS* pps,
+    base::span<const uint8_t> pps_nalu_data) {
+  if (cdm_context_) {
+    cencv1_stream_data_.num_ref_idx_l0_default_active_minus1 =
+        pps->num_ref_idx_l0_default_active_minus1;
+    cencv1_stream_data_.num_ref_idx_l1_default_active_minus1 =
+        pps->num_ref_idx_l1_default_active_minus1;
+    cencv1_stream_data_.weighted_bipred_idc = pps->weighted_bipred_idc;
+    cencv1_stream_data_.bottom_field_pic_order_in_frame_present_flag =
+        pps->bottom_field_pic_order_in_frame_present_flag;
+    cencv1_stream_data_.redundant_pic_cnt_present_flag =
+        pps->redundant_pic_cnt_present_flag;
+    cencv1_stream_data_.weighted_pred_flag = pps->weighted_pred_flag;
+  }
 }
 
 std::vector<scoped_refptr<V4L2DecodeSurface>>
@@ -319,6 +396,103 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   return Status::kOk;
 }
 
+H264Decoder::H264Accelerator::Status
+V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
+    const std::vector<base::span<const uint8_t>>& data,
+    const std::vector<SubsampleEntry>& /*subsamples*/,
+    uint64_t secure_handle,
+    H264SliceHeader* slice_header_out) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!cdm_context_ || !cdm_context_->GetChromeOsCdmContext()) {
+    LOG(ERROR) << "Missing ChromeOSCdmContext";
+    return Status::kFail;
+  }
+  if (!secure_handle) {
+    LOG(ERROR) << "Invalid secure buffer";
+    return Status::kFail;
+  }
+  if (encrypted_slice_header_parsing_failed_) {
+    encrypted_slice_header_parsing_failed_ = false;
+    last_parsed_encrypted_slice_header_.clear();
+    return Status::kFail;
+  }
+
+  std::vector<uint8_t> stream_data_vec(
+      reinterpret_cast<uint8_t*>(&cencv1_stream_data_),
+      reinterpret_cast<uint8_t*>(&cencv1_stream_data_) +
+          sizeof(cencv1_stream_data_));
+
+  // Send the request for the slice header if we don't have a pending result.
+  if (last_parsed_encrypted_slice_header_.empty()) {
+    cdm_context_->GetChromeOsCdmContext()->ParseEncryptedSliceHeader(
+        secure_handle,
+        base::checked_cast<uint32_t>(encrypted_slice_header_offset_),
+        stream_data_vec,
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &V4L2VideoDecoderDelegateH264::OnEncryptedSliceHeaderParsed,
+            weak_factory_.GetWeakPtr())));
+    return Status::kTryAgain;
+  }
+  // We have the result, map it to the structure and copy the fields.
+  if (last_parsed_encrypted_slice_header_.size() !=
+      sizeof(CencV1SliceParameterBufferH264)) {
+    return Status::kFail;
+  }
+  CencV1SliceParameterBufferH264 slice_param_buf;
+  memcpy(&slice_param_buf, last_parsed_encrypted_slice_header_.data(),
+         sizeof(slice_param_buf));
+  last_parsed_encrypted_slice_header_.clear();
+
+  // Read the parsed slice header data back and populate the structure with it.
+  slice_header_out->idr_pic_flag = !!slice_param_buf.idr_pic_flag;
+  slice_header_out->nal_ref_idc = slice_param_buf.nal_ref_idc;
+  slice_header_out->field_pic_flag = slice_param_buf.field_pic_flag;
+  // The last span in |data| will be the slice header NALU.
+  slice_header_out->nalu_data = data.back().data();
+  slice_header_out->nalu_size = data.back().size();
+  slice_header_out->slice_type = slice_param_buf.slice_type;
+  slice_header_out->frame_num = slice_param_buf.frame_num;
+  slice_header_out->idr_pic_id = slice_param_buf.idr_pic_id;
+  slice_header_out->pic_order_cnt_lsb = slice_param_buf.pic_order_cnt_lsb;
+  slice_header_out->delta_pic_order_cnt_bottom =
+      slice_param_buf.delta_pic_order_cnt_bottom;
+  slice_header_out->delta_pic_order_cnt0 = slice_param_buf.delta_pic_order_cnt0;
+  slice_header_out->delta_pic_order_cnt1 = slice_param_buf.delta_pic_order_cnt1;
+  slice_header_out->no_output_of_prior_pics_flag =
+      slice_param_buf.ref_pic_fields.bits.no_output_of_prior_pics_flag;
+  slice_header_out->long_term_reference_flag =
+      slice_param_buf.ref_pic_fields.bits.long_term_reference_flag;
+  slice_header_out->adaptive_ref_pic_marking_mode_flag =
+      slice_param_buf.ref_pic_fields.bits.adaptive_ref_pic_marking_mode_flag;
+  const size_t num_dec_ref_pics =
+      slice_param_buf.ref_pic_fields.bits.dec_ref_pic_marking_count;
+  if (num_dec_ref_pics > H264SliceHeader::kRefListSize) {
+    DVLOG(1) << "Invalid number of dec_ref_pics: " << num_dec_ref_pics;
+    return Status::kFail;
+  }
+  for (size_t i = 0; i < num_dec_ref_pics; ++i) {
+    slice_header_out->ref_pic_marking[i].memory_mgmnt_control_operation =
+        slice_param_buf.memory_management_control_operation[i];
+    slice_header_out->ref_pic_marking[i].difference_of_pic_nums_minus1 =
+        slice_param_buf.difference_of_pic_nums_minus1[i];
+    slice_header_out->ref_pic_marking[i].long_term_pic_num =
+        slice_param_buf.long_term_pic_num[i];
+    slice_header_out->ref_pic_marking[i].long_term_frame_idx =
+        slice_param_buf.long_term_frame_idx[i];
+    slice_header_out->ref_pic_marking[i].max_long_term_frame_idx_plus1 =
+        slice_param_buf.max_long_term_frame_idx_plus1[i];
+  }
+  slice_header_out->dec_ref_pic_marking_bit_size =
+      slice_param_buf.dec_ref_pic_marking_bit_size;
+  slice_header_out->pic_order_cnt_bit_size =
+      slice_param_buf.pic_order_cnt_bit_size;
+  slice_header_out->full_sample_encryption = true;
+  return Status::kOk;
+#else
+  return Status::kFail;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
     const H264PPS* pps,
     const H264SliceHeader* slice_hdr,
@@ -348,6 +522,8 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
   // TODO: don't do it here, but have it passed from the parser?
   const size_t data_copy_size = size + 3;
   if (dec_surface->secure_handle()) {
+    // If this is multi-slice CENCv1, then we need to increase this offset.
+    encrypted_slice_header_offset_ += size;
     // The secure world already post-processed the secure buffer so that all of
     // the slice NALUs w/ 3 byte start codes are the only contents.
     return surface_handler_->SubmitSlice(dec_surface.get(), nullptr,
@@ -432,6 +608,9 @@ bool V4L2VideoDecoderDelegateH264::OutputPicture(
 
 void V4L2VideoDecoderDelegateH264::Reset() {
   memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param));
+  encrypted_slice_header_offset_ = 0;
+  last_parsed_encrypted_slice_header_.clear();
+  encrypted_slice_header_parsing_failed_ = false;
 }
 
 scoped_refptr<V4L2DecodeSurface>
@@ -439,6 +618,14 @@ V4L2VideoDecoderDelegateH264::H264PictureToV4L2DecodeSurface(H264Picture* pic) {
   V4L2H264Picture* v4l2_pic = pic->AsV4L2H264Picture();
   CHECK(v4l2_pic);
   return v4l2_pic->dec_surface();
+}
+
+void V4L2VideoDecoderDelegateH264::OnEncryptedSliceHeaderParsed(
+    bool status,
+    const std::vector<uint8_t>& parsed_headers) {
+  encrypted_slice_header_parsing_failed_ = !status;
+  last_parsed_encrypted_slice_header_ = parsed_headers;
+  surface_handler_->ResumeDecoding();
 }
 
 }  // namespace media

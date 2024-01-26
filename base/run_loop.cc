@@ -201,7 +201,6 @@ RepeatingClosure RunLoop::QuitClosure() {
   // QuitClosure() from the owning thread before Run() or invoke Quit() directly
   // (which is thread-safe).
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  allow_quit_current_deprecated_ = false;
 
   return BindRepeating(
       &ProxyToTaskRunner, origin_task_runner_,
@@ -213,7 +212,6 @@ RepeatingClosure RunLoop::QuitWhenIdleClosure() {
   // QuitWhenIdleClosure() from the owning thread before Run() or invoke
   // QuitWhenIdle() directly (which is thread-safe).
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  allow_quit_current_deprecated_ = false;
 
   return BindRepeating(
       &ProxyToTaskRunner, origin_task_runner_,
@@ -246,31 +244,6 @@ void RunLoop::RemoveNestingObserverOnCurrentThread(NestingObserver* observer) {
   delegate->nesting_observers_.RemoveObserver(observer);
 }
 
-// static
-void RunLoop::QuitCurrentDeprecated() {
-  DCHECK(IsRunningOnCurrentThread());
-  DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
-      << "Please migrate off QuitCurrentDeprecated(), e.g. to QuitClosure().";
-  delegate->active_run_loops_.top()->Quit();
-}
-
-// static
-void RunLoop::QuitCurrentWhenIdleDeprecated() {
-  DCHECK(IsRunningOnCurrentThread());
-  DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
-      << "Please migrate off QuitCurrentWhenIdleDeprecated(), e.g. to "
-         "QuitWhenIdleClosure().";
-  delegate->active_run_loops_.top()->QuitWhenIdle();
-}
-
-// static
-RepeatingClosure RunLoop::QuitCurrentWhenIdleClosureDeprecated() {
-  // TODO(844016): Fix callsites and enable this check, or remove the API.
-  // DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
-  //     << "Please migrate off QuitCurrentWhenIdleClosureDeprecated(), e.g to "
-  //        "QuitWhenIdleClosure().";
-  return BindRepeating(&RunLoop::QuitCurrentWhenIdleDeprecated);
-}
 
 #if DCHECK_IS_ON()
 ScopedDisallowRunningRunLoop::ScopedDisallowRunningRunLoop()

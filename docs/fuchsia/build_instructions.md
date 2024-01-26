@@ -15,8 +15,8 @@ There are instructions for other platforms linked from the
 *   At least 100GB of free disk space.
 *   You must have Git and Python installed already.
 
-Most development is done on Ubuntu. Mac build is supported on a best-effort
-basis. If you already have a Chromium checkout, continue to the
+Most development is done on Ubuntu. Mac build is not supported.
+If you already have a Chromium checkout, continue to the
 [next section](#instructions-for-current-chromium-developers). Otherwise, skip
 to the [following section](#instructions-for-new-chromium-developers). If you
 are a Fuchsia developer, see also

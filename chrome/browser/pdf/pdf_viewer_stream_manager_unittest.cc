@@ -309,7 +309,7 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationSubresourceOverride) {
   navigation_handle.set_render_frame_host(pdf_host);
   navigation_handle.set_url(GURL("navigation_handle_url"));
 
-  EXPECT_CALL(navigation_handle, RegisterSubresourceOverride).Times(1);
+  EXPECT_CALL(navigation_handle, RegisterSubresourceOverride);
   manager->ReadyToCommitNavigation(&navigation_handle);
 
   // The stream should persist after the PDF load to provide postMessage support
@@ -347,20 +347,27 @@ TEST_F(PdfViewerStreamManagerTest,
   ASSERT_TRUE(manager->GetStreamContainer(main_rfh()));
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host2));
 
-  NiceMock<content::MockNavigationHandle> navigation_handle;
+  NiceMock<content::MockNavigationHandle> navigation_handle1;
 
-  // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
+  // Set `navigation_handle1`'s frame host to a grandchild frame host. This acts
   // as the PDF frame host.
-  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
-  navigation_handle.set_render_frame_host(pdf_host1);
-  navigation_handle.set_url(GURL("navigation_handle_url"));
+  ON_CALL(navigation_handle1, IsPdf).WillByDefault(Return(true));
+  navigation_handle1.set_render_frame_host(pdf_host1);
+  navigation_handle1.set_url(GURL("navigation_handle_url"));
 
-  EXPECT_CALL(navigation_handle, RegisterSubresourceOverride).Times(2);
-  manager->ReadyToCommitNavigation(&navigation_handle);
+  EXPECT_CALL(navigation_handle1, RegisterSubresourceOverride);
+  manager->ReadyToCommitNavigation(&navigation_handle1);
 
-  navigation_handle.set_render_frame_host(pdf_host2);
+  NiceMock<content::MockNavigationHandle> navigation_handle2;
 
-  manager->ReadyToCommitNavigation(&navigation_handle);
+  // Set `navigation_handle2`'s frame host to a grandchild frame host. This acts
+  // as the PDF frame host.
+  ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
+  navigation_handle2.set_render_frame_host(pdf_host2);
+  navigation_handle2.set_url(GURL("navigation_handle_url"));
+
+  EXPECT_CALL(navigation_handle2, RegisterSubresourceOverride);
+  manager->ReadyToCommitNavigation(&navigation_handle2);
 
   // The streams should persist after the PDF load to provide postMessage
   // support and PDF saving.
@@ -381,19 +388,22 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndDelete) {
                               pdf_test_util::GenerateSampleStreamContainer(1));
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
 
-  NiceMock<content::MockNavigationHandle> navigation_handle;
-  navigation_handle.set_render_frame_host(embedder_host);
+  NiceMock<content::MockNavigationHandle> navigation_handle1;
+  navigation_handle1.set_render_frame_host(embedder_host);
 
   // The initial load should cause the embedder host to claim the stream.
-  manager->ReadyToCommitNavigation(&navigation_handle);
+  manager->ReadyToCommitNavigation(&navigation_handle1);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_TRUE(pdf_viewer_stream_manager());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle2;
+  navigation_handle2.set_render_frame_host(embedder_host);
 
   // Committing a navigation again shouldn't try to claim a stream again if
   // there isn't a new stream. The stream should still exist. This can occur
   // if a page contains an embed to a PDF, and the embed later navigates to
   // another URL.
-  manager->ReadyToCommitNavigation(&navigation_handle);
+  manager->ReadyToCommitNavigation(&navigation_handle2);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_TRUE(pdf_viewer_stream_manager());
 }

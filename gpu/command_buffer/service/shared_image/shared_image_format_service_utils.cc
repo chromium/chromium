@@ -15,6 +15,7 @@
 #include "build/buildflag.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "ui/gl/gl_version_info.h"
 
 namespace gpu {
 
@@ -65,7 +66,8 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
-  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == viz::SinglePlaneFormat::kR_F16) {
     return VK_FORMAT_R16_SFLOAT;
   } else if (format == viz::LegacyMultiPlaneFormat::kP010) {
     return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
@@ -257,7 +259,10 @@ GLFormatCaps::GLFormatCaps(const gles2::FeatureInfo* feature_info)
       ext_texture_rg_(feature_info->feature_flags().ext_texture_rg),
       ext_texture_norm16_(feature_info->feature_flags().ext_texture_norm16),
       disable_r8_shared_images_(
-          feature_info->workarounds().r8_egl_images_broken) {}
+          feature_info->workarounds().r8_egl_images_broken),
+      enable_texture_half_float_linear_(
+          feature_info->feature_flags().enable_texture_half_float_linear),
+      is_atleast_gles3_(feature_info->gl_version_info().IsAtLeastGLES(3, 0)) {}
 
 GLFormatDesc GLFormatCaps::ToGLFormatDescExternalSampler(
     viz::SharedImageFormat format) const {
@@ -351,10 +356,10 @@ GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
       !ext_texture_norm16_) {
     return GL_ZERO;
   }
-  // Fallback to GL_LUMINANCE16F for R16F format.
-  if (gl_format == GL_R16F_EXT) {
-    // TODO(hitawala): Check for enable_texture_half_float_linear and no
-    // texture_rg extension support.
+  // Fallback to GL_LUMINANCE16F for R16F format based on extensions and ES3
+  // support.
+  if (gl_format == GL_R16F_EXT &&
+      (!is_atleast_gles3_ || !enable_texture_half_float_linear_)) {
     return GL_LUMINANCE16F_EXT;
   }
   // No fallback for RG16F format without texture_rg extension.
@@ -436,10 +441,8 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
     case ChannelFormat::k16:
       return num_channels == 2 ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
     case ChannelFormat::k16F:
-      break;
+      return num_channels == 2 ? VK_FORMAT_R16G16_SFLOAT : VK_FORMAT_R16_SFLOAT;
   }
-
-  return VK_FORMAT_UNDEFINED;
 }
 #endif
 
@@ -458,7 +461,8 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::RG8Unorm;
   } else if (format == viz::SinglePlaneFormat::kR_16) {
     return wgpu::TextureFormat::R16Unorm;
-  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == viz::SinglePlaneFormat::kR_F16) {
     return wgpu::TextureFormat::R16Float;
   } else if (format == viz::SinglePlaneFormat::kRG_1616) {
     return wgpu::TextureFormat::RG16Unorm;

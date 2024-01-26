@@ -5,22 +5,12 @@
 #ifndef CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_
 #define CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_
 
-#include <jni.h>
-
-#include <string>
-
 #include "base/feature_list.h"
 
-namespace chrome {
-namespace android {
+namespace chrome::android {
 
 bool IsJavaDrivenFeatureEnabled(const base::Feature& feature);
 
-// Returns a finch group name currently used for the reached code profiler.
-// Returns an empty string if the group isn't specified.
-std::string GetReachedCodeProfilerTrialGroup();
-
-}  // namespace android
-}  // namespace chrome
+}  // namespace chrome::android
 
 #endif  // CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_

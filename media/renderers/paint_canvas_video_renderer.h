@@ -262,6 +262,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // NOTE: This functionality is currently disabled on Android (see
+  // crbug.com/1494365 for details).
   bool UploadVideoFrameToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
@@ -273,6 +276,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int format,
       unsigned int type,
       bool flip_y);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   bool CacheBackingWrapsTexture() const;
 

@@ -48,7 +48,8 @@ class AppBannerSettingsHelper {
     APP_MENU_OPTION_MIN = APP_MENU_OPTION_UNKNOWN,
     APP_MENU_OPTION_ADD_TO_HOMESCREEN = 1,
     APP_MENU_OPTION_INSTALL = 2,
-    APP_MENU_OPTION_MAX = APP_MENU_OPTION_INSTALL,
+    APP_MENU_OPTION_UNIVERSAL_INSTALL = 3,
+    APP_MENU_OPTION_MAX = APP_MENU_OPTION_UNIVERSAL_INSTALL,
   };
 
   // The various types of banner events recorded as timestamps in the app banner

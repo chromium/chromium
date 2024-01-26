@@ -125,8 +125,7 @@ int WriteStringResponse(
     int64_t id,
     const std::string& headers,
     const std::string& body) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(body.data(), body.length())));
+  mojo_base::BigBuffer buffer(base::as_byte_span(body));
   return WriteResponse(storage, id, headers, std::move(buffer));
 }
 
@@ -211,8 +210,7 @@ int WriteResponseMetadata(
     mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     int64_t id,
     const std::string& metadata) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(metadata.data(), metadata.length())));
+  mojo_base::BigBuffer buffer(base::as_byte_span(metadata));
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>
       metadata_writer;

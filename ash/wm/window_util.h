@@ -6,12 +6,14 @@
 #define ASH_WM_WINDOW_UTIL_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -45,6 +47,12 @@ ASH_EXPORT bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
 // `windows` that is top-most in terms of z-order. Note that this doesn't take
 // account of the visibility of the windows.
 ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
+
+// Sort the windows in `window_set` according to their stacking order in the
+// window tree. Windows which are descendants of a different root window will be
+// returned in an arbitrary order relative to each-other.
+ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
+    std::set<aura::Window*> window_set);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
@@ -175,8 +183,14 @@ bool ShouldShowForCurrentUser(aura::Window* window);
 
 ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
-// Checks the prefs to see if natural scroll for the touchpad is turned on.
+// TODO(zxdan): Remove this method after all related code being migrated to the
+// new way of getting input device settings. Note: this method is being
+// deprecated. Please use IsNaturalScrollOn(const ui::ScrollEvent&).
 ASH_EXPORT bool IsNaturalScrollOn();
+
+// Checks the device settings to see if natural scroll for the touchpad is
+// turned on.
+ASH_EXPORT bool IsNaturalScrollOn(const ui::ScrollEvent& event);
 
 // The thumbnail window (transformed window for non-minimized state in overview,
 // mirror window for minimized state in overview and alt+tab windows) may need
@@ -195,6 +209,16 @@ float GetSnapRatioForWindow(aura::Window* window);
 // When this is true, snapping one window will automatically start
 // SplitViewOverviewSession.
 bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
+
+// Returns true if `SplitViewOverviewSession` is created through faster split
+// screen setup, i.e. partial overview is started on the other side of the
+// screen when `window` is snapped.
+bool IsInFasterSplitScreenSetupSession(aura::Window* window);
+
+// Returns the opposite snap type of a snapped `window`. This will be
+// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
+// if `window` is `kPrimarySnapped`.
+chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
 
 // Starts `SplitViewOverviewSession` for `window`, if it wasn't already active.
 void MaybeStartSplitViewOverview(aura::Window* window,

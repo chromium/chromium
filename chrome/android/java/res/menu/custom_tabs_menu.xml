@@ -44,6 +44,9 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/open_history_menu_id"
+            android:title="@string/menu_history"
+            android:orderInCategory="2" />
         <item android:id="@+id/page_insights_id"
             android:title="@string/menu_page_insights"
             android:visible="false"
@@ -61,6 +64,9 @@ found in the LICENSE file.
             android:orderInCategory="2" />
         <item android:id="@+id/install_webapp_id"
             android:title="@string/menu_install_webapp"
+            android:orderInCategory="2" />
+        <item android:id="@+id/universal_install"
+            android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />
         <item android:id="@+id/open_webapk_id"
             android:title="@string/menu_open_webapk"

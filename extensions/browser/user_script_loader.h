@@ -31,6 +31,8 @@ class BrowserContext;
 class RenderProcessHost;
 }
 
+class EmbedderUserScriptLoader;
+
 namespace extensions {
 
 // Manages one "logical unit" of user scripts in shared memory by constructing a
@@ -127,6 +129,8 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   content::BrowserContext* browser_context() const { return browser_context_; }
 
  private:
+  friend class ::EmbedderUserScriptLoader;
+
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(
       content::RenderProcessHost* process_host) override;

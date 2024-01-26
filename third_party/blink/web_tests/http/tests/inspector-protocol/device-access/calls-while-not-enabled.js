@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that calls to methods of DeviceAccess domain return proper error if the domain has not been enabled`);
 

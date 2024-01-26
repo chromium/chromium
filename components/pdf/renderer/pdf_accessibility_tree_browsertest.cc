@@ -109,7 +109,7 @@ MATCHER_P2(HasEventAtNode,
                PrintToString(expected_event_type) + " on " +
                PrintToString(expected_node_id)) {
   const auto& event = arg;
-  return Matches(expected_event_type)(event.event_params.event) &&
+  return Matches(expected_event_type)(event.event_params->event) &&
          Matches(expected_node_id)(event.node_id);
 }
 
@@ -2240,9 +2240,9 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   // Verify selection offsets in tree data.
   ui::AXTreeData tree_data;
   pdf_accessibility_tree_->GetTreeData(&tree_data);
-  EXPECT_EQ(9, tree_data.sel_anchor_object_id);
+  EXPECT_EQ(10, tree_data.sel_anchor_object_id);
   EXPECT_EQ(0, tree_data.sel_anchor_offset);
-  EXPECT_EQ(9, tree_data.sel_focus_object_id);
+  EXPECT_EQ(10, tree_data.sel_focus_object_id);
   EXPECT_EQ(0, tree_data.sel_focus_offset);
 
   pdf_anchor_action_target =
@@ -2476,7 +2476,7 @@ TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
   const ui::AXNode* status_node = status_wrapper_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_node);
   EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-  EXPECT_EQ(0u, status_node->GetChildCount());
+  EXPECT_EQ(1u, status_node->GetChildCount());
   EXPECT_TRUE(
       status_node->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
   constexpr char kDefaultLiveRegionRelevant[] = "additions text";
@@ -3028,7 +3028,7 @@ TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
   ui::AXNode* status_node = status_wrapper_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_node);
   EXPECT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-  EXPECT_EQ(0u, status_node->GetChildCount());
+  EXPECT_EQ(1u, status_node->GetChildCount());
   EXPECT_TRUE(
       status_node->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
   constexpr char kDefaultLiveRegionRelevant[] = "additions text";
@@ -3088,7 +3088,9 @@ TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
           HasEventAtNode(ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED,
                          status_node->id()),
           HasEventAtNode(ui::AXEventGenerator::Event::NAME_CHANGED,
-                         status_node->id())));
+                         status_node->id()),
+          HasEventAtNode(ui::AXEventGenerator::Event::NAME_CHANGED,
+                         status_node->data().child_ids[0])));
 }
 
 TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {

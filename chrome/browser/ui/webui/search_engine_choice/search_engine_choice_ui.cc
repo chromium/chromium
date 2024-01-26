@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -14,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -22,7 +21,7 @@
 #include "chrome/grit/search_engine_choice_resources.h"
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/country_codes/country_codes.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -45,16 +44,6 @@ std::string GetChoiceListJSON(Profile& profile) {
     std::string_view icon_path =
         GetSearchEngineGeneratedIconPath(choice->keyword());
     if (icon_path.empty()) {
-      SCOPED_CRASH_KEY_NUMBER("GetChoiceListJSON", "engine_id",
-                              choice->prepopulate_id());
-      SCOPED_CRASH_KEY_STRING64("GetChoiceListJSON", "engine_keyword",
-                                base::UTF16ToUTF8(choice->keyword()));
-      SCOPED_CRASH_KEY_STRING32(
-          "GetChoiceListJSON", "user_country",
-          country_codes::CountryIDToCountryString(
-              search_engines::GetSearchEngineChoiceCountryId(
-                  profile.GetPrefs())));
-      base::debug::DumpWithoutCrashing();
       icon_path = "chrome://theme/IDR_DEFAULT_FAVICON";
     }
     choice_value.Set("prepopulateId", choice->prepopulate_id());
@@ -107,6 +96,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
+  source->AddLocalizedString("chevronA11yLabel",
+                             IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL);
   source->AddLocalizedString("moreButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
   source->AddResourcePath("images/left_illustration.svg",

@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.UserDeletedFromTab"
-    enum="ClearBrowsingDataTab" expires_after="2024-05-19">
+    enum="ClearBrowsingDataTab" expires_after="2024-07-21">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.DidMakeQuery" enum="BooleanQueried"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -693,7 +693,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
-    units="counts" expires_after="2024-02-20">
+    units="counts" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1016,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.DidUpdateClusterTriggerability{Segment}"
-    enum="Boolean" expires_after="2024-03-31">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1241,7 +1241,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
-    units="num unpersisted visits" expires_after="2024-02-04">
+    units="num unpersisted visits" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1287,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.JourneysEligibleAndEnabledAtSessionStart"
-    units="BooleanEnabled" expires_after="2024-06-30">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1560,7 +1560,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseFileMB" units="MB" expires_after="2024-05-12">
+<histogram name="History.DatabaseFileMB" units="MB" expires_after="2024-07-14">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
@@ -1598,7 +1598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>sophiechang@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1609,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V2" units="domains"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1687,7 +1687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V2" units="domains"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1765,7 +1765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V2" units="domains"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1949,7 +1949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2002,6 +2002,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.KillHistoryDatabaseResult" enum="BooleanSuccess"
+    expires_after="2024-05-19">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Whether killing the database because it was corrupted beyond repair
+    succeeded.
+  </summary>
+</histogram>
+
 <histogram name="History.MigrateFailureFromVersion" units="units"
     expires_after="2024-06-30">
   <owner>sky@chromium.org</owner>
@@ -2042,6 +2053,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.QueryHistory" units="ms" expires_after="M124">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>Time used by the HistoryBackend::QueryHistory() call.</summary>
+</histogram>
+
 <histogram name="History.QueryMostRepeatedQueriesTimeV2" units="ms"
     expires_after="2023-12-20">
   <owner>mahmadi@chromium.org</owner>
@@ -2058,7 +2075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2149,7 +2166,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" units="boolean"
+<histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
     expires_after="2024-06-16">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
@@ -2195,7 +2212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyHostCount" units="hosts"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

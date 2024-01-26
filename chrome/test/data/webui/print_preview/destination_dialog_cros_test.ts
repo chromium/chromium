@@ -283,10 +283,10 @@ suite('DestinationDialogCrosTest', function() {
 
     // Throbber should show while DestinationStore is still searching.
     const throbber =
-        dialog.shadowRoot!.querySelector('.throbber-container') as HTMLElement;
-    assertTrue(throbber !== null);
+        dialog.shadowRoot!.querySelector<HTMLElement>('.throbber-container');
+    assertTrue(!!throbber);
     assertFalse(
-        throbber?.hidden,
+        throbber.hidden,
         'Loading UI should display while DestinationStore is searching');
 
     // Manage printers button hidden when there are valid destinations.
@@ -460,11 +460,11 @@ suite('DestinationDialogCrosTest', function() {
         flush();
 
         // Dialog should be visible with loading UI displayed.
-        const throbber = dialog.shadowRoot!.querySelector(
-                             '.throbber-container') as HTMLElement;
-        assertTrue(throbber !== null);
+        const throbber = dialog.shadowRoot!.querySelector<HTMLElement>(
+            '.throbber-container');
+        assertTrue(!!throbber);
         assertFalse(
-            throbber?.hidden,
+            throbber.hidden,
             'Loading UI should display while timer is running and ' +
                 'destinations have not loaded');
 
@@ -473,7 +473,7 @@ suite('DestinationDialogCrosTest', function() {
 
         // Dialog should be visible with loading UI displayed.
         assertFalse(
-            throbber?.hidden,
+            throbber.hidden,
             'Loading UI should display while destinations have not loaded');
 
         // Get destinations.
@@ -483,7 +483,7 @@ suite('DestinationDialogCrosTest', function() {
         // Loading UI should be hidden. Destination list and search box should
         // be visible.
         assertTrue(
-            throbber?.hidden,
+            throbber.hidden,
             'Loading UI should be hidden after timer is cleared and ' +
                 'destinations have loaded');
         assertTrue(

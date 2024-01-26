@@ -20,9 +20,15 @@ FakeInvalidationHandler::GetReceivedInvalidations() const {
   return received_invalidations_;
 }
 
-void FakeInvalidationHandler::ClearReceivedInvalidations() {
-  invalidation_count_ = 0;
+const std::multiset<Topic>& FakeInvalidationHandler::GetSuccessfullySubscribed()
+    const {
+  return successfully_subscribed_;
+}
+
+void FakeInvalidationHandler::Clear() {
   received_invalidations_.clear();
+  invalidation_count_ = 0;
+  successfully_subscribed_.clear();
 }
 
 int FakeInvalidationHandler::GetInvalidationCount() const {
@@ -37,6 +43,10 @@ void FakeInvalidationHandler::OnIncomingInvalidation(
     const Invalidation& invalidation) {
   received_invalidations_.emplace(invalidation.topic(), invalidation);
   ++invalidation_count_;
+}
+
+void FakeInvalidationHandler::OnSuccessfullySubscribed(const Topic& topic) {
+  successfully_subscribed_.insert(topic);
 }
 
 std::string FakeInvalidationHandler::GetOwnerName() const {

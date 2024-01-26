@@ -30,6 +30,10 @@ export class TestAuthenticator extends EventTarget {
   getAccountsResponseResult: string[]|null = null;
   getDeviceIdResponseCalls: number = 0;
   getDeviceIdResponseResult: string = '';
+  insecureContentBlockedCallback: ((url: string) => void)|null = null;
+  missingGaiaInfoCallback: (() => void)|null = null;
+  samlApiUsedCallback: ((isThirdPartyIdP: boolean) => void)|null = null;
+  recordSamlProviderCallback: ((x509Certificate: string) => void)|null = null;
 
   /**
    * @param authMode Authorization mode.
@@ -56,15 +60,27 @@ export class TestAuthenticator extends EventTarget {
     this.getDeviceIdResponseCalls++;
     this.getDeviceIdResponseResult = deviceId;
   }
+
+  sendMessageToWebview(_messageType: string, _messageData?: string|Object):
+      void {}
+  setWebviewPartition(_newWebviewPartitionName: string): void {}
+  resetWebview(): void {}
+  resetStates(): void {}
+  reload(): void {}
 }
 
 export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
     InlineLoginBrowserProxy {
   constructor() {
     super([
-      'initialize', 'authenticatorReady', 'switchToFullTab', 'completeLogin',
-      'lstFetchResults', 'metricsHandler:recordAction', 'showIncognito',
-      'getAccounts', 'getDeviceId', 'dialogClose',
+      'initialize',
+      'authenticatorReady',
+      'switchToFullTab',
+      'completeLogin',
+      'lstFetchResults',
+      'metricsHandler:recordAction',
+      'showIncognito',
+      'dialogClose',
     ]);
   }
 

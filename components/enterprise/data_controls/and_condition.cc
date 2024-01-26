@@ -12,7 +12,7 @@ namespace data_controls {
 
 // static
 std::unique_ptr<Condition> AndCondition::Create(
-    std::vector<std::unique_ptr<Condition>> conditions) {
+    std::vector<std::unique_ptr<const Condition>> conditions) {
   if (conditions.empty()) {
     return nullptr;
   }
@@ -25,12 +25,13 @@ AndCondition::~AndCondition() = default;
 bool AndCondition::IsTriggered(const ActionContext& action_context) const {
   return std::all_of(
       conditions_.begin(), conditions_.end(),
-      [&action_context](const std::unique_ptr<Condition>& condition) {
+      [&action_context](const std::unique_ptr<const Condition>& condition) {
         return condition->IsTriggered(action_context);
       });
 }
 
-AndCondition::AndCondition(std::vector<std::unique_ptr<Condition>> conditions)
+AndCondition::AndCondition(
+    std::vector<std::unique_ptr<const Condition>> conditions)
     : conditions_(std::move(conditions)) {}
 
 }  // namespace data_controls

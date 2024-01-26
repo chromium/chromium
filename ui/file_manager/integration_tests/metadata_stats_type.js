@@ -13,4 +13,6 @@
  *   clearAllCount: number,
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'MetadataStatsType' implicitly has an
+// 'any' type.
 export let MetadataStatsType;

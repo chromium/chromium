@@ -379,7 +379,8 @@ static void ProduceCacheInternal(
         cache_handler->SetCachedMetadata(
             code_cache_host, V8CodeCache::TagForCodeCache(cache_handler), data,
             length);
-        base::UmaHistogramTimes("V8.ProduceCodeCache", timer.Elapsed());
+        base::UmaHistogramMicrosecondsTimes("V8.ProduceCodeCacheMicroseconds",
+                                            timer.Elapsed());
       }
 
       TRACE_EVENT_END1(kTraceEventCategoryGroup, trace_name, "data",

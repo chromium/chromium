@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <ostream>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -21,7 +24,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_visitor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -833,5 +841,135 @@ TEST(FeatureListAccessorTest, InitFromCommandLineWithFeatureParams) {
     EXPECT_EQ(test_case.expected_feature_params, actual_params) << i;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test only class to verify correctness of
+// FeatureList::VisitFeaturesAndParams().
+class TestFeatureVisitor : public FeatureVisitor {
+ public:
+  TestFeatureVisitor() = default;
+
+  TestFeatureVisitor(const TestFeatureVisitor&) = delete;
+  TestFeatureVisitor& operator=(const TestFeatureVisitor&) = delete;
+
+  ~TestFeatureVisitor() override = default;
+
+  struct VisitedFeatureState {
+    auto operator<=>(const VisitedFeatureState&) const = default;
+
+    std::string feature_name;
+    const base::FeatureList::OverrideState override_state;
+    base::FieldTrialParams params;
+    std::string trial_name;
+    std::string group_name;
+  };
+
+  void Visit(const std::string& feature_name,
+             FeatureList::OverrideState override_state,
+             const FieldTrialParams& params,
+             const std::string& trial_name,
+             const std::string& group_name) override {
+    feature_state_.insert(TestFeatureVisitor::VisitedFeatureState{
+        feature_name, override_state, params, trial_name, group_name});
+  }
+
+  const std::multiset<TestFeatureVisitor::VisitedFeatureState>&
+  feature_state() {
+    return feature_state_;
+  }
+
+ private:
+  std::multiset<VisitedFeatureState> feature_state_;
+};
+
+// Makes test output human readable.
+std::ostream& operator<<(std::ostream& out,
+                         const TestFeatureVisitor::VisitedFeatureState& state) {
+  out << ".feature_name='" << state.feature_name
+      << "', .override_state=" << state.override_state << ", .params={";
+
+  for (const auto& param : state.params) {
+    out << param.first << "=" << param.second << ", ";
+  }
+
+  out << "}, .trial_name='" << state.trial_name << "', .group_name='"
+      << state.group_name << "'";
+  return out;
+}
+
+TEST(TestFeatureVisitor, FeatureWithNoFieldTrial) {
+  base::test::ScopedFeatureList outer_scope;
+  outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{kFeatureOffByDefault},
+                                /*disabled_features=*/{kFeatureOnByDefault});
+
+  TestFeatureVisitor visitor;
+  base::FeatureList::VisitFeaturesAndParams(visitor);
+  std::multiset<TestFeatureVisitor::VisitedFeatureState> actual_feature_state =
+      visitor.feature_state();
+
+  std::multiset<TestFeatureVisitor::VisitedFeatureState>
+      expected_feature_state = {
+          {"OnByDefault", FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+          {"OffByDefault", FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+      };
+
+  EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
+
+TEST(TestFeatureVisitor, FeatureOverrideUseDefault) {
+  base::test::ScopedFeatureList outer_scope;
+  outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("TrialExample", "A");
+  feature_list->RegisterFieldTrialOverride(
+      "TestFeature", base::FeatureList::OVERRIDE_USE_DEFAULT, trial);
+
+  base::test::ScopedFeatureList initialized_feature_list;
+  initialized_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  TestFeatureVisitor visitor;
+  base::FeatureList::VisitFeaturesAndParams(visitor);
+  std::multiset<TestFeatureVisitor::VisitedFeatureState> actual_feature_state =
+      visitor.feature_state();
+
+  std::multiset<TestFeatureVisitor::VisitedFeatureState>
+      expected_feature_state = {
+          {"TestFeature", FeatureList::OverrideState::OVERRIDE_USE_DEFAULT,
+           FieldTrialParams{}, "TrialExample", "A"}};
+
+  EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
+
+TEST(TestFeatureVisitor, FeatureHasParams) {
+  base::test::ScopedFeatureList outer_scope;
+  outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  base::test::ScopedFeatureList initialized_feature_list;
+
+  initialized_feature_list.InitFromCommandLine(
+      /*enabled_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
+      /*disabled_features=*/"");
+
+  TestFeatureVisitor visitor;
+  base::FeatureList::VisitFeaturesAndParams(visitor);
+  std::multiset<TestFeatureVisitor::VisitedFeatureState> actual_feature_state =
+      visitor.feature_state();
+
+  std::multiset<TestFeatureVisitor::VisitedFeatureState>
+      expected_feature_state = {
+          {"TestFeature", FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{{"k1", "v1"}, {"k2", "v2"}}, "foo", "bar"},
+      };
+
+  EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace base

@@ -22,7 +22,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cert/cert_status_flags.h"
 #import "url/url_constants.h"
 

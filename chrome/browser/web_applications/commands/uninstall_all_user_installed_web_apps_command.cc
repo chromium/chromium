@@ -14,9 +14,9 @@
 
 namespace web_app {
 namespace {
-absl::optional<std::string> ConstructErrorMessage(
+std::optional<std::string> ConstructErrorMessage(
     const std::vector<std::string>& errors) {
-  absl::optional<std::string> error_message = absl::nullopt;
+  std::optional<std::string> error_message = std::nullopt;
   if (!errors.empty()) {
     error_message = base::JoinString(errors, "\n");
   }
@@ -29,7 +29,7 @@ UninstallAllUserInstalledWebAppsCommand::
         webapps::WebappUninstallSource uninstall_source,
         Profile& profile,
         Callback callback)
-    : WebAppCommand<AllAppsLock, const absl::optional<std::string>&>(
+    : WebAppCommand<AllAppsLock, const std::optional<std::string>&>(
           "UninstallAllUserInstalledWebAppsCommand",
           AllAppsLockDescription(),
           std::move(callback),
@@ -108,9 +108,9 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
 
   if (code != webapps::UninstallResultCode::kSuccess &&
       code != webapps::UninstallResultCode::kNoAppToUninstall) {
-    errors_.push_back(base::StrCat(
-        {active_job_->app_id(), "[", base::ToString(install_source),
-         "]: ", ConvertUninstallResultCodeToString(code)}));
+    errors_.push_back(base::StrCat({active_job_->app_id(), "[",
+                                    base::ToString(install_source),
+                                    "]: ", base::ToString(code)}));
   }
 
   active_job_.reset();

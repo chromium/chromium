@@ -106,5 +106,12 @@ $ cd out/<Directory>
 $ ./03-mojo-browser
 ```
 
+## 04-legacy-ipc-with-separate-remote
+
+This example is very similar to the previous example in that the legacy IPC
+channel is setup but it creates an intermediate unassociated object. Anything
+associated with the intermediate object then has the pure mojo scheduling
+properties, as seen in example 02, not the legacy IPC ChannelProxy scheduling
+properties.
 
 [1]: https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/system/README.md#Invitations

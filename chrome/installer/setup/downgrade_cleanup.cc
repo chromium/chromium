@@ -4,6 +4,7 @@
 
 #include "chrome/installer/setup/downgrade_cleanup.h"
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -36,7 +36,7 @@ constexpr std::wstring_view kRevertCleaunpOperation = L"revert";
 // Returns the last version of Chrome which introduced breaking changes to the
 // installer, or no value if Chrome is not installed or the version installed
 // predates support for this feature.
-absl::optional<base::Version> GetLastBreakingInstallerVersion(HKEY reg_root) {
+std::optional<base::Version> GetLastBreakingInstallerVersion(HKEY reg_root) {
   base::win::RegKey key;
   std::wstring last_breaking_installer_version;
   if (key.Open(reg_root, install_static::GetClientStateKeyPath().c_str(),
@@ -44,11 +44,11 @@ absl::optional<base::Version> GetLastBreakingInstallerVersion(HKEY reg_root) {
       key.ReadValue(google_update::kRegCleanInstallRequiredForVersionBelowField,
                     &last_breaking_installer_version) != ERROR_SUCCESS ||
       last_breaking_installer_version.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Version version(base::WideToASCII(last_breaking_installer_version));
   if (!version.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   return version;
 }
 // Formats `cmd_line_with_placeholders` by replacing the placeholders with

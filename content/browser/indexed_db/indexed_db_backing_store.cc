@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,7 +67,6 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-using base::StringPiece;
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
@@ -148,7 +147,7 @@ std::string ComputeOriginIdentifier(
 // Read and decode the specified blob journal via the supplied transaction.
 // The key must be either the recovery journal key or active journal key.
 template <typename TransactionType>
-Status GetBlobJournal(const StringPiece& key,
+Status GetBlobJournal(std::string_view key,
                       TransactionType* transaction,
                       BlobJournalType* journal) {
   TRACE_EVENT0("IndexedDB", "IndexedDBBackingStore::GetBlobJournal");
@@ -163,7 +162,7 @@ Status GetBlobJournal(const StringPiece& key,
   journal->clear();
   if (!found || data.empty())
     return Status::OK();
-  StringPiece slice(data);
+  std::string_view slice(data);
   if (!DecodeBlobJournal(&slice, journal)) {
     INTERNAL_CONSISTENCY_ERROR(DECODE_BLOB_JOURNAL);
     s = InternalInconsistencyStatus();
@@ -314,11 +313,11 @@ std::string EncodeExternalObjects(
   return ret;
 }
 
-bool DecodeV3ExternalObjects(const base::StringPiece& data,
+bool DecodeV3ExternalObjects(std::string_view data,
                              std::vector<IndexedDBExternalObject>* output) {
   std::vector<IndexedDBExternalObject> ret;
   output->clear();
-  StringPiece slice(data);
+  std::string_view slice(data);
   while (!slice.empty()) {
     bool is_file;
     int64_t blob_number;
@@ -353,7 +352,7 @@ bool DecodeExternalObjects(const std::string& data,
                            std::vector<IndexedDBExternalObject>* output) {
   std::vector<IndexedDBExternalObject> ret;
   output->clear();
-  StringPiece slice(data);
+  std::string_view slice(data);
   while (!slice.empty()) {
     unsigned char raw_object_type;
     if (!DecodeByte(&slice, &raw_object_type) ||
@@ -453,7 +452,7 @@ Status DeleteBlobsInRange(IndexedDBBackingStore::Transaction* transaction,
          (upper_open ? CompareKeys(it->Key(), end_key) < 0
                      : CompareKeys(it->Key(), end_key) <= 0);
        s = it->Next()) {
-    StringPiece key_piece(it->Key());
+    std::string_view key_piece(it->Key());
     std::string user_key =
         BlobEntryKey::ReencodeToObjectStoreDataKey(&key_piece);
     if (user_key.empty()) {
@@ -642,7 +641,7 @@ Status ReadIndexes(TransactionalLevelDBDatabase* db,
   while (s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0) {
     IndexMetaDataKey meta_data_key;
     {
-      StringPiece slice(it->Key());
+      std::string_view slice(it->Key());
       bool ok = IndexMetaDataKey::Decode(&slice, &meta_data_key);
       DCHECK(ok);
     }
@@ -662,7 +661,7 @@ Status ReadIndexes(TransactionalLevelDBDatabase* db,
     int64_t index_id = meta_data_key.IndexId();
     std::u16string index_name;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeString(&slice, &index_name) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       }
@@ -679,7 +678,7 @@ Status ReadIndexes(TransactionalLevelDBDatabase* db,
     }
     bool index_unique;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeBool(&slice, &index_unique) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       }
@@ -696,7 +695,7 @@ Status ReadIndexes(TransactionalLevelDBDatabase* db,
     }
     blink::IndexedDBKeyPath key_path;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeIDBKeyPath(&slice, &key_path) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       }
@@ -709,7 +708,7 @@ Status ReadIndexes(TransactionalLevelDBDatabase* db,
     bool index_multi_entry = false;
     if (CheckIndexAndMetaDataKey(it.get(), stop_key, index_id,
                                  IndexMetaDataKey::MULTI_ENTRY)) {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeBool(&slice, &index_multi_entry) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       }
@@ -751,7 +750,7 @@ Status ReadObjectStores(
   while (s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0) {
     ObjectStoreMetaDataKey meta_data_key;
     {
-      StringPiece slice(it->Key());
+      std::string_view slice(it->Key());
       bool ok = ObjectStoreMetaDataKey::Decode(&slice, &meta_data_key) &&
                 slice.empty();
       DCHECK(ok);
@@ -772,7 +771,7 @@ Status ReadObjectStores(
     // simplify.
     std::u16string object_store_name;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeString(&slice, &object_store_name) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
@@ -789,7 +788,7 @@ Status ReadObjectStores(
     }
     blink::IndexedDBKeyPath key_path;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeIDBKeyPath(&slice, &key_path) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
@@ -807,7 +806,7 @@ Status ReadObjectStores(
     }
     bool auto_increment;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeBool(&slice, &auto_increment) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
@@ -846,7 +845,7 @@ Status ReadObjectStores(
     }
     int64_t max_index_id;
     {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeInt(&slice, &max_index_id) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
@@ -860,7 +859,7 @@ Status ReadObjectStores(
                                         ObjectStoreMetaDataKey::HAS_KEY_PATH)) {
       bool has_key_path;
       {
-        StringPiece slice(it->Value());
+        std::string_view slice(it->Value());
         if (!DecodeBool(&slice, &has_key_path)) {
           INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
         }
@@ -888,7 +887,7 @@ Status ReadObjectStores(
     if (CheckObjectStoreAndMetaDataType(
             it.get(), stop_key, object_store_id,
             ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER)) {
-      StringPiece slice(it->Value());
+      std::string_view slice(it->Value());
       if (!DecodeInt(&slice, &key_generator_current_number) || !slice.empty()) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
@@ -1146,7 +1145,7 @@ Status IndexedDBBackingStore::AnyDatabaseContainsBlobs(bool* blobs_exist) {
           metadata.id, store_id_metadata_pair.first);
       std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
           metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(base::StringPiece(min_key));
+      status = iterator->Seek(std::string_view(min_key));
       if (status.IsNotFound()) {
         status = Status::OK();
         continue;
@@ -1196,7 +1195,7 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
           metadata.id, store_id_metadata_pair.first);
       std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
           metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(base::StringPiece(min_key));
+      status = iterator->Seek(std::string_view(min_key));
       if (status.IsNotFound()) {
         status = Status::OK();
         continue;
@@ -1278,7 +1277,7 @@ Status IndexedDBBackingStore::ValidateBlobFiles() {
           metadata.id, store_id_metadata_pair.first);
       std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
           metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(base::StringPiece(min_key));
+      status = iterator->Seek(std::string_view(min_key));
       if (status.IsNotFound()) {
         status = Status::OK();
         continue;
@@ -1915,7 +1914,7 @@ Status IndexedDBBackingStore::GetRecord(Transaction* transaction,
   }
 
   int64_t version;
-  StringPiece slice(data);
+  std::string_view slice(data);
   if (!DecodeVarInt(&slice, &version)) {
     INTERNAL_READ_ERROR(GET_RECORD);
     return InternalInconsistencyStatus();
@@ -2099,13 +2098,13 @@ Status IndexedDBBackingStore::DeleteRange(
   BlobEntryKey start_blob_number, end_blob_number;
   std::string start_key = ObjectStoreDataKey::Encode(
       database_id, object_store_id, start_cursor->key());
-  StringPiece start_key_piece(start_key);
+  std::string_view start_key_piece(start_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&start_key_piece,
                                             &start_blob_number))
     return InternalInconsistencyStatus();
   std::string stop_key = ObjectStoreDataKey::Encode(
       database_id, object_store_id, end_cursor->key());
-  StringPiece stop_key_piece(stop_key);
+  std::string_view stop_key_piece(stop_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&stop_key_piece, &end_blob_number))
     return InternalInconsistencyStatus();
 
@@ -2159,7 +2158,7 @@ Status IndexedDBBackingStore::GetKeyGeneratorCurrentNumber(
     return s;
   }
   if (found && !data.empty()) {
-    StringPiece slice(data);
+    std::string_view slice(data);
     if (!DecodeInt(&slice, key_generator_current_number) || !slice.empty()) {
       INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
       return InternalInconsistencyStatus();
@@ -2188,7 +2187,7 @@ Status IndexedDBBackingStore::GetKeyGeneratorCurrentNumber(
   for (s = it->Seek(start_key);
        s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
        s = it->Next()) {
-    StringPiece slice(it->Key());
+    std::string_view slice(it->Key());
     ObjectStoreDataKey data_key;
     if (!ObjectStoreDataKey::Decode(&slice, &data_key) || !slice.empty()) {
       INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
@@ -2273,7 +2272,7 @@ Status IndexedDBBackingStore::KeyExistsInObjectStore(
   }
 
   int64_t version;
-  StringPiece slice(data);
+  std::string_view slice(data);
   if (!DecodeVarInt(&slice, &version))
     return InternalInconsistencyStatus();
 
@@ -2511,7 +2510,7 @@ Status IndexedDBBackingStore::Transaction::GetExternalObjectsForRecord(
   }
 
   BlobEntryKey blob_entry_key;
-  StringPiece leveldb_key_piece(object_store_data_key);
+  std::string_view leveldb_key_piece(object_store_data_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&leveldb_key_piece,
                                             &blob_entry_key)) {
     NOTREACHED();
@@ -2666,7 +2665,7 @@ Status IndexedDBBackingStore::FindKeyInIndex(
     if (CompareIndexKeys(it->Key(), leveldb_key) > 0)
       return Status::OK();
 
-    StringPiece slice(it->Value());
+    std::string_view slice(it->Value());
 
     int64_t version;
     if (!DecodeVarInt(&slice, &version)) {
@@ -2724,7 +2723,7 @@ Status IndexedDBBackingStore::GetPrimaryKeyViaIndex(
     return InvalidDBKeyStatus();
   }
 
-  StringPiece slice(found_encoded_primary_key);
+  std::string_view slice(found_encoded_primary_key);
   if (DecodeIDBKey(&slice, primary_key) && slice.empty())
     return s;
   else
@@ -2762,7 +2761,7 @@ Status IndexedDBBackingStore::KeyExistsInIndex(
     return InvalidDBKeyStatus();
   }
 
-  StringPiece slice(found_encoded_primary_key);
+  std::string_view slice(found_encoded_primary_key);
   if (DecodeIDBKey(&slice, found_primary_key) && slice.empty())
     return s;
   else
@@ -2796,7 +2795,7 @@ Status IndexedDBBackingStore::GetDatabaseNamesAndVersions(
        s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
        s = it->Next()) {
     // Decode database name (in iterator key).
-    StringPiece slice(it->Key());
+    std::string_view slice(it->Key());
     DatabaseNameKey database_name_key;
     if (!DatabaseNameKey::Decode(&slice, &database_name_key) ||
         !slice.empty()) {
@@ -2806,7 +2805,7 @@ Status IndexedDBBackingStore::GetDatabaseNamesAndVersions(
 
     // Decode database id (in iterator value).
     int64_t database_id = 0;
-    StringPiece value_slice(it->Value());
+    std::string_view value_slice(it->Value());
     if (!DecodeInt(&value_slice, &database_id) || !value_slice.empty()) {
       INTERNAL_CONSISTENCY_ERROR(GET_DATABASE_NAMES);
       continue;
@@ -3285,7 +3284,7 @@ IndexedDBBackingStore::Cursor::record_identifier() const {
 bool ObjectStoreKeyCursorImpl::LoadCurrentRow(Status* s) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  StringPiece slice(iterator_->Key());
+  std::string_view slice(iterator_->Key());
   ObjectStoreDataKey object_store_data_key;
   if (!ObjectStoreDataKey::Decode(&slice, &object_store_data_key)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3296,7 +3295,7 @@ bool ObjectStoreKeyCursorImpl::LoadCurrentRow(Status* s) {
   current_key_ = object_store_data_key.user_key();
 
   int64_t version;
-  slice = StringPiece(iterator_->Value());
+  slice = std::string_view(iterator_->Value());
   if (!DecodeVarInt(&slice, &version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InternalInconsistencyStatus();
@@ -3370,7 +3369,7 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(transaction_);
 
-  StringPiece key_slice(iterator_->Key());
+  std::string_view key_slice(iterator_->Key());
   ObjectStoreDataKey object_store_data_key;
   if (!ObjectStoreDataKey::Decode(&key_slice, &object_store_data_key)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3381,7 +3380,7 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
   current_key_ = object_store_data_key.user_key();
 
   int64_t version;
-  StringPiece value_slice = StringPiece(iterator_->Value());
+  std::string_view value_slice = std::string_view(iterator_->Value());
   if (!DecodeVarInt(&value_slice, &version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InternalInconsistencyStatus();
@@ -3474,7 +3473,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(transaction_);
 
-  StringPiece slice(iterator_->Key());
+  std::string_view slice(iterator_->Key());
   IndexDataKey index_data_key;
   if (!IndexDataKey::Decode(&slice, &index_data_key)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3485,7 +3484,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
   current_key_ = index_data_key.user_key();
   DCHECK(current_key_);
 
-  slice = StringPiece(iterator_->Value());
+  slice = std::string_view(iterator_->Value());
   int64_t index_data_version;
   if (!DecodeVarInt(&slice, &index_data_version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3524,7 +3523,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
   }
 
   int64_t object_store_data_version;
-  slice = StringPiece(result);
+  slice = std::string_view(result);
   if (!DecodeVarInt(&slice, &object_store_data_version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InternalInconsistencyStatus();
@@ -3614,7 +3613,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(transaction_);
 
-  StringPiece slice(iterator_->Key());
+  std::string_view slice(iterator_->Key());
   IndexDataKey index_data_key;
   if (!IndexDataKey::Decode(&slice, &index_data_key)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3625,7 +3624,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   current_key_ = index_data_key.user_key();
   DCHECK(current_key_);
 
-  slice = StringPiece(iterator_->Value());
+  slice = std::string_view(iterator_->Value());
   int64_t index_data_version;
   if (!DecodeVarInt(&slice, &index_data_version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
@@ -3664,7 +3663,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   }
 
   int64_t object_store_data_version;
-  slice = StringPiece(result);
+  slice = std::string_view(result);
   if (!DecodeVarInt(&slice, &object_store_data_version)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InternalInconsistencyStatus();
@@ -4063,7 +4062,7 @@ bool IndexedDBBackingStore::Transaction::CollectBlobFilesToRemove() {
   // names in blobs_to_remove_, and remove their old blob data entries.
   for (const auto& iter : external_object_change_map_) {
     BlobEntryKey blob_entry_key;
-    StringPiece key_piece(iter.second->object_store_data_key());
+    std::string_view key_piece(iter.second->object_store_data_key());
     if (!BlobEntryKey::FromObjectStoreDataKey(&key_piece, &blob_entry_key)) {
       NOTREACHED();
       INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
@@ -4187,7 +4186,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     if (!backing_store_->in_memory()) {
       for (auto& iter : external_object_change_map_) {
         BlobEntryKey blob_entry_key;
-        StringPiece key_piece(iter.second->object_store_data_key());
+        std::string_view key_piece(iter.second->object_store_data_key());
         if (!BlobEntryKey::FromObjectStoreDataKey(&key_piece,
                                                   &blob_entry_key)) {
           NOTREACHED();
@@ -4500,7 +4499,7 @@ Status IndexedDBBackingStore::Transaction::PutExternalObjectsIfNeeded(
     in_memory_external_object_map_.erase(object_store_data_key);
 
     BlobEntryKey blob_entry_key;
-    StringPiece leveldb_key_piece(object_store_data_key);
+    std::string_view leveldb_key_piece(object_store_data_key);
     if (!BlobEntryKey::FromObjectStoreDataKey(&leveldb_key_piece,
                                               &blob_entry_key)) {
       NOTREACHED();

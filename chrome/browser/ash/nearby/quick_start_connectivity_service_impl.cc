@@ -57,7 +57,9 @@ QuickStartConnectivityServiceImpl::GetQuickStartDecoder() {
 void QuickStartConnectivityServiceImpl::Cleanup() {
   nearby_process_reference_ = nullptr;
   nearby_process_manager_->ShutDownProcess();
-  nearby_connections_manager_.reset();
+  if (nearby_connections_manager_) {
+    nearby_connections_manager_->Shutdown();
+  }
 }
 
 void QuickStartConnectivityServiceImpl::OnNearbyProcessStopped(

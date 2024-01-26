@@ -104,7 +104,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   TRACE_EVENT0("omnibox", "OmniboxController::OnResultChanged");
   DCHECK(controller == autocomplete_controller_.get());
 
-  const bool was_open = edit_model_->PopupIsOpen();
+  const bool popup_was_open = edit_model_->PopupIsOpen();
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
@@ -121,7 +121,12 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
     edit_model_->OnPopupResultChanged();
   }
 
-  if (was_open && !edit_model_->PopupIsOpen()) {
+  const bool popup_is_open = edit_model_->PopupIsOpen();
+  if (popup_was_open != popup_is_open) {
+    client_->OnPopupVisibilityChanged();
+  }
+
+  if (popup_was_open && !popup_is_open) {
     // Accept the temporary text as the user text, because it makes little sense
     // to have temporary text when the popup is closed.
     edit_model_->AcceptTemporaryTextAsUserText();

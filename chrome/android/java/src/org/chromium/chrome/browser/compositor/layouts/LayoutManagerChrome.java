@@ -501,7 +501,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
 
         if (isRefactorEnabled && HubFieldTrial.isHubEnabled()) {
-            createHubLayout(mHubLayoutDependencyHolder);
+            if (mHubLayout == null) {
+                createHubLayout(mHubLayoutDependencyHolder);
+            }
+
             return;
         }
 
@@ -666,7 +669,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * non-null when the Start surface refactor is enabled if init has finished.
      */
     public Layout getTabSwitcherLayoutForTesting() {
-        return mTabSwitcherLayout;
+        if (mTabSwitcherLayout != null) return mTabSwitcherLayout;
+        return mHubLayout;
     }
 
     /** Returns the {@link StripLayoutHelperManager} managed by this class. */

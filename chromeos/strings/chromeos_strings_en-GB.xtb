@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">forward</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Run charge test</translation>
+<translation id="1626590945318984973">Shortcut not available. Press a new shortcut without using function and <ph name="META_KEY" /> keys.</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
 <translation id="1643449475550628585">Change wallpaper image daily</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Turn dark mode off</translation>
 <translation id="1885577615937958993">fast forward media</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
-<translation id="1897672602657312171">Shortcut without search key might conflict with some apps' shortcut. Press this shortcut again to continue using it, or press a new shortcut using the search key.</translation>
 <translation id="1904932688895783618">Here are some other helpful resources:</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157660087437850958">emoji picker</translation>
 <translation id="2157959690810728433">QUEUED</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Your administrator has set <ph name="APP_NAME_1" /> to start automatically every time you log in.}=2{Your administrator has set <ph name="APP_NAME_1" /> and <ph name="APP_NAME_2" /> to start automatically every time you log in.}=3{Your administrator has set <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> to start automatically every time you log in.}other{Your administrator has set <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> and # other apps to start automatically every time you log in.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="215916044711630446">Add APN button is now disabled</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
+<translation id="2215920961700443347">No Internet. Connect to the Internet and try again.</translation>
 <translation id="2217935453350629363">Current speed</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">We're at capacity. Please come back in a bit.</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Refresh the current wallpaper image</translation>
 <translation id="2512979179176933762">show windows</translation>
 <translation id="2513396635448525189">Login image</translation>
-<translation id="2515109918609218604">Shortcut not available. Press a new shortcut without using function and search keys.</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2521835766824839541">previous track</translation>
 <translation id="2526590354069164005">Desktop</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
+<translation id="4130750466177569591">I agree</translation>
 <translation id="4131410914670010031">Black and white</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> was started automatically}other{# apps were started automatically}}</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">brightness down</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4176659219503619100">Control panel</translation>
-<translation id="4185315616950253617">Shortcuts with top row keys need to include the search key.</translation>
 <translation id="420283545744377356">Turn off screensaver</translation>
 <translation id="4213104098953699324">USB keyboard</translation>
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Disable</translation>
 <translation id="439429847087949098">Restarting <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">keyboard customise</translation>
+<translation id="4403262788869804671">Shortcut without <ph name="META_KEY" /> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="KEY" /> key.</translation>
 <translation id="4415951057168511744">Current avatar</translation>
+<translation id="4417830657741848074">Your administrator has set up some apps to start automatically. Some of these apps may not be closed.</translation>
 <translation id="4422041425070339732">arrow down</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> is off</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Earth flow screen saver</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
+<translation id="4500722292849917410">Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift or <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interface colour</translation>
 <translation id="4503223151711056411">Left arrow</translation>
 <translation id="4507392511610824664">brightness up</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4835901797422965222">No active networks</translation>
 <translation id="4839698083503556542">Create your own movie</translation>
+<translation id="48409034532829769">Your administrator has set up '<ph name="APP_NAME" />' to start automatically. This app may not be closed.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selected, press Enter to select <ph name="TOPIC_SOURCE" /> albums</translation>
 <translation id="484790837831576105">(Android) DNS resolution</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Split</translation>
 <translation id="4972592110715526173">mode change</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
+<translation id="4982627662315910959">Shortcut not available. Press a new shortcut using shift and one more modifier key (ctrl, alt or <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Dark theme schedule</translation>
 <translation id="5229344016299762883">Exit full</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Your administrator has set up ‘<ph name="APP_NAME" />’ to start automatically every time you log in.}=2{Your administrator has set up ‘<ph name="APP_NAME" />’ and one other app to start automatically every time you log in.}other{Your administrator has set up ‘<ph name="APP_NAME" />’ and # other apps to start automatically every time you log in.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Enable light colour mode</translation>
 <translation id="5264277876637023664">Run CPU test</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="725133483556299729">Select email</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
-<translation id="7273347807225967898">Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, search or launcher).</translation>
+<translation id="7271932918253517778">Shortcuts with top row keys need to include the <ph name="META_KEY" /> key.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">General controls</translation>
 <translation id="7977800524392185497">To join a <ph name="NETWORK_NAME" /> network, go to Settings</translation>
 <translation id="7978412674231730200">Private key</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{‘<ph name="APP_NAME_1" />’ was started automatically}other{# apps were started automatically}}</translation>
 <translation id="7994702968232966508">EAP method</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Shortcut edited</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Change password</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
-<translation id="8111706652656628199">Shortcut not available. Press a new shortcut using shift and one more modifier key (ctrl, alt, search or launcher).</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>

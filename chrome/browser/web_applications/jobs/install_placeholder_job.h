@@ -6,14 +6,15 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_INSTALL_PLACEHOLDER_JOB_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -58,7 +59,7 @@ class InstallPlaceholderJob {
                            DownloadedIconsHttpResults icons_http_results);
 
   void FinalizeInstall(
-      absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
+      std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
           bitmaps);
 
   void OnInstallFinalized(const webapps::AppId& app_id,

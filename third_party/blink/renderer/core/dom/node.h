@@ -997,17 +997,19 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetCachedDirectionality(TextDirection direction);
 
-  bool NeedsInheritDirectionalityFromParent() const;
-  void SetNeedsInheritDirectionalityFromParent();
-  void ClearNeedsInheritDirectionalityFromParent();
-
-  bool DirAutoInheritsFromParent() const;
-  void SetDirAutoInheritsFromParent();
-  void ClearDirAutoInheritsFromParent();
+  bool DirAutoInheritsFromParent() const {
+    return GetFlag(kDirAutoInheritsFromParent);
+  }
+  void SetDirAutoInheritsFromParent() {
+    return SetFlag(kDirAutoInheritsFromParent);
+  }
+  void ClearDirAutoInheritsFromParent() {
+    return ClearFlag(kDirAutoInheritsFromParent);
+  }
 
   void Trace(Visitor*) const override;
 
-  bool IsModifiedBySoftNavigation() {
+  bool IsModifiedBySoftNavigation() const {
     return GetFlag(kModifiedBySoftNavigation);
   }
   void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }
@@ -1060,15 +1062,6 @@ class CORE_EXPORT Node : public EventTarget {
 
     kSelfOrAncestorHasDirAutoAttribute = 1 << 28,
     kCachedDirectionalityIsRtl = 1 << 29,
-    // TODO(https://crbug.com/576815): Remove this duplication once new
-    // dir=auto handling ships as part of
-    // RuntimeEnabledFeatures::CSSPseudoDirEnabled().
-    //
-    // This has the same value as the next flag; this one is used only when
-    // !RuntimeEnabledFeatures::CSSPseudoDirEnabled():
-    kNeedsInheritDirectionalityFromParent = 1u << 30,
-    // This has the same value as the previous flag; this one is used only when
-    // RuntimeEnabledFeatures::CSSPseudoDirEnabled():
     kDirAutoInheritsFromParent = 1u << 30,
 
     // Indicates that the node was added in a task descendant of a potential
@@ -1202,8 +1195,6 @@ class CORE_EXPORT Node : public EventTarget {
     return reinterpret_cast<NodeRareData*>(data_.Get());
   }
   ShadowRoot* GetSlotAssignmentRoot() const;
-
-  void AddCandidateDirectionalityForSlot();
 
   // Both parent and tree_scope are hot accessed members. Keep them uncompressed
   // for performance reasons.

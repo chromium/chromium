@@ -342,9 +342,7 @@ group("sqlite") {
 
 group("sqlite_dev") {
   public_deps = [ ":dev_sqlite3" ]
-  public_configs = [
-    ":dev_sqlite3_compile_options",
-  ]
+  public_configs = [ ":dev_sqlite3_compile_options" ]
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
@@ -438,6 +436,14 @@ source_set("sqlite3_lpm_fuzzer_core") {
     ":lpm_fuzzer_omit_non_websql",
     ":chromium_sqlite3_compile_options",
   ]
+}
+
+source_set("sql_query_proto_to_string") {
+  sources = [
+    "fuzz/sql_query_proto_to_string.cc",
+    "fuzz/sql_query_proto_to_string.h",
+  ]
+  deps = [ ":sqlite3_lpm_fuzzer_input" ]
 }
 
 # LPM-based fuzzer test.

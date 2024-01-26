@@ -7,7 +7,6 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/lens/buildflags.h"
@@ -312,11 +311,6 @@ const char kChromeUIWebUITestHost[] = "webui-test";
 const char kChromeUIUntrustedWebUITestURL[] = "chrome-untrusted://webui-test/";
 #endif
 
-#if BUILDFLAG(PLATFORM_CFM)
-const char kCfmNetworkSettingsHost[] = "cfm-network-settings";
-const char kCfmNetworkSettingsURL[] = "chrome://cfm-network-settings";
-#endif  // BUILDFLAG(PLATFORM_CFM)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Keep alphabetized.
 const char kChromeUIAccountManagerErrorHost[] = "account-manager-error";
@@ -473,9 +467,6 @@ bool IsSystemWebUIHost(base::StringPiece host) {
       kChromeUISmbCredentialsHost,
       kChromeUISmbShareHost,
       kChromeUIVcTrayTesterHost,
-#if BUILDFLAG(PLATFORM_CFM)
-      kCfmNetworkSettingsHost,
-#endif  // BUILDFLAG(PLATFORM_CFM)
   };
   for (const char* h : kHosts) {
     if (host == h) {
@@ -831,9 +822,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUIPrintHost,
 #endif
     kChromeUIWebRtcLogsHost,
-#if BUILDFLAG(PLATFORM_CFM)
-    kCfmNetworkSettingsHost,
-#endif  // BUILDFLAG(PLATFORM_CFM)
 #if BUILDFLAG(IS_CHROMEOS)
     kChromeUIDlpInternalsHost,
 #endif  // BUILDFLAG(IS_CHROMEOS)

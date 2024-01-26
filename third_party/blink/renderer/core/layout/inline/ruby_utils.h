@@ -13,6 +13,7 @@ namespace blink {
 class ComputedStyle;
 class LineInfo;
 class LogicalLineItems;
+class PhysicalBoxFragment;
 class ShapeResultView;
 struct FontHeight;
 struct InlineItemResult;
@@ -24,6 +25,8 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
                                        const ComputedStyle& style,
                                        const ShapeResultView* shape_view,
                                        WritingMode writing_mode);
+
+PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment);
 
 struct AnnotationOverhang {
   LayoutUnit start;

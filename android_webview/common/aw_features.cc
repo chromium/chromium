@@ -11,6 +11,13 @@ namespace features {
 
 // Alphabetical:
 
+// Enable back/forward cache support in WebView. Note that this will only take
+// effect iff both this feature flag and the content/public kBackForwardCache
+// flag is enabled.
+BASE_FEATURE(kWebViewBackForwardCache,
+             "WebViewBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable brotli compression support in WebView.
 BASE_FEATURE(kWebViewBrotliSupport,
              "WebViewBrotliSupport",
@@ -144,6 +151,11 @@ BASE_FEATURE(kWebViewUseMetricsUploadService,
 // of sending it directly to GMS-core when running within the SDK Runtime.
 BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
              "WebViewUseMetricsUploadServiceOnlySdkRuntime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables prerender2 on WebView (https://crbug.com/1517472).
+BASE_FEATURE(kWebViewPrerender2,
+             "WebViewPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Propagate Android's network change notification signals to the networking

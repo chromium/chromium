@@ -450,8 +450,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         if time.time() - start_time > global_timeout:
           self.HandleDurationTagOnFailure(message_state, global_timeout)
           raise WebGpuTestTimeoutError(
-              'Hit %.3f second global timeout. Message state: %s' %
-              (global_timeout, message_state))
+              '%s hit %.3f second global timeout. Message state: %s' %
+              (self._query, global_timeout, message_state))
 
         if response_type == MESSAGE_TYPE_INFRA_FAILURE:
           self.fail(response['message'])
@@ -487,13 +487,14 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
           break
 
         else:
-          raise WebGpuMessageProtocolError('Received unknown message type %s' %
-                                           response_type)
+          raise WebGpuMessageProtocolError(
+              '%s received unknown message type %s' % self._query,
+              response_type)
       except wss.WebsocketReceiveMessageTimeoutError as e:
         self.HandleDurationTagOnFailure(message_state, global_timeout)
         raise WebGpuMessageTimeoutError(
-            'Timed out waiting %.3f seconds for a message. Message state: %s' %
-            (timeout, message_state)) from e
+            '%s timed out waiting %.3f seconds for a message. Message state: %s'
+            % (self._query, timeout, message_state)) from e
       finally:
         self._test_duration = time.time() - start_time
     return result

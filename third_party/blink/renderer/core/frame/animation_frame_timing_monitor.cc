@@ -157,10 +157,11 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   current_task_start_ = base::TimeTicks();
 
   base::TimeDelta task_duration = end_time - start_time;
-  if (pending_script_info_ && ((pending_script_info_->type ==
-                                ScriptTimingInfo::Type::kPromiseResolve) ||
-                               (pending_script_info_->type ==
-                                ScriptTimingInfo::Type::kPromiseReject))) {
+  if (pending_script_info_ &&
+      ((pending_script_info_->invoker_type ==
+        ScriptTimingInfo::InvokerType::kPromiseResolve) ||
+       (pending_script_info_->invoker_type ==
+        ScriptTimingInfo::InvokerType::kPromiseReject))) {
     if (frame && frame->DomWindow()) {
       PopScriptEntryPoint(ToScriptStateForMainWorld(frame),
                           /*probe_data=*/nullptr, end_time);
@@ -270,10 +271,6 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     const AnimationFrameTimingInfo& info) {
   RecordLongAnimationFrameTrace(info, this);
-  if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
-    return;
-  }
-
   ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
   ukm::SourceId source_id = client_.MainFrameUkmSourceId();
   if (!recorder || source_id == ukm::kInvalidSourceId) {
@@ -301,19 +298,19 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     total_execution_duration += execution_duration;
     total_forced_style_and_layout_duration += script->StyleDuration();
     total_forced_style_and_layout_duration += script->LayoutDuration();
-    switch (script->GetType()) {
-      case ScriptTimingInfo::Type::kClassicScript:
-      case ScriptTimingInfo::Type::kModuleScript:
+    switch (script->GetInvokerType()) {
+      case ScriptTimingInfo::InvokerType::kClassicScript:
+      case ScriptTimingInfo::InvokerType::kModuleScript:
         script_type_duration_script_block += execution_duration;
         break;
-      case ScriptTimingInfo::Type::kEventHandler:
+      case ScriptTimingInfo::InvokerType::kEventHandler:
         script_type_duration_event_listener += execution_duration;
         break;
-      case ScriptTimingInfo::Type::kPromiseResolve:
-      case ScriptTimingInfo::Type::kPromiseReject:
+      case ScriptTimingInfo::InvokerType::kPromiseResolve:
+      case ScriptTimingInfo::InvokerType::kPromiseReject:
         script_type_duration_promise_handler += execution_duration;
         break;
-      case ScriptTimingInfo::Type::kUserCallback:
+      case ScriptTimingInfo::InvokerType::kUserCallback:
         script_type_duration_user_callback += execution_duration;
         break;
     }
@@ -397,7 +394,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   }
 
   ScriptTimingInfo* script_timing_info = MakeGarbageCollected<ScriptTimingInfo>(
-      context, script_info->type, script_info->start_time,
+      context, script_info->invoker_type, script_info->start_time,
       script_info->execution_start_time, end_time, script_info->style_duration,
       script_info->layout_duration);
 
@@ -443,8 +440,8 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
 
   base::TimeTicks now = base::TimeTicks::Now();
   pending_script_info_ = PendingScriptInfo{
-      .type = resolving ? ScriptTimingInfo::Type::kPromiseResolve
-                        : ScriptTimingInfo::Type::kPromiseReject,
+      .invoker_type = resolving ? ScriptTimingInfo::InvokerType::kPromiseResolve
+                                : ScriptTimingInfo::InvokerType::kPromiseReject,
       .start_time = now,
       .execution_start_time = now,
       .class_like_name = class_like_name,
@@ -463,8 +460,9 @@ void AnimationFrameTimingMonitor::Will(
   }
 
   pending_script_info_ = PendingScriptInfo{
-      .type = probe_data.is_module ? ScriptTimingInfo::Type::kModuleScript
-                                   : ScriptTimingInfo::Type::kClassicScript,
+      .invoker_type = probe_data.is_module
+                          ? ScriptTimingInfo::InvokerType::kModuleScript
+                          : ScriptTimingInfo::InvokerType::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
       .source_location = {.url = url}};
   if (probe_data.sanitize) {
@@ -478,10 +476,10 @@ void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
   // executing an imported module script.
   // This is true for both imported and element-created scripts.
   if (PushScriptEntryPoint(ScriptState::From(probe_data.v8_context))) {
-    pending_script_info_ =
-        PendingScriptInfo{.type = ScriptTimingInfo::Type::kModuleScript,
-                          .start_time = probe_data.CaptureStartTime(),
-                          .source_location = {.url = probe_data.script_url}};
+    pending_script_info_ = PendingScriptInfo{
+        .invoker_type = ScriptTimingInfo::InvokerType::kModuleScript,
+        .start_time = probe_data.CaptureStartTime(),
+        .source_location = {.url = probe_data.script_url}};
   }
 
   if (pending_script_info_ &&
@@ -541,7 +539,7 @@ void AnimationFrameTimingMonitor::Will(
 
   ScriptState::Scope scope(probe_data.script_state);
   pending_script_info_ = PendingScriptInfo{
-      .type = ScriptTimingInfo::Type::kUserCallback,
+      .invoker_type = ScriptTimingInfo::InvokerType::kUserCallback,
       .start_time = probe_data.CaptureStartTime(),
       .execution_start_time = probe_data.CaptureStartTime(),
       .property_like_name = probe_data.name,
@@ -558,10 +556,10 @@ void AnimationFrameTimingMonitor::Will(
     return;
   }
 
-  pending_script_info_ =
-      PendingScriptInfo{.type = ScriptTimingInfo::Type::kEventHandler,
-                        .start_time = probe_data.CaptureStartTime(),
-                        .execution_start_time = probe_data.CaptureStartTime()};
+  pending_script_info_ = PendingScriptInfo{
+      .invoker_type = ScriptTimingInfo::InvokerType::kEventHandler,
+      .start_time = probe_data.CaptureStartTime(),
+      .execution_start_time = probe_data.CaptureStartTime()};
 }
 
 void AnimationFrameTimingMonitor::Did(

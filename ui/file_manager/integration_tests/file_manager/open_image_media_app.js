@@ -12,14 +12,20 @@ import {opensInMediaApp} from './open_media_app.js';
  * @param {string} path Directory path (Downloads or Drive).
  */
 async function opensImageInMediaApp(path) {
+  // @ts-ignore: error TS4111: Property 'image3' comes from an index signature,
+  // so it must be accessed with ['image3'].
   await opensInMediaApp(path, ENTRIES.image3);
 }
 
 // Exports test functions.
+// @ts-ignore: error TS4111: Property 'imageOpenMediaAppDownloads' comes from an
+// index signature, so it must be accessed with ['imageOpenMediaAppDownloads'].
 testcase.imageOpenMediaAppDownloads = () => {
   return opensImageInMediaApp(RootPath.DOWNLOADS);
 };
 
+// @ts-ignore: error TS4111: Property 'imageOpenMediaAppDrive' comes from an
+// index signature, so it must be accessed with ['imageOpenMediaAppDrive'].
 testcase.imageOpenMediaAppDrive = () => {
   return opensImageInMediaApp(RootPath.DRIVE);
 };

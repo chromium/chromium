@@ -18,6 +18,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
@@ -56,6 +57,7 @@ class ScriptContext {
 
   ScriptContext(const v8::Local<v8::Context>& context,
                 blink::WebLocalFrame* frame,
+                const mojom::HostID& host_id,
                 const Extension* extension,
                 mojom::ContextType context_type,
                 const Extension* effective_extension,
@@ -90,6 +92,8 @@ class ScriptContext {
   v8::Local<v8::Context> v8_context() const {
     return v8::Local<v8::Context>::New(isolate_, v8_context_);
   }
+
+  const mojom::HostID& host_id() const { return host_id_; }
 
   const Extension* extension() const { return extension_.get(); }
 
@@ -293,6 +297,11 @@ class ScriptContext {
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
   raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> web_frame_;
+
+  // The HostID associated with this context. For extensions, the HostID
+  // HostType should match kExtensions and the ID should match
+  // |extension()->id()|.
+  const mojom::HostID host_id_;
 
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.

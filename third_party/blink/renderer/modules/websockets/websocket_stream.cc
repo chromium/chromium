@@ -140,7 +140,8 @@ void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(
            << " DidReceiveTextMessage() string=" << string;
 
   DCHECK(!closed_);
-  Controller()->Enqueue(string);
+  Controller()->Enqueue(
+      V8String(creator_->script_state_->GetIsolate(), string));
   creator_->channel_->ApplyBackpressure();
 }
 

@@ -23,7 +23,6 @@
 
 namespace blink {
 namespace mojom {
-class PushMessagingService;
 enum class PushRegistrationStatus;
 enum class PushUnregistrationStatus;
 }  // namespace mojom
@@ -35,6 +34,7 @@ class Origin;
 
 namespace content {
 
+class PushMessagingService;
 class RenderProcessHost;
 class ServiceWorkerContextWrapper;
 

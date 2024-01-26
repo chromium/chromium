@@ -42,9 +42,6 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
   VideoImageReaderImageBacking& operator=(const VideoImageReaderImageBacking&) =
       delete;
 
-  // SharedImageBacking implementation.
-  size_t GetEstimatedSizeForMemoryDump() const override;
-
  protected:
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,

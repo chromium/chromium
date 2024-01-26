@@ -11,16 +11,17 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscardTimerOptions} from './discard_timer_options.js';
-import {MemorySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
+import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
+import {MemorySaverModeState, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 import {getTemplate} from './performance_page.html.js';
-import {ExceptionListElement} from './tab_discard/exception_list.js';
+import type {ExceptionListElement} from './tab_discard/exception_list.js';
 
 export const MEMORY_SAVER_MODE_PREF =
     'performance_tuning.high_efficiency_mode.state';

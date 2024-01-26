@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
-#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -42,6 +41,7 @@
 namespace blink {
 
 class Element;
+class ElementResolveContext;
 class ElementRuleCollector;
 class HTMLSlotElement;
 class PartNames;

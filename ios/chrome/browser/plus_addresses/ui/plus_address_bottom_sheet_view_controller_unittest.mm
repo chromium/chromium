@@ -69,6 +69,10 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
   [view_controller_.actionHandler confirmationAlertPrimaryAction];
   EXPECT_OCMOCK_VERIFY(delegate_);
 
+  // Simulate mediator notifying controller of successful plus address
+  // confirmation.
+  [view_controller_ didConfirmPlusAddress];
+
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
@@ -144,5 +148,129 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
       FormatModalDurationMetrics(
           plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
               kModalCanceled),
+      kDuration, 1);
+}
+
+// Ensure that when confirmation error occurs, user can tap cancel button to
+// dismiss the bottom sheet and metric for the confirmation error is collected.
+TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
+  OCMExpect([delegate_ reservePlusAddress]);
+  OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
+
+  [view_controller_ loadViewIfNeeded];
+
+  OCMExpect([delegate_ confirmPlusAddress]);
+
+  // Tap confirm button.
+  [view_controller_.actionHandler confirmationAlertPrimaryAction];
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  scoped_clock_.Advance(kDuration);
+
+  // Simulate error occurring during plus address confirmation.
+  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
+                                    PlusAddressModalCompletionStatus::
+                                        kConfirmPlusAddressError];
+
+  // Tap cancel button.
+  [view_controller_.actionHandler confirmationAlertSecondaryAction];
+
+  EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalShown,
+                              1),
+                 base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalConfirmed,
+                              1),
+                 base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalCanceled,
+                              1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+              kConfirmPlusAddressError),
+      kDuration, 1);
+}
+
+// Ensure that when reservation error occurs, user can tap cancel button to
+// dismiss the bottom sheet and metric for the reservation error is collected.
+TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
+  OCMExpect([delegate_ reservePlusAddress]);
+  OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
+
+  [view_controller_ loadViewIfNeeded];
+
+  scoped_clock_.Advance(kDuration);
+
+  // Simulate error occurring during plus address reservation.
+  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
+                                    PlusAddressModalCompletionStatus::
+                                        kReservePlusAddressError];
+
+  // Tap cancel button.
+  [view_controller_.actionHandler confirmationAlertSecondaryAction];
+
+  EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
+                                          PlusAddressModalEvent::kModalShown,
+                                      1),
+                         base::Bucket(plus_addresses::PlusAddressMetrics::
+                                          PlusAddressModalEvent::kModalCanceled,
+                                      1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+              kReservePlusAddressError),
+      kDuration, 1);
+}
+
+// Ensure that when confirmation error occurs, user swipe to dismiss the bottom
+// sheet and metric for the confirmation error is collected.
+TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
+  OCMExpect([delegate_ reservePlusAddress]);
+  OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
+
+  [view_controller_ loadViewIfNeeded];
+
+  OCMExpect([delegate_ confirmPlusAddress]);
+
+  // Tap confirm button.
+  [view_controller_.actionHandler confirmationAlertPrimaryAction];
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  scoped_clock_.Advance(kDuration);
+
+  // Simulate error occurring during plus address confirmation.
+  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
+                                    PlusAddressModalCompletionStatus::
+                                        kConfirmPlusAddressError];
+
+  // Dismiss bottom sheet.
+  UIPresentationController* presentationController =
+      view_controller_.presentationController;
+  EXPECT_TRUE([presentationController.delegate
+      respondsToSelector:@selector(presentationControllerDidDismiss:)]);
+  [presentationController.delegate
+      presentationControllerDidDismiss:presentationController];
+
+  EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalShown,
+                              1),
+                 base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalConfirmed,
+                              1),
+                 base::Bucket(plus_addresses::PlusAddressMetrics::
+                                  PlusAddressModalEvent::kModalCanceled,
+                              1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+              kConfirmPlusAddressError),
       kDuration, 1);
 }

@@ -362,7 +362,7 @@ std::string SanitizeFrontendQueryParam(
     if (key == "enableAida" && value == "true") {
       return value;
     }
-    if (key == "aidaApiKey") {
+    if (key == "aidaModelId") {
       return value;
     }
     if (key == "aidaTemperature") {
@@ -694,6 +694,10 @@ DevToolsUIBindings::~DevToolsUIBindings() {
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
+
+  ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
+      ->RemoveObserver(this);
+
   if (agent_host_.get())
     agent_host_->DetachClient(this);
 
@@ -1049,7 +1053,7 @@ void DevToolsUIBindings::IndexPath(
   if (indexing_jobs_.count(index_request_id) != 0)
     return;
   std::vector<std::string> excluded_folders;
-  absl::optional<base::Value> parsed_excluded_folders =
+  std::optional<base::Value> parsed_excluded_folders =
       base::JSONReader::Read(excluded_folders_message);
   if (parsed_excluded_folders && parsed_excluded_folders->is_list()) {
     for (const base::Value& folder_path : parsed_excluded_folders->GetList()) {
@@ -1132,11 +1136,11 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
     const std::string& port_forwarding_config,
     bool network_discovery_enabled,
     const std::string& network_discovery_config) {
-  absl::optional<base::Value> parsed_port_forwarding =
+  std::optional<base::Value> parsed_port_forwarding =
       base::JSONReader::Read(port_forwarding_config);
   if (!parsed_port_forwarding || !parsed_port_forwarding->is_dict())
     return;
-  absl::optional<base::Value> parsed_network =
+  std::optional<base::Value> parsed_network =
       base::JSONReader::Read(network_discovery_config);
   if (!parsed_network || !parsed_network->is_list())
     return;

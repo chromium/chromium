@@ -4,8 +4,8 @@
 
 module commerce.mojom;
 
-import "url/mojom/url.mojom";
 import "components/commerce/core/mojom/shopping_list.mojom";
+import "url/mojom/url.mojom";
 
 // This contains the current state and the expected state of a feature.
 struct EligibleEntry {
@@ -36,6 +36,11 @@ interface CommerceInternalsHandlerFactory {
       pending_receiver<CommerceInternalsHandler> handler);
 };
 
+struct Subscription {
+  uint64 cluster_id;
+  array<shopping_list.mojom.BookmarkProductInfo> product_infos;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface CommerceInternalsHandler {
   // Returns whether the user is eligible to use the shopping list feature.
@@ -49,6 +54,9 @@ interface CommerceInternalsHandler {
   // Returns the product info for the provided URL if it exists.
   GetProductInfoForUrl(url.mojom.Url url) =>
       (shopping_list.mojom.ProductInfo info);
+  // Returns the products the user has subscribed to.
+  GetSubscriptionDetails() =>
+     (array<Subscription> subscriptions);
 };
 
 // WebUI-side handler for requests from the browser.

@@ -24,6 +24,7 @@
 #include "base/files/platform_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_shared_memory.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
@@ -420,10 +421,17 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
       return -1;
     }
     int field_trial_fd = LookUpFd(fd_mapping, kFieldTrialDescriptor);
+    int histograms_fd = LookUpFd(fd_mapping, kHistogramSharedMemoryDescriptor);
     std::vector<int> fds;
+    fds.reserve(ZygoteForkDelegate::kNumPassedFDs);
     fds.push_back(mojo_channel_fd);   // kBrowserFDIndex
     fds.push_back(pid_oracle.get());  // kPIDOracleFDIndex
-    fds.push_back(field_trial_fd);
+    fds.push_back(field_trial_fd);    // kFieldTrialFDIndex
+    if (histograms_fd != -1) {
+      // TODO(crbug/1028263): pass unconditionally once the metrics shared
+      // memory region is always passed on startup.
+      fds.push_back(histograms_fd);  // kHistogramFDIndex
+    }
     pid = helper->Fork(process_type, args, fds, /*channel_id=*/std::string());
 
     // Helpers should never return in the child process.

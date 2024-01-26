@@ -119,15 +119,6 @@ void ArcNotificationView::UpdateWithNotification(
   content_view_->Update(notification);
 }
 
-void ArcNotificationView::SetDrawBackgroundAsActive(bool active) {
-  // Do nothing if |content_view_| has a background.
-  if (content_view_->background()) {
-    return;
-  }
-
-  message_center::MessageView::SetDrawBackgroundAsActive(active);
-}
-
 void ArcNotificationView::UpdateCornerRadius(int top_radius,
                                              int bottom_radius) {
   MessageView::UpdateCornerRadius(top_radius, bottom_radius);

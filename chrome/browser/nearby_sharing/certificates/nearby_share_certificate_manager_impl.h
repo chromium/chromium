@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_CERTIFICATE_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClient;
@@ -114,7 +114,7 @@ class NearbyShareCertificateManagerImpl
   void DownloadPublicCertificates() override;
   void OnStart() override;
   void OnStop() override;
-  absl::optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
+  std::optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
       nearby_share::mojom::Visibility visibility) const override;
   void UpdatePrivateCertificateInStorage(
       const NearbySharePrivateCertificate& private_certificate) override;
@@ -133,13 +133,13 @@ class NearbyShareCertificateManagerImpl
 
   // Used by the private certificate expiration scheduler to determine the next
   // private certificate expiration time. Returns base::Time::Min() if
-  // certificates are missing. This function never returns absl::nullopt.
-  absl::optional<base::Time> NextPrivateCertificateExpirationTime();
+  // certificates are missing. This function never returns std::nullopt.
+  std::optional<base::Time> NextPrivateCertificateExpirationTime();
 
   // Used by the public certificate expiration scheduler to determine the next
-  // public certificate expiration time. Returns absl::nullopt if no public
+  // public certificate expiration time. Returns std::nullopt if no public
   // certificates are present, and no expiration event is scheduled.
-  absl::optional<base::Time> NextPublicCertificateExpirationTime();
+  std::optional<base::Time> NextPublicCertificateExpirationTime();
 
   // Invoked by the private certificate expiration scheduler when an expired
   // private certificate needs to be removed or if no private certificates exist
@@ -167,7 +167,7 @@ class NearbyShareCertificateManagerImpl
   // from trusted contacts need to be downloaded from Nearby Share server via
   // the ListPublicCertificates RPC.
   void OnDownloadPublicCertificatesRequest(
-      absl::optional<std::string> page_token,
+      std::optional<std::string> page_token,
       size_t page_number,
       size_t certificate_count);
 
@@ -180,11 +180,10 @@ class NearbyShareCertificateManagerImpl
                                        ash::nearby::NearbyHttpError error);
   void OnListPublicCertificatesTimeout(size_t page_number,
                                        size_t certificate_count);
-  void OnPublicCertificatesAddedToStorage(
-      absl::optional<std::string> page_token,
-      size_t page_number,
-      size_t certificate_count,
-      bool success);
+  void OnPublicCertificatesAddedToStorage(std::optional<std::string> page_token,
+                                          size_t page_number,
+                                          size_t certificate_count,
+                                          bool success);
   void FinishDownloadPublicCertificates(
       bool success,
       ash::nearby::NearbyHttpResult http_result,

@@ -10,6 +10,7 @@
 
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 #include "third_party/openh264/src/codec/api/wels/codec_api.h"
@@ -61,12 +62,13 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   Options options_;
   OutputCB output_cb_;
-  std::vector<uint8_t> conversion_buffer_;
   VideoFramePool frame_pool_;
+  VideoFrameConverter frame_converter_;
   gfx::ColorSpace last_frame_color_space_;
 
-  // If |h264_converter_| is null, we output in annexb format. Otherwise, we
-  // output in avc format.
+  // If `h264_converter_` is null, we output in annexb format. Otherwise, we
+  // output in avc format and `conversion_buffer_` is used for temporary space.
+  std::vector<uint8_t> conversion_buffer_;
   std::unique_ptr<H264AnnexBToAvcBitstreamConverter> h264_converter_;
 };
 

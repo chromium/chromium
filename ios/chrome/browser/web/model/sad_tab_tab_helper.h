@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -83,7 +84,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Stores the last URL that caused a renderer crash,
   // used to detect repeated crashes.

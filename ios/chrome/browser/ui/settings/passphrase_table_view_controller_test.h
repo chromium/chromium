@@ -7,6 +7,7 @@
 
 #include "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -53,7 +54,7 @@ class PassphraseTableViewControllerTest
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   // Weak, owned by chrome_browser_state_.
-  syncer::MockSyncService* fake_sync_service_;
+  raw_ptr<syncer::MockSyncService> fake_sync_service_;
 
   // Default return values for NiceMock<syncer::MockSyncService>.
   GoogleServiceAuthError default_auth_error_;

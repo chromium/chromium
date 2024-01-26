@@ -110,7 +110,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
           expected_product_specific_data, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(2);
   base::Value::List args;
   args.Append(
@@ -130,7 +130,7 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
       *mock_hats_service_,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPrivacyGuide, web_contents(), 15000, _, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(
@@ -147,7 +147,7 @@ TEST_F(HatsHandlerTest, GetMostChromeHats) {
       *mock_hats_service_,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerGetMostChrome, web_contents(), _, _, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT, _, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(
@@ -348,7 +348,7 @@ TEST_P(HatsHandlerParamTest, AdPrivacyHats) {
         *mock_hats_service_,
         LaunchDelayedSurveyForWebContents(
             survey, web_contents(), 20000, expected_product_specific_data, _,
-            HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _));
+            HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _));
     base::Value::List args;
     args.Append(static_cast<int>(interaction));
     handler()->HandleTrustSafetyInteractionOccurred(args);

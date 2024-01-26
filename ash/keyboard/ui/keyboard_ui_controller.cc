@@ -814,8 +814,14 @@ void KeyboardUIController::OnTextInputStateChanged(
 }
 
 void KeyboardUIController::ShowKeyboardIfWithinTransientBlurThreshold() {
-  if (base::Time::Now() - time_of_last_blur_ < kTransientBlurThreshold)
+  if (should_show_on_transient_blur_ &&
+      base::Time::Now() - time_of_last_blur_ < kTransientBlurThreshold) {
     ShowKeyboard(false);
+  }
+}
+
+void KeyboardUIController::SetShouldShowOnTransientBlur(bool should_show) {
+  should_show_on_transient_blur_ = should_show;
 }
 
 void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(

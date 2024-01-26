@@ -23,17 +23,17 @@ namespace ash {
 class BirchKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
+    switches::SetIgnoreForestSecretKeyForTest(true);
     BrowserWithTestWindowTest::SetUp();
-    switches::SetIgnoreBirchSecretKeyForTest(true);
   }
 
   void TearDown() override {
-    switches::SetIgnoreBirchSecretKeyForTest(false);
     BrowserWithTestWindowTest::TearDown();
+    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{features::kBirchFeature};
+  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
 TEST_F(BirchKeyedServiceFactoryTest, SupportWhenFeatureIsEnabled) {
@@ -43,7 +43,7 @@ TEST_F(BirchKeyedServiceFactoryTest, SupportWhenFeatureIsEnabled) {
 
 TEST_F(BirchKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kBirchFeature});
+  feature_list.InitWithFeatures({}, {features::kForestFeature});
 
   EXPECT_FALSE(
       BirchKeyedServiceFactory::GetInstance()->GetService(GetProfile()));

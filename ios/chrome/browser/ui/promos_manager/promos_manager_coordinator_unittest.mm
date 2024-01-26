@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
@@ -49,7 +50,9 @@ class PromosManagerCoordinatorTest : public PlatformTest {
             initWithBaseViewController:view_controller_
                                browser:browser_.get()
         credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
-                                           CredentialProviderPromoCommands))];
+                                           CredentialProviderPromoCommands))
+                   dockingPromoHandler:OCMStrictProtocolMock(
+                                           @protocol(DockingPromoCommands))];
   }
 
  protected:

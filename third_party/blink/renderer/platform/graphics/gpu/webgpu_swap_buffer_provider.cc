@@ -46,22 +46,8 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       device_(device),
       format_(WGPUFormatToViz(format)),
       usage_(usage),
-      color_space_(color_space) {
-  // Create a layer that will be used by the canvas and will ask for a
-  // SharedImage each frame.
-  layer_ = cc::TextureLayer::CreateForMailbox(this);
-
-  layer_->SetIsDrawable(true);
-  layer_->SetBlendBackgroundColor(false);
-  layer_->SetNearestNeighbor(false);
-  layer_->SetFlipped(false);
-  // TODO(cwallez@chromium.org): These flags aren't taken into account when the
-  // layer is promoted to an overlay. Make sure we have fallback / emulation
-  // paths to keep the rendering correct in that cases.
-  layer_->SetContentsOpaque(true);
-  layer_->SetPremultipliedAlpha(true);
-  layer_->SetHdrMetadata(hdr_metadata);
-
+      color_space_(color_space),
+      hdr_metadata_(hdr_metadata) {
   dawn_control_client_->GetProcs().deviceReference(device_);
 
   WGPUSupportedLimits limits = {};
@@ -97,9 +83,12 @@ cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
 
 void WebGPUSwapBufferProvider::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
-  if (layer_) {
-    layer_->SetNearestNeighbor(filter_quality ==
-                               cc::PaintFlags::FilterQuality::kNone);
+  if (filter_quality != filter_quality_) {
+    filter_quality_ = filter_quality;
+    if (layer_) {
+      layer_->SetNearestNeighbor(filter_quality ==
+                                 cc::PaintFlags::FilterQuality::kNone);
+    }
   }
 }
 
@@ -264,6 +253,25 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
                 swap_buffer->access_finished_token = access_finished_token;
               },
               current_swap_buffer_));
+
+  if (!layer_) {
+    // Create a layer that will be used by the canvas and will ask for a
+    // SharedImage each frame.
+    layer_ = cc::TextureLayer::CreateForMailbox(this);
+    layer_->SetIsDrawable(true);
+    layer_->SetFlipped(false);
+    layer_->SetNearestNeighbor(filter_quality_ ==
+                               cc::PaintFlags::FilterQuality::kNone);
+    // TODO(cwallez@chromium.org): These flags aren't taken into account when
+    // the layer is promoted to an overlay. Make sure we have fallback /
+    // emulation paths to keep the rendering correct in that cases.
+    layer_->SetPremultipliedAlpha(true);
+    layer_->SetHdrMetadata(hdr_metadata_);
+
+    if (client_) {
+      client_->SetNeedsCompositingUpdate();
+    }
+  }
 
   // When the page request a texture it means we'll need to present it on the
   // next animation frame.

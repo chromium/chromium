@@ -35,8 +35,8 @@ namespace web_app {
 ComputeAppSizeCommand::ComputeAppSizeCommand(
     const webapps::AppId& app_id,
     Profile* profile,
-    base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback)
-    : WebAppCommand<AppLock, absl::optional<ComputedAppSize>>(
+    base::OnceCallback<void(std::optional<ComputedAppSize>)> callback)
+    : WebAppCommand<AppLock, std::optional<ComputedAppSize>>(
           "ComputeAppSizeCommand",
           AppLockDescription(app_id),
           std::move(callback),

@@ -24,7 +24,6 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -689,42 +688,37 @@ void PageSpecificContentSettings::StorageAccessed(
   }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
   if (settings) {
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      auto bdm_storage_type = ([storage_type]() {
-        switch (storage_type) {
-          case StorageType::LOCAL_STORAGE:
-            return BrowsingDataModel::StorageType::kLocalStorage;
-          case StorageType::SESSION_STORAGE:
-            return BrowsingDataModel::StorageType::kSessionStorage;
-          case StorageType::FILE_SYSTEM:
-          case StorageType::INDEXED_DB:
-          case StorageType::DATABASE:
-          case StorageType::CACHE:
-          case StorageType::WEB_LOCKS:
-            return BrowsingDataModel::StorageType::kQuotaStorage;
-        }
-      })();
-
-      if (storage_type == StorageType::SESSION_STORAGE) {
-        auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-        const auto& session_storage_namespace_map =
-            web_contents->GetController().GetSessionStorageNamespaceMap();
-        const auto& storage_partition_config =
-            web_contents->GetSiteInstance()->GetStoragePartitionConfig();
-        const auto& namespace_id =
-            session_storage_namespace_map.at(storage_partition_config);
-
-        content::SessionStorageUsageInfo session_storage_usage_info{
-            storage_key, namespace_id->id()};
-        settings->OnBrowsingDataAccessed(session_storage_usage_info,
-                                         bdm_storage_type, blocked_by_policy);
-      } else {
-        settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
-                                         blocked_by_policy);
+    auto bdm_storage_type = ([storage_type]() {
+      switch (storage_type) {
+        case StorageType::LOCAL_STORAGE:
+          return BrowsingDataModel::StorageType::kLocalStorage;
+        case StorageType::SESSION_STORAGE:
+          return BrowsingDataModel::StorageType::kSessionStorage;
+        case StorageType::FILE_SYSTEM:
+        case StorageType::INDEXED_DB:
+        case StorageType::DATABASE:
+        case StorageType::CACHE:
+        case StorageType::WEB_LOCKS:
+          return BrowsingDataModel::StorageType::kQuotaStorage;
       }
+    })();
+
+    if (storage_type == StorageType::SESSION_STORAGE) {
+      auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+      const auto& session_storage_namespace_map =
+          web_contents->GetController().GetSessionStorageNamespaceMap();
+      const auto& storage_partition_config =
+          web_contents->GetSiteInstance()->GetStoragePartitionConfig();
+      const auto& namespace_id =
+          session_storage_namespace_map.at(storage_partition_config);
+
+      content::SessionStorageUsageInfo session_storage_usage_info{
+          storage_key, namespace_id->id()};
+      settings->OnBrowsingDataAccessed(session_storage_usage_info,
+                                       bdm_storage_type, blocked_by_policy);
     } else {
-      settings->OnStorageAccessed(storage_type, storage_key, blocked_by_policy);
+      settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
+                                       blocked_by_policy);
     }
   }
 }
@@ -771,15 +765,9 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
   PageSpecificContentSettings* settings = GetForFrame(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));
   if (settings) {
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      settings->OnBrowsingDataAccessed(
-          browsing_data::SharedWorkerInfo{worker_url, name, storage_key},
-          BrowsingDataModel::StorageType::kSharedWorker, blocked_by_policy);
-    } else {
-      settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
-                                       blocked_by_policy);
-    }
+    settings->OnBrowsingDataAccessed(
+        browsing_data::SharedWorkerInfo{worker_url, name, storage_key},
+        BrowsingDataModel::StorageType::kSharedWorker, blocked_by_policy);
   }
 }
 
@@ -1100,19 +1088,12 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
     content::Page* originating_page) {
   DCHECK(scope.is_valid());
   originating_page = originating_page ? originating_page : &page();
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    auto& model = allowed_result ? allowed_browsing_data_model_
-                                 : blocked_browsing_data_model_;
-    // The size isn't relevant here and won't be displayed in the UI.
-    model->AddBrowsingData(storage_key,
-                           BrowsingDataModel::StorageType::kQuotaStorage,
-                           /*storage_size=*/0);
-  } else {
-    auto& local_shared_objects = allowed_result ? allowed_local_shared_objects_
-                                                : blocked_local_shared_objects_;
-    local_shared_objects.service_workers()->Add(url::Origin::Create(scope));
-  }
+  auto& model = allowed_result ? allowed_browsing_data_model_
+                               : blocked_browsing_data_model_;
+  // The size isn't relevant here and won't be displayed in the UI.
+  model->AddBrowsingData(storage_key,
+                         BrowsingDataModel::StorageType::kQuotaStorage,
+                         /*storage_size=*/0);
 
   if (allowed_result.javascript_blocked_by_policy()) {
     OnContentBlocked(ContentSettingsType::JAVASCRIPT);

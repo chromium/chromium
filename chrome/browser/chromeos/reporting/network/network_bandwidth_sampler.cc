@@ -44,13 +44,13 @@ void NetworkBandwidthSampler::MaybeCollect(OptionalMetricCallback callback) {
   }
   if (!profile_) {
     // Profile destructed so we collect no data.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   if (!profile_->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled) &&
       !base::FeatureList::IsEnabled(kEnableNetworkBandwidthReporting)) {
     // Both policy and feature flag not set, so we return.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -59,7 +59,7 @@ void NetworkBandwidthSampler::MaybeCollect(OptionalMetricCallback callback) {
   if (downlink_speed_kbps == std::numeric_limits<int32_t>::max()) {
     // Network quality tracker returns std::numeric_limits<int32_t>::max() if
     // downstream throughput is unavailable, so we return no data.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

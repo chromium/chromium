@@ -22,6 +22,11 @@ class CaptureModeObserver : public base::CheckedObserver {
  public:
   // Called to notify with the state of a video recording. `current_root` is the
   // root window, which is either being captured itself or a descendant of it.
+  // Note that `OnRecordingEnded()` means that the recording stopped (i.e.
+  // `is_recording_in_progress()` is now false), but it doesn't mean that a new
+  // recording can be started. A recording that were just stopped may take some
+  // time for the file to be finalized and saved (see `OnVideoFileFinalized()`
+  // below). `can_start_new_recording()` should be checked for these purposes.
   virtual void OnRecordingStarted(aura::Window* current_root) = 0;
   virtual void OnRecordingEnded() = 0;
 
@@ -31,6 +36,8 @@ class CaptureModeObserver : public base::CheckedObserver {
   // `user_deleted_video_file` will be true. `thumbnail` contains an image
   // representation of the video, which can be empty if there were errors during
   // recording.
+  // `can_start_new_recording()` is guaranteed to return `true` when this is
+  // called.
   virtual void OnVideoFileFinalized(bool user_deleted_video_file,
                                     const gfx::ImageSkia& thumbnail) = 0;
 

@@ -9,11 +9,10 @@ import("//build/config/locales.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web_view/features.gni")
 import("//ios/web_view/repack.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
-
-_ios_web_view_output_name = "ChromeWebView"
 
 group("all_tests") {
   testonly = true
@@ -427,7 +426,7 @@ source_set("web_view_sources") {
 action("web_view_umbrella_header") {
   script = "//build/config/ios/generate_umbrella_header.py"
 
-  full_header_path = target_gen_dir + "/" + _ios_web_view_output_name + ".h"
+  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
   outputs = [ full_header_path ]
 
   args = [
@@ -443,7 +442,7 @@ tweak_info_plist("info_plist") {
 }
 
 ios_framework_bundle("web_view") {
-  output_name = _ios_web_view_output_name
+  output_name = ios_web_view_output_name
   info_plist_target = ":info_plist"
 
   ldflags = [ "-fapplication-extension" ]
@@ -503,6 +502,7 @@ test("ios_web_view_unittests") {
     "internal/passwords/cwv_leak_check_credential_unittest.mm",
     "internal/passwords/cwv_leak_check_service_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
+    "internal/passwords/cwv_reuse_check_service_unittest.mm",
     "internal/passwords/cwv_weak_check_utils_unittest.mm",
     "internal/passwords/web_view_password_manager_client_unittest.mm",
     "internal/safe_browsing/cwv_unsafe_url_handler_unittest.mm",
@@ -641,7 +641,7 @@ action("ios_web_view_generate_license") {
 
 copy("ios_web_view_package_copy") {
   sources = [
-    "$root_out_dir/$_ios_web_view_output_name.framework",
+    "$root_out_dir/$ios_web_view_output_name.framework",
     "//AUTHORS",
     "//chrome/VERSION",
   ]
@@ -658,11 +658,11 @@ if (enable_dsyms) {
     # the target outputs that correspond to the dSYMs (since a dSYM is a
     # directory it cannot be listed as a source file). The targets that
     # generate both the dSYM and binary image are listed in deps.
-    _dsyms = [ "$root_out_dir/$_ios_web_view_output_name.dSYM" ]
+    _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
 
-    sources = [ "$root_out_dir/$_ios_web_view_output_name.framework" ]
+    sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
 
-    _output = "$_package_dir/$_ios_web_view_output_name.dSYM.tar.bz2"
+    _output = "$_package_dir/$ios_web_view_output_name.dSYM.tar.bz2"
 
     outputs = [ _output ]
 

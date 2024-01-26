@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -215,7 +215,7 @@ class KeyRotationManagerTest : public testing::Test {
 
   scoped_refptr<SigningKeyPair> old_key_pair_;
   scoped_refptr<SigningKeyPair> new_key_pair_;
-  absl::optional<std::string> captured_upload_body_;
+  std::optional<std::string> captured_upload_body_;
 
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
 };

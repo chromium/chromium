@@ -33,32 +33,7 @@ MockMediaStreamVideoSource::MockMediaStreamVideoSource(
       respond_to_request_refresh_frame_(respond_to_request_refresh_frame),
       attempted_to_start_(false) {}
 
-MockMediaStreamVideoSource::~MockMediaStreamVideoSource() {}
-
-#if !BUILDFLAG(IS_ANDROID)
-void MockMediaStreamVideoSource::SendWheel(
-    CapturedWheelAction* action,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  CHECK(send_wheel_result_);
-  std::move(callback).Run(send_wheel_result_->success,
-                          send_wheel_result_->error);
-}
-
-void MockMediaStreamVideoSource::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
-  CHECK(get_zoom_level_result_);
-  std::move(callback).Run(get_zoom_level_result_->zoom_level,
-                          get_zoom_level_result_->error);
-}
-
-void MockMediaStreamVideoSource::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  CHECK(set_zoom_level_result_);
-  std::move(callback).Run(set_zoom_level_result_->success,
-                          set_zoom_level_result_->error);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
+MockMediaStreamVideoSource::~MockMediaStreamVideoSource() = default;
 
 void MockMediaStreamVideoSource::StartMockedSource() {
   DCHECK(attempted_to_start_);

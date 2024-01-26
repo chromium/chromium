@@ -41,7 +41,7 @@ class OfflineSigninLimiterFactory : public ProfileKeyedServiceFactory {
   ~OfflineSigninLimiterFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   static base::Clock* clock_for_testing_;

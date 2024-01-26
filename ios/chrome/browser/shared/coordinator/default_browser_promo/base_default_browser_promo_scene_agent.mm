@@ -317,6 +317,10 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
   [self dismissPromoAnimated:YES];
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.overlayPresenter = nullptr;
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState

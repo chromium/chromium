@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_stretch_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -131,25 +132,25 @@ typedef void (*GraphemeClusterCallback)(void* context,
                                         float cluster_advance,
                                         CanvasRotationInVertical);
 
-class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
-  USING_FAST_MALLOC(ShapeResult);
-
+class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
  public:
-  static scoped_refptr<ShapeResult> Create(const Font* font,
-                                           unsigned start_index,
-                                           unsigned num_characters,
-                                           TextDirection direction) {
-    return base::AdoptRef(
-        new ShapeResult(font, start_index, num_characters, direction));
+  ShapeResult(scoped_refptr<const SimpleFontData>,
+              unsigned start_index,
+              unsigned num_characters,
+              TextDirection);
+  ShapeResult(const Font*,
+              unsigned start_index,
+              unsigned num_characters,
+              TextDirection);
+  ShapeResult(const ShapeResult&);
+
+  void Trace(Visitor*) const {}
+
+  static ShapeResult* CreateEmpty(const ShapeResult& other) {
+    return MakeGarbageCollected<ShapeResult>(other.primary_font_, 0, 0,
+                                             other.Direction());
   }
-  static scoped_refptr<ShapeResult> CreateEmpty(const ShapeResult& other) {
-    return base::AdoptRef(
-        new ShapeResult(other.primary_font_, 0, 0, other.Direction()));
-  }
-  static scoped_refptr<ShapeResult> Create(const ShapeResult& other) {
-    return base::AdoptRef(new ShapeResult(other));
-  }
-  static scoped_refptr<ShapeResult> CreateForTabulationCharacters(
+  static const ShapeResult* CreateForTabulationCharacters(
       const Font* font,
       TextDirection direction,
       const TabSize& tab_size,
@@ -157,17 +158,16 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
       unsigned start_index,
       unsigned length);
   // The first glyph has |width| advance, and other glyphs have 0 advance.
-  static scoped_refptr<ShapeResult> CreateForSpaces(const Font* font,
-                                                    TextDirection direction,
-                                                    unsigned start_index,
-                                                    unsigned length,
-                                                    float width);
-  static scoped_refptr<ShapeResult> CreateForStretchyMathOperator(
-      const Font*,
-      TextDirection,
-      Glyph,
-      float stretch_size);
-  static scoped_refptr<ShapeResult> CreateForStretchyMathOperator(
+  static const ShapeResult* CreateForSpaces(const Font* font,
+                                            TextDirection direction,
+                                            unsigned start_index,
+                                            unsigned length,
+                                            float width);
+  static const ShapeResult* CreateForStretchyMathOperator(const Font*,
+                                                          TextDirection,
+                                                          Glyph,
+                                                          float stretch_size);
+  static const ShapeResult* CreateForStretchyMathOperator(
       const Font*,
       TextDirection,
       OpenTypeMathStretchData::StretchAxis,
@@ -218,6 +218,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // TODO(eae): Remove these ones the cached versions are used everywhere.
   unsigned NextSafeToBreakOffset(unsigned offset) const;
   unsigned PreviousSafeToBreakOffset(unsigned offset) const;
+
+  void AddUnsafeToBreak(base::span<const unsigned>);
 
   // Returns the offset, relative to StartIndex, whose (origin,
   // origin+advance) contains |x|.
@@ -287,8 +289,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // giving it to |ShapeResultSpacing|. It can be negative if
   // |StartIndex()| is larger than the text in |ShapeResultSpacing|.
   void ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
-  scoped_refptr<ShapeResult> ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
-                                         const TextRun&) const;
+  ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
+                                  const TextRun&) const;
 
   // Adds spacing between ideograph character and non-ideograph character for
   // the property of text-autospace.
@@ -301,8 +303,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   // Returns a line-end `ShapeResult` when breaking at `break_offset`, and the
   // glyph before `break_offset` has auto-spacing.
-  scoped_refptr<ShapeResult> UnapplyAutoSpacing(unsigned start_offset,
-                                                unsigned break_offset) const;
+  const ShapeResult* UnapplyAutoSpacing(unsigned start_offset,
+                                        unsigned break_offset) const;
 
   // Adjust the offset from `OffsetForPosition` when the offset has
   // `HasAutoSpacingAfter`.
@@ -315,14 +317,17 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   void CopyRange(unsigned start, unsigned end, ShapeResult*) const;
 
   struct ShapeRange {
+    DISALLOW_NEW();
+
+   public:
     ShapeRange(unsigned start, unsigned end, ShapeResult* target)
         : start(start), end(end), target(target) {}
 
+    void Trace(Visitor* visitor) const { visitor->Trace(target); }
+
     unsigned start;
     unsigned end;
-    // TODO(crbug.com/1489080): When this member was given MiraclePtr
-    // protection, it was found dangling.
-    ShapeResult* target;
+    Member<ShapeResult> target;
   };
 
   // Copy a set of sequential ranges. The ranges may not overlap and the offsets
@@ -330,11 +335,10 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   void CopyRanges(const ShapeRange* ranges, unsigned num_ranges) const;
 
   // Create a new ShapeResult instance from a range within an existing result.
-  scoped_refptr<ShapeResult> SubRange(unsigned start_offset,
-                                      unsigned end_offset) const;
+  ShapeResult* SubRange(unsigned start_offset, unsigned end_offset) const;
 
   // Create a new ShapeResult instance with the start offset adjusted.
-  scoped_refptr<ShapeResult> CopyAdjustedOffset(unsigned start_offset) const;
+  const ShapeResult* CopyAdjustedOffset(unsigned start_offset) const;
 
   // Computes the list of fonts along with the number of glyphs for each font.
   struct RunFontData {
@@ -401,24 +405,6 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 #endif
 
  protected:
-  ShapeResult(scoped_refptr<const SimpleFontData>,
-              unsigned start_index,
-              unsigned num_characters,
-              TextDirection);
-  ShapeResult(const Font*,
-              unsigned start_index,
-              unsigned num_characters,
-              TextDirection);
-  ShapeResult(const ShapeResult&);
-
-  static scoped_refptr<ShapeResult> Create(const SimpleFontData* font_data,
-                                           unsigned start_index,
-                                           unsigned num_characters,
-                                           TextDirection direction) {
-    return base::AdoptRef(
-        new ShapeResult(font_data, start_index, num_characters, direction));
-  }
-
   // Ensure |grapheme_| is computed. |BreakGlyphs| is valid only when
   // |grapheme_| is computed.
   void EnsureGraphemes(const StringView& text) const;
@@ -426,6 +412,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   static unsigned CountGraphemesInCluster(base::span<const UChar>,
                                           uint16_t start_index,
                                           uint16_t end_index);
+
+  template <typename Iterator>
+  void AddUnsafeToBreak(Iterator offsets_begin, const Iterator offsets_end);
 
   struct GlyphIndexResult {
     STACK_ALLOCATED();
@@ -599,5 +588,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ShapeResult::ShapeRange)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_H_

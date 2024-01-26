@@ -369,6 +369,15 @@ class CxxFuncDefNode(CompositeNode):
         assert isinstance(const, bool)
         assert isinstance(override, bool)
 
+        self._function_name = name
+        self._arg_decls = arg_decls
+        self._return_type = return_type
+        self._const = const
+
+        # Presence of some attributes only makes sense on inline defitintions,
+        # in which case a separate declaration does not make sense.
+        self._inhibit_make_decl = template_params or inline or explicit or constexpr
+
         template_format = ("{template}"
                            "{static}{inline}{explicit}{constexpr}"
                            "{return_type} "
@@ -404,7 +413,6 @@ class CxxFuncDefNode(CompositeNode):
                 separator=", ",
                 head=" : ")
 
-        self._function_name = name
         self._body_node = SymbolScopeNode()
 
         CompositeNode.__init__(
@@ -433,6 +441,20 @@ class CxxFuncDefNode(CompositeNode):
     def body(self):
         return self._body_node
 
+    def make_decl(self,
+                  static=False,
+                  explicit=False,
+                  override=False,
+                  nodiscard=False):
+        assert not self._inhibit_make_decl
+        return CxxFuncDeclNode(name=self._function_name,
+                               arg_decls=self._arg_decls,
+                               return_type=self._return_type,
+                               const=self._const,
+                               static=static,
+                               explicit=explicit,
+                               override=override,
+                               nodiscard=nodiscard)
 
 class CxxClassDefNode(CompositeNode):
     def __init__(self,

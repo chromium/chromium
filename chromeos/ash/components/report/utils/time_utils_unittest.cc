@@ -6,6 +6,7 @@
 
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -194,6 +195,188 @@ TEST(TimeUtilsTest, TimeToYYYYMMString) {
   // Validate the formatted string
   std::string expected_formatted_ts = "202305";
   EXPECT_EQ(formatted_ts, expected_formatted_ts);
+}
+
+TEST(TimeUtilsTest, GetFirstActiveWeek) {
+  system::FakeStatisticsProvider statistics_provider;
+  system::StatisticsProvider::SetTestProvider(&statistics_provider);
+
+  // Mocking the StatisticsProvider for testing.
+  statistics_provider.SetMachineStatistic(system::kActivateDateKey, "2023-18");
+
+  // Call the method under test
+  auto result = GetFirstActiveWeek();
+  EXPECT_TRUE(result.has_value());
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2023, 5, 0, 1, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, FirstMondayOfISONewYear2000) {
+  // Call the method under test.
+  std::optional<base::Time> result = FirstMondayOfISONewYear(2000);
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2000, 1, 0, 3, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, FirstMondayOfISONewYear2001) {
+  // Call the method under test.
+  std::optional<base::Time> result = FirstMondayOfISONewYear(2001);
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2001, 1, 0, 1, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, FirstMondayOfISONewYear2020) {
+  // Call the method under test.
+  std::optional<base::Time> result = FirstMondayOfISONewYear(2020);
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2019, 12, 1, 30, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, FirstMondayOfISONewYear2025) {
+  // Call the method under test.
+  std::optional<base::Time> result = FirstMondayOfISONewYear(2025);
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2024, 12, 1, 30, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2023_W18) {
+  // Call method under test and calculate the expected result for comparison.
+  auto result = Iso8601DateWeekAsTime(2023, 18);
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2023, 5, 0, 1, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2026_W01) {
+  // Call method under test and calculate the expected result for comparison.
+  auto result = Iso8601DateWeekAsTime(2026, 1);
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2025, 12, 1, 29, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2026_W53) {
+  // Call method under test and calculate the expected result for comparison.
+  auto result = Iso8601DateWeekAsTime(2026, 53);
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2026, 12, 1, 28, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, InvalidIso8601DateWeekAsTime) {
+  // Call the method under test
+  auto result = Iso8601DateWeekAsTime(0, 0);
+  EXPECT_FALSE(result.has_value());
+
+  result = Iso8601DateWeekAsTime(-1, 0);
+  EXPECT_FALSE(result.has_value());
+
+  // Week of year is greater than 53.
+  result = Iso8601DateWeekAsTime(2023, 54);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TimeUtilsTest, Iso8601DateWeekAsTimeWeek53) {
+  // Call the method under test
+  // I.e Year 2020 has 53 weeks instead of 52.
+  auto result = Iso8601DateWeekAsTime(2020, 53);
+  EXPECT_TRUE(result.has_value());
+
+  // Calculate the expected result for comparison.
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2020, 12, 0, 28, 0, 0, 0, 0}, &expected_ts));
+
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, ConvertTimeToISO8601String) {
+  // Call the method under test.
+  // Cross validated against calculator: https://planetcalc.com/8540/
+  struct {
+    base::Time::Exploded exploded;
+    std::string_view expected_yyyy_mm;
+  } kTestCases[] = {
+      {{2025, 1, 0, 1, 12, 30, 0, 0}, "2025-01"},
+      {{2020, 1, 0, 1, 12, 30, 0, 0}, "2020-01"},
+      {{2023, 1, 0, 1, 12, 30, 0, 0}, "2022-52"},
+      {{2023, 12, 0, 30, 12, 30, 0, 0}, "2023-52"},
+      {{2019, 12, 0, 30, 12, 30, 0, 0}, "2020-01"},
+      {{2019, 8, 0, 25, 12, 30, 0, 0}, "2019-34"},
+      {{2020, 8, 0, 25, 12, 30, 0, 0}, "2020-35"},
+      {{2021, 8, 0, 25, 12, 30, 0, 0}, "2021-34"},
+      {{2023, 11, 0, 25, 12, 30, 0, 0}, "2023-47"},
+      {{2020, 12, 0, 27, 12, 30, 0, 0}, "2020-52"},
+      {{2020, 12, 0, 28, 12, 30, 0, 0}, "2020-53"},
+      {{2021, 1, 0, 4, 12, 30, 0, 0}, "2021-01"},
+      // Edge Case: Returns 52 weeks, even though previous year has 53 weeks.
+      // ISO calendar date to Gregorian calendar calculator outputs 2020-53.
+      {{2021, 1, 0, 3, 12, 30, 0, 0}, "2020-52"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Case: " << test_case.expected_yyyy_mm);
+    base::Time test_ts;
+    EXPECT_TRUE(base::Time::FromUTCExploded(test_case.exploded, &test_ts));
+    EXPECT_EQ(ConvertTimeToISO8601String(test_ts), test_case.expected_yyyy_mm);
+  }
+}
+
+TEST(TimeUtilsTest, IsFirstActiveUnderFourMonthsAgo) {
+  struct {
+    base::Time::Exploded active_exploded;
+    base::Time::Exploded first_active_exploded;
+    bool expected_result;
+  } kTestCases[] = {
+      // Check when active and first active represent the same time.
+      {{2021, 1, 0, 3, 12, 30, 0, 0}, {2021, 1, 0, 3, 12, 30, 0, 0}, true},
+      // Check boundary case if first active under four months ago.
+      {{2021, 1, 0, 31, 12, 30, 0, 0}, {2020, 10, 0, 1, 12, 30, 0, 0}, true},
+      // Check outside four month boundary is false.
+      {{2021, 1, 0, 31, 12, 30, 0, 0}, {2020, 9, 0, 1, 12, 30, 0, 0}, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Time active_ts;
+    base::Time first_active_ts;
+    EXPECT_TRUE(
+        base::Time::FromUTCExploded(test_case.active_exploded, &active_ts));
+    EXPECT_TRUE(base::Time::FromUTCExploded(test_case.first_active_exploded,
+                                            &first_active_ts));
+    EXPECT_EQ(IsFirstActiveUnderFourMonthsAgo(active_ts, first_active_ts),
+              test_case.expected_result);
+  }
 }
 
 }  // namespace ash::report::utils

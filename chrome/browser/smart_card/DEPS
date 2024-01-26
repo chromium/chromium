@@ -1,0 +1,10 @@
+specific_include_rules = {
+  # UI tests need to know details of the relevant UI under test.
+  ".*_uitest\.cc": [
+    "+chrome/browser/ui/views",
+  ],
+
+  "smart_card_reader_tracker_impl_unittest\.cc": [
+    "+content/browser/smart_card/mock_smart_card_context_factory.h",
+  ],
+}

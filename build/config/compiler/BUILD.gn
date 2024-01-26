@@ -494,6 +494,9 @@ config("compiler") {
     # linker_driver.py script runs dsymutil itself, which is set to be the
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
+
+    # TODO(crbug.com/1519899): Figure out how to remove this.
+    cflags += [ "-fno-define-target-os-macros" ]
   }
 
   # Linux/Android/Fuchsia common flags setup.
@@ -1032,7 +1035,7 @@ config("compiler") {
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
-  if (!use_thin_lto) {
+  if (!use_thin_lto || !toolchain_supports_rust_thin_lto) {
     # Don't include bitcode if it won't be used.
     rustflags += [ "-Cembed-bitcode=no" ]
   }
@@ -1760,9 +1763,9 @@ config("default_warnings") {
       cflags += [ "/wd4244" ]
     }
   } else {
-    if (is_apple && !is_nacl) {
-      # When compiling Objective-C, warns if a method is used whose
-      # availability is newer than the deployment target.
+    if ((is_apple || is_android) && !is_nacl) {
+      # Warns if a method is used whose availability is newer than the
+      # deployment target.
       cflags += [ "-Wunguarded-availability" ]
     }
 

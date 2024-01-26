@@ -19,6 +19,7 @@
 static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"

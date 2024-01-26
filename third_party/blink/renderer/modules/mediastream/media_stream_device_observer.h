@@ -112,6 +112,9 @@ class MODULES_EXPORT MediaStreamDeviceObserver
       const MediaStreamDevice& device) override;
   void OnDeviceCaptureHandleChange(const String& label,
                                    const MediaStreamDevice& device) override;
+  void OnZoomLevelChange(const String& label,
+                         const MediaStreamDevice& device,
+                         int zoom_level) override;
 
   void BindMediaStreamDeviceObserverReceiver(
       mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver);

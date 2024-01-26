@@ -86,7 +86,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"

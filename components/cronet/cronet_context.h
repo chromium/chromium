@@ -153,6 +153,8 @@ class CronetContext {
   // flush any remaining writes to disk.
   void StopNetLog();
 
+  void FlushWritePropertiesForTesting();
+
   // Destroys the URLRequestContext associated to `network` if `network` has
   // disconnected and it has no pending URLRequests. This must be called on
   // the network thread while destroying a CronetURLRequest as that might

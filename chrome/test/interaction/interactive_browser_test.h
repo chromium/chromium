@@ -8,6 +8,7 @@
 #include <concepts>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -116,7 +116,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // current page in the WebContents is fully loaded.
   [[nodiscard]] MultiStep InstrumentTab(
       ui::ElementIdentifier id,
-      absl::optional<int> tab_index = absl::nullopt,
+      std::optional<int> tab_index = std::nullopt,
       BrowserSpecifier in_browser = CurrentBrowser(),
       bool wait_for_ready = true);
 
@@ -132,7 +132,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] MultiStep AddInstrumentedTab(
       ui::ElementIdentifier id,
       GURL url,
-      absl::optional<int> tab_index = absl::nullopt,
+      std::optional<int> tab_index = std::nullopt,
       BrowserSpecifier in_browser = CurrentBrowser());
 
   // Instruments the WebContents held by `web_view` as `id`. Will wait for the
@@ -159,10 +159,10 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // really easy to forget to add InAnyContext() and have your test not work.
   [[nodiscard]] static StepBuilder WaitForWebContentsReady(
       ui::ElementIdentifier webcontents_id,
-      absl::optional<GURL> expected_url = absl::nullopt);
+      std::optional<GURL> expected_url = std::nullopt);
   [[nodiscard]] static StepBuilder WaitForWebContentsNavigation(
       ui::ElementIdentifier webcontents_id,
-      absl::optional<GURL> expected_url = absl::nullopt);
+      std::optional<GURL> expected_url = std::nullopt);
 
   // This convenience method navigates the page at `webcontents_id` to
   // `new_url`, which must be different than its current URL. The sequence will

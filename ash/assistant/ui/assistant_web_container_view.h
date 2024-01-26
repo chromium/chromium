@@ -9,7 +9,12 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget_delegate.h"
+
+namespace views {
+class ClientView;
+}  // namespace views
 
 namespace ash {
 
@@ -31,9 +36,15 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
 
   ~AssistantWebContainerView() override;
 
+  AshWebView* web_view() {
+    return web_view_ptr_ ? web_view_ptr_.get() : web_view_.get();
+  }
+
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
+  void OnThemeChanged() override;
 
   // AssistantWebView::Observer:
   void DidStopLoading() override;
@@ -50,17 +61,21 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
   // Invoke to open the specified |url|.
   void OpenUrl(const GURL& url);
 
+  void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
+
   void SetCanGoBackForTesting(bool can_go_back);
 
  private:
-  AshWebView* ContentsView();
   void InitLayout();
   void RemoveContents();
+  void UpdateBackground();
 
   const raw_ptr<AssistantWebViewDelegate> web_container_view_delegate_;
 
-  std::unique_ptr<AshWebView> contents_view_;
-  raw_ptr<AshWebView, DanglingUntriaged> contents_view_ptr_ = nullptr;
+  std::unique_ptr<AshWebView> web_view_;
+  raw_ptr<AshWebView, DanglingUntriaged> web_view_ptr_ = nullptr;
+
+  gfx::RoundedCornersF background_radii_;
 };
 
 }  // namespace ash

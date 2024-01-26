@@ -92,14 +92,8 @@ class PulseAudioOutputStream : public AudioOutputStream {
   AudioManager::LogCallback log_callback_;
 
   // PulseAudio API structs.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   raw_ptr<pa_context> pa_context_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   raw_ptr<pa_threaded_mainloop> pa_mainloop_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   raw_ptr<pa_stream> pa_stream_;
 
   // Float representation of volume from 0.0 to 1.0.

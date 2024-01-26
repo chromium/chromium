@@ -11,4 +11,10 @@ extern const char kActivityBucketKey[];
 // Histogram name for the feed activity buckets filter.
 extern const char kAllFeedsActivityBucketsByProviderHistogram[];
 
+// Histogram name for the Notification Authorization Status filter.
+extern const char kNotifAuthorizationStatusByProviderHistogram[];
+
+// Histogram name for the Notification Client Status filter.
+extern const char kNotifClientStatusByProviderHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_CONSTANTS_H_

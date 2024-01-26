@@ -1378,7 +1378,8 @@ TEST_F(FieldTrialTest, ObserveIncludingLowAnonymity) {
 
 TEST_F(FieldTrialTest, ParseFieldTrialsString) {
   std::vector<FieldTrial::State> entries;
-  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString("Trial1/Group1", entries));
+  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString(
+      "Trial1/Group1", /*override_trials=*/false, entries));
 
   ASSERT_EQ(entries.size(), 1ul);
   const FieldTrial::State& entry = entries[0];
@@ -1391,7 +1392,7 @@ TEST_F(FieldTrialTest, ParseFieldTrialsString) {
 TEST_F(FieldTrialTest, ParseFieldTrialsStringTwoStudies) {
   std::vector<FieldTrial::State> entries;
   ASSERT_TRUE(FieldTrial::ParseFieldTrialsString(
-      "Trial1/Group1/*Trial2/Group2/", entries));
+      "Trial1/Group1/*Trial2/Group2/", /*override_trials=*/false, entries));
 
   ASSERT_EQ(entries.size(), 2ul);
   const FieldTrial::State& entry1 = entries[0];
@@ -1409,17 +1410,22 @@ TEST_F(FieldTrialTest, ParseFieldTrialsStringTwoStudies) {
 
 TEST_F(FieldTrialTest, ParseFieldTrialsStringEmpty) {
   std::vector<FieldTrial::State> entries;
-  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString("", entries));
+  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString("", /*override_trials=*/false,
+                                                 entries));
 
   ASSERT_EQ(entries.size(), 0ul);
 }
 
 TEST_F(FieldTrialTest, ParseFieldTrialsStringInvalid) {
   std::vector<FieldTrial::State> entries;
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("A/", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("/A", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("//", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("///", entries));
+  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString(
+      "A/", /*override_trials=*/false, entries));
+  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString(
+      "/A", /*override_trials=*/false, entries));
+  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString(
+      "//", /*override_trials=*/false, entries));
+  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString(
+      "///", /*override_trials=*/false, entries));
 }
 
 TEST_F(FieldTrialTest, BuildFieldTrialStateString) {

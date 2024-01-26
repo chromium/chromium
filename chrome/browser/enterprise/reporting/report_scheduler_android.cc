@@ -38,7 +38,7 @@ void ReportSchedulerAndroid::OnBrowserVersionUploaded() {
 }
 
 policy::DMToken ReportSchedulerAndroid::GetProfileDMToken() {
-  absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
+  std::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
   if (!dm_token || dm_token->empty())
     return policy::DMToken::CreateEmptyToken();
   return policy::DMToken::CreateValidToken(*dm_token);

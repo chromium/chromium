@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 
 namespace arc {
@@ -64,6 +65,10 @@ void ArcTermsOfServiceDefaultNegotiator::OnTermsAgreed(
       is_metrics_enabled,
       base::BindOnce(&ArcTermsOfServiceDefaultNegotiator::OnMetricsPrefsUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcTermsOfServiceDefaultNegotiator::OnTermsLoadResult(bool success) {
+  UpdateOptinTosLoadResultUMA(success);
 }
 
 void ArcTermsOfServiceDefaultNegotiator::OnTermsRetryClicked() {

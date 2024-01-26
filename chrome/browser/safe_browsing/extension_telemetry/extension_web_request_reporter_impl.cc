@@ -95,16 +95,11 @@ void ExtensionWebRequestReporterImpl::SendWebRequestData(
     return;
   }
 
-  // TODO(crbug.com/1494413): Use unspecified contact initiator for websocket
-  // connections until that information becomes available in the renderer
-  // throttle.
   auto remote_host_signal = std::make_unique<RemoteHostContactedSignal>(
       origin_extension_id, telemetry_url,
       WebRequestProtocolTypeToRemoteHostInfoProtocolType(protocol_type),
-      protocol_type == mojom::WebRequestProtocolType::kWebSocket
-          ? safe_browsing::RemoteHostInfo::CONTACT_INITIATOR_UNSPECIFIED
-          : WebRequestContactInitatorToRemoteHostInfoContactInitiator(
-                contact_initiator_type));
+      WebRequestContactInitatorToRemoteHostInfoContactInitiator(
+          contact_initiator_type));
   telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 

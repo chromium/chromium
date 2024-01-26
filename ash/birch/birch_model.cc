@@ -4,8 +4,6 @@
 
 #include "ash/birch/birch_model.h"
 
-#include "ash/birch/birch_item.h"
-
 namespace ash {
 
 BirchModel::BirchModel() = default;
@@ -31,6 +29,13 @@ void BirchModel::SetFileSuggestItems(
 
   for (auto& observer : observers_) {
     observer.OnItemsChanged();
+  }
+}
+
+void BirchModel::RequestBirchDataFetch() {
+  // TODO(b/305094143): Call this before we begin showing birch views.
+  if (birch_client_) {
+    birch_client_->RequestBirchDataFetch();
   }
 }
 

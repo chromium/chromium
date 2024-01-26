@@ -132,7 +132,7 @@ PrinterQuery::~PrinterQuery() {
 }
 
 void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
-                                   absl::optional<bool> maybe_is_modifiable,
+                                   std::optional<bool> maybe_is_modifiable,
                                    std::unique_ptr<PrintSettings> new_settings,
                                    mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -152,7 +152,7 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
 }
 
 void PrinterQuery::PostSettingsDone(base::OnceClosure callback,
-                                    absl::optional<bool> maybe_is_modifiable,
+                                    std::optional<bool> maybe_is_modifiable,
                                     std::unique_ptr<PrintSettings> new_settings,
                                     mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -239,7 +239,7 @@ void PrinterQuery::SetSettings(base::Value::Dict new_settings,
       std::move(new_settings),
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
-                     /*maybe_is_modifiable=*/absl::nullopt));
+                     /*maybe_is_modifiable=*/std::nullopt));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -252,7 +252,7 @@ void PrinterQuery::SetSettingsFromPOD(
       std::move(new_settings),
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
-                     /*maybe_is_modifiable=*/absl::nullopt));
+                     /*maybe_is_modifiable=*/std::nullopt));
 }
 #endif
 
@@ -276,7 +276,7 @@ void PrinterQuery::UpdatePrintableArea(
 
   const PrintSettings::RequestedMedia& media =
       print_settings->requested_media();
-  absl::optional<gfx::Rect> printable_area_um =
+  std::optional<gfx::Rect> printable_area_um =
       print_backend->GetPaperPrintableArea(printer_name, media.vendor_id,
                                            media.size_microns);
   if (!printable_area_um.has_value()) {

@@ -27,8 +27,7 @@ void SetFillStyleHelper(BaseRenderingContext2D* ctx,
                         T* value) {
   NonThrowableExceptionState exception_state;
   ctx->setFillStyle(script_state->GetIsolate(),
-                    ToV8Traits<T>::ToV8(script_state, value).ToLocalChecked(),
-                    exception_state);
+                    ToV8Traits<T>::ToV8(script_state, value), exception_state);
 }
 
 void SetFillStyleString(BaseRenderingContext2D* ctx,

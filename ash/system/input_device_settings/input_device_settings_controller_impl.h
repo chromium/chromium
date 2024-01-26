@@ -203,6 +203,12 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   mojom::CustomizationRestriction GetMouseCustomizationRestriction(
       const ui::InputDevice& mouse);
 
+  // Get the graphics tablet customization restriction based on the graphics
+  // tablet metadata. Return kAllowCustomizations by default if there is no
+  // graphics tablet metadata.
+  mojom::CustomizationRestriction GetGraphicsTabletCustomizationRestriction(
+      const ui::InputDevice& graphics_tablet);
+
   // Refreshes the key display values within the button remappings to match the
   // current input method.
   void RefreshKeyDisplay();

@@ -29,6 +29,9 @@ interface PageHandler {
   // Records that the cluster with `cluster_id` was clicked.
   RecordClick(int64 cluster_id);
 
+  // Records that the cluster with `cluster_id` was disabled.
+  RecordDisabled(int64 cluster_id);
+
   // Records the layout type for the cluster with `cluster_id`.
   RecordLayoutTypeShown(ntp.history_clusters.mojom.LayoutType layout_type,
                         int64 cluster_id);
@@ -36,6 +39,7 @@ interface PageHandler {
   // Dismiss or undo a dismiss of a cluster by marking its associated visits
   // with a given interaction state.
   UpdateClusterVisitsInteractionState(
+      int64 cluster_id,
       array<history_clusters.mojom.URLVisit> visits,
       history_clusters.mojom.InteractionState state);
 };

@@ -20,22 +20,7 @@ extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
 
 }  // namespace manual_fill
 
-// Protocol to handle user interactions in a ManualFillAccessoryViewController.
-@protocol ManualFillAccessoryViewControllerDelegate
-
-// Invoked after the user touches the `accounts` button.
-- (void)accountButtonPressed:(UIButton*)sender;
-
-// Invoked after the user touches the `credit cards` button.
-- (void)cardButtonPressed:(UIButton*)sender;
-
-// Invoked after the user touches the `keyboard` button.
-- (void)keyboardButtonPressed;
-
-// Invoked after the user touches the `passwords` button.
-- (void)passwordButtonPressed:(UIButton*)sender;
-
-@end
+@protocol ManualFillAccessoryViewControllerDelegate;
 
 // This view contains the icons to activate "Manual Fill". It is meant to be
 // shown above the keyboard on iPhone and above the manual fill view.
@@ -73,6 +58,18 @@ extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
 // Resets to the original state, with the keyboard icon hidden and no icon
 // selected.
 - (void)resetAnimated:(BOOL)animated;
+
+// Invoked after the user taps the `accounts` button.
+- (void)accountButtonPressed:(UIButton*)accountButton;
+
+// Invoked after the user taps the `credit cards` button.
+- (void)cardButtonPressed:(UIButton*)creditCardButton;
+
+// Invoked after the user taps the `passwords` button.
+- (void)passwordButtonPressed:(UIButton*)passwordButton;
+
+// Set the hidden property of this view controller's view.
+- (void)setViewHidden:(BOOL)hidden;
 
 @end
 

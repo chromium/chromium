@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryAllocatorDumpGuid;
@@ -95,28 +94,8 @@ void StagingBuffer::DestroyGLResources(gpu::raster::RasterInterface* ri,
 void StagingBuffer::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                                  viz::SharedImageFormat dump_format,
                                  bool in_free_list) const {
-  if (!gpu_memory_buffer)
-    return;
-
-  // Use |this| as the id, which works with multiple StagingBuffers.
-  std::string buffer_dump_name =
-      base::StringPrintf("cc/one_copy/staging_memory/buffer_%p", this);
-  MemoryAllocatorDump* buffer_dump = pmd->CreateAllocatorDump(buffer_dump_name);
-
-  uint64_t buffer_size_in_bytes = dump_format.EstimatedSizeInBytes(size);
-  buffer_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                         MemoryAllocatorDump::kUnitsBytes,
-                         buffer_size_in_bytes);
-  buffer_dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes,
-                         in_free_list ? buffer_size_in_bytes : 0);
-
-  // Emit an ownership edge towards a global allocator dump node.
-  const uint64_t tracing_process_id =
-      base::trace_event::MemoryDumpManager::GetInstance()
-          ->GetTracingProcessId();
-  const int kImportance = 2;
-  gpu_memory_buffer->OnMemoryDump(pmd, buffer_dump->guid(), tracing_process_id,
-                                  kImportance);
+  // TODO(crbug.com/1431314): Need to call through to the buffer's SharedImage's
+  // ScopedMapping::OnMemoryDump()?
 }
 
 StagingBufferPool::StagingBufferPool(
@@ -277,8 +256,7 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
     }
   }
 
-  // Find a staging buffer that allows us to perform partial raster when
-  // using persistent GpuMemoryBuffers.
+  // Find a staging buffer that allows us to perform partial raster if possible.
   if (use_partial_raster_ && previous_content_id) {
     StagingBufferDeque::iterator it = base::ranges::find(
         free_buffers_, previous_content_id, &StagingBuffer::content_id);

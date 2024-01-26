@@ -50,7 +50,7 @@ class HistoryClustersMetricsLogger
   ~HistoryClustersMetricsLogger() override;
   PAGE_USER_DATA_KEY_DECL();
 
-  absl::optional<HistoryClustersInitialState> initial_state() const {
+  std::optional<HistoryClustersInitialState> initial_state() const {
     return initial_state_;
   }
 
@@ -91,11 +91,11 @@ class HistoryClustersMetricsLogger
 
   // The navigation ID of the navigation handle that this data is associated
   // with, used for recording the metrics to UKM.
-  absl::optional<int64_t> navigation_id_;
+  std::optional<int64_t> navigation_id_;
 
   // The initial state of how this interaction with the HistoryClusters UI was
   // started.
-  absl::optional<HistoryClustersInitialState> initial_state_;
+  std::optional<HistoryClustersInitialState> initial_state_;
 
   // The number of queries made on the tracker history clusters event. Only
   // queries containing a string should be counted.

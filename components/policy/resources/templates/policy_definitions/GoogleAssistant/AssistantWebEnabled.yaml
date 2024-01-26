@@ -12,8 +12,6 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow using <ph name="ASSISTANT_PRODUCT_NAME">Google Assistant</ph> on
     the web

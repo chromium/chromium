@@ -198,8 +198,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   ASSERT_EQ(RulesetService::IndexAndWriteRulesetResult::SUCCESS,
             RulesetService::WriteRuleset(version_dir_path,
                                          /* license_path =*/base::FilePath(),
-                                         ruleset.indexed.contents.data(),
-                                         ruleset.indexed.contents.size()));
+                                         ruleset.indexed.contents));
 
   // Create a ruleset service and its harness.
   scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner =

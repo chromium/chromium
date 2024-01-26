@@ -601,6 +601,7 @@ class HistoryService : public KeyedService,
   base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       const QueryOptions& options,
       bool compute_redirect_chain_start_properties,
+      bool get_unclustered_visits_only,
       GetAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 

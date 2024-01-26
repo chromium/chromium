@@ -5,6 +5,7 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -15,7 +16,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -89,7 +89,7 @@ class ModuleDatabaseTest : public testing::Test {
 
   ScopedTestingLocalState scoped_testing_local_state_;
 
-  absl::optional<UtilWinImpl> util_win_impl_;
+  std::optional<UtilWinImpl> util_win_impl_;
 
   std::unique_ptr<ModuleDatabase> module_database_;
 };

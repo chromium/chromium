@@ -45,10 +45,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "net/proxy_resolution/win/proxy_resolver_winhttp.h"
-#elif BUILDFLAG(IS_IOS)
-#include "net/proxy_resolution/proxy_resolver_mac.h"
-#elif BUILDFLAG(IS_MAC)
-#include "net/proxy_resolution/proxy_resolver_mac.h"
+#elif BUILDFLAG(IS_APPLE)
+#include "net/proxy_resolution/proxy_resolver_apple.h"
 #endif
 
 using base::TimeTicks;
@@ -214,6 +212,32 @@ class ProxyResolverFromPacString : public ProxyResolver {
   const std::string pac_string_;
 };
 
+// ProxyResolver that simulates a proxy chain which returns
+// |proxy_chain| for every single URL.
+class ProxyResolverFromProxyChains : public ProxyResolver {
+ public:
+  explicit ProxyResolverFromProxyChains(
+      const std::vector<ProxyChain>& proxy_chains)
+      : proxy_chains_(proxy_chains) {}
+
+  int GetProxyForURL(const GURL& url,
+                     const NetworkAnonymizationKey& network_anonymization_key,
+                     ProxyInfo* results,
+                     CompletionOnceCallback callback,
+                     std::unique_ptr<Request>* request,
+                     const NetLogWithSource& net_log) override {
+    net::ProxyList proxy_list;
+    for (const ProxyChain& proxy_chain : proxy_chains_) {
+      proxy_list.AddProxyChain(proxy_chain);
+    }
+    results->UseProxyList(proxy_list);
+    return OK;
+  }
+
+ private:
+  const std::vector<ProxyChain> proxy_chains_;
+};
+
 // Creates ProxyResolvers using a platform-specific implementation.
 class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
  public:
@@ -229,7 +253,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #if BUILDFLAG(IS_WIN)
     return std::make_unique<ProxyResolverFactoryWinHttp>();
 #elif BUILDFLAG(IS_APPLE)
-    return std::make_unique<ProxyResolverFactoryMac>();
+    return std::make_unique<ProxyResolverFactoryApple>();
 #else
     NOTREACHED();
     return nullptr;
@@ -285,6 +309,30 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
 
  private:
   const std::string pac_string_;
+};
+
+class ProxyResolverFactoryForProxyChains : public ProxyResolverFactory {
+ public:
+  explicit ProxyResolverFactoryForProxyChains(
+      const std::vector<ProxyChain>& proxy_chains)
+      : ProxyResolverFactory(false), proxy_chains_(proxy_chains) {}
+
+  ProxyResolverFactoryForProxyChains(
+      const ProxyResolverFactoryForProxyChains&) = delete;
+  ProxyResolverFactoryForProxyChains& operator=(
+      const ProxyResolverFactoryForProxyChains&) = delete;
+
+  // ProxyResolverFactory override.
+  int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
+                          std::unique_ptr<ProxyResolver>* resolver,
+                          CompletionOnceCallback callback,
+                          std::unique_ptr<Request>* request) override {
+    *resolver = std::make_unique<ProxyResolverFromProxyChains>(proxy_chains_);
+    return OK;
+  }
+
+ private:
+  const std::vector<ProxyChain> proxy_chains_;
 };
 
 // Returns NetLog parameters describing a proxy configuration change.
@@ -886,6 +934,25 @@ ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResultForTest(
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
       std::make_unique<ProxyResolverFactoryForPacResult>(pac_string), nullptr,
+      /*quick_check_enabled=*/true);
+}
+
+// static
+std::unique_ptr<ConfiguredProxyResolutionService>
+ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+    const std::vector<ProxyChain>& proxy_chains,
+    const NetworkTrafficAnnotationTag& traffic_annotation) {
+  // We need the settings to contain an "automatic" setting, otherwise the
+  // ProxyResolver dependency we give it will never be used.
+  auto proxy_config_service = std::make_unique<ProxyConfigServiceFixed>(
+      ProxyConfigWithAnnotation(ProxyConfig::CreateFromCustomPacURL(GURL(
+                                    "https://my-pac-script.invalid/wpad.dat")),
+                                traffic_annotation));
+
+  return std::make_unique<ConfiguredProxyResolutionService>(
+      std::move(proxy_config_service),
+      std::make_unique<ProxyResolverFactoryForProxyChains>(proxy_chains),
+      nullptr,
       /*quick_check_enabled=*/true);
 }
 

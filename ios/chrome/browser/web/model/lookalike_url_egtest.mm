@@ -90,15 +90,13 @@ const char kLookalikeInNewTabContent[] = "New tab";
 
   if (@available(iOS 15.1, *)) {
   } else {
-    if (@available(iOS 14.5, *)) {
-      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
-      // some back/forward navigations between pages that share a renderer
-      // process. Use 'localhost' instead of '127.0.0.1' for the safe URL to
-      // prevent sharing renderer processes with unsafe URLs.
-      GURL::Replacements replacements;
-      replacements.SetHostStr("localhost");
-      _safeURL = _safeURL.ReplaceComponents(replacements);
-    }
+    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
+    // some back/forward navigations between pages that share a renderer
+    // process. Use 'localhost' instead of '127.0.0.1' for the safe URL to
+    // prevent sharing renderer processes with unsafe URLs.
+    GURL::Replacements replacements;
+    replacements.SetHostStr("localhost");
+    _safeURL = _safeURL.ReplaceComponents(replacements);
   }
 }
 

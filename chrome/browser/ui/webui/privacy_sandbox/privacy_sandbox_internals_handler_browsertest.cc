@@ -194,13 +194,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                 Field(&ContentSettingPatternSource::source, "preference")))));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdSupport) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(
       GURL("https://example.org"), GURL("https://example.net"),
-      ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
-  remote_->GetTpcdSupport(
+      ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
+  remote_->GetTpcdTrial(
       base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
                      base::Unretained(this)));
   waiter_.Wait();
@@ -214,6 +214,28 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdSupport) {
                 Field(&ContentSettingPatternSource::secondary_pattern,
                       ContentSettingsPattern::FromString(
                           "https://[*.]example.net")),
+                Field(&ContentSettingPatternSource::source, "preference")))));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTopLevelTpcdTrial) {
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  map->SetContentSettingDefaultScope(
+      GURL("https://example.org"), GURL("https://example.net"),
+      ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, CONTENT_SETTING_ALLOW);
+  remote_->GetTopLevelTpcdTrial(
+      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
+                     base::Unretained(this)));
+  waiter_.Wait();
+  EXPECT_THAT(
+      content_settings_cb_data_,
+      AllOf(SizeIs(Ge(1u)),
+            Contains(AllOf(
+                Field(&ContentSettingPatternSource::primary_pattern,
+                      ContentSettingsPattern::FromString(
+                          "https://example.org:443")),
+                Field(&ContentSettingPatternSource::secondary_pattern,
+                      ContentSettingsPattern::FromString("*")),
                 Field(&ContentSettingPatternSource::source, "preference")))));
 }
 

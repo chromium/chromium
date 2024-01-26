@@ -90,6 +90,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2583187216237139145">Gall unrhyw ddata Chromium a gynhyrchir wrth ddefnyddio'r proffil hwn (megis creu nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill) gael eu tynnu gan weinyddwr y proffil gwaith. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Parhau i ddefnyddio Chromium</translation>
 <translation id="259935314519650377">Wedi methu â storio'r gosodwr sydd wedi'i lawrlwytho dros dro. Gwall: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Mae Chromium yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd (argymhellir)</translation>
 <translation id="2648074677641340862">Bu gwall system weithredu wrth osod. Lawrlwythwch Chromium eto.</translation>
 <translation id="2661879430930417727">Os ydych yn rhannu dyfais, gall ffrindiau a theulu bori ar wahân a gosod Chromium yn yr union ffordd y maent eisiau</translation>
 <translation id="268602741124540128">Croeso i Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3258596308407688501">Ni all Chromium ddarllen nac ysgrifennu i'w gyfeiriadur data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 yw injan JavaScript a WebAssembly Chromium a ddefnyddir i wella perfformiad gwefan</translation>
 <translation id="3283186697780795848">Mae fersiwn <ph name="PRODUCT_VERSION" /> o Chromium wedi'i osod</translation>
 <translation id="3286538390144397061">Ailddechrau Nawr</translation>
 <translation id="328888136576916638">Mae allweddi API Google ar goll. Bydd rhywfaint o swyddogaeth Chromium wedi'i hanalluogi.</translation>
@@ -142,7 +144,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3533435340678213462">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
 <translation id="3567254597502212821">Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chromium ar y ddyfais hon.</translation>
 <translation id="3593091352817399191">Mae cyfrif arall eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, gall Chromium greu proffil eich hun ar eich cyfer.</translation>
-<translation id="363078681319665186">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 10.15 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.13.</translation>
 <translation id="3639635944603682591">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio.}=1{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="3651803019964686660">Er mwyn anfon rhif o <ph name="ORIGIN" /> i'ch ffôn Android, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
@@ -159,7 +160,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Cael help gyda ChromiumOS</translation>
 <translation id="3871664619793219264">Cael eich pethau porwr Chromium o <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 10.15 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.14.</translation>
 <translation id="388648406173476553">Personoleiddio a rheoli Chromium. Mae angen eich sylw ar rywbeth - cliciwch i gael manylion.</translation>
 <translation id="3889543394854987837">Cliciwch eich enw i agor Chromium ac i ddechrau pori.</translation>
 <translation id="390528597099634151">Mae <ph name="EXISTING_USER" /> wedi'i fewngofnodi yn barod i'r proffil Chromium hwn. I gadw'ch pori ar wahân, gall Chromium greu proffil eich hun ar eich cyfer.</translation>
@@ -220,6 +220,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4814736265800133385">Defnyddio Chromium heb gyfrif</translation>
 <translation id="4888717733111232871">Rheol dod i mewn ar gyfer Chromium i ganiatáu traffig mDNS.</translation>
 <translation id="4893347770495441059">Ail-lansiwch i Ddiweddaru &amp;Chromium</translation>
+<translation id="4942295735032723435">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 11 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.15.</translation>
 <translation id="4943838377383847465">Mae Chromium yn y modd cefndir.</translation>
 <translation id="4987820182225656817">Gall gwesteion ddefnyddio Chromium heb adael unrhyw beth ar ôl.</translation>
 <translation id="4994636714258228724">Ychwanegu eich hun at Chromium</translation>
@@ -248,7 +249,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5623402015214259806">{0,plural, =0{Mae diweddariad Cromiwm ar gael}=1{Mae diweddariad Cromiwm ar gael}two{Mae diweddariad Chromium wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}}</translation>
 <translation id="5643865575100044307">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chromium</translation>
 <translation id="5653831366781983928">Ailgychwynnwch Chromium nawr</translation>
-<translation id="5675598751761067447">Mae'n bosib bod y ffeil hon yn beryglus<ph name="LINE_BREAK" />Gall Chromium wirio'r lawrlwythiad hwn i chi os ydych yn darparu'r cyfrinair - mae eich cyfrinair yn aros ar eich dyfais</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Dangos Chromium yn yr iaith hon</translation>
 <translation id="569897634095159764">Methu â chysylltu â'r Rhyngrwyd. Mae angen dilysu'r dirprwy weinydd.</translation>
@@ -409,6 +409,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8105840573057009683">Mae angen caniatâd lleoliad ar Chromium ar gyfer y wefan hon</translation>
 <translation id="8133124826068723441">Nid oedd ChromiumOS yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
+<translation id="8166782796394721554">Trowch amddiffyniad ychwanegol ymlaen yn injan JavaScript a WebAssembly Chromium</translation>
 <translation id="81770708095080097">Mae'r ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
 <translation id="8213374284266571500">Gwnaeth Chromium rwystro'r ffeil hon oherwydd bod y math hwn o ffeil yn beryglus</translation>
 <translation id="8248265253516264921">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau. Gallwch ddiffodd hyn yn y gosodiadau ar unrhyw adeg.</translation>

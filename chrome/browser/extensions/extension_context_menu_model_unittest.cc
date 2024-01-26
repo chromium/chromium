@@ -754,7 +754,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(page_action, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
   }
@@ -763,7 +763,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
 
@@ -778,7 +778,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    /*is_pinned,=*/false, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(pin_string, menu.GetLabelAt(index.value()));
   }
@@ -803,7 +803,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
         }
       })",
       force_pinned_extension->id().c_str());
-  absl::optional<base::Value> parsed = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed = base::JSONReader::Read(json);
   policy::PolicyMap map;
   map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
           policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
@@ -823,7 +823,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(extension, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_TRUE(menu.IsEnabledAt(index.value()));
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
@@ -834,7 +834,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(force_pinned_extension, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_FALSE(menu.IsEnabledAt(index.value()));
     EXPECT_EQ(force_pinned_string, menu.GetLabelAt(index.value()));
@@ -1083,7 +1083,7 @@ TEST_F(ExtensionContextMenuModelTest,
     std::string requested_pattern;
     // The pattern that's granted to the extension, if any. This may be
     // significantly different than the requested pattern.
-    absl::optional<std::string> granted_pattern;
+    std::optional<std::string> granted_pattern;
     // The current URL the context menu will be used on.
     GURL current_url;
     // The set of page access menu entries that should be present.
@@ -1091,7 +1091,7 @@ TEST_F(ExtensionContextMenuModelTest,
     // The set of page access menu entries that should be enabled.
     std::set<MenuEntries> enabled_entries;
     // The selected page access menu entry.
-    absl::optional<MenuEntries> selected_entry;
+    std::optional<MenuEntries> selected_entry;
   } test_cases[] = {
       // Easy cases: site the extension wants to run on, with or without
       // permission granted.
@@ -1102,7 +1102,7 @@ TEST_F(ExtensionContextMenuModelTest,
        {kOnClick, kOnSite},
        kOnSite},
       {"https://google.com/maps",
-       absl::nullopt,
+       std::nullopt,
        GURL("https://google.com/maps"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -1137,7 +1137,7 @@ TEST_F(ExtensionContextMenuModelTest,
        {kOnClick, kOnSite},
        kOnSite},
       {"https://*.google.com/*",
-       absl::nullopt,
+       std::nullopt,
        GURL("https://google.com"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -1156,10 +1156,7 @@ TEST_F(ExtensionContextMenuModelTest,
        kOnClick},
       // On sites the extension doesn't want to run on, no controls should be
       // shown...
-      {"https://*.google.com/*",
-       absl::nullopt,
-       GURL("https://example.com"),
-       {}},
+      {"https://*.google.com/*", std::nullopt, GURL("https://example.com"), {}},
       // ...unless the extension has access to the page, in which case we should
       // display the controls.
       {"https://*.google.com/*",

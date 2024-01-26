@@ -30,8 +30,8 @@ base::Value::Dict CreateSources(base::Value::List urls) {
 }
 
 base::Value::Dict CreateDestinations(
-    absl::optional<base::Value::List> urls,
-    absl::optional<base::Value::List> components) {
+    std::optional<base::Value::List> urls,
+    std::optional<base::Value::List> components) {
   base::Value::Dict dsts;
   if (urls.has_value()) {
     dsts.Set(kUrls, std::move(urls.value()));
@@ -51,8 +51,8 @@ base::Value::Dict CreateRule(const std::string& name,
                              const std::string& desc,
                              const std::string& rule_id,
                              base::Value::List src_urls,
-                             absl::optional<base::Value::List> dst_urls,
-                             absl::optional<base::Value::List> dst_components,
+                             std::optional<base::Value::List> dst_urls,
+                             std::optional<base::Value::List> dst_components,
                              base::Value::List restrictions) {
   auto rule =
       base::Value::Dict()

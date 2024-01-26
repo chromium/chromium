@@ -74,6 +74,11 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
   // If non-empty, holds an array of urls given as arguments.
   const std::vector<GURL>& GetLaunchUrls() const;
 
+  // Returns the notification action handler receiver (if any) that was passed
+  // by the app shim on launch.
+  mojo::PendingReceiver<mac_notifications::mojom::MacNotificationActionHandler>
+  TakeNotificationActionHandler();
+
   // Returns true if this app supports multiple profiles. If so, it will not be
   // required that GetProfilePath be a valid profile path.
   bool IsMultiProfile() const;

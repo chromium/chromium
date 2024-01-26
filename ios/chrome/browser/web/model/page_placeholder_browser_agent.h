@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_PAGE_PLACEHOLDER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_PAGE_PLACEHOLDER_BROWSER_AGENT_H_
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_observer.h"

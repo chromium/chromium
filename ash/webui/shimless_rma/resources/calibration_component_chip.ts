@@ -12,14 +12,12 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './calibration_component_chip.html.js';
+import {CLICK_CALIBRATION_COMPONENT_BUTTON, ClickCalibrationComponentEvent} from './events.js';
 import {modifyTabbableElement} from './shimless_rma_util.js';
-
-
-export type ClickCalibrationComponentButtonEvent = CustomEvent<number>;
 
 declare global {
   interface HTMLElementEventMap {
-    'click-calibration-component-button': ClickCalibrationComponentButtonEvent;
+    [CLICK_CALIBRATION_COMPONENT_BUTTON]: ClickCalibrationComponentEvent;
   }
 }
 
@@ -106,7 +104,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
-            this.shadowRoot!.querySelector('#componentButton') as HTMLElement,
+        this.shadowRoot!.querySelector<HTMLElement>('#componentButton')!,
         this.isFirstClickableComponent);
   }
 

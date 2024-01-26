@@ -113,6 +113,13 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    name = "android_low_end_secondary_toolchain",
+    args = {
+        "is_high_end_android_secondary_toolchain": False,
+    },
+)
+
 # TODO(https://crbug.com/1020714): This is temporary. We'd like to run a
 # smoke test on android_binary_sizes to ensure coverage of proguard, at
 # which point we can merge this into android_fastbuild. Until then, only
@@ -716,6 +723,11 @@ gn_args.config(
     args = {
         "ios_code_signing_identity_description": "iPhone Developer",
     },
+)
+
+gn_args.config(
+    name = "ios_developer",
+    configs = ["ios_simulator", "debug"],
 )
 
 gn_args.config(

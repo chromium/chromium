@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerFactory, CustomizeChromePageHandlerInterface, CustomizeChromePageHandlerRemote} from './customize_chrome.mojom-webui.js';
+import type {CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerFactory, CustomizeChromePageHandlerRemote} from './customize_chrome.mojom-webui.js';
 
 let instance: CustomizeChromeApiProxy|null = null;
 

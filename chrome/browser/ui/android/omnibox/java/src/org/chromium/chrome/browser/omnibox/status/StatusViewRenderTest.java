@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.content_settings.ContentSettingValues;

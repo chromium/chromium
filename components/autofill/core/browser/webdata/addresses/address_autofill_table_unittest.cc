@@ -100,14 +100,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   AutofillProfile home_profile = CreateAutofillProfile();
 
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // home_profile.SetRawInfoWithVerificationStatus(
-  // NAME_HONORIFIC_PREFIX, u"Dr.",
-  // VerificationStatus::kObserved);
-
-  home_profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
-                                                VerificationStatus::kObserved);
-
   home_profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                                 VerificationStatus::kObserved);
 
@@ -128,10 +120,6 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
 
   home_profile.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"John Q. Agent 007 Smith", VerificationStatus::kObserved);
-
-  home_profile.SetRawInfoWithVerificationStatus(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                                u"Dr. John Q. Agent 007 Smith",
-                                                VerificationStatus::kObserved);
 
   home_profile.SetRawInfo(EMAIL_ADDRESS, u"js@smith.xyz");
   home_profile.SetRawInfo(COMPANY_NAME, u"Google");

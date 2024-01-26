@@ -24,6 +24,7 @@
 #include "ui/base/page_transition_types.h"
 
 class GURL;
+class PrefService;
 
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
@@ -39,26 +40,6 @@ namespace supervised_user {
 //     sources.
 class SupervisedUserURLFilter {
  public:
-  // This enum describes the filter types of Chrome, which is
-  // set by Family Link App or at families.google.com/families. These values
-  // are logged to UMA. Entries should not be renumbered and numeric values
-  // should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
-  // in src/tools/metrics/histograms/enums.xml.
-  enum class WebFilterType {
-    // The web filter is set to "Allow all sites".
-    kAllowAllSites = 0,
-
-    // The web filter is set to "Try to block mature sites".
-    kTryToBlockMatureSites = 1,
-
-    // The web filter is set to "Only allow certain sites".
-    kCertainSites = 2,
-
-    // Used for UMA. Update kMaxValue to the last value. Add future entries
-    // above this comment. Sync with enums.xml.
-    kMaxValue = kCertainSites,
-  };
-
   // This enum describes whether the approved list or blocked list is used on
   // Chrome on Chrome OS, which is set by Family Link App or at
   // families.google.com/families via "manage sites" setting. This is also
@@ -129,8 +110,9 @@ class SupervisedUserURLFilter {
   };
 
   SupervisedUserURLFilter(
-      ValidateURLSupportCallback check_webstore_url_callback,
-      std::unique_ptr<Delegate> delegate);
+      PrefService& user_prefs,
+      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
+      ValidateURLSupportCallback check_webstore_url_callback);
 
   virtual ~SupervisedUserURLFilter();
 
@@ -210,17 +192,6 @@ class SupervisedUserURLFilter {
   // Sets the set of manually allowed or blocked URLs.
   void SetManualURLs(std::map<GURL, bool> url_map);
 
-  // Initializes the experimental asynchronous checker.
-  void InitAsyncURLChecker(
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-  // Clears any asynchronous checker.
-  void ClearAsyncURLChecker();
-
-  // Returns whether the asynchronous checker is set up.
-  bool HasAsyncURLChecker() const;
-
   // Removes all filter entries, clears the async checker if present, and resets
   // the default behavior to "allow".
   void Clear();
@@ -245,6 +216,10 @@ class SupervisedUserURLFilter {
 
   // Set value for `is_filter_initialized_`.
   void SetFilterInitialized(bool is_filter_initialized);
+
+  // Sets safe_search_api::URLCheckerClient for SafeSites classification.
+  void SetURLCheckerClientForTesting(
+      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
  private:
   friend class SupervisedUserURLFilterTest;
@@ -292,6 +267,8 @@ class SupervisedUserURLFilter {
   // Blocked and Allowed host lists.
   std::set<std::string> blocked_host_list_;
   std::set<std::string> allowed_host_list_;
+
+  const raw_ref<PrefService> user_prefs_;
 
   std::unique_ptr<Delegate> service_delegate_;
 

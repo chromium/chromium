@@ -135,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   FakeUserDataAuthClient::Get()->SetNextOperationError(
       FakeUserDataAuthClient::Operation::kStartAuthSession,
-      user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
 
   LoginDisplayHost::default_host()
       ->GetOobeUI()
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   FakeUserDataAuthClient::Get()->SetNextOperationError(
       FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor,
-      user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED));
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
@@ -164,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenNotShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   FakeUserDataAuthClient::Get()->SetNextOperationError(
       FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor,
-      user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED));
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);
   // Inserted RunUntilIdle here to give maximum chances for the dialog to show

@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,11 +69,6 @@ public class WebappDisclosureControllerTest {
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     private WebappDisclosureController buildControllerForWebApk(String webApkPackageName) {

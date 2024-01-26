@@ -8,10 +8,13 @@ import {SearchEngineChoiceAppElement} from 'chrome://search-engine-choice/app.js
 import {SearchEngineChoiceBrowserProxy} from 'chrome://search-engine-choice/browser_proxy.js';
 import {PageHandlerRemote} from 'chrome://search-engine-choice/search_engine_choice.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-suite('SearchEngineChoiceTest', function() {
+// TODO(crbug.com/1509119) Fix test flakes and merge with
+// SearchEngineChoiceTest.
+suite('DISABLED_SearchEngineChoiceTest', function() {
   let testElement: SearchEngineChoiceAppElement;
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
@@ -25,6 +28,15 @@ suite('SearchEngineChoiceTest', function() {
     return new Promise(resolve => setTimeout(() => {
                          resolve(waitFor(predicate));
                        }, 0));
+  }
+
+  // Selects the first search engine from the list of search engine choices.
+  function selectChoice() {
+    const radioButtons =
+        testElement.shadowRoot!.querySelectorAll('cr-radio-button');
+
+    assertTrue(radioButtons.length > 0);
+    radioButtons[0]!.click();
   }
 
   setup(function() {
@@ -41,15 +53,6 @@ suite('SearchEngineChoiceTest', function() {
   teardown(function() {
     testElement.remove();
   });
-
-  // Selects the first search engine from the list of search engine choices.
-  function selectChoice() {
-    const radioButtons =
-        testElement.shadowRoot!.querySelectorAll('cr-radio-button');
-
-    assertTrue(radioButtons.length > 0);
-    radioButtons[0]!.click();
-  }
 
   // This tests both forced scroll when clicking on the "More" button and
   // manually scrolling because the test will trigger the same scroll event.
@@ -76,6 +79,42 @@ suite('SearchEngineChoiceTest', function() {
 
     actionButton.click();
     assertEquals(handler.getCallCount('handleSearchEngineChoiceSelected'), 1);
+  });
+});
+
+suite('SearchEngineChoiceTest', function() {
+  let testElement: SearchEngineChoiceAppElement;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let metrics: MetricsTracker;
+
+  setup(function() {
+    metrics = fakeMetricsPrivate();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    handler = TestMock.fromClass(PageHandlerRemote);
+    SearchEngineChoiceBrowserProxy.setInstance(
+        new SearchEngineChoiceBrowserProxy(handler));
+
+    testElement = document.createElement('search-engine-choice-app');
+    document.body.appendChild(testElement);
+    return waitBeforeNextRender(testElement);
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  test('Expanding chevron records user action', function() {
+    const chevrons =
+        testElement.shadowRoot!.querySelectorAll<HTMLElement>('.chevron');
+    assertTrue(!!chevrons[0]);
+
+    // Expand the chevron and check that the user action is recorded.
+    chevrons[0].click();
+    assertEquals(metrics.count('ExpandSearchEngineDescription'), 1);
+
+    // Collapse the chevron and check that no user action is recorded.
+    chevrons[0].click();
+    assertEquals(metrics.count('ExpandSearchEngineDescription'), 1);
   });
 
   test('Click learn more link', function() {

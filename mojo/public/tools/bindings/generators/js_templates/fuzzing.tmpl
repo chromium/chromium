@@ -95,15 +95,15 @@ idx = {{name}}.setHandlesInternal_(handles, idx)
 {%- endmacro -%}
 
 {%- macro generate_or_mutate_interface(obj, operation, kind, name) -%}
-{%-   if kind|is_interface_request_kind or kind|is_pending_receiver_kind -%}
+{%-   if kind|is_pending_receiver_kind -%}
 {{build_call(obj, operation, 'InterfaceRequest', name, '"' ~ kind.kind.module.namespace ~ '.' ~ kind.kind.name ~ '"', kind.is_nullable|to_js_boolean)}}
 {%-   elif kind|is_interface_kind -%}
 {{build_call(obj, operation, 'Interface', name, '"' ~ kind.module.namespace ~ '.' ~ kind.name ~ '"', kind.is_nullable|to_js_boolean)}}
 {%-   elif kind|is_pending_remote_kind -%}
 {{build_call(obj, operation, 'Interface', name, '"' ~ kind.kind.module.namespace ~ '.' ~ kind.kind.name ~ '"', kind.is_nullable|to_js_boolean)}}
-{%-   elif kind|is_associated_interface_request_kind or kind|is_pending_associated_receiver_kind -%}
+{%-   elif kind|is_pending_associated_receiver_kind -%}
 {{build_call(obj, operation, 'AssociatedInterfaceRequest', name, '"' ~ kind.kind.module.namespace ~ '.' ~ kind.kind.name ~ '"', kind.is_nullable|to_js_boolean)}}
-{%-   elif kind|is_associated_interface_kind or kind|is_pending_associated_remote_kind -%}
+{%-   elif kind|is_pending_associated_remote_kind -%}
 {{build_call(obj, operation, 'AssociatedInterface', name, '"' ~ kind.kind.module.namespace ~ '.' ~ kind.kind.name ~ '"', kind.is_nullable|to_js_boolean)}}
 {%-   endif -%}
 {%- endmacro -%}

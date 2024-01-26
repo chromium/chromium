@@ -120,7 +120,6 @@ class BrowserInterfaceBrokerProxy;
 class MediaInspectorContext;
 class MainThread;
 class ThreadSafeBrowserInterfaceBrokerProxy;
-class Thread;
 class URLLoaderThrottle;
 class UserMetricsAction;
 class WebAudioBus;

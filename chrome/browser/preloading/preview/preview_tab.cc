@@ -16,7 +16,9 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -71,7 +73,8 @@ class PreviewTab::PreviewWidget final : public views::Widget {
     if (!is_event_for_preview_window &&
         event->type() == ui::ET_MOUSE_RELEASED) {
       event->SetHandled();
-      preview_manager_->Cancel();
+      preview_manager_->Cancel(content::PreviewCancelReason::Build(
+          content::PreviewFinalStatus::kCancelledByWindowClose));
       return;
     }
 
@@ -163,7 +166,26 @@ bool PreviewTab::IsInPreviewMode() const {
   return true;
 }
 
+void PreviewTab::CancelPreview(content::PreviewCancelReason reason) {
+  // TODO(b:299240273): Show an error page when final status is
+  // kBlockedByMojoBinderPolicy.
+  cancel_reason_ = std::move(reason);
+}
+
 void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
+  // If preview failed, prevent activation and just close the preview window.
+  //
+  // Currently, PreviewFinalStatus::kBlockedByMojoBinderPolicy contains just
+  // deferred cases and we don't reject activation here.
+  //
+  // TODO(b:316226787): Consider to split the final status into
+  // cancelled/deferred.
+  if (cancel_reason_.has_value() &&
+      cancel_reason_->GetFinalStatus() !=
+          content::PreviewFinalStatus::kBlockedByMojoBinderPolicy) {
+    return;
+  }
+
   view_->SetWebContents(nullptr);
   view_ = nullptr;
 
@@ -198,11 +220,6 @@ void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
 void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   CHECK(web_contents);
   web_contents->ActivatePreviewPage();
-}
-
-void PreviewTab::CancelPreviewByMojoBinderPolicy(
-    const std::string& interface_name) {
-  // TODO(b:299240273): Navigate to an error page.
 }
 
 // Copied from chrome/browser/ui/views/accelerator_table.h

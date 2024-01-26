@@ -5,6 +5,7 @@
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
 #include <memory>
+#include <numeric>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -48,9 +49,6 @@ constexpr int kDisplayHeightThreshold = 800;
 constexpr int kCalendarBubbleHeightSmallDisplay = 340;
 constexpr int kCalendarBubbleHeightLargeDisplay = 368;
 
-// For Calendar for Glanceables:
-constexpr auto kCalendarBubbleBorder = gfx::Insets::TLBR(8, 0, 0, 0);
-
 // Tasks Glanceables constants.
 constexpr int kGlanceablesContainerCornerRadius = 24;
 
@@ -66,8 +64,6 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetOrientation(views::LayoutOrientation::kVertical);
-    SetProperty(views::kMarginsKey,
-                gfx::Insets::TLBR(0, 0, kMarginBetweenGlanceables, 0));
     SetInteriorMargin(gfx::Insets(12));
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated,
@@ -207,6 +203,7 @@ GlanceableTrayBubbleView::GlanceableTrayBubbleView(
   // should be prioritized to be shrunk. Set the default flex to 0 and manually
   // updates the flex of views depending on the view hierarchy.
   box_layout()->SetDefaultFlex(0);
+  box_layout()->set_between_child_spacing(kMarginBetweenGlanceables);
 }
 
 GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
@@ -277,8 +274,6 @@ void GlanceableTrayBubbleView::InitializeContents() {
     if (is_calendar_for_glanceables) {
       calendar_container_ =
           AddChildView(std::make_unique<views::FlexLayoutView>());
-      calendar_container_->SetBorder(
-          views::CreateEmptyBorder(kCalendarBubbleBorder));
     }
 
     auto* calendar_parent_view = is_calendar_for_glanceables
@@ -324,6 +319,14 @@ void GlanceableTrayBubbleView::InitializeContents() {
   Layout();
 
   initialized_ = true;
+}
+
+int GlanceableTrayBubbleView::GetHeightForWidth(int width) const {
+  // Let the layout manager calculate the preferred height instead of using the
+  // one from TrayBubbleView, which doesn't take the layout manager and margin
+  // settings into consider.
+  return std::min(views::View::GetHeightForWidth(width),
+                  CalculateMaxTrayBubbleHeight(shelf_->GetWindow()));
 }
 
 void GlanceableTrayBubbleView::AddedToWidget() {
@@ -476,7 +479,7 @@ void GlanceableTrayBubbleView::ClipScrollViewHeight(
   }
 
   scroll_view_->ClipHeightTo(0, screen_max_height - calendar_view_->height() -
-                                    kCalendarBubbleBorder.top());
+                                    kMarginBetweenGlanceables);
 }
 
 BEGIN_METADATA(GlanceableTrayBubbleView, TrayBubbleView)

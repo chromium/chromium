@@ -318,6 +318,24 @@ AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateInstallFaceGazeAssetsFunction::Run() {
+  AccessibilityManager::Get()->InstallFaceGazeAssets(base::BindOnce(
+      &AccessibilityPrivateInstallFaceGazeAssetsFunction::OnInstallFinished,
+      this));
+  return RespondLater();
+}
+
+void AccessibilityPrivateInstallFaceGazeAssetsFunction::OnInstallFinished(
+    std::optional<accessibility_private::FaceGazeAssets> assets) {
+  if (!assets) {
+    Respond(Error("Couldn't retrieve FaceGaze assets."));
+    return;
+  }
+
+  Respond(WithArguments(assets->ToValue()));
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
   AccessibilityManager::Get()->InstallPumpkinForDictation(
       base::BindOnce(&AccessibilityPrivateInstallPumpkinForDictationFunction::

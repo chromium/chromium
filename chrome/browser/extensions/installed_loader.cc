@@ -5,7 +5,9 @@
 #include "chrome/browser/extensions/installed_loader.h"
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -53,7 +55,6 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -356,7 +357,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
         // Non-policy extensions are repaired on startup. Add any corrupted
         // user-installed extensions to the reinstaller as well.
         corrupted_extension_reinstaller->ExpectReinstallForCorruption(
-            extension->id(), absl::nullopt, extension->location());
+            extension->id(), std::nullopt, extension->location());
       }
     }
   } else {

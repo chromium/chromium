@@ -60,9 +60,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "android_emulator_specific_network_enabled_content_browsertests",
     tests = {
-        "content_browsertests_with_emulator_network": targets.legacy_test_config(
-            ci_only = True,
-        ),
+        "content_browsertests_with_emulator_network": targets.legacy_test_config(),
     },
 )
 
@@ -2106,28 +2104,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "goma_mac_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                dimensions = {
-                    "cpu": "x86-64",
-                    "os": "Mac-13",
-                },
-            ),
-        ),
-        "content_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                dimensions = {
-                    "cpu": "x86-64",
-                    "os": "Mac-13",
-                },
-            ),
-        ),
-    },
-)
-
 # BEGIN tests which run on the GPU bots
 
 targets.legacy_basic_suite(
@@ -2255,6 +2231,7 @@ targets.legacy_basic_suite(
             ],
             chromeos_args = [
                 "--stop-ui",
+                "$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile",
             ],
             desktop_args = [
                 "--use-gpu-in-tests",
@@ -2491,7 +2468,7 @@ targets.legacy_basic_suite(
                 "webgpu_telemetry_cts",
             ],
             args = [
-                "--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features",
+                "--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-blink-features=WebGPUExperimentalFeatures",
             ],
             swarming = targets.swarming(
                 shards = 14,
@@ -3645,11 +3622,21 @@ targets.legacy_basic_suite(
         "angle_unittests": targets.legacy_test_config(
             use_isolated_scripts_api = True,
         ),
-        "base_unittests": targets.legacy_test_config(),
+        "base_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
         "blink_common_unittests": targets.legacy_test_config(),
         "blink_fuzzer_unittests": targets.legacy_test_config(),
         "blink_heap_unittests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(),
+        "blink_platform_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
+            ],
+        ),
         "blink_unittests": targets.legacy_test_config(),
         "blink_unittests_v2": targets.legacy_test_config(),
         "boringssl_crypto_tests": targets.legacy_test_config(),
@@ -4417,7 +4404,18 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "optimization_guide_gtests",
+    name = "optimization_guide_desktop_gtests",
+    tests = {
+        "chrome_ml_unittests": targets.legacy_test_config(),
+        "optimization_guide_browser_tests": targets.legacy_test_config(),
+        "optimization_guide_components_unittests": targets.legacy_test_config(),
+        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
+        "optimization_guide_unittests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "optimization_guide_desktop_gtests_nogpu",
     tests = {
         "chrome_ml_unittests": targets.legacy_test_config(),
         "optimization_guide_browser_tests": targets.legacy_test_config(),
@@ -5250,6 +5248,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 15,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
@@ -5276,6 +5275,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 3,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
@@ -5287,6 +5287,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 10,
             ),
+            experiment_percentage = 100,
         ),
     },
 )

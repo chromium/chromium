@@ -33,7 +33,7 @@ class NetworkBandwidthSampler : public Sampler {
 
   // Collects network bandwidth info if the corresponding user policy is set
   // and reports collected metrics using the specified callback. Reports
-  // `absl::nullopt` otherwise.
+  // `std::nullopt` otherwise.
   void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:

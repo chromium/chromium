@@ -221,7 +221,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
 
   ContactInfoEntryDataSetter s(profile);
   // Set name-related values and statuses.
-  s.Set(specifics.mutable_name_honorific(), NAME_HONORIFIC_PREFIX);
   s.Set(specifics.mutable_name_first(), NAME_FIRST);
   s.Set(specifics.mutable_name_middle(), NAME_MIDDLE);
   s.Set(specifics.mutable_name_last(), NAME_LAST);
@@ -229,8 +228,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.mutable_name_full(), NAME_FULL);
-  s.Set(specifics.mutable_name_full_with_honorific(),
-        NAME_FULL_WITH_HONORIFIC_PREFIX);
 
   // Set address-related values and statuses.
   s.Set(specifics.mutable_address_city(), ADDRESS_HOME_CITY);
@@ -364,7 +361,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
 
   ContactInfoProfileSetter s(*profile);
   // Set name-related values and statuses.
-  s.Set(specifics.name_honorific(), NAME_HONORIFIC_PREFIX);
   s.Set(specifics.name_first(), NAME_FIRST);
   s.Set(specifics.name_middle(), NAME_MIDDLE);
   s.Set(specifics.name_last(), NAME_LAST);
@@ -372,7 +368,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.name_full(), NAME_FULL);
-  s.Set(specifics.name_full_with_honorific(), NAME_FULL_WITH_HONORIFIC_PREFIX);
 
   // Set address-related values and statuses.
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
@@ -459,9 +454,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   EntryTokenDeleter d;
   // Delete name-related values and statuses.
-  if (d.Delete(trimmed_specifics.mutable_name_honorific())) {
-    trimmed_specifics.clear_name_honorific();
-  }
   if (d.Delete(trimmed_specifics.mutable_name_first())) {
     trimmed_specifics.clear_name_first();
   }
@@ -482,9 +474,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_name_full())) {
     trimmed_specifics.clear_name_full();
-  }
-  if (d.Delete(trimmed_specifics.mutable_name_full_with_honorific())) {
-    trimmed_specifics.clear_name_full_with_honorific();
   }
   // Delete address-related values and statuses.;
   if (d.Delete(trimmed_specifics.mutable_address_city())) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1066101356081285416">Chrome हे तुम्ही भेट दिलेल्या साइटवरील ट्रॅकिंग नंबर डिटेक्ट करेल आणि तुम्हाला नवीन टॅब पेजवर पॅकेजशी संबंधित अपडेट दाखवेल. हे वैशिष्ट्य पुरवण्यासाठी आणि सर्वांसाठी Google खरेदी वैशिष्ट्यांमध्ये सुधारणा करण्यासाठी पॅकेज ट्रॅकिंग नंबर व वेबसाइटचे नाव हे Chromium ला पाठवले जाईल. तुम्ही हे <ph name="BEGIN_LINK" />पॅकेज ट्रॅकिंग सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
 <translation id="1085696779717592361">बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="1105362920864247682">Chrome मधील ब्राउझिंग डेटा साफ करा.</translation>
 <translation id="1113057722807951993">पासफ्रेझ एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">तुमचा Chrome डेटा सिंक करा</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome मधील तुमच्या बुकमार्कमध्ये इनपुट केलेल्या URLs जोडते.</translation>
+<translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1830634592642484976">हा पत्ता सध्या Chrome वर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते <ph name="USER_EMAIL" /> मध्ये सेव्ह करा.</translation>
 <translation id="1843217788865538014">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता, तेव्हा आपोआप Chrome वापरा.</translation>
 <translation id="1910975740091000991">iOS साठी Chrome</translation>
 <translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
 <translation id="1987779152850321833">Chrome चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा.</translation>
-<translation id="2008357574463816229">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग्ज बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करा<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा.</translation>
 <translation id="2120238739383482109">Chrome बुकमार्क उघडते.</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chrome ने पडताळले.</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chrome मध्ये वाचन सूची आयटम जोडा</translation>
 <translation id="2736805085127235148">तुमच्या डिव्हाइस सेटिंग्जमध्ये Chrome सूचना सध्या बंद केल्या आहेत.</translation>
 <translation id="2767464022270041271">सेव्ह केलेले कोणतेही पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह करता, तेव्हा Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
+<translation id="2789947168960170215">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="2868822340714096138">Chrome मधील ब्राउझिंग डेटा साफ करा</translation>
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">या Chrome प्रोफाइलसाठीदेखील वर्धित केलेले सुरक्षित ब्राउझिंग मिळवा</translation>
 <translation id="3522659714780527202">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="3577555362230509265">इतर अ‍ॅप्समध्ये Chrome वापरा.</translation>
-<translation id="3594076341410558780">“Chrome चा पुरेपूर वापर करा” लपवा</translation>
 <translation id="364480321352456989">तुमचे Chrome कालबाह्य झाले आहे.</translation>
 <translation id="3646736009628185125">तुमच्या कुटुंबातील सदस्याला सध्या पासवर्ड मिळू शकत नाहीत. त्यांना Chrome अपडेट आणि त्यांचे पासवर्ड सिंक करण्यास सांगा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">याचा अर्थ असा, की Chrome हे प्रत्येक वेळी मोबाइल साइटची विनंती करेल.</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />Chrome चा कोणता डेटा सेव्ह केला जातो हे व्यवस्थापित करणे<ph name="END_LINK" /> तुम्ही करू शकता.
 
 तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
-<translation id="687586529977635009">Chrome हे तुम्ही भेट दिलेल्या साइटवरील ट्रॅकिंग क्रमांक डिटेक्ट करेल आणि तुम्हाला नवीन टॅब पेजवर पॅकेजसंबंधित अपडेट दाखवेल. हे वैशिष्‍ट्य पुरवण्यासाठी आणि प्रत्येकासाठी Shopping मध्ये सुधारणा करण्याकरिता तुमचा डेटा Google सह शेअर केला जाईल. तुम्ही हे <ph name="BEGIN_LINK" />पॅकेज ट्रॅकिंग सेटिंग्ज<ph name="END_LINK" /> मध्ये बदलू शकता.</translation>
 <translation id="6916015246697034114">Chrome मध्ये आवाज वापरून शोधा</translation>
 <translation id="6964931465519938134">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chrome वापरू शकता.</translation>
 <translation id="6975725306479268850">ऑटोफिल साठी Chrome निवडा</translation>

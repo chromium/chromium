@@ -6,6 +6,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "metrics_reporter.mojom" ]
-  webui_module_path = "chrome://resources/js/metrics_reporter"
+
+  # The generated mojo bindings are part of the ui/webui/resources/js
+  # build_webui() target, so are served from chrome://resources/js/
+  webui_module_path = "chrome://resources/js/"
   public_deps = [ "//mojo/public/mojom/base" ]
 }

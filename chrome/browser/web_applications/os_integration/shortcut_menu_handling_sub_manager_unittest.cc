@@ -742,8 +742,8 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
       OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif  // BUILDFLAG(IS_WIN)
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      scoped_supress = absl::nullopt;
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
   scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
   // Shortcuts menu should should still be registered with the OS.

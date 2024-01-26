@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
+
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/get_smart_card_context_factory.h"
-#include "chrome/browser/smart_card/smart_card_permission_request.h"
-#include "components/permissions/permission_request_manager.h"
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 
 ChromeOsSmartCardDelegate::ChromeOsSmartCardDelegate() = default;
 ChromeOsSmartCardDelegate::~ChromeOsSmartCardDelegate() = default;
@@ -19,60 +20,43 @@ ChromeOsSmartCardDelegate::GetSmartCardContextFactory(
   return ::GetSmartCardContextFactory(browser_context);
 }
 
+bool ChromeOsSmartCardDelegate::IsPermissionBlocked(
+    content::RenderFrameHost& render_frame_host) {
+  auto& profile = CHECK_DEREF(
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
+
+  auto& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(profile);
+
+  const url::Origin& origin =
+      render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
+
+  return !permission_context.CanRequestObjectPermission(origin);
+}
+
 bool ChromeOsSmartCardDelegate::HasReaderPermission(
     content::RenderFrameHost& render_frame_host,
     const std::string& reader_name) {
-  // TODO(crbug.com/1386175): Ask permission context.
-  return false;  // Asks every time
+  auto& profile = CHECK_DEREF(
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
+
+  auto& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(profile);
+
+  return permission_context.HasReaderPermission(render_frame_host, reader_name);
 }
 
 void ChromeOsSmartCardDelegate::RequestReaderPermission(
     content::RenderFrameHost& render_frame_host,
     const std::string& reader_name,
     RequestReaderPermissionCallback callback) {
-  const url::Origin& origin =
-      render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
+  auto& profile = CHECK_DEREF(
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
 
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  auto& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(profile);
 
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-  if (!permission_request_manager) {
-    LOG(ERROR) << "Cannot request permission: no PermissionRequestManager";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  // Regarding ownership: The request will delete itself once the request
-  // manager notifies that it can do so.
-  auto* permission_request = new SmartCardPermissionRequest(
-      origin, reader_name,
-      base::BindOnce(&ChromeOsSmartCardDelegate::OnPermissionRequestDecided,
-                     weak_factory_.GetWeakPtr(), origin, reader_name,
-                     std::move(callback)));
-
-  permission_request_manager->AddRequest(&render_frame_host,
-                                         permission_request);
+  permission_context.RequestReaderPermisssion(render_frame_host, reader_name,
+                                              std::move(callback));
 }
 
-void ChromeOsSmartCardDelegate::OnPermissionRequestDecided(
-    const url::Origin& origin,
-    const std::string& reader_name,
-    RequestReaderPermissionCallback callback,
-    SmartCardPermissionRequest::Result result) {
-  switch (result) {
-    case SmartCardPermissionRequest::Result::kAllowOnce:
-      // TODO(crbug.com/1386175): Set ephemeral grant in permission context.
-      std::move(callback).Run(true);
-      break;
-    case SmartCardPermissionRequest::Result::kAllowAlways:
-      // TODO(crbug.com/1386175): Set persistent grant in permission context.
-      std::move(callback).Run(true);
-      break;
-    case SmartCardPermissionRequest::Result::kDontAllow:
-      // There's no block list. Origin is free to request again.
-      std::move(callback).Run(false);
-      break;
-  }
-}

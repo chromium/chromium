@@ -89,8 +89,7 @@ bool IsANGLEMetal() {
 
 template <typename T>
 base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(vec.data()),
-                         vec.size() * sizeof(T));
+  return base::as_byte_span(vec);
 }
 
 base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {

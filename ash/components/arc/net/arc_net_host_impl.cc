@@ -6,6 +6,7 @@
 
 #include <net/if.h>
 
+#include <map>
 #include <queue>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -1316,7 +1316,7 @@ void ArcNetHostImpl::UpdateHostNetworks(
 
 void ArcNetHostImpl::NetworkListChanged() {
   // Forget properties of disconnected networks
-  base::EraseIf(shill_network_properties_, [](const auto& entry) {
+  std::erase_if(shill_network_properties_, [](const auto& entry) {
     return !IsActiveNetworkState(
         GetStateHandler()->GetNetworkState(entry.first));
   });
@@ -1414,4 +1414,17 @@ void ArcNetHostImpl::NotifySocketConnectionEvent(
   }
   ash::PatchPanelClient::Get()->NotifySocketConnectionEvent(*notification);
 }
+
+void ArcNetHostImpl::NotifyARCVPNSocketConnectionEvent(
+    mojom::SocketConnectionEventPtr msg) {
+  auto notification = net_utils::TranslateSocketConnectionEvent(msg);
+  if (!notification) {
+    NET_LOG(ERROR) << "Translate socket connection event failed, not sending "
+                      "notification for ARC VPN socket.";
+    return;
+  }
+  ash::PatchPanelClient::Get()->NotifyARCVPNSocketConnectionEvent(
+      *notification);
+}
+
 }  // namespace arc

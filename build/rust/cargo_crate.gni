@@ -147,10 +147,10 @@ template("cargo_crate") {
   # with build.rs and otherwise assuming that the target contains a
   # `crate/` subdirectory.
   if (defined(invoker.build_root)) {
-    manifest_dir = rebase_path(get_path_info(invoker.build_root, "dir"), "")
+    manifest_dir = "."
   } else {
     build_gn_dir = get_label_info(target_name, "dir")
-    manifest_dir = rebase_path(build_gn_dir + "/crate", "")
+    manifest_dir = rebase_path(build_gn_dir + "/crate", root_build_dir)
   }
   _rustenv += [ "CARGO_MANIFEST_DIR=${manifest_dir}" ]
 

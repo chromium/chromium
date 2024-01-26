@@ -33,7 +33,6 @@ bool DrmRenderNodeHandle::Initialize(const base::FilePath& path) {
   ScopedDrmVersionPtr version(drmGetVersion(drm_fd.get()));
   if (!version) {
     LOG(FATAL) << "Can't get version for device: '" << path << "'";
-    return false;
   }
 
   drm_fd_ = std::move(drm_fd);

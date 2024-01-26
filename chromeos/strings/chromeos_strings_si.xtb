@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ඉදිරියට යන්න</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> සිට දත්ත භාවිතය</translation>
 <translation id="1621067168122174824">ආරෝපණ පරීක්ෂණය ධාවනය කරන්න</translation>
+<translation id="1626590945318984973">කෙටිමඟ නොලැබේ. කාර්යය සහ <ph name="META_KEY" /> යතුරු භාවිතා නොකර නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
 <translation id="1641857168437328880">ලේඛන සංග්‍රාහකය (තනි-පැත්තක)</translation>
 <translation id="1643449475550628585">වෝල්පේපර රූපය දිනපතා වෙනස් කරන්න</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="1885577615937958993">වේගයෙන් ඉදිරියට මාධ්‍ය</translation>
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
-<translation id="1897672602657312171">සෙවීම් යතුර නොමැති කෙටිමඟ සමහර යෙදුම් කෙටිමඟ සමග ගැටිය හැක. එය දිගටම භාවිතා කිරීමට මෙම කෙටිමඟ නැවත ඔබන්න, නැතහොත් සෙවීම් යතුර භාවිතයෙන් නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="1904932688895783618">මෙන්න තවත් උපකාරී සම්පත් කිහිපයක්:</translation>
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">ඡායාරූප <ph name="NUMBER" />ක්</translation>
 <translation id="2157660087437850958">ඉමොජි තෝරකය</translation>
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලක <ph name="APP_NAME_1" /> සකසා ඇත.}=2{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලක <ph name="APP_NAME_1" /> සහ <ph name="APP_NAME_2" /> සකසා ඇත.}=3{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලක <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> සහ <ph name="APP_NAME_3" /> සකසා ඇත.}one{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලක <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> සහ තව යෙදුම් #ක් සකසා ඇත.}other{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලක <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> සහ තව යෙදුම් #ක් සකසා ඇත.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
 <translation id="215916044711630446">APN එක් කරන්න බොත්තම දැන් අබලයි</translation>
 <translation id="2161394479394250669">මුද්‍රණ කාර්යය අවලංගු කරන්න</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN විස්තර සංස්කරණය කරන්න</translation>
 <translation id="2209788852729124853">තදබදය ගණනය කිරීම් යළි සකසන්න</translation>
 <translation id="2212733584906323460">විභේදනය නම් කරන්න</translation>
+<translation id="2215920961700443347">අන්තර්ජාලය නැත. අන්තර්ජාලයට සම්බන්ධ කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2217935453350629363">වත්මන් වේගය</translation>
 <translation id="2224337661447660594">අන්තර්ජාලය නැත</translation>
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">පිටු <ph name="TOTAL_PAGES" />කින් <ph name="CURRENT_PAGE" /> රූපය</translation>
 <translation id="2446553403094072641">පාවෙන ලක්ෂ්‍යය නිරවද්‍යතාව</translation>
 <translation id="2448312741937722512">වර්ගය</translation>
+<translation id="2465272316171730950">අපි උපරිම ධාරිතාවයෙන් සිටිමු. ටික වේලාවකින් ආපසු එන්න.</translation>
 <translation id="248546197012830854">උපාංගය නොබැඳි වේ. උදවු අන්තර්ගතය බැලීමට Wi-Fi ජාලයට සම්බන්ධ වන්න.</translation>
 <translation id="2491955442992294626">ඔබ වෙනත් කවුළුවක් භාවිත කරන විට යතුරු පරීක්ෂා නොකෙරේ</translation>
 <translation id="2493126929778606526">ස්වයංක්‍රියව තෝරන ලද, ඔබගේ හොඳම ඡායාරූප</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">වත්මන් වෝල්පේපර රූපය නැවුම් කරන්න</translation>
 <translation id="2512979179176933762">කවුළු පෙන්වන්න</translation>
 <translation id="2513396635448525189">පුරන රූපය</translation>
-<translation id="2515109918609218604">කෙටිමඟ නොලැබේ. කාර්යය සහ සෙවීම් යතුරු භාවිතා නොකර නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
 <translation id="2521835766824839541">පෙර ඛණ්ඩය</translation>
 <translation id="2526590354069164005">ඩෙස්ක්ටොප්</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">ඔබට දැන් නව <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />බිතුපත්<ph name="END_LINK_WALLPAPER_SUBPAGE" /> වෙත ප්‍රවේශය ඇත</translation>
 <translation id="4117637339509843559">අඳුරු ප්‍රකාරය</translation>
 <translation id="4130035430755296270">තවත් පිරිසැලසුම් විකල්ප සඳහා දිගටම උඩින් තබා ගන්න</translation>
+<translation id="4130750466177569591">මම එකඟ වෙමි</translation>
 <translation id="4131410914670010031">කළු සහ සුදු</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ස්වයංක්‍රීයව ආරම්භ කරන ලදි}one{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}other{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}}</translation>
 <translation id="4145784616224233563">HTTP ෆයර්වෝලය</translation>
 <translation id="4147897805161313378">Google ඡායාරූප</translation>
 <translation id="4150201353443180367">සංදර්ශකය</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">දීප්තිය අඩු කිරීම</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>
 <translation id="4176659219503619100">පාලන පුවරුව</translation>
-<translation id="4185315616950253617">සෙවුම් යතුරට ඉහළ පේළියේ යතුරු සහිග කෙටිමඟ ඇතුළු කිරීම අවශ්‍යයි.</translation>
 <translation id="420283545744377356">තිර සුරැකුම ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="4213104098953699324">USB යතුරු පුවරුව</translation>
 <translation id="4227825898293920515">මුරපදය <ph name="TIME" /> තුළ කල් ඉකුත් වෙයි</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">අක්‍රිය කරන්න</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> යළි අරඹමින්</translation>
 <translation id="4395835743215824109">යතුරු පුවරුව අභිරුචිකරණය</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> යතුර නොමැති කෙටිමඟ සමහර යෙදුම් කෙටිමඟ සමග ගැටිය හැක. එය දිගටම භාවිතා කිරීමට මෙම කෙටිමඟ නැවත ඔබන්න, නැතහොත් <ph name="KEY" /> යතුර භාවිතයෙන් නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="4415951057168511744">වත්මන් නියුරුව</translation>
+<translation id="4417830657741848074">ඔබේ පරිපාලකයා ස්වයංක්‍රීයව ආරම්භ කිරීමට සමහර යෙදුම් පිහිටුවා ඇත. මෙම යෙදුම්වලින් සමහරක් වසා නොතිබිය හැක.</translation>
 <translation id="4422041425070339732">ඊතලය පහළට</translation>
 <translation id="4425149324548788773">මගේ Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ක්‍රියාවිරහිතයි</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">පෘථිවි ප්‍රවාහ තිර සුරැකුම</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
+<translation id="4500722292849917410">කෙටිමඟ නොලැබේ. සංස්කාරක යතුරක් භාවිතයෙන් නව කෙටිමඟක් ඔබන්න (ctrl, alt, shift, හෝ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">අතුරු මුහුණත් වර්ණය</translation>
 <translation id="4503223151711056411">වම් ඊතලය</translation>
 <translation id="4507392511610824664">දීප්තිය වැඩි කිරීම</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">ගොනු යෙදුම තුළ ෆෝල්ඩරයක් තෝරන්න...</translation>
 <translation id="4835901797422965222">සක්‍රිය ජාල නැත</translation>
 <translation id="4839698083503556542">ඔබේම චිත්‍රපටය තනන්න</translation>
+<translation id="48409034532829769">ඔබේ පරිපාලකයා ස්වයංක්‍රීයව ආරම්භ කිරීමට "<ph name="APP_NAME" />" පිහිටුවා ඇත. මෙම යෙදුම වසා නොතිබිය හැක.</translation>
 <translation id="484462545196658690">ස්වයං</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> තෝරන ලදි, <ph name="TOPIC_SOURCE" /> ඇල්බම තේරීමට Enter ඔබන්න</translation>
 <translation id="484790837831576105">(Android) DNS විභේදනය</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">බෙදන්න</translation>
 <translation id="4972592110715526173">ප්‍රකාරය වෙනස් කරන්න</translation>
 <translation id="498186245079027698">ස්කෑනරය පරීක්ෂා කර නැවත උත්සාහ කරන්න. ස්කෑන් කළ ගොනු සුරැකීමට ප්‍රමාණවත් ස්ථානීය ඉඩක් ඇති බවට සහතික කර ගන්න.</translation>
+<translation id="4982627662315910959">කෙටිමඟ නොලැබේ. Shift සහ 1 තවත් සංස්කාරක යතුරක් (ctrl, alt, හෝ <ph name="META_KEY" />) භාවිතයෙන් නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="4985509611418653372">ධාවනය කරන්න</translation>
 <translation id="4987769320337599931">ෆයර් වෝලය</translation>
 <translation id="4988526792673242964">පිටු</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">අඳුරු තේමා කාල සටහන</translation>
 <translation id="5229344016299762883">සම්පූර්ණයෙන් පිටවීම</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලකයා "<ph name="APP_NAME" />" පිහිටුවා ඇත.}=2{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලකයා "<ph name="APP_NAME" />" සහ තව 1 යෙදුමක් පිහිටුවා ඇත.}one{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලකයා "<ph name="APP_NAME" />" සහ තව යෙදුම් #ක් පිහිටුවා ඇත.}other{ඔබ පුරනය වන සෑම අවස්ථාවකම ස්වයංක්‍රීයව ආරම්භ කිරීමට ඔබේ පරිපාලකයා "<ph name="APP_NAME" />" සහ තව යෙදුම් #ක් පිහිටුවා ඇත.}}</translation>
 <translation id="5252456968953390977">රෝමිං</translation>
 <translation id="5257811368506016604">ළා වර්ණ ප්‍රකාරය සබල කරන්න</translation>
 <translation id="5264277876637023664">CPU පරීක්ෂණය ධාවනය කරන්න</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
 <translation id="725133483556299729">ඉ-තැපෑල තෝරන්න</translation>
 <translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
-<translation id="7273347807225967898">කෙටිමඟ නොලැබේ. සංස්කාරක යතුරක් (ctrl, alt, shift, සෙවීම, හෝ දියත්කරණය) භාවිත කර නව කෙටිමඟක් ඔබන්න.</translation>
+<translation id="7271932918253517778"><ph name="META_KEY" /> යතුරට ඉහළ පේළියේ යතුරු සහිත කෙටිමඟ ඇතුළත් කිරීම අවශ්‍යයි.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">සුළඟ විඳින්න</translation>
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">පොදු පාලන</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ජාලයකට එක් වීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="7978412674231730200">පුද්ගලික යතුර</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ස්වයංක්‍රීයව ආරම්භ කරන ලදි}one{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}other{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}}</translation>
 <translation id="7994702968232966508">EAP ආකාරය</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="8017679124341497925">කෙටිමඟ සංස්කරණය කෙරිණි</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8094062939584182041">මෙම ගැටලුව පිළිබඳව ඔබට ඉ-තැපැල් කිරීමට Google හට ඉඩ දෙන්න</translation>
 <translation id="8104083085214006426">ඔබ විවෘත සහ අනාරක්ෂිත ජාලයක් භාවිත කරමින් සිටියි</translation>
-<translation id="8111706652656628199">කෙටිමඟ නොලැබේ. shift + තව 1 සංස්කාරක යතුරක් (ctrl, alt, සෙවීම, හෝ දියත්කරණය) භාවිත කර නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="811820734797650957">(Android) වාහල පින් කළ හැකිය</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">තදබදය ගණනය කිරීම් ඉල්ලන්න</translation>

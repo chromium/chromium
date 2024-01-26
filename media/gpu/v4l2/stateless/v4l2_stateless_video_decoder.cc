@@ -4,6 +4,10 @@
 
 #include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "media/gpu/v4l2/stateless/av1_delegate.h"
+#endif
+
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
@@ -476,6 +480,12 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
   DVLOGF(3);
 
   switch (VideoCodecProfileToVideoCodec(profile)) {
+#if BUILDFLAG(IS_CHROMEOS)
+    case VideoCodec::kAV1:
+      decoder_ = std::make_unique<AV1Decoder>(
+          std::make_unique<AV1Delegate>(this), profile, color_space);
+      break;
+#endif
     case VideoCodec::kVP8:
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<VP8Delegate>(this), color_space);

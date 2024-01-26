@@ -146,6 +146,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1792959175193046959">Cambia a localización de descarga predeterminada en calquera momento</translation>
 <translation id="1796666869097395659">Minimizar pestana para volver máis tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807709131360304325">Abrir unha nova ventá</translation>
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non pode continuar usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Buscar na páxina</translation>
@@ -189,6 +190,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2056878612599315956">O sitio está en pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga}other{Produciuse un erro en # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2079545284768500474">Desfacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Mostrando vista compacta</translation>
 <translation id="2093731487903423814">últimos 15 minutos</translation>
@@ -218,7 +220,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
 <translation id="2234827758954819389">Guía de privacidade</translation>
 <translation id="2239812875700136898">Fai clic no botón Opcións de Discover e controla as túas historias</translation>
-<translation id="2241634353105152135">Só unha vez</translation>
 <translation id="2247789808226901522">A tarxeta venceu</translation>
 <translation id="2248941474044011069">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="2249635629516220541">Personaliza a información que usan os sitios para mostrarche anuncios</translation>
@@ -233,7 +234,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
-<translation id="2327226657832576859">Queres abrir automaticamente os PDF?</translation>
 <translation id="2328985652426384049">Non se puido iniciar sesión</translation>
 <translation id="2341410551640223969">Non se puido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
@@ -316,6 +316,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">produciuse un erro</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
+<translation id="2789486458103222910">Aceptar</translation>
 <translation id="2800066122460699237">Pecharase a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="281504910091592009">Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">O menú da tarxeta do feed ocupa a metade inferior da pantalla</translation>
@@ -354,7 +355,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2946420957526726953">Actualizando Chrome para conectarse a outros dispositivos</translation>
 <translation id="2951071800649516099">Engade páxinas á lista de lectura para consultalas noutro momento</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> páxina sen ler}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páxinas sen ler}}</translation>
-<translation id="2961210776189273067">Tratamento</translation>
 <translation id="296370266220139811">Aforra tempo escribindo menos</translation>
 <translation id="2977350910003566746">Ordenando pola data de última apertura</translation>
 <translation id="297771753501244313">Ordenar: Última apertura</translation>
@@ -600,6 +600,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4303044213806199882">capturadepantalla_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
+<translation id="4311652497846705514">Queres abrir o PDF?</translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
 <translation id="433213510553688132">Seguindo...</translation>
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
@@ -639,7 +640,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4523326818319942067">última hora</translation>
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4532845899244822526">Selecciona cartafol</translation>
-<translation id="4541505619120536051">Abrir sempre</translation>
 <translation id="4543131175509360848">Non hai ningunha folla de claves de acceso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana}other{<ph name="TAB_COUNT_MANY" /> pestanas, <ph name="TAB_COUNT_INCOGNITO" /> no modo de incógnito}}</translation>
 <translation id="4554077758708533499">Teléfono conectado mediante un cable USB</translation>
@@ -831,7 +831,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5486841595534124508">Logotipo do aviso de privacidade do centro de estatísticas da páxina que redirixe á páxina A miña actividade.</translation>
 <translation id="5487521232677179737">Borrar datos</translation>
 <translation id="5492637351392383067">Encriptación no dispositivo</translation>
-<translation id="5509866835115085009">Chrome pode abrir automaticamente os PDF cando os descargues.</translation>
 <translation id="5514904542973294328">Desactivado polo administrador deste dispositivo</translation>
 <translation id="5515439363601853141">Desbloquea a pantalla para ver o teu contrasinal</translation>
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5962718611393537961">Toca para contraer</translation>
 <translation id="5964869237734432770">Descricións de imaxes: non</translation>
 <translation id="5966233851250124270">Chrome lembrará a túa elección</translation>
+<translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5995726099713306770">Queres descargar esta páxina de novo?</translation>
 <translation id="6000066717592683814">Manter Google</translation>
@@ -1302,6 +1302,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os ficheiros, 1 ficheiro na lista}other{Todos os ficheiros, # ficheiros na lista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla longa</translation>
+<translation id="7821130663268546430">Podes atopar todas as pestanas abertas no selector de pestanas</translation>
 <translation id="7822705602465980873">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
 <translation id="78270725016672455">O ordenador require que se rexistre este dispositivo para iniciar sesión nun sitio</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
@@ -1329,6 +1330,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desactualizado.</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7947953824732555851">Acep. e iniciar ses.</translation>
+<translation id="7951102827450076904">Abrir sempre os PDF descargados</translation>
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botón Atrás das estatísticas da páxina</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>

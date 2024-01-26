@@ -5,8 +5,10 @@
 #include "net/cert/x509_util.h"
 
 #include <string.h>
+
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -99,7 +101,7 @@ base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
 }  // namespace
 
 // Adds an X.509 Name with the specified distinguished name to |cbb|.
-bool AddName(CBB* cbb, base::StringPiece name) {
+bool AddName(CBB* cbb, std::string_view name) {
   // See RFC 4519.
   static const uint8_t kCommonName[] = {0x55, 0x04, 0x03};
   static const uint8_t kCountryName[] = {0x55, 0x04, 0x06};
@@ -167,8 +169,21 @@ bool AddName(CBB* cbb, base::StringPiece name) {
   return true;
 }
 
-bssl::ParsedCertificateList ParseAllCerts(
-    const net::CertificateList x509_certs) {
+NET_EXPORT net::CertificateList ConvertToX509CertificatesIgnoreErrors(
+    const std::vector<std::vector<uint8_t>>& certs_bytes) {
+  net::CertificateList x509_certs;
+  for (const auto& cert_uint8 : certs_bytes) {
+    scoped_refptr<net::X509Certificate> x509_cert =
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_uint8));
+    if (x509_cert) {
+      x509_certs.push_back(std::move(x509_cert));
+    }
+  }
+  return x509_certs;
+}
+
+bssl::ParsedCertificateList ParseAllValidCerts(
+    const CertificateList& x509_certs) {
   bssl::ParsedCertificateList parsed_certs;
   for (const auto& x509_cert : x509_certs) {
     std::shared_ptr<const bssl::ParsedCertificate> cert =
@@ -209,7 +224,7 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
                                         std::string* token) {
   static const char kChannelBindingPrefix[] = "tls-server-end-point:";
 
-  base::StringPiece der_encoded_certificate =
+  std::string_view der_encoded_certificate =
       x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer());
 
   bssl::der::Input tbs_certificate_tlv;
@@ -408,7 +423,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
       CRYPTO_BUFFER_new(data.data(), data.size(), GetBufferPool()));
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(base::StringPiece data) {
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(std::string_view data) {
   return bssl::UniquePtr<CRYPTO_BUFFER>(
       CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(data.data()),
                         data.size(), GetBufferPool()));
@@ -430,8 +445,8 @@ bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
                 CRYPTO_BUFFER_len(a)) == 0;
 }
 
-base::StringPiece CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
-  return base::StringPiece(
+std::string_view CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
+  return std::string_view(
       reinterpret_cast<const char*>(CRYPTO_BUFFER_data(buffer)),
       CRYPTO_BUFFER_len(buffer));
 }
@@ -488,7 +503,7 @@ bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
 }
 
 bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer, HashValue* hash) {
-  base::StringPiece spki;
+  std::string_view spki;
   if (!asn1::ExtractSPKIFromDERCert(CryptoBufferAsStringPiece(buffer), &spki)) {
     return false;
   }
@@ -502,8 +517,7 @@ bool SignatureVerifierInitWithCertificate(
     crypto::SignatureVerifier::SignatureAlgorithm signature_algorithm,
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate) {
-  base::StringPiece cert_der =
-      x509_util::CryptoBufferAsStringPiece(certificate);
+  std::string_view cert_der = x509_util::CryptoBufferAsStringPiece(certificate);
 
   bssl::der::Input tbs_certificate_tlv;
   bssl::der::Input signature_algorithm_tlv;

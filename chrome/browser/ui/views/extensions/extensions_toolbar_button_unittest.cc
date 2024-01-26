@@ -48,9 +48,7 @@ ExtensionsToolbarButtonUnitTest::extensions_coordinator() {
 
 void ExtensionsToolbarButtonUnitTest::ClickExtensionsButton() {
   ExtensionsToolbarButton* extensions_button =
-      extensions_container()
-          ->GetExtensionsToolbarControls()
-          ->extensions_button();
+      extensions_container()->GetExtensionsButton();
   ClickButton(extensions_button);
   LayoutContainerIfNecessary();
 }

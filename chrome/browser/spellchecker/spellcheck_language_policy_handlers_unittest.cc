@@ -7,9 +7,7 @@
 // language policy. If a language is both blocked and forced, forced wins. It is
 // only practical to test this interaction in a single unit test covering both
 // header files.
-#include "chrome/browser/spellchecker/spellcheck_language_blocklist_policy_handler.h"
-#include "chrome/browser/spellchecker/spellcheck_language_policy_handler.h"
-
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -19,6 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/spellchecker/spellcheck_language_blocklist_policy_handler.h"
+#include "chrome/browser/spellchecker/spellcheck_language_policy_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -26,7 +26,6 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -105,7 +104,7 @@ class SpellcheckLanguagePolicyHandlersTest
 
 TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  absl::optional<spellcheck::ScopedDisableBrowserSpellCheckerForTesting>
+  std::optional<spellcheck::ScopedDisableBrowserSpellCheckerForTesting>
       disable_browser_spell_checker;
   if (!GetParam().windows_spellchecker_enabled) {
     // Hunspell-only spellcheck languages will be used.

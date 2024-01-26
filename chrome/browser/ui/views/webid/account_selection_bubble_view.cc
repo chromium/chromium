@@ -967,13 +967,13 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
 
   // The order that the links are added to `link_data` should match the order of
   // the links in `disclosure_resource_id`.
-  std::vector<std::pair<Observer::LinkType, GURL>> link_data;
+  std::vector<std::pair<LinkType, GURL>> link_data;
   if (!client_metadata.privacy_policy_url.is_empty()) {
-    link_data.emplace_back(Observer::LinkType::PRIVACY_POLICY,
+    link_data.emplace_back(LinkType::PRIVACY_POLICY,
                            client_metadata.privacy_policy_url);
   }
   if (!client_metadata.terms_of_service_url.is_empty()) {
-    link_data.emplace_back(Observer::LinkType::TERMS_OF_SERVICE,
+    link_data.emplace_back(LinkType::TERMS_OF_SERVICE,
                            client_metadata.terms_of_service_url);
   }
 
@@ -989,7 +989,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   disclosure_label->SetText(disclosure_text);
 
   size_t offset_index = 1u;
-  for (const std::pair<Observer::LinkType, GURL>& link_data_item : link_data) {
+  for (const std::pair<LinkType, GURL>& link_data_item : link_data) {
     disclosure_label->AddStyleRange(
         gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(

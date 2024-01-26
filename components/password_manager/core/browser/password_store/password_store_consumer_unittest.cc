@@ -16,7 +16,7 @@ using testing::IsEmpty;
 
 const PasswordStoreBackendError kBackendError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kUnspecified);
+    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
 
 // Partial mock, used to test the default implementation of the protected
 // methods, since those cannot be called from ON_CALL.

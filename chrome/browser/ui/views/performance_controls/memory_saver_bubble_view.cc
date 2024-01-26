@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,6 +99,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
 
   const bool show_memory_savings_chart = base::FeatureList::IsEnabled(
       performance_manager::features::kMemorySavingsReportingImprovements);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
 
   dialog_model_builder
       .SetTitle(
@@ -112,8 +115,6 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
                        .SetId(kMemorySaverDialogOkButton));
 
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
   const uint64_t memory_savings =
       memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
 
@@ -168,6 +169,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements) &&
       !is_guest && !profile->IsIncognitoProfile()) {
+    dialog_model_builder.SetSubtitle(
+        base::UTF8ToUTF16(web_contents->GetURL().host()));
     const bool is_site_excluded = performance_manager::user_tuning::prefs::
         IsSiteInTabDiscardExceptionsList(profile->GetPrefs(),
                                          web_contents->GetURL().host());

@@ -16,6 +16,10 @@ class SkColorSpace;
 class SkImage;
 class SkSurface;
 
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
+
 namespace viz {
 class RasterContextProvider;
 }  // namespace viz
@@ -89,6 +93,7 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
 
   // Populated by VideoFrameToMailboxes.
   std::array<gpu::MailboxHolder, kMaxPlanes> holders_;
+  std::array<scoped_refptr<gpu::ClientSharedImage>, kMaxPlanes> shared_images_;
 
   // Populated by ImportTextures.
   struct YUVPlaneTextureInfo {

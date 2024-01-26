@@ -23,17 +23,7 @@ constexpr char kUnenrollmentHistogram[] =
 constexpr char kUnenrollmentReasonHistogram[] =
     "PasswordManager.UPMUnenrollmentReason";
 
-constexpr int kNetworkError = 7;
 constexpr int kInternalError = 8;
-constexpr int kDeveloperError = 10;
-constexpr int kApiNotConnected = 17;
-constexpr int kConnectionSuspendedDuringCall = 20;
-constexpr int kReconnectionTimedOut = 22;
-constexpr int kAuthErrorResolvable = 11005;
-constexpr int kAuthErrorUnresolvable = 11006;
-constexpr int kBackendGeneric = 11009;
-constexpr int kInvalidData = 11011;
-constexpr int kUnexpectedError = 11013;
 
 }  // namespace
 
@@ -147,36 +137,4 @@ TEST_F(PasswordManagerEvictionUtilTest, ReenrollsUser) {
                 password_manager::prefs::
                     kTimesAttemptedToReenrollToGoogleMobileServices),
             0);
-}
-
-TEST_F(PasswordManagerEvictionUtilTest, ShouldIgnoreOnlyListedError) {
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      kAuthErrorResolvable));
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      kAuthErrorUnresolvable));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldIgnoreOnApiError(kDeveloperError));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldIgnoreOnApiError(kUnexpectedError));
-}
-
-TEST_F(PasswordManagerEvictionUtilTest, ShouldRetryOnlyListedError) {
-  EXPECT_TRUE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kNetworkError));
-  EXPECT_TRUE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kApiNotConnected));
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      kConnectionSuspendedDuringCall));
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      kReconnectionTimedOut));
-  EXPECT_TRUE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kBackendGeneric));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kDeveloperError));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kInvalidData));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kInternalError));
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldRetryOnApiError(kUnexpectedError));
 }

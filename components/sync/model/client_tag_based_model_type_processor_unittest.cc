@@ -15,11 +15,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -3322,36 +3320,24 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
 }
 
-// The param indicates whether the password notes feature is enabled.
 class PasswordsClientTagBasedModelTypeProcessorTest
-    : public testing::WithParamInterface<bool>,
-      public ClientTagBasedModelTypeProcessorTest {
+    : public ClientTagBasedModelTypeProcessorTest {
  public:
   PasswordsClientTagBasedModelTypeProcessorTest() {
-    feature_list_.InitWithFeatureState(syncer::kPasswordNotesWithBackup,
-                                       GetParam());
   }
 
  protected:
   ModelType GetModelType() override { return PASSWORDS; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PasswordsClientTagBasedModelTypeProcessorTest,
+TEST_F(PasswordsClientTagBasedModelTypeProcessorTest,
        ShouldSetPasswordsRedownloadedForNotesFlag) {
   ModelReadyToSync();
   OnSyncStarting();
   worker()->UpdateFromServer(UpdateResponseDataList());
 
-  EXPECT_EQ(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup),
-            db()->model_type_state()
-                .notes_enabled_before_initial_sync_for_passwords());
+  EXPECT_TRUE(db()->model_type_state()
+                  .notes_enabled_before_initial_sync_for_passwords());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PasswordsClientTagBasedModelTypeProcessorTest,
-                         testing::Bool());
 
 }  // namespace syncer

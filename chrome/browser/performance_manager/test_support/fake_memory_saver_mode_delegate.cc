@@ -20,12 +20,12 @@ void FakeMemorySaverModeDelegate::ClearLastState() {
   last_state_.reset();
 }
 
-absl::optional<prefs::MemorySaverModeState>
+std::optional<prefs::MemorySaverModeState>
 FakeMemorySaverModeDelegate::GetLastState() const {
   return last_state_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakeMemorySaverModeDelegate::GetLastTimeBeforeDiscard() const {
   return last_time_before_discard_;
 }

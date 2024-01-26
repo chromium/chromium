@@ -6,6 +6,7 @@
 #define CHROME_TEST_CHROMEDRIVER_SERVER_HTTP_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/window_commands.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -156,7 +156,7 @@ class HttpHandler {
 
   void SendResponseOverWebSocket(HttpServerInterface* http_server,
                                  int connection_id,
-                                 absl::optional<double> maybe_id,
+                                 std::optional<double> maybe_id,
                                  const Status& status,
                                  std::unique_ptr<base::Value> result,
                                  const std::string& session_id,
@@ -184,7 +184,7 @@ class HttpHandler {
                            bool w3c);
   void OnNewBidiSessionOnCmdThread(HttpServerInterface* http_server,
                                    int connection_id,
-                                   absl::optional<double> maybe_id,
+                                   std::optional<double> maybe_id,
                                    const Status& status,
                                    std::unique_ptr<base::Value> result,
                                    const std::string& session_id,
@@ -241,7 +241,7 @@ Status ParseBidiCommand(const std::string& data, base::Value::Dict& parsed);
 
 base::Value::Dict CreateBidiErrorResponse(
     Status status,
-    absl::optional<double> maybe_id = absl::nullopt);
+    std::optional<double> maybe_id = std::nullopt);
 
 }  // namespace internal
 

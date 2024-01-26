@@ -25,7 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_timeouts.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -2190,12 +2190,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
   // In addition to offsetting the window, use a small window size to avoid
   // rejection of the new bounds by the system.
   browser()->window()->SetBounds(gfx::Rect(200, 100, 700, 500));
-  do {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  } while (browser()->window()->GetBounds().origin() != gfx::Point(200, 100));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()->window()->GetBounds().origin() == gfx::Point(200, 100);
+  }));
 
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));

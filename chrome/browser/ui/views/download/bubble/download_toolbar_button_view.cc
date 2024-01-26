@@ -26,6 +26,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/download/download_bubble_info.h"
@@ -41,6 +42,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/browser/browser_thread.h"
@@ -248,14 +250,15 @@ gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
 }
 
 bool DownloadToolbarButtonView::ShouldShowScanningAnimation() const {
-  return state_ == IconState::kDeepScanning || !progress_info_.progress_certain;
+  return !is_dormant_ && (state_ == IconState::kDeepScanning ||
+                          !progress_info_.progress_certain);
 }
 
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   redraw_progress_soon_ = false;
 
   // Do not show the progress ring when there is no in progress download.
-  if (progress_info_.download_count == 0) {
+  if (state_ == IconState::kComplete || progress_info_.download_count == 0) {
     if (scanning_animation_.is_animating()) {
       scanning_animation_.End();
     }
@@ -277,6 +280,16 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int y = height() / 2 - ring_radius;
   int diameter = 2 * ring_radius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
+
+  if (is_dormant_) {
+    // Draw a static solid ring.
+    views::DrawProgressRing(canvas, gfx::RectFToSkRect(ring_bounds),
+                            background_color, background_color,
+                            kProgressRingStrokeWidth,
+                            /*start_angle=*/0,
+                            /*sweep_angle=*/0);
+    return;
+  }
 
   if (ShouldShowScanningAnimation()) {
     if (!scanning_animation_.is_animating()) {
@@ -322,21 +335,42 @@ void DownloadToolbarButtonView::Disable() {
 
 void DownloadToolbarButtonView::UpdateDownloadIcon(
     const IconUpdateInfo& updates) {
+  // Whether to update the icon after processing any changes.
+  bool update_icon = false;
+
   if (updates.show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
     // Invalidate the layout to show the animation in Layout().
     PreferredSizeChanged();
   }
-  if (updates.new_state) {
+  if (updates.new_state && *updates.new_state != state_) {
+    update_icon = true;
     state_ = *updates.new_state;
   }
-  if (updates.new_active) {
+  if (updates.new_active && *updates.new_active != active_) {
+    update_icon = true;
     active_ = *updates.new_active;
   }
 
   if (updates.new_progress) {
     const ProgressInfo& new_progress = *updates.new_progress;
-    if (progress_info_ != new_progress) {
+    // Only change the icon if the download count or progress certainty have
+    // changed. If only the percentage changed, the icon itself doesn't
+    // necessarily need to change; the ring change is captured by possibly
+    // scheduling a paint.
+    if (!new_progress.FieldsEqualExceptPercentage(progress_info_)) {
+      update_icon = true;
+    }
+
+    // Schedule a paint when we hit 0 downloads, even if this button is
+    // dormant. This will clear the ring. This is needed to avoid a ring being
+    // left over on a dormant button when going from >0 to 0 downloads.
+    if (new_progress.download_count == 0 && progress_info_.download_count > 0) {
+      redraw_progress_soon_ = true;
+    }
+
+    if (!is_dormant_ && new_progress.progress_percentage !=
+                            progress_info_.progress_percentage) {
       redraw_progress_soon_ = true;
     }
     progress_info_ = new_progress;
@@ -347,7 +381,9 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
     redraw_progress_soon_ = true;
   }
 
-  UpdateIcon();
+  if (redraw_progress_soon_ || update_icon) {
+    UpdateIcon();
+  }
 }
 
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
@@ -472,10 +508,11 @@ void DownloadToolbarButtonView::UpdateIcon() {
           *new_icon, GetForegroundColor(ButtonState::STATE_DISABLED)));
 
   int progress_download_count = progress_info_.download_count;
+  bool is_disabled = GetVisualState() == Button::STATE_DISABLED || is_dormant_;
+  bool is_active = active_ == IconActive::kActive;
   badge_image_view_->SetImage(
-      GetBadgeImage(active_ == IconActive::kActive, progress_download_count,
-                    GetProgressColor(GetVisualState() == Button::STATE_DISABLED,
-                                     active_ == IconActive::kActive),
+      GetBadgeImage(is_active, progress_download_count,
+                    GetProgressColor(is_disabled, is_active),
                     GetColorProvider()->GetColor(kColorToolbar)));
 
   // Update the toolbar button's tooltip.
@@ -566,6 +603,18 @@ void DownloadToolbarButtonView::OnDialogInteracted() {
   DeactivateAutoClose();
 }
 
+void DownloadToolbarButtonView::OnSecurityDialogButtonPress(
+    const DownloadUIModel& model,
+    DownloadCommands::Command command) {
+  if (model.GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
+      command == DownloadCommands::DISCARD) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DownloadToolbarButtonView::ShowIphPromo,
+                                  weak_factory_.GetWeakPtr()));
+  }
+}
+
 base::WeakPtr<DownloadBubbleNavigationHandler>
 DownloadToolbarButtonView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -576,6 +625,7 @@ void DownloadToolbarButtonView::OnBubbleClosing() {
   bubble_delegate_ = nullptr;
   bubble_contents_ = nullptr;
   bubble_closer_.reset();
+  UpdateIconDormant();
 }
 
 std::unique_ptr<DownloadBubbleNavigationHandler::CloseOnDeactivatePin>
@@ -662,6 +712,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
         base::BindOnce(&DownloadToolbarButtonView::OnPartialViewClosed,
                        weak_factory_.GetWeakPtr()));
   }
+
+  UpdateIconDormant();
 }
 
 // If the browser was inactive when the bubble was shown, then the bubble would
@@ -678,6 +730,11 @@ void DownloadToolbarButtonView::OnBrowserSetLastActive(Browser* browser) {
         FROM_HERE, base::BindOnce(&views::Widget::Activate,
                                   bubble_delegate_->GetWidget()->GetWeakPtr()));
   }
+  UpdateIconDormant();
+}
+
+void DownloadToolbarButtonView::OnBrowserNoLongerActive(Browser* browser) {
+  UpdateIconDormant();
 }
 
 DownloadToolbarButtonView::BubbleCloser::BubbleCloser(
@@ -706,9 +763,14 @@ void DownloadToolbarButtonView::BubbleCloser::OnEvent(const ui::Event& event) {
   }
 }
 
-void DownloadToolbarButtonView::OnPartialViewClosed() {
+void DownloadToolbarButtonView::ShowIphPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Profile* profile = browser_->profile();
+  // Don't show IPH Promo if safe browsing level is set by policy.
+  if (safe_browsing::SafeBrowsingPolicyHandler::
+          IsSafeBrowsingProtectionLevelSetByPolicy(profile->GetPrefs())) {
+    return;
+  }
   if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
           safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
       !profile->IsOffTheRecord() &&
@@ -717,6 +779,16 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
     return;
   }
 #endif
+}
+
+void DownloadToolbarButtonView::OnPartialViewClosed() {
+  // We use PostTask to avoid calling the FocusAndActivateWindow
+  // function reentrantly from ui/wm/core/focus_controller.cc.
+  // We make sure each call to the FocusAndActivateWindow method
+  // finishes before the next.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DownloadToolbarButtonView::ShowIphPromo,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void DownloadToolbarButtonView::DeactivateAutoClose() {
@@ -802,6 +874,9 @@ bool DownloadToolbarButtonView::ShouldShowBubbleAsInactive() const {
 }
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {
+  if (is_dormant_) {
+    return GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+  }
   return GetColorProvider()->GetColor(
       active_ == IconActive::kActive ||
               GetProperty(user_education::kHasInProductHelpPromoKey)
@@ -817,6 +892,20 @@ SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
   return GetColorProvider()->GetColor(
       is_active ? kColorDownloadToolbarButtonActive
                 : kColorDownloadToolbarButtonInactive);
+}
+
+void DownloadToolbarButtonView::UpdateIconDormant() {
+  // Check if the current browser is the last active browser in this profile, or
+  // if the bubble is currently open.
+  bool should_update_button_progress =
+      browser_ == chrome::FindBrowserWithProfile(browser_->profile()) ||
+      (bubble_delegate_ && !bubble_delegate_->GetWidget()->IsClosed());
+  if (is_dormant_ == !should_update_button_progress) {
+    return;
+  }
+  is_dormant_ = !should_update_button_progress;
+  redraw_progress_soon_ = true;
+  UpdateIcon();
 }
 
 void DownloadToolbarButtonView::OnAnyRowRemoved() {

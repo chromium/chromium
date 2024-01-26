@@ -54,9 +54,8 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     const std::string arguments = base::StringPrintf(
         R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",
         tab_id);
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(function.get(), arguments,
-                                                profile());
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        function.get(), arguments, profile());
 
     ASSERT_TRUE(result);
     ASSERT_EQ(base::Value::Type::BOOLEAN, result->type());

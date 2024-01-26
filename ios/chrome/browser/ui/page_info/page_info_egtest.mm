@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -47,6 +48,18 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 @end
 
 @implementation PageInfoTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+
+  if ([self isRunningTest:@selector(testLegacySecuritySection)]) {
+    config.features_disabled.push_back(kRevampPageInfoIos);
+  } else {
+    config.features_enabled.push_back(kRevampPageInfoIos);
+  }
+  return config;
+}
 
 // Checks that if the alert for site permissions pops up, and allow it.
 - (void)checkAndAllowPermissionAlerts {
@@ -279,6 +292,64 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the legacy security section by checking that the correct site security
+// label and that the security footer are displayed.
+- (void)testLegacySecuritySection {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Checks that "Site Security | Not secure” is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_SITE_SECURITY))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the security footer is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the security section by checking that the correct connection label is
+// displayed, that no security footer is displayed and that clicking on the
+// security row leads to the security subpage.
+- (void)testSecuritySection {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Checks that “Connection | Not secure” is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_CONNECTION))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the security footer is not displayed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Check that tapping on the security row leads to the security subpage.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoSecurityViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

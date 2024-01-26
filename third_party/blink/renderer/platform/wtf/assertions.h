@@ -54,7 +54,7 @@
 //    https://bugs.chromium.org/p/chromium/issues/entry?template=Security%20Bug
 #if ENABLE_SECURITY_ASSERT
 #define SECURITY_DCHECK(condition) \
-  LOG_IF(DCHECK, !(condition)) << "Security DCHECK failed: " #condition ". "
+  LOG_IF(FATAL, !(condition)) << "Security DCHECK failed: " #condition ". "
 // A SECURITY_CHECK failure is actually not vulnerable.
 #define SECURITY_CHECK(condition) \
   LOG_IF(FATAL, !(condition)) << "Security CHECK failed: " #condition ". "

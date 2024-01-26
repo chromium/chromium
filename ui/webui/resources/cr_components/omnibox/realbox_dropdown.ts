@@ -196,13 +196,19 @@ export class RealboxDropdownElement extends PolymerElement {
     this.selectedMatchIndex = index;
   }
 
-  updateSelection(selection: OmniboxPopupSelection) {
+  updateSelection(
+      oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     if (selection.state === SelectionLineState.kFocusedButtonHeader) {
       // TODO: Focus group header.
       this.unselect();
       return;
     }
-
+    // If the updated selection is a new match, remove any remaining selection
+    // on the previously selected match.
+    if (oldSelection.line !== selection.line) {
+      this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
+          selection);
+    }
     this.selectIndex(selection.line);
     this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
         selection);

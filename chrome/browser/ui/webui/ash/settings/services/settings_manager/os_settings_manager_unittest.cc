@@ -116,7 +116,7 @@ class OsSettingsManagerTest : public testing::Test {
 
 TEST_F(OsSettingsManagerTest, Initialization) {
   std::optional<base::HistogramEnumEntryMap> sections_enum_entry_map =
-      base::ReadEnumFromEnumsXml("OsSettingsSection");
+      base::ReadEnumFromEnumsXml("OsSettingsSection", "chromeos_settings");
   ASSERT_TRUE(sections_enum_entry_map);
   for (const auto& section : AllSections()) {
     // For each mojom::Section value, there should be an associated
@@ -133,7 +133,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
   }
 
   std::optional<base::HistogramEnumEntryMap> subpages_enum_entry_map =
-      base::ReadEnumFromEnumsXml("OsSettingsSubpage");
+      base::ReadEnumFromEnumsXml("OsSettingsSubpage", "chromeos_settings");
   ASSERT_TRUE(subpages_enum_entry_map);
   for (const auto& subpage : AllSubpages()) {
     // Each mojom::Subpage should be registered in the hierarchy. Note that
@@ -147,7 +147,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
   }
 
   std::optional<base::HistogramEnumEntryMap> settings_enum_entry_map =
-      base::ReadEnumFromEnumsXml("OsSetting");
+      base::ReadEnumFromEnumsXml("OsSetting", "chromeos_settings");
   ASSERT_TRUE(settings_enum_entry_map);
   for (const auto& setting : AllSettings()) {
     // Each mojom::Setting should be registered in the hierarchy. Note that

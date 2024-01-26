@@ -173,7 +173,8 @@ ObserverMethodTestParam kObserverMethodTestParams[] = {
          media::mojom::DisplayCaptureSurfaceType::MONITOR,
          /*logical_surface=*/true,
          media::mojom::CursorCaptureType::NEVER,
-         /*capture_handle=*/nullptr),
+         /*capture_handle=*/nullptr,
+         /*initial_zoom_level=*/100),
      &MockObserver::SetOnIsCapturingDisplayChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingDisplay},
 };

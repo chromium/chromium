@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that one session receives DOM notifications when the other modifies the DOM.');
   var page = await testRunner.createPage();
   await page.loadHTML(`<div id='test' attr='value'>textContent</div>`);

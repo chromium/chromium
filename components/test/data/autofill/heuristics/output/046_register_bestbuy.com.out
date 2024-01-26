@@ -1,5 +1,3 @@
-UNKNOWN_TYPE | st | SEARCH FOR | Keyword or Item # | st_1
-UNKNOWN_TYPE | sc | IN | Global | st_1
 NAME_FIRST | TxtFirstName | *First Name |  | TxtFirstName_1
 NAME_MIDDLE_INITIAL | TxtMI | MI |  | TxtFirstName_1
 NAME_LAST | TxtLastName | *Last Name |  | TxtFirstName_1
@@ -9,3 +7,6 @@ UNKNOWN_TYPE | PwdPassword | *Password (6 to 30 characters. At least one number.
 UNKNOWN_TYPE | PwdPasswordConfirm | *Retype Password (must match exactly) |  | TxtFirstName_1
 ADDRESS_HOME_ZIP | TxtPostalCode | *ZIP Code |  | TxtFirstName_1
 UNKNOWN_TYPE | TxtRzMembershipId | Enter 10-Digit Member ID (optional) |  | TxtFirstName_1
+
+UNKNOWN_TYPE | st | SEARCH FOR | Keyword or Item # | st_1
+UNKNOWN_TYPE | sc | IN | Global | st_1

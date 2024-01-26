@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note: This definition file is generated at build time.
-import {ChromeEvent} from '../definitions/chrome_event.js';
+import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 type GenericListener<T extends any[]> = (...args: T) => void;
 

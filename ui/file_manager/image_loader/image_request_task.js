@@ -1,7 +1,6 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {getFileTypeForName} from 'chrome://file-manager/common/js/file_types_base.js';
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
@@ -20,8 +19,8 @@ export class ImageRequestTask {
   /**
    * @param {string} id Request ID.
    * @param {ImageCache} cache Cache object.
-   * @param {!LoadImageRequest} request Request message as a hash array.
-   * @param {function(!LoadImageResponse)} callback Response handler.
+   * @param {LoadImageRequest} request Request message as a hash array.
+   * @param {(a: LoadImageResponse)=> void} callback Response handler.
    */
   constructor(id, cache, request, callback) {
     /**
@@ -44,14 +43,14 @@ export class ImageRequestTask {
     this.request_ = request;
 
     /**
-     * @type {function(!LoadImageResponse)}
+     * @type {(a: LoadImageResponse)=>void}
      * @private
      */
     this.sendResponse_ = callback;
 
     /**
      * Temporary image used to download images.
-     * @type {Image}
+     * @type {HTMLImageElement}
      * @private
      */
     this.image_ = new Image();
@@ -73,7 +72,7 @@ export class ImageRequestTask {
 
     /**
      * Used to download remote images using http:// or https:// protocols.
-     * @type {XMLHttpRequest}
+     * @type {?XMLHttpRequest}
      * @private
      */
     this.xhr_ = null;
@@ -100,7 +99,7 @@ export class ImageRequestTask {
 
     /**
      * Callback to be called once downloading is finished.
-     * @type {?function()}
+     * @type {?VoidCallback}
      * @private
      */
     this.downloadCallback_ = null;
@@ -115,7 +114,8 @@ export class ImageRequestTask {
   /**
    * Extracts MIME type of a data URL.
    * @param {string|undefined} dataUrl Data URL.
-   * @return {?string} MIME type string, or null if the URL is invalid.
+   * @return {?string|undefined} MIME type string, or null if the URL is
+   *     invalid.
    */
   static getDataUrlMimeType(dataUrl) {
     const dataUrlMatches = (dataUrl || '').match(/^data:([^,;]*)[,;]/);
@@ -137,6 +137,8 @@ export class ImageRequestTask {
   getClientTaskId() {
     // Every incoming request should have been given a taskId.
     assert(this.request_.taskId);
+    // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable to
+    // type 'number'.
     return this.request_.taskId;
   }
 
@@ -154,8 +156,8 @@ export class ImageRequestTask {
    * Tries to load the image from cache, if it exists in the cache, and sends
    * the response. Fails if the image is not found in the cache.
    *
-   * @param {function()} onSuccess Success callback.
-   * @param {function()} onFailure Failure callback.
+   * @param {VoidCallback} onSuccess Success callback.
+   * @param {VoidCallback} onFailure Failure callback.
    */
   loadFromCacheAndProcess(onSuccess, onFailure) {
     this.loadFromCache_(
@@ -170,7 +172,7 @@ export class ImageRequestTask {
   /**
    * Tries to download the image, resizes and sends the response.
    *
-   * @param {function()} callback Completion callback.
+   * @param {VoidCallback} callback Completion callback.
    */
   downloadAndProcess(callback) {
     if (this.downloadCallback_) {
@@ -185,9 +187,9 @@ export class ImageRequestTask {
   /**
    * Fetches the image from the persistent cache.
    *
-   * @param {function(number, number, ?string, string)} onSuccess
+   * @param {(a: number, b: number, c: ?string, d: string)=> void} onSuccess
    *    Success callback with the image width, height, ?ifd, and data.
-   * @param {function()} onFailure Failure callback.
+   * @param {VoidCallback} onFailure Failure callback.
    * @private
    */
   loadFromCache_(onSuccess, onFailure) {
@@ -214,6 +216,10 @@ export class ImageRequestTask {
       return;
     }
 
+    // @ts-ignore: error TS2345: Argument of type '(a: number, b: number, c:
+    // string | null, d: string) => void' is not assignable to parameter of type
+    // '(width: number, height: number, ifd?: string | undefined, data?: string
+    // | undefined) => void'.
     this.cache_.loadImage(cacheKey, timestamp, onSuccess, onFailure);
   }
 
@@ -239,6 +245,8 @@ export class ImageRequestTask {
       return;
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'string | null' is not
+    // assignable to parameter of type 'string | undefined'.
     this.cache_.saveImage(cacheKey, timestamp, width, height, this.ifd_, data);
   }
 
@@ -264,8 +272,8 @@ export class ImageRequestTask {
    * Loads |this.image_| with the |this.request_.url| source or the thumbnail
    * image of the source.
    *
-   * @param {function()} onSuccess Success callback.
-   * @param {function()} onFailure Failure callback.
+   * @param {VoidCallback} onSuccess Success callback.
+   * @param {VoidCallback} onFailure Failure callback.
    * @private
    */
   downloadThumbnail_(onSuccess, onFailure) {
@@ -284,17 +292,23 @@ export class ImageRequestTask {
     const dataUrlMimeType =
         ImageRequestTask.getDataUrlMimeType(this.request_.url);
     if (dataUrlMimeType) {
+      // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable
+      // to type 'string'.
       this.image_.src = this.request_.url;
       this.contentType_ = dataUrlMimeType;
       return;
     }
 
+    // @ts-ignore: error TS7006: Parameter 'dataUrl' implicitly has an 'any'
+    // type.
     const onExternalThumbnail = (dataUrl) => {
       if (chrome.runtime.lastError) {
         console.warn(chrome.runtime.lastError.message);
         onFailure();
       } else if (dataUrl) {
         this.image_.src = dataUrl;
+        // @ts-ignore: error TS2322: Type 'string | null | undefined' is not
+        // assignable to type 'string | null'.
         this.contentType_ = ImageRequestTask.getDataUrlMimeType(dataUrl);
       } else {
         onFailure();
@@ -302,39 +316,57 @@ export class ImageRequestTask {
     };
 
     // Load Drive source thumbnail.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const drivefsUrlMatches = this.request_.url.match(/^drivefs:(.*)/);
     if (drivefsUrlMatches) {
       const url = drivefsUrlMatches[1];
       const cropToSquare = !!this.request_.crop;
+      // @ts-ignore: error TS2339: Property 'imageLoaderPrivate' does not exist
+      // on type 'typeof chrome'.
       chrome.imageLoaderPrivate.getDriveThumbnail(
+          // @ts-ignore: Convert the `onExternalThumbnail` callback to promise.
           url, cropToSquare, onExternalThumbnail);
       return;
     }
 
     // Load PDF source thumbnail.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (this.request_.url.endsWith('.pdf')) {
       const {width, height} = this.targetThumbnailSize_();
+      // @ts-ignore: error TS2339: Property 'imageLoaderPrivate' does not exist
+      // on type 'typeof chrome'.
       chrome.imageLoaderPrivate.getPdfThumbnail(
+          // @ts-ignore: Convert the `onExternalThumbnail` callback to promise.
           this.request_.url, width, height, onExternalThumbnail);
       return;
     }
 
     // Load DocumentsProvider thumbnail, if supported.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const isDocumentsProviderRequest = !!this.request_.url.match(RegExp(
         'filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/.*'));
     if (isDocumentsProviderRequest) {
       const {width, height} = this.targetThumbnailSize_();
+      // @ts-ignore: error TS2339: Property 'imageLoaderPrivate' does not exist
+      // on type 'typeof chrome'.
       chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
+          // @ts-ignore: Convert the `onExternalThumbnail` callback to promise.
           this.request_.url, width, height, onExternalThumbnail);
       return;
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+    // assignable to parameter of type 'string'.
     const fileType = getFileTypeForName(this.request_.url);
 
     // Load video source thumbnail.
     if (fileType.type === 'video') {
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string'.
       this.createVideoThumbnailUrl_(this.request_.url)
           .then((url) => {
+            // @ts-ignore: error TS2322: Type 'Blob' is not assignable to type
+            // 'string'.
             this.image_.src = url;
           })
           .catch((error) => {
@@ -345,10 +377,14 @@ export class ImageRequestTask {
     }
 
     // Load the source directly.
+    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+    // assignable to parameter of type 'string'.
     this.load(this.request_.url, (contentType, blob) => {
       // Load RAW image source thumbnail.
       if (fileType.type === 'raw') {
         blob.arrayBuffer()
+            // @ts-ignore: error TS2339: Property 'reload' does not exist on
+            // type 'typeof runtime'.
             .then(buffer => PiexLoader.load(buffer, chrome.runtime.reload))
             .then(data => {
               this.renderOrientation_ =
@@ -381,12 +417,17 @@ export class ImageRequestTask {
   createVideoThumbnailUrl_(url) {
     const video =
         assertInstanceof(document.createElement('video'), HTMLVideoElement);
+    // @ts-ignore: error TS2322: Type 'Promise<string | Blob>' is not assignable
+    // to type 'Promise<Blob>'.
     return Promise
         .race([
           new Promise((resolve, reject) => {
             video.addEventListener('loadedmetadata', () => {
               video.addEventListener('seeked', () => {
                 if (video.readyState >= video.HAVE_CURRENT_DATA) {
+                  // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                  // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                  // that can be called without arguments.
                   resolve();
                 } else {
                   video.addEventListener('loadeddata', resolve);
@@ -427,19 +468,23 @@ export class ImageRequestTask {
    * Loads an image.
    *
    * @param {string} url URL to the resource to be fetched.
-   * @param {function(string, Blob)} onSuccess Success callback with the content
-   *     type and the fetched data.
-   * @param {function()} onFailure Failure callback.
+   * @param {(a: string, b: Blob)=>void} onSuccess Success callback with the
+   *     content type and the fetched data.
+   * @param {VoidCallback} onFailure Failure callback.
    */
   load(url, onSuccess, onFailure) {
     this.aborted_ = false;
 
     // Do not call any callbacks when aborting.
     const onMaybeSuccess =
-        /** @type {function(string, Blob)} */ ((contentType, response) => {
+        /** @type {(a: string, b: Blob)=>void} */ ((contentType, response) => {
           // When content type is not available, try to estimate it from url.
           if (!contentType) {
             contentType =
+                // @ts-ignore: error TS7053: Element implicitly has an 'any'
+                // type because expression of type 'string' can't be used to
+                // index type '{ gif: string; png: string; svg: string; bmp:
+                // string; jpg: string; jpeg: string; }'.
                 ImageRequestTask
                     .ExtensionContentTypeMap[this.extractExtension_(url)];
           }
@@ -450,7 +495,9 @@ export class ImageRequestTask {
         });
 
     const onMaybeFailure =
-        /** @type {function(number=)} */ ((opt_code) => {
+        // @ts-ignore: error TS6133: 'opt_code' is declared but its value is
+        // never read.
+        /** @type {(a?: number)=>void} */ ((opt_code) => {
           if (!this.aborted_) {
             onFailure();
           }
@@ -470,6 +517,8 @@ export class ImageRequestTask {
    */
   extractExtension_(url) {
     const result = (/\.([a-zA-Z]+)$/i).exec(url);
+    // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+    // type 'string'.
     return result ? result[1] : '';
   }
 
@@ -477,9 +526,9 @@ export class ImageRequestTask {
    * Fetches data using XmlHttpRequest.
    *
    * @param {string} url URL to the resource to be fetched.
-   * @param {function(string, Blob)} onSuccess Success callback with the content
-   *     type and the fetched data.
-   * @param {function(number=)} onFailure Failure callback with the error code
+   * @param {(a: string, b: Blob)=>void} onSuccess Success callback with the
+   *     content type and the fetched data.
+   * @param {(a?: number)=>void} onFailure Failure callback with the error code
    *     if available.
    * @return {XMLHttpRequest} XHR instance.
    * @private
@@ -582,10 +631,15 @@ export class ImageRequestTask {
     // Perform processing if the url is not a data url, or if there are some
     // operations requested.
     let imageChanged = false;
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (!(this.request_.url.match(/^data/) ||
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           this.request_.url.match(/^drivefs:/)) ||
         ImageLoaderUtil.shouldProcess(
             this.image_.width, this.image_.height, this.request_)) {
+      // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement' is not
+      // assignable to parameter of type 'HTMLCanvasElement | (new (width?:
+      // number | undefined, height?: number | undefined) => HTMLImageElement)'.
       ImageLoaderUtil.resizeAndCrop(this.image_, this.canvas_, this.request_);
       imageChanged = true;  // The image is now on the <canvas>.
     }
@@ -598,6 +652,8 @@ export class ImageRequestTask {
     // Finalize the request.
     this.sendImage_(imageChanged);
     this.cleanup_();
+    // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
+    // 'null'.
     this.downloadCallback_();
   }
 
@@ -610,6 +666,8 @@ export class ImageRequestTask {
     this.sendResponse_(new LoadImageResponse(
         LoadImageResponseStatus.ERROR, this.getClientTaskId()));
     this.cleanup_();
+    // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
+    // 'null'.
     this.downloadCallback_();
   }
 

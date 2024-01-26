@@ -13,12 +13,12 @@
 
 namespace enterprise_connectors {
 
-absl::optional<std::string> GetUploadBrowserPublicKeyUrl(
+std::optional<std::string> GetUploadBrowserPublicKeyUrl(
     const std::string& client_id,
     const std::string& dm_token,
     policy::DeviceManagementService* device_management_service) {
   if (!device_management_service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Get the DM server URL to upload the public key. Reuse
@@ -27,16 +27,16 @@ absl::optional<std::string> GetUploadBrowserPublicKeyUrl(
       device_management_service,
       policy::DeviceManagementService::JobConfiguration::
           TYPE_BROWSER_UPLOAD_PUBLIC_KEY,
-      client_id, true, policy::DMAuth::FromDMToken(dm_token), absl::nullopt,
+      client_id, true, policy::DMAuth::FromDMToken(dm_token), std::nullopt,
       nullptr, base::DoNothing());
 
   auto resource_request = config.GetResourceRequest(false, 0);
   if (!resource_request) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!resource_request->url.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return resource_request->url.spec();

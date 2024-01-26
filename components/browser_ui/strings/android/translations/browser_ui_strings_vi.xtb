@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1426410128494586442">Có</translation>
+<translation id="1434873037477293673">thẻ thông báo giảm giá</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Các trang web có thể đưa ra lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
 <translation id="2822354292072154809">Bạn có chắc muốn đặt lại tất cả các quyền của trang web cho <ph name="CHOSEN_OBJECT_NAME" /> không?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6452138246455930388">Có ưu đãi giảm giá trên một thẻ đang mở, từ <ph name="OLD_PRICE" /> xuống còn <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Khi cửa sổ bị thu hẹp, hãy yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="652937045869844725">Hãy thử cho phép cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động cao hơn</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
 <translation id="6766622839693428701">Vuốt xuống để đóng.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
+<translation id="6867014948848323204">Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ bảng nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6950072572526089586">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để có thể vận hành như dự kiến, ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Phù thủy xứ Oz</translation>
 <translation id="7684642910516280563">Không cho phép một trang web dùng cookie của bên thứ ba</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>
+<translation id="7770832849480336015">Ẩn "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>

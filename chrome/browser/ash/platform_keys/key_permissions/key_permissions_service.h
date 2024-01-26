@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -21,7 +21,7 @@ using CanUserGrantPermissionForKeyCallback =
 
 // If an error occurs, |corporate| will be a nullopt.
 using IsCorporateKeyCallback =
-    base::OnceCallback<void(absl::optional<bool> corporate,
+    base::OnceCallback<void(std::optional<bool> corporate,
                             chromeos::platform_keys::Status status)>;
 
 using SetCorporateKeyCallback =

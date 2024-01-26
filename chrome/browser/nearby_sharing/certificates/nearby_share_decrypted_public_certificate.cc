@@ -33,8 +33,8 @@ bool IsDataValid(base::Time not_before,
 }
 
 // Attempts to decrypt |encrypted_metadata_key| using the |secret_key|.
-// Return absl::nullopt if the decryption was unsuccessful.
-absl::optional<std::vector<uint8_t>> DecryptMetadataKey(
+// Return std::nullopt if the decryption was unsuccessful.
+std::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     const crypto::SymmetricKey* secret_key) {
   std::unique_ptr<crypto::Encryptor> encryptor =
@@ -42,23 +42,23 @@ absl::optional<std::vector<uint8_t>> DecryptMetadataKey(
   if (!encryptor) {
     CD_LOG(ERROR, Feature::NS)
         << "Cannot decrypt metadata key: Could not create CTR encryptor.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> decrypted_metadata_key;
   if (!encryptor->Decrypt(base::as_bytes(base::make_span(
                               encrypted_metadata_key.encrypted_key())),
                           &decrypted_metadata_key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return decrypted_metadata_key;
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,
-// using |authentication_key| as the IV. Returns absl::nullopt if the decryption
+// using |authentication_key| as the IV. Returns std::nullopt if the decryption
 // was unsuccessful.
-absl::optional<std::vector<uint8_t>> DecryptMetadataPayload(
+std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     base::span<const uint8_t> encrypted_metadata,
     base::span<const uint8_t> metadata_encryption_key,
     const crypto::SymmetricKey* secret_key) {
@@ -95,7 +95,7 @@ bool VerifyMetadataEncryptionKeyTag(
 }  // namespace
 
 // static
-absl::optional<NearbyShareDecryptedPublicCertificate>
+std::optional<NearbyShareDecryptedPublicCertificate>
 NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
     const nearby::sharing::proto::PublicCertificate& public_certificate,
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key) {
@@ -122,7 +122,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
 
   if (!IsDataValid(not_before, not_after, public_key, secret_key.get(), id,
                    encrypted_metadata, metadata_encryption_key_tag)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Note: Failure to decrypt the metadata key or failure to confirm that the
@@ -132,24 +132,24 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   // potentially be calling DecryptPublicCertificate() on all of our public
   // certificates with the same encrypted metadata key until we find the correct
   // one.
-  absl::optional<std::vector<uint8_t>> decrypted_metadata_key =
+  std::optional<std::vector<uint8_t>> decrypted_metadata_key =
       DecryptMetadataKey(encrypted_metadata_key, secret_key.get());
   if (!decrypted_metadata_key ||
       !VerifyMetadataEncryptionKeyTag(*decrypted_metadata_key,
                                       metadata_encryption_key_tag)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If the key was able to be decrypted, we expect the metadata to be able to
   // be decrypted.
-  absl::optional<std::vector<uint8_t>> decrypted_metadata_bytes =
+  std::optional<std::vector<uint8_t>> decrypted_metadata_bytes =
       DecryptMetadataPayload(encrypted_metadata, *decrypted_metadata_key,
                              secret_key.get());
   if (!decrypted_metadata_bytes) {
     CD_LOG(ERROR, Feature::NS)
         << "Metadata decryption failed: Failed to decrypt metadata "
         << "payload.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   nearby::sharing::proto::EncryptedMetadata unencrypted_metadata;
@@ -158,7 +158,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
     CD_LOG(ERROR, Feature::NS)
         << "Metadata decryption failed: Failed to parse decrypted "
         << "metadata payload.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return NearbyShareDecryptedPublicCertificate(

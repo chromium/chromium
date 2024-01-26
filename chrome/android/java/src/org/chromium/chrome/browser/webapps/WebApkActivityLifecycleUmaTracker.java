@@ -117,7 +117,7 @@ public class WebApkActivityLifecycleUmaTracker
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
         WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
         WebApkUkmRecorder.recordWebApkSessionDuration(
-                webApkExtras.manifestUrl,
+                webApkExtras.manifestId,
                 webApkExtras.distributor,
                 webApkExtras.webApkVersionCode,
                 sessionDuration);

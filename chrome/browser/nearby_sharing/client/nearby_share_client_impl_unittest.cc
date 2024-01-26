@@ -306,17 +306,17 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
  protected:
-  absl::optional<nearby::sharing::proto::UpdateDeviceRequest>
+  std::optional<nearby::sharing::proto::UpdateDeviceRequest>
       update_device_request_from_notifier_;
-  absl::optional<nearby::sharing::proto::UpdateDeviceResponse>
+  std::optional<nearby::sharing::proto::UpdateDeviceResponse>
       update_device_response_from_notifier_;
-  absl::optional<nearby::sharing::proto::ListContactPeopleRequest>
+  std::optional<nearby::sharing::proto::ListContactPeopleRequest>
       list_contact_people_request_from_notifier_;
-  absl::optional<nearby::sharing::proto::ListContactPeopleResponse>
+  std::optional<nearby::sharing::proto::ListContactPeopleResponse>
       list_contact_people_response_from_notifier_;
-  absl::optional<nearby::sharing::proto::ListPublicCertificatesRequest>
+  std::optional<nearby::sharing::proto::ListPublicCertificatesRequest>
       list_public_certificate_request_from_notifier_;
-  absl::optional<nearby::sharing::proto::ListPublicCertificatesResponse>
+  std::optional<nearby::sharing::proto::ListPublicCertificatesResponse>
       list_public_certificate_response_from_notifier_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;

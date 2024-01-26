@@ -26,6 +26,10 @@ source_set("data_controls") {
     "dlp_histogram_helper.cc",
     "dlp_histogram_helper.h",
     "dlp_rules_manager_base.h",
+    "not_condition.cc",
+    "not_condition.h",
+    "or_condition.cc",
+    "or_condition.h",
     "prefs.cc",
     "prefs.h",
     "rule.cc",
@@ -40,6 +44,7 @@ source_set("data_controls") {
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
+    "//components/strings",
     "//components/url_matcher",
     "//url",
   ]
@@ -59,6 +64,8 @@ source_set("unit_tests") {
   sources = [
     "and_condition_unittest.cc",
     "attributes_condition_unittest.cc",
+    "not_condition_unittest.cc",
+    "or_condition_unittest.cc",
     "rule_unittest.cc",
     "verdict_unittest.cc",
   ]

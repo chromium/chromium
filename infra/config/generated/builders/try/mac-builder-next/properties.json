@@ -23,7 +23,8 @@
                 "build_config": "Debug",
                 "config": "chromium",
                 "target_arch": "arm",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "mac"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

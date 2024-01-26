@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -14,7 +16,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -29,11 +30,11 @@ WebsiteUsageTelemetrySampler::~WebsiteUsageTelemetrySampler() {
 void WebsiteUsageTelemetrySampler::MaybeCollect(
     OptionalMetricCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
       [](base::WeakPtr<WebsiteUsageTelemetrySampler> self,
          OptionalMetricCallback callback,
-         absl::optional<MetricData>* metric_data) {
+         std::optional<MetricData>* metric_data) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
         if (!metric_data->has_value()) {
           std::move(callback).Run(std::move(*metric_data));
@@ -68,12 +69,12 @@ void WebsiteUsageTelemetrySampler::MaybeCollect(
 
   // Parse website usage across URLs from the pref store and populate
   // website usage data.
-  metric_data = absl::make_optional<MetricData>();
+  metric_data = std::make_optional<MetricData>();
   auto* const website_usage_data = metric_data->mutable_telemetry_data()
                                        ->mutable_website_telemetry()
                                        ->mutable_website_usage_data();
   for (auto usage_it : usage_dict) {
-    const absl::optional<const base::TimeDelta> saved_usage_time =
+    const std::optional<const base::TimeDelta> saved_usage_time =
         base::ValueToTimeDelta(usage_it.second);
     CHECK(saved_usage_time.has_value());
     WebsiteUsageData::WebsiteUsage* const website_usage =

@@ -331,7 +331,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                             SigninManager signinManager =
                                     IdentityServicesProvider.get().getSigninManager(profile);
                             signinManager.signinAndEnableSync(
-                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
+                                    coreAccountInfo,
                                     mSigninAccessPoint,
                                     newSignInCallback(profile, settingsClicked, callback));
                         });

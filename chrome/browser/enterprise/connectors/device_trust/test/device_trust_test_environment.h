@@ -69,7 +69,7 @@ class DeviceTrustTestEnvironment {
 
   // In-memory scoped KeyPersistenceDelegateFactory to create
   // `key_persistence_delegate_`.
-  absl::optional<test::ScopedInMemoryKeyPersistenceDelegateFactory>
+  std::optional<test::ScopedInMemoryKeyPersistenceDelegateFactory>
       scoped_in_memory_key_persistence_delegate_factory_;
 
   // Instance of platform-dependent KeyPersistenceDelegate to interact with

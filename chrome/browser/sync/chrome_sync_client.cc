@@ -5,7 +5,6 @@
 #include "chrome/browser/sync/chrome_sync_client.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -13,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -83,7 +83,6 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "components/variations/service/google_groups_updater_service.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -143,10 +142,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-using browser_sync::ExtensionModelTypeController;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace browser_sync {
 
@@ -219,25 +214,27 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
     : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  profile_web_data_service_ =
+  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_web_data_service_ =
+  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForAccount(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  web_data_service_thread_ = profile_web_data_service_
-                                 ? profile_web_data_service_->GetDBTaskRunner()
-                                 : nullptr;
+  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread =
+      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
+                               : nullptr;
 
   // This class assumes that the database thread is the same across the profile
   // and account storage. This DCHECK makes that assumption explicit.
-  DCHECK(!account_web_data_service_ ||
-         web_data_service_thread_ ==
-             account_web_data_service_->GetDBTaskRunner());
-  profile_password_store_ = ProfilePasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  DCHECK(!account_web_data_service ||
+         web_data_service_thread ==
+             account_web_data_service->GetDBTaskRunner());
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store = AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service = nullptr;
@@ -249,9 +246,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
 
   component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
       this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
-      web_data_service_thread_, profile_web_data_service_,
-      account_web_data_service_, profile_password_store_,
-      account_password_store_,
+      web_data_service_thread, profile_web_data_service,
+      account_web_data_service, profile_password_store, account_password_store,
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
       AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),

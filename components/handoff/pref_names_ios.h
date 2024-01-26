@@ -7,7 +7,10 @@
 
 namespace prefs {
 
-extern const char kIosHandoffToOtherDevices[];
+// Whether Chrome should attempt to hand off the current URL to other Apple
+// devices that share an iCloud account.
+inline constexpr char kIosHandoffToOtherDevices[] =
+    "ios.handoff_to_other_devices";
 
 }  // namespace prefs
 

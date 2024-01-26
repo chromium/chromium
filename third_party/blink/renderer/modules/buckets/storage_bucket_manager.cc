@@ -245,7 +245,7 @@ void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
         "Unknown error occured while retrieving bucket names."));
     return;
   }
-  resolver->Resolve(keys);
+  resolver->Resolve<IDLSequence<IDLString>>(keys);
 }
 
 void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,

@@ -162,12 +162,21 @@ class DataLoader {
       item.setAttribute('collapsed', 'true');
     });
 
-    const tpcdSupportParent =
-        document.querySelector<HTMLElement>('#tpcd-support')!;
-    const tpcdSupport = await this.pageHandler.getTpcdSupport();
-    tpcdSupport.contentSettings.forEach((cs) => {
+    const tpcdTrialParent = document.querySelector<HTMLElement>('#tpcd-trial')!;
+    const tpcdTrial = await this.pageHandler.getTpcdTrial();
+    tpcdTrial.contentSettings.forEach((cs) => {
       const item = document.createElement('content-setting-pattern-source');
-      tpcdSupportParent.appendChild(item);
+      tpcdTrialParent.appendChild(item);
+      item.configure(this.pageHandler, cs);
+      item.setAttribute('collapsed', 'true');
+    });
+
+    const topLevelTpcdTrialParent =
+        document.querySelector<HTMLElement>('#top-level-tpcd-trial')!;
+    const topLevelTpcdTrial = await this.pageHandler.getTopLevelTpcdTrial();
+    topLevelTpcdTrial.contentSettings.forEach((cs) => {
+      const item = document.createElement('content-setting-pattern-source');
+      topLevelTpcdTrialParent.appendChild(item);
       item.configure(this.pageHandler, cs);
       item.setAttribute('collapsed', 'true');
     });

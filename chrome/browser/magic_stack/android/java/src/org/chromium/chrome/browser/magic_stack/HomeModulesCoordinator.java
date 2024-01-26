@@ -6,16 +6,20 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
 import android.graphics.Point;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,8 +33,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private final HomeModulesMediator mMediator;
     private final SimpleRecyclerViewAdapter mAdapter;
+    private final RecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
+
+    private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
+    private SnapHelper mSnapHelper;
+    private boolean mIsSnapHelperAttached;
+    private int mCurrentOrientation;
+    private int mItemPerScreen;
+    @Nullable private UiConfig mUiConfig;
+    @Nullable private DisplayStyleObserver mDisplayStyleObserver;
 
     /**
      * @param activity The instance of {@link Activity}.
@@ -49,43 +62,114 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mModel = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         ModuleRegistry.getInstance().registerAdapter(mAdapter, this::onViewCreated);
-        RecyclerView recyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
+        mRecyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
 
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager linearLayoutManager =
                 new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         // Add pager indicator.
-        recyclerView.addItemDecoration(
+        setupRecyclerView(activity);
+
+        mMediator = new HomeModulesMediator(mModel, ModuleRegistry.getInstance());
+    }
+
+    private void setupRecyclerView(Activity activity) {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+        mUiConfig = isTablet ? mModuleDelegateHost.getUiConfig() : null;
+        mPageIndicatorDecoration =
                 new CirclePagerIndicatorDecoration(
                         activity,
-                        moduleDelegateHost.getUiConfig(),
-                        moduleDelegateHost.getStartMargin(),
+                        mUiConfig,
+                        mModuleDelegateHost.getStartMargin(),
                         SemanticColorUtils.getDefaultIconColorSecondary(activity),
                         activity.getColor(
                                 org.chromium.components.browser_ui.styles.R.color
                                         .color_primary_with_alpha_15),
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerView);
+                        isTablet);
+        mRecyclerView.addItemDecoration(mPageIndicatorDecoration);
+        mSnapHelper =
+                new PagerSnapHelper() {
+                    @Override
+                    public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
+                            throws IllegalStateException {
+                        super.attachToRecyclerView(recyclerView);
+                        mIsSnapHelperAttached = recyclerView != null;
+                    }
+                };
 
-        mMediator =
-                new HomeModulesMediator(
-                        mModel,
-                        (isVisible) -> {
-                            recyclerView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-                        },
-                        ModuleRegistry.getInstance());
+        // Snap scroll is supported by the recyclerview if it shows a single item per screen. This
+        // happens on phones or small windows on tablets.
+        if (!isTablet) {
+            mSnapHelper.attachToRecyclerView(mRecyclerView);
+            return;
+        }
+
+        mItemPerScreen =
+                CirclePagerIndicatorDecoration.getItemPerScreen(mUiConfig.getCurrentDisplayStyle());
+        if (mItemPerScreen == 1) {
+            mSnapHelper.attachToRecyclerView(mRecyclerView);
+        }
+
+        // When the screen is rotated, an event of display style change is also triggered.
+        mCurrentOrientation = activity.getResources().getConfiguration().orientation;
+
+        // Setup an observer of mUiConfig on tablets.
+        mDisplayStyleObserver =
+                newDisplayStyle -> {
+                    boolean wasSnapHelperAttached = mIsSnapHelperAttached;
+                    mItemPerScreen =
+                            CirclePagerIndicatorDecoration.getItemPerScreen(newDisplayStyle);
+                    if (mItemPerScreen > 1) {
+                        // If showing multiple items per screen, we need to detach the snap
+                        // scroll helper from the recyclerview.
+                        if (mIsSnapHelperAttached) {
+                            mSnapHelper.attachToRecyclerView(null);
+                        }
+                    } else if (!mIsSnapHelperAttached) {
+                        // If showing a single item per screen and we haven't attached the snap
+                        // scroll helper to the recyclerview yet, attach it now.
+                        mSnapHelper.attachToRecyclerView(mRecyclerView);
+                    }
+
+                    // Notifies the CirclePageIndicatorDecoration.
+                    mPageIndicatorDecoration.onDisplayStyleChanged(
+                            mModuleDelegateHost.getStartMargin(), mItemPerScreen);
+
+                    int newOrientation = activity.getResources().getConfiguration().orientation;
+                    // Redraws the recyclerview when either the screen is rotated or the width
+                    // of the window in which the magic stack is shown has changed.
+                    if (wasSnapHelperAttached != mIsSnapHelperAttached
+                            || mCurrentOrientation != newOrientation) {
+                        mCurrentOrientation = newOrientation;
+                        // Makes the recyclerview to redraw all items.
+                        mRecyclerView.invalidateItemDecorations();
+                    }
+                };
+        mUiConfig.addObserver(mDisplayStyleObserver);
+        mPageIndicatorDecoration.onDisplayStyleChanged(
+                mModuleDelegateHost.getStartMargin(), mItemPerScreen);
     }
 
-    /** Gets the module ranking list and shows the home modules. */
-    public void show() {
+    /**
+     * Gets the module ranking list and shows the home modules.
+     *
+     * @param onHomeModulesShownCallback The callback called when the magic stack is shown.
+     */
+    public void show(Callback<Boolean> onHomeModulesShownCallback) {
         List<Integer> moduleList = getModuleList();
-        if (moduleList == null) return;
+        if (moduleList == null) {
+            onHomeModulesShownCallback.onResult(false);
+            return;
+        }
 
-        mMediator.buildModulesAndShow(moduleList, this);
+        mMediator.buildModulesAndShow(
+                moduleList,
+                this,
+                (isVisible) -> {
+                    onHomeModulesShownCallback.onResult(isVisible);
+                });
     }
 
     /** Hides the modules and cleans up. */
@@ -129,8 +213,12 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
-    public void onHideModuleFromContextMenu(@ModuleType int moduleType) {
-        mMediator.remove(moduleType);
+    public void removeModule(@ModuleType int moduleType) {
+        boolean isModuleRemoved = mMediator.remove(moduleType);
+
+        if (isModuleRemoved && mModel.size() < mItemPerScreen) {
+            mRecyclerView.invalidateItemDecorations();
+        }
     }
 
     @Override
@@ -169,6 +257,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      */
     public ModuleDelegateHost getModuleDelegateHost() {
         return mModuleDelegateHost;
+    }
+
+    public void destroy() {
+        if (mUiConfig != null) {
+            mUiConfig.removeObserver(mDisplayStyleObserver);
+            mUiConfig = null;
+        }
+    }
+
+    public boolean getIsSnapHelperAttachedForTesting() {
+        return mIsSnapHelperAttached;
     }
 
     private List<Integer> getModuleList() {

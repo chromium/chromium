@@ -7,14 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol TabGroupCreationMutator;
 @protocol TabGroupsCommands;
 
 // View controller that display the tab group creation view.
 @interface CreateTabGroupViewController : UIViewController
 
 // Initiates a CreateTabGroupViewController with `handler` to handle user
-// action.
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler;
+// action and `mutator` to handle all model changes.
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+                        mutator:(id<TabGroupCreationMutator>)mutator;
 
 @end
 

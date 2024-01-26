@@ -204,8 +204,6 @@ class OpenXrApiWrapper {
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
   raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
 
-  XrReferenceSpaceType unbounded_space_type_ = XR_REFERENCE_SPACE_TYPE_MAX_ENUM;
-
   // The swapchain is initializd when a session begins and is re-created when
   // the state of a secondary view configuration changes.
   XrSwapchain color_swapchain_;
@@ -221,6 +219,7 @@ class OpenXrApiWrapper {
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
+  std::unique_ptr<OpenXrUnboundedSpaceProvider> unbounded_space_provider_;
 
   // The context provider is owned by the OpenXrRenderLoop, and may change when
   // there is a context lost.

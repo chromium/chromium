@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Версія праграмы</translation>
 <translation id="1428770807407000502">Выключыць сінхранізацыю?</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1435593198351412143">Адкрываць PDF аўтаматычна</translation>
 <translation id="1436784010935106834">Выдалены</translation>
 <translation id="1437543266176261764">Выконваецца ў <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упарадкоўвайце тавары, за якімі сочыце, у Закладках</translation>
@@ -146,6 +147,7 @@
 <translation id="1792959175193046959">Стандартнае размяшчэнне спамповак можна змяніць у любы час</translation>
 <translation id="1796666869097395659">Згарнуць укладку, каб вярнуцца да яе пазней</translation>
 <translation id="1807246157184219062">Светлая</translation>
+<translation id="1807709131360304325">Адкрыць новае акно</translation>
 <translation id="1810845389119482123">Першапачатковая наладка сінхранізацыі не завершана</translation>
 <translation id="1812027881030482584">Нельга выканаць уваход на сайце <ph name="SITE_ETLD_PLUS_ONE" /> з дапамогай сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
@@ -189,6 +191,7 @@
 <translation id="2056878612599315956">Сайт прыпынены</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Збой 1 спампоўкі}one{Збой # спампоўкі}few{Збой # спамповак}many{Збой # спамповак}other{Збой # спампоўкі}}</translation>
 <translation id="2067805253194386918">тэкст</translation>
+<translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Выбрана кампактнае адлюстраванне</translation>
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
@@ -218,7 +221,6 @@
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
 <translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
 <translation id="2239812875700136898">Кіруйце паказам артыкулаў з дапамогай кнопкі "Параметры рэкамендацый"</translation>
-<translation id="2241634353105152135">Толькі адзін раз</translation>
 <translation id="2247789808226901522">Тэрмін дзеяння карткі скончыўся</translation>
 <translation id="2248941474044011069">Вашы паролі шыфруюцца на прыладзе і толькі потым захоўваюцца ў Менеджары пароляў Google</translation>
 <translation id="2249635629516220541">Кіраванне данымі, якія сайты выкарыстоўваюць для паказу вам рэкламы</translation>
@@ -233,7 +235,6 @@
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
 <translation id="2321086116217818302">Ідзе падрыхтоўка пароляў…</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
-<translation id="2327226657832576859">Адкрываць PDF аўтаматычна?</translation>
 <translation id="2328985652426384049">Не ўдалося ўвайсці ў сістэму</translation>
 <translation id="2341410551640223969">Не ўдалося ўсталяваць праграму "<ph name="WEBAPK_NAME" />".</translation>
 <translation id="2349710944427398404">Агульны аб'ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
@@ -340,6 +342,7 @@
 <translation id="2894821468041866720">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
 <translation id="2900528713135656174">Стварыце падзею</translation>
 <translation id="2901411048554510387">Паказваюцца прапановы для сайта "<ph name="WEBSITE_TITLE" />"</translation>
+<translation id="2904300462646366554">Спампаваныя PDF аўтаматычна адкрываюцца ў адной з праграм для іх прагляду, усталяванай на прыладзе</translation>
 <translation id="2904414404539560095">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на ўвесь экран.</translation>
 <translation id="2908243544703713905">Ёсць непрачытаныя навіны</translation>
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
@@ -354,7 +357,6 @@
 <translation id="2946420957526726953">Chrome абнаўляецца, каб мець магчымасць падключацца да іншых прылад</translation>
 <translation id="2951071800649516099">Захоўвайце старонкі, каб прачытаць іх пазней, – дадавайце іх у спіс на прагляд</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
-<translation id="2961210776189273067">Форма звароту</translation>
 <translation id="296370266220139811">Эканомце час, менш пішыце</translation>
 <translation id="2977350910003566746">Адсартавана па часе апошняга адкрыцця</translation>
 <translation id="297771753501244313">Па часе адкрыцця</translation>
@@ -600,6 +602,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4307992518367153382">Асноўнае</translation>
+<translation id="4311652497846705514">Адкрыць файл PDF?</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
 <translation id="433213510553688132">Выконваецца падпіска...</translation>
 <translation id="4335835283689002019">"Бяспечны прагляд" выключаны</translation>
@@ -639,7 +642,6 @@
 <translation id="4523326818319942067">апошнюю гадзіну</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4532845899244822526">Выберыце папку</translation>
-<translation id="4541505619120536051">Адкрываць заўсёды</translation>
 <translation id="4543131175509360848">Аркуш з інфармацыяй пра адсутнасць ключоў доступу</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4554077758708533499">Падключана праз кабель USB</translation>
@@ -831,7 +833,6 @@
 <translation id="5486841595534124508">Лагатып паведамлення аб прыватнасці для раздзела статыстыкі старонкі, які перанакіроўвае на старонку "Мае дзеянні".</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
 <translation id="5492637351392383067">Шыфраванне на прыладзе</translation>
-<translation id="5509866835115085009">Chrome можа аўтаматычна адкрываць спампаваныя PDF.</translation>
 <translation id="5514904542973294328">Выключана адміністратарам гэтай прылады</translation>
 <translation id="5515439363601853141">Каб паглядзець пароль, трэба зняць блакіроўку</translation>
 <translation id="5517095782334947753">У вас ёсць закладкі, гісторыя, паролі і іншыя налады з уліковага запісу <ph name="FROM_ACCOUNT" />.</translation>
@@ -897,9 +898,11 @@
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="5822875253699806474">Каб хутка вяртацца на сайты, якія вы наведвалі, сінхранізуйце свае ўкладкі і гісторыю</translation>
+<translation id="5829586821381540080">Захавана ў папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5839058148541733625">Дыназаўр у Chrome</translation>
+<translation id="5848257610304005265">Адкрываць PDF у праграме "<ph name="APP_NAME" />"?</translation>
 <translation id="5853623416121554550">прыпынена</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Нешта пайшло не так. Абнавіць функцыю "Адсочванне цаны" не ўдалося.</translation>
@@ -925,6 +928,7 @@
 <translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
 <translation id="5966233851250124270">Chrome запомніць ваш выбар</translation>
+<translation id="5977976211062815271">На гэтай прыладзе</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
 <translation id="5995726099713306770">Спампаваць старонку зноў?</translation>
 <translation id="6000066717592683814">Пакінуць Google</translation>
@@ -1302,6 +1306,7 @@
 <translation id="7810647596859435254">Адкрыць з дапамогай…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Усе файлы, 1 файл у спісе}one{Усе файлы, # файл у спісе}few{Усе файлы, # файлы ў спісе}many{Усе файлы, # файлаў у спісе}other{Усе файлы, # файла ў спісе}}</translation>
 <translation id="7815484226266492798">Доўгі здымак экрана</translation>
+<translation id="7821130663268546430">Усе адкрытыя ўкладкі можна знайсці ў пераключальніку ўкладак</translation>
 <translation id="7822705602465980873">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="78270725016672455">Ваш камп’ютар прапануе зарэгістраваць гэту прыладу і выкарыстоўваць яе для ўваходу на сайт</translation>
 <translation id="7844171778363018843">Не выбраны даныя для сінхранізацыі</translation>
@@ -1329,6 +1334,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> – версія састарэла.</translation>
 <translation id="7944772052836377867">Для сінхранізацыі неабходна спраўдзіць вашу асобу</translation>
 <translation id="7947953824732555851">Прыняць і ўвайсці</translation>
+<translation id="7951102827450076904">Заўсёды адкрываць спампаваныя PDF</translation>
 <translation id="7957413488482743710">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Кнопка "Назад" на старонцы статыстыкі</translation>
 <translation id="7961926449547174351">Вы забаранілі доступ да сховішча. Каб дазволіць доступ зноў, перайдзіце ў Налады.</translation>
@@ -1379,6 +1385,7 @@
 <translation id="8127542551745560481">Змяніць галоўную старонку</translation>
 <translation id="8130309322784422030">Уліковыя даныя могуць быць устарэлымі</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
+<translation id="8135406045838672858">Спампаваныя PDF аўтаматычна адкрываюцца ў праграме "<ph name="APP_NAME" />"</translation>
 <translation id="8137562778192957619">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google.</translation>
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
@@ -1426,7 +1433,7 @@
 <translation id="8427875596167638501">Укладка перадпрагляду адкрыта напалову</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8430824733382774043">Абагуліць толькі здымак экрана</translation>
-<translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
+<translation id="8438566539970814960">Палепшыць пошук і прагляд</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – мова гатовая да выкарыстання, перазапусціце <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Няма новых артыкулаў</translation>
 <translation id="8443209985646068659">Немагчыма абнавіць Chrome</translation>

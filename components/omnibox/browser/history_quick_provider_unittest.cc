@@ -84,8 +84,12 @@ void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
 // thread's message loop when done.
 class GetURLTask : public history::HistoryDBTask {
  public:
-  GetURLTask(const GURL& url, bool* result_storage)
-      : result_storage_(result_storage), url_(url) {}
+  GetURLTask(const GURL& url,
+             bool* result_storage,
+             base::OnceClosure quit_closure)
+      : result_storage_(result_storage),
+        url_(url),
+        quit_closure_(std::move(quit_closure)) {}
   GetURLTask(const GetURLTask&) = delete;
   GetURLTask& operator=(const GetURLTask&) = delete;
 
@@ -95,15 +99,14 @@ class GetURLTask : public history::HistoryDBTask {
     return true;
   }
 
-  void DoneRunOnMainThread() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
+  void DoneRunOnMainThread() override { std::move(quit_closure_).Run(); }
 
  private:
   ~GetURLTask() override = default;
 
   raw_ptr<bool> result_storage_;
   const GURL url_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -418,13 +421,15 @@ void HistoryQuickProviderTest::RunTestWithCursor(
 bool HistoryQuickProviderTest::GetURLProxy(const GURL& url) {
   base::CancelableTaskTracker task_tracker;
   bool result = false;
+  base::RunLoop loop;
   client_->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
-      std::unique_ptr<history::HistoryDBTask>(new GetURLTask(url, &result)),
+      std::unique_ptr<history::HistoryDBTask>(
+          new GetURLTask(url, &result, loop.QuitWhenIdleClosure())),
       &task_tracker);
   // Run the message loop until GetURLTask::DoneRunOnMainThread stops it.  If
   // the test hangs, DoneRunOnMainThread isn't being invoked correctly.
-  base::RunLoop().Run();
+  loop.Run();
   return result;
 }
 

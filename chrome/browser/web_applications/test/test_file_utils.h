@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -39,7 +39,7 @@ class TestFileUtils : public FileUtilsWrapper {
   // Simulate "disk full" error: limit disk space for |WriteFile| operations.
   void SetRemainingDiskSpaceSize(int remaining_disk_space);
 
-  void SetNextDeleteFileRecursivelyResult(absl::optional<bool> delete_result);
+  void SetNextDeleteFileRecursivelyResult(std::optional<bool> delete_result);
 
   TestFileUtils* AsTestFileUtils() override;
 
@@ -47,7 +47,7 @@ class TestFileUtils : public FileUtilsWrapper {
   ~TestFileUtils() override;
 
   std::map<base::FilePath, base::FilePath> read_file_rerouting_;
-  absl::optional<bool> delete_file_recursively_result_;
+  std::optional<bool> delete_file_recursively_result_;
   int remaining_disk_space_ = kNoLimit;
 };
 

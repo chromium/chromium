@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Test sampling native memory snapshot.`);
 
   await dp.Memory.startSampling({samplingInterval: 10000, suppressRandomness: true});

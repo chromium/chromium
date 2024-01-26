@@ -33,6 +33,7 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -464,13 +465,17 @@ void Navigator::DidNavigate(
   FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
   FrameTree& frame_tree = frame_tree_node->frame_tree();
   DCHECK_EQ(&frame_tree, &controller_.frame_tree());
+
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
   // Save the activation status of the previous page here before it gets reset
-  // in FrameTreeNode::ResetForNavigation.
-  bool previous_document_was_activated =
-      frame_tree.root()->HasStickyUserActivation();
+  // in FrameTreeNode::ResetForNavigation. Look at the root since the
+  // activation status for all frames on the page is aggregated in the main
+  // frame of the current frame tree (but not across nested frame trees).
+  bool previous_document_history_intervention_activation =
+      old_frame_host->GetMainFrame()
+          ->HasStickyUserActivationForHistoryIntervention();
 
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
@@ -587,7 +592,8 @@ void Navigator::DidNavigate(
   base::TimeTicks start = base::TimeTicks::Now();
   bool did_navigate = controller_.RendererDidNavigate(
       render_frame_host, params, &details, was_within_same_document,
-      was_on_initial_empty_document, previous_document_was_activated,
+      was_on_initial_empty_document,
+      previous_document_history_intervention_activation,
       navigation_request.get());
   if (!was_within_same_document) {
     base::UmaHistogramTimes(
@@ -1233,7 +1239,11 @@ void Navigator::RecordNavigationMetrics(
   DCHECK(site_instance->HasProcess());
 
   if (!details.is_main_frame || !metrics_data_ ||
-      metrics_data_->url_ != original_request_url) {
+      metrics_data_->url_ != original_request_url ||
+      metrics_data_->ukm_source_id_ == ukm::kInvalidSourceId) {
+    // The source ID will be invalid for prerendered pages. See
+    // `GetPageUkmSourceId()`.
+    metrics_data_.reset();
     return;
   }
 

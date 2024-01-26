@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/password_suggestion_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
@@ -96,8 +97,8 @@ class PasswordSuggestionHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
   id delegate_;
   PasswordSuggestionHelper* helper_;
-  web::FakeWebFrame* main_frame_;
-  web::FakeWebFramesManager* frames_manager_;
+  raw_ptr<web::FakeWebFrame> main_frame_;
+  raw_ptr<web::FakeWebFramesManager> frames_manager_;
 };
 
 // Tests that the suggestions check query passes when there is fill data for the

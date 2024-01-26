@@ -47,10 +47,10 @@
 #import "ios/chrome/browser/ui/autofill/branding/branding_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
@@ -83,7 +83,7 @@ const CGFloat kIPHVerticalOffset = -5;
     AddressCoordinatorDelegate,
     CardCoordinatorDelegate,
     FormInputAccessoryMediatorHandler,
-    ManualFillAccessoryViewControllerDelegate,
+    FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
     SecurityAlertCommands>
@@ -164,7 +164,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.brandingCoordinator start];
   self.formInputAccessoryViewController =
       [[FormInputAccessoryViewController alloc]
-          initWithManualFillAccessoryViewControllerDelegate:self];
+          initWithFormInputAccessoryViewControllerDelegate:self];
   self.formInputAccessoryViewController.brandingViewController =
       self.brandingCoordinator.viewController;
 
@@ -348,34 +348,47 @@ const CGFloat kIPHVerticalOffset = -5;
       kAutofillSuggestionHighlightDelay);
 }
 
-#pragma mark - ManualFillAccessoryViewControllerDelegate
+#pragma mark - FormInputAccessoryViewControllerDelegate
 
-- (void)keyboardButtonPressed {
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                  didPressKeyboardButton:(UIButton*)keyboardButton {
   [self reset];
 }
 
-- (void)accountButtonPressed:(UIButton*)sender {
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                   didPressAccountButton:(UIButton*)accountButton {
   [self stopChildren];
-  [self startAddressFromButton:sender];
+  [self startAddressFromButton:accountButton];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)cardButtonPressed:(UIButton*)sender {
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                didPressCreditCardButton:(UIButton*)creditCardButton {
   [self stopChildren];
-  [self startCardsFromButton:sender];
+  [self startCardsFromButton:creditCardButton];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)passwordButtonPressed:(UIButton*)sender {
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                  didPressPasswordButton:(UIButton*)passwordButton {
   [self stopChildren];
   BOOL invokedOnPasswordField =
       [self.formInputAccessoryMediator lastFocusedFieldWasPassword];
-  [self startPasswordsFromButton:sender
+  [self startPasswordsFromButton:passwordButton
           invokedOnPasswordField:invokedOnPasswordField];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
+}
+
+- (void)formInputAccessoryViewControllerReset:
+    (FormInputAccessoryViewController*)formInputAccessoryViewController {
+  [self reset];
 }
 
 #pragma mark - FallbackCoordinatorDelegate

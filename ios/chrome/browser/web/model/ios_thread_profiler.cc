@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -137,7 +138,7 @@ class IOSThreadProfiler::WorkIdRecorder : public metrics::WorkIdRecorder {
   WorkIdRecorder& operator=(const WorkIdRecorder&) = delete;
 
  private:
-  base::WorkIdProvider* const work_id_provider_;
+  const raw_ptr<base::WorkIdProvider> work_id_provider_;
 };
 
 IOSThreadProfiler::~IOSThreadProfiler() {

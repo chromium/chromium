@@ -12,11 +12,13 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -40,6 +42,7 @@
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gpu {
 

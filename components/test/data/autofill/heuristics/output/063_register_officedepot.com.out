@@ -1,4 +1,3 @@
-UNKNOWN_TYPE | zip |  |  | zip_1
 NAME_FIRST | addrsForm[0].firstName | *First Name: |  | addrsForm[0].firstName_1
 NAME_MIDDLE_INITIAL | addrsForm[0].middleInitial | Middle Initial: |  | addrsForm[0].firstName_1
 NAME_LAST | addrsForm[0].lastName | *Last Name: |  | addrsForm[0].firstName_1
@@ -40,3 +39,5 @@ UNKNOWN_TYPE | loginForm.loginName | *Login Name: |  | addrsForm[2].firstName_3
 UNKNOWN_TYPE | loginForm.password | *Password: |  | addrsForm[2].firstName_3
 UNKNOWN_TYPE | loginForm.passwordConfirm | *Password Confirm: |  | addrsForm[2].firstName_3
 UNKNOWN_TYPE | loginForm.autoLogin | Log me in automatically(Cookies must be enabled) | on | addrsForm[2].firstName_3
+
+UNKNOWN_TYPE | zip |  |  | zip_1

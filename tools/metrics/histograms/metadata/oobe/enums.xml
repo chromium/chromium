@@ -1,0 +1,282 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ConsolidatedConsentScreenUserAction">
+  <summary>Actions which happen on the consolidated consent screen.</summary>
+  <int value="0" label="Accept button clicked"/>
+  <int value="1" label="Back button on demo mode clicked"/>
+  <int value="2" label="Google ToS link clicked"/>
+  <int value="3" label="Chrome and ChromeOS additional ToS clicked"/>
+  <int value="4" label="Google Play ToS clicked"/>
+  <int value="5" label="Google Privacy Policy clicked"/>
+  <int value="6" label="Usage data opt-in learn more clicked"/>
+  <int value="7" label="Backup opt-in learn more clicked"/>
+  <int value="8" label="Location opt-in learn more clicked"/>
+  <int value="9" label="Footer learn more clicked"/>
+  <int value="10" label="Error step retry button clicked"/>
+</enum>
+
+<enum name="FingerprintSetupScreenUserAction">
+  <summary>Actions which happen on the screen.</summary>
+  <int value="0" label="Setup done button clicked"/>
+  <int value="1" label="Skipped button clicked">
+    Obsolete, splited into skip in flow and skip on start actions in M90.
+  </int>
+  <int value="2" label="Do it later button clicked">
+    Obsolete, the button is removed.
+  </int>
+  <int value="3" label="Add another finger button clicked"/>
+  <int value="4" label="Show sensor location button clicked">
+    Obsolete, the button in removed.
+  </int>
+  <int value="5" label="Skip button clicked on starting page"/>
+  <int value="6" label="Skip button clicked in flow"/>
+</enum>
+
+<enum name="GaiaLoginVariant">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="OOBE"/>
+  <int value="2" label="Add User"/>
+  <int value="3" label="Online Signin"/>
+</enum>
+
+<enum name="GaiaPasswordChangedScreenUserAction">
+  <summary>Actions which happen on the screen.</summary>
+  <int value="0" label="Resync user data"/>
+  <int value="1" label="Migrate user data"/>
+  <int value="2" label="Cancel dialog"/>
+  <int value="3" label="Incorrect old password"/>
+  <int value="4" label="Don't setup Recovery"/>
+  <int value="5" label="Setup Recovery"/>
+</enum>
+
+<enum name="HidDetectionBluetoothPairingResult">
+  <int value="0" label="Attempted but did not pair via Bluetooth"/>
+  <int value="1" label="Paired via Bluetooth"/>
+</enum>
+
+<enum name="HidsMissing">
+  <summary>
+    Possible combination of human input device types that may be missing when
+    OOBE starts.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Pointer"/>
+  <int value="2" label="Keyboard"/>
+  <int value="3" label="Pointer and keyboard"/>
+</enum>
+
+<enum name="HidType">
+  <summary>
+    Possible device types of HIDs interfaced with in the OOBE HID detection
+    screen
+  </summary>
+  <int value="0" label="Touchscreen"/>
+  <int value="1" label="USB Keyboard"/>
+  <int value="2" label="USB Pointer"/>
+  <int value="3" label="Serial Keyboard"/>
+  <int value="4" label="Serial Pointer"/>
+  <int value="5" label="Bluetooth Keyboard"/>
+  <int value="6" label="Bluetooth Pointer"/>
+  <int value="7" label="Unknown Keyboard"/>
+  <int value="8" label="Unknown Pointer"/>
+</enum>
+
+<enum name="MarketingOptInBackendConnectorEvent">
+  <summary>
+    An event that occurs on the MarketingBackendConnector used in the OOBE
+    MarketingOptInScreen.
+  </summary>
+  <int value="0" label="Request successful"/>
+  <int value="1" label="Internal Server Error"/>
+  <int value="2" label="Request Timeout Error"/>
+  <int value="3" label="Authentication Error"/>
+  <int value="4" label="Other Error"/>
+</enum>
+
+<enum name="MarketingOptInGeolocationEvent">
+  <summary>Geolocation resolve status on OOBE MarketingOptInScreen.</summary>
+  <int value="0" label="Country could not be determined."/>
+  <int value="1" label="Country determined successfully."/>
+</enum>
+
+<enum name="MarketingOptInScreenEvent">
+  <summary>Opt-in actions that occur on the OOBE MarketingOptInScreen.</summary>
+  <int value="0" label="Opt-in when the default is opt-in"/>
+  <int value="1" label="Opt-in when the default is opt-out"/>
+  <int value="2" label="Opt-out when the default is opt-in"/>
+  <int value="3" label="Opt-out when the default is opt-out"/>
+</enum>
+
+<enum name="NetworkErrorType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Portal"/>
+  <int value="2" label="Offline"/>
+  <int value="3" label="Proxy"/>
+  <int value="4" label="LoadingTimeout"/>
+  <int value="5" label="None"/>
+</enum>
+
+<enum name="OobeConsumerUpdateScreenSkippedReason">
+  <int value="0" label="Critical update was already completed"/>
+  <int value="1" label="Update is not required"/>
+  <int value="2" label="Update error"/>
+  <int value="3" label="User declined update over cellular"/>
+</enum>
+
+<enum name="OobeMultideviceScreenSkippedReason">
+  <int value="0" label="Public session or ephermeral login"/>
+  <int value="1" label="Host phone already set"/>
+  <int value="2" label="Device sync finished and no eligible host phone found"/>
+  <int value="3" label="Setup client not initialized"/>
+  <int value="4"
+      label="Device sync not initialized during better together metadata
+             status fetch"/>
+  <int value="5"
+      label="Device sync not initialized during group private key status
+             fetch"/>
+  <int value="6"
+      label="No device syncer set during better together metadata status
+             fetch"/>
+  <int value="7"
+      label="No device syncer set during group private key status fetch"/>
+  <int value="8" label="Encrypted metadata empty"/>
+  <int value="9" label="Waiting to receive group private key"/>
+  <int value="10" label="No encrypted group private key received"/>
+  <int value="11" label="Encrypted group private key empty"/>
+  <int value="12" label="Local device sync better together key missing"/>
+  <int value="13" label="Group private key decryption failed"/>
+  <int value="14" label="Screen destroyed before reason could be determined"/>
+  <int value="15" label="Unknown"/>
+</enum>
+
+<enum name="OobeWebViewLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Load timeout"/>
+  <int value="2" label="Load error"/>
+  <int value="3" label="HTTP error"/>
+</enum>
+
+<enum name="PinSetupScreenUserAction">
+  <summary>Actions which happen on the screen.</summary>
+  <int value="0" label="Done button clicked"/>
+  <int value="1" label="Skip button clicked on starting page"/>
+  <int value="2" label="Skip button clicked in flow"/>
+</enum>
+
+<enum name="RecommendAppsScreenAction">
+  <int value="0" label="Skipped"/>
+  <int value="1" label="Retried"/>
+  <int value="2" label="Selected none"/>
+  <int value="3" label="Selected some apps"/>
+</enum>
+
+<enum name="RecommendAppsScreenState">
+  <int value="0" label="Show"/>
+  <int value="1" label="No show"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="RecoveryOptInResult">
+  <summary>
+    The result of the cryptohome recovery opt-in. For managed users the policy
+    value is used, for unmanaged users the user selection is used.
+  </summary>
+  <int value="0" label="Not supported"/>
+  <int value="1" label="User Opt In"/>
+  <int value="2" label="User Opt Out"/>
+  <int value="3" label="Policy Opt In"/>
+  <int value="4" label="Policy Opt Out"/>
+</enum>
+
+<enum name="SelectedTheme">
+  <int value="0" label="Auto Mode"/>
+  <int value="1" label="Dark Mode"/>
+  <int value="2" label="Light Mode"/>
+</enum>
+
+<enum name="SyncConsentBehavior">
+  <summary>
+    Behavior of the out-of-box experience (OOBE) sync consent screen.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Show"/>
+  <int value="2" label="Skip, disabled, non-GAIA account"/>
+  <int value="3" label="Skip, disabled, public account"/>
+  <int value="4" label="Skip, disabled, sync feature policy"/>
+  <int value="5" label="Skip, enabled, non-branded build"/>
+  <int value="6" label="Skip, enabled, ephemeral user"/>
+  <int value="7" label="Skip, enabled, consent screen policy"/>
+</enum>
+
+<enum name="SyncConsentUserChoice">
+  <summary>
+    Which button the user clicked in the out-of-box experience (OOBE) sync
+    consent screen.
+  </summary>
+  <int value="0" label="Declined"/>
+  <int value="1" label="Accepted"/>
+</enum>
+
+<enum name="UpdateEngineOperation">
+  <int value="-1" label="kError"/>
+  <int value="0" label="kIdle"/>
+  <int value="1" label="kCheckingForUpdate"/>
+  <int value="2" label="kUpdateAvailable"/>
+  <int value="3" label="kDownloading"/>
+  <int value="4" label="kVerifying"/>
+  <int value="5" label="kFinalizing"/>
+  <int value="6" label="kUpdateNeedReboot"/>
+  <int value="7" label="kReportErrorEvent"/>
+  <int value="8" label="kAttemptingRollback"/>
+  <int value="9" label="kDisabled"/>
+  <int value="10" label="kNeedPermissionToUpdate"/>
+  <int value="11" label="kCleanupPreviousUpdate"/>
+  <int value="12" label="kUpdatedButDeferred"/>
+</enum>
+
+<enum name="WelcomeScreenA11yUserAction">
+  <int value="0" label="Enable spoken feedback"/>
+  <int value="1" label="Disable spoken feedback"/>
+  <int value="2" label="Enable large cursor"/>
+  <int value="3" label="Disable large cursor"/>
+  <int value="4" label="Enable high contrast"/>
+  <int value="5" label="Disable high contrast"/>
+  <int value="6" label="Enable screen magnifier"/>
+  <int value="7" label="Disable screen magnifier"/>
+  <int value="8" label="Enable select to speak option"/>
+  <int value="9" label="Disable select to speak option"/>
+  <int value="10" label="Enable docked magnifier"/>
+  <int value="11" label="Disable docked magnifier"/>
+  <int value="12" label="Enable virtual keyboard"/>
+  <int value="13" label="Disable virtual keyboard"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

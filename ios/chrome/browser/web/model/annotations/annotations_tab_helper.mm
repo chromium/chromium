@@ -100,11 +100,13 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_state_, web_state);
 
-  // Check if this page requested "nointentdetection".
-  std::optional<bool> has_no_intent_detection =
-      metadata.FindBool("hasNoIntentDetection");
-  if (!has_no_intent_detection || has_no_intent_detection.value()) {
-    return;
+  if (!base::FeatureList::IsEnabled(web::features::kEnableViewportIntents)) {
+    // Check if this page requested "nointentdetection".
+    std::optional<bool> has_no_intent_detection =
+        metadata.FindBool("hasNoIntentDetection");
+    if (!has_no_intent_detection || has_no_intent_detection.value()) {
+      return;
+    }
   }
 
   // Keep latest copy.
@@ -130,12 +132,21 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
 }
 
 void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
+                                       int annotations,
                                        int successes,
-                                       int annotations) {
+                                       int failures,
+                                       const base::Value::List& cancelled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (annotations) {
     int percentage = (100 * successes) / annotations;
     base::UmaHistogramPercentage("IOS.Annotations.Percentage", percentage);
+  }
+  for (size_t i = 0; i < cancelled.size(); i++) {
+    const std::string* cancelledId = cancelled[i].GetIfString();
+    if (!cancelledId || match_cache_.find(*cancelledId) == match_cache_.end()) {
+      continue;
+    }
+    match_cache_.erase(*cancelledId);
   }
 }
 
@@ -167,13 +178,22 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     std::optional<std::vector<web::TextAnnotation>> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
+  DCHECK(manager);
+
+  if (!deferred &&
+      base::FeatureList::IsEnabled(web::features::kEnableViewportIntents)) {
+    base::Value::List decorations_list;
+    base::Value decorations(std::move(decorations_list));
+    manager->DecorateAnnotations(web_state_, decorations, seq_id);
+    return;
+  }
+
   web::ContentWorld content_world =
       web::AnnotationsTextManager::GetFeatureContentWorld();
   web::WebFrame* main_frame =
       web_state_->GetWebFramesManager(content_world)->GetMainWebFrame();
   if (main_frame && deferred) {
-    auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
-    DCHECK(manager);
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
     if ((IsIOSParcelTrackingEnabled() &&
          !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) ||

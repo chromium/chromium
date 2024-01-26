@@ -129,7 +129,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "promos_manager_impl_unittest.mm" ]
+  sources = [
+    "promos_manager_feature_engagement_unittest.mm",
+    "promos_manager_impl_unittest.mm",
+  ]
   frameworks = [ "Foundation.framework" ]
   deps = [
     ":constants",

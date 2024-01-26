@@ -182,16 +182,8 @@ void AccessibilityWinBrowserTest::SetUpInputField(
 void AccessibilityWinBrowserTest::SetUpScrollableInputField(
     Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
   ASSERT_NE(nullptr, input_text);
-  LoadInitialAccessibilityTreeFromHtml(
-      std::string(
-          R"HTML(<!DOCTYPE html>
-          <html>
-          <body>
-            <input type="text" style="width: 150px;" value=")HTML") +
-      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
-          </body>
-          </html>)HTML"));
 
+  LoadScrollableInputField("text");
   SetUpInputFieldHelper(input_text);
 }
 
@@ -200,16 +192,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputField(
 void AccessibilityWinBrowserTest::SetUpScrollableInputTypeSearchField(
     Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
   ASSERT_NE(nullptr, input_text);
-  LoadInitialAccessibilityTreeFromHtml(
-      std::string(
-          R"HTML(<!DOCTYPE html>
-          <html>
-          <body>
-            <input type="search" style="width: 150px;" value=")HTML") +
-      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
-          </body>
-          </html>)HTML"));
-
+  LoadScrollableInputField("search");
   SetUpInputFieldHelper(input_text);
 }
 

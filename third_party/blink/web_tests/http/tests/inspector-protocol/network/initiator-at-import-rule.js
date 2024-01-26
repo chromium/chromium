@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, dp} = await testRunner.startURL(
       '../resources/stylesheet-loading-issues.html',
       `Tests that the initiator position is precise on @import style rules`);

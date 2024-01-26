@@ -120,7 +120,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/favicon:favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",

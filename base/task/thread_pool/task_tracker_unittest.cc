@@ -77,7 +77,7 @@ class ThreadPostingAndRunningTask : public SimpleThread {
     WILL_POST_AND_RUN,
   };
 
-  // |action| must be either WILL_POST of WILL_POST_AND_RUN.
+  // |action| must be either WILL_POST or WILL_POST_AND_RUN.
   // |task| will be pushed to |sequence| and |sequence| will be registered. If
   // |action| is WILL_POST_AND_RUN, a task from |sequence| will run.
   ThreadPostingAndRunningTask(TaskTracker* tracker,
@@ -333,6 +333,49 @@ TEST_P(ThreadPoolTaskTrackerTest, WillPostAndRunLongTaskBeforeShutdown) {
   // Shutdown should now complete for a non CONTINUE_ON_SHUTDOWN task.
   if (GetParam() != TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN)
     WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
+}
+
+// Posting a BLOCK_SHUTDOWN task after shutdown must be allowed from a
+// CONTINUE_ON_SHUTDOWN. Ref. https://crbug.com/1499644#c9 - #c16.
+// Note: This test can't be TEST_P as non-CONTINUE_ON_SHUTDOWN `poster` would
+// hang in CompleteShutdown().
+TEST_F(ThreadPoolTaskTrackerTest, PostAfterShutdownFromContinueOnShutdown) {
+  // Dummy.
+  Task task{CreateTask()};
+
+  // Create a task that verifies the properties of this test.
+  TestWaitableEvent task_running;
+  TestWaitableEvent task_barrier;
+  Task poster(FROM_HERE, BindLambdaForTesting([&]() {
+                task_running.Signal();
+                task_barrier.Wait();
+
+                // No death when posting BLOCK_SHUTDOWN from
+                // CONTINUE_ON_SHUTDOWN.
+                EXPECT_TRUE(tracker_.IsShutdownComplete());
+                EXPECT_FALSE(tracker_.WillPostTask(
+                    &task, TaskShutdownBehavior::BLOCK_SHUTDOWN));
+              }),
+              TimeTicks::Now(), TimeDelta());
+
+  // Inform |task_tracker_| that |blocked_task| will be posted.
+  auto sequence = WillPostTaskAndQueueTaskSource(
+      std::move(poster), TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN);
+  EXPECT_TRUE(sequence);
+
+  // Create a thread to run the task. Wait until the task starts running.
+  ThreadPostingAndRunningTask thread_running_task(&tracker_,
+                                                  std::move(sequence));
+  thread_running_task.Start();
+  task_running.Wait();
+
+  // Fully shutdown `tracker_` Make sure it's complete before releasing the task
+  // to perform its test for CONTINUE_ON_SHUTDOWN.
+  test::ShutdownTaskTracker(&tracker_);
+
+  // Unblock the task and wait for it to perform its test.
+  task_barrier.Signal();
+  thread_running_task.Join();
 }
 
 // Verify that an undelayed task whose sequence wasn't queued does not block

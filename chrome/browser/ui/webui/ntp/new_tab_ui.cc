@@ -36,10 +36,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
-#endif
-
 namespace {
 
 // Strings sent to the page via jstemplates used to set the direction of the
@@ -84,15 +80,6 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 }
 
 NewTabUI::~NewTabUI() {}
-
-// static
-void NewTabUI::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  CoreAppLauncherHandler::RegisterProfilePrefs(registry);
-#if !BUILDFLAG(IS_CHROMEOS)
-  AppLauncherHandler::RegisterProfilePrefs(registry);
-#endif
-}
 
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {

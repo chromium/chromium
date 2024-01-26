@@ -45,10 +45,6 @@ FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
 FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 
-namespace base {
-class PrefService;
-}  // namespace base
-
 namespace variations {
 class SyntheticTrialRegistry;
 }

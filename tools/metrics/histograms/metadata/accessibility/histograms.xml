@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
-    units="BooleanHit" expires_after="2024-06-30">
+    enum="BooleanHit" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.PollTimeout"
-    units="BooleanHit" expires_after="2024-06-30">
+    enum="BooleanHit" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.AriaLabelledBy.HasMultipleIds" units="Boolean"
+<histogram name="Accessibility.AriaLabelledBy.HasMultipleIds" enum="Boolean"
     expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>jdiggs@chromium.org</owner>
   <owner>jkim@igalia.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1801,7 +1801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Incremental"
-    units="bytes" expires_after="2024-05-19">
+    units="bytes" expires_after="2024-07-21">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1855,7 +1855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
-    units="bytes" expires_after="2024-05-12">
+    units="bytes" expires_after="2024-07-14">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2391,6 +2391,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenReader.ScrollToImage" enum="Boolean"
+    expires_after="2024-12-07">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the result of a scroll to make visible accessibility action is
+    performed on an image node. This roughly corresponds to accessibility focus
+    on an image. Logged from ChromeVox (ChromeOS) and
+    BrowserAccessibilityManager (non-ChromeOS).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
     expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
@@ -2563,7 +2575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
@@ -2571,7 +2583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.

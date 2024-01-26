@@ -562,8 +562,8 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
         profile(), app_id, app_name));
   }
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      scoped_supress = absl::nullopt;
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
   scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
   // Run on OS Login should still be registered with the OS.

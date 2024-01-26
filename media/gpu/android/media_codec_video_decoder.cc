@@ -1107,6 +1107,13 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
     frame->set_hdr_metadata(decoder_config_.hdr_metadata());
   }
 
+  if (media_crypto_context_) {
+    frame->metadata().protected_video = true;
+    if (requires_secure_codec_) {
+      frame->metadata().hw_protected = true;
+    }
+  }
+
   if (reset_generation == reset_generation_) {
     // TODO(liberato): We might actually have a SW decoder.  Consider setting
     // this to false if so, especially for higher bitrates.

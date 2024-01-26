@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -27,6 +28,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -259,6 +262,11 @@ class ExtensionsBrowserClient {
   // Returns the ProcessManagerDelegate shared across all BrowserContexts. May
   // return NULL in tests or for simple embedders.
   virtual ProcessManagerDelegate* GetProcessManagerDelegate() const = 0;
+
+  virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  GetControlledFrameEmbedderURLLoader(
+      int frame_tree_node_id,
+      content::BrowserContext* browser_context) = 0;
 
   // Creates a new ExtensionHostDelegate instance.
   virtual std::unique_ptr<ExtensionHostDelegate>

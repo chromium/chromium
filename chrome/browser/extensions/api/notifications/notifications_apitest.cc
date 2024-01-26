@@ -293,10 +293,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
     notification_function->set_extension(empty_extension.get());
     notification_function->set_has_callback(true);
 
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(
-            notification_function.get(), "[]", profile(),
-            extensions::api_test_utils::FunctionMode::kNone);
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        notification_function.get(), "[]", profile(),
+        extensions::api_test_utils::FunctionMode::kNone);
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
     EXPECT_TRUE(result->is_string());
@@ -316,10 +315,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
         message_center::NotifierType::APPLICATION, empty_extension->id());
     GetNotifierStateTracker()->SetNotifierEnabled(notifier_id, false);
 
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(
-            notification_function.get(), "[]", profile(),
-            extensions::api_test_utils::FunctionMode::kNone);
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        notification_function.get(), "[]", profile(),
+        extensions::api_test_utils::FunctionMode::kNone);
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
     EXPECT_TRUE(result->is_string());
@@ -371,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
     // Action button event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        0 /* action_index */, absl::nullopt /* reply */);
+        0 /* action_index */, std::nullopt /* reply */);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_TRUE(listener.had_user_gesture());
   }
@@ -381,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
     // Click event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_TRUE(listener.had_user_gesture());
   }

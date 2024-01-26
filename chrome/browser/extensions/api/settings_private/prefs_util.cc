@@ -1074,9 +1074,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kBatterySaverModeState] =
           settings_api::PrefType::kNumber;
-  (*s_allowlist)
-      [performance_manager::user_tuning::prefs::kTabDiscardingExceptions] =
-          settings_api::PrefType::kList;
+  (*s_allowlist)[performance_manager::user_tuning::prefs::
+                     kTabDiscardingExceptionsWithTime] =
+      settings_api::PrefType::kDictionary;
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kManagedTabDiscardingExceptions] =
       settings_api::PrefType::kList;
@@ -1127,15 +1127,15 @@ settings_api::PrefType PrefsUtil::GetType(const std::string& name,
   }
 }
 
-absl::optional<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
+std::optional<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
     const std::string& name) {
-  absl::optional<settings_api::PrefObject> pref_object(absl::in_place);
+  std::optional<settings_api::PrefObject> pref_object(std::in_place);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Value* value = ash::CrosSettings::Get()->GetPref(name);
   if (!value) {
     LOG(WARNING) << "Cros settings pref not found: " << name;
-    return absl::nullopt;
+    return std::nullopt;
   }
   pref_object->key = name;
   pref_object->type = GetType(name, value->type());
@@ -1145,28 +1145,28 @@ absl::optional<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
   return pref_object;
 }
 
-absl::optional<settings_api::PrefObject> PrefsUtil::GetPref(
+std::optional<settings_api::PrefObject> PrefsUtil::GetPref(
     const std::string& name) {
   if (GetAllowlistedPrefType(name) == settings_api::PrefType::kNone) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   settings_private::GeneratedPrefs* generated_prefs =
       settings_private::GeneratedPrefsFactory::GetForBrowserContext(profile_);
 
   const PrefService::Preference* pref = nullptr;
-  absl::optional<settings_api::PrefObject> pref_object;
+  std::optional<settings_api::PrefObject> pref_object;
   if (IsCrosSetting(name)) {
     pref_object = GetCrosSettingsPref(name);
     if (!pref_object)
-      return absl::nullopt;
+      return std::nullopt;
   } else if (generated_prefs && generated_prefs->HasPref(name)) {
     return generated_prefs->GetPref(name);
   } else {
     PrefService* pref_service = FindServiceForPref(name);
     pref = pref_service->FindPreference(name);
     if (!pref)
-      return absl::nullopt;
+      return std::nullopt;
     pref_object.emplace();
     pref_object->key = pref->name();
     pref_object->type = GetType(name, pref->GetType());

@@ -22,6 +22,11 @@ class WebApkSyncService : public KeyedService {
   WebApkSyncService& operator=(const WebApkSyncService&) = delete;
   ~WebApkSyncService() override;
 
+  void RegisterDoneInitializingCallback(
+      base::OnceCallback<void(bool)> init_done_callback);
+  void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
+                               std::vector<int> last_used_days_vector);
+
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;

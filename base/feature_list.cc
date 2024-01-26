@@ -29,6 +29,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_visitor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -658,6 +663,33 @@ void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
   CHECK(IsEarlyAccessInstance());
   allowed_feature_names_.insert(std::move(feature_name));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor) {
+  CHECK(g_feature_list_instance);
+  FieldTrialParamAssociator* params_associator =
+      FieldTrialParamAssociator::GetInstance();
+
+  for (auto& feature_override : g_feature_list_instance->overrides_) {
+    FieldTrial* field_trial = feature_override.second.field_trial;
+
+    std::string trial_name;
+    std::string group_name;
+    FieldTrialParams params;
+    if (field_trial) {
+      trial_name = field_trial->trial_name();
+      group_name = field_trial->group_name();
+      params_associator->GetFieldTrialParamsWithoutFallback(
+          trial_name, group_name, &params);
+    }
+
+    visitor.Visit(feature_override.first,
+                  feature_override.second.overridden_state, params, trial_name,
+                  group_name);
+  }
+}
+#endif  // BULDFLAG(IS_CHROMEOS_ASH)
 
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);

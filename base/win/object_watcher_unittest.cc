@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include <process.h>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -20,9 +20,15 @@ namespace {
 
 class QuitDelegate : public ObjectWatcher::Delegate {
  public:
+  explicit QuitDelegate(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
   void OnObjectSignaled(HANDLE object) override {
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
+
+ private:
+  base::OnceClosure quit_closure_;
 };
 
 class DecrementCountDelegate : public ObjectWatcher::Delegate {
@@ -44,7 +50,8 @@ void RunTest_BasicSignal(
   // A manual-reset event that is not yet signaled.
   HANDLE event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
-  QuitDelegate delegate;
+  base::RunLoop loop;
+  QuitDelegate delegate(loop.QuitWhenIdleClosure());
   bool ok = watcher.StartWatchingOnce(event, &delegate);
   EXPECT_TRUE(ok);
   EXPECT_TRUE(watcher.IsWatching());
@@ -52,7 +59,7 @@ void RunTest_BasicSignal(
 
   SetEvent(event);
 
-  RunLoop().Run();
+  loop.Run();
 
   EXPECT_FALSE(watcher.IsWatching());
   CloseHandle(event);
@@ -67,7 +74,8 @@ void RunTest_BasicCancel(
   // A manual-reset event that is not yet signaled.
   HANDLE event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
-  QuitDelegate delegate;
+  base::RunLoop loop;
+  QuitDelegate delegate(loop.QuitWhenIdleClosure());
   bool ok = watcher.StartWatchingOnce(event, &delegate);
   EXPECT_TRUE(ok);
 
@@ -84,7 +92,7 @@ void RunTest_CancelAfterSet(
 
   int counter = 1;
   DecrementCountDelegate delegate(&counter);
-
+  base::RunLoop loop;
   // A manual-reset event that is not yet signaled.
   HANDLE event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
@@ -98,7 +106,7 @@ void RunTest_CancelAfterSet(
 
   watcher.StopWatching();
 
-  RunLoop().RunUntilIdle();
+  loop.RunUntilIdle();
 
   // Our delegate should not have fired.
   EXPECT_EQ(1, counter);
@@ -115,11 +123,12 @@ void RunTest_SignalBeforeWatch(
   // A manual-reset event that is signaled before we begin watching.
   HANDLE event = CreateEvent(nullptr, TRUE, TRUE, nullptr);
 
-  QuitDelegate delegate;
+  base::RunLoop loop;
+  QuitDelegate delegate(loop.QuitWhenIdleClosure());
   bool ok = watcher.StartWatchingOnce(event, &delegate);
   EXPECT_TRUE(ok);
 
-  RunLoop().Run();
+  loop.Run();
 
   EXPECT_FALSE(watcher.IsWatching());
   CloseHandle(event);
@@ -136,7 +145,8 @@ void RunTest_OutlivesTaskEnvironment(
     {
       test::TaskEnvironment task_environment(main_thread_type);
 
-      QuitDelegate delegate;
+      base::RunLoop loop;
+      QuitDelegate delegate(loop.QuitWhenIdleClosure());
       watcher.StartWatchingOnce(event, &delegate);
     }
   }
@@ -145,19 +155,24 @@ void RunTest_OutlivesTaskEnvironment(
 
 class QuitAfterMultipleDelegate : public ObjectWatcher::Delegate {
  public:
-  QuitAfterMultipleDelegate(HANDLE event, int iterations)
-      : event_(event), iterations_(iterations) {}
+  QuitAfterMultipleDelegate(HANDLE event,
+                            int iterations,
+                            base::OnceClosure quit_closure)
+      : event_(event),
+        iterations_(iterations),
+        quit_closure_(std::move(quit_closure)) {}
   void OnObjectSignaled(HANDLE object) override {
     if (--iterations_) {
       SetEvent(event_);
     } else {
-      RunLoop::QuitCurrentWhenIdleDeprecated();
+      std::move(quit_closure_).Run();
     }
   }
 
  private:
   HANDLE event_;
   int iterations_;
+  base::OnceClosure quit_closure_;
 };
 
 void RunTest_ExecuteMultipleTimes(
@@ -170,7 +185,8 @@ void RunTest_ExecuteMultipleTimes(
   // An auto-reset event that is not yet signaled.
   HANDLE event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-  QuitAfterMultipleDelegate delegate(event, 2);
+  base::RunLoop loop;
+  QuitAfterMultipleDelegate delegate(event, 2, loop.QuitWhenIdleClosure());
   bool ok = watcher.StartWatchingMultipleTimes(event, &delegate);
   EXPECT_TRUE(ok);
   EXPECT_TRUE(watcher.IsWatching());
@@ -178,7 +194,7 @@ void RunTest_ExecuteMultipleTimes(
 
   SetEvent(event);
 
-  RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(watcher.IsWatching());
   EXPECT_TRUE(watcher.StopWatching());

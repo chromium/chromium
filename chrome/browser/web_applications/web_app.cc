@@ -53,7 +53,7 @@ namespace {
 // Converts an optional to a string wrapped in a `Value`, or an empty `Value` if
 // absent.
 template <typename T>
-base::Value OptionalToStringValue(const absl::optional<T>& optional) {
+base::Value OptionalToStringValue(const std::optional<T>& optional) {
   if (optional.has_value()) {
     return base::Value(base::ToString(optional.value()));
   }
@@ -62,14 +62,14 @@ base::Value OptionalToStringValue(const absl::optional<T>& optional) {
 
 // Converts an optional to a debug `Value`, or an empty `Value` if absent.
 template <typename T>
-base::Value OptionalAsDebugValue(const absl::optional<T>& optional) {
+base::Value OptionalAsDebugValue(const std::optional<T>& optional) {
   if (optional.has_value()) {
     return optional.value().AsDebugValue();
   }
   return base::Value();
 }
 
-std::string ColorToString(absl::optional<SkColor> color) {
+std::string ColorToString(std::optional<SkColor> color) {
   return color.has_value() ? color_utils::SkColorToRgbaString(color.value())
                            : "none";
 }
@@ -259,7 +259,7 @@ base::Value::Dict UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
 }
 
 base::Value OptTabStripToDebugValue(
-    absl::optional<blink::Manifest::TabStrip> tab_strip) {
+    std::optional<blink::Manifest::TabStrip> tab_strip) {
   if (!tab_strip.has_value()) {
     return base::Value();
   }
@@ -281,7 +281,7 @@ base::Value OptTabStripToDebugValue(
         absl::get<blink::Manifest::HomeTabParams>(tab_strip->home_tab);
 
     base::Value::List icons_json;
-    absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+    std::optional<std::vector<blink::Manifest::ImageResource>> icons =
         home_tab_params.icons;
 
     for (auto& icon : *icons) {
@@ -308,8 +308,8 @@ base::Value OptTabStripToDebugValue(
 WebApp::WebApp(const webapps::AppId& app_id)
     : app_id_(app_id),
       chromeos_data_(IsChromeOsDataMandatory()
-                         ? absl::make_optional<WebAppChromeOsData>()
-                         : absl::nullopt) {}
+                         ? std::make_optional<WebAppChromeOsData>()
+                         : std::nullopt) {}
 
 WebApp::~WebApp() = default;
 
@@ -440,21 +440,21 @@ void WebApp::SetScope(const GURL& scope) {
   scope_ = scope;
 }
 
-void WebApp::SetThemeColor(absl::optional<SkColor> theme_color) {
+void WebApp::SetThemeColor(std::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
 }
 
 void WebApp::SetDarkModeThemeColor(
-    absl::optional<SkColor> dark_mode_theme_color) {
+    std::optional<SkColor> dark_mode_theme_color) {
   dark_mode_theme_color_ = dark_mode_theme_color;
 }
 
-void WebApp::SetBackgroundColor(absl::optional<SkColor> background_color) {
+void WebApp::SetBackgroundColor(std::optional<SkColor> background_color) {
   background_color_ = background_color;
 }
 
 void WebApp::SetDarkModeBackgroundColor(
-    absl::optional<SkColor> dark_mode_background_color) {
+    std::optional<SkColor> dark_mode_background_color) {
   dark_mode_background_color_ = dark_mode_background_color;
 }
 
@@ -464,7 +464,26 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
 }
 
 void WebApp::SetUserDisplayMode(mojom::UserDisplayMode user_display_mode) {
-  user_display_mode_ = user_display_mode;
+  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    user_display_mode_non_cros_ = user_display_mode;
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  user_display_mode_cros_ = user_display_mode;
+#else
+  user_display_mode_non_cros_ = user_display_mode;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void WebApp::SetUserDisplayModeCrOS(
+    mojom::UserDisplayMode user_display_mode_cros) {
+  user_display_mode_cros_ = user_display_mode_cros;
+}
+
+void WebApp::SetUserDisplayModeNonCrOS(
+    mojom::UserDisplayMode user_display_mode_non_cros) {
+  user_display_mode_non_cros_ = user_display_mode_non_cros;
 }
 
 void WebApp::SetDisplayModeOverride(
@@ -481,7 +500,7 @@ void WebApp::SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal) {
 }
 
 void WebApp::SetWebAppChromeOsData(
-    absl::optional<WebAppChromeOsData> chromeos_data) {
+    std::optional<WebAppChromeOsData> chromeos_data) {
   chromeos_data_ = std::move(chromeos_data);
 }
 
@@ -533,7 +552,7 @@ void WebApp::SetFileHandlerOsIntegrationState(OsIntegrationState state) {
   file_handler_os_integration_state_ = state;
 }
 
-void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
+void WebApp::SetShareTarget(std::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
 
@@ -620,7 +639,7 @@ void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
 }
 
 void WebApp::SetLaunchQueryParams(
-    absl::optional<std::string> launch_query_params) {
+    std::optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
 }
 
@@ -641,12 +660,12 @@ void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
   window_controls_overlay_enabled_ = enabled;
 }
 
-void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
+void WebApp::SetLaunchHandler(std::optional<LaunchHandler> launch_handler) {
   launch_handler_ = std::move(launch_handler);
 }
 
 void WebApp::SetParentAppId(
-    const absl::optional<webapps::AppId>& parent_app_id) {
+    const std::optional<webapps::AppId>& parent_app_id) {
   parent_app_id_ = parent_app_id;
 }
 
@@ -656,15 +675,15 @@ void WebApp::SetPermissionsPolicy(
 }
 
 void WebApp::SetLatestInstallSource(
-    absl::optional<webapps::WebappInstallSource> latest_install_source) {
+    std::optional<webapps::WebappInstallSource> latest_install_source) {
   latest_install_source_ = latest_install_source;
 }
 
-void WebApp::SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes) {
+void WebApp::SetAppSizeInBytes(std::optional<int64_t> app_size_in_bytes) {
   app_size_in_bytes_ = app_size_in_bytes;
 }
 
-void WebApp::SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes) {
+void WebApp::SetDataSizeInBytes(std::optional<int64_t> data_size_in_bytes) {
   data_size_in_bytes_ = data_size_in_bytes;
 }
 
@@ -674,7 +693,7 @@ void WebApp::SetWebAppManagementExternalConfigMap(
       std::move(management_to_external_config_map);
 }
 
-void WebApp::SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip) {
+void WebApp::SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip) {
   tab_strip_ = std::move(tab_strip);
 }
 
@@ -754,7 +773,7 @@ void WebApp::SetLatestInstallTime(const base::Time& latest_install_time) {
 }
 
 void WebApp::SetGeneratedIconFix(
-    absl::optional<GeneratedIconFix> generated_icon_fix) {
+    std::optional<GeneratedIconFix> generated_icon_fix) {
   CHECK(!generated_icon_fix.has_value() ||
         generated_icon_fix_util::IsValid(*generated_icon_fix));
   generated_icon_fix_ = generated_icon_fix;
@@ -839,7 +858,7 @@ WebApp::IsolationData::IsolationData(
     IsolatedWebAppLocation location,
     base::Version version,
     const std::set<std::string>& controlled_frame_partitions,
-    const absl::optional<PendingUpdateInfo>& pending_update_info)
+    const std::optional<PendingUpdateInfo>& pending_update_info)
     : location(location),
       version(std::move(version)),
       controlled_frame_partitions(controlled_frame_partitions) {
@@ -901,14 +920,14 @@ base::Value WebApp::IsolationData::PendingUpdateInfo::AsDebugValue() const {
 }
 
 void WebApp::IsolationData::SetPendingUpdateInfo(
-    const absl::optional<PendingUpdateInfo>& pending_update_info) {
+    const std::optional<PendingUpdateInfo>& pending_update_info) {
   if (pending_update_info.has_value()) {
     CHECK_EQ(pending_update_info->location.index(), location.index());
   }
   pending_update_info_ = pending_update_info;
 }
 
-const absl::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {
+const std::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {
   CHECK(!generated_icon_fix_.has_value() ||
         generated_icon_fix_util::IsValid(generated_icon_fix_.value()));
   return generated_icon_fix_;
@@ -937,7 +956,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.background_color_,
         app.dark_mode_background_color_,
         app.display_mode_,
-        app.user_display_mode_,
+        app.user_display_mode_cros_,
+        app.user_display_mode_non_cros_,
         app.display_mode_override_,
         app.user_page_ordinal_,
         app.user_launch_ordinal_,
@@ -1186,7 +1206,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("scope_extensions_validated",
            ConvertDebugValueList(validated_scope_extensions_));
 
-  root.Set("user_display_mode", OptionalToStringValue(user_display_mode_));
+  root.Set("user_display_mode_cros",
+           OptionalToStringValue(user_display_mode_cros_));
+
+  root.Set("user_display_mode_non_cros",
+           OptionalToStringValue(user_display_mode_non_cros_));
 
   root.Set("user_launch_ordinal", user_launch_ordinal_.ToDebugString());
 

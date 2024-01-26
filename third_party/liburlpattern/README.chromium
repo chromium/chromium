@@ -21,6 +21,8 @@ Local Modifications:
 third_party/liburlpattern/DIR_METADATA
 third_party/liburlpattern/BUILD.gn
 third_party/liburlpattern/OWNERS
+third_party/liburlpattern/constructor_string_parser.cc
+third_party/liburlpattern/constructor_string_parser.h
 third_party/liburlpattern/options.h
 third_party/liburlpattern/parse.cc
 third_party/liburlpattern/parse.h

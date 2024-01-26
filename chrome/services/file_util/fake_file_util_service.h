@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_FILE_UTIL_FAKE_FILE_UTIL_SERVICE_H_
 #define CHROME_SERVICES_FILE_UTIL_FAKE_FILE_UTIL_SERVICE_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -39,7 +40,7 @@ class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       void,
       AnalyzeZipFile,
       (base::File zip_file,
-       const absl::optional<std::string>& password,
+       const std::optional<std::string>& password,
        mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
        AnalyzeZipFileCallback callback),
       (override));
@@ -54,7 +55,7 @@ class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       void,
       AnalyzeRarFile,
       (base::File rar_file,
-       const absl::optional<std::string>& password,
+       const std::optional<std::string>& password,
        mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
        AnalyzeRarFileCallback callback),
       (override));

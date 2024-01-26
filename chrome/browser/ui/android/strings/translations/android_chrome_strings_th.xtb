@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">เปลี่ยนตำแหน่งเริ่มต้นในการดาวน์โหลดได้ทุกเมื่อ</translation>
 <translation id="1796666869097395659">ย่อแท็บเพื่อกลับไปดูในภายหลัง</translation>
 <translation id="1807246157184219062">สว่าง</translation>
+<translation id="1807709131360304325">เปิดหน้าต่างใหม่</translation>
 <translation id="1810845389119482123">ตั้งค่าการซิงค์เริ่มต้นไม่สำเร็จ</translation>
 <translation id="1812027881030482584">ดำเนินการต่อโดยใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ใน <ph name="SITE_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">เว็บไซต์หยุดชั่วคราว</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ดาวน์โหลด 1 รายการไม่สำเร็จ}other{ดาวน์โหลด # รายการไม่สำเร็จ}}</translation>
 <translation id="2067805253194386918">ข้อความ</translation>
+<translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
 <translation id="2091863218454846791">กำลังแสดงมุมมองแบบอัดแน่น</translation>
 <translation id="2093731487903423814">15 นาทีที่ผ่านมา</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2239812875700136898">ควบคุมเรื่องราวของคุณจากปุ่ม "ตัวเลือกสำหรับฟีดสำรวจ"</translation>
-<translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2247789808226901522">บัตรหมดอายุ</translation>
 <translation id="2248941474044011069">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2249635629516220541">ปรับแต่งข้อมูลที่เว็บไซต์ใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
 <translation id="2321086116217818302">กำลังเตรียมรหัสผ่าน…</translation>
 <translation id="2323763861024343754">พื้นที่เก็บข้อมูลเว็บไซต์</translation>
-<translation id="2327226657832576859">เปิดไฟล์ PDF โดยอัตโนมัติใช่ไหม</translation>
 <translation id="2328985652426384049">ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="2341410551640223969">ติดตั้ง <ph name="WEBAPK_NAME" /> ไม่สำเร็จ</translation>
 <translation id="2349710944427398404">ข้อมูลทั้งหมดที่ Chrome ใช้ รวมถึงบัญชี บุ๊กมาร์ก และการตั้งค่าที่บันทึกไว้</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">เหลือ <ph name="SECONDS" /> วิ</translation>
 <translation id="2779651927720337254">ล้มเหลว</translation>
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
+<translation id="2789486458103222910">ตกลง</translation>
 <translation id="2800066122460699237">ระบบจะปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="281504910091592009">ดูและจัดการรหัสผ่านที่บันทึกไว้ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">กำลังอัปเดต Chrome เพื่อเชื่อมต่อกับอุปกรณ์อื่นๆ</translation>
 <translation id="2951071800649516099">เพิ่มหน้าเว็บลงในเรื่องรออ่านไว้อ่านภายหลัง</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> หน้า}other{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> หน้า}}</translation>
-<translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
 <translation id="296370266220139811">ประหยัดเวลาและพิมพ์น้อยลง</translation>
 <translation id="2977350910003566746">จัดเรียงตามที่เปิดล่าสุด</translation>
 <translation id="297771753501244313">จัดเรียงตามที่เปิดล่าสุด</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4307992518367153382">พื้นฐาน</translation>
+<translation id="4311652497846705514">เปิด PDF ไหม</translation>
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="433213510553688132">กำลังติดตาม...</translation>
 <translation id="4335835283689002019">Google Safe Browsing ปิดอยู่</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">ชั่วโมงที่ผ่านมา</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4532845899244822526">เลือกโฟลเดอร์</translation>
-<translation id="4541505619120536051">เปิดตลอดเวลา</translation>
 <translation id="4543131175509360848">ไม่มีชีตพาสคีย์</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ}other{<ph name="TAB_COUNT_MANY" /> แท็บ <ph name="TAB_COUNT_INCOGNITO" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="4554077758708533499">เชื่อมต่อด้วยสาย USB แล้ว</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">โลโก้ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวสำหรับศูนย์รวมข้อมูลเชิงลึกเกี่ยวกับหน้าเว็บซึ่งเปลี่ยนเส้นทางไปยังหน้ากิจกรรมของฉัน</translation>
 <translation id="5487521232677179737">ล้างข้อมูล</translation>
 <translation id="5492637351392383067">การเข้ารหัสในอุปกรณ์</translation>
-<translation id="5509866835115085009">Chrome จะเปิดไฟล์ PDF โดยอัตโนมัติเมื่อคุณดาวน์โหลด</translation>
 <translation id="5514904542973294328">ปิดใช้โดยผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
 <translation id="5966233851250124270">Chrome จะจดจำตัวเลือกของคุณ</translation>
+<translation id="5977976211062815271">ในอุปกรณ์นี้</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5995726099713306770">ดาวน์โหลดหน้าเว็บอีกครั้งใช่ไหม</translation>
 <translation id="6000066717592683814">ใช้ Google ต่อ</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">เปิดด้วย…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ไฟล์ทั้งหมด 1 ไฟล์ในรายการ}other{ไฟล์ทั้งหมด # ไฟล์ในรายการ}}</translation>
 <translation id="7815484226266492798">ภาพหน้าจอแบบยาว</translation>
+<translation id="7821130663268546430">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดในตัวสลับแท็บได้</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="78270725016672455">คอมพิวเตอร์ต้องการลงทะเบียนอุปกรณ์นี้เพื่อลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="7844171778363018843">ไม่ได้เลือกข้อมูลที่จะซิงค์</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="7947953824732555851">ยอมรับและลงชื่อเข้าใช้</translation>
+<translation id="7951102827450076904">เปิด PDF ที่ดาวน์โหลดมาเสมอ</translation>
 <translation id="7957413488482743710">บัตรเสมือนจะซ่อนบัตรจริงไว้เพื่อช่วยปกป้องคุณจากการฉ้อโกงที่อาจเกิดขึ้น <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ปุ่มย้อนกลับในข้อมูลเชิงลึกของหน้า</translation>
 <translation id="7961926449547174351">คุณปิดการเข้าถึงพื้นที่เก็บข้อมูลไว้ โปรดไปที่การตั้งค่าเพื่อเปิดการเข้าถึง</translation>

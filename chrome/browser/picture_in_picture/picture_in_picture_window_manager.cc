@@ -23,7 +23,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
-#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -177,8 +176,11 @@ bool PictureInPictureWindowManager::ExitPictureInPictureViaWindowUi(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto_pip_setting_helper_) {
-    auto_pip_setting_helper_->OnUserClosedWindow();
+  // The user manually closed the pip window, so let the tab helper know in case
+  // the auto-pip permission dialog was visible.
+  if (auto* tab_helper = AutoPictureInPictureTabHelper::FromWebContents(
+          pip_window_controller_->GetWebContents())) {
+    tab_helper->OnUserClosedWindow();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -248,10 +250,10 @@ bool PictureInPictureWindowManager::IsChildWebContents(
   return instance->GetChildWebContents() == wc;
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
   return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
-                                : absl::nullopt;
+                                : std::nullopt;
 }
 
 gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
@@ -269,7 +271,7 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
   // tests we don't.  Don't worry about the cache if it's missing.
   if (pip_window_controller_) {
     auto* const web_contents = pip_window_controller_->GetWebContents();
-    absl::optional<gfx::Size> requested_content_bounds;
+    std::optional<gfx::Size> requested_content_bounds;
     if (pip_options.width > 0 && pip_options.height > 0) {
       requested_content_bounds.emplace(pip_options.width, pip_options.height);
     }
@@ -402,9 +404,6 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
   video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
   pip_window_controller_ = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  auto_pip_setting_helper_.reset();
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -413,8 +412,6 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // contents, so we only need to forget the controller here when user closes
   // the parent web contents with the PiP window open.
   document_web_contents_observer_.reset();
-  // `auto_pip_setting_helper_` depends on the opener's WebContents.
-  auto_pip_setting_helper_.reset();
   if (pip_window_controller_)
     pip_window_controller_ = nullptr;
 }
@@ -439,29 +436,37 @@ PictureInPictureWindowManager::GetOverlayView(
   // It would be nice to create this in `EnterPictureInPicture*`, but detecting
   // auto-pip while pip is in the process of opening doesn't work.
   //
-  // Instead, defer this until after setup, when we're asked for an overlay
-  // view.  Since the helper is only destroyed when the pip window closes, this
-  // effectively means that there's still at most one helper instance per
-  // (auto-)pip window.  This is important, because we can be asked for the
-  // overlay view multiple times if the pip window frame is destroyed and
-  // recreated.  This can happen on theme change sometimes, or on linux on days
-  // that end in a Y.  If we did recreate the helper each time we're asked, then
-  // the helper might think that there were multiple instances of a dismissed
-  // permission, and update the embargo.
-  CreateAutoPipSettingHelperIfNeeded();
+  // Remember that this can be called more than once per pip window instance,
+  // such as on theme change in some cases or on Linux at any time at all, when
+  // the window frame is destroyed and recreated.  Thus, one must be careful not
+  // to get confused between the user closing the pip window and the pip window
+  // closing itself.  Otherwise, these events would adjust the embargo counter
+  // incorrectly.  As it is, we explicitly call back when the user closes the
+  // pip window for that purpose.
 
-  // No overlay view if we're not in auto-pip.
-  if (!auto_pip_setting_helper_) {
+  auto* const web_contents = pip_window_controller_->GetWebContents();
+  CHECK(web_contents);
+
+  auto* auto_pip_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  if (!auto_pip_tab_helper) {
     return nullptr;
   }
 
-  auto overlay_view = auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
+  // See if we should display the allow / block UI.  This might call back the
+  // close cb, if the pip window should be blocked.
+  auto overlay_view = auto_pip_tab_helper->CreateOverlayPermissionViewIfNeeded(
+      base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon),
       browser_view_overridden_bounds, anchor_view, arrow);
+
   if (!overlay_view) {
-    // Clear the setting helper, since the setting is either allowed or blocked.
-    auto_pip_setting_helper_.reset();
-  } else if (auto* pip_contents = GetChildWebContents()) {
-    // For document pip, block input too.
+    // It's already allowed or blocked / embargoed.
+    return nullptr;
+  }
+
+  // We need to ask the user.
+  if (auto* pip_contents = GetChildWebContents()) {
+    // For document pip, block input too while the permission dialog is shown.
     overlay_view->IgnoreInputEvents(pip_contents);
   }
 
@@ -472,38 +477,6 @@ PictureInPictureOcclusionTracker*
 PictureInPictureWindowManager::GetOcclusionTracker() {
   CreateOcclusionTrackerIfNecessary();
   return occlusion_tracker_.get();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-void PictureInPictureWindowManager::CreateAutoPipSettingHelperIfNeeded() {
-  // Because we have to defer creating this until after the tab helper finds out
-  // about pip, we don't care if there's already a helper.  Just use it.
-  if (auto_pip_setting_helper_) {
-    return;
-  }
-
-  auto* const web_contents = pip_window_controller_->GetWebContents();
-  CHECK(web_contents);
-
-  auto* auto_pip_tab_helper =
-      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
-  if (!auto_pip_tab_helper) {
-    return;
-  }
-
-  // Check both preconditions and "in pip", since we don't know if pip is
-  // officially ready yet or not.  This might be during the opening of the pip
-  // window, so the tab helper might not know about it yet.
-  if (!auto_pip_tab_helper->AreAutoPictureInPicturePreconditionsMet() &&
-      !auto_pip_tab_helper->IsInAutoPictureInPicture()) {
-    // This isn't auto-pip, so the content setting doesn't matter.
-    return;
-  }
-
-  auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
-      web_contents,
-      base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
 }
 
 void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {

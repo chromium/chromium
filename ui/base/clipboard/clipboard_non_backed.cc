@@ -588,22 +588,26 @@ std::vector<std::u16string> ClipboardNonBacked::GetStandardFormats(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types.push_back(
-        base::UTF8ToUTF16(ClipboardFormatType::PlainTextType().GetName()));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types.push_back(
-        base::UTF8ToUTF16(ClipboardFormatType::HtmlType().GetName()));
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types.push_back(
-        base::UTF8ToUTF16(ClipboardFormatType::SvgType().GetName()));
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types.push_back(
-        base::UTF8ToUTF16(ClipboardFormatType::RtfType().GetName()));
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+  }
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  }
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  }
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  }
+  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst)) {
     types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer, data_dst))
+  }
+  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
+                        data_dst)) {
     types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  }
   return types;
 }
 

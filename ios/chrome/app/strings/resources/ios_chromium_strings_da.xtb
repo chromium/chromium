@@ -6,7 +6,7 @@
 <translation id="1091252999271033193">Det betyder, at Chromium anmoder om mobilwebsitet hver gang.</translation>
 <translation id="1115463765356382667">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chromium.</translation>
 <translation id="1141230343006904201">1. Åbn Chromium-indstillingerne</translation>
-<translation id="1171824629317156389">Åbn Chromium-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chromium.</translation>
+<translation id="1171824629317156389">Åbn Chromium-indstillingerne i iOS, tryk på "Standardapp til browsing", og vælg Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
 <translation id="12739128458173458">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chromium på begge enheder.</translation>
@@ -81,7 +81,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3366305173356742781">Chromium-data på din konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Dette kan omfatte historik og autofyld.}}</translation>
 <translation id="3472200483164753384">Understøttes ikke i Chromium Canary</translation>
-<translation id="3478750326643748149">Skjul "Få mest muligt ud af Chromium"</translation>
 <translation id="347967311580159871">Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chromium. Prøv derefter igen.</translation>
 <translation id="3554027294407525061">Ryd browserdata i Chromium.</translation>
@@ -101,9 +100,9 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 
 Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Åbn Chromium fra en hvilken som helst app</translation>
-<translation id="4002314982058020967">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Åbner og kører et sikkerhedstjek i Chromium.</translation>
 <translation id="4043291146360695975">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
+<translation id="4076589763479456892">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Understøttes ikke i Chromium Beta</translation>
 <translation id="4106512142782407609">Logget ind som <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="4408912345039114853">Kør Chromium-sikkerhedstjek</translation>
 <translation id="4432744876818348753">Log ind for at få mest muligt ud af Chromium.</translation>
 <translation id="4445228361214254027">Din organisation har deaktiveret muligheden for at bruge og gemme Chromium-data på din Google-konto. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
-<translation id="4485517920713468480">Chromium registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Dine data deles med Google med henblik på at levere denne funktion og forbedre Shopping for alle. Du kan ændre dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Føjer de angivne webadresser til din læseliste i Chromium.</translation>
 <translation id="452436063477828504">Sørg for, at du altid kan bruge Chromium-dataene på din Google-konto.</translation>
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="5534584691915394889">Dette bruges til at oprette begivenheder i din Apple Kalender via Chromium og Google Lens.</translation>
 <translation id="5571094606370987472">Åbner de seneste faner i Chromium.</translation>
 <translation id="5623083843656850677">Lås dine inkognitofaner, når du forlader Chromium eller skifter til en anden app.</translation>
+<translation id="5671188105328420281">Tips til Chromium</translation>
 <translation id="5688047395118852662">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
@@ -179,7 +178,7 @@ Vær opmærksom på følgende:
 <translation id="61109258320235597">Angiv din adgangssætning for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="6119647025869519954">Sådan gør du Chromium til din standardbrowser:
 1. Åbn Indstillinger
-2. Tryk på Standardbrowserapp
+2. Tryk på Standardapp til browsing
 3. Vælg Chromium.</translation>
 <translation id="6154098560469640583">Brug Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="6170619162539716595">Tillad, at Chromium bruger Google Maps til at vise dig rutevejledning og lokale oplysninger om registrerede adresser.</translation>
@@ -220,7 +219,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="7285031092584344905">Få adgang til dine Chromium-adgangskoder og meget mere i andre apps.</translation>
-<translation id="7313655110045230863">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chromium.</translation>
+<translation id="7313655110045230863">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger. Tryk på Standardapp til browsing, og vælg derefter Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte data er fjernet fra Chromium og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7387082980875012885">Åbn en ny fane i Chromium</translation>
@@ -262,7 +261,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="830951810931292870">Åbner de angivne webadresser i Chromium i inkognitotilstand.</translation>
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
-<translation id="8458950033462118672">Du kan åbne links i Chromium automatisk ved at angive Chromium som din standardbrowserapp.</translation>
+<translation id="8458950033462118672">Du kan åbne links i Chromium automatisk ved at angive Chromium som din standardapp til browsing.</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8618440443578628179">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
@@ -286,6 +285,7 @@ Ting, du skal overveje:
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
 <translation id="88376265765385899">Åbner Chromium-bogmærkerne.</translation>
 <translation id="8860548555286245440">Åbn webadresser i Chromium i inkognitotilstand</translation>
+<translation id="8866191443434488382">Chromium registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Chromium for at levere denne funktion og forbedre shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium til iOS</translation>
 <translation id="8924617840944134898">Åbn inkognitofane i Chromium</translation>
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>

@@ -34,12 +34,11 @@ void GetFontsUsedByFragment(const PhysicalBoxFragment& fragment,
         const String font_family =
             shape_result_view->PrimaryFont()->PlatformData().FontFamilyName();
         if (!font_family.empty())
-          result.primary_fonts.insert(font_family);
+          result.font_names.insert(font_family);
         HashSet<const SimpleFontData*> fallback_font_data;
         shape_result_view->FallbackFonts(&fallback_font_data);
         for (const SimpleFontData* font_data : fallback_font_data) {
-          result.fallback_fonts.insert(
-              font_data->PlatformData().FontFamilyName());
+          result.font_names.insert(font_data->PlatformData().FontFamilyName());
         }
       }
       continue;

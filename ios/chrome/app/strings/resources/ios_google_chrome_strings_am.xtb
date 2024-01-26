@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1066101356081285416">Chrome በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ይህንን ባህሪ ለማቅረብ እና ለሁሉም ሰው የGoogle ግዢ ባህሪያትን ለማሻሻል የጥቅል መከታተያ ቁጥሩ እና የድር ጣቢያው ስም ወደ Google ይላካል። ይህንን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />በጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ ማዘመን ይችላሉ።</translation>
 <translation id="1085696779717592361">በነባሪነት Chromeን ይጠቀሙ</translation>
 <translation id="1105362920864247682">በChrome ውስጥ የአሰሳ ውሂብን ያጽዱ።</translation>
 <translation id="1113057722807951993">የይለፍ ሐረግ ምስጠራ ከGoogle Pay የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">የChrome ውሂብዎን ያስምሩ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">በChrome ውስጥ የገቡትን ዩአርኤሎች ወደ ዕልባቶችዎ ያክላል።</translation>
+<translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
 <translation id="1830634592642484976">ይህ አድራሻ በአሁኑ ጊዜ Chrome ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="1843217788865538014">አገናኞችን በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ መታ ሲያደርጉ በራስ-ሰር Chromeን ይጠቀሙ።</translation>
 <translation id="1910975740091000991">Chrome ለiOS</translation>
 <translation id="1917964099031477364">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChrome እና በዚህ መሣሪያ ላይ ካሉት ከሌሎች የGoogle መተግበሪያዎች ይወገዳል።</translation>
 <translation id="1965935827552890526">በእርስዎ ሌላኛው ክፍት የChrome መስኮት ላይ እያደረጉ ያሉትን ነገር ያጠናቅቁ።</translation>
 <translation id="1987779152850321833">ከChrome ማግኘት የሚችሉትን ሁሉ ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ እርምጃዎች ያጠናቅቁ።</translation>
-<translation id="2008357574463816229">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="2056123005618757196">ከመቼውም ጊዜ በበለጠ ቀላል፣ ደህንነቱ በተጠበቀ እና ፈጣን በሆነ Google Chrome አማካኝነት ተጨማሪ ነገሮችን ያከናውኑ።</translation>
 <translation id="2120238739383482109">የChrome እልባቶችን ይከፍታል።</translation>
 <translation id="2147651015520127414">Chrome የዚህ ድር ጣቢያ እውቅና ማረጋገጫ ያወጣው <ph name="ISSUER" /> መሆኑን አረጋግጧል።</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">የንባብ ዝርዝር ንጥልን ወደ Chrome ያክሉ</translation>
 <translation id="2736805085127235148">አሁን ላይ በእርስዎ የመሣሪያ ቅንብሮች ውስጥ የChrome ማሳወቂያዎች ጠፍተዋል።</translation>
 <translation id="2767464022270041271">ምንም የተቀመጡ የይለፍ ቃላት የሉም። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃላትዎን ሲያስቀምጡ ሊፈትሻቸው ይችላል።</translation>
+<translation id="2789947168960170215">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ፣ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="2868822340714096138">Chrome ውስጥ የአሰሳ ውሂብን ያጽዱ</translation>
 <translation id="2869959624320573933">በመለያ ወደ Chrome ይግቡ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome እንዴት የእርስዎን ውሂብ በግል እንደሚያስቀምጥ<ph name="END_LINK" /> የበለጠ ይወቁ</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">ለዚህ የChrome መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>
 <translation id="3522659714780527202">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
 <translation id="3577555362230509265">Chromeን በሌሎች መተግበሪያዎች ውስጥ ይጠቀሙ።</translation>
-<translation id="3594076341410558780">«ከChrome ምርጡን አግኝን» ደብቅ</translation>
 <translation id="364480321352456989">የእርስዎ Chrome ጊዜው አልፎበታል።</translation>
 <translation id="3646736009628185125">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chrome እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">ይህ ማለት Chrome የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">በGoogle መለያዎ ውስጥ <ph name="BEGIN_LINK" />ምን ዓይነት የChrome ውሂብ እንደሚቀመጥ<ph name="END_LINK" /> ማስተዳደር ይችላሉ።
 
 የChrome ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
-<translation id="687586529977635009">Chrome በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ውሂብዎ ይህን ባህሪ ለማቅረብ እና ለሁሉም ሸመታን ለማሻሻል ከGoogle ጋር ይጋራል። ይህን <ph name="BEGIN_LINK" />የጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="6916015246697034114">በChrome ውስጥ በጽምፅ ይፈልጉ</translation>
 <translation id="6964931465519938134">አገናኞችን በመልእክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="6975725306479268850">ለራስ-ሙላ Chromeን ይምረጡ</translation>

@@ -13,6 +13,10 @@
 // push notification's `push_notification_client_id` for the
 // PushNotificationClientManager to accurately associate the notification to the
 // desired feature.
-enum class PushNotificationClientId { kCommerce = 1, kContent = 2 };
+enum class PushNotificationClientId {
+  kCommerce = 1,
+  kContent = 2,
+  kTips = 3,
+};
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_

@@ -23,6 +23,7 @@ source_set("data_source") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/default_promo/resources:animation_files",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

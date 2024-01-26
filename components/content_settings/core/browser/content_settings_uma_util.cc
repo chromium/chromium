@@ -116,7 +116,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::MIDI, 102},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, 103},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, 104},
-    {ContentSettingsType::TPCD_SUPPORT, 105},
+    {ContentSettingsType::TPCD_TRIAL, 105},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, 106},
     {ContentSettingsType::TPCD_METADATA_GRANTS, 107},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, 108},
@@ -126,7 +126,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::SMART_CARD_GUARD, 112},
     {ContentSettingsType::SMART_CARD_DATA, 113},
     {ContentSettingsType::WEB_PRINTING, 114},
-    {ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT, 115},
+    {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, 115},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

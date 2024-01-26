@@ -7,6 +7,11 @@
 #include <string>
 
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/logging.h"
+#include "components/manta/proto/manta.pb.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace wallpaper_handlers {
 
@@ -21,10 +26,6 @@ std::string TemplateIdToString(
       return "flower";
     case ash::personalization_app::mojom::SeaPenTemplateId::kMineral:
       return "mineral";
-    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape:
-      return "landscape";
-    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi:
-      return "scifi";
     case ash::personalization_app::mojom::SeaPenTemplateId::kArt:
       return "art";
     case ash::personalization_app::mojom::SeaPenTemplateId::kCharacters:
@@ -37,6 +38,25 @@ std::string TemplateIdToString(
       return "dreamscapes";
     case ash::personalization_app::mojom::SeaPenTemplateId::kTranslucent:
       return "translucent";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi:
+      return "scifi";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundSimple:
+      return "simple";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundOffice:
+      return "office";
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundTerrainVc:
+      return "terrain_vc";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundCafe:
+      return "cafe";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundArt:
+      return "art";
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundDreamscapesVc:
+      return "dreamscapes_vc";
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundCharacters:
+      return "characters";
   }
 }
 
@@ -51,11 +71,6 @@ std::string TemplateChipToString(
       return "<mineral_name>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kMineralColor:
       return "<mineral_color>";
-    case ash::personalization_app::mojom::SeaPenTemplateChip::kLandscapeBiome:
-      return "<landscape_biome>";
-    case ash::personalization_app::mojom::SeaPenTemplateChip::
-        kLandscapeLighting:
-      return "<landscape_lighting>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiFeature:
       return "<scifi_feature>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiColor:
@@ -95,6 +110,54 @@ std::string TemplateChipToString(
       return "<translucent_item>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kTranslucentColor:
       return "<translucent_color>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundSimpleStyle:
+      return "<simple_style>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundSimpleTone:
+      return "<simple_tone>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundOfficeStyle:
+      return "<office_style>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundOfficeColor:
+      return "<office_color>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundTerrainFeature:
+      return "<terrain_feature>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundTerrainColor:
+      return "<terrain_color>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundCafeStyle:
+      return "<cafe_style>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundCafeType:
+      return "<cafe_type>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundArtFeature:
+      return "<art_feature>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundArtMovement:
+      return "<art_movement>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundDreamscapesObject:
+      return "<dreamscapes_object>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundDreamscapesMaterial:
+      return "<dreamscapes_material>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundDreamscapesColors:
+      return "<dreamscapes_colors>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundCharactersColor:
+      return "<characters_color>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundCharactersSubjects:
+      return "<characters_subjects>";
+    case ash::personalization_app::mojom::SeaPenTemplateChip::
+        kVcBackgroundCharactersBackground:
+      return "<characters_background>";
   }
 }
 
@@ -128,8 +191,8 @@ std::string TemplateOptionToString(
         kFlowerTypeDaisy:
       return "daisy";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kFlowerTypeHydrangeas:
-      return "hydrangeas";
+        kFlowerTypeHydrangea:
+      return "hydrangea";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kFlowerColorPink:
       return "pink";
@@ -190,9 +253,6 @@ std::string TemplateOptionToString(
         kMineralNameLabradorite:
       return "labradorite";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameLapisLazuli:
-      return "lapis_lazuli";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralNameMoonstone:
       return "moonstone";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -249,54 +309,6 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralColorGray:
       return "gray";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeTaiga:
-      return "taiga";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeDesert:
-      return "desert";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeRainforest:
-      return "rainforest";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeTundra:
-      return "tundra";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeBeach:
-      return "beach";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeIcebergs:
-      return "icebergs";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeSwamp:
-      return "swamp";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeGrassland:
-      return "grassland";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeForest:
-      return "forest";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingDiffuse:
-      return "diffuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingNorthernLights:
-      return "northern_lights";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingSunRays:
-      return "sun_rays";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingGoldenHour:
-      return "golden_hour";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingEarlyMorning:
-      return "early_morning";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingBlueHour:
-      return "blue_hour";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingMidday:
-      return "midday";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kScifiFeatureStreet:
       return "street";
@@ -415,17 +427,17 @@ std::string TemplateOptionToString(
         kArtMovementAvantGarde:
       return "avant_garde";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementRealism:
-      return "realism";
+        kArtMovementRealist:
+      return "realist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementExpressionism:
-      return "expressionism";
+        kArtMovementExpressionist:
+      return "expressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementImpressionism:
-      return "impressionism";
+        kArtMovementImpressionist:
+      return "impressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementPostImpressionism:
-      return "post_impressionism";
+        kArtMovementPostImpressionist:
+      return "post_impressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementArtNouveau:
       return "art_nouveau";
@@ -436,8 +448,8 @@ std::string TemplateOptionToString(
         kArtMovementBauhaus:
       return "bauhaus";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementClassicism:
-      return "classicism";
+        kArtMovementClassicist:
+      return "classicist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementWatercolor:
       return "watercolor";
@@ -445,8 +457,8 @@ std::string TemplateOptionToString(
         kArtMovementAbstract:
       return "abstract";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementPointillism:
-      return "pointillism";
+        kArtMovementPointillist:
+      return "pointillist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementGraphicDesign:
       return "graphic_design";
@@ -472,12 +484,6 @@ std::string TemplateOptionToString(
         kCharactersColorGreen:
       return "green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorEmerald:
-      return "emerald";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorTeal:
-      return "teal";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorCyan:
       return "cyan";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -490,9 +496,6 @@ std::string TemplateOptionToString(
         kCharactersColorGold:
       return "gold";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorBurntOrange:
-      return "burnt_orange";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorRust:
       return "rust";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -502,68 +505,26 @@ std::string TemplateOptionToString(
         kCharactersColorGray:
       return "gray";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorViolet:
-      return "violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorWhite:
       return "white";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorBeige:
       return "beige";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorIvory:
-      return "ivory";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorCream:
-      return "cream";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorMagenta:
       return "magenta";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorLimeGreen:
-      return "lime_green";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorFuschia:
-      return "fuschia";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorElectricBlue:
-      return "electric_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorHotPink:
-      return "hot_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorNeonGreen:
       return "neon_green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorSkyBlue:
-      return "sky_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorElectricPurple:
-      return "electric_purple";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorFireEngineRed:
-      return "fire_engine_red";
+        kCharactersColorLightBlue:
+      return "light_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorNeonPink:
       return "neon_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorChartreuse:
-      return "chartreuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorCobalt:
-      return "cobalt";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorLemonYellow:
-      return "lemon_yellow";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorCoralPink:
       return "coral_pink";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorVibrantViolet:
-      return "vibrant_violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorPeacockBlue:
-      return "peacock_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersSubjectsLemons:
       return "lemons";
@@ -688,12 +649,6 @@ std::string TemplateOptionToString(
         kCharactersBackgroundGreen:
       return "green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundEmerald:
-      return "emerald";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundTeal:
-      return "teal";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundCyan:
       return "cyan";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -705,9 +660,6 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundRed:
       return "red";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundBurntOrange:
-      return "burnt_orange";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundRust:
       return "rust";
@@ -724,68 +676,26 @@ std::string TemplateOptionToString(
         kCharactersBackgroundYellow:
       return "yellow";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundViolet:
-      return "violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundWhite:
       return "white";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundBeige:
       return "beige";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundIvory:
-      return "ivory";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundCream:
-      return "cream";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundMagenta:
       return "magenta";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundLimeGreen:
-      return "lime_green";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundFuschia:
-      return "fuschia";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundElectricBlue:
-      return "electric_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundHotPink:
-      return "hot_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundNeonGreen:
       return "neon_green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundSkyBlue:
-      return "sky_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundElectricPurple:
-      return "electric_purple";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundFireEngineRed:
-      return "fire_engine_red";
+        kCharactersBackgroundLightBlue:
+      return "light_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundNeonPink:
       return "neon_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundChartreuse:
-      return "chartreuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundCobalt:
-      return "cobalt";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundLemonYellow:
-      return "lemon_yellow";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundCoralPink:
       return "coral_pink";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundVibrantViolet:
-      return "vibrant_violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundPeacockBlue:
-      return "peacock_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureSaltLake:
       return "salt_lake";
@@ -796,14 +706,14 @@ std::string TemplateOptionToString(
         kTerrainFeatureNorthernLights:
       return "northern_lights";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureWhiteDunes:
-      return "white_dunes";
+        kTerrainFeatureSandDunes:
+      return "sand_dunes";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureClayHills:
       return "clay_hills";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureSandyLagoons:
-      return "sandy_lagoons";
+        kTerrainFeatureSandyLagoon:
+      return "sandy_lagoon";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureMountains:
       return "mountains";
@@ -814,8 +724,8 @@ std::string TemplateOptionToString(
         kTerrainFeatureFireflyForest:
       return "firefly_forest";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureSandDunes:
-      return "sand_dunes";
+        kTerrainFeatureDifferentPlanet:
+      return "different_planet";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainColorPink:
       return "pink";
@@ -994,8 +904,8 @@ std::string TemplateOptionToString(
         kDreamscapesObjectTower:
       return "tower";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kDreamscapesObjectUfo:
-      return "UFO";
+        kDreamscapesObjectChair:
+      return "chair";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kDreamscapesMaterialFlowers:
       return "flowers";
@@ -1156,12 +1066,6 @@ std::string TemplateOptionToString(
         kTranslucentItemTulip:
       return "tulip";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTranslucentItemButterfly:
-      return "butterfly";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTranslucentItemDragonfly:
-      return "dragonfly";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTranslucentColorPink:
       return "pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -1218,6 +1122,606 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTranslucentColorBlack:
       return "black";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleStyleMinimal:
+      return "minimal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleStyleZen:
+      return "zen";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleStyleModern:
+      return "modern";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleStyleMagical:
+      return "magical";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleToneNeutral:
+      return "neutral";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleToneDark:
+      return "dark";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundSimpleToneLight:
+      return "light";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeStyleModern:
+      return "modern";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeStyleCreative:
+      return "creative";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeStyleTraditional:
+      return "traditional";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeStyleFuturistic:
+      return "futuristic";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeColorNeutral:
+      return "neutral";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeColorDark:
+      return "dark";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeColorColorful:
+      return "colorful";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundOfficeColorEarthy:
+      return "earthy";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureSaltLake:
+      return "salt_lake";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureRiver:
+      return "river";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureNorthernLights:
+      return "northern_lights";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureSandDunes:
+      return "sand_dunes";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureClayHills:
+      return "clay_hills";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureSandyLagoon:
+      return "sandy_lagoon";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureMountains:
+      return "mountains";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureBioluminescentBeach:
+      return "bioluminescent_beach";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureFireflyForest:
+      return "firefly_forest";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainFeatureDifferentPlanet:
+      return "different_planet";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorPink:
+      return "pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorTeal:
+      return "teal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorWhite:
+      return "white";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorPurple:
+      return "purple";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorBlue:
+      return "blue";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorYellow:
+      return "yellow";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorMaroonPink:
+      return "maroon_pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorBluePurple:
+      return "blue_purple";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorPinkYellow:
+      return "pink_yellow";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundTerrainColorBluePink:
+      return "blue_pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeStyleCozy:
+      return "cozy";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeStyleNeutral:
+      return "neutral";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeStyleDistressed:
+      return "distressed";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeStyleClassic:
+      return "classic";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeStyleRomantic:
+      return "romantic";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeTypeCottage:
+      return "cottage";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeTypeModern:
+      return "modern";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeTypeTeaHouse:
+      return "tea_house";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeTypeHighTea:
+      return "high_tea";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCafeTypeOutdoor:
+      return "outdoor";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureCanyon:
+      return "canyon";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureMountain:
+      return "mountain";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureBeach:
+      return "beach";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureCave:
+      return "cave";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureCliff:
+      return "cliff";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureForest:
+      return "forest";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureGlacier:
+      return "glacier";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureIsland:
+      return "island";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureJungle:
+      return "jungle";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureLake:
+      return "lake";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureMeadow:
+      return "meadow";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureOcean:
+      return "ocean";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureRiver:
+      return "river";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureDune:
+      return "dune";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureSwamp:
+      return "swamp";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureValley:
+      return "valley";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureWaterfall:
+      return "waterfall";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureField:
+      return "field";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureCityscape:
+      return "cityscape";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtFeatureVillage:
+      return "village";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementAvantGarde:
+      return "avant_garde";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementRealist:
+      return "realist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementExpressionist:
+      return "expressionist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementImpressionist:
+      return "impressionist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementPostImpressionist:
+      return "post_impressionist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementArtNouveau:
+      return "art_nouveau";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementBaroque:
+      return "baroque";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementBauhaus:
+      return "bauhaus";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementClassicist:
+      return "classicist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementWatercolor:
+      return "watercolor";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementAbstract:
+      return "abstract";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementPointillist:
+      return "pointillist";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementGraphicDesign:
+      return "graphic_design";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementModernArt:
+      return "modern_art";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementAnime:
+      return "anime";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementPixelArt:
+      return "pixel_art";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementCyberpunk:
+      return "cyberpunk";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectBicycle:
+      return "bicycle";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectCastle:
+      return "castle";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectBuilding:
+      return "building";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectBoat:
+      return "boat";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectLamp:
+      return "lamp";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectTable:
+      return "table";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectBridge:
+      return "bridge";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectLighthouse:
+      return "lighthouse";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectPagoda:
+      return "pagoda";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectPalace:
+      return "palace";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectTower:
+      return "tower";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesObjectChair:
+      return "chair";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialFlowers:
+      return "flowers";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialSilk:
+      return "silk";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialFelt:
+      return "felt";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialBurlap:
+      return "burlap";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialChiffon:
+      return "chiffon";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialCotton:
+      return "cotton";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialFur:
+      return "fur";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialLace:
+      return "lace";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialLinen:
+      return "linen";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialOrganza:
+      return "organza";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialTulle:
+      return "tulle";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialWool:
+      return "wool";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialYarn:
+      return "yarn";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialFleece:
+      return "fleece";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialClay:
+      return "clay";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialStone:
+      return "stone";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialWood:
+      return "wood";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialAmethyst:
+      return "amethyst";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialLapisLuzuli:
+      return "lapis_luzuli";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialObsidian:
+      return "obsidian";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialOpal:
+      return "opal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesMaterialSapphire:
+      return "sapphire";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsPinkPurple:
+      return "pink_purple";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsCoralTan:
+      return "coral_tan";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsCreamOrange:
+      return "cream_orange";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsBlueIndigo:
+      return "blue_indigo";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsGreenTeal:
+      return "green_teal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsBurgundyMaroon:
+      return "burgundy_maroon";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundDreamscapesColorsYellowTeal:
+      return "yellow_teal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorYellow:
+      return "yellow";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorPink:
+      return "pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorRed:
+      return "red";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorBlue:
+      return "blue";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorIndigo:
+      return "indigo";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorGreen:
+      return "green";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorCyan:
+      return "cyan";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorPurple:
+      return "purple";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorBrown:
+      return "brown";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorGold:
+      return "gold";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorRust:
+      return "rust";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorOlive:
+      return "olive";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorGray:
+      return "gray";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorWhite:
+      return "white";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorBeige:
+      return "beige";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorMagenta:
+      return "magenta";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorNeonGreen:
+      return "neon_green";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorLightBlue:
+      return "light_blue";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorNeonPink:
+      return "neon_pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersColorCoralPink:
+      return "coral_pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsLemons:
+      return "lemons";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsFlowers:
+      return "flowers";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsApples:
+      return "apples";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsCherries:
+      return "cherries";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsOranges:
+      return "oranges";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPineapples:
+      return "pineapples";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsStrawberries:
+      return "strawberries";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsWatermelons:
+      return "watermelons";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPotatoes:
+      return "potatoes";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsSushi:
+      return "sushi";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBaconAndEggs:
+      return "bacon_and_eggs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPizza:
+      return "pizza";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsHotDogs:
+      return "hot_dogs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsHamburgers:
+      return "hamburgers";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsRamen:
+      return "ramen";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsTacos:
+      return "tacos";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBunnies:
+      return "bunnies";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsCats:
+      return "cats";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsDogs:
+      return "dogs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsKoalas:
+      return "koalas";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPandas:
+      return "pandas";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPenguins:
+      return "penguins";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPigs:
+      return "pigs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsSloths:
+      return "sloths";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsPonies:
+      return "ponies";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsElephants:
+      return "elephants";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsFoxes:
+      return "foxes";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsOwls:
+      return "owls";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsCrabs:
+      return "crabs";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBees:
+      return "bees";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsButterflies:
+      return "butterflies";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBicycles:
+      return "bicycles";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBoats:
+      return "boats";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsBooks:
+      return "books";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsCutlery:
+      return "cutlery";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsUmbrellas:
+      return "umbrellas";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersSubjectsInstruments:
+      return "instruments";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundPurple:
+      return "purple";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundBlue:
+      return "blue";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundIndigo:
+      return "indigo";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundGreen:
+      return "green";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundCyan:
+      return "cyan";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundBrown:
+      return "brown";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundGold:
+      return "gold";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundRed:
+      return "red";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundRust:
+      return "rust";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundOlive:
+      return "olive";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundPink:
+      return "pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundGray:
+      return "gray";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundYellow:
+      return "yellow";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundWhite:
+      return "white";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundBeige:
+      return "beige";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundMagenta:
+      return "magenta";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundNeonGreen:
+      return "neon_green";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundLightBlue:
+      return "light_blue";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundNeonPink:
+      return "neon_pink";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundCharactersBackgroundCoralPink:
+      return "coral_pink";
   }
 }
 
@@ -1244,7 +1748,7 @@ bool IsValidTemplateQuery(
       if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kFlowerTypeRose ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kFlowerTypeHydrangeas) {
+                      kFlowerTypeHydrangea) {
         return false;
       }
       return true;
@@ -1268,52 +1772,6 @@ bool IsValidTemplateQuery(
                       kMineralColorWarm ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
                       kMineralColorGray) {
-        return false;
-      }
-      return true;
-    }
-    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape: {
-      auto enum1 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kLandscapeBiome)
-                       ->second;
-      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeBiomeTaiga ||
-          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeBiomeForest) {
-        return false;
-      }
-      auto enum2 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kLandscapeLighting)
-                       ->second;
-      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeLightingDiffuse ||
-          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeLightingMidday) {
-        return false;
-      }
-      return true;
-    }
-    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi: {
-      auto enum1 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kScifiFeature)
-                       ->second;
-      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiFeatureStreet ||
-          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiFeatureUnderwater) {
-        return false;
-      }
-      auto enum2 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kScifiColor)
-                       ->second;
-      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiColorEarthy ||
-          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiColorNeutral) {
         return false;
       }
       return true;
@@ -1349,7 +1807,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kCharactersColorYellow ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kCharactersColorPeacockBlue) {
+                      kCharactersColorCoralPink) {
         return false;
       }
       auto enum2 = options
@@ -1369,7 +1827,7 @@ bool IsValidTemplateQuery(
       if (enum3 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kCharactersBackgroundPurple ||
           enum3 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kCharactersBackgroundPeacockBlue) {
+                      kCharactersBackgroundCoralPink) {
         return false;
       }
       return true;
@@ -1382,7 +1840,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kTerrainFeatureSaltLake ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kTerrainFeatureSandDunes) {
+                      kTerrainFeatureDifferentPlanet) {
         return false;
       }
       auto enum2 = options
@@ -1438,7 +1896,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kDreamscapesObjectBicycle ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kDreamscapesObjectUfo) {
+                      kDreamscapesObjectChair) {
         return false;
       }
       auto enum2 = options
@@ -1471,7 +1929,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kTranslucentItemApple ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kTranslucentItemDragonfly) {
+                      kTranslucentItemTulip) {
         return false;
       }
       auto enum2 = options
@@ -1486,12 +1944,253 @@ bool IsValidTemplateQuery(
       }
       return true;
     }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kScifiFeature)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiFeatureStreet ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiFeatureUnderwater) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kScifiColor)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiColorEarthy ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiColorNeutral) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundSimple: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundSimpleStyle)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundSimpleStyleMinimal ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundSimpleStyleMagical) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundSimpleTone)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundSimpleToneNeutral ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundSimpleToneLight) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundOffice: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundOfficeStyle)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundOfficeStyleModern ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundOfficeStyleFuturistic) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundOfficeColor)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundOfficeColorNeutral ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundOfficeColorEarthy) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundTerrainVc: {
+      auto enum1 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundTerrainFeature)
+              ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundTerrainFeatureSaltLake ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundTerrainFeatureDifferentPlanet) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundTerrainColor)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundTerrainColorPink ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundTerrainColorBluePink) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundCafe: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundCafeStyle)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCafeStyleCozy ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCafeStyleRomantic) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundCafeType)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCafeTypeCottage ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCafeTypeOutdoor) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kVcBackgroundArt: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundArtFeature)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundArtFeatureCanyon ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundArtFeatureVillage) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kVcBackgroundArtMovement)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundArtMovementAvantGarde ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundArtMovementCyberpunk) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundDreamscapesVc: {
+      auto enum1 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundDreamscapesObject)
+              ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesObjectBicycle ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesObjectChair) {
+        return false;
+      }
+      auto enum2 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundDreamscapesMaterial)
+              ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesMaterialFlowers ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesMaterialSapphire) {
+        return false;
+      }
+      auto enum3 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundDreamscapesColors)
+              ->second;
+      if (enum3 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesColorsPinkPurple ||
+          enum3 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundDreamscapesColorsYellowTeal) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::
+        kVcBackgroundCharacters: {
+      auto enum1 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundCharactersColor)
+              ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersColorYellow ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersColorCoralPink) {
+        return false;
+      }
+      auto enum2 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundCharactersSubjects)
+              ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersSubjectsLemons ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersSubjectsInstruments) {
+        return false;
+      }
+      auto enum3 =
+          options
+              .find(ash::personalization_app::mojom::SeaPenTemplateChip::
+                        kVcBackgroundCharactersBackground)
+              ->second;
+      if (enum3 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersBackgroundPurple ||
+          enum3 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kVcBackgroundCharactersBackgroundCoralPink) {
+        return false;
+      }
+      return true;
+    }
   }
   return false;
 }
 
 }  // namespace
 // End of generated code.
+
+gfx::Size GetLargestDisplaySizeLandscape() {
+  // Screen should be non-null if the user is selecting SeaPen thumbnails.
+  CHECK(display::Screen::HasScreen());
+
+  gfx::Size largest_size;
+  uint64_t largest_area = 0u;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    DVLOG(2) << display.ToString();
+    auto next_area = display.GetSizeInPixel().Area64();
+    if (next_area > largest_area) {
+      largest_size = display.GetSizeInPixel();
+      largest_area = next_area;
+    }
+  }
+  DCHECK_GT(largest_area, 0u);
+
+  if (largest_size.height() > largest_size.width()) {
+    // Always landscape orientation.
+    largest_size.Transpose();
+  }
+
+  DVLOG(2) << "largest_size=" << largest_size.ToString();
+  return largest_size;
+}
 
 bool IsValidOutput(manta::proto::OutputData output,
                    const std::string_view source) {
@@ -1508,19 +2207,32 @@ bool IsValidOutput(manta::proto::OutputData output,
 
 manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-    absl::optional<uint32_t> generation_seed,
-    int num_output,
-    manta::proto::ImageResolution target_resolution) {
+    std::optional<uint32_t> generation_seed,
+    int num_outputs,
+    const gfx::Size& size,
+    manta::proto::FeatureName feature_name) {
+  DVLOG(2) << __func__ << " generation_seed=" << generation_seed.value_or(0)
+           << " num_outputs=" << num_outputs
+           << " image_dimensions=" << size.ToString();
+
   manta::proto::Request request;
-  request.set_feature_name(manta::proto::FeatureName::CHROMEOS_WALLPAPER);
-  manta::proto::RequestConfig& request_config =
-      *request.mutable_request_config();
-  if (generation_seed) {
-    request_config.set_generation_seed(*generation_seed);
+  request.set_feature_name(feature_name);
+
+  {
+    manta::proto::RequestConfig& request_config =
+        *request.mutable_request_config();
+    if (generation_seed) {
+      request_config.set_generation_seed(*generation_seed);
+    }
+
+    manta::proto::ImageDimensions& image_dimensions =
+        *request_config.mutable_image_dimensions();
+    image_dimensions.set_width(size.width());
+    image_dimensions.set_height(size.height());
+
+    request_config.set_num_outputs(num_outputs);
   }
-  request_config.set_num_outputs(num_output);
-  request_config.set_image_resolution(target_resolution);
-  request_config.set_aspect_ratio(manta::proto::AspectRatio::ASPECT_RATIO_16_9);
+
   manta::proto::InputData& input_data = *request.add_input_data();
   if (query->is_text_query()) {
     input_data.set_text(query->get_text_query());

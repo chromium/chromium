@@ -102,10 +102,6 @@ AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kHeadlessBoundsKey;
 // WebContentsViews find the windows that should constrain NPAPI plugins.
 AURA_EXPORT extern const WindowProperty<Window*>* const kHostWindowKey;
 
-// A property key to store menu type of the window. Valid only for the menu
-// windows.
-AURA_EXPORT extern const WindowProperty<ui::MenuType>* const kMenuType;
-
 // The modal parent of a child modal window.
 AURA_EXPORT extern const WindowProperty<Window*>* const kChildModalParentKey;
 

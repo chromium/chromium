@@ -112,6 +112,14 @@ class CORE_EXPORT GridLayoutData {
                : !(rows_ && rows_->IsForSizing());
   }
 
+  bool IsSubgridWithStandaloneAxis(
+      GridTrackSizingDirection track_direction) const {
+    return columns_ && rows_ &&
+           ((track_direction == kForColumns)
+                ? columns_->IsForSizing() && !rows_->IsForSizing()
+                : rows_->IsForSizing() && !columns_->IsForSizing());
+  }
+
   GridLayoutTrackCollection& Columns() const {
     DCHECK(columns_ && columns_->Direction() == kForColumns);
     return *columns_;

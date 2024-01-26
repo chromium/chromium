@@ -193,7 +193,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
                         Object alphaValue = animation.getAnimatedValue();
                         if (mToolbarAlphaInOverviewObserver != null
                                 && alphaValue instanceof Float) {
-                            mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                            mToolbarAlphaInOverviewObserver.onOverviewAlphaChanged(
                                     (Float) alphaValue);
                         }
                     });

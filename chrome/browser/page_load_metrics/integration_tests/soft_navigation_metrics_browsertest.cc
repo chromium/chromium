@@ -291,11 +291,11 @@ class SoftNavigationTest : public MetricIntegrationTest,
 
     size_t entry_records_list_size = entry_records_list.size();
     for (size_t i = 0; i < entry_records_list_size; i++) {
-      absl::optional<double> record_startTime =
+      std::optional<double> record_startTime =
           entry_records_list[i].GetDict().FindDouble("startTime");
-      absl::optional<double> record_score =
+      std::optional<double> record_score =
           entry_records_list[i].GetDict().FindDouble("score");
-      absl::optional<double> record_hadRecentInput =
+      std::optional<double> record_hadRecentInput =
           entry_records_list[i].GetDict().FindBool("hadRecentInput");
 
       // Verify that the optional<double> has value.

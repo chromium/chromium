@@ -119,7 +119,7 @@ try_.builder(
             "ios_disable_code_signing",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     properties = {
         "recipe_properties": {

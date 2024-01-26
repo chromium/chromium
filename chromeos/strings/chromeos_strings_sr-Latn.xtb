@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">kretanje napred</translation>
 <translation id="1615335640928990664">Potrošnja podataka od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
+<translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korišćenja funkcijskih tastera i tastera <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Učitava se</translation>
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
 <translation id="1643449475550628585">Menjajte sliku pozadine svakog dana</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Isključite tamni režim</translation>
 <translation id="1885577615937958993">premotajte medijski sadržaj unapred</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
-<translation id="1897672602657312171">Prečica bez tastera za pretragu može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera za pretragu.</translation>
 <translation id="1904932688895783618">Evo još nekih korisnih resursa:</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Slika: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">birač emodžija</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator je podesio da se aplikacija <ph name="APP_NAME_1" /> automatski pokreće svaki put kada se prijavite.}=2{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> automatski pokreću svaki put kada se prijavite.}=3{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> automatski pokreću svaki put kada se prijavite.}one{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}few{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}other{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Probaj ponovo</translation>
 <translation id="215916044711630446">Dugme Dodaj naziv pristupne tačke je sada onemogućeno</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
@@ -228,7 +227,6 @@
 <translation id="2505327257735685095">Osvežite aktuelnu sliku pozadine</translation>
 <translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2513396635448525189">Slika za prijavljivanje</translation>
-<translation id="2515109918609218604">Prečica nije dostupna. Pritisnite novu prečicu bez korišćenja funkcijskih tastera i tastera za pretragu.</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2521835766824839541">prethodna pesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
@@ -416,8 +414,8 @@
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni režim</translation>
 <translation id="4130035430755296270">Nastavite da prelazite kursorom za još opcija izgleda</translation>
+<translation id="4130750466177569591">Prihvatam</translation>
 <translation id="4131410914670010031">Crno-belo</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# aplikacija je automatski pokrenuto}}</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google slike</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -429,7 +427,6 @@
 <translation id="4171077696775491955">smanjite osvetljenost</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Kontrolna tabla</translation>
-<translation id="4185315616950253617">Prečica sa tasterima u gornjem redu treba da sadrži taster za pretragu.</translation>
 <translation id="420283545744377356">Isključite čuvar ekrana</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
@@ -457,7 +454,9 @@
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Restartuje se <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">prilagođavanje tastature</translation>
+<translation id="4403262788869804671">Prečica bez tastera <ph name="META_KEY" /> može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Aktuelni avatar</translation>
+<translation id="4417830657741848074">Administrator je podesio automatsko pokretanje nekih aplikacija. Neke od ovih aplikacija ne mogu da se zatvore.</translation>
 <translation id="4422041425070339732">strelica nadole</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
@@ -470,6 +469,7 @@
 <translation id="4469288414739283461">Čuvar ekrana sa zemljom</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
+<translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu pomoću modifikujućeg tastera (ctrl, alt, shift ili <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica nalevo</translation>
 <translation id="4507392511610824664">povećajte osvetljenost</translation>
@@ -517,6 +517,7 @@
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4839698083503556542">Napravite sopstveni film</translation>
+<translation id="48409034532829769">Administrator je podesio da se „<ph name="APP_NAME" />“ automatski pokreće. Ova aplikacija ne može da se zatvori.</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4847902821209177679">Izabrali ste uslugu <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter da biste izabrali albume usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS razrešavanje</translation>
@@ -543,6 +544,7 @@
 <translation id="4969079779290789265">Podeli</translation>
 <translation id="4972592110715526173">promena režima</translation>
 <translation id="498186245079027698">Proverite skener i probajte ponovo. Uverite se da ima dovoljno lokalne memorije za čuvanje skeniranih fajlova.</translation>
+<translation id="4982627662315910959">Prečica nije dostupna. Pritisnite novu prečicu pomoću tastera shift i još jednog modifikujućeg tastera (ctrl, alt ili <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -576,6 +578,7 @@
 <translation id="5227902338748591677">Raspored tamne teme</translation>
 <translation id="5229344016299762883">Izađite iz prikaza preko celog ekrana</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator je podesio da se <ph name="APP_NAME" /> automatski pokreće svaki put kada se prijavite.}=2{Administrator je podesio da se <ph name="APP_NAME" /> i još 1 aplikacija automatski pokreću svaki put kada se prijavite.}one{Administrator je podesio da se <ph name="APP_NAME" /> i još # aplikacija automatski pokreću svaki put kada se prijavite.}few{Administrator je podesio da se <ph name="APP_NAME" /> i još # aplikacije automatski pokreću svaki put kada se prijavite.}other{Administrator je podesio da se <ph name="APP_NAME" /> i još # aplikacija automatski pokreće svaki put kada se prijavite.}}</translation>
 <translation id="5252456968953390977">Roming</translation>
 <translation id="5257811368506016604">Omogućite režim svetle boje</translation>
 <translation id="5264277876637023664">Pokreni test procesora</translation>
@@ -848,7 +851,7 @@
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Izaberite imejl</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
-<translation id="7273347807225967898">Prečica nije dostupna. Pritisnite novu prečicu pomoću modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
+<translation id="7271932918253517778">Prečica sa tasterima u gornjem redu treba da sadrži taster <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osetite povetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>
@@ -947,6 +950,7 @@
 <translation id="7971535376154084247">Opšte kontrole</translation>
 <translation id="7977800524392185497">Da biste se povezali sa <ph name="NETWORK_NAME" /> mreži, idite u Podešavanja</translation>
 <translation id="7978412674231730200">Privatni ključ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# aplikacija je automatski pokrenuto}}</translation>
 <translation id="7994702968232966508">EAP metod</translation>
 <translation id="8004582292198964060">Pregledač</translation>
 <translation id="8017679124341497925">Prečica je izmenjena</translation>
@@ -963,7 +967,6 @@
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
-<translation id="8111706652656628199">Prečica nije dostupna. Pritisnite novu prečicu pomoću tastera shift i još 1 modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>

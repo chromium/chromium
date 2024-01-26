@@ -70,7 +70,6 @@ class FakeContentLayerClient : public ContentLayerClient {
   FakeContentLayerClient();
   ~FakeContentLayerClient() override;
 
-  gfx::Rect PaintableRegion() const override;
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
 

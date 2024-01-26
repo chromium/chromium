@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 
+#include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/starscan/metadata_allocator.h"
 #include "partition_alloc/starscan/pcscan.h"
 #include "partition_alloc/starscan/starscan_fwd.h"
 #include "partition_alloc/starscan/write_protector.h"
@@ -32,13 +32,14 @@ class PCScanInternal final {
   using Root = PCScan::Root;
   using TaskHandle = scoped_refptr<PCScanTask>;
 
-  using SuperPages = std::vector<uintptr_t, MetadataAllocator<uintptr_t>>;
-  using RootsMap =
-      std::unordered_map<Root*,
-                         SuperPages,
-                         std::hash<Root*>,
-                         std::equal_to<>,
-                         MetadataAllocator<std::pair<Root* const, SuperPages>>>;
+  using SuperPages =
+      std::vector<uintptr_t, internal::InternalAllocator<uintptr_t>>;
+  using RootsMap = std::unordered_map<
+      Root*,
+      SuperPages,
+      std::hash<Root*>,
+      std::equal_to<>,
+      internal::InternalAllocator<std::pair<Root* const, SuperPages>>>;
 
   static PCScanInternal& Instance() {
     // Since the data that PCScanInternal holds is cold, it's fine to have the
@@ -115,7 +116,7 @@ class PCScanInternal final {
       void*,
       std::hash<internal::base::PlatformThreadId>,
       std::equal_to<>,
-      MetadataAllocator<
+      internal::InternalAllocator<
           std::pair<const internal::base::PlatformThreadId, void*>>>;
 
   PCScanInternal();

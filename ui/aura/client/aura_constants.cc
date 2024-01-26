@@ -31,7 +31,6 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, int64_t)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, aura::client::FocusClient*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, aura::Window*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, std::vector<aura::Window*>*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, ui::MenuType)
 
 namespace aura {
 namespace client {
@@ -56,9 +55,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDrawAttentionKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusClient*, kFocusClientKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kHeadlessBoundsKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kHostWindowKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuType,
-                             kMenuType,
-                             ui::MenuType::kRootContextMenu)
 DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kChildModalParentKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ModalType, kModalKey, ui::MODAL_TYPE_NONE)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kNameKey, nullptr)

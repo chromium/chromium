@@ -1,0 +1,33 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * A parameterized model whose function is defined in code
+ */
+message CustomModel {
+  message CustomModelParamValue {
+    oneof value {
+      double doubleValue = 10;
+      string stringValue = 20;
+      int32 intValue = 30;
+      int64 longValue = 40;
+      bool boolValue = 50;
+      bytes bytesValue = 60;
+    }
+  }
+
+  string className = 10;  // The name of the class (conforming to MLCustomModel)
+                          // corresponding to this model
+  map<string, CustomModelParamValue> parameters = 30;
+  string description =
+      40;  // An (optional) description provided by the model creator. This
+           // information is displayed when viewing the model, but does not
+           // affect the model's execution on device.
+}

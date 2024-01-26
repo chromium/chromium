@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that we get multiple cookie blocked reasons when overwriting a Secure cookie over an insecure connection.`);
   await dp.Network.enable();

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that evaluating V8-embedder callbacks allows side-effect-free attribute getters. Should not crash.`);
 

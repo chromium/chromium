@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,6 +50,9 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -67,9 +71,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -270,7 +271,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
-        protected Set<Integer> getAllChromeTasks() {
+        protected Set<Integer> getAllChromeTasks(List<AppTask> allTasks) {
             return mAppTasks;
         }
 

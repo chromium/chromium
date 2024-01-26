@@ -300,7 +300,7 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   void ValidateDefaultSettings(
-      const absl::optional<enterprise_connectors::AnalysisSettings>& settings) {
+      const std::optional<enterprise_connectors::AnalysisSettings>& settings) {
     ASSERT_TRUE(settings.has_value());
 
     enterprise_connectors::AnalysisSettings default_settings;
@@ -334,7 +334,7 @@ class DeepScanningRequestTest : public testing::Test {
 
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
 
-  absl::optional<enterprise_connectors::AnalysisSettings> settings() {
+  std::optional<enterprise_connectors::AnalysisSettings> settings() {
     return DeepScanningRequest::ShouldUploadBinary(&item_);
   }
 
@@ -409,7 +409,7 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
             },
             run_loop.QuitClosure()),
         &download_protection_service_, dlp_and_malware_settings(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -438,7 +438,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             },
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -489,7 +489,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             },
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -522,7 +522,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             },
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -557,7 +557,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             },
             run_loop.QuitClosure()),
         &download_protection_service_, std::move(analysis_settings),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -581,7 +581,7 @@ TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE, base::DoNothing(),
       &download_protection_service_, std::move(settings),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   request.Start();
 
@@ -668,7 +668,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -716,7 +716,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*result*/ EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId);
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -741,7 +742,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -789,7 +790,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*result*/ EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId);
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -814,7 +816,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -852,7 +854,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::BLOCKED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId);
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -877,7 +880,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -915,7 +918,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId);
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -940,7 +944,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -982,7 +986,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::BLOCKED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ kScanId);
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -1007,7 +1012,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
 
@@ -1040,7 +1045,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*result*/
         EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -1065,7 +1071,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
 
@@ -1098,7 +1104,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*result*/
         EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_method*/ absl::nullopt);
 
     request.Start();
 
@@ -1124,7 +1131,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     EXPECT_CALL(item_, GetDangerType())
         .WillRepeatedly(Return(download::DownloadDangerType::
@@ -1161,7 +1168,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*result*/
         EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_reason*/ absl::nullopt);
 
     request.Start();
 
@@ -1189,7 +1197,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
           },
           base::Unretained(this), run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   enterprise_connectors::ContentAnalysisResponse response;
   response.set_request_token(kScanId);
@@ -1233,7 +1241,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
           },
           base::Unretained(this), run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   enterprise_connectors::ContentAnalysisResponse response;
   response.set_request_token(kScanId);
@@ -1280,7 +1288,7 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
           },
           base::Unretained(this), run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   enterprise_connectors::ContentAnalysisResponse response;
   response.set_request_token(kScanId);
@@ -1442,7 +1450,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         /*size*/ std::string("foo.exe").size(),
         /*result*/ EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_reason*/ absl::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -1552,7 +1561,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         {
             kScanId + std::string("0"),
             kScanId + std::string("1"),
-        });
+        },
+        /*content_transfer_reason*/ absl::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -1582,7 +1592,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
           },
           base::Unretained(this), run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
       download_path_, BinaryUploadService::Result::TIMEOUT,
@@ -1606,7 +1616,8 @@ TEST_F(DeepScanningReportingTest, Timeout) {
       /*result*/
       EventResultToString(EventResult::ALLOWED),
       /*username*/ kUserName,
-      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+      /*content_transfer_reason*/ absl::nullopt);
 
   request.Start();
 
@@ -1698,7 +1709,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -1760,7 +1771,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -1823,7 +1834,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -1852,7 +1863,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*result*/
         EventResultToString(expected_event_result_for_safe_large_file()),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_reason*/ absl::nullopt);
 
     request.Start();
 
@@ -1883,7 +1895,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             },
             base::Unretained(this), run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
-        /*password=*/absl::nullopt);
+        /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -1911,7 +1923,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(expected_event_result_for_malware()),
         /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*content_transfer_reason*/ absl::nullopt);
 
     request.Start();
 
@@ -2003,7 +2016,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
           },
           run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
-      /*password=*/absl::nullopt);
+      /*password=*/std::nullopt);
 
   request.Start();
   run_loop.Run();

@@ -358,14 +358,13 @@ static bool ParseSOS(const uint8_t* buffer,
 // and |eoi_end_ptr| will point to the end of image (right after the end of the
 // EOI marker) after search succeeds. Returns true on EOI marker found, or false
 // otherwise.
-static bool SearchEOI(const uint8_t* buffer,
-                      size_t length,
+static bool SearchEOI(base::span<const uint8_t> buffer,
                       const char** eoi_begin_ptr,
                       const char** eoi_end_ptr) {
-  DCHECK(buffer);
+  DCHECK(!buffer.empty());
   DCHECK(eoi_begin_ptr);
   DCHECK(eoi_end_ptr);
-  BigEndianReader reader(buffer, length);
+  BigEndianReader reader(buffer);
   uint8_t marker2;
 
   while (reader.remaining() > 0) {
@@ -422,13 +421,12 @@ static bool SearchEOI(const uint8_t* buffer,
 }
 
 // |result| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOI(const uint8_t* buffer,
-                     size_t length,
+static bool ParseSOI(base::span<const uint8_t> buffer,
                      JpegParseResult* result) {
   // Spec B.2.1 High-level syntax
-  DCHECK(buffer);
+  DCHECK(!buffer.empty());
   DCHECK(result);
-  BigEndianReader reader(buffer, length);
+  BigEndianReader reader(buffer);
   uint8_t marker1;
   uint8_t marker2;
   bool has_marker_dqt = false;
@@ -527,12 +525,11 @@ static bool ParseSOI(const uint8_t* buffer,
   return true;
 }
 
-bool ParseJpegPicture(const uint8_t* buffer,
-                      size_t length,
+bool ParseJpegPicture(base::span<const uint8_t> buffer,
                       JpegParseResult* result) {
-  DCHECK(buffer);
+  DCHECK(!buffer.empty());
   DCHECK(result);
-  BigEndianReader reader(buffer, length);
+  BigEndianReader reader(buffer);
   memset(result, 0, sizeof(JpegParseResult));
 
   uint8_t marker1, marker2;
@@ -543,35 +540,35 @@ bool ParseJpegPicture(const uint8_t* buffer,
     return false;
   }
 
-  if (!ParseSOI(reader.ptr(), reader.remaining(), result))
+  if (!ParseSOI(reader.remaining_bytes(), result)) {
     return false;
+  }
+  // TODO(crbug.com/1490484): Make this span part of JpegParseResult.
+  base::span<const uint8_t> result_span =
+      base::as_bytes(base::make_span(result->data, result->data_size));
 
   // Update the sizes: |result->data_size| should not include the EOI marker or
   // beyond.
-  BigEndianReader eoi_reader(reinterpret_cast<const uint8_t*>(result->data),
-                             result->data_size);
+  BigEndianReader eoi_reader(result_span);
   const char* eoi_begin_ptr = nullptr;
   const char* eoi_end_ptr = nullptr;
-  if (!SearchEOI(eoi_reader.ptr(), eoi_reader.remaining(), &eoi_begin_ptr,
-                 &eoi_end_ptr)) {
+  if (!SearchEOI(eoi_reader.remaining_bytes(), &eoi_begin_ptr, &eoi_end_ptr)) {
     DLOG(ERROR) << "SearchEOI failed";
     return false;
   }
   DCHECK(eoi_begin_ptr);
   DCHECK(eoi_end_ptr);
   result->data_size = eoi_begin_ptr - result->data;
-  result->image_size = eoi_end_ptr - reinterpret_cast<const char*>(buffer);
+  result->image_size =
+      eoi_end_ptr - reinterpret_cast<const char*>(buffer.data());
   return true;
 }
 
 // TODO(andrescj): this function no longer seems necessary. Fix call sites to
 // use ParseJpegPicture() directly.
-bool ParseJpegStream(const uint8_t* buffer,
-                     size_t length,
+bool ParseJpegStream(base::span<const uint8_t> buffer,
                      JpegParseResult* result) {
-  DCHECK(buffer);
-  DCHECK(result);
-  return ParseJpegPicture(buffer, length, result);
+  return ParseJpegPicture(buffer, result);
 }
 
 }  // namespace media

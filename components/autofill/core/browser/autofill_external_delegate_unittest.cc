@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
+#include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -236,10 +237,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
 
-  MOCK_METHOD(bool,
-              ShouldShowScanCreditCard,
-              (const FormData& form, const FormFieldData& field),
-              (override));
   MOCK_METHOD(void,
               OnUserHideSuggestions,
               (const FormData& form, const FormFieldData& field),
@@ -253,8 +250,10 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails& trigger_details),
               (override));
 
-  bool ShouldShowCardsFromAccountOption(const FormData& form,
-                                        const FormFieldData& field) override {
+  bool ShouldShowCardsFromAccountOption(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source) const override {
     return should_show_cards_from_account_option_;
   }
 
@@ -264,7 +263,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void,
               UndoAutofill,
               (mojom::ActionPersistence action_persistence,
-               FormData form,
+               const FormData& form,
                const FormFieldData& trigger_field),
               (override));
   MOCK_METHOD(void,
@@ -339,13 +338,6 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   // created in `IssueOnQuery()`.
   AutofillField* get_triggering_autofill_field() {
     return manager().GetAutofillField(queried_form_, queried_form_.fields[0]);
-  }
-
-  void IssueOnSuggestionsReturned(FieldGlobalId field_id) {
-    std::vector<Suggestion> suggestions;
-    suggestions.emplace_back();
-    suggestions[0].popup_item_id = PopupItemId::kAddressEntry;
-    external_delegate().OnSuggestionsReturned(field_id, suggestions);
   }
 
   Matcher<const FormData&> HasQueriedFormId() {
@@ -877,11 +869,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();
 
   const auto kExpectedSuggestions =
-      SuggestionVectorIdsAre(PopupItemId::kAddressEntry,
-#if !BUILDFLAG(IS_ANDROID)
-                             PopupItemId::kSeparator,
-#endif
-                             PopupItemId::kAutofillOptions);
+      SuggestionVectorIdsAre(PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
 
@@ -922,11 +910,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
 #if !BUILDFLAG(IS_ANDROID)
                              PopupItemId::kSeparator,
 #endif
-                             PopupItemId::kAddressEntry,
-#if !BUILDFLAG(IS_ANDROID)
-                             PopupItemId::kSeparator,
-#endif
-                             PopupItemId::kAutofillOptions);
+                             PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
@@ -966,11 +950,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 #if !BUILDFLAG(IS_ANDROID)
                              PopupItemId::kSeparator,
 #endif
-                             PopupItemId::kAddressEntry,
-#if !BUILDFLAG(IS_ANDROID)
-                             PopupItemId::kSeparator,
-#endif
-                             PopupItemId::kAutofillOptions);
+                             PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
@@ -1010,11 +990,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 #if !BUILDFLAG(IS_ANDROID)
       PopupItemId::kSeparator,
 #endif
-      PopupItemId::kAddressEntry,
-#if !BUILDFLAG(IS_ANDROID)
-      PopupItemId::kSeparator,
-#endif
-      PopupItemId::kAutofillOptions);
+      PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
 
@@ -1149,12 +1125,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
           PopupOpenArgsAre(SuggestionVectorIdsAre(PopupItemId::kIbanEntry)),
           _));
   std::vector<Suggestion> suggestions;
-  const std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  const std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
-  suggestions.emplace_back(/*main_text=*/masked_iban_value,
-                           PopupItemId::kIbanEntry);
+  Iban iban = test::GetLocalIban();
+  suggestions.emplace_back(
+      /*main_text=*/iban.GetIdentifierStringForAutofillDisplay(),
+      PopupItemId::kIbanEntry);
   suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
-  suggestions[0].payload = Suggestion::ValueToFill(unmasked_iban_value);
+  suggestions[0].payload = Suggestion::Guid(iban.guid());
   external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
                                             suggestions);
 
@@ -1163,7 +1139,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               FillOrPreviewField(mojom::ActionPersistence::kPreview,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 masked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.GetIdentifierStringForAutofillDisplay(),
+                                 PopupItemId::kIbanEntry));
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -1171,7 +1148,17 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 unmasked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.value(), PopupItemId::kIbanEntry));
+  EXPECT_CALL(*client().GetMockIbanManager(),
+              OnSingleFieldSuggestionSelected(
+                  iban.GetIdentifierStringForAutofillDisplay(),
+                  PopupItemId::kIbanEntry));
+  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+      .WillByDefault([iban](const Suggestion& suggestion,
+                            IbanAccessManager::OnIbanFetchedCallback callback) {
+        std::move(callback).Run(iban.value());
+      });
+
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
 }
@@ -1350,27 +1337,31 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   base::HistogramTester histogram_tester;
-  // When the user chooses to fill a specific field, we only log this metric for
-  // fields that were classified as address. This is because otherwise the user
-  // had not choice but to select field-by-field filling.
+
+  // Field-by-field filling is the only filling method that can fill
+  // unclassified fields.
   if (params.target_metric ==
       autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
     get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
     external_delegate().DidAcceptSuggestion(suggestion,
                                             SuggestionPosition{.row = 0});
-    // An unclassified field should not produce this metric.
-    histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
-                                        params.target_metric, 0);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FillingMethodUsed.Address."
+        "TriggeringFieldDoesNotMatchFillingProduct",
+        params.target_metric, 1);
 
     get_triggering_autofill_field()->SetTypeTo(AutofillType(NAME_FIRST));
-    // Now the field is classified as an address field and should produce the
+    // Now the field is classified as an address field, assert the expected
     // metric.
   }
-
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-  histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
-                                      params.target_metric, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FillingMethodUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
+      params.target_metric, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1573,7 +1564,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       suggestion, SuggestionPosition{.row = 0, .sub_popup_level = 1});
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
       autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 1);
 }
 
@@ -1590,7 +1582,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                           SuggestionPosition{.row = 0});
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
       autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 0);
 }
 
@@ -2099,68 +2092,69 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
       Suggestion(PopupItemId::kScanCreditCard), SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
-  // Log that the scan card item was shown, although nothing was selected.
-  {
-    EXPECT_CALL(manager(), ShouldShowScanCreditCard(_, _))
-        .WillOnce(testing::Return(true));
-    base::HistogramTester histogram;
-    IssueOnQuery();
-    IssueOnSuggestionsReturned(queried_form_triggering_field_id_);
-    external_delegate().OnPopupShown();
-    histogram.ExpectUniqueSample("Autofill.ScanCreditCardPrompt",
-                                 AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
-  }
-  // Log that the scan card item was selected.
-  {
-    EXPECT_CALL(manager(), ShouldShowScanCreditCard(_, _))
-        .WillOnce(testing::Return(true));
-    base::HistogramTester histogram;
-    IssueOnQuery();
-    IssueOnSuggestionsReturned(queried_form_triggering_field_id_);
-    external_delegate().OnPopupShown();
+TEST_F(AutofillExternalDelegateUnitTest,
+       ScanCreditCardMetrics_SuggestionShown) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kScanCreditCard)});
+  external_delegate().OnPopupShown();
 
-    external_delegate().DidAcceptSuggestion(
-        Suggestion(PopupItemId::kScanCreditCard), SuggestionPosition{.row = 0});
+  histogram.ExpectUniqueSample("Autofill.ScanCreditCardPrompt",
+                               AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
+}
 
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_ITEM_SELECTED, 1);
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED,
-                                0);
-  }
-  // Log that something else was selected.
-  {
-    EXPECT_CALL(manager(), ShouldShowScanCreditCard(_, _))
-        .WillOnce(testing::Return(true));
-    base::HistogramTester histogram;
-    IssueOnQuery();
-    IssueOnSuggestionsReturned(queried_form_triggering_field_id_);
-    external_delegate().OnPopupShown();
+TEST_F(AutofillExternalDelegateUnitTest,
+       ScanCreditCardMetrics_SuggestionAccepted) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kScanCreditCard)});
+  external_delegate().OnPopupShown();
 
-    external_delegate().DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
-                                            SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(PopupItemId::kScanCreditCard), SuggestionPosition{.row = 0});
 
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_ITEM_SELECTED, 0);
-    histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
-                                AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED,
-                                1);
-  }
-  // Nothing is logged when the item isn't shown.
-  {
-    EXPECT_CALL(manager(), ShouldShowScanCreditCard(_, _))
-        .WillOnce(testing::Return(false));
-    base::HistogramTester histogram;
-    IssueOnQuery();
-    IssueOnSuggestionsReturned(queried_form_triggering_field_id_);
-    external_delegate().OnPopupShown();
-    histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
-  }
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_ITEM_SELECTED, 1);
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED,
+                              0);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       ScanCreditCardMetrics_DifferentSuggestionAccepted) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kScanCreditCard)});
+  external_delegate().OnPopupShown();
+
+  external_delegate().DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
+                                          SuggestionPosition{.row = 0});
+
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_ITEM_SELECTED, 0);
+  histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
+                              AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED,
+                              1);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       ScanCreditCardMetrics_SuggestionNotShown) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
+                                            {});
+  external_delegate().OnPopupShown();
+  histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, AutocompleteShown_MetricsEmitted) {
@@ -2266,21 +2260,25 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
 
-  std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
+  Iban iban = test::GetLocalIban();
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 unmasked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.value(), PopupItemId::kIbanEntry));
   EXPECT_CALL(*client().GetMockIbanManager(),
-              OnSingleFieldSuggestionSelected(masked_iban_value,
-                                              PopupItemId::kIbanEntry));
-
+              OnSingleFieldSuggestionSelected(
+                  iban.GetIdentifierStringForAutofillDisplay(),
+                  PopupItemId::kIbanEntry));
+  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+      .WillByDefault([iban](const Suggestion& suggestion,
+                            IbanAccessManager::OnIbanFetchedCallback callback) {
+        std::move(callback).Run(iban.value());
+      });
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
-          PopupItemId::kIbanEntry, masked_iban_value,
-          Suggestion::ValueToFill(unmasked_iban_value)),
+          PopupItemId::kIbanEntry, iban.GetIdentifierStringForAutofillDisplay(),
+          Suggestion::Guid(iban.guid())),
       SuggestionPosition{.row = 0});
 }
 
@@ -2303,71 +2301,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-  // On Desktop, the GPay icon should be stored in the store indicator icon.
-#if BUILDFLAG(IS_ANDROID)
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               AnyOf(Suggestion::Icon::kGooglePay,
-                                     Suggestion::Icon::kGooglePayDark));
-#elif BUILDFLAG(IS_IOS)
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kNoIcon,
-                               AnyOf(Suggestion::Icon::kGooglePay,
-                                     Suggestion::Icon::kGooglePayDark));
-#else
-      SuggestionVectorStoreIndicatorIconsAre(
-          Suggestion::Icon::kNoIcon, Suggestion::Icon::kNoIcon,
-          AnyOf(Suggestion::Icon::kGooglePay,
-                Suggestion::Icon::kGooglePayDark));
-#endif
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item, true);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       ShouldNotShowGooglePayIconIfSuggestionsContainLocalCards) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-#if !BUILDFLAG(IS_ANDROID)
-                               Suggestion::Icon::kNoIcon,
-#endif
-                               Suggestion::Icon::kSettings);
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item, false);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-#if !BUILDFLAG(IS_ANDROID)
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
-#endif
-      Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
-                       Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item);
 }
 
 // Test that browser autofill manager will handle the unmasking request for the
@@ -2445,101 +2378,32 @@ INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
 
 TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   const AutofillProfile profile = test::GetFullProfile();
-  const PopupItemId& popup_item_id = GetParam();
+  const Suggestion& suggestion = test::CreateAutofillSuggestion(
+      GetParam(), u"autofill suggestion", Suggestion::Guid(profile.guid()));
   pdm().AddProfile(profile);
 
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+  if (suggestion.popup_item_id == PopupItemId::kAutocompleteEntry) {
     EXPECT_CALL(single_field_form_fill_router(),
                 OnRemoveCurrentSingleFieldSuggestion);
-  } else if (popup_item_id != PopupItemId::kPasswordEntry) {
+  } else if (suggestion.popup_item_id != PopupItemId::kPasswordEntry) {
     // Passwords entries cannot be deleted. Since all the remaining ones are
     // address or credit card, we can expect that pdm is called.
     EXPECT_CALL(pdm(), RemoveByGUID);
   }
-  bool result = external_delegate().RemoveSuggestion(
-      u"", popup_item_id, Suggestion::Guid(profile.guid()));
+  bool result = external_delegate().RemoveSuggestion(suggestion);
 
   // Password entries are the only ones from the test set that cannot be
   // deleted.
-  EXPECT_EQ(result, popup_item_id != PopupItemId::kPasswordEntry);
-}
-
-// Tests that the prompt to show account cards shows up when the corresponding
-// bit is set, including any suggestions that are passed along and the "Manage"
-// row in the footer.
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShouldShowCardsFromAccountOptionWithCards) {
-  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
-                                                     /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
-                              kDefaultTriggerSource);
-
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)),
-#if !BUILDFLAG(IS_ANDROID)
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
-#endif
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-}
-
-// Tests that the prompt to show account cards shows up when the corresponding
-// bit is set, even if no suggestions are passed along. The "Manage" row should
-// *not* show up in this case.
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShouldShowCardsFromAccountOptionWithoutCards) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-      SuggestionVectorMainTextsAre(Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            std::vector<Suggestion>());
+  EXPECT_EQ(result, suggestion.popup_item_id != PopupItemId::kPasswordEntry);
 }
 
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       LogShowCardsFromGoogleAccountButtonMetrics) {
-  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
-                                                     /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
-                              kDefaultTriggerSource);
+       ShowCardsFromAccountMetrics) {
   base::HistogramTester histogram_tester;
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)),
-#if !BUILDFLAG(IS_ANDROID)
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
-#endif
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kShowAccountCards)});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
@@ -2551,16 +2415,9 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
                            kButtonAppearedOnce,
                        1)));
 
-  // Simulate suggestions returned again.
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(SuggestionVectorIdsAre(
-                                    PopupItemId::kShowAccountCards)),
-                                _));
-  autofill_item.clear();
-
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kShowAccountCards)});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),

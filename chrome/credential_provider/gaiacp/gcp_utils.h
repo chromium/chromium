@@ -44,7 +44,9 @@ class FilePath;
 namespace credential_provider {
 
 // Windows supports a maximum of 20 characters plus null in username.
-constexpr int kWindowsUsernameBufferLength = 21;
+inline constexpr int kWindowsUsernameBufferLength = 21;
+
+inline constexpr int kWindowsPasswordBufferLength = 32;
 
 // Maximum domain length is 256 characters including null.
 // https://support.microsoft.com/en-ca/help/909264/naming-conventions-in-active-directory-for-computers-domains-sites-and

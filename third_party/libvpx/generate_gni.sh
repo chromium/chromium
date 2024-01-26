@@ -137,12 +137,12 @@ function convert_srcs_to_project_files() {
     | egrep '(mmx|sse2|sse3|ssse3|sse4|avx|avx2|avx512).c$')
 
   if [[ "$2" =~ arm ]]; then
-    # Select all arm neon files ending in _neon.c and all asm files.
+    # Select all arm neon files ending in _neon*.c, _sve*.c and all asm files.
     # The asm files need to be included in the intrinsics target because
     # they need the -mfpu=neon flag.
     # the pattern may need to be updated if vpx_scale gets intrinsics
     local intrinsic_list=$(echo "$source_list" \
-      | egrep 'neon.*(\.c|\.asm)$')
+      | egrep '(neon|sve).*(\.c|\.asm)$')
   fi
 
   # Select loongarch lsx files ending in C from source_list.
@@ -206,9 +206,11 @@ function convert_srcs_to_project_files() {
           grep '_neon_dotprod\.c$')
         local neon_i8mm_sources=$(echo "$intrinsic_list" | \
           grep '_neon_i8mm\.c$')
+        local sve_sources=$(echo "$intrinsic_list" | grep '_sve\.c$')
         write_gni neon_dotprod_sources $2_neon_dotprod \
           "$BASE_DIR/libvpx_srcs.gni"
         write_gni neon_i8mm_sources $2_neon_i8mm "$BASE_DIR/libvpx_srcs.gni"
+        write_gni sve_sources $2_sve "$BASE_DIR/libvpx_srcs.gni"
       fi
      fi
   fi
@@ -481,7 +483,10 @@ gen_rtcd_header linux/mips64el mips64el
 gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
-gen_rtcd_header win/arm64-highbd armv8 "${require_neon}"
+# SVE is disabled due to a limitation with clang-cl-18:
+# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+# error: cannot mangle this built-in __SVInt8_t type yet
+gen_rtcd_header win/arm64-highbd armv8 "${require_neon} --disable-sve"
 gen_rtcd_header win/ia32 x86 "${require_sse2}"
 gen_rtcd_header win/x64 x86_64
 gen_rtcd_header mac/ia32 x86 "${require_sse2}"

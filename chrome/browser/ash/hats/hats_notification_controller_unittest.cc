@@ -80,6 +80,7 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
 
   ~HatsNotificationControllerTest() override {}
 
+  // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -90,7 +91,7 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.InitAndEnableFeature(kHatsGeneralSurvey.feature);
   }
 
-  TestingProfile* CreateProfile() override {
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     sync_preferences::PrefServiceMockFactory factory;
     auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
     int64_t now_timestamp = base::Time::Now().ToInternalValue();
@@ -99,7 +100,7 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
         factory.CreateSyncable(registry.get()));
     RegisterUserProfilePrefs(registry.get());
     return profile_manager()->CreateTestingProfile(
-        "test_profile", std::move(prefs), std::u16string(), 0,
+        profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
   }
 

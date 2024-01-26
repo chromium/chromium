@@ -15,6 +15,7 @@ namespace features {
 // Please keep features in alphabetical order.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowContentInitiatedDataUrlNavigations);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWebOverride);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheTimeToLiveControl);
 BASE_DECLARE_FEATURE(kBeforeUnloadBrowserResponseQueue);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
@@ -61,6 +62,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kGroupNIKByJoiningOrigin);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kHandleChildThreadTypeChangesInBrowser);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kHighPriorityBeforeUnload);
+
+BASE_DECLARE_FEATURE(kHistoryInterventionSameDocumentFix);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInMemoryCodeCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInnerFrameCompositorSurfaceEviction);
 #if BUILDFLAG(IS_MAC)

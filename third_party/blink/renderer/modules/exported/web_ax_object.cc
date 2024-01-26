@@ -573,8 +573,9 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
                                int anchor_offset,
                                const WebAXObject& focus_object,
                                int focus_offset) const {
-  if (IsDetached() || anchor_object.IsDetached() || focus_object.IsDetached())
+  if (IsDetached() || anchor_object.IsDetached() || focus_object.IsDetached()) {
     return false;
+  }
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kSetSelection);

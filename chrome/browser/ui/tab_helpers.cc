@@ -161,6 +161,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "rlz/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -223,6 +224,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/cros_apps/cros_apps_tab_helper.h"
+#include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
 
@@ -289,6 +291,10 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#endif
+
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 #endif
 
 using content::WebContents;
@@ -361,6 +367,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
   CreateSubresourceFilterWebContentsHelper(web_contents);
+#if BUILDFLAG(ENABLE_RLZ)
+  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
+      web_contents);
+#endif
   ChromeTranslateClient::CreateForWebContents(web_contents);
   client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
       web_contents);
@@ -583,7 +593,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         ResourceUsageTabHelper::CreateForWebContents(web_contents);
   }
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kTabHoverCardImageSettings) ||
       base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);
   }
@@ -644,6 +653,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   CrosAppsTabHelper::MaybeCreateForWebContents(web_contents);
+  mahi::MahiTabHelper::MaybeCreateForWebContents(web_contents);
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 

@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
                       "performance.getEntriesByType('navigation')[0].type"));
 
   // Verify the request for the view-source tab had the correct IsolationInfo.
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       loader_monitor.GetRequestInfo(url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->trusted_params);

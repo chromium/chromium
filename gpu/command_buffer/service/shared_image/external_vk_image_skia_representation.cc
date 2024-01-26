@@ -22,6 +22,7 @@
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
@@ -104,7 +105,8 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     // |end_state| VK_QUEUE_FAMILY_EXTERNAL, and then the caller will set the
     // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
     *end_state = std::make_unique<skgpu::MutableTextureState>(
-        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
+        skgpu::MutableTextureStates::MakeVulkan(VK_IMAGE_LAYOUT_UNDEFINED,
+                                                VK_QUEUE_FAMILY_EXTERNAL));
   }
 
   write_surfaces_ = surfaces;
@@ -132,7 +134,8 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
   if (backing_impl()->need_synchronization()) {
     *end_state = std::make_unique<skgpu::MutableTextureState>(
-        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
+        skgpu::MutableTextureStates::MakeVulkan(VK_IMAGE_LAYOUT_UNDEFINED,
+                                                VK_QUEUE_FAMILY_EXTERNAL));
   }
 
   return promise_textures;
@@ -175,7 +178,8 @@ ExternalVkImageSkiaImageRepresentation::BeginReadAccess(
   // VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
   if (backing_impl()->need_synchronization()) {
     *end_state = std::make_unique<skgpu::MutableTextureState>(
-        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
+        skgpu::MutableTextureStates::MakeVulkan(VK_IMAGE_LAYOUT_UNDEFINED,
+                                                VK_QUEUE_FAMILY_EXTERNAL));
   }
 
   access_mode_ = AccessMode::kRead;

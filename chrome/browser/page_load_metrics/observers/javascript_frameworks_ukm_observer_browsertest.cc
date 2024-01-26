@@ -188,7 +188,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
   void RunSingleFrameworkVersionDetectionTest(
       const std::string& test_url,
       base::StringPiece framework,
-      absl::optional<std::pair<int, int>> expected_version) {
+      std::optional<std::pair<int, int>> expected_version) {
     page_load_metrics::PageLoadMetricsTestWaiter waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     waiter.AddPageExpectation(
@@ -213,7 +213,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
   void RunSingleContentManagementSystemVersionDetectionTest(
       const std::string& test_url,
       base::StringPiece cms,
-      absl::optional<std::pair<int, int>> expected_version) {
+      std::optional<std::pair<int, int>> expected_version) {
     page_load_metrics::PageLoadMetricsTestWaiter waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     waiter.AddPageExpectation(

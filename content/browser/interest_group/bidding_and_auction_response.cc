@@ -151,6 +151,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   output.score = input_dict->FindDouble("score");
   output.bid = input_dict->FindDouble("bid");
 
+  std::string* maybe_currency = input_dict->FindString("bidCurrency");
+  if (maybe_currency) {
+    if (!blink::IsValidAdCurrencyCode(*maybe_currency)) {
+      return std::nullopt;
+    }
+    output.bid_currency = blink::AdCurrency::From(*maybe_currency);
+  }
+
   base::Value::Dict* win_reporting_urls =
       input_dict->FindDict("winReportingURLs");
   if (win_reporting_urls) {
@@ -159,10 +167,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     if (buyer_reporting) {
       output.buyer_reporting = ReportingURLs::TryParse(buyer_reporting);
     }
-    base::Value::Dict* seller_reporting =
+    base::Value::Dict* top_level_seller_reporting =
         win_reporting_urls->FindDict("topLevelSellerReportingURLs");
-    if (seller_reporting) {
-      output.seller_reporting = ReportingURLs::TryParse(seller_reporting);
+    if (top_level_seller_reporting) {
+      output.top_level_seller_reporting =
+          ReportingURLs::TryParse(top_level_seller_reporting);
+    }
+    base::Value::Dict* component_seller_reporting =
+        win_reporting_urls->FindDict("componentSellerReportingURLs");
+    if (component_seller_reporting) {
+      output.component_seller_reporting =
+          ReportingURLs::TryParse(component_seller_reporting);
     }
   }
   std::string* maybe_top_level_seller =

@@ -28,10 +28,7 @@ class HelpAppDiscoverTabNotificationTest : public BrowserWithTestWindowTest {
   HelpAppDiscoverTabNotificationTest& operator=(
       const HelpAppDiscoverTabNotificationTest&) = delete;
 
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile("user@gmail.com");
-  }
-
+  // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(

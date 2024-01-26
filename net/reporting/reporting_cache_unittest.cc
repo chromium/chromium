@@ -131,7 +131,7 @@ class ReportingCacheTest : public ReportingTestBase,
 
     for (const ReportingReport* report : after) {
       // If report isn't in before, we've found the new instance.
-      if (std::find(before.begin(), before.end(), report) == before.end()) {
+      if (!base::Contains(before, report)) {
         EXPECT_EQ(network_anonymization_key, report->network_anonymization_key);
         EXPECT_EQ(url, report->url);
         EXPECT_EQ(user_agent, report->user_agent);

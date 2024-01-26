@@ -8,7 +8,11 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/threading/platform_thread.h"
+#include "components/country_codes/country_codes.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -21,8 +25,17 @@ class TemplateURLServiceUnitTest : public testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
 
+    search_engine_choice_service_ =
+        std::make_unique<search_engines::SearchEngineChoiceService>(
+            pref_service_);
+    // Bypass the country checks.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::kCountryCodeUnknown);
+
     template_url_service_ = std::make_unique<TemplateURLService>(
-        &pref_service_, std::make_unique<SearchTermsData>(),
+        &pref_service_, search_engine_choice_service_.get(),
+        std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
         nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -38,6 +51,8 @@ class TemplateURLServiceUnitTest : public testing::Test {
 
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 

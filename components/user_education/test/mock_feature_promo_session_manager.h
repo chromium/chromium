@@ -59,7 +59,10 @@ class MockFeaturePromoSessionManager : public FeaturePromoSessionManager {
   ~MockFeaturePromoSessionManager() override;
 
   MOCK_METHOD(void, OnIdleStateUpdating, (base::Time, bool), (override));
-  MOCK_METHOD(void, OnNewSession, (), (override));
+  MOCK_METHOD(void,
+              OnNewSession,
+              (const base::Time, const base::Time, const base::Time),
+              (override));
 };
 
 }  // namespace user_education::test

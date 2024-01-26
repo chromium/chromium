@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that Page.setDocumentContent is observable from different session.');
   var page = await testRunner.createPage();
 

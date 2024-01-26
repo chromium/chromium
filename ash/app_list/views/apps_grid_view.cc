@@ -386,6 +386,8 @@ AppsGridView::~AppsGridView() {
     item_list_->RemoveObserver(this);
   }
 
+  set_context_menu_controller(nullptr);
+
   // Abort reorder animation before `view_model_` is cleared.
   MaybeAbortWholeGridAnimation();
 
@@ -1625,7 +1627,7 @@ void AppsGridView::AnimateToIdealBounds(bool is_animating_top_to_bottom) {
     item_reorder_animation_tracker_ =
         layer()->GetCompositor()->RequestNewThroughputTracker();
     item_reorder_animation_tracker_->Start(
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             &ReportItemDragReorderAnimationSmoothness, IsTabletMode())));
   }
 
@@ -2453,7 +2455,7 @@ views::AnimationBuilder AppsGridView::FadeOutVisibleItemsForReorder(
   grid_animation_status_ = AppListGridAnimationStatus::kReorderFadeOut;
   reorder_animation_tracker_.emplace(
       layer()->GetCompositor()->RequestNewThroughputTracker());
-  reorder_animation_tracker_->Start(metrics_util::ForSmoothness(
+  reorder_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportReorderAnimationSmoothness, IsTabletMode())));
 
   views::AnimationBuilder animation_builder;
@@ -3248,7 +3250,7 @@ AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
 
   const auto& entries = view_model_.entries();
   const auto iter = base::ranges::find_if(entries, [&](const auto& entry) {
-    return entry.view->bounds() == tile_rect && entry.view != drag_view_;
+    return entry.view->bounds() == tile_rect && entry.view.get() != drag_view_;
   });
   return iter == entries.end() ? nullptr
                                : static_cast<AppListItemView*>(iter->view);

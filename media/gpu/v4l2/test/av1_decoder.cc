@@ -985,8 +985,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
 
   for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
     if (state_->reference_frame[i] != nullptr && ref_frames_[i] == nullptr) {
-      LOG_ASSERT(false) << "The state of the reference frames are different "
-                           "between |ref_frames_| and |state_|";
+      LOG(FATAL) << "The state of the reference frames are different "
+                    "between |ref_frames_| and |state_|";
     }
     if (state_->reference_frame[i] == nullptr && ref_frames_[i] != nullptr)
       ref_frames_[i].reset();

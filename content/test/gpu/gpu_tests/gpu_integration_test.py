@@ -22,6 +22,7 @@ import unittest
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from telemetry.internal.browser import browser_options as bo
+from telemetry.internal.platform import system_info as si_module
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
 from telemetry.util import minidump_utils
@@ -29,6 +30,7 @@ from telemetry.util import screenshot
 from typ import json_results
 
 import gpu_path_util
+import validate_tag_consistency
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
@@ -41,17 +43,15 @@ _MAX_TEST_TRIES = 3
 
 ResultType = json_results.ResultType
 
+
 # Please expand the following lists when we expand to new bot configs.
 _SUPPORTED_WIN_VERSIONS = ['win7', 'win10']
-_SUPPORTED_WIN_VERSIONS_WITH_DIRECT_COMPOSITION = ['win10']
-_SUPPORTED_WIN_GPU_VENDORS = [0x8086, 0x10de, 0x1002, 0x4D4F4351]
-_SUPPORTED_WIN_AMD_GPUS = [0x6613, 0x699f, 0x7340]
-_SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS = [0x7340]
-_SUPPORTED_WIN_INTEL_GPUS = [0x5912, 0x3e92, 0x9bc5]
-_SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS = [0x5912, 0x3e92, 0x9bc5]
-_SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92, 0x9bc5]
-# Hardware overlays are disabled in 26.20.100.8141 per crbug.com/1079393#c105
-_UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS = ['5912-26.20.100.8141']
+_SUPPORTED_WIN_GPU_VENDORS = [
+    gpu_helper.GpuVendors.AMD,
+    gpu_helper.GpuVendors.INTEL,
+    gpu_helper.GpuVendors.NVIDIA,
+    gpu_helper.GpuVendors.QUALCOMM,
+]
 
 _ARGS_TO_CONSOLIDATE = frozenset([
     '--enable-features',
@@ -60,6 +60,20 @@ _ARGS_TO_CONSOLIDATE = frozenset([
 
 TestTuple = Tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
+
+
+# Handled in a function to avoid polluting the module's environment with
+# temporary variable names.
+def _GenerateSpecificToGenericTagMapping() -> Dict[str, str]:
+  specific_to_generic = {}
+  for _, tag_set in validate_tag_consistency.TAG_SPECIALIZATIONS.items():
+    for general_tag, specific_tags in tag_set.items():
+      for tag in specific_tags:
+        specific_to_generic[tag] = general_tag
+  return specific_to_generic
+
+
+_specific_to_generic_tags = _GenerateSpecificToGenericTagMapping()
 
 
 @dataclasses.dataclass
@@ -830,65 +844,6 @@ class GpuIntegrationTest(
     """
     raise NotImplementedError
 
-  def _GetOverlayBotConfig(self) -> Dict[str, Any]:
-    """Returns expected bot config for DirectComposition and overlay support.
-
-    This is only meaningful on Windows platform.
-
-    The rules to determine bot config are:
-      1) Only win10 or newer supports DirectComposition
-      2) Only Intel supports hardware overlays with DirectComposition
-      3) Currently the Win/Intel GPU bot supports YUY2 and NV12 overlays
-    """
-    if self.browser is None:
-      raise Exception("Browser doesn't exist")
-    system_info = self.browser.GetSystemInfo()
-    if system_info is None:
-      raise Exception("Browser doesn't support GetSystemInfo")
-    gpu = system_info.gpu.devices[0]
-    if gpu is None:
-      raise Exception("System Info doesn't have a gpu")
-    gpu_vendor_id = gpu.vendor_id
-    gpu_device_id = gpu.device_id
-    os_version = self.browser.platform.GetOSVersionName()
-    if os_version is None:
-      raise Exception('browser.platform.GetOSVersionName() returns None')
-    os_version = os_version.lower()
-
-    config = {
-        'direct_composition': False,
-        'supports_overlays': False,
-        'yuy2_overlay_support': 'NONE',
-        'nv12_overlay_support': 'NONE',
-    }
-    assert os_version in _SUPPORTED_WIN_VERSIONS
-    assert gpu_vendor_id in _SUPPORTED_WIN_GPU_VENDORS
-    if os_version in _SUPPORTED_WIN_VERSIONS_WITH_DIRECT_COMPOSITION:
-      config['direct_composition'] = True
-      config['supports_overlays'] = True
-      config['yuy2_overlay_support'] = 'SOFTWARE'
-      config['nv12_overlay_support'] = 'SOFTWARE'
-      if gpu_vendor_id == 0x1002:
-        assert gpu_device_id in _SUPPORTED_WIN_AMD_GPUS
-        if gpu_device_id in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS:
-          config['nv12_overlay_support'] = 'SCALING'
-      elif gpu_vendor_id == 0x8086:
-        if self._extra_intel_device_id_with_overlays:
-          extra_device_id = int(self._extra_intel_device_id_with_overlays, 16)
-          _SUPPORTED_WIN_INTEL_GPUS.append(extra_device_id)
-          _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS.append(extra_device_id)
-          _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS.append(extra_device_id)
-
-        assert gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS
-        gpu_device_and_driver = ('%x-' + gpu.driver_version) % gpu_device_id
-        if gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS:
-          config['yuy2_overlay_support'] = 'SCALING'
-        if (gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS
-            and gpu_device_and_driver not in
-            _UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS):
-          config['nv12_overlay_support'] = 'SCALING'
-    return config
-
   def _GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
     """Returns expected bot config for DX12 and Vulkan support.
 
@@ -978,11 +933,50 @@ class GpuIntegrationTest(
       startup_args = getattr(browser, 'startup_args', None)
       skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info, startup_args)
       tags.append(skia_renderer)
+      tags.extend(cls._GetDriverVersionTags(browser, system_info))
     display_server = gpu_helper.GetDisplayServer(browser.browser_type)
     if display_server:
       tags.append(display_server)
     tags = gpu_helper.ReplaceTags(tags)
     return tags
+
+  @classmethod
+  def _GetDriverVersionTags(cls, browser: ct.Browser,
+                            system_info: si_module.SystemInfo) -> List[str]:
+    gpu_info = system_info.gpu
+    tags = []
+    if gpu_helper.EXPECTATIONS_DRIVER_TAGS and gpu_info:
+      driver_vendor = gpu_helper.GetGpuDriverVendor(gpu_info)
+      driver_version = gpu_helper.GetGpuDriverVersion(gpu_info)
+      if driver_vendor and driver_version:
+        driver_vendor = driver_vendor.lower()
+        driver_version = driver_version.lower()
+
+        # Extract the string of vendor from 'angle (vendor)'
+        matcher = re.compile(r'^angle \(([a-z]+)\)$')
+        match = matcher.match(driver_vendor)
+        if match:
+          driver_vendor = match.group(1)
+
+        # Extract the substring before first space/dash/underscore
+        matcher = re.compile(r'^([a-z\d]+)([\s\-_]+[a-z\d]+)+$')
+        match = matcher.match(driver_vendor)
+        if match:
+          driver_vendor = match.group(1)
+
+        for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
+          match = gpu_helper.MatchDriverTag(tag)
+          assert match
+          if (driver_vendor == match.group(1)
+              and gpu_helper.EvaluateVersionComparison(
+                  driver_version, match.group(2), match.group(3),
+                  browser.platform.GetOSName(), driver_vendor)):
+            tags.append(tag)
+    return tags
+
+  @classmethod
+  def GetTagConflictChecker(cls) -> ct.TagConflictChecker:
+    return _TagConflictChecker
 
   @classmethod
   def _EnsureTabIsAvailable(cls) -> None:
@@ -1072,6 +1066,15 @@ class GpuIntegrationTest(
     expectation file lives in a third party repo.
     """
     return gpu_path_util.CHROMIUM_SRC_DIR
+
+
+def _TagConflictChecker(tag1: str, tag2: str) -> bool:
+  # This conflict check takes into account both driver tag matching and
+  # cases of tags being subsets of others, e.g. win10 being a subset of win.
+  if gpu_helper.MatchDriverTag(tag1):
+    return not gpu_helper.IsDriverTagDuplicated(tag1, tag2)
+  return (tag1 != tag2 and tag1 != _specific_to_generic_tags.get(tag2, tag2)
+          and tag2 != _specific_to_generic_tags.get(tag1, tag1))
 
 
 def GenerateTestNameMapping() -> Dict[str, Type[GpuIntegrationTest]]:

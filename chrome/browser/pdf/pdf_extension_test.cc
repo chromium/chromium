@@ -39,6 +39,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -134,27 +137,6 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 #else
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 #endif
-
-// A promise that receives and sends postMessage() messages to the PDF iframe.
-// The iframe must be accessed differently than the embed, so
-// `EnsurePDFHasLoaded()` can't be used here.
-const char kOopifPostMessageIframe[] = R"(
-    new Promise(resolve => {
-      window.addEventListener('message', event => {
-        if (event.origin !==
-                'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
-          return;
-        }
-        if (event.data.type === 'documentLoaded') {
-          resolve(
-              event.data.load_state === 'success');
-        } else if (event.data.type === 'passwordPrompted') {
-          resolve(true);
-        }
-      });
-      window.frames[0][0].postMessage({type: 'initialize'}, '*');
-    });
-  )";
 
 struct PDFExtensionLoadTestPassToString {
   std::string operator()(
@@ -3396,7 +3378,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSubmitFormTest, SubmitForm) {
   SimulateMouseClickAt(
       guest, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kLeft,
-      ConvertPageCoordToScreenCoord(guest_mainframe, {200, 200}));
+      ConvertPageCoordToScreenCoord(guest_mainframe, {210, 210}));
 
   run_loop->Run();
 }
@@ -3725,17 +3707,21 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
     GTEST_SKIP() << "GuestView PDF viewer cannot ensure PDF load in an iframe.";
   }
 
+  content::WebContents* contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(contents));
+
+  auto* manager =
+      pdf::TestPdfViewerStreamManager::CreateForWebContents(contents);
+
   // Load the HTML containing an iframe embedding a PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser(),
       embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+  ASSERT_EQ(manager, pdf::PdfViewerStreamManager::FromWebContents(contents));
 
-  content::WebContents* contents =
-      incognito_browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Verify the pdf has loaded.
-  EXPECT_EQ(true, content::EvalJs(contents->GetPrimaryMainFrame(),
-                                  kOopifPostMessageIframe));
+  // Verify the pdf has loaded. The test will timeout if the PDF fails to load.
+  manager->DeprecatedWaitUntilPdfLoaded();
 }
 
 // PDF extension tests for the OOPIF PDF viewer.
@@ -3772,16 +3758,46 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
       GetActiveWebContents()->GetPrimaryMainFrame()));
 }
 
-// Test that an iframe-embedded PDF can send and receive postMessage() messages
-// from its embedder.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageIframe) {
-  // Load the HTML containing an iframe embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+// This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       OopifPdfFindFullPagePdfExtensionHost) {
+  {
+    // Navigate to a non-PDF page.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
 
-  // Verify the pdf has loaded.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
-                                  kOopifPostMessageIframe));
+    // Verify that there is no full-page pdf extension host on non-PDF page.
+    EXPECT_FALSE(
+        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+  }
+
+  {
+    // Load page with embedded PDF and make sure it succeeds.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    // Verify that there is no full-page pdf extension host on embedded PDF.
+    EXPECT_FALSE(
+        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+  }
+
+  {
+    // Load a full-page PDF and make sure it succeeds.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    content::RenderFrameHost* child_frame =
+        content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+
+    // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
+    EXPECT_EQ(child_frame, pdf_frame_util::FindFullPagePdfExtensionHost(
+                               GetActiveWebContents()));
+  }
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer

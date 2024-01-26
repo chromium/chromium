@@ -688,10 +688,8 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
                                               "proxy2b.com", 80),
   });
   net::ProxyChain chain2(net::ProxyChain::Direct());
-  net::ProxyChain chain3({
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "proxy1.com", 80),
-  });
+  net::ProxyChain chain3(net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "proxy1.com", 80));
   net::ProxyList existing_proxy_list;
   existing_proxy_list.AddProxyChain(chain1);
   existing_proxy_list.AddProxyChain(chain2);

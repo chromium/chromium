@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/template_url_service.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -32,13 +34,13 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -133,7 +135,7 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 // Creates a `TemplateURLData` corresponding to a site search engine set by
 // policy, with some fake data generated from `keyword` and the
 // `featured_by_policy` field set according to the corresponding parameter.
@@ -196,7 +198,7 @@ void VerifySiteSearchPolicyConflictHistograms(
       1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
   return info.param ? "SearchEngineChoiceEnabled"
@@ -291,17 +293,11 @@ class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {
 };
 
 TemplateURLServiceTest::TemplateURLServiceTest() {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
   if (IsSearchEngineChoiceEnabled()) {
-    enabled_features.push_back(switches::kSearchEngineChoice);
-    enabled_features.push_back(switches::kSearchEngineChoiceFre);
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   } else {
-    disabled_features.push_back(switches::kSearchEngineChoice);
-    disabled_features.push_back(switches::kSearchEngineChoiceFre);
+    feature_list_.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
   }
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 void TemplateURLServiceTest::SetUp() {
@@ -2572,7 +2568,7 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
@@ -3185,7 +3181,7 @@ TEST_P(TemplateURLServiceTest,
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(,
                          TemplateURLServiceTest,

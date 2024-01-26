@@ -23,9 +23,6 @@ namespace experimental_flags {
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
-// Whether the search engine choice UI will always be displayed.
-bool AlwaysDisplaySearchEngineChoice();
-
 // Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
 

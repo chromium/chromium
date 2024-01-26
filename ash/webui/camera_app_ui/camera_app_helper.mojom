@@ -20,9 +20,50 @@ interface TabletModeMonitor {
 // Screen backlight state.
 // Reference from ash/public/cpp/screen_backlight_type.h
 enum ScreenState {
-    ON,
-    OFF,
-    OFF_AUTO,
+  kOn,
+  kOff,
+  kOffAuto,
+};
+
+// Wi-Fi security type.
+enum WifiSecurityType {
+  kNone,
+  kEap,
+  kWep,
+  kWpa,
+};
+
+// EAP methods.
+enum WifiEapMethod {
+  kEapTls,
+  kEapTtls,
+  kLeap,
+  kPeap,
+};
+
+// EAP phase2 methods.
+enum WifiEapPhase2Method {
+  kAutomatic,
+  kChap,
+  kGtc,
+  kMd5,
+  kMschap,
+  kMschapv2,
+  kPap,
+};
+
+// Configurations which can be provided by Wi-Fi QR Code.
+struct WifiConfig {
+  // Required fields.
+  string ssid;
+  WifiSecurityType security;
+
+  // Optional fields.
+  string? password;
+  WifiEapMethod? eap_method;
+  WifiEapPhase2Method? eap_phase2_method;
+  string? eap_identity;
+  string? eap_anonymous_identity;
 };
 
 // Interface for monitoring screen state of device. The state is detected from
@@ -49,10 +90,10 @@ interface CameraUsageOwnershipMonitor {
 
 // The window states that we care about.
 enum WindowStateType {
-  MINIMIZED = 0,
-  MAXIMIZED = 1,
-  FULLSCREEN = 2,
-  REGULAR = 3,  // None of the above.
+  kMinimized = 0,
+  kMaximized = 1,
+  kFullscreen = 2,
+  kRegular = 3,  // None of the above.
 };
 
 // Interface for monitoring window states.
@@ -67,31 +108,31 @@ interface WindowStateMonitor {
 // The possible result of the file deletion monitor.
 enum FileMonitorResult {
   // The file is deleted.
-  DELETED = 0,
+  kDeleted = 0,
 
   // The request is canceled since there is another monitor request.
-  CANCELED = 1,
+  kCanceled = 1,
 
   // Fails to monitor the file due to errors.
-  ERROR = 2,
+  kError = 2,
 };
 
 enum StorageMonitorStatus {
   // There are enough storage space to operate CCA functionalities.
-  NORMAL = 0,
+  kNormal = 0,
 
   // Storage is getting low, display warning to users.
-  LOW = 1,
+  kLow = 1,
 
   // Storage is almost full. Should stop ongoing recording and don't allow new
   // recording.
-  CRITICALLY_LOW = 2,
+  kCriticallyLow = 2,
 
   // Monitoring got canceled since there is another monitor request.
-  CANCELED = 3,
+  kCanceled = 3,
 
   // Monitoring get errors.
-  ERROR = 4,
+  kError = 4,
 };
 
 // Interface to monitor storage status changes.
@@ -126,16 +167,16 @@ interface WindowStateController {
 };
 
 enum ToteMetricFormat {
-  PHOTO = 0,
-  SCAN_JPG = 1,
-  SCAN_PDF = 2,
-  VIDEO_GIF = 3,
-  VIDEO_MP4 = 4,
+  kPhoto = 0,
+  kScanJpg = 1,
+  kScanPdf = 2,
+  kVideoGif = 3,
+  kVideoMp4 = 4,
 };
 
 enum DocumentOutputFormat {
-  JPEG = 0,
-  PDF = 1,
+  kJpeg = 0,
+  kPdf = 1,
 };
 
 // Interface for communication between Chrome Camera App (Remote) and Chrome
@@ -260,4 +301,10 @@ interface CameraAppHelper {
   // Open "Storage management" page directly. This page is inside Settings app,
   // under "Device" section.
   OpenStorageManagement();
+
+  // Opens the Wi-Fi connection dialog and fills the dialog with provided
+  // `config` extracted from QR code. Since the call won't invoke the network
+  // connection directly, no error message will be returned when the config is
+  // incorrect.
+  OpenWifiDialog(WifiConfig config);
 };

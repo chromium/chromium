@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MediapipeAvailability} from '../third_party/mediapipe/availability/mediapipe_availability.js';
+import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+
 import {FacialGesture, GestureDetector} from './gesture_detector.js';
-import {MediapipeAvailability} from './mediapipe_availability.js';
-import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
 import {MouseController} from './mouse_controller.js';
 
 /**
@@ -98,7 +99,7 @@ export class FaceGaze {
       return;
     }
 
-    this.mouseController_.updateMouseLocation(result);
+    this.mouseController_.onFaceLandmarkerResult(result);
     const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
     for (const gesture of gestures) {
       if (gesture === FacialGesture.BROW_DOWN_LEFT ||

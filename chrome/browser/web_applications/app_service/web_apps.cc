@@ -140,9 +140,9 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
       base::BindOnce(
           [](apps::LaunchCallback callback,
              content::WebContents* web_contents) {
-            apps::LaunchResult::State result = web_contents
-                                                   ? apps::LaunchResult::SUCCESS
-                                                   : apps::LaunchResult::FAILED;
+            apps::LaunchResult::State result =
+                web_contents ? apps::LaunchResult::State::kSuccess
+                             : apps::LaunchResult::State::kFailed;
             std::move(callback).Run(apps::LaunchResult(result));
           },
           std::move(callback)));
@@ -333,8 +333,8 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
 
 void WebApps::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   CHECK(!IsAppServiceShortcut(app_id, *provider_));
   apps::AppPublisher::ModifyCapabilityAccess(
       app_id, std::move(accessing_camera), std::move(accessing_microphone));

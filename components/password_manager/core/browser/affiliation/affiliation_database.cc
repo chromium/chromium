@@ -34,7 +34,7 @@ namespace password_manager {
 namespace {
 
 // The current version number of the affiliation database schema.
-const int kVersion = 5;
+const int kVersion = 6;
 
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
@@ -111,6 +111,14 @@ void InitializeTableBuilders(SQLTableBuilders builders) {
 
   builders.psl_extensions->AddColumnToUniqueKey("domain", "VARCHAR NOT NULL");
   SealVersion(builders, /*expected_version=*/5u);
+
+  // Add index on eq_class_groups.facet_uri and eq_class_groups.set_id
+  // manually (to prevent linear scan when joining).
+  builders.eq_class_groups->AddIndex("index_on_eq_groups_url_index",
+                                     {"facet_uri"});
+  builders.eq_class_groups->AddIndex("index_on_eq_groups_set_id_index",
+                                     {"set_id"});
+  SealVersion(builders, /*expected_version=*/6u);
 }
 
 // Migrates from a given version or creates table depending if table exists or

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -39,9 +40,6 @@
 namespace ash {
 
 namespace {
-
-// For testing proxy-auth case for shill status code.
-const int ProxyAuthenticationRequiredStatusCode = 407;
 
 // Used to compare values for finding entries to erase in a ListValue.
 // (ListValue only implements a const_iterator version of Find).
@@ -208,13 +206,6 @@ void UpdatePortaledState(const std::string& service_path,
                          const std::string& state) {
   ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
       service_path, shill::kStateProperty, base::Value(state));
-}
-
-void UpdateProxyState(const std::string& service_path) {
-  ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
-      service_path, shill::kPortalDetectionFailedStatusCodeProperty,
-      base::Value(ProxyAuthenticationRequiredStatusCode));
-  UpdatePortaledState(service_path, shill::kStatePortalSuspected);
 }
 
 bool IsCellularTechnology(const std::string& type) {
@@ -848,7 +839,7 @@ void FakeShillManagerClient::SetNetworkThrottlingStatus(
 
 bool FakeShillManagerClient::GetFastTransitionStatus() {
   std::optional<bool> fast_transition_status = stub_properties_.FindBool(
-      base::StringPiece(shill::kWifiGlobalFTEnabledProperty));
+      std::string_view(shill::kWifiGlobalFTEnabledProperty));
   return fast_transition_status && fast_transition_status.value();
 }
 
@@ -1008,16 +999,10 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       services->SetServiceProperty(kPortaledWifiPath,
                                    shill::kSecurityClassProperty,
                                    base::Value(shill::kSecurityClassNone));
-      if (proxy_auth_) {
-        services->SetConnectBehavior(
-            kPortaledWifiPath,
-            base::BindRepeating(&UpdateProxyState, kPortaledWifiPath));
-      } else {
-        services->SetConnectBehavior(
-            kPortaledWifiPath,
-            base::BindRepeating(&UpdatePortaledState, kPortaledWifiPath,
-                                portal_state));
-      }
+      services->SetConnectBehavior(
+          kPortaledWifiPath,
+          base::BindRepeating(&UpdatePortaledState, kPortaledWifiPath,
+                              portal_state));
       services->SetServiceProperty(
           kPortaledWifiPath, shill::kConnectableProperty, base::Value(true));
       profiles->AddService(shared_profile, kPortaledWifiPath);
@@ -1423,11 +1408,6 @@ bool FakeShillManagerClient::SetInitialNetworkState(
   } else if (state_arg == "portal-suspected") {
     // Technology is enabled, a service is connected and in portal-suspected
     // state.
-    state = shill::kStatePortalSuspected;
-  } else if (state_arg == "proxy-auth") {
-    // Technology is enabled, a service is connected and in portal-suspected
-    // state for proxy-auth. Set the PortalDetectionStatusCode to 407.
-    proxy_auth_ = true;
     state = shill::kStatePortalSuspected;
   } else if (state_arg == "no-connectivity") {
     // Technology is enabled, a service is connected and in no-connectivity

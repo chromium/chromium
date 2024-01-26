@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,7 +38,7 @@ struct SingleImageGeometryFeatures {
   Size original_image_size;
   Rect onpage_rect = Rect(0, 0, 0, 0);
   // Used for filtering of overlapping images using the z index.
-  absl::optional<int> z_index;
+  std::optional<int> z_index;
   ~SingleImageGeometryFeatures() = default;
 };
 
@@ -111,7 +111,7 @@ class EligibilityModule {
   double GetImageFeatureValue(
       FeatureLibrary::ImageLevelFeatureName feature_name,
       const SingleImageGeometryFeatures& image);
-  absl::optional<double> RetrieveImageFeatureIfPresent(
+  std::optional<double> RetrieveImageFeatureIfPresent(
       FeatureLibrary::ImageLevelFeatureName feature_name,
       const std::string& image_id);
   double RetrieveImageFeatureOrDie(

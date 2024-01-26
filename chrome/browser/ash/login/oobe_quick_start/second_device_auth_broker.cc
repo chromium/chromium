@@ -58,6 +58,7 @@ constexpr char kRejectionReasonKey[] = "rejectionReason";
 constexpr char kTargetFallbackUrlKey[] = "targetFallbackUrl";
 constexpr char kSourceDeviceFallbackUrlKey[] = "sourceDeviceFallbackUrl";
 constexpr char kEmailKey[] = "email";
+constexpr char kObfuscatedGaiaIdKey[] = "obfuscatedGaiaId";
 constexpr char kTargetSessionIdentifierKey[] = "targetSessionIdentifier";
 constexpr char kCredentialIdKey[] = "credentialId";
 constexpr char kAuthenticatorDataKey[] = "authenticatorData";
@@ -78,8 +79,8 @@ constexpr char kTargetDeviceInfoKey[] = "targetDeviceInfo";
 constexpr char kCredentialDataKey[] = "credentialData";
 constexpr char kOauthTokenKey[] = "oauthToken";
 
-const int64_t kGetChallengeDataTimeoutInSeconds = 60;
-const int64_t kStartSessionTimeoutInSeconds = 60;
+const int64_t kGetChallengeDataTimeoutInSeconds = 3 * 60;
+const int64_t kStartSessionTimeoutInSeconds = 3 * 60;
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/json";
 
@@ -276,6 +277,33 @@ void HandleAttestationUnknownError(
   std::move(callback).Run(base::unexpected(error_type));
 }
 
+void HandleGaiaAuthenticationUnknownError(
+    QuickStartMetrics& metrics,
+    SecondDeviceAuthBroker::AuthCodeCallback callback,
+    const SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse& response) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kUnknownError);
+  std::move(callback).Run(response);
+}
+
+void HandleGaiaAuthenticationParsingError(
+    QuickStartMetrics& metrics,
+    SecondDeviceAuthBroker::AuthCodeCallback callback,
+    const SecondDeviceAuthBroker::AuthCodeParsingErrorResponse& response) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError);
+  std::move(callback).Run(response);
+}
+
+void HandleGaiaAuthenticationRejectionError(
+    QuickStartMetrics& metrics,
+    SecondDeviceAuthBroker::AuthCodeCallback callback,
+    const SecondDeviceAuthBroker::AuthCodeRejectionResponse& response) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kRejection);
+  std::move(callback).Run(response);
+}
+
 std::string CreateStartSessionRequestData(
     const FidoAssertionInfo& fido_assertion_info,
     const PEMCertChain& certificate) {
@@ -363,12 +391,14 @@ std::string CreateStartSessionRequestData(
 }
 
 void RunAuthCodeCallbackWithRejectionResponse(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
 
+  std::string* email_ptr = response->FindString(kEmailKey);
   // Note that email may be empty.
-  rejection_response.email = *response->FindString(kEmailKey);
+  rejection_response.email = email_ptr ? *email_ptr : std::string();
   rejection_response.reason =
       SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::kUnknownReason;
   std::string* rejection_reason = response->FindString(kRejectionReasonKey);
@@ -376,7 +406,8 @@ void RunAuthCodeCallbackWithRejectionResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
            "without providing a reason";
-    std::move(auth_code_callback).Run(rejection_response);
+    HandleGaiaAuthenticationRejectionError(
+        metrics, std::move(auth_code_callback), rejection_response);
     return;
   }
 
@@ -386,15 +417,18 @@ void RunAuthCodeCallbackWithRejectionResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
            "with unknown reason";
-    std::move(auth_code_callback).Run(rejection_response);
+    HandleGaiaAuthenticationRejectionError(
+        metrics, std::move(auth_code_callback), rejection_response);
     return;
   }
   rejection_response.reason =
       kRejectionReasonErrorMap.at(rejection_reason_lowercase);
-  std::move(auth_code_callback).Run(rejection_response);
+  HandleGaiaAuthenticationRejectionError(metrics, std::move(auth_code_callback),
+                                         rejection_response);
 }
 
 void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnTargetResponse
@@ -408,16 +442,21 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request required "
            "additional target challenges on unknown URL";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    HandleGaiaAuthenticationParsingError(
+        metrics, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
   additional_challenges_response.fallback_url = *target_fallback_url;
 
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnTarget);
   std::move(auth_code_callback).Run(additional_challenges_response);
 }
 
 void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnSourceResponse
@@ -434,35 +473,46 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request required "
            "additional source challenges on unknown URL";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    HandleGaiaAuthenticationParsingError(
+        metrics, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
   additional_challenges_response.fallback_url = *source_device_fallback_url;
 
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnSource);
   std::move(auth_code_callback).Run(additional_challenges_response);
 }
 
 // Runs `auth_code_callback` with the `auth_code` as success response.
 void RunAuthCodeCallback(
-    const std::string& email,
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    const std::string& auth_code) {
+    const std::string& email,
+    const std::string& auth_code,
+    const std::string& gaia_id) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kSuccess);
   SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
   response.email = email;
   response.auth_code = auth_code;
+  response.gaia_id = gaia_id;
   std::move(auth_code_callback).Run(response);
 }
 
 void ParseAuthCodeAndRunCallback(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   base::Value::Dict* credential_data = response->FindDict(kCredentialDataKey);
   if (!credential_data) {
     QS_LOG(ERROR) << "Could not fetch OAuth auth code. Could not find "
                      "credential_data";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    HandleGaiaAuthenticationParsingError(
+        metrics, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
@@ -470,73 +520,19 @@ void ParseAuthCodeAndRunCallback(
   if (!auth_code) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth auth code. Could not find oauth_token";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    HandleGaiaAuthenticationParsingError(
+        metrics, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
     return;
   }
 
-  RunAuthCodeCallback(/*email=*/*response->FindString(kEmailKey),
-                      std::move(auth_code_callback), *auth_code);
-}
+  std::string* gaia_id_ptr = response->FindString(kObfuscatedGaiaIdKey);
+  // Gaia id may be empty. We need to handle this gracefully.
+  std::string gaia_id = gaia_id_ptr ? *gaia_id_ptr : std::string();
 
-void RunAuthCodeCallbackFromParsedResponse(
-    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    std::unique_ptr<EndpointResponse> unparsed_response,
-    data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value() || !response->is_dict()) {
-    // When we can't even parse the response, it most probably is an error from
-    // Google's FrontEnd (GFE) - which may not be sending JSON responses. Check
-    // if it's an auth error from GFE.
-    if (unparsed_response->error_type &&
-        unparsed_response->error_type.value() == FetchErrorType::kAuthError) {
-      SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
-      rejection_response.reason = SecondDeviceAuthBroker::
-          AuthCodeRejectionResponse::Reason::kUnknownReason;
-      QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Received an "
-                       "auth error from server";
-      std::move(auth_code_callback).Run(rejection_response);
-      return;
-    }
-
-    // We could not parse the response and it is not an auth error.
-    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
-                     "response from server";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
-    return;
-  }
-
-  std::string* session_status =
-      response->GetDict().FindString(kSessionStatusKey);
-  if (!session_status) {
-    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
-                     "session status";
-    std::move(auth_code_callback)
-        .Run(SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
-    return;
-  }
-
-  if (base::ToLowerASCII(*session_status) == "rejected") {
-    RunAuthCodeCallbackWithRejectionResponse(std::move(auth_code_callback),
-                                             &response->GetDict());
-    return;
-  } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
-    RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
-        std::move(auth_code_callback), &response->GetDict());
-    return;
-  } else if (base::ToLowerASCII(*session_status) == "pending") {
-    RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
-        std::move(auth_code_callback), &response->GetDict());
-    return;
-  } else if (base::ToLowerASCII(*session_status) == "authenticated") {
-    ParseAuthCodeAndRunCallback(std::move(auth_code_callback),
-                                &response->GetDict());
-    return;
-  }
-
-  // Unknown session status.
-  std::move(auth_code_callback)
-      .Run(SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse());
+  RunAuthCodeCallback(metrics, std::move(auth_code_callback),
+                      /*email=*/*response->FindString(kEmailKey), *auth_code,
+                      gaia_id);
 }
 
 }  // namespace
@@ -638,6 +634,7 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);
 
+  metrics_.RecordGaiaAuthenticationStarted();
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&SecondDeviceAuthBroker::OnAuthorizationCodeFetched,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -663,8 +660,10 @@ void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
   std::string unparsed_response = response->response;
   data_decoder::DataDecoder::ParseJsonIsolated(
       unparsed_response,
-      base::BindOnce(&RunAuthCodeCallbackFromParsedResponse,
-                     std::move(auth_code_callback), std::move(response)));
+      base::BindOnce(
+          &SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(auth_code_callback),
+          std::move(response)));
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
@@ -750,6 +749,70 @@ void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
       HandleAttestationNotAvailableError(metrics_, std::move(callback));
       return;
   }
+}
+
+void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
+    SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
+    std::unique_ptr<EndpointResponse> unparsed_response,
+    data_decoder::DataDecoder::ValueOrError response) {
+  if (!response.has_value() || !response->is_dict()) {
+    // When we can't even parse the response, it most probably is an error from
+    // Google's FrontEnd (GFE) - which may not be sending JSON responses. Check
+    // if it's an auth error from GFE.
+    if (unparsed_response->error_type &&
+        unparsed_response->error_type.value() == FetchErrorType::kAuthError) {
+      SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
+      rejection_response.reason = SecondDeviceAuthBroker::
+          AuthCodeRejectionResponse::Reason::kUnknownReason;
+      QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Received an "
+                       "auth error from server";
+      HandleGaiaAuthenticationRejectionError(
+          metrics_, std::move(auth_code_callback), rejection_response);
+      return;
+    }
+
+    // We could not parse the response and it is not an auth error.
+    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
+                     "response from server";
+    HandleGaiaAuthenticationParsingError(
+        metrics_, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    return;
+  }
+
+  std::string* session_status =
+      response->GetDict().FindString(kSessionStatusKey);
+  if (!session_status) {
+    QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
+                     "session status";
+    HandleGaiaAuthenticationParsingError(
+        metrics_, std::move(auth_code_callback),
+        SecondDeviceAuthBroker::AuthCodeParsingErrorResponse());
+    return;
+  }
+
+  if (base::ToLowerASCII(*session_status) == "rejected") {
+    RunAuthCodeCallbackWithRejectionResponse(
+        metrics_, std::move(auth_code_callback), &response->GetDict());
+    return;
+  } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
+    RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
+        metrics_, std::move(auth_code_callback), &response->GetDict());
+    return;
+  } else if (base::ToLowerASCII(*session_status) == "pending") {
+    RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
+        metrics_, std::move(auth_code_callback), &response->GetDict());
+    return;
+  } else if (base::ToLowerASCII(*session_status) == "authenticated") {
+    ParseAuthCodeAndRunCallback(metrics_, std::move(auth_code_callback),
+                                &response->GetDict());
+    return;
+  }
+
+  // Unknown session status.
+  HandleGaiaAuthenticationUnknownError(
+      metrics_, std::move(auth_code_callback),
+      SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse());
 }
 
 std::ostream& operator<<(

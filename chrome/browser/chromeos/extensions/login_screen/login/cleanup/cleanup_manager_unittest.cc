@@ -62,7 +62,7 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   base::HistogramTester histogram_tester;
 
   auto no_error_callback = [](CleanupHandler::CleanupHandlerCallback callback) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   };
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
@@ -78,9 +78,9 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
   manager_->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
-  base::test::TestFuture<absl::optional<std::string>> future;
-  manager_->Cleanup(future.GetCallback<const absl::optional<std::string>&>());
-  EXPECT_EQ(absl::nullopt, future.Get());
+  base::test::TestFuture<std::optional<std::string>> future;
+  manager_->Cleanup(future.GetCallback<const std::optional<std::string>&>());
+  EXPECT_EQ(std::nullopt, future.Get());
 
   histogram_tester.ExpectBucketCount(
       "Enterprise.LoginApiCleanup.Handler1.Success", 1, 1);
@@ -111,18 +111,18 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
       base::BarrierClosure(2, run_loop.QuitClosure());
 
   manager_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
-        EXPECT_EQ(absl::nullopt, error);
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
+        EXPECT_EQ(std::nullopt, error);
         barrier_closure.Run();
       }));
 
   manager_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
         EXPECT_EQ("Cleanup is already in progress", *error);
         barrier_closure.Run();
       }));
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
   run_loop.Run();
 }
 
@@ -149,8 +149,8 @@ TEST_F(CleanupManagerUnittest, CleanupErrors) {
   cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
   manager_->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
-  base::test::TestFuture<absl::optional<std::string>> future;
-  manager_->Cleanup(future.GetCallback<const absl::optional<std::string>&>());
+  base::test::TestFuture<std::optional<std::string>> future;
+  manager_->Cleanup(future.GetCallback<const std::optional<std::string>&>());
   EXPECT_EQ("Handler1: Error 1\nHandler2: Error 2", future.Get());
 
   histogram_tester.ExpectBucketCount(

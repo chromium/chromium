@@ -18,6 +18,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {ConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './internet_config_dialog.html.js';
@@ -75,6 +76,13 @@ export class InternetConfigDialogElement extends
        */
       type_: String,
 
+      /**
+       * The network configuration which the network dialog will prefill. Can be
+       * empty if nothing to prefill or the information will be synced based on
+       * given guid.
+       */
+      prefilledProperties_: ConfigProperties,
+
       enableConnect_: Boolean,
 
       /**
@@ -91,6 +99,7 @@ export class InternetConfigDialogElement extends
   private shareDefault_: boolean;
   private guid_: string;
   private type_: string;
+  private prefilledProperties_: ConfigProperties|null;
   private enableConnect_: boolean;
   private error_: string;
 
@@ -105,11 +114,13 @@ export class InternetConfigDialogElement extends
       this.type_ = args.type;
       assert(this.type_);
       this.guid_ = args.guid || '';
+      this.prefilledProperties_ = args.prefilledProperties || null;
     } else {
       // For debugging
       const params = new URLSearchParams(document.location.search.substring(1));
       this.type_ = params.get('type') || 'WiFi';
       this.guid_ = params.get('guid') || '';
+      this.prefilledProperties_ = null;
     }
 
     if (isJellyEnabled) {

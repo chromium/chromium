@@ -937,11 +937,17 @@ TEST(StringNumberConversionsTest, AppendHexEncodedByte) {
 }
 
 TEST(StringNumberConversionsTest, HexEncode) {
-  std::string hex(HexEncode(nullptr, 0));
-  EXPECT_EQ(hex.length(), 0U);
-  unsigned char bytes[] = {0x01, 0xff, 0x02, 0xfe, 0x03, 0x80, 0x81};
-  hex = HexEncode(bytes, sizeof(bytes));
-  EXPECT_EQ(hex, "01FF02FE038081");
+  EXPECT_EQ(HexEncode(nullptr, 0), "");
+  EXPECT_EQ(HexEncode(base::span<uint8_t>()), "");
+  EXPECT_EQ(HexEncode(std::string()), "");
+
+  const uint8_t kBytes[] = {0x01, 0xff, 0x02, 0xfe, 0x03, 0x80, 0x81};
+  EXPECT_EQ(HexEncode(kBytes, sizeof(kBytes)), "01FF02FE038081");
+  EXPECT_EQ(HexEncode(kBytes), "01FF02FE038081");  // Implicit span conversion.
+
+  const std::string kString = "\x01\xff";
+  EXPECT_EQ(HexEncode(kString.c_str(), kString.size()), "01FF");
+  EXPECT_EQ(HexEncode(kString), "01FF");  // Implicit StringPiece conversion.
 }
 
 // Test cases of known-bad strtod conversions that motivated the use of dmg_fp.

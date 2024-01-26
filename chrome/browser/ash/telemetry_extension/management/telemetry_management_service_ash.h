@@ -56,6 +56,10 @@ class TelemetryManagementServiceAsh
   void SetAudioGain(uint64_t node_id,
                     int32_t gain,
                     SetAudioGainCallback callback) override;
+  void SetAudioVolume(uint64_t node_id,
+                      int32_t volume,
+                      bool is_muted,
+                      SetAudioVolumeCallback callback) override;
 
   // Support any number of connections.
   mojo::ReceiverSet<crosapi::mojom::TelemetryManagementService> receivers_;

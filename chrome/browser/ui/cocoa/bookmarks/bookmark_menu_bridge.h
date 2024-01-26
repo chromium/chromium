@@ -23,10 +23,6 @@ namespace bookmarks {
 class BookmarkNode;
 }
 
-namespace test {
-class AppMenuControllerTest;
-}
-
 // C++ controller for the bookmark menu; one per AppController (which
 // means there is only one).  When bookmarks are changed, this class
 // takes care of updating Cocoa bookmark menus.  This is not named
@@ -108,9 +104,12 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
   // an NSMenuItem in this menu, returns the invalid GUID.
   base::Uuid TagToGUID(int64_t tag) const;
 
+  // Returns the NSMenuItem for a given BookmarkNode, exposed publicly for
+  // testing.
+  NSMenuItem* MenuItemForNodeForTest(const bookmarks::BookmarkNode* node);
+
  private:
   friend class BookmarkMenuBridgeTest;
-  friend class test::AppMenuControllerTest;
 
   void BuildRootMenu(bool recurse);
 

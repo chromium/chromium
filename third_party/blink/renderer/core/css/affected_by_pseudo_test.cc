@@ -5391,4 +5391,63 @@ TEST_F(AffectedByPseudoTest, AffectedByHasWithoutNth) {
   ASSERT_EQ(GetStyleEngine().StyleForElementCount() - start_count, 1U);
 }
 
+TEST_F(AffectedByPseudoTest, AffectedByPseudoInHasWithNestingParent) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .b:hover {
+        .a:has(~ &) { background-color: green; }
+      }
+    </style>
+    <div id=div1></div>
+    <div id=div2 class='a'></div>
+    <div id=div3></div>
+    <div id=div4 class='b'></div>
+    <div id=div5></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  CheckAffectedByFlagsForHas(
+      "div1", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kSiblingsAffectedByHasForSiblingRelationship, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedBySubjectHas, true},
+               {kAffectedByPseudoInHas, true},
+               {kSiblingsAffectedByHasForSiblingRelationship, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kSiblingsAffectedByHasForSiblingRelationship, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kSiblingsAffectedByHasForSiblingRelationship, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div5", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kSiblingsAffectedByHasForSiblingRelationship, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div3")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+  GetElementById("div4")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

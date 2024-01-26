@@ -780,6 +780,7 @@ void UpdateServiceImpl::CheckForUpdate(
   if (!config_->GetUpdaterPersistedData()
            ->GetProductVersion(app_id)
            .IsValid()) {
+    VLOG(1) << __func__ << ": App not registered: " << app_id;
     std::move(callback).Run(Result::kInvalidArgument);
     return;
   }

@@ -11,6 +11,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -72,6 +73,12 @@ public interface Player {
          * hiding.
          */
         LayoutManager getLayoutManager();
+
+        /**
+         * Return {@link ActivityLifecycleDispatcher} that can be used to register for configuration
+         * change updates.
+         */
+        ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
     }
 
     /** Observer interface to provide updates about player UI. */
@@ -121,12 +128,32 @@ public interface Player {
     /** Show mini player. Assumes the playback is running. */
     default void restoreMiniPlayer() {}
 
+    /** Only called after playback is released and no more events are coming. */
+    default void recordPlaybackDuration() {}
+
     /** Hide players, clears playback and sets UI to a stopped state. */
     default void dismissPlayers() {}
 
     /**
-     * Hide players, unsubscribe from updates. State updates will resume after {@link
+     * Hide miniPlayer, unsubscribe from updates. State updates will resume after {@link
      * #restoreMiniPlayer() restoreMiniPlayer} is called.
      */
+    default void hideMiniPlayer() {}
+
+    /**
+     * Hide players, unsubscribe from progress updates. Updates will resume after {@link
+     * #restoreMiniPlayer() restoreMiniPlayer} or {@link #restorePlayers() restorePlayers} is
+     * called.
+     */
     default void hidePlayers() {}
+
+    /** Show back whatever player was shown last. Assumes the playback is running. */
+    default void restorePlayers() {}
+
+    /**
+     * Called when the Application state changes.
+     *
+     * @param boolean isScreenLocked
+     */
+    default void onScreenStatusChanged(boolean isScreenLocked) {}
 }

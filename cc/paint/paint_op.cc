@@ -5,13 +5,17 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
@@ -30,6 +34,7 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
+#include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -129,6 +134,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(DrawSkottieOp)    \
   M(DrawSlugOp)       \
   M(DrawTextBlobOp)   \
+  M(DrawVerticesOp)   \
   M(NoopOp)           \
   M(RestoreOp)        \
   M(RotateOp)         \
@@ -502,6 +508,17 @@ void DrawRRectOp::Serialize(PaintOpWriter& writer,
   writer.Write(rrect);
 }
 
+void DrawVerticesOp::Serialize(PaintOpWriter& writer,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+
+  writer.Write(vertices->data());
+  writer.Write(uvs->data());
+  writer.Write(indices->data());
+}
+
 namespace {
 
 template <typename T>
@@ -816,6 +833,28 @@ PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawRRectOp* op = new (output) DrawRRectOp;
   reader.Read(&op->flags);
   reader.Read(&op->rrect);
+  return op;
+}
+
+PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawVerticesOp* op = new (output) DrawVerticesOp;
+
+  reader.Read(&op->flags);
+
+  std::vector<SkPoint> vertices;
+  reader.Read(&vertices);
+  op->vertices =
+      base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(vertices));
+
+  std::vector<SkPoint> uvs;
+  reader.Read(&uvs);
+  op->uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(uvs));
+
+  std::vector<uint16_t> indices;
+  reader.Read(&indices);
+  op->indices =
+      base::MakeRefCounted<RefCountedBuffer<uint16_t>>(std::move(indices));
+
   return op;
 }
 
@@ -1266,6 +1305,34 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
   });
 }
 
+void DrawVerticesOp::RasterWithFlags(const DrawVerticesOp* op,
+                                     const PaintFlags* flags,
+                                     SkCanvas* canvas,
+                                     const PlaybackParams& params) {
+  CHECK_EQ(op->vertices->data().size(), op->uvs->data().size());
+  SkVertices::Builder vertices_builder(
+      SkVertices::kTriangles_VertexMode,
+      base::checked_cast<int>(op->vertices->data().size()),
+      base::checked_cast<int>(op->indices->data().size()),
+      SkVertices::kHasTexCoords_BuilderFlag);
+
+  std::copy(op->vertices->data().data(),
+            op->vertices->data().data() + op->vertices->data().size(),
+            vertices_builder.positions());
+  std::copy(op->uvs->data().data(),
+            op->uvs->data().data() + op->uvs->data().size(),
+            vertices_builder.texCoords());
+  std::copy(op->indices->data().data(),
+            op->indices->data().data() + op->indices->data().size(),
+            vertices_builder.indices());
+
+  const sk_sp<SkVertices> skverts = vertices_builder.detach();
+
+  flags->DrawToSk(canvas, [&skverts](SkCanvas* c, const SkPaint& p) {
+    c->drawVertices(skverts, SkBlendMode::kSrcOver, p);
+  });
+}
+
 void DrawSkottieOp::Raster(const DrawSkottieOp* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
@@ -1523,6 +1590,12 @@ bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
          rrect == other.rrect;
 }
 
+bool DrawVerticesOp::EqualsForTesting(const DrawVerticesOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         *vertices == *other.vertices && *uvs == *other.uvs &&
+         *indices == *other.indices;
+}
+
 bool DrawSkottieOp::EqualsForTesting(const DrawSkottieOp& other) const {
   // TODO(malaykeshav): Verify the skottie objects of each PaintOb are equal
   // bsed on the serialized bytes.
@@ -1758,6 +1831,13 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       const auto& slug_op = static_cast<const DrawSlugOp&>(op);
       *rect = slug_op.slug->sourceBoundsWithOrigin();
       rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawVertices: {
+      const auto& vertices_op = static_cast<const DrawVerticesOp&>(op);
+      rect->setBounds(
+          vertices_op.vertices->data().data(),
+          base::checked_cast<int>(vertices_op.vertices->data().size()));
       return true;
     }
     default:
@@ -2022,6 +2102,20 @@ size_t DrawRecordOp::AdditionalBytesUsed() const {
 size_t DrawRecordOp::AdditionalOpCount() const {
   return record.total_op_count();
 }
+
+DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlags(kType) {}
+
+DrawVerticesOp::DrawVerticesOp(
+    scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+    const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags),
+      vertices(std::move(vertices)),
+      uvs(std::move(uvs)),
+      indices(std::move(indices)) {}
+
+DrawVerticesOp::~DrawVerticesOp() = default;
 
 DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkRect dst,

@@ -100,12 +100,20 @@ class BookmarkBridge : public ProfileObserver,
 
   void GetTopLevelFolderIds(
       JNIEnv* env,
+      jboolean j_ignore_visibility,
       const base::android::JavaParamRef<jobject>& j_result_obj);
-  std::vector<const bookmarks::BookmarkNode*> GetTopLevelFolderIdsImpl();
+  std::vector<const bookmarks::BookmarkNode*> GetTopLevelFolderIdsImpl(
+      bool ignore_visibility);
   base::android::ScopedJavaLocalRef<jobject> GetRootFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetMobileFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountMobileFolderId(
+      JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountOtherFolderId(
+      JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountDesktopFolderId(
+      JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject>
   GetLocalOrSyncableReadingListFolder(JNIEnv* env);

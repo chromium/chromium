@@ -16,7 +16,6 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "cc/tiles/picture_layer_tiling.h"
 #include "components/viz/common/traced_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -34,7 +33,8 @@ RasterSource::RasterSource(const RecordingSource* other)
       size_(other->size_),
       slow_down_raster_scale_factor_for_debug_(
           other->slow_down_raster_scale_factor_for_debug_),
-      recording_scale_factor_(other->recording_scale_factor_) {}
+      recording_scale_factor_(other->recording_scale_factor_),
+      directly_composited_image_info_(other->directly_composited_image_info_) {}
 
 RasterSource::~RasterSource() = default;
 
@@ -151,9 +151,7 @@ RasterSource::TakeDecodingModeMap() {
   return display_list_->TakeDecodingModeMap();
 }
 
-bool RasterSource::IntersectsRect(
-    const gfx::Rect& layer_rect,
-    const PictureLayerTilingClient& client) const {
+bool RasterSource::IntersectsRect(const gfx::Rect& layer_rect) const {
   if (size_.IsEmpty())
     return false;
 
@@ -161,8 +159,9 @@ bool RasterSource::IntersectsRect(
   // covers the entire layer, so return true for these raster sources.
   // TODO(crbug.com/1117174): This will miss cases when the raster source
   // partially covers the layer rect.
-  if (client.IsDirectlyCompositedImage())
+  if (directly_composited_image_info_.has_value()) {
     return true;
+  }
 
   gfx::Rect bounded_rect = layer_rect;
   bounded_rect.Intersect(gfx::Rect(size_));

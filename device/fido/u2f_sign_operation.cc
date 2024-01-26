@@ -99,8 +99,7 @@ void U2fSignOperation::OnSignResponseReceived(
 
       FIDO_LOG(DEBUG)
           << "Received successful U2F sign response from authenticator: "
-          << base::HexEncode(apdu_response->data().data(),
-                             apdu_response->data().size());
+          << base::HexEncode(apdu_response->data());
       std::move(callback())
           .Run(CtapDeviceResponseCode::kSuccess, std::move(sign_response));
       break;

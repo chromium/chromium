@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -169,9 +169,9 @@ class ComponentLoader {
     std::string extension_id;
   };
 
-  // Parses the given JSON manifest. Returns `absl::nullopt` if it cannot be
+  // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
   // parsed or if the result is not a base::Value::Dict.
-  absl::optional<base::Value::Dict> ParseManifest(
+  std::optional<base::Value::Dict> ParseManifest(
       base::StringPiece manifest_contents) const;
 
   std::string Add(const base::StringPiece& manifest_contents,
@@ -222,10 +222,10 @@ class ComponentLoader {
   void FinishAddComponentFromDir(
       const base::FilePath& root_directory,
       const char* extension_id,
-      const absl::optional<std::string>& name_string,
-      const absl::optional<std::string>& description_string,
+      const std::optional<std::string>& name_string,
+      const std::optional<std::string>& description_string,
       base::OnceClosure done_cb,
-      absl::optional<base::Value::Dict> manifest);
+      std::optional<base::Value::Dict> manifest);
 
   // Finishes loading an extension tts engine.
   void FinishLoadSpeechSynthesisExtension(const char* extension_id);

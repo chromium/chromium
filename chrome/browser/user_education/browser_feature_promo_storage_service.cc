@@ -4,6 +4,8 @@
 
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
@@ -12,7 +14,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_education/common/feature_promo_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // Promo data will be saved as a dictionary in the PrefService of a profile.
@@ -78,30 +79,30 @@ void BrowserFeaturePromoStorageService::Reset(
   update->RemoveByDottedPath(iph_feature.name);
 }
 
-absl::optional<user_education::FeaturePromoData>
+std::optional<user_education::FeaturePromoData>
 BrowserFeaturePromoStorageService::ReadPromoData(
     const base::Feature& iph_feature) const {
   const std::string path_prefix = std::string(iph_feature.name) + ".";
 
   const auto& pref_data = profile_->GetPrefs()->GetDict(kIPHPromoDataPath);
-  absl::optional<bool> is_dismissed =
+  std::optional<bool> is_dismissed =
       pref_data.FindBoolByDottedPath(path_prefix + kIPHIsDismissedPath);
-  absl::optional<int> last_dismissed_by =
+  std::optional<int> last_dismissed_by =
       pref_data.FindIntByDottedPath(path_prefix + kIPHLastDismissedByPath);
-  absl::optional<base::Time> first_show_time = base::ValueToTime(
+  std::optional<base::Time> first_show_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHFirstShowTimePath));
-  absl::optional<base::Time> last_show_time = base::ValueToTime(
+  std::optional<base::Time> last_show_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastShowTimePath));
-  absl::optional<base::Time> snooze_time = base::ValueToTime(
+  std::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeTimePath));
-  absl::optional<int> snooze_count =
+  std::optional<int> snooze_count =
       pref_data.FindIntByDottedPath(path_prefix + kIPHSnoozeCountPath);
-  absl::optional<int> show_count =
+  std::optional<int> show_count =
       pref_data.FindIntByDottedPath(path_prefix + kIPHShowCountPath);
   const base::Value::List* app_list =
       pref_data.FindListByDottedPath(path_prefix + kIPHShownForAppsPath);
 
-  absl::optional<user_education::FeaturePromoData> promo_data;
+  std::optional<user_education::FeaturePromoData> promo_data;
 
   if (!is_dismissed || !snooze_time || !snooze_count) {
     // IPH data is corrupt. Ignore the previous data.

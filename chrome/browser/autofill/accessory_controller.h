@@ -30,7 +30,7 @@ class AccessoryController {
   virtual void RegisterFillingSourceObserver(
       FillingSourceObserver observer) = 0;
 
-  // Reurns a absl::nullopt if the accessory controller can't provide any data.
+  // Reurns a std::nullopt if the accessory controller can't provide any data.
   // If the controller can provide data, it returns a non-empty sheet that *can*
   // be in a loading state while the data is being fetched.
   // Use |RegisterFillingSourceObserver()| to repeatedly be notified about

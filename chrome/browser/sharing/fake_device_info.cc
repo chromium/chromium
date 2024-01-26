@@ -9,7 +9,7 @@
 std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
     const std::string& guid,
     const std::string& name,
-    const absl::optional<syncer::DeviceInfo::SharingInfo>& sharing_info,
+    const std::optional<syncer::DeviceInfo::SharingInfo>& sharing_info,
     sync_pb::SyncEnums_DeviceType device_type,
     syncer::DeviceInfo::OsType os_type,
     syncer::DeviceInfo::FormFactor form_factor,
@@ -23,7 +23,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       full_hardware_class, last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
       /*send_tab_to_self_receiving_enabled=*/false, sharing_info,
-      /*paask_info=*/absl::nullopt,
+      /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

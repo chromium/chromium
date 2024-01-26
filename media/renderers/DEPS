@@ -2,6 +2,7 @@
 include_rules = [
   "+components/viz/client",
   "+components/viz/common",
+  "+gpu/ipc/client/client_shared_image_interface.h",
   "+media/base/audio_buffer.h",
   "+media/base/speech_recognition_client.h",
   "+third_party/khronos/GLES2",

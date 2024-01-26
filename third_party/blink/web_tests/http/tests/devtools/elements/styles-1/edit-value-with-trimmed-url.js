@@ -21,7 +21,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     TestRunner.addResult('Viewing \'background\' value in Styles:');
     TestRunner.addResult(treeElement.valueElement.textContent);
 
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
     TestRunner.addResult('Editing \'background\' value in Styles:');
     TestRunner.addResult(treeElement.valueElement.textContent);
     TestRunner.completeTest();

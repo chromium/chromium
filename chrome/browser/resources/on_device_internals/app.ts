@@ -15,11 +15,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, ResponseStatus, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, ResponseChunk, ResponseSummary, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
   response: string;
+  responseClass: string;
   retracted: boolean;
   error: boolean;
 }
@@ -50,6 +51,15 @@ function getPerformanceClassText(performanceClass: PerformanceClass): string {
     default:
       return 'Error';
   }
+}
+
+function shouldRetractResponse(scores: number[]|undefined): boolean {
+  if (!scores) {
+    return false;
+  }
+
+  // As a proof-of-concept retract anything scoring highly on drugs or politics.
+  return scores[11] >= 0.5 || scores[13] >= 0.5;
 }
 
 class OnDeviceInternalsAppElement extends PolymerElement {
@@ -173,7 +183,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     const {result} = await this.proxy_.handler.loadModel(
         {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
     if (result !== LoadModelResult.kSuccess) {
-      this.error_ = 'Unable to load model';
+      this.error_ =
+          'Unable to load model. Specify a correct and absolute path.';
     } else {
       this.model_ = newModel;
       this.model_.onConnectionError.addListener(() => {
@@ -227,33 +238,31 @@ class OnDeviceInternalsAppElement extends PolymerElement {
         {text: this.text_, ignoreContext: false},
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
-        this.responseRouter_.onResponse.addListener((text: string) => {
+        this.responseRouter_.onResponse.addListener((chunk: ResponseChunk) => {
           this.set(
               'currentResponse_.response',
-              (this.currentResponse_?.response + text).trimStart());
+              (this.currentResponse_?.response + chunk.text).trimStart());
+          if (shouldRetractResponse(chunk.tsScores)) {
+            this.set('currentResponse_.responseClass', 'response retracted');
+          }
         });
     const onCompleteId = this.responseRouter_.onComplete.addListener(
-        (status: ResponseStatus) => {
-          if (status === ResponseStatus.kRetracted && this.currentResponse_) {
-            this.currentResponse_.retracted = true;
+        (summary: ResponseSummary) => {
+          if (shouldRetractResponse(summary.tsScores)) {
+            this.set('currentResponse_.responseClass', 'response retracted');
           }
           this.addResponse_();
           this.responseRouter_.removeListener(onResponseId);
           this.responseRouter_.removeListener(onCompleteId);
         });
-    this.currentResponse_ =
-        {text: this.text_, response: '', retracted: false, error: false};
+    this.currentResponse_ = {
+      text: this.text_,
+      response: '',
+      responseClass: 'response',
+      retracted: false,
+      error: false,
+    };
     this.text_ = '';
-  }
-
-  private responseClass_(response: Response): string {
-    if (response.retracted) {
-      return 'response retracted';
-    }
-    if (response.error) {
-      return 'response error';
-    }
-    return 'response';
   }
 
   private canExecute_(): boolean {

@@ -22,10 +22,15 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java",
   ]
   deps = [
+    "//base:base_cached_flags_java",
     "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/util:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }

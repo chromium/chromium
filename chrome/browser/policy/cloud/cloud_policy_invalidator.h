@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -201,7 +201,7 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
       invalidation_service_;
 
   // The time that invalidations became enabled.
-  absl::optional<base::Time> invalidations_enabled_time_;
+  std::optional<base::Time> invalidations_enabled_time_;
 
   // The topic representing the policy in the invalidation service.
   invalidation::Topic topic_;

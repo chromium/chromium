@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Borealis.Audio.UsedPath.{Direction}" enum="BorealisAudioPath"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Audio.UsedSubdevices" units="count"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Audio.Xrun.Alsa.Output" units="count"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -292,6 +292,43 @@ chromium-metrics-reviews@google.com.
     Recording the result of each attempt to start Borealis, whether it was
     successful or the error that it faced.
   </summary>
+</histogram>
+
+<histogram name="Borealis.VMPerformance.Generic.SlowFrameRatio" units="%"
+    expires_after="2024-07-30">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The percentage of slow frames when a Borealis window is active and being
+    rendered.It's collected periodically and emitted via Sommelier. Generic
+    refers to Borealis as a platform. These measurements are for any Sommelier
+    tracing period in which a Borealis (excluding the Steam client) window was
+    active for the entirety of that period.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.VMPerformance.Generic.{Variant}" units="fps"
+    expires_after="2024-07-30">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    These are FPS related performance metrics that are collected within the VM.
+    They are collected periodically and emitted via Sommelier. Generic refers to
+    Borealis as a platform. These measurements are for any Sommelier tracing
+    period in which a Borealis (excluding the Steam client) window was active
+    for the entirety of that period.
+  </summary>
+  <token key="Variant">
+    <variant name="FPSLow"
+        summary="Lowest 1% of FPS captured during the capture period. Rounded
+                 to the nearest integer."/>
+    <variant name="FPSMean"
+        summary="Average FPS of the capture period. Rounded to the nearest
+                 integer."/>
+    <variant name="FPSVariance"
+        summary="FPS variance, calculated with Welford's online algorithm, of
+                 the capture period. Rounded to the nearest integer."/>
+  </token>
 </histogram>
 
 </histograms>

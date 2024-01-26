@@ -137,6 +137,36 @@ int GetMessageIDMultiplePermissions(
   return IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
 
+// Helper to get `PermissionsPolicyFeature` from permission name
+mojom::blink::PermissionsPolicyFeature PermissionNameToPermissionsPolicyFeature(
+    PermissionName permission_name) {
+  switch (permission_name) {
+    case PermissionName::AUDIO_CAPTURE:
+      return mojom::blink::PermissionsPolicyFeature::kMicrophone;
+    case PermissionName::VIDEO_CAPTURE:
+      return mojom::blink::PermissionsPolicyFeature::kCamera;
+    case PermissionName::GEOLOCATION:
+      return mojom::blink::PermissionsPolicyFeature::kGeolocation;
+    default:
+      NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
+  }
+}
+
+// Helper to translate permission names into strings, primarily used for logging
+// console messages.
+String PermissionNameToString(PermissionName permission_name) {
+  switch (permission_name) {
+    case PermissionName::GEOLOCATION:
+      return "geolocation";
+    case PermissionName::AUDIO_CAPTURE:
+      return "audio_capture";
+    case PermissionName::VIDEO_CAPTURE:
+      return "video_capture";
+    default:
+      NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
+  }
+}
+
 }  // namespace
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
@@ -208,16 +238,22 @@ void HTMLPermissionElement::AttributeChanged(
 
     permission_descriptors_ = ParsePermissionDescriptorsFromString(GetType());
     if (permission_descriptors_.empty()) {
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kError,
+      AddConsoleError(
           String::Format("The permission type '%s' is not supported by the "
                          "permission element.",
                          GetType().Utf8().c_str()));
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {this->GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
       return;
+    }
+
+    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+      if (!GetExecutionContext()->IsFeatureEnabled(
+              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+        AddConsoleError(String::Format(
+            "The permission '%s' is not allowed in the current context due to "
+            "PermissionsPolicy",
+            PermissionNameToString(descriptor->name).Utf8().c_str()));
+        return;
+      }
     }
 
     // TODO(crbug.com/1462930): We might consider not displaying the element
@@ -330,19 +366,12 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     case EmbeddedPermissionControlResult::kDenied:
       DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
-    case EmbeddedPermissionControlResult::kNotSupported: {
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kError,
-          String::Format(
-              "The permission request type '%s' is not supported and "
-              "this <permission> element will not be functional.",
-              GetType().Utf8().c_str()));
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {this->GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
+    case EmbeddedPermissionControlResult::kNotSupported:
+      AddConsoleError(String::Format(
+          "The permission request type '%s' is not supported and "
+          "this <permission> element will not be functional.",
+          GetType().Utf8().c_str()));
       return;
-    }
     case EmbeddedPermissionControlResult::kResolvedNoUserGesture:
       return;
   }
@@ -415,6 +444,14 @@ void HTMLPermissionElement::UpdateText() {
 
   CHECK(message_id);
   permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
+}
+
+void HTMLPermissionElement::AddConsoleError(String error) {
+  ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kError, error);
+  console_message->SetNodes(GetDocument().GetFrame(), {this->GetDomNodeId()});
+  GetDocument().AddConsoleMessage(console_message);
 }
 
 }  // namespace blink

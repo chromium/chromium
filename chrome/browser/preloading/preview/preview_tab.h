@@ -17,6 +17,7 @@
 namespace content {
 class WebContents;
 class PrerenderHandle;
+class PreviewCancelReason;
 }  // namespace content
 
 namespace views {
@@ -54,6 +55,9 @@ class PreviewTab final : public content::WebContentsDelegate,
   // This is not fully implemented, and the progress is tracked at b:305000959.
   void Activate(base::WeakPtr<content::WebContents> web_contents);
 
+  // content::WebContentsDelegate implementation:
+  void CancelPreview(content::PreviewCancelReason reason) override;
+
   base::WeakPtr<content::WebContents> GetWebContents();
 
  private:
@@ -63,12 +67,10 @@ class PreviewTab final : public content::WebContentsDelegate,
 
   void InitWindow(content::WebContents& parent);
 
-  // content::WebCopntentsDelegate implementation:
+  // content::WebContentsDelegate implementation:
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
   bool IsInPreviewMode() const override;
-  void CancelPreviewByMojoBinderPolicy(
-      const std::string& interface_name) override;
 
   void RegisterKeyboardAccelerators();
 
@@ -84,6 +86,7 @@ class PreviewTab final : public content::WebContentsDelegate,
   // PrerenderManager.
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
+  std::optional<content::PreviewCancelReason> cancel_reason_ = std::nullopt;
   // A mapping between accelerators and command IDs.
   base::flat_map<ui::Accelerator, int> accelerator_table_;
 };

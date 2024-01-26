@@ -146,6 +146,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1792959175193046959">Je kunt op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
 <translation id="1796666869097395659">Tabblad minimaliseren om later terug te keren</translation>
 <translation id="1807246157184219062">Licht</translation>
+<translation id="1807709131360304325">Een nieuw venster openen</translation>
 <translation id="1810845389119482123">Eerste synchronisatieconfiguratie niet voltooid</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> niet meer gebruiken</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
@@ -189,6 +190,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2056878612599315956">Site onderbroken</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislukt}other{# downloads mislukt}}</translation>
 <translation id="2067805253194386918">sms</translation>
+<translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Compacte weergave tonen</translation>
 <translation id="2093731487903423814">afgelopen 15 minuten</translation>
@@ -218,7 +220,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="223356358902285214">Web- en app-activiteit</translation>
 <translation id="2234827758954819389">Privacygids</translation>
 <translation id="2239812875700136898">Beheer je artikelen met de knop 'Opties voor Discover'</translation>
-<translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2247789808226901522">Kaart verlopen</translation>
 <translation id="2248941474044011069">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
@@ -233,7 +234,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2318045970523081853">Tik om te bellen</translation>
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
 <translation id="2323763861024343754">Site-opslag</translation>
-<translation id="2327226657832576859">Pdf's automatisch openen?</translation>
 <translation id="2328985652426384049">Kan niet inloggen</translation>
 <translation id="2341410551640223969">Kan <ph name="WEBAPK_NAME" /> niet installeren.</translation>
 <translation id="2349710944427398404">Totale gegevens gebruikt door Chrome, inclusief accounts, bookmarks en opgeslagen instellingen</translation>
@@ -316,6 +316,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
 <translation id="2779651927720337254">mislukt</translation>
 <translation id="2781151931089541271">1 seconde resterend</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feedkaartmenu halve hoogte</translation>
@@ -354,7 +355,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2946420957526726953">Chrome wordt geüpdatet om verbinding te maken met andere apparaten</translation>
 <translation id="2951071800649516099">Voeg pagina's aan je leeslijst toe voor later</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongelezen pagina}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongelezen pagina's}}</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Bespaar tijd en typ minder</translation>
 <translation id="2977350910003566746">Sorteren op laatst geopend</translation>
 <translation id="297771753501244313">Sorteren op laatst geopend</translation>
@@ -600,6 +600,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
+<translation id="4311652497846705514">Pdf openen?</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="433213510553688132">Volgen…</translation>
 <translation id="4335835283689002019">Safe Browsing staat uit</translation>
@@ -639,7 +640,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4523326818319942067">afgelopen uur</translation>
 <translation id="452750746583162491">Je gesynchroniseerde gegevens controleren</translation>
 <translation id="4532845899244822526">Map kiezen</translation>
-<translation id="4541505619120536051">Altijd openen</translation>
 <translation id="4543131175509360848">Blad Geen toegangssleutels</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_COUNT_MANY" /> tabbladen, <ph name="TAB_COUNT_INCOGNITO" /> incognitotabbladen}}</translation>
 <translation id="4554077758708533499">Aangesloten via USB-kabel</translation>
@@ -831,7 +831,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5486841595534124508">Logo van privacyverklaring voor de hub voor pagina-inzichten die omleidt naar de pagina Mijn activiteit.</translation>
 <translation id="5487521232677179737">Gegevens wissen</translation>
 <translation id="5492637351392383067">Versleuteling op het apparaat</translation>
-<translation id="5509866835115085009">Chrome kan een pdf automatisch openen als je deze downloadt.</translation>
 <translation id="5514904542973294328">Uitgezet door de beheerder van dit apparaat</translation>
 <translation id="5515439363601853141">Ontgrendelen om je wachtwoord te bekijken</translation>
 <translation id="5517095782334947753">Je hebt bookmarks, geschiedenis, wachtwoorden en andere instellingen van <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5962718611393537961">Tik om samen te vouwen</translation>
 <translation id="5964869237734432770">Afbeeldingsbeschrijvingen stoppen</translation>
 <translation id="5966233851250124270">Chrome onthoudt je keuze</translation>
+<translation id="5977976211062815271">Op dit apparaat</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5995726099713306770">Pagina opnieuw downloaden?</translation>
 <translation id="6000066717592683814">Google blijven gebruiken</translation>
@@ -1302,6 +1302,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7810647596859435254">Openen met…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle bestanden, 1 bestand in lijst}other{Alle bestanden, # bestanden in lijst}}</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
+<translation id="7821130663268546430">Je vindt alle geopende tabbladen in de tabbladschakelaar</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="78270725016672455">Je computer wil dit apparaat registreren om in te loggen op een site</translation>
 <translation id="7844171778363018843">Geen gegevens geselecteerd om te synchroniseren</translation>
@@ -1329,6 +1330,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
+<translation id="7951102827450076904">Gedownloade pdf's altijd openen</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Terugknop voor pagina-inzichten</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>

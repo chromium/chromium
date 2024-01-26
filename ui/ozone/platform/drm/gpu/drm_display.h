@@ -98,13 +98,10 @@ class DrmDisplay {
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);
-  void SetColorSpace(const gfx::ColorSpace& color_space);
 
   void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
 
  private:
-  void CommitGammaCorrection(const display::GammaCurve& degamma,
-                             const display::GammaCurve& gamma);
   gfx::HDRStaticMetadata::Eotf GetEotf(
       const gfx::ColorSpace::TransferID transfer_id);
 

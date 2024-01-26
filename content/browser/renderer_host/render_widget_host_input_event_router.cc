@@ -459,8 +459,8 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindMouseEventTarget(
   if (route_to_root_for_devtools_)
     target = root_view;
 
-  if (!target && root_view->IsMouseLocked()) {
-    target = root_view->host()->delegate()->GetMouseLockWidget()->GetView();
+  if (!target && root_view->IsPointerLocked()) {
+    target = root_view->host()->delegate()->GetPointerLockWidget()->GetView();
   }
 
   gfx::PointF transformed_point;
@@ -517,8 +517,8 @@ RenderWidgetHostInputEventRouter::FindMouseWheelEventTarget(
     const blink::WebMouseWheelEvent& event) const {
   RenderWidgetHostViewBase* target = nullptr;
   gfx::PointF transformed_point;
-  if (root_view->IsMouseLocked()) {
-    target = root_view->host()->delegate()->GetMouseLockWidget()->GetView();
+  if (root_view->IsPointerLocked()) {
+    target = root_view->host()->delegate()->GetPointerLockWidget()->GetView();
     if (!root_view->TransformPointToCoordSpaceForView(
             event.PositionInWidget(), target, &transformed_point)) {
       return {nullptr, false, std::nullopt, true};
@@ -671,7 +671,7 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
   // notify the CursorManager that it might need to change the cursor.
   if ((event.GetType() == blink::WebInputEvent::Type::kMouseLeave ||
        event.GetType() == blink::WebInputEvent::Type::kMouseMove) &&
-      target != last_mouse_move_target_ && !root_view->IsMouseLocked()) {
+      target != last_mouse_move_target_ && !root_view->IsPointerLocked()) {
     SendMouseEnterOrLeaveEvents(mouse_event, target, root_view);
     if (root_view->GetCursorManager())
       root_view->GetCursorManager()->UpdateViewUnderCursor(target);
@@ -698,7 +698,7 @@ void RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent(
     const blink::WebMouseWheelEvent& mouse_wheel_event,
     const ui::LatencyInfo& latency,
     const std::optional<gfx::PointF>& target_location) {
-  if (!root_view->IsMouseLocked()) {
+  if (!root_view->IsPointerLocked()) {
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
       wheel_target_ = target;
     } else {
@@ -937,6 +937,8 @@ void RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result,
     RenderWidgetHostViewBase* view) {
+  TRACE_EVENT("input",
+              "RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent");
   touch_event_ack_queue_->MarkAcked(event, ack_result, view);
 }
 

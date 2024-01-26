@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.Base64;
 import android.view.View;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
@@ -522,6 +524,7 @@ public class StartSurfaceTestUtils {
      * @param cta The ChromeTabbedActivity under test.
      */
     public static void scrollToolbar(ChromeTabbedActivity cta) {
+        boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         // Toolbar layout should be hidden if start surface toolbar is shown on the top of the
         // screen.
         onView(withId(R.id.toolbar))
@@ -531,24 +534,37 @@ public class StartSurfaceTestUtils {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
         // Drag the Feed header title to scroll the toolbar to the top.
-        int toY = -cta.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow);
+        int logoInSurfaceHeight = 0;
+        if (isSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
+            Resources resources = cta.getResources();
+            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
+                logoInSurfaceHeight =
+                        LogoUtils.getLogoHeightPolishedShort(resources)
+                                + LogoUtils.getTopMarginPolishedSmall(resources)
+                                + LogoUtils.getBottomMarginPolishedSmall(resources);
+            } else {
+                logoInSurfaceHeight =
+                        LogoUtils.getLogoHeightPolished(resources)
+                                + LogoUtils.getTopMarginPolished(resources)
+                                + LogoUtils.getBottomMarginPolished(resources);
+            }
+        }
+        float toY =
+                -cta.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        - logoInSurfaceHeight;
         TestTouchUtils.dragCompleteView(
                 InstrumentationRegistry.getInstrumentation(),
                 cta.findViewById(R.id.header_title),
                 0,
                 0,
                 0,
-                toY,
+                (int) toY,
                 10);
 
         // The start surface toolbar should be scrolled up and not be displayed.
         CriteriaHelper.pollInstrumentationThread(
-                () ->
-                        cta.findViewById(R.id.tab_switcher_toolbar).getTranslationY()
-                                <= (float)
-                                        -cta.getResources()
-                                                .getDimensionPixelOffset(
-                                                        R.dimen.toolbar_height_no_shadow));
+                () -> cta.findViewById(R.id.tab_switcher_toolbar).getTranslationY() <= toY);
 
         // Toolbar layout view should show.
         onViewWaiting(withId(R.id.toolbar));
@@ -559,7 +575,7 @@ public class StartSurfaceTestUtils {
         // Check the toolbar's background color.
         ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
         int expectedToolbarColor =
-                ChromeFeatureList.sSurfacePolish.isEnabled()
+                isSurfacePolishEnabled
                         ? ChromeColors.getSurfaceColor(
                                 cta, R.dimen.home_surface_background_color_elevation)
                         : toolbar.getToolbarDataProvider().getPrimaryColor();

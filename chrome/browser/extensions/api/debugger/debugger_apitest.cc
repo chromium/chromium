@@ -154,7 +154,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   // Attach by targetId.
   scoped_refptr<DebuggerGetTargetsFunction> get_targets_function =
       new DebuggerGetTargetsFunction();
-  absl::optional<base::Value> value(
+  std::optional<base::Value> value(
       api_test_utils::RunFunctionAndReturnSingleResult(
           get_targets_function.get(), "[]", profile()));
   EXPECT_TRUE(value->is_list());
@@ -162,7 +162,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::string debugger_target_id;
   for (const base::Value& target_value : value->GetList()) {
     EXPECT_TRUE(target_value.is_dict());
-    absl::optional<int> id = target_value.GetDict().FindInt("tabId");
+    std::optional<int> id = target_value.GetDict().FindInt("tabId");
     if (id == tab_id) {
       const std::string* id_str = target_value.GetDict().FindString("id");
       EXPECT_TRUE(id_str);

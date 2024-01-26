@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1066101356081285416">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 모든 사용자를 위해 Google 쇼핑 기능을 개선하기 위해 운송장 번호와 웹사이트 이름이 Google로 전송됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 언제든지 업데이트할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="1105362920864247682">Chrome에서 인터넷 사용 기록을 삭제합니다.</translation>
 <translation id="1113057722807951993">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">Chrome 데이터 동기화</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
+<translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="1843217788865538014">메시지, 문서, 기타 앱에서 링크를 탭하면 자동으로 Chrome이 사용됩니다</translation>
 <translation id="1910975740091000991">iOS용 Chrome</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
 <translation id="1987779152850321833">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
-<translation id="2008357574463816229">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="2056123005618757196">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chrome을 더욱 다양하게 활용하세요</translation>
 <translation id="2120238739383482109">Chrome 북마크를 엽니다.</translation>
 <translation id="2147651015520127414">Chrome이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chrome에 읽기 목록 항목 추가</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
+<translation id="2789947168960170215">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="2868822340714096138">Chrome에서 인터넷 사용 기록 삭제</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">이 Chrome 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
 <translation id="3522659714780527202">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="3577555362230509265">다른 앱에서 Chrome을 사용합니다.</translation>
-<translation id="3594076341410558780">'Chrome 최대한 활용하기' 숨기기</translation>
 <translation id="364480321352456989">Chrome이 최신 버전이 아닙니다.</translation>
 <translation id="3646736009628185125">가족 구성원이 비밀번호를 바로 받을 수 없습니다. Chrome을 업데이트하고 비밀번호를 동기화하도록 요청하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Chrome에서 모바일 사이트를 매번 요청함을 의미합니다</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">Google 계정에 <ph name="BEGIN_LINK" />저장되는 Chrome 데이터를 관리<ph name="END_LINK" />할 수 있습니다.
 
 Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
-<translation id="687586529977635009">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 Google 쇼핑을 개선하기 위해 내 데이터가 Google과 공유됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 이를 변경할 수 있습니다.</translation>
 <translation id="6916015246697034114">Chrome에서 음성으로 검색하기</translation>
 <translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>

@@ -65,6 +65,10 @@ const char kFullMemoryCrashReport[] = "full-memory-crash-report";
 // to BEST_EFFORT are not logged.
 const char kLogBestEffortTasks[] = "log-best-effort-tasks";
 
+// Handle to the shared memory segment a child process should use to transmit
+// histograms back to the browser process.
+const char kMetricsSharedMemoryHandle[] = "metrics-shmem-handle";
+
 // Suppresses all error dialogs when present.
 const char kNoErrorDialogs[]                = "noerrdialogs";
 
@@ -143,14 +147,6 @@ const char kEnableCrashReporterForTesting[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the reached code profiler that samples all threads in all processes
-// to determine which functions are almost never executed.
-const char kEnableReachedCodeProfiler[] = "enable-reached-code-profiler";
-
-// Specifies the profiling interval in microseconds for reached code profiler.
-const char kReachedCodeSamplingIntervalUs[] =
-    "reached-code-sampling-interval-us";
-
 // Default country code to be used for search engine localization.
 const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 

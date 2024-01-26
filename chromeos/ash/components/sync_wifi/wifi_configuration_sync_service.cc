@@ -15,9 +15,9 @@
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_updater_impl.h"
-#include "chromeos/ash/components/sync_wifi/timer_factory.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_bridge.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store.h"
@@ -34,7 +34,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
   metrics_logger_ = std::make_unique<SyncedNetworkMetricsLogger>(
       network_handler->network_state_handler(),
       network_handler->network_connection_handler());
-  timer_factory_ = std::make_unique<TimerFactory>();
+  timer_factory_ = cross_device::TimerFactoryImpl::Factory::Create();
   updater_ = std::make_unique<SyncedNetworkUpdaterImpl>(
       std::make_unique<PendingNetworkConfigurationTrackerImpl>(pref_service),
       remote_cros_network_config_.get(), timer_factory_.get(),

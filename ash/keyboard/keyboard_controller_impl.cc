@@ -307,6 +307,12 @@ bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
   return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
 }
 
+void KeyboardControllerImpl::SetSmartVisibilityEnabled(bool enabled) {
+  if (keyboard_ui_controller_->IsEnabled()) {
+    keyboard_ui_controller_->SetShouldShowOnTransientBlur(enabled);
+  }
+}
+
 // SessionObserver
 void KeyboardControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -50,6 +52,7 @@ namespace blink {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 
 class CanvasResourceDispatcher;
+class MemoryManagedPaintCanvas;
 class WebGraphicsContext3DProviderWrapper;
 
 // CanvasResourceProvider
@@ -157,7 +160,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  cc::PaintCanvas* Canvas(bool needs_will_draw = false);
+  MemoryManagedPaintCanvas& Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
@@ -243,21 +246,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
 
-  // Drops all draw ops from the recording while preserving the layer and matrix
-  // clip stack. This is done by discarding the whole recording and rebuilding
-  // the layer and matrix clip stack. If the recording contains no draw calls,
-  // the flush and stack rebuild is optimized out.
-  void SkipQueuedDrawCommands();
-  // Restarts the whole recording. This will rebuild the layer and matrix clip
-  // stack, but since this function is meant to be called after resetting the
-  // canvas state stack, the matrix clip stack should be rebuilt to it's default
-  // initial state.
-  void RestartRecording();
-
   void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
-  bool HasRecordedDrawOps() const;
 
   void OnDestroyResource();
 
@@ -267,9 +258,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void FlushIfRecordingLimitExceeded();
 
-  size_t TotalOpCount() const { return recorder_.TotalOpCount(); }
-  size_t TotalOpBytesUsed() const { return recorder_.OpBytesUsed(); }
-  size_t TotalImageBytesUsed() const { return recorder_.ImageBytesUsed(); }
+  MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
 
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
@@ -364,7 +355,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void Clear();
 
   // Called after the recording was cleared from any draw ops it might have had.
-  void RecordingCleared();
+  void RecordingCleared() override;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;
@@ -375,7 +366,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  MemoryManagedPaintRecorder recorder_{this};
+  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_ = nullptr;
+  // Recording accumulating draw ops. This pointer is always valid and safe to
+  // dereference.
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
@@ -405,8 +399,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Parameters for the auto-flushing heuristic.
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
-
-  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_ = nullptr;
 
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;

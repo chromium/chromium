@@ -133,13 +133,6 @@ void XDisplayManager::DispatchDelayedDisplayListUpdate() {
       FROM_HERE, update_task_.callback());
 }
 
-gfx::Point XDisplayManager::GetCursorLocation() const {
-  if (auto response = connection_->QueryPointer({x_root_window_}).Sync()) {
-    return {response->root_x, response->root_y};
-  }
-  return {};
-}
-
 std::string XDisplayManager::GetCurrentWorkspace() {
   return workspace_handler_.GetCurrentWorkspace();
 }

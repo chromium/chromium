@@ -16,11 +16,15 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_allowlist_provider.h"
+#include "url/origin.h"
 
 using ::testing::_;
 
@@ -398,4 +402,55 @@ TEST_F(WebUIAllowlistProviderTest, RegisterThirdPartyCookiesNotifiesOnlyOnce) {
       {ContentSettingsPattern::FromURL(third_party_url1),
        ContentSettingsPattern::FromURL(third_party_url3)});
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+// Regression test for https://crbug.com/1514740.
+TEST_F(WebUIAllowlistProviderTest, CookieSettings) {
+  const GURL url = GURL("https://google.com/");
+  const GURL top_level_url = GURL("chrome-untrusted://test/");
+  const url::Origin top_level_origin = url::Origin::Create(top_level_url);
+
+  auto* map = GetHostContentSettingsMap(profile());
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+
+  // Enable 3p cookie blocking and clear on exit.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                CONTENT_SETTING_SESSION_ONLY);
+
+  // Check that settings are applied before creating an allowlist entry.
+  EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
+      url, net::SiteForCookies::FromUrl(top_level_url),
+      url::Origin::Create(top_level_url), {}));
+  EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(url));
+  EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
+      cookie_settings->GetCookieSettings(), url.host(),
+      net::CookieSourceScheme::kSecure));
+  EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(top_level_url));
+  EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
+      cookie_settings->GetCookieSettings(), top_level_url.host(),
+      net::CookieSourceScheme::kSecure));
+
+  // Registering a third-party cookie exception should only affect 3p cookies
+  // in webui and not change clear on exit behavior of regular cookies.
+  // A first-party exception should still apply to web ui.
+  auto* allowlist = WebUIAllowlist::GetOrCreate(profile());
+  allowlist->RegisterAutoGrantedPermission(top_level_origin,
+                                           ContentSettingsType::COOKIES);
+  allowlist->RegisterAutoGrantedThirdPartyCookies(
+      top_level_origin, {ContentSettingsPattern::FromURLNoWildcard(url)});
+
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      url, net::SiteForCookies::FromUrl(top_level_url),
+      url::Origin::Create(top_level_url), {}));
+  EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(url));
+  EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
+      cookie_settings->GetCookieSettings(), url.host(),
+      net::CookieSourceScheme::kSecure));
+  EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(top_level_url));
+  EXPECT_FALSE(cookie_settings->ShouldDeleteCookieOnExit(
+      cookie_settings->GetCookieSettings(), top_level_url.host(),
+      net::CookieSourceScheme::kSecure));
 }

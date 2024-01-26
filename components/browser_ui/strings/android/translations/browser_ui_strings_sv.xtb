@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1434873037477293673">kort om prissänkning</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webbplats}other{<ph name="SITE_COUNT" /> webbplatser}}</translation>
 <translation id="1510341833810331442">Webbplatser får inte spara data på enheten</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="2790501146643349491">När detta är aktiverat kan nyligen stängda webbplatser fortsätta att skicka och ta emot data. När detta är inaktiverat får webbplatser som nyligen stängts inte skicka eller ta emot data.</translation>
 <translation id="2822354292072154809">Vill du återställa alla webbplatsbehörigheter för <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Begär mobilvy</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
@@ -276,7 +278,7 @@
 <translation id="5689516760719285838">Plats</translation>
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> kan använda dina uppgifter när du surfar</translation>
-<translation id="5700761515355162635">Cookies från tredje part har tillåtits</translation>
+<translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
 <translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blockera webbplatser från att använda VR-enheter och VR-data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Prissänkning på den öppna fliken, från <ph name="OLD_PRICE" /> till <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Begär mobilvy när fönstret är smalt</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="652937045869844725">Testa att tillåta cookies från tredje part, vilket innebär mindre skydd men större sannolikhet att webbplatsfunktionerna fungerar</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Flytta ned</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
 <translation id="6766622839693428701">Svep nedåt när du vill stänga.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Från <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Välj ett alternativ för <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
+<translation id="6867014948848323204">Från <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Webbplatser ges inte tillgång till text och bilder i Urklipp</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6950072572526089586">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Trollkarlen från Oz</translation>
 <translation id="7684642910516280563">Tillåt inte att en webbplats använder tredjepartscookies</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
+<translation id="7770832849480336015">Dölj <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="780301667611848630">Nej tack</translation>

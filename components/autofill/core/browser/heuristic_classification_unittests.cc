@@ -113,8 +113,10 @@
 //    }
 //  }
 
+#include <iomanip>
 #include <sstream>
 #include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -518,9 +520,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       variations::switches::kVariationsOverrideCountry, *country);
 
   std::vector<base::test::FeatureRef> enabled_features = {
-      // This is always enabled to classify autocomplete=invalid fields.
-      features::kAutofillPredictionsForAutocompleteUnrecognized,
       // Support for new field types.
+      features::kAutofillUseI18nAddressModel,
       features::kAutofillEnableSupportForBetweenStreets,
       features::kAutofillEnableSupportForAdminLevel2,
       features::kAutofillEnableSupportForAddressOverflow,

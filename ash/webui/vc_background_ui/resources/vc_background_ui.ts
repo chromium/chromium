@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import './js/vc_background_app.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {emptyState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
+import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const p = document.createElement('p');
-  p.textContent = loadTimeData.getString('vcBackgroundTitle');
-  document.body.appendChild(p);
-});
+getSeaPenStore().init(emptyState());
+ColorChangeUpdater.forDocument().start();

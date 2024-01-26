@@ -20,8 +20,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/fullscreen_notification_blocker.h"
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/metrics_utils.h"
+#include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -433,7 +435,7 @@ void AshMessagePopupCollection::AnimationStarted() {
     animation_tracker_.emplace(last_pop_up_added_->GetWidget()
                                    ->GetCompositor()
                                    ->RequestNewThroughputTracker());
-    animation_tracker_->Start(metrics_util::ForSmoothness(
+    animation_tracker_->Start(metrics_util::ForSmoothnessV3(
         base::BindRepeating(&ReportPopupAnimationSmoothness)));
   }
   ++popups_animating_;
@@ -459,10 +461,17 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
   bool a11_feedback_on_init =
       notification.rich_notification_data()
           .should_make_spoken_feedback_for_popup_updates;
-  return new message_center::MessagePopupView(
+  auto* popup_view = new message_center::MessagePopupView(
       MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
           .release(),
       this, a11_feedback_on_init);
+
+  if (message_center_utils::IsAshNotificationView(popup_view->message_view()) ||
+      features::IsRenderArcNotificationsByChromeEnabled()) {
+    notification_style_utils::StyleNotificationPopup(
+        popup_view->message_view());
+  }
+  return popup_view;
 }
 
 void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {

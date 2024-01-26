@@ -20,10 +20,13 @@ class SerializedScriptValue;
 class WebBlobInfo;
 
 // Exposed for unit testing:
-MODULES_EXPORT v8::Local<v8::Value> DeserializeIDBValue(
-    v8::Isolate*,
-    v8::Local<v8::Object> creation_context,
-    const IDBValue*);
+MODULES_EXPORT v8::Local<v8::Value> DeserializeIDBValue(ScriptState*,
+                                                        const IDBValue*);
+
+v8::Local<v8::Value> DeserializeIDBValueArray(
+    ScriptState*,
+    const Vector<std::unique_ptr<IDBValue>>&);
+
 MODULES_EXPORT bool InjectV8KeyIntoV8Value(v8::Isolate*,
                                            v8::Local<v8::Value> key,
                                            v8::Local<v8::Value>,

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A service worker is able to initialize a MediaStreamTrackGenerator without crashing
+  promise_test: Unhandled rejection with value: "Failed with error ReferenceError: MediaStreamTrackGenerator is not defined"
+Harness: the test ran to completion.
+

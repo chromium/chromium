@@ -249,8 +249,8 @@ class InterestGroupAuctionReporterTest
             &private_aggregation_manager_,
             private_aggregation_manager_
                 .GetLogPrivateAggregationRequestsCallback(),
-            std::move(auction_config_), kTopFrameOrigin, kFrameOrigin,
-            frame_client_security_state_.Clone(),
+            std::move(auction_config_), kDevtoolsAuctionId, kTopFrameOrigin,
+            kFrameOrigin, frame_client_security_state_.Clone(),
             dummy_report_shared_url_loader_factory_,
             auction_worklet::mojom::KAnonymityBidMode::kNone, false,
             std::move(winning_bid_info_), std::move(seller_winning_bid_info_),
@@ -467,6 +467,7 @@ class InterestGroupAuctionReporterTest
   EventReportingAttestationBrowserClient browser_client_;
   ScopedContentBrowserClientSetting browser_client_setting_{&browser_client_};
 
+  const std::string kDevtoolsAuctionId = "123-456";
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://top_frame_origin.test/"));
   const url::Origin kFrameOrigin =

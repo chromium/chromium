@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//! Utilities for working with `cargo_metadata::Metadata`.
+
 use crate::crates;
 use anyhow::{format_err, Result};
 use cargo_metadata::{Metadata, Node, Package, PackageId};
 use std::collections::{HashMap, HashSet};
-
-///! Utilities for working with `cargo_metadata::Metadata`.
 
 /// Collects the set of third-party crate Packages into a map keyed by their
 /// ids.
@@ -16,9 +16,7 @@ use std::collections::{HashMap, HashSet};
 ///
 /// The Package contains fixed information about the crate like its name and
 /// version.
-pub fn metadata_packages<'a>(
-    metadata: &'a Metadata,
-) -> Result<HashMap<&'a PackageId, &'a Package>> {
+pub fn metadata_packages(metadata: &Metadata) -> Result<HashMap<&PackageId, &Package>> {
     let packages: HashMap<_, _> = metadata
         .packages
         .iter()
@@ -37,9 +35,9 @@ pub fn metadata_packages<'a>(
     // Bail out.
     {
         let mut found = HashSet::new();
-        for (_, p) in &packages {
+        for p in packages.values() {
             let epoch = crates::Epoch::from_version(&p.version);
-            if found.insert((&p.name, epoch)) == false {
+            if !found.insert((&p.name, epoch)) {
                 return Err(format_err!(
                     "Two '{}' crates found with the same {} epoch",
                     p.name,
@@ -58,6 +56,6 @@ pub fn metadata_packages<'a>(
 ///
 /// The Node contains resolved information about the crate like its
 /// dependencies, which depend on enabled feature sets.
-pub fn metadata_nodes<'a>(metadata: &'a Metadata) -> HashMap<&'a PackageId, &'a Node> {
+pub fn metadata_nodes(metadata: &Metadata) -> HashMap<&PackageId, &Node> {
     metadata.resolve.as_ref().unwrap().nodes.iter().map(|node| (&node.id, node)).collect()
 }

@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -116,9 +116,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     LOG(ERROR) << "Cannot serialize the response proto";
     return "";
   }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
+  return base::Base64Encode(unencoded_response_string);
 }
 
 void AddFieldOverrideToForm(
@@ -2889,10 +2887,8 @@ TEST_F(
 
     // Serialize API response.
     std::string response_string;
-    std::string encoded_response_string;
     ASSERT_TRUE(api_response.SerializeToString(&response_string));
-    base::Base64Encode(response_string, &encoded_response_string);
-    ParseServerPredictionsQueryResponse(std::move(encoded_response_string),
+    ParseServerPredictionsQueryResponse(base::Base64Encode(response_string),
                                         forms, encoded_signatures, nullptr,
                                         nullptr);
 
@@ -3047,12 +3043,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Serialize API response.
   std::string response_string;
-  std::string encoded_response_string;
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
-  base::Base64Encode(response_string, &encoded_response_string);
 
-  ParseServerPredictionsQueryResponse(std::move(encoded_response_string), forms,
-                                      encoded_signatures, nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(base::Base64Encode(response_string),
+                                      forms, encoded_signatures, nullptr,
+                                      nullptr);
 
   // Check expected field types.
   ASSERT_GE(forms[0]->field_count(), 6U);
@@ -3128,12 +3123,10 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   AddFieldPredictionToForm(form2.fields[1], NO_SERVER_DATA, form_suggestion);
   // Serialize API response.
   std::string response_string;
-  std::string encoded_response_string;
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
-  base::Base64Encode(response_string, &encoded_response_string);
 
-  ParseServerPredictionsQueryResponse(std::move(encoded_response_string), forms,
-                                      test::GetEncodedSignatures(forms),
+  ParseServerPredictionsQueryResponse(base::Base64Encode(response_string),
+                                      forms, test::GetEncodedSignatures(forms),
                                       nullptr, nullptr);
 
   // Verify that the form fields are properly filled with data retrieved from

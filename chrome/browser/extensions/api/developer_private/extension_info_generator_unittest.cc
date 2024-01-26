@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -52,7 +53,6 @@
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -72,13 +72,13 @@ namespace {
 
 const char kAllHostsPermission[] = "*://*/*";
 
-absl::optional<base::Value::Dict> DeserializeJSONTestData(
+std::optional<base::Value::Dict> DeserializeJSONTestData(
     const base::FilePath& path,
     std::string* error) {
   JSONFileValueDeserializer deserializer(path);
   std::unique_ptr<base::Value> value = deserializer.Deserialize(nullptr, error);
   if (!value || !value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*value).TakeDict();
 }
@@ -226,7 +226,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       InspectableViewsFinder::ViewList views,
       const base::FilePath& expected_output_path) {
     std::string error;
-    absl::optional<base::Value::Dict> expected_output_data =
+    std::optional<base::Value::Dict> expected_output_data =
         DeserializeJSONTestData(expected_output_path, &error);
     ASSERT_TRUE(expected_output_data);
     EXPECT_EQ(std::string(), error);

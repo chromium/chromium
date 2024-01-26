@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">înainte</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
+<translation id="1626590945318984973">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1643449475550628585">Schimbă zilnic imaginea de fundal</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Dezactivează modul întunecat</translation>
 <translation id="1885577615937958993">derulează rapid conținutul media</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
-<translation id="1897672602657312171">Comanda rapidă fără tasta de căutare poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta de căutare.</translation>
 <translation id="1904932688895783618">Iată alte resurse utile:</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografii</translation>
 <translation id="2157660087437850958">selector de emoji</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratorul a setat <ph name="APP_NAME_1" /> să pornească automat de fiecare dată când te conectezi.}=2{Administratorul a setat <ph name="APP_NAME_1" /> și <ph name="APP_NAME_2" /> să pornească automat de fiecare dată când te conectezi.}=3{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> să pornească automat de fiecare dată când te conectezi.}few{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și încă # aplicații să pornească automat de fiecare dată când te conectezi.}other{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și încă # de aplicații să pornească automat de fiecare dată când te conectezi.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: reîncearcă</translation>
 <translation id="215916044711630446">Butonul Adaugă un APN este dezactivat</translation>
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Modifică detaliile APN</translation>
 <translation id="2209788852729124853">Resetează contoarele de trafic</translation>
 <translation id="2212733584906323460">Rezolvarea pentru nume</translation>
+<translation id="2215920961700443347">Nu există conexiune la internet. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="2217935453350629363">Viteza actuală</translation>
 <translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="222447520299472966">Trebuie să selectezi cel puțin un album din Galeria de imagini</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Imaginea <ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
+<translation id="2465272316171730950">Suntem la capacitate maximă. Revino mai târziu.</translation>
 <translation id="248546197012830854">Dispozitivul este offline. Conectează-te la rețeaua Wi-Fi pentru a vedea conținutul de ajutor.</translation>
 <translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
 <translation id="2512979179176933762">afișează ferestrele</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
-<translation id="2515109918609218604">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și de căutare.</translation>
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2521835766824839541">melodia anterioară</translation>
 <translation id="2526590354069164005">Desktop</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modul întunecat</translation>
 <translation id="4130035430755296270">Plasează cursorul pentru mai multe opțiuni de aspect</translation>
+<translation id="4130750466177569591">Sunt de acord</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a pornit automat}few{# aplicații au pornit automat}other{# de aplicații au pornit automat}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Ecran</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">redu luminozitatea</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
 <translation id="4176659219503619100">Panou de control</translation>
-<translation id="4185315616950253617">Comenzile rapide cu taste de pe rândul de sus trebuie să includă tasta de căutare.</translation>
 <translation id="420283545744377356">Dezactivează screensaverul</translation>
 <translation id="4213104098953699324">Tastatură USB</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Dezactivează</translation>
 <translation id="439429847087949098">Se repornește <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalizarea tastaturii</translation>
+<translation id="4403262788869804671">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatarul actual</translation>
+<translation id="4417830657741848074">Administratorul a configurat unele aplicații pentru a porni automat. Este posibil ca unele dintre aceste aplicații să nu fie închise.</translation>
 <translation id="4422041425070339732">săgeată în jos</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4428374560396076622">Rețeaua <ph name="NETWORK_NAME" /> este dezactivată</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Screensaver Earth Flow</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4500722292849917410">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind o tastă de modificare (Ctrl, Alt, Shift sau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Culoarea interfeței</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>
 <translation id="4507392511610824664">mărește luminozitatea</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4835901797422965222">Nu există rețele active</translation>
 <translation id="4839698083503556542">Creează propriul film</translation>
+<translation id="48409034532829769">Administratorul a configurat <ph name="APP_NAME" /> pentru pornire automată. Această aplicație nu poate fi închisă.</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4847902821209177679">S-a selectat <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, apasă pe Enter pentru a selecta albumele <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Rezolvare DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Împărțit</translation>
 <translation id="4972592110715526173">schimbarea modului</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
+<translation id="4982627662315910959">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind Shift și o altă tastă de modificare (Ctrl, Alt sau <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagini</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Programul temei întunecate</translation>
 <translation id="5229344016299762883">Ieși din ecranul complet</translation>
 <translation id="5234764350956374838">Închide</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratorul a configurat <ph name="APP_NAME" /> să pornească automat de fiecare dată când te conectezi.}=2{Administratorul a configurat <ph name="APP_NAME" /> și încă o aplicație să pornească automat de fiecare dată când te conectezi.}few{Administratorul a configurat <ph name="APP_NAME" /> și încă # aplicații să pornească automat de fiecare dată când te conectezi.}other{Administratorul a configurat <ph name="APP_NAME" /> și încă # de aplicații să pornească automat de fiecare dată când te conectezi.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Activează modul de culoare deschisă</translation>
 <translation id="5264277876637023664">Rulează testul CPU</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
 <translation id="725133483556299729">Selectează adresa de e-mail</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
-<translation id="7273347807225967898">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind o tastă de modificare (Ctrl, Alt, Shift, tasta de căutare sau Lansator).</translation>
+<translation id="7271932918253517778">Comenzile rapide cu taste de pe rândul de sus trebuie să includă tasta <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Colecții de imagini de fundal</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Comenzi generale</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a pornit automat}few{# aplicații au pornit automat}other{# de aplicații au pornit automat}}</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Comanda rapidă a fost editată</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
-<translation id="8111706652656628199">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind Shift și o altă tastă de modificare (Ctrl, Alt, tasta de căutare sau Lansator).</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>

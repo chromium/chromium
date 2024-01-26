@@ -99,15 +99,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithDefaultBackground];
   appearance.backgroundColor = backgroundColor;
-  if (@available(iOS 15, *)) {
-    self.navigationItem.scrollEdgeAppearance = appearance;
-  } else {
-    // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
-    // titles, so it can't be used. Instead, the navigation bar will always be
-    // the same style.
-    self.navigationItem.standardAppearance = appearance;
-  }
-
+  self.navigationItem.scrollEdgeAppearance = appearance;
   self.title =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_TITLE",
                         @"Title for add new password screen");

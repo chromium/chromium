@@ -5,76 +5,29 @@
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 
 #include <memory>
+#include <optional>
 
-#include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
-#include "base/files/file.h"
-#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ui/ash/birch/birch_client_impl.h"
+#include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 
 namespace ash {
 
-namespace {
-
-// Gets a list of `BirchFileItem` given a list of `FileSuggestData`.
-// Performs some asynchronous file IO, so should not be run on the UI thread.
-std::vector<BirchFileItem> GetFileSuggestionInfo(
-    std::vector<FileSuggestData> file_suggestions) {
-  std::vector<BirchFileItem> results;
-  for (const auto& suggestion : file_suggestions) {
-    base::File::Info info;
-    if (base::GetFileInfo(suggestion.file_path, &info)) {
-      // Get the most recent time between last modified and last accessed.
-      base::Time timestamp = (info.last_modified > info.last_accessed)
-                                 ? info.last_modified
-                                 : info.last_accessed;
-      results.emplace_back(suggestion.file_path, timestamp);
-    }
-  }
-  return results;
-}
-
-}  // namespace
-
 BirchKeyedService::BirchKeyedService(Profile* profile)
-    : file_suggest_service_(
-          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)) {
-  file_suggest_service_observation_.Observe(file_suggest_service_);
+    : file_suggest_provider_(
+          std::make_unique<BirchFileSuggestProvider>(profile)) {
+  birch_client_impl_ = std::make_unique<BirchClientImpl>(profile);
+  Shell::Get()->birch_model()->SetClient(birch_client_impl_.get());
 }
 
-BirchKeyedService::~BirchKeyedService() = default;
-
-void BirchKeyedService::OnFileSuggestionUpdated(FileSuggestionType type) {
-  weak_factory_.InvalidateWeakPtrs();
-
-  if (type == FileSuggestionType::kDriveFile) {
-    file_suggest_service_->GetSuggestFileData(
-        type, base::BindOnce(&BirchKeyedService::OnSuggestedFileDataUpdated,
-                             weak_factory_.GetWeakPtr()));
-  }
+BirchKeyedService::~BirchKeyedService() {
+  Shell::Get()->birch_model()->SetClient(nullptr);
 }
 
-void BirchKeyedService::OnSuggestedFileDataUpdated(
-    const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
-  if (suggest_results) {
-    // Convert each `FileSuggestData` into a `BirchFileItem`.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&GetFileSuggestionInfo, suggest_results.value()),
-        base::BindOnce(&BirchKeyedService::OnFileInfoRetrieved,
-                       weak_factory_.GetWeakPtr()));
-  }
-}
-
-void BirchKeyedService::OnFileInfoRetrieved(
-    std::vector<BirchFileItem> file_items) {
-  Shell::Get()->birch_model()->SetFileSuggestItems(std::move(file_items));
+void BirchKeyedService::RequestBirchDataFetch() {
+  // TODO(b/305093932): Begin data fetching requests.
 }
 
 }  // namespace ash

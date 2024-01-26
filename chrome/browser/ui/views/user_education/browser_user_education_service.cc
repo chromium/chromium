@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
@@ -72,6 +74,7 @@
 namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
+const char kSavedTabGroupTutorialMetricPrefix[] = "SavedTabGroup";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
 const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
 const char kPasswordManagerTutorialMetricPrefix[] = "PasswordManager";
@@ -91,6 +94,26 @@ class IfView : public user_education::TutorialDescription::If {
                      el->AsA<views::TrackedElementViews>()->view()));
                },
                std::move(if_condition))) {}
+};
+
+class ScopedSavedTabGroupTutorialState
+    : public user_education::ScopedTutorialState {
+ public:
+  explicit ScopedSavedTabGroupTutorialState(ui::ElementContext ctx)
+      : user_education::ScopedTutorialState(ctx),
+        browser_(chrome::FindBrowserWithUiElementContext(ctx)) {
+    CHECK(browser_);
+    browser_->SetForceShowBookmarkBarFlag(
+        Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
+  }
+
+  ~ScopedSavedTabGroupTutorialState() override {
+    browser_->ClearForceShowBookmarkBarFlag(
+        Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
+  }
+
+ private:
+  raw_ptr<Browser> browser_;
 };
 
 bool HasTabGroups(const BrowserView* browser_view) {
@@ -883,6 +906,84 @@ void MaybeRegisterChromeTutorials(
           BubbleStep(kTabStripRegionElementId)
               .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
               .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION)));
+
+  {  // Saved Tab Group tutorial.
+    auto saved_tab_group_tutorial =
+        TutorialDescription::Create<kSavedTabGroupTutorialMetricPrefix>(
+            IfView(kBrowserViewElementId, base::BindRepeating(&HasTabGroups))
+                .Then(
+                    // Point at the tab group header and say rick-click on
+                    // group name to open the editor bubble.
+                    BubbleStep(kTabGroupHeaderElementId)
+                        .SetBubbleBodyText(
+                            IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR)
+                        .SetBubbleArrow(HelpBubbleArrow::kTopCenter))
+                .Else(
+                    // Point at the tab strip and say right-click a tab and
+                    // choose "Add tab to new group".
+                    BubbleStep(kTabStripRegionElementId)
+                        .SetBubbleBodyText(
+                            IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP),
+
+                    // Wait for the tab group to be created.
+                    HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)),
+
+            // Wait for the editor bubble to appear.
+            HiddenStep::WaitForShowEvent(kTabGroupEditorBubbleId),
+
+            // Point at editor bubble "Name your group, turn on save".
+            BubbleStep(kTabGroupEditorBubbleSaveToggleId)
+                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP)
+                .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
+
+            // Wait for save group sync to be toggled.
+            HiddenStep::WaitForActivated(kTabGroupEditorBubbleSaveToggleId),
+
+            // Point at editor bubble "Hide group" to save it for later in the
+            // bookmarks bar.
+            BubbleStep(kTabGroupEditorBubbleCloseGroupButtonId)
+                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP)
+                .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
+
+            // Wait for the hide group to be pressed.
+            HiddenStep::WaitForActivated(
+                kTabGroupEditorBubbleCloseGroupButtonId),
+
+            // Wait for the bookmarks bar to show.
+            HiddenStep::WaitForShown(kBookmarkBarElementId),
+
+            // Point at bookmark bar with message to open the previously
+            // closed saved tab group.
+            BubbleStep(kSavedTabGroupButtonElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP)
+                .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
+
+            // Wait for the saved tab groups button in bookmarks bar to be
+            // activated.
+            HiddenStep::WaitForActivated(kSavedTabGroupButtonElementId),
+
+            // Wait for saved tabs groups to be reopened.
+            HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)
+                .NameElement(kTabGroupHeaderElementName),
+
+            // Point at tab group header and show the success message for the
+            // tutorial.
+            BubbleStep(kTabGroupHeaderElementName)
+                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+                .SetBubbleBodyText(
+                    IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION)
+                .SetBubbleArrow(HelpBubbleArrow::kTopCenter));
+    // Attach a temporary state callback to force show bookmarks bar
+    // during the lifetime of the tutorial.
+    saved_tab_group_tutorial.temporary_state_callback = base::BindRepeating(
+        [](ui::ElementContext context)
+            -> std::unique_ptr<user_education::ScopedTutorialState> {
+          return base::WrapUnique(
+              new ScopedSavedTabGroupTutorialState(context));
+        });
+    tutorial_registry.AddTutorial(kSavedTabGroupTutorialId,
+                                  std::move(saved_tab_group_tutorial));
+  }
 
   // Side panel customize chrome
   tutorial_registry.AddTutorial(

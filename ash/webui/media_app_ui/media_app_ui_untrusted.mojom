@@ -16,10 +16,31 @@ interface UntrustedPageHandlerFactory {
       pending_remote<OcrUntrustedPage> page);
 };
 
+struct PageMetadata {
+  // Opaque ID uniquely identifying a page.
+  string id;
+  gfx.mojom.RectF rect;
+};
+
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
 interface OcrUntrustedPageHandler {
-  // TODO(b/301007305): Implement methods for the OCR service.
+  // Provides metadata about the document. Page metadata is always provided for
+  // all pages. Called in the following cases:
+  //   a) A page is rotated (only the rotated page is dirty, but potentially all
+  //      pages will get updated metadata). This case is slightly special as a
+  //      DocumentUpdated() will also be called with the rotated page's ID. This
+  //      method will always be called before DocumentUpdated() for a rotated
+  //      page.
+  //   b) A page is deleted. The deleted page will be omitted from the provided
+  //      page metadata.
+  //   c) A deleted page is re-added (undo page delete). The deleted page's UUID
+  //      will be added back into the page metadata in the correct array
+  //      location.
+  //   d) Pages are re-ordered. The array will be re-ordered to match.
+  //   page_metadata: An array of the new coordinate bounds for each page in the
+  //                  document, attached to each page's unique identifier.
+  PageMetadataUpdated(array<PageMetadata> page_metadata);
 
   // Called whenever the viewport changes, e.g. due to scrolling, zooming,
   // resizing the window, or opening and closing toolbars/panels.

@@ -124,6 +124,12 @@ void AudioTrackMojoEncoder::EncodeAudio(
     return;
   }
 
+  DoEncodeAudio(std::move(input_bus), capture_time);
+}
+
+void AudioTrackMojoEncoder::DoEncodeAudio(
+    std::unique_ptr<media::AudioBus> input_bus,
+    base::TimeTicks capture_time) {
   auto done_cb = base::BindPostTask(
       encoder_task_runner_, WTF::BindOnce(&AudioTrackMojoEncoder::OnEncodeDone,
                                           weak_factory_.GetWeakPtr()));
@@ -145,8 +151,8 @@ void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
   }
 
   while (!input_queue_.empty()) {
-    EncodeAudio(std::move(input_queue_.front().audio_bus),
-                input_queue_.front().capture_time);
+    DoEncodeAudio(std::move(input_queue_.front().audio_bus),
+                  input_queue_.front().capture_time);
     input_queue_.pop();
   }
 }

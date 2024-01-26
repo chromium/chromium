@@ -11,7 +11,6 @@ assert(is_chromeos_ash)
 component("cryptohome") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
   deps = [
-    ":public",
     "//base",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome",
@@ -36,8 +35,6 @@ component("cryptohome") {
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
     "cryptohome_util.h",
-    "error_util.cc",
-    "error_util.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
     "userdataauth_util.cc",
@@ -45,7 +42,8 @@ component("cryptohome") {
   ]
 }
 
-source_set("public") {
+component("public") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
@@ -53,7 +51,10 @@ source_set("public") {
   sources = [
     "common_types.h",
     "constants.h",
+    "error_types.cc",
     "error_types.h",
+    "error_util.cc",
+    "error_util.h",
   ]
 }
 

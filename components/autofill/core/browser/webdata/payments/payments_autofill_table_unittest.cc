@@ -1741,38 +1741,22 @@ TEST_F(PaymentsAutofillTableTest, RemoveAllVirtualCardUsageData) {
 TEST_F(PaymentsAutofillTableTest, AddBankAccount) {
   BankAccount bank_account_to_store_1 = test::CreatePixBankAccount(100);
   BankAccount bank_account_to_store_2 = test::CreatePixBankAccount(200);
-  bank_account_to_store_2.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kUnknown);
   bank_account_to_store_1.AddToDatabase(table_.get());
   bank_account_to_store_2.AddToDatabase(table_.get());
 
   // Verify bank account 1 is correctly retrieved.
-  std::unique_ptr<PaymentInstrument> payment_instrument_1 =
-      table_->GetPaymentInstrument(
-          bank_account_to_store_1.instrument_id(),
-          PaymentInstrument::InstrumentType::kBankAccount);
-  BankAccount* bank_account_from_db_1(
-      static_cast<BankAccount*>(payment_instrument_1.get()));
+  std::unique_ptr<BankAccount> bank_account_from_db_1 =
+      table_->GetMaskedBankAccount(bank_account_to_store_1.instrument_id());
 
   ASSERT_TRUE(bank_account_from_db_1);
   EXPECT_EQ(bank_account_to_store_1, *bank_account_from_db_1);
-  EXPECT_TRUE(bank_account_from_db_1->IsSupported(
-      PaymentInstrument::PaymentRail::kPix));
 
   // Verify bank account 2 is correctly retrieved.
-  std::unique_ptr<PaymentInstrument> payment_instrument_2 =
-      table_->GetPaymentInstrument(
-          bank_account_to_store_2.instrument_id(),
-          PaymentInstrument::InstrumentType::kBankAccount);
-  BankAccount* bank_account_from_db_2(
-      static_cast<BankAccount*>(payment_instrument_2.get()));
+  std::unique_ptr<BankAccount> bank_account_from_db_2 =
+      table_->GetMaskedBankAccount(bank_account_to_store_2.instrument_id());
 
   ASSERT_TRUE(bank_account_from_db_2);
   EXPECT_EQ(bank_account_to_store_2, *bank_account_from_db_2);
-  EXPECT_TRUE(bank_account_from_db_2->IsSupported(
-      PaymentInstrument::PaymentRail::kPix));
-  EXPECT_TRUE(bank_account_from_db_2->IsSupported(
-      PaymentInstrument::PaymentRail::kUnknown));
 }
 
 TEST_F(PaymentsAutofillTableTest, UpdateBankAccount) {
@@ -1783,136 +1767,44 @@ TEST_F(PaymentsAutofillTableTest, UpdateBankAccount) {
       100, u"updated_nickname", GURL("http://www.updated-example.com"),
       u"updated_bank_name", u"updated_account_number_suffix",
       BankAccount::AccountType::kSalary);
-  updated_bank_account_to_store.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kPix);
-  updated_bank_account_to_store.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kUnknown);
   ASSERT_TRUE(updated_bank_account_to_store.UpdateInDatabase(table_.get()));
 
-  std::unique_ptr<PaymentInstrument> payment_instrument =
-      table_->GetPaymentInstrument(
-          bank_account_to_store.instrument_id(),
-          PaymentInstrument::InstrumentType::kBankAccount);
-  BankAccount* bank_account_from_db(
-      static_cast<BankAccount*>(payment_instrument.get()));
+  std::unique_ptr<BankAccount> bank_account_from_db =
+      table_->GetMaskedBankAccount(bank_account_to_store.instrument_id());
 
   ASSERT_TRUE(bank_account_from_db);
   EXPECT_EQ(updated_bank_account_to_store, *bank_account_from_db);
-  // Verify existing payment rail is still supported.
-  EXPECT_TRUE(
-      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
-  // Verify updated payment rail is supported.
-  EXPECT_TRUE(bank_account_from_db->IsSupported(
-      PaymentInstrument::PaymentRail::kUnknown));
-}
-
-TEST_F(PaymentsAutofillTableTest, UpdateBankAccount_RemoveSupportedRail) {
-  // Add 2 supported payment rails.
-  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
-  bank_account_to_store.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kUnknown);
-  ASSERT_TRUE(bank_account_to_store.AddToDatabase(table_.get()));
-
-  BankAccount updated_bank_account_to_store(
-      100, bank_account_to_store.nickname(),
-      bank_account_to_store.display_icon_url(),
-      bank_account_to_store.bank_name(),
-      bank_account_to_store.account_number_suffix(),
-      bank_account_to_store.account_type());
-  // Add only 1 supported payment rail.
-  updated_bank_account_to_store.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kUnknown);
-
-  ASSERT_TRUE(updated_bank_account_to_store.UpdateInDatabase(table_.get()));
-
-  std::unique_ptr<PaymentInstrument> payment_instrument =
-      table_->GetPaymentInstrument(
-          bank_account_to_store.instrument_id(),
-          PaymentInstrument::InstrumentType::kBankAccount);
-  BankAccount* bank_account_from_db(
-      static_cast<BankAccount*>(payment_instrument.get()));
-
-  ASSERT_TRUE(bank_account_from_db);
-  EXPECT_EQ(updated_bank_account_to_store, *bank_account_from_db);
-  // Verify existing payment rail is no longer supported.
-  EXPECT_FALSE(
-      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
-  // Verify updated payment rail is supported.
-  EXPECT_TRUE(bank_account_from_db->IsSupported(
-      PaymentInstrument::PaymentRail::kUnknown));
 }
 
 TEST_F(PaymentsAutofillTableTest, RemoveBankAccount) {
   BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
-  bank_account_to_store.AddPaymentRail(
-      PaymentInstrument::PaymentRail::kUnknown);
   ASSERT_TRUE(bank_account_to_store.AddToDatabase(table_.get()));
 
   // Remove bank account from db.
   ASSERT_TRUE(bank_account_to_store.DeleteFromDatabase(table_.get()));
 
-  // Verify row is deleted from payment_instruments table.
-  sql::Statement payment_instruments_select(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT COUNT(*) "
-          "FROM payment_instruments WHERE instrument_id = ? AND "
-          "instrument_type = ?"));
-  payment_instruments_select.BindInt64(0,
-                                       bank_account_to_store.instrument_id());
-  payment_instruments_select.BindInt64(
-      1, static_cast<int>(bank_account_to_store.GetInstrumentType()));
-
-  EXPECT_TRUE(payment_instruments_select.Step());
-  EXPECT_EQ(0, payment_instruments_select.ColumnInt(0));
-
-  // Verify row is deleted from payment_instrument_supported_rails table.
-  sql::Statement payment_instrument_supported_rails_select(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT COUNT(*) "
-          "FROM payment_instrument_supported_rails WHERE instrument_id = ? AND "
-          "instrument_type = ?"));
-  payment_instrument_supported_rails_select.BindInt64(
-      0, bank_account_to_store.instrument_id());
-  payment_instrument_supported_rails_select.BindInt64(
-      1, static_cast<int>(bank_account_to_store.GetInstrumentType()));
-
-  EXPECT_TRUE(payment_instrument_supported_rails_select.Step());
-  EXPECT_EQ(0, payment_instrument_supported_rails_select.ColumnInt(0));
-
   // Verify row is deleted from bank_accounts table.
   sql::Statement bank_accounts_select(
       db_->GetSQLConnection()->GetUniqueStatement(
           "SELECT COUNT(*) "
-          "FROM bank_accounts WHERE instrument_id = ?"));
+          "FROM masked_bank_accounts WHERE instrument_id = ?"));
   bank_accounts_select.BindInt64(0, bank_account_to_store.instrument_id());
   EXPECT_TRUE(bank_accounts_select.Step());
   EXPECT_EQ(0, bank_accounts_select.ColumnInt(0));
 }
 
 TEST_F(PaymentsAutofillTableTest, GetPaymentInstrument) {
-  sql::Statement payment_instruments_insert(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "INSERT INTO payment_instruments (instrument_id, instrument_type, "
-          "nickname, display_icon_url) VALUES(100, 1, 'nickname', "
-          "'http://display-icon-url.com')"));
-  sql::Statement payment_instrument_supported_rails_insert(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "INSERT INTO payment_instrument_supported_rails (instrument_id, "
-          "instrument_type, payment_rail)VALUES(100, 1, 1)"));
   sql::Statement bank_accounts_insert(
       db_->GetSQLConnection()->GetUniqueStatement(
-          "INSERT INTO bank_accounts (instrument_id, bank_name, "
-          "account_number_suffix, account_type) VALUES(100, 'bank_name', "
-          "'account_number_suffix', 1)"));
-  EXPECT_TRUE(payment_instruments_insert.Run());
-  EXPECT_TRUE(payment_instrument_supported_rails_insert.Run());
+          "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+          "account_number_suffix, account_type, nickname, display_icon_url) "
+          "VALUES(100, 'bank_name', "
+          "'account_number_suffix', 1, 'nickname', "
+          "'http://display-icon-url.com')"));
   EXPECT_TRUE(bank_accounts_insert.Run());
 
-  std::unique_ptr<PaymentInstrument> payment_instrument =
-      table_->GetPaymentInstrument(
-          100, PaymentInstrument::InstrumentType::kBankAccount);
-  BankAccount* bank_account_from_db(
-      static_cast<BankAccount*>(payment_instrument.get()));
+  std::unique_ptr<BankAccount> bank_account_from_db =
+      table_->GetMaskedBankAccount(100);
 
   ASSERT_TRUE(bank_account_from_db);
   EXPECT_EQ(100, bank_account_from_db->instrument_id());
@@ -1924,8 +1816,6 @@ TEST_F(PaymentsAutofillTableTest, GetPaymentInstrument) {
   EXPECT_EQ(GURL("http://display-icon-url.com"),
             bank_account_from_db->display_icon_url());
   EXPECT_EQ(u"bank_name", bank_account_from_db->bank_name());
-  EXPECT_TRUE(
-      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
 }
 
 }  // namespace autofill

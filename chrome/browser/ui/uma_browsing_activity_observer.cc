@@ -6,12 +6,13 @@
 
 #include <algorithm>
 
-#include "base/debug/alias.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -197,15 +198,13 @@ UMABrowsingActivityObserver::TabHelper::~TabHelper() = default;
 
 void UMABrowsingActivityObserver::TabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  // TODO(crbug.com/1510023): Prevent code folding for investigating the linked
-  // crash bug.
-  NO_CODE_FOLDING();
-
   // This is null in unit tests.
   if (!g_uma_browsing_activity_observer_instance) {
-    // TODO(crbug.com/1510023): Ideally, this would be a `CHECK_IS_TEST()`, but
-    // this may not be holding in production.
-    base::debug::DumpWithoutCrashing();
+    // Crash reports suggest this could also be null on Windows. See
+    // https://crbug.com/1510023
+#if !BUILDFLAG(IS_WIN)
+    CHECK_IS_TEST();
+#endif
     return;
   }
 

@@ -76,6 +76,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
+            "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -87,6 +88,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
+            "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -98,6 +100,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
+            "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
             "remote": True,
             "canonicalize_dir": True,
@@ -110,6 +113,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
+            "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
             "remote": True,
             "canonicalize_dir": True,

@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -253,16 +252,6 @@ class BASE_EXPORT RunLoop {
   // on forever bound to that thread (including its destruction).
   static void RegisterDelegateForCurrentThread(Delegate* new_delegate);
 
-  // Quits the active RunLoop (when idle) -- there must be one. These were
-  // introduced as prefered temporary replacements to the long deprecated
-  // MessageLoop::Quit(WhenIdle)(Closure) methods. Callers should properly plumb
-  // a reference to the appropriate RunLoop instance (or its QuitClosure)
-  // instead of using these in order to link Run()/Quit() to a single RunLoop
-  // instance and increase readability.
-  static void QuitCurrentDeprecated();
-  static void QuitCurrentWhenIdleDeprecated();
-  [[nodiscard]] static RepeatingClosure QuitCurrentWhenIdleClosureDeprecated();
-
   // Support for //base/test/scoped_run_loop_timeout.h.
   // This must be public for access by the implementation code in run_loop.cc.
   struct BASE_EXPORT RunLoopTimeout {
@@ -302,9 +291,7 @@ class BASE_EXPORT RunLoop {
   // A cached reference of RunLoop::Delegate for the thread driven by this
   // RunLoop for quick access without using TLS (also allows access to state
   // from another sequence during Run(), ref. |sequence_checker_| below).
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union, #global-scope
-  RAW_PTR_EXCLUSION Delegate* const delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   const Type type_;
 
@@ -321,11 +308,6 @@ class BASE_EXPORT RunLoop {
   // responsible for probing this state via ShouldQuitWhenIdle()). This state is
   // stored here rather than pushed to Delegate to support nested RunLoops.
   bool quit_when_idle_ = false;
-
-  // True if use of QuitCurrent*Deprecated() is allowed. Taking a Quit*Closure()
-  // from a RunLoop implicitly sets this to false, so QuitCurrent*Deprecated()
-  // cannot be used while that RunLoop is being Run().
-  bool allow_quit_current_deprecated_ = true;
 
   // RunLoop is not thread-safe. Its state/methods, unless marked as such, may
   // not be accessed from any other sequence than the thread it was constructed

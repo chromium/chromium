@@ -57,6 +57,8 @@ void CookieControlsBridge::UpdateWebContents(
 
 void CookieControlsBridge::OnStatusChanged(
     CookieControlsStatus status,
+    bool controls_visible,
+    bool protections_on,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {

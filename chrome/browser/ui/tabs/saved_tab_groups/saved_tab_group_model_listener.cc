@@ -56,14 +56,23 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       return;
     }
 
-    // Ignored because closing empty groups is handled when the last tab is
-    // removed in TabGroupedStateChanged.
+    // We should never get close notifications, because we destroy the
+    // LocalTabGroupListener when the last tab is closed, which happens before
+    // this event is sent out.
     case TabGroupChange::kClosed:
+    // We should never get created notifications, because we only are connected
+    // to the local group after it has been created and populated.
+    case TabGroupChange::kCreated: {
+      // The exception to both of these is when the group is being moved between
+      // browser windows, as it gets created in the new window and destroyed in
+      // the old window. In these cases, tracking must be paused, as otherwise
+      // the saved group will get emptied out during the move.
+      CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      return;
+    }
+
     // Ignored because contents changes are handled in TabGroupedStateChanged.
     case TabGroupChange::kContentsChanged:
-    // Ignored because we explicitly add the TabGroupId to the saved tab group
-    // outside of the observer flow.
-    case TabGroupChange::kCreated:
     // kEditorOpened doesn't affect the SavedTabGroup.
     case TabGroupChange::kEditorOpened:
     // kMoved doesn't affect the order of the saved tab groups.

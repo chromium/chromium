@@ -119,6 +119,10 @@ extern const base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync;
 // Enables unpacking of nested archives during downloads.
 BASE_DECLARE_FEATURE(kNestedArchives);
 
+// Controls whether custom messages from admin are shown for warn and block
+// enterprise interstitials.
+BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
+
 // Controls whether we are using red interstitial facelift updates.
 BASE_DECLARE_FEATURE(kRedInterstitialFacelift);
 

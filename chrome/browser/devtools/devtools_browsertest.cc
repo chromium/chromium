@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
@@ -136,7 +137,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_switches.h"
@@ -624,7 +624,7 @@ class DevToolsExtensionTest : public DevToolsTest {
         "src='panel_devtools_page.js'></script></head><body></body></html>");
 
     dir.WriteFile(FILE_PATH_LITERAL("panel_devtools_page.js"),
-                  "chrome.devtools.panels.create('iframe_panel',\n"
+                  "chrome.devtools.panels.create('iframe-panel',\n"
                   "    null,\n"
                   "    'panel.html',\n"
                   "    function(panel) {\n"
@@ -642,7 +642,7 @@ class DevToolsExtensionTest : public DevToolsTest {
 
     dir.WriteFile(
         FILE_PATH_LITERAL("sidebarpane_devtools_page.js"),
-        "chrome.devtools.panels.elements.createSidebarPane('iframe_pane',\n"
+        "chrome.devtools.panels.elements.createSidebarPane('iframe-pane',\n"
         "    function(sidebar) {\n"
         "      chrome.devtools.inspectedWindow.eval(\n"
         "        'console.log(\"PASS\")');\n"
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTestFunction(window_, "waitForTestResultsInConsole");
 
   // Now that we know the panel is loaded, switch to it.
-  SwitchToExtensionPanel(window_, extension, "iframe_panel");
+  SwitchToExtensionPanel(window_, extension, "iframe-panel");
   EXPECT_TRUE(content::WaitForLoadStop(main_web_contents()));
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1221,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   SwitchToPanel(window_, "elements");
   // This is a bit of a hack to switch to the sidebar pane in the elements panel
   // that the Iframe has been added to.
-  SwitchToPanel(window_, "iframe_pane");
+  SwitchToPanel(window_, "iframe-pane");
   ASSERT_TRUE(web_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // Now that we know the panel is loaded, switch to it.
   content::TestNavigationManager non_devtools_manager(
       main_web_contents(), non_dt_extension_test_url);
-  SwitchToExtensionPanel(window_, devtools_extension, "iframe_panel");
+  SwitchToExtensionPanel(window_, devtools_extension, "iframe-panel");
   ASSERT_TRUE(non_devtools_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // Now that we know the panel is loaded, switch to it.
   content::TestNavigationManager extension_b_manager(main_web_contents(),
                                                      extension_b_page_url);
-  SwitchToExtensionPanel(window_, devtools_a_extension, "iframe_panel");
+  SwitchToExtensionPanel(window_, devtools_a_extension, "iframe-panel");
   ASSERT_TRUE(extension_b_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1520,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
   GURL extension_test_url = extension->GetResourceURL("/simple_test_page.html");
   content::TestNavigationManager test_page_manager(main_web_contents(),
                                                    extension_test_url);
-  SwitchToExtensionPanel(window_, extension, "iframe_panel");
+  SwitchToExtensionPanel(window_, extension, "iframe-panel");
   ASSERT_TRUE(test_page_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1941,7 +1941,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CanInspectExtensionOffscreenDoc) {
   // Get the list of inspectable views for the extension.
   auto get_info_function = base::MakeRefCounted<
       extensions::api::DeveloperPrivateGetExtensionInfoFunction>();
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       extensions::api_test_utils::RunFunctionAndReturnSingleResult(
           get_info_function.get(),
           content::JsReplace(R"([$1])", extension->id()), browser()->profile());
@@ -2121,7 +2121,7 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
   params->client->OnReceiveResponse(std::move(response),
-                                    std::move(consumer_handle), absl::nullopt);
+                                    std::move(consumer_handle), std::nullopt);
   params->client->OnComplete(network::URLLoaderCompletionStatus());
   return true;
 }

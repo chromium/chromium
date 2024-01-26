@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -131,7 +131,7 @@ void DeviceOAuth2TokenStoreChromeOS::EncryptAndSaveToken() {
   FlushTokenSaveCallbacks(result);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 DeviceOAuth2TokenStoreChromeOS::LoadAndDecryptToken() {
   // Try to load a more strongly encrypted v2 token if it exists, but if it does
   // not it will fall back to trying to load a weaker v1 token. If neither
@@ -144,7 +144,7 @@ DeviceOAuth2TokenStoreChromeOS::LoadAndDecryptToken() {
     decrypted_token = encryptor.DecryptWithSystemSalt(encrypted_token);
     if (decrypted_token.empty()) {
       LOG(ERROR) << "Failed to decrypt v2 refresh token.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else if (encrypted_token = local_state_->GetString(
                  prefs::kDeviceRobotAnyApiRefreshTokenV1);
@@ -152,7 +152,7 @@ DeviceOAuth2TokenStoreChromeOS::LoadAndDecryptToken() {
     decrypted_token = encryptor.WeakDecryptWithSystemSalt(encrypted_token);
     if (decrypted_token.empty()) {
       LOG(ERROR) << "Failed to decrypt v1 refresh token.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return decrypted_token;
@@ -180,7 +180,7 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
   }
 
   // Otherwise, load the refresh token from |local_state_|.
-  absl::optional<std::string> token = LoadAndDecryptToken();
+  std::optional<std::string> token = LoadAndDecryptToken();
   if (token.has_value()) {
     refresh_token_ = std::move(*token);
     std::move(callback).Run(true, true);

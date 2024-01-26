@@ -23,10 +23,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "components/power_metrics/resource_coalition_mac.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace {
 
 // Calculates the UKM bucket |value| falls in and returns it. This uses an
@@ -74,31 +70,11 @@ const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
 
 PowerMetricsReporter::PowerMetricsReporter(
     ProcessMonitor* process_monitor,
-    UsageScenarioDataStore* short_usage_scenario_data_store,
     UsageScenarioDataStore* long_usage_scenario_data_store,
-    std::unique_ptr<base::BatteryLevelProvider> battery_level_provider
-#if BUILDFLAG(IS_MAC)
-    ,
-    std::unique_ptr<CoalitionResourceUsageProvider>
-        coalition_resource_usage_provider
-#endif  // BUILDFLAG(IS_MAC)
-    )
+    std::unique_ptr<base::BatteryLevelProvider> battery_level_provider)
     : process_monitor_(process_monitor),
-      short_usage_scenario_data_store_(short_usage_scenario_data_store),
       long_usage_scenario_data_store_(long_usage_scenario_data_store),
-      battery_level_provider_(std::move(battery_level_provider))
-#if BUILDFLAG(IS_MAC)
-      ,
-      coalition_resource_usage_provider_(
-          std::move(coalition_resource_usage_provider))
-#endif  // BUILDFLAG(IS_MAC)
-{
-  if (!short_usage_scenario_data_store_) {
-    short_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
-    short_usage_scenario_data_store_ =
-        short_usage_scenario_tracker_->data_store();
-  }
-
+      battery_level_provider_(std::move(battery_level_provider)) {
   if (!long_usage_scenario_data_store_) {
     long_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
     long_usage_scenario_data_store_ =
@@ -117,10 +93,6 @@ PowerMetricsReporter::PowerMetricsReporter(
                        base::Unretained(this)));
   }
 
-#if BUILDFLAG(IS_MAC)
-  coalition_resource_usage_provider_->Init();
-#endif
-
   StartNextLongInterval();
 }
 
@@ -133,7 +105,7 @@ int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
 }
 
 void PowerMetricsReporter::OnFirstBatteryStateSampled(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_level_provider_);
@@ -141,33 +113,10 @@ void PowerMetricsReporter::OnFirstBatteryStateSampled(
 }
 
 void PowerMetricsReporter::StartNextLongInterval() {
-#if BUILDFLAG(IS_MAC)
-  // On Mac, set the timer for 10 seconds before the end of the long interval to
-  // start the short interval.
-  interval_timer_.Start(
-      FROM_HERE,
-      kLongPowerMetricsIntervalDuration - kShortPowerMetricsIntervalDuration,
-      base::BindOnce(&PowerMetricsReporter::OnShortIntervalBegin,
-                     base::Unretained(this)));
-#else
   interval_timer_.Start(FROM_HERE, kLongPowerMetricsIntervalDuration,
                         base::BindOnce(&PowerMetricsReporter::OnLongIntervalEnd,
                                        base::Unretained(this)));
-#endif
 }
-
-#if BUILDFLAG(IS_MAC)
-void PowerMetricsReporter::OnShortIntervalBegin() {
-  short_interval_begin_time_ = base::TimeTicks::Now();
-  short_usage_scenario_data_store_->ResetIntervalData();
-  coalition_resource_usage_provider_->StartShortInterval();
-
-  interval_timer_.Start(
-      FROM_HERE, kShortPowerMetricsIntervalDuration,
-      base::BindRepeating(&PowerMetricsReporter::OnLongIntervalEnd,
-                          base::Unretained(this)));
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 void PowerMetricsReporter::OnLongIntervalEnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -212,7 +161,7 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_level_provider_);
@@ -249,40 +198,6 @@ void PowerMetricsReporter::ReportMetrics(
                                            long_interval_suffixes);
   base::UmaHistogramEnumeration("PerformanceMonitor.UsageScenario.LongInterval",
                                 long_interval_scenario_params.scenario);
-
-#if BUILDFLAG(IS_MAC)
-  // Sample coalition resource usage rate.
-  absl::optional<power_metrics::CoalitionResourceUsageRate>
-      short_interval_resource_usage_rate;
-  absl::optional<power_metrics::CoalitionResourceUsageRate>
-      long_interval_resource_usage_rate;
-  coalition_resource_usage_provider_->EndIntervals(
-      &short_interval_resource_usage_rate, &long_interval_resource_usage_rate);
-
-  // Report resource coalition histograms for the long interval.
-  if (long_interval_resource_usage_rate.has_value()) {
-    ReportResourceCoalitionHistograms(long_interval_resource_usage_rate.value(),
-                                      long_interval_suffixes);
-  }
-
-  // Then do it for the short interval.
-  if (short_interval_resource_usage_rate.has_value()) {
-    auto short_interval_data =
-        short_usage_scenario_data_store_->ResetIntervalData();
-    const ScenarioParams short_interval_scenario_params =
-        GetShortIntervalScenarioParams(short_interval_data, long_interval_data);
-
-    base::UmaHistogramEnumeration(
-        "PerformanceMonitor.UsageScenario.ShortInterval",
-        short_interval_scenario_params.scenario);
-
-    ReportShortIntervalHistograms(
-        short_interval_scenario_params.histogram_suffix,
-        short_interval_resource_usage_rate.value());
-    MaybeEmitHighCPUTraceEvent(short_interval_scenario_params,
-                               short_interval_resource_usage_rate.value());
-  }
-#endif  // BUILDFLAG(IS_MAC)
 
   StartNextLongInterval();
 }
@@ -370,22 +285,3 @@ void PowerMetricsReporter::ReportBatteryUKMs(
 
   builder.Record(ukm_recorder);
 }
-
-#if BUILDFLAG(IS_MAC)
-void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
-    const ScenarioParams& short_interval_scenario_params,
-    const CoalitionResourceUsageRate& coalition_resource_usage_rate) {
-  if (coalition_resource_usage_rate.cpu_time_per_second >=
-      short_interval_scenario_params.short_interval_cpu_threshold) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "browser", short_interval_scenario_params.trace_event_title,
-        TRACE_ID_LOCAL(this), short_interval_begin_time_);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "browser", short_interval_scenario_params.trace_event_title,
-        TRACE_ID_LOCAL(this), now);
-  }
-  short_interval_begin_time_ = base::TimeTicks();
-}
-#endif  // BUILDFLAG(IS_MAC)

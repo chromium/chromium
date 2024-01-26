@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Få besked</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="4212246570487010370">Fortsæt med at gennemse</translation>
+<translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4648718555153979859">Dine faner er grupperet sammen her</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}one{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Vis</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Skjul fuldskærmsgitter</translation>
 <translation id="5076161749301278626">Vil du se butiksanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign hurtigt sider ved at oprette en gruppe. Hold et link nede for at starte.</translation>
+<translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> fane, du ikke har brugt for nylig}one{Du har <ph name="TABS_COUNT_MANY" /> fane, du ikke har brugt for nylig}other{Du har <ph name="TABS_COUNT_MANY" /> faner, du ikke har brugt for nylig}}</translation>
 <translation id="5339733443032484186">Din seneste fane</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>

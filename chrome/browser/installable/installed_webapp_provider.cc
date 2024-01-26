@@ -105,5 +105,6 @@ void InstalledWebappProvider::ShutdownOnUIThread() {
 
 void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 }

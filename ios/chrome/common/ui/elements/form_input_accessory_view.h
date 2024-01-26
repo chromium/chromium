@@ -20,6 +20,12 @@
     (FormInputAccessoryView*)sender;
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender;
+@optional
+// This method must be implemented only if the manual fill button is present,
+// which happens when using the setup function with the `manualFillSymbol`
+// argument below.
+- (void)formInputAccessoryViewDidTapManualFillButton:
+    (FormInputAccessoryView*)sender;
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
@@ -39,6 +45,10 @@ extern NSString* const
 // otherwise.
 @property(nonatomic, readonly, weak) UIButton* nextButton;
 
+// The expand button if the view was set up with a navigation delegate. Nil
+// otherwise.
+@property(nonatomic, readonly, weak) UIButton* manualFillButton;
+
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
 
@@ -46,6 +56,20 @@ extern NSString* const
 // on the trailing side and use `delegate` for actions.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate;
+
+// Sets up the view with the given `leadingView`. Navigation controls are shown
+// on the trailing side and use `delegate` for actions.
+// This initializer modifies multiple UI elements:
+// - The manual fill button is added, using manualFillSymbol as its image.
+// - The previous and next buttons are removed.
+// - The accessory height is increased.
+// - The background color is set to grey.
+// If `closeButtonSymbol` is nil, the close button will use the default text.
+// Otherwise, it will use closeButtonSymbol as the image instead.
+- (void)setUpWithLeadingView:(UIView*)leadingView
+          navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
+            manualFillSymbol:(UIImage*)manualFillSymbol
+           closeButtonSymbol:(UIImage*)closeButtonSymbol;
 
 // Sets up the view with the given `leadingView`. Navigation controls are
 // replaced with `customTrailingView`.

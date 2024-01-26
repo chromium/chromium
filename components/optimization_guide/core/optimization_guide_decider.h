@@ -71,7 +71,8 @@ class OptimizationGuideDecider {
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback) = 0;
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata = nullptr) = 0;
 };
 
 }  // namespace optimization_guide

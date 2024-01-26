@@ -31,7 +31,7 @@ class WebAppUninstallCommand
   static std::unique_ptr<WebAppUninstallCommand> CreateForRemoveInstallUrl(
       webapps::WebappUninstallSource uninstall_source,
       Profile& profile,
-      absl::optional<webapps::AppId> app_id,
+      std::optional<webapps::AppId> app_id,
       WebAppManagement::Type install_source,
       GURL install_url,
       UninstallJob::Callback callback);
@@ -62,7 +62,7 @@ class WebAppUninstallCommand
   // Constructor for RemoveInstallUrlJob.
   WebAppUninstallCommand(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
-                         absl::optional<webapps::AppId> app_id,
+                         std::optional<webapps::AppId> app_id,
                          WebAppManagement::Type install_source,
                          GURL install_url,
                          UninstallJob::Callback callback);

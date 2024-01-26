@@ -505,9 +505,8 @@ using signin_metrics::PromoAction;
     // UIKit doesn't allow a view controller to be dismissed during the
     // animation. The interruption has to be processed when the view controller
     // will be fully presented.
-    // See crbug.com/1126170
-    // TODO(crbug.com/1493398): Convert to CHECK.
-    DUMP_WILL_BE_CHECK(!self.interruptCallback)
+    // See crbug.com/1126170 and crbug.com/1499576.
+    DCHECK(!self.interruptCallback)
         << "Action: " << static_cast<int>(action) << ", "
         << base::SysNSStringToUTF8([self description]);
     __weak __typeof(self) weakSelf = self;

@@ -6,9 +6,9 @@ type AutomationNode = chrome.automation.AutomationNode;
 type AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
 
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AsyncUtil} from '../../common/async_util.js';
-import {EventHandler} from '../../common/event_handler.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {EventHandler} from '/common/event_handler.js';
 
 export class FocusHandler {
   private active_ = false;

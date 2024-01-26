@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -37,7 +38,7 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
     WEB_STATE_USER_DATA_KEY_DECL();
     Container(web::WebState* web_state);
 
-    web::WebState* web_state_ = nullptr;
+    raw_ptr<web::WebState> web_state_ = nullptr;
     std::map<OverlayModality, std::unique_ptr<OverlayRequestQueueImpl>> queues_;
   };
 
@@ -121,8 +122,8 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   // handler or by a call to CancelAllRequests().
   void RemoveRequest(size_t index, bool cancelled);
 
-  web::WebState* web_state_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
   base::ObserverList<Observer, /* check_empty= */ true> observers_;
   // The queue used to hold the received requests.  Stored as a circular dequeue
   // to allow performant pop events from the front of the queue.

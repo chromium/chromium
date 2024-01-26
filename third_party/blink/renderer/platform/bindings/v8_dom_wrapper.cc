@@ -37,18 +37,12 @@
 
 namespace blink {
 
-v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapper(
-    ScriptState* script_state,
-    const WrapperTypeInfo* type) {
+v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
+                                                  const WrapperTypeInfo* type) {
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kCreateWrapper);
 
-  const V8WrapperInstantiationScope scope(script_state, type);
-  if (UNLIKELY(scope.AccessCheckFailed())) {
-    // V8WrapperInstantiationScope's ctor throws an exception if
-    // AccessCheckFailed.
-    return v8::MaybeLocal<v8::Object>();
-  }
+  const V8WrapperInstantiationScope scope(script_state);
 
   v8::Local<v8::Object> wrapper;
   auto* per_context_data = V8PerContextData::From(scope.GetContext());
@@ -102,8 +96,7 @@ bool V8DOMWrapper::HasInternalFieldsSet(v8::Local<v8::Value> value) {
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return false;
 
-  // The untyped wrappable can either be ScriptWrappable or CustomWrappable.
-  const void* untrused_wrappable = ToUntypedWrappable(object);
+  const ScriptWrappable* untrused_wrappable = ToScriptWrappable(object);
   const WrapperTypeInfo* untrusted_wrapper_type_info =
       ToWrapperTypeInfo(object);
   return untrused_wrappable && untrusted_wrapper_type_info &&

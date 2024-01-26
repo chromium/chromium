@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Powiadamiaj mnie</translation>
 <translation id="4133493477912226187">Liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="4212246570487010370">Przeglądaj dalej</translation>
+<translation id="427987768447457592">Nowa grupa kart</translation>
 <translation id="4648718555153979859">Tutaj są zgrupowane Twoje karty</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Ukryj siatkę pełnego ekranu</translation>
 <translation id="5076161749301278626">Wyświetlić opinie o sklepie?</translation>
 <translation id="5082793167783849073">Możesz szybko porównać strony, tworząc ich grupę. Aby to zrobić, naciśnij i przytrzymaj link.</translation>
+<translation id="5161254044473106830">Tytuł jest wymagany</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Masz <ph name="TABS_COUNT_ONE" /> ostatnio nieużywaną kartę}few{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywane karty}many{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywanych kart}other{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywanej karty}}</translation>
 <translation id="5339733443032484186">Ostatnia karta</translation>
 <translation id="5490235265819901748">Grupa kart została rozwinięta</translation>

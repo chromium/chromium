@@ -90,6 +90,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Fortsätt att använda Chromium</translation>
 <translation id="259935314519650377">Det gick inte att cachelagra det nedladdade installationsprogrammet. Fel: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium körs snabbare och funktioner som använder JavaScript bör fungera som de ska (rekommenderas)</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="268602741124540128">Välkommen till Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 är Chromiums JavaScript- och WebAssembly-motor som används för att förbättra webbplatsens prestanda</translation>
 <translation id="3283186697780795848">Chromium-version <ph name="PRODUCT_VERSION" /> har installerats</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
@@ -142,7 +144,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3533435340678213462">För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chromium ska inkludera.</translation>
 <translation id="3567254597502212821">Webbhistoriken, där webbplatser som du besökt i Chromium på den här enheten registreras.</translation>
 <translation id="3593091352817399191">Ett annat konto är redan inloggat. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chromium.</translation>
-<translation id="363078681319665186">Du behöver macOS 10.15 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 10.13.</translation>
 <translation id="3639635944603682591">Den här personens webbläsardata tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill återställa data.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om.}=1{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Inkognitofönstret öppnas inte igen.}other{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="3651803019964686660">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
@@ -159,7 +160,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Få hjälp med Chromium OS</translation>
 <translation id="3871664619793219264">Få saker i webbläsaren Chromium från <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Du behöver macOS 10.15 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 10.14.</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="3889543394854987837">Öppna Chromium genom att klicka på ditt namn och börja surfa.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> är redan inloggad på den här Chromium-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chromium.</translation>
@@ -220,6 +220,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4814736265800133385">Använd Chromium utan konto</translation>
 <translation id="4888717733111232871">Regel som tillåter inkommande mDNS-trafik för Chromium.</translation>
 <translation id="4893347770495441059">Starta om för att uppdatera &amp;Chromium</translation>
+<translation id="4942295735032723435">Du behöver macOS 11 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium körs i bakgrundsläge.</translation>
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
@@ -248,7 +249,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
 <translation id="5643865575100044307">Radera alltid webbplatsdata från enheten när du stänger Chromium</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
-<translation id="5675598751761067447">Den här filen kan vara farlig<ph name="LINE_BREAK" />Chromium kan kontrollera den här nedladdningen åt dig om du anger lösenordet (lösenordet lämnar inte enheten)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
@@ -409,6 +409,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8105840573057009683">Du behöver ge Chromium platsbehörighet för den här webbplatsen</translation>
 <translation id="8133124826068723441">Det gick inte att synkronisera data med Chromium OS eftersom synkronisering inte är tillgängligt för domänen.</translation>
 <translation id="813913629614996137">Initierar …</translation>
+<translation id="8166782796394721554">Aktivera ytterligare skydd i Chromiums JavaScript- och WebAssembly-motor</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
 <translation id="8213374284266571500">Den här filen blockerades av Chromium eftersom den här typen av filer är farliga</translation>
 <translation id="8248265253516264921">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>

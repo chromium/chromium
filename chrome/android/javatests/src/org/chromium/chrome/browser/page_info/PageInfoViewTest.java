@@ -57,6 +57,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -76,8 +78,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -219,12 +219,12 @@ public class PageInfoViewTest {
     }
 
     private void loadUrlAndOpenPageInfoWithPermission(
-            String url, @ContentSettingsType int highlightedPermission) {
+            String url, @ContentSettingsType.EnumType int highlightedPermission) {
         sActivityTestRule.loadUrl(url);
         openPageInfo(highlightedPermission);
     }
 
-    private void openPageInfo(@ContentSettingsType int highlightedPermission) {
+    private void openPageInfo(@ContentSettingsType.EnumType int highlightedPermission) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -371,7 +371,7 @@ public class PageInfoViewTest {
     }
 
     private List<ContentSettingException> getNonWildcardContentSettingExceptions(
-            @ContentSettingsType int type) {
+            @ContentSettingsType.EnumType int type) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     List<ContentSettingException> exceptions =

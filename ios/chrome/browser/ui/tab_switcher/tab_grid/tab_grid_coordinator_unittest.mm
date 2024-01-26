@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -197,7 +198,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
   // Model for bookmarks.
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;

@@ -31,11 +31,6 @@ class AshMergeSessionLoaderThrottle final : public blink::URLLoaderThrottle {
 
   ~AshMergeSessionLoaderThrottle() override;
 
- private:
-  bool MaybeDeferForMergeSession(
-      const GURL& url,
-      DelayedCallbackGroup::Callback resume_callback);
-
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
@@ -46,6 +41,11 @@ class AshMergeSessionLoaderThrottle final : public blink::URLLoaderThrottle {
       std::vector<std::string>* to_be_removed_headers,
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
+
+ private:
+  bool MaybeDeferForMergeSession(
+      const GURL& url,
+      DelayedCallbackGroup::Callback resume_callback);
   void DetachFromCurrentSequence() override;
   void ResumeLoader(DelayedCallbackGroup::RunReason run_reason);
 

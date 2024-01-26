@@ -3861,7 +3861,9 @@ class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {
 };
 
 // Test SecurityDetails reports when Encrypted ClientHello was negotiated.
-IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolECHTest, SecurityDetailsECH) {
+// Flaky: https://crbug.com/1521189
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolECHTest,
+                       DISABLED_SecurityDetailsECH) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GetURL("/title1.html"),
                                              1);
 

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/tab_matcher.h"
 
 class ChromeBrowserState;
@@ -17,7 +18,7 @@ class TabMatcherImpl : public TabMatcher {
                         const AutocompleteInput* input) const override;
 
  private:
-  ChromeBrowserState* browser_state_{};
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_

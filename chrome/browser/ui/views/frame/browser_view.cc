@@ -43,7 +43,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/native_window_notification_source.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -207,7 +206,6 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -332,11 +330,6 @@
 // To avoid conflicts with the macro from the Windows SDK...
 #undef LoadAccelerators
 #endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -818,13 +811,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      if (features::IsPdfOcrEnabled()) {
-        screen_ai::PdfOcrControllerFactory::GetForProfile(
-            browser_view_->GetProfile());
-      }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
   }
 
@@ -1553,7 +1539,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     loading_animation_tracker_.emplace(
         GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothness(
+    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
     // Loads are happening, and the timer isn't running, so start it.
@@ -1854,14 +1840,36 @@ bool BrowserView::IsMinimized() const {
 }
 
 void BrowserView::Maximize() {
+  if (!CanMaximize()) {
+    if (content::WebContents* web_contents = GetActiveWebContents();
+        !GetCanResizeFromWebAPI().value_or(true)) {
+      web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf("Maximizing window has been blocked by "
+                             "window.setResizable API."));
+    }
+    return;
+  }
   frame_->Maximize();
 }
 
 void BrowserView::Minimize() {
+  if (!CanMinimize()) {
+    return;
+  }
   frame_->Minimize();
 }
 
 void BrowserView::Restore() {
+  if (content::WebContents* web_contents = GetActiveWebContents();
+      IsMaximized() && !GetCanResizeFromWebAPI().value_or(true)) {
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf("Restoring maximized window has been blocked by "
+                           "window.setResizable API."));
+    return;
+  }
+
   frame_->Restore();
 }
 
@@ -2683,6 +2691,9 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
 }
 
 void BrowserView::MaybeShowExperimentalAIIPH() {
+  if (!browser()->is_type_normal()) {
+    return;
+  }
   auto* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser_->profile());
   if (opt_guide_service && opt_guide_service->ShouldShowExperimentalAIPromo()) {
@@ -5257,7 +5268,7 @@ void BrowserView::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool BrowserView::CanTriggerOnMouse() const {
+bool BrowserView::CanTriggerOnMousePointer() const {
   // Returning false here can prevent the exclusive access bubble from showing
   // in certain situations in macOS immersive fullscreen. This check only
   // exists for Chrome running on ChromeOS in a Public Session.

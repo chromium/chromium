@@ -96,7 +96,7 @@ void VisualQuerySuggestionsService::UnloadModelFile() {
     // background thread.
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
-    model_file_ = absl::nullopt;
+    model_file_ = std::nullopt;
   }
 }
 
@@ -133,7 +133,7 @@ void VisualQuerySuggestionsService::OnModelUpdated(
     return;
   }
 
-  const absl::optional<optimization_guide::proto::Any>& metadata =
+  const std::optional<optimization_guide::proto::Any>& metadata =
       model_info->GetModelMetadata();
 
   if (metadata.has_value()) {

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -17,6 +18,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_counter.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
@@ -27,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -42,6 +45,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
@@ -126,10 +130,10 @@ class PasswordCounterDelegateBridge
 @implementation FormInputAccessoryMediator {
   // The WebStateList this instance is observing in order to update the
   // active WebState.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 
   // Personal data manager to be observed.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
@@ -405,6 +409,11 @@ class PasswordCounterDelegateBridge
 - (void)formInputAccessoryViewDidTapCloseButton:
     (FormInputAccessoryView*)sender {
   [self.formNavigationHandler closeKeyboardWithButtonPress];
+}
+
+- (void)formInputAccessoryViewDidTapManualFillButton:
+    (FormInputAccessoryView*)sender {
+  [self.consumer manualFillButtonPressed:sender.manualFillButton];
 }
 
 - (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:

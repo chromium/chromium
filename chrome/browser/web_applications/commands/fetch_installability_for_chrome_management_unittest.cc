@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
@@ -40,7 +40,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   const GURL kWebAppScope = GURL("https://example.com/path/");
   const std::string kWebAppName = "Example App";
   const webapps::AppId kWebAppId =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kWebAppUrl);
 
   FetchInstallabilityForChromeManagementTest() = default;
   ~FetchInstallabilityForChromeManagementTest() override = default;
@@ -64,7 +64,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
 
   struct FetchResult {
     InstallableCheckResult result = InstallableCheckResult::kInstallable;
-    absl::optional<webapps::AppId> app_id = absl::nullopt;
+    std::optional<webapps::AppId> app_id = std::nullopt;
   };
 
   FetchResult ScheduleCommandAndWait(
@@ -81,7 +81,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
             std::move(data_retriever),
             base::BindLambdaForTesting(
                 [&](InstallableCheckResult result,
-                    absl::optional<webapps::AppId> app_id) {
+                    std::optional<webapps::AppId> app_id) {
                   output.result = result;
                   output.app_id = app_id;
                   run_loop.Quit();
@@ -110,7 +110,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, UrlLoadError) {
                              std::move(url_loader), std::move(data_retriever));
   EXPECT_THAT(result, AllOf(Field(&FetchResult::result,
                                   Eq(InstallableCheckResult::kNotInstallable)),
-                            Field(&FetchResult::app_id, Eq(absl::nullopt))));
+                            Field(&FetchResult::app_id, Eq(std::nullopt))));
 }
 
 TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
@@ -128,7 +128,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
                              std::move(url_loader), std::move(data_retriever));
   EXPECT_THAT(result, AllOf(Field(&FetchResult::result,
                                   Eq(InstallableCheckResult::kNotInstallable)),
-                            Field(&FetchResult::app_id, Eq(absl::nullopt))));
+                            Field(&FetchResult::app_id, Eq(std::nullopt))));
 }
 
 TEST_F(FetchInstallabilityForChromeManagementTest, Installable) {

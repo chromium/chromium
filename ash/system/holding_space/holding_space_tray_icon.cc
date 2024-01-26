@@ -121,7 +121,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
 
   void Start() {
     animation_throughput_tracker_.Start(
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             holding_space_metrics::RecordPodResizeAnimationSmoothness)));
 
     animation_.Show();

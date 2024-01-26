@@ -28,4 +28,7 @@ BASE_DECLARE_FEATURE(kOmniboxSuggestionsRTLImprovements);
 // disabled, no icon is shown for secure pages.
 BASE_DECLARE_FEATURE(kOmniboxLockIconEnabled);
 
+// Feature flag to enable the use of content configuration for the popup rows.
+BASE_DECLARE_FEATURE(kOmniboxPopupRowContentConfiguration);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

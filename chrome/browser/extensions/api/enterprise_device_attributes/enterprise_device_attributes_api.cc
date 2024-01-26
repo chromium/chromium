@@ -9,9 +9,10 @@
 #include "base/functional/bind.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #else
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -38,7 +39,7 @@ const char kUnsupportedProfile[] = "Not available for this profile.";
 // extension so they are considered recoverable. Returns an error message on
 // error, or nullopt on success. |context| is the browser context in which the
 // extension is hosted.
-absl::optional<std::string> ValidateCrosapi(content::BrowserContext* context) {
+std::optional<std::string> ValidateCrosapi(content::BrowserContext* context) {
   if (!chromeos::LacrosService::Get()
            ->IsAvailable<crosapi::mojom::DeviceAttributes>()) {
     return kUnsupportedByAsh;
@@ -51,7 +52,7 @@ absl::optional<std::string> ValidateCrosapi(content::BrowserContext* context) {
   if (!Profile::FromBrowserContext(context)->IsMainProfile())
     return kUnsupportedProfile;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -77,7 +78,7 @@ void EnterpriseDeviceAttributesBase::OnCrosapiResult(
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(browser_context());
+  std::optional<std::string> error = ValidateCrosapi(browser_context());
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -96,7 +97,7 @@ EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(browser_context());
+  std::optional<std::string> error = ValidateCrosapi(browser_context());
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -115,7 +116,7 @@ EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(browser_context());
+  std::optional<std::string> error = ValidateCrosapi(browser_context());
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -134,7 +135,7 @@ EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(browser_context());
+  std::optional<std::string> error = ValidateCrosapi(browser_context());
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -154,7 +155,7 @@ EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(browser_context());
+  std::optional<std::string> error = ValidateCrosapi(browser_context());
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }

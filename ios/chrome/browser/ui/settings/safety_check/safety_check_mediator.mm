@@ -57,7 +57,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
@@ -862,7 +862,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
             }
           });
     } else {
-      self.passwordCheckManager->StartPasswordCheck();
+      self.passwordCheckManager->StartPasswordCheck(
+          password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
     }
     // Want to show the loading wheel momentarily.
     dispatch_after(
@@ -986,8 +987,6 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     return;
   }
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
   if (details.is_up_to_date) {
     [self possiblyDelayReconfigureUpdateCheckItemWithState:
               UpdateCheckRowStateUpToDate];
@@ -1028,7 +1027,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.
-    [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];
+    prefService->SetTime(kLastInfobarDisplayTimeKey, base::Time::Now());
   }
 }
 

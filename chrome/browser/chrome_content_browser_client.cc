@@ -251,6 +251,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/payments/content/payment_credential_factory.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
@@ -495,6 +496,10 @@
 #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
@@ -722,7 +727,6 @@
 #endif  // defined(_WINDOWS_)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -1130,7 +1134,7 @@ void LaunchURL(
     bool is_in_fenced_frame_tree,
     network::mojom::WebSandboxFlags sandbox_flags,
     bool has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document
 #if BUILDFLAG(IS_ANDROID)
     ,
@@ -1456,8 +1460,6 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kNativeClientForceAllowed, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed, true);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOutOfProcessSystemDnsResolutionEnabled,
                                 true);
@@ -2106,11 +2108,11 @@ bool ChromeContentBrowserClient::CanCommitURL(
 }
 
 void ChromeContentBrowserClient::OverrideNavigationParams(
-    absl::optional<GURL> source_process_site_url,
+    std::optional<GURL> source_process_site_url,
     ui::PageTransition* transition,
     bool* is_renderer_initiated,
     content::Referrer* referrer,
-    absl::optional<url::Origin>* initiator_origin) {
+    std::optional<url::Origin>* initiator_origin) {
   DCHECK(transition);
   DCHECK(is_renderer_initiated);
   DCHECK(referrer);
@@ -2127,7 +2129,7 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
     *transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
     *is_renderer_initiated = false;
     *referrer = content::Referrer();
-    *initiator_origin = absl::nullopt;
+    *initiator_origin = std::nullopt;
   }
 }
 
@@ -2208,7 +2210,7 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 #endif
 }
 
-absl::optional<blink::ParsedPermissionsPolicy>
+std::optional<blink::ParsedPermissionsPolicy>
 ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
@@ -2216,7 +2218,7 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
   // Extensions are exempt from manifest policy enforcement and retain the
   // default frame permissions policy.
   if (app_origin.scheme() == extensions::kExtensionScheme) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -2835,16 +2837,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (process_type != switches::kZygoteProcess) {
-    DCHECK(g_browser_process);
-    PrefService* local_state = g_browser_process->local_state();
-    DCHECK(local_state);
-    if (!local_state->GetBoolean(
-            policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed)) {
-      command_line->AppendSwitch(
-          ::switches::kDisableUseSharedImagesForPepperVideo);
-    }
-  }
 }
 
 std::string
@@ -2895,7 +2887,7 @@ content::AllowServiceWorkerResult
 ChromeContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
   DCHECK(context);
@@ -2958,7 +2950,7 @@ bool ChromeContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
 bool ChromeContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
     content::BrowserContext* context,
@@ -3331,13 +3323,14 @@ bool ChromeContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
   bool allowed = privacy_sandbox_settings->IsSharedStorageAllowed(
-      top_frame_origin, accessing_origin, rfh);
+      top_frame_origin, accessing_origin, out_debug_message, rfh);
   if (rfh) {
     content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
         rfh, blink::StorageKey::CreateFirstParty(accessing_origin),
@@ -3349,13 +3342,14 @@ bool ChromeContentBrowserClient::IsSharedStorageAllowed(
 bool ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
   return privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
-      top_frame_origin, accessing_origin);
+      top_frame_origin, accessing_origin, out_debug_message);
 }
 
 bool ChromeContentBrowserClient::IsPrivateAggregationAllowed(
@@ -4136,7 +4130,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             features::kNetworkQualityEstimatorWebHoldback,
             "web_effective_connection_type_override");
 
-    absl::optional<net::EffectiveConnectionType> effective_connection_type =
+    std::optional<net::EffectiveConnectionType> effective_connection_type =
         net::GetEffectiveConnectionTypeForName(effective_connection_type_param);
     DCHECK(effective_connection_type_param.empty() ||
            effective_connection_type);
@@ -4181,7 +4175,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
-  absl::optional<ui::CaptionStyle> style =
+  std::optional<ui::CaptionStyle> style =
       captions::GetCaptionStyleFromUserSettings(prefs,
                                                 true /* record_metrics */);
   if (style) {
@@ -4357,11 +4351,11 @@ base::FilePath ChromeContentBrowserClient::GetFirstPartySetsDirectory() {
   return user_data_dir;
 }
 
-absl::optional<base::FilePath>
+std::optional<base::FilePath>
 ChromeContentBrowserClient::GetLocalTracesDirectory() {
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_LOCAL_TRACES, &user_data_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(!user_data_dir.empty());
   return user_data_dir;
@@ -4787,7 +4781,7 @@ bool ChromeContentBrowserClient::IsUtilityCetCompatible(
 }
 
 void ChromeContentBrowserClient::SessionEnding(
-    absl::optional<DWORD> control_type) {
+    std::optional<DWORD> control_type) {
   chrome::SessionEnding();
 }
 
@@ -5229,6 +5223,11 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                    &throttles);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeAddThrottle(PreviewNavigationThrottle::MaybeCreateThrottleFor(handle),
+                   &throttles);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return throttles;
 }
 
@@ -5333,6 +5332,29 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
   return expiration_times;
 }
 
+std::optional<base::TimeDelta>
+ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
+    const GURL& site_url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDeferredSpareRendererForTopChromeWebUI)) {
+    return std::nullopt;
+  }
+
+  if (!IsTopChromeWebUIURL(site_url)) {
+    return std::nullopt;
+  }
+
+  // Prevent new spare renderer creation until page loading completes, signaled
+  // by WebContentsImpl::DidStopLoading. When enabled, delay spare renderer
+  // creation indefinitely by returning the maximum TimeDelta value.
+  if (features::kSpareRendererWarmupDelayUntilPageStopsLoading.Get()) {
+    return base::TimeDelta::Max();
+  }
+
+  // Otherwise, schedule new spare renderer creation after a predefined delay.
+  return features::kSpareRendererWarmupDelay.Get();
+}
+
 content::TracingDelegate* ChromeContentBrowserClient::GetTracingDelegate() {
   return new ChromeTracingDelegate();
 }
@@ -5429,7 +5451,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     int frame_tree_node_id,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     Profile* profile) {
   bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(
       request.url, *profile->GetPrefs());
@@ -5470,7 +5492,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     safe_browsing::AsyncCheckTracker* async_check_tracker =
         GetAsyncCheckTracker(wc_getter, is_enterprise_lookup_enabled,
                              is_consumer_lookup_enabled,
-                             hash_realtime_selection);
+                             hash_realtime_selection, frame_tree_node_id);
 
     return safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindRepeating(
@@ -5568,7 +5590,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id,
-    absl::optional<int64_t> navigation_id) {
+    std::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
@@ -5664,7 +5686,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (auto safe_browsing_throttle = MaybeCreateSafeBrowsingURLLoaderThrottle(
           request, browser_context, wc_getter, frame_tree_node_id,
-          /*navigation_id=*/absl::nullopt, profile);
+          /*navigation_id=*/std::nullopt, profile);
       safe_browsing_throttle) {
     result.push_back(std::move(safe_browsing_throttle));
   }
@@ -5999,7 +6021,7 @@ void ChromeContentBrowserClient::
     RegisterNonNetworkSubresourceURLLoaderFactories(
         int render_process_id,
         int render_frame_id,
-        const absl::optional<url::Origin>& request_initiator_origin,
+        const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
     !BUILDFLAG(IS_ANDROID)
@@ -6059,7 +6081,7 @@ void ChromeContentBrowserClient::
                          render_process_id, render_frame_id));
 
   const extensions::Extension* extension = nullptr;
-  if (request_initiator_origin != absl::nullopt) {
+  if (request_initiator_origin != std::nullopt) {
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(
             Profile::FromBrowserContext(browser_context));
@@ -6093,7 +6115,7 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     const url::Origin& request_initiator,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -6217,7 +6239,7 @@ void ChromeContentBrowserClient::CreateWebSocket(
     WebSocketFactory factory,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<std::string>& user_agent,
+    const std::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -6318,7 +6340,7 @@ void ChromeContentBrowserClient::MaybeInterceptWebTransport(
   // id and routing id.
   auto* render_process_host = content::RenderProcessHost::FromID(process_id);
   if (!render_process_host) {
-    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+    std::move(callback).Run(std::move(handshake_client), std::nullopt);
     return;
   }
   content::BrowserContext* browser_context =
@@ -6329,14 +6351,14 @@ void ChromeContentBrowserClient::MaybeInterceptWebTransport(
   // NOTE: Some unit test environments do not initialize BrowserContextKeyedAPI
   // factories like WebRequestAPI.
   if (!web_request_api) {
-    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+    std::move(callback).Run(std::move(handshake_client), std::nullopt);
     return;
   }
   web_request_api->ProxyWebTransport(
       *render_process_host, frame_routing_id, url, initiator_origin,
       std::move(handshake_client), std::move(callback));
 #else
-  std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+  std::move(callback).Run(std::move(handshake_client), std::nullopt);
 #endif
 }
 
@@ -6579,6 +6601,12 @@ ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
 }
 #endif
 
+void ChromeContentBrowserClient::CreatePaymentCredential(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+  payments::CreatePaymentCredential(render_frame_host, std::move(receiver));
+}
+
 std::unique_ptr<net::ClientCertStore>
 ChromeContentBrowserClient::CreateClientCertStore(
     content::BrowserContext* browser_context) {
@@ -6656,7 +6684,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::RenderFrameHost* initiator_document,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -6821,8 +6849,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate(
-    content::BrowserContext* browser_context) {
+content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate() {
   if (!smart_card_delegate_) {
     smart_card_delegate_ = std::make_unique<ChromeOsSmartCardDelegate>();
   }
@@ -6953,15 +6980,26 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     bool is_enterprise_lookup_enabled,
     bool is_consumer_lookup_enabled,
     safe_browsing::hash_realtime_utils::HashRealTimeSelection
-        hash_realtime_selection) {
+        hash_realtime_selection,
+    int frame_tree_node_id) {
   content::WebContents* contents = wc_getter.Run();
   if (!contents || !safe_browsing_service_ ||
       !safe_browsing_service_->ui_manager()) {
     return nullptr;
   }
-  if (!is_enterprise_lookup_enabled && !is_consumer_lookup_enabled &&
+  if (is_enterprise_lookup_enabled) {
+    // No async checks for enterprise real-time checks. URL filtering rules
+    // need to be applied before the navigation is completed.
+    return nullptr;
+  }
+  if (!is_consumer_lookup_enabled &&
       hash_realtime_selection ==
           safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {
+    return nullptr;
+  }
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          contents) ||
+      contents->IsPrerenderedFrame(frame_tree_node_id)) {
     return nullptr;
   }
   if (!base::FeatureList::IsEnabled(
@@ -7079,15 +7117,15 @@ blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
       g_browser_process->local_state());
 }
 
-absl::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {
+std::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {
   // This icon is available on Android, but adds 19KiB to the APK. Since it
   // isn't used on Android we exclude it to avoid bloat.
 #if !BUILDFLAG(IS_ANDROID)
-  return absl::optional<gfx::ImageSkia>(
+  return std::optional<gfx::ImageSkia>(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PRODUCT_LOGO_256));
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
@@ -7140,12 +7178,10 @@ ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
     ax_mode.set_mode(ui::AXMode::kLabelImages, true);
   }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled() &&
-      (accessibility_state_utils::IsScreenReaderEnabled() ||
-       (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-        accessibility_state_utils::IsSelectToSpeakEnabled()))) {
-    // PdfOcrController will be created when the user turns on a screen reader
-    // before or even after starting the browser.
+  if (features::IsPdfOcrEnabled()) {
+    // PdfOcrController will be enabled when the user turns on a screen reader
+    // or any other accessibility feature that needs it; before or even after
+    // starting the browser.
     auto* pdf_ocr_controller =
         screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
     if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
@@ -7326,9 +7362,9 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
 base::OnceClosure ChromeContentBrowserClient::FetchRemoteSms(
     content::WebContents* web_contents,
     const std::vector<url::Origin>& origin_list,
-    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
-                            absl::optional<std::string>,
-                            absl::optional<content::SmsFetchFailureType>)>
+    base::OnceCallback<void(std::optional<std::vector<url::Origin>>,
+                            std::optional<std::string>,
+                            std::optional<content::SmsFetchFailureType>)>
         callback) {
   return ::FetchRemoteSms(web_contents, origin_list, std::move(callback));
 }
@@ -7986,7 +8022,7 @@ bool ChromeContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
     content::BrowserContext& browser_context,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const net::CookieSettingOverrides overrides) {
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
@@ -8091,10 +8127,9 @@ ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 }
 
 void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
-    content::WebContents& web_contents,
+    content::BrowserContext& browser_context,
     const GURL& navigation_url) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(&browser_context);
   CHECK(profile);
 
   // `loading_predictor` can be nullptr if the profile `IsOffTheRecord`.

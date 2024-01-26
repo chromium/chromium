@@ -146,6 +146,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1792959175193046959">Altere o local padrão de download a qualquer momento</translation>
 <translation id="1796666869097395659">Minimize a guia para voltar a ela mais tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1810845389119482123">Configuração de sincronização inicial não concluída</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Encontrar na página</translation>
@@ -189,6 +190,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2056878612599315956">Site pausado</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Falha em 1 download}one{Falha em # download}other{Falha em # downloads}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2079545284768500474">Desfazer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Mostrando a exibição compacta</translation>
 <translation id="2093731487903423814">nos últimos 15 minutos</translation>
@@ -218,7 +220,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2239812875700136898">Controle suas matérias com o botão "Opções do Discover"</translation>
-<translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2247789808226901522">Cartão vencido</translation>
 <translation id="2248941474044011069">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para mostrar anúncios</translation>
@@ -233,7 +234,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2318045970523081853">Toque para ligar</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
-<translation id="2327226657832576859">Abrir PDFs automaticamente?</translation>
 <translation id="2328985652426384049">Não consigo fazer login</translation>
 <translation id="2341410551640223969">Não foi possível instalar o app <ph name="WEBAPK_NAME" /></translation>
 <translation id="2349710944427398404">Total de dados utilizados pelo Chrome, incluindo contas, favoritos e configurações salvas</translation>
@@ -316,6 +316,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">falha</translation>
 <translation id="2781151931089541271">Um segundo restante</translation>
+<translation id="2789486458103222910">Ok</translation>
 <translation id="2800066122460699237">A guia <ph name="TAB_TITLE" /> será fechada</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">O menu do card do feed está aberto pela metade</translation>
@@ -354,7 +355,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2946420957526726953">Atualizando o Chrome para se conectar a outros dispositivos</translation>
 <translation id="2951071800649516099">Adicionar páginas à lista de leitura para mais tarde</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
-<translation id="2961210776189273067">Título</translation>
 <translation id="296370266220139811">Ganhe tempo e digite menos</translation>
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
@@ -600,6 +600,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4307992518367153382">Básicas</translation>
+<translation id="4311652497846705514">Abrir PDF?</translation>
 <translation id="4320177379694898372">Sem conexão com a Internet</translation>
 <translation id="433213510553688132">Seguindo…</translation>
 <translation id="4335835283689002019">O Navegação segura está desativado</translation>
@@ -640,7 +641,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="4523326818319942067">na última hora</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
-<translation id="4541505619120536051">Sempre abrir</translation>
 <translation id="4543131175509360848">Nenhuma página de chaves de acesso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}other{<ph name="TAB_COUNT_MANY" /> guias e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}}</translation>
 <translation id="4554077758708533499">Conectado com um cabo USB</translation>
@@ -688,7 +688,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4766313118839197559">As senhas são salvas no Gerenciador de senhas neste dispositivo</translation>
 <translation id="4766678251456904326">Adicionar uma conta ao dispositivo</translation>
-<translation id="4767947714785277816">Estamos lançando um novo recurso de privacidade de anúncios chamado "medição de anúncios". O Chrome compartilha apenas informações muito limitadas entre sites e apps, como o momento em que um anúncio foi mostrado a você, para ajudar a avaliar a performance dos anúncios.</translation>
+<translation id="4767947714785277816">Estamos lançando um novo recurso de privacidade chamado "medição de anúncios". O Chrome compartilha apenas informações muito limitadas entre sites e apps, como o momento em que um anúncio foi mostrado a você, para ajudar a avaliar a performance deles.</translation>
 <translation id="4769095993849849966">Novo nome do arquivo</translation>
 <translation id="4775646243557794597">Período excluído – <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Nada para mostrar no momento</translation>
@@ -832,7 +832,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5486841595534124508">Logotipo do Aviso de privacidade para o Hub de insights da página que redireciona para a página "Minha atividade".</translation>
 <translation id="5487521232677179737">Remover dados</translation>
 <translation id="5492637351392383067">Criptografia no dispositivo</translation>
-<translation id="5509866835115085009">O Chrome pode abrir um PDF automaticamente quando você faz o download dele.</translation>
 <translation id="5514904542973294328">Opção desativada pelo administrador deste dispositivo</translation>
 <translation id="5515439363601853141">Desbloqueie para ver sua senha</translation>
 <translation id="5517095782334947753">Você tem favoritos, histórico, senhas e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
@@ -926,6 +925,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5966233851250124270">O Chrome vai lembrar sua escolha</translation>
+<translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5995726099713306770">Fazer o download da página novamente?</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
@@ -1129,7 +1129,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="694267552845942083">No momento, você está personalizando suas configurações de sincronização. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6955535239952325894">Esta configuração está desativada em navegadores gerenciados</translation>
-<translation id="6958103823951858863">Abrir o PDF automaticamente após o download</translation>
 <translation id="6963766334940102469">Excluir favoritos</translation>
 <translation id="696447261358045621">Sair do modo de navegação anônima</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1304,6 +1303,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os arquivos: 1 arquivo na lista}one{Todos os arquivos: # arquivo na lista}other{Todos os arquivos: # arquivos na lista}}</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
+<translation id="7821130663268546430">Todas as guias abertas ficam no seletor de guias</translation>
 <translation id="7822705602465980873">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="78270725016672455">O computador quer registrar este dispositivo para fazer login em um site</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
@@ -1331,6 +1331,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa confirmar sua identidade</translation>
 <translation id="7947953824732555851">Aceitar/fazer login</translation>
+<translation id="7951102827450076904">Sempre abrir PDFs baixados</translation>
 <translation id="7957413488482743710">O cartão virtual oculta o real para proteger você contra possíveis tentativas de fraude. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botão "Voltar" dos insights da página</translation>
 <translation id="7961926449547174351">Você desativou o acesso ao armazenamento. Acesse as Configurações para reativá-lo.</translation>

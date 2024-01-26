@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">အကြောင်းကြားချက် ရယူရန်</translation>
 <translation id="4133493477912226187">တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
+<translation id="427987768447457592">တဘ်အုပ်စုအသစ်</translation>
 <translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
+<translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုရှိသည်}other{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုရှိသည်}}</translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -118,7 +119,11 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void ScheduleNextStep(base::TimeDelta delay);
   void CancelScheduledTasks();
 
-  enum class ContinueReason { kTimeout, kInvalidation };
+  enum class ContinueReason {
+    kTimeout,
+    kSubscribedToInvalidation,
+    kInvalidationReceived
+  };
   void OnShouldContinue(ContinueReason reason);
 
   // Registers for |invalidation_topic_| that allows to receive notification
@@ -128,6 +133,9 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   // or not). Should not be called when the worker is destroyed, but will be
   // deserialized back later.
   void UnregisterFromInvalidationTopic();
+
+  // Callback from invalidations system.
+  void OnInvalidationEvent(InvalidationEvent invalidation_event);
 
   // If it is called with kSucceed or kFailed, it will call the |callback_|. The
   // worker can be destroyed in callback and should not use any member fields

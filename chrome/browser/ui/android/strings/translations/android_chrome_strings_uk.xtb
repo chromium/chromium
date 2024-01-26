@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Будь-коли змінюйте папку для завантажень за умовчанням</translation>
 <translation id="1796666869097395659">Згорнути вкладку, щоб повернутися на неї пізніше</translation>
 <translation id="1807246157184219062">Світла</translation>
+<translation id="1807709131360304325">Відкрити нове вікно</translation>
 <translation id="1810845389119482123">Початкове налаштування синхронізації не завершено</translation>
 <translation id="1812027881030482584">Не вдається ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /> за допомогою сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1829244130665387512">Знайти на сторінці</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">Роботу сайту призупинено</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Не вдалося завантажити 1 файл}one{Не вдалося завантажити # файл}few{Не вдалося завантажити # файли}many{Не вдалося завантажити # файлів}other{Не вдалося завантажити # файлу}}</translation>
 <translation id="2067805253194386918">SMS</translation>
+<translation id="2079545284768500474">Відмінити</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Показано компактний перегляд</translation>
 <translation id="2093731487903423814">останні 15 хвилин</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">Історія додатків і веб-пошуку</translation>
 <translation id="2234827758954819389">Посібник із конфіденційності</translation>
 <translation id="2239812875700136898">Контролюйте новини за допомогою кнопки "Налаштування рекомендацій"</translation>
-<translation id="2241634353105152135">Лише цього разу</translation>
 <translation id="2247789808226901522">Строк дії картки закінчився</translation>
 <translation id="2248941474044011069">Ваші паролі шифруються на пристрої, а потім зберігаються в Менеджері паролів Google</translation>
 <translation id="2249635629516220541">Керуйте інформацією, яку сайти використовують для показу реклами</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
-<translation id="2327226657832576859">Відкривати файли PDF автоматично?</translation>
 <translation id="2328985652426384049">Не вдається ввійти</translation>
 <translation id="2341410551640223969">Не вдалося встановити додаток <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
 <translation id="2781151931089541271">Залишилась 1 с</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню картки зі стрічки відкрито на половину висоти</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">Chrome оновлюється, щоб підключитися до інших пристроїв</translation>
 <translation id="2951071800649516099">Додавайте сторінки в список читання, щоб переглядати їх пізніше</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана сторінка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана сторінка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитані сторінки}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаних сторінок}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаної сторінки}}</translation>
-<translation id="2961210776189273067">Форма звертання</translation>
 <translation id="296370266220139811">Не вводьте URL-адреси</translation>
 <translation id="2977350910003566746">Сортування за датою останнього відкриття</translation>
 <translation id="297771753501244313">Востаннє відкриті</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4307992518367153382">Основні</translation>
+<translation id="4311652497846705514">Відкрити файл PDF?</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="433213510553688132">Додавання до підписок…</translation>
 <translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">останню годину</translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4532845899244822526">Вибрати папку</translation>
-<translation id="4541505619120536051">Завжди відкривати</translation>
 <translation id="4543131175509360848">Екран "Немає ключів доступу"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
 <translation id="4554077758708533499">Підключено за допомогою кабелю USB</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">Логотип Примітки про конфіденційність для центру статистики сторінки, який переспрямовує на сторінку "Мої дії".</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
 <translation id="5492637351392383067">Шифрування на пристрої</translation>
-<translation id="5509866835115085009">Chrome може автоматично відкривати файли PDF, які ви завантажуєте.</translation>
 <translation id="5514904542973294328">Вимкнено адміністратором пристрою</translation>
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
 <translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5964869237734432770">Не показувати описи</translation>
 <translation id="5966233851250124270">Chrome запам’ятає ваш вибір</translation>
+<translation id="5977976211062815271">На цьому пристрої</translation>
 <translation id="5979084224081478209">Перевірити паролі</translation>
 <translation id="5995726099713306770">Завантажити сторінку знову?</translation>
 <translation id="6000066717592683814">Залишити Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">Відкрити за допомогою…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Усі файли (1 файл у списку)}one{Усі файли (# файл у списку)}few{Усі файли (# файли в списку)}many{Усі файли (# файлів у списку)}other{Усі файли (# файлу в списку)}}</translation>
 <translation id="7815484226266492798">Довгий знімок екрана</translation>
+<translation id="7821130663268546430">Усі відкриті вкладки можна переглянути в перемикачі</translation>
 <translation id="7822705602465980873">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="78270725016672455">Ваш комп’ютер пропонує зареєструвати цей пристрій для входу на сайті</translation>
 <translation id="7844171778363018843">Дані не синхронізуються</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342">Застаріла версія <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Для синхронізації потрібно підтвердити вашу особу</translation>
 <translation id="7947953824732555851">Прийняти й увійти</translation>
+<translation id="7951102827450076904">Завжди відкривати завантажені файли PDF</translation>
 <translation id="7957413488482743710">Для захисту від потенційного шахрайства замість справжньої картки можна використовувати віртуальну. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Кнопка "Назад" на сторінці зі статистикою</translation>
 <translation id="7961926449547174351">Ви вимкнули доступ до пам'яті. Відкрийте налаштування, щоб увімкнути його.</translation>

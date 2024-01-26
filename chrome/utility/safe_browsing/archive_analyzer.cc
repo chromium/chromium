@@ -46,7 +46,7 @@ ArchiveAnalyzer::~ArchiveAnalyzer() = default;
 void ArchiveAnalyzer::Analyze(
     base::File archive_file,
     base::FilePath relative_path,
-    const absl::optional<std::string>& password,
+    const std::optional<std::string>& password,
     FinishedAnalysisCallback finished_analysis_callback,
     GetTempFileCallback get_temp_file_callback,
     ArchiveAnalyzerResults* results) {

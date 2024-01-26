@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace autofill {
 
@@ -29,7 +30,8 @@ TouchToFillDelegateAndroidImpl* GetDelegate(AutofillManager& manager) {
 
 TouchToFillCreditCardController::TouchToFillCreditCardController(
     ContentAutofillClient* autofill_client)
-    : keyboard_suppressor_(
+    : content::WebContentsObserver(&autofill_client->GetWebContents()),
+      keyboard_suppressor_(
           autofill_client,
           base::BindRepeating([](AutofillManager& manager) {
             return GetDelegate(manager) &&
@@ -53,6 +55,21 @@ TouchToFillCreditCardController::~TouchToFillCreditCardController() {
     Java_TouchToFillCreditCardControllerBridge_onNativeDestroyed(
         base::android::AttachCurrentThread(), java_object_);
   }
+}
+
+void TouchToFillCreditCardController::WebContentsDestroyed() {
+  Hide();
+}
+
+void TouchToFillCreditCardController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsInPrerenderedMainFrame() ||
+      (!navigation_handle->IsInMainFrame() &&
+       !navigation_handle->HasSubframeNavigationEntryCommitted())) {
+    return;
+  }
+  Hide();
 }
 
 void TouchToFillCreditCardController::OnContentAutofillDriverFactoryDestroyed(

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">avanti</translation>
 <translation id="1615335640928990664">Utilizzo dei dati da <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Esegui test ricarica</translation>
+<translation id="1626590945318984973">Scorciatoia non disponibile. Premi una nuova scorciatoia senza utilizzare i tasti funzione e <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
 <translation id="1643449475550628585">Cambia l'immagine di sfondo ogni giorno</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
-<translation id="1897672602657312171">La scorciatoia senza tasto Ricerca potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto Ricerca.</translation>
 <translation id="1904932688895783618">Ecco alcune altre risorse utili:</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157660087437850958">selettore di emoji</translation>
 <translation id="2157959690810728433">IN CODA</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" /> ogni volta che accedi.}=2{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" /> e <ph name="APP_NAME_2" /> ogni volta che accedi.}=3{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> ogni volta che accedi.}other{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e altre # app ogni volta che accedi.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="215916044711630446">Il pulsante Aggiungi APN è ora disattivato</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Modifica dettagli APN</translation>
 <translation id="2209788852729124853">Reimposta contatori di traffico</translation>
 <translation id="2212733584906323460">Risoluzione nome</translation>
+<translation id="2215920961700443347">Nessuna connessione a internet. Connettiti a internet e riprova.</translation>
 <translation id="2217935453350629363">Velocità attuale</translation>
 <translation id="2224337661447660594">Nessuna connessione a Internet</translation>
 <translation id="222447520299472966">Deve essere selezionato almeno un album Galleria d'arte</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2465272316171730950">Siamo al completo. Riprova tra poco.</translation>
 <translation id="248546197012830854">Il dispositivo è offline. Connettiti alla rete Wi-Fi per vedere i contenuti di assistenza.</translation>
 <translation id="2491955442992294626">I tasti non vengono testati quando utilizzi un'altra finestra</translation>
 <translation id="2493126929778606526">Le tue foto migliori selezionate automaticamente</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Aggiorna l'immagine di sfondo corrente</translation>
 <translation id="2512979179176933762">mostra finestre</translation>
 <translation id="2513396635448525189">Immagine di accesso</translation>
-<translation id="2515109918609218604">Scorciatoia non disponibile. Premi una nuova scorciatoia senza utilizzare i tasti funzione e Ricerca.</translation>
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2521835766824839541">traccia precedente</translation>
 <translation id="2526590354069164005">Desktop</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Ora puoi accedere a nuovi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />sfondi<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modalità Buio</translation>
 <translation id="4130035430755296270">Continua a passare il mouse sopra per altre opzioni di layout</translation>
+<translation id="4130750466177569591">Accetto</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{L'app <ph name="APP_NAME_1" /> è stata avviata automaticamente}other{# app sono state avviate automaticamente}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">diminuisci luminosità</translation>
 <translation id="4176463684765177261">Disattivato</translation>
 <translation id="4176659219503619100">Pannello di controllo</translation>
-<translation id="4185315616950253617">La scorciatoia con tasti della fila superiore deve includere il tasto Ricerca.</translation>
 <translation id="420283545744377356">Disattiva salvaschermo</translation>
 <translation id="4213104098953699324">Tastiera USB</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="439429847087949098">Riavvio di <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="4395835743215824109">Personalizzazione della tastiera</translation>
+<translation id="4403262788869804671">La scorciatoia senza tasto <ph name="META_KEY" /> potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar attuale</translation>
+<translation id="4417830657741848074">L'amministratore ha configurato l'avvio automatico di alcune app. Potresti non poter chiudere alcune di queste app.</translation>
 <translation id="4422041425070339732">Freccia giù</translation>
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4428374560396076622">Rete <ph name="NETWORK_NAME" /> disattivata</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Salvaschermo Flusso terrestre</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
+<translation id="4500722292849917410">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando un tasto di modifica (Ctrl, Alt, Maiusc o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Colore interfaccia</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>
 <translation id="4507392511610824664">aumenta la luminosità</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4835901797422965222">Nessuna rete attiva</translation>
 <translation id="4839698083503556542">Crea il tuo filmato</translation>
+<translation id="48409034532829769">L'amministratore ha configurato l'avvio automatico di "<ph name="APP_NAME" />". Potresti non poter chiudere questa app.</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selezionato, premi Invio per selezionare gli album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) risoluzione DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Suddividi</translation>
 <translation id="4972592110715526173">cambio modalità</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
+<translation id="4982627662315910959">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando Maiusc e 1 altro tasto di modifica (Ctrl, Alt o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagine</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Programmazione tema scuro</translation>
 <translation id="5229344016299762883">Esci da schermo intero</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{L'amministratore ha impostato l'avvio automatico di "<ph name="APP_NAME" />" ogni volta che accedi.}=2{L'amministratore ha impostato l'avvio automatico di "<ph name="APP_NAME" />" e di 1 altra app ogni volta che accedi.}other{L'amministratore ha impostato l'avvio automatico di "<ph name="APP_NAME" />" e di # altre app ogni volta che accedi.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Attiva la modalità Colore chiaro</translation>
 <translation id="5264277876637023664">Esegui test CPU</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
 <translation id="725133483556299729">Seleziona email</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
-<translation id="7273347807225967898">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando un tasto di modifica (Ctrl, Alt, Maiusc, Ricerca o Avvio app).</translation>
+<translation id="7271932918253517778">La scorciatoia con tasti della fila superiore deve includere il tasto <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Raccolte di sfondi</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Controlli generali</translation>
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" è stata avviata automaticamente}other{# app sono state avviate automaticamente}}</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Scorciatoia modificata</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
-<translation id="8111706652656628199">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando Maiusc e 1 altro tasto di modifica (Ctrl, Alt, Ricerca o Avvio app).</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Richiedi contatori di traffico</translation>

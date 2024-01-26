@@ -108,7 +108,7 @@ bool KeyboardLockController::HandleKeyEvent(
              !hold_timer_.IsRunning()) {
     // Seeing a key down event on Esc when the hold timer is stopped starts
     // the timer. When the timer fires, the callback will trigger an exit from
-    // fullscreen/mouselock/keyboardlock.
+    // fullscreen/pointerlock/keyboardlock.
     hold_timer_.Start(
         FROM_HERE, kHoldEscapeTime,
         base::BindOnce(&KeyboardLockController::HandleUserHeldEscape,
@@ -165,7 +165,7 @@ void KeyboardLockController::UnlockKeyboard() {
 void KeyboardLockController::HandleUserHeldEscape() {
   ExclusiveAccessManager* const manager = exclusive_access_manager();
   manager->fullscreen_controller()->HandleUserPressedEscape();
-  manager->mouse_lock_controller()->HandleUserPressedEscape();
+  manager->pointer_lock_controller()->HandleUserPressedEscape();
   HandleUserPressedEscape();
 }
 

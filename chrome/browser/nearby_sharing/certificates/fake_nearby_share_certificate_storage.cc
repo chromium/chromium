@@ -76,12 +76,12 @@ void FakeNearbyShareCertificateStorage::GetPublicCertificates(
   get_public_certificates_callbacks_.push_back(std::move(callback));
 }
 
-absl::optional<std::vector<NearbySharePrivateCertificate>>
+std::optional<std::vector<NearbySharePrivateCertificate>>
 FakeNearbyShareCertificateStorage::GetPrivateCertificates() const {
   return private_certificates_;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 FakeNearbyShareCertificateStorage::NextPublicCertificateExpirationTime() const {
   return next_public_certificate_expiration_time_;
 }
@@ -112,6 +112,6 @@ void FakeNearbyShareCertificateStorage::SetPublicCertificateIds(
 }
 
 void FakeNearbyShareCertificateStorage::SetNextPublicCertificateExpirationTime(
-    absl::optional<base::Time> time) {
+    std::optional<base::Time> time) {
   next_public_certificate_expiration_time_ = time;
 }

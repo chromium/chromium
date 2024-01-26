@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/common/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -30,7 +31,7 @@
   // TODO(crbug.com/1335402): View controllers should not have access to
   // model-layer objects. Create a mediator to connect model-layer class
   // `UrlLoadingBrowserAgent` to the view controller.
-  UrlLoadingBrowserAgent* _URLLoader;  // weak
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;  // weak
 }
 
 - (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader {

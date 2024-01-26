@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_METRICS_USERTYPE_BY_DEVICETYPE_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_USERTYPE_BY_DEVICETYPE_METRICS_PROVIDER_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -73,8 +74,8 @@ class UserTypeByDeviceTypeMetricsProvider
   static int ConstructUmaValue(UserSegment user, policy::MarketSegment device);
 
  private:
-  absl::optional<UserSegment> user_segment_;
-  absl::optional<policy::MarketSegment> device_segment_;
+  std::optional<UserSegment> user_segment_;
+  std::optional<policy::MarketSegment> device_segment_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_USERTYPE_BY_DEVICETYPE_METRICS_PROVIDER_H_

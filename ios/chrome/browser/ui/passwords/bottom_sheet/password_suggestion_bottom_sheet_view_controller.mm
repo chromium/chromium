@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -209,10 +210,19 @@ CGFloat const kSpacingAfterTitle = 4;
 
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
-    [tableView cellForRowAtIndexPath:indexPath].accessoryView = nil;
+    TableViewURLCell* cell = base::apple::ObjCCastStrict<TableViewURLCell>(
+        [tableView cellForRowAtIndexPath:indexPath]);
+
+    cell.accessoryView = nil;
     // Make separator visible on first cell.
-    [tableView cellForRowAtIndexPath:indexPath].separatorInset =
+    cell.separatorInset =
         UIEdgeInsetsMake(0.f, kTableViewHorizontalSpacing, 0.f, 0.f);
+    // Remove the portion of the accessibility label mentioning that the user
+    // can tap for more passwords now that the table view is no longer
+    // minimized.
+    cell.accessibilityLabel = [self cellAccessibilityLabel:cell
+                                               atIndexPath:indexPath];
+
     [self addRemainingRowsToTableView:tableView];
 
     // Update table view height.
@@ -323,6 +333,16 @@ CGFloat const kSpacingAfterTitle = 4;
 - (void)confirmationAlertSecondaryAction {
   // "Use Keyboard" button, which dismisses the bottom sheet.
   [self dismiss];
+}
+
+#pragma mark - ConfirmationAlertViewController
+
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  if (_subtitle) {
+    subtitle.attributedText =
+        PutBoldPartInString(_subtitle, UIFontTextStyleBody);
+    subtitle.textAlignment = NSTextAlignmentCenter;
+  }
 }
 
 #pragma mark - Private
@@ -507,6 +527,17 @@ CGFloat const kSpacingAfterTitle = 4;
   }
 }
 
+// Returns the accessibility label for the given cell at the provided index
+// path.
+- (NSString*)cellAccessibilityLabel:(TableViewURLCell*)cell
+                        atIndexPath:(NSIndexPath*)indexPath {
+  return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+                                 base::SysNSStringToUTF16(cell.titleLabel.text),
+                                 base::SysNSStringToUTF16(_domain),
+                                 base::NumberToString16(indexPath.row + 1),
+                                 base::NumberToString16(_suggestions.count));
+}
+
 // Layouts the cell for the table view with the password form suggestion at the
 // specific index path.
 - (TableViewURLCell*)layoutCell:(TableViewURLCell*)cell
@@ -523,12 +554,8 @@ CGFloat const kSpacingAfterTitle = 4;
   cell.URLLabel.text = _domain;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
-  cell.accessibilityLabel =
-      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-                              base::SysNSStringToUTF16(cell.titleLabel.text),
-                              base::SysNSStringToUTF16(_domain),
-                              base::NumberToString16(indexPath.row + 1),
-                              base::NumberToString16(_suggestions.count));
+  cell.accessibilityLabel = [self cellAccessibilityLabel:cell
+                                             atIndexPath:indexPath];
 
   cell.userInteractionEnabled = YES;
 

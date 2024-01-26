@@ -31,13 +31,13 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-namespace {
-
 namespace cricket {
 // This is an opaque type for the purposes of this test, so a forward
 // declaration suffices
-class IceConfig;
+struct IceConfig;
 }  // namespace cricket
+
+namespace {
 
 using ::blink::BridgeIceController;
 using ::blink::FakeConnectionFactory;

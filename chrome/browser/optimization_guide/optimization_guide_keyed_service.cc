@@ -4,6 +4,8 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -14,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -28,10 +31,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/metrics/metrics_log.h"
+#include "components/metrics/version_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -55,6 +61,7 @@
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -63,7 +70,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -327,8 +333,6 @@ void OptimizationGuideKeyedService::Initialize() {
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  base::WeakPtr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store;
   base::FilePath model_downloads_dir;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
@@ -336,8 +340,6 @@ void OptimizationGuideKeyedService::Initialize() {
             GetProfileForOTROptimizationGuide(profile));
     DCHECK(original_ogks);
     hint_store = original_ogks->GetHintsManager()->hint_store();
-    prediction_model_and_features_store =
-        original_ogks->GetPredictionManager()->model_and_features_store();
   } else {
     // Use the database associated with the original profile.
     auto* proto_db_provider = profile->GetOriginalProfile()
@@ -380,28 +382,6 @@ void OptimizationGuideKeyedService::Initialize() {
                   profile->GetPrefs())
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
-
-    if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      // Do not explicitly hand off the model downloads directory to
-      // off-the-record profiles. Underneath the hood, this variable is only
-      // used in non off-the-record profiles to know where to download the model
-      // files to. Off-the-record profiles read the model locations from the
-      // original profiles they are associated with.
-      model_downloads_dir = profile_path.Append(
-          optimization_guide::kOldOptimizationGuidePredictionModelDownloads);
-      prediction_model_and_features_store_ =
-          std::make_unique<optimization_guide::OptimizationGuideStore>(
-              proto_db_provider,
-              profile_path.Append(
-                  optimization_guide::
-                      kOldOptimizationGuidePredictionModelMetadataStore),
-              model_downloads_dir,
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-              profile->GetPrefs());
-      prediction_model_and_features_store =
-          prediction_model_and_features_store_->AsWeakPtr();
-    }
   }
 
   optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
@@ -413,10 +393,7 @@ void OptimizationGuideKeyedService::Initialize() {
       optimization_guide_logger_.get());
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      prediction_model_and_features_store,
-      optimization_guide::features::IsInstallWideModelStoreEnabled()
-          ? optimization_guide::PredictionModelStore::GetInstance()
-          : nullptr,
+      optimization_guide::PredictionModelStore::GetInstance(),
       url_loader_factory, profile->GetPrefs(), profile->IsOffTheRecord(),
       g_browser_process->GetApplicationLocale(), model_downloads_dir,
       optimization_guide_logger_.get(),
@@ -548,7 +525,7 @@ void OptimizationGuideKeyedService::OnNavigationFinish(
 
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata,
+    const std::optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   prediction_manager_->AddObserverForOptimizationTargetModel(
       optimization_target, model_metadata, observer);
@@ -601,13 +578,16 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-        callback) {
+        callback,
+    optimization_guide::proto::RequestContextMetadata*
+        request_context_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(request_context !=
          optimization_guide::proto::RequestContext::CONTEXT_UNSPECIFIED);
 
   hints_manager_->CanApplyOptimizationOnDemand(urls, optimization_types,
-                                               request_context, callback);
+                                               request_context, callback,
+                                               request_context_metadata);
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -657,6 +637,11 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
       optimization_guide::GetModelExecutionFeature(
           log_entry->log_ai_data_request()->feature_case());
 
+  TRACE_EVENT1(
+      "browser", "OptimizationGuideKeyedService::UploadModelQualityLogs",
+      "feature",
+      optimization_guide::GetStringNameForModelExecutionFeature(feature));
+
   // Model quality logging requires user consent. Skip upload if consent is
   // missing.
   if (!g_browser_process->GetMetricsServicesManager()
@@ -675,6 +660,16 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
     return;
   }
 
+  // Set system profile proto before uploading.
+  metrics::MetricsLog::RecordCoreSystemProfile(
+      metrics::GetVersionString(),
+      metrics::AsProtobufChannel(chrome::GetChannel()),
+      chrome::IsExtendedStableChannel(),
+      g_browser_process->GetApplicationLocale(), metrics::GetAppPackageName(),
+      log_entry->logging_metadata()->mutable_system_profile());
+
+  CHECK(log_entry->logging_metadata()->has_system_profile())
+      << "System Profile Proto not set\n";
   model_quality_logs_uploader_service_.get()->UploadModelQualityLogs(
       std::move(log_entry));
 }
@@ -699,7 +694,7 @@ void OptimizationGuideKeyedService::OnProfileInitializationComplete(
 void OptimizationGuideKeyedService::AddHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
-    const absl::optional<optimization_guide::OptimizationMetadata>& metadata) {
+    const std::optional<optimization_guide::OptimizationMetadata>& metadata) {
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 

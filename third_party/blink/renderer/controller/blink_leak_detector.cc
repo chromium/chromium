@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 
+#include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -66,14 +68,14 @@ void BlinkLeakDetector::PerformLeakDetection(
         // non-empty string creates a static ScriptRegexp value which holds a
         // V8PerContextData indirectly. This affects the number of
         // V8PerContextData. To ensure that context data is created, call
-        // ensureScriptRegexpContext here.
-        V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
+        // EnsureScriptRegexpScriptState here.
+        V8PerIsolateData::From(isolate)->EnsureScriptRegexpScriptState();
 
         MemoryCache::Get()->EvictResources();
 
         // FIXME: HTML5 Notification should be closed because notification
         // affects the result of number of DOM objects.
-        V8PerIsolateData::From(isolate)->ClearScriptRegexpContext();
+        V8PerIsolateData::From(isolate)->ClearUtilityScriptState();
       }));
 
   // Clear lazily loaded style sheets.
@@ -134,6 +136,16 @@ void BlinkLeakDetector::ReportInvalidResult() {
 }
 
 void BlinkLeakDetector::ReportResult() {
+  // Run with --enable-leak-detection-heap-snapshot (in addition to
+  // --enable-leak-detection) to dunp a heap snapshot to file named
+  // "leak_detection.heapsnapshot". This requires --no-sandbox, otherwise the
+  // write to the file is blocked.
+  const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
+  if (cmd.HasSwitch(switches::kEnableLeakDetectionHeapSnapshot)) {
+    ThreadState::Current()->TakeHeapSnapshotForTesting(
+        "leak_detection.heapsnapshot");
+  }
+
   mojom::blink::LeakDetectionResultPtr result =
       mojom::blink::LeakDetectionResult::New();
   result->number_of_live_audio_nodes =

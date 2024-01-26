@@ -10,6 +10,7 @@ source_set("save_to_drive") {
     "save_to_drive_mediator.mm",
   ]
   deps = [
+    ":file_destination_picker",
     ":util",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -21,9 +22,37 @@ source_set("save_to_drive") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/account_picker",
     "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/chrome/browser/ui/account_picker:account_picker_consumer",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("file_destination_picker_constants") {
+  sources = [
+    "file_destination_picker_constants.h",
+    "file_destination_picker_constants.mm",
+  ]
+}
+
+source_set("file_destination_picker") {
+  sources = [
+    "file_destination.h",
+    "file_destination_picker_action_delegate.h",
+    "file_destination_picker_consumer.h",
+    "file_destination_picker_view_controller.h",
+    "file_destination_picker_view_controller.mm",
+  ]
+  deps = [
+    ":file_destination_picker_constants",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -71,4 +100,26 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "save_to_drive_egtest.mm" ]
+  deps = [
+    ":file_destination_picker_constants",
+    "//ios/chrome/browser/drive/model:test_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/account_picker/account_picker_confirmation:constants",
+    "//ios/chrome/browser/ui/account_picker/account_picker_screen:account_picker_screen",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/download:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

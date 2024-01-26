@@ -34,17 +34,29 @@ constexpr char kPasswordCheckDataKey[] = "password-check-manager-data-key";
 // IOSChromePasswordCheckManager was destroyed.
 class IOSChromePasswordCheckManagerHolder : public LeakCheckCredential::Data {
  public:
-  explicit IOSChromePasswordCheckManagerHolder(
-      scoped_refptr<IOSChromePasswordCheckManager> manager)
-      : manager_(std::move(manager)) {}
+  IOSChromePasswordCheckManagerHolder(
+      scoped_refptr<IOSChromePasswordCheckManager> manager,
+      password_manager::TriggerBackendNotification should_trigger_notification)
+      : manager_(std::move(manager)),
+        should_trigger_notification_(should_trigger_notification) {}
   ~IOSChromePasswordCheckManagerHolder() override = default;
 
   std::unique_ptr<Data> Clone() override {
-    return std::make_unique<IOSChromePasswordCheckManagerHolder>(manager_);
+    return std::make_unique<IOSChromePasswordCheckManagerHolder>(
+        manager_, should_trigger_notification_);
+  }
+
+  password_manager::TriggerBackendNotification should_trigger_notification()
+      const {
+    return should_trigger_notification_;
   }
 
  private:
   scoped_refptr<IOSChromePasswordCheckManager> manager_;
+  // Certain client use cases require to notify backend if new leaked
+  // credentials are found. This member indicate whether that should happen.
+  const password_manager::TriggerBackendNotification
+      should_trigger_notification_;
 };
 
 PasswordCheckState ConvertBulkCheckState(State state) {
@@ -104,12 +116,22 @@ IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() {
   DCHECK(observers_.empty());
 }
 
-void IOSChromePasswordCheckManager::StartPasswordCheck() {
+void IOSChromePasswordCheckManager::StartPasswordCheck(
+    password_manager::LeakDetectionInitiator initiator) {
+  // Calls to StartPasswordCheck() will be only processed after
+  // OnSavedPasswordsChanged() is called. Meaning that all client calls
+  // happening before that will be stored in memory until all conditions are
+  // met. Thus initiator value must be stored to ensure that when this method is
+  // run, it has the correct value.
+  password_check_initiator_ = initiator;
+
   if (is_initialized_) {
     IOSChromePasswordCheckManagerHolder data(
-        scoped_refptr<IOSChromePasswordCheckManager>(this));
-    bulk_leak_check_service_adapter_.StartBulkLeakCheck(kPasswordCheckDataKey,
-                                                        &data);
+        scoped_refptr<IOSChromePasswordCheckManager>(this),
+        password_manager::ShouldTriggerBackendNotificationForInitiator(
+            password_check_initiator_));
+    bulk_leak_check_service_adapter_.StartBulkLeakCheck(
+        password_check_initiator_, kPasswordCheckDataKey, &data);
 
     insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
         &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
@@ -169,7 +191,7 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
   // Observing saved passwords to update possible kNoPasswords state.
   NotifyPasswordCheckStatusChanged();
   if (!std::exchange(is_initialized_, true) && start_check_on_init_) {
-    StartPasswordCheck();
+    StartPasswordCheck(password_manager::LeakDetectionInitiator::kEditCheck);
   }
 }
 
@@ -214,7 +236,14 @@ void IOSChromePasswordCheckManager::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    insecure_credentials_manager_.SaveInsecureCredential(credential);
+    password_manager::TriggerBackendNotification should_trigger_notification =
+        credential.GetUserData(kPasswordCheckDataKey)
+            ? static_cast<IOSChromePasswordCheckManagerHolder*>(
+                  credential.GetUserData(kPasswordCheckDataKey))
+                  ->should_trigger_notification()
+            : password_manager::TriggerBackendNotification(false);
+    insecure_credentials_manager_.SaveInsecureCredential(
+        credential, should_trigger_notification);
   }
 }
 

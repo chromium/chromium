@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

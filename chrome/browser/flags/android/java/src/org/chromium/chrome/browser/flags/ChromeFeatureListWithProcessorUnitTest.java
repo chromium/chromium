@@ -17,10 +17,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

@@ -7,6 +7,7 @@
 
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/ambient/model/ambient_weather_model_observer.h"
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,8 +25,8 @@ class AmbientViewDelegate;
 class TimeView;
 
 // Container for displaying a glanceable clock and weather info.
-class GlanceableInfoView : public views::View,
-                           public AmbientWeatherModelObserver {
+class ASH_EXPORT GlanceableInfoView : public views::View,
+                                      public AmbientWeatherModelObserver {
  public:
   class Delegate {
    public:
@@ -52,9 +53,12 @@ class GlanceableInfoView : public views::View,
   // AmbientWeatherModelObserver:
   void OnWeatherInfoUpdated() override;
 
-  void Show();
+  void ShowWeather();
 
   int GetTimeFontDescent();
+
+  bool IsWeatherConditionIconSetForTesting() const;
+  bool IsTemperatureSetForTesting() const;
 
  private:
   void InitLayout();

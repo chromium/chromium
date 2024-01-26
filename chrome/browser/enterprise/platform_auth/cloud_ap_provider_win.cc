@@ -435,7 +435,7 @@ void CloudApProviderWin::OnGetDataCallback(
 
 // static
 void CloudApProviderWin::SetSupportLevelForTesting(
-    absl::optional<SupportLevel> level) {
+    std::optional<SupportLevel> level) {
   delete std::exchange(support_level_for_testing_, nullptr);
   if (!level)
     return;

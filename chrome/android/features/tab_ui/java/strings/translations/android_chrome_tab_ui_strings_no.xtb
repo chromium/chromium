@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Bli varslet</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="4212246570487010370">Fortsett å surfe</translation>
+<translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4648718555153979859">Fanene dine er gruppert sammen her</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Visning</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign sider raskt ved å lage en gruppe. For å begynne, trykk og hold på en link.</translation>
+<translation id="5161254044473106830">Du må oppgi en tittel</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> fane du ikke har brukt i det siste}other{Du har <ph name="TABS_COUNT_MANY" /> faner du ikke har brukt i det siste}}</translation>
 <translation id="5339733443032484186">Den siste fanen du brukte</translation>
 <translation id="5490235265819901748">Fanegruppen er utvidet</translation>
@@ -100,6 +102,6 @@
 <translation id="9090098097337832354">Informasjon om denne butikken er lukket</translation>
 <translation id="9150694013019234766">Bytt mellom faner i fanegruppen på nedre del av skjermen</translation>
 <translation id="9169594135889675189">Legg til ny fane i gruppen</translation>
-<translation id="955558140275419384">Gå gjennom alle arkiverte faner som er klare for opprydding, ved å åpne dette redigeringsprogrammet.</translation>
+<translation id="955558140275419384">Gjennomgå alle arkiverte faner som er klare for opprydding, ved å åpne dette redigeringsprogrammet.</translation>
 <translation id="959682366969460160">Få orden på ting</translation>
 </translationbundle>

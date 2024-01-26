@@ -126,7 +126,7 @@ void PrintingAPIHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void PrintingAPIHandler::SubmitJob(
     gfx::NativeWindow native_window,
     scoped_refptr<const extensions::Extension> extension,
-    absl::optional<api::printing::SubmitJob::Params> params,
+    std::optional<api::printing::SubmitJob::Params> params,
     SubmitJobCallback callback) {
   DCHECK(params);
   // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
@@ -150,12 +150,12 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!result.has_value()) {
-    absl::optional<std::string> error = std::move(result).error();
-    absl::optional<api::printing::SubmitJobStatus> status;
+    std::optional<std::string> error = std::move(result).error();
+    std::optional<api::printing::SubmitJobStatus> status;
     if (!error)
       status = api::printing::SubmitJobStatus::kUserRejected;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), status, absl::nullopt,
+        FROM_HERE, base::BindOnce(std::move(callback), status, std::nullopt,
                                   std::move(error)));
     return;
   }
@@ -170,7 +170,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), api::printing::SubmitJobStatus::kOk,
-                     cups_id, absl::nullopt));
+                     cups_id, std::nullopt));
 
   DCHECK(!base::Contains(print_jobs_, cups_id));
   print_jobs_[cups_id] = PrintJobInfo{printer_id, info.job_id, extension_id};
@@ -193,7 +193,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   event_router_->DispatchEventToExtension(extension_id, std::move(event));
 }
 
-absl::optional<std::string> PrintingAPIHandler::CancelJob(
+std::optional<std::string> PrintingAPIHandler::CancelJob(
     const std::string& extension_id,
     const std::string& job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -208,7 +208,7 @@ absl::optional<std::string> PrintingAPIHandler::CancelJob(
 
   local_printer_->CancelPrintJob(it->second.printer_id, it->second.job_id,
                                  base::DoNothing());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
@@ -227,7 +227,7 @@ void PrintingAPIHandler::OnPrintersRetrieved(
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context_)->GetPrefs();
 
-  absl::optional<DefaultPrinterRules> default_printer_rules =
+  std::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(prefs->GetString(
           prefs::kPrintPreviewDefaultDestinationSelectionRules));
 
@@ -266,16 +266,16 @@ void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
   if (!caps) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
-                       /*status=*/absl::nullopt, kInvalidPrinterIdError));
+        base::BindOnce(std::move(callback), /*capabilities=*/std::nullopt,
+                       /*status=*/std::nullopt, kInvalidPrinterIdError));
     return;
   }
   if (!caps->capabilities) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
+        base::BindOnce(std::move(callback), /*capabilities=*/std::nullopt,
                        /*status=*/api::printing::PrinterStatus::kUnreachable,
-                       /*error=*/absl::nullopt));
+                       /*error=*/std::nullopt));
     return;
   }
   cups_wrapper_->QueryCupsPrinterStatus(
@@ -296,7 +296,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(capabilities),
                                   api::printing::PrinterStatus::kUnreachable,
-                                  /*error=*/absl::nullopt));
+                                  /*error=*/std::nullopt));
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -305,18 +305,25 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           std::move(callback), std::move(capabilities),
           PrinterStatusToIdl(chromeos::PrinterErrorCodeFromPrinterStatusReasons(
               *printer_status)),
-          /*error=*/absl::nullopt));
+          /*error=*/std::nullopt));
+}
+
+void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
+    const std::string& printer_id,
+    unsigned int job_id,
+    crosapi::mojom::PrintJobStatus status) {
+  NOTREACHED();
 }
 
 void PrintingAPIHandler::OnPrintJobUpdate(
     const std::string& printer_id,
     unsigned int job_id,
-    crosapi::mojom::PrintJobStatus status) {
+    crosapi::mojom::PrintJobUpdatePtr update) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool done = true;
   api::printing::JobStatus job_status;
-  switch (status) {
+  switch (update->status) {
     case crosapi::mojom::PrintJobStatus::kStarted:
       job_status = api::printing::JobStatus::kInProgress;
       done = false;

@@ -37,16 +37,14 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   // If `event` is a string of the name of the event (i.e.
   // FenceEvent.eventType), calls reportPrivateAggregationEvent() to trigger
   // sending the contributions associated with the given event.
-  void reportEvent(ScriptState* script_state,
-                   const V8UnionFenceEventOrString* event,
+  void reportEvent(const V8UnionFenceEventOrString* event,
                    ExceptionState& exception_state);
 
   // Saves the event data that will be used when an automatic beacon of type
   // event.eventType is sent. Right now, it only supports saving data for the
   // "reserved.top_navigation_start", "reserved.top_navigation_commit", and the
   // deprecated "reserved.top_navigation" beacons.
-  void setReportEventDataForAutomaticBeacons(ScriptState* script_state,
-                                             const FenceEvent* event,
+  void setReportEventDataForAutomaticBeacons(const FenceEvent* event,
                                              ExceptionState& exception_state);
 
   // Returns a list of nested inner configurations for the fenced frame, if any
@@ -56,31 +54,30 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   HeapVector<Member<FencedFrameConfig>> getNestedConfigs(
       ExceptionState& exception_state);
 
+  ScriptPromise disableUntrustedNetwork(ScriptState* script_state,
+                                        ExceptionState& exception_state);
+  void DisableUntrustedNetworkComplete(ScriptPromiseResolver* resolver);
+
   void Trace(Visitor*) const override;
 
  private:
   // Dispatches to `reportEventToDestinationEnum` or
   // `reportEventToDestinationURL` depending on the format of `event`.
-  void reportEvent(ScriptState* script_state,
-                   const FenceEvent* event,
-                   ExceptionState& exception_state);
+  void reportEvent(const FenceEvent* event, ExceptionState& exception_state);
 
   // Sends a report with `eventData` to the reporting destinations specified by
   // `destination`.
-  void reportEventToDestinationEnum(ScriptState* script_state,
-                                    const FenceEvent* event,
+  void reportEventToDestinationEnum(const FenceEvent* event,
                                     ExceptionState& exception_state);
 
   // Sends a report to `destinationURL`, with substitution of buyer macros.
-  void reportEventToDestinationURL(ScriptState* script_state,
-                                   const FenceEvent* event,
+  void reportEventToDestinationURL(const FenceEvent* event,
                                    ExceptionState& exception_state);
 
   // Triggers the sending of any contributions associated with the given event.
   // This function simply passes off the work to the fenced frame reporter in
   // the browser to handle the actual sending of contributions.
-  void reportPrivateAggregationEvent(ScriptState* script_state,
-                                     const String& event,
+  void reportPrivateAggregationEvent(const String& event,
                                      ExceptionState& exception_state);
 
   void AddConsoleMessage(const String& message,

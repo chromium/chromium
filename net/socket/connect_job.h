@@ -46,7 +46,7 @@ class NetLog;
 class NetLogWithSource;
 class NetworkQualityEstimator;
 class ProxyDelegate;
-class QuicStreamFactory;
+class QuicSessionPool;
 class SocketPerformanceWatcherFactory;
 class SocketTag;
 class SpdySessionPool;
@@ -60,6 +60,8 @@ class WebSocketEndpointLockManager;
 // ConnectJobs that wrap other ConnectJobs typically have different values for
 // those.
 struct NET_EXPORT_PRIVATE CommonConnectJobParams {
+  // TODO(https://crbug.com/1505765): Look into passing in HttpNetworkSession
+  // instead.
   CommonConnectJobParams(
       ClientSocketFactory* client_socket_factory,
       HostResolver* host_resolver,
@@ -67,7 +69,7 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
       HttpAuthHandlerFactory* http_auth_handler_factory,
       SpdySessionPool* spdy_session_pool,
       const quic::ParsedQuicVersionVector* quic_supported_versions,
-      QuicStreamFactory* quic_stream_factory,
+      QuicSessionPool* quic_session_pool,
       ProxyDelegate* proxy_delegate,
       const HttpUserAgentSettings* http_user_agent_settings,
       SSLClientContext* ssl_client_context,
@@ -78,7 +80,8 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
       HttpServerProperties* http_server_properties,
       const NextProtoVector* alpn_protos,
       const SSLConfig::ApplicationSettings* application_settings,
-      const bool* ignore_certificate_errors);
+      const bool* ignore_certificate_errors,
+      const bool* enable_early_data);
   CommonConnectJobParams(const CommonConnectJobParams& other);
   ~CommonConnectJobParams();
 
@@ -90,7 +93,7 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
   raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
   raw_ptr<SpdySessionPool> spdy_session_pool;
   raw_ptr<const quic::ParsedQuicVersionVector> quic_supported_versions;
-  raw_ptr<QuicStreamFactory> quic_stream_factory;
+  raw_ptr<QuicSessionPool> quic_session_pool;
   raw_ptr<ProxyDelegate> proxy_delegate;
   raw_ptr<const HttpUserAgentSettings> http_user_agent_settings;
   raw_ptr<SSLClientContext> ssl_client_context;
@@ -106,6 +109,7 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
   raw_ptr<const NextProtoVector> alpn_protos;
   raw_ptr<const SSLConfig::ApplicationSettings> application_settings;
   raw_ptr<const bool> ignore_certificate_errors;
+  raw_ptr<const bool> enable_early_data;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If

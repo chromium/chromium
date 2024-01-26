@@ -48,11 +48,11 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
                              CSSPrimitiveValue::UnitType::kPercentage));
     object_builder.Add("offset", timeline_range_offset);
   } else if (offset_) {
-    object_builder.Add("offset", offset_.value());
+    object_builder.AddNumber("offset", offset_.value());
   } else {
     object_builder.AddNull("offset");
   }
-  object_builder.Add("easing", easing_->ToString());
+  object_builder.AddString("easing", easing_->ToString());
   object_builder.AddString("composite",
                            EffectModel::CompositeOperationToString(composite_));
 }

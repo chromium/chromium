@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
+#include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -47,6 +48,8 @@ class CSSPropertyValueSet;
 class CSSValue;
 class Document;
 class Element;
+class Font;
+class FontDescription;
 class Interpolation;
 class MatchResult;
 class PropertyHandle;
@@ -83,9 +86,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
   ComputedStyleBuilder InitialStyleBuilderForElement() const;
-  const ComputedStyle* InitialStyleForElement() const {
-    return InitialStyleBuilderForElement().TakeStyle();
-  }
+  const ComputedStyle* InitialStyleForElement() const;
 
   float InitialZoom() const;
 
@@ -126,10 +127,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       EDisplay);
   const ComputedStyle* CreateAnonymousStyleWithDisplay(
       const ComputedStyle& parent_style,
-      EDisplay display) {
-    return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
-        .TakeStyle();
-  }
+      EDisplay display);
 
   // Create ComputedStyle for anonymous wrappers between text boxes and
   // display:contents elements.
@@ -199,6 +197,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   //
   // This is intended for use by the Inspector Agent.
   static const CSSValue* ResolveValue(Element& element,
+                                      const ComputedStyle& style,
                                       const CSSPropertyName&,
                                       const CSSValue&);
 

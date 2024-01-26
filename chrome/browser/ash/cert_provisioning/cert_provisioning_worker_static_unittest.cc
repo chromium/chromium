@@ -1238,7 +1238,8 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
 }
 
 // Checks that when the server returns try_again_later field, the worker will
-// retry when the invalidation is triggered.
+// retry when successfully subscribed for the invalidation or when the
+// invalidation is triggered.
 TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
@@ -1281,7 +1282,7 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
               CertProvisioningWorkerState::kKeypairGenerated);
   }
 
-  base::RepeatingClosure on_invalidation_callback;
+  OnInvalidationEventCallback on_invalidation_event_callback;
   {
     testing::InSequence seq;
 
@@ -1289,7 +1290,7 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_callback));
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1341,6 +1342,20 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
 
     testing::InSequence seq;
 
+    EXPECT_DOWNLOAD_CERT_TRY_LATER(
+        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        download_cert_server_delay.InMilliseconds());
+
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kSuccessfullySubscribed);
+  }
+
+  {
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+
+    testing::InSequence seq;
+
     EXPECT_DOWNLOAD_CERT_OK(DownloadCert, kFakeCertificate);
 
     EXPECT_IMPORT_CERTIFICATE_OK(
@@ -1352,7 +1367,8 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
                 Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
         .Times(1);
 
-    on_invalidation_callback.Run();
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kInvalidationReceived);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
   }
 }

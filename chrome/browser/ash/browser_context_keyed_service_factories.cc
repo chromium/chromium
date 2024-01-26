@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
@@ -196,6 +197,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   help_app::HelpAppManagerFactory::GetInstance();
   HoldingSpaceKeyedServiceFactory::GetInstance();
   InSessionPasswordSyncManagerFactory::GetInstance();
+  kcer::KcerFactoryAsh::EnsureFactoryBuilt();
   KerberosCredentialsManagerFactory::GetInstance();
   KioskAppUpdateServiceFactory::GetInstance();
   LockScreenAppsFactory::GetInstance();

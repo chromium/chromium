@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -64,7 +65,7 @@
 
 @implementation UserPolicySceneAgent {
   // Manager for user policies that provides access to the stored policy data.
-  policy::UserCloudPolicyManager* _userPolicyManager;
+  raw_ptr<policy::UserCloudPolicyManager> _userPolicyManager;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider

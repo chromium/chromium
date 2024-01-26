@@ -490,7 +490,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     }
     // Since OnSessionDescriptionsUpdated can fire events, it may cause
     // garbage collection. Ensure that handler_ is still valid.
-    if (handler_) {
+    if (handler_ && !handler_->is_unregistered_) {
       handler_->OnModifyTransceivers(
           states.signaling_state, std::move(states.transceiver_states),
           action_ == PeerConnectionTracker::kActionSetRemoteDescription,
@@ -839,15 +839,19 @@ bool RTCPeerConnectionHandler::Initialize(
     WebLocalFrame* frame,
     ExceptionState& exception_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(frame);
   DCHECK(dependency_factory_);
-  frame_ = frame;
 
   CHECK(!initialize_called_);
   initialize_called_ = true;
 
   // Prevent garbage collection of client_ during processing.
   auto* client_on_stack = client_.Get();
+  if (!client_on_stack) {
+    return false;
+  }
+
+  DCHECK(frame);
+  frame_ = frame;
   peer_connection_tracker_ = PeerConnectionTracker::From(*frame);
 
   configuration_ = server_configuration;
@@ -2058,10 +2062,13 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
                                               int sdp_mline_index,
                                               int component,
                                               int address_family) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // In order to ensure that the RTCPeerConnection is not garbage collected
   // from under the function, we keep a pointer to it on the stack.
   auto* client_on_stack = client_.Get();
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!client_on_stack) {
+    return;
+  }
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceCandidateImpl");
   // This line can cause garbage collection.
   auto* platform_candidate = MakeGarbageCollected<RTCIceCandidatePlatform>(
@@ -2173,6 +2180,7 @@ std::unique_ptr<blink::RTCRtpTransceiverImpl>
 RTCPeerConnectionHandler::CreateOrUpdateTransceiver(
     blink::RtpTransceiverState transceiver_state,
     blink::TransceiverStateUpdateMode update_mode) {
+  CHECK(dependency_factory_);
   DCHECK(transceiver_state.is_initialized());
   DCHECK(transceiver_state.sender_state());
   DCHECK(transceiver_state.receiver_state());

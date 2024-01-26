@@ -89,7 +89,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   }
 
  protected:
-  const absl::optional<MockCrashEndpoint::Report>& last_report() {
+  const std::optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
   raw_ptr<const Extension, DanglingUntriaged> extension_;
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
-  const absl::optional<MockCrashEndpoint::Report>& report = last_report();
+  const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
   )-";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
-  const absl::optional<MockCrashEndpoint::Report>& report = last_report();
+  const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
   // The product name is escaped twice. The first time, it becomes
   // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
-  const absl::optional<MockCrashEndpoint::Report>& report = last_report();
+  const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
-  const absl::optional<MockCrashEndpoint::Report>& report = last_report();
+  const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
             chrome.runtime.lastError.message : "")
       });
   )";
-  const absl::optional<MockCrashEndpoint::Report>& report = last_report();
+  const std::optional<MockCrashEndpoint::Report>& report = last_report();
 
   // Ensure error is not reported since devtools is open.
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));

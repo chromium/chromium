@@ -5,8 +5,8 @@
 // Custom binding for the enterprise.platformKeys API.
 
 // The platformKeys API consists of two major parts:
-//   - the certificate management.
-//   - the key generation and crypto operations and
+//   - the certificate management and
+//   - the key generation and crypto operations.
 // The former is implemented without custom binding as static functions.
 // The latter is exposed by implementing WebCrypto's SubtleCrypto interface.
 // The internal API provides the key and crypto operations through static

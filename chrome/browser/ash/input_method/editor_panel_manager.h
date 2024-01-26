@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_PANEL_MANAGER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_PANEL_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -12,11 +13,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::input_method {
 
@@ -35,10 +36,12 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
 
     virtual void OnPromoCardDeclined() = 0;
     virtual void HandleTrigger(
-        absl::optional<std::string_view> preset_query_id,
-        absl::optional<std::string_view> freeform_text) = 0;
+        std::optional<std::string_view> preset_query_id,
+        std::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
+    virtual std::vector<EditorBlockedReason> GetBlockedReasons() const = 0;
 
     virtual void CacheContext() = 0;
   };

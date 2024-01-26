@@ -10,7 +10,7 @@ import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_u
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import {ModuleDescriptor} from './module_descriptor.js';
+import type {ModuleDescriptor} from './module_descriptor.js';
 import {getTemplate} from './module_wrapper.html.js';
 
 /** @fileoverview Element that implements the common module UI. */

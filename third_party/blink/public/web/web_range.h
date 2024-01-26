@@ -38,9 +38,10 @@
 
 namespace blink {
 
+#if INSIDE_BLINK
 class LocalFrame;
+#endif
 class PlainTextRange;
-class Range;
 
 class BLINK_EXPORT WebRange final {
  public:

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that Page.navigate triggers Page.navigatedWithinDocument when navigating to the same fragment`);
   await dp.Page.enable();

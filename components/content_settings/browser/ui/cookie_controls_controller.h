@@ -83,7 +83,11 @@ class CookieControlsController final
 
  private:
   struct Status {
+    // TODO(b/317975095): Remove `status` in favor of `control_visible` and
+    // `protections_on`.
     CookieControlsStatus status;
+    bool controls_visible;
+    bool protections_on;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;

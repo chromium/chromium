@@ -31,9 +31,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -48,16 +45,16 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
-#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -112,9 +109,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
     MagicStackModuleContainerDelegate,
-    ParcelTrackingViewDelegate,
     SetUpListItemViewTapDelegate,
-    TabResumptionViewDelegate,
     URLDropDelegate,
     UIScrollViewDelegate,
     UIScrollViewAccessibilityDelegate>
@@ -160,8 +155,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 @property(nonatomic, strong) SetUpListView* setUpListView;
 // The current state of the Safety Check.
 @property(nonatomic, strong) SafetyCheckState* safetyCheckState;
-// The SafetyCheckView, if it is currently being displayed.
-@property(nonatomic, strong) SafetyCheckView* safetyCheckView;
 // Module Container for the `safetyCheckView` when being shown in Magic Stack.
 @property(nonatomic, strong)
     MagicStackModuleContainer* safetyCheckModuleContainer;
@@ -190,7 +183,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
-  TabResumptionView* _tabResumptionView;
   NSMutableArray<MagicStackModuleContainer*>* _parcelTrackingModuleContainers;
   NSLayoutConstraint* _mostVisitedTilesStackviewHeightAnchor;
   NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
@@ -286,10 +278,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         _shortcutsStackviewHeightAnchor
       ]];
     }
-  }
-
-  if (IsSafetyCheckMagicStackEnabled() && self.safetyCheckState) {
-    [self createSafetyCheck:self.safetyCheckState];
   }
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
@@ -521,9 +509,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                               kShortcuts];
     }
   } else {
-    if (!self.shortcutsViews) {
+    if ([self.shortcutsViews count]) {
+      for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
+        [view removeFromSuperview];
+      }
+      [self.shortcutsViews removeAllObjects];
+    } else {
       self.shortcutsViews = [NSMutableArray array];
+      self.shortcutsStackView = [self createShortcutsStackView];
     }
+
+    NSUInteger index = 0;
     // Assumes this only called before viewDidLoad, so there is no need to add
     // the views into the view hierarchy here.
     for (ContentSuggestionsMostVisitedActionItem* item in config
@@ -532,18 +528,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
           [[ContentSuggestionsShortcutTileView alloc]
               initWithConfiguration:item];
       [self.shortcutsViews addObject:view];
-    }
 
-    self.shortcutsStackView = [self createShortcutsStackView];
-  }
-}
-
-- (void)updateShortcutTileConfig:
-    (ContentSuggestionsMostVisitedActionItem*)config {
-  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-    if (view.config == config) {
-      [view updateConfiguration:config];
-      return;
+      view.accessibilityIdentifier = [NSString
+          stringWithFormat:
+              @"%@%li",
+              kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(contentSuggestionsElementTapped:)];
+      [view addGestureRecognizer:tapRecognizer];
+      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
+      [self.shortcutsStackView addArrangedSubview:view];
+      index++;
     }
   }
 }
@@ -603,7 +599,61 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
               animated:YES];
 }
 
+- (void)showSetUpListModuleWithConfigs:(NSArray<SetUpListConfig*>*)configs {
+  for (SetUpListConfig* config in configs) {
+    if (config.shouldShowCompactModule) {
+      _setUpListCompactedModule = [[MagicStackModuleContainer alloc] init];
+      _setUpListCompactedModule.delegate = self;
+      [_setUpListCompactedModule configureWithConfig:config];
+      // Only add it to the Magic Stack here if it is after the inital
+      // construction of the Magic Stack.
+      if (_magicStackRankReceived) {
+        [self insertModuleIntoMagicStack:_setUpListCompactedModule];
+        [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                                kCompactedSetUpList];
+      }
+    } else {
+      MagicStackModuleContainer* setUpListModule =
+          [[MagicStackModuleContainer alloc] init];
+      setUpListModule.delegate = self;
+      [setUpListModule configureWithConfig:config];
+      SetUpListItemViewData* data = [config.setUpListItems firstObject];
+      ContentSuggestionsModuleType type =
+          SetUpListModuleTypeForSetUpListType(data.type);
+      switch (type) {
+        case ContentSuggestionsModuleType::kSetUpListSync:
+          _setUpListSyncModule = setUpListModule;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+          _setUpListDefaultBrowserModule = setUpListModule;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListAutofill:
+          _setUpListAutofillModule = setUpListModule;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListContentNotification:
+          _setUpListContentNotificationModule = setUpListModule;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListAllSet:
+          _setUpListAllSetModule = setUpListModule;
+          break;
+        default:
+          break;
+      }
+      // Only add it to the Magic Stack here if it is after the inital
+      // construction of the Magic Stack.
+      if (_magicStackRankReceived) {
+        [self insertModuleIntoMagicStack:setUpListModule];
+        ContentSuggestionsModuleType firstItemType =
+            SetUpListModuleTypeForSetUpListType(
+                [config.setUpListItems firstObject].type);
+        [self logTopModuleImpressionForType:firstItemType];
+      }
+    }
+  }
+}
+
 - (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items {
+  DCHECK(!IsMagicStackEnabled());
   if (!self.viewLoaded) {
     _savedSetUpListItems = items;
     return;
@@ -619,104 +669,16 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   } else {
     index++;
   }
-  if (IsMagicStackEnabled()) {
-    BOOL shouldShowCompactedSetUpListModule =
-        set_up_list_utils::ShouldShowCompactedSetUpListModule();
-    if (shouldShowCompactedSetUpListModule) {
-      _compactedSetUpListViews = [NSMutableArray array];
-    }
-    if ([self hasMagicStackLoaded]) {
-      ContentSuggestionsModuleType firstItemType =
-          SetUpListModuleTypeForSetUpListType([items firstObject].type);
-      [self logTopModuleImpressionForType:shouldShowCompactedSetUpListModule
-                                              ? ContentSuggestionsModuleType::
-                                                    kCompactedSetUpList
-                                              : firstItemType];
-    }
-    for (SetUpListItemViewData* data in items) {
-      data.compactLayout = shouldShowCompactedSetUpListModule;
-      data.heroCellMagicStackLayout = !shouldShowCompactedSetUpListModule;
-      SetUpListItemView* view = [[SetUpListItemView alloc] initWithData:data];
-      view.tapDelegate = self;
-      ContentSuggestionsModuleType type =
-          SetUpListModuleTypeForSetUpListType(data.type);
-      if (shouldShowCompactedSetUpListModule) {
-        [_compactedSetUpListViews addObject:view];
-      }
-      MagicStackModuleContainer* setUpListModule;
-      switch (type) {
-        case ContentSuggestionsModuleType::kSetUpListSync:
-          _setUpListSyncItemView = view;
-          _setUpListSyncModule = [[MagicStackModuleContainer alloc]
-              initWithContentView:_setUpListSyncItemView
-                             type:type
-                         delegate:self];
-          setUpListModule = _setUpListSyncModule;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-          _setUpListDefaultBrowserItemView = view;
-          _setUpListDefaultBrowserModule = [[MagicStackModuleContainer alloc]
-              initWithContentView:_setUpListDefaultBrowserItemView
-                             type:type
-                         delegate:self];
-          setUpListModule = _setUpListDefaultBrowserModule;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListAutofill:
-          _setUpListAutofillItemView = view;
-          _setUpListAutofillModule = [[MagicStackModuleContainer alloc]
-              initWithContentView:_setUpListAutofillItemView
-                             type:type
-                         delegate:self];
-          setUpListModule = _setUpListAutofillModule;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListContentNotification:
-          _setUpListContentNotificationItemView = view;
-          _setUpListContentNotificationModule =
-              [[MagicStackModuleContainer alloc]
-                  initWithContentView:_setUpListContentNotificationItemView
-                                 type:type
-                             delegate:self];
-          setUpListModule = _setUpListContentNotificationModule;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListAllSet:
-          _setUpListAllSetModule =
-              [[MagicStackModuleContainer alloc] initWithContentView:view
-                                                                type:type
-                                                            delegate:self];
-          setUpListModule = _setUpListAllSetModule;
-          break;
-        default:
-          break;
-      }
 
-      // Only add it to the Magic Stack here if it is after the inital
-      // construction of the Magic Stack.
-      if (_magicStackRankReceived && !shouldShowCompactedSetUpListModule) {
-        [self insertModuleIntoMagicStack:setUpListModule];
-      }
-    }
-    if (shouldShowCompactedSetUpListModule) {
-      MultiRowContainerView* multiRowContainer = [[MultiRowContainerView alloc]
-          initWithViews:_compactedSetUpListViews];
-      _setUpListCompactedModule = [[MagicStackModuleContainer alloc]
-          initWithContentView:multiRowContainer
-                         type:ContentSuggestionsModuleType::kCompactedSetUpList
-                     delegate:self];
-      if (_magicStackRankReceived) {
-        [self insertModuleIntoMagicStack:_setUpListCompactedModule];
-      }
-    }
-  } else {
-    SetUpListView* setUpListView =
-        [[SetUpListView alloc] initWithItems:items rootView:self.view];
-    setUpListView.delegate = self.setUpListViewDelegate;
-    self.setUpListView = setUpListView;
-    [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
+  SetUpListView* setUpListView =
+      [[SetUpListView alloc] initWithItems:items rootView:self.view];
+  setUpListView.delegate = self.setUpListViewDelegate;
+  self.setUpListView = setUpListView;
+  [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [setUpListView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-    ]];
-  }
+  [NSLayoutConstraint activateConstraints:@[
+    [setUpListView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
+  ]];
 }
 
 - (void)markSetUpListItemComplete:(SetUpListItemType)type
@@ -813,6 +775,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // Shows the Safety Check (Magic Stack) module with `state`.
 - (void)showSafetyCheck:(SafetyCheckState*)state {
   _safetyCheckState = state;
+  [self.safetyCheckModuleContainer removeFromSuperview];
+  self.safetyCheckModuleContainer =
+      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+  [self.safetyCheckModuleContainer configureWithConfig:_safetyCheckState];
 
   if (!_magicStackRankReceived) {
     return;
@@ -835,10 +801,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
   }];
 
-  [self.safetyCheckModuleContainer removeFromSuperview];
-
-  [self createSafetyCheck:state];
-
   UMA_HISTOGRAM_BOOLEAN("IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder",
                         safetyCheckModuleOrderIndex != NSNotFound);
 
@@ -858,13 +820,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                             kTabResumption];
   }
-  _tabResumptionView = [[TabResumptionView alloc] initWithItem:item];
-  _tabResumptionView.delegate = self;
+
   [_tabResumptionModuleContainer removeFromSuperview];
-  _tabResumptionModuleContainer = [[MagicStackModuleContainer alloc]
-      initWithContentView:_tabResumptionView
-                     type:ContentSuggestionsModuleType::kTabResumption
-                 delegate:self];
+  _tabResumptionModuleContainer = [[MagicStackModuleContainer alloc] init];
+  _tabResumptionModuleContainer.delegate = self;
+  [_tabResumptionModuleContainer configureWithConfig:item];
 
   if (_magicStackRankReceived) {
     [self insertModuleIntoMagicStack:self.tabResumptionModuleContainer];
@@ -892,32 +852,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items {
   _parcelTrackingModuleContainers = [NSMutableArray array];
 
-  if ([items count] > 2) {
-    ParcelTrackingModuleView* parcelTrackingModuleView =
-        [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
-    parcelTrackingModuleView.delegate = self;
-    [parcelTrackingModuleView configureView:items[0]];
-    MagicStackModuleContainer* parcelTrackingModuleContainer =
-        [[MagicStackModuleContainer alloc]
-            initWithContentView:parcelTrackingModuleView
-                           type:ContentSuggestionsModuleType::
-                                    kParcelTrackingSeeMore
-                       delegate:self];
-    [_parcelTrackingModuleContainers addObject:parcelTrackingModuleContainer];
-  } else {
     for (ParcelTrackingItem* item in items) {
-      ParcelTrackingModuleView* parcelTrackingModuleView =
-          [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
-      parcelTrackingModuleView.delegate = self;
-      [parcelTrackingModuleView configureView:item];
       MagicStackModuleContainer* parcelTrackingModuleContainer =
-          [[MagicStackModuleContainer alloc]
-              initWithContentView:parcelTrackingModuleView
-                             type:ContentSuggestionsModuleType::kParcelTracking
-                         delegate:self];
+          [[MagicStackModuleContainer alloc] init];
+      parcelTrackingModuleContainer.delegate = self;
+      [parcelTrackingModuleContainer configureWithConfig:item];
       [_parcelTrackingModuleContainers addObject:parcelTrackingModuleContainer];
     }
-  }
 
   if (_magicStackRankReceived) {
     for (MagicStackModuleContainer* parcelTrackingModuleContainer in
@@ -937,12 +878,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)tabResumptionViewTapped {
   [self.suggestionCommandHandler openTabResumptionItem];
-}
-
-#pragma mark - ParcelTrackingViewDelegate methods
-
-- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
-  [self.suggestionCommandHandler loadParcelTrackingPage:parcelTrackingURL];
 }
 
 #pragma mark - ContentSuggestionsSelectionActions
@@ -1080,6 +1015,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.audience neverShowModuleType:type];
 }
 
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  [self.audience enableNotifications:type];
+}
+
 // Returns the module's subtitle, if any, given the Magic Stack module `type`.
 - (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
   if (type == ContentSuggestionsModuleType::kSafetyCheck ||
@@ -1167,31 +1106,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-// Creates the Safety Check (Magic Stack) module using the Safety Check `state`.
-- (void)createSafetyCheck:(SafetyCheckState*)state {
-  self.safetyCheckState = state;
-
-  self.safetyCheckView = [[SafetyCheckView alloc] initWithState:state];
-
-  self.safetyCheckView.delegate = self.audience;
-
-  int checkIssuesCount = CheckIssuesCount(state);
-
-  ContentSuggestionsModuleType type =
-      ContentSuggestionsModuleType::kSafetyCheck;
-
-  if (checkIssuesCount > 2) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
-  } else if (checkIssuesCount > 1) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
-  }
-
-  self.safetyCheckModuleContainer = [[MagicStackModuleContainer alloc]
-      initWithContentView:self.safetyCheckView
-                     type:type
-                 delegate:self];
-}
-
 // Add the elements in `mostVisitedViews` into `verticalStackView`.
 - (void)populateMostVisitedModule {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
@@ -1213,20 +1127,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   shortcutsStackView.spacing =
       ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
   shortcutsStackView.alignment = UIStackViewAlignmentTop;
-  NSUInteger index = 0;
-  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-    view.accessibilityIdentifier = [NSString
-        stringWithFormat:
-            @"%@%li", kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
-            index];
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(contentSuggestionsElementTapped:)];
-    [view addGestureRecognizer:tapRecognizer];
-    [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-    [shortcutsStackView addArrangedSubview:view];
-    index++;
-  }
   return shortcutsStackView;
 }
 

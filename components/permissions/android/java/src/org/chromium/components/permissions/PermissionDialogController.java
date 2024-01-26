@@ -68,14 +68,15 @@ public class PermissionDialogController
     public interface Observer {
         /**
          * Notifies the observer that the user has just completed a permissions prompt.
+         *
          * @param window The {@link WindowAndroid} for the prompt that just finished.
          * @param permissions An array of ContentSettingsType, indicating the last dialog
-         *         permissions.
+         *     permissions.
          * @param result A ContentSettingValues type, indicating the last dialog result.
          */
         void onDialogResult(
                 WindowAndroid window,
-                @ContentSettingsType int[] permissions,
+                @ContentSettingsType.EnumType int[] permissions,
                 @ContentSettingValues int result);
     }
 

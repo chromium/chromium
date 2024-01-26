@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
@@ -30,6 +31,12 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   using TokenListCertsCallback = base::OnceCallback<void(
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>)>;
 
+  // Methods to create each of the specializations of KcerToken.
+  static std::unique_ptr<KcerToken> CreateWithoutNss(
+      Token token,
+      HighLevelChapsClient* chaps_client);
+  static std::unique_ptr<KcerToken> CreateForNss(Token token);
+
   KcerToken() = default;
   KcerToken(const KcerToken&) = delete;
   KcerToken& operator=(const KcerToken&) = delete;
@@ -43,9 +50,9 @@ class COMPONENT_EXPORT(KCER) KcerToken {
 
   // Initialization methods for different specializations of KcerToken. They
   // should be used by the factory that creates instances of Kcer and knows
-  // which tokens are used at the moment, even when it has only a generic
+  // which tokens are used at the moment even when it has only a generic
   // pointer to them. Each KcerToken specialization only needs to implement the
-  // correct relevant method.
+  // single correct relevant method.
   virtual void InitializeWithoutNss(SessionChapsClient::SlotId pkcs11_slot_id) {
   }
   virtual void InitializeForNss(crypto::ScopedPK11Slot nss_slot) {}
@@ -86,6 +93,11 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void GetTokenInfo(Kcer::GetTokenInfoCallback callback) = 0;
   virtual void GetKeyInfo(PrivateKeyHandle key,
                           Kcer::GetKeyInfoCallback callback) = 0;
+  virtual void GetKeyPermissions(PrivateKeyHandle key,
+                                 Kcer::GetKeyPermissionsCallback callback) = 0;
+  virtual void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      Kcer::GetCertProvisioningProfileIdCallback callback) = 0;
   virtual void SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               Kcer::StatusCallback callback) = 0;

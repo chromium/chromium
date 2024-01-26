@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -34,7 +37,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -52,8 +54,6 @@ class ContentSettingsPattern;
 class ContentSettingsTypeSet;
 class Profile;
 class GURL;
-
-enum class ContentSettingsType : int32_t;
 
 namespace apps {
 struct AppLaunchParams;
@@ -78,9 +78,11 @@ namespace content {
 class WebContents;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 namespace message_center {
 class Notification;
 }
+#endif
 
 namespace ui {
 enum ResourceScaleFactor : int;
@@ -133,8 +135,8 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
     virtual void ModifyWebAppCapabilityAccess(
         const std::string& app_id,
-        absl::optional<bool> accessing_camera,
-        absl::optional<bool> accessing_microphone) = 0;
+        std::optional<bool> accessing_camera,
+        std::optional<bool> accessing_microphone) = 0;
   };
 
   using LoadIconCallback = base::OnceCallback<void(apps::IconValuePtr)>;
@@ -278,8 +280,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void LaunchAppWithFilesCheckingUserPermission(
       const std::string& app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback);
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   Profile* profile() const { return profile_; }
 
@@ -379,8 +380,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       apps::IntentPtr intent,
       apps::LaunchSource launch_source,
       int64_t display_id,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback);
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   // Get the list of identifiers for the app that will be used in policy
   // controls, such as force-installation and pinning. May be empty.
@@ -405,22 +405,21 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void OnFileHandlerDialogCompleted(
       std::string app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback,
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       bool allowed,
       bool remember_user_choice);
 
   void OnLaunchCompleted(
       apps::AppLaunchParams params_for_restore,
       bool is_system_web_app,
-      absl::optional<GURL> override_url,
+      std::optional<GURL> override_url,
       base::OnceCallback<void(content::WebContents*)> on_complete,
       base::WeakPtr<Browser> browser,
       base::WeakPtr<content::WebContents> web_contents,
       apps::LaunchContainer container);
 
   void OnGetWebAppSize(webapps::AppId app_id,
-                       absl::optional<ComputedAppSize> size);
+                       std::optional<ComputedAppSize> size);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

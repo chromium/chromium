@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/system/statistics_provider.h"
 
+#include <string_view>
+
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
@@ -114,7 +116,7 @@ bool StatisticsProvider::FlagValueToBool(FlagValue value, bool default_value) {
   }
 }
 
-std::optional<base::StringPiece> StatisticsProvider::GetMachineID() {
+std::optional<std::string_view> StatisticsProvider::GetMachineID() {
   for (const char* key : kMachineInfoSerialNumberKeys) {
     auto machine_id = GetMachineStatistic(key);
     if (machine_id && !machine_id->empty()) {

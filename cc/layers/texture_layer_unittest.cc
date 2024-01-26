@@ -296,6 +296,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
       loop.Run();
     }
 
+    client.SetLayerTreeHost(nullptr);
     // Destroy the LayerTreeHost and the compositor-thread LayerImpl trees
     // while the resource is still in the layer. The resource should be released
     // back to the TextureLayer's client, but is post-tasked back so...
@@ -2020,6 +2021,52 @@ class SoftwareTextureLayerUnregisterRegisterTest
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerUnregisterRegisterTest);
+
+class TextureLayerNoResourceTest : public LayerTreeTest, TextureLayerClient {
+ public:
+  bool PrepareTransferableResource(
+      SharedBitmapIdRegistrar* bitmap_registar,
+      viz::TransferableResource* transferable_resource,
+      viz::ReleaseCallback* release_callback) override {
+    return false;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeTest::SetupTree();
+    auto texture_layer = TextureLayer::CreateForMailbox(this);
+    texture_layer->SetIsDrawable(true);
+    texture_layer->SetContentsOpaque(true);
+    texture_layer->SetBounds(gfx::Size(100, 100));
+    texture_layer->SetBackgroundColor(SkColors::kRed);
+    layer_tree_host()->root_layer()->AddChild(texture_layer);
+    texture_layer_id_ = static_cast<uint32_t>(texture_layer->id());
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(0u, frame.resource_list.size());
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+
+    const auto& quad_list = frame.render_pass_list[0]->quad_list;
+    EXPECT_EQ(1u, quad_list.size());
+    EXPECT_NE(viz::DrawQuad::Material::kTextureContent,
+              quad_list.ElementAt(0)->material);
+
+    const auto& shared_list = frame.render_pass_list[0]->shared_quad_state_list;
+    EXPECT_EQ(1u, shared_list.size());
+    EXPECT_NE(texture_layer_id_, shared_list.ElementAt(0)->layer_id);
+
+    EndTest();
+  }
+
+ private:
+  uint32_t texture_layer_id_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerNoResourceTest);
 
 }  // namespace
 }  // namespace cc

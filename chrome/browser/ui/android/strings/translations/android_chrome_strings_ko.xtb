@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
 <translation id="1796666869097395659">나중에 다시 보려면 탭 최소화</translation>
 <translation id="1807246157184219062">밝게</translation>
+<translation id="1807709131360304325">새 창 열기</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">사이트 일시중지됨</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="2067805253194386918">텍스트</translation>
+<translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2091863218454846791">간단히 보기 표시 중</translation>
 <translation id="2093731487903423814">지난 15분</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">웹 및 앱 활동</translation>
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
-<translation id="2241634353105152135">한 번만</translation>
 <translation id="2247789808226901522">카드가 만료됨</translation>
 <translation id="2248941474044011069">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
-<translation id="2327226657832576859">PDF를 자동으로 여시겠습니까?</translation>
 <translation id="2328985652426384049">로그인할 수 없음</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> APK를 설치할 수 없음</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
+<translation id="2789486458103222910">확인</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">다른 기기에 연결하기 위해 Chrome을 업데이트하는 중</translation>
 <translation id="2951071800649516099">나중에 읽을 수 있도록 읽기 목록에 페이지를 추가합니다.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
-<translation id="2961210776189273067">제목</translation>
 <translation id="296370266220139811">적게 입력하고 시간 절약하기</translation>
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4307992518367153382">기본설정</translation>
+<translation id="4311652497846705514">PDF를 여시겠습니까?</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">지난 1시간</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
-<translation id="4541505619120536051">항상 열기</translation>
 <translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">내 활동 페이지로 리디렉션되는 페이지 인사이트 허브의 개인정보처리방침 로고</translation>
 <translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
 <translation id="5492637351392383067">기기 내 암호화</translation>
-<translation id="5509866835115085009">PDF를 다운로드하면 Chrome에서 자동으로 PDF를 열 수 있습니다.</translation>
 <translation id="5514904542973294328">기기 관리자가 사용 중지함</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5966233851250124270">선택사항이 Chrome에 저장됩니다</translation>
+<translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5995726099713306770">페이지를 다시 다운로드하시겠습니까?</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
@@ -1128,7 +1128,6 @@
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
-<translation id="6958103823951858863">다운로드 후 자동으로 PDF 열기</translation>
 <translation id="6963766334940102469">북마크 삭제</translation>
 <translation id="696447261358045621">시크릿 모드 종료</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -1303,6 +1302,7 @@
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
+<translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="78270725016672455">컴퓨터가 사이트에 로그인하기 위해 기기를 등록하려고 합니다.</translation>
 <translation id="7844171778363018843">동기화할 데이터 선택 안됨</translation>
@@ -1330,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
+<translation id="7951102827450076904">다운로드한 PDF 항상 열기</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">페이지 통계 뒤로 버튼</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>

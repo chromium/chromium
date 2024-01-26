@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_hit_test_options_init.h"
@@ -336,18 +337,20 @@ XRSession::XRSession(
     device::mojom::blink::XRInteractionMode interaction_mode,
     device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     bool sensorless_session,
-    XRSessionFeatureSet enabled_features)
+    XRSessionFeatureSet enabled_feature_set)
     : ActiveScriptWrappable<XRSession>({}),
+      frame_tracked_images_(
+          MakeGarbageCollected<FrozenArray<XRImageTrackingResult>>()),
       xr_(xr),
       mode_(mode),
       environment_integration_(
           mode == device::mojom::blink::XRSessionMode::kImmersiveAr),
-      enabled_features_(std::move(enabled_features)),
+      enabled_feature_set_(std::move(enabled_feature_set)),
       plane_manager_(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
       depth_manager_(
-          CreateDepthManagerIfEnabled(enabled_features_, *device_config)),
+          CreateDepthManagerIfEnabled(enabled_feature_set_, *device_config)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       callback_collection_(
@@ -357,6 +360,13 @@ XRSession::XRSession(
                                  device_config->supports_viewport_scaling),
       enable_anti_aliasing_(device_config->enable_anti_aliasing),
       sensorless_session_(sensorless_session) {
+  FrozenArray<IDLString>::VectorType enabled_features;
+  for (const auto& feature : enabled_feature_set_) {
+    enabled_features.push_back(XRSessionFeatureToString(feature));
+  }
+  enabled_features_ =
+      MakeGarbageCollected<FrozenArray<IDLString>>(std::move(enabled_features));
+
   client_receiver_.Bind(
       std::move(client_receiver),
       xr->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -401,8 +411,8 @@ XRSession::XRSession(
 
 void XRSession::SetDOMOverlayElement(Element* element) {
   DVLOG(2) << __func__ << ": element=" << element;
-  DCHECK(
-      enabled_features_.Contains(device::mojom::XRSessionFeature::DOM_OVERLAY));
+  DCHECK(enabled_feature_set_.Contains(
+      device::mojom::XRSessionFeature::DOM_OVERLAY));
   DCHECK(element);
 
   overlay_element_ = element;
@@ -428,13 +438,8 @@ const String XRSession::visibilityState() const {
   }
 }
 
-Vector<String> XRSession::enabledFeatures() const {
-  Vector<String> enabled_features;
-  for (const auto& feature : enabled_features_) {
-    enabled_features.push_back(XRSessionFeatureToString(feature));
-  }
-
-  return enabled_features;
+const FrozenArray<IDLString>& XRSession::enabledFeatures() const {
+  return *enabled_features_.Get();
 }
 
 XRAnchorSet* XRSession::TrackedAnchors() const {
@@ -1761,7 +1766,8 @@ ScriptPromise XRSession::getTrackedImageScores(
 
   if (tracked_image_scores_available_) {
     DVLOG(3) << __func__ << ": returning existing results";
-    resolver->Resolve(tracked_image_scores_);
+    resolver->Resolve(
+        MakeGarbageCollected<FrozenArray<IDLString>>(tracked_image_scores_));
   } else {
     DVLOG(3) << __func__ << ": storing promise";
     image_scores_resolvers_.push_back(resolver);
@@ -1773,18 +1779,22 @@ ScriptPromise XRSession::getTrackedImageScores(
 void XRSession::ProcessTrackedImagesData(
     const device::mojom::blink::XRTrackedImagesData* images_data) {
   DVLOG(3) << __func__;
-  frame_tracked_images_.clear();
 
   if (!images_data) {
+    frame_tracked_images_ =
+        MakeGarbageCollected<FrozenArray<XRImageTrackingResult>>();
     return;
   }
 
+  HeapVector<Member<XRImageTrackingResult>> frame_tracked_images;
   for (const auto& image : images_data->images_data) {
     DVLOG(3) << __func__ << ": image index=" << image->index;
-    XRImageTrackingResult* result =
-        MakeGarbageCollected<XRImageTrackingResult>(this, *image);
-    frame_tracked_images_.push_back(result);
+    frame_tracked_images.push_back(
+        MakeGarbageCollected<XRImageTrackingResult>(this, *image));
   }
+  frame_tracked_images_ =
+      MakeGarbageCollected<FrozenArray<XRImageTrackingResult>>(
+          std::move(frame_tracked_images));
 
   if (images_data->image_trackable_scores) {
     DVLOG(3) << ": got image_trackable_scores";
@@ -1800,13 +1810,14 @@ void XRSession::ProcessTrackedImagesData(
     image_scores_resolvers_.swap(image_score_promises);
     for (ScriptPromiseResolver* resolver : image_score_promises) {
       DVLOG(3) << __func__ << ": resolving promise";
-      resolver->Resolve(tracked_image_scores_);
+      resolver->Resolve(
+          MakeGarbageCollected<FrozenArray<IDLString>>(tracked_image_scores_));
     }
     tracked_image_scores_available_ = true;
   }
 }
 
-HeapVector<Member<XRImageTrackingResult>> XRSession::ImageTrackingResults(
+const FrozenArray<XRImageTrackingResult>& XRSession::ImageTrackingResults(
     ExceptionState& exception_state) {
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
     exception_state.ThrowDOMException(
@@ -1814,10 +1825,10 @@ HeapVector<Member<XRImageTrackingResult>> XRSession::ImageTrackingResults(
         kFeatureNotSupportedBySessionPrefix +
             XRSessionFeatureToString(
                 device::mojom::XRSessionFeature::IMAGE_TRACKING));
-    return {};
+    return *MakeGarbageCollected<FrozenArray<XRImageTrackingResult>>();
   }
 
-  return frame_tracked_images_;
+  return *frame_tracked_images_.Get();
 }
 
 void XRSession::UpdateWorldUnderstandingStateForFrame(
@@ -1871,7 +1882,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
 
 bool XRSession::IsFeatureEnabled(
     device::mojom::XRSessionFeature feature) const {
-  return enabled_features_.Contains(feature);
+  return enabled_feature_set_.Contains(feature);
 }
 
 void XRSession::SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter) {
@@ -2387,6 +2398,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(world_light_probe_);
   visitor->Trace(pending_render_state_);
   visitor->Trace(end_session_resolver_);
+  visitor->Trace(enabled_features_);
   visitor->Trace(input_sources_);
   visitor->Trace(resize_observer_);
   visitor->Trace(canvas_input_provider_);

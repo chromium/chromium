@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.Incog
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
  * Unit tests for {@link IncognitoTabSwitcherPane}. Refer to {@link TabSwitcherPaneUnitTest} for
@@ -69,7 +68,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private IncognitoTabModel mIncognitoTabModel;
-    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private PaneHubController mPaneHubController;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
@@ -108,7 +106,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mMenuOrKeyboardActionController,
                         mIncognitoReauthControllerSupplier);
     }
 
@@ -191,6 +188,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
         TabSwitcherPaneCoordinator coordinator =
                 mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        reset(coordinator);
 
         callback.onIncognitoReauthNotPossible();
         callback.onIncognitoReauthFailure();
@@ -329,10 +327,10 @@ public class IncognitoTabSwitcherPaneUnitTest {
         DisplayButtonData buttonData =
                 mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_incognito_stack),
                 buttonData.resolveText(mContext));
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_incognito_stack),
                 buttonData.resolveContentDescription(mContext));
         assertNotNull(buttonData.resolveIcon(mContext));
 

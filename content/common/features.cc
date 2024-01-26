@@ -24,6 +24,12 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables exposure of the Cross App Web Attribution Reporting in the renderer
+// without an origin trial token.
+BASE_FEATURE(kAttributionReportingCrossAppWebOverride,
+             "AttributionReportingCrossAppWebOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
@@ -52,6 +58,12 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromUnknown,
              "BlockInsecurePrivateNetworkRequestsFromUnknown",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The fix to crbug.com/1248529 will be behind this default-enabled flag, in
+// case it breaks any applications in the wild.
+BASE_FEATURE(kHistoryInterventionSameDocumentFix,
+             "HistoryInterventionSameDocumentFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, keyboard user activation will be verified by the browser side.
 BASE_FEATURE(kBrowserVerifiedUserActivationKeyboard,
@@ -146,9 +158,9 @@ BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable back/forward cache when a page which has subframe(s) with ongoing
-// navigation(s) is navigated. Currently, this is only for navigations without
-// URLLoaders. This flag should be removed once the https://crbug.com/1511153 is
-// resolved.
+// navigation(s) is navigated. Currently, this is only for navigations which
+// don't need URLLoaders or haven't yet sent network requests. This flag should
+// be removed once the https://crbug.com/1511153 is resolved.
 BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
              "EnableBackForwardCacheForOngoingSubframeNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);

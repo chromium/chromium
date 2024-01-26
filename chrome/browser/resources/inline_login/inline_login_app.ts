@@ -116,10 +116,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
         e => this.onAuthCompleted_(e as CustomEvent<AuthCompletedCredentials>));
     this.authenticator_.addEventListener(
         'showIncognito', () => this.onShowIncognito_());
-    this.authenticator_.addEventListener(
-        'getAccounts', () => this.onGetAccounts_());
-    this.authenticator_.addEventListener(
-        'getDeviceId', () => this.onGetDeviceId_());
   }
 
   private onDropLink_(e: CustomEvent<string>) {
@@ -152,20 +148,6 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
   private onShowIncognito_() {
     this.browserProxy_.showIncognito();
-  }
-
-  private onGetAccounts_() {
-    this.browserProxy_.getAccounts().then(result => {
-      assert(this.authenticator_);
-      this.authenticator_.getAccountsResponse(result);
-    });
-  }
-
-  private onGetDeviceId_() {
-    this.browserProxy_.getDeviceId().then(deviceId => {
-      assert(this.authenticator_);
-      this.authenticator_.getDeviceIdResponse(deviceId);
-    });
   }
 
   /**

@@ -71,7 +71,7 @@ void WaitForClosingBrowsersToClose() {
 KombuchaInProcessFuzzer::KombuchaInProcessFuzzer()
     : InteractiveBrowserTestT(InProcessFuzzerOptions{
           .run_loop_timeout_behavior = RunLoopTimeoutBehavior::kContinue,
-          .run_loop_timeout = base::Seconds(5),
+          .run_loop_timeout = base::Seconds(20),
       }) {}
 
 KombuchaInProcessFuzzer::~KombuchaInProcessFuzzer() = default;

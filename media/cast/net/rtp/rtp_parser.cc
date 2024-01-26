@@ -13,10 +13,8 @@ namespace media {
 namespace cast {
 
 // static
-bool RtpParser::ParseSsrc(const uint8_t* packet,
-                          size_t length,
-                          uint32_t* ssrc) {
-  base::BigEndianReader big_endian_reader(packet, length);
+bool RtpParser::ParseSsrc(base::span<const uint8_t> packet, uint32_t* ssrc) {
+  base::BigEndianReader big_endian_reader(packet);
   return big_endian_reader.Skip(8) && big_endian_reader.ReadU32(ssrc);
 }
 
@@ -28,20 +26,19 @@ RtpParser::RtpParser(uint32_t expected_sender_ssrc,
 
 RtpParser::~RtpParser() = default;
 
-bool RtpParser::ParsePacket(const uint8_t* packet,
-                            size_t length,
+bool RtpParser::ParsePacket(base::span<const uint8_t> packet,
                             RtpCastHeader* header,
                             const uint8_t** payload_data,
                             size_t* payload_size) {
-  DCHECK(packet);
   DCHECK(header);
   DCHECK(payload_data);
   DCHECK(payload_size);
 
-  if (length < (kRtpHeaderLength + kCastHeaderLength))
+  if (packet.size() < (kRtpHeaderLength + kCastHeaderLength)) {
     return false;
+  }
 
-  base::BigEndianReader reader(packet, length);
+  base::BigEndianReader reader(packet);
 
   // Parse the RTP header.  See
   // http://en.wikipedia.org/wiki/Real-time_Transport_Protocol for an

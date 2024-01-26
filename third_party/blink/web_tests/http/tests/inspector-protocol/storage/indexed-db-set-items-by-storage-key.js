@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, session, page} = await testRunner.startBlank(
       `Tests that setting IndexedDB data by storage key works differently to doing so by origin\n`);
 

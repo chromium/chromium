@@ -11,6 +11,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -70,7 +70,7 @@ class DlcserviceErrorResponseHandler {
  private:
   void VerifyAndSetError(dbus::ErrorResponse* err_response) {
     const std::string& err = err_response->GetErrorName();
-    static constexpr auto kErrSet = base::MakeFixedFlatSet<base::StringPiece>({
+    static constexpr auto kErrSet = base::MakeFixedFlatSet<std::string_view>({
         dlcservice::kErrorNone,
         dlcservice::kErrorInternal,
         dlcservice::kErrorBusy,

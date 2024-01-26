@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -44,7 +45,7 @@ class BASE_EXPORT FileProxy final {
   using GetFileInfoCallback =
       OnceCallback<void(File::Error, const File::Info&)>;
   using ReadCallback =
-      OnceCallback<void(File::Error, const char* data, int bytes_read)>;
+      OnceCallback<void(File::Error, base::span<const char> data)>;
   using WriteCallback = OnceCallback<void(File::Error, int bytes_written)>;
 
   explicit FileProxy(TaskRunner* task_runner);
@@ -109,8 +110,7 @@ class BASE_EXPORT FileProxy final {
   // This returns false if |bytes_to_write| is less than or equal to zero,
   // if |buffer| is NULL, or if task posting to |task_runner| has failed.
   bool Write(int64_t offset,
-             const char* buffer,
-             int bytes_to_write,
+             base::span<const uint8_t> data,
              WriteCallback callback);
 
   // Proxies File::SetTimes. The callback can be null.

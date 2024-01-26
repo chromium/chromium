@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
@@ -96,7 +97,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 // Check that a capability set to True is received as True.

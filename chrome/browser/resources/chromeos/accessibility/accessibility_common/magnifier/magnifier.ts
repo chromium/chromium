@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {ChromeEventHandler} from '../../common/chrome_event_handler.js';
-import {EventHandler} from '../../common/event_handler.js';
-import {FlagName, Flags} from '../../common/flags.js';
-import {RectUtil} from '../../common/rect_util.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {ChromeEventHandler} from '/common/chrome_event_handler.js';
+import {EventHandler} from '/common/event_handler.js';
+import {FlagName, Flags} from '/common/flags.js';
+import {RectUtil} from '/common/rect_util.js';
 
 import AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;

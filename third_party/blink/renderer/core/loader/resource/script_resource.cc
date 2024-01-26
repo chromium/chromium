@@ -61,17 +61,26 @@ namespace blink {
 
 namespace {
 
-// Returns true if the given request context is a script-like destination
-// defined in the Fetch spec:
-// https://fetch.spec.whatwg.org/#request-destination-script-like
+// Returns true if the given request context is a valid destination for
+// scripts or modules. This includes:
+// - script-like https://fetch.spec.whatwg.org/#request-destination-script-like
+// - json
+// - style
+// These contextes to the destinations that the request performed by
+// https://html.spec.whatwg.org/#fetch-a-single-module-script can have.
 bool IsRequestContextSupported(
     mojom::blink::RequestContextType request_context) {
   // TODO(nhiroki): Support "audioworklet" and "paintworklet" destinations.
   switch (request_context) {
+    // script-like
     case mojom::blink::RequestContextType::SCRIPT:
     case mojom::blink::RequestContextType::WORKER:
     case mojom::blink::RequestContextType::SERVICE_WORKER:
     case mojom::blink::RequestContextType::SHARED_WORKER:
+    // json
+    case mojom::blink::RequestContextType::JSON:
+    // style
+    case mojom::blink::RequestContextType::STYLE:
       return true;
     default:
       break;

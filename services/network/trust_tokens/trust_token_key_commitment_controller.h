@@ -15,11 +15,6 @@
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "url/gurl.h"
 
-namespace mojom {
-class URLLoaderFactory;
-class URLResponseHead;
-}  // namespace mojom
-
 namespace net {
 struct NetworkTrafficAnnotationTag;
 struct RedirectInfo;
@@ -31,6 +26,11 @@ class Origin;
 }
 
 namespace network {
+
+namespace mojom {
+class URLLoaderFactory;
+class URLResponseHead;
+}  // namespace mojom
 
 namespace internal {
 

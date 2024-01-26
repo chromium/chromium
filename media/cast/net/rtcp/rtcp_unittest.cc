@@ -58,7 +58,7 @@ class FakeRtcpTransport : public PacedPacketSender {
 
   bool SendRtcpPacket(uint32_t ssrc, PacketRef packet) final {
     clock_->Advance(packet_delay_);
-    rtcp_session_->IncomingRtcpPacket(&packet->data[0], packet->data.size());
+    rtcp_session_->IncomingRtcpPacket(packet->data);
     return true;
   }
 

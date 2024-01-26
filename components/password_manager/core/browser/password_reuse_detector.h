@@ -55,135 +55,54 @@ struct MatchingReusedCredential {
 // a password reuse.
 class PasswordReuseDetector {
  public:
-  PasswordReuseDetector();
-  ~PasswordReuseDetector();
+  PasswordReuseDetector() = default;
+  virtual ~PasswordReuseDetector() = default;
 
   PasswordReuseDetector(const PasswordReuseDetector&) = delete;
   PasswordReuseDetector& operator=(const PasswordReuseDetector&) = delete;
 
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
+  virtual void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) = 0;
 
-  void OnLoginsChanged(
-      const password_manager::PasswordStoreChangeList& changes);
+  virtual void OnLoginsChanged(
+      const password_manager::PasswordStoreChangeList& changes) = 0;
 
-  void OnLoginsRetained(const std::vector<PasswordForm>& retained_passwords);
+  virtual void OnLoginsRetained(
+      const std::vector<PasswordForm>& retained_passwords) = 0;
 
   // Clears all the cached passwords which are stored on the account store.
-  void ClearCachedAccountStorePasswords();
+  virtual void ClearCachedAccountStorePasswords() = 0;
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain| or to a sync password.
   // If such suffix is found, |consumer|->OnReuseFound() is called on the same
   // thread on which this method is called.
   // |consumer| should not be null.
-  void CheckReuse(const std::u16string& input,
-                  const std::string& domain,
-                  PasswordReuseDetectorConsumer* consumer);
+  virtual void CheckReuse(const std::u16string& input,
+                          const std::string& domain,
+                          PasswordReuseDetectorConsumer* consumer) = 0;
 
   // Stores a vector of PasswordHashData for Gaia password reuse checking.
-  void UseGaiaPasswordHash(
-      std::optional<std::vector<PasswordHashData>> password_hash_data_list);
+  virtual void UseGaiaPasswordHash(
+      std::optional<std::vector<PasswordHashData>> password_hash_data_list) = 0;
 
   // Stores a vector of PasswordHashData for enterprise password reuse checking.
-  void UseNonGaiaEnterprisePasswordHash(
-      std::optional<std::vector<PasswordHashData>> password_hash_data_list);
+  virtual void UseNonGaiaEnterprisePasswordHash(
+      std::optional<std::vector<PasswordHashData>> password_hash_data_list) = 0;
 
   // Stores enterprise login URLs and change password URL.
   // These URLs should be skipped in enterprise password reuse checking.
-  void UseEnterprisePasswordURLs(
+  virtual void UseEnterprisePasswordURLs(
       std::optional<std::vector<GURL>> enterprise_login_urls,
-      std::optional<GURL> enterprise_change_password_url);
+      std::optional<GURL> enterprise_change_password_url) = 0;
 
-  void ClearGaiaPasswordHash(const std::string& username);
+  virtual void ClearGaiaPasswordHash(const std::string& username) = 0;
 
-  void ClearAllGaiaPasswordHash();
+  virtual void ClearAllGaiaPasswordHash() = 0;
 
-  void ClearAllEnterprisePasswordHash();
+  virtual void ClearAllEnterprisePasswordHash() = 0;
 
-  void ClearAllNonGmailPasswordHash();
-
- private:
-  using PasswordsReusedCredentialsMap =
-      std::map<std::u16string,
-               std::set<MatchingReusedCredential>,
-               ReverseStringLess>;
-
-  using passwords_iterator = PasswordsReusedCredentialsMap::const_iterator;
-
-  // Add password from |form| to |passwords_| and
-  // |passwords_with_matching_reused_credentials_|.
-  void AddPassword(const PasswordForm& form);
-
-  // Remove password of |form| from
-  // |passwords_with_matching_reused_credentials_|;
-  void RemovePassword(const PasswordForm& form);
-
-  // If Gaia password reuse is found, return the PasswordHashData of the reused
-  // password. If no reuse is found, return |std::nullopt|.
-  std::optional<PasswordHashData> CheckGaiaPasswordReuse(
-      const std::u16string& input,
-      const std::string& domain);
-
-  // If Non-Gaia enterprise password reuse is found, return the PasswordHashData
-  // of the the reused password. If no reuse is found, return |std::nullopt|.
-  std::optional<PasswordHashData> CheckNonGaiaEnterprisePasswordReuse(
-      const std::u16string& input,
-      const std::string& domain);
-
-  // If saved-password reuse is found, fill in the MatchingReusedCredentials
-  // that match any reused password, and return the longest password matched. If
-  // no reuse is found, return an empty string.
-  std::u16string CheckSavedPasswordReuse(
-      const std::u16string& input,
-      const std::string& domain,
-      std::vector<MatchingReusedCredential>* matching_reused_credentials_out);
-
-  // Returns the iterator to |passwords_with_matching_reused_credentials_| that
-  // corresponds to the longest key in
-  // |passwords_with_matching_reused_credentials_| that is a suffix of |input|.
-  // Returns passwords_with_matching_reused_credentials_.end() in case when no
-  // key in |passwords_with_matching_reused_credentials_| is a prefix of
-  // |input|.
-  passwords_iterator FindFirstSavedPassword(const std::u16string& input);
-
-  // Call this repeatedly with iterator from |FindFirstSavedPassword| to
-  // find other matching passwords. This returns the iterator to
-  // |passwords_with_matching_reused_credentials_| that is the next previous
-  // matching entry that's a suffix of |input|, or
-  // passwords_with_matching_reused_credentials_.end() if there are no more.
-  passwords_iterator FindNextSavedPassword(const std::u16string& input,
-                                           passwords_iterator it);
-
-  // Number of passwords in |passwords_with_matching_reused_credentials_|,
-  // each password is calculated the number of times how many different sites
-  // it's saved on.
-  size_t SavedPasswordsCount();
-
-  // Ensures that all methods, excluding construction, are called on the same
-  // sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // Contains all passwords.
-  // A key is a password.
-  // A value is a set of pairs of signon_realms and username on which the
-  // password is saved.
-  // The order of the keys are ordered in lexicographical order of reversed
-  // strings. The reason for this is to optimize the lookup time. If the strings
-  // were not reversed, it would be needed to loop over the length of the typed
-  // input and size of this map and then find the suffix (O(n*m*log(n))).
-  // See https://crbug.com/668155.
-  PasswordsReusedCredentialsMap passwords_with_matching_reused_credentials_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::optional<std::vector<PasswordHashData>> gaia_password_hash_data_list_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::optional<std::vector<PasswordHashData>>
-      enterprise_password_hash_data_list_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::optional<std::vector<GURL>> enterprise_password_urls_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  virtual void ClearAllNonGmailPasswordHash() = 0;
 };
 
 }  // namespace password_manager

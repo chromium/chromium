@@ -117,8 +117,9 @@ app_management::mojom::LocalePtr CreateLocaleForTag(
   // In Android, it's possible for Apps to set custom locale tag, hence these
   // locales might be untranslatable (based on ICU-20273).
   // In this case, we'll pass empty string and let the UI decides what to
-  // display. For ARC, we'll display the `locale_tag` as is (relying on
-  // Polymer to escape possible HTML tags).
+  // display. For ARC, we'll display the `locale_tag` as is (this is safe
+  // within the limit specified by IETF BCP 47, as no malicious HTML tags
+  // could be formed).
   return app_management::mojom::Locale::New(
       locale_tag,
       display_name == kUndefinedTranslatedLocaleName ? "" : display_name,

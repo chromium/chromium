@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -38,9 +39,7 @@ using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   switch (error.recovery_type) {
     case PasswordStoreBackendErrorRecoveryType::kUnrecoverable:
-    case PasswordStoreBackendErrorRecoveryType::kUnspecified:
       return true;
-    case PasswordStoreBackendErrorRecoveryType::kRetriable:
     case PasswordStoreBackendErrorRecoveryType::kRecoverable:
       return false;
   }
@@ -295,6 +294,7 @@ PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
 void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
+  sync_service_->AddObserver(this);
   android_backend_->OnSyncServiceInitialized(sync_service);
 }
 
@@ -338,6 +338,12 @@ PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
                                            : android_backend_;
 }
 
+void PasswordStoreProxyBackend::OnSyncShutdown(
+    syncer::SyncService* sync_service) {
+  sync_service->RemoveObserver(this);
+  sync_service_ = nullptr;
+}
+
 void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
     CallbackOriginatesFromAndroidBackend originates_from_android,
     RemoteChangesReceived remote_form_changes_received,
@@ -351,6 +357,7 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 }
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
+  CHECK(sync_service_, base::NotFatalUntil::M123);
   if (is_account_store_) {
     // The account store shouldn't be used unless the split happened.
     CHECK(password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_));

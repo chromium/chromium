@@ -24,13 +24,16 @@ import '../i18n_setup.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import {AutofillManagerImpl} from './autofill_manager_proxy.js';
 import {getTemplate} from './autofill_section.html.js';
 
 declare global {
@@ -42,6 +45,7 @@ declare global {
 export interface SettingsAutofillSectionElement {
   $: {
     autofillProfileToggle: SettingsToggleButtonElement,
+    autofillSyncToggle: SettingsToggleButtonElement,
     addressSharedMenu: CrActionMenuElement,
     addAddress: CrButtonElement,
     addressList: HTMLElement,
@@ -81,7 +85,7 @@ export class SettingsAutofillSectionElement extends
   prefs: {[key: string]: any};
   addresses: chrome.autofillPrivate.AddressEntry[];
   activeAddress: chrome.autofillPrivate.AddressEntry|null;
-  private accountInfo_?: chrome.autofillPrivate.AccountInfo;
+  private accountInfo_: chrome.autofillPrivate.AccountInfo|null = null;
   private showAddressDialog_: boolean;
   private showAddressRemoveConfirmationDialog_: boolean;
   private autofillManager_: AutofillManagerProxy =
@@ -103,12 +107,12 @@ export class SettingsAutofillSectionElement extends
         };
     const setAccountListener =
         (accountInfo?: chrome.autofillPrivate.AccountInfo) => {
-          this.accountInfo_ = accountInfo;
+          this.accountInfo_ = accountInfo || null;
         };
     const setPersonalDataListener: PersonalDataChangedListener =
         (addressList, _cardList, _ibans, accountInfo?) => {
           this.addresses = addressList;
-          this.accountInfo_ = accountInfo;
+          this.accountInfo_ = accountInfo || null;
         };
 
     // Remember the bound reference in order to detach.
@@ -229,7 +233,7 @@ export class SettingsAutofillSectionElement extends
 
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
-      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
     if (address.metadata?.source ===
         chrome.autofillPrivate.AddressSource.ACCOUNT) {
       return false;
@@ -260,6 +264,24 @@ export class SettingsAutofillSectionElement extends
   private moreActionsTitle_(label: string, sublabel: string) {
     return this.i18n(
         'moreActionsForAddress', label + (sublabel ? sublabel : ''));
+  }
+
+  private isAutofillSyncToggleVisible_(accountInfo:
+                                           chrome.autofillPrivate.AccountInfo|
+                                       null): boolean {
+    return !!(accountInfo?.isAutofillSyncToggleAvailable);
+  }
+
+  /**
+   * Triggered by settings-toggle-button#autofillSyncToggle. It passes
+   * the toggle state to the native code. If the data changed the page
+   * content will be refreshed automatically via `PersonalDataChangedListener`.
+   */
+  private onAutofillSyncEnabledChange_() {
+    assert(
+        this.accountInfo_ && this.accountInfo_.isAutofillSyncToggleAvailable);
+    this.autofillManager_.setAutofillSyncToggleEnabled(
+        this.$.autofillSyncToggle.checked);
   }
 }
 

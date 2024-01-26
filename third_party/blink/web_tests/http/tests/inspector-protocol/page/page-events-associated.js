@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <a href="">
       <div style="width:1000px; height: 1000px" href="http://localhost:8000/inspector-protocol/resources/blank.html">LINK</div>

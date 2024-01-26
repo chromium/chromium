@@ -19,10 +19,29 @@
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/aura/env.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/events/event_utils.h"
 
 namespace exo::wayland {
 namespace {
+
+int ToMousePressedFlag(wayland::SerialTracker::EventType event_type) {
+  switch (event_type) {
+    case wayland::SerialTracker::POINTER_LEFT_BUTTON_DOWN:
+      return ui::EF_LEFT_MOUSE_BUTTON;
+    case wayland::SerialTracker::POINTER_MIDDLE_BUTTON_DOWN:
+      return ui::EF_MIDDLE_MOUSE_BUTTON;
+    case wayland::SerialTracker::POINTER_RIGHT_BUTTON_DOWN:
+      return ui::EF_RIGHT_MOUSE_BUTTON;
+    case wayland::SerialTracker::POINTER_FORWARD_BUTTON_DOWN:
+      return ui::EF_FORWARD_MOUSE_BUTTON;
+    case wayland::SerialTracker::POINTER_BACK_BUTTON_DOWN:
+      return ui::EF_BACK_MOUSE_BUTTON;
+    default:
+      return 0;
+  }
+}
 
 uint32_t WaylandDataDeviceManagerDndAction(DndAction action) {
   switch (action) {
@@ -315,12 +334,25 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       source->Cancelled();
       return;
     }
-    if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN) {
-      if (serial_tracker_->GetPointerDownSerial() != serial) {
-        LOG(ERROR)
-            << "The serial passed to StartDrag for pointer does not match its "
-               "expected types. tracker_id="
-            << serial << ", " << serial_tracker_->ToString();
+    const int button_mask = ToMousePressedFlag(event_type.value());
+    LOG(ERROR) << "Start Drag Button Mask=" << button_mask
+               << ", event type=" << SerialTracker::ToString(*event_type);
+
+    if (button_mask) {
+      if ((aura::Env::GetInstance()->mouse_button_flags() & button_mask) == 0) {
+        LOG(ERROR) << "The mouse button used to StartDrag has already been "
+                      "relesed. tracker_id="
+                   << serial << ", " << serial_tracker_->ToString()
+                   << ", stored button event="
+                   << (event_type == wayland::SerialTracker::EventType::
+                                         POINTER_LEFT_BUTTON_DOWN
+                           ? "left"
+                           : "other")
+                   << ", currently pressed buttons="
+                   << base::JoinString(
+                          ui::MouseEventFlagsNames(
+                              aura::Env::GetInstance()->mouse_button_flags()),
+                          ",");
         source->Cancelled();
         return;
       }
@@ -328,11 +360,10 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       data_device->StartDrag(source, origin, icon,
                              ui::mojom::DragEventSource::kMouse);
     } else if (event_type == wayland::SerialTracker::EventType::TOUCH_DOWN) {
-      if (serial_tracker_->GetTouchDownSerial() != serial) {
-        LOG(ERROR)
-            << "The serial passed to StartDrag for touch does not match its "
-               "expected types. tracker_id="
-            << serial << ", " << serial_tracker_->ToString();
+      if (!aura::Env::GetInstance()->is_touch_down()) {
+        LOG(ERROR) << "The touch used to StartDrag has already been relesed. "
+                      "tracker_id="
+                   << serial << ", " << serial_tracker_->ToString();
         source->Cancelled();
         return;
       }
@@ -340,7 +371,8 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       data_device->StartDrag(source, origin, icon,
                              ui::mojom::DragEventSource::kTouch);
     } else {
-      LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
+      LOG(ERROR) << "Invalid event type for StartDrag:"
+                 << SerialTracker::ToString(*event_type)
                  << ", tracker_id=" << serial << ", "
                  << serial_tracker_->ToString();
       source->Cancelled();

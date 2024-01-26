@@ -37,7 +37,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -2488,9 +2487,6 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
 }
 
 TEST_F(LoginDatabaseTest, RetrievesNoteWithLogin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-
   PasswordForm form = GenerateExamplePasswordForm();
   std::ignore = db().AddLogin(form);
   PasswordNote note(u"example note", base::Time::Now());
@@ -2506,9 +2502,6 @@ TEST_F(LoginDatabaseTest, RetrievesNoteWithLogin) {
 }
 
 TEST_F(LoginDatabaseTest, AddLoginWithNotePersistsThem) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-
   PasswordForm form = GenerateExamplePasswordForm();
   PasswordNote note(u"example note", base::Time::Now());
   form.notes = {note};
@@ -2520,9 +2513,6 @@ TEST_F(LoginDatabaseTest, AddLoginWithNotePersistsThem) {
 }
 
 TEST_F(LoginDatabaseTest, RemoveLoginRemovesNoteAttachedToTheLogin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-
   PasswordForm form = GenerateExamplePasswordForm();
   PasswordNote note = PasswordNote(u"example note", base::Time::Now());
   form.notes = {note};

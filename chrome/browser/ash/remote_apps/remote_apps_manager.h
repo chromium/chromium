@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListModelUpdater;
 class ChromeAppListItem;

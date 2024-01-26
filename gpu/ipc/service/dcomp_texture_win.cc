@@ -72,6 +72,7 @@ class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
                                         kTopLeft_GrSurfaceOrigin,
                                         kPremul_SkAlphaType,
                                         gpu::SHARED_IMAGE_USAGE_SCANOUT,
+                                        {},
                                         /*estimated_size=*/0,
                                         /*is_thread_safe=*/false),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {

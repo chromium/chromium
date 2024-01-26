@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_UI_CONTROLLER_H_
 #define CHROME_BROWSER_SHARING_SHARING_UI_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -82,11 +82,10 @@ class SharingUiController {
   void ClearLastDialog();
 
   // Gets the current list of apps and devices and shows a new dialog.
-  void UpdateAndShowDialog(
-      const absl::optional<url::Origin>& initiating_origin);
+  void UpdateAndShowDialog(const std::optional<url::Origin>& initiating_origin);
 
   // Gets the current list of devices that support the required feature.
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> GetDevices() const;
+  std::vector<SharingTargetDeviceInfo> GetDevices() const;
 
   bool HasSendFailed() const;
 
@@ -115,9 +114,9 @@ class SharingUiController {
   // response or when cancelling the request by calling the returned callback.
   base::OnceClosure SendMessageToDevice(
       const SharingTargetDeviceInfo& device,
-      absl::optional<base::TimeDelta> response_timeout,
+      std::optional<base::TimeDelta> response_timeout,
       chrome_browser_sharing::SharingMessage sharing_message,
-      absl::optional<SharingMessageSender::ResponseCallback> callback);
+      std::optional<SharingMessageSender::ResponseCallback> callback);
 
   // Updates the omnibox icon if available.
   void UpdateIcon();
@@ -135,12 +134,12 @@ class SharingUiController {
   // response via |custom_callback|.
   void OnResponse(
       int dialog_id,
-      absl::optional<SharingMessageSender::ResponseCallback> custom_callback,
+      std::optional<SharingMessageSender::ResponseCallback> custom_callback,
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
   void OnAppsReceived(int dialog_id,
-                      const absl::optional<url::Origin>& initiating_origin,
+                      const std::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
   raw_ptr<SharingDialog> dialog_ = nullptr;

@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/formatted_text/formatted_text.h"
@@ -263,20 +264,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                                          row_bytes, x, y);
 }
 
-void CanvasRenderingContext2D::SkipQueuedDrawCommands() {
-  if (CanvasResourceProvider* provider = ResourceProvider();
-      LIKELY(provider != nullptr)) {
-    provider->SkipQueuedDrawCommands();
-  }
-}
-
-void CanvasRenderingContext2D::RestartRecording() {
-  if (CanvasResourceProvider* provider = ResourceProvider();
-      LIKELY(provider != nullptr)) {
-    provider->RestartRecording();
-  }
-}
-
 void CanvasRenderingContext2D::Reset() {
   // This is a multiple inheritance bootstrap
   BaseRenderingContext2D::ResetInternal();
@@ -402,6 +389,14 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
     return nullptr;
   }
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
+}
+
+MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (UNLIKELY(provider == nullptr)) {
+    return nullptr;
+  }
+  return &provider->Recorder();
 }
 
 void CanvasRenderingContext2D::WillDraw(
@@ -852,6 +847,10 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 FontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
+}
+
+int CanvasRenderingContext2D::LayerCount() const {
+  return BaseRenderingContext2D::LayerCount();
 }
 
 }  // namespace blink

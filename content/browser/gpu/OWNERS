@@ -1,5 +1,6 @@
 kbr@chromium.org
 zmo@chromium.org
+kylechar@chromium.org
 
 # For security review.
 per-file gpu_process_host_receiver_bindings.*=set noparent

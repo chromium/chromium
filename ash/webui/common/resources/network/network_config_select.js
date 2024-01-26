@@ -12,8 +12,8 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {assertNotReached} from '//resources/ash/common/assert.js';
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NetworkCertificate} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
@@ -58,15 +58,6 @@ Polymer({
     oncPrefix: {
       type: String,
       value: '',
-    },
-
-    /**
-     * Select item value
-     * @type {string|number}
-     */
-    value: {
-      type: Object,
-      notify: true,
     },
   },
 
@@ -169,5 +160,15 @@ Polymer({
           'networkCertificateName', certificate.issuedBy, certificate.issuedTo);
     }
     return certificate.issuedBy;
+  },
+
+  /**
+   * Only use the `prefilledValue` when it is also listed in the `items`.
+   */
+  isPrefilledValueValid() {
+    if (this.prefilledValue === undefined || this.prefilledValue === null) {
+      return false;
+    }
+    return this.items.includes(this.prefilledValue);
   },
 });

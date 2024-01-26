@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/singleton.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -88,8 +89,8 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   bool IsUmaEnabledOnCrOSDevice() const override { return false; }
 
  private:
-  PrefService* const prefs_;
-  syncer::SyncInvalidationsService* const sync_invalidations_service_;
+  const raw_ptr<PrefService> prefs_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
 };
 
 }  // namespace

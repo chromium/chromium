@@ -200,7 +200,7 @@ export class DefaultResultSaver implements ResultSaver {
 
   async saveGif(blob: Blob, name: string): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
-    ChromeHelper.getInstance().notifyTote(ToteMetricFormat.VIDEO_GIF, name);
+    ChromeHelper.getInstance().notifyTote(ToteMetricFormat.kVideoGif, name);
     await this.updateCover(file);
   }
 
@@ -211,7 +211,7 @@ export class DefaultResultSaver implements ResultSaver {
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
     ChromeHelper.getInstance().notifyTote(
-        ToteMetricFormat.VIDEO_MP4, file.name);
+        ToteMetricFormat.kVideoMp4, file.name);
     await this.updateCover(file);
   }
 }

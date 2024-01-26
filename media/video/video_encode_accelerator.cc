@@ -37,18 +37,12 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
     : payload_size_bytes(payload_size_bytes),
       key_frame(key_frame),
       timestamp(timestamp) {}
-BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
 bool BitstreamBufferMetadata::dropped_frame() const {
   return payload_size_bytes == 0;
 }
 
-bool BitstreamBufferMetadata::end_of_picture() const {
-  if (vp9) {
-    return vp9->end_of_picture;
-  }
-  return true;
-}
+BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
 absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
@@ -255,7 +249,6 @@ bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
          l.referenced_by_upper_spatial_layers ==
              r.referenced_by_upper_spatial_layers &&
          l.reference_lower_spatial_layers == r.reference_lower_spatial_layers &&
-         l.end_of_picture == r.end_of_picture &&
          l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
          l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
          l.p_diffs == r.p_diffs;
@@ -269,8 +262,9 @@ bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
-         l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
-         l.av1 == r.av1 && l.h265 == r.h265;
+         l.end_of_picture == r.end_of_picture && l.vp8 == r.vp8 &&
+         l.vp9 == r.vp9 && l.h264 == r.h264 && l.av1 == r.av1 &&
+         l.h265 == r.h265;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,

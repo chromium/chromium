@@ -65,6 +65,26 @@ bool SessionChapsClient::IsSessionError(uint32_t result_code) {
 
 //==============================================================================
 
+void SessionChapsClientImpl::Shutdown() {
+  chaps_service_ = nullptr;
+}
+
+//==============================================================================
+
+void SessionChapsClientImpl::GetMechanismList(
+    SlotId slot_id,
+    GetMechanismListCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
+
+  return chaps_service_->GetMechanismList(slot_id.value(), std::move(callback));
+}
+
+//==============================================================================
+
 void SessionChapsClientImpl::CreateObject(
     SlotId slot_id,
     const std::vector<uint8_t>& attributes,
@@ -305,11 +325,16 @@ void SessionChapsClientImpl::DidFindObjectsInit(SlotId slot_id,
     sessions_map_.erase(slot_id);
     return std::move(callback).Run({}, result_code);
   }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(callback).Run({}, result_code);
+  }
 
   SessionId session_id = GetSessionForSlot(slot_id);
   CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
 
-  CHECK(chaps_service_);
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
   return chaps_service_->FindObjects(
       session_id.value(), kFindObjectsMaxCount,
       base::BindOnce(&SessionChapsClientImpl::DidFindObjects,
@@ -327,13 +352,18 @@ void SessionChapsClientImpl::DidFindObjects(
     sessions_map_.erase(slot_id);
     return std::move(callback).Run({}, result_code);
   }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(callback).Run({}, result_code);
+  }
 
   SessionId session_id = GetSessionForSlot(slot_id);
   CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
 
   std::vector<ObjectHandle> typed_list(object_list.begin(), object_list.end());
 
-  CHECK(chaps_service_);
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
   return chaps_service_->FindObjectsFinal(
       session_id.value(),
       base::BindOnce(&SessionChapsClientImpl::DidFindObjectsFinal,
@@ -360,6 +390,89 @@ void SessionChapsClientImpl::DidFindObjectsFinal(
   }
   return std::move(callback).Run(std::move(object_list),
                                  chromeos::PKCS11_CKR_OK);
+}
+
+//==============================================================================
+
+void SessionChapsClientImpl::Sign(SlotId slot_id,
+                                  uint64_t mechanism_type,
+                                  std::vector<uint8_t> mechanism_parameter,
+                                  ObjectHandle key_handle,
+                                  std::vector<uint8_t> data,
+                                  int attempts_left,
+                                  SignCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
+
+  SessionId session_id = GetSessionForSlot(slot_id);
+  if (session_id.value() == chromeos::PKCS11_INVALID_SESSION_ID) {
+    if (attempts_left <= 0) {
+      return std::move(callback).Run({}, chaps::CKR_FAILED_TO_OPEN_SESSION);
+    }
+    attempts_left--;
+
+    auto chaps_callback = base::BindOnce(
+        &SessionChapsClientImpl::Sign, weak_factory_.GetWeakPtr(), slot_id,
+        mechanism_type, std::move(mechanism_parameter), key_handle,
+        std::move(data), attempts_left, std::move(callback));
+    return chaps_service_->OpenSession(
+        slot_id.value(), kSessionFlags,
+        base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
+                       weak_factory_.GetWeakPtr(), slot_id,
+                       std::move(chaps_callback)));
+  }
+
+  return chaps_service_->SignInit(
+      session_id.value(), mechanism_type, mechanism_parameter,
+      key_handle.value(),
+      base::BindOnce(&SessionChapsClientImpl::DidSignInit,
+                     weak_factory_.GetWeakPtr(), slot_id, std::move(data),
+                     std::move(callback)));
+}
+
+void SessionChapsClientImpl::DidSignInit(SlotId slot_id,
+                                         std::vector<uint8_t> data,
+                                         SignCallback callback,
+                                         uint32_t result_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsSessionError(result_code)) {
+    sessions_map_.erase(slot_id);
+    return std::move(callback).Run({}, result_code);
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(callback).Run({}, result_code);
+  }
+
+  SessionId session_id = GetSessionForSlot(slot_id);
+  CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
+
+  // Maximum supported RSA key is 4096 bits, its signature is 4096 bits, 512
+  // bytes. The only supported EC key is P-256, its signature is 512 bits, 64
+  // bytes.
+  constexpr uint64_t kMaxOutLength = 512;
+
+  CHECK(chaps_service_);
+  return chaps_service_->Sign(
+      session_id.value(), data, kMaxOutLength,
+      base::BindOnce(&SessionChapsClientImpl::DidSign,
+                     weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
+}
+
+void SessionChapsClientImpl::DidSign(SlotId slot_id,
+                                     SignCallback callback,
+                                     uint64_t actual_out_length,
+                                     const std::vector<uint8_t>& signature,
+                                     uint32_t result_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsSessionError(result_code)) {
+    sessions_map_.erase(slot_id);
+  }
+  return std::move(callback).Run(std::move(signature), result_code);
 }
 
 //==============================================================================

@@ -8,12 +8,12 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ProxyConfigDictionary;
 
@@ -90,7 +90,7 @@ bool GetBypassListFromExtensionPref(const base::Value::Dict& proxy_config,
 // Creates and returns a ProxyConfig dictionary (as defined in the extension
 // API) from the given parameters. Ownership is passed to the caller.
 // Depending on the value of |mode_enum|, several of the strings may be empty.
-absl::optional<base::Value::Dict> CreateProxyConfigDict(
+std::optional<base::Value::Dict> CreateProxyConfigDict(
     ProxyPrefs::ProxyMode mode_enum,
     bool pac_mandatory,
     const std::string& pac_url,
@@ -123,7 +123,7 @@ bool JoinUrlList(const base::Value::List& list,
 // Creates and returns a ProxyRules dictionary as defined in the extension API
 // with the values of a ProxyConfigDictionary configured for fixed proxy
 // servers. Returns an empty object in case of failures.
-absl::optional<base::Value::Dict> CreateProxyRulesDict(
+std::optional<base::Value::Dict> CreateProxyRulesDict(
     const ProxyConfigDictionary& proxy_config);
 
 // Creates and returns a ProxyServer dictionary as defined in the extension API
@@ -134,7 +134,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy);
 // Creates and returns a PacScript dictionary as defined in the extension API
 // with the values of a ProxyconfigDictionary configured for pac scripts.
 // Returns an empty object in case of failures.
-absl::optional<base::Value::Dict> CreatePacScriptDict(
+std::optional<base::Value::Dict> CreatePacScriptDict(
     const ProxyConfigDictionary& proxy_config);
 
 // Tokenizes the |in| at delimiters |delims| and returns a new

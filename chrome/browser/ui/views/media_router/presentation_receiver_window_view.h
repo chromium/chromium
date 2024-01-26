@@ -115,7 +115,7 @@ class PresentationReceiverWindowView final
   bool IsImmersiveModeEnabled() const final;
   gfx::Rect GetTopContainerBoundsInScreen() final;
   void DestroyAnyExclusiveAccessBubble() final;
-  bool CanTriggerOnMouse() const final;
+  bool CanTriggerOnMousePointer() const final;
 
   // ui::AcceleratorProvider overrides.
   bool GetAcceleratorForCommandId(int command_id,

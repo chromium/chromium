@@ -9,6 +9,10 @@
 
 class PrefValueMap;
 
+namespace policy {
+class PolicyErrorMap;
+}  // namespace policy
+
 namespace data_controls {
 
 class DataControlsPolicyHandler : public policy::CloudOnlyPolicyHandler {
@@ -20,6 +24,9 @@ class DataControlsPolicyHandler : public policy::CloudOnlyPolicyHandler {
 
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
 
  private:
   const char* pref_path_;

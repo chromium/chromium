@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'resources/minified.html',
       `Tests that the initiator position is correct even when that initiator is minified.`);

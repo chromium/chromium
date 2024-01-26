@@ -395,23 +395,23 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-absl::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
+std::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The `initialization_state_` can be not `INITIALIZED` in the very first
   // navigation on browser startup. Because this object is initialized on the
   // first navigation.
   if (initialization_state_ != INITIALIZED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!url.is_valid() || url.host().empty() || net::IsLocalhost(url) ||
       !url.SchemeIsHTTPOrHTTPS()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   LcppData data;
   if (!lcpp_data_->TryGetData(url.host(), &data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return data;
 }

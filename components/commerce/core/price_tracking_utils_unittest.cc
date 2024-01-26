@@ -607,5 +607,65 @@ TEST_F(PriceTrackingUtilsTest, GetProductClusterIdFromBookmark) {
           .has_value());
 }
 
+TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions) {
+  std::vector<CommerceSubscription> subs;
+  const uint64_t dangling_id = 12345L;
+  subs.push_back(BuildUserSubscriptionForClusterId(dangling_id));
+  uint64_t valid_id = 67890L;
+  subs.push_back(BuildUserSubscriptionForClusterId(valid_id));
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(std::move(subs));
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  // Ensure there's a bookmark for the "valid_id" but not the "dangling_id".
+  AddProductBookmark(bookmark_model_.get(), u"product",
+                     GURL("https://example.com/"), valid_id, true);
+
+  EXPECT_CALL(*shopping_service_,
+              Unsubscribe(VectorHasSubscriptionWithId(
+                              base::NumberToString(dangling_id)),
+                          testing::_))
+      .Times(1);
+  EXPECT_CALL(
+      *shopping_service_,
+      Unsubscribe(VectorHasSubscriptionWithId(base::NumberToString(valid_id)),
+                  testing::_))
+      .Times(0);
+
+  base::RunLoop run_loop;
+  RemoveDanglingSubscriptions(shopping_service_.get(), bookmark_model_.get(),
+                              base::BindOnce(
+                                  [](base::RunLoop* run_loop, size_t count) {
+                                    ASSERT_EQ(count, 1u);
+                                    run_loop->Quit();
+                                  },
+                                  &run_loop));
+  run_loop.Run();
+}
+
+// Ensure the callback runs even if there are no dangling
+TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions_NoDanglingSubs) {
+  std::vector<CommerceSubscription> subs;
+  uint64_t valid_id = 67890L;
+  subs.push_back(BuildUserSubscriptionForClusterId(valid_id));
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(std::move(subs));
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  // Ensure there's a bookmark for the above subscription.
+  AddProductBookmark(bookmark_model_.get(), u"product",
+                     GURL("https://example.com/"), valid_id, true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  RemoveDanglingSubscriptions(shopping_service_.get(), bookmark_model_.get(),
+                              base::BindOnce(
+                                  [](base::RunLoop* run_loop, size_t count) {
+                                    ASSERT_EQ(count, 0u);
+                                    run_loop->Quit();
+                                  },
+                                  &run_loop));
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace commerce

@@ -5,8 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_HOOKABLE_IMPL_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_HOOKABLE_IMPL_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <type_traits>
 
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -203,6 +202,10 @@ struct RawPtrHookableImpl {
     }
     return wrapped_ptr;
   }
+
+  template <typename T>
+  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {}
+  static constexpr void Untrace(uint64_t owner_id) {}
 
   // This is for accounting only, used by unit tests.
   PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}

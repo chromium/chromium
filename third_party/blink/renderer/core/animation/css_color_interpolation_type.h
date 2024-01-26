@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_COLOR_INTERPOLATION_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_COLOR_INTERPOLATION_TYPE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
+#include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -33,10 +33,18 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                  const InterpolationValue& value,
                  double interpolation_fraction) const final;
 
+  static void EnsureInterpolableStyleColor(InterpolableList& list,
+                                           wtf_size_t index);
+  static void EnsureCompatibleInterpolableColorTypes(InterpolableList& list_a,
+                                                     InterpolableList& list_b);
+
   static InterpolableColor* CreateInterpolableColor(const Color&);
   static InterpolableColor* CreateInterpolableColor(CSSValueID);
   static InterpolableColor* CreateInterpolableColor(const StyleColor&);
   static InterpolableColor* MaybeCreateInterpolableColor(const CSSValue&);
+
+  static BaseInterpolableColor* CreateBaseInterpolableColor(const StyleColor&);
+
   static Color ResolveInterpolableColor(
       const InterpolableValue& interpolable_color,
       const StyleResolverState&,

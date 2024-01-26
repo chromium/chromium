@@ -103,7 +103,7 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   std::u16string text;
 
   if (!client) {
-    return mojom::TextInputStatePtr(absl::in_place, 0, text, text_range,
+    return mojom::TextInputStatePtr(std::in_place, 0, text, text_range,
                                     selection_range, ui::TEXT_INPUT_TYPE_NONE,
                                     false, 0, is_input_state_update_requested,
                                     composition_text_range);
@@ -116,8 +116,8 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   client->GetTextFromRange(text_range, &text);
 
   return mojom::TextInputStatePtr(
-      absl::in_place, selection_range.start(), text, text_range,
-      selection_range, client->GetTextInputType(), client->ShouldDoLearning(),
+      std::in_place, selection_range.start(), text, text_range, selection_range,
+      client->GetTextInputType(), client->ShouldDoLearning(),
       client->GetTextInputFlags(), is_input_state_update_requested,
       composition_text_range);
 }

@@ -256,7 +256,7 @@ void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
 
 void CryptohomeRecoveryScreen::OnRefreshFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to get auth factors configuration, code "
                << error->get_cryptohome_code();

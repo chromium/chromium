@@ -58,31 +58,27 @@
 class PermissionsInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   PermissionsInfobarModalOverlayMediatorTest() {
-    if (@available(iOS 15, *)) {
-      auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-      item_ = web::NavigationItem::Create();
-      GURL url("http://test.com/");
-      item_->SetURL(url);
-      navigation_manager->SetVisibleItem(item_.get());
-      web_state_.SetNavigationManager(std::move(navigation_manager));
-      // First parameter is used for banner; not needed for this test.
-      std::unique_ptr<PermissionsInfobarDelegate> delegate =
-          std::make_unique<PermissionsInfobarDelegate>([NSArray array],
-                                                       &web_state_);
-      infobar_ = std::make_unique<InfoBarIOS>(
-          InfobarType::kInfobarTypePermissions, std::move(delegate));
-      request_ =
-          OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
-              infobar_.get(), InfobarOverlayType::kModal);
-      mediator_ = [[PermissionsInfobarModalOverlayMediator alloc]
-          initWithRequest:request_.get()];
-    }
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    item_ = web::NavigationItem::Create();
+    GURL url("http://test.com/");
+    item_->SetURL(url);
+    navigation_manager->SetVisibleItem(item_.get());
+    web_state_.SetNavigationManager(std::move(navigation_manager));
+    // First parameter is used for banner; not needed for this test.
+    std::unique_ptr<PermissionsInfobarDelegate> delegate =
+        std::make_unique<PermissionsInfobarDelegate>([NSArray array],
+                                                     &web_state_);
+    infobar_ = std::make_unique<InfoBarIOS>(
+        InfobarType::kInfobarTypePermissions, std::move(delegate));
+    request_ =
+        OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+            infobar_.get(), InfobarOverlayType::kModal);
+    mediator_ = [[PermissionsInfobarModalOverlayMediator alloc]
+        initWithRequest:request_.get()];
   }
 
   ~PermissionsInfobarModalOverlayMediatorTest() override {
-    if (@available(iOS 15, *)) {
-      [mediator_ disconnect];
-    }
+    [mediator_ disconnect];
   }
 
  protected:
@@ -96,76 +92,70 @@ class PermissionsInfobarModalOverlayMediatorTest : public PlatformTest {
 // Tests that a PermissionsInfobarModalOverlayMediator correctly sets up its
 // consumer.
 TEST_F(PermissionsInfobarModalOverlayMediatorTest, SetUpConsumer) {
-  if (@available(iOS 15, *)) {
-    // Package the infobar into an OverlayRequest, then create a mediator that
-    // uses this request in order to set up a fake consumer.
-    FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
-    mediator_.consumer = consumer;
-    EXPECT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
-    EXPECT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
-    NSString* description = l10n_util::GetNSStringF(
-        IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION, u"test.com");
-    EXPECT_NSEQ(description, consumer.permissionsDescription);
-  }
+  // Package the infobar into an OverlayRequest, then create a mediator that
+  // uses this request in order to set up a fake consumer.
+  FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
+  mediator_.consumer = consumer;
+  EXPECT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
+  EXPECT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
+  NSString* description = l10n_util::GetNSStringF(
+      IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION, u"test.com");
+  EXPECT_NSEQ(description, consumer.permissionsDescription);
 }
 
 // Tests that the mediator would update its consumer when web state permissions
 // change.
 TEST_F(PermissionsInfobarModalOverlayMediatorTest, PermissionStatesUpdate) {
-  if (@available(iOS 15, *)) {
-    FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
-    mediator_.consumer = consumer;
-    ASSERT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
-    ASSERT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
-    // Update web state permission directly.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
-    EXPECT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
-    EXPECT_EQ(web::PermissionStateBlocked, consumer.microphoneInfo.state);
-  }
+  FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
+  mediator_.consumer = consumer;
+  ASSERT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
+  ASSERT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
+  // Update web state permission directly.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
+  EXPECT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
+  EXPECT_EQ(web::PermissionStateBlocked, consumer.microphoneInfo.state);
 }
 
 // Tests that calling `updateStateForPermission:` updates both the consumer and
 // web state permissions.
 TEST_F(PermissionsInfobarModalOverlayMediatorTest,
        UpdatePermissionStatesThroughInfobarModal) {
-  if (@available(iOS 15, *)) {
-    FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
-    mediator_.consumer = consumer;
-    ASSERT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
-    ASSERT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
-    // Update web state permission directly.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    ASSERT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
+  FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
+  mediator_.consumer = consumer;
+  ASSERT_EQ(web::PermissionStateNotAccessible, consumer.cameraInfo.state);
+  ASSERT_EQ(web::PermissionStateNotAccessible, consumer.microphoneInfo.state);
+  // Update web state permission directly.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  ASSERT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
 
-    // Update web state permissions through the infobar modal.
-    PermissionInfo* permission_info_1 = [[PermissionInfo alloc] init];
-    permission_info_1.permission = web::PermissionMicrophone;
-    permission_info_1.state = web::PermissionStateAllowed;
-    [mediator_ updateStateForPermission:permission_info_1];
-    EXPECT_EQ(web::PermissionStateAllowed,
-              web_state_.GetStateForPermission(web::PermissionCamera));
-    EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
-    EXPECT_EQ(web::PermissionStateAllowed,
-              web_state_.GetStateForPermission(web::PermissionMicrophone));
-    EXPECT_EQ(web::PermissionStateAllowed, consumer.microphoneInfo.state);
+  // Update web state permissions through the infobar modal.
+  PermissionInfo* permission_info_1 = [[PermissionInfo alloc] init];
+  permission_info_1.permission = web::PermissionMicrophone;
+  permission_info_1.state = web::PermissionStateAllowed;
+  [mediator_ updateStateForPermission:permission_info_1];
+  EXPECT_EQ(web::PermissionStateAllowed,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+  EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
+  EXPECT_EQ(web::PermissionStateAllowed,
+            web_state_.GetStateForPermission(web::PermissionMicrophone));
+  EXPECT_EQ(web::PermissionStateAllowed, consumer.microphoneInfo.state);
 
-    PermissionInfo* permission_info_2 = [[PermissionInfo alloc] init];
-    permission_info_2.permission = web::PermissionCamera;
-    permission_info_2.state = web::PermissionStateBlocked;
-    [mediator_ updateStateForPermission:permission_info_2];
-    EXPECT_EQ(web::PermissionStateBlocked,
-              web_state_.GetStateForPermission(web::PermissionCamera));
-    EXPECT_EQ(web::PermissionStateBlocked, consumer.cameraInfo.state);
-    EXPECT_EQ(web::PermissionStateAllowed,
-              web_state_.GetStateForPermission(web::PermissionMicrophone));
-    EXPECT_EQ(web::PermissionStateAllowed, consumer.microphoneInfo.state);
-  }
+  PermissionInfo* permission_info_2 = [[PermissionInfo alloc] init];
+  permission_info_2.permission = web::PermissionCamera;
+  permission_info_2.state = web::PermissionStateBlocked;
+  [mediator_ updateStateForPermission:permission_info_2];
+  EXPECT_EQ(web::PermissionStateBlocked,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+  EXPECT_EQ(web::PermissionStateBlocked, consumer.cameraInfo.state);
+  EXPECT_EQ(web::PermissionStateAllowed,
+            web_state_.GetStateForPermission(web::PermissionMicrophone));
+  EXPECT_EQ(web::PermissionStateAllowed, consumer.microphoneInfo.state);
 }
 
 // Tests that a PermissionsInfobarModalOverlayMediator correctly removes itself

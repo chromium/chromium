@@ -107,7 +107,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   InterestGroup();
   ~InterestGroup();
 
-  // Checks for validity. Performs same checks as IsBlinkInterestGroupValid().
+  // Checks for validity. Performs same checks as ValidateBlinkInterestGroup().
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
 
@@ -159,6 +159,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
       TrustedBiddingSignalsSlotSizeMode::kNone;
+  int32_t max_trusted_bidding_signals_url_length = 0;
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
   absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -170,7 +171,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<AdditionalBidKey> additional_bid_key;
   absl::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 173, R"(
+  static_assert(__LINE__ == 174, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

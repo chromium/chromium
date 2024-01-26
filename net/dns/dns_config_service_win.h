@@ -12,6 +12,7 @@
 #include <iptypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -49,7 +50,7 @@ ParseSearchList(std::wstring_view value);
 
 // Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
 // a valid config could not be determined.
-absl::optional<DnsConfig> NET_EXPORT_PRIVATE
+std::optional<DnsConfig> NET_EXPORT_PRIVATE
 ConvertSettingsToDnsConfig(const WinDnsSystemSettings& settings);
 
 // Service for reading and watching Windows system DNS settings. This object is

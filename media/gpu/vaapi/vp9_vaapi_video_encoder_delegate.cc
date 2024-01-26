@@ -106,6 +106,8 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   rc_cfg.max_intra_bitrate_pct = MaxSizeOfKeyframeAsPercentage(
       rc_cfg.buf_optimal_sz, encode_params.framerate);
   rc_cfg.framerate = encode_params.framerate;
+  rc_cfg.frame_drop_thresh = encode_params.drop_frame_thresh;
+  rc_cfg.is_screen = encode_params.is_screen;
 
   // Fill spatial/temporal layers variables.
   rc_cfg.ss_number_layers = num_spatial_layers;
@@ -247,9 +249,12 @@ void VP9RateControlWrapper::UpdateRateControl(
 
 VP9RateControlWrapper::~VP9RateControlWrapper() = default;
 
-int VP9RateControlWrapper::ComputeQP(
+libvpx::FrameDropDecision VP9RateControlWrapper::ComputeQP(
     const libvpx::VP9FrameParamsQpRTC& frame_params) {
-  impl_->ComputeQP(frame_params);
+  return impl_->ComputeQP(frame_params);
+}
+
+int VP9RateControlWrapper::GetQP() const {
   return impl_->GetQP();
 }
 
@@ -310,6 +315,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
       VideoEncodeAccelerator::Config::ContentType::kDisplay) {
     current_params_.min_qp = kScreenMinQP;
     current_params_.max_qp = kScreenMaxQP;
+    current_params_.is_screen = true;
   }
 
   reference_frames_.Clear();
@@ -356,6 +362,8 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
     current_params_.error_resilident_mode = true;
   }
 
+  current_params_.drop_frame_thresh = config.drop_frame_thresh_percentage;
+
   // Store layer size for vp9 simple stream.
   if (spatial_layer_resolutions.empty())
     spatial_layer_resolutions.push_back(visible_size_);
@@ -397,6 +405,17 @@ VaapiVideoEncoderDelegate::PrepareEncodeJobResult
 VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (svc_layers_) {
+    if (dropped_superframe_timestamp_) {
+      if (*dropped_superframe_timestamp_ == encode_job.timestamp()) {
+        // The bottom spatial layer has been dropped. The rate controller drops
+        // all the spatial layers in the super frame in this case and neither
+        // ComputeQP() nor PostEncodeUpdate() is to be called.
+        return PrepareEncodeJobResult::kDrop;
+      }
+      // This is EncodeJob on the bottom spatial layer for the next frame.
+      dropped_superframe_timestamp_.reset();
+    }
+
     // If keyframe is requested, then reset |svc_layers_|.
     // Note that a frame must not be dropped on key frame.
     if (encode_job.IsKeyframeRequested() ||
@@ -425,8 +444,19 @@ VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK(picture);
 
   std::array<bool, kVp9NumRefsPerFrame> ref_frames_used = {false, false, false};
-  SetFrameHeader(encode_job.IsKeyframeRequested(), picture.get(),
-                 &ref_frames_used);
+  if (auto result = SetFrameHeader(encode_job.IsKeyframeRequested(),
+                                   picture.get(), &ref_frames_used);
+      result != PrepareEncodeJobResult::kSuccess) {
+    if (svc_layers_ &&
+        svc_layers_->config().active_spatial_layer_resolutions.size() > 1 &&
+        result == PrepareEncodeJobResult::kDrop) {
+      // When SVC encoding, record the timestamp so that PrepareEncodeJob()
+      // returns kDrop for all upper spatial layers.
+      dropped_superframe_timestamp_ = encode_job.timestamp();
+    }
+    return result;
+  }
+
   if (!SubmitFrameParameters(encode_job, current_params_, picture,
                              reference_frames_, ref_frames_used)) {
     LOG(ERROR) << "Failed submitting frame parameters";
@@ -441,15 +471,21 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
     const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  if (metadata.dropped_frame()) {
+    // BitstreamBufferMetadata should not have a codec specific metadata,
+    // when a frame is dropped.
+    return metadata;
+  }
+
   auto picture = GetVP9Picture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
-
   CHECK_EQ(metadata.key_frame, picture->frame_hdr->IsKeyframe());
-
+  DCHECK_EQ(GetSVCLayerResolutions().size() - 1 ==
+                (metadata.vp9 ? metadata.vp9->spatial_idx : 0),
+            metadata.end_of_picture);
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_hdr->quant_params.base_q_idx);
   return metadata;
@@ -622,7 +658,8 @@ Vp9FrameHeader VP9VaapiVideoEncoderDelegate::GetDefaultFrameHeader(
   return hdr;
 }
 
-void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
+VaapiVideoEncoderDelegate::PrepareEncodeJobResult
+VP9VaapiVideoEncoderDelegate::SetFrameHeader(
     bool keyframe,
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
@@ -689,8 +726,16 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
         picture->metadata_for_encoding->temporal_idx;
     frame_params.spatial_layer_id = picture->metadata_for_encoding->spatial_idx;
   }
-  picture->frame_hdr->quant_params.base_q_idx =
-      rate_ctrl_->ComputeQP(frame_params);
+  if (rate_ctrl_->ComputeQP(frame_params) == libvpx::FrameDropDecision::kDrop) {
+    CHECK(!keyframe);
+    // The rate controller drops all frames in a super frame in SVC. Therefore,
+    // if a frame is dropped, then it must be the bottom spatial layer.
+    CHECK_EQ(frame_params.spatial_layer_id, 0);
+    DVLOGF(3) << "Drop frame";
+    return PrepareEncodeJobResult::kDrop;
+  }
+
+  picture->frame_hdr->quant_params.base_q_idx = rate_ctrl_->GetQP();
   picture->frame_hdr->loop_filter.level = rate_ctrl_->GetLoopfilterLevel();
   DVLOGF(4) << "qp="
             << static_cast<int>(picture->frame_hdr->quant_params.base_q_idx)
@@ -705,6 +750,7 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
                     : "");
 
   is_last_encoded_key_frame_ = keyframe;
+  return PrepareEncodeJobResult::kSuccess;
 }
 
 void VP9VaapiVideoEncoderDelegate::UpdateReferenceFrames(

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/reading_list/ios/favicon_web_state_dispatcher.h"
 
@@ -32,7 +33,7 @@ class FaviconWebStateDispatcherImpl : public FaviconWebStateDispatcher {
   void ReleaseAll() override;
 
  private:
-  web::BrowserState* browser_state_;
+  raw_ptr<web::BrowserState> browser_state_;
   // Map of the WebStates currently alive.
   std::vector<std::unique_ptr<web::WebState>> web_states_;
   // Time during which the WebState will be kept alive after being returned.

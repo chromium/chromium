@@ -52,6 +52,11 @@
       "permission:os.management.audio"
     ]
   },
+  "os.management.setAudioVolume": {
+    "dependencies": [
+      "permission:os.management.audio"
+    ]
+  },
   "os.telemetry": {
     "dependencies": [
       "permission:os.telemetry"

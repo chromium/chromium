@@ -420,7 +420,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
-      return MakeGarbageCollected<LayoutRubyAsInline>(element);
+      return MakeGarbageCollected<LayoutRuby>(element);
     case EDisplay::kBlockRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       return MakeGarbageCollected<LayoutRubyAsBlock>(element);
@@ -4569,7 +4569,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InPostLifecycleSteps());
-  InvalidateIntersectionObserverCachedRects();
+  DeprecatedInvalidateIntersectionObserverCachedRects();
   if (LayoutObject* layout_object = Parent())
     layout_object->SetNeedsBoundariesUpdate();
 }
@@ -4631,7 +4631,7 @@ void LayoutObject::SetShouldDoFullPaintInvalidation(
   DCHECK(IsLayoutFullPaintInvalidationReason(reason));
   SetShouldCheckForPaintInvalidation();
   SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
-  InvalidateIntersectionObserverCachedRects();
+  DeprecatedInvalidateIntersectionObserverCachedRects();
 }
 
 void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChange(

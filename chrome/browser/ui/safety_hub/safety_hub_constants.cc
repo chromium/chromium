@@ -23,6 +23,8 @@ const char kSafetyHubMenuNotificationResultKey[] = "result";
 
 const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
 
+const char kSafetyHubChooserPermissionsData[] = "chooserPermissionsData";
+
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 const base::TimeDelta kPasswordCheckOverdueTimeWindow = base::Hours(1);
 

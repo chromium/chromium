@@ -46,9 +46,6 @@ PhoneDisconnectedView::PhoneDisconnectedView(
       IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION));
 
   // Add "Learn more" and "Refresh" buttons.
-  // TODO(b/281844561): Migrate the "Learn More" button to use
-  // |PillButton::Type::kSecondaryWithoutIcon| when the PillButton colors
-  // are updated with better contrast-ratios.
   auto learn_more = std::make_unique<PillButton>(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
@@ -61,7 +58,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               NewWindowDelegate::Disposition::kNewForegroundTab)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
-      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
+      PillButton::Type::kSecondaryWithoutIcon, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kDisconnectedLearnMoreButton);
   content_view_->AddButton(std::move(learn_more));
 

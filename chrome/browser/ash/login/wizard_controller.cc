@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
+#include "chrome/browser/ash/login/screens/install_attributes_error_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
@@ -175,6 +176,7 @@
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
@@ -307,6 +309,7 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     KioskEnableScreenView::kScreenId,
     ManagementTransitionScreenView::kScreenId,
     TpmErrorView::kScreenId,
+    InstallAttributesErrorView::kScreenId,
     WrongHWIDScreenView::kScreenId,
     LocalStateErrorScreenView::kScreenId,
 };
@@ -790,6 +793,9 @@ WizardController::CreateScreens() {
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
+  append(std::make_unique<InstallAttributesErrorScreen>(
+      oobe_ui->GetView<InstallAttributesErrorScreenHandler>()->AsWeakPtr()));
+
   append(std::make_unique<GaiaPasswordChangedScreen>(
       base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
                           weak_factory_.GetWeakPtr()),
@@ -1046,11 +1052,9 @@ void WizardController::ShowEnterOldPasswordScreen() {
 }
 
 void WizardController::ShowEnrollmentScreen() {
-  if (wizard_context_->quick_start_setup_ongoing) {
-    quickstart_controller_->AbortFlow(
-        quick_start::QuickStartController::AbortFlowReason::
-            ENTERPRISE_ENROLLMENT);
-  }
+  MaybeAbortQuickStartFlow(quick_start::QuickStartController::AbortFlowReason::
+                               ENTERPRISE_ENROLLMENT);
+
   // Update the enrollment configuration and start the screen.
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
@@ -1279,6 +1283,9 @@ void WizardController::OnUserCreationScreenExit(
                UserCreationScreen::GetResultString(result));
   switch (result) {
     case UserCreationScreen::Result::SIGNIN_SCHOOL:
+      MaybeAbortQuickStartFlow(
+          quick_start::QuickStartController::AbortFlowReason::SIGNIN_SCHOOL);
+      [[fallthrough]];
     case UserCreationScreen::Result::SIGNIN_TRIAGE:
       GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
       StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
@@ -2468,7 +2475,7 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
 void WizardController::ObtainContextAndLoginAuthenticated() {
   CHECK(wizard_context_->extra_factors_token);
   auto token = std::move(wizard_context_->extra_factors_token);
-  wizard_context_->extra_factors_token = absl::nullopt;
+  wizard_context_->extra_factors_token = std::nullopt;
 
   ash::AuthSessionStorage::Get()->Withdraw(
       *token, base::BindOnce(&WizardController::LoginAuthenticatedWithContext,
@@ -2478,7 +2485,7 @@ void WizardController::ObtainContextAndLoginAuthenticated() {
 void WizardController::ObtainContextAndAttemptLocalAuthentication() {
   CHECK(wizard_context_->extra_factors_token);
   auto token = std::move(wizard_context_->extra_factors_token);
-  wizard_context_->extra_factors_token = absl::nullopt;
+  wizard_context_->extra_factors_token = std::nullopt;
 
   ash::AuthSessionStorage::Get()->Withdraw(
       *token,
@@ -2534,10 +2541,17 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
   // Remember the user acknowledged the message.
   GetLocalState()->SetBoolean(::prefs::kRemoteAdminWasPresent, false);
 
-  // Cleanup OOBE state.
+  // Check if there are any local accounts present for the lock screen which
+  // suggest that the OOBE flow was completed and the dialog should be hidden.
   if (LoginDisplayHost::default_host()->HasUserPods()) {
     LoginDisplayHost::default_host()->HideOobeDialog();
+    return;
   }
+
+  // When, there is no local accounts present and the OOBE flow must be
+  // continued. Hence, we go back to the previous screen present in the flow.
+  bool switched_screen = MaybeSetToPreviousScreen();
+  CHECK(switched_screen);
 }
 
 void WizardController::OnAppDownloadingScreenExit() {
@@ -3044,6 +3058,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   } else if (screen_id == LocalPasswordSetupView::kScreenId) {
     ShowLocalPasswordSetupScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
+             screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
@@ -3385,6 +3400,13 @@ void WizardController::ResetCurrentScreen() {
   if (current_screen_) {
     current_screen_->Hide();
     current_screen_ = nullptr;
+  }
+}
+
+void WizardController::MaybeAbortQuickStartFlow(
+    quick_start::QuickStartController::AbortFlowReason reason) {
+  if (wizard_context_->quick_start_setup_ongoing) {
+    quickstart_controller_->AbortFlow(reason);
   }
 }
 

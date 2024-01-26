@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -98,7 +100,6 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -175,14 +176,14 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
   void WaitForDidChangeVisibleSecurityState() { run_loop_.Run(); }
 
-  absl::optional<security_state::SecurityLevel> latest_security_level() const {
+  std::optional<security_state::SecurityLevel> latest_security_level() const {
     return latest_security_level_;
   }
 
-  void ClearLatestSecurityLevel() { latest_security_level_ = absl::nullopt; }
+  void ClearLatestSecurityLevel() { latest_security_level_ = std::nullopt; }
 
  private:
-  absl::optional<security_state::SecurityLevel> latest_security_level_;
+  std::optional<security_state::SecurityLevel> latest_security_level_;
   base::RunLoop run_loop_;
 };
 
@@ -278,7 +279,7 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
 
   ~SecurityStateTabHelperTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 
   void SetUpOnMainThread() override {

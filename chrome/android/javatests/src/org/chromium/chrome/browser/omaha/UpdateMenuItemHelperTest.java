@@ -293,7 +293,7 @@ public class UpdateMenuItemHelperTest {
     private void waitForAppMenuDimissedRunnable() {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    return UpdateMenuItemHelper.getInstance()
+                    return UpdateMenuItemHelper.getInstance(mActivityTestRule.getProfile(false))
                             .getMenuDismissedRunnableExecutedForTests();
                 });
     }

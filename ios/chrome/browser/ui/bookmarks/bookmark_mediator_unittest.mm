@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -32,10 +33,10 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface BookmarkMediator ()
-- (NSString*)messageForAddingBookmarksInFolder:(BOOL)addFolder
+- (NSString*)messageForAddingBookmarksInFolder:(NSString*)folderTitle
+                                 choosenByUser:(BOOL)choosenByUser
                              folderStorageType:
                                  (bookmarks::StorageType)storageType
-                                         title:(NSString*)folderTitle
                                          count:(int)count;
 @end
 
@@ -50,6 +51,8 @@ enum class SignInStatus {
   kSignOut,
   // The user is signed in and using the local or syncable storage.
   kSignedInOnlyWithLocalOrSyncableStorage,
+  // The user is signed in, not syncing bookmark.
+  kSignedInNoBookmarkSyncing,
   // The user is signed in and using the account storage.
   kSignedInOnlyWithAccountStorage,
   // The user is signed in and syncing.
@@ -78,7 +81,7 @@ class BookmarkMediatorUnitTest
   // Number of bookmark saved.
   int GetBookmarkCountParam() { return std::get<0>(GetParam()); }
   // Weather the bookmarks are saved in the default folder or not.
-  bool GetDefaultFolderSetParam() { return std::get<1>(GetParam()); }
+  bool GetFolderWasSelectedByUserParam() { return std::get<1>(GetParam()); }
   SignInStatus GetSignInStatusParam() { return std::get<2>(GetParam()); }
 
  protected:
@@ -95,6 +98,14 @@ class BookmarkMediatorUnitTest
     return fake_identity;
   }
 
+  // Signs in using `fakeIdentity1`. Disables synchronization of bookmark.
+  FakeSystemIdentity* SignInOnlyAndDisableBookmark() {
+    FakeSystemIdentity* fake_identity = SignInOnly();
+    sync_service_.GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, NO);
+    return fake_identity;
+  }
+
   // Signs in and enable sync, using the same identity than `SignInOnly()`.
   void SignInAndSync() {
     FakeSystemIdentity* fake_identity = SignInOnly();
@@ -103,13 +114,10 @@ class BookmarkMediatorUnitTest
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   }
 
-  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED` string with `count` value.
+  // Returns `IDS_IOS_BOOKMARKS_BULK_SAVED` string with `count` value.
   NSString* GetSavedToDeviceText(int count) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED);
-    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
-        pattern, "count", count);
-    return base::SysUTF16ToNSString(message);
+    return base::SysUTF16ToNSString(
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
   }
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER` string with `count` and
@@ -146,9 +154,20 @@ class BookmarkMediatorUnitTest
     return base::SysUTF16ToNSString(message);
   }
 
+  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE` string with `count`,
+  // `folder_name` and `email` value.
+  NSString* GetSavedLocallyOnlyText(int count, NSString* folder_name) {
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
+    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "title",
+        base::SysNSStringToUTF16(folder_name));
+    return base::SysUTF16ToNSString(message);
+  }
+
   BookmarkMediator* mediator_;
-  ChromeAccountManagerService* account_manager_service_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scope_;
   base::HistogramTester histogram_tester_;
@@ -165,6 +184,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Sign-in status.
         testing::Values(SignInStatus::kSignOut,
                         SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage,
+                        SignInStatus::kSignedInNoBookmarkSyncing,
                         SignInStatus::kSignedInOnlyWithAccountStorage,
                         SignInStatus::KSignedInAndSync)));
 
@@ -175,43 +195,54 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   const int bookmark_count = GetBookmarkCountParam();
   const SignInStatus signed_in_status = GetSignInStatusParam();
-  const bool default_folder_set = GetDefaultFolderSetParam();
+  const bool folder_was_selected_by_user = GetFolderWasSelectedByUserParam();
+  NSString* expected_snackbar_message = nil;
   bookmarks::StorageType bookmark_storage_type =
       bookmarks::StorageType::kLocalOrSyncable;
   switch (signed_in_status) {
+    case SignInStatus::kSignedInNoBookmarkSyncing:
+      SignInOnlyAndDisableBookmark();
+      [[fallthrough]];
     case SignInStatus::kSignOut:
+      expected_snackbar_message =
+          (folder_was_selected_by_user)
+              ? GetSavedToFolderText(bookmark_count, kFolderName)
+              : GetSavedToDeviceText(bookmark_count);
       break;
     case SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage:
+      if (!folder_was_selected_by_user) {
+        // If the user is signed-in, syncing bookmarks, the default folder is
+        // the account folder. This case can’t occur, so there is nothing to
+        // test.
+        return;
+      }
+      expected_snackbar_message =
+          GetSavedLocallyOnlyText(bookmark_count, kFolderName);
       SignInOnly();
       break;
     case SignInStatus::kSignedInOnlyWithAccountStorage:
+      expected_snackbar_message =
+          (folder_was_selected_by_user)
+              ? GetSavedToFolderToAccountText(bookmark_count, kFolderName,
+                                              kEmail)
+              : GetSavedToAccountText(bookmark_count, kEmail);
       SignInOnly();
       bookmark_storage_type = bookmarks::StorageType::kAccount;
       break;
     case SignInStatus::KSignedInAndSync:
+      expected_snackbar_message =
+          (folder_was_selected_by_user)
+              ? GetSavedToFolderToAccountText(bookmark_count, kFolderName,
+                                              kEmail)
+              : GetSavedToAccountText(bookmark_count, kEmail);
       SignInAndSync();
       break;
   }
   NSString* const snackbar_message =
-      [mediator_ messageForAddingBookmarksInFolder:default_folder_set
+      [mediator_ messageForAddingBookmarksInFolder:kFolderName
+                                     choosenByUser:folder_was_selected_by_user
                                  folderStorageType:bookmark_storage_type
-                                             title:kFolderName
                                              count:bookmark_count];
-  NSString* expected_snackbar_message = nil;
-  if (signed_in_status == SignInStatus::KSignedInAndSync ||
-      bookmark_storage_type == bookmarks::StorageType::kAccount) {
-    if (default_folder_set) {
-      expected_snackbar_message =
-          GetSavedToFolderToAccountText(bookmark_count, kFolderName, kEmail);
-    } else {
-      expected_snackbar_message = GetSavedToAccountText(bookmark_count, kEmail);
-    }
-  } else if (default_folder_set) {
-    expected_snackbar_message =
-        GetSavedToFolderText(bookmark_count, kFolderName);
-  } else {
-    expected_snackbar_message = GetSavedToDeviceText(bookmark_count);
-  }
   ASSERT_NSEQ(snackbar_message, expected_snackbar_message);
 }
 

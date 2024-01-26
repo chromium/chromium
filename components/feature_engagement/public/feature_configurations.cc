@@ -1901,7 +1901,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig(
         feature_engagement::events::kPasswordManagerWidgetPromoTriggered,
-        Comparator(LESS_THAN, 3), 360, 360);
+        Comparator(LESS_THAN, 2), 360, 360);
     config->used =
         EventConfig(feature_engagement::events::kPasswordManagerWidgetPromoUsed,
                     Comparator(EQUAL, 0), 360, 360);
@@ -2066,10 +2066,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
     // The IPH is shown at most once a week.
-    config->trigger =
-        EventConfig(kIOSSwipeLeftForIncognitoTrigger, Comparator(EQUAL, 0),
-                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
-                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito);
+    config->trigger = EventConfig(kIOSSwipeLeftForIncognitoTrigger,
+                                  Comparator(EQUAL, 0), 7, 7);
     // The user hasn't swiped from the regular tab grid to incognito.
     config->used = EventConfig(
         feature_engagement::events::kIOSSwipeLeftForIncognitoUsed,
@@ -2082,6 +2080,34 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(GREATER_THAN_OR_EQUAL, 2),
                     kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
                     kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito));
+    return config;
+  }
+
+  if (kIPHiOSSwipeBackForwardFeature.name == feature->name) {
+    // The IPH of the tab grid swipe feature.
+    //
+    // Note that the IPH is only triggered for users who installed Chrome on iOS
+    // in the last specified number of days, so this could be used as the
+    // maximum storage period of respective events.
+    const uint32_t kMaxStorageDays = 61;
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once a week.
+    config->trigger =
+        EventConfig("swipe_back_forward_trigger", Comparator(EQUAL, 0), 7, 7);
+    // The user hasn't swiped to go backward or forward.
+    config->used =
+        EventConfig(feature_engagement::events::kIOSSwipeBackForwardUsed,
+                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays);
+    // The IPH only shows when user taps the backward/forward button at least
+    // twice.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSBackForwardButtonTapped,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2), kMaxStorageDays,
+                    kMaxStorageDays));
     return config;
   }
 

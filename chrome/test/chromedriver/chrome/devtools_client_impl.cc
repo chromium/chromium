@@ -108,7 +108,7 @@ Status DeserializePayload(const base::Value::Dict& params,
                   "payload is missing in the Runtime.bindingCalled params"};
   }
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(*payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_dict()) {
     return Status{kUnknownError, "unable to deserialize the BiDi payload"};
@@ -120,7 +120,7 @@ Status DeserializePayload(const base::Value::Dict& params,
 
 Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
                                    base::Value::Dict* bidi_cmd) {
-  absl::optional<int> cdp_cmd_id = cdp_cmd.FindInt("id");
+  std::optional<int> cdp_cmd_id = cdp_cmd.FindInt("id");
   if (!cdp_cmd_id) {
     return Status(kUnknownError, "CDP command has no 'id' field");
   }
@@ -1184,7 +1184,7 @@ bool ParseInspectorMessage(const std::string& message,
                            InspectorCommandResponse* command_response) {
   // We want to allow invalid characters in case they are valid ECMAScript
   // strings. For example, webplatform tests use this to check string handling
-  absl::optional<base::Value> message_value =
+  std::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
   base::Value::Dict* message_dict =
       message_value ? message_value->GetIfDict() : nullptr;
@@ -1252,7 +1252,7 @@ bool ParseInspectorMessage(const std::string& message,
           return true;
         } else {  // CDP command response
 
-          absl::optional<int> cdp_id = payload.FindInt("id");
+          std::optional<int> cdp_id = payload.FindInt("id");
           if (!cdp_id) {
             LOG(WARNING) << "tunneled CDP response has no id";
             return false;
@@ -1325,12 +1325,12 @@ bool ParseInspectorMessage(const std::string& message,
 }
 
 Status ParseInspectorError(const std::string& error_json) {
-  absl::optional<base::Value> error = base::JSONReader::Read(error_json);
+  std::optional<base::Value> error = base::JSONReader::Read(error_json);
   base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
   if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");
 
-  absl::optional<int> maybe_code = error_dict->FindInt("code");
+  std::optional<int> maybe_code = error_dict->FindInt("code");
   std::string* maybe_message = error_dict->FindString("message");
 
   if (maybe_code.has_value()) {
@@ -1370,7 +1370,7 @@ Status ParseInspectorError(const std::string& error_json) {
       // This means that the node with given BackendNodeId is not found.
       return Status{kNoSuchElement, error_message};
     }
-    absl::optional<int> error_code = error_dict->FindInt("code");
+    std::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {
       if (error_message == kNoTargetWithGivenIdError) {
         return Status(kNoSuchWindow, error_message);

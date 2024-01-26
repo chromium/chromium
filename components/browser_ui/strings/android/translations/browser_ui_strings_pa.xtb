@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="1415402041810619267">URL ਛੋਟਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
+<translation id="1434873037477293673">ਕੀਮਤ ਵਿੱਚ ਗਿਰਾਵਟ ਵਾਲਾ ਕਾਰਡ</translation>
 <translation id="1448064542941920355">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ਸਾਈਟ}one{<ph name="SITE_COUNT" /> ਸਾਈਟ}other{<ph name="SITE_COUNT" /> ਸਾਈਟਾਂ}}</translation>
 <translation id="1510341833810331442">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">ਸਾਈਟਾਂ ਪਛਾਣ ਸੰਬੰਧੀ ਸੇਵਾਵਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਦਿਖਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="2790501146643349491">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਹਾਲ ਹੀ ਵਿੱਚ ਬੰਦ ਕੀਤੀਆਂ ਸਾਈਟਾਂ ਡਾਟਾ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਪੂਰਾ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਹਾਲ ਹੀ ਵਿੱਚ ਬੰਦ ਕੀਤੀਆਂ ਸਾਈਟਾਂ ਡਾਟਾ ਭੇਜਣ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="2822354292072154809">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="CHOSEN_OBJECT_NAME" /> ਲਈ ਸਾਰੀਆਂ ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
 <translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
+<translation id="6452138246455930388">ਤੁਹਾਡੀ ਖੁੱਲ੍ਹੀ ਟੈਬ 'ਤੇ ਕੀਮਤ ਵਿੱਚ <ph name="OLD_PRICE" /> ਤੋਂ <ph name="NEW_PRICE" /> ਤੱਕ ਕਮੀ, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">ਵਿੰਡੋ ਛੋਟੀ ਹੋਣ 'ਤੇ, ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="652937045869844725">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਕਰਨਗੀਆਂ</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">ਹੇਠਾਂ ਜਾਓ</translation>
 <translation id="6749077623962119521">ਕੀ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6766622839693428701">ਬੰਦ ਕਰਨ ਲਈ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
+<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> ਤੋਂ <ph name="SEPARATOR" /> <ph name="ACCESS_TIME" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ਲਈ ਕੋਈ ਵਿਕਲਪ ਚੁਣੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>
 <translation id="6864395892908308021">ਇਹ ਡੀਵਾਈਸ NFC ਨੂੰ ਨਹੀਂ ਪੜ੍ਹ ਸਕਦਾ</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> ਤੋਂ</translation>
 <translation id="6912998170423641340">ਸਾਈਟਾਂ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਲਿਖਤ ਪੜ੍ਹਨ ਅਤੇ ਚਿੱਤਰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6950072572526089586">ਤੁਸੀਂ ਜਿਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ ਤੁਹਾਡੀਆਂ ਕਾਰਵਾਈਆਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਤਾਂ ਜੋ ਇਹ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰੇ — ਉਦਾਹਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਕਿਸੇ ਸਾਈਟ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰੱਖਣ ਜਾਂ ਤੁਹਾਡੇ ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਵਿੱਚ ਆਈਟਮਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਾਸਤੇ। ਅਕਸਰ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਰੱਖਿਅਤ ਕਰਦੀਆਂ ਹਨ।</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">ਔਜ਼ ਦਾ ਨਿਰਾਲਾ ਵਿਜ਼ਾਰਡ</translation>
 <translation id="7684642910516280563">ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7719367874908701697">ਪੰਨਾ ਜ਼ੂਮ</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" ਲੁਕਾਓ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
 <translation id="7791543448312431591">ਜੋੜੋ</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>

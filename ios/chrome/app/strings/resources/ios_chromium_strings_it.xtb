@@ -81,7 +81,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. Potrebbero essere inclusi la cronologia e la compilazione automatica.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. Potrebbero essere inclusi la cronologia e la compilazione automatica.}}</translation>
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
-<translation id="3478750326643748149">Nascondi "Ottieni il massimo da Chromium"</translation>
 <translation id="347967311580159871">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chromium, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La tua password non è stata condivisa. Controlla la connessione a internet e assicurati di aver eseguito l'accesso a Chromium. Quindi riprova.</translation>
 <translation id="3554027294407525061">Cancella i dati di navigazione in Chromium.</translation>
@@ -101,9 +100,9 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 
 Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Apri Chromium da qualsiasi app</translation>
-<translation id="4002314982058020967">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Apre ed esegue il controllo di sicurezza in Chromium.</translation>
 <translation id="4043291146360695975">Le password vengono salvate in Gestore delle password solo su questo dispositivo.</translation>
+<translation id="4076589763479456892">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Non supportata su Chromium beta</translation>
 <translation id="4106512142782407609">Accesso eseguito come <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 <translation id="4408912345039114853">Esegui il controllo di sicurezza di Chromium</translation>
 <translation id="4432744876818348753">Accedi per usare al meglio Chromium.</translation>
 <translation id="4445228361214254027">La tua organizzazione ha disattivato la possibilità di usare e salvare i dati di Chromium nel tuo Account Google. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
-<translation id="4485517920713468480">Chromium rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti. Puoi modificare questa impostazione nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Aggiunge gli URL inseriti al tuo elenco di lettura in Chromium.</translation>
 <translation id="452436063477828504">Assicurati di poter usare sempre i dati di Chromium nel tuo Account Google</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 <translation id="5534584691915394889">Verranno creati eventi nel tuo Calendario Apple da Chromium e Google Lens.</translation>
 <translation id="5571094606370987472">Apre le schede recenti di Chromium.</translation>
 <translation id="5623083843656850677">Blocca le schede di navigazione in incognito quando esci da Chromium o passi a un'altra app.</translation>
+<translation id="5671188105328420281">Suggerimenti per Chromium</translation>
 <translation id="5688047395118852662">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chromium.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
 <translation id="5777187867430702742">Pagina di Chromium</translation>
@@ -286,6 +285,7 @@ Aspetti da considerare:
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
 <translation id="88376265765385899">Consente di aprire i preferiti di Chromium.</translation>
 <translation id="8860548555286245440">Apri gli URL in Chromium in incognito</translation>
+<translation id="8866191443434488382">Chromium rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero per il monitoraggio della spedizione e il nome del sito web verranno inviati a Chromium per fornire questa funzionalità e migliorare le funzionalità di acquisto per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium per iOS</translation>
 <translation id="8924617840944134898">Apri scheda di navigazione in incognito di Chromium</translation>
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>

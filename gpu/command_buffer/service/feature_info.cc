@@ -1287,6 +1287,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
 #if BUILDFLAG(IS_MAC)
+  feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RGBA_F16);
   if (base::mac::MacOSMajorVersion() >= 11) {
     feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::YUVA_420_TRIPLANAR);

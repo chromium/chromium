@@ -16,49 +16,25 @@ import sys
 GNRT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'gnrt')
 GNRT_MANIFEST_PATH = os.path.join(GNRT_DIR, 'Cargo.toml')
 
+from run_cargo import (RunCargo, DEFAULT_SYSROOT)
 
 def main():
     parser = argparse.ArgumentParser(description='build and run gnrt')
     parser.add_argument('--rust-sysroot',
-                        default='third_party/rust-toolchain',
+                        default=DEFAULT_SYSROOT,
                         help='use cargo and rustc from here')
     parser.add_argument('--out-dir',
                         default='out/gnrt',
                         help='put target and cargo home dir here')
-    parser.add_argument('gnrt_args',
-                        nargs='*',
-                        help='additional arguments to pass to gnrt, e.g. "gen"')
-    args = parser.parse_args()
+    (args, gnrt_args) = parser.parse_known_args()
 
-    if sys.platform == 'darwin' and platform.machine() == 'arm64':
-        if args.rust_sysroot == 'third_party/rust-toolchain':
-            args.rust_sysroot = os.path.expanduser(
-                '~/.rustup/toolchains/nightly-aarch64-apple-darwin')
-            print('No "cargo" provided in the Chromium toolchain on Mac-ARM. '
-                  'Install cargo nightly to ~/.rustup or use --rust-sysroot:')
-            print("== To install: `rustup install nightly`")
-
-    exe = ''
-    if sys.platform == 'win32':
-        exe = '.exe'
-
-    abs_rust_sysroot = os.path.abspath(args.rust_sysroot)
-    cargo_bin = os.path.join(abs_rust_sysroot, 'bin', f'cargo{exe}')
-    rustc_bin = os.path.join(abs_rust_sysroot, 'bin', f'rustc{exe}')
-    # The paths given to `--config` need to be unix separators.
-    rustc_bin_unix_style = rustc_bin.replace('\\', '/')
-
-    cargo_env = os.environ
-    cargo_env['CARGO_HOME'] = os.path.abspath(
-        os.path.join(args.out_dir, 'cargo_home'))
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
+    home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
 
-    return subprocess.run([
-        cargo_bin, '--locked', 'run', '--release', '--manifest-path',
-        GNRT_MANIFEST_PATH, '--target-dir', target_dir, '--config',
-        f'build.rustc="{rustc_bin_unix_style}"', '--',
-        f'--cargo-path={cargo_bin}', f'--rustc-path={rustc_bin}'
-    ] + args.gnrt_args).returncode
+    return RunCargo(args.rust_sysroot, home_dir, [
+        '--locked', 'run', '--release', '--manifest-path', GNRT_MANIFEST_PATH,
+        '--target-dir', target_dir, '--'
+    ] + gnrt_args)
 
 
 if __name__ == '__main__':

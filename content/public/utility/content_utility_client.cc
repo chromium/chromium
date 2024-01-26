@@ -12,4 +12,10 @@ bool ContentUtilityClient::HandleServiceRequestDeprecated(
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+mojo::GenericPendingReceiver ContentUtilityClient::InitMojoServiceManager() {
+  return mojo::GenericPendingReceiver();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace content

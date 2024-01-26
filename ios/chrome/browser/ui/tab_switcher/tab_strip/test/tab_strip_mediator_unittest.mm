@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -109,7 +110,7 @@ class TabStripMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  WebStateList* web_state_list_;
+  raw_ptr<WebStateList> web_state_list_;
   TabStripMediator* mediator_;
   FakeTabStripConsumer* consumer_;
 };

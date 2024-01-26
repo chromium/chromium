@@ -13,7 +13,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
   // this rule causes false negatives due to axe not handling the shadow DOM properly
   const noRequiredParent = {'aria-required-parent': {enabled: false}};
 
-  await UI.ViewManager.ViewManager.instance().showView('sources.xhrBreakpoints');
+  await UI.ViewManager.ViewManager.instance().showView('sources.xhr-breakpoints');
   TestRunner.addResult('Adding XHR breakpoint.');
   const xhrBreakpointsPane = BrowserDebugger.XHRBreakpointsSidebarPane.XHRBreakpointsSidebarPane.instance();
   xhrBreakpointsPane.setBreakpoint('test xhr breakpoint', true);

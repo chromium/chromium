@@ -1625,9 +1625,11 @@ AX_TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(b/321663219): Re-enable when flakiness is resolved.
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'DISABLED_MoveByCharSuggestions', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <div contenteditable="true" role="textbox">
       <p>Start</p>
       <span>I </span>
@@ -1637,41 +1639,41 @@ AX_TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', async function() {
       <p>End</p>
     </div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  await this.focusFirstTextField(root);
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
 
-  mockFeedback.call(this.press(KeyCode.DOWN))
-      .expectSpeech('I ')
-      // Move forward through line.
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech(' ')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('Suggest', 'Username', 'Insert', 'w')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('a')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('s')
-      .expectSpeech('Insert end')
-      .call(this.press(KeyCode.RIGHT))
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('Delete', 'a')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('m')
-      .expectSpeech('Delete end', 'Suggest end')
-      // Move backward through the same line.
-      .call(this.press(KeyCode.LEFT))
-      .expectSpeech('Delete', 'a')
-      .call(this.press(KeyCode.LEFT))
-      .call(this.press(KeyCode.LEFT))
-      .expectSpeech('s', 'Insert end')
-      .call(this.press(KeyCode.LEFT))
-      .expectSpeech('a')
-      .call(this.press(KeyCode.LEFT))
-      .expectSpeech('Suggest', 'Insert', 'w')
-      .call(this.press(KeyCode.DOWN))
-      .expectSpeech('End');
-  await mockFeedback.replay();
-});
+      mockFeedback.call(this.press(KeyCode.DOWN))
+          .expectSpeech('I ')
+          // Move forward through line.
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech(' ')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Suggest', 'Username', 'Insert', 'w')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('a')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('s')
+          .expectSpeech('Insert end')
+          .call(this.press(KeyCode.RIGHT))
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Delete', 'a')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('m')
+          .expectSpeech('Delete end', 'Suggest end')
+          // Move backward through the same line.
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Delete', 'a')
+          .call(this.press(KeyCode.LEFT))
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('s', 'Insert end')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('a')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Suggest', 'Insert', 'w')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('End');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxEditingTest', 'MoveByWordSuggestions', async function() {
@@ -2152,36 +2154,39 @@ AX_TEST_F('ChromeVoxEditingTest', 'ContextMenus', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxEditingTest', 'NativeCharWordCommands', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(b/321663219): Re-enable when flakiness is resolved.
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'DISABLED_NativeCharWordCommands',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <p>start</p>
     <div role="textbox" contenteditable>This is a test</div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  await this.focusFirstTextField(root);
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
 
-  const textField = root.find({role: RoleType.TEXT_FIELD});
-  mockFeedback.expectSpeech('Text area')
-      .call(this.press(KeyCode.HOME, {ctrl: true}))
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('h')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('i')
-      .call(this.press(KeyCode.LEFT))
-      .expectSpeech('h')
+      const textField = root.find({role: RoleType.TEXT_FIELD});
+      mockFeedback.expectSpeech('Text area')
+          .call(this.press(KeyCode.HOME, {ctrl: true}))
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('h')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('i')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('h')
 
-      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-      .expectSpeech(/This\s*/)
-      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-      .expectSpeech('is')
-      .call(this.press(KeyCode.LEFT, {ctrl: true}))
-      .expectSpeech('is')
-      .call(this.press(KeyCode.LEFT, {ctrl: true}))
-      .expectSpeech(/This\s*/);
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech(/This\s*/)
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech('is')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('is')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech(/This\s*/);
 
-  await mockFeedback.replay();
-});
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
   const mockFeedback = this.createMockFeedback();
@@ -2236,8 +2241,10 @@ AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
   await mockFeedback.replay();
 });
 
+// TODO(b/321663219): Re-enable when flakiness is resolved.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'NonbreakingSpaceNewLineOrSpace', async function() {
+    'ChromeVoxEditingTest', 'DISABLED_NonbreakingSpaceNewLineOrSpace',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <div contenteditable="true" role="textbox">

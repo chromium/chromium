@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
 
 #pragma mark - GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate

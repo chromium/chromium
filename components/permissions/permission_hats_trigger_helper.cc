@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_hats_trigger_helper.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -13,13 +14,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/messages/android/message_enums.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/pref_names.h"
+#include "components/permissions/request_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace permissions {
 
@@ -43,7 +49,7 @@ bool StringMatchesFilter(const std::string& string, const std::string& filter) {
 
 std::map<std::string, std::pair<std::string, std::string>>
 GetKeyToValueFilterPairMap(
-    PermissionHatsTriggerHelper::PromptParametersForHaTS prompt_parameters) {
+    PermissionHatsTriggerHelper::PromptParametersForHats prompt_parameters) {
   // configuration key -> {current value for key, configured filter for key}
   return {
       {kPermissionsPromptSurveyPromptDispositionKey,
@@ -89,7 +95,7 @@ GetKeyToValueFilterPairMap(
 // of misconfiguration (which would lead to very high HaTS QPS), we enforce
 // that at least one valid filter must be configured.
 bool IsValidConfiguration(
-    PermissionHatsTriggerHelper::PromptParametersForHaTS prompt_parameters) {
+    PermissionHatsTriggerHelper::PromptParametersForHats prompt_parameters) {
   auto filter_pair_map = GetKeyToValueFilterPairMap(prompt_parameters);
 
   if (filter_pair_map[kPermissionsPromptSurveyDisplayTimeKey].second.empty()) {
@@ -153,35 +159,19 @@ std::vector<std::string>& GetRequestFilterVector(
   }
   return *request_filter_vector;
 }
-
-std::vector<std::pair<std::string, std::string>>
-ComputePermissionPromptTriggerIdPairs(const std::string& trigger_name_base) {
-  std::vector<std::string> permission_trigger_id_vector(
-      base::SplitString(feature_params::kPermissionsPromptSurveyTriggerId.Get(),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  int trigger_index = 0;
-  std::vector<std::pair<std::string, std::string>> pairs;
-  pairs.clear();
-  for (const auto& trigger_id : permission_trigger_id_vector) {
-    pairs.emplace_back(
-        trigger_name_base + base::NumberToString(trigger_index++), trigger_id);
-  }
-  return pairs;
-}
-
 }  // namespace
 
-PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
+PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     RequestType request_type,
-    absl::optional<PermissionAction> action,
+    std::optional<PermissionAction> action,
     PermissionPromptDisposition prompt_disposition,
     PermissionPromptDispositionReason prompt_disposition_reason,
     PermissionRequestGestureType gesture_type,
     const std::string& channel,
     const std::string& survey_display_time,
-    absl::optional<base::TimeDelta> prompt_display_duration,
+    std::optional<base::TimeDelta> prompt_display_duration,
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-    absl::optional<GURL> gurl)
+    std::optional<GURL> gurl)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -193,10 +183,26 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
       url(gurl.has_value() ? gurl->spec() : "") {}
 
-PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
-    const PromptParametersForHaTS& other) = default;
-PermissionHatsTriggerHelper::PromptParametersForHaTS::
-    ~PromptParametersForHaTS() = default;
+PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
+    double trigger_probability,
+    std::optional<std::string> supplied_trigger_id,
+    std::optional<std::u16string> custom_survey_invitation,
+    std::optional<messages::MessageIdentifier> message_identifier)
+    : trigger_probability(trigger_probability),
+      supplied_trigger_id(supplied_trigger_id),
+      custom_survey_invitation(custom_survey_invitation),
+      message_identifier(message_identifier) {}
+
+PermissionHatsTriggerHelper::SurveyParametersForHats::
+    ~SurveyParametersForHats() = default;
+
+PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
+    const SurveyParametersForHats& other) = default;
+
+PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
+    const PromptParametersForHats& other) = default;
+PermissionHatsTriggerHelper::PromptParametersForHats::
+    ~PromptParametersForHats() = default;
 
 PermissionHatsTriggerHelper::SurveyProductSpecificData::
     SurveyProductSpecificData(SurveyBitsData survey_bits_data,
@@ -209,7 +215,7 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::
 
 PermissionHatsTriggerHelper::SurveyProductSpecificData
 PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
-    PromptParametersForHaTS prompt_parameters) {
+    PromptParametersForHats prompt_parameters) {
   static const char* const kProductSpecificBitsFields[] = {
       kPermissionsPromptSurveyHadGestureKey};
   static const char* const kProductSpecificStringFields[] = {
@@ -251,15 +257,13 @@ void PermissionHatsTriggerHelper::RegisterProfilePrefs(
 }
 
 bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
-    PromptParametersForHaTS prompt_parameters,
-    const std::string& trigger_name_base) {
-  auto trigger_and_probability = PermissionHatsTriggerHelper::
-      GetPermissionPromptTriggerNameAndProbabilityForRequestType(
-          trigger_name_base, PermissionUmaUtil::GetRequestTypeString(
-                                 prompt_parameters.request_type));
+    PromptParametersForHats prompt_parameters) {
+  std::optional<SurveyParametersForHats> survey_parameters =
+      PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
+          prompt_parameters.request_type);
 
-  if (!trigger_and_probability.has_value() ||
-      base::RandDouble() >= trigger_and_probability->second) {
+  if (!survey_parameters.has_value() ||
+      base::RandDouble() >= survey_parameters->trigger_probability) {
     return false;
   }
 
@@ -344,57 +348,111 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
 }
 
 // static
-std::vector<std::pair<std::string, std::string>>&
-PermissionHatsTriggerHelper::GetPermissionPromptTriggerIdPairs(
-    const std::string& trigger_name_base) {
-  static base::NoDestructor<std::vector<std::pair<std::string, std::string>>>
-      trigger_id_pairs([trigger_name_base] {
-        return ComputePermissionPromptTriggerIdPairs(trigger_name_base);
-      }());
-  if (is_test) {
-    CHECK_IS_TEST();
-    *trigger_id_pairs =
-        ComputePermissionPromptTriggerIdPairs(trigger_name_base);
-  }
-  return *trigger_id_pairs;
-}
-
-// static
-absl::optional<std::pair<std::string, double>> PermissionHatsTriggerHelper::
-    GetPermissionPromptTriggerNameAndProbabilityForRequestType(
-        const std::string& trigger_name_base,
-        const std::string& request_type) {
-  auto& trigger_id_pairs = GetPermissionPromptTriggerIdPairs(trigger_name_base);
+std::optional<PermissionHatsTriggerHelper::SurveyParametersForHats>
+PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
+    permissions::RequestType request_type) {
   auto& probability_vector =
       GetProbabilityVector(feature_params::kProbabilityVector.Get());
 
-  if (trigger_id_pairs.size() == 1 && probability_vector.size() <= 1) {
+  std::vector<std::string> permission_trigger_id_vector(
+      base::SplitString(feature_params::kPermissionsPromptSurveyTriggerId.Get(),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+
+  std::vector<std::string> custom_invitation_trigger_id_vector(
+      base::SplitString(
+          feature_params::kPermissionsPromptSurveyCustomInvitationTriggerId
+              .Get(),
+          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+
+  CHECK(custom_invitation_trigger_id_vector.empty() ||
+        custom_invitation_trigger_id_vector.size() ==
+            permission_trigger_id_vector.size());
+
+  // If custom_invitation_trigger_id_vector is not empty, the custom invitation
+  // experiment is active. In that case, we show custom invitations with the
+  // corresponding separate triggerId with probability 50%, and the generic
+  // invitation with the corresponding separate triggerId in the other 50% of
+  // cases.
+  bool is_custom_invitation_experiment =
+      custom_invitation_trigger_id_vector.size() != 0;
+  bool is_custom_invitation_arm =
+      is_custom_invitation_experiment && base::RandDouble() < 0.5;
+
+  std::optional<messages::MessageIdentifier> message_identifier;
+  std::optional<std::u16string> custom_invitation;
+  if (is_custom_invitation_experiment) {
+    int request_type_message_id = -1;
+    if (request_type == RequestType::kCameraStream) {
+      request_type_message_id = IDS_CAMERA_PERMISSION_NAME_FRAGMENT;
+      message_identifier = is_custom_invitation_arm
+                               ? messages::MessageIdentifier::
+                                     PROMPT_HATS_CAMERA_CUSTOM_INVITATION
+                               : messages::MessageIdentifier::
+                                     PROMPT_HATS_CAMERA_GENERIC_INVITATION;
+    } else if (request_type == RequestType::kGeolocation) {
+      request_type_message_id = IDS_GEOLOCATION_NAME_FRAGMENT;
+      message_identifier = is_custom_invitation_arm
+                               ? messages::MessageIdentifier::
+                                     PROMPT_HATS_LOCATION_CUSTOM_INVITATION
+                               : messages::MessageIdentifier::
+                                     PROMPT_HATS_LOCATION_GENERIC_INVITATION;
+    } else if (request_type == RequestType::kMicStream) {
+      request_type_message_id = IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT;
+      message_identifier = is_custom_invitation_arm
+                               ? messages::MessageIdentifier::
+                                     PROMPT_HATS_MICROPHONE_CUSTOM_INVITATION
+                               : messages::MessageIdentifier::
+                                     PROMPT_HATS_MICROPHONE_GENERIC_INVITATION;
+    }
+    CHECK_NE(request_type_message_id, -1)
+        << "Request type not supported by the custom invitation experiment.";
+    if (is_custom_invitation_arm) {
+      custom_invitation =
+          std::optional<std::u16string>(l10n_util::GetStringFUTF16(
+              IDS_PERMISSION_PROMPT_SURVEY_CUSTOM_INVITATION,
+              l10n_util::GetStringUTF16(request_type_message_id)));
+    }
+  }
+
+  if (permission_trigger_id_vector.size() == 1 &&
+      probability_vector.size() <= 1) {
     // If a value is configured, use it, otherwise set it to 1.
-    return std::make_pair(
-        trigger_id_pairs[0].first,
-        probability_vector.size() == 1 ? probability_vector[0] : 1.0);
-  } else if (trigger_id_pairs.size() != probability_vector.size()) {
+    double probability =
+        probability_vector.size() == 1 ? probability_vector[0] : 1.0;
+    const std::string& supplied_trigger_id =
+        is_custom_invitation_arm ? custom_invitation_trigger_id_vector[0]
+                                 : permission_trigger_id_vector[0];
+    return PermissionHatsTriggerHelper::SurveyParametersForHats(
+        probability, supplied_trigger_id, custom_invitation);
+  } else if (permission_trigger_id_vector.size() != probability_vector.size()) {
     // Configuration error
-    return absl::nullopt;
+    return std::nullopt;
   } else {
     auto& request_filter_vector = GetRequestFilterVector(
         feature_params::kPermissionsPromptSurveyRequestTypeFilter.Get());
 
-    if (request_filter_vector.size() != trigger_id_pairs.size()) {
+    if (request_filter_vector.size() != permission_trigger_id_vector.size()) {
       // Configuration error
-      return absl::nullopt;
+      return std::nullopt;
     }
 
-    for (unsigned long i = 0; i < trigger_id_pairs.size(); i++) {
-      if (base::EqualsCaseInsensitiveASCII(request_type,
-                                           request_filter_vector[i])) {
-        return std::make_pair(trigger_id_pairs.at(i).first,
-                              probability_vector[i]);
+    for (unsigned long i = 0; i < permission_trigger_id_vector.size(); i++) {
+      if (base::EqualsCaseInsensitiveASCII(
+              permissions::PermissionUmaUtil::GetRequestTypeString(
+                  request_type),
+              request_filter_vector[i])) {
+        double probability = probability_vector[i];
+        const std::string& supplied_trigger_id =
+            is_custom_invitation_arm ? custom_invitation_trigger_id_vector[i]
+                                     : permission_trigger_id_vector[i];
+        return PermissionHatsTriggerHelper::SurveyParametersForHats(
+            probability, supplied_trigger_id, custom_invitation,
+            message_identifier);
       }
     }
 
     // No matching filter
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 

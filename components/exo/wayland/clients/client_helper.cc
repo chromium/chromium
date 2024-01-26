@@ -82,6 +82,9 @@ DEFAULT_DELETER(zwp_linux_surface_synchronization_v1,
 DEFAULT_DELETER(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)
+DEFAULT_DELETER(wl_data_device, wl_data_device_destroy)
+DEFAULT_DELETER(wl_data_offer, wl_data_offer_destroy)
+DEFAULT_DELETER(wl_data_source, wl_data_source_destroy)
 DEFAULT_DELETER(wp_content_type_manager_v1, wp_content_type_manager_v1_destroy)
 DEFAULT_DELETER(wp_content_type_v1, wp_content_type_v1_destroy)
 DEFAULT_DELETER(wp_fractional_scale_manager_v1,

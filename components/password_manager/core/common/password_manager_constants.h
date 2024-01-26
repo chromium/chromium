@@ -7,6 +7,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace password_manager::constants {
 
 inline constexpr char kAutocompleteUsername[] = "username";
@@ -18,6 +20,9 @@ inline constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
 inline constexpr int kMaxPasswordNoteLength = 1000;
 inline constexpr int kMaxPasswordsPerCSVFile = 3000;
+
+inline constexpr base::TimeDelta kPasswordManagerAuthValidity =
+    base::Minutes(5);
 
 // Password manager specific regexes are defined below.
 

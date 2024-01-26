@@ -616,7 +616,7 @@ void HTMLInputElement::SubtreeHasChanged() {
   input_type_view_->SubtreeHasChanged();
   // When typing in an input field, childrenChanged is not called, so we need to
   // force the directionality check.
-  CalculateAndAdjustAutoDirectionality(this);
+  CalculateAndAdjustAutoDirectionality();
 }
 
 FormControlType HTMLInputElement::FormControlType() const {
@@ -1353,8 +1353,7 @@ ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   return ScriptValue(
       isolate,
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date))
-          .ToLocalChecked());
+          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date)));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,
@@ -2271,8 +2270,14 @@ void HTMLInputElement::SetFilesFromPaths(const Vector<String>& paths) {
 void HTMLInputElement::ChildrenChanged(const ChildrenChange& change) {
   // Some input types only need shadow roots to hide any children that may
   // have been appended by script. For such types, shadow roots are lazily
-  // created when children are added for the first time.
-  EnsureUserAgentShadowRoot();
+  // created when children are added for the first time. For the case of
+  // `kFinishedBuildingDocumentFragmentTree` this function may be called
+  // when the HTMLInputElement has no children.
+  if (change.type !=
+          ChildrenChangeType::kFinishedBuildingDocumentFragmentTree ||
+      HasChildren()) {
+    EnsureUserAgentShadowRoot();
+  }
   ContainerNode::ChildrenChanged(change);
 }
 

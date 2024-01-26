@@ -23,8 +23,7 @@ SystemWebDialogView::SystemWebDialogView(
                            std::move(handler),
                            web_contents) {}
 
-void SystemWebDialogView::UpdateWindowRoundedCorners() {
-  const int corner_radius = GetCornerRadius();
+void SystemWebDialogView::UpdateWindowRoundedCorners(int corner_radius) {
   gfx::RoundedCornersF radii;
 
   if (GetWebDialogFrameKind() == FrameKind::kDialog && GetBubbleFrameView()) {
@@ -63,14 +62,6 @@ void SystemWebDialogView::UpdateWindowRoundedCorners() {
   }
 
   SetWebViewCornersRadii(radii);
-}
-
-void SystemWebDialogView::AddedToWidget() {
-  if (GetWidget()->non_client_view()) {
-    GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
-  } else {
-    WebDialogView::AddedToWidget();
-  }
 }
 
 }  // namespace ash

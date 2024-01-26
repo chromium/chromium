@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_tab_helper.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -141,13 +141,13 @@ std::optional<webapps::AppId> GetSourceAppId(
   // LinkCapturingTabHelper contains the App ID of the app which caused this
   // navigation, in cases where the navigation is happening in a different
   // browser to where it was initiated. We should only use this ID if it's the
-  // first navigation in this WebContents -- i.e., the there is no committed
-  // URL.
-  auto* helper = LinkCapturingTabHelper::FromWebContents(web_contents);
+  // first navigation in this WebContents -- i.e., there is no committed URL.
+  const webapps::AppId* source_app_id =
+      GetLinkCapturingSourceAppId(web_contents);
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
-  if (helper &&
+  if (source_app_id &&
       (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())) {
-    return helper->source_app_id();
+    return *source_app_id;
   }
 
   return std::nullopt;

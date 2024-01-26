@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +39,7 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -95,6 +98,27 @@ public class DisplayCutoutControllerTest {
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
         verify(mController).maybeUpdateLayout();
+    }
+
+    @Test
+    @SmallTest
+    public void testViewportFitUpdateOnFullscreen() {
+        // Re-adding observers; otherwise, the internal observers are bound to un-mocked
+        // mController.
+        mController.destroy();
+        mController.maybeAddObservers();
+
+        ArgumentCaptor<WebContentsObserver> captor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(mWebContents, times(2)).addObserver(captor.capture());
+        WebContentsObserver webContentsObserver = captor.getValue();
+        webContentsObserver.didToggleFullscreenModeForTab(true, false);
+        verify(mController, description("Should update layout when entering fullscreen"))
+                .maybeUpdateLayout();
+
+        webContentsObserver.didToggleFullscreenModeForTab(false, false);
+        verify(mController, times(2).description("Should update layout when exiting fullscreen"))
+                .maybeUpdateLayout();
     }
 
     @Test

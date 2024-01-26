@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -37,7 +38,7 @@ void RecordUploadStatusHistogram(proto::ModelExecutionFeature feature,
                                  ModelQualityLogsUploadStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
-          {"OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.",
+          {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
            GetStringNameForModelExecutionFeature(feature)}),
       status);
 }
@@ -95,6 +96,9 @@ void OnURLLoadComplete(
     proto::ModelExecutionFeature feature,
     std::unique_ptr<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
+  TRACE_EVENT1("browser", "ModelQualityLogsUploaderService::OnURLLoadComplete",
+               "feature", GetStringNameForModelExecutionFeature(feature));
+
   auto net_error = active_url_loader->NetError();
   int response_code = -1;
   if (active_url_loader->ResponseInfo() &&
@@ -189,6 +193,10 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   proto::ModelExecutionFeature feature =
       GetModelExecutionFeature(log_ai_data_request->feature_case());
 
+  TRACE_EVENT1("browser",
+               "ModelQualityLogsUploaderService::UploadModelQualityLogs",
+               "feature", GetStringNameForModelExecutionFeature(feature));
+
   // Don't do anything if logging is disabled for the feature. Nothing to
   // upload.
   if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
@@ -197,21 +205,19 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     return;
   }
 
-  // TODO(b/301301447): Set LoggingMetadata fields during upload.
   // Set the client id for logging if non-zero.
-  proto::LoggingMetadata logging_metadata;
+  proto::LoggingMetadata* logging_metadata =
+      log_ai_data_request->mutable_logging_metadata();
   int64_t client_id = GetOrCreateModelQualityClientId(feature, pref_service_);
   if (client_id != 0) {
-    logging_metadata.set_client_id(client_id);
+    logging_metadata->set_client_id(client_id);
   }
 
   proto::PerformanceClass perf_class = GetPerformanceClass(pref_service_);
   if (perf_class != proto::PERFORMANCE_CLASS_UNSPECIFIED) {
-    logging_metadata.mutable_on_device_system_profile()->set_performance_class(
+    logging_metadata->mutable_on_device_system_profile()->set_performance_class(
         perf_class);
   }
-
-  *(log_ai_data_request->mutable_logging_metadata()) = logging_metadata;
 
   std::string serialized_logs;
   log_ai_data_request->SerializeToString(&serialized_logs);
@@ -221,6 +227,68 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("model_quality_logging",
+                                          R"(
+        semantics {
+          sender: "Optimization Guide Model Quality Logger"
+          description:
+            "Sends logging data about machine learning model requests, "
+            "responses and user interaction with the feature using the "
+            "machine learning model. Google may use this data to improve "
+            "Google products, including the machine learning models "
+            "themselves, or to develop new models."
+          trigger:
+            "Sent after the feature using the machine learning model "
+            "is no longer using the model response, and the user is "
+            "done interacting with the feature."
+          data: "The machine learning model request, response and "
+            "usage statistics, feedback data and device information "
+            "(platform, chrome version, etc.)."
+          internal {
+            contacts {
+              email: "chrome-intelligence-core@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+            type: USER_AGENT
+            type: USER_CONTENT
+            type: HW_OS_INFO
+          }
+          last_reviewed: "2024-01-12"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+         policy {
+          cookies_allowed: NO
+          setting:
+            "Users can disable this by signing out of Chrome or by "
+            "disabling each feature using a machine learning model."
+          chrome_policy {
+            CreateThemesSettings {
+              CreateThemesSettings: 1
+            }
+            TabOrganizerSettings {
+              TabOrganizerSettings: 1
+            }
+            HelpMeWriteSettings {
+              HelpMeWriteSettings: 1
+            }
+          }
+          chrome_policy {
+            CreateThemesSettings {
+              CreateThemesSettings: 2
+            }
+            TabOrganizerSettings {
+              TabOrganizerSettings: 2
+            }
+            HelpMeWriteSettings {
+              HelpMeWriteSettings: 2
+            }
+          }
+        })");
+
   // Holds the currently active url request.
   std::unique_ptr<network::SimpleURLLoader> active_url_loader;
   active_url_loader = variations::CreateSimpleURLLoaderWithVariationsHeader(
@@ -228,9 +296,7 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
       // This is always InIncognito::kNo as model quality logs upload is not
       // enabled on incognito sessions and is rechecked before each upload.
       variations::InIncognito::kNo, variations::SignedIn::kNo,
-      // TODO(crbug/1485313): Update the traffic annotations with more details
-      // about the features.
-      MISSING_TRAFFIC_ANNOTATION);
+      traffic_annotation);
 
   active_url_loader->AttachStringForUpload(serialized_logs,
                                            "application/x-protobuf");

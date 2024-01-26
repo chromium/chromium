@@ -133,6 +133,10 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
     infoButton.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonID,
                                    _recipients[indexPath.row].email];
+    infoButton.accessibilityLabel = [NSString
+        stringWithFormat:@"%@, %@", _recipients[indexPath.row].fullName,
+                         l10n_util::GetNSString(
+                             IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)];
     cell.accessoryView = infoButton;
 
     // Make the cell a non-accessible element to make the info button accessible
@@ -179,7 +183,9 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
   item.detailText = recipient.email;
   item.image = CircularImageFromImage(recipient.profileImage,
                                       kAccountProfilePhotoDimension);
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   if (!recipient.isEligible) {
+    item.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     item.textColor = [UIColor colorNamed:kTextTertiaryColor];
     item.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
     item.imageViewAlpha = 0.4f;

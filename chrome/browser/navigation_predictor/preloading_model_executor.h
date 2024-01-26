@@ -25,7 +25,7 @@ class PreloadingModelExecutor
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   ModelInput input) override;
-  absl::optional<ModelOutput> Postprocess(
+  std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };
 

@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   }
   std::vector<std::pair<uint32_t, char*>> hashes;
   for (int i = 1; i < argc; i++) {
-    uint32_t data = base::Hash(argv[i], strlen(argv[i]));
+    uint32_t data = base::PersistentHash(argv[i]);
 
     // Strip off the signed bit because UMA doesn't support negative values,
     // but takes a signed int as input.

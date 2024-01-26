@@ -315,7 +315,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 
   if (!is_fully_locked) {
     window->SetProperty(ash::kUnresizableSnappedSizeKey,
-                        new gfx::Size(GetPortraitPhoneSizeWidth(), 0));
+                        new gfx::Size(GetPortraitPhoneSizeWidth(window), 0));
   } else {
     window->ClearProperty(ash::kUnresizableSnappedSizeKey);
   }

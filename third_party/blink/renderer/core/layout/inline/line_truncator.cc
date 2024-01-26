@@ -55,7 +55,7 @@ void LineTruncator::SetupEllipsis() {
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text_);
   ellipsis_shape_result_ =
-      ShapeResultView::Create(shaper.Shape(&font, line_direction_).get());
+      ShapeResultView::Create(shaper.Shape(&font, line_direction_));
   ellipsis_width_ = ellipsis_shape_result_->SnappedWidth();
 }
 
@@ -85,10 +85,10 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   }
 
   DCHECK(ellipsis_text_);
-  DCHECK(ellipsis_shape_result_.get());
+  DCHECK(ellipsis_shape_result_);
   line_box->AddChild(
       *ellipsized_layout_object, StyleVariant::kEllipsis,
-      std::move(ellipsis_shape_result_), ellipsis_text_,
+      ellipsis_shape_result_, ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),
       /* bidi_level */ 0);
@@ -105,7 +105,7 @@ wtf_size_t LineTruncator::AddTruncatedChild(
   LogicalLineItems& line = *line_box;
   const LogicalLineItem& source_item = line[source_index];
   DCHECK(source_item.shape_result);
-  scoped_refptr<ShapeResult> shape_result =
+  const ShapeResult* shape_result =
       source_item.shape_result->CreateShapeResult();
   unsigned text_offset = shape_result->OffsetToFit(position, edge);
   if (IsLtr(edge) ? IsLeftMostOffset(*shape_result, text_offset)
@@ -506,8 +506,7 @@ bool LineTruncator::TruncateChild(
 
   // TODO(layout-dev): Add support for OffsetToFit to ShapeResultView to avoid
   // this copy.
-  scoped_refptr<ShapeResult> shape_result =
-      child.shape_result->CreateShapeResult();
+  const ShapeResult* shape_result = child.shape_result->CreateShapeResult();
   DCHECK(shape_result);
   const TextOffsetRange original_offset = child.text_offset;
   // Compute the offset to truncate.
@@ -536,10 +535,10 @@ LogicalLineItem LineTruncator::TruncateText(const LogicalLineItem& item,
                             item.StartOffset() + offset_to_fit)
           : TextOffsetRange(item.StartOffset() + offset_to_fit,
                             item.EndOffset());
-  scoped_refptr<ShapeResultView> new_shape_result = ShapeResultView::Create(
+  const ShapeResultView* new_shape_result = ShapeResultView::Create(
       &shape_result, new_text_offset.start, new_text_offset.end);
   DCHECK(item.inline_item);
-  return LogicalLineItem(item, std::move(new_shape_result), new_text_offset);
+  return LogicalLineItem(item, new_shape_result, new_text_offset);
 }
 
 }  // namespace blink

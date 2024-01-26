@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -101,6 +102,9 @@ CSSSelectorList* ParseSelectorList(const String&,
                                    CSSNestingType,
                                    const StyleRule* parent_rule_for_nesting,
                                    bool is_within_scope);
+
+// Make a copy of a style rule which carries the specified signal.
+StyleRule* MakeSignalingRule(StyleRule*, CSSSelector::Signal);
 
 }  // namespace css_test_helpers
 }  // namespace blink

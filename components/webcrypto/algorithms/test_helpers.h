@@ -40,7 +40,7 @@ namespace webcrypto {
 // PartitionAlloc.
 class WebCryptoTestBase : public testing::Test {
  protected:
-  static void SetUpTestCase();
+  static void SetUpTestSuite();
 };
 
 class Status;

@@ -501,7 +501,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
     // IsDescendantOf() also returns true in the case of equality.
     if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
-      FireGeneratedEvent(targeted_event.event_params.event,
+      FireGeneratedEvent(targeted_event.event_params->event,
                          event_target->node());
     } else {
       deferred_events.push_back(targeted_event);
@@ -532,7 +532,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (!event_target->CanFireEvents())
       continue;
 
-    FireGeneratedEvent(targeted_event.event_params.event, event_target->node());
+    FireGeneratedEvent(targeted_event.event_params->event,
+                       event_target->node());
   }
   event_generator().ClearEvents();
 
@@ -649,7 +650,11 @@ void BrowserAccessibilityManager::OnLocationChanges(
                       change->new_location.bounds,
                       change->new_location.transform.get());
   }
-  SendLocationChangeEvents(changes);
+  // Only send location change events when the page is not in back/forward
+  // cache.
+  if (CanFireEvents()) {
+    SendLocationChangeEvents(changes);
+  }
   if (!location_change_callback_for_testing_.is_null())
     location_change_callback_for_testing_.Run();
 }
@@ -994,6 +999,9 @@ void BrowserAccessibilityManager::ScrollToMakeVisible(
 
   base::RecordAction(
       base::UserMetricsAction("Accessibility.NativeApi.ScrollToMakeVisible"));
+
+  base::UmaHistogramBoolean("Accessibility.ScreenReader.ScrollToImage",
+                            node.GetRole() == ax::mojom::Role::kImage);
 
   ui::AXActionData action_data;
   action_data.target_node_id = node.GetId();

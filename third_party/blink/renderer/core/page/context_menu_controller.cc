@@ -140,15 +140,9 @@ void SetPasswordManagerData(Element* element, ContextMenuData& data) {
 void SetAutofillData(Node* node, ContextMenuData& data) {
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
     data.form_control_type = form_control->FormControlType();
-    data.field_renderer_id = base::FeatureList::IsEnabled(
-                                 features::kAutofillUseDomNodeIdForRendererId)
-                                 ? form_control->GetDomNodeId()
-                                 : form_control->UniqueRendererFormControlId();
+    data.field_renderer_id = form_control->GetDomNodeId();
     if (auto* form = form_control->Form()) {
-      data.form_renderer_id = base::FeatureList::IsEnabled(
-                                  features::kAutofillUseDomNodeIdForRendererId)
-                                  ? form->GetDomNodeId()
-                                  : form->UniqueRendererFormId();
+      data.form_renderer_id = form->GetDomNodeId();
     } else {
       data.form_renderer_id = 0;
     }
@@ -157,17 +151,14 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
           node ? DynamicTo<HTMLElement>(RootEditableElement(*node)) : nullptr) {
     ContentEditableType content_editable =
         html_element->contentEditableNormalized();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseDomNodeIdForRendererId)) {
-      data.is_content_editable_for_autofill =
-          (content_editable == ContentEditableType::kPlaintextOnly ||
-           content_editable == ContentEditableType::kContentEditable) &&
-          !DynamicTo<HTMLFormElement>(node) &&
-          !DynamicTo<HTMLFormControlElement>(node);
-      if (data.is_content_editable_for_autofill) {
-        data.field_renderer_id = html_element->GetDomNodeId();
-        data.form_renderer_id = html_element->GetDomNodeId();
-      }
+    data.is_content_editable_for_autofill =
+        (content_editable == ContentEditableType::kPlaintextOnly ||
+         content_editable == ContentEditableType::kContentEditable) &&
+        !DynamicTo<HTMLFormElement>(node) &&
+        !DynamicTo<HTMLFormControlElement>(node);
+    if (data.is_content_editable_for_autofill) {
+      data.field_renderer_id = html_element->GetDomNodeId();
+      data.form_renderer_id = html_element->GetDomNodeId();
     }
   }
 }

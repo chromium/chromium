@@ -28,9 +28,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;

@@ -10,6 +10,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
@@ -234,7 +235,7 @@ TEST(AddressInfoTest, Canonical) {
   EXPECT_EQ(err, OK);
   EXPECT_EQ(os_error, 0);
   EXPECT_THAT(ai->GetCanonicalName(),
-              absl::optional<std::string>("canonical.bar.com"));
+              std::optional<std::string>("canonical.bar.com"));
 }
 
 TEST(AddressInfoTest, Iteration) {

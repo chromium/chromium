@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -358,7 +360,7 @@ base::Time PrivacySandboxSettingsImpl::TopicsDataAccessibleSince() const {
 }
 
 PrivacySandboxSettingsImpl::Status
-PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
+PrivacySandboxSettingsImpl::GetM1AdMeasurementAllowedStatus(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   Status status = GetM1PrivacySandboxApiEnabledStatus(
@@ -398,8 +400,8 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                         reporting_origin);
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
   JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
   return IsAllowed(status);
 }
@@ -425,11 +427,11 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(
+  Status status = GetM1AdMeasurementAllowedStatus(
       /*top_frame_origin=*/source_origin,
       /*reporting_origin=*/reporting_origin);
   if (IsAllowed(status)) {
-    status = GetM1AttributionReportingAllowedStatus(
+    status = GetM1AdMeasurementAllowedStatus(
         /*top_frame_origin=*/destination_origin,
         /*reporting_origin=*/reporting_origin);
   }
@@ -614,6 +616,7 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
 bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin,
+    std::string* out_debug_message,
     content::RenderFrameHost* console_frame) const {
   // Check for attestation on the caller's site.
   Status attestation_status =
@@ -622,11 +625,20 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
           PrivacySandboxAttestationsGatedAPI::kSharedStorage);
   if (!IsAllowed(attestation_status)) {
     JoinHistogram(kIsSharedStorageAllowedHistogram, attestation_status);
+    std::string error_message =
+        base::StrCat({"Attestation check for Shared Storage on ",
+                      accessing_origin.Serialize(), " failed."});
+    if (out_debug_message) {
+      *out_debug_message = base::StrCat(
+          {error_message, "\nReturned status ",
+           base::NumberToString(int(attestation_status)),
+           "; see `PrivacySandboxSettingsImpl::Status` at ",
+           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+           "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
+    }
     if (console_frame) {
       console_frame->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "Attestation check for Shared Storage on " +
-              accessing_origin.Serialize() + " failed.");
+          blink::mojom::ConsoleMessageLevel::kError, error_message);
     }
     return false;
   }
@@ -635,6 +647,23 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
   if (IsAllowed(status)) {
     status =
         GetSiteAccessAllowedStatus(top_frame_origin, accessing_origin.GetURL());
+    if (out_debug_message) {
+      *out_debug_message = base::StrCat(
+          {"Site access settings returned status ",
+           base::NumberToString(int(status)), " for accessing origin ",
+           accessing_origin.Serialize(), " and top-frame origin ",
+           top_frame_origin.Serialize(),
+           "; see `PrivacySandboxSettingsImpl::Status` at ",
+           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+           "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
+    }
+  } else if (out_debug_message) {
+    *out_debug_message = base::StrCat(
+        {"Privacy Sandbox settings returned status ",
+         base::NumberToString(int(status)),
+         "; see `PrivacySandboxSettingsImpl::Status` at ",
+         "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+         "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
   }
   JoinHistogram(kIsSharedStorageAllowedHistogram, status);
   return IsAllowed(status);
@@ -642,9 +671,20 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) const {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) const {
   Status status = GetM1FledgeAllowedStatus(top_frame_origin, accessing_origin);
   JoinHistogram(kIsSharedStorageSelectURLAllowedHistogram, status);
+  if (out_debug_message) {
+    *out_debug_message = base::StrCat(
+        {"M1 measurement settings returned status ",
+         base::NumberToString(int(status)), " for accessing origin ",
+         accessing_origin.Serialize(), " and top-frame origin ",
+         top_frame_origin.Serialize(),
+         "; see `PrivacySandboxSettingsImpl::Status` at ",
+         "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+         "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
+  }
   return IsAllowed(status);
 }
 
@@ -661,8 +701,8 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                         reporting_origin);
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
   JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
   return IsAllowed(status);
 }

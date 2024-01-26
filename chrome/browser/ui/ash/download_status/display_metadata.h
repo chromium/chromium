@@ -1,7 +1,6 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #ifndef CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_METADATA_H_
 #define CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_METADATA_H_
 
@@ -12,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -23,9 +22,11 @@ namespace ash::download_status {
 // Lists the types of commands that can be performed on a displayed download.
 enum class CommandType {
   kCancel,
+  kOpenFile,
   kPause,
   kResume,
   kShowInBrowser,
+  kShowInFolder,
 };
 
 // The metadata to display a download command.
@@ -51,6 +52,38 @@ struct CommandInfo {
   CommandType type;
 };
 
+// Indicates a download's progress. A progress is indeterminate if either
+// `received_bytes` or `total_bytes` is unknown.
+class Progress {
+ public:
+  Progress();
+
+  // Creates an instance for the specified `received_bytes`, `total_bytes` and
+  // `complete`. NOTE:
+  // 1. The values of `received_bytes` and `total_bytes`, if any, must be
+  //    non-negative.
+  // 2. `received_bytes` must not be greater than `total_bytes` unless the
+  //     progress is indeterminate.
+  // 3. When `complete` is true, `received_bytes` and `total_bytes` must have
+  //    values and be equal.
+  Progress(const std::optional<int64_t>& received_bytes,
+           const std::optional<int64_t>& total_bytes,
+           bool complete);
+
+  bool complete() const { return complete_; }
+
+  const std::optional<int64_t>& received_bytes() const {
+    return received_bytes_;
+  }
+
+  const std::optional<int64_t>& total_bytes() const { return total_bytes_; }
+
+ private:
+  std::optional<int64_t> received_bytes_;
+  std::optional<int64_t> total_bytes_;
+  bool complete_;
+};
+
 // The metadata used to display downloads.
 struct DisplayMetadata {
   DisplayMetadata();
@@ -65,17 +98,17 @@ struct DisplayMetadata {
   // NOTE: This path is different from the download target path.
   base::FilePath file_path;
 
-  // The received bytes of download.
-  std::optional<int64_t> received_bytes;
+  // A nullable image that represents the underlying download.
+  gfx::ImageSkia image;
+
+  // Indicates the progress of the underlying download.
+  Progress progress;
 
   // The text that provides additional details about the download.
   std::optional<std::u16string> secondary_text;
 
   // The primary text of the displayed download.
   std::optional<std::u16string> text;
-
-  // The total bytes of download.
-  std::optional<int64_t> total_bytes;
 };
 
 }  // namespace ash::download_status

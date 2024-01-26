@@ -14,12 +14,21 @@
   cr-icon-button.active {
     background-color: var(--cr-active-background-color);
   }
-  /* TODO(b/1465029): Investigate why chrome refresh colors don't always
-     work on first launch. */
   #play-pause {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 28px;
     color: var(--color-side-panel-entry-icon);
+    --cr-icon-button-fill-color: var(--color-sys-primary);
+  }
+  .audio-background-when-paused-true {
+    --audio-controls-background: transparent;
+    --audio-controls-right-padding: 0px;
+    --audio-controls-right-margin: 2px;
+  }
+  .audio-background-when-paused-false {
+    --audio-controls-background: var(--color-sys-tonal-container);
+    --audio-controls-right-padding: 4px;
+    --audio-controls-right-margin: 6px;
   }
   #audio-controls {
     border-radius: 18px;
@@ -77,11 +86,12 @@
     visibility: hidden;
     margin: 0;
   }
-  #toolbar-container {
+  .toolbar-container {
     padding: 6px 8px;
     overflow: visible;
     white-space: nowrap;
     max-height: 48px;
+    display: inline-block;
   }
   #more {
     display: none;
@@ -115,18 +125,18 @@
      role="toolbar" aria-label="$i18n{readingModeToolbarLabel}"
      on-keydown="onToolbarKeyDown_">
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
-    <span id="audio-controls">
+    <span id="audio-controls" class$="audio-background-when-paused-[[paused]]">
       <cr-icon-button
         class="toolbar-button audio-controls"
         id="play-pause"
-        aria-label="$i18n{playLabel}"
+        aria-label$="[[playPauseButtonAriaLabel_(paused)]]"
         aria-keyshortcuts="k"
         aria-description="$i18n{playDescription}"
-        iron-icon="read-anything-20:play"
+        iron-icon$="[[playPauseButtonIronIcon_(paused)]]"
         tabindex="0"
         on-click="onPlayPauseClick">
       </cr-icon-button>
-      <span id="granularity-container" hidden="[[isPaused_]]">
+      <span id="granularity-container" hidden="[[paused]]">
         <cr-icon-button
           id="previousGranularity"
           class="toolbar-button audio-controls"
@@ -202,6 +212,17 @@
   </template>
 
   <hr class="separator" aria-hidden="true">
+
+  <template is="dom-repeat" items="[[textStyleToggles_]]">
+    <cr-icon-button
+    tabindex="-1"
+    class="toolbar-button"
+    id="[[item.id]]"
+      aria-label="[[item.ariaLabel]]"
+      iron-icon="[[item.icon]]"
+      on-click="onToggleButtonClick_">
+    </cr-icon-button>
+  </template>
 
   <template is="dom-repeat" items="[[textStyleOptions_]]">
     <cr-icon-button

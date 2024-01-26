@@ -177,7 +177,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     shared_image = sii->NotifyMailboxAdded(
         mailbox_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                      gpu::SHARED_IMAGE_USAGE_RASTER);
+                      gpu::SHARED_IMAGE_USAGE_RASTER_READ);
   }
 
   gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
@@ -211,7 +211,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;

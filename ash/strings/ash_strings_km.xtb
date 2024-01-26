@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">គ្មានបណ្ដាញ​ទូរសព្ទចល័តទេ</translation>
 <translation id="1882897271359938046">កំពុងឆ្លុះទៅ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ដោះសោដោយប្រើស្នាមម្រាមដៃ</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> មិនអាចប្រើ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) បានទេ។ កម្រិតច្បាស់ត្រូវបានប្ដូរទៅ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សាការផ្លាស់ប្ដូរ។ ការកំណត់​មុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="1908992311423394684">ការដំឡើងថ្មី</translation>
 <translation id="1915307458270490472">បញ្ចប់​ការ​សន្ទនា</translation>
 <translation id="1918022425394817322">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងលើ</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">ការមើលកាមេរ៉ា​សាកល្បង​ត្រូវបានបើក</translation>
 <translation id="2067602449040652523">ពន្លឺកា្តរចុច</translation>
 <translation id="2075520525463668108">បិទ/បើក<ph name="CAPTURE_MEDIUM" />។ <ph name="CAPTURE_MEDIUM" />គឺ<ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">អូសទៅស្ដាំ​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុបន្ទាប់</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2083190527011054446">រាត្រីសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">បើកផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">ទៅកាន់​ភ្លេង​មុន</translation>
 <translation id="2152895518047545149">ហាក់​ដូចជា​មិនមាន​ជំពាក់កិច្ចការអ្វីទេ។ ល្អណាស់!</translation>
 <translation id="2161132820593978283">សាកល្បង​ប្រើ​ការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​ ដើម្បីឱ្យ​អ្នក​ស្ថិតនៅ​ចំកណ្ដាល​នៃ​អេក្រង់​នៅលើ​ការហៅជាវីដេអូ។ សូមបើកមុខងារនេះនៅក្នុងការកំណត់រហ័ស។</translation>
-<translation id="2170530631236737939">អូសចុះក្រោម​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចាកចេញពី​ទិដ្ឋភាពរួម</translation>
 <translation id="2185166372312820725">ទៅកាន់​ផ្ទាំង​ពីមុន</translation>
 <translation id="2185444992308415167">ឆ្លងកាត់​ផ្ទាំងទី 1 ដល់ទី 8</translation>
 <translation id="2198625180564913276">កំពុងបញ្ចូល​កម្រងព័ត៌មាន។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">ទូរសព្ទ​របស់អ្នក​ត្រូវតែមាន​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីផ្ដល់​ហតស្ប៉ត</translation>
 <translation id="2727175239389218057">ឆ្លើយតប</translation>
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
+<translation id="2744221223678373668">បានចែករំលែក</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"លុប"</translation>
 <translation id="2750941250130734256">បានផ្ដាច់វិនដូ​សកម្ម។</translation>
 <translation id="2761723519669354964">បើក​ធាតុ​ដែលបាន​រំលេច​ពី​ធ្នើរ</translation>
+<translation id="2762000892062317888">អំបាញ់មិញនេះ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ដល់ <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+ស្វែងរក+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">មានអ្វីមួយខុសប្រក្រតី។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="3580650856351781466">កំពុងទាញយកឯកសារនៃការនិយាយ</translation>
 <translation id="3585296979871889131">មើលរូបថត មេឌៀ ការជូនដំណឹង និងកម្មវិធីថ្មីៗ​លើ​ទូរសព្ទរបស់​អ្នក</translation>
+<translation id="3590441166907930941">ប៊ូតុងចំហៀង</translation>
 <translation id="3593039967545720377">ចូលប្រើប្រវត្តិឃ្លីបបតរបស់អ្នកដោយចុច <ph name="SHORTCUT_KEY_NAME" /> + V ដើម្បីមើលឃ្លីបបតរបស់អ្នក។ សូមចម្លងធាតុណាមួយ ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="3593646411856133110">អូសឡើងលើ រួចសង្កត់ឱ្យជាប់ ដើម្បីមើល​កម្មវិធីដែលបើក</translation>
 <translation id="3595596368722241419">ថ្មពេញ</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">ទទួល</translation>
 <translation id="3990002060657467458">ការគ្រប់គ្រង​ដែលប្រើ​ញឹកញាប់​ដូចជា Wi-Fi, ប៊្លូធូស និង​កម្រិតសំឡេង​គឺនៅក្នុង​ការកំណត់រហ័ស។ អ្នកក៏អាច​ចូលទីនេះ ដើម្បីថតរូប​អេក្រង់​បានផងដែរ។</translation>
 <translation id="3995138139523574647">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងស្តាំ)</translation>
+<translation id="4002066346123236978">ចំណងជើង</translation>
 <translation id="40062176907008878">ការសរសេរដោយដៃ</translation>
 <translation id="4011112806063830608">មុខងារ​កុំ​រំខាន​ត្រូវ​បាន​បើក។</translation>
 <translation id="4017989525502048489">ព្រួញឡាស៊ែរ</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">គុណ​ភាព​ថ្ម <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ចំនួន​វដ្ដ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">រក្សាទុកតុជាទម្រង់គំរូ</translation>
 <translation id="5168181903108465623">មានឧបករណ៍ខាស</translation>
+<translation id="5168753792967365150">កែនៅក្នុង Google កិច្ចការ</translation>
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="5176318573511391780">ថតវីដេអូ​អេក្រង់​ដោយផ្នែក</translation>
 <translation id="5187627942836026988">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានទប់ស្កាត់​ដោយអ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">កម្មវិធីដែលអ្នកបានដំឡើង</translation>
 <translation id="6173151025443907148">មិនអាច​ចូលគណនីជា​អ្នកប្រើប្រាស់ទីពីរ​បានទេ ប្រសិនបើ​បើក Lacros។ សូមប្រើ​កម្រងព័ត៌មាន​កម្មវិធីរុករកតាម​អ៊ីនធឺណិតទីពីរ​នៅក្នុង Lacros ជំនួសវិញ ឬបិទ Lacros រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6179832488876878285">អ្នកអាចខ្ទាស់ឯកសារសំខាន់ៗរបស់អ្នកនៅទីនេះ។ សូមបើកកម្មវិធី Files ដើម្បីចាប់ផ្ដើម។</translation>
+<translation id="6180193585172850042">ប៊ូតុង​ថយក្រោយ</translation>
+<translation id="6180651297859206670">ប៊ូតុង​ទៅមុខ</translation>
 <translation id="6182592640011875895">បើកតុ</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">ឥឡូវ​សាកថ្ម​ពេញហើយ</translation>
@@ -1347,7 +1351,7 @@
 <translation id="638716340450135524">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="639644700271529076">CAPS LOCK ត្រូវបានបិទ</translation>
 <translation id="6406704438230478924">altgr</translation>
-<translation id="6417265370957905582">Google ជំនួយការ</translation>
+<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">សម្អាត​ការ​ជូន​ដំណឹង​ទាំងអស់</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6981291220124935078">បើកការចូលប្រើប្រាស់</translation>
 <translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
 <translation id="698231206551913481">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលប្រើជាមួយអ្នកប្រើនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍ បន្ទាប់ពីអ្នកប្រើនេះត្រូវបានលុប។</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> មិនអាចប្រើ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) បានទេ។ កម្រិត​គុណភាព​ត្រូវបាន​ប្ដូរទៅ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សា​ការផ្លាស់ប្ដូរ។ ការកំណត់​ពីមុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="6989752354829085073">មើលការណែនាំត្រួសៗ ដើម្បីស្វែងយល់អំពីរបៀបប្រើប្រាស់ Chromebook របស់អ្នក។ រៀបចំ និងដំណើរការក្នុង 6 ជំហាន។</translation>
 <translation id="7004910047186208204">ភ្ជាប់​ទៅ​ទិន្នន័យទូរសព្ទចល័ត</translation>
 <translation id="7005239792648594238">បើកកម្មវិធី ដើម្បី​ចាប់ផ្ដើម</translation>
@@ -1692,7 +1697,6 @@
 <translation id="7850320739366109486">កុំរំខាន</translation>
 <translation id="7851039877802112575">ផ្លាស់ទី​ការ​ផ្ដោត​ទៅ​ផ្ទាំង​លោតឡើង និងប្រអប់</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">អូស​ឡើងលើ​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចូល​ទិដ្ឋភាពរួម</translation>
 <translation id="7862292329216937261">ដើម្បីប្រើប្រាស់​ឧបករណ៍​ក្នុងនាម​ជា​ភ្ញៀវ អ្នក​ត្រូវ​ចេញពី​គណនី រួច​ជ្រើសរើស "រុករក​ក្នុងនាម​ជា​ភ្ញៀវ" នៅ​ផ្នែក​ខាងក្រោម​នៃ​អេក្រង់។</translation>
 <translation id="7866482334467279021">បើក</translation>
 <translation id="7872786842639831132">បិទ</translation>
@@ -1803,7 +1807,6 @@
 <translation id="8262312463845990408">បិទ/បើកការចាក់</translation>
 <translation id="8270450402312105425">{0,plural, =1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល​មួយម៉ោង}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # ម៉ោង}}</translation>
 <translation id="8277261673056602147">រំលេចអក្សរនៅលើអេក្រង់របស់អ្នក</translation>
-<translation id="8284362522226889623">អូសទៅឆ្វេង​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុមុន</translation>
 <translation id="828708037801473432">បិទ</translation>
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8308637677604853869">ម៉ឺនុយពីមុន</translation>

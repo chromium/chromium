@@ -5,6 +5,7 @@
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
@@ -22,7 +23,7 @@
   BookmarksSpotlightManager* _bookmarkManager;
   TopSitesSpotlightManager* _topSitesManager;
   ActionsSpotlightManager* _actionsManager;
-  TemplateURLService* _templateURLService;
+  raw_ptr<TemplateURLService> _templateURLService;
 }
 
 @property(nonatomic, strong) ReadingListSpotlightManager* readingListManager;

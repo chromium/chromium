@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -50,6 +51,12 @@ content::WebContents* SecurityInterstitialPage::web_contents() const {
 
 GURL SecurityInterstitialPage::request_url() const {
   return request_url_;
+}
+
+void SecurityInterstitialPage::OnInterstitialShown() {
+  if (controller_->metrics_helper()) {
+    controller_->metrics_helper()->RecordInterstitialShowDelay();
+  }
 }
 
 void SecurityInterstitialPage::DontCreateViewForTesting() {

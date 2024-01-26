@@ -726,13 +726,13 @@ bool DoesFormControlTypeSupportEmoji(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
-absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
-                                                           const GURL& url) {
-  absl::optional<webapps::AppId> link_app_id =
+std::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
+                                                          const GURL& url) {
+  std::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url);
 
   if (!link_app_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ash::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
@@ -1677,7 +1677,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         ash::SystemWebDialogDelegate::HasInstance(current_url_);
 
     Profile* profile = GetProfile();
-    absl::optional<ash::SystemWebAppType> link_system_app_type =
+    std::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
 
     // true if the link points to a WebUI page, including SWA.
@@ -1785,9 +1785,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         }
       }
 
-      if ((multiple_profiles_open_ ||
-           (base::FeatureList::IsEnabled(features::kDisplayOpenLinkAsProfile) &&
-            has_active_profiles))) {
+      if (multiple_profiles_open_ || has_active_profiles) {
         DCHECK(!target_profiles_entries.empty());
         if (target_profiles_entries.size() == 1) {
           int menu_index = static_cast<int>(profile_link_paths_.size());
@@ -1903,7 +1901,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!provider)
     return;
 
-  absl::optional<webapps::AppId> link_app_id =
+  std::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
   if (!link_app_id)
     return;
@@ -2389,7 +2387,7 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       base::RecordAction(
           base::UserMetricsAction("Compose.ContextMenu.ItemSeen"));
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
-                                      IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+                                      IDS_COMPOSE_CONTEXT_MENU_TEXT);
       menu_model_.SetElementIdentifierAt(
           menu_model_.GetIndexOfCommandId(IDC_CONTEXT_COMPOSE).value(),
           kComposeMenuItem);
@@ -2605,7 +2603,7 @@ void RenderViewContextMenu::AppendSharingItems() {
 #if !BUILDFLAG(IS_FUCHSIA)
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
-  absl::optional<std::string> phone_number;
+  std::optional<std::string> phone_number;
   std::string selection_text;
   if (ShouldOfferClickToCallForURL(browser_context_, params_.link_url)) {
     entry_point = SharingClickToCallEntryPoint::kRightClickLink;
@@ -3919,7 +3917,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(
           Profile::FromBrowserContext(browser_context_), params_.link_url);
   // |app_id| could be nullopt if it has been uninstalled since the user
@@ -3980,10 +3978,14 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
 void RenderViewContextMenu::ExecOpenCompose() {
   ChromeComposeClient* client = GetChromeComposeClient();
   if (!client) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoChromeComposeClient);
     return;
   }
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoRenderFrameHost);
     return;
   }
   if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
@@ -3997,6 +3999,9 @@ void RenderViewContextMenu::ExecOpenCompose() {
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
     new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
+  } else {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoContentAutofillDriver);
   }
 }
 #endif

@@ -4,8 +4,9 @@
 
 #include "chrome/services/file_util/single_file_tar_reader.h"
 
+#include <optional>
+
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // https://www.gnu.org/software/tar/manual/html_node/Standard.html
@@ -58,11 +59,11 @@ bool SingleFileTarReader::IsComplete() const {
 }
 
 // static
-absl::optional<uint64_t> SingleFileTarReader::ReadOctalNumber(
+std::optional<uint64_t> SingleFileTarReader::ReadOctalNumber(
     base::span<const uint8_t> buffer) {
   const size_t length = buffer.size();
   if (length < 8u)
-    return absl::nullopt;
+    return std::nullopt;
 
   uint64_t num = 0;
 

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/preloading/preview/preview_tab.h"
+#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -26,11 +27,12 @@ void PreviewManager::InitiatePreview(const GURL& url) {
   tab_ = std::make_unique<PreviewTab>(this, GetWebContents(), url);
 }
 
-void PreviewManager::Cancel() {
+void PreviewManager::Cancel(content::PreviewCancelReason reason) {
   if (!tab_) {
     return;
   }
 
+  tab_->CancelPreview(std::move(reason));
   // Delete `tab_` asynchronously so that we can call this inside PreviewTab.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::DoNothingWithBoundArgs(std::move(tab_)));

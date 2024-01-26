@@ -238,14 +238,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // |EncodeFieldTypes()| in components/autofill/core/browser/form_structure.cc.
   // The resulting bit mask in this test is hard-coded to capture regressions in
   // the calculation of the mask.
-
-  std::string data_present;
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHonorificPrefixes)) {
-    data_present = "1f7e0003f80000080004000001c424180002";
-  } else {
-    data_present = "1f7e0003f80000080004000001c420180002";
-  }
+  std::string data_present = "1f7e0003f80000080004000001c420180002";
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present
   // if AutofillEnableSupportForPhoneNumberTrunkTypes is enabled. Clean-up

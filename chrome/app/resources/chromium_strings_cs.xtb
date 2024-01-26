@@ -90,6 +90,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2583187216237139145">Veškerá data prohlížeče Chromium vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Pokračovat v používání prohlížeče Chromium</translation>
 <translation id="259935314519650377">Stažený instalační program se nepodařilo uložit do mezipaměti. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy (doporučeno)</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
 <translation id="268602741124540128">Vítejte v prohlížeči Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3258596308407688501">Chromium nemůže číst ani zapisovat do svého datového adresáře:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 je modul prohlížeče Chromium pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="3283186697780795848">Je nainstalována tato verze prohlížeče Chromium: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartovat</translation>
 <translation id="328888136576916638">Chybí klíče rozhraní Google API. Některé funkce Chromium nebudou k dispozici.</translation>
@@ -142,7 +144,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3533435340678213462">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromia odstranit.</translation>
 <translation id="3567254597502212821">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>
 <translation id="3593091352817399191">Už je přihlášen jiný účet. Pokud chcete své prohlížení oddělit, Chromium vám může vytvořit vlastní profil.</translation>
-<translation id="363078681319665186">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.15 nebo novější. Tento počítač používá systém macOS 10.13.</translation>
 <translation id="3639635944603682591">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování.}=1{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3651803019964686660">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
@@ -159,7 +160,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pomoc se systémem ChromiumOS</translation>
 <translation id="3871664619793219264">Získejte obsah prohlížeče Chromium z účtu <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.15 nebo novější. Tento počítač používá systém macOS 10.14.</translation>
 <translation id="388648406173476553">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="3889543394854987837">Chcete-li otevřít Chromium a začít procházet Internet, klikněte na svoje jméno.</translation>
 <translation id="390528597099634151">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chromium přihlášen. Chcete-li své procházení oddělit, Chromium vám může vytvořit vlastní profil.</translation>
@@ -220,6 +220,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4814736265800133385">Použít Chromium bez účtu</translation>
 <translation id="4888717733111232871">Pravidlo příchozího provozu pro prohlížeč Chromium, které povolí provoz mDNS.</translation>
 <translation id="4893347770495441059">Znovu spustit a aktualizovat &amp;Chromium</translation>
+<translation id="4942295735032723435">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 11 nebo novější. Tento počítač používá systém macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium je v režimu na pozadí.</translation>
 <translation id="4987820182225656817">Hosté mohou Chromium používat, aniž by po nich zůstaly jakékoliv stopy.</translation>
 <translation id="4994636714258228724">Přidejte do prohlížeče Chromium svůj účet</translation>
@@ -248,7 +249,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozici aktualizace prohlížeče Chromium}=1{Je k dispozici aktualizace prohlížeče Chromium}few{Již # dny je k dispozici aktualizace prohlížeče Chromium}many{Již # dne je k dispozici aktualizace prohlížeče Chromium}other{Již # dní je k dispozici aktualizace prohlížeče Chromium}}</translation>
 <translation id="5643865575100044307">Při zavření prohlížeče Chromium ze zařízení vždy vymazat data webů</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
-<translation id="5675598751761067447">Tento soubor může být nebezpečný.<ph name="LINE_BREAK" />Pokud zadáte heslo, může Chromium toto stažení zkontrolovat za vás – heslo zůstane ve vašem zařízení.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
@@ -282,6 +282,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6144416395842701622">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se</translation>
 <translation id="6145820983052037069">Zde můžete přepínat mezi profily Chromium</translation>
 <translation id="615103374448673771">Pokud máte povolené soubory cookie, může je Chromium při předběžném načítání použít</translation>
+<translation id="6174920971222007286">Tento soubor může být nebezpečný.<ph name="LINE_BREAK" />Pokud zadáte heslo, může vám Chromium tento stažený soubor zkontrolovat. Informace o souboru budou odeslány do Bezpečného prohlížení Google, ale obsah souboru a heslo zůstanou ve vašem zařízení.</translation>
 <translation id="6175304430031192654">V závislosti na vašem nastavení může Chromium odesílat také soubory cookie a vaši aktuální adresu URL</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
 <translation id="6183079672144801177">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do prohlížeče Chromium, a potom zkuste číslo odeslat znovu.</translation>
@@ -409,6 +410,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8105840573057009683">Chromium pro tento web potřebuje přístup k poloze</translation>
 <translation id="8133124826068723441">ChromiumOS nemůže synchronizovat data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
+<translation id="8166782796394721554">Zapnout další ochranu v modulu prohlížeče Chromium pro JavaScript a WebAssembly</translation>
 <translation id="81770708095080097">Tento soubor je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="8213374284266571500">Prohlížeč Chromium tento soubor zablokoval, protože tento typ souboru je nebezpečný</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>

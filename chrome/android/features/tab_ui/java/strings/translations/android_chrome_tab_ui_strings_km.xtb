@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4133493477912226187">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="4212246570487010370">ការអានបន្ត</translation>
+<translation id="427987768447457592">ក្រុមផ្ទាំងថ្មី</translation>
 <translation id="4648718555153979859">ផ្ទាំងរបស់អ្នកត្រូវ​បានដាក់ជាក្រុម​រួមគ្នានៅទីនេះ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" />)}other{(មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">មើល</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">លាក់ក្រឡា​ពេញ​អេក្រង់</translation>
 <translation id="5076161749301278626">មើលការវាយតម្លៃហាងឬ?</translation>
 <translation id="5082793167783849073">ប្រៀបធៀបទំព័រ​យ៉ាងរហ័សដោយ​ការបង្កើតក្រុម។ ដើម្បីចាប់ផ្ដើម សូមចុច​តំណឱ្យជាប់។</translation>
+<translation id="5161254044473106830">ត្រូវមានចំណងជើង</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{អ្នកមាន​ផ្ទាំង <ph name="TABS_COUNT_ONE" /> ដែលអ្នក​មិនបានប្រើ​នាពេលថ្មីៗនេះ}other{អ្នកមាន​ផ្ទាំង <ph name="TABS_COUNT_MANY" /> ដែលអ្នក​មិនបានប្រើ​នាពេលថ្មីៗនេះ}}</translation>
 <translation id="5339733443032484186">ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
 <translation id="5490235265819901748">បានពង្រីក​ក្រុមផ្ទាំង</translation>

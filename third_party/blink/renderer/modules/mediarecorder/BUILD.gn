@@ -6,12 +6,6 @@ import("//build/buildflag_header.gni")
 import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libaom/options.gni")
-import("//third_party/webrtc/webrtc.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "RTC_USE_H264=$rtc_use_h264" ]
-}
 
 blink_modules_sources("mediarecorder") {
   sources = [
@@ -46,7 +40,6 @@ blink_modules_sources("mediarecorder") {
   ]
 
   deps = [
-    ":buildflags",
     "//build:chromeos_buildflags",
     "//media",
     "//media/mojo/clients",
@@ -57,7 +50,7 @@ blink_modules_sources("mediarecorder") {
     "//third_party/opus",
   ]
 
-  if (rtc_use_h264) {
+  if (media_use_openh264) {
     sources += [
       "h264_encoder.cc",
       "h264_encoder.h",

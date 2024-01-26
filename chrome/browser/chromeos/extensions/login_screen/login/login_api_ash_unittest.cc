@@ -322,7 +322,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          data_for_next_login_attempt);
 
-  absl::optional<base::Value> value = RunFunctionAndReturnValue(
+  std::optional<base::Value> value = RunFunctionAndReturnValue(
       base::MakeRefCounted<LoginFetchDataForNextLoginAttemptFunction>(), "[]");
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
 
@@ -335,7 +335,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
 TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
   const std::string data_for_next_login_attempt = "hello world";
 
-  absl::optional<base::Value> value = RunFunctionAndReturnValue(
+  std::optional<base::Value> value = RunFunctionAndReturnValue(
       base::MakeRefCounted<LoginSetDataForNextLoginAttemptFunction>(),
       "[\"" + data_for_next_login_attempt + "\"]");
 
@@ -796,8 +796,8 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   }
 
   void SetUpCleanupHandlerMocks(
-      absl::optional<std::string> error1 = absl::nullopt,
-      absl::optional<std::string> error2 = absl::nullopt) {
+      std::optional<std::string> error1 = std::nullopt,
+      std::optional<std::string> error2 = std::nullopt) {
     std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler1 =
         std::make_unique<StrictMock<chromeos::MockCleanupHandler>>();
     EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))

@@ -40,7 +40,7 @@ const size_t kTwoBytePayloadLengthField = 126;
 const size_t kEightBytePayloadLengthField = 127;
 const size_t kMaskingKeyWidthInBytes = 4;
 
-WebSocket::ParseResult DecodeFrameHybi17(const std::string_view& frame,
+WebSocket::ParseResult DecodeFrameHybi17(std::string_view frame,
                                          bool client_frame,
                                          int* bytes_consumed,
                                          std::string* output,
@@ -293,10 +293,9 @@ WebSocketEncoder::WebSocketEncoder(
 
 WebSocketEncoder::~WebSocketEncoder() = default;
 
-WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
-    const std::string_view& frame,
-    int* bytes_consumed,
-    std::string* output) {
+WebSocket::ParseResult WebSocketEncoder::DecodeFrame(std::string_view frame,
+                                                     int* bytes_consumed,
+                                                     std::string* output) {
   bool compressed;
   std::string current_output;
   WebSocket::ParseResult result = DecodeFrameHybi17(

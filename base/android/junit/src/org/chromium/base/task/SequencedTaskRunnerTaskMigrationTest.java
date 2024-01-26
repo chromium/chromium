@@ -47,7 +47,6 @@ public class SequencedTaskRunnerTaskMigrationTest {
 
     @After
     public void tearDown() throws Exception {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
         // Ensure that no stuck threads left behind.
         List<Runnable> queuedRunnables = mConcurrentExecutor.shutdownNow();
         Assert.assertTrue("Some task is stuck in thread pool queue", queuedRunnables.isEmpty());

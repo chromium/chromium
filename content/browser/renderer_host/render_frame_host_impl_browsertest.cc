@@ -33,6 +33,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -7869,17 +7870,12 @@ viz::SurfaceId GetFirstSurfaceIdAfterNavigation(RenderWidgetHostView* view) {
 // BFCache, we explicitly set its fallback surface to the current View to avoid
 // visual glitches.
 //
-// TODO(https://crbug.com/1472026): Investigate and re-enable.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
-  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-#else
-#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
-  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-#endif
+// This test is disabled because it's flaky on Windows, fails on iOS, and when
+// updated to use correct APIs, started failing consistently on Android and
+// Linux. TODO(https://crbug.com/1472026): Investigate and re-enable.
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
-    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+    DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
   // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
   // event.
   const GURL url_red(embedded_test_server()->GetURL(
@@ -7923,10 +7919,11 @@ IN_PROC_BROWSER_TEST_F(
           .IsSameOrNewerThan(first_surface_id_after_nav_after_bfcache_restore));
 
   {
-    gfx::Image screenshot;
-    ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
-                         gfx::Rect(web_contents()->GetSize()), &screenshot);
-    AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
+    base::test::TestFuture<gfx::Image> future;
+    ui::GrabViewSnapshotAsync(web_contents()->GetView()->GetNativeView(),
+                              gfx::Rect(web_contents()->GetSize()),
+                              future.GetCallback());
+    AssertBitmapOfColor(future.Take().AsBitmap(), SK_ColorGREEN);
   }
 
   ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
@@ -7938,10 +7935,11 @@ IN_PROC_BROWSER_TEST_F(
   // `first_surface_id_after_nav_` of the `DelegatedFrameHost{Android}`. This
   // should have no effects on the screen.
   {
-    gfx::Image screenshot;
-    ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
-                         gfx::Rect(web_contents()->GetSize()), &screenshot);
-    AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
+    base::test::TestFuture<gfx::Image> future;
+    ui::GrabViewSnapshotAsync(web_contents()->GetView()->GetNativeView(),
+                              gfx::Rect(web_contents()->GetSize()),
+                              future.GetCallback());
+    AssertBitmapOfColor(future.Take().AsBitmap(), SK_ColorGREEN);
   }
 }
 

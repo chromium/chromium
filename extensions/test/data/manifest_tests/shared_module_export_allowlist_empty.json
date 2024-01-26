@@ -1,0 +1,9 @@
+{
+  "name": "shared_module_export unittest",
+  "manifest_version": 3,
+  "version": "1",
+  "export": {
+    "allowlist": [
+    ]
+  }
+}

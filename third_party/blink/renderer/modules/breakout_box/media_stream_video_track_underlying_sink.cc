@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
 #include "base/feature_list.h"
+#include "base/location.h"
+#include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/base/video_types.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -36,6 +39,15 @@ BASE_FEATURE(kBreakoutBoxEagerConversion,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// If BreakoutBoxEagerConversion is enabled, this feature enables frame
+// conversion even if the sinks connected to the track backed by the
+// MediaStreamVideoTrackUnderlyingSink have not sent the RequireMappedFrame
+// signal.
+// This feature has no effect if BreakoutBoxEagerConversion is disabled.
+BASE_FEATURE(kBreakoutBoxConversionWithoutSinkSignal,
+             "BreakoutBoxConversionWithoutSinkSignal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class TransferringOptimizer : public WritableStreamTransferringOptimizer {
  public:
@@ -171,7 +183,6 @@ void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool(
   } else {
     convert_to_nv12_gmb_failure_count_++;
   }
-  accelerated_frame_pool_callback_in_progress_ = false;
 }
 
 absl::optional<ScriptPromise>
@@ -185,38 +196,56 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
   }
   DCHECK(video_frame);
   auto format = video_frame->format();
-  if (!(base::FeatureList::IsEnabled(kBreakoutBoxEagerConversion) &&
-        video_frame->NumTextures() == 1 &&
-        (media::IsOpaque(format) || source_broker_->CanDiscardAlpha()) &&
-        (format == media::PIXEL_FORMAT_XBGR ||
-         format == media::PIXEL_FORMAT_ABGR ||
-         format == media::PIXEL_FORMAT_XRGB ||
-         format == media::PIXEL_FORMAT_ARGB) &&
-        source_broker_->RequireMappedFrame())) {
+  bool frame_is_rgb = (format == media::PIXEL_FORMAT_XBGR ||
+                       format == media::PIXEL_FORMAT_ABGR ||
+                       format == media::PIXEL_FORMAT_XRGB ||
+                       format == media::PIXEL_FORMAT_ARGB);
+  bool frame_can_be_converted =
+      video_frame->NumTextures() == 1 &&
+      (media::IsOpaque(format) || source_broker_->CanDiscardAlpha());
+  bool sink_wants_mapped_frame =
+      base::FeatureList::IsEnabled(kBreakoutBoxConversionWithoutSinkSignal) ||
+      source_broker_->RequireMappedFrame();
+
+  bool should_eagerly_convert =
+      base::FeatureList::IsEnabled(kBreakoutBoxEagerConversion) &&
+      frame_is_rgb && frame_can_be_converted && sink_wants_mapped_frame;
+  if (!should_eagerly_convert) {
     return absl::nullopt;
   }
+
   if (!accelerated_frame_pool_) {
-    if (accelerated_frame_pool_callback_in_progress_) {
-      return absl::nullopt;
+    gpu::GpuMemoryBufferManager* gmb_manager = nullptr;
+    if (IsMainThread()) {
+      gmb_manager = Platform::Current()->GetGpuMemoryBufferManager();
+    } else {
+      // Get the GPU Buffer Manager by jumping to the main thread and blocking.
+      // This normally occurs for the first frame only. In case of failures
+      // only kMaxFailures attempts are made.
+      // The purpose of blocking until the value is read is to avoid forwarding
+      // unconverted frames, which cause the WebRTC sink to fall back to
+      // software encoding.
+      base::WaitableEvent waitable_event;
+      PostCrossThreadTask(
+          *Thread::MainThread()->GetTaskRunner(
+              AccessMainThreadForGpuMemoryBufferManager()),
+          FROM_HERE,
+          CrossThreadBindOnce(
+              [](base::WaitableEvent* event,
+                 gpu::GpuMemoryBufferManager** gmb_manager_ptr) {
+                *gmb_manager_ptr =
+                    Platform::Current()->GetGpuMemoryBufferManager();
+                event->Signal();
+              },
+              CrossThreadUnretained(&waitable_event),
+              CrossThreadUnretained(&gmb_manager)));
+      waitable_event.Wait();
     }
-    if (!IsMainThread()) {
-      accelerated_frame_pool_callback_in_progress_ = true;
-      Thread::MainThread()
-          ->GetTaskRunner(AccessMainThreadForGpuMemoryBufferManager())
-          ->PostTaskAndReplyWithResult(
-              FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce([]() {
-                return Platform::Current()->GetGpuMemoryBufferManager();
-              })),
-              WTF::BindOnce(&MediaStreamVideoTrackUnderlyingSink::
-                                CreateAcceleratedFramePool,
-                            WrapWeakPersistent(this)));
-      return absl::nullopt;
-    }
-    auto* gmb_manager = Platform::Current()->GetGpuMemoryBufferManager();
     if (!gmb_manager) {
       convert_to_nv12_gmb_failure_count_++;
       return absl::nullopt;
     }
+
     CreateAcceleratedFramePool(gmb_manager);
     if (!accelerated_frame_pool_) {
       convert_to_nv12_gmb_failure_count_++;

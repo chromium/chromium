@@ -39,6 +39,9 @@ FillingProduct GetPreferredSuggestionFillingProduct(
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource suggestion_trigger_source);
 
+// Returns a string representation of `filling_product`.
+std::string FillingProductToString(FillingProduct filling_product);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_

@@ -60,6 +60,12 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
+namespace network {
+namespace mojom {
+class SharedDictionaryAccessObserver;
+}  // namespace mojom
+}  // namespace network
+
 namespace storage {
 class SharedStorageManager;
 }
@@ -97,7 +103,6 @@ class PrivateAggregationManager;
 class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class QuotaContext;
-class SharedDictionaryAccessObserver;
 class SharedStorageHeaderObserver;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
@@ -448,7 +453,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateSharedDictionaryAccessObserverForServiceWorker();
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateAuthCertObserverForServiceWorker();
+  CreateAuthCertObserverForServiceWorker(int process_id);
 
   std::vector<std::string> GetCorsExemptHeaderList();
 
@@ -467,54 +472,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Called by BrowserContextImpl prior to destruction.
   void OnBrowserContextWillBeDestroyed();
 
-  class URLLoaderNetworkContext {
-   public:
-    enum class Type {
-      kRenderFrameHostContext,
-      kNavigationRequestContext,
-      kServiceWorkerContext,
-    };
-
-    ~URLLoaderNetworkContext();
-
-    // Allow copy and assign.
-    URLLoaderNetworkContext(const URLLoaderNetworkContext& other);
-    URLLoaderNetworkContext& operator=(const URLLoaderNetworkContext& other);
-
-    // Creates a URLLoaderNetworkContext for the RenderFrameHost.
-    static StoragePartitionImpl::URLLoaderNetworkContext
-    CreateForRenderFrameHost(
-        GlobalRenderFrameHostId global_render_frame_host_id);
-
-    // Creates a URLLoaderNetworkContext for the navigation request.
-    static StoragePartitionImpl::URLLoaderNetworkContext CreateForNavigation(
-        NavigationRequest& navigation_request);
-
-    // Creates a URLLoaderNetworkContext for the service worker.
-    static StoragePartitionImpl::URLLoaderNetworkContext
-    CreateForServiceWorker();
-
-    // Used when `type` is `kRenderFrameHostContext` or
-    // `kServiceWorkerContext`.
-    URLLoaderNetworkContext(
-        URLLoaderNetworkContext::Type type,
-        GlobalRenderFrameHostId global_render_frame_host_id);
-
-    // Used when `type` is `kNavigationRequestContext`.
-    explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
-
-    // Returns true if `type` is `kNavigationRequestContext`.
-    bool IsNavigationRequestContext() const;
-
-    Type type() const { return type_; }
-
-    NavigationOrDocumentHandle* navigation_or_document() const {
-      return navigation_or_document_.get();
-    }
-
-   private:
-    Type type_;
-    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
+  enum class ContextType {
+    kRenderFrameHostContext,
+    kNavigationRequestContext,
+    kServiceWorkerContext,
   };
 
  private:
@@ -566,6 +527,59 @@ class CONTENT_EXPORT StoragePartitionImpl
                            RemoveProtectedLocalStorageForever);
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
                            RemoveLocalStorageForLastWeek);
+
+  class URLLoaderNetworkContext {
+   public:
+    ~URLLoaderNetworkContext();
+
+    // Allow copy and assign.
+    URLLoaderNetworkContext(const URLLoaderNetworkContext& other);
+    URLLoaderNetworkContext& operator=(const URLLoaderNetworkContext& other);
+
+    // Creates a URLLoaderNetworkContext for the RenderFrameHost.
+    static StoragePartitionImpl::URLLoaderNetworkContext
+    CreateForRenderFrameHost(
+        GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Creates a URLLoaderNetworkContext for the navigation request.
+    static StoragePartitionImpl::URLLoaderNetworkContext CreateForNavigation(
+        NavigationRequest& navigation_request);
+
+    // Used when `type` is `kRenderFrameHostContext`.
+    explicit URLLoaderNetworkContext(
+        GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Used when `type` is `kServiceWorkerContext`.
+    explicit URLLoaderNetworkContext(int process_id);
+
+    // Used when `type` is `kNavigationRequestContext`.
+    explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
+
+    // Returns true if `type` is `kNavigationRequestContext`.
+    bool IsNavigationRequestContext() const;
+
+    ContextType type() const { return type_; }
+
+    NavigationOrDocumentHandle* navigation_or_document() const {
+      return navigation_or_document_.get();
+    }
+
+    int process_id() const { return process_id_; }
+
+    // If `type_` is kServiceWorkerContext, returns nullptr. Otherwise returns
+    // the WebContents.
+    WebContents* GetWebContents();
+
+    // Returns true if the request is the primary main frame navigation.
+    bool IsPrimaryMainFrameRequest();
+
+   private:
+    ContextType type_;
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
+
+    // Only valid when `type_` is kServiceWorkerContext.
+    int process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+  };
 
   // `relative_partition_path` is the relative path under `profile_path` to the
   // StoragePartition's on-disk-storage.

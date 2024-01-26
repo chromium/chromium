@@ -32,13 +32,13 @@ namespace blink {
 
 class CascadeInterpolations;
 class CascadeResolver;
-class CSSCustomPropertyDeclaration;
+class CSSUnparsedDeclarationValue;
 class CSSParserContext;
 class CSSParserTokenStream;
 class CSSProperty;
 class CSSValue;
 class CSSVariableData;
-class CSSVariableReferenceValue;
+class CSSUnparsedDeclarationValue;
 class CustomProperty;
 class MatchResult;
 class StyleResolverState;
@@ -66,6 +66,7 @@ class CORE_EXPORT StyleCascade {
   STACK_ALLOCATED();
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
+  using Signal = CSSSelector::Signal;
 
  public:
   StyleCascade(StyleResolverState& state) : state_(state) {}
@@ -251,7 +252,7 @@ class CORE_EXPORT StyleCascade {
   // However, actually building a CSSVariableData is optional; you can also
   // get a CSSParserTokenRange directly, which is useful when resolving a
   // CSSVariableData which won't ultimately end up in a CSSVariableData
-  // (i.e. CSSVariableReferenceValue or CSSPendingSubstitutionValue).
+  // (i.e. CSSUnparsedDeclarationValue or CSSPendingSubstitutionValue).
   class TokenSequence {
     STACK_ALLOCATED();
 
@@ -344,10 +345,10 @@ class CORE_EXPORT StyleCascade {
                                        const CSSValue&,
                                        CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
-                                        const CSSCustomPropertyDeclaration&,
+                                        const CSSUnparsedDeclarationValue&,
                                         CascadeResolver&);
   const CSSValue* ResolveVariableReference(const CSSProperty&,
-                                           const CSSVariableReferenceValue&,
+                                           const CSSUnparsedDeclarationValue&,
                                            CascadeResolver&);
   const CSSValue* ResolvePendingSubstitution(const CSSProperty&,
                                              const CSSPendingSubstitutionValue&,
@@ -394,7 +395,7 @@ class CORE_EXPORT StyleCascade {
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
                                           WTF::Vector<unsigned>) const;
-  const CSSParserContext* GetParserContext(const CSSVariableReferenceValue&);
+  const CSSParserContext* GetParserContext(const CSSUnparsedDeclarationValue&);
 
   // Detects if the given property/data depends on the font-size property
   // of the Element we're calculating the style for.
@@ -434,6 +435,21 @@ class CORE_EXPORT StyleCascade {
   void CountUse(WebFeature);
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
+
+  // Expands the cascade for the incoming `MatchedProperties`, and adds
+  // pending signals (via `MaybeAddPendingSignal`) for the declarations
+  // that actually change the cascade map.
+  void ExpandSignals(const MatchedProperties&, int index, Signal);
+  void MaybeAddPendingSignal(const CSSPropertyName& name,
+                             CascadePriority priority,
+                             Signal signal);
+
+  // Looks at pending signals produced by `ExpandSignals`, and either triggers
+  // a real use-count for the signals (if the signaling declaration ended up
+  // winning the cascade), or ignores them.
+  void ProcessPendingSignals();
+  void ProcessPendingSignals(WebFeature,
+                             const HashMap<CSSPropertyName, CascadePriority>&);
 
   StyleResolverState& state_;
   MatchResult match_result_;
@@ -484,6 +500,10 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
+  // Properties that had a signal (see CSSSelector::Signal) which changed
+  // the value of the cascade map.
+  HashMap<CSSPropertyName, CascadePriority>
+      pending_signals_[static_cast<wtf_size_t>(Signal::kMax)];
 };
 
 }  // namespace blink

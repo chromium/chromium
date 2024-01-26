@@ -11,8 +11,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Chrome Apps will be allowed to run on these platforms.
   value: true

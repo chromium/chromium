@@ -467,6 +467,8 @@ export class EmojiPickerApp extends PolymerElement {
     this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
     this.variantGroupingSupport =
         featureList.includes(Feature.EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);
+
+    this.updateEmojiPreferencesStore();
   }
 
   private fetchOrderingData(url: string): Promise<EmojiGroupData> {
@@ -1149,9 +1151,7 @@ export class EmojiPickerApp extends PolymerElement {
    */
   updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
-    this.emojiPreferences = incognito ? null : new EmojiPreferencesStore();
-    this.globalTone = this.emojiPreferences?.getTone() ?? null;
-    this.globalGender = this.emojiPreferences?.getGender() ?? null;
+    this.updateEmojiPreferencesStore();
 
     // Load the history item for each category.
     for (const category of Object.values(CategoryEnum)) {
@@ -1159,6 +1159,17 @@ export class EmojiPickerApp extends PolymerElement {
           incognito ? null : new RecentlyUsedStore(`${category}-recently-used`);
       this.categoryHistoryUpdated(category);
     }
+  }
+
+  /**
+   * Updates the emoji preferences store, global tone, and global gender.
+   */
+  updateEmojiPreferencesStore() {
+    this.emojiPreferences = this.incognito || !this.variantGroupingSupport ?
+        null :
+        new EmojiPreferencesStore();
+    this.globalTone = this.emojiPreferences?.getTone() ?? null;
+    this.globalGender = this.emojiPreferences?.getGender() ?? null;
   }
 
   /**

@@ -28,8 +28,9 @@ namespace gpu {
 namespace {
 constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+    SHARED_IMAGE_USAGE_MIPMAP;
 
 constexpr uint32_t kGraphiteDawnFallbackUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
@@ -87,7 +88,8 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-        color_space, surface_origin, alpha_type, usage, context_state_,
+        color_space, surface_origin, alpha_type, usage, std::move(debug_label),
+        context_state_,
         /*is_thread_safe=*/false);
     if (!backing->Initialize()) {
       return nullptr;
@@ -97,7 +99,8 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   CHECK(context_state_->gr_context());
   auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, context_state_,
+      color_space, surface_origin, alpha_type, usage, debug_label,
+      context_state_,
       /*is_thread_safe=*/is_thread_safe &&
           context_state_->GrContextIsVulkan() && is_drdc_enabled_);
   if (!backing->Initialize(debug_label)) {
@@ -120,7 +123,8 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-        color_space, surface_origin, alpha_type, usage, context_state_,
+        color_space, surface_origin, alpha_type, usage, std::move(debug_label),
+        context_state_,
         /*is_thread_safe=*/false);
     if (!backing->InitializeWithData(data)) {
       return nullptr;
@@ -130,7 +134,8 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   CHECK(context_state_->gr_context());
   auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, context_state_,
+      color_space, surface_origin, alpha_type, usage, debug_label,
+      context_state_,
       /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
           is_drdc_enabled_);
   if (!backing->InitializeWithData(debug_label, data)) {

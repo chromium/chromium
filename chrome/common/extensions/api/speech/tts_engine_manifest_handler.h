@@ -40,10 +40,10 @@ struct TtsVoices : public Extension::ManifestData {
   std::vector<extensions::TtsVoice> voices;
 
   // The sample rate at which this engine encodes its audio data.
-  absl::optional<int> sample_rate;
+  std::optional<int> sample_rate;
 
   // The number of samples in one audio buffer.
-  absl::optional<int> buffer_size;
+  std::optional<int> buffer_size;
 
   static const std::vector<TtsVoice>* GetTtsVoices(const Extension* extension);
   static const TtsVoices* GetTtsEngineInfo(const Extension* extension);

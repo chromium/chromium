@@ -31,11 +31,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
+import org.chromium.components.optimization_guide.proto.HintsProto.RequestContextMetadata;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
 /** Unit tests for OptimizationGuideBridge. */
+// TODO(kamalchoudhury): Include requestContextMetadata when Logic in production code is completed
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class OptimizationGuideBridgeUnitTest {
@@ -157,7 +159,8 @@ public class OptimizationGuideBridgeUnitTest {
                             OptimizationType.PERFORMANCE_HINTS, OptimizationType.DEFER_ALL_SCRIPT
                         }),
                 RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
-                mOnDemandCallbackMock);
+                mOnDemandCallbackMock,
+                null);
 
         verify(mOptimizationGuideBridgeJniMock, never())
                 .canApplyOptimizationOnDemand(
@@ -165,7 +168,8 @@ public class OptimizationGuideBridgeUnitTest {
                         any(),
                         any(),
                         anyInt(),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
+                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
+                        any());
         verify(mOnDemandCallbackMock)
                 .onOnDemandOptimizationGuideDecision(
                         eq(gurl),
@@ -200,6 +204,7 @@ public class OptimizationGuideBridgeUnitTest {
         GURL gurl = new GURL(TEST_URL);
         GURL gurl2 = new GURL(TEST_URL2);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
+        RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
 
         bridge.canApplyOptimizationOnDemand(
                 Arrays.asList(new GURL[] {gurl, gurl2}),
@@ -208,7 +213,8 @@ public class OptimizationGuideBridgeUnitTest {
                             OptimizationType.PERFORMANCE_HINTS, OptimizationType.DEFER_ALL_SCRIPT
                         }),
                 RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
-                mOnDemandCallbackMock);
+                mOnDemandCallbackMock,
+                requestContextMetadata);
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimizationOnDemand(
@@ -220,6 +226,7 @@ public class OptimizationGuideBridgeUnitTest {
                                     OptimizationType.DEFER_ALL_SCRIPT_VALUE
                                 }),
                         eq(RequestContext.CONTEXT_PAGE_INSIGHTS_HUB_VALUE),
-                        eq(mOnDemandCallbackMock));
+                        eq(mOnDemandCallbackMock),
+                        eq(requestContextMetadata.toByteArray()));
     }
 }

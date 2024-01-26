@@ -97,11 +97,11 @@ IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest,
   cache()->OnPageContentAnnotated(
       url3, optimization_guide::PageContentAnnotationsResult::
                 CreateContentVisibilityScoreResult(1.0f));
-  EXPECT_EQ(cache()->GetScore(url1), absl::nullopt);
+  EXPECT_EQ(cache()->GetScore(url1), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest, ScoreNotPresent) {
   const GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
 
-  EXPECT_EQ(cache()->GetScore(url1), absl::nullopt);
+  EXPECT_EQ(cache()->GetScore(url1), std::nullopt);
 }

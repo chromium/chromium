@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Descarga detenida</translation>
 <translation id="1415402041810619267">URL acortada</translation>
 <translation id="1426410128494586442">Sí</translation>
+<translation id="1434873037477293673">tarjeta de reducción de precio</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
 <translation id="1510341833810331442">Los sitios no pueden guardar datos en tu dispositivo</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad.</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Cuando está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni recibir datos.</translation>
 <translation id="2822354292072154809">¿Confirmas que quieres restablecer todos los permisos de sitios para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicitar la vista para dispositivos móviles</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedir que los sitios utilicen tus datos y dispositivos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Reducción de precio en la pestaña abierta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Cuando la ventana sea angosta, solicitar la vista para dispositivos móviles</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="652937045869844725">Intenta permitir cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Mover hacia abajo</translation>
 <translation id="6749077623962119521">¿Deseas restablecer los permisos?</translation>
 <translation id="6766622839693428701">Desliza hacia abajo para cerrar.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> de <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecciona una opción para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Seleccionar elementos</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
+<translation id="6867014948848323204">De <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Impedir que los sitios lean el texto y las imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Un sitio que visitas puede guardar información sobre tu actividad para que funcione como esperas (por ejemplo, para mantener el acceso a un sitio o guardar artículos en tu carrito de compras). A menudo, los sitios guardan esta información de forma temporal en tu dispositivo.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">El maravilloso mago de Oz</translation>
 <translation id="7684642910516280563">No permitir que un sitio utilice cookies de terceros</translation>
 <translation id="7719367874908701697">Zoom de página</translation>
+<translation id="7770832849480336015">Ocultar "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="780301667611848630">No, gracias</translation>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/pressure/pressure_metrics.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -11,7 +13,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char kCPUPressureHistogramName[] = "System.Pressure.CPU";
@@ -93,7 +94,7 @@ TEST(PressureMetricsTest, ParseValidPressureFileAndPressureValues) {
       base::WriteFile(cpu_pressure_path,
                       "some avg10=0.01 avg60=0.02 avg300=0.03 total=1\n"
                       "full avg10=0.04 avg60=0.05 avg300=0.06 total=1\n"));
-  absl::optional<PressureMetrics::Sample> sample =
+  std::optional<PressureMetrics::Sample> sample =
       cpu_pressure.CollectCurrentPressure();
   EXPECT_TRUE(sample.has_value());
 
@@ -115,7 +116,7 @@ TEST(PressureMetricsTest, MetricsAreEmitted) {
       "avg10=7.52 avg60=4.01 avg300=0.42 total=168256\n"));
 
   PressureMetrics cpu_pressure(kCPUPressureHistogramName, cpu_pressure_path);
-  absl::optional<PressureMetrics::Sample> sample =
+  std::optional<PressureMetrics::Sample> sample =
       cpu_pressure.CollectCurrentPressure();
   ASSERT_TRUE(sample.has_value());
 

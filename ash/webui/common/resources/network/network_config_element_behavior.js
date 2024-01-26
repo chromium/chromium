@@ -17,6 +17,12 @@ export const NetworkConfigElementBehavior = {
       reflectToAttribute: true,
     },
 
+    readonly: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+
     /**
      * Network managed property associated with the config element.
      * @type {?OncMojo.ManagedProperty}
@@ -25,7 +31,28 @@ export const NetworkConfigElementBehavior = {
       type: Object,
       value: null,
     },
+
+    /**
+     * @type {string|number|null}
+     */
+    value: {
+      type: Object,
+      notify: true,
+    },
+
+    /**
+     * If set, the field will be filled and the element will be disabled for
+     * user input.
+     * @type {string|number|null}
+     */
+    prefilledValue: {
+      type: Object,
+      value: null,
+    },
   },
+
+  observers:
+      ['maybeLockByPrefilledValue(readonly, disabled, value, prefilledValue)'],
 
   /**
    * @param {boolean} disabled
@@ -35,5 +62,29 @@ export const NetworkConfigElementBehavior = {
    */
   getDisabled_(disabled, property) {
     return disabled || (!!property && this.isNetworkPolicyEnforced(property));
+  },
+
+  /**
+   * It can be overridden by the elements to implement their own validation
+   * logic.
+   */
+  isPrefilledValueValid() {
+    return true;
+  },
+
+  /**
+   * If the prefilled value is defined, always use the value and mark the input
+   * as readonly/disabled.
+   */
+  maybeLockByPrefilledValue() {
+    if (this.prefilledValue === undefined || this.prefilledValue === null) {
+      return;
+    }
+    if (!this.isPrefilledValueValid()) {
+      return;
+    }
+    this.value = this.prefilledValue;
+    this.readonly = true;
+    this.disabled = true;
   },
 };

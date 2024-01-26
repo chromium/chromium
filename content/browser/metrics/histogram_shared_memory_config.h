@@ -13,7 +13,7 @@
 namespace content {
 
 // Returns the histogram shared memory configuration for |process_type|, if any.
-CONTENT_EXPORT std::optional<base::HistogramSharedMemoryConfig>
+CONTENT_EXPORT std::optional<base::HistogramSharedMemory::Config>
 GetHistogramSharedMemoryConfig(int process_type);
 
 }  // namespace content

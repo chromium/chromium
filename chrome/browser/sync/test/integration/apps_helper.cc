@@ -382,7 +382,7 @@ void AppsStatusChangeChecker::OnExtensionStateChanged(
 
 void AppsStatusChangeChecker::OnAppsReordered(
     content::BrowserContext* context,
-    const absl::optional<std::string>& extension_id) {
+    const std::optional<std::string>& extension_id) {
   CheckExitCondition();
 }
 

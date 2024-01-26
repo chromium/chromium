@@ -1011,70 +1011,32 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
-  // Declarative shadow DOM, as initially shipped:
-  //   1. used the 'shadowroot' attribute, and
-  //   2. attached the shadow root at the *closing* </template> tag.
-  // In 2022, discussions of the spec resumed, and two changes were made:
-  //   1. the attribute is called 'shadowrootmode', and
-  //   2. the shadow root is attached at the *opening* <template> tag.
-  // During the transition between these two behaviors, *both* behaviors can
-  // be used, and are controlled by the developer:
-  //   <template shadowroot=open>  ==> old behavior
-  //   <template shadowrootmode=open>  ==> new behavior
-  //   <template shadowroot=open shadowrootmode=open> ==> new behavior
-  // crbug.com/1379513 tracks the new behavior.
-  // crbug.com/1396384 tracks the eventual removal of the old behavior.
-  Attribute* type_attribute_streaming =
+  Attribute* type_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
-  String shadow_mode;
-  if (type_attribute_streaming) {
-    shadow_mode = type_attribute_streaming->Value();
-  } else {
-    Attribute* type_attribute_non_streaming =
-        token->GetAttributeItem(html_names::kShadowrootAttr);
-    if (!type_attribute_non_streaming) {
-      return DeclarativeShadowRootType::kNone;
-    }
-    if (!RuntimeEnabledFeatures::
-            DeprecatedNonStreamingDeclarativeShadowDOMEnabled()) {
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kDeprecation,
-          mojom::blink::ConsoleMessageLevel::kError,
-          "Found an old-style declarative `shadowroot` attribute on a "
-          "template, but that style was deprecated and has been removed. "
-          "Please use the `shadowrootmode` attribute instead. Please see "
-          "https://chromestatus.com/feature/6239658726391808."));
-      return DeclarativeShadowRootType::kNone;
-    }
-    shadow_mode = type_attribute_non_streaming->Value();
+  if (!type_attribute) {
+    return DeclarativeShadowRootType::kNone;
   }
+  String shadow_mode = type_attribute->Value();
 
   if (include_shadow_roots) {
     if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-      return type_attribute_streaming
-                 ? DeclarativeShadowRootType::kStreamingOpen
-                 : DeclarativeShadowRootType::kOpen;
+      return DeclarativeShadowRootType::kOpen;
     } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-      return type_attribute_streaming
-                 ? DeclarativeShadowRootType::kStreamingClosed
-                 : DeclarativeShadowRootType::kClosed;
+      return DeclarativeShadowRootType::kClosed;
     }
   }
-  String attribute_in_use =
-      type_attribute_streaming ? "shadowrootmode" : "shadowroot";
   if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Found declarative " + attribute_in_use +
-            " attribute on a template, but declarative "
-            "Shadow DOM has not been enabled by includeShadowRoots."));
+        "Found declarative shadowrootmode attribute on a template, but "
+        "declarative Shadow DOM has not been enabled by includeShadowRoots."));
   } else {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid declarative " + attribute_in_use + " attribute value \"" +
-            shadow_mode + "\". Valid values include \"open\" and \"closed\"."));
+        "Invalid declarative shadowrootmode attribute value \"" + shadow_mode +
+            "\". Valid values include \"open\" and \"closed\"."));
   }
   return DeclarativeShadowRootType::kNone;
 }
@@ -1106,7 +1068,6 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   tree_.OpenElements()->PopUntil(HTMLTag::kTemplate);
   HTMLStackItem* template_stack_item = tree_.OpenElements()->TopStackItem();
   tree_.OpenElements()->Pop();
-  HTMLStackItem* shadow_host_stack_item = tree_.OpenElements()->TopStackItem();
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
   ResetInsertionModeAppropriately();
@@ -1114,44 +1075,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
     DCHECK(template_stack_item->IsElementNode());
     HTMLTemplateElement* template_element =
         DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
-    DocumentFragment* template_content = nullptr;
-    if (template_element->IsDeclarativeShadowRoot()) {
-      if (RuntimeEnabledFeatures::
-              DeprecatedNonStreamingDeclarativeShadowDOMEnabled()) {
-        if (shadow_host_stack_item->GetNode() ==
-            tree_.OpenElements()->RootNode()) {
-          // 10. If the adjusted current node is the topmost element in the
-          // stack of open elements, then stop this algorithm.
-          template_element->SetDeclarativeShadowRootType(
-              DeclarativeShadowRootType::kNone);
-        } else {
-          DCHECK(shadow_host_stack_item);
-          DCHECK(shadow_host_stack_item->IsElementNode());
-          if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
-            template_content = template_element->DeclarativeShadowContent();
-            auto focus_delegation =
-                template_stack_item->GetAttributeItem(
-                    html_names::kShadowrootdelegatesfocusAttr)
-                    ? FocusDelegation::kDelegateFocus
-                    : FocusDelegation::kNone;
-            // TODO(crbug.com/1063157): Add an attribute for imperative slot
-            // assignment.
-            auto slot_assignment_mode = SlotAssignmentMode::kNamed;
-            shadow_host_stack_item->GetElement()
-                ->AttachDeprecatedNonStreamingDeclarativeShadowRoot(
-                    *template_element,
-                    template_element->GetDeclarativeShadowRootType() ==
-                            DeclarativeShadowRootType::kOpen
-                        ? ShadowRootType::kOpen
-                        : ShadowRootType::kClosed,
-                    focus_delegation, slot_assignment_mode);
-          }
-        }
-      }
-    } else {
-      template_content = template_element->content();
-    }
-    if (template_content) {
+    if (DocumentFragment* template_content = template_element->getContent()) {
       tree_.FinishedTemplateElement(template_content);
     }
   }
@@ -1539,6 +1463,24 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       }
       ParseError(token);
       break;
+    case kInButtonInSelectMode:
+    case kInDatalistInSelectMode:
+      switch (tag) {
+        case HTMLTag::kSelect: {
+          // Don't allow <select> within <select> even if there is a <button> or
+          // <datalist> in between. To match the other branch for <select> in
+          // <select>, add a </select> instead of a <select>. ProcessEndTag()
+          // will also end all tags within the currently open <select>.
+          ParseError(token);
+          AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
+          ProcessEndTag(&end_select);
+          break;
+        }
+        default:
+          ProcessStartTagForInBody(token);
+          break;
+      }
+      break;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -1622,6 +1564,27 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         case HTMLTag::kTemplate:
           ProcessTemplateStartTag(token);
           return;
+        case HTMLTag::kButton:
+          // TODO(crbug.com/1511354): Add console warnings for this and the
+          // datalist branch when the flag is disabled once we're certain that
+          // we are shipping with <button> and <datalist>.
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kHTMLButtonInSelect);
+          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+            SetInsertionMode(kInButtonInSelectMode);
+            ProcessStartTagForInBody(token);
+            return;
+          }
+          break;
+        case HTMLTag::kDatalist:
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kHTMLDatalistInSelect);
+          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+            SetInsertionMode(kInDatalistInSelectMode);
+            ProcessStartTagForInBody(token);
+            return;
+          }
+          break;
         default:
           break;
       }
@@ -2448,6 +2411,39 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
     case kAfterAfterFramesetMode:
       ParseError(token);
       break;
+    case kInButtonInSelectMode:
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      switch (tag) {
+        case HTMLTag::kButton:
+          SetInsertionMode(kInSelectMode);
+          break;
+        case HTMLTag::kSelect:
+          SetInsertionMode(kInSelectMode);
+          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
+          ResetInsertionModeAppropriately();
+          return;
+        default:
+          break;
+      }
+      // TODO(crbug.com/1511354): We need to review which end tags cause which
+      // elements to close once there's a reviewed HTML PR for styleable select.
+      ProcessEndTagForInBody(token);
+      return;
+    case kInDatalistInSelectMode:
+      switch (tag) {
+        case HTMLTag::kDatalist:
+          SetInsertionMode(kInSelectMode);
+          break;
+        case HTMLTag::kSelect:
+          SetInsertionMode(kInSelectMode);
+          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
+          ResetInsertionModeAppropriately();
+          return;
+        default:
+          break;
+      }
+      ProcessEndTagForInBody(token);
+      return;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -2619,6 +2615,8 @@ ReprocessBuffer:
     case kInBodyMode:
     case kInCaptionMode:
     case kTemplateContentsMode:
+    case kInDatalistInSelectMode:
+    case kInButtonInSelectMode:
     case kInCellMode: {
       ProcessCharacterBufferForInBody(buffer);
       break;
@@ -2785,6 +2783,8 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInFramesetMode:
     case kInTableMode:
     case kInTableBodyMode:
+    case kInButtonInSelectMode:
+    case kInDatalistInSelectMode:
     case kInSelectInTableMode:
     case kInSelectMode:
       if (tree_.CurrentNode() != tree_.OpenElements()->RootNode())
@@ -3159,6 +3159,8 @@ const char* HTMLTreeBuilder::ToString(HTMLTreeBuilder::InsertionMode mode) {
     DEFINE_STRINGIFY(kInCellMode)
     DEFINE_STRINGIFY(kInSelectMode)
     DEFINE_STRINGIFY(kInSelectInTableMode)
+    DEFINE_STRINGIFY(kInButtonInSelectMode)
+    DEFINE_STRINGIFY(kInDatalistInSelectMode)
     DEFINE_STRINGIFY(kAfterBodyMode)
     DEFINE_STRINGIFY(kInFramesetMode)
     DEFINE_STRINGIFY(kAfterFramesetMode)

@@ -117,7 +117,8 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   DCHECK_EQ(Step::kAccountSelection, current_step());
 
   Step step;
-  if (account_info.IsEmpty()) {
+  // SAML with ForceSignin flow is migrated to the regular Profile Picker flow.
+  if (account_info.IsEmpty() && !signin_util::IsForceSigninEnabled()) {
     step = Step::kFinishSamlSignin;
     DCHECK(!IsStepInitialized(step));
     // The SAML step controller handles finishing the profile setup by itself

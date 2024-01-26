@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Template shadowRoot reflection</title>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+
+<!-- This simply tests whether HTMLTemplateElement has a `shadowRoot` attribute.
+  It should not, since that was deprecated and removed as part of the original
+  declarative Shadow DOM. -->
+
+<script>
+  test(() => {
+    assert_false(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"));
+  }, "HTMLTemplateElement should not have a shadowRoot own property");
+</script>

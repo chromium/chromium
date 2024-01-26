@@ -7,3 +7,8 @@ self.addEventListener('install', async e => {
   ]);
   self.skipWaiting();
 });
+
+// If the "fetch-event" source is set, it is mandatory to have a fetch
+// handler.
+// See: https://github.com/yoshisatoyanagisawa/ServiceWorker/pull/2.
+self.addEventListener('fetch', {});

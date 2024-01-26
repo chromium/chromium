@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_string_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor_with_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_database.h"
@@ -63,113 +62,6 @@ namespace blink {
 
 static v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate*,
                                                     const IDBValue*);
-static v8::Local<v8::Value> DeserializeIDBValueArray(
-    v8::Isolate*,
-    v8::Local<v8::Object> creation_context,
-    const Vector<std::unique_ptr<IDBValue>>&);
-
-v8::Local<v8::Value> ToV8(const IDBKeyPath& value,
-                          v8::Local<v8::Object> creation_context,
-                          v8::Isolate* isolate) {
-  switch (value.GetType()) {
-    case mojom::IDBKeyPathType::Null:
-      return v8::Null(isolate);
-    case mojom::IDBKeyPathType::String:
-      return V8String(isolate, value.GetString());
-    case mojom::IDBKeyPathType::Array:
-      return ToV8(value.Array(), creation_context, isolate);
-  }
-  NOTREACHED();
-  return v8::Undefined(isolate);
-}
-
-v8::Local<v8::Value> ToV8(const IDBKey* key,
-                          v8::Local<v8::Object> creation_context,
-                          v8::Isolate* isolate) {
-  if (!key) {
-    // The IndexedDB spec requires that absent keys appear as attribute
-    // values as undefined, rather than the more typical (for DOM) null.
-    // This appears on the |upper| and |lower| attributes of IDBKeyRange.
-    // Spec: http://www.w3.org/TR/IndexedDB/#idl-def-IDBKeyRange
-    return v8::Local<v8::Value>();
-  }
-
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
-  switch (key->GetType()) {
-    case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::Min:
-      NOTREACHED();
-      return v8::Local<v8::Value>();
-    case mojom::IDBKeyType::None:
-      return v8::Null(isolate);
-    case mojom::IDBKeyType::Number:
-      return v8::Number::New(isolate, key->Number());
-    case mojom::IDBKeyType::String:
-      return V8String(isolate, key->GetString());
-    case mojom::IDBKeyType::Binary:
-      // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
-      return ToV8(DOMArrayBuffer::Create(key->Binary()), creation_context,
-                  isolate);
-    case mojom::IDBKeyType::Date:
-      return v8::Date::New(context, key->Date()).ToLocalChecked();
-    case mojom::IDBKeyType::Array: {
-      v8::Local<v8::Array> array = v8::Array::New(isolate, key->Array().size());
-      for (wtf_size_t i = 0; i < key->Array().size(); ++i) {
-        v8::Local<v8::Value> value =
-            ToV8(key->Array()[i].get(), creation_context, isolate);
-        if (value.IsEmpty())
-          value = v8::Undefined(isolate);
-        bool created_property;
-        if (!array->CreateDataProperty(context, i, value)
-                 .To(&created_property) ||
-            !created_property)
-          return v8::Local<v8::Value>();
-      }
-      return array;
-    }
-  }
-
-  NOTREACHED();
-  return v8::Local<v8::Value>();
-}
-
-// IDBAny is a variant type used to hold the values produced by the |result|
-// attribute of IDBRequest and (as a convenience) the |source| attribute of
-// IDBRequest and IDBCursor.
-// TODO(jsbell): Replace the use of IDBAny for |source| attributes (which are
-// ScriptWrappable types) using unions per IDL.
-v8::Local<v8::Value> ToV8(const IDBAny* impl,
-                          v8::Local<v8::Object> creation_context,
-                          v8::Isolate* isolate) {
-  if (!impl)
-    return v8::Null(isolate);
-
-  switch (impl->GetType()) {
-    case IDBAny::kUndefinedType:
-      return v8::Undefined(isolate);
-    case IDBAny::kNullType:
-      return v8::Null(isolate);
-    case IDBAny::kIDBCursorType:
-      return ToV8(impl->IdbCursor(), creation_context, isolate);
-    case IDBAny::kIDBCursorWithValueType:
-      return ToV8(impl->IdbCursorWithValue(), creation_context, isolate);
-    case IDBAny::kIDBDatabaseType:
-      return ToV8(impl->IdbDatabase(), creation_context, isolate);
-    case IDBAny::kIDBValueType:
-      return DeserializeIDBValue(isolate, creation_context, impl->Value());
-    case IDBAny::kIDBValueArrayType:
-      return DeserializeIDBValueArray(isolate, creation_context,
-                                      impl->Values());
-    case IDBAny::kIntegerType:
-      return v8::Number::New(isolate, impl->Integer());
-    case IDBAny::kKeyType:
-      return ToV8(impl->Key(), creation_context, isolate);
-  }
-
-  NOTREACHED();
-  return v8::Undefined(isolate);
-}
 
 // Convert a simple (non-Array) script value to an Indexed DB key. If the
 // conversion fails due to a detached buffer, an exception is thrown. If
@@ -551,8 +443,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPaths(
 // Deserialize just the value data & blobInfo from the given IDBValue.
 //
 // Primary key injection is performed in deserializeIDBValue() below.
-static v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
-                                                    const IDBValue* value) {
+v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
+                                             const IDBValue* value) {
   DCHECK(isolate->InContext());
   if (!value || value->IsNull())
     return v8::Null(isolate);
@@ -582,19 +474,19 @@ static v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
 // On top of deserializeIDBValueData(), this handles the special case of having
 // to inject a key into the de-serialized value. See injectV8KeyIntoV8Value()
 // for details.
-v8::Local<v8::Value> DeserializeIDBValue(v8::Isolate* isolate,
-                                         v8::Local<v8::Object> creation_context,
+v8::Local<v8::Value> DeserializeIDBValue(ScriptState* script_state,
                                          const IDBValue* value) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate->InContext());
   if (!value || value->IsNull())
     return v8::Null(isolate);
 
   v8::Local<v8::Value> v8_value = DeserializeIDBValueData(isolate, value);
   if (value->PrimaryKey()) {
-    v8::Local<v8::Value> key =
-        ToV8(value->PrimaryKey(), creation_context, isolate);
-    if (key.IsEmpty())
+    v8::Local<v8::Value> key = value->PrimaryKey()->ToV8(script_state);
+    if (key.IsEmpty()) {
       return v8::Local<v8::Value>();
+    }
 
     InjectV8KeyIntoV8Value(isolate, key, v8_value, value->KeyPath());
 
@@ -606,24 +498,25 @@ v8::Local<v8::Value> DeserializeIDBValue(v8::Isolate* isolate,
   return v8_value;
 }
 
-static v8::Local<v8::Value> DeserializeIDBValueArray(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> creation_context,
+v8::Local<v8::Value> DeserializeIDBValueArray(
+    ScriptState* script_state,
     const Vector<std::unique_ptr<IDBValue>>& values) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate->InContext());
 
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> array = v8::Array::New(isolate, values.size());
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
   for (wtf_size_t i = 0; i < values.size(); ++i) {
     v8::Local<v8::Value> v8_value =
-        DeserializeIDBValue(isolate, creation_context, values[i].get());
+        DeserializeIDBValue(script_state, values[i].get());
     if (v8_value.IsEmpty())
       v8_value = v8::Undefined(isolate);
     bool created_property;
-    if (!array->CreateDataProperty(context, i, v8_value)
+    if (!array->CreateDataProperty(current_context, i, v8_value)
              .To(&created_property) ||
-        !created_property)
+        !created_property) {
       return v8::Local<v8::Value>();
+    }
   }
 
   return array;
@@ -850,7 +743,7 @@ void AssertPrimaryKeyValidOrInjectable(ScriptState* script_state,
                                        const IDBValue* value) {
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ScriptValue key_value = ScriptValue::From(script_state, value->PrimaryKey());
+  ScriptValue key_value(isolate, value->PrimaryKey()->ToV8(script_state));
   ScriptValue script_value(isolate, DeserializeIDBValueData(isolate, value));
 
   DummyExceptionStateForTesting exception_state;

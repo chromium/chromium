@@ -58,6 +58,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -410,7 +411,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             /*ssl_client_context=*/nullptr,
@@ -421,7 +422,8 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr),
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr),
         spdy_util_(/*use_priority_header=*/true),
         ssl_(ASYNC, OK),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
@@ -7774,8 +7776,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithSessionRace) {
   // Race a session to the proxy, which completes first.
   session_deps_.host_resolver->set_ondemand_mode(false);
   SpdySessionKey key(HostPortPair("proxy", 70), ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kTrue, SocketTag(),
+                     PRIVACY_MODE_DISABLED, SessionUsage::kProxy, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, net_log_with_source);
@@ -15220,7 +15221,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15229,7 +15230,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15240,7 +15241,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15250,7 +15251,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "[2001:1418:13:1::25]",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15260,7 +15261,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15298,7 +15299,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15309,7 +15310,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
 
@@ -15320,7 +15321,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15358,7 +15359,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15367,7 +15368,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15378,7 +15379,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15387,7 +15388,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
 
@@ -15398,7 +15399,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -17522,9 +17523,9 @@ TEST_P(HttpNetworkTransactionTest,
   // Set up an initial SpdySession in the pool to reuse.
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -18601,7 +18602,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   const ClientSocketPool::GroupId kSocketGroup(
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
   // First round of authentication.
   auth_handler_ptr->SetGenerateExpectation(false, OK);
@@ -19222,9 +19223,9 @@ TEST_P(HttpNetworkTransactionTest, PreconnectWithExistingSpdySession) {
   // Set up an initial SpdySession in the pool to reuse.
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -21750,8 +21751,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   HostPortPair host_port_pair_a("www.a.com", 443);
   SpdySessionKey spdy_session_key_a(
       host_port_pair_a, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a));
 
@@ -21785,8 +21786,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   HostPortPair host_port_pair_b("www.b.com", 443);
   SpdySessionKey spdy_session_key_b(
       host_port_pair_b, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_b));
   HttpRequestInfo request2;
@@ -21817,8 +21818,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   HostPortPair host_port_pair_a1("www.a.com", 80);
   SpdySessionKey spdy_session_key_a1(
       host_port_pair_a1, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a1));
   HttpRequestInfo request3;
@@ -22930,8 +22931,10 @@ TEST_P(HttpNetworkTransactionTest, WebSocketNotSentOverQuicProxy) {
   for (bool secure : {true, false}) {
     SCOPED_TRACE(secure);
     session_deps_.proxy_resolution_service =
-        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-            "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
+        ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+            {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                               "myproxy.org", 443)},
+            TRAFFIC_ANNOTATION_FOR_TESTS);
     session_deps_.enable_quic = true;
 
     HttpRequestInfo request;
@@ -23241,8 +23244,10 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
 
 TEST_P(HttpNetworkTransactionTest, NoSupportedProxies) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             "myproxy.org", 443)},
+          TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.enable_quic = false;
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 

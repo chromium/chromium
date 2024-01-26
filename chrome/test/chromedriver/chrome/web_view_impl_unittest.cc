@@ -196,7 +196,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
       result->SetByDottedPath("frameTree.frame.loaderId", "root_loader");
       result->SetByDottedPath("frameTree.childFrames", std::move(children));
     } else if (method == "DOM.resolveNode") {
-      absl::optional<int> maybe_backend_node_id =
+      std::optional<int> maybe_backend_node_id =
           params.FindInt("backendNodeId");
       if (!maybe_backend_node_id.has_value()) {
         return Status{
@@ -416,12 +416,12 @@ class MockSyncWebSocket : public SyncWebSocket {
   }
 
   bool Send(const std::string& message) override {
-    absl::optional<base::Value> value = base::JSONReader::Read(message);
+    std::optional<base::Value> value = base::JSONReader::Read(message);
     if (!value) {
       return false;
     }
 
-    absl::optional<int> id = value->GetDict().FindInt("id");
+    std::optional<int> id = value->GetDict().FindInt("id");
     if (!id) {
       return false;
     }
@@ -466,7 +466,7 @@ TEST(CreateChild, MultiLevel) {
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
-                     std::move(client_uptr), absl::nullopt,
+                     std::move(client_uptr), std::nullopt,
                      PageLoadStrategy::kEager);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
@@ -492,7 +492,7 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), absl::nullopt,
+                          std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kEager);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
@@ -514,7 +514,7 @@ TEST(CreateChild, Load_NoErrors) {
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), absl::nullopt,
+                          std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
@@ -534,7 +534,7 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), absl::nullopt,
+                          std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
@@ -557,7 +557,7 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), absl::nullopt,
+                          std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNormal);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
@@ -577,7 +577,7 @@ TEST(ManageCookies, AddCookie_SameSiteTrue) {
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
-                   std::move(client_uptr), absl::nullopt,
+                   std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager);
   std::string samesite = "Strict";
   base::Value::Dict dict;
@@ -594,7 +594,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
-                   std::move(client_uptr), absl::nullopt,
+                   std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager);
   {
     // Good 1
@@ -646,7 +646,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
-                   std::move(client_uptr), absl::nullopt,
+                   std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager);
   {
     // Good 1
@@ -695,7 +695,7 @@ TEST(GetBackendNodeId, NonW3C) {
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), false, nullptr, &browser_info,
-                   std::move(client_uptr), absl::nullopt,
+                   std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager);
   {
     base::Value::Dict node_ref;
@@ -723,7 +723,7 @@ TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
       std::make_unique<FakeDevToolsClient>("root");
   client_uptr->SetResult(GenerateResponse(4321));
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
@@ -761,7 +761,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
       std::make_unique<FakeDevToolsClient>("good");
   client_uptr->SetResult(GenerateResponse(4321));
   WebViewImpl view("good", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
@@ -799,7 +799,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -890,7 +890,7 @@ TEST(GetFedCmTracker, OK) {
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
-                   std::move(client_uptr), absl::nullopt,
+                   std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager);
   FedCmTracker* tracker = nullptr;
   Status status = view.GetFedCmTracker(&tracker);
@@ -907,7 +907,7 @@ class CallUserSyncScriptArgs
     client_ptr = client_uptr.get();
     view = std::make_unique<WebViewImpl>(
         "root", IsW3C(), nullptr, &browser_info, std::move(client_uptr),
-        absl::nullopt, PageLoadStrategy::kEager);
+        std::nullopt, PageLoadStrategy::kEager);
     view->GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -1104,7 +1104,7 @@ TEST(CallUserSyncScript, WeakReference) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1145,7 +1145,7 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1183,7 +1183,7 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   absl::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;

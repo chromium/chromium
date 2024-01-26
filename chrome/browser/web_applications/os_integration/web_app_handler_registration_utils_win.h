@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_HANDLER_REGISTRATION_UTILS_WIN_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_HANDLER_REGISTRATION_UTILS_WIN_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -13,7 +14,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -52,8 +52,8 @@ std::wstring GetProgIdForAppFileHandler(
 
 // Makes an app-specific copy of chrome_pwa_launcher.exe that lives in the web
 // application directory |web_app_path|. Returns path of the launcher file if
-// successful, absl::nullopt otherwise.
-absl::optional<base::FilePath> CreateAppLauncherFile(
+// successful, std::nullopt otherwise.
+std::optional<base::FilePath> CreateAppLauncherFile(
     const std::wstring& app_name,
     const std::wstring& app_name_extension,
     const base::FilePath& web_app_path);

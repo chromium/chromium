@@ -13,7 +13,7 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import run_ffx_command, IMAGES_ROOT, SDK_ROOT
+from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, SDK_ROOT
 from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
@@ -60,6 +60,8 @@ class FfxEmulator(AbstractContextManager):
         logging.info('Starting emulator %s', self._node_name)
         prod, board = self._product.split('.', 1)
         image_dir = os.path.join(IMAGES_ROOT, prod, board)
+        if not os.path.isdir(image_dir):
+            image_dir = os.path.join(INTERNAL_IMAGES_ROOT, prod, board)
         emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
         if not self._enable_graphics:
             emu_command.append('-H')

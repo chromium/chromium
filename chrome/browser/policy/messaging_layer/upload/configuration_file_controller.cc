@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -171,11 +171,11 @@ bool ConfigurationFileController::HandleBlockedEventConfigs(
     }
 
     // Check if it should be blocked for the current version or not.
-    absl::optional<int32_t> maximum_version;
+    std::optional<int32_t> maximum_version;
     maximum_version =
         current_event.has_maximum_release_version()
-            ? absl::optional<int32_t>(current_event.maximum_release_version())
-            : absl::nullopt;
+            ? std::optional<int32_t>(current_event.maximum_release_version())
+            : std::nullopt;
     if (ShouldBeBlocked(current_event.minimum_release_version(),
                         maximum_version)) {
       current_list.add_destinations(current_event.destination());
@@ -196,7 +196,7 @@ bool ConfigurationFileController::HandleBlockedEventConfigs(
 
 bool ConfigurationFileController::ShouldBeBlocked(
     int32_t minimum_version,
-    absl::optional<int32_t> maximum_version) const {
+    std::optional<int32_t> maximum_version) const {
   if (maximum_version.has_value()) {
     return current_os_version_ >= minimum_version &&
            current_os_version_ <= maximum_version.value();

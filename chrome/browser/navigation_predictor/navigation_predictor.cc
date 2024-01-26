@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/hash/hash.h"
@@ -30,7 +31,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -38,20 +38,20 @@
 namespace {
 
 // The maximum number of clicks to track in a single navigation.
-size_t kMaxClicksTracked = 10;
+constexpr size_t kMaxClicksTracked = 10;
 
 bool IsPrerendering(content::RenderFrameHost& render_frame_host) {
   return render_frame_host.GetLifecycleState() ==
          content::RenderFrameHost::LifecycleState::kPrerendering;
 }
 
-int GetFontSizeFromPx(uint32_t font_size_px) {
+NavigationPredictor::FontSizeBucket GetFontSizeFromPx(uint32_t font_size_px) {
   if (font_size_px < 10) {
-    return 1;
+    return NavigationPredictor::kLessThanTen;
   } else if (font_size_px < 18) {
-    return 2;
+    return NavigationPredictor::kTenToSeventeen;
   } else {
-    return 3;
+    return NavigationPredictor::kEighteenOrGreater;
   }
 }
 
@@ -94,22 +94,23 @@ base::TimeDelta MLModelExecutionTimerInterval() {
   return base::Milliseconds(timer_interval);
 }
 
-bool IsTargetURLTheSameAsDocument(
-    const blink::mojom::AnchorElementMetricsPtr& anchor) {
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  GURL document_url = anchor->source_url.ReplaceComponents(replacements);
-  GURL target_url = anchor->target_url.ReplaceComponents(replacements);
-  return target_url == document_url;
-}
-
 }  // namespace
 
 NavigationPredictor::AnchorElementData::AnchorElementData(
     blink::mojom::AnchorElementMetricsPtr metrics,
     base::TimeTicks first_report_timestamp)
-    : metrics(std::move(metrics)),
+    : ratio_distance_root_top(metrics->ratio_distance_root_top),
+      ratio_area(static_cast<uint8_t>(metrics->ratio_area * 100)),
+      is_in_iframe(metrics->is_in_iframe),
+      contains_image(metrics->contains_image),
+      is_same_host(metrics->is_same_host),
+      is_url_incremented_by_one(metrics->is_url_incremented_by_one),
+      has_text_sibling(metrics->has_text_sibling),
+      is_bold_font(IsBoldFont(metrics->font_weight)),
+      font_size(GetFontSizeFromPx(metrics->font_size_px)),
+      target_url(metrics->target_url),
       first_report_timestamp(first_report_timestamp) {}
+
 NavigationPredictor::AnchorElementData::~AnchorElementData() = default;
 
 NavigationPredictor::NavigationPredictor(
@@ -195,7 +196,8 @@ void NavigationPredictor::ReportNewAnchorElements(
   // reports for links from all same-process iframes.
   NavigationPredictorMetricsDocumentData::AnchorsData& data =
       GetNavigationPredictorMetricsDocumentData().GetAnchorsData();
-  GURL document_url;
+  const GURL document_url =
+      render_frame_host().GetLastCommittedURL().GetWithoutRef();
   std::vector<GURL> new_predictions;
   for (auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
@@ -222,10 +224,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     data.link_locations_.push_back(element->ratio_distance_top_to_visible_top);
 
     // Collect the target URL if it is new, without ref (# fragment).
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    document_url = element->source_url.ReplaceComponents(replacements);
-    GURL target_url = element->target_url.ReplaceComponents(replacements);
+    GURL target_url = element->target_url.GetWithoutRef();
     if (target_url != document_url) {
       auto [it, inserted] =
           predicted_urls_.insert(base::FastHash(target_url.spec()));
@@ -289,7 +288,7 @@ void NavigationPredictor::ProcessPointerEventUsingMLModel(
         return;
       }
       // Ignore anchors pointing to the same document.
-      if (IsTargetURLTheSameAsDocument(anchor.metrics)) {
+      if (IsTargetURLTheSameAsDocument(anchor)) {
         return;
       }
 
@@ -336,26 +335,23 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   AnchorElementData& anchor = it->second;
 
   PreloadingModelKeyedService::Inputs inputs;
-  inputs.contains_image = anchor.metrics->contains_image;
-  inputs.font_size = GetFontSizeFromPx(anchor.metrics->font_size_px);
-  inputs.has_text_sibling = anchor.metrics->has_text_sibling;
-  inputs.is_bold = IsBoldFont(anchor.metrics->font_weight);
-  inputs.is_in_iframe = anchor.metrics->is_in_iframe;
-  inputs.is_url_incremented_by_one = anchor.metrics->is_url_incremented_by_one;
+  inputs.contains_image = anchor.contains_image;
+  inputs.font_size = anchor.font_size;
+  inputs.has_text_sibling = anchor.has_text_sibling;
+  inputs.is_bold = anchor.is_bold_font;
+  inputs.is_in_iframe = anchor.is_in_iframe;
+  inputs.is_url_incremented_by_one = anchor.is_url_incremented_by_one;
   inputs.navigation_start_to_link_logged =
       anchor.first_report_timestamp - navigation_start_;
-  auto path_info = GetUrlPathLengthDepthAndHash(anchor.metrics->target_url);
+  auto path_info = GetUrlPathLengthDepthAndHash(anchor.target_url);
   inputs.path_length = path_info.path_length;
   inputs.path_depth = path_info.path_depth;
-  // Convert the ratio area and ratio distance from [0,1] to [0,100].
-  inputs.percent_clickable_area =
-      static_cast<int>(anchor.metrics->ratio_area * 100);
-
+  inputs.percent_clickable_area = anchor.ratio_area;
   inputs.percent_vertical_distance =
-      static_cast<int>(anchor.metrics->ratio_distance_root_top * 100);
+      static_cast<int>(anchor.ratio_distance_root_top * 100);
 
-  inputs.is_same_origin = anchor.metrics->is_same_host;
-  auto to_timedelta = [this](absl::optional<base::TimeTicks> ts) {
+  inputs.is_same_origin = anchor.is_same_host;
+  auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
     return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
   };
   inputs.entered_viewport_to_left_viewport =
@@ -368,8 +364,7 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   model_service->Score(
       &scoring_model_task_tracker_, inputs,
       base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     anchor.metrics->target_url));
+                     weak_ptr_factory_.GetWeakPtr(), anchor.target_url));
 
   if (!ml_model_execution_timer_.IsRunning()) {
     ml_model_execution_timer_.Start(
@@ -442,7 +437,8 @@ void NavigationPredictor::ReportAnchorElementClick(
         navigation_predictor_metrics_data.GetUserInteractionsData();
     auto user_interaction_it = user_interactions.find(index_it->second);
     if (user_interaction_it != user_interactions.end()) {
-      auto& user_interaction = user_interactions[index_it->second];
+      auto& user_interaction = user_interaction_it->second;
+
       // navigation_start_to_click_ is set to click->navigation_start_to_click
       // and should always have a value.
       CHECK(navigation_start_to_click_.has_value());
@@ -481,7 +477,7 @@ void NavigationPredictor::ReportAnchorElementClick(
   auto it = anchors_.find(anchor_id);
   if (it != anchors_.end()) {
     page_link_click.href_unchanged_ =
-        (it->second.metrics->target_url == click->target_url);
+        (it->second.target_url == click->target_url);
   }
   navigation_start_to_click_ = click->navigation_start_to_click;
   // navigation_start_to_click_ is set to click->navigation_start_to_click and
@@ -642,7 +638,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       // zero width/height, etc.
       continue;
     }
-    const auto& anchor = anchor_it->second.metrics;
+    const AnchorElementData& anchor = anchor_it->second;
     // Collect the target URL if it is new, without ref (# fragment).
     if (IsTargetURLTheSameAsDocument(anchor)) {
       // Ignore anchors pointing to the same document.
@@ -655,32 +651,37 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
 
     NavigationPredictorMetricsDocumentData::AnchorElementMetricsData metrics;
 
-    metrics.is_in_iframe_ = anchor->is_in_iframe;
-    metrics.is_url_incremented_by_one_ = anchor->is_url_incremented_by_one;
-    metrics.contains_image_ = anchor->contains_image;
-    metrics.is_same_origin_ = anchor->is_same_host;
-    metrics.has_text_sibling_ = anchor->has_text_sibling;
-    metrics.is_bold_ = IsBoldFont(anchor->font_weight);
+    metrics.is_in_iframe_ = anchor.is_in_iframe;
+    metrics.is_url_incremented_by_one_ = anchor.is_url_incremented_by_one;
+    metrics.contains_image_ = anchor.contains_image;
+    metrics.is_same_origin_ = anchor.is_same_host;
+    metrics.has_text_sibling_ = anchor.has_text_sibling;
+    metrics.is_bold_ = anchor.is_bold_font;
     metrics.navigation_start_to_link_logged =
         element->navigation_start_to_entered_viewport;
 
-    metrics.font_size_ = GetFontSizeFromPx(anchor->font_size_px);
-    auto path_info = GetUrlPathLengthDepthAndHash(anchor->target_url);
+    metrics.font_size_ = anchor.font_size;
+    auto path_info = GetUrlPathLengthDepthAndHash(anchor.target_url);
     metrics.path_length_ = path_info.path_length;
     metrics.path_depth_ = path_info.path_depth;
     metrics.bucketed_path_hash_ = path_info.hash;
 
-    // Convert the ratio area and ratio distance from [0,1] to [0,100].
-    int percent_ratio_area = static_cast<int>(anchor->ratio_area * 100);
+    int percent_ratio_area = anchor.ratio_area;
     metrics.percent_clickable_area_ =
         GetLinearBucketForRatioArea(percent_ratio_area);
 
     int percent_ratio_distance_root_top =
-        static_cast<int>(anchor->ratio_distance_root_top * 100);
+        static_cast<int>(anchor.ratio_distance_root_top * 100);
     metrics.percent_vertical_distance_ =
         GetLinearBucketForLinkLocation(percent_ratio_distance_root_top);
 
     navigation_predictor_metrics_data.AddAnchorElementMetricsData(
         index_it->second, std::move(metrics));
   }
+}
+
+bool NavigationPredictor::IsTargetURLTheSameAsDocument(
+    const AnchorElementData& anchor) {
+  return render_frame_host().GetLastCommittedURL().EqualsIgnoringRef(
+      anchor.target_url);
 }

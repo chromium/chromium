@@ -149,7 +149,7 @@ void ModelTypeController::LoadModels(
   CHECK_EQ(NOT_RUNNING, state_);
 
   auto it = delegate_map_.find(configure_context.sync_mode);
-  DCHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
+  CHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
   delegate_ = it->second.get();
   CHECK(delegate_);
 

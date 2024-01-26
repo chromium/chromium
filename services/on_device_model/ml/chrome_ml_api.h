@@ -202,6 +202,21 @@ struct GpuConfig {
   WGPUBackendType backend_type;
 };
 
+struct ChromeMLMetricsFns {
+  // Logs an exact sample for the named metric.
+  void (*RecordExactLinearHistogram)(const char* name,
+                                     int sample,
+                                     int exclusive_max);
+
+  // Logs a sample for the named metric into one of a fixed number of buckets
+  // spanning the specified range.
+  void (*RecordCustomCountsHistogram)(const char* name,
+                                      int sample,
+                                      int min,
+                                      int exclusive_max,
+                                      size_t buckets);
+};
+
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with
 // DISABLE_CFI_DLSYM.
 
@@ -210,6 +225,9 @@ struct ChromeMLAPI {
   // Initializes the Dawn proc table. This must be called before any other
   // functions.
   void (*InitDawnProcs)(const DawnProcTable& procs);
+
+  // Sets functions which can be used to log metrics from within the library.
+  void (*SetMetricsFns)(const ChromeMLMetricsFns* fns);
 
   // Sets an error handling function for fatal errors in the GPU. See also
   // SetFatalErrorNonGpuFn.

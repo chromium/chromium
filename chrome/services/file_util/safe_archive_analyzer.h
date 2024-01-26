@@ -5,13 +5,14 @@
 #ifndef CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 #define CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 
+#include <optional>
+
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "chrome/utility/safe_browsing/rar_analyzer.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
@@ -37,7 +38,7 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
   // chrome::mojom::SafeArchiveAnalyzer:
   void AnalyzeZipFile(
       base::File zip_file,
-      const absl::optional<std::string>& password,
+      const std::optional<std::string>& password,
       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
       AnalyzeZipFileCallback callback) override;
   void AnalyzeDmgFile(
@@ -46,7 +47,7 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       AnalyzeDmgFileCallback callback) override;
   void AnalyzeRarFile(
       base::File rar_file,
-      const absl::optional<std::string>& password,
+      const std::optional<std::string>& password,
       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
       AnalyzeRarFileCallback callback) override;
   void AnalyzeSevenZipFile(

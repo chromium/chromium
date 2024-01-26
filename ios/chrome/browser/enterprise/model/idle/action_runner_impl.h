@@ -44,6 +44,7 @@ class ActionRunnerImpl : public ActionRunner {
   // off the next action (if there's one).
   void OnActionFinished(ActionQueue remaining_actions, bool succeeded);
 
+  base::TimeTicks actions_start_time_;
   ActionsCompletedCallback actions_completed_callback_;
   raw_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<ActionFactory> action_factory_;

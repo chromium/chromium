@@ -100,7 +100,7 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
     return nullptr;
   }
 
-  absl::optional<std::string> optional_device_name;
+  std::optional<std::string> optional_device_name;
   if (device_name_length > 0) {
     optional_device_name = std::string(iter, iter + device_name_length);
     iter += device_name_length;

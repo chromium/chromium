@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_sharing {
 enum MessageType : int;
@@ -42,7 +42,7 @@ class SharingMessageSender {
    public:
     using SendMessageCallback =
         base::OnceCallback<void(SharingSendMessageResult result,
-                                absl::optional<std::string> message_id,
+                                std::optional<std::string> message_id,
                                 SharingChannelType channel_type)>;
     virtual ~SendMessageDelegate() = default;
 
@@ -108,7 +108,7 @@ class SharingMessageSender {
 
   void OnMessageSent(const std::string& message_guid,
                      SharingSendMessageResult result,
-                     absl::optional<std::string> message_id,
+                     std::optional<std::string> message_id,
                      SharingChannelType channel_type);
 
   void InvokeSendMessageCallback(

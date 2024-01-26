@@ -19,6 +19,8 @@
         <!-- WebAuthn Lottie resources -->
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT" file="resources/webauthn/hybrid_connecting_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_DARK" file="resources/webauthn/hybrid_connecting_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT" file="resources/webauthn/gpm_fingerprint_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_LAPTOP_LIGHT" file="resources/webauthn/gpm_laptop_light.json" compress="brotli" />
       </if>
     </structures>
     <includes>
@@ -232,7 +234,7 @@
         </if>
       </if>
       <if expr="_google_chrome">
-        <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings_internal\pref_hash_seed.bin" type="BINDATA" />
+        <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings\internal\pref_hash_seed.bin" type="BINDATA" />
         <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">

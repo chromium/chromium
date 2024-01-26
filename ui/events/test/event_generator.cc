@@ -127,6 +127,30 @@ void EventGenerator::SetTargetWindow(gfx::NativeWindow target_window) {
   SetCurrentScreenLocation(delegate()->CenterOfWindow(target_window));
 }
 
+void EventGenerator::PressButton(int flag) {
+  if (!(flags_ & flag)) {
+    flags_ |= flag;
+    grab_ = (flags_ & kAllButtonMask) != 0;
+    gfx::Point location = GetLocationInCurrentRoot();
+    ui::MouseEvent mouseev(ui::ET_MOUSE_PRESSED, location, location,
+                           ui::EventTimeForNow(), flags_, flag);
+    mouseev.set_source_device_id(mouse_source_device_id_);
+    Dispatch(&mouseev);
+  }
+}
+
+void EventGenerator::ReleaseButton(int flag) {
+  if (flags_ & flag) {
+    gfx::Point location = GetLocationInCurrentRoot();
+    ui::MouseEvent mouseev(ui::ET_MOUSE_RELEASED, location, location,
+                           ui::EventTimeForNow(), flags_, flag);
+    mouseev.set_source_device_id(mouse_source_device_id_);
+    Dispatch(&mouseev);
+    flags_ ^= flag;
+  }
+  grab_ = (flags_ & kAllButtonMask) != 0;
+}
+
 void EventGenerator::PressLeftButton() {
   PressButton(ui::EF_LEFT_MOUSE_BUTTON);
 }
@@ -165,6 +189,7 @@ void EventGenerator::MoveMouseWheel(int delta_x, int delta_y) {
   gfx::Point location = GetLocationInCurrentRoot();
   ui::MouseWheelEvent wheelev(gfx::Vector2d(delta_x, delta_y), location,
                               location, ui::EventTimeForNow(), flags_, 0);
+  wheelev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&wheelev);
 }
 
@@ -173,6 +198,7 @@ void EventGenerator::SendMouseEnter() {
   delegate()->ConvertPointToTarget(current_target_, &enter_location);
   ui::MouseEvent mouseev(ui::ET_MOUSE_ENTERED, enter_location, enter_location,
                          ui::EventTimeForNow(), flags_, 0);
+  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 }
 
@@ -181,6 +207,7 @@ void EventGenerator::SendMouseExit() {
   delegate()->ConvertPointToTarget(current_target_, &exit_location);
   ui::MouseEvent mouseev(ui::ET_MOUSE_EXITED, exit_location, exit_location,
                          ui::EventTimeForNow(), flags_, 0);
+  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 }
 
@@ -195,6 +222,7 @@ void EventGenerator::MoveMouseToWithNative(const gfx::Point& point_in_host,
       new ui::MouseEvent(ui::ET_MOUSE_MOVED, point_in_host, point_in_host,
                          ui::EventTimeForNow(), flags_, 0));
   ui::MouseEvent mouseev(native_event.get());
+  mouseev.set_source_device_id(mouse_source_device_id_);
   native_event->set_location(point_for_native);
   Dispatch(&mouseev);
 
@@ -208,6 +236,7 @@ void EventGenerator::MoveMouseToInHost(const gfx::Point& point_in_host) {
       ui::ET_MOUSE_DRAGGED : ui::ET_MOUSE_MOVED;
   ui::MouseEvent mouseev(event_type, point_in_host, point_in_host,
                          ui::EventTimeForNow(), flags_, 0);
+  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 
   SetCurrentScreenLocation(point_in_host);
@@ -231,6 +260,7 @@ void EventGenerator::MoveMouseTo(const gfx::Point& point_in_screen,
     delegate()->ConvertPointToTarget(current_target_, &move_point);
     ui::MouseEvent mouseev(event_type, move_point, move_point,
                            ui::EventTimeForNow(), flags_, 0);
+    mouseev.set_source_device_id(mouse_source_device_id_);
     Dispatch(&mouseev);
   }
   SetCurrentScreenLocation(point_in_screen);
@@ -731,28 +761,6 @@ void EventGenerator::SetCurrentScreenLocation(const gfx::Point& point) {
 
 void EventGenerator::UpdateCurrentDispatcher(const gfx::Point& point) {
   current_target_ = delegate()->GetTargetAt(point);
-}
-
-void EventGenerator::PressButton(int flag) {
-  if (!(flags_ & flag)) {
-    flags_ |= flag;
-    grab_ = (flags_ & kAllButtonMask) != 0;
-    gfx::Point location = GetLocationInCurrentRoot();
-    ui::MouseEvent mouseev(ui::ET_MOUSE_PRESSED, location, location,
-                           ui::EventTimeForNow(), flags_, flag);
-    Dispatch(&mouseev);
-  }
-}
-
-void EventGenerator::ReleaseButton(int flag) {
-  if (flags_ & flag) {
-    gfx::Point location = GetLocationInCurrentRoot();
-    ui::MouseEvent mouseev(ui::ET_MOUSE_RELEASED, location, location,
-                           ui::EventTimeForNow(), flags_, flag);
-    Dispatch(&mouseev);
-    flags_ ^= flag;
-  }
-  grab_ = (flags_ & kAllButtonMask) != 0;
 }
 
 gfx::Point EventGenerator::GetLocationInCurrentRoot() const {

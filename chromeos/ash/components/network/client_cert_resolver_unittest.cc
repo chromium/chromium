@@ -7,6 +7,7 @@
 #include <pk11pub.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/files/file_path.h"
@@ -76,7 +77,7 @@ void OnListCertsDone(base::OnceClosure loop_quit_closure,
 std::unique_ptr<chromeos::onc::OncParsedCertificates>
 OncParsedCertificatesForPkcs12File(
     const base::FilePath& client_cert_pkcs12_file,
-    base::StringPiece guid) {
+    std::string_view guid) {
   std::string pkcs12_raw;
   if (!base::ReadFileToString(client_cert_pkcs12_file, &pkcs12_raw))
     return nullptr;
@@ -376,7 +377,7 @@ class ClientCertResolverTest : public testing::Test,
   }
 
   void SetManagedNetworkPolicy(::onc::ONCSource onc_source,
-                               base::StringPiece policy_json) {
+                               std::string_view policy_json) {
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
         policy_json,
         base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);

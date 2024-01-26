@@ -13,9 +13,9 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -145,15 +145,18 @@
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.pedalsEndpoint = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  annotator.omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  annotator.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  annotator.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+
   self.mediator.pedalAnnotator = annotator;
 
-  self.mediator.applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.mediator.applicationCommandsHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
   self.mediator.incognito = isIncognito;
   self.mediator.sceneState = self.browser->GetSceneState();
   self.mediator.presenter = [[OmniboxPopupPresenter alloc]

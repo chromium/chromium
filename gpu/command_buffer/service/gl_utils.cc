@@ -1248,7 +1248,6 @@ bool ValidateCopyTextureCHROMIUMInternalFormats(const FeatureInfo* feature_info,
       source_internal_format == GL_BGRA8_EXT ||
       source_internal_format == GL_RGB_YCRCB_420_CHROMIUM ||
       source_internal_format == GL_RGB_YCBCR_420V_CHROMIUM ||
-      source_internal_format == GL_RGB_YCBCR_422_CHROMIUM ||
       source_internal_format == GL_RGB_YCBCR_P010_CHROMIUM ||
       source_internal_format == GL_R16_EXT ||
       source_internal_format == GL_RG16_EXT ||

@@ -214,8 +214,8 @@ void SmartCardConnection::TransactionState::SetCallbackException(
   ScriptState* script_state = start_transaction_request_->GetScriptState();
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  callback_exception_ = ScriptValue::From(
-      script_state, V8ThrowDOMException::CreateOrEmpty(isolate, code, message));
+  callback_exception_ = ScriptValue(
+      isolate, V8ThrowDOMException::CreateOrEmpty(isolate, code, message));
 }
 
 void SmartCardConnection::TransactionState::SetCallbackException(

@@ -325,9 +325,11 @@ constexpr base::TimeDelta kDelaySecondsForContentStateSyncHidden =
     base::Seconds(5);
 constexpr base::TimeDelta kDelaySecondsForContentStateSync = base::Seconds(1);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 typedef std::map<int, RenderFrameImpl*> RoutingIDFrameMap;
 static base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit
     g_routing_id_frame_map = LAZY_INSTANCE_INITIALIZER;
+#endif
 
 typedef std::map<blink::WebFrame*, RenderFrameImpl*> FrameMap;
 base::LazyInstance<FrameMap>::DestructorAtExit g_frame_map =
@@ -1080,7 +1082,7 @@ void FillMiscNavigationParams(
       const auto& nested_urn_config_pairs_value =
           commit_params.fenced_frame_properties->nested_urn_config_pairs()
               ->potentially_opaque_value.value();
-      DCHECK_EQ(blink::kMaxAdAuctionAdComponents,
+      DCHECK_EQ(blink::MaxAdAuctionAdComponents(),
                 nested_urn_config_pairs_value.size());
       navigation_params->ad_auction_components.emplace();
       for (const auto& nested_urn_config_pair : nested_urn_config_pairs_value) {
@@ -1503,7 +1505,6 @@ RenderFrameImpl* RenderFrameImpl::Create(
 RenderFrame* RenderFrame::FromRoutingID(int routing_id) {
   return RenderFrameImpl::FromRoutingID(routing_id);
 }
-#endif
 
 // static
 RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
@@ -1513,6 +1514,7 @@ RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
     return iter->second;
   return nullptr;
 }
+#endif
 
 // static
 RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
@@ -1855,7 +1857,9 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       unique_name_helper_(&unique_name_frame_adapter_),
       in_frame_tree_(false),
       frame_token_(params.frame_token),
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
       routing_id_(params.routing_id),
+#endif
       process_label_id_(
           base::trace_event::TraceLog::GetInstance()->GetNewProcessLabelId()),
       selection_text_offset_(0),
@@ -1898,9 +1902,11 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   // Must call after binding our own remote interfaces.
   media_factory_.SetupMojo();
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   std::pair<RoutingIDFrameMap::iterator, bool> result =
       g_routing_id_frame_map.Get().insert(std::make_pair(routing_id_, this));
   CHECK(result.second) << "Inserting a duplicate item.";
+#endif
 
   // Everything below subclasses RenderFrameObserver and is automatically
   // deleted when the RenderFrame gets deleted.
@@ -1930,8 +1936,15 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(
       process_label_id_);
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   g_routing_id_frame_map.Get().erase(routing_id_);
-  agent_scheduling_group_->RemoveFrameRoute(routing_id_);
+#endif
+  agent_scheduling_group_->RemoveFrameRoute(frame_token_
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+                                            ,
+                                            routing_id_
+#endif
+  );
 }
 
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
@@ -1970,8 +1983,11 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
       std::move(pending_frame_receiver_),
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
   agent_scheduling_group_->AddFrameRoute(
-      routing_id_, this,
-      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
+      frame_token_,
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+      routing_id_,
+#endif
+      this, GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
 
 void RenderFrameImpl::GetInterface(
@@ -2528,12 +2544,18 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
     const GURL& new_page_url) {
   if (!old_page_info)
     return;
-  RenderFrameImpl* old_main_render_frame = RenderFrameImpl::FromRoutingID(
-      old_page_info->routing_id_for_old_main_frame);
-  if (!old_main_render_frame) {
-    // Even if we sent a valid |routing_id_for_old_main_frame|, it might have
-    // already been destroyed by the time we try to get the RenderFrame, so
+
+  WebLocalFrame* old_main_web_frame = WebLocalFrame::FromFrameToken(
+      old_page_info->frame_token_for_old_main_frame);
+  if (!old_main_web_frame) {
+    // Even if we sent a valid `frame_token_for_old_main_frame`, it might have
+    // already been destroyed by the time we try to get the WebLocalFrame, so
     // we should check if it still exists.
+    return;
+  }
+  RenderFrameImpl* old_main_render_frame =
+      RenderFrameImpl::FromWebFrame(old_main_web_frame);
+  if (!old_main_render_frame) {
     return;
   }
   if (!IsMainFrame() && !old_main_render_frame->IsMainFrame()) {
@@ -2547,8 +2569,6 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
                           old_main_render_frame->IsMainFrame());
     SCOPED_CRASH_KEY_STRING256("old_page_info", "old_url",
                                old_main_render_frame->GetLoadingUrl().spec());
-    SCOPED_CRASH_KEY_NUMBER("old_page_info", "old_routing_id",
-                            old_page_info->routing_id_for_old_main_frame);
     SCOPED_CRASH_KEY_BOOL(
         "old_page_info", "old_is_frozen",
         old_page_info->new_lifecycle_state_for_old_page->is_frozen);
@@ -2571,7 +2591,6 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
             blink::mojom::PageVisibilityState::kHidden);
   DCHECK_NE(old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch,
             blink::mojom::PagehideDispatch::kNotDispatched);
-  WebFrame* old_main_web_frame = old_main_render_frame->GetWebFrame();
   old_main_web_frame->View()->SetPageLifecycleStateFromNewPageCommit(
       old_page_info->new_lifecycle_state_for_old_page->visibility,
       old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch);
@@ -3620,7 +3639,7 @@ void RenderFrameImpl::DidCreateFencedFrame(
 
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
   if (GetBlinkPreferences().renderer_wide_named_frame_lookup) {
-    for (const auto& it : g_routing_id_frame_map.Get()) {
+    for (const auto& it : g_frame_map.Get()) {
       WebLocalFrame* frame = it.second->GetWebFrame();
       if (frame->AssignedName() == name)
         return frame;
@@ -5349,8 +5368,12 @@ void RenderFrameImpl::BeginNavigation(
 
   if (frame_->IsOutermostMainFrame() && url.is_valid() &&
       url.SchemeIsHTTPOrHTTPS() &&
-      base::FeatureList::IsEnabled(
-          features::kSpeculativeServiceWorkerStartup)) {
+      (base::FeatureList::IsEnabled(
+           blink::features::kHttpDiskCachePrewarming) ||
+       base::FeatureList::IsEnabled(
+           blink::features::kSpeculativeServiceWorkerWarmUp) ||
+       base::FeatureList::IsEnabled(
+           features::kSpeculativeServiceWorkerStartup))) {
     frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 
@@ -6237,7 +6260,11 @@ RenderFrameImpl::MaybeGetBackgroundResourceFetchAssets() {
     background_resource_fetch_context_ =
         base::MakeRefCounted<BackgroundResourceFetchAssets>(
             GetLoaderFactoryBundle()->Clone(),
-            background_resource_fetch_task_runner_);
+            GetURLLoaderThrottleProvider()
+                ? GetURLLoaderThrottleProvider()->Clone()
+                : nullptr,
+            background_resource_fetch_task_runner_,
+            frame_->GetLocalFrameToken());
   }
   return background_resource_fetch_context_;
 }

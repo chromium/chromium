@@ -119,6 +119,9 @@ enum FieldTypeGroupForMetrics {
   GROUP_DELIVERY_INSTRUCTIONS = 40,
   GROUP_ADDRESS_HOME_OVERFLOW_AND_LANDMARK = 41,
   GROUP_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK = 42,
+  GROUP_ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY = 43,
+  GROUP_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK = 44,
+  GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -255,6 +258,15 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case ADDRESS_HOME_STREET_LOCATION:
           group = GROUP_ADDRESS_HOME_STREET_LOCATION;
           break;
+        case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+          group = GROUP_ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY;
+          break;
+        case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+          group = GROUP_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK;
+          break;
+        case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+          group = GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK;
+          break;
         case DELIVERY_INSTRUCTIONS:
           group = GROUP_DELIVERY_INSTRUCTIONS;
           break;
@@ -316,7 +328,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:
         case NAME_HONORIFIC_PREFIX:
-        case NAME_FULL_WITH_HONORIFIC_PREFIX:
         case BIRTHDATE_DAY:
         case BIRTHDATE_MONTH:
         case BIRTHDATE_4_DIGIT_YEAR:
@@ -2377,10 +2388,10 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   // The field type predicted by the Autofill crowdsourced server from
   // majority voting.
-  FieldType server_type1 = NO_SERVER_DATA;
+  std::optional<FieldType> server_type1 = std::nullopt;
   FieldPrediction::Source prediction_source1 =
       FieldPrediction::SOURCE_UNSPECIFIED;
-  FieldType server_type2 = NO_SERVER_DATA;
+  std::optional<FieldType> server_type2 = std::nullopt;
   FieldPrediction::Source prediction_source2 =
       FieldPrediction::SOURCE_UNSPECIFIED;
   // This is an annotation for server predicted field types which indicates
@@ -2613,9 +2624,15 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (had_server_type) {
-    builder.SetServerType1(server_type1)
+    int64_t server_type1_value = server_type1.has_value()
+                                     ? server_type1.value()
+                                     : /*SERVER_RESPONSE_PENDING*/ 161;
+    int64_t server_type2_value = server_type2.has_value()
+                                     ? server_type2.value()
+                                     : /*SERVER_RESPONSE_PENDING*/ 161;
+    builder.SetServerType1(server_type1_value)
         .SetServerPredictionSource1(prediction_source1)
-        .SetServerType2(server_type2)
+        .SetServerType2(server_type2_value)
         .SetServerPredictionSource2(prediction_source2)
         .SetServerTypeIsOverride(server_type_is_override);
   }

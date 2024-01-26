@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
+
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -10,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/values.h"
-#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -23,7 +25,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -215,14 +216,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCloudIdentifierDelegateCrosBrowsertest,
       .WillOnce(base::test::RunOnceCallback<2>(
           crosapi::mojom::FileSystemAccessCloudIdentifier::New(
               "drive-fs-provider-name", "drive-fs-dir-item-id")));
-  const absl::optional<base::Value> expected_drive_fs_file_result =
+  const std::optional<base::Value> expected_drive_fs_file_result =
       base::JSONReader::Read(R"(
         [{
           "id": "drive-fs-file-item-id",
           "providerName": "drive-fs-provider-name"
         }]
       )");
-  const absl::optional<base::Value> expected_drive_fs_dir_result =
+  const std::optional<base::Value> expected_drive_fs_dir_result =
       base::JSONReader::Read(R"(
         [{
           "id": "drive-fs-dir-item-id",
@@ -258,14 +259,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCloudIdentifierDelegateCrosBrowsertest,
       .WillOnce(base::test::RunOnceCallback<2>(
           crosapi::mojom::FileSystemAccessCloudIdentifier::New(
               "provided-fs-provider-name", "provided-fs-dir-item-id")));
-  const absl::optional<base::Value> expected_provided_fs_file_result =
+  const std::optional<base::Value> expected_provided_fs_file_result =
       base::JSONReader::Read(R"(
         [{
           "id": "provided-fs-file-item-id",
           "providerName": "provided-fs-provider-name"
         }]
       )");
-  const absl::optional<base::Value> expected_provided_fs_dir_result =
+  const std::optional<base::Value> expected_provided_fs_dir_result =
       base::JSONReader::Read(R"(
         [{
           "id": "provided-fs-dir-item-id",

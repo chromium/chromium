@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -239,9 +240,9 @@ class CommercePushNotificationClientTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> background_browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  BrowserList* browser_list_;
-  bookmarks::BookmarkModel* bookmark_model_;
-  commerce::MockShoppingService* shopping_service_;
+  raw_ptr<BrowserList> browser_list_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<commerce::MockShoppingService> shopping_service_;
   SceneState* scene_state_foreground_;
   SceneState* scene_state_background_;
   AppState* app_state_;

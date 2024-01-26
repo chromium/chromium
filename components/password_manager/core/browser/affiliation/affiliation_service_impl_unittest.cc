@@ -628,4 +628,21 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory, GetGroupingInfoUsesCache) {
   RunUntilIdle();
 }
 
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       UpdateAffiliationsAndBranding) {
+  base::MockOnceClosure completion_callback;
+
+  service()->UpdateAffiliationsAndBranding(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
+      completion_callback.Get());
+  background_task_runner()->RunUntilIdle();
+
+  EXPECT_CALL(completion_callback, Run);
+  ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
+  fake_affiliation_api()->ServeNextRequest();
+  background_task_runner()->RunUntilIdle();
+
+  RunUntilIdle();
+}
+
 }  // namespace password_manager

@@ -110,8 +110,7 @@ TEST_F(GameModeControllerForBorealisTest, SwitchingWindowsMaintainsGameMode) {
 }
 
 TEST_F(GameModeControllerForBorealisTest, SetGameModeFailureDoesNotCrash) {
-  fake_resourced_client_->set_set_game_mode_with_timeout_response(
-      absl::nullopt);
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(std::nullopt);
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.guest_os.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();

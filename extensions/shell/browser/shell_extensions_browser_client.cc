@@ -204,6 +204,13 @@ ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return nullptr;
 }
 
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ShellExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
+    int frame_tree_node_id,
+    content::BrowserContext* browser_context) {
+  return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
+}
+
 std::unique_ptr<ExtensionHostDelegate>
 ShellExtensionsBrowserClient::CreateExtensionHostDelegate() {
   return base::WrapUnique(new ShellExtensionHostDelegate);

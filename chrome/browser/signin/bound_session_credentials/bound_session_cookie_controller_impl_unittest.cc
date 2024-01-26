@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -32,7 +33,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
@@ -152,7 +152,7 @@ class BoundSessionCookieControllerImplTest
 
   void SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result result,
-      absl::optional<base::Time> cookie_expiration) {
+      std::optional<base::Time> cookie_expiration) {
     ASSERT_TRUE(cookie_fetcher());
     FakeBoundSessionRefreshCookieFetcher* fetcher =
         static_cast<FakeBoundSessionRefreshCookieFetcher*>(cookie_fetcher());
@@ -160,7 +160,7 @@ class BoundSessionCookieControllerImplTest
   }
 
   void SimulateCookieChange(const std::string& cookie_name,
-                            absl::optional<base::Time> cookie_expiration) {
+                            std::optional<base::Time> cookie_expiration) {
     net::CanonicalCookie cookie = BoundSessionTestCookieManager::CreateCookie(
         bound_session_cookie_controller()->url(), cookie_name,
         cookie_expiration);
@@ -410,8 +410,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(AreAllCookiesFresh());
   // Preemptive cookie rotation also fails with persistent error.
   SimulateCompleteRefreshRequest(
-      BoundSessionRefreshCookieFetcher::Result::kConnectionError,
-      absl::nullopt);
+      BoundSessionRefreshCookieFetcher::Result::kConnectionError, std::nullopt);
   EXPECT_FALSE(cookie_fetcher());
 
   // Request blocked on the cookie.
@@ -491,8 +490,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(AreAllCookiesFresh());
   // Preemptive cookie rotation also fails with persistent error.
   SimulateCompleteRefreshRequest(
-      BoundSessionRefreshCookieFetcher::Result::kConnectionError,
-      absl::nullopt);
+      BoundSessionRefreshCookieFetcher::Result::kConnectionError, std::nullopt);
   EXPECT_FALSE(cookie_fetcher());
 
   base::test::TestFuture<void> future;
@@ -502,7 +500,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Simulate refresh completes with persistent failure.
   SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result::kServerPersistentError,
-      absl::nullopt);
+      std::nullopt);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(on_persistent_error_encountered_called());
   EXPECT_TRUE(future.IsReady());
@@ -531,7 +529,7 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
     bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
         future.GetCallback());
     EXPECT_FALSE(future.IsReady());
-    SimulateCompleteRefreshRequest(result, absl::nullopt);
+    SimulateCompleteRefreshRequest(result, std::nullopt);
     EXPECT_TRUE(future.IsReady());
   }
 
@@ -876,7 +874,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // request without updating the cookies.
   SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result::kServerTransientError,
-      absl::nullopt);
+      std::nullopt);
   EXPECT_FALSE(cookie_fetcher());
   EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
   base::Time old_min_cookie_expiration =

@@ -43,7 +43,6 @@ class TestHooks : public AnimationDelegate {
                                           bool has_damage) {}
   virtual void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
-  virtual void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void BeginMainFrameAbortedOnThread(
       LayerTreeHostImpl* host_impl,
       CommitEarlyOutReason reason,

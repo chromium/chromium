@@ -102,9 +102,7 @@ bool GetMimeType(const FileSystemURL& url, std::string* mime_type) {
 }
 
 // Common implementation shared between the file and directory URLLoaders.
-class FileSystemEntryURLLoader
-    : public network::mojom::URLLoader,
-      public base::SupportsWeakPtr<FileSystemEntryURLLoader> {
+class FileSystemEntryURLLoader : public network::mojom::URLLoader {
  public:
   explicit FileSystemEntryURLLoader(FactoryParams params)
       : params_(std::move(params)) {}
@@ -125,6 +123,7 @@ class FileSystemEntryURLLoader
 
  protected:
   virtual void FileSystemIsMounted() = 0;
+  virtual base::WeakPtr<FileSystemEntryURLLoader> AsWeakPtr() = 0;
 
   void Start(const network::ResourceRequest& request,
              mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -260,7 +259,7 @@ class FileSystemEntryURLLoader
   }
 };
 
-class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
+class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
  public:
   static void CreateAndStart(
       const network::ResourceRequest& request,
@@ -302,7 +301,11 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     params_.file_system_context->operation_runner()->ReadDirectory(
         url_,
         base::BindRepeating(&FileSystemDirectoryURLLoader::DidReadDirectory,
-                            base::AsWeakPtr(this)));
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  base::WeakPtr<FileSystemEntryURLLoader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   void DidReadDirectory(base::File::Error result,
@@ -348,7 +351,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
         {storage::FileSystemOperation::GetMetadataField::kSize,
          storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&FileSystemDirectoryURLLoader::DidGetMetadata,
-                       base::AsWeakPtr(this), index));
+                       weak_ptr_factory_.GetWeakPtr(), index));
   }
 
   void DidGetMetadata(size_t index,
@@ -422,9 +425,10 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
   std::string data_;
   std::vector<DirectoryEntry> entries_;
   scoped_refptr<net::IOBuffer> directory_data_;
+  base::WeakPtrFactory<FileSystemDirectoryURLLoader> weak_ptr_factory_{this};
 };
 
-class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
+class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
  public:
   static void CreateAndStart(
       const network::ResourceRequest& request,
@@ -466,7 +470,11 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
          storage::FileSystemOperation::GetMetadataField::kSize},
         base::BindOnce(&FileSystemFileURLLoader::DidGetMetadata,
-                       base::AsWeakPtr(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  base::WeakPtr<FileSystemEntryURLLoader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   void DidGetMetadata(base::File::Error error_code,
@@ -553,8 +561,9 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
     }
     const int64_t bytes_to_read = std::min(
         static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
-    net::CompletionRepeatingCallback read_callback = base::BindRepeating(
-        &FileSystemFileURLLoader::DidReadMoreFileData, base::AsWeakPtr(this));
+    net::CompletionRepeatingCallback read_callback =
+        base::BindRepeating(&FileSystemFileURLLoader::DidReadMoreFileData,
+                            weak_ptr_factory_.GetWeakPtr());
     const int rv =
         reader_->Read(file_data_.get(), bytes_to_read, read_callback);
     if (rv == net::ERR_IO_PENDING) {
@@ -605,7 +614,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
             mojo::StringDataSource::AsyncWritingMode::
                 STRING_STAYS_VALID_UNTIL_COMPLETION),
         base::BindOnce(&FileSystemFileURLLoader::OnFileDataWritten,
-                       base::AsWeakPtr(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnFileDataWritten(MojoResult result) {
@@ -633,6 +642,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
       network::mojom::URLResponseHead::New();
   const network::ResourceRequest original_request_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  base::WeakPtrFactory<FileSystemFileURLLoader> weak_ptr_factory_{this};
 };
 
 // A URLLoaderFactory used for the filesystem:// scheme used when the Network

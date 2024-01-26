@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/smart_card/smart_card_permission_request.h"
 #include "content/public/browser/smart_card_delegate.h"
 
 class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
@@ -17,20 +16,14 @@ class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
   // `content::SmartCardDelegate` overrides:
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(content::BrowserContext& browser_context) override;
+  bool IsPermissionBlocked(
+      content::RenderFrameHost& render_frame_host) override;
   bool HasReaderPermission(content::RenderFrameHost& render_frame_host,
                            const std::string& reader_name) override;
   void RequestReaderPermission(
       content::RenderFrameHost& render_frame_host,
       const std::string& reader_name,
       RequestReaderPermissionCallback callback) override;
-
- private:
-  void OnPermissionRequestDecided(const url::Origin& origin,
-                                  const std::string& reader_name,
-                                  RequestReaderPermissionCallback callback,
-                                  SmartCardPermissionRequest::Result result);
-
-  base::WeakPtrFactory<ChromeOsSmartCardDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_

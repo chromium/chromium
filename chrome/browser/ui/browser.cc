@@ -113,7 +113,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
+#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -948,6 +948,16 @@ StatusBubble* Browser::GetStatusBubbleForTesting() {
   return GetStatusBubble();
 }
 
+void Browser::SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
+  force_show_bookmark_bar_flags_ |= flag;
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW);
+}
+
+void Browser::ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
+  force_show_bookmark_bar_flags_ &= ~flag;
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW);
+}
+
 void Browser::OnWindowClosing() {
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
@@ -1416,7 +1426,7 @@ bool Browser::HandleKeyboardEvent(content::WebContents* source,
          window()->HandleKeyboardEvent(event);
 }
 
-bool Browser::TabsNeedBeforeUnloadFired() {
+bool Browser::TabsNeedBeforeUnloadFired() const {
   return unload_controller_.TabsNeedBeforeUnloadFired();
 }
 
@@ -1568,8 +1578,9 @@ base::WeakPtr<content::WebContentsDelegate> Browser::GetDelegateWeakPtr() {
   return AsWeakPtr();
 }
 
-bool Browser::IsMouseLocked() const {
-  return exclusive_access_manager_->mouse_lock_controller()->IsMouseLocked();
+bool Browser::IsPointerLocked() const {
+  return exclusive_access_manager_->pointer_lock_controller()
+      ->IsPointerLocked();
 }
 
 void Browser::OnWindowDidShow() {
@@ -2245,15 +2256,15 @@ void Browser::FindReply(WebContents* web_contents,
                                    final_update);
 }
 
-void Browser::RequestToLockMouse(WebContents* web_contents,
+void Browser::RequestPointerLock(WebContents* web_contents,
                                  bool user_gesture,
                                  bool last_unlocked_by_target) {
-  exclusive_access_manager_->mouse_lock_controller()->RequestToLockMouse(
+  exclusive_access_manager_->pointer_lock_controller()->RequestToLockPointer(
       web_contents, user_gesture, last_unlocked_by_target);
 }
 
-void Browser::LostMouseLock() {
-  exclusive_access_manager_->mouse_lock_controller()->LostMouseLock();
+void Browser::LostPointerLock() {
+  exclusive_access_manager_->pointer_lock_controller()->LostPointerLock();
 }
 
 void Browser::RequestKeyboardLock(WebContents* web_contents,
@@ -3149,7 +3160,8 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
     return;
   }
 
-  bool should_animate = reason == BOOKMARK_BAR_STATE_CHANGE_PREF_CHANGE;
+  bool should_animate = reason == BOOKMARK_BAR_STATE_CHANGE_PREF_CHANGE ||
+                        reason == BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW;
   window_->BookmarkBarStateChanged(
       should_animate ? BookmarkBar::ANIMATE_STATE_CHANGE
                      : BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
@@ -3163,6 +3175,10 @@ bool Browser::ShouldShowBookmarkBar() const {
       profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar) &&
       !ShouldHideUIForFullscreen())
     return true;
+
+  if (force_show_bookmark_bar_flags_ != ForceShowBookmarkBarFlag::kNone) {
+    return true;
+  }
 
   WebContents* web_contents = tab_strip_model_->GetActiveWebContents();
   if (!web_contents)

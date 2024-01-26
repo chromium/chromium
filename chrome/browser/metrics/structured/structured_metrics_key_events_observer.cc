@@ -4,8 +4,10 @@
 
 #include "chrome/browser/metrics/structured/structured_metrics_key_events_observer.h"
 
-#include "base/logging.h"
+#include <utility>
+
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace metrics::structured {
 
@@ -35,17 +37,18 @@ StructuredMetricsKeyEventsObserver::~StructuredMetricsKeyEventsObserver() {
 void StructuredMetricsKeyEventsObserver::ActiveUserChanged(
     user_manager::User* user) {
   if (user->is_active()) {
-    cros_events::UserLogin().Record();
+    StructuredMetricsClient::Record(cros_events::UserLogin());
   }
 }
 
 void StructuredMetricsKeyEventsObserver::OnSessionWillBeTerminated() {
-  cros_events::UserLogout().Record();
+  StructuredMetricsClient::Record(std::move(cros_events::UserLogout()));
 }
 
 void StructuredMetricsKeyEventsObserver::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  cros_events::SystemSuspended().SetReason(reason).Record();
+  StructuredMetricsClient::Record(
+      std::move(cros_events::SystemSuspended().SetReason(reason)));
 }
 
 }  // namespace metrics::structured

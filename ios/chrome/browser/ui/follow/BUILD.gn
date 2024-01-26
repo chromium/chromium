@@ -40,7 +40,7 @@ source_set("first_follow") {
     ":follow",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/net/model:crurl",

@@ -252,6 +252,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8PerContextMarkingWorklist,
                          "--stress-per-context-marking-worklist",
                          "--no-stress-per-context-marking-worklist");
+  SetV8FlagsIfOverridden(
+      features::kV8ProfileGuidedOptimization, "--profile-guided-optimization",
+      "--profile-guided-optimization-for-empty-feedback-vector");
   SetV8FlagsIfOverridden(features::kV8FlushEmbeddedBlobICache,
                          "--experimental-flush-embedded-blob-icache",
                          "--no-experimental-flush-embedded-blob-icache");
@@ -397,6 +400,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptImportAttributes,
                          "--harmony-import-attributes",
                          "--no-harmony-import-attributes");
+  SetV8FlagsIfOverridden(features::kJavaScriptSetMethods,
+                         "--harmony-set-methods", "--no-harmony-set-methods");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
@@ -580,7 +585,6 @@ void V8Initializer::LoadV8SnapshotFromFile(
 
   if (!snapshot_file.IsValid()) {
     LOG(FATAL) << "Error loading V8 startup snapshot file";
-    return;
   }
 
   g_snapshot_file_type = snapshot_file_type;
@@ -592,7 +596,6 @@ void V8Initializer::LoadV8SnapshotFromFile(
 
   if (!MapV8File(std::move(snapshot_file), region, &g_mapped_snapshot)) {
     LOG(FATAL) << "Error mapping V8 startup snapshot file";
-    return;
   }
 }
 

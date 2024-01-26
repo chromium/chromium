@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/scoped_observation.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -26,12 +27,12 @@ using ScopedWebStateListObservation =
   // The UI consumer to which updates are made.
   __weak id<InactiveTabsInfoConsumer> _consumer;
   // The list of inactive tabs.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   // Observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
   // Preference service from the application context.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.

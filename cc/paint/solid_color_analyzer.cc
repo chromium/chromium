@@ -283,6 +283,7 @@ std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::kDrawLine:
       case PaintOpType::kDrawOval:
       case PaintOpType::kDrawPath:
+      case PaintOpType::kDrawVertices:
         return std::nullopt;
       // TODO(vmpstr): Add more tests on exceeding max_ops_to_analyze.
       case PaintOpType::kDrawRRect: {

@@ -137,12 +137,13 @@ void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,
   button->SetToggledImageModel(Button::STATE_DISABLED, disabled_image);
 }
 
-void SetImageFromVectorIconWithColorId(
-    ImageButton* button,
-    const gfx::VectorIcon& icon,
-    ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id,
-    absl::optional<int> icon_size /*=nullopt*/) {
+void SetImageFromVectorIconWithColorId(ImageButton* button,
+                                       const gfx::VectorIcon& icon,
+                                       ui::ColorId icon_color_id,
+                                       ui::ColorId icon_disabled_color_id,
+                                       absl::optional<int> icon_size) {
+  // A ternary must be used here instead of `value_or` to prevent a DCHECK when
+  // the icon does not contain a size in it's definition.
   int dip_size = icon_size.has_value() ? icon_size.value()
                                        : GetDefaultSizeOfVectorIcon(icon);
   const ui::ImageModel& normal_image =
@@ -159,8 +160,12 @@ void SetToggledImageFromVectorIconWithColorId(
     ToggleImageButton* button,
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id) {
-  int dip_size = GetDefaultSizeOfVectorIcon(icon);
+    ui::ColorId icon_disabled_color_id,
+    absl::optional<int> icon_size) {
+  // A ternary must be used here instead of `value_or` to prevent a DCHECK when
+  // the icon does not contain a size in it's definition.
+  int dip_size = icon_size.has_value() ? icon_size.value()
+                                       : GetDefaultSizeOfVectorIcon(icon);
   const ui::ImageModel& normal_image =
       ui::ImageModel::FromVectorIcon(icon, icon_color_id, dip_size);
   const ui::ImageModel& disabled_image =

@@ -5,6 +5,9 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 
 #import "base/check.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 
@@ -39,6 +42,15 @@ NSMutableSet* invokedCompletionUUID = nil;
     if (completionUUID)
       [self completionInvokedWithUUID:completionUUID];
   });
+}
+
++ (void)blockSigninIPH {
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  tracker->NotifyUsedEvent(
+      feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
 }
 
 + (BOOL)isCompletionInvokedWithUUID:(NSUUID*)completionUUID {

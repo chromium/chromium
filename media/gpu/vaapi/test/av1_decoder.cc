@@ -628,7 +628,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
         current_frame_header.show_existing_frame ||
         current_frame->temporal_id() != 0) {
       // Section 7.5.
-      LOG_ASSERT(false)
+      LOG(FATAL)
           << "The first frame successive to sequence header OBU must be a "
           << "keyframe with show_frame=1, show_existing_frame=0 and "
           << "temporal_id=0";
@@ -681,8 +681,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // Clean up reference frames.
   for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
     if (state_->reference_frame[i] && !ref_frames_[i]) {
-      LOG_ASSERT(false) << "The state of the reference frames are different "
-                           "between |ref_frames_| and |state_|";
+      LOG(FATAL) << "The state of the reference frames are different "
+                    "between |ref_frames_| and |state_|";
     }
     if (!state_->reference_frame[i] && ref_frames_[i]) {
       ref_frames_[i].reset();

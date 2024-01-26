@@ -8,6 +8,7 @@
 
 #import <map>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
@@ -27,7 +28,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -61,7 +62,7 @@ class FakeAppLauncherTabHelper : public AppLauncherTabHelper {
   AppLauncherTabHelperDelegate* delegate() { return delegate_; }
 
  private:
-  AppLauncherTabHelperDelegate* delegate_;
+  raw_ptr<AppLauncherTabHelperDelegate> delegate_;
 };
 
 // Test fixture for AppLauncherBrowserAgent.
@@ -178,7 +179,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppStoreUrlShowsAlert) {
   // Request an app launch for kAppStoreUrl.
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(
@@ -217,7 +218,7 @@ TEST_F(AppLauncherBrowserAgentTest, MailToUrlLaunchesApp) {
                 completionHandler:[OCMArg isNotNil]]);
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kMailToUrl, kSourcePageUrl, /*link_transition=*/true,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that the application attempts to open the URL.
   [application_ verify];
@@ -238,7 +239,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlLaunchesApp) {
                 completionHandler:[OCMArg isNotNil]]);
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/true,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that the application attempts to open the URL.
   [application_ verify];
@@ -258,7 +259,7 @@ TEST_F(AppLauncherBrowserAgentTest, RepeatedRequestShowsAlert) {
   abuse_detectors_[web_state].policy = ExternalAppLaunchPolicyPrompt;
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/true,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that an app launch overlay request for a repeated request was added
   // to `web_state`'s queue.
@@ -296,7 +297,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlWithoutLinkShowsAlert) {
   // Request an app launch for kAppUrl without a link transition.
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(
@@ -332,7 +333,7 @@ TEST_F(AppLauncherBrowserAgentTest, ShowDialogInOpener) {
   // Request an app launch for kAppStoreUrl.
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(
@@ -354,7 +355,7 @@ TEST_F(AppLauncherBrowserAgentTest, IncognitoRequestShowsAlert) {
   abuse_detectors_[web_state].policy = ExternalAppLaunchPolicyAllow;
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/true,
-      /*is_user_initiated=*/true);
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
 
   // Verify that an app launch overlay request for a repeated request was added
   // to `web_state`'s queue.
@@ -397,7 +398,7 @@ TEST_F(AppLauncherBrowserAgentTest, NoUserInteractionRequestShowsAlert) {
   abuse_detectors_[web_state].policy = ExternalAppLaunchPolicyAllow;
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/true,
-      /*is_user_initiated=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
 
   // Verify that an app launch overlay request for a repeated request was added
   // to `web_state`'s queue.

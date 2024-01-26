@@ -60,11 +60,15 @@ constexpr float float_error = 0.0001f;
 // we're primarily testing caching behavior, and the code necessary to
 // construct a Java-backed MotionEvent itself adds unnecessary complexity.
 TEST(MotionEventAndroidTest, Constructor) {
-  constexpr int kEventTimeNS = 5'123'456;
-  base::TimeTicks event_time =
-      base::TimeTicks() + base::Nanoseconds(kEventTimeNS);
+  constexpr int kLatestEventTimeNS = 5'123'456;
+  constexpr int kOldestEventTimeNS = 4'123'456;
+  base::TimeTicks latest_event_time =
+      base::TimeTicks() + base::Nanoseconds(kLatestEventTimeNS);
+  base::TimeTicks oldest_event_time =
+      base::TimeTicks() + base::Nanoseconds(kOldestEventTimeNS);
+
   ui::test::ScopedEventTestTickClock clock;
-  clock.SetNowTicks(event_time);
+  clock.SetNowTicks(latest_event_time);
 
   MotionEventAndroid::Pointer p0(
       1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f, kAndroidToolTypeFinger);
@@ -74,15 +78,16 @@ TEST(MotionEventAndroidTest, Constructor) {
   int pointer_count = 2;
   int history_size = 0;
   int action_index = -1;
-  MotionEventAndroid event(
-      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
-      base::TimeTicks() + base::Nanoseconds(kEventTimeNS), kAndroidActionDown,
-      pointer_count, history_size, action_index, kAndroidActionButton, 0,
-      kAndroidButtonPrimary, kAndroidAltKeyDown, raw_offset, -raw_offset, false,
-      &p0, &p1);
+  MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
+                           kPixToDip, 0.f, 0.f, 0.f, oldest_event_time,
+                           latest_event_time, kAndroidActionDown, pointer_count,
+                           history_size, action_index, kAndroidActionButton, 0,
+                           kAndroidButtonPrimary, kAndroidAltKeyDown,
+                           raw_offset, -raw_offset, false, &p0, &p1);
 
   EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
-  EXPECT_EQ(event_time, event.GetEventTime());
+  EXPECT_EQ(oldest_event_time, event.GetEventTime());
+  EXPECT_EQ(latest_event_time, event.GetLatestEventTime());
   EXPECT_EQ(p0.pos_x_pixels * kPixToDip, event.GetX(0));
   EXPECT_EQ(p0.pos_y_pixels * kPixToDip, event.GetY(0));
   EXPECT_EQ(p1.pos_x_pixels * kPixToDip, event.GetX(1));
@@ -179,10 +184,10 @@ TEST(MotionEventAndroidTest, NonEmptyHistoryForNonMoveEventsSanitized) {
   int pointer_count = 1;
   size_t history_size = 5;
   MotionEventAndroid::Pointer p0(0, 0, 0, 0, 0, 0, 0, 0);
-  MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
-                           kPixToDip, 0, 0, 0, base::TimeTicks(),
-                           kAndroidActionDown, pointer_count, history_size, 0,
-                           0, 0, 0, 0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroid event(
+      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
+      base::TimeTicks(), base::TimeTicks(), kAndroidActionDown, pointer_count,
+      history_size, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
 
   EXPECT_EQ(0U, event.GetHistorySize());
 }

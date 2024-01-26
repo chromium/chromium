@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="New session with selected text opened"/>
 </enum>
 
+<enum name="ComposeInnerTextNodeOffset">
+  <int value="0" label="Inner Text Node Offset not found"/>
+  <int value="1" label="Inner Text Node Offset found"/>
+</enum>
+
 <enum name="ComposeMSBBSessionCloseReasonType">
   <int value="0"
       label="Session implicitly closed, often by web contents destruction"/>
@@ -66,13 +71,25 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ComposeResponseStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Generic error, not specified"/>
-  <int value="2" label="Request was unable to be processed"/>
-  <int value="3" label="Server may have not responded"/>
+  <int value="1" label="Generic client error, not specified"/>
+  <int value="2" label="DEPRECATED: Request was unable to be processed"/>
+  <int value="3" label="DEPRECATED: Server may have not responded"/>
   <int value="4"
-      label="Server is likely overloaded, cannot handle a response right now"/>
+      label="DEPRECATED: Server is likely overloaded, cannot handle a
+             response right now"/>
   <int value="5" label="The feature is disabled"/>
   <int value="6" label="User permission is denied"/>
+  <int value="7" label="Generic server error, not specified"/>
+  <int value="8" label="Invalid request sent"/>
+  <int value="9" label="Request was throttled"/>
+  <int value="10" label="Retryable error occurred in the server"/>
+  <int value="11" label="Non-retryable error occured in the server"/>
+  <int value="12" label="Unsupported language used"/>
+  <int value="13" label="Request was filtered"/>
+  <int value="14" label="Compose service was disabled"/>
+  <int value="15" label="Request was cancelled"/>
+  <int value="16" label="No response received from the server"/>
+  <int value="17" label="The user is offline"/>
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">
@@ -81,13 +98,36 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Session implicitly closed, often by web contents destruction"/>
   <int value="3" label="New session with selected text opened"/>
+  <int value="4" label="Session was closed while waiting for a response"/>
+</enum>
+
+<enum name="ComposeSessionEventTypes">
+  <int value="0" label="Dialog Shown"/>
+  <int value="1" label="FRE Shown"/>
+  <int value="2" label="FRE Accepted"/>
+  <int value="3" label="MSBB Shown"/>
+  <int value="4" label="MSBB Settings Opened"/>
+  <int value="5" label="MSBB Enabled In Session"/>
+  <int value="6" label="Sesstion started with selection"/>
+  <int value="7" label="Create Clicked"/>
+  <int value="8" label="Update Clicked"/>
+  <int value="9" label="Retry Clicked"/>
+  <int value="10" label="Undo Clicked"/>
+  <int value="11" label="Shorten Clicked"/>
+  <int value="12" label="Elaborate Clicked"/>
+  <int value="13" label="Casual Clicked"/>
+  <int value="14" label="Formal Clicked"/>
+  <int value="15" label="Thumbs Down Clicked"/>
+  <int value="16" label="Thumbs Up Clicked"/>
+  <int value="17" label="Insert Clicked"/>
+  <int value="18" label="Close Clicked"/>
 </enum>
 
 <enum name="ComposeShowStatus">
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Blocked for generic reason"/>
   <int value="2" label="Blocked for incompatible field type"/>
-  <int value="3" label="Blocked for MSBB not enabled"/>
+  <int value="3" label="Blocked for MSBB not enabled (OBSOLETE)"/>
   <int value="4" label="Blocked for user not signed in"/>
   <int value="5" label="Blocked for user language not supported"/>
   <int value="6"
@@ -99,6 +139,19 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Feature not eligible, remotely disabled"/>
   <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
   <int value="11" label="Blocked for element appearing inside a fenced frame"/>
+  <int value="12"
+      label="Blocked for feature flag for Chrome Compose not enabled"/>
+</enum>
+
+<enum name="OpenComposeDialogResult">
+  <int value="0" label="Success (dialog opened)"/>
+  <int value="1" label="No ChromeComposeClient instance"/>
+  <int value="2" label="No RenderFrameHost instance"/>
+  <int value="3" label="No ContentAutofillDriver instance"/>
+  <int value="4" label="autofill::FormData not found"/>
+  <int value="5" label="autofill::FormFieldData not found"/>
+  <int value="6" label="No WebContents instance"/>
+  <int value="7" label="Failed creating ComposeDialogView"/>
 </enum>
 
 </enums>

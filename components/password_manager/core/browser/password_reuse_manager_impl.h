@@ -43,6 +43,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void Init(PrefService* prefs,
             PasswordStoreInterface* profile_store,
             PasswordStoreInterface* account_store,
+            std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
             signin::IdentityManager* identity_manager = nullptr,
             std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate =
                 nullptr) override;

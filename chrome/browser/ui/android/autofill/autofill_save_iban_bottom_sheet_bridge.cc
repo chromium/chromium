@@ -18,8 +18,13 @@ AutofillSaveIbanBottomSheetBridge::AutofillSaveIbanBottomSheetBridge()
               base::android::AttachCurrentThread(),
               reinterpret_cast<jlong>(this))) {}
 
-AutofillSaveIbanBottomSheetBridge::~AutofillSaveIbanBottomSheetBridge() =
-    default;
+AutofillSaveIbanBottomSheetBridge::~AutofillSaveIbanBottomSheetBridge() {
+  if (java_autofill_save_iban_bottom_sheet_bridge_) {
+    Java_AutofillSaveIbanBottomSheetBridge_destroy(
+        base::android::AttachCurrentThread(),
+        java_autofill_save_iban_bottom_sheet_bridge_);
+  }
+}
 
 void AutofillSaveIbanBottomSheetBridge::RequestShowContent(
     std::u16string_view iban_label,

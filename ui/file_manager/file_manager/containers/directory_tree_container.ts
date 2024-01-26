@@ -895,15 +895,18 @@ export class DirectoryTreeContainer {
       element: XfTreeItem, isRoot: boolean, fileData: FileData|null,
       androidAppData: AndroidApp|null) {
     if (androidAppData) {
-      chrome.fileManagerPrivate.selectAndroidPickerApp(androidAppData, () => {
-        if (chrome.runtime.lastError) {
-          console.error(
-              'selectAndroidPickerApp error: ',
-              chrome.runtime.lastError.message);
-        } else {
-          window.close();
-        }
-      });
+      // Exclude "icon" filed before sending it to the API.
+      const {icon: _, ...androidAppDataForApi} = androidAppData;
+      chrome.fileManagerPrivate.selectAndroidPickerApp(
+          androidAppDataForApi, () => {
+            if (chrome.runtime.lastError) {
+              console.error(
+                  'selectAndroidPickerApp error: ',
+                  chrome.runtime.lastError.message);
+            } else {
+              window.close();
+            }
+          });
       return;
     }
 

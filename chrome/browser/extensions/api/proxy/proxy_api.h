@@ -8,13 +8,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/singleton.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "components/proxy_config/proxy_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class EventRouterForwarder;
@@ -32,11 +32,11 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
   ~ProxyPrefTransformer() override;
 
   // Implementation of PrefTransformerInterface.
-  absl::optional<base::Value> ExtensionToBrowserPref(
+  std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) override;
-  absl::optional<base::Value> BrowserToExtensionPref(
+  std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override;
 };

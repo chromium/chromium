@@ -4,9 +4,17 @@
 
 #include "net/quic/quic_chromium_client_session_peer.h"
 
-#include "net/dns/public/secure_dns_policy.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include <string>
 
+#include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
+#include "net/dns/public/secure_dns_policy.h"
+#include "net/quic/quic_session_key.h"
+#include "net/socket/socket_tag.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 namespace net::test {
 // static
 void QuicChromiumClientSessionPeer::SetHostname(
@@ -15,9 +23,12 @@ void QuicChromiumClientSessionPeer::SetHostname(
   quic::QuicServerId server_id(hostname,
                                session->session_key_.server_id().port(),
                                session->session_key_.privacy_mode());
-  session->session_key_ =
-      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
+  session->session_key_ = QuicSessionKey(
+      server_id, session->session_key_.proxy_chain(),
+      session->session_key_.session_usage(), session->session_key_.socket_tag(),
+      session->session_key_.network_anonymization_key(),
+      session->session_key_.secure_dns_policy(),
+      session->session_key_.require_dns_https_alpn());
 }
 
 // static

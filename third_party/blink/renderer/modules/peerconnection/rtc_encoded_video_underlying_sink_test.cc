@@ -89,8 +89,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
     return ScriptValue(
         script_state->GetIsolate(),
-        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame)
-            .ToLocalChecked());
+        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame));
   }
 
  protected:
@@ -137,7 +136,9 @@ TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDataFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* sink = CreateSink(script_state);
-  ScriptValue v8_integer = ScriptValue::From(script_state, 0);
+  ScriptValue v8_integer =
+      ScriptValue(script_state->GetIsolate(),
+                  v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not an RTCEncodedVideoFrame integer to the sink
   // should fail.

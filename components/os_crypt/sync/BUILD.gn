@@ -47,6 +47,7 @@ component("os_crypt") {
       "keychain_password_mac.mm",
       "os_crypt_mac.mm",
     ]
+    deps += [ "//crypto:mock_apple_keychain" ]
   }
 
   if (is_win) {
@@ -135,6 +136,7 @@ source_set("unit_tests") {
 
   if (is_apple) {
     sources += [ "keychain_password_mac_unittest.mm" ]
+    deps += [ "//crypto:mock_apple_keychain" ]
   }
 
   if (is_linux && !is_castos) {

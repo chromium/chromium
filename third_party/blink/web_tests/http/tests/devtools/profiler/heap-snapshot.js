@@ -9,7 +9,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots module.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   function createTestEnvironmentInWorker() {
     if (!this.TestRunner)

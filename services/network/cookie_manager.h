@@ -96,6 +96,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
       mojo::PendingRemote<mojom::CookieChangeListener> listener) override;
   void CloneInterface(
       mojo::PendingReceiver<mojom::CookieManager> new_interface) override;
+  void SetPreCommitCallbackDelayForTesting(base::TimeDelta delay) override;
 
   size_t GetClientsBoundForTesting() const { return receivers_.size(); }
   size_t GetListenersRegisteredForTesting() const {

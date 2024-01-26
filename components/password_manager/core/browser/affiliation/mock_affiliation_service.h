@@ -54,6 +54,10 @@ class MockAffiliationService : public AffiliationService {
               GetPSLExtensions,
               (base::OnceCallback<void(std::vector<std::string>)>),
               (override, const));
+  MOCK_METHOD(void,
+              UpdateAffiliationsAndBranding,
+              (const std::vector<FacetURI>&, base::OnceClosure),
+              (override));
 };
 
 }  // namespace password_manager

@@ -201,7 +201,7 @@
     </span>
     <template is="dom-if"
         if="[[shouldShowCarrierLockWarning_(isDeviceCarrierLocked_)]]" restamp>
-      <div id="carrierLockWarningContainer">
+      <div id="carrierLockWarningContainer" aria-live="alert">
           <iron-icon id="carrierLockWarningIcon" icon="cellular-setup:warning">
           </iron-icon>
         [[i18n('eSimCarrierLockedDevice')]]

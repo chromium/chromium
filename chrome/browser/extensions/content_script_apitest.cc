@@ -49,6 +49,8 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1266,8 +1268,17 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, Messaging) {
       "content_scripts/other_extensions/message_echoer_allows_by_default")));
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "content_scripts/other_extensions/message_echoer_allows")));
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
-      "content_scripts/other_extensions/message_echoer_denies")));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII(
+          "content_scripts/other_extensions/message_echoer_denies"),
+      {.ignore_manifest_warnings = true});
+  ASSERT_TRUE(extension);
+  std::vector<InstallWarning> expected_warnings;
+  expected_warnings.emplace_back(
+      manifest_errors::kManifestV2IsDeprecatedWarning);
+  expected_warnings.emplace_back(
+      externally_connectable_errors::kErrorNothingSpecified);
+  EXPECT_EQ(extension->install_warnings(), expected_warnings);
   ASSERT_TRUE(RunExtensionTest("content_scripts/messaging")) << message_;
 }
 
@@ -2304,6 +2315,35 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("done", listener.message());
+}
+
+class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    ContentScriptApiTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests Activity Log for content script executions.
+// Regression test for https://crbug.com/1519380.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
+                       ActivityLogRecorded) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that injects content scripts.
+  base::FilePath data_dir = test_data_dir_.AppendASCII("content_scripts");
+  const Extension* extension =
+      LoadExtension(data_dir.AppendASCII("script_a_com"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page where content scripts would be executed.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("a.com", "/extensions/test_file.html")));
+
+  // Execute the test which passes when it sees exactly 1 content_script entry
+  // in the activity log.
+  ASSERT_TRUE(RunExtensionTest("content_scripts/activity_log/"));
 }
 
 }  // namespace extensions

@@ -211,9 +211,10 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   }
 
   if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
-    if (policy_util::IsAccountManaged(profile) && !user->IsAffiliated() &&
+    if (!user->IsAffiliated() &&
         !(profile->GetPrefs()->GetBoolean(
-            prefs::kUnaffiliatedDeviceArcAllowed))) {
+            prefs::kUnaffiliatedDeviceArcAllowed)) &&
+        policy_util::IsAccountManaged(profile)) {
       VLOG_IF(1, should_report_reason)
         << "ARC disallowed for unaffiliated users";
       return false;

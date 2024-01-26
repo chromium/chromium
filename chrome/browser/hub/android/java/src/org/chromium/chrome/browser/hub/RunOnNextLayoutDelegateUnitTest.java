@@ -48,8 +48,8 @@ public class RunOnNextLayoutDelegateUnitTest {
         }
 
         @Override
-        public void onLayout(boolean changed, int l, int t, int r, int b) {
-            super.onLayout(changed, l, t, r, b);
+        public void layout(int l, int t, int r, int b) {
+            super.layout(l, t, r, b);
             runOnNextLayoutRunnables();
         }
 
@@ -89,18 +89,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     @After
     public void tearDown() {
         mActivityController.destroy();
-    }
-
-    @Test
-    @SmallTest
-    public void testRunsImmediatelyWhenDetached() {
-        assertFalse(mRunOnNextLayoutView.isAttachedToWindow());
-
-        mRunOnNextLayoutView.runOnNextLayout(mRunnable1);
-        verify(mRunnable1, times(1)).run();
-
-        mRunOnNextLayoutView.runOnNextLayout(mRunnable2);
-        verify(mRunnable2, times(1)).run();
     }
 
     @Test
@@ -160,6 +148,29 @@ public class RunOnNextLayoutDelegateUnitTest {
 
         // Even if a layout never happens because the mRunOnNextLayoutView hasn't changed, the
         // runnable should still run.
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mRunnable1, times(1)).run();
+        verify(mRunnable2, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testDelayedIfLayoutHasZeroDimension() {
+        mRootView.addView(mRunOnNextLayoutView);
+        ShadowLooper.runUiThreadTasks();
+        mRootView.layout(0, 0, 0, 100);
+        assertTrue(mRunOnNextLayoutView.isAttachedToWindow());
+
+        mRunOnNextLayoutView.requestLayout();
+        assertTrue(mRunOnNextLayoutView.isLayoutRequested());
+
+        mRunOnNextLayoutView.runOnNextLayout(mRunnable1);
+        mRunOnNextLayoutView.runOnNextLayout(mRunnable2);
+        verify(mRunnable1, never()).run();
+        verify(mRunnable2, never()).run();
+
+        mRunOnNextLayoutView.layout(0, 0, 100, 100);
         ShadowLooper.runUiThreadTasks();
 
         verify(mRunnable1, times(1)).run();

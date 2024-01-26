@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -16,14 +13,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Controls the bookmarks save-flow view. */
 public class ImprovedBookmarkSaveFlowView extends FrameLayout {
     private View mBookmarkContainer;
     private ImageView mBookmarkImageView;
+    private TextView mBookmarkTitleView;
     private TextView mBookmarkSubtitleView;
     private View mPriceTrackingContainer;
     private CompoundButton mPriceTrackingSwitch;
@@ -39,12 +36,20 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
 
         mBookmarkContainer = findViewById(R.id.bookmark_container);
         mBookmarkImageView = findViewById(R.id.bookmark_image);
+        mBookmarkTitleView = findViewById(R.id.bookmark_title);
         mBookmarkSubtitleView = findViewById(R.id.bookmark_subtitle);
         mPriceTrackingContainer = findViewById(R.id.price_tracking_container);
         mPriceTrackingSwitch = findViewById(R.id.price_tracking_switch);
 
         mBookmarkContainer.setBackgroundResource(
                 R.drawable.improved_bookmark_save_flow_single_pane_background);
+
+        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    mBookmarkTitleView, R.style.TextAppearance_TextMedium_Secondary);
+            ApiCompatibilityUtils.setTextAppearance(
+                    mBookmarkSubtitleView, R.style.TextAppearance_TextMedium_Secondary);
+        }
     }
 
     void setBookmarkRowClickListener(View.OnClickListener listener) {
@@ -55,18 +60,12 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
         mBookmarkImageView.setImageDrawable(drawable);
     }
 
-    void setFolderText(FolderText folderText) {
-        SpannableString ss = new SpannableString(folderText.getDisplayText());
-        ForegroundColorSpan fcs =
-                new ForegroundColorSpan(
-                        SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-        ss.setSpan(
-                fcs,
-                folderText.getFolderTitleStartIndex(),
-                folderText.getFolderTitleEndIndex(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        // mBookmarkSubtitleView.setMovementMethod(LinkMovementMethod.getInstance());
-        mBookmarkSubtitleView.setText(ss);
+    void setTitle(CharSequence charSequence) {
+        mBookmarkTitleView.setText(charSequence);
+    }
+
+    void setSubtitle(CharSequence charSequence) {
+        mBookmarkSubtitleView.setText(charSequence);
     }
 
     void setPriceTrackingUiVisible(boolean visible) {

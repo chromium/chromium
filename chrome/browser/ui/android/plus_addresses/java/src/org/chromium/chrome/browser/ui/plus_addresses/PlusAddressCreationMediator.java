@@ -79,8 +79,8 @@ import org.chromium.url.GURL;
         mBottomSheetContent.setProposedPlusAddress(plusAddress);
     }
 
-    void showError(String message) {
-        mBottomSheetContent.showError(message);
+    void showError() {
+        mBottomSheetContent.showError();
     }
 
     /** Hide the bottom sheet (if showing) and clean up observers. */
@@ -116,7 +116,7 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void openManagementPage(GURL url) {
+    public void openUrl(GURL url) {
         mTabModelSelector.openNewTab(
                 new LoadUrlParams(url.getSpec()),
                 TabLaunchType.FROM_LINK,

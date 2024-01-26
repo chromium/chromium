@@ -81,22 +81,25 @@ std::string CreateAuthorizationHeader(
 // possible One Platform system params.
 constexpr std::string_view kSystemParameters("alt=proto");
 
-// Creates a requests for kids management api which is independent from the
+// Creates a request url for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
 // parameter that configures the remote endpoint to respond with a protocol
 // buffer message.
-GURL CreateRequestUrl(const FetcherConfig& config) {
+GURL CreateRequestUrl(const FetcherConfig& config,
+                      const FetcherConfig::PathArgs& args) {
   return GURL(config.service_endpoint.Get())
-      .Resolve(base::StrCat({config.service_path, "?", kSystemParameters}));
+      .Resolve(
+          base::StrCat({config.ServicePath(args), "?", kSystemParameters}));
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const signin::AccessTokenInfo access_token_info,
     const FetcherConfig& fetcher_config,
+    const FetcherConfig::PathArgs& args,
     const absl::optional<std::string>& payload) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
-  resource_request->url = CreateRequestUrl(fetcher_config);
+  resource_request->url = CreateRequestUrl(fetcher_config, args);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->priority = fetcher_config.request_priority;
@@ -379,9 +382,11 @@ AbstractProtoFetcher::AbstractProtoFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view payload,
-    const FetcherConfig& fetcher_config)
+    const FetcherConfig& fetcher_config,
+    const FetcherConfig::PathArgs& args)
     : payload_(payload),
       config_(fetcher_config),
+      args_(args),
       metrics_(Metrics::FromConfig(fetcher_config)),
       fetcher_(identity_manager,
                fetcher_config.access_token_config,
@@ -423,7 +428,7 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
   }
 
   simple_url_loader_ = InitializeSimpleUrlLoader(access_token.value(), config_,
-                                                 GetRequestPayload());
+                                                 args_, GetRequestPayload());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(

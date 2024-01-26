@@ -213,15 +213,6 @@ TEST_F(PrivacySandboxSettingsTest, TopicsDataAccessibleSince) {
 TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
   // Whether or not a site can join a user to an interest group is independent
   // of any other profile state.
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*block_third_party_cookies=*/true,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
-      /*user_cookie_exceptions=*/
-      {{"https://example.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
-      /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
-      /*managed_cookie_exceptions=*/
-      {{"https://example.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}});
   EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
 
@@ -563,91 +554,101 @@ TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
 }
 
-TEST_F(
-    PrivacySandboxSettingsTest,
-    IsAttributionReportingTransitionalDebuggingAllowed_CanBypassInCookieDeprecationExperiment) {
-  for (bool enabled : {false, true}) {
-    SCOPED_TRACE(enabled);
-
-    base::test::ScopedFeatureList feature_list_;
-    if (enabled) {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{content_settings::features::kTrackingProtection3pcd, {}},
-           {kAttributionDebugReportingCookieDeprecationTesting, {}}},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{content_settings::features::
-                                     kTrackingProtection3pcd,
-                                 {}}},
-          /*disabled_features=*/{
-              kAttributionDebugReportingCookieDeprecationTesting});
-    }
-
-    bool ara_transitional_debug_reporting_can_bypass = false;
-
-    if (enabled) {
-      EXPECT_CALL(*mock_delegate(),
-                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
-          .WillOnce(testing::Return(false));
-    } else {
-      EXPECT_CALL(*mock_delegate(),
-                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
-          .Times(0);
-    }
-
-    // Disallowed not due to cookie deprecation experiment, therefore cannot
-    // bypass.
-    privacy_sandbox_test_util::SetupTestState(
-        prefs(), host_content_settings_map(),
-        /*block_third_party_cookies=*/false,
-        /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-        /*user_cookie_exceptions=*/{},
-        /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-        /*managed_cookie_exceptions=*/{});
-    EXPECT_FALSE(privacy_sandbox_settings()
-                     ->IsAttributionReportingTransitionalDebuggingAllowed(
-                         url::Origin::Create(GURL("https://test.com")),
-                         url::Origin::Create(GURL("https://embedded.com")),
-                         ara_transitional_debug_reporting_can_bypass));
-    EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
-
-    if (enabled) {
-      EXPECT_CALL(*mock_delegate(),
-                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
-          .WillOnce(testing::Return(true));
-    } else {
-      EXPECT_CALL(*mock_delegate(),
-                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
-          .Times(0);
-    }
-
-    // Disallowed due to cookie deprecation experiment, therefore can bypass
-    // when feature enabled.
-    EXPECT_FALSE(privacy_sandbox_settings()
-                     ->IsAttributionReportingTransitionalDebuggingAllowed(
-                         url::Origin::Create(GURL("https://test.com")),
-                         url::Origin::Create(GURL("https://embedded.com")),
-                         ara_transitional_debug_reporting_can_bypass));
-    EXPECT_EQ(ara_transitional_debug_reporting_can_bypass, enabled);
-
-    // Disallowed due to user's exception, therefore cannot bypass.
-    privacy_sandbox_test_util::SetupTestState(
-        prefs(), host_content_settings_map(),
-        /*block_third_party_cookies=*/false,
-        /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-        /*user_cookie_exceptions=*/
-        {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
-        /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-        /*managed_cookie_exceptions=*/{});
-    EXPECT_FALSE(privacy_sandbox_settings()
-                     ->IsAttributionReportingTransitionalDebuggingAllowed(
-                         url::Origin::Create(GURL("https://test.com")),
-                         url::Origin::Create(GURL("https://embedded.com")),
-                         ara_transitional_debug_reporting_can_bypass));
-    EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
+class PrivacySandboxSettingsAttributionReportingTransitionalDebugModeTest
+    : public PrivacySandboxSettingsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivacySandboxSettingsAttributionReportingTransitionalDebugModeTest() =
+      default;
+  bool IsAttributionDebugReportingCookieDeprecationTestingEnabled() {
+    return GetParam();
   }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrivacySandboxSettingsAttributionReportingTransitionalDebugModeTest,
+    testing::Bool());
+
+TEST_P(
+    PrivacySandboxSettingsAttributionReportingTransitionalDebugModeTest,
+    IsAttributionReportingTransitionalDebuggingAllowed_CanBypassInCookieDeprecationExperiment) {
+  bool enabled = IsAttributionDebugReportingCookieDeprecationTestingEnabled();
+  SCOPED_TRACE(enabled);
+
+  base::test::ScopedFeatureList feature_list_;
+  if (enabled) {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{content_settings::features::kTrackingProtection3pcd, {}},
+         {kAttributionDebugReportingCookieDeprecationTesting, {}}},
+        /*disabled_features=*/{});
+  } else {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{content_settings::features::
+                                   kTrackingProtection3pcd,
+                               {}}},
+        /*disabled_features=*/{
+            kAttributionDebugReportingCookieDeprecationTesting});
+  }
+
+  bool ara_transitional_debug_reporting_can_bypass = false;
+
+  if (enabled) {
+    EXPECT_CALL(*mock_delegate(),
+                AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+        .WillOnce(testing::Return(false));
+  } else {
+    EXPECT_CALL(*mock_delegate(),
+                AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+        .Times(0);
+  }
+
+  // Disallowed not due to cookie deprecation experiment, therefore cannot
+  // bypass.
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  EXPECT_FALSE(privacy_sandbox_settings()
+                   ->IsAttributionReportingTransitionalDebuggingAllowed(
+                       url::Origin::Create(GURL("https://test.com")),
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
+
+  if (enabled) {
+    EXPECT_CALL(*mock_delegate(),
+                AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+        .WillOnce(testing::Return(true));
+  } else {
+    EXPECT_CALL(*mock_delegate(),
+                AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+        .Times(0);
+  }
+
+  // Disallowed due to cookie deprecation experiment, therefore can bypass
+  // when feature enabled.
+  EXPECT_FALSE(privacy_sandbox_settings()
+                   ->IsAttributionReportingTransitionalDebuggingAllowed(
+                       url::Origin::Create(GURL("https://test.com")),
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_EQ(ara_transitional_debug_reporting_can_bypass, enabled);
+
+  // Disallowed due to user's exception, therefore cannot bypass.
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  host_content_settings_map()->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://embedded.com"),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+      ContentSetting::CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(privacy_sandbox_settings()
+                   ->IsAttributionReportingTransitionalDebuggingAllowed(
+                       url::Origin::Create(GURL("https://test.com")),
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 }
 
 struct PrivateAggregationDebugModeTestCase {
@@ -738,19 +739,15 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
           AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
       .WillByDefault(testing::Return(test_case.cookies_blocked_by_experiment));
 
-  std::vector<privacy_sandbox_test_util::CookieContentSettingException>
-      user_cookie_exceptions;
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           test_case.cookie_controls_mode_ui_pref)));
   if (test_case.cookies_blocked_by_user_setting) {
-    user_cookie_exceptions.emplace_back("https://embedded.com", "*",
-                                        ContentSetting::CONTENT_SETTING_BLOCK);
+    host_content_settings_map()->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString("https://embedded.com"),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+        ContentSetting::CONTENT_SETTING_BLOCK);
   }
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*block_third_party_cookies=*/test_case.cookie_controls_mode_ui_pref,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/user_cookie_exceptions,
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
 
   const bool is_debug_mode_allowed =
       privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
@@ -1980,13 +1977,9 @@ TEST_P(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
 }
 
 TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*block_third_party_cookies=*/false,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
   privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
 
   // Set an empty attestations map to prevent the API being default allowed
@@ -2031,13 +2024,9 @@ TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
        GURL("https://embedded.com"), true},
       {"www", "https://www.embedded.com", GURL("https://embedded.com"), true},
   };
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*block_third_party_cookies=*/false,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
   privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
   base::test::ScopedCommandLine scoped_command_line;
 
@@ -2154,5 +2143,204 @@ TEST_P(PrivacySandbox3pcdExperimentTest, ExperimentDisablesAdsAPIs) {
 INSTANTIATE_TEST_SUITE_P(PrivacySandbox3pcdExperimentTests,
                          PrivacySandbox3pcdExperimentTest,
                          testing::ValuesIn(kTestCases));
+
+namespace {
+
+const char* attestation_failed_template =
+    "Attestation check for Shared Storage on %s failed.\nReturned status %d; "
+    "see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* site_settings_template =
+    "Site access settings returned status %d for accessing origin "
+    "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* sandbox_restricted_template =
+    "Privacy Sandbox settings returned status %d; see "
+    "`PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* select_url_template =
+    "M1 measurement settings returned status %d for accessing origin "
+    "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+class PrivacySandboxSettingsSharedStorageDebugTest
+    : public PrivacySandboxSettingsM1Test {
+ public:
+  PrivacySandboxSettingsSharedStorageDebugTest() {
+    default_allow_attestations_feature_list_.InitAndEnableFeature(
+        kDefaultAllowPrivacySandboxAttestations);
+
+    // This test suite tests Privacy Sandbox Attestations related behaviors,
+    // turn off the setting that makes all APIs considered attested.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(false);
+  }
+
+ protected:
+  std::string actual_out_shared_storage_debug_message_;
+  std::string actual_out_select_url_debug_message_;
+
+ private:
+  base::test::ScopedFeatureList default_allow_attestations_feature_list_;
+};
+
+}  // namespace
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceEnabled) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when `sharedStorage`
+  // and `sharedStorage.selectURL()` are enabled.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  true},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kAllowed)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceDisabled) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kApisDisabled),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when `sharedStorage`
+  // is enabled but `sharedStorage.selectURL()` is disabled.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, false}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{
+          {kIsSharedStorageAllowed, true},
+          {kIsSharedStorageSelectURLAllowed, false},
+          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {kIsSharedStorageSelectURLAllowedMetric,
+           static_cast<int>(Status::kApisDisabled)},
+          {kIsSharedStorageAllowedDebugMessage,
+           &expected_out_shared_storage_debug_message},
+          {kIsSharedStorageSelectURLAllowedDebugMessage,
+           &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
+       ApisAreOffForRestrictedAccounts) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      sandbox_restricted_template, static_cast<int>(Status::kRestricted));
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kRestricted),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received for a restricted
+  // account.
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1FledgeEnabledUserPrefValue,
+                                   kIsRestrictedAccount},
+                 true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  false},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kRestricted)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
+       SiteDataDefaultBlockExceptionApplies) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when site settings
+  // block exception applies.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true},
+                {kSiteDataUserDefault, CONTENT_SETTING_BLOCK}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  false},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kSiteDataAccessBlocked)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
+  std::string expected_out_shared_storage_debug_message =
+      base::StringPrintf(attestation_failed_template, "https://embedded.com",
+                         static_cast<int>(Status::kAttestationFailed));
+
+  // Confirm that the expected debug message is received when attestation fails
+  // due to no enrollments.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true},
+                {kAttestationsMap, PrivacySandboxAttestationsMap{}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_}},
+      TestOutput{{kIsSharedStorageAllowed, false},
+                 {kIsSharedStorageAllowedMetric,
+                  static_cast<int>(Status::kAttestationFailed)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message}});
+}
 
 }  // namespace privacy_sandbox

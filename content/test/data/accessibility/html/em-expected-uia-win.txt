@@ -1,5 +1,6 @@
 Document
 ++Group IsControlElement=false
 ++++Text Name='One word is '
-++++Text Name='emphasized'
+++++Text IsControlElement=false
+++++++Text Name='emphasized'
 ++++Text Name='.'

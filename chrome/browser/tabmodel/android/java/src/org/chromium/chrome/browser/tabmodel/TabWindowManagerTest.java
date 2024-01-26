@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -27,6 +28,9 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -557,5 +561,37 @@ public class TabWindowManagerTest {
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.Q)
+    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
+    public void testAssertIndicesMismatch() {
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        mSubject.requestSelector(
+                activity0, mProfileProviderSupplier, mTabCreatorManager, mNextTabPolicySupplier, 0);
+
+        ActivityController<Activity> activityController1 = createActivity();
+        Activity activity1 = activityController1.get();
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindowMode.AssertIndicesMatch")) {
+            mSubject.requestSelector(
+                    activity1,
+                    mProfileProviderSupplier,
+                    mTabCreatorManager,
+                    mNextTabPolicySupplier,
+                    0);
+        } finally {
+            destroyActivity(activityController1);
+        }
+
+        String umaPreExistingActivityDestroyed =
+                "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed";
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(umaPreExistingActivityDestroyed)) {
+            destroyActivity(activityController0);
+        }
     }
 }

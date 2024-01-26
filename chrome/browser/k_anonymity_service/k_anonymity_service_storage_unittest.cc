@@ -107,7 +107,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadOHTTPKeys) {
     storage->UpdateOHTTPKeyFor(test_origin, {test_ohttp_key, expiration});
     storage->UpdateOHTTPKeyFor(test_origin2, {test_ohttp_key2, expiration2});
 
-    absl::optional<OHTTPKeyAndExpiration> result;
+    std::optional<OHTTPKeyAndExpiration> result;
     result = storage->GetOHTTPKeyFor(test_origin);
     ASSERT_TRUE(result);
     EXPECT_EQ(test_ohttp_key, result->key);
@@ -123,7 +123,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadOHTTPKeys) {
 
   {
     std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
-    absl::optional<OHTTPKeyAndExpiration> result;
+    std::optional<OHTTPKeyAndExpiration> result;
 
     if (StorageIsPersistent()) {
       // Should be persisted after the storage is closed and re-opened.
@@ -161,7 +161,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadOHTTPKeys) {
 
   {
     std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
-    absl::optional<OHTTPKeyAndExpiration> result;
+    std::optional<OHTTPKeyAndExpiration> result;
 
     if (StorageIsPersistent()) {
       // Modifications should be persisted after the storage is closed and
@@ -208,7 +208,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadTooManyOHTTPKeys) {
     storage->UpdateOHTTPKeyFor(test_origin2, {test_ohttp_key2, expiration2});
     storage->UpdateOHTTPKeyFor(test_origin3, {test_ohttp_key3, expiration3});
 
-    absl::optional<OHTTPKeyAndExpiration> result;
+    std::optional<OHTTPKeyAndExpiration> result;
     result = storage->GetOHTTPKeyFor(test_origin);
     if (StorageIsPersistent()) {
       // The oldest should be forgotten.
@@ -235,7 +235,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadTooManyOHTTPKeys) {
 
   {
     std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
-    absl::optional<OHTTPKeyAndExpiration> result;
+    std::optional<OHTTPKeyAndExpiration> result;
 
     if (StorageIsPersistent()) {
       // Modifications should be persisted after the storage is closed and
@@ -276,7 +276,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadKeyCommitment) {
     storage->UpdateKeyAndNonUniqueUserId(
         {{test_key_commitment, non_unique_user_id}, expiration});
 
-    absl::optional<KeyAndNonUniqueUserIdWithExpiration> result;
+    std::optional<KeyAndNonUniqueUserIdWithExpiration> result;
     result = storage->GetKeyAndNonUniqueUserId();
     ASSERT_TRUE(result);
     EXPECT_EQ(test_key_commitment, result->key_and_id.key_commitment);
@@ -288,7 +288,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadKeyCommitment) {
 
   {
     std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
-    absl::optional<KeyAndNonUniqueUserIdWithExpiration> result;
+    std::optional<KeyAndNonUniqueUserIdWithExpiration> result;
     if (StorageIsPersistent()) {
       // Should be persisted after the storage is closed and re-opened.
 
@@ -318,7 +318,7 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadKeyCommitment) {
 
   {
     std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
-    absl::optional<KeyAndNonUniqueUserIdWithExpiration> result;
+    std::optional<KeyAndNonUniqueUserIdWithExpiration> result;
     if (StorageIsPersistent()) {
       // Modifications should be persisted after the storage is closed and
       // re-opened.

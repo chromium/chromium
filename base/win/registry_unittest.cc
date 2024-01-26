@@ -333,8 +333,8 @@ class TestChangeDelegate {
   TestChangeDelegate() = default;
   ~TestChangeDelegate() = default;
 
-  void OnKeyChanged() {
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+  void OnKeyChanged(base::OnceClosure quit_closure) {
+    std::move(quit_closure).Run();
     called_ = true;
   }
 
@@ -354,12 +354,16 @@ TEST_F(RegistryTest, ChangeCallback) {
   RegKey key;
   TestChangeDelegate delegate;
   test::TaskEnvironment task_environment;
+  base::RunLoop loop1;
+  base::RunLoop loop2;
+  base::RunLoop loop3;
 
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ));
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop1.QuitWhenIdleClosure())));
   EXPECT_FALSE(delegate.WasCalled());
 
   // Make some change.
@@ -371,22 +375,24 @@ TEST_F(RegistryTest, ChangeCallback) {
 
   // Allow delivery of the notification.
   EXPECT_FALSE(delegate.WasCalled());
-  RunLoop().Run();
+  loop1.Run();
 
   ASSERT_TRUE(delegate.WasCalled());
   EXPECT_FALSE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop2.QuitWhenIdleClosure())));
 
   // Change something else.
   EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(L"name2", L"data2"));
-  RunLoop().Run();
+  loop2.Run();
   ASSERT_TRUE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
-  RunLoop().RunUntilIdle();
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop3.QuitWhenIdleClosure())));
+  loop3.RunUntilIdle();
   EXPECT_FALSE(delegate.WasCalled());
 }
 

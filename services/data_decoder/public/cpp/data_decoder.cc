@@ -181,7 +181,6 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 #else
       LOG(FATAL) << "data_decoder::ServiceProvider::Set() must be called "
                  << "before any instances of DataDecoder can be used.";
-      return nullptr;
 #endif
     }
 

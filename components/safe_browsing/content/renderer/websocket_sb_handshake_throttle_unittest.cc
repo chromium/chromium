@@ -33,6 +33,43 @@ namespace {
 
 constexpr char kTestUrl[] = "wss://test/";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+constexpr char kTestExtensionUrl[] =
+    "chrome-extension://abcdefghijklmnopabcdefghijklmnop/";
+
+class FakeExtensionWebRequestReporter
+    : public mojom::ExtensionWebRequestReporter {
+ public:
+  FakeExtensionWebRequestReporter() {}
+
+  void SendWebRequestData(
+      const std::string& origin_extension_id,
+      const GURL& telemetry_url,
+      mojom::WebRequestProtocolType protocol_type,
+      mojom::WebRequestContactInitiatorType contact_initiator_type) override {
+    origin_extension_id_ = origin_extension_id;
+    telemetry_url_ = telemetry_url;
+    protocol_type_ = protocol_type;
+    contact_initiator_type_ = contact_initiator_type;
+    run_loop_.Quit();
+  }
+
+  void Clone(mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver)
+      override {
+    NOTREACHED_NORETURN();
+  }
+
+  void RunUntilCalled() { run_loop_.Run(); }
+
+  std::string origin_extension_id_;
+  GURL telemetry_url_;
+  mojom::WebRequestProtocolType protocol_type_;
+  mojom::WebRequestContactInitiatorType contact_initiator_type_;
+  base::RunLoop run_loop_;
+};
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 class FakeSafeBrowsing : public mojom::SafeBrowsing {
  public:
   FakeSafeBrowsing()
@@ -113,19 +150,44 @@ class FakeCallback {
 
 class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
  protected:
-  WebSocketSBHandshakeThrottleTest() : mojo_receiver_(&safe_browsing_) {
-    mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  WebSocketSBHandshakeThrottleTest()
+      : safe_browsing_receiver_(&safe_browsing_),
+        extension_web_request_reporter_receiver_(
+            &extension_web_request_reporter_) {
+    safe_browsing_receiver_.Bind(
+        safe_browsing_remote_.BindNewPipeAndPassReceiver());
+    extension_web_request_reporter_receiver_.Bind(
+        extension_web_request_reporter_remote_.BindNewPipeAndPassReceiver());
+    throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
+        safe_browsing_remote_.get(), std::nullopt,
+        extension_web_request_reporter_remote_.get());
+  }
+#else
+  WebSocketSBHandshakeThrottleTest()
+      : safe_browsing_receiver_(&safe_browsing_) {
+    safe_browsing_receiver_.Bind(
+        safe_browsing_remote_.BindNewPipeAndPassReceiver());
     throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
         safe_browsing_remote_.get(), std::nullopt);
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   void SetUp() override {
     feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources2);
   }
 
   base::test::TaskEnvironment message_loop_;
   FakeSafeBrowsing safe_browsing_;
-  mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
+  mojo::Receiver<mojom::SafeBrowsing> safe_browsing_receiver_;
   mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  FakeExtensionWebRequestReporter extension_web_request_reporter_;
+  mojo::Receiver<mojom::ExtensionWebRequestReporter>
+      extension_web_request_reporter_receiver_;
+  mojo::Remote<mojom::ExtensionWebRequestReporter>
+      extension_web_request_reporter_remote_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<WebSocketSBHandshakeThrottle> throttle_;
   FakeCallback fake_callback_;
   base::test::ScopedFeatureList feature_list_;
@@ -137,6 +199,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
@@ -158,6 +221,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, Safe) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
@@ -172,6 +236,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, Unsafe) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
@@ -190,6 +255,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, SlowCheckNotifier) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
@@ -209,9 +275,10 @@ TEST_F(WebSocketSBHandshakeThrottleTest, SlowCheckNotifier) {
 
 TEST_F(WebSocketSBHandshakeThrottleTest, MojoServiceNotThere) {
   base::HistogramTester histogram_tester;
-  mojo_receiver_.reset();
+  safe_browsing_receiver_.reset();
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   fake_callback_.RunUntilCalled();
@@ -219,6 +286,56 @@ TEST_F(WebSocketSBHandshakeThrottleTest, MojoServiceNotThere) {
   histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
                                       false, 1);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(WebSocketSBHandshakeThrottleTest, SendExtensionWebRequestData) {
+  base::HistogramTester histogram_tester;
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl),
+      blink::WebSecurityOrigin::CreateFromString(kTestExtensionUrl),
+      blink::WebSecurityOrigin(),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  extension_web_request_reporter_.RunUntilCalled();
+
+  EXPECT_EQ(extension_web_request_reporter_.origin_extension_id_,
+            kTestExtensionId);
+  EXPECT_EQ(extension_web_request_reporter_.telemetry_url_, GURL(kTestUrl));
+  EXPECT_EQ(extension_web_request_reporter_.protocol_type_,
+            mojom::WebRequestProtocolType::kWebSocket);
+  EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
+            mojom::WebRequestContactInitiatorType::kExtension);
+
+  // A log of "false" represents the data being sent.
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
+      false, 1);
+}
+
+TEST_F(WebSocketSBHandshakeThrottleTest,
+       SendExtensionWebRequestData_ContentScript) {
+  base::HistogramTester histogram_tester;
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl), blink::WebSecurityOrigin(),
+      blink::WebSecurityOrigin::CreateFromString(kTestExtensionUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  extension_web_request_reporter_.RunUntilCalled();
+
+  EXPECT_EQ(extension_web_request_reporter_.origin_extension_id_,
+            kTestExtensionId);
+  EXPECT_EQ(extension_web_request_reporter_.telemetry_url_, GURL(kTestUrl));
+  EXPECT_EQ(extension_web_request_reporter_.protocol_type_,
+            mojom::WebRequestProtocolType::kWebSocket);
+  EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
+            mojom::WebRequestContactInitiatorType::kContentScript);
+
+  // A log of "false" represents the data being sent.
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
+      false, 1);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class WebSocketSBHandshakeThrottleNoSafeBrowsingCheckTest
     : public WebSocketSBHandshakeThrottleTest {
@@ -231,6 +348,7 @@ TEST_F(WebSocketSBHandshakeThrottleNoSafeBrowsingCheckTest, DoesNotRunCheck) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);

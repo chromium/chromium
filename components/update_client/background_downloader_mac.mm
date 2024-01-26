@@ -84,7 +84,7 @@ constexpr base::TimeDelta kNoProgressTimeout = base::Minutes(15);
 // The maximum duration a task can exist before giving up.
 constexpr base::TimeDelta kMaxTaskAge = base::Days(3);
 
-// These methods have been copied from //net/base/mac/url_conversions.h to
+// These methods have been copied from //net/base/apple/url_conversions.h to
 // avoid introducing a dependancy on //net.
 NSURL* NSURLWithGURL(const GURL& url) {
   if (!url.is_valid()) {

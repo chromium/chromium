@@ -132,13 +132,13 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   ~TestChromeDownloadManagerDelegate() override;
 
   // ChromeDownloadManagerDelegate override:
-  bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path) override;
+  bool IsOpenInBrowserPreferredForFile(const base::FilePath& path) override;
 };
 
 TestChromeDownloadManagerDelegate::~TestChromeDownloadManagerDelegate() =
     default;
 
-bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
+bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
     const base::FilePath& path) {
   return true;
 }
@@ -693,39 +693,39 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo) {
   SetupCompletedDownloadItem(base::Hours(1));
   const struct DangerTypeTestCase {
     download::DownloadDangerType danger_type;
-    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::optional<DownloadCommands::Command> primary_button_command;
     std::vector<DownloadCommands::Command> subpage_button_commands;
   } kDangerTypeTestCases[] = {
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD}},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD}},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD}},
       {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD}},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD}},
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
        DownloadCommands::Command::DISCARD,
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
       {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DEEP_SCAN,
         DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
       {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
-       absl::nullopt,
+       std::nullopt,
        {DownloadCommands::Command::DISCARD,
         DownloadCommands::Command::CANCEL_DEEP_SCAN}},
   };
@@ -782,32 +782,32 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
 
     std::string expected_warning_summary;
     raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
-    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+    std::optional<DownloadCommands::Command> expected_primary_button_command;
   } kTestCases[] = {
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
        false,
        "Your organization blocked this file because it didn't meet a security "
        "policy",
        &views::kInfoIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
        "Try using a shorter file name or saving to a different folder",
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
        "Free up space on your device. Then, try to download again",
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
        "Try to sign in to the site. Then, download again",
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {no_retry_interrupt_reasons, false, "",
        &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
+       std::optional<DownloadCommands::Command>()},
       {retry_interrupt_reasons, false, "", &vector_icons::kFileDownloadOffIcon,
        DownloadCommands::Command::RETRY},
       {retry_interrupt_reasons, true, "", &vector_icons::kFileDownloadOffIcon,
@@ -838,7 +838,7 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
 TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
   auto in_progress = DownloadItem::IN_PROGRESS;
   auto canceled = DownloadItem::CANCELLED;
-  auto never = absl::optional<base::Time>();
+  auto never = std::optional<base::Time>();
   auto two_mins_ago = base::Time::Now() - base::Minutes(2);
   auto ten_mins_ago = base::Time::Now() - base::Minutes(10);
   auto dangerous_file = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
@@ -847,7 +847,7 @@ TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
   const struct TestCase {
     DownloadItem::DownloadState state;
     download::DownloadDangerType danger_type;
-    absl::optional<base::Time> shown_time;
+    std::optional<base::Time> shown_time;
     bool expected_should_show;
   } kTestCases[] = {
       {in_progress, not_dangerous, two_mins_ago, true},

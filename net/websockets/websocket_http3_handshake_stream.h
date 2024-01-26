@@ -22,7 +22,7 @@
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_session.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"

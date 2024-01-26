@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
@@ -57,7 +56,7 @@ IsolatedWorldManager::GetExecutionWorldForIsolatedWorld(int world_id) {
 void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::EraseIf(isolated_worlds_, [&host_id](const auto& entry) {
+  std::erase_if(isolated_worlds_, [&host_id](const auto& entry) {
     return entry.second.host_id == host_id;
   });
 }

@@ -68,7 +68,7 @@ GuestOsSessionTracker::~GuestOsSessionTracker() {
 }
 
 void GuestOsSessionTracker::OnListVms(
-    absl::optional<vm_tools::concierge::ListVmsResponse> response) {
+    std::optional<vm_tools::concierge::ListVmsResponse> response) {
   if (!response) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
       LOG(ERROR)
@@ -87,8 +87,7 @@ void GuestOsSessionTracker::OnListVms(
 }
 
 void GuestOsSessionTracker::OnListRunningContainers(
-    absl::optional<vm_tools::cicerone::ListRunningContainersResponse>
-        response) {
+    std::optional<vm_tools::cicerone::ListRunningContainersResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to list containers, assuming there aren't any "
                   "already running";
@@ -113,7 +112,7 @@ void GuestOsSessionTracker::OnGetGarconSessionInfo(
     std::string vm_name,
     std::string container_name,
     std::string container_token,
-    absl::optional<vm_tools::cicerone::GetGarconSessionInfoResponse> response) {
+    std::optional<vm_tools::cicerone::GetGarconSessionInfoResponse> response) {
   if (!response ||
       response->status() !=
           vm_tools::cicerone::GetGarconSessionInfoResponse::SUCCEEDED) {
@@ -129,32 +128,32 @@ void GuestOsSessionTracker::OnGetGarconSessionInfo(
 
 // Returns information about a running guest. Returns nullopt if the guest
 // isn't recognised e.g. it's not running.
-absl::optional<GuestInfo> GuestOsSessionTracker::GetInfo(const GuestId& id) {
+std::optional<GuestInfo> GuestOsSessionTracker::GetInfo(const GuestId& id) {
   auto iter = guests_.find(id);
   if (iter == guests_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second;
 }
 
-absl::optional<vm_tools::concierge::VmInfo> GuestOsSessionTracker::GetVmInfo(
+std::optional<vm_tools::concierge::VmInfo> GuestOsSessionTracker::GetVmInfo(
     const std::string& vm_name) {
   auto iter = vms_.find(vm_name);
   if (iter == vms_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second;
 }
 
-absl::optional<GuestId> GuestOsSessionTracker::GetGuestIdForToken(
+std::optional<GuestId> GuestOsSessionTracker::GetGuestIdForToken(
     const std::string& container_token) {
   if (container_token.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto iter = tokens_to_guests_.find(container_token);
   if (iter == tokens_to_guests_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second;
 }

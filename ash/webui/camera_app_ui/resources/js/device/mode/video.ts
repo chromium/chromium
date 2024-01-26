@@ -386,11 +386,11 @@ export class Video extends ModeBase {
    */
   private async startMonitorStorage(): Promise<boolean> {
     const onChange = (newState: StorageMonitorStatus) => {
-      if (newState === StorageMonitorStatus.NORMAL) {
+      if (newState === StorageMonitorStatus.kNormal) {
         this.toggleLowStorageWarning(false);
-      } else if (newState === StorageMonitorStatus.LOW) {
+      } else if (newState === StorageMonitorStatus.kLow) {
         this.toggleLowStorageWarning(true);
-      } else if (newState === StorageMonitorStatus.CRITICALLY_LOW) {
+      } else if (newState === StorageMonitorStatus.kCriticallyLow) {
         if (!state.get(state.State.RECORDING_PAUSED)) {
           this.autoStopped = true;
           this.stop();
@@ -401,10 +401,10 @@ export class Video extends ModeBase {
     };
     const initialState =
         await ChromeHelper.getInstance().startMonitorStorage(onChange);
-    if (initialState === StorageMonitorStatus.LOW) {
+    if (initialState === StorageMonitorStatus.kLow) {
       this.toggleLowStorageWarning(true);
     }
-    return initialState !== StorageMonitorStatus.CRITICALLY_LOW;
+    return initialState !== StorageMonitorStatus.kCriticallyLow;
   }
 
   /**

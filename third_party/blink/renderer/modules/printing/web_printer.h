@@ -42,7 +42,7 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
 
  private:
   void OnFetchAttributes(ScriptPromiseResolver*,
-                         mojom::blink::WebPrinterAttributesPtr new_attributes);
+                         mojom::blink::WebPrinterFetchResultPtr result);
 
   void OnPrint(ScriptPromiseResolver* resolver,
                mojom::blink::WebPrintResultPtr result);

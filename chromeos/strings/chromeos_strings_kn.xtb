@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ಗುಣಿಸಿ</translation>
 <translation id="1145018782460575098">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ವಿಂಡೋ ತೆರೆದಿದೆ. <ph name="NUM_UPDATES" /> ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="1145516343487477149">ಸಾಮಾನ್ಯ Chromebook ಪ್ರಶ್ನೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸಹಾಯ ಒದಗಿಸುವ ಲೇಖನಗಳು ಹಾಗೂ ಉತ್ತರಗಳನ್ನು ಕಂಡುಕೊಳ್ಳಿ</translation>
 <translation id="1154390310959620237">ನೀವು ಕೇವಲ 5 ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು. ಹೊಸದನ್ನು ಸೇರಿಸಲು ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಅಳಿಸಿ.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ಸ್ಕ್ಯಾನ್ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1367951781824006909">ಫೈಲ್‌ವೊಂದನ್ನು ಆರಿಸಿ</translation>
+<translation id="1371650399987522809">Google AI ನಿಂದ ಬೆಂಬಲಿತವಾದ ವಾಲ್‌ಪೇಪರ್‌ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="1387854245479784695">ಇದು ಎಲ್ಲಾ ಕೋರ್‌ಗಳ ಒಟ್ಟುಗೂಡಿಸುವಿಕೆಯಾಗಿದೆ</translation>
 <translation id="1394661041439318933">ಸಾಧನವು <ph name="BATTERY_PERCENTAGE" />% ಕೇಸ್ ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="1397738625398125236">ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1561927818299383735">ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಬಣ್ಣ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="1566493343215789965">ವಿಭಾಗಿಸಿ</translation>
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
 <translation id="1572585716423026576">ವಾಲ್‌ಪೇಪರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="1578784163189013834">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="160633243685262989">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1611649489706141841">ಮುಂದೆ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
+<translation id="1615576200479539465">ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
+<translation id="1626590945318984973">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಫಂಕ್ಷನ್ ಮತ್ತು <ph name="META_KEY" /> ಕೀಗಳನ್ನು ಬಳಸದೆಯೇ ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಒಂದನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
 <translation id="1643449475550628585">ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ಪ್ರತಿದಿನ ಬದಲಾಯಿಸಿ</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">ಕತ್ತಲೆ ಮೋಡ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1885577615937958993">ಮಾಧ್ಯಮವನ್ನು ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
-<translation id="1897672602657312171">ಹುಡುಕಾಟದ ಕೀ ಇಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್‌ನೊಂದಿಗೆ ಹೊಂದಿಕೊಳ್ಳದೇ ಇರಬಹುದು. ಇದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ ಅಥವಾ ಹುಡುಕಾಟದ ಕೀ ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1904932688895783618">ಕೆಲವು ಇತರ ಉಪಯುಕ್ತ ಮಾಹಿತಿಯ ಮೂಲಗಳು ಇಲ್ಲಿವೆ:</translation>
 <translation id="1905710495812624430">ಅನುಮತಿಸಲಾದ ಗರಿಷ್ಟ ಪ್ರಯತ್ನಗಳು ಮೀರಿವೆ.</translation>
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
 <translation id="2157660087437850958">ಎಮೋಜಿ ಪಿಕರ್‌</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}=2{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" /> ಮತ್ತು <ph name="APP_NAME_2" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}=3{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}one{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}other{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="215916044711630446">APN ಸೇರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2209788852729124853">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="2212733584906323460">ಹೆಸರಿನ ರೆಸಲ್ಯೂಷನ್</translation>
+<translation id="2215920961700443347">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ. ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2217935453350629363">ಪ್ರಸ್ತುತ ವೇಗ</translation>
 <translation id="2224337661447660594">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
 <translation id="222447520299472966">ಕನಿಷ್ಠ ಒಂದು ಆರ್ಟ್ ಗ್ಯಾಲರಿ ಆಲ್ಬಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193">ಚಿತ್ರ <ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
+<translation id="2465272316171730950">ಪ್ರಸ್ತುತ ಓವರ್‌ಲೋಡ್ ಆಗಿದೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="248546197012830854">ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ. ಸಹಾಯ ವಿಷಯವನ್ನು ನೋಡಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="2491955442992294626">ನೀವು ಇನ್ನೊಂದು ವಿಂಡೋವನ್ನು ಬಳಸುತ್ತಿರುವಾಗ ಕೀಗಳನ್ನು ಪರೀಕ್ಷಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2493126929778606526">ನಿಮ್ಮ ಅತ್ಯುತ್ತಮ ಫೋಟೋಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಯ್ಕೆಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">ಪ್ರಸ್ತುತ ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2512979179176933762">ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2513396635448525189">ಲಾಗಿನ್ ಚಿತ್ರ</translation>
-<translation id="2515109918609218604">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಫಂಕ್ಷನ್ ಮತ್ತು ಹುಡುಕಾಟದ ಕೀಗಳನ್ನು ಬಳಸದೆಯೇ ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಒಂದನ್ನು ಒತ್ತಿ.</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2521835766824839541">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="2880569433548999039">ಮೋಡ ತೆಲುತ್ತಿರುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="2938573842839598578">ಅಂದಾಜು ಫಲಿತಾಂಶಕ್ಕಾಗಿ, <ph name="CATEGORY_TEXT" /> ದ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ <ph name="OPERATOR_TEXT" /> ಮಾಡಿ</translation>
 <translation id="2940811910881150316">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಮುಚ್ಚಳವನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</translation>
 <translation id="2941112035454246133">ಕಡಿಮೆ</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
 <translation id="3569407787324516067">ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">ನೀವೀಗ ಹೊಸ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ವಾಲ್‌ಪೇಪರ್‌ಗಳಿಗೆ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="4117637339509843559">ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
+<translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿದೆ}one{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}other{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}}</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4176659219503619100">ನಿಯಂತ್ರಣ ಫಲಕ</translation>
-<translation id="4185315616950253617">ಮೇಲಿನ ಸಾಲಿನ ಕೀಗಳ ಶಾರ್ಟ್‌ಕಟ್ ಹುಡುಕಾಟ ಕೀಯನ್ನು ಹೊಂದಿರಬೇಕಾದ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="420283545744377356">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="4213104098953699324">USB ಕೀಬೋರ್ಡ್</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ನ ಅವಧಿ ಮುಗಿಯಲಿದೆ</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4395835743215824109">ಕೀಬೋರ್ಡ್ ಕಸ್ಟಮೈಸ್</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> ಕೀ ಇಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್‌ನೊಂದಿಗೆ ಹೊಂದಿಕೊಳ್ಳದೇ ಇರಬಹುದು. ಇದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ ಅಥವಾ <ph name="KEY" /> ಕೀ ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4415951057168511744">ಪ್ರಸ್ತುತ ಅವತಾರ್</translation>
+<translation id="4417830657741848074">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ. ಈ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಕೆಲವನ್ನು ಮುಚ್ಚಲು ಸಾಧ್ಯವಾಗದೇ ಇರಬಹುದು.</translation>
 <translation id="4422041425070339732">ಕೆಳಗಿನ ಆ್ಯರೋ</translation>
 <translation id="4425149324548788773">ನನ್ನ ಡ್ರೈವ್</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ಆಫ್ ಆಗಿದೆ</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">ಭೂಮಿ ತಿರುಗುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4500722292849917410">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಮಾರ್ಪಡಿಸುವ ಕೀಯನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, shift ಅಥವಾ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ಇಂಟರ್‌ಫೇಸ್ ಬಣ್ಣ</translation>
 <translation id="4503223151711056411">ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
 <translation id="4507392511610824664">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡಿ</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4835901797422965222">ಯಾವುದೇ ಸಕ್ರಿಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="4839698083503556542">ನಿಮ್ಮದೇ ಆದ ಮೂವಿ ರಚಿಸಿ</translation>
+<translation id="48409034532829769">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು "<ph name="APP_NAME" />" ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ. ಈ ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು ಸಾಧ್ಯವಾಗದೇ ಇರಬಹುದು.</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ, <ph name="TOPIC_SOURCE" /> ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="484790837831576105">(Android) DNS ರೆಸಲ್ಯೂಷನ್</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">ವಿಭಜಿಸಿ</translation>
 <translation id="4972592110715526173">ಮೋಡ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
+<translation id="4982627662315910959">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. shift ಮತ್ತು ಇನ್ನೂ ಒಂದು ಮಾರ್ಪಡಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt ಅಥವಾ <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
 <translation id="4987769320337599931">ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ಡಾರ್ಕ್‌ ಥೀಮ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="5229344016299762883">ಫುಲ್‌ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಆ್ಯಪ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}=2{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು 1 ಇತರ ಆ್ಯಪ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}one{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}other{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="5252456968953390977">ರೋಮಿಂಗ್</translation>
 <translation id="5257811368506016604">ತಿಳಿ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5264277876637023664">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
@@ -588,7 +599,7 @@
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ಪ್ರತ್ಯೇಕ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ಗುರುತು</translation>
-<translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5318334351163689047">TCP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ಈಗ ಹೊಸದೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7180865173735832675">ಕಸ್ಟಮೈಸ್</translation>
 <translation id="7184043045742675738">ನಿಮ್ಮ ಬಟನ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಯಾವುದೇ ಕೀ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ. ಮೌಸ್ ಅಥವಾ ಬಾಣದ ಕೀಗಳೊಂದಿಗೆ ಕೀಯ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
+<translation id="7206979415662233817">ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="7212547870105584639">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
 <translation id="725133483556299729">ಇಮೇಲ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7271040990581020067">ಸ್ಕ್ಯಾನರ್ ಅನ್ನು ಪ್ರಸ್ತುತವಾಗಿ ಬಳಸಲಾಗುತ್ತಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="7273347807225967898">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಮಾರ್ಪಡಿಸುವ ಕೀಯನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, shift, ಹುಡುಕಾಟ, ಅಥವಾ ಲಾಂಚರ್).</translation>
+<translation id="7271932918253517778">ಮೇಲಿನ ಸಾಲಿನ ಕೀಗಳ ಶಾರ್ಟ್‌ಕಟ್ <ph name="META_KEY" /> ಕೀಯನ್ನು ಹೊಂದಿರಬೇಕಾದ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ತಂಗಾಳಿಯನ್ನು ಅನುಭವಿಸಿ</translation>
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">ಕೀಬೋರ್ಡ್ ಬಣ್ಣ</translation>
 <translation id="7317831949569936035">ಶಾಲಾ ನೋಂದಣಿ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ನಿಮಗೆ ಕನಿಷ್ಟ 18 ವರ್ಷ ವಯಸ್ಸಿನವರಾಗಿರಬೇಕು ಮತ್ತು AI ವಾಲ್‌ಪೇಪರ್‌ನ ನಿಮ್ಮ ಬಳಕೆಯು <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ಮತ್ತು <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ಜನರೇಟಿವ್ AI ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ನೀವು ವೈಯಕ್ತಿಕ ಮತ್ತು ವಾಣಿಜ್ಯೇತರ ಬಳಕೆಗಾಗಿ ಮಾತ್ರ AI ಮೂಲಕ ವಾಲ್‌ಪೇಪರ್‌ಗಳನ್ನು ರಚಿಸಬಹುದು. ನೀವು ವಾಲ್‌ಪೇಪರ್ ಸಹಾಯವನ್ನು ಸ್ವೀಕರಿಸಿದಾಗ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಗೆ ಒಳಪಟ್ಟಿರುವ ವಾಲ್‌ಪೇಪರ್ ಸಲಹೆಗಳನ್ನು ರಚಿಸಲು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಪಠ್ಯವನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ರಲ್ಲಿ <ph name="LIST_POSITION" /> ಹುಡುಕಾಟ ಫಲಿತಾಂಶ: <ph name="SEARCH_RESULT_TEXT" />. ಶಾರ್ಟ್‌ಕಟ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು Enter ಕೀ ಒತ್ತಿರಿ.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">ಸಾಮಾನ್ಯ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ನೆಟ್ಟವರ್ಕ್‌ಗೆ ಸೇರಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="7978412674231730200">ಖಾಸಗಿ ಕೀಲಿ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ಆ್ಯಪ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}one{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}other{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}}</translation>
 <translation id="7994702968232966508">EAP ವಿಧಾನ</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
 <translation id="8017679124341497925">ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
 <translation id="8094062939584182041">ಈ ಸಮಸ್ಯೆಯ ಕುರಿತು ನಿಮಗೆ ಇಮೇಲ್ ಮಾಡಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="8104083085214006426">ನೀವು ಓಪನ್ ಮತ್ತು ಸುರಕ್ಷಿತವಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ</translation>
-<translation id="8111706652656628199">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. shift ಮತ್ತು ಇನ್ನೂ ಒಂದು ಮಾರ್ಪಡಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, ಹುಡುಕಾಟ ಅಥವಾ ಲಾಂಚರ್).</translation>
 <translation id="811820734797650957">(Android) ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>

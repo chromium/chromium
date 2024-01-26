@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/WEBGL_blend_func_extended/
+
+[
+    LegacyNoInterfaceObject
+] interface WebGLBlendFuncExtended {
+    const unsigned long SRC1_COLOR_WEBGL           = 0x88F9;
+    const unsigned long SRC1_ALPHA_WEBGL           = 0x8589;
+    const unsigned long ONE_MINUS_SRC1_COLOR_WEBGL = 0x88FA;
+    const unsigned long ONE_MINUS_SRC1_ALPHA_WEBGL = 0x88FB;
+
+    const unsigned long MAX_DUAL_SOURCE_DRAW_BUFFERS_WEBGL = 0x88FC;
+};

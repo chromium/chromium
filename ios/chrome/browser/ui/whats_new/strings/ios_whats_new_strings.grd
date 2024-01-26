@@ -186,7 +186,7 @@ locale.  The strings in this file are specific to iOS.
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- What's New milestone specific strings -->
-      <part file="m121_strings.grdp" />
+      <part file="m122_strings.grdp" />
     </messages>
   </release>
 </grit>

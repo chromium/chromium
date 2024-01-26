@@ -1006,21 +1006,6 @@ chromium-metrics-reviews@google.com.
       label="Failed as no factory associated with the profile found"/>
 </enum>
 
-<enum name="GetOutputDeviceInfoCacheHit">
-  <int value="0" label="Miss: no cached sink found">
-    Output parmeters for a device are requested, and there is no corresponding
-    sink cached; new sink is created and cached.
-  </int>
-  <int value="1" label="Miss: cannot lookup by session id">
-    If session id is used to specify a device, we always have to create and
-    cache a new sink.
-  </int>
-  <int value="2" label="Hit">
-    Output parmeters for a device are requested, and there is a corresponding
-    sink cached.
-  </int>
-</enum>
-
 <enum name="GlobalMediaControlsCastMode">
   <int value="0" label="Presentation"/>
   <int value="1" label="Remote Playback"/>
@@ -1663,6 +1648,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="RGBA, 8:8:8:8 RGBA in one GMB"/>
   <int value="7" label="BGRA, 8:8:8:8 BGRA in one GMB"/>
   <int value="8" label="P010, one P010 GMB"/>
+  <int value="9" label="YV12, one YV12 GMB"/>
 </enum>
 
 <enum name="PepperVideoDecoderHardwareAccelerationBehavior">
@@ -1832,6 +1818,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="PreviousErrorOnDecode"/>
   <int value="4" label="PreviousErrorOnRegisterCallback"/>
   <int value="5" label="ConsecutivePendingBufferOverflowDuringInit"/>
+  <int value="6" label="ParseErrorOnResolutionCheck"/>
+  <int value="7" label="TooManyInstancesAndSmallResolution"/>
 </enum>
 
 <enum name="ScreenCaptureKitFullscreenModuleMode">

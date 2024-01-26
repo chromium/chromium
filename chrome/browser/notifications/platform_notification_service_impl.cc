@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -413,7 +413,7 @@ PlatformNotificationServiceImpl::GetNotificationTriggerScheduler() {
 void PlatformNotificationServiceImpl::DidGetBackgroundSourceId(
     base::OnceClosure recorded_closure,
     const content::NotificationDatabaseData& data,
-    absl::optional<ukm::SourceId> source_id) {
+    std::optional<ukm::SourceId> source_id) {
   // This background event did not meet the requirements for the UKM service.
   if (!source_id)
     return;
@@ -479,9 +479,9 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   // triggered from workers (where `web_app_hint_url` is always blank) but also
   // for persistent notifications triggered from web pages (where the page url
   // might be a better "hint" than the service worker scope).
-  absl::optional<webapps::AppId> web_app_id = FindWebAppId(web_app_hint_url);
+  std::optional<webapps::AppId> web_app_id = FindWebAppId(web_app_hint_url);
 
-  absl::optional<WebAppIconAndTitle> web_app_icon_and_title;
+  std::optional<WebAppIconAndTitle> web_app_icon_and_title;
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
   if (web_app_icon_and_title && notification_resources.badge.isNull()) {
@@ -496,9 +496,8 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
 
   message_center::NotifierId notifier_id(
       origin,
-      web_app_icon_and_title
-          ? absl::make_optional(web_app_icon_and_title->title)
-          : absl::nullopt,
+      web_app_icon_and_title ? std::make_optional(web_app_icon_and_title->title)
+                             : std::nullopt,
       web_app_id);
 
   // TODO(peter): Handle different screen densities instead of always using the
@@ -609,7 +608,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
   return std::u16string();
 }
 
-absl::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
+std::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
     const GURL& web_app_hint_url) const {
 #if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
@@ -620,21 +619,21 @@ absl::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
   }
 #endif
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
+std::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
 PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
     const GURL& web_app_hint_url) const {
 #if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
-    const absl::optional<webapps::AppId> app_id =
+    const std::optional<webapps::AppId> app_id =
         web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
             web_app_hint_url);
     if (app_id) {
-      absl::optional<WebAppIconAndTitle> icon_and_title;
+      std::optional<WebAppIconAndTitle> icon_and_title;
       icon_and_title.emplace();
 
       icon_and_title->title = base::UTF8ToUTF16(
@@ -646,7 +645,7 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
   }
 #endif
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
@@ -662,7 +661,7 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
     return false;
   }
 
-  const absl::optional<webapps::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       web_app_provider->registrar_unsafe().FindAppWithUrlInScope(web_app_url);
   return app_id.has_value() &&
          web_app_provider->registrar_unsafe().IsActivelyInstalled(

@@ -280,18 +280,19 @@ public class UiUtils {
     }
 
     /**
-     * Iterates through all items in the specified ListAdapter (including header and footer views)
-     * and returns the width of the widest item (when laid out with height and width set to
-     * WRAP_CONTENT).
+     * Computes the max width of the widest list item & the total height of all of the items. The
+     * height returned in unbounded and may be larger than the available window space.
      *
-     * WARNING: do not call this on a ListAdapter with more than a handful of items, the performance
-     * will be terrible since it measures every single item.
+     * <p>WARNING: do not call this on a ListAdapter with more than a handful of items, the
+     * performance will be terrible since it measures every single item.
      *
-     * @param adapter The ListAdapter whose widest item's width will be returned.
-     * @param parentView The parent view. This can be null.
-     * @return The measured width (in pixels) of the widest item in the passed-in ListAdapter.
+     * @param adapter The adapter for the list.
+     * @param parentView The parent view for the list.
+     * @return int array representing the max width of the menu items stored at index 0 & the total
+     *     height of all items stored at index 1.
      */
-    public static int computeMaxWidthOfListAdapterItems(ListAdapter adapter, ViewGroup parentView) {
+    public static int[] computeListAdapterContentDimensions(
+            ListAdapter adapter, ViewGroup parentView) {
         final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         AbsListView.LayoutParams params =
@@ -299,7 +300,7 @@ public class UiUtils {
                         AbsListView.LayoutParams.WRAP_CONTENT,
                         AbsListView.LayoutParams.WRAP_CONTENT);
 
-        int maxWidth = 0;
+        int[] result = new int[] {0, 0};
         View[] itemViews = new View[adapter.getViewTypeCount()];
         for (int i = 0; i < adapter.getCount(); ++i) {
             View itemView;
@@ -315,10 +316,11 @@ public class UiUtils {
 
             itemView.setLayoutParams(params);
             itemView.measure(widthMeasureSpec, heightMeasureSpec);
-            maxWidth = Math.max(maxWidth, itemView.getMeasuredWidth());
+            result[0] = Math.max(result[0], itemView.getMeasuredWidth());
+            result[1] += itemView.getMeasuredHeight();
         }
 
-        return maxWidth;
+        return result;
     }
 
     /**
@@ -448,8 +450,8 @@ public class UiUtils {
     public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         // The status bar should always be black in automotive devices to match the black back
-        // button toolbar, so we should use dark theme icons.
-        if (useDarkIcons || BuildInfo.getInstance().isAutomotive) {
+        // button toolbar, so we should not use dark icons.
+        if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;

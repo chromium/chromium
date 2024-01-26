@@ -124,7 +124,6 @@ void SaveCallback1(const std::string src_path,
 
 using EOFFlushFsWriterCallback = base::OnceCallback<void(
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
-    int64_t write_offset,
     int posix_error_code)>;
 
 // Calls fs_writer->Flush(kEndOfFile), running the callback afterwards, if
@@ -139,7 +138,7 @@ void EOFFlushFsWriterIfNecessary(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (!fs_writer || !needs_eof_flushing) {
-    std::move(callback).Run(std::move(fs_writer), write_offset, 0);
+    std::move(callback).Run(std::move(fs_writer), 0);
     return;
   }
 
@@ -153,8 +152,7 @@ void EOFFlushFsWriterIfNecessary(
       [](std::unique_ptr<storage::FileStreamWriter> fs_writer,
          int64_t write_offset, EOFFlushFsWriterCallback callback, int result) {
         int posix_error_code = (result < 0) ? NetErrorToErrno(result) : 0;
-        std::move(callback).Run(std::move(fs_writer), write_offset,
-                                posix_error_code);
+        std::move(callback).Run(std::move(fs_writer), posix_error_code);
       },
       std::move(fs_writer), write_offset, std::move(callback)));
 
@@ -202,17 +200,16 @@ void ReadWriter::Close(scoped_refptr<storage::FileSystemContext> fs_context,
       std::move(fs_writer_), std::exchange(write_offset_, -1),
       std::exchange(fs_writer_needs_eof_flushing_, false),
       base::BindOnce(&ReadWriter::OnEOFFlushBeforeActualClose,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(fs_context),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(fs_context)));
 }
 
 // static
 void ReadWriter::OnEOFFlushBeforeActualClose(
     base::WeakPtr<ReadWriter> weak_ptr,
-    scoped_refptr<storage::FileSystemContext> fs_context,
     Close2Callback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
-    int64_t write_offset,
     int flush_posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -596,7 +593,6 @@ void ReadWriter::OnEOFFlushBeforeCallWriteDirect(
     int64_t offset,
     int length,
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
-    int64_t write_offset,
     int flush_posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 

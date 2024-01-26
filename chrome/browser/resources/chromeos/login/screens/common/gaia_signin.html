@@ -16,49 +16,44 @@ found in the LICENSE file.
   [animated-transparency]:not([transparent]) {
     transition: opacity 500ms ease-out;
   }
-
-  .icon20 {
-    height: 20px;
-    width: 20px;
-  }
 </style>
 <gaia-dialog id="signin-frame-dialog"
     for-step="online-gaia"
-    is-saml-sso-visible="[[isSamlSsoVisible_]]"
-    is-default-sso-provider="[[isDefaultSsoProvider_]]"
-    is-closable="[[isClosable_]]"
-    video-enabled="{{videoEnabled_}}"
-    auth-domain="{{authDomain_}}"
+    is-saml-sso-visible="[[isSamlSsoVisible]]"
+    is-default-sso-provider="[[isDefaultSsoProvider]]"
+    is-closable="[[isClosable]]"
+    video-enabled="{{videoEnabled}}"
+    auth-domain="{{authDomain}}"
     auth-flow="{{authFlow}}"
-    navigation-enabled="{{navigationEnabled_}}"
-    navigation-hidden="[[navigationButtonsHidden_]]"
+    navigation-enabled="{{navigationEnabled}}"
+    navigation-hidden="[[navigationButtonsHidden]]"
     webview-name="signin-frame"
-    can-go-back="{{canGaiaGoBack_}}"
-    on-authcompleted="onAuthCompletedMessage_"
-    on-backcancel="onBackButtonCancel_"
-    on-closesaml="closeSaml_"
-    on-identifierentered="onIdentifierEnteredMessage_"
-    on-webviewerror="onLoadAbortMessage_"
-    on-ready="onAuthReady_"
-    on-showview="onShowView_"
-    on-startenrollment="onStartEnrollment_"
-    on-exit="onExitMessage_"
-    on-removeuserbyemail="onRemoveUserByEmailMessage_"
-    on-changesigninprovider="onSamlPageChangeAccount_"
-    on-quick-start-clicked="onQuickStartButtonClicked_">
+    can-go-back="{{canGaiaGoBack}}"
+    on-authcompleted="onAuthCompletedMessage"
+    on-backcancel="onBackButtonCancel"
+    on-closesaml="closeSaml"
+    on-identifierentered="onIdentifierEnteredMessage"
+    on-webviewerror="onLoadAbortMessage"
+    on-ready="onAuthReady"
+    on-showview="onShowView"
+    on-startenrollment="onStartEnrollment"
+    on-exit="onExitMessage"
+    on-removeuserbyemail="onRemoveUserByEmailMessage"
+    on-changesigninprovider="onSamlPageChangeAccount"
+    on-quick-start-clicked="onQuickStartButtonClicked">
 </gaia-dialog>
 <!-- TODO(dkuzmin): This alert is added here, because ChromeVox keep
                     pronouncing it several times when role="alert" is added
                     inside gaia-dialog. This problem should be resolved in
                     https://crbug.com/1288829 -->
-<div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled_]]"
-    aria-label$="[[getSamlVideoAlertMessage_(locale,
-        videoEnabled_,
-        authDomain_)]]">
+<div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled]]"
+    aria-label$="[[getSamlVideoAlertMessage(locale,
+        videoEnabled,
+        authDomain)]]">
 </div>
-<security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
-    for-step="pin" on-cancel="onPinDialogCanceled_"
-    on-completed="onPinDialogCompleted_">
+<security-token-pin id="pinDialog" parameters="[[pinDialogParameters]]"
+    for-step="pin" on-cancel="onPinDialogCanceled"
+    on-completed="onPinDialogCompleted">
 </security-token-pin>
 <oobe-loading-dialog title-key="gaiaLoading"
     id="step-loading" for-step="loading">
@@ -69,16 +64,16 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'enrollmentNudgeTitle')]]
   </div>
   <div slot="content">
-    [[getEnrollmentNudgeMessage_(locale, emailDomain_)]]
+    [[getEnrollmentNudgeMessage(locale, emailDomain)]]
   </div>
   <div slot="buttons">
     <oobe-text-button id="useAnotherAccount"
-      class="focus-on-show"
-      on-click="onEnrollmentNudgeUseAnotherAccount_"
+      on-click="onEnrollmentNudgeUseAnotherAccount"
       text-key="enrollmentNudgeUseAnotherAccountButton">
     </oobe-text-button>
     <oobe-text-button id="enterpriseEnrollment"
-      inverse on-click="onEnrollmentNudgeEnroll_"
+      class="focus-on-show"
+      inverse on-click="onEnrollmentNudgeEnroll"
       text-key="enrollmentNudgeEnterpriseEnrollmentButton">
     </oobe-text-button>
   </div>

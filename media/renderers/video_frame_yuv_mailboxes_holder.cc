@@ -97,10 +97,11 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
-  for (auto& mailbox_holder : holders_) {
-    if (!mailbox_holder.mailbox.IsZero())
-      sii->DestroySharedImage(token, mailbox_holder.mailbox);
-    mailbox_holder.mailbox.SetZero();
+  for (unsigned int i = 0; i < kMaxPlanes; ++i) {
+    if (shared_images_[i]) {
+      sii->DestroySharedImage(token, std::move(shared_images_[i]));
+    }
+    holders_[i].mailbox.SetZero();
   }
 
   created_shared_images_ = false;
@@ -156,7 +157,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   uint32_t mailbox_usage;
   auto& caps = provider_->ContextCapabilities();
   if (caps.gpu_rasterization) {
-    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
@@ -181,6 +183,7 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       CHECK(client_shared_image);
       holders_[0].mailbox = client_shared_image->mailbox();
       holders_[0].texture_target = GL_TEXTURE_2D;
+      shared_images_[0] = std::move(client_shared_image);
 
       // Split up shared image creation from upload so we only have to wait on
       // one sync token.
@@ -221,6 +224,7 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       CHECK(client_shared_image);
       holders_[plane].mailbox = client_shared_image->mailbox();
       holders_[plane].texture_target = GL_TEXTURE_2D;
+      shared_images_[plane] = std::move(client_shared_image);
     }
 
     // Split up shared image creation from upload so we only have to wait on

@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -34,7 +35,7 @@
 #import "ios/web/test/test_url_constants.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -115,7 +116,7 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
   }
 
   id mock_web_view_;
-  WebState* web_state_ = nullptr;
+  raw_ptr<WebState> web_state_ = nullptr;
 };
 
 // Data holder for the informations to be restored in the items.

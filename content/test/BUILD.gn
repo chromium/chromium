@@ -106,6 +106,8 @@ static_library("test_support") {
     "../browser/media/session/mock_media_session_player_observer.h",
     "../browser/media/session/mock_media_session_service_impl.cc",
     "../browser/media/session/mock_media_session_service_impl.h",
+    "../browser/payments/stub_payment_credential.cc",
+    "../browser/payments/stub_payment_credential.h",
     "../browser/preloading/prefetch/prefetch_test_utils.cc",
     "../browser/preloading/prefetch/prefetch_test_utils.h",
     "../browser/presentation/presentation_test_utils.cc",
@@ -625,10 +627,10 @@ static_library("test_support") {
     ]
   } else {
     sources += [
-      "../browser/renderer_host/media/mock_captured_surface_controller.cc",
-      "../browser/renderer_host/media/mock_captured_surface_controller.h",
       "../browser/serial/serial_test_utils.cc",
       "../browser/serial/serial_test_utils.h",
+      "../public/test/mock_captured_surface_controller.cc",
+      "../public/test/mock_captured_surface_controller.h",
     ]
   }
 
@@ -1811,6 +1813,12 @@ test("content_browsertests") {
     "//third_party/mesa_headers",
   ]
 
+  data = [
+    "data/",
+    "//media/test/data/",
+    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+  ]
+
   if (is_ios) {
     bundle_deps = [
       ":content_test_bundle_data",
@@ -1819,11 +1827,6 @@ test("content_browsertests") {
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
   } else {
-    data = [
-      "data/",
-      "//media/test/data/",
-      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-    ]
     data_deps += [
       "//testing/buildbot/filters:content_browsertests_filters",
       "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
@@ -2784,6 +2787,7 @@ test("content_unittests") {
     "../common/input/touchpad_pinch_event_queue_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
     "../common/service_worker/race_network_request_url_loader_client_unittest.cc",
+    "../common/service_worker/race_network_request_write_buffer_manager_unittest.cc",
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
@@ -3166,7 +3170,7 @@ test("content_unittests") {
       "../browser/media/capture/web_contents_frame_tracker_unittest.cc",
     ]
 
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       deps += [
         "//content/common:buildflags",
         "//media/capture:test_support",
@@ -3175,8 +3179,8 @@ test("content_unittests") {
       ]
       sources += [
         "../browser/media/capture/desktop_capture_device_unittest.cc",
-        "../browser/renderer_host/media/captured_surface_controller_permission_manager_unittest.cc",
-        "../browser/renderer_host/media/captured_surface_controller_unittest.cc",
+        "../browser/media/captured_surface_controller_permission_manager_unittest.cc",
+        "../browser/media/captured_surface_controller_unittest.cc",
         "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
       ]
     }
@@ -3263,7 +3267,6 @@ test("content_unittests") {
       "../browser/android/overscroll_controller_android_unittest.cc",
       "../browser/android/scoped_surface_request_manager_unittest.cc",
       "../browser/font_unique_name_lookup/font_unique_name_lookup_unittest.cc",
-      "../browser/host_zoom_map_impl_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",

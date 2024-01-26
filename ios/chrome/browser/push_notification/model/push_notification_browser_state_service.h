@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_H_
 
 #import "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 
@@ -29,7 +30,7 @@ class PushNotificationBrowserStateService
  private:
   // This object notifies the PushNotificationProfileService of the signin and
   // signout events.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   // The path of the browser state with which the
   // PushNotificationBrowserStateService instance is associated.
   const base::FilePath browser_state_path_;

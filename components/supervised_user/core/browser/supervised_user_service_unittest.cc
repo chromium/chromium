@@ -117,7 +117,7 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   histogram_tester.ExpectUniqueSample(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites,
+      WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/0);
 
   // Tests filter "allow all sites".
@@ -125,7 +125,7 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kAllowAllSites,
+      WebFilterType::kAllowAllSites,
       /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
@@ -137,7 +137,7 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kCertainSites,
+      WebFilterType::kCertainSites,
       /*expected_count=*/1);
 
   histogram_tester.ExpectTotalCount(

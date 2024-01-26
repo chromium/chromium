@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/arc_features_parser.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -44,7 +46,7 @@ void RecordParseResultHistogram(ParseResult status) {
 base::RepeatingCallback<std::optional<ArcFeatures>()>*
     g_arc_features_getter_for_testing = nullptr;
 
-std::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
+std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   ArcFeatures arc_features;
 
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(input_json);
@@ -225,7 +227,7 @@ void ArcFeaturesParser::GetArcFeatures(
 }
 
 std::optional<ArcFeatures> ArcFeaturesParser::ParseFeaturesJsonForTesting(
-    base::StringPiece input_json) {
+    std::string_view input_json) {
   return ParseFeaturesJson(input_json);
 }
 

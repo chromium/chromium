@@ -4,9 +4,8 @@
 
 #include "cc/layers/recording_source.h"
 
-#include <stdint.h>
-
 #include <algorithm>
+#include <utility>
 
 #include "base/numerics/safe_math.h"
 #include "base/trace_event/trace_event.h"
@@ -32,21 +31,30 @@ RecordingSource::~RecordingSource() = default;
 void RecordingSource::UpdateInvalidationForNewViewport(
     const gfx::Rect& old_recorded_viewport,
     const gfx::Rect& new_recorded_viewport,
-    Region* invalidation) {
+    Region& invalidation) {
   // Invalidate newly-exposed and no-longer-exposed areas.
   Region newly_exposed_region(new_recorded_viewport);
   newly_exposed_region.Subtract(old_recorded_viewport);
-  invalidation->Union(newly_exposed_region);
+  invalidation.Union(newly_exposed_region);
 
   Region no_longer_exposed_region(old_recorded_viewport);
   no_longer_exposed_region.Subtract(new_recorded_viewport);
-  invalidation->Union(no_longer_exposed_region);
+  invalidation.Union(no_longer_exposed_region);
 }
 
 void RecordingSource::FinishDisplayItemListUpdate() {
   TRACE_EVENT0("cc", "RecordingSource::FinishDisplayItemListUpdate");
   DetermineIfSolidColor();
   display_list_->EmitTraceSnapshot();
+
+  directly_composited_image_info_ =
+      display_list_->GetDirectlyCompositedImageInfo();
+  if (directly_composited_image_info_) {
+    // Directly composited images are not guaranteed to fully cover every
+    // pixel in the layer due to ceiling when calculating the tile content
+    // rect from the layer bounds.
+    SetRequiresClear(true);
+  }
 }
 
 void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
@@ -56,46 +64,56 @@ void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
   }
 }
 
-bool RecordingSource::UpdateAndExpandInvalidation(
-    Region* invalidation,
-    const gfx::Size& layer_size,
-    const gfx::Rect& new_recorded_viewport) {
-  bool updated = false;
+bool RecordingSource::Update(const gfx::Size& layer_size,
+                             float recording_scale_factor,
+                             ContentLayerClient& client,
+                             Region& invalidation) {
+  size_ = layer_size;
 
-  if (size_ != layer_size)
-    size_ = layer_size;
-
-  invalidation_.Swap(invalidation);
+  invalidation_.Swap(&invalidation);
   invalidation_.Clear();
 
+  // TODO(crbug.com/1517714): Move this invalidation into
+  // UpdateDisplayItemList() based on the change the display list bounds.
+  gfx::Rect new_recorded_viewport(layer_size);
   if (new_recorded_viewport != recorded_viewport_) {
     UpdateInvalidationForNewViewport(recorded_viewport_, new_recorded_viewport,
                                      invalidation);
     recorded_viewport_ = new_recorded_viewport;
-    updated = true;
+  } else if (!invalidation.Intersects(recorded_viewport_)) {
+    // If the invalidation did not affect the recording source, then it can be
+    // cleared as an optimization.
+    invalidation.Clear();
+    return false;
   }
 
-  if (!updated && !invalidation->Intersects(recorded_viewport_))
-    return false;
-
-  if (invalidation->IsEmpty())
-    return false;
-
+  UpdateDisplayItemList(client.PaintContentsToDisplayList(),
+                        recording_scale_factor, invalidation);
   return true;
 }
 
 void RecordingSource::UpdateDisplayItemList(
-    const scoped_refptr<DisplayItemList>& display_list,
-    float recording_scale_factor) {
+    scoped_refptr<DisplayItemList> display_list,
+    float recording_scale_factor,
+    Region& invalidation) {
+  CHECK(display_list);
   recording_scale_factor_ = recording_scale_factor;
 
-  if (display_list_ != display_list) {
-    display_list_ = display_list;
-    // Do the following only if the display list changes. Though we use
-    // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
-    // affect whether the same display list is solid or not.
-    FinishDisplayItemListUpdate();
+  if (display_list_ == display_list) {
+    return;
   }
+
+  // Do the following only if the display list changes. Though we use
+  // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
+  // affect whether the same display list is solid or not.
+
+  if (display_list_ &&
+      display_list->NeedsAdditionalInvalidationForLCDText(*display_list_)) {
+    invalidation = gfx::Rect(size_);
+  }
+
+  display_list_ = std::move(display_list);
+  FinishDisplayItemListUpdate();
 }
 
 gfx::Size RecordingSource::GetSize() const {

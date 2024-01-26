@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +16,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class Profile;
@@ -51,7 +52,7 @@ class ManagedConfigurationAPI : public KeyedService {
   void GetOriginPolicyConfiguration(
       const url::Origin& origin,
       const std::vector<std::string>& keys,
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)> callback);
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> callback);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

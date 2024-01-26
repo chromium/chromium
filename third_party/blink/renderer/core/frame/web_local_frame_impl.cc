@@ -757,11 +757,8 @@ WebFontFamilyNames WebLocalFrameImpl::GetWebFontFamilyNames() const {
   FontFamilyNames font_family_names;
   GetFontsUsedByFrame(*GetFrame(), font_family_names);
   WebFontFamilyNames result;
-  for (const String& font_family_name : font_family_names.primary_fonts)
-    result.primary_family_names.push_back(font_family_name);
-  for (const String& font_family_name : font_family_names.fallback_fonts) {
-    if (!font_family_names.primary_fonts.Contains(font_family_name))
-      result.fallback_family_names.push_back(font_family_name);
+  for (const String& font_family_name : font_family_names.font_names) {
+    result.font_names.push_back(font_family_name);
   }
   return result;
 }
@@ -3183,7 +3180,6 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
   if (!reasons_to_copy.is_null()) {
     not_restored_reasons =
         mojom::blink::BackForwardCacheNotRestoredReasons::New();
-    not_restored_reasons->blocked = reasons_to_copy->blocked;
     if (reasons_to_copy->id) {
       not_restored_reasons->id = reasons_to_copy->id.value().c_str();
     }
@@ -3193,12 +3189,12 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     if (reasons_to_copy->src) {
       not_restored_reasons->src = reasons_to_copy->src.value().c_str();
     }
+    for (const auto& reason : reasons_to_copy->reasons) {
+      not_restored_reasons->reasons.push_back(reason.c_str());
+    }
     if (reasons_to_copy->same_origin_details) {
       auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
       details->url = reasons_to_copy->same_origin_details->url.c_str();
-      for (const auto& reason : reasons_to_copy->same_origin_details->reasons) {
-        details->reasons.push_back(reason.c_str());
-      }
       for (const auto& child : reasons_to_copy->same_origin_details->children) {
         details->children.push_back(ConvertNotRestoredReasons(child));
       }

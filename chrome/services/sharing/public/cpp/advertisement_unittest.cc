@@ -34,7 +34,7 @@ TEST(AdvertisementTest, CreateNewInstanceWithNullName) {
   std::unique_ptr<sharing::Advertisement> advertisement =
       sharing::Advertisement::NewInstance(kSalt, kEncryptedMetadataKey,
                                           kDeviceType,
-                                          /* device_name=*/absl::nullopt);
+                                          /* device_name=*/std::nullopt);
   EXPECT_FALSE(advertisement->device_name());
   EXPECT_EQ(kEncryptedMetadataKey, advertisement->encrypted_metadata_key());
   EXPECT_EQ(kDeviceType, advertisement->device_type());

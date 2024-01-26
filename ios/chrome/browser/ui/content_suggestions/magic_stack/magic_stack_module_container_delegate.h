@@ -24,6 +24,10 @@ enum class ContentSuggestionsModuleType;
 // anymore.
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
 
+// Indicates that the user has tapped the context menu item to enable
+// notifications.
+- (void)enableNotifications:(ContentSuggestionsModuleType)type;
+
 // Returns the subtitle string for the module `type`.
 - (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type;
 

@@ -122,9 +122,8 @@ compile_ts("fill_js_dependencies") {
   ]
 }
 
-optimize_js("fill_js") {
-  primary_script = "resources/fill.js"
-  sources = [ "resources/fill.js" ]
+optimize_ts("fill_js") {
+  sources = [ "resources/fill.ts" ]
 
   deps = [
     ":child_frame_registration_ts_lib",
@@ -145,9 +144,8 @@ optimize_ts("form_js") {
   ]
 }
 
-optimize_js("form_handlers_js") {
-  primary_script = "resources/form_handlers.js"
-  sources = [ "resources/form_handlers.js" ]
+optimize_ts("form_handlers_js") {
+  sources = [ "resources/form_handlers.ts" ]
   deps = [
     ":autofill_form_features_ts",
     ":child_frame_registration_ts_lib",

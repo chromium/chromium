@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Ստանալ ծանուցումներ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
+<translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
+<translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Դուք ունեք <ph name="TABS_COUNT_ONE" /> ներդիր, որը վերջերս չեք օգտագործել}one{Դուք ունեք <ph name="TABS_COUNT_MANY" /> ներդիր, որը վերջերս չեք օգտագործել}other{Դուք ունեք <ph name="TABS_COUNT_MANY" /> ներդիր, որոնք վերջերս չեք օգտագործել}}</translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>

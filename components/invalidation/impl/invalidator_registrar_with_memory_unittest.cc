@@ -29,6 +29,12 @@ void Dispatch(InvalidatorRegistrarWithMemory& registrar, Inv... inv) {
   (registrar.DispatchInvalidationToHandlers(inv), ...);
 }
 
+template <class... Topic>
+void DispatchSuccessfullySubscribed(InvalidatorRegistrarWithMemory& registrar,
+                                    Topic... topics) {
+  (registrar.DispatchSuccessfullySubscribedToHandlers(topics), ...);
+}
+
 template <class... Inv>
 std::map<Topic, Invalidation> ExpectedInvalidations(Inv... inv) {
   std::map<Topic, Invalidation> expected_invalidations;
@@ -40,10 +46,14 @@ constexpr char kTopicsToHandler[] = "invalidation.per_sender_topics_to_handler";
 
 class InvalidatorRegistrarWithMemoryTest : public testing::Test {
  protected:
-  const TopicData kTopic1 = {/*name=*/"topic_1", /*is_public=*/false};
-  const TopicData kTopic2 = {/*name=*/"topic_2", /*is_public=*/false};
-  const TopicData kTopic3 = {/*name=*/"topic_3", /*is_public=*/false};
-  const TopicData kTopic4 = {/*name=*/"topic_4", /*is_public=*/false};
+  const Topic kTopicName1 = "topic_1";
+  const Topic kTopicName2 = "topic_2";
+  const Topic kTopicName3 = "topic_3";
+  const Topic kTopicName4 = "topic_4";
+  const TopicData kTopic1 = {/*name=*/kTopicName1, /*is_public=*/false};
+  const TopicData kTopic2 = {/*name=*/kTopicName2, /*is_public=*/false};
+  const TopicData kTopic3 = {/*name=*/kTopicName3, /*is_public=*/false};
+  const TopicData kTopic4 = {/*name=*/kTopicName4, /*is_public=*/false};
   const Invalidation kInv1 = Invalidation(kTopic1.name, 1, "1");
   const Invalidation kInv2 = Invalidation(kTopic2.name, 2, "2");
   const Invalidation kInv3 = Invalidation(kTopic3.name, 3, "3");
@@ -66,6 +76,10 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
   EXPECT_TRUE(invalidator->HasObserver(&handler));
 
   // Should be ignored since no topics are registered to |handler|.
+  DispatchSuccessfullySubscribed(*invalidator, kTopicName1, kTopicName2,
+                                 kTopicName3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(), IsEmpty());
+
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 
@@ -75,22 +89,32 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
   invalidator->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
+  DispatchSuccessfullySubscribed(*invalidator, kTopicName1, kTopicName2,
+                                 kTopicName3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(kTopicName1, kTopicName2));
+
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
   EXPECT_EQ(2, handler.GetInvalidationCount());
   EXPECT_EQ(ExpectedInvalidations(kInv1, kInv2),
             handler.GetReceivedInvalidations());
-  handler.ClearReceivedInvalidations();
+  handler.Clear();
 
   // Remove kTopic1, add kTopic3.
   EXPECT_TRUE(
       invalidator->UpdateRegisteredTopics(&handler, {kTopic2, kTopic3}));
 
   // Removed topic should not be notified, newly-added ones should.
+  DispatchSuccessfullySubscribed(*invalidator, kTopicName1, kTopicName2,
+                                 kTopicName3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(kTopicName2, kTopicName3));
+
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
   EXPECT_EQ(2, handler.GetInvalidationCount());
   EXPECT_EQ(ExpectedInvalidations(kInv2, kInv3),
             handler.GetReceivedInvalidations());
-  handler.ClearReceivedInvalidations();
+  handler.Clear();
 
   invalidator->UpdateInvalidatorState(TRANSIENT_INVALIDATION_ERROR);
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
@@ -102,6 +126,10 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
   EXPECT_FALSE(invalidator->HasObserver(&handler));
 
   // Should be ignored since |handler| isn't registered anymore.
+  DispatchSuccessfullySubscribed(*invalidator, kTopicName1, kTopicName2,
+                                 kTopicName3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(), IsEmpty());
+
   Dispatch(*invalidator, kInv1, kInv2, kInv3);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 }

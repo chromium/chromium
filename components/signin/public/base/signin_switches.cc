@@ -93,17 +93,22 @@ BASE_FEATURE(kTangibleSync,
 
 );
 
+#if BUILDFLAG(IS_ANDROID)
 // Enables the search engine choice feature for existing users.
+// TODO(b/316859558): Not used for shipping purposes, remove this feature.
 BASE_FEATURE(kSearchEngineChoice,
              "SearchEngineChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the search engine choice feature in the FRE.
-BASE_FEATURE(kSearchEngineChoiceFre,
-             "SearchEngineChoiceFre",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
+             "MinorModeRestrictionsForHistorySyncOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kRemoveSignedInAccountsDialog,

@@ -388,8 +388,38 @@ TEST_F(AssistantPageViewTest,
   EXPECT_FALSE(current_interaction().has_value());
 }
 
+TEST_F(AssistantPageViewTest, ShouldNotShowOptInViewWithZeroStateView) {
+  ShowAssistantUi();
+
+  // When Launcher Search IPH is enabled, there is no suggestion or opt-in chips
+  // on the zero state page.
+  const views::View* suggestion_chips = suggestion_chip_container();
+  const views::View* opt_in = opt_in_view();
+
+  SetConsentStatus(ConsentStatus::kUnauthorized);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kNotFound);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kUnknown);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kActivityControlAccepted);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+}
+
 TEST_F(AssistantPageViewTest, ShouldShowOptInViewUnlessUserHasGivenConsent) {
   ShowAssistantUi();
+
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the suggestion or opt-in chips as needed.
+  MockTextInteraction().WithTextResponse("The response");
+
   const views::View* suggestion_chips = suggestion_chip_container();
   const views::View* opt_in = opt_in_view();
 
@@ -587,11 +617,13 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
-TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
+TEST_F(AssistantPageViewTest, ShouldNotHaveConversationStarters) {
   ShowAssistantUi();
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(GetSuggestionChips().empty());
+
+  // When Launcher Search IPH is enabled, there is no suggestion chips.
+  EXPECT_TRUE(GetSuggestionChips().empty());
 }
 
 TEST_F(AssistantPageViewTest, ShouldHavePopulatedSuggestionChips) {

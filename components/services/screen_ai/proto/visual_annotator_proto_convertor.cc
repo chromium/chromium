@@ -412,7 +412,7 @@ gfx::Rect ProtoToMojo(const chrome_screen_ai::Rect& source) {
   dest.set_x(source.x());
   dest.set_y(source.y());
   dest.set_width(source.width());
-  dest.set_width(source.height());
+  dest.set_height(source.height());
   return dest;
 }
 
@@ -606,14 +606,16 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
     line_box->language = line.language();
     line_box->order_within_block = line.order_within_block();
     line_box->bounding_box = ProtoToMojo(line.bounding_box());
-    line_box->angle = line.bounding_box().angle();
+    line_box->bounding_box_angle = line.bounding_box().angle();
 
     // `baseline_box` is not available in ChromeScreenAI library prior to
     // version 122.1.
     // If it is not provided by the OCR, the library assigns bounding box's
     // value to it and it's done the same here.
-    line_box->baseline_box = ProtoToMojo(
-        line.has_baseline_box() ? line.baseline_box() : line.bounding_box());
+    auto baseline_box =
+        line.has_baseline_box() ? line.baseline_box() : line.bounding_box();
+    line_box->baseline_box = ProtoToMojo(baseline_box);
+    line_box->baseline_box_angle = baseline_box.angle();
 
     for (const auto& word : line.words()) {
       auto word_box = screen_ai::mojom::WordBox::New();
@@ -621,6 +623,7 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
       word_box->dictionary_word = word.dictionary_word();
       word_box->language = word.language();
       word_box->bounding_box = ProtoToMojo(word.bounding_box());
+      word_box->bounding_box_angle = word.bounding_box().angle();
       word_box->direction = ProtoToMojo(word.direction());
       word_box->has_space_after = word.has_space_after();
       line_box->words.push_back(std::move(word_box));

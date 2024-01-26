@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace base {
 class TimeTicks;
@@ -38,7 +39,7 @@ namespace blink {
 // Some encoders may buffer input frames, and MediaRecorder's abrupt stop design
 // does not allow us to Flush. So, we may never receive the output for them,
 // losing some audio at the end of the recording.
-class AudioTrackMojoEncoder : public AudioTrackEncoder {
+class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
  public:
   AudioTrackMojoEncoder(
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
@@ -64,6 +65,9 @@ class AudioTrackMojoEncoder : public AudioTrackEncoder {
   // Run when the platform encoder finishes initializing, will flush
   // `input_queue_`.
   void OnInitializeDone(media::EncoderStatus status);
+
+  void DoEncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
+                     base::TimeTicks capture_time);
 
   // Run when input is delivered to the platform encoder, or when an error is
   // encountered.

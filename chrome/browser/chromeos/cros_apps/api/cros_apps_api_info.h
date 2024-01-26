@@ -16,6 +16,10 @@
 #include "third_party/blink/public/mojom/runtime_feature_state//runtime_feature.mojom-forward.h"
 #include "url/origin.h"
 
+// Identifies ChromeOS Apps APIs. Use this to query systems like API access
+// control.
+using CrosAppsApiId = blink::mojom::RuntimeFeature;
+
 // CrosAppsApiInfo carries information about a ChromeOS Apps API that's required
 // for the rest of ChromeOS Apps system to function.
 class CrosAppsApiInfo {
@@ -23,7 +27,7 @@ class CrosAppsApiInfo {
   using EnableBlinkRuntimeFeatureFunction =
       void (blink::RuntimeFeatureStateContext::*)(bool);
 
-  CrosAppsApiInfo(blink::mojom::RuntimeFeature blink_feature,
+  CrosAppsApiInfo(CrosAppsApiId api_id,
                   EnableBlinkRuntimeFeatureFunction enable_fn);
 
   CrosAppsApiInfo(const CrosAppsApiInfo&) = delete;
@@ -51,8 +55,8 @@ class CrosAppsApiInfo {
       std::initializer_list<const std::reference_wrapper<const base::Feature>>
           features);
 
-  // Returns the enum that represents the blink runtime feature of this API.
-  blink::mojom::RuntimeFeature blink_feature() const { return blink_feature_; }
+  // Returns the enum that represents this API.
+  CrosAppsApiId api_id() const { return api_id_; }
 
   // Returns the function that should be called on RuntimeFeatureStateContext to
   // enable the Blink runtime feature.
@@ -73,7 +77,7 @@ class CrosAppsApiInfo {
   }
 
  private:
-  blink::mojom::RuntimeFeature blink_feature_;
+  CrosAppsApiId api_id_;
   // TODO(b/309556977): Remove enablement function when Runtime Feature State
   // supports a generic SetEnabled() method.
   EnableBlinkRuntimeFeatureFunction enable_blink_runtime_feature_fn_;

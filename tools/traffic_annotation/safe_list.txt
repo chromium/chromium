@@ -43,7 +43,6 @@ missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
 missing,components/optimization_guide/core/model_execution/model_execution_fetcher.cc
-missing,components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
@@ -352,8 +351,9 @@ missing_new_fields,chrome/browser/ash/net/network_diagnostics/http_request_manag
 missing_new_fields,chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.cc
 missing_new_fields,chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc
 missing_new_fields,chromeos/ash/components/trial_group/trial_group_checker.cc
-missing_new_fields,chrome/browser/apps/app_service/app_install/web_app_installer.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 missing_new_fields,chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc
 missing_new_fields,chrome/browser/ash/file_suggest/item_suggest_cache.cc
+missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc
+missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc

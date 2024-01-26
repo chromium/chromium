@@ -17,9 +17,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -43,10 +46,12 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_key.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
+#include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
@@ -242,6 +247,7 @@ class QuicProxyClientSocketTest
         &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),

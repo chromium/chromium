@@ -103,9 +103,8 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     // Set focus on the currently selected zone to overwrite the default focus
     // on the dialog title.
     afterNextRender(this, () => {
-      const selectedZoneElem =
-          this.shadowRoot!.querySelector('.zone-tab[aria-selected=true]') as
-          HTMLElement;
+      const selectedZoneElem = this.shadowRoot!.querySelector<HTMLElement>(
+          '.zone-tab[aria-selected=true]');
       if (selectedZoneElem) {
         selectedZoneElem.focus();
       }

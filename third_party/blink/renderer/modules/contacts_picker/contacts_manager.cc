@@ -261,8 +261,7 @@ void ContactsManager::OnContactsSelected(
 ScriptPromise ContactsManager::getProperties(ScriptState* script_state) {
   return ScriptPromise::Cast(script_state,
                              ToV8Traits<IDLSequence<IDLString>>::ToV8(
-                                 script_state, GetProperties(script_state))
-                                 .ToLocalChecked());
+                                 script_state, GetProperties(script_state)));
 }
 
 void ContactsManager::Trace(Visitor* visitor) const {

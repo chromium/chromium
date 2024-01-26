@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_IMPL_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_IMPL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -12,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -33,7 +33,7 @@ class ExperimentManagerImpl : public ExperimentManager {
       bool is_eligible,
       EligibilityDecisionCallback on_eligibility_decision_callback) override;
 
-  absl::optional<bool> IsClientEligible() const override;
+  std::optional<bool> IsClientEligible() const override;
 
   bool DidVersionChange() const override;
 

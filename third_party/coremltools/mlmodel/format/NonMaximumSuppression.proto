@@ -1,0 +1,188 @@
+// Copyright (c) 2018, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/*
+ * Non-maximum suppression of axis-aligned bounding boxes.
+ *
+ * This is used primarily for object detectors that tend to produce multiple
+ * boxes around a single object.  This is a byproduct of the detector's
+ * robustness to spatial translation. If there are two or more bounding boxes
+ * that are very similar to one another, the algorithm should return only a
+ * single representative.
+ *
+ * Similarity between two bounding boxes is measured by intersection-over-union
+ * (IOU), the fraction between the area of intersection and area of the union.
+ * Here is an example where the areas can be calculated by hand by counting
+ * glyphs::
+ *
+ *     +-------+                            +-------+
+ *     |       |                            |       |
+ *     |    +------+          +--+          |       +---+
+ *     |    |  |   |          |  |          |           |
+ *     +-------+   |          +--+          +----+      |
+ *          |      |                             |      |
+ *          +------+                             +------+
+ *                        Intersection         Union
+ *      IOU: 0.16      =       12       /       73
+ *
+ * All IOU scores are fractions betwen 0.0 (fully disjoint) and 1.0 (perfect
+ * overlap). The standard algorithm (PickTop) is defined as follows:
+ *
+ *  1. Sort boxes by descending order of confidence
+ *  2. Take the top one and mark it as keep
+ *  3. Suppress (mark it as discard) all boxes within a fixed IOU radius of the
+ *     keep box
+ *  4. Go to 2 and repeat on the subset of boxes not already kept or discarded
+ *  5. When all boxes are processed, output only the ones marked as keep
+ *
+ * Before the algorithm, boxes that fall below the confidence threshold are
+ * discarded.
+ */
+message NonMaximumSuppression {
+  // Suppression methods:
+  /*
+   * Pick the bounding box of the top confidence, suppress all within a radius.
+   */
+  message PickTop {
+    /*
+     * Suppression is only done among predictions with the same label
+     * (argmax of the confidence).
+     */
+    bool perClass = 1;
+  }
+
+  /*
+   * Choose which underlying suppression method to use
+   */
+  oneof SuppressionMethod {
+    PickTop pickTop = 1;
+  }
+
+  /*
+   * Optional class label mapping.
+   */
+  oneof ClassLabels {
+    StringVector stringClassLabels = 100;
+    Int64Vector int64ClassLabels = 101;
+  }
+
+  /*
+   * This defines the radius of suppression. A box is considered to be within
+   * the radius of another box if their IOU score is less than this value.
+   */
+  double iouThreshold = 110;
+
+  /*
+  * Remove bounding boxes below this threshold.  The algorithm run-time is
+  * proportional to the square of the number of incoming bounding boxes
+  * (O(N^2)). This threshold is a way to reduce N to make the algorithm
+  * faster. The confidence threshold can be any non-negative value. Negative
+  * confidences are not allowed, since if the output shape is specified to be
+  * larger than boxes after suppression, the unused boxes are filled with
+  * zero confidence. If the prediction is handled by Core Vision, it is also
+  * important that confidences are defined with the following semantics:
+  *
+  *   1. Confidences should be between 0 and 1
+  *   2. The sum of the confidences for a prediction should not exceed 1, but is
+  *      allowed to be less than 1
+  *   3. The sum of the confidences will be interpreted as the confidence of
+  *      any object (e.g. if the confidences for two classes are 0.2 and 0.4,
+         it means there is a 60% (0.2 + 0.4) confidence that an object is
+         present)
+  */
+  double confidenceThreshold = 111;
+
+  /*
+   * Set the name of the confidence input.
+   *
+   * The input should be a multi-array of type double and shape N x C. N is
+   * the number of boxes and C the number of classes. Each row describes the
+   * confidences of each object category being present at that particular
+   * location. Confidences should be nonnegative, where 0.0 means the highest
+   * certainty the object is not present.
+   *
+   * Specifying shape is optional.
+   */
+  string confidenceInputFeatureName = 200;
+
+  /*
+   * Set the name of the coordinates input.
+   *
+   * The input should be a multi-array of type double and shape N x 4. The
+   * rows correspond to the rows of the confidence matrix. The four values
+   * describe (in order):
+   *
+   *  - x (center location of the box along the horizontal axis)
+   *  - y (center location of the box along the vertical axis)
+   *  - width (size of box along the horizontal axis)
+   *  - height (size of box on along the vertical axis)
+   *
+   * Specifying shape is optional.
+   */
+  string coordinatesInputFeatureName = 201;
+
+  /*
+   * The iouThreshold can be optionally overridden by specifying this string
+   * and providing a corresponding input of type double. This allows changing
+   * the value of the parameter during run-time.
+   *
+   * The input should be a scalar double between 0.0 and 1.0. Setting it to 1.0
+   * means there will be no suppression based on IOU.
+   */
+  string iouThresholdInputFeatureName = 202;
+
+  /*
+   * The confidenceThreshold can be optionally overridden by specifying this
+   * string and providing a corresponding input. This allows changing the
+   * value of the parameter during run-time, which can aid setting it just
+   * right for a particular use case.
+   *
+   * The input should be a scalar double with nonnegative value.
+   */
+  string confidenceThresholdInputFeatureName = 203;
+
+  /*
+   * Set the name of the confidence output. The output will be the same type
+   * and shape as the corresponding input. The only difference is that the
+   * number of rows may have been reduced.
+   *
+   * Specifying shape is optional. One reason to specify shape is to limit
+   * the number of output boxes. This can be done is several ways:
+   *
+   * Fixed shape:
+   * The output can be pinned to a fixed set of boxes. If this number is larger
+   * than the number of boxes that would have been returned, the output is
+   * padded with zeros for both confidence and coordinates. Specifying a fixed
+   * shape can be done by setting either shape (deprecated) or allowedShapes set
+   * to fixedsize.
+   *
+   * Min/max:
+   * It is also possible to set both a minimum and a maximum. The same
+   * zero-padding as for fixed shape is applied when necessary. Setting min/max
+   * is done by defining two allowedShapes, where the first dimension uses a
+   * rangeofsizes defining lowerbound and upperbound.
+   */
+  string confidenceOutputFeatureName = 210;
+
+  /*
+   * Set the name of the coordinates output. The output will be the same type
+   * and shape as the corresponding input. The only difference is that the
+   * number of rows may have been reduced.
+   *
+   * Specifying shape is optional. See confidence output for a more detailed
+   * description. Note that to achieve either fixed shape output or a
+   * constraint range of boxes, only one of confidence or coordinates need to
+   * set a shape. Both shapes are allowed to be defined, but in such case they
+   * have to be consistent along dimension 0.
+   */
+  string coordinatesOutputFeatureName = 211;
+}

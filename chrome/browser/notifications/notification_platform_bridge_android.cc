@@ -171,7 +171,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   std::string webapk_package =
       ConvertJavaStringToUTF8(env, java_webapk_package);
 
-  absl::optional<std::u16string> reply;
+  std::optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
 
@@ -180,7 +180,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   regenerated_notification_infos_[notification_id] =
       RegeneratedNotificationInfo(scope_url, webapk_package);
 
-  absl::optional<int> action_index;
+  std::optional<int> action_index;
   if (java_action_index != kNotificationInvalidButtonIndex)
     action_index = java_action_index;
 
@@ -195,7 +195,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationOperation::kClick, notification_type, origin,
                      notification_id, std::move(action_index), std::move(reply),
-                     absl::nullopt /* by_user */));
+                     std::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::
@@ -244,8 +244,36 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationOperation::kClose, notification_type,
                      GURL(ConvertJavaStringToUTF8(env, java_origin)),
+                     notification_id, std::nullopt /* action index */,
+                     std::nullopt /* reply */, by_user));
+}
+
+void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_object,
+    const JavaParamRef<jstring>& java_notification_id,
+    jint java_notification_type,
+    const JavaParamRef<jstring>& java_origin,
+    const JavaParamRef<jstring>& java_profile_id,
+    jboolean incognito) {
+  std::string profile_id = ConvertJavaStringToUTF8(env, java_profile_id);
+  std::string notification_id =
+      ConvertJavaStringToUTF8(env, java_notification_id);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
+
+  NotificationHandler::Type notification_type =
+      JavaToNotificationType(java_notification_type);
+
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kDisablePermission,
+                     notification_type,
+                     GURL(ConvertJavaStringToUTF8(env, java_origin)),
                      notification_id, absl::nullopt /* action index */,
-                     absl::nullopt /* reply */, by_user));
+                     absl::nullopt /* reply */, absl::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::Display(
@@ -321,7 +349,7 @@ void NotificationPlatformBridgeAndroid::Display(
       notification.renotify(), notification.silent(), actions);
 
   regenerated_notification_infos_[notification.id()] =
-      RegeneratedNotificationInfo(scope_url, absl::nullopt);
+      RegeneratedNotificationInfo(scope_url, std::nullopt);
 }
 
 void NotificationPlatformBridgeAndroid::Close(
@@ -398,7 +426,7 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     RegeneratedNotificationInfo(
         const GURL& service_worker_scope,
-        const absl::optional<std::string>& webapk_package)
+        const std::optional<std::string>& webapk_package)
     : service_worker_scope(service_worker_scope),
       webapk_package(webapk_package) {}
 

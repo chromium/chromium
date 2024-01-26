@@ -181,6 +181,23 @@ AppShimController::AppShimController(const Params& params)
           [[ApplicationDockMenuTarget alloc] initWithController:this]) {
   screen_ = std::make_unique<display::ScopedNativeScreen>();
   NSApp.delegate = delegate_;
+  // Since this is early startup code, there is no guarantee that the state of
+  // the features being tested for here matches the state from the eventualy
+  // Chrome we connect to (although they will match the vast majority of the
+  // time). Creating the notification service when it ends up being not needed
+  // is harmless, and the only effect of not creating it early when we later
+  // need it is that we might miss some notification actions, which again is
+  // harmless.
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+      app_mode::UseAdHocSigningForWebAppShims()) {
+    // `notification_service_` needs to be created early during start up to make
+    // sure it is able to install its delegate before the OS attempts to inform
+    // it of any notification actions that might have happened.
+    notification_service_ =
+        std::make_unique<mac_notifications::MacNotificationServiceUN>(
+            std::move(notification_action_handler_remote_),
+            UNUserNotificationCenter.currentNotificationCenter);
+  }
 }
 
 AppShimController::~AppShimController() {
@@ -252,10 +269,11 @@ void AppShimController::PreInitFeatureState(
   // FeatureList was set yet at all (i.e. check-fail).
   base::FeatureList::SetEarlyAccessInstance(
       std::move(feature_list),
-      {"AppShimLaunchChromeSilently",
+      {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
        "DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
        "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
-       "UseAdHocSigningForWebAppShims"});
+       "StandardCompliantNonSpecialSchemeURLParsing",
+       "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional"});
 }
 
 // static
@@ -290,9 +308,11 @@ void AppShimController::FinalizeFeatureState(
   base::FeatureList::SetInstance(std::move(feature_list));
 }
 
-void AppShimController::OnAppFinishedLaunching() {
+void AppShimController::OnAppFinishedLaunching(
+    bool launched_by_notification_action) {
   DCHECK_EQ(init_state_, InitState::kWaitingForAppToFinishLaunch);
   init_state_ = InitState::kWaitingForChromeReady;
+  launched_by_notification_action_ = launched_by_notification_action;
 
   if (FindOrLaunchChrome()) {
     // Start polling to see if Chrome is ready to connect.
@@ -550,11 +570,15 @@ void AppShimController::SendBootstrapOnShimConnected(
   app_shim_info->profile_path = params_.profile_dir;
   app_shim_info->app_id = params_.app_id;
   app_shim_info->app_url = params_.app_url;
+  // If the app shim was launched for a notification action, we don't want to
+  // automatically launch the app as well. So do a kRegisterOnly launch
+  // instead.
   app_shim_info->launch_type =
-      (base::CommandLine::ForCurrentProcess()->HasSwitch(
-           app_mode::kLaunchedByChromeProcessId) &&
-       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-           app_mode::kIsNormalLaunch))
+      (launched_by_notification_action_ ||
+       (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            app_mode::kLaunchedByChromeProcessId) &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            app_mode::kIsNormalLaunch)))
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
@@ -570,6 +594,9 @@ void AppShimController::SendBootstrapOnShimConnected(
     app_shim_info->login_item_restore_state =
         chrome::mojom::AppShimLoginItemRestoreState::kNone;
   }
+
+  app_shim_info->notification_action_handler =
+      std::move(notification_action_handler_receiver_);
 
   host_bootstrap_->OnShimConnected(
       std::move(host_receiver_), std::move(app_shim_info),
@@ -734,10 +761,7 @@ void AppShimController::UpdateApplicationDockMenu(
 void AppShimController::BindNotificationProvider(
     mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
         provider) {
-  if (notifications_receiver_.is_bound()) {
-    notifications_receiver_.reset();
-    notification_service_.reset();
-  }
+  notifications_receiver_.reset();
   notifications_receiver_.Bind(std::move(provider));
 }
 
@@ -746,22 +770,47 @@ void AppShimController::BindNotificationService(
         service,
     mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
         handler) {
-  DCHECK(!notification_service_);
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
   // TODO(https://crbug.com/938661): Once ad-hoc signed app shims become the
   // default on supported platforms, change this to always use the
   // UNUserNotification API (and not support notification attribution on other
   // platforms at all).
   if (app_mode::UseAdHocSigningForWebAppShims()) {
-    notification_service_ =
-        std::make_unique<mac_notifications::MacNotificationServiceUN>(
-            std::move(service), std::move(handler),
-            UNUserNotificationCenter.currentNotificationCenter);
+    // While the constructor should have created the `notification_service_`
+    // instance already, it is possible that the base::FeatureList state at the
+    // time did not match the current Chrome state, so make sure to create the
+    // service now if it wasn't created already.
+    if (!notification_service_) {
+      CHECK(notification_action_handler_remote_);
+      notification_service_ =
+          std::make_unique<mac_notifications::MacNotificationServiceUN>(
+              std::move(notification_action_handler_remote_),
+              UNUserNotificationCenter.currentNotificationCenter);
+    }
+    // Note that `handler` as passed in to this method is ignored. Notification
+    // actions instead will be dispatched to the app-shim scoped mojo pipe that
+    // was established earlier during startup, to allow notification actions to
+    // be triggered before the browser process tries to connect to the
+    // notification service.
+    notification_service_un()->Bind(std::move(service));
+    // TODO(crbug.com/938661): Determine when to ask for permissions.
+    notification_service_un()->RequestPermission();
   } else {
     notification_service_ =
         std::make_unique<mac_notifications::MacNotificationServiceNS>(
             std::move(service), std::move(handler),
             [NSUserNotificationCenter defaultUserNotificationCenter]);
   }
+}
+
+mac_notifications::MacNotificationServiceUN*
+AppShimController::notification_service_un() {
+  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+    return nullptr;
+  }
+  return static_cast<mac_notifications::MacNotificationServiceUN*>(
+      notification_service_.get());
 }
 
 void AppShimController::SetUserAttention(

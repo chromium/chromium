@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PREF_TRANSFORMER_INTERFACE_H_
 #define CHROME_BROWSER_EXTENSIONS_PREF_TRANSFORMER_INTERFACE_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -22,9 +21,9 @@ class PrefTransformerInterface {
   // Converts the representation of a preference as seen by the extension
   // into a representation that is used in the pref stores of the browser.
   // Returns the pref store representation in case of success or sets
-  // `error` and returns absl::nullopt otherwise. `bad_message` is passed
+  // `error` and returns std::nullopt otherwise. `bad_message` is passed
   // to simulate the behavior of EXTENSION_FUNCTION_VALIDATE.
-  virtual absl::optional<base::Value> ExtensionToBrowserPref(
+  virtual std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) = 0;
@@ -32,8 +31,8 @@ class PrefTransformerInterface {
   // Converts the representation of the preference as stored in the browser
   // into a representation that is used by the extension.
   // Returns the extension representation in case of success or returns
-  // absl::nullopt otherwise.
-  virtual absl::optional<base::Value> BrowserToExtensionPref(
+  // std::nullopt otherwise.
+  virtual std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) = 0;
 };

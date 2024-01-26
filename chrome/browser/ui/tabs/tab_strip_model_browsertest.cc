@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,6 +36,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 using testing::_;
 
@@ -124,8 +129,24 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
-                       PreventCloseEnforedByPolicyTabbedAppShallBeClosable) {
+// TODO(b/321593065): enable this flaky test.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#else
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#endif
+IN_PROC_BROWSER_TEST_F(
+    TabStripModelPreventCloseTest,
+    MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Cannot launch web apps in a tab when Shortstand is enabled.";
+  }
+#endif
+
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,

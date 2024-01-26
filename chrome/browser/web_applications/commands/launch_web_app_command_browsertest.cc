@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -39,7 +40,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -309,8 +309,8 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
       WindowOpenDisposition disposition,
       apps::LaunchSource source,
       const std::vector<base::FilePath>& launch_files,
-      const absl::optional<GURL>& url_handler_launch_url,
-      const absl::optional<GURL>& protocol_handler_launch_url) {
+      const std::optional<GURL>& url_handler_launch_url,
+      const std::optional<GURL>& protocol_handler_launch_url) {
     apps::AppLaunchParams params(app_id, container, disposition, source);
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = CreateCommandLine();
@@ -325,10 +325,18 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // When shortstand enabled, we no longer allow web app to be launched in
+  // browser tab. This test is no longer valid. The shortstand behaviour is
+  // tested in LaunchWebAppCommandTest_Shortstand.* below.
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP();
+  }
+#endif
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
+      apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -346,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
-      {}, absl::nullopt, absl::nullopt);
+      {}, std::nullopt, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -402,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
     apps::AppLaunchParams launch_params = CreateLaunchParams(
         web_shortcut_id, apps::LaunchContainer::kLaunchContainerTab,
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
+        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
 
     auto [launch_browser, web_contents, launch_container] =
         DoLaunch(std::move(launch_params));
@@ -419,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
     apps::AppLaunchParams launch_params = CreateLaunchParams(
         web_shortcut_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
+        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
 
     auto [launch_browser, web_contents, launch_container] =
         DoLaunch(std::move(launch_params));
@@ -450,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
     apps::AppLaunchParams launch_params = CreateLaunchParams(
         app_id_, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
+        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
 
     auto [launch_browser, web_contents, launch_container] =
         DoLaunch(std::move(launch_params));
@@ -468,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
     apps::AppLaunchParams launch_params = CreateLaunchParams(
         app_id_, apps::LaunchContainer::kLaunchContainerTab,
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
+        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
 
     auto [launch_browser, web_contents, launch_container] =
         DoLaunch(std::move(launch_params));

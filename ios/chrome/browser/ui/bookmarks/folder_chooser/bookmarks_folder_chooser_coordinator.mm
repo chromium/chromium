@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -53,7 +54,7 @@
   // This is only used for clients of this coordinator to update the UI. This
   // does not reflect the folder users chose by clicking. For that information
   // use `bookmarksFolderChooserCoordinatorDidConfirm:withSelectedFolder:`.
-  const bookmarks::BookmarkNode* _selectedFolder;
+  raw_ptr<const bookmarks::BookmarkNode> _selectedFolder;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;

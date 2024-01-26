@@ -74,10 +74,8 @@ testPaste("<span>foo</span><div><template>Hello</template></div><span>bar</span>
 // Contained shadow DOM is stripped, but content is retained (streaming DSD API, shadowrootmode attribute):
 testPaste("<span>foo</span><div><template shadowrootmode='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar");
 testPaste("<span>foo</span><div><template shadowrootmode='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar");
-// Make sure non-declarative <template shadowroot> doesn't form a shadow root on paste:
+// Make sure non-declarative <template shadowrootmode> doesn't form a shadow root on paste:
 const nodeWithTemplate = createEditable("<span>foo</span><div>ABC<template>Hello</template></div><span>bar</span>");
-nodeWithTemplate.querySelector('template').setAttribute('shadowroot','open');
-testPaste(nodeWithTemplate, "foo<div>ABC</div>bar", "non-streaming DSD 3");
 nodeWithTemplate.querySelector('template').setAttribute('shadowrootmode','open');
 testPaste(nodeWithTemplate, "foo<div>ABC</div>bar");
 </script>

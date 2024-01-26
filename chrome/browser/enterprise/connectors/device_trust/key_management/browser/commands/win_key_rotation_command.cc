@@ -8,6 +8,7 @@
 #include <winerror.h>
 #include <wrl/client.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -55,7 +55,7 @@ constexpr int kMaxCommandArgs = 9;
 // this code is duped in two places including this one.
 HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
                                        const std::vector<std::string>& args,
-                                       absl::optional<DWORD>* return_code) {
+                                       std::optional<DWORD>* return_code) {
   DCHECK(return_code);
   if (args.size() > kMaxCommandArgs)
     return E_INVALIDARG;
@@ -229,7 +229,7 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
             std::string nonce_base64;
             base::Base64Encode(params.nonce, &nonce_base64);
 
-            absl::optional<DWORD> return_code;
+            std::optional<DWORD> return_code;
 
             // Omaha does not support concurrent elevated commands.  If this
             // fails for that reason, wait a little and try again.  Retry count

@@ -242,6 +242,30 @@ suite('ComboboxTest', () => {
     assertTrue(isVisible(combobox.$.dropdown));
   });
 
+  test('UnselectsItems', async () => {
+    combobox.$.input.click();
+    const option = getOption(0);
+
+    // Clicking and re-clicking should unselect item.
+    option.click();
+    assertTrue(option.hasAttribute('selected'));
+    assertEquals('Option 1', combobox.value);
+    option.click();
+    assertFalse(option.hasAttribute('selected'));
+    assertEquals(undefined, combobox.value);
+
+    // Unselecting by keyboard should also work.
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    assertTrue(option.hasAttribute('selected'));
+    assertEquals('Option 1', combobox.value);
+    combobox.$.input.click();  // Open dropdown again
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    assertFalse(option.hasAttribute('selected'));
+    assertEquals(undefined, combobox.value);
+  });
+
   test('NotifiesValueChange', async () => {
     const option1 = getOption(0);
     const option2 = getOption(1);
@@ -307,6 +331,7 @@ suite('ComboboxTest', () => {
       },
     ];
     await flushTasks();
+    combobox.$.input.click();
 
     // Only the default option should be visible yet since group is by default
     // collapsed.
@@ -318,19 +343,20 @@ suite('ComboboxTest', () => {
     assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
 
-    // // Clicking on a group expands the dropdown items below it.
+    // Clicking on a group expands the dropdown items below it.
     toggleGroupExpand(0);
     await flushTasks();
-    assertEquals(
-        3, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+    const options = Array.from<HTMLElement>(
+        combobox.shadowRoot!.querySelectorAll('[role=option]'));
+    assertEquals(3, options.filter(option => isVisible(option)).length);
+
     assertEquals('true', groupLabel.ariaExpanded);
     assertEquals('cr:expand-less', groupLabelIcon.icon);
 
-    // // Clicking on the group again hides the dropdown items below it.
+    // Clicking on the group again hides the dropdown items below it.
     toggleGroupExpand(0);
     await flushTasks();
-    assertEquals(
-        1, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+    assertEquals(1, options.filter(option => isVisible(option)).length);
     assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
   });

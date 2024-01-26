@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1426410128494586442">Bai</translation>
+<translation id="1434873037477293673">prezio-jaitsieraren txartela</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
 <translation id="1510341833810331442">Webguneek ez dute zure gailuan datuak gordetzeko baimenik</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
 <translation id="2790501146643349491">Aktibatuta dagoenean, berriki itxitako webguneek datuak bidaltzen eta jasotzen amai dezakete. Desaktibatuta dagoenean, berriki itxitako webguneek ezin dute amaitu datuak bidaltzen eta jasotzen.</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Eskatu mugikorretarako ikuspegia</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ez utzi webguneei errealitate birtualeko gailuak eta datuak erabiltzen</translation>
 <translation id="6447842834002726250">Cookieak</translation>
+<translation id="6452138246455930388">Prezio-jaitsiera irekitako fitxan. Lehen <ph name="OLD_PRICE" />, orain <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />.</translation>
 <translation id="6500423977866688905">Leihoa estua denean, eskatu mugikorretarako ikuspegia</translation>
 <translation id="6527303717912515753">Partekatu</translation>
 <translation id="652937045869844725">Eman hirugarrenen cookieak erabiltzeko baimena. Babes txikiagoa izango duzu, baina webgunearen eginbideek funtzionatzeko probabilitate handiagoa izango dute.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Eraman behera</translation>
 <translation id="6749077623962119521">Baimenak berrezarri nahi dituzu?</translation>
 <translation id="6766622839693428701">Pasatu hatza behera ixteko.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Iturburua: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Hautatu aukera bat <ph name="SITE_NAME" /> webgunerako</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6818926723028410516">Hautatu elementuak</translation>
 <translation id="6864395892908308021">Gailu honek ezin du irakurri NFC</translation>
+<translation id="6867014948848323204">Iturburua: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6950072572526089586">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Ozeko azti miragarria</translation>
 <translation id="7684642910516280563">Debekatu hirugarrenen cookieak erabiltzea webgune bati</translation>
 <translation id="7719367874908701697">Orriaren zooma</translation>
+<translation id="7770832849480336015">Ezkutatu "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>

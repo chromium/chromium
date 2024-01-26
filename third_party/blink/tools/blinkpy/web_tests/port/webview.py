@@ -47,12 +47,13 @@ class WebviewPort(linux.LinuxPort):
         the --additional-expectations flag is passed; those aren't included
         here.
         """
-        return filter(None, [
-            self.path_to_generic_test_expectations_file(),
-            self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
-            self._filesystem.join(self.web_tests_dir(),
-                                  'MobileTestExpectations'),
-            self._filesystem.join(self.web_tests_dir(),
-                                  'StaleTestExpectations'),
-            self._filesystem.join(self.web_tests_dir(), 'SlowTests')
-        ])
+        return list(
+            filter(None, [
+                self.path_to_generic_test_expectations_file(),
+                self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
+                self._filesystem.join(self.web_tests_dir(),
+                                      'MobileTestExpectations'),
+                self._filesystem.join(self.web_tests_dir(),
+                                      'StaleTestExpectations'),
+                self._filesystem.join(self.web_tests_dir(), 'SlowTests')
+            ]))

@@ -173,11 +173,9 @@ void OfflineContentAggregatorBridge::ResumeDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id,
-    jboolean j_has_user_gesture) {
+    const JavaParamRef<jstring>& j_id) {
   provider_->ResumeDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
-                                env, j_namespace, j_id),
-                            j_has_user_gesture);
+      env, j_namespace, j_id));
 }
 
 void OfflineContentAggregatorBridge::GetItemById(

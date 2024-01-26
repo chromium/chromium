@@ -63,14 +63,6 @@ bool SVGObjectPainter::PreparePaint(
     LayoutSVGResourceMode resource_mode,
     cc::PaintFlags& flags,
     const AffineTransform* additional_paint_server_transform) {
-  if (paint_flags & PaintFlag::kPaintingClipPathAsMask) {
-    if (resource_mode == kApplyToStrokeMode)
-      return false;
-    flags.setColor(SK_ColorBLACK);
-    flags.setShader(nullptr);
-    return true;
-  }
-
   const bool apply_to_fill = resource_mode == kApplyToFillMode;
   const SVGPaint& paint =
       apply_to_fill ? style.FillPaint() : style.StrokePaint();

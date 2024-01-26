@@ -126,17 +126,18 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
                                   OpenTypeMathStretchData::Vertical);
     float target_size = base_ascent + base_descent + vertical.vertical_gap +
                         vertical.rule_thickness;
-    scoped_refptr<ShapeResult> shape_result =
+    const ShapeResult* shape_result =
         shaper.Shape(&Style().GetFont(), target_size, &surd_metrics);
-    scoped_refptr<ShapeResultView> shape_result_view =
-        ShapeResultView::Create(shape_result.get());
+    const ShapeResultView* shape_result_view =
+        ShapeResultView::Create(shape_result);
     LayoutUnit operator_inline_offset = index_inline_size +
                                         horizontal.kern_before_degree +
                                         horizontal.kern_after_degree;
-    container_builder_.SetMathMLPaintInfo(
-        std::move(shape_result_view), LayoutUnit(surd_metrics.advance),
-        LayoutUnit(surd_metrics.ascent), LayoutUnit(surd_metrics.descent),
-        operator_inline_offset, base_margins);
+    container_builder_.SetMathMLPaintInfo(MakeGarbageCollected<MathMLPaintInfo>(
+        kSquareRootCharacter, shape_result_view,
+        LayoutUnit(surd_metrics.advance), LayoutUnit(surd_metrics.ascent),
+        LayoutUnit(surd_metrics.descent), base_margins,
+        operator_inline_offset));
   }
 
   // Determine the metrics of the radical operator + the base.

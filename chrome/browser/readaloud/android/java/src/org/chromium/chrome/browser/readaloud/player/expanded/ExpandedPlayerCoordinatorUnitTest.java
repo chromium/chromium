@@ -50,6 +50,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
     @Mock private InteractionHandler mHandler;
     @Mock private ExpandedPlayerMediator mMediator;
     @Mock private ExpandedPlayerSheetContent mSheetContent;
+    @Mock private OptionsMenuSheetContent mOptionsMenuSheetContent;
     @Mock private VoiceMenuSheetContent mVoiceMenu;
     private ExpandedPlayerCoordinator mCoordinator;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -101,6 +102,14 @@ public class ExpandedPlayerCoordinatorUnitTest {
         mCoordinator.setSheetContent(null);
         mBottomSheetObserver.onSheetContentChanged(mSheetContent);
         verify(mMediator).setVisibility(VisibilityState.GONE);
+        verify(mMediator).setShowMiniPlayerOnDismiss(eq(true));
+    }
+
+    @Test
+    public void testOnSheetContentChanged_dontShowMiniPlayer() {
+        mCoordinator.setSheetContent(mSheetContent);
+        mBottomSheetObserver.onSheetContentChanged(mOptionsMenuSheetContent);
+        verify(mMediator, never()).setShowMiniPlayerOnDismiss(eq(true));
     }
 
     @Test
@@ -108,6 +117,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
         mCoordinator.setSheetContent(null);
         mBottomSheetObserver.onSheetOpened(StateChangeReason.NAVIGATION);
         verify(mMediator).setVisibility(VisibilityState.VISIBLE);
+        verify(mHandler).onShouldHideMiniPlayer();
     }
 
     @Test
@@ -116,7 +126,16 @@ public class ExpandedPlayerCoordinatorUnitTest {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.NONE);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
-        verify(mHandler, never()).onExpandedPlayerClose();
+        verify(mHandler, never()).onShouldRestoreMiniPlayer();
+    }
+
+    @Test
+    public void testOnSheetClosed_dontShowMiniPlayer_submenus() {
+        when(mMediator.getShowMiniPlayerOnDismiss()).thenReturn(false);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOptionsMenuSheetContent);
+        mBottomSheetObserver.onSheetClosed(StateChangeReason.NONE);
+        verify(mSheetContent).notifySheetClosed(eq(mOptionsMenuSheetContent));
+        verify(mHandler, never()).onShouldRestoreMiniPlayer();
     }
 
     @Test
@@ -125,7 +144,15 @@ public class ExpandedPlayerCoordinatorUnitTest {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.BACK_PRESS);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
-        verify(mHandler).onExpandedPlayerClose();
+        verify(mHandler).onShouldRestoreMiniPlayer();
+    }
+
+    @Test
+    public void testShowPlayer_resumePlaybackUpdates() {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, true);
+        mBottomSheetObserver.onSheetContentChanged(mOptionsMenuSheetContent);
+        mBottomSheetObserver.onSheetContentChanged(mSheetContent);
+        verify(mMediator).setHiddenAndPlaying(eq(false));
     }
 
     @Test

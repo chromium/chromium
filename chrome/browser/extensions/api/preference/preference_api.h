@@ -21,12 +21,13 @@
 #include "extensions/common/api/types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 class PrefService;
@@ -70,7 +71,7 @@ class PreferenceEventRouter : public ProfileObserver {
   // Second callback to return additional detail about the extension-controlled
   // pref.
   void OnAshGetSuccess(const std::string& browser_pref,
-                       absl::optional<::base::Value> opt_value,
+                       std::optional<::base::Value> opt_value,
                        crosapi::mojom::PrefControlState control_state);
 
   // Callback for lacros version of the prefs, to update ash in the event that
@@ -162,7 +163,7 @@ class GetPreferenceFunction : public PreferenceFunction {
   ~GetPreferenceFunction() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnLacrosGetSuccess(absl::optional<::base::Value> opt_value,
+  void OnLacrosGetSuccess(std::optional<::base::Value> opt_value,
                           crosapi::mojom::PrefControlState control_state);
 #endif
 

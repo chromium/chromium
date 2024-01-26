@@ -97,11 +97,21 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // if the recording session was aborted.
   void OnRecordingEnded();
 
+  // Called when a recorded file has been finalized and fully saved, at which
+  // point a new recording is allowed to be started.
+  void OnVideoFileFinalized();
+
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // TODO(b/316141148): Remove this test function once it's possible to set
+  // `show_welcome_dialog_` via a property.
+  void SetShowWelcomeDialogForTesting(bool show_dialog) {
+    show_welcome_dialog_ = show_dialog;
+  }
 
  private:
   friend class GameDashboardContextTestApi;
@@ -117,9 +127,20 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Called when `GameDashboardButton` is pressed, and toggles the main menu.
   void OnGameDashboardButtonPressed();
 
+  // Shows the Game Dashboard welcome dialog, if it's enabled in the Game
+  // Dashboard settings.
+  void MaybeShowWelcomeDialog();
+
+  // Updates the Game Dashboard welcome dialog's bounds and location, relative
+  // to the `game_window_`.
+  void MaybeUpdateWelcomeDialogBounds();
+
   // Determines the toolbar's physical location on screen based on the
   // `toolbar_snap_location_` value.
   const gfx::Rect CalculateToolbarWidgetBounds();
+
+  // Calculates the height of the app's frame header.
+  int GetFrameHeaderHeight() const;
 
   // Updates the toolbar widget's bounds and location utilizing an animation as
   // it transfers from the previous location.
@@ -128,6 +149,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Repeating timer callback that notifies `main_menu_view_` of the video
   // recording session duration.
   void OnUpdateRecordingTimer();
+
+  // Closes and deletes the Game Dashboard welcome dialog once it's no longer
+  // needed.
+  void CloseWelcomeDialog();
 
   const raw_ptr<aura::Window> game_window_;
 
@@ -139,6 +164,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // The toolbar for the Game Dashboard.
   std::unique_ptr<GameDashboardWidget> toolbar_widget_;
+
+  // The dialog displayed when the game window first opens.
+  std::unique_ptr<GameDashboardWidget> welcome_dialog_widget_;
 
   // The indicator of the current corner that the toolbar is placed.
   ToolbarSnapLocation toolbar_snap_location_;
@@ -165,6 +193,11 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // Duration since `recording_timer_` started.
   std::u16string recording_duration_;
+
+  // Indicates whether the Game Dashboard welcome dialog should be shown. This
+  // param ensures the welcome dialog is only shown once per game window
+  // startup.
+  bool show_welcome_dialog_ = false;
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

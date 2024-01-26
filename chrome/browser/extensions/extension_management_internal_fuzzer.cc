@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_management_internal.h"
+
 #include <stdint.h>
+
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_management_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/fuzzers/fuzzer_utils.h"
 
 using extensions::internal::IndividualSettings;
@@ -37,7 +39,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   base::StringPiece json(reinterpret_cast<const char*>(data), size);
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value || !value->is_dict())
     return 0;
 

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -26,7 +27,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keymap.h"
@@ -894,7 +894,7 @@ bool InputImeEventRouter::RegisterImeExtension(
           false,  // 3rd party IMEs are always not for login.
           component.options_page_url, component.input_view_url,
           // Not applicable to 3rd-party IMEs.
-          /*handwriting_language=*/absl::nullopt));
+          /*handwriting_language=*/std::nullopt));
     }
   }
 
@@ -981,7 +981,7 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  absl::optional<ClearComposition::Params> parent_params =
+  std::optional<ClearComposition::Params> parent_params =
       ClearComposition::Params::Create(args());
   const ClearComposition::Params::Parameters& params =
       parent_params->parameters;
@@ -1014,7 +1014,7 @@ InputImeSetAssistiveWindowPropertiesFunction::Run() {
   if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  absl::optional<SetAssistiveWindowProperties::Params> parent_params =
+  std::optional<SetAssistiveWindowProperties::Params> parent_params =
       SetAssistiveWindowProperties::Params::Create(args());
   const SetAssistiveWindowProperties::Params::Parameters& params =
       parent_params->parameters;
@@ -1042,7 +1042,7 @@ InputImeSetAssistiveWindowButtonHighlightedFunction::Run() {
   if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  absl::optional<SetAssistiveWindowButtonHighlighted::Params> parent_params =
+  std::optional<SetAssistiveWindowButtonHighlighted::Params> parent_params =
       SetAssistiveWindowButtonHighlighted::Params::Create(args());
   const SetAssistiveWindowButtonHighlighted::Params::Parameters& params =
       parent_params->parameters;
@@ -1063,7 +1063,7 @@ InputImeSetAssistiveWindowButtonHighlightedFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputImeSetCandidateWindowPropertiesFunction::Run() {
-  absl::optional<SetCandidateWindowProperties::Params> parent_params =
+  std::optional<SetCandidateWindowProperties::Params> parent_params =
       SetCandidateWindowProperties::Params::Create(args());
   const SetCandidateWindowProperties::Params::Parameters& params =
       parent_params->parameters;
@@ -1150,7 +1150,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  absl::optional<SetCandidates::Params> parent_params =
+  std::optional<SetCandidates::Params> parent_params =
       SetCandidates::Params::Create(args());
   const SetCandidates::Params::Parameters& params = parent_params->parameters;
 
@@ -1188,7 +1188,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  absl::optional<SetCursorPosition::Params> parent_params =
+  std::optional<SetCursorPosition::Params> parent_params =
       SetCursorPosition::Params::Create(args());
   const SetCursorPosition::Params::Parameters& params =
       parent_params->parameters;
@@ -1205,7 +1205,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
-  absl::optional<SetMenuItems::Params> parent_params =
+  std::optional<SetMenuItems::Params> parent_params =
       SetMenuItems::Params::Create(args());
   const input_ime::MenuParameters& params = parent_params->parameters;
 
@@ -1236,7 +1236,7 @@ ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
-  absl::optional<UpdateMenuItems::Params> parent_params =
+  std::optional<UpdateMenuItems::Params> parent_params =
       UpdateMenuItems::Params::Create(args());
   const input_ime::MenuParameters& params = parent_params->parameters;
 
@@ -1267,7 +1267,7 @@ ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeDeleteSurroundingTextFunction::Run() {
-  absl::optional<DeleteSurroundingText::Params> parent_params =
+  std::optional<DeleteSurroundingText::Params> parent_params =
       DeleteSurroundingText::Params::Create(args());
   const DeleteSurroundingText::Params::Parameters& params =
       parent_params->parameters;
@@ -1293,7 +1293,7 @@ InputMethodPrivateFinishComposingTextFunction::Run() {
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
-  absl::optional<FinishComposingText::Params> parent_params =
+  std::optional<FinishComposingText::Params> parent_params =
       FinishComposingText::Params::Create(args());
   const FinishComposingText::Params::Parameters& params =
       parent_params->parameters;

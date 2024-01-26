@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_PRINTING_TEST_PRINT_PREVIEW_OBSERVER_H_
 #define CHROME_BROWSER_PRINTING_TEST_PRINT_PREVIEW_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -47,7 +48,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override;
   void PreviewDocumentReady(content::WebContents* preview_dialog) override;
 
-  absl::optional<content::DOMMessageQueue> queue_;
+  std::optional<content::DOMMessageQueue> queue_;
 
   // Rendered pages are provided after N-up processing, which will be different
   // from the count provided to `DidGetPreviewPageCount()` when

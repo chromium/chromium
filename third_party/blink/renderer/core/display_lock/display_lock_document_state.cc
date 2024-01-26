@@ -214,8 +214,11 @@ void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
     return;
   }
 
-  if (MarkAncestorContextsHaveTopLayerElement(element))
+  if (MarkAncestorContextsHaveTopLayerElement(element)) {
+    StyleEngine& style_engine = document_->GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(style_engine);
     element->DetachLayoutTree();
+  }
 }
 
 void DisplayLockDocumentState::ElementRemovedFromTopLayer(Element*) {

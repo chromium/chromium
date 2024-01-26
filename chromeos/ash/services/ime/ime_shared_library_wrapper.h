@@ -66,19 +66,14 @@ class ImeSharedLibraryWrapper {
   struct EntryPoints {
     InitProtoModeFn init_proto_mode;
     CloseProtoModeFn close_proto_mode;
-
-    // TODO(b/214153032): Prefix the following with "proto_mode_" to better
-    // indicate they only pertain to the IME shared lib's ProtoMode. While it's
-    // "hard" to rename corresponding "C" API functions due to cross-repo
-    // backward compat requirements, these are local and rename is feasible.
-    ImeDecoderSupportsFn supports;
-    ImeDecoderActivateImeFn activate_ime;
-    ImeDecoderProcessFn process;
+    ImeDecoderSupportsFn proto_mode_supports;
+    ImeDecoderActivateImeFn proto_mode_activate_ime;
+    ImeDecoderProcessFn proto_mode_process;
 
     InitMojoModeFn init_mojo_mode;
     CloseMojoModeFn close_mojo_mode;
-    InitializeConnectionFactoryFn initialize_connection_factory;
-    IsInputMethodConnectedFn is_input_method_connected;
+    InitializeConnectionFactoryFn mojo_mode_initialize_connection_factory;
+    IsInputMethodConnectedFn mojo_mode_is_input_method_connected;
   };
 
   // Loads the IME shared library (if not already loaded) then returns its entry

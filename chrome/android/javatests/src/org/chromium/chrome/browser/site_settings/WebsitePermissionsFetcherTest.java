@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.CookiesInfo;
@@ -475,7 +475,7 @@ public class WebsitePermissionsFetcherTest {
 
         @Override
         public List<PermissionInfo> getPermissionInfo(
-                BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
+                BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
             List<PermissionInfo> result = new ArrayList<>();
             for (PermissionInfo info : mPermissionInfos) {
                 if (info.getContentSettingsType() == type) {
@@ -488,7 +488,7 @@ public class WebsitePermissionsFetcherTest {
         @Override
         public List<ContentSettingException> getContentSettingsExceptions(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType) {
+                @ContentSettingsType.EnumType int contentSettingsType) {
             List<ContentSettingException> result = new ArrayList<>();
             for (ContentSettingException exception : mContentSettingExceptions) {
                 if (exception.getContentSettingType() == contentSettingsType) {
@@ -1053,7 +1053,7 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.VR));
 
         @SessionModel int sessionModel = isOneTime ? SessionModel.ONE_TIME : SessionModel.DURABLE;
-        for (@ContentSettingsType int type : permissionInfoTypes) {
+        for (@ContentSettingsType.EnumType int type : permissionInfoTypes) {
             PermissionInfo fakePermissionInfo =
                     new PermissionInfo(type, ORIGIN, SITE_WILDCARD, isEmbargoed, sessionModel);
             websitePreferenceBridge.addPermissionInfo(fakePermissionInfo);
@@ -1094,7 +1094,7 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.POPUPS,
                                 ContentSettingsType.SOUND));
 
-        for (@ContentSettingsType int type : contentSettingExceptionTypes) {
+        for (@ContentSettingsType.EnumType int type : contentSettingExceptionTypes) {
             {
                 ContentSettingException fakeContentSettingException =
                         new ContentSettingException(
@@ -1155,7 +1155,7 @@ public class WebsitePermissionsFetcherTest {
 
         String mainSite = "https://a.com";
         String thirdPartySite = "https://b.com";
-        @ContentSettingsType int contentSettingsType = ContentSettingsType.COOKIES;
+        @ContentSettingsType.EnumType int contentSettingsType = ContentSettingsType.COOKIES;
 
         // Test the advanced exception combinations of:
         // b.com on a.com
@@ -1347,7 +1347,7 @@ public class WebsitePermissionsFetcherTest {
                     new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
             FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
             fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-            @ContentSettingsType
+            @ContentSettingsType.EnumType
             int chooserDataType =
                     SiteSettingsCategory.objectChooserDataTypeFromGuard(
                             SiteSettingsCategory.contentSettingsType(type));
@@ -1629,7 +1629,7 @@ public class WebsitePermissionsFetcherTest {
 
         String embedder = isEmbargoed ? null : EMBEDDER;
 
-        for (@ContentSettingsType int type : EMBEDDED_CONTENT_SETTINGS) {
+        for (@ContentSettingsType.EnumType int type : EMBEDDED_CONTENT_SETTINGS) {
             ContentSettingException fakeContentSetting =
                     new ContentSettingException(
                             type,

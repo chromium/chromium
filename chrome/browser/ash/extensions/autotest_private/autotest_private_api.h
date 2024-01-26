@@ -1862,6 +1862,17 @@ class AutotestPrivateGetArcWakefulnessModeFunction : public ExtensionFunction {
   void OnGetWakefulnessStateRespond(arc::mojom::WakefulnessMode mode);
 };
 
+class AutotestPrivateSetDeviceLanguageFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateSetDeviceLanguageFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.setDeviceLanguage",
+                             AUTOTESTPRIVATE_SETDEVICELANGUAGE)
+
+ private:
+  ~AutotestPrivateSetDeviceLanguageFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

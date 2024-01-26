@@ -45,7 +45,7 @@ class AddSyncedVisitTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     history::VisitID visit_id = backend->AddSyncedVisit(
-        url_, u"Title", /*hidden=*/false, visit_, absl::nullopt, absl::nullopt);
+        url_, u"Title", /*hidden=*/false, visit_, std::nullopt, std::nullopt);
     EXPECT_NE(visit_id, history::kInvalidVisitID);
     return true;
   }

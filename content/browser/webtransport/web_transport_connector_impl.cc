@@ -77,8 +77,8 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
-      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
-      override {
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      network::mojom::WebTransportStatsPtr initial_stats) override {
     if (tracker_) {
       tracker_->OnHandshakeEstablished();
     }
@@ -87,7 +87,8 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
     remote_->OnConnectionEstablished(
         std::move(transport), std::move(client),
         base::MakeRefCounted<net::HttpResponseHeaders>(
-            /*raw_headers=*/""));
+            /*raw_headers=*/""),
+        std::move(initial_stats));
   }
   void OnHandshakeFailed(
       const std::optional<net::WebTransportError>& error) override {

@@ -44,7 +44,7 @@ interface DisplaySelectEvent {
 
 const MIN_VISUAL_SCALE = .01;
 
-interface DisplayLayoutElement {
+export interface DisplayLayoutElement {
   $: {
     displayArea: HTMLElement,
   };
@@ -54,7 +54,7 @@ const DisplayLayoutElementBase =
     mixinBehaviors([IronResizableBehavior], LayoutMixin(PolymerElement)) as
     Constructor<PolymerElement&LayoutMixinInterface>;
 
-class DisplayLayoutElement extends DisplayLayoutElementBase {
+export class DisplayLayoutElement extends DisplayLayoutElementBase {
   static get is() {
     return 'display-layout';
   }

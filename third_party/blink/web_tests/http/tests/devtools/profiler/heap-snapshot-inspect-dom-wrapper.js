@@ -10,7 +10,7 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
 (async function() {
   TestRunner.addResult(
       `Test that resolving heap snapshot object to a JS object will not crash on DOM wrapper boilerplate. Test passes if it doesn't crash.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
   await TestRunner.evaluateInPagePromise(`
       // Make sure there is a body wrapper.
       document.body.fieldOnDomWrapper = 2012;

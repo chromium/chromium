@@ -44,7 +44,7 @@ Document* DOMParser::parseFromString(const String& str,
   if (include_shadow_roots) {
     doc->CountUse(mojom::blink::WebFeature::kParseFromStringIncludeShadows);
   }
-  doc->SetContent(str);
+  doc->SetContentFromDOMParser(str);
   doc->SetMimeType(AtomicString(type));
   return doc;
 }

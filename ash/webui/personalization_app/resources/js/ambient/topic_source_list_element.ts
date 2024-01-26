@@ -57,8 +57,8 @@ export class TopicSourceListElement extends WithPersonalizationStore {
   hasGooglePhotosAlbums: boolean;
 
   override focus() {
-    const elem = this.shadowRoot!.querySelector('topic-source-item[checked]') as
-        HTMLElement;
+    const elem = this.shadowRoot!.querySelector<HTMLElement>(
+        'topic-source-item[checked]');
     if (elem) {
       elem.focus();
     }

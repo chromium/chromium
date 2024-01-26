@@ -11,17 +11,6 @@
 
 namespace flag_descriptions {
 
-const char kAppStoreRatingName[] = "Enable the App Store Rating promo.";
-const char kAppStoreRatingDescription[] =
-    "When enabled, App Store Rating promo will be presented to eligible "
-    "users.";
-
-const char kAppStoreRatingLoosenedTriggersName[] =
-    "Enable the App Store Rating promo's loosened triggers.";
-const char kAppStoreRatingLoosenedTriggersDescription[] =
-    "When enabled, App Store Rating promo will have loosened trigger "
-    "requirements.";
-
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =
@@ -154,12 +143,6 @@ const char kBottomOmniboxDefaultSettingDescription[] =
     "hasn't already changed the setting, changes the omnibox position to top "
     "or bottom of the screen on iPhone. The default is top omnibox.";
 
-const char kBottomOmniboxDeviceSwitcherResultsName[] =
-    "Bottom omnibox device switcher results.";
-const char kBottomOmniboxDeviceSwitcherResultsDescription[] =
-    "Enabled by default. Retrieve device switcher results for the default "
-    "omnibox position.";
-
 const char kBottomOmniboxPromoAppLaunchName[] =
     "Bottom omnibox promo app-launch";
 const char kBottomOmniboxPromoAppLaunchDescription[] =
@@ -174,9 +157,10 @@ const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
 const char kBottomOmniboxPromoFREDescription[] =
     "Enables the FRE promo for the bottom omnibox.";
 
-const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
-const char kBottomOmniboxSteadyStateDescription[] =
-    "Move the omnibox to the bottom in steady state";
+const char kBottomOmniboxPromoRegionFilterName[] =
+    "Bottom omnibox promo region filter";
+const char kBottomOmniboxPromoRegionFilterDescription[] =
+    "When enabled the bottom omnibox promo is limited to some regions.";
 
 const char kSpotlightDonateNewIntentsName[] = "Donate New Spotlight Intents";
 const char kSpotlightDonateNewIntentsDescription[] =
@@ -205,6 +189,16 @@ const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
+extern const char kContextualPanelForceShowEntrypointName[] =
+    "Force show Contextual Panel entrypoint";
+extern const char kContextualPanelForceShowEntrypointDescription[] =
+    "When enabled, the Contextual Panel entrypoint will be shown regardless of "
+    "appearance prerequisites.";
+
+const char kContextualPanelName[] = "Contextual Panel";
+const char kContextualPanelDescription[] =
+    "Enables the contextual panel feature.";
+
 extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
@@ -214,6 +208,11 @@ const char kMeasurementsName[] = "Measurements experience enable";
 const char kMeasurementsDescription[] =
     "When enabled, one tapping or long pressing on a measurement will trigger "
     "the measurement conversion experience.";
+
+const char kEnableViewportIntentsName[] = "Viewport intent detection";
+const char kEnableViewportIntentsDescription[] =
+    "When enabled the intents are detected live as the viewport is moved "
+    "around.";
 
 extern const char kEnableExpKitTextClassifierName[] =
     "Text Classifier in Experience Kit";
@@ -269,9 +268,7 @@ const char kDefaultBrowserPromoForceShowPromoName[] =
 const char kDefaultBrowserPromoForceShowPromoDescription[] =
     "When enabled, the user will be able to chose which default browser promo "
     "will skip the triggering criteria. For this flag to effectively force a "
-    "default browser promo, either enable kPromosManagerUsesFET and "
-    "IPH_iOSPromoDefaultBrowser, or disable kPromosManagerUsesFET and enable "
-    "Force Promo (Default Browser) in the system settings experimental flags.";
+    "default browser promo, enable IPH_iOSPromoDefaultBrowser.";
 
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
@@ -384,6 +381,10 @@ const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
 
+const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
+const char kEnableiPadFeedGhostCardsDescription[] =
+    "Enables ghost cards placeholder when feed is loading on iPads.";
+
 const char kEnablePreferencesAccountStorageName[] =
     "Enable the account data storage for preferences for syncing users";
 const char kEnablePreferencesAccountStorageDescription[] =
@@ -405,6 +406,11 @@ const char kEnableSignedOutViewDemotionName[] =
 const char kEnableSignedOutViewDemotionDescription[] =
     "Enable signed out user view demotion to avoid repeated content for signed "
     "out users.";
+
+const char kEnableStartupImprovementsName[] =
+    "Enable startup latency improvements";
+const char kEnableStartupImprovementsDescription[] =
+    "Enables startup latency improvements to make startup faster.";
 
 const char kEnableSuggestionsScrollingOnIPadName[] =
     "Enable omnibox suggestions scrolling on iPad";
@@ -537,12 +543,6 @@ const char kIOSPasswordBottomSheetAutofocusName[] =
     "IOS Password Manager Bottom Sheet Autofocus";
 const char kIOSPasswordBottomSheetAutofocusDescription[] =
     "Enables triggering the password bottom sheet on autofocus on IOS.";
-
-const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[] =
-    "iOS Bulk Upload Local Passwords";
-const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[] =
-    "Enables bulk uploading local passwords for eligible users in the iOS "
-    "password settings.";
 
 const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
 const char kIOSPasswordSignInUffDescription[] =
@@ -724,6 +724,11 @@ const char kOmniboxPopulateShortcutsDatabaseDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "to provider better suggestions ranking.";
 
+const char kOmniboxPopupRowContentConfigurationName[] =
+    "Omnibox popup row content configuration";
+const char kOmniboxPopupRowContentConfigurationDescription[] =
+    "Enables the use of content configuration for the omnibox popup row.";
+
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
@@ -797,10 +802,10 @@ const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
-const char kPromosManagerUsesFETName[] = "Promos Manager using FET";
-const char kPromosManagerUsesFETDescription[] =
-    "Migrates the Promos Manager to use the Feature Engagement Tracker as its "
-    "impression tracking system";
+const char kIdleTimeoutPoliciesName[] =
+    "IdleTimeout and IdleTimeoutActions Policies";
+const char kIdleTimeoutPoliciesDescription[] =
+    "Enable IdleTimeout and IdleTimeoutActions enterprise policies.";
 
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";

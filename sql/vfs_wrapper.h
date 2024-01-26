@@ -13,7 +13,11 @@
 
 namespace sql {
 
-// A wrapper around the default VFS.
+static constexpr char kVfsWrapperName[] = "VFSWrapper";
+
+// Wraps the default VFS and to add on some functionality. The new wrapper
+// becomes the default VFS. This should only be called from
+// EnsureSqliteInitialized().
 //
 // On OSX, the wrapper propagates Time Machine exclusions from the main database
 // file to associated files such as journals. <http://crbug.com/23619> and
@@ -23,7 +27,7 @@ namespace sql {
 // file locking).
 //
 // TODO(shess): On Windows, wrap xFetch() with a structured exception handler.
-sqlite3_vfs* VFSWrapper();
+void EnsureVfsWrapper();
 
 // Internal representation of sqlite3_file for VFSWrapper.
 struct VfsFile {

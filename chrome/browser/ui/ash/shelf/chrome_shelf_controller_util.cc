@@ -333,5 +333,13 @@ void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
     return;
   }
 
+  PrefService* prefs = profile->GetPrefs();
+
+  if (prefs->GetBoolean(prefs::kStandaloneWindowMigrationNudgeShown)) {
+    return;
+  }
+
+  prefs->SetBoolean(prefs::kStandaloneWindowMigrationNudgeShown, true);
+
   ash::CreateAndShowNudge(anchor_view, base::UTF8ToUTF16(app_name));
 }

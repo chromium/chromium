@@ -60,8 +60,8 @@ class StubFunction : public ScriptFunction::Callable {
 
 class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
  public:
-  typedef ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                                Member<GarbageCollectedScriptWrappable>>
+  typedef ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                GarbageCollectedScriptWrappable>
       Property;
   GarbageCollectedHolder(ExecutionContext* execution_context)
       : GarbageCollectedScriptWrappable("holder"),
@@ -83,9 +83,8 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
 
 class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
  public:
-  using Property =
-      ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                            Member<GarbageCollectedScriptWrappable>>;
+  using Property = ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                         GarbageCollectedScriptWrappable>;
 
   explicit ScriptPromisePropertyResetter(Property* property)
       : property_(property) {}
@@ -166,15 +165,15 @@ class ScriptPromisePropertyTestBase {
         ->V8Function();
   }
 
-  template <typename T>
-  ScriptValue Wrap(DOMWrapperWorld& world, const T& value) {
+  ScriptValue Wrap(DOMWrapperWorld& world,
+                   GarbageCollectedScriptWrappable* value) {
     v8::HandleScope handle_scope(GetIsolate());
     ScriptState* script_state =
         ScriptState::From(ToV8Context(DomWindow(), world));
     ScriptState::Scope scope(script_state);
     return ScriptValue(
         GetIsolate(),
-        ToV8(value, script_state->GetContext()->Global(), GetIsolate()));
+        ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value));
   }
 
  private:
@@ -213,8 +212,11 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
       public testing::Test {
  public:
   template <typename T>
-  void Test(const T& value, const char* expected, const char* file, int line) {
-    typedef ScriptPromiseProperty<T, ToV8UndefinedGenerator> Property;
+  void Test(const T::ImplType& value,
+            const char* expected,
+            const char* file,
+            int line) {
+    typedef ScriptPromiseProperty<T, IDLUndefined> Property;
     Property* property = MakeGarbageCollected<Property>(DomWindow());
     size_t n_resolve_calls = 0;
     ScriptValue actual_value;
@@ -565,7 +567,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                              MainScriptState(), resolution)
-                             .ToLocalChecked()
                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
@@ -586,7 +587,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                               OtherScriptState(), resolution)
-                              .ToLocalChecked()
                               .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
@@ -608,17 +608,17 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithUndefined) {
-  Test(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
+  Test<IDLUndefined>(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithString) {
-  Test(String("hello"), "hello", __FILE__, __LINE__);
+  Test<IDLString>(String("hello"), "hello", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithInteger) {
-  Test(-1, "-1", __FILE__, __LINE__);
+  Test<IDLLong>(-1, "-1", __FILE__, __LINE__);
 }
 
 }  // namespace blink

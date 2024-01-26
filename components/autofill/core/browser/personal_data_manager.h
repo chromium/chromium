@@ -22,6 +22,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -33,7 +34,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/personal_data_manager_cleaner.h"
+#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
@@ -49,6 +50,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -240,7 +242,11 @@ class PersonalDataManager : public KeyedService,
 
   // Called to indicate `iban` was used (to fill in a form). Updates the
   // database accordingly.
-  void RecordUseOfIban(Iban& iban);
+  virtual void RecordUseOfIban(Iban& iban);
+
+  // Try to save a credit card locally. If the card already exists, do nothing
+  // and return false. If the card is new, save it locally and return true.
+  virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
 
   // Called when the user accepts the prompt to save the credit card locally.
   // Records some metrics and attempts to save the imported card. Returns the
@@ -264,6 +270,7 @@ class PersonalDataManager : public KeyedService,
 
   // Removes the profile, credit card or IBAN identified by `guid`.
   virtual void RemoveByGUID(const std::string& guid);
+  void RemoveProfile(const std::string& guid);
 
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
@@ -320,9 +327,8 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateLocalCvc(const std::string& guid,
                               const std::u16string& cvc);
 
-  // Update a server card. Only the full number and masked/unmasked
-  // status can be changed. Looks up the card by server ID.
-  virtual void UpdateServerCreditCard(const CreditCard& credit_card);
+  // Masks a full server card in the database.
+  virtual void MaskFullServerCreditCard(const std::string& server_id);
 
   // Updates the use stats and billing address id for the server |credit_cards|.
   // Looks up the cards by server_id.
@@ -369,9 +375,9 @@ class PersonalDataManager : public KeyedService,
   // TODO(1426498): rewrite tests that rely on this method to use Init instead.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
-  // Returns the IBAN with the specified |guid|, or nullptr if there is no IBAN
-  // with the specified |guid|.
-  virtual const Iban* GetIbanByGUID(const std::string& guid);
+  // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
+  // with the specified `guid`.
+  const Iban* GetIbanByGUID(const std::string& guid) const;
 
   // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
   // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.
@@ -495,7 +501,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
-#ifdef UNIT_TEST
   // Returns the country code that was provided from the variations service
   // during construction.
   const std::string& variations_country_code_for_testing() const {
@@ -506,17 +511,6 @@ class PersonalDataManager : public KeyedService,
   void set_variations_country_code_for_testing(std::string country_code) {
     variations_country_code_ = country_code;
   }
-
-#if BUILDFLAG(IS_IOS)
-  // Returns the raw pointer to PersonalDataManagerCleaner used for testing
-  // purposes.
-  PersonalDataManagerCleaner* personal_data_manager_cleaner_for_testing()
-      const {
-    DCHECK(personal_data_manager_cleaner_);
-    return personal_data_manager_cleaner_.get();
-  }
-#endif  // IOS
-#endif  // UNIT_TEST
 
   // Returns our best guess for the country a user is likely to use when
   // inputting a new address. The value is calculated once and cached, so it
@@ -550,10 +544,8 @@ class PersonalDataManager : public KeyedService,
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 
-#if defined(UNIT_TEST)
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueriesForTesting() { return HasPendingQueries(); }
-#endif
 
   // This function assumes |credit_card| contains the full PAN. Returns |true|
   // if the card number of |credit_card| is equal to any local card or any
@@ -674,6 +666,12 @@ class PersonalDataManager : public KeyedService,
   // Returns true if the user's selectable `type` is enabled.
   bool IsUserSelectableTypeEnabled(syncer::UserSelectableType type) const;
 
+  // Sets the Sync UserSelectableType::kAutofill toggle value.
+  // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
+  // only. It controls syncing of autofill data stored in user accounts for
+  // non-syncing users. Remove when toggle becomes available on the Sync page.
+  void SetAutofillSelectableTypeEnabled(bool enabled);
+
   // The functions below are related to the payments mandatory re-auth feature.
   // All of this functionality is done through per-profile per-device prefs.
   // `SetPaymentMethodsMandatoryReauthEnabled()` is used to update the opt-in
@@ -699,6 +697,11 @@ class PersonalDataManager : public KeyedService,
   // Get pointer to the image fetcher.
   AutofillImageFetcherBase* GetImageFetcher() const;
 
+  // Defines whether the Sync toggle on the Autofill Settings page is visible.
+  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // page for non-syncing users.
+  bool IsAutofillSyncToggleAvailable() const;
+
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.
   void set_auto_accept_address_imports_for_testing(bool auto_accept) {
@@ -723,13 +726,21 @@ class PersonalDataManager : public KeyedService,
   // still-supported paths (filling, editing, and deleting full server cards).
   void AddFullServerCreditCardForTesting(const CreditCard& credit_card);
 
+  AlternativeStateNameMapUpdater*
+  get_alternative_state_name_map_updater_for_testing() {
+    return alternative_state_name_map_updater_.get();
+  }
+
+  std::optional<signin::AccountManagedStatusFinder::Outcome>
+  GetAccountStatusForTesting() const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
   friend class ::PaymentsSuggestionBottomSheetMediatorTest;
-  friend class PersonalDataManagerCleaner;
+  friend class PaymentsDataCleaner;
   friend class VirtualCardEnrollmentManagerTest;
 
   // Used to get a pointer to the strike database for migrating existing
@@ -903,10 +914,9 @@ class PersonalDataManager : public KeyedService,
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
 
-  // Add/Update/Removes a profile in AutofillTable asynchronously. The changes
-  // only surface in the PDM after the task on the DB sequence has finished.
+  // Update a profile in AutofillTable asynchronously. The change only surfaces
+  // in the PDM after the task on the DB sequence has finished.
   void UpdateProfileInDB(const AutofillProfile& profile);
-  void RemoveProfileFromDB(const std::string& guid);
 
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);
@@ -975,10 +985,11 @@ class PersonalDataManager : public KeyedService,
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
 
-  // PersonalDataManagerCleaner is used to apply various address and credit
-  // card fixes/cleanups one time at browser startup or when the sync starts.
-  // PersonalDataManagerCleaner is declared as a friend class.
-  std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
+  // The *DataCleaner classes are used to apply various address and payment
+  // cleanups (e.g. deduplication, disused data removal) at browser startup or
+  // when the sync starts.
+  std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
+  std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
 
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
@@ -986,6 +997,12 @@ class PersonalDataManager : public KeyedService,
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Used for the Autofill sync toggle visibility calculation only.
+  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // page for non-syncing users.
+  std::unique_ptr<const signin::AccountManagedStatusFinder>
+      account_status_finder_;
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;

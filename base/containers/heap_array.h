@@ -59,6 +59,12 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return HeapArray(std::unique_ptr<T[]>(new T[size]), size);
   }
 
+  static HeapArray CopiedFrom(base::span<const T> that) {
+    auto result = HeapArray::Uninit(that.size());
+    result.copy_from(that);
+    return result;
+  }
+
   // Constructs an empty array and does not allocate any memory.
   HeapArray()
     requires(std::constructible_from<T>)
@@ -119,6 +125,11 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return base::span<const T>(data_.get(), size_);
   }
 
+  // Convenience method to copy the contents of the entire array from a
+  // span<>. Hard CHECK occurs in span<>::copy_from() if the HeapArray and
+  // the span have different sizes.
+  void copy_from(base::span<const T> other) { as_span().copy_from(other); }
+
   // Convenience methods to slice the vector into spans.
   // Returns a span over the HeapArray starting at `offset` of `count` elements.
   // If `count` is unspecified, all remaining elements are included. A CHECK()
@@ -150,6 +161,15 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   }
   base::span<const T> last(size_t count) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return as_span().last(count);
+  }
+
+  // Leaks the memory in the HeapArray so that it will never be freed, and
+  // consumes the HeapArray, returning an unowning span that points to the
+  // memory.
+  base::span<T> leak() && {
+    HeapArray<T> dropped = std::move(*this);
+    T* leaked = dropped.data_.release();
+    return make_span(leaked, dropped.size_);
   }
 
  private:

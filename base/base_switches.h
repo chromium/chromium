@@ -24,6 +24,7 @@ extern const char kFieldTrialHandle[];
 extern const char kForceFieldTrials[];
 extern const char kFullMemoryCrashReport[];
 extern const char kLogBestEffortTasks[];
+extern const char kMetricsSharedMemoryHandle[];
 extern const char kNoErrorDialogs[];
 extern const char kProfilingAtStart[];
 extern const char kProfilingFile[];
@@ -49,8 +50,6 @@ extern const char kEnableCrashReporterForTesting[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kEnableReachedCodeProfiler[];
-extern const char kReachedCodeSamplingIntervalUs[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
 extern const char kForceFieldTrialParams[];

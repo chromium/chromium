@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DASHBOARD_PRIVATE_DASHBOARD_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/common/extensions/api/dashboard_private.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SkBitmap;
 
@@ -64,7 +64,7 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
 
   const Params::Details& details() const { return params_->details; }
 
-  absl::optional<Params> params_;
+  std::optional<Params> params_;
 
   // A dummy Extension object we create for the purposes of using
   // ExtensionInstallPrompt to prompt for confirmation of the install.

@@ -719,6 +719,104 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   EXPECT_FALSE(*value);
 }
 
+// Verify that IDP sign-in/out headers work in fetch from worker.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
+                       IdpSigninAndOutFetchFromWorker) {
+  static constexpr char script[] = R"(
+    (async () => {
+      const script =
+        '(async () => { return (await fetch("/header/sign%s")).status; })()'
+      return new Promise(resolve => {
+        const channel = new MessageChannel();
+        channel.port1.addEventListener('message', (e) => {
+          resolve(e.data);
+        });
+        channel.port1.start();
+        const worker = new Worker('/fedcm/eval_worker.js');
+        worker.postMessage(
+          {
+            nested: false,
+            script: script,
+          },
+          [channel.port2]
+        );
+      });
+    }) ();
+  )";
+
+  GURL url_for_origin = https_server().GetURL(kRpHostName, "/header/");
+  url::Origin origin = url::Origin::Create(url_for_origin);
+  EXPECT_FALSE(sharing_context()->GetIdpSigninStatus(origin).has_value());
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "in")));
+    run_loop.Run();
+  }
+  auto value = sharing_context()->GetIdpSigninStatus(origin);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "out")));
+    run_loop.Run();
+  }
+  value = sharing_context()->GetIdpSigninStatus(origin);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_FALSE(*value);
+}
+
+// Verify that IDP sign-in/out headers work in fetch from nested worker.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
+                       IdpSigninAndOutFetchFromNestedWorker) {
+  static constexpr char script[] = R"(
+    (async () => {
+      const script =
+        '(async () => { return (await fetch("/header/sign%s")).status; })()'
+      return new Promise(resolve => {
+        const channel = new MessageChannel();
+        channel.port1.addEventListener('message', (e) => {
+          resolve(e.data);
+        });
+        channel.port1.start();
+        const worker = new Worker('/fedcm/eval_worker.js');
+        worker.postMessage(
+          {
+            nested: true,
+            script: script,
+          },
+          [channel.port2]
+        );
+      });
+    }) ();
+  )";
+
+  GURL url_for_origin = https_server().GetURL(kRpHostName, "/header/");
+  url::Origin origin = url::Origin::Create(url_for_origin);
+  EXPECT_FALSE(sharing_context()->GetIdpSigninStatus(origin).has_value());
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "in")));
+    run_loop.Run();
+  }
+  auto value = sharing_context()->GetIdpSigninStatus(origin);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+
+  {
+    base::RunLoop run_loop;
+    sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+    EXPECT_EQ(200, EvalJs(shell(), base::StringPrintf(script, "out")));
+    run_loop.Run();
+  }
+  value = sharing_context()->GetIdpSigninStatus(origin);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_FALSE(*value);
+}
+
 // Verify that an IdP can call close to close modal dialog views.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
   GURL configURL = GURL(BaseIdpUrl());
@@ -1076,8 +1174,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _))
-      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
+  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _, _))
+      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",

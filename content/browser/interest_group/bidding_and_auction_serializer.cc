@@ -11,6 +11,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -211,6 +212,9 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   cbor::Value::MapValue groups_map;
   groups_map.reserve(accumulated_groups_.size());
+  int num_groups = 0;
+  size_t uncompressed_size = 0;
+  size_t compressed_size = 0;
   for (const auto& bidder_groups : accumulated_groups_) {
     cbor::Value::ArrayValue groups;
     std::vector<std::string> names;
@@ -218,6 +222,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
       cbor::Value group_obj = SerializeInterestGroup(start_time_, group);
       groups.emplace_back(std::move(group_obj));
       names.push_back(group->interest_group.name);
+      num_groups++;
     }
     cbor::Value groups_obj(std::move(groups));
     std::optional<std::vector<uint8_t>> maybe_sub_message =
@@ -227,10 +232,21 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
     bool success = compression::GzipCompress(maybe_sub_message.value(),
                                              &compressed_groups);
     DCHECK(success);
-    groups_map[cbor::Value(bidder_groups.first.Serialize())] =
-        cbor::Value(compressed_groups, cbor::Value::Type::BYTE_STRING);
+    uncompressed_size += maybe_sub_message->size();
+    compressed_size += compressed_groups.size();
+
+    groups_map[cbor::Value(bidder_groups.first.Serialize())] = cbor::Value(
+        std::move(compressed_groups), cbor::Value::Type::BYTE_STRING);
     data.group_names.emplace(bidder_groups.first, std::move(names));
   }
+
+  // UMA requires integers, so we scale the relative compressed size by 100.
+  int relative_compressed_size = (100 * compressed_size) / uncompressed_size;
+  base::UmaHistogramPercentage(
+      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize",
+      relative_compressed_size);
+  base::UmaHistogramCounts1000(
+      "Ads.InterestGroup.ServerAuction.Request.NumGroups", num_groups);
 
   message_obj[cbor::Value("enableDebugReporting")] =
       cbor::Value(base::FeatureList::IsEnabled(

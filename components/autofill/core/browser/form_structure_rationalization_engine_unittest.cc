@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -418,6 +418,34 @@ TEST(FormStructureRationalizationEngine,
                   /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
                   /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
                   ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+}
+
+// Test that the actions are applied if all conditions are met.
+TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseDEAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Name", u"n", NAME_FIRST},
+      {u"Nachname", u"a", NAME_LAST},
+      {u"Straße und Hausnummer", u"addressline1", ADDRESS_HOME_LINE1},
+      {u"Adresszusatz", u"adresszusatz", ADDRESS_HOME_LINE2},
+      {u"PLZ", u"plz", ADDRESS_HOME_ZIP},
+      {u"Ort", u"ort", ADDRESS_HOME_CITY},
+  });
+
+  GeoIpCountryCode kDE = GeoIpCountryCode("DE");
+  ParsingContext kDEContext(kDE, LanguageCode("de"), PatternSource::kLegacy);
+  ApplyRationalizationEngineRules(kDEContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST,
+                          /*changed*/ ADDRESS_HOME_STREET_LOCATION,
+                          /*changed*/ ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_ZIP,
+                          ADDRESS_HOME_CITY));
 }
 
 }  // namespace

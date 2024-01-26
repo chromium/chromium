@@ -128,6 +128,18 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   return true;
 }
 
+FormData::FillData::FillData() = default;
+
+FormData::FillData::~FillData() = default;
+
+FormData::FillData::FillData(const FormData& form)
+    : unique_renderer_id(form.unique_renderer_id) {
+  fields.reserve(form.fields.size());
+  for (const FormFieldData& field : form.fields) {
+    fields.emplace_back(field);
+  }
+}
+
 bool FormHasNonEmptyPasswordField(const FormData& form) {
   for (const auto& field : form.fields) {
     if (field.IsPasswordInputElement()) {

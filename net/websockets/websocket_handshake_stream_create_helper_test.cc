@@ -26,8 +26,10 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -113,10 +115,10 @@ struct WebSocketHandshakeResponseInfo;
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
+using ::testing::_;
 using ::testing::StrictMock;
 using ::testing::TestWithParam;
 using ::testing::Values;
-using ::testing::_;
 
 namespace net {
 namespace {
@@ -138,7 +140,7 @@ class MockClientSocketHandleFactory {
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             /*ssl_client_context=*/nullptr,
@@ -149,7 +151,8 @@ class MockClientSocketHandleFactory {
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr),
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr),
         pool_(1, 1, &common_connect_job_params_) {}
 
   MockClientSocketHandleFactory(const MockClientSocketHandleFactory&) = delete;
@@ -168,7 +171,7 @@ class MockClientSocketHandleFactory {
         ClientSocketPool::GroupId(
             url::SchemeHostPort(url::kHttpScheme, "a", 80),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-            SecureDnsPolicy::kAllow),
+            SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
         scoped_refptr<ClientSocketPool::SocketParams>(),
         absl::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
@@ -346,8 +349,8 @@ class WebSocketHandshakeStreamCreateHelperTest
             SpdySessionDependencies::SpdyCreateSession(&session_deps);
         const SpdySessionKey key(
             HostPortPair::FromURL(url), ProxyChain::Direct(),
-            PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
-            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+            PRIVACY_MODE_DISABLED, SessionUsage::kDestination, SocketTag(),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
         base::WeakPtr<SpdySession> spdy_session =
             CreateSpdySession(http_network_session.get(), key, net_log);
         std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
@@ -480,6 +483,7 @@ class WebSocketHandshakeStreamCreateHelperTest
             &transport_security_state, &ssl_config_service,
             /*server_info=*/nullptr,
             QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                           ProxyChain::Direct(), SessionUsage::kDestination,
                            SocketTag(), NetworkAnonymizationKey(),
                            SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false),

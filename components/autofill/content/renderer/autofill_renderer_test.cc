@@ -48,8 +48,9 @@ void AutofillRendererTest::SetUp() {
       GetMainRenderFrame(), password_autofill_agent.get(),
       &associated_interfaces_);
   autofill_agent_ = std::make_unique<AutofillAgent>(
-      GetMainRenderFrame(), std::move(password_autofill_agent),
-      std::move(password_generation), &associated_interfaces_);
+      GetMainRenderFrame(), AutofillAgent::Config(),
+      std::move(password_autofill_agent), std::move(password_generation),
+      &associated_interfaces_);
 }
 
 void AutofillRendererTest::TearDown() {

@@ -221,8 +221,7 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   auto& document = GetDocument();
   HTMLElement::HideAllPopoversUntil(
       nullptr, document, HidePopoverFocusBehavior::kNone,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-      HidePopoverIndependence::kHideUnrelated);
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     SetFocusForDialog();
@@ -320,8 +319,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   // Showing a <dialog> should hide all open popovers.
   HTMLElement::HideAllPopoversUntil(
       nullptr, document, HidePopoverFocusBehavior::kNone,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-      HidePopoverIndependence::kHideUnrelated);
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     SetFocusForDialog();

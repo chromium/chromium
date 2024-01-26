@@ -77,7 +77,7 @@ struct SameSizeAsRunInfo : public RefCounted<SameSizeAsRunInfo> {
 
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
-struct SameSizeAsShapeResult : public RefCounted<SameSizeAsShapeResult> {
+struct SameSizeAsShapeResult {
   float floats[5];
   Vector<int> vector;
   void* pointers[2];
@@ -522,6 +522,48 @@ unsigned ShapeResult::PreviousSafeToBreakOffset(unsigned index) const {
   return StartIndex();
 }
 
+template <typename Iterator>
+void ShapeResult::AddUnsafeToBreak(Iterator offsets_iter,
+                                   const Iterator offsets_end) {
+  CHECK(offsets_iter != offsets_end);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  DCHECK(!character_position_);
+  DCHECK(std::is_sorted(
+      offsets_iter, offsets_end,
+      IsLtr() ? [](unsigned a, unsigned b) { return a < b; }
+              : [](unsigned a, unsigned b) { return a > b; }));
+  DCHECK_GE(*offsets_iter, StartIndex());
+#endif
+  unsigned offset = *offsets_iter;
+  for (const auto& run : runs_) {
+    unsigned run_offset = offset - run->StartIndex() - StartIndex();
+    if (run_offset >= run->num_characters_) {
+      continue;
+    }
+    for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_) {
+      if (glyph_data.character_index == run_offset) {
+        glyph_data.safe_to_break_before = false;
+        if (++offsets_iter == offsets_end) {
+          return;
+        }
+        offset = *offsets_iter;
+        run_offset = offset - run->StartIndex() - StartIndex();
+        if (run_offset >= run->num_characters_) {
+          break;
+        }
+      }
+    }
+  }
+}
+
+void ShapeResult::AddUnsafeToBreak(base::span<const unsigned> offsets) {
+  if (IsLtr()) {
+    AddUnsafeToBreak(offsets.begin(), offsets.end());
+  } else {
+    AddUnsafeToBreak(offsets.rbegin(), offsets.rend());
+  }
+}
+
 // If the position is outside of the result, returns the start or the end offset
 // depends on the position.
 void ShapeResult::OffsetForPosition(float target_x,
@@ -956,12 +998,12 @@ void ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
   ApplySpacingImpl(spacing, text_start_offset);
 }
 
-scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
+ShapeResult* ShapeResult::ApplySpacingToCopy(
     ShapeResultSpacing<TextRun>& spacing,
     const TextRun& run) const {
   unsigned index_of_sub_run = spacing.Text().IndexOfSubRun(run);
   DCHECK_NE(std::numeric_limits<unsigned>::max(), index_of_sub_run);
-  scoped_refptr<ShapeResult> result = ShapeResult::Create(*this);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(*this);
   if (index_of_sub_run != std::numeric_limits<unsigned>::max())
     result->ApplySpacingImpl(spacing, index_of_sub_run);
   return result;
@@ -1116,7 +1158,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
   // `width_` will be updated in `RecalcCharacterPositions()`.
 }
 
-scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
+const ShapeResult* ShapeResult::UnapplyAutoSpacing(
     unsigned start_offset,
     unsigned break_offset) const {
   DCHECK_GE(start_offset, StartIndex());
@@ -1125,7 +1167,7 @@ scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
   DCHECK(HasAutoSpacingBefore(break_offset));
 
   // Create a `ShapeResult` for the character before `break_offset`.
-  scoped_refptr<ShapeResult> sub_range = SubRange(start_offset, break_offset);
+  ShapeResult* sub_range = SubRange(start_offset, break_offset);
 
   // Remove the auto-spacing from the last glyph.
   for (const scoped_refptr<RunInfo>& run : base::Reversed(sub_range->runs_)) {
@@ -1636,17 +1678,16 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
   return run_index;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::SubRange(unsigned start_offset,
-                                                 unsigned end_offset) const {
-  scoped_refptr<ShapeResult> sub_range =
-      Create(primary_font_.get(), 0, 0, Direction());
-  CopyRange(start_offset, end_offset, sub_range.get());
+ShapeResult* ShapeResult::SubRange(unsigned start_offset,
+                                   unsigned end_offset) const {
+  ShapeResult* sub_range =
+      MakeGarbageCollected<ShapeResult>(primary_font_.get(), 0, 0, Direction());
+  CopyRange(start_offset, end_offset, sub_range);
   return sub_range;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::CopyAdjustedOffset(
-    unsigned start_index) const {
-  scoped_refptr<ShapeResult> result = base::AdoptRef(new ShapeResult(*this));
+const ShapeResult* ShapeResult::CopyAdjustedOffset(unsigned start_index) const {
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(*this);
 
   if (start_index > result->StartIndex()) {
     unsigned delta = start_index - result->StartIndex();
@@ -1701,7 +1742,7 @@ void ShapeResult::CheckConsistency() const {
 }
 #endif
 
-scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
+const ShapeResult* ShapeResult::CreateForTabulationCharacters(
     const Font* font,
     TextDirection direction,
     const TabSize& tab_size,
@@ -1711,8 +1752,8 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
   DCHECK_GT(length, 0u);
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(font, start_index, length, direction);
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(font, start_index, length, direction);
   result->num_glyphs_ = length;
   DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
@@ -1747,16 +1788,16 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
   return result;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
-                                                        TextDirection direction,
-                                                        unsigned start_index,
-                                                        unsigned length,
-                                                        float width) {
+const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
+                                                TextDirection direction,
+                                                unsigned start_index,
+                                                unsigned length,
+                                                float width) {
   DCHECK_GT(length, 0u);
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(font, start_index, length, direction);
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(font, start_index, length, direction);
   result->num_glyphs_ = length;
   DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
@@ -1777,15 +1818,15 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
   return result;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
+const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
     const Font* font,
     TextDirection direction,
     Glyph glyph_variant,
     float stretch_size) {
   unsigned start_index = 0;
   unsigned num_characters = 1;
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(font, start_index, num_characters, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(
+      font, start_index, num_characters, direction);
 
   hb_direction_t hb_direction = HB_DIRECTION_LTR;
   unsigned glyph_index = 0;
@@ -1804,7 +1845,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
   return result;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
+const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
     const Font* font,
     TextDirection direction,
     OpenTypeMathStretchData::StretchAxis stretch_axis,
@@ -1816,8 +1857,8 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
       stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal;
   unsigned start_index = 0;
   unsigned num_characters = 1;
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(font, start_index, num_characters, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(
+      font, start_index, num_characters, direction);
 
   hb_direction_t hb_direction =
       is_horizontal_assembly ? HB_DIRECTION_LTR : HB_DIRECTION_TTB;

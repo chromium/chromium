@@ -13,7 +13,7 @@ import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import type {LoadErrorDelegate} from './load_error.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
 import type {PackDialogDelegate} from './pack_dialog.js';
-import type {SiteSettingsDelegate} from './site_settings_mixin.js';
+import type {SiteSettingsDelegate} from './site_permissions/site_settings_mixin.js';
 import type {ToolbarDelegate} from './toolbar.js';
 
 export interface ServiceInterface extends ActivityLogDelegate,

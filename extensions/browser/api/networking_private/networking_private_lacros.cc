@@ -207,8 +207,8 @@ void DeviceStateListCallbackAdapter(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  auto list =
-      std::optional<extensions::NetworkingPrivateDelegate::DeviceStateList>();
+  auto list = std::make_optional<
+      extensions::NetworkingPrivateDelegate::DeviceStateList>();
   for (auto& item : *result) {
     if (item) {
       list->emplace_back(

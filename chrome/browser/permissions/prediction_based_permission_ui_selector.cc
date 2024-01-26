@@ -53,7 +53,7 @@ constexpr base::TimeDelta kPermissionActionCutoffAge = base::Days(28);
 // the particular permission type.
 constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
 
-absl::optional<
+std::optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
 ParsePredictionServiceMockLikelihood(const std::string& value) {
   if (value == "very-unlikely") {
@@ -73,7 +73,7 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
         PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ShouldPredictionTriggerQuietUi(
@@ -105,8 +105,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     DecisionMadeCallback callback) {
   VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
-  last_request_grant_likelihood_ = absl::nullopt;
-  was_decision_held_back_ = absl::nullopt;
+  last_request_grant_likelihood_ = std::nullopt;
+  was_decision_held_back_ = std::nullopt;
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
   if (prediction_source == PredictionSource::USE_NONE) {
@@ -211,12 +211,12 @@ bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
          request_type == permissions::RequestType::kGeolocation;
 }
 
-absl::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
 PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }
 
-absl::optional<bool>
+std::optional<bool>
 PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
   return was_decision_held_back_;
 }
@@ -257,7 +257,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     permissions::RequestType request_type,
     bool lookup_succesful,
     bool response_from_cache,
-    const absl::optional<permissions::GeneratePredictionsResponse>& response) {
+    const std::optional<permissions::GeneratePredictionsResponse>& response) {
   request_.reset();
   if (!callback_) {
     VLOG(1) << "[CPSS] Prediction service response ignored as the request is "

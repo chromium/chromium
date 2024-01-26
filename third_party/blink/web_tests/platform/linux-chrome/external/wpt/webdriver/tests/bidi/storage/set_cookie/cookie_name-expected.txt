@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_cookie_name[]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name[cookie name with special symbols !@#$%&*()_+-{}[]|\\\\:"'<>,.?/`~]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+[FAIL] test_cookie_name[123cookie]
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
+Harness: the test ran to completion.

@@ -12,7 +12,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bypass_warning_confirmation_dialog.html.js';
@@ -49,6 +51,8 @@ export class DownloadBypassWarningConfirmationDialogElement extends
   }
 
   private onDownloadDangerousClick_() {
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('screenreaderSavedDangerous'));
     this.$.dialog.close();
   }
 

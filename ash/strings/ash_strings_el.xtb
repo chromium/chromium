@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Δεν υπάρχει δίκτυο κινητής τηλεφωνίας</translation>
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ξεκλείδωμα με δακτυλικό αποτύπωμα</translation>
-<translation id="1888656773939766144">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Κάντε κλικ για να επιβεβαιώσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Νέα εγκατάσταση</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1918022425394817322">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Η προεπισκόπηση κάμερας είναι ενεργή</translation>
 <translation id="2067602449040652523">Φωτεινότητα πληκτρολογίου</translation>
 <translation id="2075520525463668108">Εναλλαγή <ph name="CAPTURE_MEDIUM" />. Το κουμπί <ph name="CAPTURE_MEDIUM" /> είναι <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Σύρετε προς τα δεξιά με τέσσερα δάχτυλα για μετάβαση στο επόμενο γραφείο</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Άνοιγμα εργαλείου επιλογής emoji</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Μετάβαση στο προηγούμενο κομμάτι</translation>
 <translation id="2152895518047545149">Φαίνεται ότι δεν λείπει τίποτα. Μπράβο!</translation>
 <translation id="2161132820593978283">Δοκιμάστε τη λειτουργία καδραρίσματος της κάμερας για να βρίσκεστε στο κέντρο της οθόνης κατά τη διάρκεια των βιντεοκλήσεων. Ενεργοποιήστε τη λειτουργία στις Γρήγορες ρυθμίσεις.</translation>
-<translation id="2170530631236737939">Σύρετε προς τα κάτω με τρία δάχτυλα για έξοδο από την Επισκόπηση</translation>
 <translation id="2185166372312820725">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="2185444992308415167">Μετάβαση στις καρτέλες 1 έως 8</translation>
 <translation id="2198625180564913276">Προσθήκη προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
@@ -392,7 +389,7 @@
 <translation id="2624588537172718173">Ήχος συσκευής και μικρόφωνο</translation>
 <translation id="263399434338050016">"Επιλογή όλων"</translation>
 <translation id="2644422758626431000">Καρφίτσωμα παραθύρου στα αριστερά</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Λήψη παραθύρου</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2658778018866295321">Κάντε κλικ και σύρετε</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">Το τηλέφωνό σας πρέπει να διαθέτει σύνδεση δεδομένων κινητής τηλεφωνίας για να παρέχει σημείο πρόσβασης Wi-Fi</translation>
 <translation id="2727175239389218057">Απάντηση</translation>
 <translation id="2727977024730340865">Σύνδεση με φορτιστή χαμηλής ισχύος. Η φόρτιση της μπαταρίας ενδέχεται να μη γίνεται με αξιόπιστο τρόπο.</translation>
+<translation id="2744221223678373668">Κοινόχρηστο</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Διαγραφή"</translation>
 <translation id="2750941250130734256">Έγινε απαγκύρωση του ενεργού παραθύρου.</translation>
 <translation id="2761723519669354964">Άνοιγμα επισημασμένου στοιχείου από το ράφι</translation>
+<translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> έως <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+αναζήτηση+s</translation>
 <translation id="2778650143428714839">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />.</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Παρουσιάστηκε κάποιο πρόβλημα. Επανάληψη.</translation>
 <translation id="3580650856351781466">Λήψη αρχείων ομιλίας</translation>
 <translation id="3585296979871889131">Προβολή των πρόσφατων φωτογραφιών, μέσων, ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
+<translation id="3590441166907930941">Πλευρικό κουμπί</translation>
 <translation id="3593039967545720377">Αποκτήστε πρόσβαση στο ιστορικό του πρόχειρου πατώντας <ph name="SHORTCUT_KEY_NAME" /> + V για να προβάλετε το πρόχειρο. Αντιγράψτε ένα στοιχείο για να ξεκινήσετε.</translation>
 <translation id="3593646411856133110">Σύρετε προς τα επάνω και κρατήστε το δάχτυλό σας για να δείτε τις ανοικτές εφαρμογές.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Απάντηση</translation>
 <translation id="3990002060657467458">Τα στοιχεία ελέγχου που χρησιμοποιούνται συχνά όπως το Wi-Fi, το Bluetooth και η ένταση ήχου βρίσκονται στις Γρήγορες ρυθμίσεις. Μπορείτε επίσης να μεταβείτε εδώ για να τραβήξετε στιγμιότυπα οθόνης.</translation>
 <translation id="3995138139523574647">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
+<translation id="4002066346123236978">Τίτλος</translation>
 <translation id="40062176907008878">Γραφή</translation>
 <translation id="4011112806063830608">Η λειτουργία Μην ενοχλείτε είναι ενεργή.</translation>
 <translation id="4017989525502048489">Δείκτης λέιζερ</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Κατάσταση μπαταρίας <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Πλήθος κύκλων φόρτισης <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Αποθήκευση γραφείου ως πρότυπο</translation>
 <translation id="5168181903108465623">Διαθέσιμες συσκευές μετάδοσης</translation>
+<translation id="5168753792967365150">Επεξεργασία στο Google Tasks</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
 <translation id="5187627942836026988">Εμφάνιση λεπτομερειών σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi έχει αποκλειστεί από τον διαχειριστή σας.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Οι εγκατεστημένες εφαρμογές</translation>
 <translation id="6173151025443907148">Η σύνδεση δεύτερου χρήστη δεν υποστηρίζεται, εάν είναι ενεργοποιημένο το Lacros. Αντί αυτού, χρησιμοποιήστε ένα δεύτερο προφίλ προγράμματος περιήγησης στο Lacros ή απενεργοποιήστε το Lacros και δοκιμάστε ξανά.</translation>
 <translation id="6179832488876878285">Μπορείτε να καρφιτσώσετε εδώ σημαντικά αρχεία. Ανοίξτε την εφαρμογή Αρχεία για να ξεκινήσετε.</translation>
+<translation id="6180193585172850042">Κουμπί Πίσω</translation>
+<translation id="6180651297859206670">Κουμπί Εμπρός</translation>
 <translation id="6182592640011875895">Άνοιγμα γραφείου</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Πλήρης φόρτιση τώρα</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">Μην ενοχλείτε</translation>
 <translation id="7851039877802112575">Μετατόπιση εστίασης σε αναδυόμενα παράθυρα και παράθυρα διαλόγου</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Σύρετε προς τα επάνω με τρία δάχτυλα για είσοδο στην Επισκόπηση</translation>
 <translation id="7862292329216937261">Για να χρησιμοποιήσετε τη συσκευή ως επισκέπτης, θα πρέπει να αποσυνδεθείτε και, στη συνέχεια, να επιλέξετε Περιήγηση ως επισκέπτης, στο κάτω μέρος της οθόνης.</translation>
 <translation id="7866482334467279021">ενεργή</translation>
 <translation id="7872786842639831132">Ανενεργό</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">Εναλλαγή αναπαραγωγής</translation>
 <translation id="8270450402312105425">{0,plural, =1{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός μίας ώρας}other{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός # ωρών}}</translation>
 <translation id="8277261673056602147">Επισήμανση κειμένου στην οθόνη</translation>
-<translation id="8284362522226889623">Σύρετε προς τα αριστερά με τέσσερα δάχτυλα για μετάβαση στο προηγούμενο γραφείο</translation>
 <translation id="828708037801473432">Ανενεργό</translation>
 <translation id="8297006494302853456">Αδύναμο</translation>
 <translation id="8308637677604853869">Προηγούμενο μενού</translation>

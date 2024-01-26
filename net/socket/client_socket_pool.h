@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -24,6 +25,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
+#include "net/ssl/ssl_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
@@ -100,7 +102,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     GroupId(url::SchemeHostPort destination,
             PrivacyMode privacy_mode,
             NetworkAnonymizationKey network_anonymization_key,
-            SecureDnsPolicy secure_dns_policy);
+            SecureDnsPolicy secure_dns_policy,
+            bool disable_cert_network_fetches);
     GroupId(const GroupId& group_id);
 
     ~GroupId();
@@ -118,23 +121,29 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
+    bool disable_cert_network_fetches() const {
+      return disable_cert_network_fetches_;
+    }
+
     // Returns the group ID as a string, for logging.
     std::string ToString() const;
 
     bool operator==(const GroupId& other) const {
       return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_) ==
+                      secure_dns_policy_, disable_cert_network_fetches_) ==
              std::tie(other.destination_, other.privacy_mode_,
                       other.network_anonymization_key_,
-                      other.secure_dns_policy_);
+                      other.secure_dns_policy_,
+                      other.disable_cert_network_fetches_);
     }
 
     bool operator<(const GroupId& other) const {
       return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_) <
+                      secure_dns_policy_, disable_cert_network_fetches_) <
              std::tie(other.destination_, other.privacy_mode_,
                       other.network_anonymization_key_,
-                      other.secure_dns_policy_);
+                      other.secure_dns_policy_,
+                      other.disable_cert_network_fetches_);
     }
 
    private:
@@ -149,6 +158,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     // Controls the Secure DNS behavior to use when creating this socket.
     SecureDnsPolicy secure_dns_policy_;
+
+    // Whether cert validation-related network fetches are allowed. Should only
+    // be true for a very limited number of network-configuration related
+    // scripts (e.g., PAC fetches).
+    bool disable_cert_network_fetches_;
   };
 
   // Parameters that, in combination with GroupId, proxy, websocket information,
@@ -162,8 +176,10 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   class NET_EXPORT_PRIVATE SocketParams
       : public base::RefCounted<SocketParams> {
    public:
-    // For non-SSL requests, `ssl_config_for_origin` argument may be nullptr.
-    explicit SocketParams(std::unique_ptr<SSLConfig> ssl_config_for_origin);
+    // For non-SSL requests, `allowed_bad_certs` argument will be ignored (and
+    // is likely empty, anyways).
+    explicit SocketParams(
+        const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs);
 
     SocketParams(const SocketParams&) = delete;
     SocketParams& operator=(const SocketParams&) = delete;
@@ -172,15 +188,15 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     // works for the HTTP case only.
     static scoped_refptr<SocketParams> CreateForHttpForTesting();
 
-    const SSLConfig* ssl_config_for_origin() const {
-      return ssl_config_for_origin_.get();
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs() const {
+      return allowed_bad_certs_;
     }
 
    private:
     friend class base::RefCounted<SocketParams>;
     ~SocketParams();
 
-    std::unique_ptr<SSLConfig> ssl_config_for_origin_;
+    std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   };
 
   ClientSocketPool(const ClientSocketPool&) = delete;

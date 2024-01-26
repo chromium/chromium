@@ -158,6 +158,7 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
@@ -242,6 +243,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 
 // Feature to evict when accessibility events occur while in back/forward cache.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEvictOnAXEvents);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
+
 }  // namespace features
 
 namespace content {
@@ -2001,6 +2005,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreatePaymentManager(
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
 
+  void CreatePaymentCredential(
+      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
+
   void GetWebAuthenticationService(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 
@@ -2179,10 +2186,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsLastCrossDocumentNavigationStartedByUser() const override;
 
   net::CookieSettingOverrides GetCookieSettingOverrides() override;
-
-  bool is_fenced_frame_root_originating_from_opaque_url() const {
-    return is_fenced_frame_root_originating_from_opaque_url_;
-  }
 
   PolicyContainerHost* policy_container_host() {
     return policy_container_host_.get();
@@ -2439,6 +2442,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       bool once,
       bool cross_origin_exposed) override;
+  void DisableUntrustedNetworkInFencedFrame(
+      DisableUntrustedNetworkInFencedFrameCallback callback) override;
   void SendLegacyTechEvent(
       const std::string& type,
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
@@ -2914,6 +2919,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ActivateFocusSourceUserActivation();
   void DeactivateFocusSourceUserActivation();
 
+  // Computes user activation status for history intervention based on the
+  // actual sticky activation and
+  // `honor_sticky_activation_for_history_intervention_`. Note that this should
+  // be invoked on the root RFH and not a subframe's RFH since sticky activation
+  // from any frame is sufficient and is aggregated at the root.
+  bool HasStickyUserActivationForHistoryIntervention() const;
+
   // Parameter for `ClosePage()` that indicates whether the request comes from
   // the browser or the renderer. This is used to determine whether navigation
   // should prevent the page from closing, since navigations should not prevent
@@ -3210,6 +3222,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            BlockNameUpdateForBackForwardCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            BlockNameUpdateForPendingDelete);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithFlagForAXLocationChange,
+      EvictOnAXLocationChangeOrNot);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowsingContextStateBrowserTest,
                            SlowUnloadHandlerInIframe);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
@@ -3245,6 +3260,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            DetachedIframePagehideHandlerABCB);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheStillLoadingBrowserTest,
                            DoesNotCacheIfFrameStillLoading);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationForHistoryIntervention);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           HonorStickyActivationForHistoryInterventionReset);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestStickyActivationOnReload);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      HonorStickyActivationForHistoryInterventionNotResetOnReplaceState);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationCrossDocument);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      TestHonorStickyActivationForHistoryInterventionForward);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationWithChildFrame);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      TestHonorStickyActivationWithChildFrameCrossDocument);
 
   class SubresourceLoaderFactoriesConfig;
 
@@ -4926,13 +4960,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Only for fenced frames based on MPArch:
-  // Indicates whether this is the root of a fenced subtree whose last
-  // embedder-initiated navigation was to an opaque url (urn:uuid).
-  // Once this value is initially set, it doesn't change over the lifetime of
-  // the document.
-  bool is_fenced_frame_root_originating_from_opaque_url_ = false;
-
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost
   // is displaying a document. Its lifetime should coincide with the lifetime of
@@ -4999,7 +5026,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the Navigation API). Activated when `user_activation_state_` is activated,
   // but consumed separately when a page interrupts browser-initiated history
   // navigations (e.g., after canceled history navigations or uses of
-  // CloseWatcher).
+  // CloseWatcher). Note that this is used for the navigation API and not for
+  // tracking whether NavigationEntries are skippable (which uses sticky user
+  // activation and the honor_sticky_activation_for_history_intervention_ bit
+  // below).
   blink::HistoryUserActivationState history_user_activation_state_;
 
   // Manages a transient state tracking mechanism for this frame to verify focus
@@ -5008,6 +5038,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // passed to the new frame. This can be passed to multiple frames as part of a
   // single focus event if a frame doesn't have any focusable elements.
   TransientFocusSourceUserActivation focus_source_user_activation_state_;
+
+  // For the history manipulation intervention, main frames track whether to
+  // honor the sticky user activation for creating non-skippable
+  // NavigationEntries. The activation can be ignored if a same-document
+  // history navigation occurs, so that documents in the page cannot create
+  // more non-skippable entries after a back navigation even though activations
+  // are not consumed after same-document navigations. See crbug.com/1248529
+  // for more details.
+  // More specifically, this field is only updated for main frames, and:
+  // 1) Starts at true for every new document.
+  // 2) Is set to false after a same-document back/forward navigation in any
+  // frame of the page.
+  // 3) Is set back to true if another user activation is received or a cross
+  // document commit occurs (including a BFCache activation).
+
+  // The value is manually reset on cross-document navigations in
+  // ClearUserActivation via ResetForNavigation, and not via
+  // DocumentAssociatedData (which does not get reset for BFCache activations).
+  bool honor_sticky_activation_for_history_intervention_ = true;
 
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.

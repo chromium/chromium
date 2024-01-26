@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Zasílat oznámení</translation>
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
+<translation id="427987768447457592">Nová skupina karet</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenze)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}many{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzí)}}</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
+<translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> kartu, se kterou jste delší dobu nepracovali}few{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}many{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}other{Máte <ph name="TABS_COUNT_MANY" /> karet, se kterými jste delší dobu nepracovali}}</translation>
 <translation id="5339733443032484186">Vaše poslední karta</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>

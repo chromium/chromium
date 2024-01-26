@@ -156,17 +156,6 @@ std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
              : std::nullopt;
 }
 
-// If the autocomplete `value` doesn't match any of Autofill's supported values,
-// Autofill should remain enabled for good intended values. This function checks
-// if there is reason to believe so, by matching `value` against patterns like
-// "address".
-// Ignoring autocomplete="off" and alike is treated separately in
-// `ParseAutocompleteAttribute()`.
-bool ShouldIgnoreAutocompleteValue(std::string_view value) {
-  static constexpr char16_t kRegex[] = u"address";
-  return MatchesRegex<kRegex>(base::UTF8ToUTF16(value));
-}
-
 }  // namespace
 
 std::string AutocompleteParsingResult::ToString() const {
@@ -204,14 +193,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
 
   // `value` cannot be mapped to any HtmlFieldType. By classifying the field
   // as HtmlFieldType::kUnrecognized Autofill is effectively disabled.
-  // Instead, check if we have reason to ignore the value and treat the field as
-  // HtmlFieldType::kUnspecified. This makes us ignore the autocomplete
-  // value.
-  return ShouldIgnoreAutocompleteValue(value) &&
-                 base::FeatureList::IsEnabled(
-                     features::kAutofillIgnoreUnmappableAutocompleteValues)
-             ? HtmlFieldType::kUnspecified
-             : HtmlFieldType::kUnrecognized;
+  return HtmlFieldType::kUnrecognized;
 }
 
 std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(

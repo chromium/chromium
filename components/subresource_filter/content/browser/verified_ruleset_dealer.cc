@@ -60,7 +60,7 @@ scoped_refptr<const MemoryMappedRuleset> VerifiedRulesetDealer::GetRuleset() {
     case RulesetVerificationStatus::kNotVerified: {
       auto ruleset = RulesetDealer::GetRuleset();
       if (ruleset) {
-        if (IndexedRulesetMatcher::Verify(ruleset->data(), ruleset->length(),
+        if (IndexedRulesetMatcher::Verify(ruleset->data(),
                                           expected_checksum_)) {
           status_ = RulesetVerificationStatus::kIntact;
         } else {

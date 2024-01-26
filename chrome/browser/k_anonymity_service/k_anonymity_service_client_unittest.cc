@@ -485,9 +485,9 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
   }
 
  private:
-  absl::optional<net::Error> error_;
-  absl::optional<int> outer_response_error_code_;
-  absl::optional<int> inner_response_code_;
+  std::optional<net::Error> error_;
+  std::optional<int> outer_response_error_code_;
+  std::optional<int> inner_response_code_;
   bool drop_requests_ = false;
   network::mojom::ObliviousHttpRequestPtr pending_request_;
   mojo::Remote<network::mojom::ObliviousHttpClient> remote_;

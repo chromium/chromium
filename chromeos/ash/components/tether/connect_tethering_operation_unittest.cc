@@ -20,11 +20,11 @@
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
-#include "chromeos/ash/components/tether/test_timer_factory.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "components/cross_device/timer_factory/fake_timer_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,12 +89,6 @@ class ConnectTetheringOperationTest : public testing::Test {
 
   std::unique_ptr<ConnectTetheringOperation> ConstructOperation() {
     std::unique_ptr<ConnectTetheringOperation> operation;
-    test_timer_factory_ = new TestTimerFactory();
-
-    // Prepare the connection timeout timer to be made for the remote device.
-    test_timer_factory_->set_device_id_for_next_timer(
-        remote_device_.GetDeviceId());
-
     auto fake_connection_attempt =
         std::make_unique<secure_channel::FakeConnectionAttempt>();
     remote_device_to_fake_connection_attempt_map_[remote_device_] =
@@ -107,7 +101,7 @@ class ConnectTetheringOperationTest : public testing::Test {
         fake_secure_channel_client_.get(),
         mock_tether_host_response_recorder_.get(), false /* setup_required */));
     operation->SetTimerFactoryForTest(
-        base::WrapUnique(test_timer_factory_.get()));
+        std::make_unique<cross_device::FakeTimerFactory>());
     operation->AddObserver(&mock_observer_);
 
     test_clock_.SetNow(base::Time::UnixEpoch());
@@ -142,7 +136,6 @@ class ConnectTetheringOperationTest : public testing::Test {
   std::unique_ptr<StrictMock<MockTetherHostResponseRecorder>>
       mock_tether_host_response_recorder_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<TestTimerFactory, DanglingUntriaged> test_timer_factory_;
   MockOperationObserver mock_observer_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ConnectTetheringOperation> operation_;

@@ -10,7 +10,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   const locationsToTest =
     [
       // elements
-      'elements.domProperties',
+      'elements.dom-properties',
       // Performance Monitor
       'performance.monitor',
       // Sensors

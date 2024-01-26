@@ -20,12 +20,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -133,7 +133,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
         /*offsets=*/nullptr));
     builder.AddPngImage(
         "/256x256-green.png",
-        test::BitmapAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
+        test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
     builder.AddHtml("/index.html", R"(
       <head>
         <link rel="manifest" href="/manifest.webmanifest">
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 // TODO(crbug.com/1479463): Session restore does not restore app windows on
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 
   Browser* app_window =
       AppBrowserController::FindForWebApp(*profile(), url_info_.app_id());

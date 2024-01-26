@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Endirmə durduruldu</translation>
 <translation id="1415402041810619267">URL tam deyil</translation>
 <translation id="1426410128494586442">Bəli</translation>
+<translation id="1434873037477293673">qiymətin düşməsi kartı</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobil görünüş tələb edin</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytların virtual reallıq cihazınızı və datanızı istifadə etməsinin qarşısını alın</translation>
 <translation id="6447842834002726250">Kukilər</translation>
+<translation id="6452138246455930388">Açıq tabda qiymət <ph name="OLD_PRICE" /> məbləğindən <ph name="NEW_PRICE" /> məbləğinə düşdü: <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Pəncərə dar olduqda mobil görünüş tələb edin</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="652937045869844725">Üçüncü tərəf kukilərinə icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
 <translation id="6766622839693428701">Bağlamaq üçün aşağı sürüşdürün.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />, mənbə: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> üçün seçim edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6818926723028410516">Element seçin</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
+<translation id="6867014948848323204">Mənbə: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6950072572526089586">Daxil olduğunuz sayt düzgün işləmək üçün gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Bu məlumat sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki məhsulları yadda saxlamaq üçündür. Adətən, saytlar bu məlumatı cihazda müvəqqəti yadda saxlayır.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Ozlu Heyrətamiz Sehrbaz</translation>
 <translation id="7684642910516280563">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verməyin</translation>
 <translation id="7719367874908701697">Səhifə yaxınlaşdırması</translation>
+<translation id="7770832849480336015">Gizlədin: "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>

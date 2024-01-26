@@ -6,6 +6,8 @@
  * @fileoverview Class to handle accessing/storing/caching local storage data.
  */
 
+type StorageChange = chrome.storage.StorageChange;
+
 export class LocalStorage {
   private values_: Record<string, any>|null = null;
   private keyCallbacks_: Record<string, Array<(value: any) => void>> = {};
@@ -14,9 +16,9 @@ export class LocalStorage {
   constructor(onInit: (localStorage: LocalStorage) => void) {
     chrome.storage.local.get(
         undefined /* get all values */,
-        values => this.onInitialGet_(values, onInit));
+        (values: {[key: string]: any}) => this.onInitialGet_(values, onInit));
     chrome.storage.local.onChanged.addListener(
-        updates => this.update_(updates));
+        (updates: {[key: string]: StorageChange}) => this.update_(updates));
   }
 
   // ========== Static methods ==========

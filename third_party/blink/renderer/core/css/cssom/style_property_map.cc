@@ -266,8 +266,7 @@ const CSSValue* CoerceStyleValuesOrStrings(
     if (!css_value) {
       return nullptr;
     }
-    if (css_value->IsCSSWideKeyword() ||
-        css_value->IsVariableReferenceValue()) {
+    if (css_value->IsCSSWideKeyword() || css_value->IsUnparsedDeclaration()) {
       return style_values.size() == 1U ? css_value : nullptr;
     }
     result->Append(*css_value);
@@ -387,7 +386,7 @@ void StylePropertyMap::append(
 
   CSSValueList* current_value = nullptr;
   if (const CSSValue* css_value = GetProperty(property_id)) {
-    if (css_value->IsVariableReferenceValue() ||
+    if (css_value->IsUnparsedDeclaration() ||
         css_value->IsPendingSubstitutionValue()) {
       // https://drafts.css-houdini.org/css-typed-om/#dom-stylepropertymap-append
       // 8. If props[property] contains a var() reference, throw a TypeError.

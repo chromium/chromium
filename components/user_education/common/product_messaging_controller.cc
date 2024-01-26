@@ -16,6 +16,10 @@
 
 namespace user_education {
 
+namespace internal {
+DEFINE_REQUIRED_NOTICE_IDENTIFIER(kShowAfterAllNotices);
+}
+
 // RequiredNoticePriorityHandle
 
 RequiredNoticePriorityHandle::RequiredNoticePriorityHandle() = default;
@@ -81,6 +85,11 @@ struct ProductMessagingController::RequiredNoticeData {
 ProductMessagingController::ProductMessagingController() = default;
 ProductMessagingController::~ProductMessagingController() = default;
 
+bool ProductMessagingController::IsNoticeQueued(
+    RequiredNoticeId notice_id) const {
+  return base::Contains(data_, notice_id);
+}
+
 void ProductMessagingController::QueueRequiredNotice(
     RequiredNoticeId notice_id,
     RequiredNoticeShowCallback ready_to_start_callback,
@@ -121,15 +130,22 @@ void ProductMessagingController::MaybeShowNextRequiredNoticeImpl() {
   RequiredNoticeId to_show;
   for (const auto& [id, data] : data_) {
     bool excluded = false;
+    bool show_after_all = false;
     for (auto after : data.show_after) {
-      if (base::Contains(data_, after)) {
+      if (after == internal::kShowAfterAllNotices) {
+        show_after_all = true;
+      } else if (base::Contains(data_, after)) {
         excluded = true;
         break;
       }
     }
     if (!excluded) {
-      to_show = id;
-      break;
+      if (!show_after_all) {
+        to_show = id;
+        break;
+      } else if (!to_show) {
+        to_show = id;
+      }
     }
   }
 

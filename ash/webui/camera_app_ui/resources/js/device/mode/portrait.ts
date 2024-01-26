@@ -66,7 +66,7 @@ export class Portrait extends Photo {
     let portrait: TakePhotoResult;
     try {
       [reference, portrait] = await this.getImageCapture().takePhoto(
-          photoSettings, [Effect.PORTRAIT_MODE]);
+          photoSettings, [Effect.kPortraitMode]);
       this.portraitHandler.playShutterEffect();
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);

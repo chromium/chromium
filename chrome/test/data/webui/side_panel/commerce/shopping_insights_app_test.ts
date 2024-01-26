@@ -101,6 +101,9 @@ suite('ShoppingInsightsAppTest', () => {
         Promise.resolve({productInfo: productInfo}));
     shoppingServiceApi.setResultFor(
         'isShoppingListEligible', Promise.resolve({eligible: false}));
+    shoppingServiceApi.setResultFor(
+        'getPriceTrackingStatusForCurrentUrl',
+        Promise.resolve({tracked: false}));
     ShoppingServiceApiProxyImpl.setInstance(shoppingServiceApi);
 
     shoppingInsightsApp = document.createElement('shopping-insights-app');
@@ -184,7 +187,7 @@ suite('ShoppingInsightsAppTest', () => {
         comment.textContent!.trim());
 
     const feedbackButton =
-        commentRow.shadowRoot!.querySelector('.link') as HTMLElement;
+        commentRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!feedbackButton);
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
@@ -257,7 +260,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertFalse(
         isVisible(attributesRow.shadowRoot!.querySelector('.attributes')));
     const buyOption =
-        attributesRow.shadowRoot!.querySelector('.link') as HTMLElement;
+        attributesRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!buyOption);
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
@@ -334,15 +337,56 @@ suite('ShoppingInsightsAppTest', () => {
       await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
       await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
       await shoppingServiceApi.whenCalled('isShoppingListEligible');
+      await shoppingServiceApi.whenCalled(
+          'getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
-      const section = shoppingInsightsApp.shadowRoot!.querySelector(
-                          '#priceTrackingSection') as PriceTrackingSection;
+      const section =
+          shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+              '#priceTrackingSection');
       assertEquals(isVisible(section), eligible);
       if (eligible) {
+        assertTrue(!!section);
         assertEquals(section.priceInsightsInfo, priceInsights1);
         assertEquals(section.productInfo, productInfo);
       }
     });
+  });
+
+  test('NotShowPriceTrackingWithoutTrackingStatus', async () => {
+    shoppingServiceApi.setResultFor(
+        'isShoppingListEligible', Promise.resolve({eligible: true}));
+    shoppingServiceApi.setResultFor(
+        'getProductInfoForCurrentUrl',
+        Promise.resolve({productInfo: productInfo}));
+    shoppingServiceApi.setResultFor(
+        'getPriceInsightsInfoForCurrentUrl',
+        Promise.resolve({priceInsightsInfo: priceInsights1}));
+    shoppingServiceApi.setResultFor(
+        'getParentBookmarkFolderNameForCurrentUrl',
+        Promise.resolve({name: stringToMojoString16('Parent folder')}));
+
+    const callbackRouter = new PageCallbackRouter();
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+
+    document.body.appendChild(shoppingInsightsApp);
+    await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
+    await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
+    await shoppingServiceApi.whenCalled('isShoppingListEligible');
+
+    // Price tracking section is not visible before
+    // `getPriceTrackingStatusForCurrentUrl` returns.
+    let section =
+        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+            '#priceTrackingSection');
+    assertFalse(isVisible(section));
+
+    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
+    await flushTasks();
+
+    section =
+        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+            '#priceTrackingSection');
+    assertTrue(isVisible(section));
   });
 });

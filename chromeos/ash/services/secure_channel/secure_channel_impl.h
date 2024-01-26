@@ -17,6 +17,10 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
+namespace cross_device {
+class TimerFactory;
+}  // namespace cross_device
+
 namespace device {
 class BluetoothAdapter;
 }
@@ -117,7 +121,9 @@ class SecureChannelImpl : public mojom::SecureChannel,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
   void GetLastSeenTimestamp(const std::string& remote_device_id,
@@ -182,7 +188,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
       ConnectionMedium connection_medium);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  std::unique_ptr<TimerFactory> timer_factory_;
+  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
   std::unique_ptr<BluetoothHelper> bluetooth_helper_;
   std::unique_ptr<BleSynchronizerBase> ble_synchronizer_;

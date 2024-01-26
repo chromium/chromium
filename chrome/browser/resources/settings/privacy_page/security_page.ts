@@ -14,9 +14,10 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
@@ -27,14 +28,16 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../focus_config.js';
+import type {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
-import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
+import type {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {getTemplate} from './security_page.html.js';
 
 /**
@@ -516,6 +519,10 @@ export class SettingsSecurityPageElement extends
 
   private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));
+  }
+
+  private onV8SettingsClick_() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_JAVASCRIPT_JIT);
   }
 
   private onSecurityKeysClick_() {

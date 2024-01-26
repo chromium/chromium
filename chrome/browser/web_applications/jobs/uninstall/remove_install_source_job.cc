@@ -122,7 +122,7 @@ void RemoveInstallSourceJob::RemoveInstallSourceFromDatabase(
     WebApp* app = update->UpdateApp(app_id_);
     app->RemoveSource(install_source_);
     if (install_source_ == WebAppManagement::kSubApp) {
-      app->SetParentAppId(absl::nullopt);
+      app->SetParentAppId(std::nullopt);
     }
     // TODO(crbug.com/1447308): Make sync uninstall not synchronously
     // remove its sync install source even while a command has an app lock so

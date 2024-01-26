@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -579,12 +578,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
       EvictionInfo(RenderFrameHostImpl& rfh,
                    BackForwardCacheCanStoreDocumentResult* reasons)
           : rfh_to_be_evicted(&rfh), reasons(reasons) {}
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #union
-      RAW_PTR_EXCLUSION RenderFrameHostImpl* const rfh_to_be_evicted;
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #union
-      RAW_PTR_EXCLUSION const BackForwardCacheCanStoreDocumentResult* reasons;
+      const raw_ptr<RenderFrameHostImpl> rfh_to_be_evicted;
+      raw_ptr<const BackForwardCacheCanStoreDocumentResult> reasons;
     };
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
@@ -766,8 +761,17 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // from all the reachable cross-origin iframes. We decrement this count
   // every time we call this function, and report only when |index| is 0 so
   // that reporting happens only for randomly picked one of such iframes.
+  // TODO(crbug.com/1518408): Add "masked" when UA internal reasons such as
+  // memory pressure and browsing instance not swapped are blocking as well.
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasonsInternal(int& index);
+
+  // Returns if any cross-origin iframe in the tree is blocking and is not
+  // a randomly selected iframe (i.e. does not have "masked" as its reason).
+  // If this is true, we need to add "masked" to main frame's reasons.
+  // |index| is the random index of the cross-origin iframe that we decided to
+  // report from all the reachable cross-origin iframes.
+  bool HasUnexposedCrossOriginBlockingIframe(int& index);
 
   // Count the number of cross-origin frames that are direct children of
   // same-origin frames, including the main frame, in the tree.

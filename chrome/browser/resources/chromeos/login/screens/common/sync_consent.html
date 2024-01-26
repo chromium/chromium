@@ -153,13 +153,13 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
     for-step="ash-sync">
   <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-  <h1 slot="title" consent-description hidden="[[isLacrosEnabled_]]">
+  <h1 slot="title" consent-description hidden="[[isLacrosEnabled]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
   </h1>
-  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled_]]">
+  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
   </h1>
-  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled_]]">
+  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled]]">
     [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
   </div>
   <iron-icon slot="subtitle-illustration" icon="oobe-illos:sync-consent-illo"
@@ -168,7 +168,7 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="landscape-header-aligned">
     <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled_]]">
+        hidden="[[isLacrosEnabled]]">
       <iron-icon icon="oobe-24:settings-gear" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -179,7 +179,7 @@ found in the LICENSE file.
       </div>
     </div>
     <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled_]]">
+        hidden="[[isLacrosEnabled]]">
       <iron-icon icon="oobe-24:browser-sync" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -193,31 +193,31 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div hidden="[[!isLacrosEnabled_]]" consent-description>
+    <div hidden="[[!isLacrosEnabled]]" consent-description>
       [[i18nDynamic(locale,
           'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
     </div>
 
-    <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
+    <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode]]"
         consent-description>
-      [[getReviewSettingText_(locale, isLacrosEnabled_)]]
+      [[getReviewSettingText(locale, isLacrosEnabled)]]
     </cr-checkbox>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="declineButton"
-        on-click="onDeclined_" hidden="[[!isMinorMode_]]"
+        on-click="onDeclined" hidden="[[!isMinorMode]]"
         label-for-aria="[[i18nDynamic(locale,
                                       'syncConsentScreenDecline')]]">
       <div slot="text" consent-description consent-confirmation>
         [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
       </div>
     </oobe-text-button>
-    <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
+    <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode]]"
         id="acceptButton"
-        on-click="onAccepted_"
-        label-for-aria="[[i18nDynamic(locale, optInButtonTextKey_)]]">
+        on-click="onAccepted"
+        label-for-aria="[[i18nDynamic(locale, optInButtonTextKey)]]">
       <div slot="text" consent-description consent-confirmation>
-        [[i18nDynamic(locale, optInButtonTextKey_)]]
+        [[i18nDynamic(locale, optInButtonTextKey)]]
       </div>
     </oobe-text-button>
   </div>
@@ -246,9 +246,9 @@ found in the LICENSE file.
     <iron-icon icon="oobe-illos:sync-consent-illo" class="illustration-jelly">
     </iron-icon>
   </div>
-  <div slot="bottom-buttons" hidden="[[isMinorMode_]]">
+  <div slot="bottom-buttons" hidden="[[isMinorMode]]">
     <oobe-text-button id="manageButtonRegularUser"
-        on-click="onManageClicked_"
+        on-click="onManageClicked"
         label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
       <div slot="text" consent-description consent-confirmation>
         [[i18nDynamic(locale, 'syncConsentScreenManage')]]
@@ -256,16 +256,16 @@ found in the LICENSE file.
     </oobe-text-button>
     <oobe-text-button class="focus-on-show" inverse
         id="syncEverythingButton"
-        on-click="onSyncEverything_"
+        on-click="onSyncEverything"
         label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
       <div slot="text" consent-description consent-confirmation>
         [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
       </div>
     </oobe-text-button>
   </div>
-  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[!isMinorMode_]]">
+  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[!isMinorMode]]">
     <oobe-text-button id="manageButtonMinorUser"
-        on-click="onManageClicked_"
+        on-click="onManageClicked"
         label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
       <div slot="text" consent-description consent-confirmation>
         [[i18nDynamic(locale, 'syncConsentScreenManage')]]
@@ -273,7 +273,7 @@ found in the LICENSE file.
     </oobe-text-button>
     <div id="rightButtons">
       <oobe-text-button id="declineLacrosButton"
-          on-click="onLacrosDeclineClicked_"
+          on-click="onLacrosDeclineClicked"
           label-for-aria="[[i18nDynamic(locale,
                                           'syncConsentScreenDecline')]]">
         <div slot="text" consent-description consent-confirmation>
@@ -282,7 +282,7 @@ found in the LICENSE file.
       </oobe-text-button>
       <oobe-text-button class="focus-on-show"
           id="syncEverythingButton"
-          on-click="onSyncEverything_"
+          on-click="onSyncEverything"
           label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
         <div slot="text" consent-description consent-confirmation>
           [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
@@ -303,7 +303,7 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton"
-        on-click="onBackClicked_"></oobe-back-button>
+        on-click="onBackClicked"></oobe-back-button>
   </div>
   <div slot="content" class="layout vertical landscape-header-aligned ">
     <div id="cards-container">
@@ -325,7 +325,7 @@ found in the LICENSE file.
         </div>
         <div style="display:inline-block">
           <iron-icon id="tooltip-icon" icon="oobe-32:sync-tooltip"
-            role="img" aria-label$="[[getAriaLabeltooltip_(locale)]]">
+            role="img" aria-label$="[[getAriaLabeltooltip(locale)]]">
           </iron-icon>
           <paper-tooltip id="tooltip-element" position="left"
               aria-hidden="true"
@@ -342,7 +342,7 @@ found in the LICENSE file.
           </paper-tooltip>
         </div>
         <cr-toggle id="appsTogglebutton" checked="{{osSyncItemsStatus.osApps}}"
-          aria-label$="[[getAriaLabelToggleButtons_(locale,
+          aria-label$="[[getAriaLabelToggleButtons(locale,
             'syncConsentScreenOsSyncItemOptionAppsTitle' ,
             'syncConsentScreenOsSyncItemOptionAppsSubtitle')]]">
         </cr-toggle>
@@ -363,9 +363,9 @@ found in the LICENSE file.
           </div>
         </div>
         <cr-toggle id="settingsTogglebutton"
-                   on-change="onSettingsSyncedChanged_"
+                   on-change="onSettingsSyncedChanged"
                    checked="{{osSyncItemsStatus.osPreferences}}"
-                   aria-label$="[[getAriaLabelToggleButtons_(locale,
+                   aria-label$="[[getAriaLabelToggleButtons(locale,
                       'syncConsentScreenOsSyncItemOptionSettingsTitle' ,
                       'syncConsentScreenOsSyncItemOptionSettingsSubtitle')]]">
         </cr-toggle>
@@ -387,7 +387,7 @@ found in the LICENSE file.
         </div>
         <cr-toggle id="wifiTogglebutton"
             checked="{{osSyncItemsStatus.osWifiConfigurations}}"
-            aria-label$="[[getAriaLabelToggleButtons_(locale,
+            aria-label$="[[getAriaLabelToggleButtons(locale,
                       'syncConsentScreenOsSyncItemOptionWifiTitle' ,
                       'syncConsentScreenOsSyncItemOptionWifiSubtitle')]]">
         </cr-toggle>
@@ -410,7 +410,7 @@ found in the LICENSE file.
         <cr-toggle id="wallpaperTogglebutton"
                    checked="{{osSyncItemsStatus.osWallpaper}}"
                    disabled="[[!osSyncItemsStatus.osPreferences]]"
-                   aria-label$="[[getAriaLabelToggleButtons_(locale,
+                   aria-label$="[[getAriaLabelToggleButtons(locale,
                       'syncConsentScreenOsSyncItemOptionWallpaperTitle' ,
                       'syncConsentScreenOsSyncItemOptionWallpaperSubtitle')]]">
         </cr-toggle>
@@ -419,7 +419,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton" class="focus-on-show"
-      on-click="onNextClicked_">
+      on-click="onNextClicked">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

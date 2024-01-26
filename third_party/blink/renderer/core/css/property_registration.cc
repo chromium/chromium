@@ -6,16 +6,15 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_property_definition.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -83,7 +82,7 @@ static bool ComputationallyIndependent(const CSSValue& value) {
   DCHECK(!value.IsCSSWideKeyword());
 
   if (auto* variable_reference_value =
-          DynamicTo<CSSVariableReferenceValue>(value)) {
+          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
     return !variable_reference_value->VariableDataValue()
                 ->NeedsVariableResolution();
   }
@@ -137,7 +136,7 @@ absl::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
     return syntax.IsUniversal() ? absl::make_optional(nullptr) : absl::nullopt;
   }
   scoped_refptr<CSSVariableData> initial_variable_data =
-      &To<CSSCustomPropertyDeclaration>(*initial_value).Value();
+      To<CSSUnparsedDeclarationValue>(*initial_value).VariableDataValue();
 
   // Parse initial value, if we have it.
   const CSSValue* initial = nullptr;

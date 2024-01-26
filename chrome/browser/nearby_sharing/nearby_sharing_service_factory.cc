@@ -36,8 +36,8 @@ namespace {
 constexpr char kServiceName[] = "NearbySharingService";
 constexpr char kServiceId[] = "NearbySharing";
 
-absl::optional<bool>& IsSupportedTesting() {
-  static absl::optional<bool> is_supported;
+std::optional<bool>& IsSupportedTesting() {
+  static std::optional<bool> is_supported;
   return is_supported;
 }
 

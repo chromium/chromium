@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1426410128494586442">Kyllä</translation>
+<translation id="1434873037477293673">hinnanlaskukortti</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
 <translation id="1510341833810331442">Sivustot eivät saa tallentaa dataa laitteellesi</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pyydä mobiilinäkymää</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Estä sivustoja käyttämästä virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>
 <translation id="6447842834002726250">Evästeet</translation>
+<translation id="6452138246455930388">Hinnanalennus avoimella välilehdellä, vanha hinta <ph name="OLD_PRICE" />, nyt <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="652937045869844725">Kokeile sallia kolmannen osapuolen evästeet. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Siirrä alas</translation>
 <translation id="6749077623962119521">Nollataanko luvat?</translation>
 <translation id="6766622839693428701">Sulje pyyhkäisemällä alas.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />, lähde: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Valitse vaihtoehto sivustolle <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6818926723028410516">Valitse kohteet</translation>
 <translation id="6864395892908308021">Tämä laite ei lue NFC-dataa</translation>
+<translation id="6867014948848323204">Lähde: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Estä sivustoja lukemasta tekstiä ja kuvia leikepöydältä</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6950072572526089586">Avaamasi sivusto voi tallentaa tietoja toiminnastasi, jotta se toimii odotetulla tavalla – esimerkiksi pitääksesi sinut kirjautuneena sivustolle tai tallentaaksesi tuotteita ostoskoriin. Sivustot tallentavat usein nämä tiedot väliaikaisesti laitteellesi.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Ihmemaa Oz</translation>
 <translation id="7684642910516280563">Älä salli sivuston käyttää kolmannen osapuolen evästeitä</translation>
 <translation id="7719367874908701697">Sivun zoomaus</translation>
+<translation id="7770832849480336015">Piilota "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="780301667611848630">Ei kiitos</translation>

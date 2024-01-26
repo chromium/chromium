@@ -4228,4 +4228,62 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   EXPECT_FALSE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 }
 
+class ShelfViewWebAppShortcutTest : public ShelfViewTest {
+ public:
+  ShelfViewWebAppShortcutTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSeparateWebAppShortcutBadgeIcon,
+         chromeos::features::kCrosWebAppShortcutUiUpdate},
+        {});
+  }
+  ShelfViewWebAppShortcutTest(const ShelfViewWebAppShortcutTest&) = delete;
+  ShelfViewWebAppShortcutTest& operator=(const ShelfViewWebAppShortcutTest&) =
+      delete;
+  ~ShelfViewWebAppShortcutTest() override = default;
+
+ protected:
+  ShelfID AddWebAppShortcut(bool wait_for_animations) {
+    ShelfItem item = ShelfTestUtil::AddWebAppShortcut(
+        base::NumberToString(id_++), true, CreateImageSkiaIcon(SK_ColorRED),
+        CreateImageSkiaIcon(SK_ColorCYAN));
+    // Set a delegate; some tests require one to select the item.
+    model_->ReplaceShelfItemDelegate(
+        item.id, std::make_unique<ShelfItemSelectionTracker>());
+    if (wait_for_animations) {
+      test_api_->RunMessageLoopUntilAnimationsDone();
+    }
+    return item.id;
+  }
+
+  gfx::ImageSkia GetHostBadgeImage(ShelfID id) {
+    ShelfAppButton* button = GetButtonByID(id);
+    return button->GetHostBadgeImageForTest();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ShelfViewWebAppShortcutTest,
+       ShortcutIconEffectsShowOnShortcutItemWithHostBadge) {
+  // Add a shortcut app button.
+  ShelfID last_added = AddWebAppShortcut(true);
+  const std::string web_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+
+  EXPECT_FALSE(item.badge_image.isNull());
+  EXPECT_FALSE(GetHostBadgeImage(last_added).isNull());
+}
+
+TEST_F(ShelfViewWebAppShortcutTest,
+       NoShortcutIconEffectOntItemWithoutHostBadge) {
+  // Add a shortcut app button.
+  ShelfID last_added = AddAppShortcut();
+  const std::string web_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+
+  EXPECT_TRUE(item.badge_image.isNull());
+  EXPECT_TRUE(GetHostBadgeImage(last_added).isNull());
+}
+
 }  // namespace ash

@@ -39,14 +39,6 @@ class BorealisTokenHardwareChecker : public TokenHardwareChecker {
   // is more than 7G.
   bool HasSufficientHardware(const std::string& cpu_regex) const;
 
-  // Performs a token check for the |expected| token with the given |salt|. If
-  // the token matches we log a WARNING, identifying the token by |name|, since
-  // we only expect tokens to be used on unreleased/underpowered devices by
-  // internal developers.
-  bool HasNamedToken(const char* name,
-                     const char* salt,
-                     const char* expected) const;
-
   // Determines if this hardware has the correct segmentation parameters (see
   // b/274537000 for details).
   bool InTargetSegment() const;

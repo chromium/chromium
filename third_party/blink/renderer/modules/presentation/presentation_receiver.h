@@ -31,8 +31,7 @@ class MODULES_EXPORT PresentationReceiver final
       public mojom::blink::PresentationReceiver {
   DEFINE_WRAPPERTYPEINFO();
   using ConnectionListProperty =
-      ScriptPromiseProperty<Member<PresentationConnectionList>,
-                            Member<DOMException>>;
+      ScriptPromiseProperty<PresentationConnectionList, DOMException>;
 
  public:
   explicit PresentationReceiver(LocalDOMWindow*);

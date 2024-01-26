@@ -13,30 +13,13 @@ struct SameOriginBfcacheNotRestoredDetails {
   // URL when the frame navigated away. This could be cut down if the
   // reported value was longer than a limit.
   string url;
-  // List of reasons that blocked back/forward cache if any.
-  array<string> reasons;
   // List of children frames' information.
   array<BackForwardCacheNotRestoredReasons> children;
-};
-
-// Enum to indicate whether or not a document blocked back/forward cache.
-enum BFCacheBlocked {
-  kYes = 0,
-  kNo = 1,
-  // This value indicates that the privacy sensitive information (whether or
-  // not a document blocked back/forward cache) is masked for a cross-origin
-  // iframe.
-  kMasked = 2
 };
 
 // Struct for NotRestoredReasons API to report from browser to renderer. This
 // contains the information that is common to both same-origin and cross-origin iframes.
 struct BackForwardCacheNotRestoredReasons {
-  // Indicates whether or not this document blocked back/forward cache. If this
-  // document is cross-origin from the main document, this indicates if this
-  // frame's subtree blocked back/forward cache. This value can be |kMasked| for
-  // privacy reasons.
-  BFCacheBlocked blocked;
   // HTML src attribute of the frame. This could be cut down if the reported
   // value was longer than a limit.
   string? src;
@@ -44,6 +27,9 @@ struct BackForwardCacheNotRestoredReasons {
   string? id;
   // HTML name attribute of the frame.
   string? name;
+  // List of reasons that blocked back/forward cache if any.
+  // TODO(crbug.com/1519483): Define enums of reasons and use them instead of strings.
+  array<string> reasons;
   // This will be absl::nullopt when this document is cross-origin from the main
   // document.
   SameOriginBfcacheNotRestoredDetails? same_origin_details;

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -17,19 +18,19 @@ class ContentAnalysisDelegateBase {
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
   virtual void BypassWarnings(
-      absl::optional<std::u16string> user_justification) = 0;
+      std::optional<std::u16string> user_justification) = 0;
 
   // Called when the user hits "cancel" on the dialog, typically cancelling a
   // pending file transfer.
   virtual void Cancel(bool warning) = 0;
 
   // Returns the custom message specified by the admin to display in the dialog,
-  // or absl::nullopt if there isn't any.
-  virtual absl::optional<std::u16string> GetCustomMessage() const = 0;
+  // or std::nullopt if there isn't any.
+  virtual std::optional<std::u16string> GetCustomMessage() const = 0;
 
   // Returns the custom "learn more" URL specified by the admin to display in
-  // the dialog, or absl::nullopt if there isn't any.
-  virtual absl::optional<GURL> GetCustomLearnMoreUrl() const = 0;
+  // the dialog, or std::nullopt if there isn't any.
+  virtual std::optional<GURL> GetCustomLearnMoreUrl() const = 0;
 
   // Returns true if the final verdict is from a type of analysis that requires
   // user justification to bypass, as per the connector policy.
@@ -38,9 +39,9 @@ class ContentAnalysisDelegateBase {
   virtual std::u16string GetBypassJustificationLabel() const = 0;
 
   // Returns the text to display on the "cancel" button in the dialog, or
-  // absl::nullopt if no text is specified by this delegate. Takes precedence
+  // std::nullopt if no text is specified by this delegate. Takes precedence
   // over any other text that would be chosen by the dialog.
-  virtual absl::optional<std::u16string> OverrideCancelButtonText() const = 0;
+  virtual std::optional<std::u16string> OverrideCancelButtonText() const = 0;
 };
 
 }  // namespace enterprise_connectors

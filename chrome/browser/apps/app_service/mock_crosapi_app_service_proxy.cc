@@ -35,7 +35,7 @@ void MockCrosapiAppServiceProxy::LaunchWithResult(
     LaunchWithResultCallback callback) {
   launched_apps_.push_back(std::move(launch_params));
   std::move(callback).Run(ConvertLaunchResultToMojomLaunchResult(
-      LaunchResult(LaunchResult::State::SUCCESS)));
+      LaunchResult(LaunchResult::State::kSuccess)));
   run_loop_->Quit();
 }
 

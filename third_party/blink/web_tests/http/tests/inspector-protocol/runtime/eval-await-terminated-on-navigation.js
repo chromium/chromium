@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
     'http://first.test:8000/inspector-protocol/resources/test-page.html',
     `Tests that not finished asynchronous Runtime.evaluate calls are terminated on navigation.`);

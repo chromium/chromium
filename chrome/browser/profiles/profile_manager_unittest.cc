@@ -282,7 +282,7 @@ class ProfileManagerTest : public testing::Test {
       bool profile_is_child,
       bool user_is_child,
       bool profile_is_managed,
-      absl::optional<bool> arc_is_managed) {
+      std::optional<bool> arc_is_managed) {
     ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
@@ -1220,7 +1220,7 @@ TEST_F(ProfileManagerTest,
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
-      true /* profile_is_managed */, absl::nullopt /* arc_is_managed */);
+      true /* profile_is_managed */, std::nullopt /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
@@ -1235,7 +1235,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildUserForFirstSignInOnNewVersion) {
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       true /* profile_is_child */, true /* user_is_child */,
-      true /* profile_is_managed */, absl::nullopt /* arc_is_managed */);
+      true /* profile_is_managed */, std::nullopt /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),

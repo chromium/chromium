@@ -42,14 +42,14 @@ class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider,
                         base::Value::List args,
                         ForwardOperationCallback callback) override;
   void ForwardRequest(const std::string& provider,
-                      const absl::optional<std::string>& file_system_id,
+                      const std::optional<std::string>& file_system_id,
                       int64_t request_id,
                       int32_t histogram_value,
                       const std::string& event_name,
                       base::Value::List args,
                       ForwardRequestCallback callback) override;
   void CancelRequest(const std::string& provider,
-                     const absl::optional<std::string>& file_system_id,
+                     const std::optional<std::string>& file_system_id,
                      int64_t request_id) override;
 
   // extensions::ExtensionRegistryObserver overrides.

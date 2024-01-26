@@ -334,7 +334,8 @@ scoped_refptr<BasicShape> CreateBasicShape(
   circle->SetRadius(
       CreateRadius(*list.Get(kCircleRadiusIndex), conversion_data));
   circle->SetHasExplicitCenter(
-      To<InterpolableNumber>(list.Get(kCircleHasExplicitCenterIndex))->Value());
+      To<InterpolableNumber>(list.Get(kCircleHasExplicitCenterIndex))
+          ->Value(conversion_data));
   return circle;
 }
 
@@ -423,7 +424,8 @@ scoped_refptr<BasicShape> CreateBasicShape(
   ellipse->SetRadiusY(
       CreateRadius(*list.Get(kEllipseRadiusYIndex), conversion_data));
   ellipse->SetHasExplicitCenter(
-      To<InterpolableNumber>(list.Get(kEllipseHasExplicitCenter))->Value());
+      To<InterpolableNumber>(list.Get(kEllipseHasExplicitCenter))
+          ->Value(conversion_data));
   return ellipse;
 }
 

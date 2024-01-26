@@ -15,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,16 +61,31 @@ bool TestFromSddlStringVector(const std::vector<std::wstring> sddl) {
   return TestSidVector(Sid::FromSddlStringVector(sddl), sddl);
 }
 
-bool EqualNamedCapSid(const Sid& sid, const std::wstring& capability_name) {
-  typedef decltype(::DeriveCapabilitySidsFromName)*
-      DeriveCapabilitySidsFromNameFunc;
+typedef decltype(::DeriveCapabilitySidsFromName)*
+    DeriveCapabilitySidsFromNameFunc;
+
+// Get the DeriveCapabilitySidsFromName API dynamically. Versions of Windows 10
+// older than 1809 do not implement this method. By loading dynamically we can
+// skip tests when running on these older versions. Online documentation for
+// this API claims it's supported back to Windows 2003, however this is entirely
+// incorrect.
+DeriveCapabilitySidsFromNameFunc GetDeriveCapabilitySidsFromName() {
   static const DeriveCapabilitySidsFromNameFunc derive_capability_sids =
       []() -> DeriveCapabilitySidsFromNameFunc {
     HMODULE module = GetModuleHandle(L"api-ms-win-security-base-l1-2-2.dll");
-    CHECK(module);
+    if (!module) {
+      return nullptr;
+    }
     return reinterpret_cast<DeriveCapabilitySidsFromNameFunc>(
         ::GetProcAddress(module, "DeriveCapabilitySidsFromName"));
   }();
+
+  return derive_capability_sids;
+}
+
+bool EqualNamedCapSid(const Sid& sid, const std::wstring& capability_name) {
+  DeriveCapabilitySidsFromNameFunc derive_capability_sids =
+      GetDeriveCapabilitySidsFromName();
   CHECK(derive_capability_sids);
 
   // Pre-reserve some space for SID deleters.
@@ -153,6 +169,10 @@ TEST(SidTest, KnownCapability) {
 }
 
 TEST(SidTest, NamedCapability) {
+  if (!GetDeriveCapabilitySidsFromName()) {
+    GTEST_SKIP()
+        << "Platform doesn't support DeriveCapabilitySidsFromName function.";
+  }
   const std::wstring capabilities[] = {L"",
                                        L"InternetClient",
                                        L"InternetClientServer",
@@ -260,6 +280,10 @@ TEST(SidTest, FromSddlStringVector) {
 }
 
 TEST(SidTest, FromNamedCapabilityVector) {
+  if (!GetDeriveCapabilitySidsFromName()) {
+    GTEST_SKIP()
+        << "Platform doesn't support DeriveCapabilitySidsFromName function.";
+  }
   std::vector<std::wstring> capabilities = {L"",
                                             L"InternetClient",
                                             L"InternetClientServer",

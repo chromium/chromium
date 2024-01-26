@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -512,6 +513,7 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
     // (See viz::Surface::ActivateFrame()).
+    base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, false);
     if (++starting_desk_screenshot_retries_ <= kMaxScreenshotRetries) {
       TakeStartingDeskScreenshot();
     } else {
@@ -523,6 +525,7 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     return;
   }
 
+  base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, true);
   CompleteAnimationPhase1WithLayer(CreateLayerFromCopyOutputResult(
       std::move(copy_result), root_window_size_));
 }
@@ -538,6 +541,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
     // (See viz::Surface::ActivateFrame()).
+    base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, false);
     if (++ending_desk_screenshot_retries_ <= kMaxScreenshotRetries) {
       TakeEndingDeskScreenshot();
     } else {
@@ -549,6 +553,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
     return;
   }
 
+  base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, true);
   ui::Layer* ending_desk_screenshot_layer =
       CreateLayerFromCopyOutputResult(std::move(copy_result), root_window_size_)
           .release();

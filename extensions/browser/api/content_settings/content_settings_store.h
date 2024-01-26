@@ -22,7 +22,7 @@
 #include "extensions/common/api/types.h"
 
 namespace content_settings {
-class OriginIdentifierValueMap;
+class OriginValueMap;
 class RuleIterator;
 }
 
@@ -132,11 +132,11 @@ class ContentSettingsStore
 
   virtual ~ContentSettingsStore();
 
-  content_settings::OriginIdentifierValueMap* GetValueMap(
-      const std::string& ext_id,
-      ChromeSettingScope scope) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  content_settings::OriginValueMap* GetValueMap(const std::string& ext_id,
+                                                ChromeSettingScope scope)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  const content_settings::OriginIdentifierValueMap* GetValueMap(
+  const content_settings::OriginValueMap* GetValueMap(
       const std::string& ext_id,
       ChromeSettingScope scope) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

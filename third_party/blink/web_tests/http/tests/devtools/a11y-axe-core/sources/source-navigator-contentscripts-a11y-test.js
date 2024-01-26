@@ -39,7 +39,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   }
 
   async function testA11yForView(ruleSet) {
-    await UI.ViewManager.ViewManager.instance().showView('navigator-contentScripts');
+    await UI.ViewManager.ViewManager.instance().showView('navigator-content-scripts');
     const sourcesNavigatorView = new Sources.SourcesNavigator.ContentScriptsNavigatorView();
 
     sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);

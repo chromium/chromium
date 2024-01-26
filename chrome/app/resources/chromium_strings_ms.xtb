@@ -88,6 +88,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2583187216237139145">Sebarang data Chromium yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk (disyorkan)</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
 <translation id="268602741124540128">Selamat datang ke Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3258596308407688501">Chromium tidak dapat membaca atau menulis pada direktori datanya:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 ialah JavaScript Chromium dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
 <translation id="3283186697780795848">Chromium versi <ph name="PRODUCT_VERSION" /> dipasang</translation>
 <translation id="3286538390144397061">Mulakan Semula Sekarang</translation>
 <translation id="328888136576916638">Kunci API Google tiada. Sesetengah fungsi Chromium akan dilumpuhkan.</translation>
@@ -140,7 +142,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3533435340678213462">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chromium.</translation>
 <translation id="3567254597502212821">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chromium pada peranti ini.</translation>
 <translation id="3593091352817399191">Akaun lain sudah log masuk. Untuk menjadikan penyemakan imbas anda terpisah, Chromium boleh membuat profil anda sendiri untuk anda.</translation>
-<translation id="363078681319665186">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan macOS 10.15 atau yang lebih baharu. Komputer ini menggunakan macOS 10.13.</translation>
 <translation id="3639635944603682591">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium.}=1{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="3651803019964686660">Untuk menghantar nombor daripada <ph name="ORIGIN" /> ke telefon Android anda, log masuk ke Chromium pada kedua-dua peranti.</translation>
@@ -157,7 +158,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Dapatkan bantuan berkenaan Chromium OS</translation>
 <translation id="3871664619793219264">Dapatkan bahan penyemak imbas Chromium anda daripada <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan macOS 10.15 atau yang lebih baharu. Komputer ini menggunakan macOS 10.14.</translation>
 <translation id="388648406173476553">Sesuaikan dan kawal Chromium. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
 <translation id="3889543394854987837">Klik nama anda untuk membuka Chromium dan mula menyemak imbas.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chromium ini. Untuk menjadikan penyemakan imbas anda terpisah, Chromium boleh membuat profil anda sendiri untuk anda.</translation>
@@ -218,6 +218,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4814736265800133385">Gunakan Chromium tanpa akaun</translation>
 <translation id="4888717733111232871">Peraturan masuk bagi Chromium untuk membolehkan trafik mDNS.</translation>
 <translation id="4893347770495441059">Lancarkan Semula untuk Mengemas Kini &amp;Chromium</translation>
+<translation id="4942295735032723435">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan macOS 11 atau yang lebih baharu. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium dalam mod latar belakang.</translation>
 <translation id="4987820182225656817">Tetamu boleh menggunakan Chromium tanpa meninggalkan apa-apa.</translation>
 <translation id="4994636714258228724">Tambahkan diri anda kepada Chromium</translation>
@@ -246,7 +247,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5623402015214259806">{0,plural, =0{Kemas kini Chromium tersedia}=1{Kemas kini Chromium tersedia}other{Kemas kini Chromium telah tersedia selama # hari}}</translation>
 <translation id="5643865575100044307">Sentiasa padamkan data laman daripada peranti anda apabila anda menutup Chromium</translation>
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
-<translation id="5675598751761067447">Fail ini mungkin berbahaya<ph name="LINE_BREAK" />Chromium boleh memeriksa muat turun ini untuk anda jika anda memberikan kata laluan — kata laluan anda kekal pada peranti anda</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
 <translation id="569897634095159764">Tidak dapat disambungkan kepada Internet. Pelayan proksi memerlukan pengesahan.</translation>
@@ -407,6 +407,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8105840573057009683">Chromium memerlukan kebenaran lokasi untuk laman ini</translation>
 <translation id="8133124826068723441">Chromium OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="813913629614996137">Memulakan...</translation>
+<translation id="8166782796394721554">Hidupkan perlindungan tambahan dalam JavaScript Chromium dan enjin WebAssembly</translation>
 <translation id="81770708095080097">Fail ini berbahaya, maka Chromium telah menyekatnya.</translation>
 <translation id="8213374284266571500">Chromium menyekat fail ini kerana jenis fail ini berbahaya</translation>
 <translation id="8248265253516264921">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>

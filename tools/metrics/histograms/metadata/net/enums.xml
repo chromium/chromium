@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="BrokenAlternateProtocolLocation">
   <int value="0" label="HTTP_STREAM_FACTORY_JOB"/>
-  <int value="1" label="QUIC_STREAM_FACTORY"/>
+  <int value="1" label="QUIC_SESSION_POOL"/>
   <int value="2" label="HTTP_STREAM_FACTORY_JOB_ALT"/>
   <int value="3" label="HTTP_STREAM_FACTORY_JOB_MAIN"/>
   <int value="4" label="QUIC_HTTP_STREAM"/>

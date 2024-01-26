@@ -12,7 +12,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,6 +21,7 @@ class GURL;
 namespace bookmarks {
 
 class BookmarkModel;
+class BookmarkNode;
 class BookmarkPermanentNode;
 
 // A callback that generates a std::unique_ptr<BookmarkPermanentNode>, given a
@@ -40,18 +40,8 @@ class BookmarkClient {
 
   virtual ~BookmarkClient() = default;
 
-  // Returns whether the embedder wants permanent node of type |type|
-  // to always be visible or to only show them when not empty.
-  bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) const;
-
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
-
-  // Controls whether this BookmarkModel is allowed to use permanent folders for
-  // account storage. If false, calling BookmarkModel's
-  // `CreateAccountPermanentFolders`/`RemoveAccountPermanentFolders` will
-  // trigger a CHECK failure.
-  virtual bool AreFoldersForAccountStorageAllowed() = 0;
 
   // Gets a bookmark folder that the provided URL can be saved to. If nullptr is
   // returned, the bookmark is saved to the default location (usually this is

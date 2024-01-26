@@ -177,7 +177,7 @@ SharingDialogType SharingDialogView::GetDialogType() const {
 void SharingDialogView::DeviceButtonPressed(size_t index) {
   DCHECK_LT(index, data_.devices.size());
   LogSharingSelectedIndex(data_.prefix, kSharingUiDialog, index);
-  std::move(data_.device_callback).Run(*data_.devices[index]);
+  std::move(data_.device_callback).Run(data_.devices[index]);
   CloseBubble();
 }
 
@@ -258,17 +258,17 @@ void SharingDialogView::InitListView() {
   // Devices:
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
   size_t index = 0;
-  for (const auto& device : data_.devices) {
+  for (const SharingTargetDeviceInfo& device : data_.devices) {
     auto icon = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromVectorIcon(GetIconType(device->form_factor()),
+        ui::ImageModel::FromVectorIcon(GetIconType(device.form_factor()),
                                        ui::kColorIcon, kPrimaryIconSize));
 
     auto* dialog_button =
         button_list->AddChildView(std::make_unique<HoverButton>(
             base::BindRepeating(&SharingDialogView::DeviceButtonPressed,
                                 base::Unretained(this), index++),
-            std::move(icon), base::UTF8ToUTF16(device->client_name()),
-            GetLastUpdatedTimeInDays(device->last_updated_timestamp())));
+            std::move(icon), base::UTF8ToUTF16(device.client_name()),
+            GetLastUpdatedTimeInDays(device.last_updated_timestamp())));
     dialog_button->SetEnabled(true);
     dialog_button->SetBorder(views::CreateEmptyBorder(device_border));
   }

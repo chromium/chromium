@@ -98,7 +98,7 @@ public class TrustedWebActivityClient {
     public interface ExecutionCallback {
         void onConnected(Origin origin, Connection service) throws RemoteException;
 
-        default void onNoTwaFound() {}
+        void onNoTwaFound();
     }
 
     /** Creates a TrustedWebActivityClient. */
@@ -193,6 +193,7 @@ public class TrustedWebActivityClient {
 
                     @Override
                     public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to check notification permission.");
                         permissionCallback.onNoTwaFound();
                     }
                 });
@@ -282,6 +283,7 @@ public class TrustedWebActivityClient {
 
                     @Override
                     public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to request notification permission.");
                         permissionCallback.onNoTwaFound();
                     }
                 });
@@ -345,6 +347,7 @@ public class TrustedWebActivityClient {
 
                     @Override
                     public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to request location permission.");
                         permissionCallback.onNoTwaFound();
                     }
                 });
@@ -382,6 +385,7 @@ public class TrustedWebActivityClient {
 
                     @Override
                     public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to start listening for location.");
                         notifyLocationUpdateError(locationCallback, "NoTwaFound");
                     }
                 });
@@ -392,9 +396,15 @@ public class TrustedWebActivityClient {
                 Uri.parse(url),
                 new ExecutionCallback() {
                     @Override
-                    public void onConnected(Origin origin, Connection service) {
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
                         safeSendExtraCommand(
                                 service, STOP_LOCATION_COMMAND_NAME, Bundle.EMPTY, null);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to stop listening for location.");
                     }
                 });
     }
@@ -419,35 +429,44 @@ public class TrustedWebActivityClient {
 
         connectAndExecute(
                 scope,
-                (origin, service) -> {
-                    if (!service.areNotificationsEnabled(channelDisplayName)) {
-                        mPermissionManager.updatePermission(
-                                origin,
-                                service.getComponentName().getPackageName(),
-                                ContentSettingsType.NOTIFICATIONS,
-                                ContentSettingValues.BLOCK);
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        if (!service.areNotificationsEnabled(channelDisplayName)) {
+                            mPermissionManager.updatePermission(
+                                    origin,
+                                    service.getComponentName().getPackageName(),
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    ContentSettingValues.BLOCK);
 
-                        // Attempting to notify when notifications are disabled won't have any
-                        // effect, but returning here just saves us from doing unnecessary work.
-                        return;
+                            // Attempting to notify when notifications are disabled won't have any
+                            // effect, but returning here just saves us from doing unnecessary work.
+                            return;
+                        }
+
+                        fallbackToIconFromServiceIfNecessary(builder, service);
+
+                        NotificationMetadata metadata =
+                                new NotificationMetadata(
+                                        NotificationUmaTracker.SystemNotificationType
+                                                .TRUSTED_WEB_ACTIVITY_SITES,
+                                        platformTag,
+                                        platformId);
+                        Notification notification = builder.build(metadata).getNotification();
+
+                        service.notify(platformTag, platformId, notification, channelDisplayName);
+
+                        notificationUmaTracker.onNotificationShown(
+                                NotificationUmaTracker.SystemNotificationType
+                                        .TRUSTED_WEB_ACTIVITY_SITES,
+                                notification);
                     }
 
-                    fallbackToIconFromServiceIfNecessary(builder, service);
-
-                    NotificationMetadata metadata =
-                            new NotificationMetadata(
-                                    NotificationUmaTracker.SystemNotificationType
-                                            .TRUSTED_WEB_ACTIVITY_SITES,
-                                    platformTag,
-                                    platformId);
-                    Notification notification = builder.build(metadata).getNotification();
-
-                    service.notify(platformTag, platformId, notification, channelDisplayName);
-
-                    notificationUmaTracker.onNotificationShown(
-                            NotificationUmaTracker.SystemNotificationType
-                                    .TRUSTED_WEB_ACTIVITY_SITES,
-                            notification);
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to delegate notification.");
+                    }
                 });
     }
 
@@ -490,7 +509,20 @@ public class TrustedWebActivityClient {
      * @param platformId The id of the notification to cancel.
      */
     public void cancelNotification(Uri scope, String platformTag, int platformId) {
-        connectAndExecute(scope, (origin, service) -> service.cancel(platformTag, platformId));
+        connectAndExecute(
+                scope,
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        service.cancel(platformTag, platformId);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.w(TAG, "Unable to cancel notification.");
+                    }
+                });
     }
 
     public void connectAndExecute(Uri scope, ExecutionCallback callback) {

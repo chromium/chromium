@@ -130,9 +130,9 @@ class PLATFORM_EXPORT KURL {
   bool CanSetPathname() const { return IsHierarchical(); }
   bool IsHierarchical() const;
 
-  // The returned `String` is guaranteed to consist of only ASCII characters,
-  // but may be 8-bit or 16-bit.
-  const String& GetString() const { return string_; }
+  // The returned `AtomicString` is guaranteed to consist of only ASCII
+  // characters, but may be 8-bit or 16-bit.
+  const AtomicString& GetString() const { return string_; }
 
   String ElidedString() const;
 

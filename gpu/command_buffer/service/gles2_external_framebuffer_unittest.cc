@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -16,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_utils.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -178,8 +180,8 @@ class GLES2ExternalFrameBufferTest
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageFactory> backing_factory_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
+  std::unique_ptr<SharedImageFactory> backing_factory_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;

@@ -499,6 +499,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::vector<AnnotatedVisit> GetAnnotatedVisits(
       const QueryOptions& options,
       bool compute_redirect_chain_start_properties,
+      bool get_unclustered_visits_only,
       bool* limited_by_max_count = nullptr);
 
   // Utility method to Construct `AnnotatedVisit`s.
@@ -828,6 +829,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   //
   // This does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
+  // Note that |app_is| is used for mobile only; |nullopt| on other platforms.
   std::pair<URLID, VisitID> AddPageVisit(
       const GURL& url,
       base::Time time,
@@ -843,6 +845,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       absl::optional<std::u16string> title = absl::nullopt,
       absl::optional<GURL> top_level_url = absl::nullopt,
       absl::optional<GURL> frame_url = absl::nullopt,
+      absl::optional<std::string> app_id = absl::nullopt,
       absl::optional<base::TimeDelta> visit_duration = absl::nullopt,
       absl::optional<std::string> originator_cache_guid = absl::nullopt,
       absl::optional<VisitID> originator_visit_id = absl::nullopt,

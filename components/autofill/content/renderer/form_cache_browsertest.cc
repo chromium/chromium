@@ -447,10 +447,14 @@ void FillAndCheckState(
     value_to_fill->is_autofilled = true;
   }
 
-  form_util::ApplyFormAction(values_to_fill.fields, autofill_initiating_element,
-                             mojom::ActionType::kFill,
-                             mojom::ActionPersistence::kFill,
-                             field_data_manager);
+  std::vector<FormFieldData::FillData> fields_to_fill;
+  fields_to_fill.reserve(values_to_fill.fields.size());
+  for (const FormFieldData& field : values_to_fill.fields) {
+    fields_to_fill.emplace_back(field);
+  }
+  form_util::ApplyFormAction(
+      fields_to_fill, autofill_initiating_element, mojom::ActionType::kFill,
+      mojom::ActionPersistence::kFill, field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
@@ -523,7 +527,11 @@ TEST_F(FormCacheBrowserTest,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("myForm")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  std::vector<FormFieldData> values_to_fill = forms.updated_forms[0].fields;
+  std::vector<FormFieldData::FillData> values_to_fill;
+  values_to_fill.reserve(forms.updated_forms[0].fields.size());
+  for (const FormFieldData& field : forms.updated_forms[0].fields) {
+    values_to_fill.emplace_back(field);
+  }
   values_to_fill[0].value = u"John";
   values_to_fill[0].is_autofilled = true;
   values_to_fill[1].value = u"Smith";

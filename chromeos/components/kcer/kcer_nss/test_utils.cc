@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -15,6 +16,16 @@
 using SignatureAlgorithm = crypto::SignatureVerifier::SignatureAlgorithm;
 
 namespace kcer {
+namespace {
+std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
+  if (!val.has_value()) {
+    return "<empty>";
+  }
+  // Should be updated if `KeyPermissions` struct is changed.
+  return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
+                            val->key_usages().corporate());
+}
+}  // namespace
 
 TokenHolder::TokenHolder(Token token, bool initialize) {
   io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
@@ -56,12 +67,20 @@ void TokenHolder::FailInitialization() {
 
 //==============================================================================
 
-bool KeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
-                         const std::optional<chaps::KeyPermissions>& b) {
+[[nodiscard]] bool ExpectKeyPermissionsEqual(
+    const std::optional<chaps::KeyPermissions>& a,
+    const std::optional<chaps::KeyPermissions>& b) {
+  bool result = true;
   if (!a.has_value() || !b.has_value()) {
-    return (a.has_value() == b.has_value());
+    result = (a.has_value() == b.has_value());
+  } else {
+    result = (a->SerializeAsString() == b->SerializeAsString());
   }
-  return (a->SerializeAsString() == b->SerializeAsString());
+  if (!result) {
+    LOG(ERROR) << "ERROR: key_permissions: a: " << ToString(a)
+               << ", b: " << ToString(b);
+  }
+  return result;
 }
 
 bool VerifySignature(SigningScheme signing_scheme,

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -28,7 +30,7 @@ const char kSubAppIdConcatenation[] = ":";
 
 std::string MaybeConcatenateParentAppManifestId(
     const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   if (parent_manifest_id.has_value()) {
     CHECK(parent_manifest_id->is_valid());
     CHECK_NE(parent_manifest_id.value(), manifest_id)
@@ -68,9 +70,9 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
 }
 
 webapps::AppId GenerateAppId(
-    const absl::optional<std::string>& manifest_id_path,
+    const std::optional<std::string>& manifest_id_path,
     const GURL& start_url,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   if (!manifest_id_path) {
     return GenerateAppIdFromManifestId(
         GenerateManifestIdFromStartUrlOnly(start_url), parent_manifest_id);
@@ -82,14 +84,14 @@ webapps::AppId GenerateAppId(
 
 webapps::AppId GenerateAppIdFromManifest(
     const blink::mojom::Manifest& manifest,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   CHECK(manifest.id.is_valid());
   return GenerateAppIdFromManifestId(manifest.id, parent_manifest_id);
 }
 
 webapps::AppId GenerateAppIdFromManifestId(
     const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   // The app ID is hashed twice: here and in GenerateId.
   // The double-hashing is for historical reasons and it needs to stay
   // this way for backwards compatibility. (Back then, a web app's input to the
@@ -107,15 +109,33 @@ webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
 
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url) {
-  // When manifest_id is specified, the app id is generated from
+  const webapps::ManifestId manifest_id =
+      GenerateManifestIdUnsafe(manifest_id_path, start_url);
+  CHECK(manifest_id.is_valid())
+      << "start_url: " << start_url << ", manifest_id = " << manifest_id_path;
+  return manifest_id;
+}
+
+webapps::ManifestId GenerateManifestIdUnsafe(
+    const std::string& manifest_id_path,
+    const GURL& start_url) {
+  // When manifest_id_path is specified, the manifest_id is generated from
   // <start_url_origin>/<manifest_id_path>.
   // Note: start_url.DeprecatedGetOriginAsURL().spec() returns the origin ending
   // with slash.
-  GURL app_id(start_url.DeprecatedGetOriginAsURL().spec() + manifest_id_path);
-  CHECK(app_id.is_valid()) << "start_url: " << start_url
-                           << ", manifest_id = " << manifest_id_path;
-  return app_id.GetWithoutRef();
+  const GURL manifest_id(start_url.DeprecatedGetOriginAsURL().spec() +
+                         manifest_id_path);
+  return manifest_id.GetWithoutRef();
 }
+
+namespace {
+
+base::flat_set<std::string>& ValidChromeUrlHosts() {
+  static base::NoDestructor<base::flat_set<std::string>> hosts;
+  return *hosts.get();
+}
+
+}  // namespace
 
 bool IsValidWebAppUrl(const GURL& app_url) {
   if (app_url.is_empty() || app_url.inner_url())
@@ -126,17 +146,28 @@ bool IsValidWebAppUrl(const GURL& app_url) {
          app_url.SchemeIs(url::kHttpsScheme) ||
          app_url.SchemeIs("chrome-extension") ||
          (app_url.SchemeIs("chrome") &&
-          (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
+          ((app_url.host() == password_manager::kChromeUIPasswordManagerHost) ||
+           ValidChromeUrlHosts().contains(app_url.host())));
 }
 
-absl::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
-    Profile* profile,
-    const GURL& url,
-    bool window_only) {
+base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(  // IN-TEST
+    const std::string& host) {
+  CHECK(ValidChromeUrlHosts().insert(host).second);
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](const std::string& host) {
+        CHECK(ValidChromeUrlHosts().contains(host));
+        ValidChromeUrlHosts().erase(host);
+      },
+      host));
+}
+
+std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
+                                                             const GURL& url,
+                                                             bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
                         url, window_only)
-                  : absl::nullopt;
+                  : std::nullopt;
 }
 
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {

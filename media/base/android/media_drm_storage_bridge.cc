@@ -185,8 +185,8 @@ void MediaDrmStorageBridge::OnSessionDataLoaded(
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_eme_id = ToJavaByteArray(env, session_id);
-  ScopedJavaLocalRef<jbyteArray> j_key_set_id = ToJavaByteArray(
-      env, session_data->key_set_id.data(), session_data->key_set_id.size());
+  ScopedJavaLocalRef<jbyteArray> j_key_set_id =
+      ToJavaByteArray(env, session_data->key_set_id);
   ScopedJavaLocalRef<jstring> j_mime =
       ConvertUTF8ToJavaString(env, session_data->mime_type);
 

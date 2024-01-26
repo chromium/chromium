@@ -261,6 +261,7 @@ component("net") {
     "base/scheme_host_port_matcher_rule.h",
     "base/schemeful_site.cc",
     "base/schemeful_site.h",
+    "base/session_usage.h",
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
     "base/sys_addrinfo.h",
@@ -798,8 +799,8 @@ component("net") {
     "quic/quic_server_info.h",
     "quic/quic_session_key.cc",
     "quic/quic_session_key.h",
-    "quic/quic_stream_factory.cc",
-    "quic/quic_stream_factory.h",
+    "quic/quic_session_pool.cc",
+    "quic/quic_session_pool.h",
     "quic/set_quic_flag.cc",
     "quic/set_quic_flag.h",
     "quic/web_transport_client.cc",
@@ -1195,19 +1196,20 @@ component("net") {
 
   if (is_apple) {
     sources += [
+      "base/apple/url_conversions.h",
+      "base/apple/url_conversions.mm",
       "base/mac/url_conversions.h",
-      "base/mac/url_conversions.mm",
-      "base/network_change_notifier_mac.h",
-      "base/network_change_notifier_mac.mm",
-      "base/network_config_watcher_mac.cc",
-      "base/network_config_watcher_mac.h",
-      "base/platform_mime_util_mac.mm",
+      "base/network_change_notifier_apple.h",
+      "base/network_change_notifier_apple.mm",
+      "base/network_config_watcher_apple.cc",
+      "base/network_config_watcher_apple.h",
+      "base/platform_mime_util_apple.mm",
       "cert/x509_util_apple.cc",
       "cert/x509_util_apple.h",
-      "proxy_resolution/proxy_chain_util_mac.cc",
-      "proxy_resolution/proxy_chain_util_mac.h",
-      "proxy_resolution/proxy_resolver_mac.cc",
-      "proxy_resolution/proxy_resolver_mac.h",
+      "proxy_resolution/proxy_chain_util_apple.cc",
+      "proxy_resolution/proxy_chain_util_apple.h",
+      "proxy_resolution/proxy_resolver_apple.cc",
+      "proxy_resolution/proxy_resolver_apple.h",
     ]
   }
 
@@ -2446,6 +2448,19 @@ if (is_ios) {
   }
 }
 
+if (fuzztest_supported && !is_cronet_build) {
+  test("net_fuzztests") {
+    sources = [ "cert/x509_certificate_fuzztest.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":net",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
+}
+
 test("net_unittests") {
   sources = [
     "base/address_family_unittest.cc",
@@ -2661,9 +2676,10 @@ test("net_unittests") {
     "quic/quic_http_utils_test.cc",
     "quic/quic_network_transaction_unittest.cc",
     "quic/quic_proxy_client_socket_unittest.cc",
-    "quic/quic_stream_factory_peer.cc",
-    "quic/quic_stream_factory_peer.h",
-    "quic/quic_stream_factory_test.cc",
+    "quic/quic_session_key_unittest.cc",
+    "quic/quic_session_pool_peer.cc",
+    "quic/quic_session_pool_peer.h",
+    "quic/quic_session_pool_test.cc",
     "quic/quic_test_packet_maker.cc",
     "quic/quic_test_packet_maker.h",
     "quic/quic_test_packet_printer.cc",
@@ -2803,7 +2819,7 @@ test("net_unittests") {
   if (is_apple) {
     sources += [
       "cert/x509_util_apple_unittest.cc",
-      "proxy_resolution/proxy_chain_util_mac_unittest.cc",
+      "proxy_resolution/proxy_chain_util_apple_unittest.cc",
     ]
   }
 
@@ -2948,7 +2964,7 @@ test("net_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "base/mac/url_conversions_unittest.mm" ]
+    sources += [ "base/apple/url_conversions_unittest.mm" ]
   }
 
   if (is_mac) {
@@ -3809,8 +3825,8 @@ fuzzer_test("net_reporting_header_parser_fuzzer") {
   ]
 }
 
-fuzzer_test("net_quic_stream_factory_fuzzer") {
-  sources = [ "quic/quic_stream_factory_fuzzer.cc" ]
+fuzzer_test("net_quic_session_pool_fuzzer") {
+  sources = [ "quic/quic_session_pool_fuzzer.cc" ]
 
   deps = [
     ":net_fuzzer_test_support",

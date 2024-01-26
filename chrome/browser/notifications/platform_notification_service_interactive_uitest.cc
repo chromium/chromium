@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-      absl::nullopt /* action_index */, absl::nullopt /* reply */);
+      std::nullopt /* action_index */, std::nullopt /* reply */);
 
   // We expect +1 engagement for the notification interaction.
   EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
 
     // We have interacted with the button, so expect a notification bump.
     EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
 
     EXPECT_EQ("action_close", RunScript("GetMessageFromWorker()"));
   }
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      0 /* action_index */, absl::nullopt /* reply */);
+      0 /* action_index */, std::nullopt /* reply */);
 
   EXPECT_EQ("action_button_click actionId1",
             RunScript("GetMessageFromWorker()"));
@@ -726,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      1 /* action_index */, absl::nullopt /* reply */);
+      1 /* action_index */, std::nullopt /* reply */);
 
   EXPECT_EQ("action_button_click actionId2",
             RunScript("GetMessageFromWorker()"));
@@ -854,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::RunLoop run_loop;
     handler->OnClick(profile, GURL(kTestNotificationOrigin),
-                     kTestNotificationId, absl::nullopt /* action_index */,
-                     absl::nullopt /* reply */, run_loop.QuitClosure());
+                     kTestNotificationId, std::nullopt /* action_index */,
+                     std::nullopt /* reply */, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -974,8 +974,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   base::RunLoop run_loop;
   handler->OnClick(browser()->profile(), notifications[0].origin_url(),
-                   notifications[0].id(), absl::nullopt /* action_index */,
-                   absl::nullopt /* reply */, run_loop.QuitClosure());
+                   notifications[0].id(), std::nullopt /* action_index */,
+                   std::nullopt /* reply */, run_loop.QuitClosure());
 
   // The asynchronous part of the click event will still be in progress, but
   // the keep alive registration should have been created.

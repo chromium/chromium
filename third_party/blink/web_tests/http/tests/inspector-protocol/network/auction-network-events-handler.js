@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const base = 'https://a.test:8443/inspector-protocol/resources/'
   const { session, dp } = await testRunner.startBlank(
     'Verifying the events that go through the auction network event handler are accurate.\nNote: There are two bidding requests because we reload the bidding worklet when we are reporting. ',

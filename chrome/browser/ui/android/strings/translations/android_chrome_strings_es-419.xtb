@@ -133,7 +133,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1710099199314114079">Cambiar o cerrar pestañas</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea la pantalla para editar tu contraseña.</translation>
-<translation id="1726477445370128854">Puedes navegar y realizar búsquedas más rápidas cuando Chrome precarga las páginas que considera que puedes visitar</translation>
+<translation id="1726477445370128854">Puedes navegar y realizar búsquedas de manera más rápida cuando Chrome precarga las páginas que considera que puedes visitar</translation>
 <translation id="1728803206919861584">¿Quieres guardar la llave de acceso fuera del modo Incógnito?</translation>
 <translation id="1749561566933687563">Sincroniza tus favoritos</translation>
 <translation id="1750259112639922169">Grupo de pestañas: <ph name="TAB_COUNT" /> pestañas</translation>
@@ -146,6 +146,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
 <translation id="1796666869097395659">Minimiza la pestaña para regresar a ella más tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807709131360304325">Abrir una ventana nueva</translation>
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
@@ -189,6 +190,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2056878612599315956">Se pausó el sitio</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se pudo realizar 1 descarga}other{No se pudieron realizar # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2079545284768500474">Deshacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Se muestra la vista compacta</translation>
 <translation id="2093731487903423814">últimos 15 minutos</translation>
@@ -218,7 +220,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="223356358902285214">Actividad web y de aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2239812875700136898">Controla tus historias desde las opciones del botón Descubre</translation>
-<translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2247789808226901522">Se venció la tarjeta</translation>
 <translation id="2248941474044011069">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
@@ -233,7 +234,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2318045970523081853">Presiona para realizar la llamada</translation>
 <translation id="2321086116217818302">Preparando las contraseñas…</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
-<translation id="2327226657832576859">¿Quieres abrir los archivos PDF de forma automática?</translation>
 <translation id="2328985652426384049">No puedes acceder</translation>
 <translation id="2341410551640223969">No se pudo instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Cantidad total de datos que usa Chrome, lo que incluye las cuentas, favoritos y opciones de configuración guardadas</translation>
@@ -316,6 +316,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
+<translation id="2789486458103222910">Aceptar</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" />.</translation>
 <translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -354,7 +355,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2946420957526726953">Actualizando Chrome para conectar a otros dispositivos.</translation>
 <translation id="2951071800649516099">Agrega páginas a la lista de lectura para retomarlas más tarde</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
-<translation id="2961210776189273067">Cargo</translation>
 <translation id="296370266220139811">Ahorra tiempo y escribe menos</translation>
 <translation id="2977350910003566746">Ordenados por fecha de último acceso</translation>
 <translation id="297771753501244313">Últimos abiertos</translation>
@@ -379,7 +379,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="303514781271618814">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
-<translation id="3037517125981011456">Muestra mensajes para acceder a Chrome.</translation>
+<translation id="3037517125981011456">Muestra mensajes para acceder a Chrome</translation>
 <translation id="3038272154009688107">Ver todos los sitios</translation>
 <translation id="3046945242843292318">Vuelve a acceder a este sitio más rápido</translation>
 <translation id="3055259925215945098">Se movió el favorito</translation>
@@ -600,6 +600,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
+<translation id="4311652497846705514">¿Quieres abrir el PDF?</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
 <translation id="433213510553688132">Siguiendo…</translation>
 <translation id="4335835283689002019">La Navegación segura está desactivada</translation>
@@ -639,7 +640,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4523326818319942067">última hora</translation>
 <translation id="452750746583162491">Revisa tus datos sincronizados</translation>
 <translation id="4532845899244822526">Seleccionar carpeta</translation>
-<translation id="4541505619120536051">Siempre abierto</translation>
 <translation id="4543131175509360848">No ninguna hoja de llaves de acceso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4554077758708533499">Conectado con cable USB</translation>
@@ -831,7 +831,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5486841595534124508">Logotipo del Aviso de Privacidad del panel central de estadísticas de la página que redirecciona a la página Mi actividad.</translation>
 <translation id="5487521232677179737">Borrar datos</translation>
 <translation id="5492637351392383067">Encriptación integrada en el dispositivo</translation>
-<translation id="5509866835115085009">Chrome puede abrir automáticamente los archivos PDF cuando los descargas.</translation>
 <translation id="5514904542973294328">El administrador de este dispositivo inhabilitó esta opción</translation>
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5962718611393537961">Presiona para contraer</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5966233851250124270">Chrome recordará tu elección</translation>
+<translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
 <translation id="5995726099713306770">¿Quieres descargar la página de nuevo?</translation>
 <translation id="6000066717592683814">Seguir usando Google</translation>
@@ -1192,7 +1192,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7304072650267745798">Es posible que tu dispositivo Android incluya un parámetro de configuración similar. Si este parámetro está activado en Chrome y en tu dispositivo Android, es posible que una empresa pueda medir la eficacia de un anuncio en los sitios web que visitas y en las apps que usas.</translation>
 <translation id="7304873321153398381">Sin conexión. Chrome no puede verificar tus contraseñas.</translation>
 <translation id="7313188324932846546">Presionar para configurar la sincronización</translation>
-<translation id="7324354302972299151">Envía una solicitud de "Do Not Track"</translation>
+<translation id="7324354302972299151">Enviar una solicitud de "Do Not Track"</translation>
 <translation id="7332075081379534664">Se accedió a la cuenta correctamente.</translation>
 <translation id="7333232495927792353">Utiliza la función de sincronización para obtener el contenido más relevante de Google.</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
@@ -1302,6 +1302,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla completa</translation>
+<translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en el alternador de pestañas</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
 <translation id="78270725016672455">Tu computadora quiere registrar este dispositivo para acceder a un sitio</translation>
 <translation id="7844171778363018843">No se seleccionaron datos para sincronizar</translation>
@@ -1329,6 +1330,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no está actualizado.</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
+<translation id="7951102827450076904">Abrir siempre los PDF descargados</translation>
 <translation id="7957413488482743710">La tarjeta virtual oculta tu tarjeta real para protegerte contra posibles fraudes. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botón Atrás de las estadísticas de la página</translation>
 <translation id="7961926449547174351">Inhabilitaste el acceso al almacenamiento. Ve a la Configuración para habilitarlo.</translation>

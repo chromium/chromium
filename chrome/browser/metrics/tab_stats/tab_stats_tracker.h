@@ -52,9 +52,13 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // Sets the |TabStatsTracker| global instance.
   static void SetInstance(std::unique_ptr<TabStatsTracker> instance);
+  // Clears and tears down the |TabStatsTracker| global instance.
+  static void ClearInstance();
 
-  // Returns the |TabStatsTracker| global instance.
+  // Returns the |TabStatsTracker| global instance. CHECKs there is an instance.
   static TabStatsTracker* GetInstance();
+  // Returns whether there is a global instance.
+  static bool HasInstance();
 
   // Registers a TabStatsObserver instance. Upon registering the initial state
   // of the observer is made to match the current browser/tab state.

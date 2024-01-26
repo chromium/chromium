@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -30,7 +32,6 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -268,12 +269,12 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
@@ -282,7 +283,7 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
 
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
@@ -291,7 +292,7 @@ TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
   SetUserAsOwner();
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -303,12 +304,12 @@ TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
   ASSERT_FALSE(profile()->IsMainProfile());
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
@@ -319,12 +320,12 @@ TEST_P(ApiGuardDelegateTest, AppNotOpen) {
   SetUserAsOwner();
 #endif  // IS_CHROMEOS_ASH
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
@@ -337,12 +338,12 @@ TEST_P(ApiGuardDelegateTest, AppIsOpenButNotSecure) {
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
@@ -357,12 +358,12 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
             error.value());
@@ -381,12 +382,12 @@ TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 
@@ -397,12 +398,12 @@ TEST_P(ApiGuardDelegateTest, NoError) {
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 
@@ -442,12 +443,12 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not installed by the admin", error.value());
 }
@@ -464,12 +465,12 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, AppNotOpen) {
   }
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
@@ -489,12 +490,12 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, AppIsOpenButNotSecure) {
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
@@ -516,12 +517,12 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, ManufacturerNotAllowed) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
             error.value());
@@ -541,11 +542,11 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 
@@ -638,9 +639,8 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   }
 
   // BrowserWithTestWindowTest overrides.
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile(
-        ash::kShimlessRmaAppBrowserContextBaseName);
+  std::string GetDefaultProfileName() override {
+    return ash::kShimlessRmaAppBrowserContextBaseName;
   }
 
   // ApiGuardDelegateTest overrides.
@@ -656,12 +656,12 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
 
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
@@ -673,12 +673,12 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
             error.value());
@@ -688,11 +688,11 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
   OpenShimlessRmaAppDialog();
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  absl::optional<std::string> error = future.Get();
+  std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 

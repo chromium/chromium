@@ -27,13 +27,11 @@ public interface StylusWritingHandler {
     boolean canShowSoftKeyboard();
 
     /**
-     * Requests to start stylus writing for input field in web page.
+     * Check if stylus writing can be started for input field in web page.
      *
-     * @param view the view on which to start stylus handwriting.
-     * @return true if writing can be started or if started successfully, false if writing cannot be
-     *     started.
+     * @return true if stylus writing can be started, false otherwise.
      */
-    boolean requestStartStylusWriting(View view);
+    boolean shouldInitiateStylusWriting();
 
     /**
      * Update current input state parameters to stylus writing system.
@@ -102,12 +100,20 @@ public interface StylusWritingHandler {
 
     /**
      * This message is sent when the stylus writable element has been focused.
+     *
      * @param focusedEditBounds the input field bounds in view
      * @param cursorPosition the input cursor Position point in pix
+     * @param scaleFactor current device scale factor
+     * @param contentOffsetY the Physical on-screen Y offset amount below the browser controls
+     * @param view the view on which to start stylus handwriting
      */
     @Nullable
     default EditorBoundsInfo onEditElementFocusedForStylusWriting(
-            Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
+            Rect focusedEditBounds,
+            Point cursorPosition,
+            float scaleFactor,
+            int contentOffsetY,
+            View view) {
         return null;
     }
 

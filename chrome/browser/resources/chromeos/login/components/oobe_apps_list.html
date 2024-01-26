@@ -168,11 +168,11 @@ found in the LICENSE file.
   }
 </style>
 <div id="appsListContainer">
-  <div id="unselectAll" hidden="[[unselectSymbolHidden_(appsSelected)]]"></div>
+  <div id="unselectAll" hidden="[[unselectSymbolHidden(appsSelected)]]"></div>
   <cr-checkbox
     id="selectAll"
-    checked="{{allSelected_}}"
-    on-change="updateSelection_"
+    checked="{{allSelected}}"
+    on-change="updateSelection"
   >
     <slot name="selectAllTitle"></slot>
   </cr-checkbox>
@@ -184,16 +184,16 @@ found in the LICENSE file.
           checked="{{item.checked}}"
           class="no-label"
           aria-description="[[item.title]]"
-          on-change="updateCount_"
+          on-change="updateCount"
         >
         </cr-checkbox>
         <webview
           role="img"
           class="app-icon"
-          src="[[getWrappedIcon_(item.icon_url)]]"
+          src="[[getWrappedIcon(item.icon_url)]]"
           aria-hidden="true"
           tabindex="-1"
-          on-contentload="onImageLoaded_"
+          on-contentload="onImageLoaded"
         >
         </webview>
         <div class="app-title">[[item.title]]</div>

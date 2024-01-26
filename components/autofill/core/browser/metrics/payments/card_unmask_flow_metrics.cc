@@ -4,7 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {

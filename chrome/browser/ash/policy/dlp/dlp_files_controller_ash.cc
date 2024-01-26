@@ -398,7 +398,7 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
             }
             if (!is_allowed) {
               ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
-                  profile, /*task_id=*/absl::nullopt, {file_path},
+                  profile, /*task_id=*/std::nullopt, {file_path},
                   dlp::FileAction::kDownload);
             }
             std::move(result_callback).Run(is_allowed);
@@ -852,7 +852,7 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
         });
 
     ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
-        profile_, /*task_id=*/absl::nullopt, std::move(restricted_files),
+        profile_, /*task_id=*/std::nullopt, std::move(restricted_files),
         dlp::FileAction::kUpload);
   }
 

@@ -8,8 +8,6 @@ blink_modules_sources("webgl") {
   sources = [
     "angle_instanced_arrays.cc",
     "angle_instanced_arrays.h",
-    "ext_blend_func_extended.cc",
-    "ext_blend_func_extended.h",
     "ext_blend_min_max.cc",
     "ext_blend_min_max.h",
     "ext_clip_control.cc",
@@ -82,6 +80,8 @@ blink_modules_sources("webgl") {
     "webgl2_rendering_context_base.cc",
     "webgl2_rendering_context_base.h",
     "webgl_active_info.h",
+    "webgl_blend_func_extended.cc",
+    "webgl_blend_func_extended.h",
     "webgl_buffer.cc",
     "webgl_buffer.h",
     "webgl_clip_cull_distance.cc",

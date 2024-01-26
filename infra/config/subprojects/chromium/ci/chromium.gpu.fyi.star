@@ -9,6 +9,7 @@ load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -17,6 +18,7 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = 6 * time.hour,
+    health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumGPUFYI",
     },
@@ -196,6 +198,38 @@ ci.thin_tester(
         category = "Android|S64|ARM",
         short_name = "P6",
     ),
+)
+
+ci.thin_tester(
+    name = "Android FYI Experimental Release (Pixel 6)",
+    description_html = "Runs standard GPU tests on experimental Pixel 6 configs",
+    triggered_by = ["GPU FYI Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+            ],
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Android|S64|ARM",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
 )
 
 # TODO(crbug.com/1485734): Add a trybot for this builder when there's capacity.
@@ -467,6 +501,7 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -501,6 +536,7 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -532,6 +568,7 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -562,6 +599,7 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -725,6 +763,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -749,6 +788,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -773,6 +813,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -797,6 +838,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -823,6 +865,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -849,6 +892,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -873,6 +917,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -897,6 +942,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -1283,6 +1329,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1307,6 +1354,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1331,6 +1379,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1355,6 +1404,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1381,14 +1431,15 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|10|x64|Nvidia",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|10|x64|Nvidia",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -1407,6 +1458,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1431,6 +1483,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1455,6 +1508,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1479,6 +1533,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1503,6 +1558,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1525,6 +1581,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -1557,6 +1614,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -1591,6 +1649,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -1621,6 +1680,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -1653,6 +1713,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -1684,6 +1745,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         # This causes the builder to upload isolates to a location where
         # Pinpoint can access them in addition to the usual isolate

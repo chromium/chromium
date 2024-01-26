@@ -32,6 +32,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,8 +48,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -68,7 +68,7 @@ import java.io.IOException;
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
     ChromeFeatureList.INSTANT_START
 })
-@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID, ChromeFeatureList.ANDROID_HUB})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE
@@ -152,7 +152,7 @@ public class InstantStartToolbarTest {
 
         View surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar_v2");
 
         // Focus the omnibox.
         UrlBar urlBar = cta.findViewById(R.id.url_bar);
@@ -162,7 +162,7 @@ public class InstantStartToolbarTest {
         // Default search engine logo should still show.
         surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar_v2");
     }
 
     @Test

@@ -20,6 +20,11 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kClosedTabCache);
 
+BASE_DECLARE_FEATURE(kDeferredSpareRendererForTopChromeWebUI);
+extern const base::FeatureParam<base::TimeDelta> kSpareRendererWarmupDelay;
+extern const base::FeatureParam<bool>
+    kSpareRendererWarmupDelayUntilPageStopsLoading;
+
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
@@ -29,7 +34,7 @@ BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
 extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsAidaEndpoint;
-extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsApiKey;
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
@@ -51,6 +56,8 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
+#else
+BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 #endif
 
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
@@ -77,6 +84,8 @@ BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
 BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
+BASE_DECLARE_FEATURE(kEnableDPAPIEncryptionProvider);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
@@ -131,7 +140,7 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
-BASE_DECLARE_FEATURE(kPayloadTestComponent);
+BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 
 }  // namespace features
 

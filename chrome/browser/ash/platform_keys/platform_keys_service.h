@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class NSSCertDatabase;
@@ -90,15 +90,15 @@ using SetAttributeForKeyCallback =
 
 // If the attribute value has been successfully retrieved, |attribute_value|
 // will contain the result. If an error occurs, |attribute_value| will be empty.
-using GetAttributeForKeyCallback = base::OnceCallback<void(
-    absl::optional<std::vector<uint8_t>> attribute_value,
-    chromeos::platform_keys::Status status)>;
+using GetAttributeForKeyCallback =
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>> attribute_value,
+                            chromeos::platform_keys::Status status)>;
 
 // If the availability of the key on the provided token has been successfully
 // determined, |on_token| will contain the result. If an error occurs,
 // |on_token| will be empty and an error |status| will be returned.
 using IsKeyOnTokenCallback =
-    base::OnceCallback<void(absl::optional<bool> on_token,
+    base::OnceCallback<void(std::optional<bool> on_token,
                             chromeos::platform_keys::Status status)>;
 
 // An observer that gets notified when the PlatformKeysService is being shut
@@ -157,7 +157,7 @@ class PlatformKeysService : public KeyedService {
   // specified), the operation aborts. |callback| will be invoked with the
   // signature or an error status.
   virtual void SignRsaPkcs1(
-      absl::optional<chromeos::platform_keys::TokenId> token_id,
+      std::optional<chromeos::platform_keys::TokenId> token_id,
       std::vector<uint8_t> data,
       std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
@@ -171,7 +171,7 @@ class PlatformKeysService : public KeyedService {
   // is the key size in octets. |callback| will be invoked with the signature or
   // an error status.
   virtual void SignRSAPKCS1Raw(
-      absl::optional<chromeos::platform_keys::TokenId> token_id,
+      std::optional<chromeos::platform_keys::TokenId> token_id,
       std::vector<uint8_t> data,
       std::vector<uint8_t> public_key_spki_der,
       SignCallback callback) = 0;
@@ -182,7 +182,7 @@ class PlatformKeysService : public KeyedService {
   // aborts. |callback| will be invoked with the ECDSA signature or an error
   // status.
   virtual void SignEcdsa(
-      absl::optional<chromeos::platform_keys::TokenId> token_id,
+      std::optional<chromeos::platform_keys::TokenId> token_id,
       std::vector<uint8_t> data,
       std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
@@ -264,7 +264,7 @@ class PlatformKeysService : public KeyedService {
   // |public_key_spki_der| only if the key is in |token_id|. |callback| will be
   // invoked on the UI thread when getting the attribute is done, possibly with
   // an error message. In case no value was set for |attribute_type|, an error
-  // |status| and absl::nullopt |attribute_value| will be returned.
+  // |status| and std::nullopt |attribute_value| will be returned.
   virtual void GetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,
       std::vector<uint8_t> public_key_spki_der,
@@ -273,7 +273,7 @@ class PlatformKeysService : public KeyedService {
 
   // Determines if |public_key_spki_der| resides on |token_id|. |callback| will
   // be invoked on the UI thread with the result. If an error occurred, an error
-  // |status| will be returned and absl::nullopt |on_token| will be returned.
+  // |status| will be returned and std::nullopt |on_token| will be returned.
   virtual void IsKeyOnToken(chromeos::platform_keys::TokenId token_id,
                             std::vector<uint8_t> public_key_spki_der,
                             IsKeyOnTokenCallback callback) = 0;
@@ -346,17 +346,16 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void GenerateECKey(chromeos::platform_keys::TokenId token_id,
                      const std::string& named_curve,
                      GenerateKeyCallback callback) override;
-  void SignRsaPkcs1(absl::optional<chromeos::platform_keys::TokenId> token_id,
+  void SignRsaPkcs1(std::optional<chromeos::platform_keys::TokenId> token_id,
                     std::vector<uint8_t> data,
                     std::vector<uint8_t> public_key_spki_der,
                     chromeos::platform_keys::HashAlgorithm hash_algorithm,
                     SignCallback callback) override;
-  void SignRSAPKCS1Raw(
-      absl::optional<chromeos::platform_keys::TokenId> token_id,
-      std::vector<uint8_t> data,
-      std::vector<uint8_t> public_key_spki_der,
-      SignCallback callback) override;
-  void SignEcdsa(absl::optional<chromeos::platform_keys::TokenId> token_id,
+  void SignRSAPKCS1Raw(std::optional<chromeos::platform_keys::TokenId> token_id,
+                       std::vector<uint8_t> data,
+                       std::vector<uint8_t> public_key_spki_der,
+                       SignCallback callback) override;
+  void SignEcdsa(std::optional<chromeos::platform_keys::TokenId> token_id,
                  std::vector<uint8_t> data,
                  std::vector<uint8_t> public_key_spki_der,
                  chromeos::platform_keys::HashAlgorithm hash_algorithm,

@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from './i18n_setup.js';
-import {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
+import type {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {getTemplate} from './voice_search_overlay.html.js';
 import {WindowProxy} from './window_proxy.js';

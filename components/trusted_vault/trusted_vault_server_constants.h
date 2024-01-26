@@ -50,6 +50,7 @@ static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
               "enum values");
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
+GURL GetGetSecurityDomainMembersURL(const GURL& server_url);
 GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
                                    base::span<const uint8_t> public_key);
 GURL GetGetSecurityDomainURL(const GURL& server_url,
@@ -58,6 +59,9 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain);
 
 // Computes full URL, including alternate proto param.
+GURL GetGetSecurityDomainMembersURLForTesting(
+    const absl::optional<std::string>& next_page_token,
+    const GURL& server_url);
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url,
                                              SecurityDomainId security_domain);
 GURL GetFullGetSecurityDomainMemberURLForTesting(

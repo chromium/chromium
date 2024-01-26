@@ -28,7 +28,7 @@ void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
                                   DWORD expected_error = ERROR_SUCCESS) {
   base::win::ScopedHandle job(::CreateJobObject(nullptr, nullptr));
   DWORD result =
-      SetObjectIntegrityLabel(job.Get(), base::win::SecurityObjectType::kKernel,
+      SetObjectIntegrityLabel(job.get(), base::win::SecurityObjectType::kKernel,
                               mandatory_policy, integrity_level);
   EXPECT_EQ(result, expected_error);
   if (result != ERROR_SUCCESS)

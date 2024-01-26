@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/frame/browser_view_ash.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -20,7 +19,7 @@ BrowserViewAsh::BrowserViewAsh(std::unique_ptr<Browser> browser)
 void BrowserViewAsh::Layout() {
   BrowserView::Layout();
 
-  // In chromeOS ash we round the bottom two corners of the browser frame by
+  // In ChromeOS ash we round the bottom two corners of the browser frame by
   // rounding the respective corners of visible client contents i.e main web
   // contents, devtools web contents and side panel. When ever there is change
   // in the layout or visibility of these contents (devtools opened, devtools
@@ -32,10 +31,7 @@ void BrowserViewAsh::Layout() {
   GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 }
 
-void BrowserViewAsh::UpdateWindowRoundedCorners() {
-  const int corner_radius =
-      chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
-
+void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   SidePanel* side_panel = unified_side_panel();
   const bool right_aligned_side_panel_showing =
       side_panel->GetVisible() && side_panel->IsRightAligned();

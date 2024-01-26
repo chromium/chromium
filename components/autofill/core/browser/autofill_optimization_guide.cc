@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -20,16 +21,16 @@ namespace autofill {
 namespace {
 
 optimization_guide::proto::OptimizationType
-GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
+GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard& card) {
   // If `card` is not enrolled into VCN, do not return an optimization type.
-  if (card->virtual_card_enrollment_state() !=
+  if (card.virtual_card_enrollment_state() !=
       CreditCard::VirtualCardEnrollmentState::kEnrolled) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
 
   // If `card` is not a network-level enrollment, do not return an optimization
   // type.
-  if (card->virtual_card_enrollment_type() !=
+  if (card.virtual_card_enrollment_type() !=
       CreditCard::VirtualCardEnrollmentType::kNetwork) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
@@ -37,13 +38,64 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
   // Now that we know this card is enrolled into VCN and is a network-level
   // enrollment, if it is a network that we have an optimization type for then
   // return that optimization type.
-  if (card->network() == kVisaCard) {
+  if (card.network() == kVisaCard) {
     return optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA;
   }
 
   // No conditions to return an optimization type were found, so return that we
   // could not find an optimization type.
   return optimization_guide::proto::TYPE_UNSPECIFIED;
+}
+
+std::vector<optimization_guide::proto::OptimizationType>
+GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
+  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
+  if (card.issuer_id() == kAmexCardIssuerId) {
+    optimization_types.push_back(
+        optimization_guide::proto::
+            AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::
+            AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
+  } else if (card.issuer_id() == kCapitalOneCardIssuerId) {
+    optimization_types.push_back(
+        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::
+            CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS);
+  }
+  return optimization_types;
+}
+
+void AddCreditCardOptimizationTypes(
+    const PersonalDataManager* personal_data_manager,
+    base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+  for (const CreditCard* card : personal_data_manager->GetServerCreditCards()) {
+    auto vcn_merchant_opt_out_optimization_type =
+        GetVcnMerchantOptOutOptimizationTypeForCard(*card);
+    if (vcn_merchant_opt_out_optimization_type !=
+        optimization_guide::proto::TYPE_UNSPECIFIED) {
+      optimization_types.insert(vcn_merchant_opt_out_optimization_type);
+    }
+
+    // Check if the card is eligible for category-level benefit
+    // optimizations from supported issuers. Other benefit types are read
+    // directly from the PersonalDataManager and don't require filter
+    // optimizations.
+    if (base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits)) {
+      auto benefits_optimization_types =
+          GetCardBenefitsOptimizationTypesForCard(*card);
+      if (!benefits_optimization_types.empty()) {
+        optimization_types.insert(benefits_optimization_types.begin(),
+                                  benefits_optimization_types.end());
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -54,6 +106,8 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 
+// TODO(crbug.com/1519658): Pass PersonalDataManager by reference and remove
+// check for presence.
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,
     const PersonalDataManager* personal_data_manager) {
@@ -69,25 +123,14 @@ void AutofillOptimizationGuide::OnDidParseForm(
   if (has_iban_field) {
     optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering) &&
-      personal_data_manager) {
+  if (personal_data_manager) {
     bool has_credit_card_field =
         base::ranges::any_of(form_structure, [](const auto& field) {
           return field->Type().group() == FieldTypeGroup::kCreditCard;
         });
+
     if (has_credit_card_field) {
-      // For each server card, check whether we need to register an optimization
-      // type, and if so then add it to `optimization_types`.
-      for (const auto* card : personal_data_manager->GetServerCreditCards()) {
-        if (auto optimization_type =
-                GetVcnMerchantOptOutOptimizationTypeForCard(card);
-            optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
-          optimization_types.insert(optimization_type);
-          break;
-        }
-      }
+      AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
     }
   }
 
@@ -129,13 +172,8 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
 bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
     const GURL& url,
     const CreditCard* card) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering)) {
-    return false;
-  }
-
   if (auto optimization_type =
-          GetVcnMerchantOptOutOptimizationTypeForCard(card);
+          GetVcnMerchantOptOutOptimizationTypeForCard(*card);
       optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
     optimization_guide::OptimizationGuideDecision decision =
         decider_->CanApplyOptimization(url, optimization_type,

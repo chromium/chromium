@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -46,7 +47,6 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
@@ -333,14 +333,14 @@ public class PageInfoDiscoverabilityTest {
     @Feature({"PageInfoDiscoverability"})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     public void testPermissionRequestTypes(
-            @ContentSettingsType int contentSettingsType, boolean isInSiteSettings) {
+            @ContentSettingsType.EnumType int contentSettingsType, boolean isInSiteSettings) {
         if (contentSettingsType == ContentSettingsType.BLUETOOTH_CHOOSER_DATA) {
             isInSiteSettings =
                     ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
         }
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
-        @ContentSettingsType int[] permissions = {contentSettingsType};
+        @ContentSettingsType.EnumType int[] permissions = {contentSettingsType};
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMediator.onDialogResult(

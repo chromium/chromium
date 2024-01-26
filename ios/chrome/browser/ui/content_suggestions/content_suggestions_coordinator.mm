@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/favicon/large_icon_cache.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
@@ -76,15 +78,15 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
@@ -96,6 +98,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -103,6 +106,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -111,7 +115,7 @@
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     NotificationsConfirmationPresenter,
-    SafetyCheckViewDelegate,
+    NotificationsOptInAlertCoordinatorDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListViewDelegate>
@@ -161,6 +165,9 @@
   // The coordinator used to present a modal alert for the parcel tracking
   // module.
   AlertCoordinator* _parcelTrackingAlertCoordinator;
+
+  // The coordinator used to present an alert to enable Tips notifications.
+  NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 }
 
 - (void)start {
@@ -234,6 +241,7 @@
                     shoppingService:shoppingService
                             browser:self.browser];
   self.contentSuggestionsMediator.delegate = self.delegate;
+  self.contentSuggestionsMediator.presentationDelegate = self;
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
@@ -305,6 +313,8 @@
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
   [self dismissParcelTrackingAlertCoordinator];
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator = nil;
   _started = NO;
 }
 
@@ -369,6 +379,27 @@
   }
 }
 
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List modules.
+  CHECK(IsSetUpListModuleType(type));
+
+  // Ask user for permission to opt-in notifications.
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator =
+      [[NotificationsOptInAlertCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  _notificationsOptInAlertCoordinator.clientId =
+      PushNotificationClientId::kTips;
+  _notificationsOptInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSStringF(
+          IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+          l10n_util::GetStringUTF16(
+              content_suggestions::SetUpListTitleStringID()));
+  _notificationsOptInAlertCoordinator.delegate = self;
+  [_notificationsOptInAlertCoordinator start];
+}
+
 - (void)didTapMagicStackEditButton {
   _magicStackHalfSheetTableViewController =
       [[MagicStackHalfSheetTableViewController alloc] init];
@@ -420,6 +451,10 @@
   [self.viewController presentViewController:navViewController
                                     animated:YES
                                   completion:nil];
+}
+
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
+  [self didSelectSetUpListItem:view.type];
 }
 
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
@@ -479,52 +514,44 @@
   CHECK(IsSafetyCheckMagicStackEnabled());
 
   [self.NTPMetricsDelegate safetyCheckOpened];
+  Browser* browser = self.browser;
   [self.contentSuggestionsMediator
       logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                          kSafetyCheck];
 
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          browser->GetBrowserState());
+
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<ApplicationSettingsCommands> settingsHandler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), ApplicationSettingsCommands);
 
   switch (type) {
     case SafetyCheckItemType::kUpdateChrome: {
       const GURL& chrome_upgrade_url =
           safetyCheckManager->GetChromeAppUpgradeUrl();
-
-      HandleSafetyCheckUpdateChromeTap(
-          chrome_upgrade_url,
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             ApplicationCommands));
-
+      HandleSafetyCheckUpdateChromeTap(chrome_upgrade_url, applicationHandler);
       break;
     }
     case SafetyCheckItemType::kPassword: {
       std::vector<password_manager::CredentialUIEntry> credentials =
           safetyCheckManager->GetInsecureCredentials();
-
-      HandleSafetyCheckPasswordTap(
-          credentials, HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                          ApplicationCommands));
-
+      HandleSafetyCheckPasswordTap(credentials, applicationHandler,
+                                   settingsHandler);
       break;
     }
     case SafetyCheckItemType::kSafeBrowsing:
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          ApplicationSettingsCommands)
-          showSafeBrowsingSettings];
-
+      [settingsHandler showSafeBrowsingSettings];
       break;
     case SafetyCheckItemType::kAllSafe:
     case SafetyCheckItemType::kRunning:
     case SafetyCheckItemType::kDefault:
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          ApplicationCommands)
-          showAndStartSafetyCheckInHalfSheet:YES
-                                    referrer:password_manager::
-                                                 PasswordCheckReferrer::
-                                                     kSafetyCheckMagicStack];
-
+      password_manager::PasswordCheckReferrer referrer =
+          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
+      [settingsHandler showAndStartSafetyCheckInHalfSheet:YES
+                                                 referrer:referrer];
       break;
   }
 }
@@ -713,6 +740,13 @@
   _contentNotificationCoordinator.delegate = self;
   _contentNotificationCoordinator.messagePresenter = self;
   [_contentNotificationCoordinator start];
+}
+
+#pragma mark - NotificationsOptInAlertCoordinatorDelegate
+
+- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator = nil;
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

@@ -21,6 +21,7 @@
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "components/performance_manager/resource_attribution/context_collection.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
 namespace performance_manager::resource_attribution::internal {
@@ -169,7 +170,7 @@ void QueryScheduler::RequestResults(
   // Send out a measurement request for each resource type. The BarrierCallback
   // will invoke OnResultsReceived when all have responded.
   const size_t num_requests = query_params.resource_types.Size();
-  auto barrier_callback = base::BarrierCallback<SingleQueryResultMap>(
+  auto barrier_callback = base::BarrierCallback<QueryResultMap>(
       num_requests, base::BindOnce(&QueryScheduler::OnResultsReceived,
                                    weak_factory_.GetWeakPtr(),
                                    query_params.contexts, std::move(callback)));
@@ -285,14 +286,28 @@ void QueryScheduler::RemoveMemoryQuery() {
 void QueryScheduler::OnResultsReceived(
     const ContextCollection& contexts,
     base::OnceCallback<void(const QueryResultMap&)> callback,
-    const std::vector<SingleQueryResultMap>& results) {
+    std::vector<QueryResultMap> all_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QueryResultMap merged_results;
-  for (const auto& result_map : results) {
+  for (auto& result_map : all_results) {
     for (auto& [context, result] : result_map) {
-      if (contexts.ContainsContext(context)) {
-        merged_results[context].push_back(std::move(result));
+      if (!contexts.ContainsContext(context)) {
+        continue;
       }
+      QueryResults& merged_result = merged_results[context];
+      // Move from `result` into `merged_result`. Only one member of `result`
+      // should be set since each element of `all_results` is the result for a
+      // single resource type.
+      if (result.cpu_time_result.has_value()) {
+        std::swap(result.cpu_time_result, merged_result.cpu_time_result);
+      } else if (result.memory_summary_result.has_value()) {
+        std::swap(result.memory_summary_result,
+                  merged_result.memory_summary_result);
+      }
+      // If this fails, either `result` had multiple members set, or multiple
+      // entries of `all_results` copied measurements of the same resource into
+      // `merged_result` and the earlier measurement was swapped into `result`.
+      CHECK(result == QueryResults{});
     }
   }
   std::move(callback).Run(merged_results);

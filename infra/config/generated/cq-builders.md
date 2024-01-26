@@ -39,7 +39,7 @@ These builders must pass before a CL may land that affects files outside of
 
 * [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-gtest""))
 
-* [chromeos-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-renamed""))
+    * Replaced with builder: [chromeos-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest-and-tast) when CL owner is in group [chromeos-pa-with-chromium-accounts](https://chrome-infra-auth.appspot.com/auth/lookup?p=chromeos-pa-with-chromium-accounts)
 
 * [chromeos-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-arm-generic-rel""))
 
@@ -51,7 +51,9 @@ These builders must pass before a CL may land that affects files outside of
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator""))
 
-* [lacros-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-renamed""))
+* [lacros-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-gtest""))
+
+    * Replaced with builder: [lacros-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest-and-tast) when CL owner is in group [chromeos-pa-with-chromium-accounts](https://chrome-infra-auth.appspot.com/auth/lookup?p=chromeos-pa-with-chromium-accounts)
 
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
 
@@ -419,9 +421,6 @@ builder.
   * [`//chromeos/ash/components/dbus/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/components/dbus/chromebox_for_meetings/)
   * [`//chromeos/ash/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/services/chromebox_for_meetings/)
   * [`//chrome/browser/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ash/chromebox_for_meetings/)
-  * [`//chrome/browser/resources/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/chromebox_for_meetings/)
-  * [`//chrome/browser/ui/webui/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/ash/chromebox_for_meetings/)
-  * [`//chrome/test/data/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/test/data/webui/chromeos/chromebox_for_meetings/)
 
 * [linux-headless-shell-rel](https://ci.chromium.org/p/chromium/builders/try/linux-headless-shell-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-headless-shell-rel""))
 
@@ -552,6 +551,7 @@ builder.
 * [reclient-config-deployment-verifier](https://ci.chromium.org/p/chromium/builders/try/reclient-config-deployment-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""reclient-config-deployment-verifier""))
 
   Location filters:
+  * [`//buildtools/reclient_cfgs/.+`](https://cs.chromium.org/chromium/src/buildtools/reclient_cfgs/)
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//DEPS`](https://cs.chromium.org/chromium/src/DEPS)
 
@@ -642,9 +642,6 @@ as required builders.
 * [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
   * Experiment percentage: 10.0
 
-* [linux-chromeos-compile-siso-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-siso-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-siso-dbg""))
-  * Experiment percentage: 10.0
-
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
@@ -661,7 +658,7 @@ as required builders.
   * Experiment percentage: 100.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 100.0
 
   Location filters:
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)

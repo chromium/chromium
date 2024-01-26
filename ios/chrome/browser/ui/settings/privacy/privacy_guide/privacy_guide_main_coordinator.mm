@@ -13,12 +13,15 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
 
 @interface PrivacyGuideMainCoordinator () <
     PrivacyGuideCommands,
+    PrivacyGuideCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -33,7 +36,10 @@
   if (self) {
     // TODO: Not all steps in the list can be displayed. This will be handled
     // when optional steps are implemented.
-    _steps = @[ @(kPrivacyGuideWelcomeStep), @(kPrivacyGuideURLUsageStep) ];
+    _steps = @[
+      @(kPrivacyGuideWelcomeStep), @(kPrivacyGuideURLUsageStep),
+      @(kPrivacyGuideHistorySyncStep)
+    ];
   }
   return self;
 }
@@ -47,6 +53,8 @@
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.navigationBar.accessibilityIdentifier =
+      kPrivacyGuideNavigationBarViewID;
   _navigationController.presentationController.delegate = self;
 
   [self startNextCoordinator];
@@ -84,6 +92,14 @@
   [self.delegate privacyGuideMainCoordinatorDidRemove:self];
 }
 
+#pragma mark - PrivacyGuideCoordinatorDelegate
+
+- (void)privacyGuideCoordinatorDidRemove:(ChromeCoordinator*)coordinator {
+  CHECK([self.childCoordinators containsObject:coordinator]);
+  [coordinator stop];
+  [self.childCoordinators removeObject:coordinator];
+}
+
 #pragma mark - Private
 
 // Initializes the Welcome step coordinator and starts it.
@@ -103,6 +119,19 @@
       [[PrivacyGuideURLUsageCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser];
+  coordinator.delegate = self;
+  [coordinator start];
+
+  [self.childCoordinators addObject:coordinator];
+}
+
+// Initializes the History Sync step and starts it.
+- (void)startHistorySyncCoordinator {
+  PrivacyGuideHistorySyncCoordinator* coordinator =
+      [[PrivacyGuideHistorySyncCoordinator alloc]
+          initWithBaseNavigationController:_navigationController
+                                   browser:self.browser];
+  coordinator.delegate = self;
   [coordinator start];
 
   [self.childCoordinators addObject:coordinator];
@@ -115,6 +144,9 @@
       break;
     case kPrivacyGuideURLUsageStep:
       [self startURLUsageCoordinator];
+      break;
+    case kPrivacyGuideHistorySyncStep:
+      [self startHistorySyncCoordinator];
       break;
   }
 }

@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">ใครกำลังใช้ Chrome อยู่</translation>
 <translation id="1142745911746664600">อัปเดต Chrome ไม่ได้</translation>
 <translation id="1149651794389918149">ลงชื่อเข้าใช้ Chrome หากต้องการลงชื่อเข้าใช้บัญชีเพียงครั้งเดียว คุณสามารถ<ph name="GUEST_LINK_BEGIN" />ใช้อุปกรณ์ในฐานะผู้มาเยือน<ph name="GUEST_LINK_END" />ได้</translation>
-<translation id="1152920704813762236">เกี่ยวกับ Chrome OS</translation>
+<translation id="1152920704813762236">เกี่ยวกับ ChromeOS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
 <translation id="1194807384646768652">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ประเภทนี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดเพิ่ม <ph name="PRODUCT_EXE_NAME" /> ในรายการที่อนุญาต</translation>
 <translation id="2131230230468101642">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ หรือคุณจะนำความสนใจที่ไม่ต้องการให้ Chrome พิจารณาออกก็ได้</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
-<translation id="2146761408396054429">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />Chrome ตรวจสอบการดาวน์โหลดนี้ให้คุณได้หากคุณให้รหัสผ่าน โดยรหัสผ่านจะอยู่แค่ในอุปกรณ์ของคุณเท่านั้น</translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
 <translation id="2174917724755363426">การติดตั้งไม่สมบูรณ์ คุณแน่ใจไหมว่าต้องการยกเลิก</translation>
 <translation id="2190166659037789668">ข้อผิดพลาดในการตรวจสอบการอัปเดต: <ph name="UPDATE_CHECK_ERROR" /></translation>
@@ -84,7 +83,7 @@
 <translation id="234869673307233423">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="235650106824528204">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chrome ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ต่อไป</translation>
-<translation id="2401189691232800402">ระบบ Chrome OS</translation>
+<translation id="2401189691232800402">ระบบ ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}=1{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}other{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID # เครื่อง}}</translation>
 <translation id="2424440923901031101">ส่วนขยายนี้ละเมิดนโยบาย Chrome เว็บสโตร์และอาจไม่ปลอดภัย นำส่วนขยายดังกล่าวออกจาก Chrome เพื่อไม่ให้ดูและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ที่เข้าชม รวมถึงข้อมูลส่วนบุคคลได้อีกต่อไป</translation>
 <translation id="2467438592969358367">Google Chrome ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
@@ -104,7 +103,7 @@
 <translation id="2597976513418770460">ดึงข้อมูลของคุณในเบราว์เซอร์ Chrome จาก <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">การแคชโปรแกรมติดตั้งที่ดาวน์โหลดไว้ล้มเหลว ข้อผิดพลาด: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
 <translation id="2622559029861875898">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome ดำเนินการตรวจสอบเป็นประจำเพื่อให้มั่นใจว่าเบราว์เซอร์มีการตั้งค่าที่ปลอดภัยที่สุด เราจะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
 <translation id="2652691236519827073">เปิดลิงก์ใน Chrome แท็บใหม่</translation>
 <translation id="2665296953892887393">ช่วยทำให้ Google Chrome ดียิ่งขึ้นโดยการส่งรายงานข้อขัดข้องและ <ph name="UMA_LINK" /> ไปยัง Google</translation>
@@ -194,6 +193,7 @@
 <translation id="4053720452172726777">กำหนดค่าและควบคุม Google Chrome</translation>
 <translation id="4106587138345390261">Chrome กำลังพัฒนาฟีเจอร์ใหม่ๆ ที่จะช่วยให้เว็บไซต์มอบประสบการณ์การท่องเว็บได้เหมือนเดิมแต่ใช้ข้อมูลของคุณน้อยลง</translation>
 <translation id="4110895483821904099">ตั้งค่าโปรไฟล์ Chrome ใหม่</translation>
+<translation id="4128488089242627000">Chrome ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ (แนะนำ)</translation>
 <translation id="4147555960264124640">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Google Chrome ของคุณ ข้อมูล Chrome เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">กำลังติดตั้ง...</translation>
 <translation id="4149882025268051530">โปรแกรมติดตั้งยกเลิกการบีบอัดการเก็บข้อมูลไม่ได้ โปรดดาวน์โหลด Google Chrome อีกครั้ง</translation>
@@ -216,7 +216,6 @@
 <translation id="4343195214584226067">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chrome แล้ว</translation>
 <translation id="4384570495110188418">Chrome ตรวจสอบรหัสผ่านไม่ได้เพราะคุณไม่ได้ลงชื่อเข้าใช้</translation>
 <translation id="4389991535395284064">เมื่อท่องเว็บในโหมดไม่ระบุตัวตน Chrome จะแจ้งเตือนคุณก่อนโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
-<translation id="4393248995085527349">คุณจะต้องใช้ macOS 10.15 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.13</translation>
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4450664632294415862">Chrome - หน้าลงชื่อเข้าใช้ของเครือข่าย - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -241,6 +240,7 @@
 <translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4828579605166583682">Google Chrome กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="4842397268809523050">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ใช้ไม่ได้กับโดเมนของคุณ</translation>
+<translation id="4873692836499071887">คุณจะต้องใช้ macOS 11 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.15</translation>
 <translation id="4873783916118289636">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัยใน Chrome</translation>
 <translation id="4891791193823137474">ให้ Google Chrome ทำงานในเบื้องหลัง</translation>
 <translation id="4895437082222824641">เปิดลิงก์ใน Chrome แท็บใหม่</translation>
@@ -300,7 +300,6 @@
 <translation id="5941711191222866238">ย่อเล็กสุด</translation>
 <translation id="5941830788786076944">ทำให้ Google Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
-<translation id="6010556343189461180">คุณจะต้องใช้ macOS 10.15 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.14</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />เครื่องมือจาก Chrome<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6025087594896450715">Google Chrome จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
@@ -346,9 +345,10 @@
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
 <translation id="6794858689789885890">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chrome</translation>
 <translation id="683440813066116847">กฎขาเข้าสำหรับ Google Chrome Canary เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
+<translation id="6851981911629679515">เปิดการปกป้องเพิ่มเติมในเครื่องมือ JavaScript และ WebAssembly ของ Chrome</translation>
 <translation id="6881299373831449287">กำลังอัปเดต Chrome</translation>
 <translation id="6885412569789873916">แอป Chrome เบต้า</translation>
-<translation id="6933858244219479645">ระบบ Chrome OS</translation>
+<translation id="6933858244219479645">ระบบ ChromeOS</translation>
 <translation id="6938166777909186039">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 8.1</translation>
 <translation id="6943584222992551122">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์เครื่องนี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chrome ในชื่อ <ph name="USER_EMAIL" /></translation>
 <translation id="6967962315388095737">กฎขาเข้าสำหรับ Google Chrome เบต้าเพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
@@ -467,6 +467,7 @@
 <translation id="873133009373065397">Google Chrome ไม่สามารถกำหนดหรือตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="8765470054473112089">เมื่อคุณพิมพ์ในแถบที่อยู่หรือช่องค้นหา Chrome จะส่งสิ่งที่คุณพิมพ์ไปยังเครื่องมือค้นหาเริ่มต้นเพื่อให้ได้รับการแนะนำที่ดียิ่งขึ้น ตัวเลือกนี้จะปิดไว้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="878572486461146056">ข้อผิดพลาดในการติดตั้ง: ผู้ดูแลเครือข่ายของคุณใช้นโยบายระดับกลุ่มซึ่งป้องกันการติดตั้ง: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 เป็นเครื่องมือ JavaScript และ WebAssembly ของ Chrome ที่ใช้เพื่อปรับปรุงประสิทธิภาพของเว็บไซต์</translation>
 <translation id="8821043148920470810">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 7</translation>
 <translation id="8823341990149967727">Chrome ล้าสมัย</translation>
 <translation id="8825634023950448068">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ และหาก Chrome คาดคะเนผิดหรือคุณไม่ต้องการเห็นโฆษณาบางรายการ คุณนำความสนใจออกได้</translation>

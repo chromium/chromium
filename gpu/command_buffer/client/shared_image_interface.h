@@ -50,10 +50,9 @@ struct SharedImageCapabilities;
 // It is asynchronous in the same sense as GLES2Interface or RasterInterface in
 // that commands are executed asynchronously on the service side, but can be
 // synchronized using SyncTokens. See //docs/design/gpu_synchronization.md.
-class GPU_EXPORT SharedImageInterface {
+class GPU_EXPORT SharedImageInterface
+    : public base::RefCountedThreadSafe<SharedImageInterface> {
  public:
-  virtual ~SharedImageInterface() = default;
-
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with.
@@ -158,6 +157,33 @@ class GPU_EXPORT SharedImageInterface {
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
+  struct GPU_EXPORT SharedImageMapping {
+    SharedImageMapping(SharedImageMapping& mapped) = delete;
+    SharedImageMapping& operator=(SharedImageMapping& mapped) = delete;
+    SharedImageMapping();
+    SharedImageMapping(SharedImageMapping&& mapped);
+    SharedImageMapping(scoped_refptr<ClientSharedImage> shared_image,
+                       base::WritableSharedMemoryMapping mapping);
+    SharedImageMapping& operator=(SharedImageMapping&& mapped);
+    ~SharedImageMapping();
+
+    scoped_refptr<ClientSharedImage> shared_image;
+    base::WritableSharedMemoryMapping mapping;
+  };
+
+  // Creates a shared image with the usage of gpu::SHARED_IMAGE_USAGE_CPU_WRITE
+  // only. A shared memory buffer is created internally and a shared image is
+  // created out this buffer. This method is used by the software compositor
+  // only.
+  virtual SharedImageMapping CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label) = 0;
+
   // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
   // single planar eg. RGB BufferFormats. Please use the equivalent method above
   // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
@@ -234,22 +260,28 @@ class GPU_EXPORT SharedImageInterface {
       const Mailbox& mailbox,
       uint32_t usage) = 0;
 
-  struct SwapChainMailboxes {
-    Mailbox front_buffer;
-    Mailbox back_buffer;
+  struct GPU_EXPORT SwapChainSharedImages {
+    SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,
+                          scoped_refptr<gpu::ClientSharedImage> back_buffer);
+    SwapChainSharedImages(const SwapChainSharedImages& shared_images);
+    ~SwapChainSharedImages();
+
+    scoped_refptr<gpu::ClientSharedImage> front_buffer;
+    scoped_refptr<gpu::ClientSharedImage> back_buffer;
   };
 
   // Creates a swap chain.
-  // Returns mailboxes for front and back buffers of a DXGI Swap Chain that can
-  // be imported into GL command buffer using shared image functions (e.g.
+  // Returns shared images for front and back buffers of a DXGI Swap Chain that
+  // can be imported into GL command buffer using shared image functions (e.g.
   // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM) or (deprecated)
   // mailbox functions (e.g. GLES2Interface::CreateAndConsumeTextureCHROMIUM).
-  virtual SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                             const gfx::Size& size,
-                                             const gfx::ColorSpace& color_space,
-                                             GrSurfaceOrigin surface_origin,
-                                             SkAlphaType alpha_type,
-                                             uint32_t usage) = 0;
+  virtual SwapChainSharedImages CreateSwapChain(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage) = 0;
 
   // Swaps front and back buffer of a swap chain. Back buffer mailbox still
   // refers to the back buffer of the swap chain after calling PresentSwapChain.
@@ -328,6 +360,10 @@ class GPU_EXPORT SharedImageInterface {
       uint32_t usage);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<SharedImageInterface>;
+  virtual ~SharedImageInterface() = default;
 };
 
 }  // namespace gpu

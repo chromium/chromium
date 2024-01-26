@@ -193,8 +193,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableAccessibilityPageZoom,
            raw_ref(features::kAccessibilityPageZoom)},
-          {wf::EnableAutoDisableAccessibilityV2,
-           raw_ref(features::kAutoDisableAccessibilityV2)},
 #endif
           {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
            raw_ref(features::kUseAXPositionForDocumentMarkers)},
@@ -203,6 +201,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableAutoplayIgnoresWebAudio,
            raw_ref(media::kAutoplayIgnoreWebAudio)},
           {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
+          {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
+           raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
           {wf::EnableBrowserVerifiedUserActivationKeyboard,
            raw_ref(features::kBrowserVerifiedUserActivationKeyboard)},
           {wf::EnableBrowserVerifiedUserActivationMouse,
@@ -256,6 +256,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableFencedFrames,
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
            kSetOnlyIfOverridden},
+          // FledgeFeatureDetection should be on if any of the features it aims
+          // to help detect is on.
+          {wf::EnableFledgeFeatureDetection,
+           raw_ref(blink::features::kFledgeCustomMaxAuctionAdComponents)},
           {wf::EnableForcedColors, raw_ref(features::kForcedColors)},
           {wf::EnableFractionalScrollOffsets,
            raw_ref(features::kFractionalScrollOffsets)},
@@ -268,6 +272,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableLazyInitializeMediaControls,
            raw_ref(features::kLazyInitializeMediaControls)},
+#if BUILDFLAG(IS_CHROMEOS)
+          {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
+#endif
           {wf::EnableMachineLearningModelLoader,
            raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
            kSetOnlyIfOverridden},
@@ -377,6 +384,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AttributionReportingCrossAppWeb",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
+          {"AttributionReportingCrossAppWeb",
+           raw_ref(features::kAttributionReportingCrossAppWebOverride)},
           {"AndroidDownloadableFontsMatching",
            raw_ref(features::kAndroidDownloadableFontsMatching)},
 #if BUILDFLAG(IS_ANDROID)
@@ -496,6 +505,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        true},
       {wrf::EnableWebGPUDeveloperFeatures,
        switches::kEnableWebGPUDeveloperFeatures, true},
+      {wrf::EnableWebGPUExperimentalFeatures, switches::kEnableUnsafeWebGPU,
+       true},
       {wrf::EnableDirectSockets, switches::kEnableIsolatedWebAppsInRenderer,
        true},
   };
@@ -699,6 +710,21 @@ void ResolveInvalidConfigurations() {
         << attribution_reporting::features::kConversionMeasurement.name
         << " in addition.";
     WebRuntimeFeatures::EnableAttributionReporting(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement) ||
+      !base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingCrossAppWeb)) {
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsAttributionReportingCrossAppWebEnabled())
+        << "AttributionReportingCrossAppWeb cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << attribution_reporting::features::kConversionMeasurement.name << ","
+        << network::features::kAttributionReportingCrossAppWeb.name
+        << " in addition.";
+    WebRuntimeFeatures::EnableAttributionReportingCrossAppWeb(false);
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {

@@ -19,13 +19,13 @@
 
 namespace {
 
-// Performs the assertion that the side swipe bubble appears and return the
-// result.
-void ExpectThatSideSwipeBubbleAppears() {
+// Performs the assertion that the gesture IPH appears and return the result.
+void ExpectThatGestureIPHAppears() {
   // Disable scoped synchronization to perform checks with animation running.
   ScopedSynchronizationDisabler sync_disabler;
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(@"SideSwipeBubbleViewBubbleAXId")];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(@"GestureInProductHelpViewBubbleAXId")];
 }
 
 }  // namespace
@@ -116,7 +116,7 @@ void ExpectThatSideSwipeBubbleAppears() {
   [ChromeEarlGrey loadURL:destinationUrl];
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  ExpectThatSideSwipeBubbleAppears();
+  ExpectThatGestureIPHAppears();
 }
 
 // Tests that the pull-to-refresh IPH when user reloads the page using context
@@ -131,7 +131,7 @@ void ExpectThatSideSwipeBubbleAppears() {
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
   [ChromeEarlGreyUI reload];
-  ExpectThatSideSwipeBubbleAppears();
+  ExpectThatGestureIPHAppears();
 }
 
 @end

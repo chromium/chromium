@@ -4,11 +4,11 @@
 
 package org.chromium.components.messages;
 
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
@@ -18,10 +18,23 @@ import org.chromium.base.metrics.RecordHistogram;
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
+    private static final String ENQUEUED_SUSPEND_HISTOGRAM_NAME =
+            "Android.Messages.Enqueued.Suspended";
+    private static final String ENQUEUED_RESUME_HISTOGRAM_NAME =
+            "Android.Messages.Enqueued.Resumed";
+    private static final String ENQUEUED_SCOPE_ACTIVE_HISTOGRAM_NAME =
+            "Android.Messages.Enqueued.ScopeActive";
+    private static final String ENQUEUED_SCOPE_INACTIVE_HISTOGRAM_NAME =
+            "Android.Messages.Enqueued.ScopeInactive";
     private static final String ENQUEUED_VISIBLE_HISTOGRAM_NAME =
             "Android.Messages.Enqueued.Visible";
     private static final String ENQUEUED_HIDDEN_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hidden";
     private static final String ENQUEUED_HIDING_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hiding";
+    private static final String FULLY_VISIBLE_NAME = "Android.Messages.FullyVisible";
+    private static final String ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME =
+            "Android.Messages.Error.FullyVisibleNotInformed";
+    private static final String DISMISSED_WITHOUT_FULLY_VISIBLE =
+            "Android.Messages.DismissedWithoutFullyVisible";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
     private static final String TIME_TO_ACTION_HISTOGRAM_PREFIX = "Android.Messages.TimeToAction.";
     private static final String TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX =
@@ -29,6 +42,15 @@ public class MessagesMetrics {
     static final String STACKING_HISTOGRAM_NAME = "Android.Messages.Stacking";
     static final String STACKING_HIDDEN_NAME = "Android.Messages.Stacking.Hidden";
     static final String STACKING_HIDING_NAME = "Android.Messages.Stacking.Hiding";
+    static final String STACKING_REQUEST_TO_SHOW_NAME =
+            "Android.Messages.Stacking.RequestToFullyShow";
+    static final String STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME =
+            "Android.Messages.Stacking.BlockedByBrowserControl";
+    static final String STACKING_BLOCKED_BY_CONTAINER_INITING_NAME =
+            "Android.Messages.Stacking.BlockedByContainerInitializing";
+    static final String STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME =
+            "Android.Messages.Stacking.BlockedByContainerNotInitialized";
+    static final String STACKING_TIME_TO_FULLY_SHOW_PREFIX = "Android.Messages.TimeToFullyShow.";
     static final String STACKING_ACTION_HISTOGRAM_PREFIX = "Android.Messages.Stacking.";
     static final String THREE_STACKED_HISTOGRAM_NAME = "Android.Messages.Stacking.ThreeStacked";
 
@@ -91,6 +113,24 @@ public class MessagesMetrics {
                 ENQUEUED_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
+    static void recordMessageEnqueuedScopeActive(
+            @MessageIdentifier int messageIdentifier, boolean active) {
+        String histogram =
+                active
+                        ? ENQUEUED_SCOPE_ACTIVE_HISTOGRAM_NAME
+                        : ENQUEUED_SCOPE_INACTIVE_HISTOGRAM_NAME;
+        RecordHistogram.recordEnumeratedHistogram(
+                histogram, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    static void recordMessageEnqueuedQueueSuspended(
+            @MessageIdentifier int messageIdentifier, boolean suspended) {
+        String histogram =
+                suspended ? ENQUEUED_SUSPEND_HISTOGRAM_NAME : ENQUEUED_RESUME_HISTOGRAM_NAME;
+        RecordHistogram.recordEnumeratedHistogram(
+                histogram, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
     /** Records metrics when a message is visible after being enqueued. */
     static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -134,6 +174,61 @@ public class MessagesMetrics {
     }
 
     /**
+     * Record the id of candidate which will be displayed in the foreground.
+     *
+     * @param messageIdentifier The id of the next front message.
+     */
+    static void recordRequestToFullyShow(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                STACKING_REQUEST_TO_SHOW_NAME, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    /**
+     * Record the id of candidate which will be displayed in the foreground but now is waiting for
+     * browser control to be ready.
+     *
+     * @param messageIdentifier The id of the next front message.
+     */
+    static void recordBlockedByBrowserControl(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME,
+                messageIdentifier,
+                MessageIdentifier.COUNT);
+    }
+
+    /**
+     * Record the id of candidate which will be displayed in the foreground but now is waiting for
+     * message container to finishing initialization.
+     *
+     * @param messageIdentifier The id of the next front message.
+     */
+    static void recordBlockedByContainerInitializing(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                STACKING_BLOCKED_BY_CONTAINER_INITING_NAME,
+                messageIdentifier,
+                MessageIdentifier.COUNT);
+    }
+
+    /**
+     * Record the id of candidate which will be displayed in the foreground but container has not
+     * been initialized.
+     *
+     * @param messageIdentifier The id of the next front message.
+     */
+    static void recordBlockedByContainerNotInitialized(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME,
+                messageIdentifier,
+                MessageIdentifier.COUNT);
+    }
+
+    static void recordTimeToFullyShow(@MessageIdentifier int messageIdentifier, long durationMs) {
+        String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
+        RecordHistogram.recordMediumTimesHistogram(
+                STACKING_TIME_TO_FULLY_SHOW_PREFIX + histogramSuffix, durationMs);
+    }
+
+    /**
      * Record the id of background message when it is stacked.
      * @param messageIdentifier The id of the background message.
      */
@@ -171,12 +266,33 @@ public class MessagesMetrics {
                 THREE_STACKED_HISTOGRAM_NAME, scenario, ThreeStackedScenario.MAX_VALUE);
     }
 
+    /** Record the message has been fully visible. */
+    static void recordFullyVisible(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                FULLY_VISIBLE_NAME, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    /**
+     * Record the fully visible callback is not triggered when it is supposed to be. E.g. when the
+     * message is dismissed by gesture, primary action, secondary action, timer.
+     */
+    static void recordErrorFullyVisibleNotInformed(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    /** Record when the message is dismissed without being fully visible before. */
+    static void recordDismissedWithoutFullyVisible(@MessageIdentifier int messageIdentifier) {
+        RecordHistogram.recordEnumeratedHistogram(
+                DISMISSED_WITHOUT_FULLY_VISIBLE, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
     /**
      * Returns current timestamp in milliseconds to be used when recording message's visible
      * duration.
      */
     static long now() {
-        return SystemClock.uptimeMillis();
+        return TimeUtils.uptimeMillis();
     }
 
     private static String stackingAnimationActionToHistogramSuffix(
@@ -280,6 +396,18 @@ public class MessagesMetrics {
                 return "TrackingProtectionNotice";
             case MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING:
                 return "DesktopSiteWindowSetting";
+            case MessageIdentifier.PROMPT_HATS_LOCATION_CUSTOM_INVITATION:
+                return "PromptHatsLocationCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_LOCATION_GENERIC_INVITATION:
+                return "PromptHatsLocationGenericInvitation";
+            case MessageIdentifier.PROMPT_HATS_CAMERA_CUSTOM_INVITATION:
+                return "PromptHatsCameraCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_CAMERA_GENERIC_INVITATION:
+                return "PromptHatsCameraGenericInvitation";
+            case MessageIdentifier.PROMPT_HATS_MICROPHONE_CUSTOM_INVITATION:
+                return "PromptHatsMicrophoneCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_MICROPHONE_GENERIC_INVITATION:
+                return "PromptHatsMicrophoneGenericInvitation";
             default:
                 return "Unknown";
         }

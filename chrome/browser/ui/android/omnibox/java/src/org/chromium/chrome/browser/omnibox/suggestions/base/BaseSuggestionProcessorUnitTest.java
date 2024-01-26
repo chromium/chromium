@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,15 +29,17 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -95,15 +96,15 @@ public class BaseSuggestionProcessorUnitTest {
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
 
+    private Context mContext;
     private TestBaseSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mProcessor =
-                new TestBaseSuggestionProcessor(
-                        ContextUtils.getApplicationContext(), mSuggestionHost, mImageSupplier);
+        mContext = ContextUtils.getApplicationContext();
+        mProcessor = new TestBaseSuggestionProcessor(mContext, mSuggestionHost, mImageSupplier);
     }
 
     /** Create Suggestion for test. */
@@ -114,7 +115,6 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
@@ -131,7 +131,6 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
@@ -147,7 +146,6 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_featureDisabled() {
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, true, TEST_URL);
@@ -157,7 +155,6 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_featureEnabled() {
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, true, TEST_URL);
@@ -178,7 +175,6 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_nonSearchSuggestion() {
         // The touch down listener is only added for search suggestions.
@@ -186,5 +182,59 @@ public class BaseSuggestionProcessorUnitTest {
 
         Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         Assert.assertNull(touchDownListener);
+    }
+
+    @Test
+    public void setTabSwitchOrRefineAction_refineActionForSearch() {
+        createSuggestion(OmniboxSuggestionType.SEARCH_HISTORY, /* isSearch= */ true, TEST_URL);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(1, actions.size());
+
+        var action = actions.get(0);
+
+        var expectedDescription =
+                mContext.getResources()
+                        .getString(
+                                R.string.accessibility_omnibox_btn_refine,
+                                mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+        Assert.assertEquals(
+                R.drawable.btn_suggestion_refine,
+                shadowOf(action.icon.drawable).getCreatedFromResId());
+
+        var monitor = new UserActionTester();
+        action.callback.run();
+        Assert.assertEquals(1, monitor.getActionCount("MobileOmniboxRefineSuggestion.Search"));
+        Assert.assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
+    }
+
+    @Test
+    public void setTabSwitchOrRefineAction_refineActionForUrl() {
+        createSuggestion(OmniboxSuggestionType.HISTORY_URL, /* isSearch= */ false, TEST_URL);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(1, actions.size());
+
+        var action = actions.get(0);
+
+        var expectedDescription =
+                mContext.getResources()
+                        .getString(
+                                R.string.accessibility_omnibox_btn_refine,
+                                mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+        Assert.assertEquals(
+                R.drawable.btn_suggestion_refine,
+                shadowOf(action.icon.drawable).getCreatedFromResId());
+
+        var monitor = new UserActionTester();
+        action.callback.run();
+        Assert.assertEquals(1, monitor.getActionCount("MobileOmniboxRefineSuggestion.Url"));
+        Assert.assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 }

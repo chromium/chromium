@@ -4,13 +4,12 @@
 
 #include "partition_alloc/partition_alloc_base/cpu.h"
 
-#include <inttypes.h>
-#include <limits.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cinttypes>
+#include <climits>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <sstream>
 #include <utility>
 

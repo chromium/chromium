@@ -64,6 +64,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
@@ -89,8 +91,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
@@ -398,16 +398,15 @@ public class UrlOverridingTest {
 
     private ActivityMonitor mActivityMonitor;
     private EmbeddedTestServer mTestServer;
-    private Context mContextToRestore;
     private TestContext mTestContext;
     private String mNonBrowserPackageName;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
-        mContextToRestore = ContextUtils.getApplicationContext();
         mNonBrowserPackageName = getNonBrowserPackageName();
-        mTestContext = new TestContext(mContextToRestore, mNonBrowserPackageName);
+        mTestContext =
+                new TestContext(ContextUtils.getApplicationContext(), mNonBrowserPackageName);
         ContextUtils.initApplicationContextForTests(mTestContext);
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -425,9 +424,6 @@ public class UrlOverridingTest {
 
     @After
     public void tearDown() {
-        if (mContextToRestore != null) {
-            ContextUtils.initApplicationContextForTests(mContextToRestore);
-        }
         ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
     }
 

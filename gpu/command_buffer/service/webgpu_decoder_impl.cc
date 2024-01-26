@@ -48,6 +48,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
@@ -1083,7 +1084,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
       wire_serializer_(new DawnServiceSerializer(client)),
       isolation_key_provider_(isolation_key_provider) {
-  if (gpu_preferences.enable_webgpu_developer_features) {
+  if (gpu_preferences.enable_webgpu_experimental_features) {
     safety_level_ = webgpu::SafetyLevel::kSafeExperimental;
   }
   if (gpu_preferences.enable_unsafe_webgpu) {
@@ -1214,8 +1215,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
         return true;
       }
 
-      auto* info =
-          dawn_instance_->GetFeatureInfo(static_cast<WGPUFeatureName>(feature));
+      auto* info = dawn::native::GetFeatureInfo(feature);
       if (info == nullptr) {
         return false;
       }
@@ -1886,7 +1886,8 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     std::vector<wgpu::TextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceDawn(
-          mailbox, device, backendType, std::move(view_formats));
+          mailbox, device, backendType, std::move(view_formats),
+          shared_context_state_);
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";

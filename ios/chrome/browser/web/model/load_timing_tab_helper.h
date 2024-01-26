@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_LOAD_TIMING_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_LOAD_TIMING_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -51,7 +52,7 @@ class LoadTimingTabHelper : public web::WebStateUserData<LoadTimingTabHelper>,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   base::TimeTicks load_start_time_;
 

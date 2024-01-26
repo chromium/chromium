@@ -10,12 +10,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 
 namespace autofill {
 

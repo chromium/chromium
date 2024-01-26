@@ -11,9 +11,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -171,11 +171,12 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
   // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
-    BrowserViewWrangler* wrangler = [[BrowserViewWrangler alloc]
-               initWithBrowserState:chrome_browser_state()
-                         sceneState:scene_state()
-         applicationCommandEndpoint:(id<ApplicationCommands>)nil
-        browsingDataCommandEndpoint:nil];
+    BrowserViewWrangler* wrangler =
+        [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
+                                               sceneState:scene_state()
+                                      applicationEndpoint:nil
+                                         settingsEndpoint:nil
+                                     browsingDataEndpoint:nil];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -213,8 +214,9 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
-                             applicationCommandEndpoint:nil
-                            browsingDataCommandEndpoint:nil];
+                                    applicationEndpoint:nil
+                                       settingsEndpoint:nil
+                                   browsingDataEndpoint:nil];
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state());
@@ -281,8 +283,9 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
-                             applicationCommandEndpoint:nil
-                            browsingDataCommandEndpoint:nil];
+                                    applicationEndpoint:nil
+                                       settingsEndpoint:nil
+                                   browsingDataEndpoint:nil];
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state());
@@ -302,8 +305,9 @@ TEST_F(BrowserViewWranglerTest, TestSessionRestorationLogic) {
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
-                             applicationCommandEndpoint:nil
-                            browsingDataCommandEndpoint:nil];
+                                    applicationEndpoint:nil
+                                       settingsEndpoint:nil
+                                   browsingDataEndpoint:nil];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.

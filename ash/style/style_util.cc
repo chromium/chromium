@@ -30,6 +30,7 @@ namespace {
 constexpr int kTooltipRoundedCornerRadius = 6;
 constexpr gfx::Insets kTooltipBorderInset = gfx::Insets::VH(5, 8);
 constexpr int kTooltipMinLineHeight = 18;
+constexpr int kTooltipMaxLines = 3;
 
 // A themed fully rounded rect background whose corner radius equals to the half
 // of the minimum dimension of its view's local bounds.
@@ -222,6 +223,8 @@ StyleUtil::CreateAshStyleTooltipView() {
   tooltip_view->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosAnnotation1));
   tooltip_view->SetMinLineHeight(kTooltipMinLineHeight);
+  tooltip_view->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+  tooltip_view->SetMaxLines(kTooltipMaxLines);
   return tooltip_view;
 }
 

@@ -263,13 +263,13 @@ TEST_F(DownloadItemNotificationTest, PauseAndResumeNotification) {
   // Pauses and makes sure the DownloadItem::Pause() is called.
   EXPECT_CALL(*download_item_, Pause()).Times(1);
   EXPECT_CALL(*download_item_, IsPaused()).WillRepeatedly(Return(true));
-  download_item_notification_->Click(0, absl::nullopt);
+  download_item_notification_->Click(0, std::nullopt);
   download_item_->NotifyObserversDownloadUpdated();
 
   // Resumes and makes sure the DownloadItem::Resume() is called.
   EXPECT_CALL(*download_item_, Resume(true)).Times(1);
   EXPECT_CALL(*download_item_, IsPaused()).WillRepeatedly(Return(false));
-  download_item_notification_->Click(0, absl::nullopt);
+  download_item_notification_->Click(0, std::nullopt);
   download_item_->NotifyObserversDownloadUpdated();
 }
 
@@ -286,7 +286,7 @@ TEST_F(DownloadItemNotificationTest, OpenDownload) {
   // Clicks and confirms that the OpenDownload() is called.
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(_)).Times(0);
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(DownloadItemNotificationTest, OpenWhenComplete) {
@@ -300,7 +300,7 @@ TEST_F(DownloadItemNotificationTest, OpenWhenComplete) {
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true))
       .Times(1)
       .WillOnce(Return());
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
   EXPECT_CALL(*download_item_, GetOpenWhenComplete())
       .WillRepeatedly(Return(true));
 
@@ -308,7 +308,7 @@ TEST_F(DownloadItemNotificationTest, OpenWhenComplete) {
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(false))
       .Times(1)
       .WillOnce(Return());
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
   EXPECT_CALL(*download_item_, GetOpenWhenComplete())
       .WillRepeatedly(Return(false));
 
@@ -316,7 +316,7 @@ TEST_F(DownloadItemNotificationTest, OpenWhenComplete) {
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true))
       .Times(1)
       .WillOnce(Return());
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
   EXPECT_CALL(*download_item_, GetOpenWhenComplete())
       .WillRepeatedly(Return(true));
 
@@ -375,7 +375,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
   EXPECT_CALL(*download_item_, OpenDownload()).Times(0);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true)).Times(1);
   EXPECT_EQ(u"TITLE.bin is being scanned.", GetStatusString());
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 
   // Can be opened while scanning.
   enterprise_connectors::test::SetAnalysisConnector(
@@ -389,7 +389,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
       )");
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
   EXPECT_EQ(u"TITLE.bin is being scanned.", GetStatusString());
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 
   // Scanning finished, warning.
   EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(true));
@@ -398,7 +398,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(0);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true)).Times(0);
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 
   // Scanning finished, blocked.
   EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(true));
@@ -407,7 +407,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(0);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true)).Times(0);
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 
   // Scanning finished, safe.
   EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(false));
@@ -416,7 +416,7 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
   EXPECT_CALL(*download_item_, GetState())
       .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
-  download_item_notification_->Click(absl::nullopt, absl::nullopt);
+  download_item_notification_->Click(std::nullopt, std::nullopt);
 }
 
 // Test that PLATFORM_ACTION is added for pdf file if

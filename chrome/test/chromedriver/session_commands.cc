@@ -44,6 +44,7 @@
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
+#include "services/device/public/cpp/generic_sensor/orientation_util.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace {
@@ -110,7 +111,7 @@ bool GetW3CSetting(const base::Value::Dict& params) {
   const base::Value::Dict* caps_dict =
       params.FindDictByDottedPath("capabilities.alwaysMatch");
   if (caps_dict && GetChromeOptionsDictionary(*caps_dict, &options_dict)) {
-    absl::optional<bool> w3c = options_dict->FindBool("w3c");
+    std::optional<bool> w3c = options_dict->FindBool("w3c");
     if (w3c.has_value())
       return *w3c;
   }
@@ -121,7 +122,7 @@ bool GetW3CSetting(const base::Value::Dict& params) {
     const base::Value& caps_dict_ref = (*list)[0];
     if (caps_dict_ref.is_dict() &&
         GetChromeOptionsDictionary(caps_dict_ref.GetDict(), &options_dict)) {
-      absl::optional<bool> w3c = options_dict->FindBool("w3c");
+      std::optional<bool> w3c = options_dict->FindBool("w3c");
       if (w3c.has_value())
         return *w3c;
     }
@@ -129,7 +130,7 @@ bool GetW3CSetting(const base::Value::Dict& params) {
 
   caps_dict = params.FindDict("desiredCapabilities");
   if (caps_dict && GetChromeOptionsDictionary(*caps_dict, &options_dict)) {
-    absl::optional<bool> w3c = options_dict->FindBool("w3c");
+    std::optional<bool> w3c = options_dict->FindBool("w3c");
     if (w3c.has_value())
       return *w3c;
   }
@@ -970,7 +971,7 @@ Status ExecuteSwitchToWindow(Session* session,
 Status ExecuteSetTimeoutLegacy(Session* session,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
-  absl::optional<double> maybe_ms = params.FindDouble("ms");
+  std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value())
     return Status(kInvalidArgument, "'ms' must be a double");
 
@@ -1052,7 +1053,7 @@ Status ExecuteGetTimeouts(Session* session,
 Status ExecuteSetScriptTimeout(Session* session,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
-  absl::optional<double> maybe_ms = params.FindDouble("ms");
+  std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
     return Status(kInvalidArgument, "'ms' must be a non-negative number");
   session->script_timeout =
@@ -1063,7 +1064,7 @@ Status ExecuteSetScriptTimeout(Session* session,
 Status ExecuteImplicitlyWait(Session* session,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
-  absl::optional<double> maybe_ms = params.FindDouble("ms");
+  std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
     return Status(kInvalidArgument, "'ms' must be a non-negative number");
   session->implicit_wait =
@@ -1127,7 +1128,7 @@ namespace {
 bool ParseSingleValue(const std::string& key_name,
                       const base::Value::Dict& params,
                       base::Value::Dict* out_params) {
-  absl::optional<double> value = params.FindDouble(key_name);
+  std::optional<double> value = params.FindDouble(key_name);
   if (!value.has_value()) {
     return false;
   }
@@ -1143,15 +1144,15 @@ bool ParseSingleValue(const std::string& key_name,
 
 bool ParseXYZValue(const base::Value::Dict& params,
                    base::Value::Dict* out_params) {
-  absl::optional<double> x = params.FindDouble("x");
+  std::optional<double> x = params.FindDouble("x");
   if (!x.has_value()) {
     return false;
   }
-  absl::optional<double> y = params.FindDouble("y");
+  std::optional<double> y = params.FindDouble("y");
   if (!y.has_value()) {
     return false;
   }
-  absl::optional<double> z = params.FindDouble("z");
+  std::optional<double> z = params.FindDouble("z");
   if (!z.has_value()) {
     return false;
   }
@@ -1168,30 +1169,31 @@ bool ParseXYZValue(const base::Value::Dict& params,
   return true;
 }
 
-bool ParseOrientationQuaternion(const base::Value::Dict& params,
-                                base::Value::Dict* out_params) {
-  constexpr size_t kQuaternionListSize = 4;  // x, y, z, w
+bool ParseOrientationEuler(const base::Value::Dict& params,
+                           base::Value::Dict* out_params) {
+  if (!params.contains("alpha") || !params.contains("beta") ||
+      !params.contains("gamma")) {
+    return false;
+  }
 
-  const base::Value::List* value_list = params.FindList("quaternion");
-  if (!value_list || value_list->size() != kQuaternionListSize) {
+  std::optional<double> alpha = params.FindDouble("alpha");
+  if (!alpha.has_value()) {
     return false;
   }
-  absl::optional<double> x = (*value_list)[0].GetIfDouble();
-  if (!x.has_value()) {
+  std::optional<double> beta = params.FindDouble("beta");
+  if (!beta.has_value()) {
     return false;
   }
-  absl::optional<double> y = (*value_list)[1].GetIfDouble();
-  if (!y.has_value()) {
+  std::optional<double> gamma = params.FindDouble("gamma");
+  if (!gamma.has_value()) {
     return false;
   }
-  absl::optional<double> z = (*value_list)[2].GetIfDouble();
-  if (!z.has_value()) {
+  device::SensorReading quaternion_readings;
+  if (!device::ComputeQuaternionFromEulerAngles(*alpha, *beta, *gamma,
+                                                &quaternion_readings)) {
     return false;
   }
-  absl::optional<double> w = (*value_list)[3].GetIfDouble();
-  if (!w.has_value()) {
-    return false;
-  }
+
   // Construct a dict that looks like this:
   // {
   //   quaternion: {
@@ -1201,9 +1203,13 @@ bool ParseOrientationQuaternion(const base::Value::Dict& params,
   //     w: VAL4
   //   }
   // }
+  const double x = quaternion_readings.orientation_quat.x;
+  const double y = quaternion_readings.orientation_quat.y;
+  const double z = quaternion_readings.orientation_quat.z;
+  const double w = quaternion_readings.orientation_quat.w;
   out_params->Set(
       "quaternion",
-      base::Value::Dict().Set("x", *x).Set("y", *y).Set("z", *z).Set("w", *w));
+      base::Value::Dict().Set("x", x).Set("y", y).Set("z", z).Set("w", w));
   return true;
 }
 
@@ -1239,9 +1245,10 @@ base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
     }
   } else if (*type == "absolute-orientation" ||
              *type == "relative-orientation") {
-    if (!ParseOrientationQuaternion(*reading_dict, &reading)) {
-      return base::unexpected(
-          Status(kInvalidArgument, "Could not parse quaternion"));
+    if (!ParseOrientationEuler(*reading_dict, &reading)) {
+      return base::unexpected(Status(
+          kInvalidArgument, "Could not parse " + *type +
+                                " readings. Invalid alpha/beta/gamma values"));
     }
   } else {
     return base::unexpected(Status(
@@ -1379,7 +1386,7 @@ Status ExecuteSetNetworkConnection(Session* session,
   if (!desktop->IsNetworkConnectionEnabled())
     return Status(kUnknownError, "network connection must be enabled");
 
-  absl::optional<int> connection_type =
+  std::optional<int> connection_type =
       params.FindIntByDottedPath("parameters.type");
   if (!connection_type)
     return Status(kInvalidArgument, "invalid connection_type");
@@ -1459,8 +1466,8 @@ Status ExecuteGetWindowPosition(Session* session,
 Status ExecuteSetWindowPosition(Session* session,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
-  absl::optional<double> maybe_x = params.FindDouble("x");
-  absl::optional<double> maybe_y = params.FindDouble("y");
+  std::optional<double> maybe_x = params.FindDouble("x");
+  std::optional<double> maybe_y = params.FindDouble("y");
 
   if (!maybe_x.has_value() || !maybe_y.has_value())
     return Status(kInvalidArgument, "missing or invalid 'x' or 'y'");
@@ -1491,8 +1498,8 @@ Status ExecuteGetWindowSize(Session* session,
 Status ExecuteSetWindowSize(Session* session,
                             const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* value) {
-  absl::optional<double> maybe_width = params.FindDouble("width");
-  absl::optional<double> maybe_height = params.FindDouble("height");
+  std::optional<double> maybe_width = params.FindDouble("width");
+  std::optional<double> maybe_height = params.FindDouble("height");
 
   if (!maybe_width.has_value() || !maybe_height.has_value())
     return Status(kInvalidArgument, "missing or invalid 'width' or 'height'");
@@ -1657,7 +1664,7 @@ Status ForwardBidiCommand(Session* session,
     return Status{kUnknownError, "bidiCommand is missing in params"};
   }
 
-  absl::optional<int> connection_id = params.FindInt("connectionId");
+  std::optional<int> connection_id = params.FindInt("connectionId");
   if (!connection_id) {
     return Status{kUnknownCommand, "connectionId is missing in params"};
   }

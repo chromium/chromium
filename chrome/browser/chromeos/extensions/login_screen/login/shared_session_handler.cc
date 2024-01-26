@@ -68,7 +68,7 @@ SharedSessionHandler::SharedSessionHandler() = default;
 
 SharedSessionHandler::~SharedSessionHandler() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 SharedSessionHandler::LaunchSharedManagedGuestSession(
     const std::string& password) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
@@ -105,7 +105,7 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
   context.SetCanLockManagedGuestSession(true);
   existing_user_controller->Login(context, ash::SigninSpecifics());
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SharedSessionHandler::EnterSharedSession(
@@ -190,7 +190,7 @@ void SharedSessionHandler::UnlockSharedSession(
     return;
   }
 
-  absl::optional<std::string> scrypt_result =
+  std::optional<std::string> scrypt_result =
       GetHashFromScrypt(password, user_secret_salt_);
 
   if (!scrypt_result) {
@@ -269,7 +269,7 @@ void SharedSessionHandler::ResetStateForTesting() {
   user_secret_salt_.clear();
 }
 
-absl::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
+std::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
     const std::string& password,
     const std::string& salt) {
   std::string hash_key;
@@ -282,7 +282,7 @@ absl::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
                      kScryptMaxMemory, key_data, kHashKeyLength);
 
   if (!scrypt_ok)
-    return absl::nullopt;
+    return std::nullopt;
   return hash_key;
 }
 
@@ -300,7 +300,7 @@ void SharedSessionHandler::UnlockWithSessionSecret(
 bool SharedSessionHandler::CreateAndSetUserSecretHashAndSalt(
     const std::string& password) {
   std::string salt = GenerateRandomString(kUserSaltLength);
-  absl::optional<std::string> scrypt_result = GetHashFromScrypt(password, salt);
+  std::optional<std::string> scrypt_result = GetHashFromScrypt(password, salt);
 
   if (!scrypt_result)
     return false;
@@ -319,18 +319,18 @@ void SharedSessionHandler::OnAuthenticateDone(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void SharedSessionHandler::OnCleanupDone(
     CallbackWithOptionalError callback,
-    const absl::optional<std::string>& errors) {
+    const std::optional<std::string>& errors) {
   if (errors) {
     std::move(callback).Run(*errors);
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 std::string SharedSessionHandler::GenerateRandomString(size_t size) {

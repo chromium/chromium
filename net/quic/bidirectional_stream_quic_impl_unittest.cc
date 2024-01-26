@@ -21,6 +21,10 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
@@ -39,7 +43,8 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_key.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/quic_test_packet_printer.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
@@ -133,8 +138,9 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     CHECK(!callback_.is_null());
 
     // If read EOF, make sure this callback is after trailers callback.
-    if (bytes_read == 0)
+    if (bytes_read == 0) {
       EXPECT_TRUE(!trailers_expected_ || trailers_received_);
+    }
     ++on_data_read_count_;
     CHECK_GE(bytes_read, OK);
     data_received_.append(read_buf_->data(), bytes_read);
@@ -228,34 +234,40 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     not_expect_callback_ = true;
     int rv = stream_->ReadData(read_buf_.get(), read_buf_len_);
     not_expect_callback_ = false;
-    if (rv > 0)
+    if (rv > 0) {
       data_received_.append(read_buf_->data(), rv);
-    if (rv == ERR_IO_PENDING)
+    }
+    if (rv == ERR_IO_PENDING) {
       callback_ = std::move(callback);
+    }
     return rv;
   }
 
   NextProto GetProtocol() const {
-    if (stream_)
+    if (stream_) {
       return stream_->GetProtocol();
+    }
     return next_proto_;
   }
 
   int64_t GetTotalReceivedBytes() const {
-    if (stream_)
+    if (stream_) {
       return stream_->GetTotalReceivedBytes();
+    }
     return received_bytes_;
   }
 
   int64_t GetTotalSentBytes() const {
-    if (stream_)
+    if (stream_) {
       return stream_->GetTotalSentBytes();
+    }
     return sent_bytes_;
   }
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) {
-    if (stream_)
+    if (stream_) {
       return stream_->GetLoadTimingInfo(load_timing_info);
+    }
     *load_timing_info = load_timing_info_;
     return has_load_timing_info_;
   }
@@ -342,8 +354,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnStreamReady(bool request_headers_sent) override {
     TestDelegateBase::OnStreamReady(request_headers_sent);
-    if (phase_ == ON_STREAM_READY)
+    if (phase_ == ON_STREAM_READY) {
       DeleteStream();
+    }
   }
 
   void OnHeadersReceived(
@@ -351,8 +364,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
     // Make a copy of |response_headers| before the stream is deleted, since
     // the headers are owned by the stream.
     spdy::Http2HeaderBlock headers_copy = response_headers.Clone();
-    if (phase_ == ON_HEADERS_RECEIVED)
+    if (phase_ == ON_HEADERS_RECEIVED) {
       DeleteStream();
+    }
     TestDelegateBase::OnHeadersReceived(headers_copy);
   }
 
@@ -360,8 +374,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnDataRead(int bytes_read) override {
     DCHECK_NE(ON_HEADERS_RECEIVED, phase_);
-    if (phase_ == ON_DATA_READ)
+    if (phase_ == ON_DATA_READ) {
       DeleteStream();
+    }
     TestDelegateBase::OnDataRead(bytes_read);
   }
 
@@ -371,8 +386,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
     // Make a copy of |response_headers| before the stream is deleted, since
     // the headers are owned by the stream.
     spdy::Http2HeaderBlock trailers_copy = trailers.Clone();
-    if (phase_ == ON_TRAILERS_RECEIVED)
+    if (phase_ == ON_TRAILERS_RECEIVED) {
       DeleteStream();
+    }
     TestDelegateBase::OnTrailersReceived(trailers_copy);
   }
 
@@ -516,7 +532,8 @@ class BidirectionalStreamQuicImplTest
         &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
-                       PRIVACY_MODE_DISABLED, SocketTag(),
+                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
         /*require_confirmation=*/false,

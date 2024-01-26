@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -48,6 +47,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
       const GpuDriverBugWorkarounds& workarounds,
@@ -74,7 +74,8 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

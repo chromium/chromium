@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EXTENSION_TO_TYPE, FileExtensionType} from './file_types_data.js';
+import {EXTENSION_TO_TYPE, type FileExtensionType} from './file_types_data.js';
 
 /**
  * A special placeholder for unknown types with no extension.

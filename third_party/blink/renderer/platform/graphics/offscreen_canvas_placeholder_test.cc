@@ -92,7 +92,7 @@ void OffscreenCanvasPlaceholderTest::TearDown() {
 void OffscreenCanvasPlaceholderTest::DrawSomething() {
   // 'needs_will_draw=true' is required to ensure the CanvasResourceProvider
   // does not retain a reference on the previous frame.
-  resource_provider_->Canvas(/*needs_will_draw=*/true)->clear(SkColors::kWhite);
+  resource_provider_->Canvas(/*needs_will_draw=*/true).clear(SkColors::kWhite);
 }
 
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {

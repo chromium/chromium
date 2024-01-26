@@ -29,12 +29,11 @@ using blink::mojom::MediaDeviceType;
 
 namespace content {
 
-class PepperMediaDeviceManager
+class PepperMediaDeviceManager final
     : public PepperDeviceEnumerationHostHelper::Delegate,
       public blink::mojom::MediaDevicesListener,
       public RenderFrameObserver,
-      public RenderFrameObserverTracker<PepperMediaDeviceManager>,
-      public base::SupportsWeakPtr<PepperMediaDeviceManager> {
+      public RenderFrameObserverTracker<PepperMediaDeviceManager> {
  public:
   static base::WeakPtr<PepperMediaDeviceManager> GetForRenderFrame(
       RenderFrame* render_frame);
@@ -125,6 +124,8 @@ class PepperMediaDeviceManager
       media_devices_dispatcher_;
 
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
+
+  base::WeakPtrFactory<PepperMediaDeviceManager> weak_ptr_factory_{this};
 };
 
 }  // namespace content

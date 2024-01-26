@@ -4,24 +4,29 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.hub.HubLayoutConstants.SHRINK_EXPAND_DURATION_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.DESTROY_COORDINATOR_DELAY_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.HARD_CLEANUP_DELAY_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Handler;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SyncOneshotSupplier;
+import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
@@ -32,10 +37,13 @@ import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
+import org.chromium.chrome.browser.hub.ShrinkExpandAnimationData;
+import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimationFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -46,6 +54,8 @@ import java.util.List;
  * incognito modes.
  */
 public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandler {
+    private static final String TAG = "TabSwitcherPaneBase";
+
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
@@ -58,6 +68,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
     private final Runnable mHardCleanupRunnable = this::hardCleanupInternal;
     private final Runnable mDestroyCoordinatorRunnable = this::destroyTabSwitcherPaneCoordinator;
+    private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager =
+            new TabSwitcherCustomViewManager();
 
     private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
             new MenuOrKeyboardActionHandler() {
@@ -83,8 +95,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                     new TransitiveObservableSupplier<>(
                             mTabSwitcherPaneCoordinatorSupplier,
                             pc -> pc.getHandleBackPressChangedSupplier());
-    private final ViewGroup mRootView;
-    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final FrameLayout mRootView;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
 
@@ -94,16 +105,13 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     /**
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether the pane is incognito.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
         mFactory = factory;
-        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mIsIncognito = isIncognito;
 
         mRootView = new FrameLayout(context);
@@ -113,26 +121,22 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
     @Override
     public void destroy() {
-        mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
-                mMenuOrKeyboardActionHandler);
         destroyTabSwitcherPaneCoordinator();
     }
 
     @Override
-    public @NonNull View getRootView() {
+    public @NonNull ViewGroup getRootView() {
         return mRootView;
+    }
+
+    @Override
+    public @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
+        return mMenuOrKeyboardActionHandler;
     }
 
     @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
-        if (mPaneHubController != null) {
-            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
-        } else {
-            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
-        }
     }
 
     @Override
@@ -185,18 +189,91 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1516949): Replace with shrink animator and set animating supplier.
-        return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
-                hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+        int tabId = getCurrentTabId();
+        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+            return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
+                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+        }
+
+        @ColorInt int backgroundColor = getAnimationBackgroundColor();
+        SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
+                requestAnimationData(hubContainerView, /* isShrink= */ true, tabId);
+        return ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
+                hubContainerView,
+                animationDataSupplier,
+                backgroundColor,
+                SHRINK_EXPAND_DURATION_MS);
     }
 
     @Override
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1516949): Replace with expand animator and set animating supplier.
-        return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
-                hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+        int tabId = getCurrentTabId();
+        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+            return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
+                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+        }
+
+        @ColorInt int backgroundColor = getAnimationBackgroundColor();
+        SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
+                requestAnimationData(hubContainerView, /* isShrink= */ false, tabId);
+        return ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
+                hubContainerView,
+                animationDataSupplier,
+                backgroundColor,
+                SHRINK_EXPAND_DURATION_MS);
+    }
+
+    private @ColorInt int getAnimationBackgroundColor() {
+        if (mIsIncognito) {
+            return ChromeColors.getPrimaryBackgroundColor(mRootView.getContext(), mIsIncognito);
+        } else {
+            // TODO(crbug/1507839): Consider not getting the color from home surface.
+            return ChromeColors.getSurfaceColor(
+                    mRootView.getContext(), R.dimen.home_surface_background_color_elevation);
+        }
+    }
+
+    private SyncOneshotSupplier<ShrinkExpandAnimationData> requestAnimationData(
+            @NonNull HubContainerView hubContainerView, boolean isShrink, int tabId) {
+        SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
+                new SyncOneshotSupplierImpl<>();
+        @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+        assert coordinator != null;
+        Runnable provideAnimationData =
+                () -> {
+                    Rect hubRect = new Rect();
+                    hubContainerView.getGlobalVisibleRect(hubRect);
+                    Rect initialRect;
+                    Rect finalRect;
+                    int leftOffset = 0;
+                    if (isShrink) {
+                        initialRect = coordinator.getRecyclerViewRect();
+                        finalRect = coordinator.getTabThumbnailRect(tabId);
+                        leftOffset = initialRect.left;
+                    } else {
+                        initialRect = coordinator.getTabThumbnailRect(tabId);
+                        finalRect = coordinator.getRecyclerViewRect();
+                        leftOffset = finalRect.left;
+                    }
+                    boolean useFallbackAnimation = false;
+                    if (initialRect.isEmpty() || finalRect.isEmpty()) {
+                        Log.d(TAG, "Geometry not ready using fallback animation.");
+                        useFallbackAnimation = true;
+                    }
+                    // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+                    initialRect.offset(-leftOffset, -hubRect.top);
+                    finalRect.offset(-leftOffset, -hubRect.top);
+                    animationDataSupplier.set(
+                            new ShrinkExpandAnimationData(
+                                    initialRect,
+                                    finalRect,
+                                    coordinator.getThumbnailSize(),
+                                    useFallbackAnimation));
+                };
+        coordinator.waitForLayoutWithTab(tabId, provideAnimationData);
+        return animationDataSupplier;
     }
 
     @Override
@@ -249,10 +326,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
     /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
-        @Nullable
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) return null;
-        return coordinator.getTabSwitcherCustomViewManager();
+        return mTabSwitcherCustomViewManager;
     }
 
     /** Returns the number of elements in the tab switcher's tab list model. */
@@ -271,11 +345,25 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         coordinator.setTabSwitcherRecyclerViewPosition(position);
     }
 
+    /** Show the Quick Delete animation on the tab list . */
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) {
+            onAnimationEnd.run();
+            return;
+        }
+        coordinator.showQuickDeleteAnimation(onAnimationEnd);
+    }
+
     /**
      * Request to show all the tabs in the pane. Subclasses should override this method to invoke
      * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.
      */
     protected abstract void showAllTabs();
+
+    /** Returns the current selected tab ID. */
+    protected abstract int getCurrentTabId();
 
     /** Requests accessibility focus on the currently selected tab in the tab switcher. */
     protected void requestAccessibilityFocusOnCurrentTab() {
@@ -326,6 +414,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                         this::onTabClick,
                         mIsIncognito);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
+        mTabSwitcherCustomViewManager.setDelegate(
+                coordinator.getTabSwitcherCustomViewManagerDelegate());
         if (mNativeInitialized) {
             coordinator.initWithNative();
         }
@@ -342,6 +432,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         @NonNull TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         mTabSwitcherPaneCoordinatorSupplier.set(null);
         mRootView.removeAllViews();
+        mTabSwitcherCustomViewManager.setDelegate(null);
         coordinator.destroy();
     }
 

@@ -37,6 +37,8 @@
 using instance_id::InstanceID;
 using instance_id::InstanceIDDriver;
 using testing::_;
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 namespace invalidation {
 
@@ -200,6 +202,11 @@ class FCMInvalidationServiceTest : public testing::Test {
     listener_->EmitStateChangeForTest(state);
   }
 
+  template <class... TopicType>
+  void TriggerSuccessfullySubscribed(TopicType... topics) {
+    (listener_->EmitSuccessfullySubscribedForTest(topics), ...);
+  }
+
   template <class... Inv>
   void TriggerOnIncomingInvalidation(Inv... inv) {
     (listener_->EmitSavedInvalidationForTest(inv), ...);
@@ -238,6 +245,8 @@ TEST_F(FCMInvalidationServiceTest, Basic) {
   const auto inv3 = Invalidation(topic3, 3, "3");
 
   // Should be ignored since no IDs are registered to |handler|.
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(), IsEmpty());
   TriggerOnIncomingInvalidation(inv1, inv2, inv3);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 
@@ -249,22 +258,30 @@ TEST_F(FCMInvalidationServiceTest, Basic) {
   TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(topic1, topic2));
+
   TriggerOnIncomingInvalidation(inv1, inv2, inv3);
   EXPECT_EQ(2, handler.GetInvalidationCount());
   EXPECT_EQ(ExpectedInvalidations(inv1, inv2),
             handler.GetReceivedInvalidations());
-  handler.ClearReceivedInvalidations();
+  handler.Clear();
 
   topics.erase(topic1);
   topics.insert(topic3);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler, topics));
 
   // Removed Topics should not be notified, newly-added ones should.
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(topic2, topic3));
+
   TriggerOnIncomingInvalidation(inv1, inv2, inv3);
   EXPECT_EQ(2, handler.GetInvalidationCount());
   EXPECT_EQ(ExpectedInvalidations(inv2, inv3),
             handler.GetReceivedInvalidations());
-  handler.ClearReceivedInvalidations();
+  handler.Clear();
 
   TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
@@ -275,6 +292,9 @@ TEST_F(FCMInvalidationServiceTest, Basic) {
   invalidator->RemoveObserver(&handler);
 
   // Should be ignored since |handler| isn't registered anymore.
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3);
+  EXPECT_THAT(handler.GetSuccessfullySubscribed(), IsEmpty());
+
   TriggerOnIncomingInvalidation(inv1, inv2, inv3);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 }
@@ -326,6 +346,14 @@ TEST_F(FCMInvalidationServiceTest, MultipleHandlers) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
+
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3, topic4);
+  EXPECT_THAT(handler1.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(topic1, topic2));
+  EXPECT_THAT(handler2.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(topic3));
+  EXPECT_THAT(handler3.GetSuccessfullySubscribed(), IsEmpty());
+  EXPECT_THAT(handler4.GetSuccessfullySubscribed(), IsEmpty());
 
   {
     const auto inv1 = Invalidation(topic1, 1, "1");
@@ -413,6 +441,11 @@ TEST_F(FCMInvalidationServiceTest, EmptySetUnregisters) {
   TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
+
+  TriggerSuccessfullySubscribed(topic1, topic2, topic3);
+  EXPECT_THAT(handler1.GetSuccessfullySubscribed(), IsEmpty());
+  EXPECT_THAT(handler2.GetSuccessfullySubscribed(),
+              UnorderedElementsAre(topic3));
 
   {
     const auto inv1 = Invalidation(topic1, 1, "1");

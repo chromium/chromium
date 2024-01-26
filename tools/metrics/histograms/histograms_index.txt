@@ -19,6 +19,7 @@ tools/metrics/histograms/metadata/auto/histograms.xml
 tools/metrics/histograms/metadata/autofill/enums.xml
 tools/metrics/histograms/metadata/autofill/histograms.xml
 tools/metrics/histograms/metadata/background/histograms.xml
+tools/metrics/histograms/metadata/blink/enums.xml
 tools/metrics/histograms/metadata/blink/histograms.xml
 tools/metrics/histograms/metadata/bluetooth/enums.xml
 tools/metrics/histograms/metadata/bluetooth/histograms.xml
@@ -31,6 +32,7 @@ tools/metrics/histograms/metadata/browser/histograms.xml
 tools/metrics/histograms/metadata/browsing_topics/enums.xml
 tools/metrics/histograms/metadata/browsing_topics/histograms.xml
 tools/metrics/histograms/metadata/bruschetta/histograms.xml
+tools/metrics/histograms/metadata/chrome/enums.xml
 tools/metrics/histograms/metadata/chrome/histograms.xml
 tools/metrics/histograms/metadata/chromeos/enums.xml
 tools/metrics/histograms/metadata/chromeos/histograms.xml
@@ -50,18 +52,22 @@ tools/metrics/histograms/metadata/cookie/enums.xml
 tools/metrics/histograms/metadata/cookie/histograms.xml
 tools/metrics/histograms/metadata/cras/enums.xml
 tools/metrics/histograms/metadata/cras/histograms.xml
+tools/metrics/histograms/metadata/cros/enums.xml
 tools/metrics/histograms/metadata/cros/histograms.xml
 tools/metrics/histograms/metadata/cros_audio/enums.xml
 tools/metrics/histograms/metadata/cros_audio/histograms.xml
+tools/metrics/histograms/metadata/cros_ml/enums.xml
 tools/metrics/histograms/metadata/cros_ml/histograms.xml
 tools/metrics/histograms/metadata/cross_device/enums.xml
 tools/metrics/histograms/metadata/cross_device/histograms.xml
+tools/metrics/histograms/metadata/crostini/enums.xml
 tools/metrics/histograms/metadata/crostini/histograms.xml
 tools/metrics/histograms/metadata/cryptohome/enums.xml
 tools/metrics/histograms/metadata/cryptohome/histograms.xml
 tools/metrics/histograms/metadata/custom_tabs/enums.xml
 tools/metrics/histograms/metadata/custom_tabs/histograms.xml
 tools/metrics/histograms/metadata/data/histograms.xml
+tools/metrics/histograms/metadata/dev/enums.xml
 tools/metrics/histograms/metadata/dev/histograms.xml
 tools/metrics/histograms/metadata/disk/histograms.xml
 tools/metrics/histograms/metadata/download/enums.xml
@@ -92,6 +98,7 @@ tools/metrics/histograms/metadata/hang_watcher/enums.xml
 tools/metrics/histograms/metadata/hang_watcher/histograms.xml
 tools/metrics/histograms/metadata/help_app/histograms.xml
 tools/metrics/histograms/metadata/histogram_suffixes_list.xml
+tools/metrics/histograms/metadata/history/enums.xml
 tools/metrics/histograms/metadata/history/histograms.xml
 tools/metrics/histograms/metadata/holding_space/enums.xml
 tools/metrics/histograms/metadata/holding_space/histograms.xml
@@ -106,6 +113,7 @@ tools/metrics/histograms/metadata/ios/enums.xml
 tools/metrics/histograms/metadata/ios/histograms.xml
 tools/metrics/histograms/metadata/kerberos/histograms.xml
 tools/metrics/histograms/metadata/kiosk/histograms.xml
+tools/metrics/histograms/metadata/language/enums.xml
 tools/metrics/histograms/metadata/language/histograms.xml
 tools/metrics/histograms/metadata/leveldb_proto/histograms.xml
 tools/metrics/histograms/metadata/local/histograms.xml
@@ -117,6 +125,7 @@ tools/metrics/histograms/metadata/memory/enums.xml
 tools/metrics/histograms/metadata/memory/histograms.xml
 tools/metrics/histograms/metadata/mobile/enums.xml
 tools/metrics/histograms/metadata/mobile/histograms.xml
+tools/metrics/histograms/metadata/na_cl/enums.xml
 tools/metrics/histograms/metadata/na_cl/histograms.xml
 tools/metrics/histograms/metadata/navigation/enums.xml
 tools/metrics/histograms/metadata/navigation/histograms.xml
@@ -128,10 +137,12 @@ tools/metrics/histograms/metadata/network/enums.xml
 tools/metrics/histograms/metadata/network/histograms.xml
 tools/metrics/histograms/metadata/new_tab_page/enums.xml
 tools/metrics/histograms/metadata/new_tab_page/histograms.xml
+tools/metrics/histograms/metadata/notifications/enums.xml
 tools/metrics/histograms/metadata/notifications/histograms.xml
 tools/metrics/histograms/metadata/offline/histograms.xml
 tools/metrics/histograms/metadata/omnibox/enums.xml
 tools/metrics/histograms/metadata/omnibox/histograms.xml
+tools/metrics/histograms/metadata/oobe/enums.xml
 tools/metrics/histograms/metadata/oobe/histograms.xml
 tools/metrics/histograms/metadata/optimization/enums.xml
 tools/metrics/histograms/metadata/optimization/histograms.xml
@@ -143,6 +154,7 @@ tools/metrics/histograms/metadata/password/histograms.xml
 tools/metrics/histograms/metadata/payment/histograms.xml
 tools/metrics/histograms/metadata/pcscan/histograms.xml
 tools/metrics/histograms/metadata/pdf/histograms.xml
+tools/metrics/histograms/metadata/performance_controls/enums.xml
 tools/metrics/histograms/metadata/performance_controls/histograms.xml
 tools/metrics/histograms/metadata/performance_manager/enums.xml
 tools/metrics/histograms/metadata/performance_manager/histograms.xml
@@ -152,7 +164,6 @@ tools/metrics/histograms/metadata/phonehub/enums.xml
 tools/metrics/histograms/metadata/phonehub/histograms.xml
 tools/metrics/histograms/metadata/platform/enums.xml
 tools/metrics/histograms/metadata/platform/histograms.xml
-tools/metrics/histograms/metadata/plugin/histograms.xml
 tools/metrics/histograms/metadata/plugin_vm/histograms.xml
 tools/metrics/histograms/metadata/power/histograms.xml
 tools/metrics/histograms/metadata/prefetch/histograms.xml
@@ -186,7 +197,9 @@ tools/metrics/histograms/metadata/search/histograms.xml
 tools/metrics/histograms/metadata/security/enums.xml
 tools/metrics/histograms/metadata/security/histograms.xml
 tools/metrics/histograms/metadata/segmentation_platform/histograms.xml
+tools/metrics/histograms/metadata/service/enums.xml
 tools/metrics/histograms/metadata/service/histograms.xml
+tools/metrics/histograms/metadata/session/enums.xml
 tools/metrics/histograms/metadata/session/histograms.xml
 tools/metrics/histograms/metadata/settings/enums.xml
 tools/metrics/histograms/metadata/settings/histograms.xml
@@ -198,6 +211,7 @@ tools/metrics/histograms/metadata/simple/histograms.xml
 tools/metrics/histograms/metadata/stability/enums.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
 tools/metrics/histograms/metadata/start_surface/histograms.xml
+tools/metrics/histograms/metadata/startup/enums.xml
 tools/metrics/histograms/metadata/startup/histograms.xml
 tools/metrics/histograms/metadata/storage/enums.xml
 tools/metrics/histograms/metadata/storage/histograms.xml
@@ -210,6 +224,7 @@ tools/metrics/histograms/metadata/tab/enums.xml
 tools/metrics/histograms/metadata/tab/histograms.xml
 tools/metrics/histograms/metadata/translate/enums.xml
 tools/metrics/histograms/metadata/translate/histograms.xml
+tools/metrics/histograms/metadata/trusted_vault/enums.xml
 tools/metrics/histograms/metadata/trusted_vault/histograms.xml
 tools/metrics/histograms/metadata/ukm/enums.xml
 tools/metrics/histograms/metadata/ukm/histograms.xml

@@ -81,6 +81,15 @@ class RealboxActionElement extends PolymerElement {
   private hintHtml_: TrustedHTML;
   private tooltip_: string;
 
+  override ready() {
+    super.ready();
+
+    this.addEventListener('click', (event) => this.onActionClick_(event));
+    this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
+    this.addEventListener(
+        'mousedown', (event) => this.onActionMouseDown_(event));
+  }
+
   private onActionClick_(e: MouseEvent|KeyboardEvent) {
     this.dispatchEvent(new CustomEvent('execute-action', {
       bubbles: true,

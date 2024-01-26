@@ -34,6 +34,10 @@ constexpr char kDeviceSerialNumberPlaceholder[] = "${DEVICE_SERIAL_NUMBER}";
 constexpr char kDeviceAssetIdPlaceholder[] = "${DEVICE_ASSET_ID}";
 constexpr char kDeviceAnnotatedLocationPlaceholder[] =
     "${DEVICE_ANNOTATED_LOCATION}";
+// Used as a replacement value for device identifiers when the user is
+// unaffiliated.
+constexpr char kDeviceNotManaged[] = "VALUE_NOT_AVAILABLE";
+
 constexpr char kFixedSaltForExperiment[] = "salt for experiment";
 
 // Part before "@" of the given |email| address.
@@ -58,25 +62,35 @@ std::string EmailDomain(const std::string& email) {
   return email.substr(at_sign_pos + 1);
 }
 
-// If a salt is given we replace the input by hash(salt + input). Otherwise we
-// return the input as if it was a variable placeholder.
-std::string FormatVariable(const std::string& input, const std::string& salt) {
-  if (salt.empty())
+// If `hash_variable` is true, the output is the hex encoded result of the
+// hashed `salt` + `input` value.  Otherwise we return the input between
+// placeholder delimiters.
+std::string FormatVariable(const std::string& input,
+                           const std::string& salt,
+                           bool hash_variable) {
+  if (!hash_variable) {
     return "${" + input + "}";
-
+  }
   std::string hash = crypto::SHA256HashString(salt + input);
   return base::HexEncode(hash.c_str(), hash.size());
 }
 
-// Replace any occurrence of the variables above.
-// If a non-empty salt is given, use hash(salt + value). Otherwise use
-// "${value}" which is useful for displaying the resolved values on the UI. If
-// the DeviceAttributes or the user cannot be obtained do not replace anything
-// but return an empty string. In this case the calling code should use the
-// template string without identifiers.
+// Returns a copy of `template` where the identifier placeholders are replaced
+// with real user and device data.
+// If `hash_variable` is true, then the user and device identifiers are hashed
+// with `salt` and hex encoded. The salt is optional and can be an empty string.
+// If `hash_variable` is false, the output is a
+// user-friendly version of the effective DNS URI template. This value is used
+// to inform the user of identifiers which are shared with the DoH server when
+// sending a DNS resolution request.
+// Only affiliated users can share device identifiers. If the user is not
+// affiliated, the device identifier placeholder will be replaced by
+// `kDeviceNotManaged`; e.g for `hash_variable`=true
+// ${DEVICE_ASSET_ID} is replaced by hash(VALUE_NOT_AVAILABLE+salt).
 std::string ReplaceVariables(std::string templates,
                              const std::string salt,
-                             policy::DeviceAttributes* attributes) {
+                             policy::DeviceAttributes* attributes,
+                             bool hash_variable) {
   if (!user_manager::UserManager::IsInitialized()) {
     return std::string();
   }
@@ -89,31 +103,44 @@ std::string ReplaceVariables(std::string templates,
   std::string user_email = user->GetAccountId().GetUserEmail();
   std::string user_email_domain = EmailDomain(user_email);
   std::string user_email_name = EmailName(user_email);
-  base::ReplaceSubstringsAfterOffset(&templates, 0, kUserEmailPlaceholder,
-                                     FormatVariable(user_email, salt));
-  base::ReplaceSubstringsAfterOffset(&templates, 0, kUserEmailDomainPlaceholder,
-                                     FormatVariable(user_email_domain, salt));
-  base::ReplaceSubstringsAfterOffset(&templates, 0, kUserEmailNamePlaceholder,
-                                     FormatVariable(user_email_name, salt));
+  base::ReplaceSubstringsAfterOffset(
+      &templates, 0, kUserEmailPlaceholder,
+      FormatVariable(user_email, salt, hash_variable));
+  base::ReplaceSubstringsAfterOffset(
+      &templates, 0, kUserEmailDomainPlaceholder,
+      FormatVariable(user_email_domain, salt, hash_variable));
+  base::ReplaceSubstringsAfterOffset(
+      &templates, 0, kUserEmailNamePlaceholder,
+      FormatVariable(user_email_name, salt, hash_variable));
 
-  if (!user->IsAffiliated()) {
+  std::string device_directory_id = kDeviceNotManaged;
+  std::string device_asset_id = kDeviceNotManaged;
+  std::string device_serial_number = kDeviceNotManaged;
+  std::string device_annotated_location = kDeviceNotManaged;
+
+  if (user->IsAffiliated() && attributes) {
+    device_directory_id = attributes->GetDirectoryApiID();
+    device_asset_id = attributes->GetDeviceAssetID();
+    device_serial_number = attributes->GetDeviceSerialNumber();
+    device_annotated_location = attributes->GetDeviceAnnotatedLocation();
+  } else {
+    // Device identifiers are only replaced for affiliated users.
     LOG(WARNING)
         << "Skiping device variables replacement for unaffiliated user";
-    return templates;
   }
 
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceDirectoryIdPlaceholder,
-      FormatVariable(attributes->GetDirectoryApiID(), salt));
+      FormatVariable(device_directory_id, salt, hash_variable));
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceAssetIdPlaceholder,
-      FormatVariable(attributes->GetDeviceAssetID(), salt));
+      FormatVariable(device_asset_id, salt, hash_variable));
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceSerialNumberPlaceholder,
-      FormatVariable(attributes->GetDeviceSerialNumber(), salt));
+      FormatVariable(device_serial_number, salt, hash_variable));
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceAnnotatedLocationPlaceholder,
-      FormatVariable(attributes->GetDeviceAnnotatedLocation(), salt));
+      FormatVariable(device_annotated_location, salt, hash_variable));
 
   return templates;
 }
@@ -170,9 +197,11 @@ void TemplatesUriResolverImpl::UpdateFromPrefs(PrefService* pref_service) {
   }
 
   std::string effective_templates =
-      ReplaceVariables(templates_with_identifiers, salt, attributes_.get());
+      ReplaceVariables(templates_with_identifiers, salt, attributes_.get(),
+                       /*hash_variable=*/true);
   std::string display_templates =
-      ReplaceVariables(templates_with_identifiers, "", attributes_.get());
+      ReplaceVariables(templates_with_identifiers, "", attributes_.get(),
+                       /*hash_variable=*/false);
   if (effective_templates.empty() || display_templates.empty())
     return;
   // We only use this if the variable substitution was successful for both

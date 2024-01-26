@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/variations_seed_processor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 namespace {

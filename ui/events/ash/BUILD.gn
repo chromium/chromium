@@ -60,3 +60,15 @@ source_set("unit_tests") {
   ]
   testonly = true
 }
+
+source_set("test_support") {
+  sources = [
+    "fake_event_rewriter_ash_delegate.cc",
+    "fake_event_rewriter_ash_delegate.h",
+  ]
+  deps = [
+    ":ash",
+    "//base",
+  ]
+  testonly = true
+}

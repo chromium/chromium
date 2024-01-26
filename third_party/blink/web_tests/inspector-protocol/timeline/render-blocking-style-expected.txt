@@ -4,6 +4,7 @@ Tracing complete
 Previous value requestId is identical to the current one
 importer.css: blocking
 importer_print.css: non_blocking
+style.css?disabled: non_blocking
 style.css?dynamicDOM: dynamically_injected_non_blocking
 style.css?dynamicDOMBlocking: blocking
 style.css?dynamicDocWrite: blocking

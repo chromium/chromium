@@ -67,6 +67,11 @@ bool FontFaceSetDocument::InActiveContext() const {
   return context && To<LocalDOMWindow>(context)->document()->IsActive();
 }
 
+FontSelector* FontFaceSetDocument::GetFontSelector() const {
+  DCHECK(IsMainThread());
+  return GetDocument()->GetStyleEngine().GetFontSelector();
+}
+
 AtomicString FontFaceSetDocument::status() const {
   DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
   DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));

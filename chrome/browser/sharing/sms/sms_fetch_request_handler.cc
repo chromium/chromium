@@ -62,7 +62,7 @@ void SmsFetchRequestHandler::OnMessage(
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_sms_fetch_request());
 
-  std::unique_ptr<SharingTargetDeviceInfo> device =
+  std::optional<SharingTargetDeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
   const std::string& client_name =
       device ? device->client_name() : message.sender_device_name();

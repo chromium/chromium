@@ -30,13 +30,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
@@ -442,7 +442,6 @@ public class PersonalDataManagerTest {
         AutofillProfile profileWithDifferentStatuses =
                 AutofillProfile.builder()
                         .setGUID("")
-                        .setHonorificPrefix("", VerificationStatus.NO_STATUS)
                         .setFullName("John Smith", VerificationStatus.PARSED)
                         .setCompanyName("", VerificationStatus.NO_STATUS)
                         .setStreetAddress("1 Main\nApt A", VerificationStatus.FORMATTED)

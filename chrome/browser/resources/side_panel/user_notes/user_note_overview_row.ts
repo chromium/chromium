@@ -14,7 +14,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_note_overview_row.html.js';
-import {NoteOverview} from './user_notes.mojom-webui.js';
+import type {NoteOverview} from './user_notes.mojom-webui.js';
 
 export class UserNoteOverviewRowElement extends PolymerElement {
   static get is() {

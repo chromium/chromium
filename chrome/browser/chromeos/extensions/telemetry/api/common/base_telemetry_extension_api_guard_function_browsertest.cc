@@ -653,6 +653,21 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function setAudioVolume() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.management.setAudioVolume(
+              {
+                nodeId: 1,
+                volume: 100,
+                isMuted: false,
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.management.setAudioVolume. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([
@@ -818,10 +833,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
     return;
   }
 
-  // Setup the device ownership for Lacros
-  auto params = crosapi::mojom::BrowserInitParams::New();
-  params->is_current_user_device_owner = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+  // Check that device ownership is set up.
+  ASSERT_TRUE(
+      chromeos::BrowserInitParams::GetForTests()->is_current_user_device_owner);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

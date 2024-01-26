@@ -17,11 +17,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-namespace {
-
-constexpr auto kPickerContentsMargins = gfx::Insets::VH(0, 8);
-
-}  // namespace
 
 PickerContentsView::PickerContentsView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -38,7 +33,6 @@ PickerContentsView::PickerContentsView() {
   auto page_container = std::make_unique<views::FlexLayoutView>();
   page_container->SetOrientation(views::LayoutOrientation::kVertical);
   page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  page_container->SetDefault(views::kMarginsKey, kPickerContentsMargins);
   page_container_ = scroll_view->SetContents(std::move(page_container));
 }
 

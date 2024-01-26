@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
@@ -39,7 +40,8 @@ class TextureBase;
 // TextureOwner's shared context is lost.
 class GPU_GLES2_EXPORT TextureOwner
     : public base::RefCountedDeleteOnSequence<TextureOwner>,
-      public SharedContextState::ContextLostObserver {
+      public SharedContextState::ContextLostObserver,
+      public base::trace_event::MemoryDumpProvider {
  public:
   // Creates a GL texture using the current platform GL context and returns a
   // new TextureOwner attached to it. Returns null on failure.
@@ -132,6 +134,8 @@ class GPU_GLES2_EXPORT TextureOwner
 
   AbstractTextureAndroid* texture() const { return texture_.get(); }
 
+  int tracing_id() const { return tracing_id_; }
+
  private:
   friend class MockTextureOwner;
 
@@ -146,6 +150,7 @@ class GPU_GLES2_EXPORT TextureOwner
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<AbstractTextureAndroid> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const int tracing_id_;
 };
 
 }  // namespace gpu

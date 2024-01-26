@@ -39,6 +39,21 @@ class [[clang::lto_visibility_public]] OSUserManager {
                           BSTR* sid,
                           DWORD* error);
 
+  // Creates a new windows OS user with the given |base_username|, |fullname|
+  // and |password| on the local machine.  Returns the SID of the new user. If a
+  // user with |base_username| already exists, the function will try to generate
+  // a new indexed username up to |max_attempts| before failing. The actual
+  // username used for the new user will be filled in |final_username| if
+  // successful.
+  HRESULT CreateNewUser(const wchar_t* base_username,
+                        const wchar_t* password,
+                        const wchar_t* fullname,
+                        const wchar_t* comment,
+                        bool add_to_users_group,
+                        int max_attempts,
+                        BSTR* final_username,
+                        BSTR* sid);
+
   // Changes the password of the given OS user.
   virtual HRESULT ChangeUserPassword(
       const wchar_t* domain, const wchar_t* username,
@@ -70,7 +85,8 @@ class [[clang::lto_visibility_public]] OSUserManager {
                              PSID* sid);
 
   // Gets the SID in string format of the given OS user.
-  HRESULT GetUserSID(const wchar_t* domain, const wchar_t* username,
+  HRESULT GetUserSID(const wchar_t* domain,
+                     const wchar_t* username,
                      std::wstring* sid_string);
 
   // Finds a user created from a gaia account by its SID.  Returns S_OK if a

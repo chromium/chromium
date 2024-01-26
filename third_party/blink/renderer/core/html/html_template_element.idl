@@ -35,25 +35,26 @@
 ] interface HTMLTemplateElement : HTMLElement {
     readonly attribute DocumentFragment content;
 
-    // This is the shipped version of declarative shadow DOM - using the
-    // 'shadowRoot' IDL attribute. However, discussions on the HTML spec PR
-    // (https://github.com/whatwg/html/pull/5465) has changed this behavior.
-    // This IDL will remain during the period during which we deprecate it.
-    // This 'shadowRoot' attribute shadows Element.prototype.shadowRoot
-    // without changing any behavior. The existence of this attribute
-    // indicates support of Declarative Shadow DOM, so that this works:
-    //   function supportsDeclarativeShadowDOM() {
-    //     return HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot");
-    //   }
-    // See https://github.com/mfreed7/declarative-shadow-dom/blob/master/README.md#feature-detection-and-polyfilling
-    // for more detail.
+    // This is the deprecated and removed IDL for `shadowRoot`, which was used
+    // by the old declarative shadow DOM proposal. Note that it was only used
+    // for feature detection - this override of `shadowRoot` returns the same
+    // thing as HTMLElement's `shadowRoot` attribute. For safety, it is here,
+    // guarded by a runtime flag, in case of compat problems.
     // TODO(crbug.com/1396384) Eventually remove this.
-    [ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+    [ImplementedAs=OpenShadowRoot, RuntimeEnabled=DeprecatedTemplateShadowRoot]
+    readonly attribute ShadowRoot? shadowRoot;
 
     // This is the declarative Shadow DOM IDL attribute, which reflects the
     // 'shadowrootmode' content attribute.
-    [Reflect,ReflectOnly=("open","closed")] attribute DOMString? shadowRootMode;
+    [Reflect,ReflectOnly=("open","closed")] attribute DOMString shadowRootMode;
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
+
+    // Declarative shadow dom serializable attribute, which controls whether the
+    // shadow root will be serialized by getHTML({includeShadowRoots:true}).
+    // Note that this is just the reflection of HTMLTemplateElement's attribute,
+    // which isn't a common usage - in normal declarative shadow DOM usage, the
+    // template element is "converted" to a shadow root.
+    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 };

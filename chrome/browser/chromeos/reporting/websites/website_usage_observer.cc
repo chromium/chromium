@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -19,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/metrics/reporting_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace reporting {
@@ -94,7 +94,7 @@ void WebsiteUsageObserver::CreateOrUpdateWebsiteUsageEntry(
   }
 
   // Aggregate and update the running time otherwise.
-  const absl::optional<const base::TimeDelta> saved_running_time_value =
+  const std::optional<const base::TimeDelta> saved_running_time_value =
       base::ValueToTimeDelta(usage_dict_pref->Find(url_string));
   if (saved_running_time_value.has_value()) {
     usage_dict_pref->Set(

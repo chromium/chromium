@@ -6,15 +6,15 @@
 #define CHROME_BROWSER_SHARING_SHARING_DIALOG_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -30,12 +30,8 @@ struct SharingDialogData {
   // work on any background color.
   struct HeaderIcons {
     HeaderIcons(const gfx::VectorIcon* light, const gfx::VectorIcon* dark);
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION const gfx::VectorIcon* light;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION const gfx::VectorIcon* dark;
+    raw_ptr<const gfx::VectorIcon> light;
+    raw_ptr<const gfx::VectorIcon> dark;
   };
   SharingDialogData();
   ~SharingDialogData();
@@ -45,16 +41,16 @@ struct SharingDialogData {
   SharingDialogType type = SharingDialogType::kErrorDialog;
   SharingFeatureName prefix = SharingFeatureName::kUnknown;
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
   std::vector<SharingApp> apps;
 
   std::u16string title;
   std::u16string error_text;
   int help_text_id = 0;
   int help_text_origin_id = 0;
-  absl::optional<HeaderIcons> header_icons;
+  std::optional<HeaderIcons> header_icons;
   int origin_text_id = 0;
-  absl::optional<url::Origin> initiating_origin;
+  std::optional<url::Origin> initiating_origin;
 
   base::OnceCallback<void(const SharingTargetDeviceInfo&)> device_callback;
   base::OnceCallback<void(const SharingApp&)> app_callback;

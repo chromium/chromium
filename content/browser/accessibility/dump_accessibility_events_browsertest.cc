@@ -264,9 +264,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-disabled-changed.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaHasPopupChanged) {
+                       AccessibilityEventsAriaHasPopupChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-haspopup-changed.html"));
 }
 
@@ -288,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // TODO(crbug.com/983709): Flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaMenuItemFocus) {
+                       AccessibilityEventsAriaMenuItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-menuitem-focus.html"));
 }
 
@@ -365,9 +364,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-tree-expand.html"));
 }
 
-// TODO(crbug.com/983801): Flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaTreeItemFocus) {
+                       AccessibilityEventsAriaTreeItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
 }
 
@@ -415,10 +413,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-slider-valuetext-change.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
-    DISABLED_AccessibilityEventsAriaSpinButtonValueBothChange) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaSpinButtonValueBothChange) {
   RunEventTest(FILE_PATH_LITERAL("aria-spinbutton-value-both-change.html"));
 }
 
@@ -699,9 +695,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
   RunEventTest(FILE_PATH_LITERAL("popover-expanded-changed.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsFormRequiredChanged) {
+                       AccessibilityEventsFormRequiredChanged) {
   RunEventTest(FILE_PATH_LITERAL("form-required-changed.html"));
 }
 
@@ -1225,15 +1220,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaFlowToChange) {
+                       AccessibilityEventsAriaFlowToChange) {
   RunEventTest(FILE_PATH_LITERAL("aria-flow-to.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsSelectAddRemove) {
+                       AccessibilityEventsSelectAddRemove) {
   RunEventTest(FILE_PATH_LITERAL("select-selected-add-remove.html"));
 }
 

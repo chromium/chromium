@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">do przodu</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
+<translation id="1626590945318984973">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawiszy funkcyjnych i klawisza <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
 <translation id="1885577615937958993">przewiń do przodu</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
-<translation id="1897672602657312171">Skrót bez klawisza wyszukiwania może być w konflikcie z jakimś skrótem do aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza wyszukiwania.</translation>
 <translation id="1904932688895783618">Oto inne przydatne materiały:</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">selektor emotikonów</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" /> przy każdym logowaniu.}=2{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> przy każdym logowaniu.}=3{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> przy każdym logowaniu.}few{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i jeszcze # przy każdym logowaniu.}many{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i jeszcze # przy każdym logowaniu.}other{Administrator skonfigurował automatyczne uruchamianie aplikacji <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i jeszcze # przy każdym logowaniu.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
 <translation id="215916044711630446">Przycisk Dodaj APN jest teraz wyłączony</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
+<translation id="2215920961700443347">Brak internetu. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="222447520299472966">Musi być wybrany co najmniej jeden album z Galerii sztuki</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Zdjęcie <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2465272316171730950">Brakuje nam wolnych zasobów. Wróć za chwilę.</translation>
 <translation id="248546197012830854">Urządzenie jest offline. Aby wyświetlić materiały pomocy, połącz się z siecią Wi-Fi.</translation>
 <translation id="2491955442992294626">Gdy używasz innego okna, klucze nie są testowane</translation>
 <translation id="2493126929778606526">Twoje najlepsze zdjęcia wybrane automatycznie</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
 <translation id="2512979179176933762">pokaż okna</translation>
 <translation id="2513396635448525189">Obraz użytkownika</translation>
-<translation id="2515109918609218604">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawiszy funkcyjnych i wyszukiwania.</translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2521835766824839541">poprzedni utwór</translation>
 <translation id="2526590354069164005">Pulpit</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tryb ciemny</translation>
 <translation id="4130035430755296270">Najedź kursorem, aby zobaczyć więcej opcji układu</translation>
+<translation id="4130750466177569591">Zgadzam się</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Aplikacja <ph name="APP_NAME_1" /> została uruchomiona automatycznie}few{# aplikacje zostały uruchomione automatycznie}many{# aplikacji zostało uruchomionych automatycznie}other{# aplikacji zostało uruchomione automatycznie}}</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
 <translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">zmniejsz jasność</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4176659219503619100">Panel sterowania</translation>
-<translation id="4185315616950253617">Skrót wykorzystujący górny rząd klawiszy na klawiaturze musi zawierać klawisz wyszukiwania.</translation>
 <translation id="420283545744377356">Wyłącz wygaszacz ekranu</translation>
 <translation id="4213104098953699324">Klawiatura USB</translation>
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Wyłącz</translation>
 <translation id="439429847087949098">Ponownie uruchamiam urządzenie: <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">dostosowywanie klawiatury</translation>
+<translation id="4403262788869804671">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Bieżący awatar</translation>
+<translation id="4417830657741848074">Administrator skonfigurował niektóre aplikacje tak, aby uruchamiały się automatycznie. Niektórych z nich nie można zamknąć.</translation>
 <translation id="4422041425070339732">strzałka w dół</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4428374560396076622">Sieć <ph name="NETWORK_NAME" /> jest wyłączona</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Wygaszacz ekranu Ziemia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4500722292849917410">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift lub <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kolor interfejsu</translation>
 <translation id="4503223151711056411">Strzałka w lewo</translation>
 <translation id="4507392511610824664">zwiększ jasność</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
 <translation id="4835901797422965222">Brak aktywnych sieci</translation>
 <translation id="4839698083503556542">Zmontuj własny film</translation>
+<translation id="48409034532829769">Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />”. Nie można jej zamknąć.</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4847902821209177679">Wybrano: <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />). Naciśnij Enter, by wybrać albumy ze źródła <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Rozpoznawanie nazw DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Podziel</translation>
 <translation id="4972592110715526173">zmiana trybu</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
+<translation id="4982627662315910959">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza Shift i 1 dodatkowego klawisza modyfikującego (Ctrl, Alt lub <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Uruchom</translation>
 <translation id="4987769320337599931">Zapora sieciowa</translation>
 <translation id="4988526792673242964">Strony</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Harmonogram ciemnego motywu</translation>
 <translation id="5229344016299762883">Zamknij tryb pełnego ekranu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” przy każdym logowaniu.}=2{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze 1 przy każdym logowaniu.}few{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}many{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}other{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Włącz jasny tryb kolorów</translation>
 <translation id="5264277876637023664">Przeprowadź test procesora</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Operator komórkowy</translation>
 <translation id="725133483556299729">Wybierz adres e-mail</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
-<translation id="7273347807225967898">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift, klawisza wyszukiwania lub klawisza Menu z aplikacjami).</translation>
+<translation id="7271932918253517778">Skrót wykorzystujący górny rząd klawiszy na klawiaturze musi zawierać klawisz <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Odetchnij</translation>
 <translation id="7287310195820267359">Kolekcje tapet</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Ustawienia ogólne</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacja „<ph name="APP_NAME_1" />” została uruchomiona automatycznie}few{# aplikacje zostały uruchomione automatycznie}many{# aplikacji zostało uruchomionych automatycznie}other{# aplikacji zostało uruchomione automatycznie}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8017679124341497925">Skrót był edytowany</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8094062939584182041">Zezwalaj Google na wysyłanie e-maili dotyczących tego problemu</translation>
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
-<translation id="8111706652656628199">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza shift i 1 dodatkowego klawisza modyfikującego (Ctrl, Alt, klawisza wyszukiwania lub klawisza Menu z aplikacjami).</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>

@@ -356,7 +356,16 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   absl::optional<AXSelection::TextControlSelection> text_control_selection =
       AsTextControlSelection();
-  if (text_control_selection.has_value()) {
+
+  // We need to make sure we only go into here if we're dealing with a position
+  // in the atomic text field. This is because the offsets are being assumed
+  // to be on the atomic text field, and not on the descendant inline text
+  // boxes.
+  if (text_control_selection.has_value() &&
+      *base_.ContainerObject() ==
+          *base_.ContainerObject()->GetAtomicTextFieldAncestor() &&
+      *extent_.ContainerObject() ==
+          *extent_.ContainerObject()->GetAtomicTextFieldAncestor()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
     TextControlElement& text_control = ToTextControl(
         *base_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());

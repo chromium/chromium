@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests reporting of unused preloads in traces.');
 
   const TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');

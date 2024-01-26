@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/usb_policy_allowed_devices.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -98,7 +98,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
         continue;
 
       auto requesting_origin = url::Origin::Create(GURL(urls[0]));
-      absl::optional<url::Origin> embedding_origin;
+      std::optional<url::Origin> embedding_origin;
       if (urls.size() == 2 && !urls[1].empty())
         embedding_origin = url::Origin::Create(GURL(urls[1]));
 
@@ -124,9 +124,9 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
       const base::Value::Dict& device = device_val.GetDict();
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
-      const absl::optional<int> vendor_id_optional =
+      const std::optional<int> vendor_id_optional =
           device.FindInt(kPrefVendorIdKey);
-      const absl::optional<int> product_id_optional =
+      const std::optional<int> product_id_optional =
           device.FindInt(kPrefProductIdKey);
       int vendor_id = vendor_id_optional.value_or(-1);
       int product_id = product_id_optional.value_or(-1);

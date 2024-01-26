@@ -206,7 +206,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
     app_service_test_.SetUp(profile_.get());
 
     auto* provider = web_app::FakeWebAppProvider::Get(profile_.get());
-    provider->SetRunSubsystemStartupTasks(true);
+    provider->SetStartSystemOnStart(true);
     provider->Start();
 
     app_registrar_ = &provider->GetRegistrarMutable();

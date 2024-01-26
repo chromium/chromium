@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1066101356081285416">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Google ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature ng Google para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
 <translation id="1105362920864247682">I-clear ang Data Mula sa Pagba-browse sa Chrome.</translation>
 <translation id="1113057722807951993">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
@@ -40,13 +41,13 @@ Mga bagay na dapat isaalang-alang:
 <translation id="1682483655351012182">I-sync ang Iyong Data sa Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Idaragdag ang mga in-input na URL sa iyong mga bookmark sa Chrome.</translation>
+<translation id="1799920918471566157">Mga Tip sa Chrome</translation>
 <translation id="1830634592642484976">Kasalukuyang naka-save ang address na ito sa Chrome. Para gamitin ito sa mga produkto ng Google, i-save ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Awtomatikong gamitin ang Chrome kapag nag-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="1910975740091000991">Chrome para sa iOS</translation>
 <translation id="1917964099031477364">Aalisin sa Chrome at sa iba pang Google app sa device na ito ang account na ito at anumang hindi naka-save na data.</translation>
 <translation id="1965935827552890526">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chrome.</translation>
 <translation id="1987779152850321833">Kumpletuhin ang mga iminumungkahing pagkilos na ito sa ibaba para masulit ang Chrome.</translation>
-<translation id="2008357574463816229">Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Google Chrome.</translation>
 <translation id="2120238739383482109">Mabubuksan ang mga bookmark sa Chrome.</translation>
 <translation id="2147651015520127414">Na-verify ng Chrome na ang <ph name="ISSUER" /> ang nagbigay sa certificate ng website na ito.</translation>
@@ -75,6 +76,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2702250627063295552">Magdagdag ng Item sa Listahan ng Babasahin sa Chrome</translation>
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
+<translation id="2789947168960170215">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">I-clear ang Data Mula sa Pagba-browse sa Chrome</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="3503014945441706099">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chrome na ito</translation>
 <translation id="3522659714780527202">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, i-on ang pag-sync</translation>
 <translation id="3577555362230509265">Gamitin ang Chrome sa iba pang app.</translation>
-<translation id="3594076341410558780">I-hide ang “Sulitin ang Chrome”</translation>
 <translation id="364480321352456989">Luma na ang iyong Chrome.</translation>
 <translation id="3646736009628185125">Hindi makakatanggap ng mga password ang iyong miyembro ng pamilya sa ngayon. Hilingin sa kanyang i-update ang Chrome at i-sync ang mga password niya. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Nangangahulugan itong hihilingin ng Chrome ang pang-mobile na site sa lahat ng pagkakataon.</translation>
@@ -204,7 +205,6 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="686691656039982452">Puwede mong <ph name="BEGIN_LINK" />pamahalaan kung anong data ng Chrome ang nase-save<ph name="END_LINK" /> sa iyong Google Account.
 
 Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chrome, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Maghanap Gamit ang Boses sa Chrome</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>

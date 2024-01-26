@@ -77,6 +77,7 @@ class TestShellDelegate : public ShellDelegate {
       ShouldExitFullscreenCallback callback) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
+  DeskProfilesDelegate* GetDeskProfilesDelegate() override;
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
@@ -129,6 +130,8 @@ class TestShellDelegate : public ShellDelegate {
 
   // True if window browser sessions are restoring.
   bool session_restore_in_progress_ = false;
+
+  std::unique_ptr<DeskProfilesDelegate> test_desk_profiles_delegate_;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;

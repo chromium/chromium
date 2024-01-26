@@ -52,6 +52,9 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
+// Returns the title of the Set Up List.
++ (NSString*)setUpListTitle;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_

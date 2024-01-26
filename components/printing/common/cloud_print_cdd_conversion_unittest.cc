@@ -163,9 +163,9 @@ constexpr char kExpectedMediaSizeWithWiderPaper[] = R"json({
     }, {
       "custom_display_name": "NA_INDEX_3X5",
       "height_microns": 127000,
-      "imageable_area_bottom_microns": 1000,
+      "imageable_area_bottom_microns": 700,
       "imageable_area_left_microns": 500,
-      "imageable_area_right_microns": 75700,
+      "imageable_area_right_microns": 76000,
       "imageable_area_top_microns": 126000,
       "name": "NA_INDEX_3X5",
       "vendor_id": "15",
@@ -373,12 +373,14 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
 
 TEST(CloudPrintCddConversionTest, WiderPaper) {
   // Test that a Paper that has a larger width swaps its width and height when
-  // converting to a CDD.
+  // converting to a CDD.  Additionally, create the printable area such that
+  // none of the margins are equal.  Create margins as so:  left: 1000,
+  // bottom: 500, right: 700, top: 200.
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.papers.push_back(printing::PrinterSemanticCapsAndDefaults::Paper(
       "NA_INDEX_3X5", "15", gfx::Size(127000, 76200),
-      gfx::Rect(1000, 500, 125000, 75200)));
+      gfx::Rect(1000, 500, 125300, 75500)));
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 

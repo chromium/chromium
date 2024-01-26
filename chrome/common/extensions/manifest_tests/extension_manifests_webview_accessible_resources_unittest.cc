@@ -13,8 +13,7 @@ using extensions::Extension;
 using extensions::WebviewInfo;
 namespace errors = extensions::manifest_errors;
 
-class WebviewAccessibleResourcesManifestTest : public ChromeManifestTest {
-};
+using WebviewAccessibleResourcesManifestTest = ChromeManifestTest;
 
 TEST_F(WebviewAccessibleResourcesManifestTest, WebviewAccessibleResources) {
   // Manifest version 2 with webview accessible resources specified.

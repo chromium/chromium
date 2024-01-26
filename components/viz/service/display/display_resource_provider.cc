@@ -181,6 +181,11 @@ const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
   return resource->transferable.color_space;
 }
 
+bool DisplayResourceProvider::GetNeedsDetiling(ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return resource->transferable.needs_detiling;
+}
+
 const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->transferable.hdr_metadata;

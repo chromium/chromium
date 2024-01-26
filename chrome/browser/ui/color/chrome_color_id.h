@@ -466,6 +466,7 @@
   E_CPONLY(kColorSidePanelWallpaperSearchTileBackground) \
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonBackground) \
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonText) \
+  E_CPONLY(kColorSidePanelWallpaperSearchInspirationDescriptors) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \
@@ -752,6 +753,7 @@
   E_CPONLY(kColorComposeDialogLogo) \
   E_CPONLY(kColorComposeDialogResultBackground) \
   E_CPONLY(kColorComposeDialogResultForeground) \
+  E_CPONLY(kColorComposeDialogResultForegroundWhileLoading) \
   E_CPONLY(kColorComposeDialogResultIcon) \
   E_CPONLY(kColorComposeDialogScrollbarThumb) \
   E_CPONLY(kColorComposeDialogTitle) \

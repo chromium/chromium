@@ -126,7 +126,7 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
 void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(forwarding_client_);
   if (can_fallback_) {
     if (!head->headers) {
@@ -153,7 +153,7 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
 
   can_fallback_ = false;
   forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
-                                        absl::nullopt);
+                                        std::nullopt);
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveRedirect(
@@ -201,7 +201,7 @@ void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   // This should never be called for a non-network service URLLoader.
   NOTREACHED();
 }

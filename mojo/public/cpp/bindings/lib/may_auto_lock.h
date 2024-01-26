@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MAY_AUTO_LOCK_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"

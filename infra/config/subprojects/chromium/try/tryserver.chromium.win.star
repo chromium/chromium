@@ -142,6 +142,8 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
         "chromium.compilator_can_outlive_parent": 100,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -196,6 +198,7 @@ try_.builder(
     ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
         # out builder cache
@@ -346,7 +349,7 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         # TODO(https://crbug.com/1441206): Enable after resources verified.
-        experiment_percentage = 10,
+        experiment_percentage = 100,
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",

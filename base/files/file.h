@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct stat;
 
@@ -220,11 +221,11 @@ class BASE_EXPORT File {
   // normal expectation is that actually |size| bytes are read unless there is
   // an error.
   int Read(int64_t offset, char* data, int size);
-  int Read(int64_t offset, base::span<uint8_t> data);
+  absl::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
   int ReadAtCurrentPos(char* data, int size);
-  int ReadAtCurrentPos(base::span<uint8_t> data);
+  absl::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
@@ -241,11 +242,11 @@ class BASE_EXPORT File {
   // Ignores the offset and writes to the end of the file if the file was opened
   // with FLAG_APPEND.
   int Write(int64_t offset, const char* data, int size);
-  int Write(int64_t offset, base::span<const uint8_t> data);
+  absl::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
   // Save as above but without seek.
   int WriteAtCurrentPos(const char* data, int size);
-  int WriteAtCurrentPos(base::span<const uint8_t> data);
+  absl::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Save as above but does not make any effort to write all data on all
   // platforms. Returns the number of bytes written, or -1 on error.

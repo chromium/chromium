@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -88,8 +89,6 @@ class PrefProvider : public UserModifiableProvider {
       const PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 
-  void ClearPrefs();
-
   ContentSettingsPref* GetPref(ContentSettingsType type) const;
 
  private:
@@ -97,12 +96,14 @@ class PrefProvider : public UserModifiableProvider {
 
   void Notify(const ContentSettingsPattern& primary_pattern,
               const ContentSettingsPattern& secondary_pattern,
-              ContentSettingsType content_type);
+              ContentSettingsType content_type,
+              const PartitionKey* partition_key);
 
   bool SetLastVisitTime(const ContentSettingsPattern& primary_pattern,
                         const ContentSettingsPattern& secondary_pattern,
                         ContentSettingsType content_type,
-                        const base::Time time);
+                        const base::Time time,
+                        const PartitionKey& partition_key);
 
   // Finds the first setting whose Rule satisfies `is_match`, and performs some
   // update. `perform_update` may modify the Rule in-place, and should return
@@ -110,7 +111,8 @@ class PrefProvider : public UserModifiableProvider {
   // was updated.
   bool UpdateSetting(ContentSettingsType content_type,
                      base::FunctionRef<bool(const Rule&)> is_match,
-                     base::FunctionRef<bool(Rule&)> perform_update);
+                     base::FunctionRef<bool(Rule&)> perform_update,
+                     const PartitionKey& partition_key);
 
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();
@@ -128,7 +130,7 @@ class PrefProvider : public UserModifiableProvider {
 
   bool store_last_modified_;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   std::map<ContentSettingsType, std::unique_ptr<ContentSettingsPref>>
       content_settings_prefs_;

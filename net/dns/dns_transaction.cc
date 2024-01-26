@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -79,7 +80,6 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -426,7 +426,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       if (is_probe) {
         return NetLogStartParams("(probe)", query_->qtype());
       }
-      absl::optional<std::string> hostname =
+      std::optional<std::string> hostname =
           dns_names_util::NetworkToDottedName(query_->qname());
       DCHECK(hostname.has_value());
       return NetLogStartParams(*hostname, query_->qtype());
@@ -986,7 +986,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(!session_->config().doh_config.servers().empty());
     DCHECK(context_);
 
-    absl::optional<std::vector<uint8_t>> qname =
+    std::optional<std::vector<uint8_t>> qname =
         dns_names_util::DottedNameToNetwork(kDohProbeHostname);
     DCHECK(qname.has_value());
     formatted_probe_qname_ = std::move(qname).value();
@@ -1269,7 +1269,7 @@ class DnsTransactionImpl : public DnsTransaction,
   int PrepareSearch() {
     const DnsConfig& config = session_->config();
 
-    absl::optional<std::vector<uint8_t>> labeled_qname =
+    std::optional<std::vector<uint8_t>> labeled_qname =
         dns_names_util::DottedNameToNetwork(
             hostname_,
             /*require_valid_internet_hostname=*/true);
@@ -1298,7 +1298,7 @@ class DnsTransactionImpl : public DnsTransaction,
     }
 
     for (const auto& suffix : config.search) {
-      absl::optional<std::vector<uint8_t>> qname =
+      std::optional<std::vector<uint8_t>> qname =
           dns_names_util::DottedNameToNetwork(
               hostname_ + "." + suffix,
               /*require_valid_internet_hostname=*/true);
@@ -1522,7 +1522,7 @@ class DnsTransactionImpl : public DnsTransaction,
 
   // Begins query for the current name. Makes the first attempt.
   AttemptResult StartQuery() {
-    absl::optional<std::string> dotted_qname =
+    std::optional<std::string> dotted_qname =
         dns_names_util::NetworkToDottedName(qnames_.front());
     net_log_.BeginEventWithStringParams(
         NetLogEventType::DNS_TRANSACTION_QUERY, "qname",

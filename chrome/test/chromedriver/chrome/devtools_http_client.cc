@@ -68,7 +68,7 @@ bool DevToolsHttpClient::FetchUrlAndLog(const std::string& url,
 
 Status DevToolsHttpClient::ParseWebViewsInfo(const std::string& data,
                                              WebViewsInfo& views_info) {
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value) {
     return Status(kUnknownError, "DevTools returned invalid JSON");
   }

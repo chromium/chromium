@@ -5,6 +5,7 @@
 #ifndef ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_
 #define ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_
 
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "components/app_restore/window_info.h"
 
@@ -24,6 +25,13 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     std::optional<int> activation_index,
     bool for_saved_desks,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& mru_windows);
+
+// Gets the path for the pine image being taken on shutdown. It will be written
+// to /home/chronos/u-<hash>/pine_image.png.
+ASH_EXPORT base::FilePath GetShutdownPineImagePath();
+
+// Sets the pine image path for tests.
+ASH_EXPORT void SetPineImagePathForTest(const base::FilePath& path);
 
 }  // namespace ash
 

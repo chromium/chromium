@@ -453,7 +453,7 @@ TEST_F(SmbFsShareTest, GenerateStableMountIdInput) {
 
   smbfs::SmbFsMounter::MountOptions options2;
   options2.kerberos_options =
-      absl::make_optional<smbfs::SmbFsMounter::KerberosOptions>(
+      std::make_optional<smbfs::SmbFsMounter::KerberosOptions>(
           smbfs::SmbFsMounter::KerberosOptions::Source::kKerberos,
           kKerberosIdentity);
   SmbFsShare share2(&profile_, SmbUrl(kSharePath2), kDisplayName, options2);

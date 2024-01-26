@@ -69,13 +69,28 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   // Populate initial instance params from creation params.
   net::CertVerifyProc::InstanceParams instance_params;
   if (creation_params->initial_additional_certificates) {
-    instance_params.additional_trust_anchors = net::x509_util::ParseAllCerts(
-        creation_params->initial_additional_certificates->trust_anchors);
+    instance_params
+        .additional_trust_anchors = net::x509_util::ParseAllValidCerts(
+        net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+            creation_params->initial_additional_certificates->trust_anchors));
+
     instance_params.additional_untrusted_authorities =
-        net::x509_util::ParseAllCerts(
-            creation_params->initial_additional_certificates->all_certificates);
+        net::x509_util::ParseAllValidCerts(
+            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+                creation_params->initial_additional_certificates
+                    ->all_certificates));
+
+    instance_params.additional_trust_anchors_with_enforced_constraints =
+        net::x509_util::ParseAllValidCerts(
+            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+                creation_params->initial_additional_certificates
+                    ->trust_anchors_with_enforced_constraints));
+
     instance_params.additional_distrusted_spkis =
         creation_params->initial_additional_certificates->distrusted_spkis;
+    instance_params.include_system_trust_store =
+        creation_params->initial_additional_certificates
+            ->include_system_trust_store;
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 
@@ -41,7 +42,7 @@ ProxyChain::ProxyChain(ProxyServer proxy_server)
 
 ProxyChain::ProxyChain(ProxyServer::Scheme scheme,
                        const HostPortPair& host_port_pair)
-    : ProxyChain({ProxyServer(scheme, host_port_pair)}) {}
+    : ProxyChain(ProxyServer(scheme, host_port_pair)) {}
 
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
     : proxy_server_list_(std::move(proxy_server_list)) {
@@ -59,6 +60,21 @@ const ProxyServer& ProxyChain::GetProxyServer(size_t chain_index) const {
 const std::vector<ProxyServer>& ProxyChain::proxy_servers() const {
   DCHECK(IsValid());
   return proxy_server_list_.value();
+}
+
+std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
+  DCHECK(IsValid());
+  DCHECK_NE(length(), 0u);
+  ProxyChain new_chain =
+      ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1});
+  new_chain.is_for_ip_protection_ = is_for_ip_protection_;
+  return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
+}
+
+const ProxyServer& ProxyChain::Last() const {
+  DCHECK(IsValid());
+  DCHECK_NE(length(), 0u);
+  return proxy_server_list_->back();
 }
 
 ProxyChain&& ProxyChain::ForIpProtection() && {

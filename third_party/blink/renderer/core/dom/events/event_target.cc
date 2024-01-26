@@ -35,9 +35,9 @@
 
 #include "base/format_macros.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.h"
@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -611,8 +610,11 @@ bool EventTarget::AddEventListenerInternal(
     }
   }
 
-  // Consider `Permissions-Policy: unload`.
+  // Consider `Permissions-Policy: unload` unless the deprecation trial is in
+  // effect.
   if (event_type == event_type_names::kUnload &&
+      !RuntimeEnabledFeatures::DeprecateUnloadOptOutEnabled(
+          execution_context) &&
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
@@ -1163,12 +1165,5 @@ void EventTarget::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(data_);
 }
-
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kFalse,
-                   PassiveListenerDefault::kFalse);
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kTrue,
-                   PassiveListenerDefault::kTrue);
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kForceAllTrue,
-                   PassiveListenerDefault::kForceAllTrue);
 
 }  // namespace blink

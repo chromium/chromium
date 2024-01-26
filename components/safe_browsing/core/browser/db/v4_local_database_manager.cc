@@ -418,10 +418,6 @@ bool V4LocalDatabaseManager::CanCheckUrl(const GURL& url) const {
          url.SchemeIsWSOrWSS();
 }
 
-bool V4LocalDatabaseManager::ChecksAreAlwaysAsync() const {
-  return GetPrefixMatchesIsAsync();
-}
-
 bool V4LocalDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
@@ -1159,12 +1155,13 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
     RemovePendingCheck(it);
   }
 
-  if (results.empty()) {
+  check->full_hash_to_store_and_hash_prefixes = results;
+  GetArtificialPrefixMatches(check);
+  if (check->full_hash_to_store_and_hash_prefixes.empty() &&
+      check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
     RespondToClient(std::move(check));
   } else {
-    check->full_hash_to_store_and_hash_prefixes = results;
-    AddPendingCheck(check.get());
-    PerformFullHashCheck(std::move(check));
+    ScheduleFullHashCheck(std::move(check));
   }
 }
 

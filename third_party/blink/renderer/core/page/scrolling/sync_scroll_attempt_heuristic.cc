@@ -47,8 +47,6 @@ SyncScrollAttemptHeuristic::~SyncScrollAttemptHeuristic() {
       }
     }
   }
-  base::UmaHistogramBoolean("Renderer.PossibleSynchronizedScroll2",
-                            saw_possible_sync_scrolling_attempt);
 }
 
 SyncScrollAttemptHeuristic::Scope::Scope(bool enable_observation)

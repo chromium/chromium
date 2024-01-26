@@ -22,6 +22,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_network_session.h"
@@ -430,9 +431,9 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
     SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
-                       PRIVACY_MODE_DISABLED,
-                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                       PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                       socket_tag, NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow);
     session_ =
         CreateSpdySession(http_session_.get(), key,
                           NetLogWithSource::Make(NetLogSourceType::NONE));
@@ -619,9 +620,9 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
 
   http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow);
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
   request_info->method = "GET";
   request_info->url = default_url_;

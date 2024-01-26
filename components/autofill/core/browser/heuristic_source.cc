@@ -34,26 +34,44 @@ HeuristicSource GetActiveHeuristicSource() {
 }
 
 DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
-  // Collect all used `HeuristicSource`s depending on build flags and feature
-  // states.
-  DenseSet<HeuristicSource> sources;
+  DenseSet<HeuristicSource> non_active_sources;
+  switch (GetActiveHeuristicSource()) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
-    sources.insert_all({HeuristicSource::kDefault,
-                        HeuristicSource::kExperimental,
-                        HeuristicSource::kNextGen});
-  } else {
-    sources.insert(HeuristicSource::kLegacy);
-  }
-#else
-  sources.insert(HeuristicSource::kLegacy);
+    // If a `PatternSource` is the active `HeuristicSource`, compute shadow
+    // predictions against the `PatternSource` of the prior rollout stage.
+    case HeuristicSource::kDefault:
+      non_active_sources.insert(HeuristicSource::kExperimental);
+      break;
+    case HeuristicSource::kExperimental:
+      non_active_sources.insert(HeuristicSource::kNextGen);
+      break;
+    case HeuristicSource::kNextGen:
 #endif
-  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    sources.insert(HeuristicSource::kMachineLearning);
+    // Prior to PatternProvider and on non Chrome-branded builds, no alternative
+    // `PatternSource`s exist.
+    case HeuristicSource::kLegacy:
+      break;
+    // If ML is active, compare against the `PatternSource`-based predictions
+    // that would otherwise be active.
+    case HeuristicSource::kMachineLearning:
+      non_active_sources.insert(
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+          base::FeatureList::IsEnabled(
+              features::kAutofillParsingPatternProvider)
+              ? HeuristicSource::kDefault
+              : HeuristicSource::kLegacy
+#else
+          HeuristicSource::kLegacy
+#endif
+      );
+      break;
   }
-  // Erase the active heuristic source, to get the non-active ones.
-  sources.erase(GetActiveHeuristicSource());
-  return sources;
+  // If ML is enabled but inactive, compute shadow predictions for it.
+  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
+      !features::kAutofillModelPredictionsAreActive.Get()) {
+    non_active_sources.insert(HeuristicSource::kMachineLearning);
+  }
+  return non_active_sources;
 }
 
 std::optional<PatternSource> HeuristicSourceToPatternSource(

@@ -11,7 +11,7 @@ import sync.model as model
 import unittest
 
 class ModelTest(unittest.TestCase):
-  """Tests for model.py"""
+  """Tests for model.py."""
 
   def assert_project(self, project, name, id_, summary, owners,
                      key_rotation_period):

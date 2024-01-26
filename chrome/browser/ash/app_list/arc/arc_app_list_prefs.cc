@@ -62,6 +62,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/icu/source/common/unicode/localebuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -394,6 +395,13 @@ ash::LoginUnlockThroughputRecorder* GetLoginRecorder() {
   return ash::Shell::HasInstance()
              ? ash::Shell::Get()->login_unlock_throughput_recorder()
              : nullptr;
+}
+
+// Validate |locale_tag| based on IETF BCP 47 language tag.
+bool IsLocaleTagValid(const std::string& locale_tag) {
+  UErrorCode error = U_ZERO_ERROR;
+  icu::LocaleBuilder().setLanguageTag(locale_tag.c_str()).build(error);
+  return error == U_ZERO_ERROR;
 }
 
 // In some cases when ARC is not ready (e.g. ARC hasn't booted / ARC failed to
@@ -1948,13 +1956,17 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
           *package.locale_info;
       for (const std::string& supported_locale :
            package_locale_info.supported_locales) {
-        supported_locales.Append(supported_locale);
+        if (IsLocaleTagValid(supported_locale)) {
+          supported_locales.Append(supported_locale);
+        }
       }
+      const auto& selected_locale = package_locale_info.selected_locale;
       package_dict.Set(
           kLocaleInfo,
           base::Value::Dict()
               .Set(kSupportedLocales, std::move(supported_locales))
-              .Set(kSelectedLocale, package_locale_info.selected_locale));
+              .Set(kSelectedLocale,
+                   IsLocaleTagValid(selected_locale) ? selected_locale : ""));
     }
   } else {
     package_dict.Remove(kLocaleInfo);

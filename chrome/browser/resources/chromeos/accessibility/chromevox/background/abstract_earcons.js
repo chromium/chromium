@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LocalStorage} from '../../common/local_storage.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {EarconId} from '../common/earcon_id.js';
 
 /**

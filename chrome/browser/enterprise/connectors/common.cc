@@ -32,6 +32,16 @@ using safe_browsing::BinaryUploadService;
 
 namespace enterprise_connectors {
 
+RequestHandlerResult::RequestHandlerResult() = default;
+RequestHandlerResult::~RequestHandlerResult() = default;
+RequestHandlerResult::RequestHandlerResult(RequestHandlerResult&&) = default;
+RequestHandlerResult& RequestHandlerResult::operator=(RequestHandlerResult&&) =
+    default;
+RequestHandlerResult::RequestHandlerResult(const RequestHandlerResult&) =
+    default;
+RequestHandlerResult& RequestHandlerResult::operator=(
+    const RequestHandlerResult&) = default;
+
 namespace {
 
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
@@ -130,7 +140,50 @@ RequestHandlerResult CalculateRequestHandlerResult(
     result.final_result = FinalContentAnalysisResult::FAILURE;
   }
 
+  for (const auto& response_result : response.results()) {
+    if (!response_result.has_status() ||
+        response_result.status() != ContentAnalysisResponse::Result::SUCCESS) {
+      continue;
+    }
+    for (const auto& rule : response_result.triggered_rules()) {
+      // Ensures that lower precedence actions custom messages are skipped. The
+      // message shown is arbitrary for rules with the same precedence.
+      if (rule.action() == action && rule.has_custom_rule_message()) {
+        result.custom_rule_message = rule.custom_rule_message();
+      }
+    }
+  }
   return result;
+}
+
+std::u16string GetCustomRuleString(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message) {
+  std::u16string custom_message;
+  for (const auto& custom_segment : custom_rule_message.message_segments()) {
+    base::StrAppend(&custom_message,
+                    {base::UTF8ToUTF16(custom_segment.text())});
+  }
+  return custom_message;
+}
+
+std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message) {
+  int curr_index = 0;
+  std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
+  for (const auto& custom_segment : custom_rule_message.message_segments()) {
+    if (custom_segment.has_link()) {
+      GURL url(custom_segment.link());
+      if (url.is_valid()) {
+        linked_ranges.emplace_back(
+            gfx::Range(curr_index, curr_index + custom_segment.text().length()),
+            url);
+      }
+    }
+    curr_index += custom_segment.text().length();
+  }
+  return linked_ranges;
 }
 
 safe_browsing::EventResult CalculateEventResult(

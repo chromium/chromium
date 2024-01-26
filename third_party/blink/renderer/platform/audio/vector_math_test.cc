@@ -236,7 +236,7 @@ class VectorMathTest : public testing::Test {
     return sources_[i];
   }
 
-  static void SetUpTestCase() {
+  static void SetUpTestSuite() {
     std::minstd_rand generator(3141592653u);
     // Fill in source buffers with finite random floats.
     std::uniform_real_distribution<float> float_distribution(-10.0f, 10.0f);

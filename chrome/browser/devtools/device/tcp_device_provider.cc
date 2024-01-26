@@ -51,7 +51,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                               pending_receiver) {
                          g_browser_process->system_network_context_manager()
                              ->GetContext()
-                             ->CreateHostResolver(absl::nullopt,
+                             ->CreateHostResolver(std::nullopt,
                                                   std::move(pending_receiver));
                        },
                        resolver.BindNewPipeAndPassReceiver()));
@@ -66,16 +66,16 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(base::BindOnce(
         &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/absl::nullopt,
-        /*endpoint_results_with_metadata=*/absl::nullopt));
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt));
   }
 
  private:
   // network::mojom::ResolveHostClient implementation:
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     if (result != net::OK) {
       RunSocketCallback(std::move(callback_), nullptr,

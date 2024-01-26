@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/task/single_thread_task_runner.h"
@@ -462,14 +463,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static RenderProcessHost* GetProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance);
 
-  // Should be called when |browser_context| is used in a navigation.
+  // Should be called when `site_instance` is used in a navigation.
   //
   // The SpareRenderProcessHostManager can decide how to respond (for example,
   // by shutting down the spare process to conserve resources, or alternatively
   // by making sure that the spare process belongs to the same BrowserContext as
   // the most recent navigation).
-  static void NotifySpareManagerAboutRecentlyUsedBrowserContext(
-      BrowserContext* browser_context);
+  //
+  // If `ignore_delay` is false, delays new spare renderer creation as per
+  // embedder's setting. Otherwise, the spare renderer creation might have been
+  // deferred previously, and this is a signal that it should now be started
+  // immediately.
+  static void NotifySpareManagerAboutRecentlyUsedSiteInstance(
+      SiteInstance* site_instance,
+      bool ignore_delay = false);
 
   // This enum backs a histogram, so do not change the order of entries or
   // remove entries and update enums.xml if adding new entries.
@@ -970,11 +977,29 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Called if the backgrounded or visibility state of the process changes.
   void SendProcessStateToRenderer();
 
-  // Creates a PersistentMemoryAllocator and shares it with the renderer
-  // process for it to store histograms from that process. The allocator is
-  // available for extraction by a SubprocesMetricsProvider in order to
-  // report those histograms to UMA.
-  void CreateSharedRendererHistogramAllocator();
+  // Creates an UnsafeSharedMemoryRegion and PersistentMemoryAllocator for
+  // the renderer process to store histograms. The allocator is available for
+  // extraction by a SubprocesMetricsProvider in order to report those
+  // histograms to UMA. This must be called before launching the renderer
+  // process.
+  void CreateMetricsAllocator();
+
+  // Shares the histogram UnsafeSharedMemoryRegion, post launch, with the child
+  // renderer process via IPC. This also serves to and notify the child to send
+  // any early histograms it may have recorded before the shared memory region
+  // became available to it. This must be called just after launching the
+  // renderer process.
+  //
+  // If passing the memory region on launch is enabled, a duplicate handle to
+  // the memory region may have already been passed to the renderer process
+  // during launch. If so, the passing of the shmem handle is a NOP. There may
+  // still be early histograms recorded before the child reads its launch
+  // parameters to learn of the shared memory region.
+  //
+  // TODO(crbug/1028263): It may be possible to completely remove this once
+  // passing the memory region on launch is rolled-out, if the shmem parameter
+  // is consumed before the child records any histograms.
+  void ShareMetricsMemoryRegion();
 
   // Retrieves the details of the terminating child process.
   //
@@ -988,6 +1013,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Handle termination of our process.
   void ProcessDied(const ChildProcessTerminationInfo& termination_info);
+
+  // Shutdowns the child process as fast as possible. This is similar to the
+  // public `FastShutdownIfPossible()` method, but doesn't perform any checks
+  // before initiating fast shutdown.
+  void FastShutdown();
 
   // Destroy all objects that can cause methods to be invoked on this object or
   // any other that hang off it.
@@ -1286,6 +1316,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
+  base::UnsafeSharedMemoryRegion metrics_memory_region_;
 
   bool channel_connected_ = false;
   bool sent_render_process_ready_ = false;

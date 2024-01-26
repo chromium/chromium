@@ -13,5 +13,6 @@
 ++++[list item]
 ++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Some '
-++++++[static] name='more'
+++++++[static]
+++++++++[static] name='more'
 ++++++[static] name=' text.'

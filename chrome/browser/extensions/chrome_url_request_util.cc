@@ -104,7 +104,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     NOTREACHED() << "No redirects for local file loads.";
   }
   // Current implementation reads all resource data at start of resource
@@ -178,7 +178,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                                head->mime_type.c_str());
     }
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     uint32_t write_size = data->size();
     MojoResult result = producer_handle->WriteData(data->front(), &write_size,

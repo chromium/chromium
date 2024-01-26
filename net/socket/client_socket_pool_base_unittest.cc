@@ -58,6 +58,7 @@
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_config.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -91,7 +92,8 @@ ClientSocketPool::GroupId TestGroupId(
         NetworkAnonymizationKey()) {
   return ClientSocketPool::GroupId(url::SchemeHostPort(scheme, host, port),
                                    privacy_mode, network_anonymization_key,
-                                   SecureDnsPolicy::kAllow);
+                                   SecureDnsPolicy::kAllow,
+                                   /*disable_cert_network_fetches=*/false);
 }
 
 // Make sure |handle| sets load times correctly when it has been assigned a
@@ -347,8 +349,9 @@ class TestConnectJob : public ConnectJob {
   bool IsSSLError() const override { return store_additional_error_state_; }
 
   scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override {
-    if (store_additional_error_state_)
+    if (store_additional_error_state_) {
       return base::MakeRefCounted<SSLCertRequestInfo>();
+    }
     return nullptr;
   }
 
@@ -474,8 +477,9 @@ class TestConnectJob : public ConnectJob {
       SetSocket(std::unique_ptr<StreamSocket>(), absl::nullopt);
     }
 
-    if (was_async)
+    if (was_async) {
       NotifyDelegateOfCompletion(result);
+    }
     return result;
   }
 
@@ -544,7 +548,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
       Endpoint endpoint,
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       ConnectJobFactory::AlpnMode alpn_mode,
       bool force_tunnel,
       PrivacyMode privacy_mode,
@@ -553,6 +557,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
       SocketTag socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const override {
     EXPECT_TRUE(!job_types_ || !job_types_->empty());
@@ -700,7 +705,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       /*http_auth_handler_factory=*/nullptr,
       /*spdy_session_pool=*/nullptr,
       /*quic_supported_versions=*/nullptr,
-      /*quic_stream_factory=*/nullptr,
+      /*quic_session_pool=*/nullptr,
       /*proxy_delegate=*/nullptr,
       /*http_user_agent_settings=*/nullptr,
       /*ssl_client_context=*/nullptr,
@@ -711,7 +716,8 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       /*http_server_properties=*/nullptr,
       /*alpn_protos=*/nullptr,
       /*application_settings=*/nullptr,
-      /*ignore_certificate_errors=*/nullptr};
+      /*ignore_certificate_errors=*/nullptr,
+      /*early_data_enabled=*/nullptr};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   RecordingNetLogObserver net_log_observer_;
@@ -890,7 +896,8 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
             ClientSocketPool::GroupId group_id(
                 url::SchemeHostPort(scheme, host_port_pair.host(),
                                     host_port_pair.port()),
-                privacy_mode, network_anonymization_key, secure_dns_policy);
+                privacy_mode, network_anonymization_key, secure_dns_policy,
+                /*disable_cert_network_fetches=*/false);
 
             EXPECT_FALSE(pool_->HasGroupForTesting(group_id));
 
@@ -1285,8 +1292,9 @@ TEST_F(ClientSocketPoolBaseTest, StallAndThenCancelAndTriggerAvailableSocket) {
   // One will be stalled, cancel all the handles now.
   // This should hit the OnAvailableSocketSlot() code where we previously had
   // stalled groups, but no longer have any.
-  for (auto& handle : handles)
+  for (auto& handle : handles) {
     handle.Reset();
+  }
 }
 
 TEST_F(ClientSocketPoolBaseTest, CancelStalledSocketAtSocketLimit) {
@@ -1490,8 +1498,7 @@ TEST_F(ClientSocketPoolBaseTest, PendingRequests) {
   ReleaseAllConnections(ClientSocketPoolTest::KEEP_ALIVE);
   EXPECT_EQ(kDefaultMaxSocketsPerGroup,
             client_socket_factory_.allocation_count());
-  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup,
-            completion_count());
+  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup, completion_count());
 
   EXPECT_EQ(1, GetOrderOfRequest(1));
   EXPECT_EQ(2, GetOrderOfRequest(2));
@@ -1519,13 +1526,13 @@ TEST_F(ClientSocketPoolBaseTest, PendingRequests_NoKeepAlive) {
 
   ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);
 
-  for (size_t i = kDefaultMaxSocketsPerGroup; i < requests_size(); ++i)
+  for (size_t i = kDefaultMaxSocketsPerGroup; i < requests_size(); ++i) {
     EXPECT_THAT(request(i)->WaitForResult(), IsOk());
+  }
 
   EXPECT_EQ(static_cast<int>(requests_size()),
             client_socket_factory_.allocation_count());
-  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup,
-            completion_count());
+  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup, completion_count());
 }
 
 TEST_F(ClientSocketPoolBaseTest, ResetAndCloseSocket) {
@@ -1775,8 +1782,9 @@ void RequestSocketOnComplete(ClientSocketHandle* handle,
   test_connect_job_factory->set_job_type(next_job_type);
 
   // Don't allow reuse of the socket.  Disconnect it and then release it.
-  if (handle->socket())
+  if (handle->socket()) {
     handle->socket()->Disconnect();
+  }
   handle->Reset();
 
   TestCompletionCallback callback;
@@ -1871,8 +1879,7 @@ TEST_F(ClientSocketPoolBaseTest, CancelActiveRequestWithPendingRequests) {
     request(i)->handle()->Reset();
   }
 
-  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup,
-            completion_count());
+  EXPECT_EQ(requests_size() - kDefaultMaxSocketsPerGroup, completion_count());
 }
 
 // Make sure that pending requests get serviced after active requests fail.
@@ -1886,12 +1893,14 @@ TEST_F(ClientSocketPoolBaseTest, FailingActiveRequestWithPendingRequests) {
   ASSERT_LE(kNumberOfRequests, kMaxSockets);  // Otherwise the test will hang.
 
   // Queue up all the requests
-  for (size_t i = 0; i < kNumberOfRequests; ++i)
+  for (size_t i = 0; i < kNumberOfRequests; ++i) {
     EXPECT_THAT(StartRequest(TestGroupId("a"), DEFAULT_PRIORITY),
                 IsError(ERR_IO_PENDING));
+  }
 
-  for (size_t i = 0; i < kNumberOfRequests; ++i)
+  for (size_t i = 0; i < kNumberOfRequests; ++i) {
     EXPECT_THAT(request(i)->WaitForResult(), IsError(ERR_CONNECTION_FAILED));
+  }
 }
 
 // Make sure that pending requests that complete synchronously get serviced
@@ -1909,13 +1918,15 @@ TEST_F(ClientSocketPoolBaseTest, HandleMultipleSyncFailuresAfterAsyncFailure) {
   connect_job_factory_->set_job_type(TestConnectJob::kMockFailingJob);
 
   // Queue up all the other requests
-  for (size_t i = 1; i < kNumberOfRequests; ++i)
+  for (size_t i = 1; i < kNumberOfRequests; ++i) {
     EXPECT_THAT(StartRequest(TestGroupId("a"), DEFAULT_PRIORITY),
                 IsError(ERR_IO_PENDING));
+  }
 
   // Make sure all requests fail, instead of hanging.
-  for (size_t i = 0; i < kNumberOfRequests; ++i)
+  for (size_t i = 0; i < kNumberOfRequests; ++i) {
     EXPECT_THAT(request(i)->WaitForResult(), IsError(ERR_CONNECTION_FAILED));
+  }
 }
 
 TEST_F(ClientSocketPoolBaseTest, CancelActiveRequestThenRequestSocket) {
@@ -2113,8 +2124,7 @@ TEST_F(ClientSocketPoolBaseTest, BasicAsynchronous) {
   EXPECT_TRUE(LogContainsEndEvent(entries, 4, NetLogEventType::SOCKET_POOL));
 }
 
-TEST_F(ClientSocketPoolBaseTest,
-       InitConnectionAsynchronousFailure) {
+TEST_F(ClientSocketPoolBaseTest, InitConnectionAsynchronousFailure) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
 
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingFailingJob);
@@ -2195,7 +2205,6 @@ TEST_F(ClientSocketPoolBaseTest, TwoRequestsCancelOne) {
                    pool_.get(), NetLogWithSource()));
 
   handle.Reset();
-
 
   // At this point, request 2 is just waiting for the connect job to finish.
 
@@ -2636,7 +2645,7 @@ TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsReuse) {
 TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsNoReuse) {
   CreatePoolWithIdleTimeouts(
       kDefaultMaxSockets, kDefaultMaxSocketsPerGroup,
-      base::TimeDelta(),  // Time out unused sockets immediately
+      base::TimeDelta(),   // Time out unused sockets immediately
       base::TimeDelta());  // Time out used sockets immediately
 
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
@@ -2903,8 +2912,9 @@ class TestReleasingSocketRequest : public TestCompletionCallbackBase {
  private:
   void OnComplete(int result) {
     SetResult(result);
-    if (reset_releasing_handle_)
+    if (reset_releasing_handle_) {
       handle_.Reset();
+    }
 
     EXPECT_EQ(
         expected_result_,
@@ -2922,7 +2932,6 @@ class TestReleasingSocketRequest : public TestCompletionCallbackBase {
   ClientSocketHandle handle_;
   ClientSocketHandle handle2_;
 };
-
 
 TEST_F(ClientSocketPoolBaseTest, AdditionalErrorSocketsDontUseSlot) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
@@ -3027,9 +3036,7 @@ class ConnectWithinCallback : public TestCompletionCallbackBase {
 
   ~ConnectWithinCallback() override = default;
 
-  int WaitForNestedResult() {
-    return nested_callback_.WaitForResult();
-  }
+  int WaitForNestedResult() { return nested_callback_.WaitForResult(); }
 
   CompletionOnceCallback callback() {
     return base::BindOnce(&ConnectWithinCallback::OnComplete,
@@ -4914,8 +4921,8 @@ TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketsHeldByLayeredPoolWhenNeeded) {
   MockLayeredPool mock_layered_pool(pool_.get(), TestGroupId("foo"));
   EXPECT_THAT(mock_layered_pool.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool, CloseOneIdleConnection())
-      .WillOnce(Invoke(&mock_layered_pool,
-                       &MockLayeredPool::ReleaseOneConnection));
+      .WillOnce(
+          Invoke(&mock_layered_pool, &MockLayeredPool::ReleaseOneConnection));
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(
@@ -4938,8 +4945,8 @@ TEST_F(ClientSocketPoolBaseTest,
   mock_layered_pool.set_can_release_connection(false);
   EXPECT_THAT(mock_layered_pool.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool, CloseOneIdleConnection())
-      .WillOnce(Invoke(&mock_layered_pool,
-                       &MockLayeredPool::ReleaseOneConnection));
+      .WillOnce(
+          Invoke(&mock_layered_pool, &MockLayeredPool::ReleaseOneConnection));
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(
@@ -4976,8 +4983,8 @@ TEST_F(ClientSocketPoolBaseTest,
   MockLayeredPool mock_layered_pool(pool_.get(), TestGroupId("group2"));
   EXPECT_THAT(mock_layered_pool.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool, CloseOneIdleConnection())
-      .WillOnce(Invoke(&mock_layered_pool,
-                       &MockLayeredPool::ReleaseOneConnection));
+      .WillOnce(
+          Invoke(&mock_layered_pool, &MockLayeredPool::ReleaseOneConnection));
   ClientSocketHandle handle;
   TestCompletionCallback callback2;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -5013,8 +5020,8 @@ TEST_F(ClientSocketPoolBaseTest,
   MockLayeredPool mock_layered_pool(pool_.get(), TestGroupId("group2"));
   EXPECT_THAT(mock_layered_pool.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool, CloseOneIdleConnection())
-      .WillRepeatedly(Invoke(&mock_layered_pool,
-                             &MockLayeredPool::ReleaseOneConnection));
+      .WillRepeatedly(
+          Invoke(&mock_layered_pool, &MockLayeredPool::ReleaseOneConnection));
   mock_layered_pool.set_can_release_connection(false);
 
   // The third request is made when the socket pool is in a stalled state.
@@ -5078,8 +5085,8 @@ TEST_F(ClientSocketPoolBaseTest,
   MockLayeredPool mock_layered_pool(pool_.get(), TestGroupId("group2"));
   EXPECT_THAT(mock_layered_pool.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool, CloseOneIdleConnection())
-      .WillRepeatedly(Invoke(&mock_layered_pool,
-                             &MockLayeredPool::ReleaseOneConnection));
+      .WillRepeatedly(
+          Invoke(&mock_layered_pool, &MockLayeredPool::ReleaseOneConnection));
   mock_layered_pool.set_can_release_connection(false);
 
   // The third request is made when the socket pool is in a stalled state.
@@ -5122,14 +5129,14 @@ TEST_F(ClientSocketPoolBaseTest,
   MockLayeredPool mock_layered_pool1(pool_.get(), TestGroupId("foo"));
   EXPECT_THAT(mock_layered_pool1.RequestSocket(pool_.get()), IsOk());
   EXPECT_CALL(mock_layered_pool1, CloseOneIdleConnection())
-      .WillRepeatedly(Invoke(&mock_layered_pool1,
-                             &MockLayeredPool::ReleaseOneConnection));
+      .WillRepeatedly(
+          Invoke(&mock_layered_pool1, &MockLayeredPool::ReleaseOneConnection));
   MockLayeredPool mock_layered_pool2(pool_.get(), TestGroupId("bar"));
   EXPECT_THAT(mock_layered_pool2.RequestSocketWithoutLimits(pool_.get()),
               IsOk());
   EXPECT_CALL(mock_layered_pool2, CloseOneIdleConnection())
-      .WillRepeatedly(Invoke(&mock_layered_pool2,
-                             &MockLayeredPool::ReleaseOneConnection));
+      .WillRepeatedly(
+          Invoke(&mock_layered_pool2, &MockLayeredPool::ReleaseOneConnection));
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(

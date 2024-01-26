@@ -5,7 +5,7 @@
 #include "ui/touch_selection/longpress_drag_selector.h"
 
 #include "base/auto_reset.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
 namespace {

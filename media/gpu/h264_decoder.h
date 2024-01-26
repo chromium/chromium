@@ -119,15 +119,16 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // for the NALU type byte, is encrypted. |data| represents the encrypted
     // ranges which will include any SEI NALUs along with the encrypted slice
     // NALU. |subsamples| specifies what is encrypted and should have just a
-    // single clear byte for each and the rest is encrypted. |sps_nalu_data|
-    // and |pps_nalu_data| are the SPS and PPS NALUs respectively.
-    // |slice_header_out| should have its fields filled in upon successful
+    // single clear byte for each and the rest is encrypted. |secure_handle| is
+    // used on ARM to store the secure buffer reference to parse the header
+    // from. |slice_header_out| should have its fields filled in upon successful
     // return. Returns kOk if successful, kFail if there are errors, or
     // kTryAgain if the accelerator needs additional data before being able to
     // proceed.
     virtual Status ParseEncryptedSliceHeader(
         const std::vector<base::span<const uint8_t>>& data,
         const std::vector<SubsampleEntry>& subsamples,
+        uint64_t secure_handle,
         H264SliceHeader* slice_header_out);
 
     // Submit one slice for the current frame, passing the current |pps| and

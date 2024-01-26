@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">vorentoe</translation>
 <translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
+<translation id="1626590945318984973">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad sonder om funksie- en <ph name="META_KEY" />-sleutels te gebruik.</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
 <translation id="1643449475550628585">Verander muurpapierprent daagliks</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Skakel donkermodus af</translation>
 <translation id="1885577615937958993">spoel media vorentoe</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
-<translation id="1897672602657312171">Kortpad sonder soeksleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die soeksleutel te gebruik.</translation>
 <translation id="1904932688895783618">Hier is nog ’n paar nuttige hulpbronne:</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157660087437850958">emosiekoon-kieser</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Jou administrateur het <ph name="APP_NAME_1" /> gestel om outomaties te begin elke keer as jy aanmeld.}=2{Jou administrateur het <ph name="APP_NAME_1" /> en <ph name="APP_NAME_2" /> gestel om outomaties te begin elke keer as jy aanmeld.}=3{Jou administrateur het <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> gestel om outomaties te begin elke keer as jy aanmeld.}other{Jou administrateur het <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> en # ander apps gestel om outomaties te begin elke keer as jy aanmeld.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
 <translation id="215916044711630446">Voeg APN By-knoppie is nou gedeaktiveer</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Wysig APN-besonderhede</translation>
 <translation id="2209788852729124853">Stel verkeertellers terug</translation>
 <translation id="2212733584906323460">Naamresolusie</translation>
+<translation id="2215920961700443347">Geen internet nie. Koppel aan die internet en probeer weer.</translation>
 <translation id="2217935453350629363">Huidige spoed</translation>
 <translation id="2224337661447660594">Geen internet nie</translation>
 <translation id="222447520299472966">Jy moet 'n minimum van een kunsgalery-album kies</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Prent <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
+<translation id="2465272316171730950">Ons het nie tans kapasiteit nie. Kom asseblief ’n bietjie later terug.</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
 <translation id="2491955442992294626">Sleutels word nie getoets wanneer jy ’n ander venster gebruik nie</translation>
 <translation id="2493126929778606526">Jou beste foto's, outomaties gekies</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Herlaai die huidige muurpapierprent</translation>
 <translation id="2512979179176933762">wys vensters</translation>
 <translation id="2513396635448525189">Aanmeldprent</translation>
-<translation id="2515109918609218604">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad sonder om funksie- en soeksleutels te gebruik.</translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2521835766824839541">vorige snit</translation>
 <translation id="2526590354069164005">Rekenaar</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Jy het nou toegang tot nuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />muurpapiere<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Donkermodus</translation>
 <translation id="4130035430755296270">Hou oor kieslys vir nog uitlegopsies</translation>
+<translation id="4130750466177569591">Ek stem in</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is outomaties begin}other{# apps is outomaties begin}}</translation>
 <translation id="4145784616224233563">HTTP-brandmuur</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4150201353443180367">Vertoon</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">verlaag helderheid</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
 <translation id="4176659219503619100">Kontroleskerm</translation>
-<translation id="4185315616950253617">Kortpad met sleutels in die boonste ry moet die soeksleutel insluit.</translation>
 <translation id="420283545744377356">Skakel sluimerskerm af</translation>
 <translation id="4213104098953699324">USB-sleutelbord</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="439429847087949098">Herbegin tans <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sleutelbord pasmaak</translation>
+<translation id="4403262788869804671">Kortpad sonder <ph name="META_KEY" />-sleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die <ph name="KEY" />-sleutel te gebruik.</translation>
 <translation id="4415951057168511744">Huidige Avatar</translation>
+<translation id="4417830657741848074">Jou admin het sommige apps opgestel om outomaties te begin. Sommige van hierdie apps kan nie toegemaak word nie.</translation>
 <translation id="4422041425070339732">pyl af</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> is af</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Aardevloeisluimerskerm</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
+<translation id="4500722292849917410">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van ’n wysigersleutel (ctrl, alt, shift, of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Koppelvlakkleur</translation>
 <translation id="4503223151711056411">Linkspyl</translation>
 <translation id="4507392511610824664">verhoog helderheid</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4835901797422965222">Geen aktiewe netwerke nie</translation>
 <translation id="4839698083503556542">Skep jou eie fliek</translation>
+<translation id="48409034532829769">Jou admin het “<ph name="APP_NAME" />” opgestel om outomaties te begin. Hierdie app kan nie toegemaak word nie.</translation>
 <translation id="484462545196658690">Outo</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> is gekies; druk Enter om <ph name="TOPIC_SOURCE" />-albums te kies</translation>
 <translation id="484790837831576105">(Android) DNS-resolusie</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Verdeel</translation>
 <translation id="4972592110715526173">modus verander</translation>
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
+<translation id="4982627662315910959">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van shift en nog 1 wysigersleutel (ctrl, alt of <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="4987769320337599931">Brandmuur</translation>
 <translation id="4988526792673242964">Bladsye</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Donkertema-skedule</translation>
 <translation id="5229344016299762883">Verlaat volskerm</translation>
 <translation id="5234764350956374838">Verwerp</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Jou admin het “<ph name="APP_NAME" />” opgestel om elke keer as jy aanmeld outomaties te begin.}=2{Jou admin het “<ph name="APP_NAME" />” en 1 ander app opgestel om elke keer as jy aanmeld outomaties te begin.}other{Jou admin het “<ph name="APP_NAME" />” en # ander apps opgestel om elke keer as jy aanmeld outomaties te begin.}}</translation>
 <translation id="5252456968953390977">Swerf tans</translation>
 <translation id="5257811368506016604">Aktiveer ligkleurmodus</translation>
 <translation id="5264277876637023664">Laat loop CPU-toets</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="725133483556299729">Kies e-posadres</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
-<translation id="7273347807225967898">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van ’n wysigersleutel (ctrl, alt, shift, soektog of lanseerder).</translation>
+<translation id="7271932918253517778">Kortpad met sleutels in die boonste ry moet die <ph name="META_KEY" />-sleutel insluit.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Voel die briesie</translation>
 <translation id="7287310195820267359">Muurpapierversamelings</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Algemene kontroles</translation>
 <translation id="7977800524392185497">Gaan na Instellings om by 'n <ph name="NETWORK_NAME" />-netwerk aan te sluit</translation>
 <translation id="7978412674231730200">Private sleutel</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />” is outomaties begin}other{# apps is outomaties begin}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8017679124341497925">Kortpad is gewysig</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Verander wagwoord</translation>
 <translation id="8094062939584182041">Laat Google toe om vir jou ’n e-pos oor hierdie kwessie te stuur</translation>
 <translation id="8104083085214006426">Jy gebruik tans 'n oop en onveilige netwerk</translation>
-<translation id="8111706652656628199">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van shift en nog 1 wysigersleutel (ctrl, alt, soektog of lanseerder).</translation>
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>

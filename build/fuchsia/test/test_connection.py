@@ -21,8 +21,9 @@ from common import run_ffx_command
 def test_connection(target_id: Optional[str], wait_sec: int = 60) -> None:
     """Runs echo tests to verify that the device can be connected to.
 
-    Devices may not be connectable right after being discovered by ffx, so this
-    function retries up to |wait_sec| before throwing an exception.
+    Devices may not be connectable right after being discovered by ffx, e.g.
+    after a `ffx target wait`, so this function retries up to |wait_sec| before
+    throwing an exception.
     """
     start_sec = time.time()
     while time.time() - start_sec < wait_sec:
@@ -30,6 +31,7 @@ def test_connection(target_id: Optional[str], wait_sec: int = 60) -> None:
                            target_id=target_id,
                            check=False).returncode == 0:
             return
+        time.sleep(10)
 
     run_ffx_command(cmd=('target', 'echo'), target_id=target_id)
 

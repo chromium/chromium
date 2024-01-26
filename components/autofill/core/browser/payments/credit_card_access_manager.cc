@@ -348,8 +348,9 @@ void CreditCardAccessManager::FetchCreditCard(
 }
 
 bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableFpanRiskBasedAuthentication);
+  return !card_->IsExpired(AutofillClock::Now()) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableFpanRiskBasedAuthentication);
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
@@ -982,8 +983,6 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
     return false;
   }
 
-  // If the strike limit was reached for the FIDO opt-in dialog, we should not
-  // offer it.
   if (auto* strike_database =
           GetOrCreateFidoAuthenticator()
               ->GetOrCreateFidoAuthenticationStrikeDatabase();

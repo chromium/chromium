@@ -87,13 +87,13 @@ class PromoServiceTest : public testing::Test {
 TEST_F(PromoServiceTest, PromoDataNetworkError) {
   SetUpResponseWithNetworkError(service()->GetLoadURLForTesting());
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::TRANSIENT_ERROR);
 }
 
@@ -101,13 +101,13 @@ TEST_F(PromoServiceTest, BadPromoResponse) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(),
                         "{\"update\":{\"promotions\":{}}}");
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::FATAL_ERROR);
 }
 
@@ -115,7 +115,7 @@ TEST_F(PromoServiceTest, PromoResponseMissingData) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(),
                         "{\"update\":{\"promos\":{}}}");
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -132,7 +132,7 @@ TEST_F(PromoServiceTest, GoodPromoResponse) {
       "\"log_url\":\"/log_url?id=42\",\"id\":\"42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -157,7 +157,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseCanDismiss) {
       "\"log_url\":\"/log_url?id=42\",\"id\":\"42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -182,7 +182,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdField) {
       "\"log_url\":\"/log_url?id=42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -206,7 +206,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdFieldNorLogUrl) {
       "{\"part\":[{\"text\":{\"text\":\"Foo\"}}]}}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -235,7 +235,7 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
       "\"log_url\":\"/log_url?id=42\",\"id\":\"42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -255,7 +255,7 @@ TEST_F(PromoServiceTest, BlocklistPromo) {
       "\"log_url\":\"/log_url?id=42\",\"id\":\"42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
@@ -352,7 +352,7 @@ TEST_F(PromoServiceTest, UndoBlocklistPromo) {
       "\"log_url\":\"/log_url?id=42\",\"id\":\"42\"}}}";
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
-  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  ASSERT_EQ(service()->promo_data(), std::nullopt);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();

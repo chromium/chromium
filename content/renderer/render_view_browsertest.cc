@@ -1111,8 +1111,9 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   widget_params->widget = std::move(blink_widget_receiver);
   widget_params->widget_host = blink_widget_host.Unbind();
 
+  blink::LocalFrameToken frame_token;
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
+      *agent_scheduling_group_, frame_token, routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
@@ -1128,7 +1129,8 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
 
   TestRenderFrame* provisional_frame =
-      static_cast<TestRenderFrame*>(RenderFrameImpl::FromRoutingID(routing_id));
+      static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+          WebLocalFrame::FromFrameToken(frame_token)));
   EXPECT_TRUE(provisional_frame);
 
   // Navigate to other page, which triggers the swap in.
@@ -1179,8 +1181,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // Do the first step of a remote-to-local transition for the child proxy,
   // which is to create a provisional local frame.
   int routing_id = kProxyRoutingId + 1;
+  blink::LocalFrameToken frame_token;
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
+      *agent_scheduling_group_, frame_token, routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
@@ -1194,8 +1197,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
       CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
   {
-    TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(routing_id));
+    TestRenderFrame* provisional_frame =
+        static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+            WebLocalFrame::FromFrameToken(frame_token)));
     EXPECT_TRUE(provisional_frame);
   }
 
@@ -1210,8 +1214,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // thus any subsequent messages (such as OnNavigate) already in flight for it
   // should be dropped.
   {
-    TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(routing_id));
+    TestRenderFrame* provisional_frame =
+        static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+            WebLocalFrame::FromFrameToken(frame_token)));
     EXPECT_FALSE(provisional_frame);
   }
 }

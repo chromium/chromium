@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/policy/model/status_provider/user_cloud_policy_status_provider.h"
 
 #import "base/containers/flat_set.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/task_environment.h"
@@ -123,7 +124,7 @@ class UserCloudPolicyStatusProviderTest
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<policy::MockUserCloudPolicyStore> user_store_;
   std::unique_ptr<policy::CloudPolicyCore> user_core_;
-  policy::MockCloudPolicyClient* user_client_;
+  raw_ptr<policy::MockCloudPolicyClient> user_client_;
   std::unique_ptr<UserCloudPolicyStatusProvider> status_provider_;
 };
 

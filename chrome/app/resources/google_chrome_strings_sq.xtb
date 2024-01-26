@@ -73,7 +73,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2130870084309816036">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, lejo <ph name="PRODUCT_EXE_NAME" /> në listën e lejimeve.</translation>
 <translation id="2131230230468101642">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chrome të marrë parasysh.</translation>
 <translation id="2139300032719313227">Rinis ChromeOS</translation>
-<translation id="2146761408396054429">Ky skedar mund të jetë i rrezikshëm<ph name="LINE_BREAK" />Chrome mund ta kontrollojë këtë shkarkim për ty nëse ti jep fjalëkalimin - fjalëkalimi yt qëndron në pajisjen tënde</translation>
 <translation id="2151406531797534936">Rinise Chrome tani</translation>
 <translation id="2174917724755363426">Instalimi nuk përfundoi. E konfirmon që dëshiron ta anulosh?</translation>
 <translation id="2190166659037789668">Gabim në kontrollin e përditësimeve: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -198,6 +197,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4053720452172726777">Personalizo dhe kontrollo Google Chrome</translation>
 <translation id="4106587138345390261">Chrome po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
 <translation id="4110895483821904099">Konfiguro profilin tënd të ri të Chrome</translation>
+<translation id="4128488089242627000">Chrome funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet (rekomandohet)</translation>
 <translation id="4147555960264124640">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontroll mbi profilin tënd të Google Chrome. Të dhënat e tua të Chrome, siç janë aplikacionet, faqeshënuesit, fjalëkalimet dhe cilësime të tjera do të lidhen në mënyrë të përhershme me <ph name="USER_NAME" />. Ti do të jesh në gjendje t'i fshish këto të dhëna përmes Panelit të llogarive të Google, por nuk do të jesh në gjendje t'i shoqërosh këto të dhëna me një llogari tjetër. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
 <translation id="4149882025268051530">Instaluesi nuk arriti ta nxjerrë arkivin. Shkarko përsëri Google Chrome.</translation>
@@ -220,7 +220,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> është shtuar te Chrome</translation>
 <translation id="4384570495110188418">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="4389991535395284064">Kur shfleton në "Modalitetin 'e fshehtë'", Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
-<translation id="4393248995085527349">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 10.15 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.13.</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
@@ -245,6 +244,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4828579605166583682">Google Chrome po përpiqet të zëvendësojë fjalëkalimet ekzistuese. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="4842397268809523050">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
+<translation id="4873692836499071887">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 11 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.15.</translation>
 <translation id="4873783916118289636">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chrome</translation>
 <translation id="4891791193823137474">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="4895437082222824641">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
@@ -308,7 +308,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
-<translation id="6010556343189461180">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 10.15 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.14.</translation>
 <translation id="6014316319780893079">Me <ph name="BEGIN_LINK" />veglat nga Chrome<ph name="END_LINK" />, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
 <translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
 <translation id="6025087594896450715">Google Chrome do të riniset pas <ph name="REMAINING_TIME" /></translation>
@@ -354,6 +353,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
 <translation id="6794858689789885890">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chrome</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
+<translation id="6851981911629679515">Aktivizo mbrojtjen shtesë në motorin e JavaScript dhe WebAssembly të Chrome</translation>
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
@@ -475,6 +475,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
 <translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8825634023950448068">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chrome gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>

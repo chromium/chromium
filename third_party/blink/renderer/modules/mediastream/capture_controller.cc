@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -38,12 +40,57 @@ bool IsCaptureType(const MediaStreamTrack* track,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-bool IsValid(CapturedWheelAction* action) {
-  CHECK(action->hasX());
-  CHECK(action->hasY());
-  CHECK(action->hasWheelDeltaX());
-  CHECK(action->hasWheelDeltaY());
-  return action->x() >= 0 && action->y() >= 0;
+struct ScaledCoordinates {
+  ScaledCoordinates(double relative_x, double relative_y)
+      : relative_x(relative_x), relative_y(relative_y) {
+    CHECK(0.0 <= relative_x && relative_x < 1.0);
+    CHECK(0.0 <= relative_y && relative_y < 1.0);
+  }
+
+  const double relative_x;
+  const double relative_y;
+};
+
+// Attempt to scale the coordinates to relative coordinates based on the last
+// frame emitted for the given track.
+base::expected<ScaledCoordinates, String> ScaleCoordinates(
+    MediaStreamTrack* track,
+    CapturedWheelAction* action) {
+  CHECK(track);  // Validated by ValidateCapturedSurfaceControlCall().
+
+  MediaStreamComponent* const component = track->Component();
+  if (!component) {
+    return base::unexpected("Unexpected error - no component.");
+  }
+
+  MediaStreamVideoTrack* const video_track =
+      MediaStreamVideoTrack::From(component);
+  if (!video_track) {
+    return base::unexpected("Unexpected error - no video track.");
+  }
+
+  // Determine the size of the last video frame observed by the app for this
+  // capture session.
+  const gfx::Size last_frame_size = video_track->GetVideoSize();
+
+  // Validate (x, y) prior to scaling.
+  if (last_frame_size.width() <= 0 || last_frame_size.height() <= 0) {
+    return base::unexpected("No frames observed yet.");
+  }
+  if (action->x() < 0 || action->x() >= last_frame_size.width() ||
+      action->y() < 0 || action->y() >= last_frame_size.height()) {
+    return base::unexpected("Coordinates out of bounds.");
+  }
+
+  // Scale (x, y) to reflect their position relative to the video size.
+  // This allows the browser process to scale these coordinates to
+  // the coordinate space of the captured surface, which is unknown
+  // to the capturer.
+  const double relative_x =
+      static_cast<double>(action->x()) / last_frame_size.width();
+  const double relative_y =
+      static_cast<double>(action->y()) / last_frame_size.height();
+  return ScaledCoordinates(relative_x, relative_y);
 }
 
 bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
@@ -122,6 +169,10 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
                                            CapturedWheelAction* action) {
   DCHECK(IsMainThread());
   CHECK(action);
+  CHECK(action->hasX());
+  CHECK(action->hasY());
+  CHECK(action->hasWheelDeltaX());
+  CHECK(action->hasWheelDeltaY());
 
   ScriptPromiseResolver* const resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -139,31 +190,46 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
     return promise;
   }
 
-  if (!IsValid(action)) {
+  const base::expected<ScaledCoordinates, String> scaled_coordinates =
+      ScaleCoordinates(video_track_, action);
+  if (!scaled_coordinates.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Invalid action."));
+        DOMExceptionCode::kInvalidStateError, scaled_coordinates.error()));
     return promise;
   }
 
-  video_track_->SendWheel(action, WTF::BindOnce(&OnCapturedSurfaceControlResult,
-                                                WrapPersistent(resolver)));
+  video_track_->SendWheel(
+      scaled_coordinates->relative_x, scaled_coordinates->relative_y,
+      action->wheelDeltaX(), action->wheelDeltaY(),
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
 
   return promise;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-int CaptureController::getMinZoomLevel() {
-  // We expect `100 * kMinimumPageZoomFactor` to be an integer. But if it's not,
-  // over-reporting the minimum is preferable, as it would mean the application
-  // still asks to set zoom levels which aren't below the minimum.
-  return static_cast<int>(std::ceil(100 * kMinimumPageZoomFactor));
-}
+Vector<int> CaptureController::getSupportedZoomLevels() {
+  const wtf_size_t kSize = static_cast<wtf_size_t>(kPresetZoomFactors.size());
+  // If later developers modify `kPresetZoomFactors` to include many more
+  // entries than original intended, they should consider modifying this
+  // Web-exposed API to either:
+  // * Allow the Web application provide the max levels it wishes to receive.
+  // * Do some UA-determined trimming.
+  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
+  CHECK_EQ(kMinimumPageZoomFactor, kPresetZoomFactors.front());
+  CHECK_EQ(kMaximumPageZoomFactor, kPresetZoomFactors.back());
 
-int CaptureController::getMaxZoomLevel() {
-  // We expect `100 * kMaximumPageZoomFactor` to be an integer. But if it's not,
-  // under-reporting the maximum is preferable, as it would mean the application
-  // still asks to set zoom levels which aren't above the maximum.
-  return static_cast<int>(std::floor(100 * kMaximumPageZoomFactor));
+  Vector<int> result(kSize);
+  if (kSize == 0) {
+    return result;
+  }
+
+  result[0] = static_cast<int>(std::ceil(100 * kPresetZoomFactors[0]));
+  for (wtf_size_t i = 1; i < kSize; ++i) {
+    result[i] = static_cast<int>(std::floor(100 * kPresetZoomFactors[i]));
+    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
+  }
+
+  return result;
 }
 
 ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
@@ -224,9 +290,10 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
     return promise;
   }
 
-  if (zoom_level < getMinZoomLevel() || getMaxZoomLevel() < zoom_level) {
+  if (!getSupportedZoomLevels().Contains(zoom_level)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Invalid zoom_level."));
+        DOMExceptionCode::kInvalidStateError,
+        "Only values returned by getSupportedZoomLevels() are valid."));
     return promise;
   }
 

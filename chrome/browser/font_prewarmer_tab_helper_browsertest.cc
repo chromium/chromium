@@ -74,12 +74,12 @@ class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::string GetSearchResultsPagePrimaryFontsPref() {
-    return FontPrewarmerTabHelper::GetSearchResultsPagePrimaryFontsPref();
+  std::string GetSearchResultsPageFontsPref() {
+    return FontPrewarmerTabHelper::GetSearchResultsPageFontsPref();
   }
 
-  std::vector<std::string> GetPrimaryFontNames() {
-    return FontPrewarmerTabHelper::GetPrimaryFontNames(browser()->profile());
+  std::vector<std::string> GetFontNames() {
+    return FontPrewarmerTabHelper::GetFontNames(browser()->profile());
   }
 
   std::unique_ptr<net::test_server::HttpResponse> OnHandleRequest(
@@ -107,11 +107,11 @@ IN_PROC_BROWSER_TEST_F(FontPrewarmerTabHelperTest, Basic) {
   base::RunLoop run_loop;
   PrefChangeRegistrar prefs_registrar;
   prefs_registrar.Init(browser()->profile()->GetPrefs());
-  prefs_registrar.Add(GetSearchResultsPagePrimaryFontsPref(),
+  prefs_registrar.Add(GetSearchResultsPageFontsPref(),
                       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   Navigate(&params);
   run_loop.Run();
-  auto font_names = GetPrimaryFontNames();
+  auto font_names = GetFontNames();
   std::vector<std::string> expected = {"Arial"};
   EXPECT_EQ(expected, font_names);
 }

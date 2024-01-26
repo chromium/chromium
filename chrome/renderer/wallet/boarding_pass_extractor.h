@@ -37,7 +37,7 @@ class BoardingPassExtractor : public content::RenderFrameObserver,
       mojo::PendingReceiver<mojom::BoardingPassExtractor> receiver);
 
   void OnBoardingPassExtracted(ExtractBoardingPassCallback callback,
-                               absl::optional<base::Value> results,
+                               std::optional<base::Value> results,
                                base::TimeTicks start_time);
 
   mojo::Receiver<mojom::BoardingPassExtractor> receiver_{this};

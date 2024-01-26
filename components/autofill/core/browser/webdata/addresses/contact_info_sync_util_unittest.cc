@@ -44,8 +44,6 @@ AutofillProfile ConstructCompleteProfile(
   profile.set_last_modifier_id(kNonChromeModifier);
 
   // Set name-related values and statuses.
-  profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
-                                           VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
@@ -60,9 +58,6 @@ AutofillProfile ConstructCompleteProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
                                            VerificationStatus::kUserVerified);
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                           u"Dr. John K. Doe",
-                                           VerificationStatus::kFormatted);
 
   // Set address-related values and statuses.
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Mountain View",
@@ -254,8 +249,6 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   specifics.set_last_modifier_id(kNonChromeModifier);
 
   // Set name-related values and statuses.
-  SetToken(specifics.mutable_name_honorific(), "Dr.",
-           ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_name_first(), "John",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_name_middle(), "K.",
@@ -270,8 +263,6 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_full(), "John K. Doe",
            ContactInfoSpecifics::USER_VERIFIED);
-  SetToken(specifics.mutable_name_full_with_honorific(), "Dr. John K. Doe",
-           ContactInfoSpecifics::FORMATTED);
 
   // Set address-related values and statuses.
   SetToken(specifics.mutable_address_city(), "Mountain View",
@@ -485,8 +476,7 @@ class ContactInfoSyncUtilTest
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillTrackProfileTokenQuality,
-         features::kAutofillEnableSupportForHonorificPrefixes},
+         features::kAutofillTrackProfileTokenQuality},
         {});
   }
 

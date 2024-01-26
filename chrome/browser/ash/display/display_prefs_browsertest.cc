@@ -41,7 +41,7 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
     const base::Value::Dict* properties = GetDisplayProperties(index);
     EXPECT_TRUE(properties);
     display::Display::Rotation result = display::Display::ROTATE_0;
-    absl::optional<int> rot_value = properties->FindInt("rotation");
+    std::optional<int> rot_value = properties->FindInt("rotation");
     EXPECT_TRUE(rot_value);
     if (rot_value)
       result = static_cast<display::Display::Rotation>(rot_value.value());

@@ -17,6 +17,7 @@ build_task_ids AS (
     AND JSON_VALUE(b.input.properties, '$.cq') = 'required'
     AND JSON_QUERY(b.output.properties, '$.rts_was_used') IS NULL
     AND b.status = 'SUCCESS'
+    AND b.builder.project = 'chromium'
 ),
 deduped_tasks AS (
   SELECT DISTINCT

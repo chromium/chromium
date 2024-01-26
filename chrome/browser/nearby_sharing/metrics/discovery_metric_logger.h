@@ -21,7 +21,7 @@ class DiscoveryMetricLogger : public NearbySharingService::Observer {
   void OnShareTargetAdded(const ShareTarget& share_target) override;
 
  private:
-  absl::optional<base::TimeTicks> discovery_start_;
+  std::optional<base::TimeTicks> discovery_start_;
 };
 
 }  // namespace nearby::share::metrics

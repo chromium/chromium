@@ -40,6 +40,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -520,6 +521,14 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
     return;
 
   gfx::Rect opaque_background_bounds = GetLocalBounds();
+
+  // Let the shelf occlude things below it - this helps prevent unnecessary
+  // occlusion updates when changing display scale. The shelf widget may have
+  // rounded corners and background blur. But, it almost opaque (very low high
+  // alpha, and small rounded corners), so we manually make the window opaque
+  // so that the window behind it can be marked as occluded.
+  shelf_widget_->GetNativeWindow()->SetOpaqueRegionsForOcclusion(
+      std::vector<gfx::Rect>{opaque_background_bounds});
 
   const Shelf* shelf = shelf_widget_->shelf();
   const ShelfBackgroundType background_type =

@@ -106,10 +106,14 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
       // DispatchToAckTime
       {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
        ContextType::kFromManifest,  // event page
-       {"Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2"}},
+       {"Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+        "Extensions.Events.DispatchToAckTime."
+        "ExtensionPersistentBackgroundPage"}},
       {"Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
        ContextType::kServiceWorker,
-       {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3"}},
+       {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
+        "Extensions.Events.DispatchToAckTime."
+        "ExtensionPersistentBackgroundPage"}},
       // TODO(crbug.com/1441221): Add `event_metrics_not_emitted` when other
       // versions are created.
       // DispatchToAckLongTime
@@ -169,6 +173,93 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
     // metrics for events.
     UninstallExtension(extension->id());
   }
+}
+
+// Tests that only the dispatch time histogram for a persistent background page
+// extension is emitted with a sane value, and that the same metric for other
+// background context types are not emitted.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       PersistentBackgroundDispatchMetricTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for a persistent background page
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/metrics/persistent_background"));
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionPersistentBackgroundPage",
+      /*expected_count=*/1);
+
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionPersistentBackgroundPage",
+      /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
+  // Verify other extension background context types are not logged.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/0);
+}
+
+// Tests that only the dispatch time histogram for a persistent background page
+// extension is emitted with a sane value, and that the same metric for other
+// background context types are not emitted.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       PersistentBackgroundStaleEventsMetricTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for a persistent background page
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/metrics/persistent_background"));
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+      /*expected_count=*/1);
+  // Verify that the value is `true` since the event wasn't delayed in acking.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+      /*sample=*/true, /*expected_count=*/1);
+
+  // Verify other extension background context types are not logged.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      /*expected_count=*/0);
 }
 
 // Tests that for every event received there is a corresponding emit of starting
@@ -394,6 +485,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*expected_count=*/0);
 }
 
+// TODO: refactor to be generic for this feature, then do these two metrics with
+// using to avoid code duplication.
 class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
     : public EventMetricsBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -477,6 +570,9 @@ INSTANTIATE_TEST_SUITE_P(
     /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
        enabled status */
     testing::Bool());
+
+using ServiceWorkerPendingTasksForRunningWorkerMetricsBrowserTest =
+    ServiceWorkerRedundantWorkerStartMetricsBrowserTest;
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,

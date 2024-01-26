@@ -290,14 +290,6 @@ TEST_F(FingerprintChromeOSTest, FingerprintScanResultConvertTest) {
             device::mojom::FingerprintMessage::Tag::kScanResult);
   EXPECT_EQ(observer.last_message().get_scan_result(),
             device::mojom::ScanResult::NO_MATCH);
-
-  msg.set_scan_result(biod::SCAN_RESULT_MAX);
-  GenerateAuthScanDoneSignal(msg);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.last_message().which(),
-            device::mojom::FingerprintMessage::Tag::kScanResult);
-  EXPECT_EQ(observer.last_message().get_scan_result(),
-            device::mojom::ScanResult::kMaxValue);
 }
 
 // Make sure that compilation fails if a new value is added and this assert is

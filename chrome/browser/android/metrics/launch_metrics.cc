@@ -49,10 +49,8 @@ static void JNI_LaunchMetrics_RecordLaunch(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
 
-  if (web_contents &&
-      (histogram_source == webapps::ShortcutInfo::SOURCE_APP_BANNER ||
-       histogram_source ==
-           webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA)) {
+  if (web_contents && (histogram_source ==
+                       webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA)) {
     // Tell the Site Engagement Service about this launch as sites recently
     // launched from a shortcut receive a boost to their engagement.
     site_engagement::SiteEngagementService* service =

@@ -1,4 +1,4 @@
-(async function(testRunner, session) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner, session) {
   self['Common'] = {};
   self['TextUtils'] = {};
   self['HeapSnapshotModel'] = {};

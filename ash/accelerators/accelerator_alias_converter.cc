@@ -232,6 +232,31 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
   }
 }
 
+ui::mojom::ExtendedFkeysModifier GetExtendedFkeysModifier(
+    ui::KeyboardCode key_code,
+    std::optional<int> device_id) {
+  if (!features::IsInputDeviceSettingsSplitEnabled() ||
+      !::features::AreF11AndF12ShortcutsEnabled() || !device_id.has_value() ||
+      !ui::KeyboardCapability::IsF11OrF12(key_code)) {
+    return ui::mojom::ExtendedFkeysModifier::kDisabled;
+  }
+
+  auto* controller = Shell::Get()->input_device_settings_controller();
+  CHECK(controller);
+  const auto* settings = controller->GetKeyboardSettings(device_id.value());
+
+  // Settings are only supported for F11 and F12.
+  if (!settings) {
+    return ui::mojom::ExtendedFkeysModifier::kDisabled;
+  }
+
+  if (key_code == ui::VKEY_F11) {
+    return settings->f11.value();
+  }
+
+  return settings->f12.value();
+}
+
 }  // namespace
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
@@ -239,6 +264,12 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   std::optional<ui::KeyboardDevice> priority_external_keyboard =
       GetPriorityExternalKeyboard();
   std::optional<ui::KeyboardDevice> internal_keyboard = GetInternalKeyboard();
+  std::optional<int> device_id = std::nullopt;
+  if (priority_external_keyboard.has_value()) {
+    device_id = priority_external_keyboard->id;
+  } else if (internal_keyboard.has_value()) {
+    device_id = internal_keyboard->id;
+  }
 
   // If the external and internal keyboards are either both non-chromeos
   // keyboards (ex ChromeOS flex devices) or if they are both ChromeOS keyboards
@@ -287,6 +318,20 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
         alias) {
       aliases_set.insert(*alias);
     }
+    if (ui::KeyboardCapability::IsF11OrF12(accelerator.key_code()) &&
+        Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(
+            internal_keyboard->id)) {
+      if (const auto alias = CreateExtendedFKeysAliases(
+              *internal_keyboard, accelerator, internal_keyboard->id);
+          alias) {
+        aliases_set.insert(*alias);
+        // If there is an external keyboard connected, we show both versions of
+        // the shortcut (base accelerator + alias).
+        if (priority_external_keyboard) {
+          aliases_set.insert(accelerator);
+        }
+      }
+    }
   }
   if (!aliases_set.empty()) {
     return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
@@ -295,13 +340,6 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   // For |six_pack_key|, show both the base
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
-
-  std::optional<int> device_id = std::nullopt;
-  if (priority_external_keyboard.has_value()) {
-    device_id = priority_external_keyboard->id;
-  } else if (internal_keyboard.has_value()) {
-    device_id = internal_keyboard->id;
-  }
   std::vector<ui::Accelerator> aliases =
       CreateSixPackAliases(accelerator, device_id);
 
@@ -316,13 +354,13 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
-    return {};
+    return std::nullopt;
   }
 
   // Only attempt to alias if the provided accelerator is for an F-Key.
   if (accelerator.key_code() < ui::VKEY_F1 ||
       accelerator.key_code() > ui::VKEY_F24) {
-    return {};
+    return std::nullopt;
   }
 
   // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
@@ -330,14 +368,14 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
       Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
           keyboard, accelerator.key_code());
   if (!action_key) {
-    return {};
+    return std::nullopt;
   }
 
   // Convert the `ui::TopRowActionKey` to the corresponding `ui::KeyboardCode`
   std::optional<ui::KeyboardCode> action_vkey =
       ui::KeyboardCapability::ConvertToKeyboardCode(*action_key);
   if (!action_vkey) {
-    return {};
+    return std::nullopt;
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
@@ -364,26 +402,82 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 }
 
+std::optional<ui::Accelerator>
+AcceleratorAliasConverter::CreateExtendedFKeysAliases(
+    const ui::KeyboardDevice& keyboard,
+    const ui::Accelerator& accelerator,
+    std::optional<int> device_id) const {
+  if (!::features::AreF11AndF12ShortcutsEnabled() ||
+      !ui::KeyboardCapability::IsF11OrF12(accelerator.key_code()) ||
+      !device_id.has_value()) {
+    return std::nullopt;
+  }
+  const ui::KeyboardCode accel_key_code = accelerator.key_code();
+  const ui::mojom::ExtendedFkeysModifier fkey_modifier =
+      GetExtendedFkeysModifier(accel_key_code, device_id);
+
+  int modifiers;
+  const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
+
+  bool avoid_remapping = false;
+  switch (fkey_modifier) {
+    case ui::mojom::ExtendedFkeysModifier::kDisabled:
+      avoid_remapping = true;
+      break;
+    case ui::mojom::ExtendedFkeysModifier::kAlt:
+      avoid_remapping = accelerator.IsAltDown();
+      modifiers = ui::EF_ALT_DOWN;
+      break;
+    case ui::mojom::ExtendedFkeysModifier::kShift:
+      avoid_remapping = accelerator.IsShiftDown();
+      modifiers = ui::EF_SHIFT_DOWN;
+      break;
+    case ui::mojom::ExtendedFkeysModifier::kCtrlShift:
+      avoid_remapping = accelerator.IsShiftDown() || accelerator.IsCtrlDown();
+      modifiers = (ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+      break;
+  }
+  if (avoid_remapping) {
+    return std::nullopt;
+  }
+
+  ui::KeyboardCode key_code;
+  const auto* top_row_keys =
+      Shell::Get()->keyboard_capability()->GetTopRowActionKeys(keyboard);
+  if (!top_row_keys) {
+    return std::nullopt;
+  }
+  const int top_row_key_index = accel_key_code - ui::KeyboardCode::VKEY_F11;
+  CHECK(0 <= top_row_key_index && top_row_key_index <= 1);
+  key_code = Shell::Get()
+                 ->keyboard_capability()
+                 ->ConvertToKeyboardCode((*top_row_keys)[top_row_key_index])
+                 .value();
+  modifiers = accelerator.modifiers() |
+              (top_row_are_fkeys ? modifiers : modifiers | ui::EF_COMMAND_DOWN);
+  return ui::Accelerator(key_code, modifiers);
+}
+
 std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
-    return {};
+    return std::nullopt;
   }
 
   // If the accelerator is not an action key, do no aliasing.
   std::optional<ui::TopRowActionKey> action_key =
       ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
   if (!action_key) {
-    return {};
+    return std::nullopt;
   }
 
   std::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
           keyboard, *action_key);
   if (!function_key.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);

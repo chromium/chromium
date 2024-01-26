@@ -290,10 +290,6 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   config.additional_args.push_back("promos_manager::Promo::OmniboxPosition");
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  // Disable FET in promo manager as the initialization takes too much time and
-  // causes the test to fail (crbug.com/1505431).
-  config.features_disabled.push_back(kPromosManagerUsesFET);
-
   std::string bottomOptionByDefault =
       std::string(kBottomOmniboxPromoDefaultPosition.name) + ":" +
       kBottomOmniboxPromoDefaultPositionParam + "/" +

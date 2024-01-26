@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
@@ -125,10 +126,8 @@ void JSBasedEventListener::Invoke(
     return;
   }
 
-  v8::Local<v8::Value> js_event =
-      ToV8(event, v8_context_of_event_target->Global(), isolate);
-  if (js_event.IsEmpty())
-    return;
+  v8::Local<v8::Value> js_event = ToV8Traits<Event>::ToV8(
+      ScriptState::From(v8_context_of_event_target), event);
 
   // Step 7: Let |current_event| be undefined.
   Event* current_event = nullptr;

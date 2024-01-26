@@ -6,7 +6,7 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_TEST_CONTENT_SETTINGS_MOCK_PROVIDER_H_
 
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -56,7 +56,7 @@ class MockProvider : public ObservableProvider {
   bool read_only() const { return read_only_; }
 
  private:
-  OriginIdentifierValueMap value_map_;
+  OriginValueMap value_map_;
   bool read_only_;
 };
 

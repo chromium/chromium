@@ -5,6 +5,7 @@
 #include "net/dns/host_resolver_system_task.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -86,7 +87,7 @@ void PostSystemDnsResolutionTaskAndReply(
 }
 
 int ResolveOnWorkerThread(scoped_refptr<HostResolverProc> resolver_proc,
-                          absl::optional<std::string> hostname,
+                          std::optional<std::string> hostname,
                           AddressFamily address_family,
                           HostResolverFlags flags,
                           handles::NetworkHandle network,
@@ -136,7 +137,7 @@ base::Value::Dict NetLogHostResolverSystemTaskFailedParams(
 }
 
 using SystemDnsResolverOverrideCallback =
-    base::RepeatingCallback<void(const absl::optional<std::string>& host,
+    base::RepeatingCallback<void(const std::optional<std::string>& host,
                                  AddressFamily address_family,
                                  HostResolverFlags host_resolver_flags,
                                  SystemDnsResultsCallback results_cb,
@@ -204,11 +205,11 @@ HostResolverSystemTask::CreateForOwnHostname(
     const NetLogWithSource& job_net_log,
     handles::NetworkHandle network) {
   return std::make_unique<HostResolverSystemTask>(
-      absl::nullopt, address_family, flags, params, job_net_log, network);
+      std::nullopt, address_family, flags, params, job_net_log, network);
 }
 
 HostResolverSystemTask::HostResolverSystemTask(
-    absl::optional<std::string> hostname,
+    std::optional<std::string> hostname,
     AddressFamily address_family,
     HostResolverFlags flags,
     const Params& params,

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_PROFILE_POLICY_CONNECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -201,7 +201,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   std::unique_ptr<PolicyService> policy_service_;
 
-  absl::optional<base::TimeTicks> creation_time_for_metrics_;
+  std::optional<base::TimeTicks> creation_time_for_metrics_;
 
   std::unique_ptr<bool> is_managed_override_;
 

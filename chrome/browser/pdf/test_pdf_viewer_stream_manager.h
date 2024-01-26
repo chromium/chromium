@@ -33,8 +33,9 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Wait until the PDF has finished loading.
-  void WaitUntilPdfLoaded();
+  // Deprecated. Do not add any additional uses. Wait until the PDF has finished
+  // loading.
+  void DeprecatedWaitUntilPdfLoaded();
 
  private:
   base::OnceClosure on_pdf_loaded_;

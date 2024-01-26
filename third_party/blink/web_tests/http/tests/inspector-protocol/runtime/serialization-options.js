@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp } = await testRunner.startHTML(
     '<div some_attr_name="some_attr_value">some text<h2>some another text</h2></div>',
     'Tests `serialization` options.');

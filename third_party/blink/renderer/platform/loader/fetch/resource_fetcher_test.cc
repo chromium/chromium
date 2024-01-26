@@ -1603,6 +1603,7 @@ TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
              base::NumberToString(kTotalSizeThreshold)},
             {"memory_cache_strong_ref_resource_size_threshold",
              base::NumberToString(kResourceSizeThreshold)}}},
+          {features::kResourceFetcherStoresStrongReferences, {}},
       },
       /*disabled_features=*/{});
 

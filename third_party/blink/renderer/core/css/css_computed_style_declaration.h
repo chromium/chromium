@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -45,6 +46,18 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
  public:
   static const Vector<const CSSProperty*>& ComputableProperties(
       const ExecutionContext*);
+
+  class ScopedCleanStyleForAllProperties {
+    STACK_ALLOCATED();
+
+   public:
+    ScopedCleanStyleForAllProperties(CSSComputedStyleDeclaration*);
+    ~ScopedCleanStyleForAllProperties();
+
+   private:
+    absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope_;
+    CSSComputedStyleDeclaration* declaration_;
+  };
 
   explicit CSSComputedStyleDeclaration(Element*,
                                        bool allow_visited_style = false,
@@ -86,8 +99,12 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   // If we are updating the style/layout-tree/layout with the intent to
   // retrieve the computed value of a property, the appropriate
   // property name/instance must be provided.
-  void UpdateStyleAndLayoutTreeIfNeeded(const CSSPropertyName*) const;
-  void UpdateStyleAndLayoutIfNeeded(const CSSProperty*) const;
+  // Setting `for_all_properties` will ensure style/layout-tree/layout is up to
+  // date to retrieve the computed value for any property.
+  void UpdateStyleAndLayoutTreeIfNeeded(const CSSPropertyName*,
+                                        bool for_all_properties) const;
+  void UpdateStyleAndLayoutIfNeeded(const CSSProperty*,
+                                    bool for_all_properties) const;
 
   // CSSOM functions.
   CSSRule* parentRule() const override;
@@ -131,6 +148,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   Member<Element> element_;
   PseudoId pseudo_element_specifier_;
   bool allow_visited_style_;
+  bool guaranteed_style_clean_;
 };
 
 }  // namespace blink

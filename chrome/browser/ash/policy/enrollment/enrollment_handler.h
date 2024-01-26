@@ -141,8 +141,9 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_LOCK_DEVICE = 10,       // Writing installation-time attributes.
     STEP_STORE_TOKEN = 11,       // Encrypting and storing DM token.
     STEP_STORE_ROBOT_AUTH = 12,  // Encrypting & writing robot refresh token.
-    STEP_STORE_POLICY = 13,      // Storing policy and API refresh token.
-    STEP_FINISHED = 14,          // Enrollment process done, no further action.
+    STEP_STORE_VERSION = 13,     // Storing OS and browser version.
+    STEP_STORE_POLICY = 14,      // Storing policy and API refresh token.
+    STEP_FINISHED = 15,          // Enrollment process done, no further action.
   };
 
   // Handles the response to a request for server-backed state keys.
@@ -188,6 +189,12 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Initiates storing of robot auth token.
   void StartStoreRobotAuth();
+
+  // Store the version related information.
+  void StoreVersion();
+
+  // Store the device policy.
+  void StartStoreDevicePolicy();
 
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

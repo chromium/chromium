@@ -4,12 +4,13 @@
 
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 
+#include <map>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/restore_data.h"
@@ -101,10 +102,10 @@ bool ScrubLacrosProfileFromSavedDesk(DeskTemplate& saved_desk,
   // window. Here we traverse the entire tree. We find and erase any window with
   // a matching lacros ID. If this results in an empty launch list, then that
   // list is erased from the root.
-  base::EraseIf(app_id_to_launch_list, [&](auto& launch_list_entry) {
+  std::erase_if(app_id_to_launch_list, [&](auto& launch_list_entry) {
     auto& launch_list = launch_list_entry.second;
 
-    base::EraseIf(launch_list, [&](auto& window_entry) {
+    std::erase_if(launch_list, [&](auto& window_entry) {
       auto& app_restore_data = window_entry.second;
       if (app_restore_data->lacros_profile_id != lacros_profile_id) {
         return false;

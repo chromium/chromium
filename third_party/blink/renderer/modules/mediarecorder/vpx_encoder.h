@@ -30,8 +30,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
              bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
              uint32_t bits_per_second,
+             bool is_screencast,
              const VideoTrackRecorder::OnErrorCB on_error_cb);
-
   VpxEncoder(const VpxEncoder&) = delete;
   VpxEncoder& operator=(const VpxEncoder&) = delete;
 
@@ -73,6 +73,7 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
 
   // Force usage of VP9 for encoding, instead of VP8 which is the default.
   const bool use_vp9_;
+  const bool is_screencast_;
 
   const VideoTrackRecorder::OnErrorCB on_error_cb_;
 

@@ -264,7 +264,7 @@ class SingleTestRunner(object):
         # Note that current_expected_path may change because of the above file removal.
         current_expected_path = port.expected_filename(
             self._test_name, extension, return_default=False)
-        data = data or ''
+        data = data or b''
         if (current_expected_path and fs.sha1(current_expected_path) ==
                 hashlib.sha1(data).hexdigest()):
             if self._options.reset_results:
@@ -722,10 +722,10 @@ class SingleTestRunner(object):
                                        actual_driver_output,
                                        reference_filename, mismatch):
         failures = []
-
-        # Don't continue any more if we already have crash
-        failures.extend(self._handle_error(actual_driver_output))
-        if failures:
+        # Don't continue any more if we already have crash, timeout, or leak.
+        # The caller should report `actual_driver_output` errors.
+        if (actual_driver_output.crash or actual_driver_output.timeout
+                or actual_driver_output.leak):
             return failures
         failures.extend(
             self._handle_error(

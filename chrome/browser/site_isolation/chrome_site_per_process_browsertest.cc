@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
   // Wait until the PDF is fully loaded.
-  test_pdf_viewer_stream_manager->WaitUntilPdfLoaded();
+  test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
 
   // The primary main frame shouldn't be the PDF embedder and shouldn't have a
   // PDF stream.
@@ -419,7 +419,7 @@ class MailtoExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {}
 
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(

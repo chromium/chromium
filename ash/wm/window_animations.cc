@@ -122,16 +122,18 @@ class CrossFadeObserver : public aura::WindowObserver,
 
     smoothness_tracker_ =
         layer_->GetCompositor()->RequestNewThroughputTracker();
-    smoothness_tracker_->Start(metrics_util::ForSmoothness(base::BindRepeating(
-        [](const std::optional<std::string>& histogram_name, int smoothness) {
-          if (histogram_name) {
-            DCHECK(!histogram_name->empty());
-            base::UmaHistogramPercentage(*histogram_name, smoothness);
-          } else {
-            UMA_HISTOGRAM_PERCENTAGE(kCrossFadeSmoothness, smoothness);
-          }
-        },
-        std::move(histogram_name))));
+    smoothness_tracker_->Start(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
+            [](const std::optional<std::string>& histogram_name,
+               int smoothness) {
+              if (histogram_name) {
+                DCHECK(!histogram_name->empty());
+                base::UmaHistogramPercentage(*histogram_name, smoothness);
+              } else {
+                UMA_HISTOGRAM_PERCENTAGE(kCrossFadeSmoothness, smoothness);
+              }
+            },
+            std::move(histogram_name))));
   }
   CrossFadeObserver(const CrossFadeObserver&) = delete;
   CrossFadeObserver& operator=(const CrossFadeObserver&) = delete;
@@ -470,7 +472,7 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
   ui::AnimationThroughputReporter reporter(
       settings.GetAnimator(),
-      metrics_util::ForSmoothness(
+      metrics_util::ForSmoothnessV3(
           base::BindRepeating(static_cast<void (*)(const char*, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Unminimize")));
@@ -491,7 +493,7 @@ void AnimateHideWindow_Minimize(aura::Window* window) {
   // Report animation smoothness for animations created within this scope.
   ui::AnimationThroughputReporter reporter(
       hiding_settings.layer_animation_settings()->GetAnimator(),
-      metrics_util::ForSmoothness(
+      metrics_util::ForSmoothnessV3(
           base::BindRepeating(static_cast<void (*)(const char*, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Minimize")));

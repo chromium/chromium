@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -25,7 +26,6 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/target_utils.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 Status MakeFailedStatus(const std::string& desired_state,
@@ -273,15 +273,15 @@ Status ChromeImpl::SetWindowRect(const std::string& target_id,
   auto bounds = std::make_unique<base::Value::Dict>();
 
   // window position
-  absl::optional<int> x = params.FindInt("x");
-  absl::optional<int> y = params.FindInt("y");
+  std::optional<int> x = params.FindInt("x");
+  std::optional<int> y = params.FindInt("y");
   if (x.has_value() && y.has_value()) {
     bounds->Set("left", *x);
     bounds->Set("top", *y);
   }
   // window size
-  absl::optional<int> width = params.FindInt("width");
-  absl::optional<int> height = params.FindInt("height");
+  std::optional<int> width = params.FindInt("width");
+  std::optional<int> height = params.FindInt("height");
   if (width.has_value() && height.has_value()) {
     bounds->Set("width", *width);
     bounds->Set("height", *height);
@@ -407,8 +407,8 @@ Status ChromeImpl::SetWindowBounds(Window* window,
         &result);
     if (status.IsError())
       return Status(kUnknownError, "JavaScript code failed", status);
-    const absl::optional<int> width = result->GetDict().FindInt("width");
-    const absl::optional<int> height = result->GetDict().FindInt("height");
+    const std::optional<int> width = result->GetDict().FindInt("width");
+    const std::optional<int> height = result->GetDict().FindInt("height");
     if (!width || !height) {
       return Status(kUnknownError, "unexpected JavaScript result");
     }
@@ -444,7 +444,7 @@ Status ChromeImpl::SetWindowBounds(Window* window,
 
 Status ChromeImpl::ParseWindow(const base::Value::Dict& params,
                                Window* window) {
-  absl::optional<int> id = params.FindInt("windowId");
+  std::optional<int> id = params.FindInt("windowId");
   if (!id)
     return Status(kUnknownError, "no window id in response");
   window->id = *id;
@@ -464,22 +464,22 @@ Status ChromeImpl::ParseWindowBounds(const base::Value::Dict& params,
     return Status(kUnknownError, "no window state in window bounds");
   window->state = *state;
 
-  absl::optional<int> left = value->FindInt("left");
+  std::optional<int> left = value->FindInt("left");
   if (!left)
     return Status(kUnknownError, "no left offset in window bounds");
   window->left = *left;
 
-  absl::optional<int> top = value->FindInt("top");
+  std::optional<int> top = value->FindInt("top");
   if (!top)
     return Status(kUnknownError, "no top offset in window bounds");
   window->top = *top;
 
-  absl::optional<int> width = value->FindInt("width");
+  std::optional<int> width = value->FindInt("width");
   if (!width)
     return Status(kUnknownError, "no width in window bounds");
   window->width = *width;
 
-  absl::optional<int> height = value->FindInt("height");
+  std::optional<int> height = value->FindInt("height");
   if (!height)
     return Status(kUnknownError, "no height in window bounds");
   window->height = *height;
@@ -605,7 +605,7 @@ ChromeImpl::ChromeImpl(BrowserInfo browser_info,
                        std::unique_ptr<DevToolsClient> websocket_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
-                       absl::optional<MobileDevice> mobile_device,
+                       std::optional<MobileDevice> mobile_device,
                        std::string page_load_strategy)
     : mobile_device_(std::move(mobile_device)),
       browser_info_(std::move(browser_info)),

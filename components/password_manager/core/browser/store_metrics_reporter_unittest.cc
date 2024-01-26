@@ -29,7 +29,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -150,8 +149,7 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
     // should be mocked.
     OSCryptMocker::SetUp();
 
-    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
-                                    syncer::kPasswordNotesWithBackup},
+    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
 
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
@@ -1094,9 +1092,9 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   // This test is only relevant when the passwords accounts store is enabled.
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
+  base::test::ScopedFeatureList feature_list{
+      features::kEnablePasswordsAccountStorage};
+
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =

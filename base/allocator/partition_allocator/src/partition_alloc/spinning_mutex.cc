@@ -17,10 +17,11 @@
 #endif
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
-#include <errno.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#include <cerrno>
 #endif  // PA_CONFIG(HAS_LINUX_KERNEL)
 
 #if !PA_CONFIG(HAS_FAST_MUTEX)

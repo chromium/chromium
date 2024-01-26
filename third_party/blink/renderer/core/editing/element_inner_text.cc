@@ -242,7 +242,7 @@ void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
 
 void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
                                                   const Text& text_node) {
-  if (layout_text.TransformedTextLength() == 0) {
+  if (layout_text.HasEmptyText()) {
     return;
   }
   if (layout_text.Style()->Visibility() != EVisibility::kVisible) {
@@ -407,7 +407,7 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
     return;
   const LayoutText& layout_text = *node.GetLayoutObject();
   if (LayoutText* first_letter_part = layout_text.GetFirstLetterPart()) {
-    if (layout_text.TransformedTextLength() == 0 ||
+    if (layout_text.HasEmptyText() ||
         OffsetMapping::GetInlineFormattingContextOf(layout_text) !=
             OffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
       // "::first-letter" with "float" reach here.

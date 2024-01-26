@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "sandbox/policy/win/lpac_capability.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace {
@@ -108,7 +108,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Register Media Foundation Widevine CDM";
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kHardwareSecure,
-      /*capability=*/absl::nullopt, /*supports_sub_key_systems=*/false,
+      /*capability=*/std::nullopt, /*supports_sub_key_systems=*/false,
       kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmType,
       version, GetCdmPath(install_dir));
 

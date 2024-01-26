@@ -5,6 +5,7 @@
 #include "ash/ambient/test/ambient_test_util.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/utility/lottie_util.h"
@@ -21,7 +22,7 @@ std::string GenerateLottieCustomizableIdForTesting(int unique_id) {
       {kLottieCustomizableIdPrefix, base::NumberToString(unique_id)});
 }
 
-std::string GenerateLottieDynamicAssetIdForTesting(base::StringPiece position,
+std::string GenerateLottieDynamicAssetIdForTesting(std::string_view position,
                                                    int idx) {
   CHECK(!position.empty());
   return base::StrCat({kLottieCustomizableIdPrefix, "_Photo_Position", position,

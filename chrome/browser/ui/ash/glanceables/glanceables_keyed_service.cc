@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -103,25 +104,33 @@ void GlanceablesKeyedService::Shutdown() {
   ClearClients();
 }
 
-bool GlanceablesKeyedService::AreGlanceablesEnabled() const {
+GlanceablesKeyedService::GlanceablesStatus
+GlanceablesKeyedService::AreGlanceablesEnabled() const {
   if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     // TODO(b/319251265): Finalize policies to control the feature.
-    return true;
+    return GlanceablesStatus::kEnabledForFullLaunch;
   }
 
   PrefService* const prefs = profile_->GetPrefs();
   if (features::AreGlanceablesV2Enabled()) {
-    return prefs->GetBoolean(prefs::kGlanceablesEnabled) ||
-           base::CommandLine::ForCurrentProcess()->HasSwitch(
-               ash::switches::kAshBypassGlanceablesPref);
+    if (prefs->GetBoolean(prefs::kGlanceablesEnabled)) {
+      return GlanceablesStatus::kEnabledByV2Flag;
+    }
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ash::switches::kAshBypassGlanceablesPref)) {
+      return GlanceablesStatus::kEnabledByPrefBypass;
+    }
+    return GlanceablesStatus::kDisabled;
   }
 
   if (features::AreGlanceablesV2EnabledForTrustedTesters()) {
-    return prefs->IsManagedPreference(prefs::kGlanceablesEnabled) &&
-           prefs->GetBoolean(prefs::kGlanceablesEnabled);
+    if (prefs->IsManagedPreference(prefs::kGlanceablesEnabled) &&
+        prefs->GetBoolean(prefs::kGlanceablesEnabled)) {
+      return GlanceablesStatus::kEnabledForTrustedTesters;
+    }
   }
 
-  return false;
+  return GlanceablesStatus::kDisabled;
 }
 
 std::unique_ptr<google_apis::RequestSender>
@@ -181,7 +190,11 @@ void GlanceablesKeyedService::UpdateRegistration() {
 
   CHECK(prefs);
 
-  if (!AreGlanceablesEnabled()) {
+  GlanceablesStatus status = AreGlanceablesEnabled();
+  base::UmaHistogramEnumeration("Ash.Glanceables.TimeManagement.FeatureStatus",
+                                status);
+
+  if (status == GlanceablesStatus::kDisabled) {
     Shell::Get()->glanceables_controller()->ClearUserStatePrefs(prefs);
     ClearClients();
     return;

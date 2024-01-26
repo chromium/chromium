@@ -17,8 +17,9 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {ShoppingServiceApiProxy} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import {ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 
 import {getTemplate} from './app.html.js';
 
@@ -45,12 +46,17 @@ export class ShoppingInsightsAppElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      isProductTracked_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
   private isProductTrackable_: boolean;
+  private isProductTracked_: boolean;
   private shoppingApi_: ShoppingServiceApiProxy =
       ShoppingServiceApiProxyImpl.getInstance();
 
@@ -70,6 +76,9 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     this.priceInsightsInfo = priceInsightsInfo;
 
     const {eligible} = await this.shoppingApi_.isShoppingListEligible();
+    const {tracked} =
+        await this.shoppingApi_.getPriceTrackingStatusForCurrentUrl();
+    this.isProductTracked_ = tracked;
     this.isProductTrackable_ =
         eligible && (priceInsightsInfo.clusterId !== BigInt(0));
   }

@@ -12,10 +12,20 @@ suite('MojoTypeUtilTest', () => {
     assertDeepEquals(stringToMojoString16('你好'), {data: [0x4f60, 0x597d]});
   });
 
-  test('Can convert mojo String16s to strings', () => {
+  test('mojoString16ToString_NoChunking', () => {
     assertEquals(mojoString16ToString({data: []}), '');
     assertEquals(mojoString16ToString({data: [0x68, 0x69]}), 'hi');
     assertEquals(mojoString16ToString({data: [0x4f60, 0x597d]}), '你好');
+  });
+
+  test('mojoString16ToString_WithChunking', () => {
+    assertEquals(
+        'h'.repeat(9000), mojoString16ToString({data: Array(9000).fill(0x68)}));
+    assertEquals(
+        'h'.repeat(18000),
+        mojoString16ToString({data: Array(18000).fill(0x68)}));
+    assertEquals(
+        'h'.repeat(1e6), mojoString16ToString({data: Array(1e6).fill(0x68)}));
   });
 
   test('emojis', () => {
@@ -29,6 +39,23 @@ suite('MojoTypeUtilTest', () => {
         '👨‍👨‍👦🇯🇵👨‍👨‍👦a你❤️👨‍👨‍👦',
         mojoString16ToString(stringToMojoString16(
             '👨‍👨‍👦🇯🇵👨‍👨‍👦a你❤️👨‍👨‍👦')));
+  });
+
+  test('mojoString16ToString_WithChunking_Boundaries', () => {
+    // Length of emoji flag = 4.
+    // Adding characters at the beginning offsets it relative to the chunk size
+    // which is 2^13.
+    let s = '🇺🇳'.repeat(9000);
+    assertEquals(s, mojoString16ToString(stringToMojoString16(s)));
+    s = 'h' +
+        '🇺🇳'.repeat(9000);
+    assertEquals(s, mojoString16ToString(stringToMojoString16(s)));
+    s = 'hh' +
+        '🇺🇳'.repeat(9000);
+    assertEquals(s, mojoString16ToString(stringToMojoString16(s)));
+    s = 'hhh' +
+        '🇺🇳'.repeat(9000);
+    assertEquals(s, mojoString16ToString(stringToMojoString16(s)));
   });
 
   test('Can convert strings to mojo Urls', () => {

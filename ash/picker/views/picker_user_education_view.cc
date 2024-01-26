@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_user_education_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -34,7 +35,7 @@ class PickerUserEducationItemView : public views::View {
   METADATA_HEADER(PickerUserEducationItemView, views::View)
 
  public:
-  explicit PickerUserEducationItemView(const base::StringPiece16 label)
+  explicit PickerUserEducationItemView(const std::u16string_view label)
       : label_(label) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(std::make_unique<views::Label>(label_));

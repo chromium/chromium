@@ -10,6 +10,17 @@ namespace autofillPrivate {
     DOMString email;
     boolean isSyncEnabledForAutofillProfiles;
     boolean isEligibleForAddressAccountStorage;
+
+    // Controls whether the Autofill Sync toggle should be available (duplicated
+    // from the Sync Settings page) on the Autofill Settings page.
+    // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+    // page for non-syncing users.
+    boolean isAutofillSyncToggleAvailable;
+
+    // Represents the UserSelectableType::kAutofill state (enabled or not).
+    // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+    // page for non-syncing users.
+    boolean isAutofillSyncToggleEnabled;
   };
 
   // A copy of FieldType from
@@ -84,7 +95,6 @@ namespace autofillPrivate {
     ADDRESS_HOME_ADDRESS,
     ADDRESS_HOME_ADDRESS_WITH_NAME,
     ADDRESS_HOME_FLOOR,
-    NAME_FULL_WITH_HONORIFIC_PREFIX,
     BIRTHDATE_DAY,
     BIRTHDATE_MONTH,
     BIRTHDATE_4_DIGIT_YEAR,
@@ -104,6 +114,9 @@ namespace autofillPrivate {
     ADDRESS_HOME_STREET_LOCATION,
     ADDRESS_HOME_BETWEEN_STREETS,
     ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+    ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
+    ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
+    ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
     ADDRESS_HOME_BETWEEN_STREETS_1,
     ADDRESS_HOME_BETWEEN_STREETS_2,
     SINGLE_USERNAME_FORGOT_PASSWORD,
@@ -397,6 +410,10 @@ namespace autofillPrivate {
     // database. For server CVCs, this will also clear them from the Chrome
     // sync server and thus other devices.
     static void bulkDeleteAllCvcs();
+
+    // Sets the Sync Autofill toggle value, which corresponds to
+    // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
+    static void setAutofillSyncToggleEnabled(boolean enabled);
   };
 
   interface Events {

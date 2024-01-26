@@ -27,7 +27,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_win_clang_asan",
-                "target_bits": 32
+                "target_bits": 32,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

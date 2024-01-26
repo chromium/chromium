@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_LONGPRESS_CONTROL_V_SUGGESTER_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ash/input_method/longpress_suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
 
@@ -40,7 +40,7 @@ class LongpressControlVSuggester : public LongpressSuggester {
 
   // Starting index of the text pasted when Ctrl+V was first pressed, if there
   // is an active long press.
-  absl::optional<size_t> pasted_text_start_;
+  std::optional<size_t> pasted_text_start_;
 };
 
 }  // namespace ash::input_method

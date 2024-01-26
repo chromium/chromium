@@ -6,12 +6,15 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
@@ -19,7 +22,7 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
@@ -38,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -45,7 +49,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -150,11 +153,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   TabPresentationDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
-  Browser* _incognitoBrowser;
+  raw_ptr<Browser> _incognitoBrowser;
 
   // Browser that contain tabs, from the regular browser, that have not been
   // open since a certain amount of time.
-  Browser* _inactiveBrowser;
+  raw_ptr<Browser> _inactiveBrowser;
 
   // The coordinator that shows the bookmarking UI after the user taps the Add
   // to Bookmarks button.
@@ -308,7 +311,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Ensure browser which is actually used by the incognito coordinator is
   // returned, as it may have been updated.
   return _incognitoGridCoordinator ? _incognitoGridCoordinator.browser
-                                   : _incognitoBrowser;
+                                   : _incognitoBrowser.get();
 }
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
@@ -852,7 +855,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =
       self.remoteTabsMediator;
-  baseViewController.remoteTabsViewController.handler =
+  baseViewController.remoteTabsViewController.applicationHandler =
       applicationCommandsHandler;
   baseViewController.remoteTabsViewController.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
@@ -1156,6 +1159,30 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.inactiveTabsCoordinator show];
 }
 
+- (BOOL)tabGridIsUserEligibleForSwipeToIncognitoIPH {
+  return _pageConfiguration == TabGridPageConfiguration::kAllPagesEnabled &&
+         IsFirstRunRecent(base::Days(60)) &&
+         feature_engagement::TrackerFactory::GetForBrowserState(
+             self.regularBrowser->GetBrowserState())
+             ->WouldTriggerHelpUI(
+                 feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+}
+
+- (BOOL)tabGridShouldPresentSwipeToIncognitoIPH {
+  return feature_engagement::TrackerFactory::GetForBrowserState(
+             self.regularBrowser->GetBrowserState())
+      ->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+}
+
+- (void)tabGridDidDismissSwipeToIncognitoIPH {
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      self.regularBrowser->GetBrowserState())
+      ->DismissedWithSnooze(
+          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito,
+          feature_engagement::Tracker::SnoozeAction::DISMISSED);
+}
+
 #pragma mark - InactiveTabsCoordinatorDelegate
 
 - (void)inactiveTabsCoordinator:
@@ -1315,7 +1342,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)unpinTabWithIdentifier:(web::WebStateID)identifier {
-  [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
+  [self.regularTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
@@ -1333,16 +1360,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
-                     incognito:(BOOL)incognito
-                        pinned:(BOOL)pinned {
+                     incognito:(BOOL)incognito {
   if (incognito) {
     [self.incognitoTabsMediator closeItemWithID:identifier];
-    return;
-  }
-
-  if (pinned) {
-    DCHECK(IsPinnedTabsEnabled());
-    [self.pinnedTabsMediator closeItemWithID:identifier];
     return;
   }
 

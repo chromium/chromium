@@ -33,7 +33,7 @@ class VapidKeyManagerTest : public testing::Test {
 
 TEST_F(VapidKeyManagerTest, CreateKeyFlow) {
   // No keys stored in preferences.
-  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
+  EXPECT_EQ(std::nullopt, sharing_sync_preference_.GetVapidKey());
 
   // Expected to create new keys and store in preferences.
   crypto::ECPrivateKey* key_1 = vapid_key_manager_.GetOrCreateKey();
@@ -56,7 +56,7 @@ TEST_F(VapidKeyManagerTest, SkipCreateKeyFlow) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   // No keys stored in preferences.
-  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
+  EXPECT_EQ(std::nullopt, sharing_sync_preference_.GetVapidKey());
 
   // Expected to skip creating keys when sync preference is not available.
   EXPECT_FALSE(vapid_key_manager_.GetOrCreateKey());

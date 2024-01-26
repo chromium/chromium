@@ -30,7 +30,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -577,21 +577,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
                                      FormControlType::kSelectOne, "")};
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
-}
-
-// Tests that unmappable autocomplete values containing "address" are treated
-// as HtmlFieldType::kUnspecified instead of
-// HtmlFieldType::kUnrecognized.
-TEST_F(FormStructureTestImpl, IgnoreUnmappableAutocompleteValues) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillIgnoreUnmappableAutocompleteValues);
-
-  CheckFormStructureTestData(
-      {{{.description_for_logging = "IgnoreUnmappableAutocompleteValues",
-         .fields = {{.autocomplete_attribute = "address-info"}}},
-        {.determine_heuristic_type = true},
-        {.expected_html_type = {HtmlFieldType::kUnspecified}}}});
 }
 
 // Tests that ShouldBeParsed returns true for a form containing less than three
@@ -2745,13 +2730,16 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
             FormStructure::FindFieldsEligibleForManualFilling(forms));
 }
 
-// Tests that ParseFieldTypesWithPatterns() sets (only) the PatternSource.
+// Tests that AssignBestFieldTypes() sets (only) the PatternSource.
 TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   FormData form = test::CreateTestAddressFormData();
   FormStructure form_structure(form);
   ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                          pattern_source());
-  test_api(form_structure).ParseFieldTypesWithPatterns(context);
+  test_api(form_structure)
+      .AssignBestFieldTypes(
+          test_api(form_structure).ParseFieldTypesWithPatterns(context),
+          pattern_source());
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {
@@ -2819,13 +2807,9 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
               ElementsAre(0, 0, 1, 0, 0, 0));
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// forms that are completely annotated with ac=unrecognized are not classified
-// as address forms.
+// Tests that forms that are completely annotated with ac=unrecognized are not
+// classified as address forms.
 TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   FormData form = test::CreateTestAddressFormData();
   for (FormFieldData& field : form.fields) {
     field.parsed_autocomplete =

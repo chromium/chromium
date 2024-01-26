@@ -11,7 +11,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 import {getTemplate} from './edu_coexistence_error.html.js';
-import {EduCoexistenceTemplate} from './edu_coexistence_template.js';
 
 class EduCoexistenceError extends PolymerElement {
   static get is() {
@@ -24,8 +23,8 @@ class EduCoexistenceError extends PolymerElement {
 
   override ready() {
     super.ready();
-    const template = this.shadowRoot!.querySelector(
-                         'edu-coexistence-template') as EduCoexistenceTemplate;
+    const template =
+        this.shadowRoot!.querySelector('edu-coexistence-template')!;
     template.updateButtonFooterVisibility(true);
 
     this.addEventListener('go-action', () => {

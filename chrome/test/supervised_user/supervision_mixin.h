@@ -6,6 +6,7 @@
 #define CHROME_TEST_SUPERVISED_USER_SUPERVISION_MIXIN_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -22,7 +23,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -102,8 +102,7 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   // This mixin dependencies.
   raw_ptr<InProcessBrowserTest> test_base_;
   FakeGaiaMixin fake_gaia_mixin_;
-  absl::optional<EmbeddedTestServerSetupMixin>
-      embedded_test_server_setup_mixin_;
+  std::optional<EmbeddedTestServerSetupMixin> embedded_test_server_setup_mixin_;
   KidsManagementApiMockSetupMixin api_mock_setup_mixin_;
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;

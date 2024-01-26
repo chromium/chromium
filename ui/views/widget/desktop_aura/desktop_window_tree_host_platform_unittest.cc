@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ui_base_features.h"
@@ -160,6 +161,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, CallOnNativeWidgetVisibilityChanged) {
 
   widget->Show();
   EXPECT_TRUE(observer.visible());
+  EXPECT_TRUE(observer.visible());
 
   widget->Hide();
   EXPECT_FALSE(observer.visible());
@@ -220,6 +222,26 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
   EXPECT_TRUE(host_platform->GetWindowMaskForClipping().isEmpty());
   EXPECT_TRUE(widget->GetLayer()->FillsBoundsCompletely());
+}
+
+// Calling show/hide/show triggers changing visibility of the native widget.
+TEST_F(DesktopWindowTreeHostPlatformTest,
+       OnAcceleratedWidgetMadeVisibleCalled) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(host_platform);
+  EXPECT_FALSE(aura::test::AcceleratedWidgetMadeVisible(host_platform));
+
+  widget->Show();
+  EXPECT_TRUE(aura::test::AcceleratedWidgetMadeVisible(host_platform));
+
+  widget->Hide();
+  EXPECT_FALSE(aura::test::AcceleratedWidgetMadeVisible(host_platform));
+
+  widget->Show();
+  EXPECT_TRUE(aura::test::AcceleratedWidgetMadeVisible(host_platform));
 }
 
 // A Widget that allows setting the min/max size for the widget.

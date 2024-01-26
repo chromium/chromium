@@ -13,6 +13,8 @@ source_set("wm") {
 
   sources = [
     "constants.h",
+    "debug_util.cc",
+    "debug_util.h",
     "desks/chromeos_desks_histogram_enums.h",
     "desks/desks_helper.h",
     "fullscreen/keep_fullscreen_for_url_checker.cc",
@@ -29,8 +31,11 @@ source_set("wm") {
     "//chromeos/ui/base",
     "//components/prefs",
     "//components/url_matcher",
+    "//ui/accessibility",
     "//ui/aura",
     "//ui/base",
+    "//ui/views",
+    "//ui/wm/public",
     "//url",
   ]
 

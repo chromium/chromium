@@ -13,8 +13,8 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /**
  * Stubbed class for getting version numbers from the rest of Chrome.  Override the functions for
@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 public class VersionNumberGetter {
     private static final String MIN_SDK_VERSION_PARAM = "min_sdk_version";
     public static final IntCachedFieldTrialParameter MIN_SDK_VERSION =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID,
                     MIN_SDK_VERSION_PARAM,
                     ContextUtils.getApplicationContext().getApplicationInfo().minSdkVersion);

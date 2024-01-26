@@ -1856,7 +1856,6 @@ String AXObject::KeyboardShortcut() const {
 void AXObject::SerializeOtherScreenReaderAttributes(
     ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
-  DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
   if (IsA<Document>(GetNode())) {
     // The busy attribute is only relevant for actual Documents, not popups.
@@ -3571,9 +3570,6 @@ const AXObject* AXObject::AriaHiddenRoot() const {
 
 const AXObject* AXObject::InertRoot() const {
   const AXObject* object = this;
-  if (!RuntimeEnabledFeatures::InertAttributeEnabled())
-    return nullptr;
-
   while (object && !object->IsAXNodeObject())
     object = object->ParentObject();
 
@@ -4700,7 +4696,7 @@ bool AXObject::ElementsFromAttribute(Element* from,
     return false;
 
   HeapVector<Member<Element>>* attr_associated_elements =
-      from->GetElementArrayAttribute(attribute);
+      from->GetAttrAssociatedElements(attribute);
   if (!attr_associated_elements)
     return false;
 

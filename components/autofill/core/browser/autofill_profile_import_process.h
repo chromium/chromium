@@ -92,10 +92,6 @@ struct ProfileImportMetadata {
   bool did_import_from_unrecognized_autocomplete_field = false;
   // The origin that the form was submitted on.
   url::Origin origin;
-  // The number of fields with unrecognized autocomplete attribute that used to
-  // construct the observed profile.
-  // TODO(crbug.com/1301721): Remove.
-  int num_autocomplete_unrecognized_fields = 0;
 };
 
 // This class holds the state associated with the import of an AutofillProfile

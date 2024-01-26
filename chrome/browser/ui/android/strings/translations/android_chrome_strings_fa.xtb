@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">هرزمان بخواهید می‌توانید محل پیش‌فرض بارگیری را تغییر دهید</translation>
 <translation id="1796666869097395659">برگه را کوچک کنید تا بعداً به آن برگردید</translation>
 <translation id="1807246157184219062">روشن</translation>
+<translation id="1807709131360304325">باز کردن پنجره جدید</translation>
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> نمی‌تواند بااستفاده از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه دهد</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">سایت موقتاً متوقف شد</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد}one{# بارگیری انجام نشد}other{# بارگیری انجام نشد}}</translation>
 <translation id="2067805253194386918">نوشتار</translation>
+<translation id="2079545284768500474">لغو</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">نمای فشرده نشان داده می‌شود</translation>
 <translation id="2093731487903423814">۱۵ دقیقه گذشته</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">فعالیت‌ها در وب و برنامه</translation>
 <translation id="2234827758954819389">راهنمای حریم خصوصی</translation>
 <translation id="2239812875700136898">کنترل داستان‌ها از دکمه «گزینه‌های یافته‌ها»</translation>
-<translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2247789808226901522">کارت منقضی شده است</translation>
 <translation id="2248941474044011069">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شود</translation>
 <translation id="2249635629516220541">سفارشی کردن اطلاعات مورداستفاده سایت‌ها برای نمایش آگهی به شما</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">برای برقراری تماس، ضربه بزنید.</translation>
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
-<translation id="2327226657832576859">‏فایل‌های PDF به‌طور خودکار باز شود؟</translation>
 <translation id="2328985652426384049">ورود به سیستم امکان‌پذیر نیست</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> نصب نشد.</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
 <translation id="2779651927720337254">انجام نشد</translation>
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
+<translation id="2789486458103222910">تأیید</translation>
 <translation id="2800066122460699237">برگه <ph name="TAB_TITLE" /> بسته خواهد شد</translation>
 <translation id="281504910091592009">‏در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="2827278682606527653">منوی کارت فید تا نیمه باز شد</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">‏درحال به‌روزرسانی Chrome برای اتصال به دستگاه‌های دیگر</translation>
 <translation id="2951071800649516099">صفحه‌ها را برای خواندن در فرصتی دیگر به فهرست خواندن اضافه کنید</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> صفحه خوانده‌نشده}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}}</translation>
-<translation id="2961210776189273067">عنوان</translation>
 <translation id="296370266220139811">صرفه‌جویی در زمان و تایپ کمتر</translation>
 <translation id="2977350910003566746">ترتیب براساس آخرین باز شدن</translation>
 <translation id="297771753501244313">به‌ترتیب آخرین باز شدن</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="4307992518367153382">موارد اصلی</translation>
+<translation id="4311652497846705514">‏فایل PDF باز شود؟</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
 <translation id="433213510553688132">دنبال می‌کنید…</translation>
 <translation id="4335835283689002019">«مرور ایمن» خاموش است</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">یک ساعتِ گذشته</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4532845899244822526">انتخاب پوشه</translation>
-<translation id="4541505619120536051">همیشه باز شود</translation>
 <translation id="4543131175509360848">برگ گذرکلیدی وجود ندارد</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه}one{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}other{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}}</translation>
 <translation id="4554077758708533499">‏بااستفاده از سیم USB متصل است</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">نشان‌واره اعلان حریم خصوصی برای مرکز اطلاعات آماری صفحه که به صفحه فعالیت‌هایم هدایت می‌کند.</translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
 <translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
-<translation id="5509866835115085009">‏Chrome می‌تواند وقتی فایل PDF بارگیری می‌کنید، آن را به‌طور خودکار باز کند.</translation>
 <translation id="5514904542973294328">توسط سرپرست این دستگاه غیرفعال شده است</translation>
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="5517095782334947753">نشانک، سابقه، گذرواژه و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">برای کوچک کردن ضربه بزنید</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5966233851250124270">‏Chrome انتخابتان را به‌خاطر می‌سپارد</translation>
+<translation id="5977976211062815271">در این دستگاه</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="5995726099713306770">صفحه دوباره بارگیری شود؟</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
@@ -1274,7 +1274,7 @@
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>
 <translation id="7686086654630106285">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت</translation>
-<translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
+<translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند. وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
 <translation id="7690596512217303514">‏دستگاه شما Chrome را باز نکرد. برای رفع مشکل، جدیدترین به‌روزرسانی Chrome را از فروشگاه برنامه بارگیری کنید.</translation>
 <translation id="7691043218961417207">کاوش محتوا برای دنبال کردن</translation>
 <translation id="7697383401610880082">دستگیره کشاندن</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{همه فایل‌ها، ۱ فایل در فهرست}one{همه فایل‌ها، # فایل در فهرست}other{همه فایل‌ها، # فایل در فهرست}}</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
+<translation id="7821130663268546430">می‌توانید همه برگه‌های باز را در تعویض‌کننده برگه پیدا کنید</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="78270725016672455">رایانه‌تان می‌خواهد این دستگاه را برای ورود به سیستم یک سایت ثبت کند</translation>
 <translation id="7844171778363018843">هیچ داده‌ای برای همگام‌سازی انتخاب نشده است</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
+<translation id="7951102827450076904">‏فایل‌های PDF بارگیری‌شده همیشه باز شود</translation>
 <translation id="7957413488482743710">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">دکمه برگشتن در برگه اطلاعات آماری صفحه</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>

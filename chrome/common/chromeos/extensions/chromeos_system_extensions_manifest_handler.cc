@@ -52,7 +52,7 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
            matches_list->front().GetString() == extension_info.pwa_origin;
   }
 
-  absl::optional<std::string> iwa_origin;
+  std::optional<std::string> iwa_origin;
   if (extension_info.iwa_id.has_value()) {
     iwa_origin =
         base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,

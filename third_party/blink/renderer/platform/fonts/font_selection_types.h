@@ -185,12 +185,28 @@ inline constexpr FontSelectionValue kMinWeightValue = FontSelectionValue(1);
 
 inline constexpr FontSelectionValue kMaxWeightValue = FontSelectionValue(1000);
 
+inline constexpr FontSelectionValue kBlackWeightValue = FontSelectionValue(900);
+
+inline constexpr FontSelectionValue kExtraBoldWeightValue =
+    FontSelectionValue(800);
+
 inline constexpr FontSelectionValue kBoldWeightValue = FontSelectionValue(700);
+
+inline constexpr FontSelectionValue kSemiBoldWeightValue =
+    FontSelectionValue(600);
+
+inline constexpr FontSelectionValue kMediumWeightValue =
+    FontSelectionValue(500);
 
 inline constexpr FontSelectionValue kNormalWeightValue =
     FontSelectionValue(400);
 
-inline constexpr FontSelectionValue kLightWeightValue = FontSelectionValue(200);
+inline constexpr FontSelectionValue kLightWeightValue = FontSelectionValue(300);
+
+inline constexpr FontSelectionValue kExtraLightWeightValue =
+    FontSelectionValue(200);
+
+inline constexpr FontSelectionValue kThinWeightValue = FontSelectionValue(100);
 
 static constexpr inline bool isFontWeightBold(FontSelectionValue fontWeight) {
   return fontWeight >= kBoldThreshold;

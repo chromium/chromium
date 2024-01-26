@@ -22,6 +22,8 @@ static_library("common") {
     "content_settings_pattern.h",
     "content_settings_pattern_parser.cc",
     "content_settings_pattern_parser.h",
+    "content_settings_rules.cc",
+    "content_settings_rules.h",
     "content_settings_types.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
@@ -33,7 +35,6 @@ static_library("common") {
     "cookie_settings_base.h",
     "host_indexed_content_settings.cc",
     "host_indexed_content_settings.h",
-    "pref_names.cc",
     "pref_names.h",
     "third_party_site_data_access_type.h",
   ]
@@ -41,6 +42,7 @@ static_library("common") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":content_settings_types",
     ":features",
     "//base",
   ]
@@ -83,11 +85,24 @@ source_set("unit_tests") {
   ]
 }
 
+mojom("content_settings_types") {
+  generate_java = true
+  sources = [ "content_settings_types.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+}
+
 mojom("mojo_bindings") {
   generate_java = true
   sources = [ "content_settings.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    ":content_settings_types",
+    "//mojo/public/mojom/base",
+  ]
 
   webui_module_path = "/"
   generate_legacy_js_bindings = true
@@ -102,10 +117,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.ContentSettingsPattern"
           cpp = "::ContentSettingsPattern"
-        },
-        {
-          mojom = "content_settings.mojom.ContentSettingsType"
-          cpp = "::ContentSettingsType"
         },
         {
           mojom = "content_settings.mojom.ContentSetting"

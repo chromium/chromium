@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
@@ -64,7 +65,7 @@ class IOSChromeMetricsServicesManagerClient
   base::ThreadChecker thread_checker_;
 
   // Weak pointer to the local state prefs store.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_

@@ -95,6 +95,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                     const std::string& user_id_hash,
                     bool browser_restart,
                     bool is_child) override;
+  bool OnUserProfileCreated(const AccountId& account_id,
+                            PrefService* prefs) override;
+  void OnUserProfileWillBeDestroyed(const AccountId& account_id) override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;

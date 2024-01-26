@@ -45,7 +45,7 @@ class CrosDiagnosticsImpl
 
   void GetNetworkInterfacesGetNetworkListCallback(
       GetNetworkInterfacesCallback callback,
-      const absl::optional<net::NetworkInterfaceList>& interface_list);
+      const std::optional<net::NetworkInterfaceList>& interface_list);
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

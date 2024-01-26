@@ -580,16 +580,13 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
       MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
       MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
       MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
-      MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION | MITIGATION_KTM_COMPONENT;
+      MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
+      MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
 
   // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
   // disabled for processes we know are not compatible.
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
-
-  if (base::FeatureList::IsEnabled(features::kWinSboxFsctlLockdown)) {
-    mitigations |= MITIGATION_FSCTL_DISABLED;
-  }
 
   ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)

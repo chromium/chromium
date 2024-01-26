@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/first_run/tos/tos_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/web_view_creation_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface TOSCoordinator () <UIAdaptivePresentationControllerDelegate,

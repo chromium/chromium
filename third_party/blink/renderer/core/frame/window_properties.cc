@@ -75,9 +75,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
             child->GetSecurityContext()->GetSecurityOrigin()) ||
         name == child->Owner()->BrowsingContextContainerName()) {
       return ToV8Traits<DOMWindow>::ToV8(
-                 ScriptState::From(isolate->GetCurrentContext()),
-                 child->DomWindow())
-          .ToLocalChecked();
+          ScriptState::From(isolate->GetCurrentContext()), child->DomWindow());
     }
 
     UseCounter::Count(
@@ -119,8 +117,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {
     UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-    return ToV8Traits<Element>::ToV8(script_state, doc->getElementById(name))
-        .ToLocalChecked();
+    return ToV8Traits<Element>::ToV8(script_state, doc->getElementById(name));
   }
 
   HTMLCollection* items = doc->WindowNamedItems(name);
@@ -131,11 +128,9 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     // multiple with the same name, but Chrome and Safari does. What's the
     // right behavior?
     if (items->HasExactlyOneItem()) {
-      return ToV8Traits<Element>::ToV8(script_state, items->item(0))
-          .ToLocalChecked();
+      return ToV8Traits<Element>::ToV8(script_state, items->item(0));
     }
-    return ToV8Traits<HTMLCollection>::ToV8(script_state, items)
-        .ToLocalChecked();
+    return ToV8Traits<HTMLCollection>::ToV8(script_state, items);
   }
   return v8::Local<v8::Value>();
 }

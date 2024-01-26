@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 source_set("features") {
   sources = [
     "compose_features.cc",
@@ -27,9 +29,17 @@ static_library("browser") {
   public_deps = [ ":features" ]
 
   deps = [
+    ":mojo_bindings",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "compose_enums.mojom" ]
+  webui_module_path = "/"
 }

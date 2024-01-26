@@ -110,7 +110,6 @@ public class TabSwitcherLayout extends Layout {
         }
 
         void run() {
-            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", !mIsCancelled);
             if (mIsCancelled) return;
 
             assert mRunnable != null;
@@ -200,13 +199,9 @@ public class TabSwitcherLayout extends Layout {
                     }
 
                     if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-                        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-                            final Tab currentTab = mTabModelSelector.getCurrentTab();
-                            if (currentTab != null) {
-                                RecordHistogram.recordBooleanHistogram(
-                                        "Android.TabSwitcher.TabHidden", true);
-                                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
-                            }
+                        final Tab currentTab = mTabModelSelector.getCurrentTab();
+                        if (currentTab != null) {
+                            currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
                         }
                         resetLayoutTabs();
                         return;
@@ -447,12 +442,9 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private void onFinishedShowingWithoutAnimation() {
-        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-            Tab currentTab = mTabModelSelector.getCurrentTab();
-            if (currentTab != null) {
-                RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", true);
-                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
-            }
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab != null) {
+            currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
         }
         resetLayoutTabs();
         mFinishedShowingRunnable = null;
@@ -461,29 +453,25 @@ public class TabSwitcherLayout extends Layout {
     private void onFinishedShowingWithAnimation() {
         Tab currentTab = mTabModelSelector.getCurrentTab();
         if (currentTab != null) {
-            if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-                if (mHideTabCallback != null) {
-                    mHideTabCallback.cancel();
-                }
-                HideTabCallback hideTabCallback =
-                        new HideTabCallback(
-                                () -> {
-                                    Tab tab = mTabModelSelector.getCurrentTab();
-                                    if (currentTab == tab) {
-                                        currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
-                                    }
-                                    mHideTabCallback = null;
-                                });
-                mHideTabCallback = hideTabCallback;
-                mTabContentManager.cacheTabThumbnailWithCallback(
-                        currentTab,
-                        /* returnBitmap= */ false,
-                        (bitmap) -> {
-                            hideTabCallback.run();
-                        });
-            } else {
-                mTabContentManager.cacheTabThumbnail(currentTab);
+            if (mHideTabCallback != null) {
+                mHideTabCallback.cancel();
             }
+            HideTabCallback hideTabCallback =
+                    new HideTabCallback(
+                            () -> {
+                                Tab tab = mTabModelSelector.getCurrentTab();
+                                if (currentTab == tab) {
+                                    currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+                                }
+                                mHideTabCallback = null;
+                            });
+            mHideTabCallback = hideTabCallback;
+            mTabContentManager.cacheTabThumbnailWithCallback(
+                    currentTab,
+                    /* returnBitmap= */ false,
+                    (bitmap) -> {
+                        hideTabCallback.run();
+                    });
         }
         resetLayoutTabs();
         mFinishedShowingRunnable = null;

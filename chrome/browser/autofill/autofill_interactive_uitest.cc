@@ -369,7 +369,7 @@ class ValueWaiter {
       : waiterId_(waiterId), execution_target_(execution_target) {}
 
   // Returns the non-empty value of the observed form-control element, or
-  // absl::nullopt if no value change is observed before `timeout`.
+  // std::nullopt if no value change is observed before `timeout`.
   [[nodiscard]] std::optional<std::string> Wait(
       base::TimeDelta timeout = kDefaultTimeout) && {
     const std::string kFunction = R"(
@@ -415,8 +415,8 @@ class ValueWaiter {
                                           waiterId_, timeout.InMilliseconds());
     content::EvalJsResult r =
         content::EvalJs(execution_target_, kFunction + call);
-    return !r.value.is_none() ? absl::make_optional(r.ExtractString())
-                              : absl::nullopt;
+    return !r.value.is_none() ? std::make_optional(r.ExtractString())
+                              : std::nullopt;
   }
 
  private:
@@ -2677,7 +2677,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   // Select element on `other` and wait for `onchange` event.
   ValueWaiter onchange_waiter =
-      ListenForValueChange("other", absl::nullopt, GetWebContents());
+      ListenForValueChange("other", std::nullopt, GetWebContents());
   ASSERT_TRUE(FocusField(GetElementById("other"), GetWebContents()));
   EXPECT_EQ("First", GetFieldValueById("other"));
   FillElementWithValue("other", "Second");
@@ -3158,9 +3158,17 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
+// TODO(crbug.com/1521229) flaky on win-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
+  DISABLED_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
+  DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
+#endif
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
-    DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
+    MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com",
@@ -3426,8 +3434,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DISABLED_DynamicChangingFormFill_DoubleSelectUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DynamicChangingFormFill_DoubleSelectUpdated
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_DoubleSelectUpdated) {
+                       MAYBE_DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
@@ -3525,8 +3541,17 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
+  DISABLED_DynamicChangingFormFill_SelectUpdated_SyntheticForm
+#else
+#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
+  DynamicChangingFormFill_SelectUpdated_SyntheticForm
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AutofillInteractiveTestDynamicForm,
+    MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_synthetic_form_select_options_change.html");

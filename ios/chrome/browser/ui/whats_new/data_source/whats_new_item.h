@@ -25,7 +25,10 @@ enum class WhatsNewType {
   kCalendarEvent = 9,
   kChromeActions = 10,
   kMiniMaps = 11,
-  kMaxValue = kMiniMaps,
+  kLensSearch = 12,
+  kBottomOmnibox = 13,
+  kESB = 14,
+  kMaxValue = kESB
 };
 
 // An enum representing the different primary button actions for features in
@@ -69,6 +72,8 @@ class GURL;
 @property(nonatomic, copy) NSString* screenshotName;
 // What's New entry screenshot text provier for localization.
 @property(nonatomic, copy) NSDictionary* screenshotTextProvider;
+// Whether or not the feature or Chrome tip is exclusively available on iPhone.
+@property(nonatomic, assign) BOOL isIphoneOnly;
 
 @end
 

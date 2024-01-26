@@ -708,19 +708,32 @@ TEST_F(DevicePolicyDecoderTest, DeviceEphemeralNetworkPoliciesEnabled) {
                                /*expected_value=*/base::Value(true));
 }
 
-TEST_F(DevicePolicyDecoderTest, DeviceFkeysPolicy) {
+TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
   em::ChromeDeviceSettingsProto device_policy;
 
   DecodeUnsetDevicePolicyTestHelper(device_policy,
-                                    key::kDeviceExtendedFkeysModifier);
+                                    key::kTouchVirtualKeyboardEnabled);
 
-  base::Value device_extended_fkeys_modifier(1);
-  device_policy.mutable_extended_fkeys_modifier()->set_modifier(
-      static_cast<em::ExtendedFkeysModifierProto::ExtendedFkeysModifier>(
-          device_extended_fkeys_modifier.GetInt()));
+  device_policy.mutable_deviceloginscreentouchvirtualkeyboardenabled()
+      ->set_value(true);
 
-  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceExtendedFkeysModifier,
-                               std::move(device_extended_fkeys_modifier));
+  DecodeDevicePolicyTestHelper(device_policy, key::kTouchVirtualKeyboardEnabled,
+                               base::Value(true));
+}
+
+TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceExtendedAutoUpdateEnabled);
+
+  base::Value deviceextendedautoupdateenabled(true);
+  device_policy.mutable_deviceextendedautoupdateenabled()->set_value(
+      deviceextendedautoupdateenabled.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceExtendedAutoUpdateEnabled,
+                               std::move(deviceextendedautoupdateenabled));
 }
 
 }  // namespace policy

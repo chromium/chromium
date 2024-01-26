@@ -48,7 +48,7 @@ bool SignedDispatcher::CreateSection(IPCInfo* ipc, HANDLE file_handle) {
   }
 
   base::win::ScopedHandle local_handle(local_file_handle);
-  auto path = GetPathFromHandle(local_handle.Get());
+  auto path = GetPathFromHandle(local_handle.get());
   if (!path)
     return false;
   const wchar_t* module_name = path->c_str();

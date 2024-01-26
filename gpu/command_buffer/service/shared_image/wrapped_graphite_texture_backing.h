@@ -40,6 +40,7 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
                                 GrSurfaceOrigin surface_origin,
                                 SkAlphaType alpha_type,
                                 uint32_t usage,
+                                std::string debug_label,
                                 scoped_refptr<SharedContextState> context_state,
                                 const bool thread_safe);
 
@@ -77,7 +78,8 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  private:

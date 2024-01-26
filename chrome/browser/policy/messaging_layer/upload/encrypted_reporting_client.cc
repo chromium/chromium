@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/reporting/util/statusor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -47,7 +47,7 @@ EncryptedReportingClient::~EncryptedReportingClient() {
 
 void EncryptedReportingClient::UploadReport(
     base::Value::Dict merging_payload,
-    absl::optional<base::Value::Dict> context,
+    std::optional<base::Value::Dict> context,
     policy::CloudPolicyClient* cloud_policy_client,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,7 +102,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     policy::DeviceManagementService::Job* job,
     policy::DeviceManagementStatus status,
     int response_code,
-    absl::optional<base::Value::Dict> response) {
+    std::optional<base::Value::Dict> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (job) {
     request_jobs_.erase(job);

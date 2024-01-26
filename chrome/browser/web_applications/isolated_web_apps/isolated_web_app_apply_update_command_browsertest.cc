@@ -12,11 +12,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -99,7 +99,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
                             test::IsolationDataIs(
                                 result->location, Eq(installed_version_),
                                 /*controlled_frame_partitions=*/_,
-                                /*pending_update_info=*/Eq(absl::nullopt))));
+                                /*pending_update_info=*/Eq(std::nullopt))));
   }
 
   PrepareAndStoreUpdateResult PrepareAndStoreUpdateInfo(
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppApplyUpdateCommandBrowserTest, Succeeds) {
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
                       prepare_update_result->location, Eq(update_version_),
-                      /*controlled_frame_partitions=*/_, Eq(absl::nullopt))));
+                      /*controlled_frame_partitions=*/_, Eq(std::nullopt))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

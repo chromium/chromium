@@ -114,7 +114,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
   if (in_memory) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
                        clip_x, clip_y, clip_width, clip_height, in_memory,
-                       absl::nullopt);
+                       std::nullopt);
     return;
   }
 
@@ -139,7 +139,7 @@ void LongScreenshotsTabService::CaptureTabInternal(
     int clip_width,
     int clip_height,
     bool in_memory,
-    const absl::optional<base::FilePath>& file_path) {
+    const std::optional<base::FilePath>& file_path) {
   if (!in_memory && !file_path.has_value()) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(

@@ -322,26 +322,16 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
     return nullptr;
   }
 
-  String blocked;
-  switch (nrr->blocked) {
-    case mojom::blink::BFCacheBlocked::kYes:
-      blocked = "yes";
-      break;
-    case mojom::blink::BFCacheBlocked::kNo:
-      blocked = "no";
-      break;
-    case mojom::blink::BFCacheBlocked::kMasked:
-      blocked = "masked";
-      break;
-  }
   String url;
-  Vector<String> reasons;
+  HeapVector<Member<NotRestoredReasonDetails>> reasons;
   HeapVector<Member<NotRestoredReasons>> children;
+  for (const auto& reason : nrr->reasons) {
+    NotRestoredReasonDetails* detail =
+        MakeGarbageCollected<NotRestoredReasonDetails>(reason);
+    reasons.push_back(detail);
+  }
   if (nrr->same_origin_details) {
     url = nrr->same_origin_details->url;
-    for (const auto& reason : nrr->same_origin_details->reasons) {
-      reasons.push_back(reason);
-    }
     for (const auto& child : nrr->same_origin_details->children) {
       NotRestoredReasons* nrr_child = BuildNotRestoredReasons(child);
       // Reasons in children vector should never be null.
@@ -350,13 +340,28 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
     }
   }
 
+  HeapVector<Member<NotRestoredReasonDetails>>* reasons_to_report;
+  if (nrr->same_origin_details) {
+    // Expose same-origin reasons.
+    reasons_to_report = &reasons;
+  } else {
+    if (reasons.size() == 0) {
+      // If cross-origin iframes do not have any reasons, set the reasons to
+      // nullptr.
+      reasons_to_report = nullptr;
+    } else {
+      // If cross-origin iframes have reasons, that is "masked" for the randomly
+      // selected one. Expose that reason.
+      reasons_to_report = &reasons;
+    }
+  }
+
   NotRestoredReasons* not_restored_reasons =
       MakeGarbageCollected<NotRestoredReasons>(
-          /*prevented_back_forward_cache=*/blocked,
           /*src=*/nrr->src,
           /*id=*/nrr->id,
           /*name=*/nrr->name, /*url=*/url,
-          nrr->same_origin_details ? &reasons : nullptr,
+          /*reasons=*/reasons_to_report,
           nrr->same_origin_details ? &children : nullptr);
   return not_restored_reasons;
 }
@@ -382,14 +387,18 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("notRestoredReasons", notRestoredReasons());
+    if (auto* not_restored_reasons = notRestoredReasons()) {
+      builder.Add("notRestoredReasons", not_restored_reasons);
+    } else {
+      builder.AddNull("notRestoredReasons");
+    }
     ExecutionContext::From(builder.GetScriptState())
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }
 
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
+    builder.AddString("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
   }
 }
 

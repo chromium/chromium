@@ -48,9 +48,7 @@ class MrfuCategoryRanker : public Ranker {
   ~MrfuCategoryRanker() override;
 
   // Ranker:
-  void Start(const std::u16string& query,
-             ResultsMap& results,
-             CategoriesList& categories) override;
+  void Start(const std::u16string& query, CategoriesList& categories) override;
   void UpdateCategoryRanks(const ResultsMap& results,
                            CategoriesList& categories,
                            ProviderType provider) override;

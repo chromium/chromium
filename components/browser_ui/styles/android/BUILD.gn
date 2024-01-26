@@ -45,7 +45,6 @@ android_resources("java_resources") {
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/filled_button_bg_dynamic_list.xml",
     "java/res/color/icon_animated_faded_color_list.xml",
-    "java/res/color/primary_when_selected_list.xml",
     "java/res/color/progress_bar_bg_color_list.xml",
     "java/res/color/selection_control_button_tint_list.xml",
     "java/res/color/target_view_color_list.xml",

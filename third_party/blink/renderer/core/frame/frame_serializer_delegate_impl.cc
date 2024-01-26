@@ -42,6 +42,9 @@ namespace blink {
 namespace {
 
 const int kPopupOverlayZIndexThreshold = 50;
+// Note that this is *not* the open web's declarative shadow DOM attribute,
+// which is <template shadowrootmode>. This is a special attribute used by
+// MHTML archive files to represent shadow roots.
 const char kShadowModeAttributeName[] = "shadowmode";
 const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 
@@ -274,32 +277,21 @@ void FrameSerializerDelegateImpl::GetCustomAttributesForImageElement(
   attributes->push_back(height_attribute);
 }
 
-std::pair<Node*, Element*> FrameSerializerDelegateImpl::GetAuxiliaryDOMTree(
-    const Element& element) const {
+std::pair<ShadowRoot*, HTMLTemplateElement*>
+FrameSerializerDelegateImpl::GetShadowTree(const Element& element) const {
   ShadowRoot* shadow_root = element.GetShadowRoot();
-  if (!shadow_root)
-    return std::pair<Node*, Element*>();
-
-  String shadow_mode;
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
-      // No need to serialize.
-      return std::pair<Node*, Element*>();
-    case ShadowRootType::kOpen:
-      shadow_mode = "open";
-      break;
-    case ShadowRootType::kClosed:
-      shadow_mode = "closed";
-      break;
+  if (!shadow_root || shadow_root->GetType() == ShadowRootType::kUserAgent) {
+    return std::pair<ShadowRoot*, HTMLTemplateElement*>();
   }
 
   // Put the shadow DOM content inside a template element. A special attribute
   // is set to tell the mode of the shadow DOM.
-  auto* template_element = MakeGarbageCollected<Element>(
-      html_names::kTemplateTag, &(element.GetDocument()));
+  HTMLTemplateElement* template_element =
+      MakeGarbageCollected<HTMLTemplateElement>(element.GetDocument());
   template_element->setAttribute(
       QualifiedName(AtomicString(kShadowModeAttributeName)),
-      AtomicString(shadow_mode));
+      AtomicString(shadow_root->GetType() == ShadowRootType::kOpen ? "open"
+                                                                   : "closed"));
   if (shadow_root->delegatesFocus()) {
     template_element->setAttribute(
         QualifiedName(AtomicString(kShadowDelegatesFocusAttributeName)),
@@ -307,7 +299,8 @@ std::pair<Node*, Element*> FrameSerializerDelegateImpl::GetAuxiliaryDOMTree(
   }
   shadow_template_elements_.insert(template_element);
 
-  return std::pair<Node*, Element*>(shadow_root, template_element);
+  return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
+                                                      template_element);
 }
 
 }  // namespace blink

@@ -283,13 +283,20 @@ bool PopupViewViews::HandleKeyPressEvent(
   // Selects the content cell of the row with currently open sup-popup if any,
   // which closes the sub-popup and looks like going one menu level back.
   auto select_sub_popup_content_cell = [&]() {
-    if (row_with_open_sub_popup_) {
-      SetSelectedCell(CellIndex{*row_with_open_sub_popup_,
-                                PopupRowView::CellType::kContent},
-                      PopupCellSelectionSource::kKeyboard);
-      return true;
+    if (!row_with_open_sub_popup_) {
+      return false;
     }
-    return false;
+
+    size_t row_index = *row_with_open_sub_popup_;
+    // Closing the sub-popup by setting `std::nullopt` is required as
+    // `suppress_popup=true` is not enough: the sub-popup closing will be
+    // prevented by the "same value" check.
+    SetRowWithOpenSubPopup(std::nullopt);
+    SetSelectedCell(CellIndex{row_index, PopupRowView::CellType::kContent},
+                    PopupCellSelectionSource::kKeyboard,
+                    AutoselectFirstSuggestion(false),
+                    /*suppress_popup=*/true);
+    return true;
   };
 
   switch (event.windows_key_code) {
@@ -603,7 +610,12 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
 void PopupViewViews::SetSelectedCell(
     std::optional<CellIndex> cell_index,
     PopupCellSelectionSource source,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
+    AutoselectFirstSuggestion autoselect_first_suggestion,
+    bool suppress_popup) {
+  if (!controller_) {
+    return;
+  }
+
   std::optional<CellIndex> old_index = GetSelectedCell();
   if (old_index == cell_index) {
     return;
@@ -625,8 +637,12 @@ void PopupViewViews::SetSelectedCell(
     new_selected_row.SetSelectedCell(cell_index->second);
     new_selected_row.ScrollViewToVisible();
 
+    const Suggestion& suggestion =
+        controller_->GetSuggestionAt(cell_index->first);
     bool can_open_sub_popup =
-        cell_index->second == PopupRowView::CellType::kControl;
+        !suppress_popup &&
+        (cell_index->second == PopupRowView::CellType::kControl ||
+         !suggestion.is_acceptable);
 
     CHECK(!can_open_sub_popup ||
           !controller_->GetSuggestionAt(cell_index->first).children.empty());
@@ -792,6 +808,12 @@ void PopupViewViews::CreateChildViews() {
           controller(), /*a11y_selection_delegate=*/*this,
           /*selection_delegate=*/*this, current_line_number)));
     }
+  }
+
+  // Adjust the scrollable area height. Make sure this adjustment always goes
+  // after changes that can affect `body_container_`'s size.
+  if (scroll_view_ && body_container_ && IsFooterScrollable()) {
+    scroll_view_->ClipHeightTo(0, body_container_->GetPreferredSize().height());
   }
 }
 

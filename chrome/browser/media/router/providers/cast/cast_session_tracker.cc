@@ -142,7 +142,7 @@ void CastSessionTracker::HandleMediaStatusMessage(
   for (auto& media : *updated_status) {
     base::Value::Dict& media_dict = media.GetDict();
     media_dict.Set("sessionId", session_id);
-    absl::optional<int> supported_media_commands =
+    std::optional<int> supported_media_commands =
         media_dict.FindInt("supportedMediaCommands");
     if (!supported_media_commands.has_value())
       continue;
@@ -157,7 +157,7 @@ void CastSessionTracker::HandleMediaStatusMessage(
   DVLOG(2) << "Final updated MEDIA_STATUS: " << *updated_status;
   session->UpdateMedia(*updated_status);
 
-  absl::optional<int> request_id =
+  std::optional<int> request_id =
       cast_channel::GetRequestIdFromResponse(updated_message);
 
   // Notify observers of media update.
@@ -178,7 +178,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
 
   for (auto& media : media_list) {
     base::Value::Dict& media_dict = media.GetDict();
-    absl::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
+    std::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
     if (!media_session_id.has_value() || media_dict.Find("media"))
       continue;
 

@@ -62,15 +62,18 @@ class ShapeResult;
 //  ╚═════════════════════════════════════════════════════╝
 //
 // In this case the beginning of the first line would be represented as a part
-// referecing the a range into the original ShapeResult while the last word wold
-// be a separate result owned by the ShapeResultView instance. The second
+// referencing a range in the original ShapeResult while the last word
+// would be a separate result owned by the ShapeResultView instance. The second
 // and third lines would again be represented as parts.
 class PLATFORM_EXPORT ShapeResultView final
-    : public RefCounted<ShapeResultView> {
+    : public GarbageCollected<ShapeResultView> {
  public:
   // Create a new ShapeResultView from a pre-defined list of segments.
   // The segments list is assumed to be in logical order.
   struct Segment {
+    STACK_ALLOCATED();
+
+   public:
     Segment() = default;
     Segment(const ShapeResult* result, unsigned start_index, unsigned end_index)
         : result(result),
@@ -89,23 +92,26 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned start_index;
     unsigned end_index;
   };
-  static scoped_refptr<ShapeResultView> Create(
-      base::span<const Segment> segments);
+  static ShapeResultView* Create(base::span<const Segment> segments);
 
   // Creates a new ShapeResultView from a single segment.
-  static scoped_refptr<ShapeResultView> Create(const ShapeResult*);
-  static scoped_refptr<ShapeResultView> Create(const ShapeResult*,
-                                               unsigned start_index,
-                                               unsigned end_index);
-  static scoped_refptr<ShapeResultView> Create(const ShapeResultView*,
-                                               unsigned start_index,
-                                               unsigned end_index);
+  static ShapeResultView* Create(const ShapeResult*);
+  static ShapeResultView* Create(const ShapeResult*,
+                                 unsigned start_index,
+                                 unsigned end_index);
+  static ShapeResultView* Create(const ShapeResultView*,
+                                 unsigned start_index,
+                                 unsigned end_index);
 
+  struct InitData;
+  explicit ShapeResultView(const InitData& data);
   ShapeResultView(const ShapeResultView&) = delete;
   ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView();
 
-  scoped_refptr<ShapeResult> CreateShapeResult() const;
+  void Trace(Visitor*) const {}
+
+  ShapeResult* CreateShapeResult() const;
 
   unsigned StartIndex() const { return start_index_ + char_index_offset_; }
   unsigned EndIndex() const { return StartIndex() + num_characters_; }
@@ -140,7 +146,8 @@ class PLATFORM_EXPORT ShapeResultView final
                                 void* context) const;
 
   // Computes and returns the ink bounds (or visual overflow rect). This is
-  // quite expensive and involves measuring each glyph accumulating the bounds.
+  // quite expensive and involves measuring each glyph and accumulating the
+  // bounds.
   gfx::RectF ComputeInkBounds() const;
 
   scoped_refptr<const SimpleFontData> PrimaryFont() const {
@@ -151,9 +158,6 @@ class PLATFORM_EXPORT ShapeResultView final
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
 
  private:
-  struct InitData;
-  explicit ShapeResultView(const InitData& data);
-
   struct RunInfoPart;
   RunInfoPart* PopulateRunInfoParts(const Segment& segment, RunInfoPart* part);
 
@@ -182,7 +186,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   // Returns byte size, aka allocation size, of |ShapeResultView| with
   // |num_parts| count of |RunInfoPart| in flexible array member.
-  static constexpr size_t ByteSize(wtf_size_t num_parts);
+  static constexpr size_t AdditionalByteSize(wtf_size_t num_parts);
 
   scoped_refptr<const SimpleFontData> const primary_font_;
 
@@ -208,7 +212,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   const wtf_size_t num_parts_;
 
-  // TODO(yosin): We should declare |RunInoPart| in this file to avoid using
+  // TODO(yosin): We should declare |RunInfoPart| in this file to avoid using
   // dummy struct.
   // Note: To avoid declaring |RunInfoPart| here, we use dummy struct.
   struct {

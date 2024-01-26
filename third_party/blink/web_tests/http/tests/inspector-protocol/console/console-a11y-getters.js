@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`<button>Test</button>`,
     'Tests a11y getters exposed via command line API.');
 

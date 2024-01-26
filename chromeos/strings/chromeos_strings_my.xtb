@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ရှေ့သို့</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
+<translation id="1626590945318984973">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ လုပ်ဆောင်ချက်နှင့် <ph name="META_KEY" /> ခလုတ်များ မသုံးဘဲ ဖြတ်လမ်းလင့်ခ်အသစ်နှိပ်ပါ။</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
 <translation id="1643449475550628585">နောက်ခံပုံကို နေ့စဉ်ပြောင်းရန်</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="1885577615937958993">မီဒီယာကို ရှေ့သို့အမြန်သွားရန်</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
-<translation id="1897672602657312171">ရှာရန်ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) ရှာရန်ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ် နှိပ်ပါ။</translation>
 <translation id="1904932688895783618">အခြားအသုံးဝင်မည့် ရင်းမြစ်အချို့ကို ဤနေရာတွင် ဖော်ပြထားသည်-</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
 <translation id="2157660087437850958">အီမိုဂျီ ရွေးချယ်စနစ်</translation>
 <translation id="2157959690810728433">စီထားသည်</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> နှင့် <ph name="APP_NAME_2" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=3{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် အခြားအက်ပ် # ခုကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />- ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="215916044711630446">‘APN ထည့်ရန်’ ခလုတ်ကို ယခု ပိတ်လိုက်သည်</translation>
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN အသေးစိတ် ပြင်ခြင်း</translation>
 <translation id="2209788852729124853">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2212733584906323460">ပုံရိပ်ပြတ်သားကိန်းကို အမည်ပေးရန်</translation>
+<translation id="2215920961700443347">အင်တာနက် မရှိပါ။ အင်တာနက်ချိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2217935453350629363">လက်ရှိ မြန်နှုန်း</translation>
 <translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
 <translation id="222447520299472966">အနည်းဆုံး အနုပညာပြခန်း အယ်လ်ဘမ်တစ်ခုကို ရွေးရန် လိုအပ်သည်</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">ပုံ <ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
+<translation id="2465272316171730950">လုပ်နိုင်စွမ်း ပြည့်နေပါပြီ။ ခဏအကြာတွင် ပြန်လာပါ။</translation>
 <translation id="248546197012830854">စက်အော့ဖ်လိုင်းဖြစ်နေသည်။ အကူအညီ အကြောင်းအရာကြည့်ရန် Wi-Fi ကွန်ရက်သို့ ချိတ်ဆက်ပါ။</translation>
 <translation id="2491955442992294626">အခြားဝင်းဒိုးတစ်ခုကို သင်သုံးနေစဉ် ကီးများကို စမ်းသပ်ခြင်း မပြုပါ</translation>
 <translation id="2493126929778606526">အလိုအလျောက်ရွေးထားသော သင်၏ အကောင်းဆုံးဓာတ်ပုံများ</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">လက်ရှိနောက်ခံပုံကို ပြန်လည်စတင်ရန်</translation>
 <translation id="2512979179176933762">ဝင်းဒိုးများ ပြပါ</translation>
 <translation id="2513396635448525189">အကောင့်ဝင်ရန်ပုံ</translation>
-<translation id="2515109918609218604">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ လုပ်ဆောင်ချက်နှင့် ရှာရန်ခလုတ်များ မသုံးဘဲ ဖြတ်လမ်းလင့်ခ်အသစ်နှိပ်ပါ။</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2521835766824839541">ယခင်တစ်ပုဒ်သို့ သွားရန်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334"><ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />နောက်ခံ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> အသစ်များကို ယခု သင်သုံးနိုင်ပြီ</translation>
 <translation id="4117637339509843559">အမှောင်မုဒ်</translation>
 <translation id="4130035430755296270">နောက်ထပ် အပြင်အဆင်နည်းလမ်းများအတွက် မောက်စ်ကို ဆက်ပြီးတင်ထားပါ</translation>
+<translation id="4130750466177569591">ကျွန်ုပ် သဘောတူ</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်လိုက်သည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်လိုက်သည်}}</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">တောက်ပမှု လျှော့ရန်</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
 <translation id="4176659219503619100">ထိန်းချုပ်ခန်း</translation>
-<translation id="4185315616950253617">ထိပ်ဆုံးတန်းခလုတ်များပါသော ဖြတ်လမ်းလင့်ခ်တွင် ရှာရန်ခလုတ် လိုအပ်သည်။</translation>
 <translation id="420283545744377356">စခရင်နားချိန်ပုံ ပိတ်ရန်</translation>
 <translation id="4213104098953699324">USB ကီးဘုတ်</translation>
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">ပိတ်ထားရန်</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ပြန်စနေသည်</translation>
 <translation id="4395835743215824109">ကီးဘုတ် စိတ်ကြိုက်ပြင်ရန်</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4415951057168511744">လက်ရှိ ကိုယ်စားပြုပုံ</translation>
+<translation id="4417830657741848074">သင့်စီမံခန့်ခွဲသူက အက်ပ်အချို့ကို အလိုအလျောက်စတင်ရန် စနစ်ထည့်သွင်းထားသည်။ ၎င်းအက်ပ်များအနက်အချို့ကို ပိတ်မည်မဟုတ်ပါ။</translation>
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ပိတ်ထားသည်</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">ပြတ်ရွေ့သွားသည့်မြေ စခရင်နားချိန်ပုံ</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
+<translation id="4500722292849917410">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ မွမ်းမံခလုတ် (Ctrl၊ Alt၊ Shift သို့မဟုတ် <ph name="META_KEY" />) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4500966230243561393">အင်တာဖေ့စ် အရောင်</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>
 <translation id="4507392511610824664">တောက်ပမှု တိုးရန်</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
 <translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
 <translation id="4839698083503556542">ရုပ်ရှင် ဖန်တီးပါ</translation>
+<translation id="48409034532829769">သင့်စီမံခန့်ခွဲသူက “<ph name="APP_NAME" />” ကို အလိုအလျောက်စတင်ရန် စနစ်ထည့်သွင်းထားသည်။ ဤအက်ပ်ကို ပိတ်မည်မဟုတ်ပါ။</translation>
 <translation id="484462545196658690">အော်တို</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ကို ရွေးချယ်ထားသည်၊ <ph name="TOPIC_SOURCE" /> အယ်လ်ဘမ်များကိုရွေးရန် Enter နှိပ်ပါ</translation>
 <translation id="484790837831576105">(Android) DNS ဖြေရှင်းချက်</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">ခွဲထုတ်ရန်</translation>
 <translation id="4972592110715526173">မုဒ်ပြောင်းရန်</translation>
 <translation id="498186245079027698">စကင်ဖတ်စက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ စကင်ဖတ်ထားသောဖိုင်များကို သိမ်းရန် စက်တွင်းနေရာ လုံလောက်ကြောင်း သေချာပါစေ။</translation>
+<translation id="4982627662315910959">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ Shift နှင့် မွမ်းမံခလုတ် (Ctrl၊ Alt၊ သို့မဟုတ် <ph name="META_KEY" />) ၁ ခု ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">စာမျက်နှာများ</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">အမှောင်နောက်ခံ အချိန်ဇယား</translation>
 <translation id="5229344016299762883">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" ကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် ၁ ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် # ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}}</translation>
 <translation id="5252456968953390977">ရွမ်မင်း</translation>
 <translation id="5257811368506016604">အလင်းမုဒ် ဖွင့်ရန်</translation>
 <translation id="5264277876637023664">CPU စမ်းသပ်မှု လုပ်ဆောင်ရန်</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="725133483556299729">အီးမေးလ်ရွေးရန်</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
-<translation id="7273347807225967898">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ မွမ်းမံပေးရေး ကီး (Ctrl၊ Alt၊ Shift၊ Search၊ သို့မဟုတ် Launcher) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
+<translation id="7271932918253517778">ထိပ်ဆုံးတန်းခလုတ်များပါဝင်သော ဖြတ်လမ်းလင့်ခ်တွင် <ph name="META_KEY" /> ခလုတ် လိုအပ်သည်။</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">လေညှင်း ခံစားရန်</translation>
 <translation id="7287310195820267359">နောက်ခံပုံ စုစည်းမှုများ</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">အထွေထွေ သတ်မှတ်ချက်များ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ကို အလိုအလျောက် စတင်ထားသည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်ထားသည်}}</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
 <translation id="8017679124341497925">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ပြီးပါပြီ</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
 <translation id="8094062939584182041">ဤပြဿနာအကြောင်း အီးမေးလ်ပို့ခွင့် Google ကိုပေးရန်</translation>
 <translation id="8104083085214006426">သင်သည် အများသုံးဖြစ်ပြီး မလုံခြုံသောကွန်ရက်ကို သုံးနေသည်</translation>
-<translation id="8111706652656628199">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ Shift နှင့် မွမ်းမံပေးရေး ကီး နောက် ၁ ခု (Ctrl၊ Alt၊ Search၊ သို့မဟုတ် Launcher) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="811820734797650957">(Android) ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်နိုင်သည်</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8132480444149501833">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ တောင်းဆိုရန်</translation>

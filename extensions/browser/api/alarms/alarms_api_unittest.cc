@@ -41,11 +41,17 @@ class AlarmDelegate : public AlarmManager::Delegate {
   ~AlarmDelegate() override {}
   void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
     alarms_seen.push_back(alarm.js_alarm->name);
-    if (base::RunLoop::IsRunningOnCurrentThread())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (!quit_closure_.is_null()) {
+      std::move(quit_closure_).Run();
+    }
   }
-
+  void WaitForAlarm() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
   std::vector<std::string> alarms_seen;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -138,7 +144,7 @@ void ExtensionAlarmsTestGetAlarmCallback(ExtensionAlarmsTest* test,
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 
   ASSERT_EQ(1u, test->alarm_delegate_->alarms_seen.size());
   EXPECT_EQ("", test->alarm_delegate_->alarms_seen[0]);
@@ -170,12 +176,12 @@ void ExtensionAlarmsTestCreateRepeatingGetAlarmCallback(
   test->test_clock_.Advance(base::Seconds(1));
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 
   test->test_clock_.Advance(base::Seconds(1));
   // Wait again, and ensure the alarm fires again.
   RunScheduleNextPoll(test->alarm_manager_);
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 
   ASSERT_EQ(2u, test->alarm_delegate_->alarms_seen.size());
   EXPECT_EQ("", test->alarm_delegate_->alarms_seen[0]);
@@ -212,7 +218,7 @@ void ExtensionAlarmsTestCreateAbsoluteGetAlarm1Callback(
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 
   test->alarm_manager_->GetAlarm(
       test->extension()->id(), std::string(),
@@ -242,7 +248,8 @@ void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm2Callback(
   EXPECT_THAT(test->alarm_delegate_->alarms_seen, testing::ElementsAre(""));
 
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.7));
-  base::RunLoop().Run();
+
+  test->alarm_delegate_->WaitForAlarm();
 
   test->alarm_manager_->GetAlarm(
       test->extension()->id(), std::string(),
@@ -262,7 +269,7 @@ void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm1Callback(
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 
   test->alarm_manager_->GetAlarm(
       test->extension()->id(), std::string(),
@@ -426,7 +433,8 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
   // fire.
   test->test_clock_.Advance(base::Milliseconds(60));
   RunScheduleNextPoll(test->alarm_manager_);
-  base::RunLoop().Run();
+
+  test->alarm_delegate_->WaitForAlarm();
 
   ASSERT_EQ(1u, test->alarm_delegate_->alarms_seen.size());
   EXPECT_EQ("", test->alarm_delegate_->alarms_seen[0]);
@@ -568,7 +576,9 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     alarm.js_alarm->scheduled_time = 3 * 60000;
     alarm.js_alarm->period_in_minutes = 3;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm));
-    base::RunLoop().Run();
+
+    alarm_delegate_->WaitForAlarm();
+
     EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3 * 60) + base::Minutes(3),
               alarm_manager_->next_poll_time_);
     RemoveAllAlarms();
@@ -587,7 +597,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     alarm3.js_alarm->scheduled_time = 25 * 60000;
     alarm3.js_alarm->period_in_minutes = 25;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm3));
-    base::RunLoop().Run();
+    alarm_delegate_->WaitForAlarm();
     EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4 * 60) + base::Minutes(4),
               alarm_manager_->next_poll_time_);
     RemoveAllAlarms();
@@ -623,7 +633,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, TimerRunning) {
   CreateAlarm("[\"a\", {\"delayInMinutes\": 0.001}]");
   EXPECT_TRUE(alarm_manager_->timer_.IsRunning());
   test_clock_.Advance(base::Milliseconds(60));
-  base::RunLoop().Run();
+  alarm_delegate_->WaitForAlarm();
   EXPECT_FALSE(alarm_manager_->timer_.IsRunning());
   CreateAlarm("[\"bb\", {\"delayInMinutes\": 10}]");
   EXPECT_TRUE(alarm_manager_->timer_.IsRunning());
@@ -689,7 +699,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
   test->test_clock_.Advance(base::Milliseconds(10));
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
-  base::RunLoop().Run();
+  test->alarm_delegate_->WaitForAlarm();
 }
 
 // Tests that alarms with very small period written to storage are also

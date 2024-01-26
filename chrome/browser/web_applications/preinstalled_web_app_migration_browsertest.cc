@@ -115,7 +115,7 @@ class PreinstalledWebAppMigrationBrowserTest
   }
 
   webapps::AppId GetWebAppId() const {
-    return GenerateAppId(/*manifest_id=*/absl::nullopt, GetWebAppUrl());
+    return GenerateAppId(/*manifest_id=*/std::nullopt, GetWebAppUrl());
   }
 
   // extensions::ExtensionBrowserTest:
@@ -224,7 +224,7 @@ class PreinstalledWebAppMigrationBrowserTest
                            bool pass_config = true) {
     base::RunLoop run_loop;
 
-    absl::optional<webapps::InstallResultCode> code;
+    std::optional<webapps::InstallResultCode> code;
 
     auto callback = base::BindLambdaForTesting(
         [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -295,7 +295,7 @@ class PreinstalledWebAppMigrationBrowserTest
  protected:
   const char* uninstall_and_replace_ = kExtensionId;
   base::test::ScopedFeatureList features_;
-  absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
+  std::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 
@@ -819,6 +819,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/old/");
+    info->scope = info->start_url;
     info->title = u"Old app";
     old_app_id = web_app::test::InstallWebApp(profile(), std::move(info));
     apps::AppReadinessWaiter(profile(), old_app_id).Await();
@@ -837,6 +838,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/new/");
+    info->scope = info->start_url;
     info->title = u"New app";
 
     WebAppInstallParams install_params;

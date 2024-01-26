@@ -5,8 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_STRINGPRINTF_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_STRINGPRINTF_H_
 
-#include <stdarg.h>  // va_list
-
+#include <cstdarg>  // va_list
 #include <string>
 
 #include "build/build_config.h"

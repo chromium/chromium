@@ -105,6 +105,23 @@ class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
         size, std::move(callback));
   }
 
+  void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ParseEncryptedSliceHeaderCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::ParseEncryptedSliceHeader,
+                         weak_factory_.GetWeakPtr(), secure_handle, offset,
+                         stream_data, std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().ParseEncryptedSliceHeader(
+        secure_handle, offset, stream_data, std::move(callback));
+  }
+
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<BrowserCdmFactoryProxy> weak_factory_{this};
@@ -285,6 +302,27 @@ void CdmFactoryDaemonProxyAsh::AllocateSecureBuffer(
                      base::Unretained(this), size, std::move(callback)));
 }
 
+void CdmFactoryDaemonProxyAsh::ParseEncryptedSliceHeader(
+    uint64_t secure_handle,
+    uint32_t offset,
+    const std::vector<uint8_t>& stream_data,
+    ParseEncryptedSliceHeaderCallback callback) {
+  DCHECK(mojo_task_runner_->RunsTasksInCurrentSequence());
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::ParseEncryptedSliceHeader called";
+  if (daemon_remote_.is_bound()) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    ProxyParseEncryptedSliceHeader(secure_handle, offset, stream_data,
+                                   std::move(callback));
+    return;
+  }
+
+  // base::Unretained is safe below because this class is a singleton.
+  EstablishDaemonConnection(
+      base::BindOnce(&CdmFactoryDaemonProxyAsh::ProxyParseEncryptedSliceHeader,
+                     base::Unretained(this), secure_handle, offset, stream_data,
+                     std::move(callback)));
+}
+
 void CdmFactoryDaemonProxyAsh::EstablishDaemonConnection(
     base::OnceClosure callback) {
   // This may have happened already.
@@ -366,6 +404,20 @@ void CdmFactoryDaemonProxyAsh::ProxyAllocateSecureBuffer(
     return;
   }
   daemon_remote_->AllocateSecureBuffer(size, std::move(callback));
+}
+
+void CdmFactoryDaemonProxyAsh::ProxyParseEncryptedSliceHeader(
+    uint64_t secure_handle,
+    uint32_t offset,
+    const std::vector<uint8_t>& stream_data,
+    ParseEncryptedSliceHeaderCallback callback) {
+  if (!daemon_remote_) {
+    LOG(ERROR) << "daemon_remote_ interface is not connected";
+    std::move(callback).Run(false, {});
+    return;
+  }
+  daemon_remote_->ParseEncryptedSliceHeader(secure_handle, offset, stream_data,
+                                            std::move(callback));
 }
 
 void CdmFactoryDaemonProxyAsh::SendDBusRequest(base::ScopedFD fd,

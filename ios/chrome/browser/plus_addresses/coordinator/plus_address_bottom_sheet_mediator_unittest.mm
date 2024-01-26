@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
+#import "components/plus_addresses/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
@@ -120,7 +121,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
                            activeUrl:GURL(kFacet)
                     autofillCallback:base::DoNothing()];
   mediator.consumer = consumer_;
-  OCMExpect([consumer_ notifyError]);
+  OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kReservePlusAddressError]);
   [mediator reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -168,7 +171,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddressError) {
       didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
   [mediator reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  OCMExpect([consumer_ notifyError]);
+  OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kConfirmPlusAddressError]);
   service.set_force_error_for_testing(/*force_error_for_testing=*/true);
   [mediator confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

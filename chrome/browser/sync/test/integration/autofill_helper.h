@@ -117,7 +117,7 @@ class AutofillProfileChecker : public StatusChangeChecker,
  public:
   AutofillProfileChecker(int profile_a,
                          int profile_b,
-                         absl::optional<unsigned int> expected_count);
+                         std::optional<unsigned int> expected_count);
   ~AutofillProfileChecker() override;
 
   // StatusChangeChecker implementation.
@@ -130,7 +130,7 @@ class AutofillProfileChecker : public StatusChangeChecker,
  private:
   const int profile_a_;
   const int profile_b_;
-  const absl::optional<unsigned int> expected_count_;
+  const std::optional<unsigned int> expected_count_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_AUTOFILL_HELPER_H_

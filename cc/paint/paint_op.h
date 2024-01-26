@@ -26,6 +26,7 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -33,6 +34,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -54,8 +56,12 @@ class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:
   explicit ThreadsafePath(const SkPath& path) : SkPath(path) {
     updateBoundsCache();
+    getGenerationID();
   }
-  ThreadsafePath() { updateBoundsCache(); }
+  ThreadsafePath() {
+    updateBoundsCache();
+    getGenerationID();
+  }
 };
 
 // See PaintOp::Serialize/Deserialize for comments.  Serialize() of derived
@@ -88,6 +94,7 @@ enum class PaintOpType : uint8_t {
   kDrawSkottie,
   kDrawSlug,
   kDrawTextBlob,
+  kDrawVertices,
   kNoop,
   kRestore,
   kRotate,
@@ -718,6 +725,40 @@ class CC_PAINT_EXPORT DrawRRectOp final : public PaintOpWithFlags {
 
  private:
   DrawRRectOp() : PaintOpWithFlags(kType) {}
+};
+
+class CC_PAINT_EXPORT DrawVerticesOp final : public PaintOpWithFlags {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::kDrawVertices;
+  static constexpr bool kIsDrawOp = true;
+
+  DrawVerticesOp(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                 scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                 scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                 const PaintFlags&);
+  ~DrawVerticesOp();
+
+  static void RasterWithFlags(const DrawVerticesOp* op,
+                              const PaintFlags* flags,
+                              SkCanvas* canvas,
+                              const PlaybackParams& params);
+
+  bool IsValid() const {
+    return flags.IsValid() && vertices && uvs && indices &&
+           vertices->data().size() > 0 &&
+           vertices->data().size() == uvs->data().size() &&
+           indices->data().size() > 0 && (indices->data().size() % 3) == 0;
+  }
+
+  bool EqualsForTesting(const DrawVerticesOp& other) const;
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  scoped_refptr<RefCountedBuffer<SkPoint>> vertices;
+  scoped_refptr<RefCountedBuffer<SkPoint>> uvs;
+  scoped_refptr<RefCountedBuffer<uint16_t>> indices;
+
+ private:
+  DrawVerticesOp();
 };
 
 class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {

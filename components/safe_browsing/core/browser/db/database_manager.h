@@ -128,10 +128,6 @@ class SafeBrowsingDatabaseManager
   // Returns true if the url's scheme can be checked.
   virtual bool CanCheckUrl(const GURL& url) const = 0;
 
-  // Returns true if checks are never done synchronously, and therefore
-  // always have some latency.
-  virtual bool ChecksAreAlwaysAsync() const = 0;
-
   //
   // Methods to check (possibly asynchronously) whether a given resource is
   // safe. If the database manager can't determine it synchronously, the

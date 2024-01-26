@@ -740,13 +740,23 @@ class RawPtrRewriter {
 
     match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
 
+    // This is used to exclude unions from certain files that are known to have
+    // safe usage of union (i.e. doesn't cause ref count mismatch), such as
+    // std::optional and absl::variant.
+    files_with_audited_unions =
+        std::make_unique<FilterFile>(std::vector<std::string>{
+            "third_party/libc++/src/include/optional",
+            "third_party/abseil-cpp/absl/types/internal/variant.h",
+        });
     // Matches fields in unions (both directly rewritable fields as well as
     // union fields that embed a struct that contains a rewritable field).  See
     // also the testcases in tests/gen-unions-test.cc.
     auto union_field_decl_matcher = recordDecl(allOf(
-        isUnion(), forEach(fieldDecl(anyOf(field_decl_matcher,
-                                           hasType(typeWithEmbeddedFieldDecl(
-                                               field_decl_matcher)))))));
+        isUnion(),
+        unless(isInLocationListedInFilterFile(files_with_audited_unions.get())),
+        forEach(fieldDecl(
+            anyOf(field_decl_matcher,
+                  hasType(typeWithEmbeddedFieldDecl(field_decl_matcher)))))));
 
     match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
 
@@ -806,6 +816,7 @@ class RawPtrRewriter {
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
   FilteredExprWriter reinterpret_cast_struct_writer;
+  std::unique_ptr<FilterFile> files_with_audited_unions;
   const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 

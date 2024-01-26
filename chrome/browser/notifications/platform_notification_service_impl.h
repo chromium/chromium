@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -23,16 +24,15 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class GURL;
 class Profile;
 
-namespace content {
+namespace blink {
 struct NotificationResources;
-}  // namespace content
+}  // namespace blink
 
 // The platform notification service is the profile-specific entry point through
 // which Web Notifications can be controlled.
@@ -124,7 +124,7 @@ class PlatformNotificationServiceImpl
   static void DidGetBackgroundSourceId(
       base::OnceClosure recorded_closure,
       const content::NotificationDatabaseData& data,
-      absl::optional<ukm::SourceId> source_id);
+      std::optional<ukm::SourceId> source_id);
 
   // Creates a new Web Notification-based Notification object. Should only be
   // called when the notification is first shown. |web_app_hint_url| is used to
@@ -142,13 +142,13 @@ class PlatformNotificationServiceImpl
 
   // Finds the AppId associated with |web_app_hint_url| when this is part of
   // an installed experience, and the notification can be attributed as such.
-  absl::optional<webapps::AppId> FindWebAppId(
+  std::optional<webapps::AppId> FindWebAppId(
       const GURL& web_app_hint_url) const;
 
   // Finds the icon and title associated with |web_app_id| when this
   // is part of an installed experience, and the notification can be attributed
   // as such.
-  absl::optional<WebAppIconAndTitle> FindWebAppIconAndTitle(
+  std::optional<WebAppIconAndTitle> FindWebAppIconAndTitle(
       const GURL& web_app_hint_url) const;
 
   // Identifies whether the notification was sent from an installed web app or

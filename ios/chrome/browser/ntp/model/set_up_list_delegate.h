@@ -9,7 +9,8 @@
 @protocol SetUpListDelegate
 
 // Indicates that a SetUpList item has been completed.
-- (void)setUpListItemDidComplete:(SetUpListItem*)item;
+- (void)setUpListItemDidComplete:(SetUpListItem*)item
+               allItemsCompleted:(BOOL)completed;
 
 @end
 

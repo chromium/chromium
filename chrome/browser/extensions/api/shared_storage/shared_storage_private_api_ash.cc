@@ -39,7 +39,7 @@ SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;
 SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
-  absl::optional<shared_api::Set::Params> params =
+  std::optional<shared_api::Set::Params> params =
       shared_api::Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =
@@ -55,7 +55,7 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
-  absl::optional<shared_api::Remove::Params> params =
+  std::optional<shared_api::Remove::Params> params =
       shared_api::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =

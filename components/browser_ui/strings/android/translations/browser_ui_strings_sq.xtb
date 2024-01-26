@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1426410128494586442">Po</translation>
+<translation id="1434873037477293673">karta e uljes së çmimit</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
 <translation id="1510341833810331442">Sajtet nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blloko sajtet që të mos përdorin pajisjen e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="6447842834002726250">Kukit</translation>
+<translation id="6452138246455930388">Ulje çmimi në skedën tënde të hapur, nga <ph name="OLD_PRICE" /> deri në <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kur dritarja është e ngushtë, kërko pamjen për celular</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="652937045869844725">Provo të lejosh kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="6749077623962119521">Të rivendosen lejet?</translation>
 <translation id="6766622839693428701">Rrëshqit shpejt poshtë për ta mbyllur.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Nga <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Zgjidh një opsion për <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6818926723028410516">Zgjidh artikujt</translation>
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
+<translation id="6867014948848323204">Nga <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blloko sajtet që të mos lexojnë tekstin dhe imazhet nga kujtesa e fragmenteve</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6950072572526089586">Një sajt që viziton mund të ruajë informacione për gjërat që ti po bën që ai të mund të funksionojë siç pritet, p.sh. për të të mbajtur të identifikuar në një sajt ose për të ruajtur artikuj në karrocën e blerjeve. Shpesh sajtet i ruajnë këto informacione përkohësisht në pajisjen tënde.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Magjistari i mrekullueshëm i Ozit</translation>
 <translation id="7684642910516280563">Mos lejo që një sajt të përdorë kukit e palëve të treta</translation>
 <translation id="7719367874908701697">Zmadhimi i faqes</translation>
+<translation id="7770832849480336015">Fshih "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>

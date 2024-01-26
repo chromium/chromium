@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, createNestedTestFolders, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, createNestedTestFolders, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -80,6 +80,8 @@ async function showHiddenFiles(appId) {
  * Delete files in MyFiles and ensure they are moved to /.Trash.
  * Then delete items from /.Trash/files and /.Trash/info, then delete /.Trash.
  */
+// @ts-ignore: error TS4111: Property 'trashMoveToTrash' comes from an index
+// signature, so it must be accessed with ['trashMoveToTrash'].
 testcase.trashMoveToTrash = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -149,6 +151,8 @@ testcase.trashMoveToTrash = async () => {
 /**
  * Selects a file and a folder at the same time then deletes both.
  */
+// @ts-ignore: error TS4111: Property 'trashMultipleEntries' comes from an index
+// signature, so it must be accessed with ['trashMultipleEntries'].
 testcase.trashMultipleEntries = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.photos], []);
@@ -169,6 +173,8 @@ testcase.trashMultipleEntries = async () => {
 /**
  * Selects a non-empty folder and deletes it.
  */
+// @ts-ignore: error TS4111: Property 'trashNonEmptyFolder' comes from an index
+// signature, so it must be accessed with ['trashNonEmptyFolder'].
 testcase.trashNonEmptyFolder = async () => {
   // Build folder structure nested-folder0/nested-folder1.
   const entries = createNestedTestFolders(2);
@@ -191,6 +197,8 @@ testcase.trashNonEmptyFolder = async () => {
 /**
  * Permanently delete files in Downloads.
  */
+// @ts-ignore: error TS4111: Property 'trashPermanentlyDelete' comes from an
+// index signature, so it must be accessed with ['trashPermanentlyDelete'].
 testcase.trashPermanentlyDelete = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -213,6 +221,9 @@ testcase.trashPermanentlyDelete = async () => {
  * Files send to the Trash from ~/MyFiles should be able to be deleted once they
  * are in Trash.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashDeleteFromTrashOriginallyFromMyFiles' comes from an index signature, so
+// it must be accessed with ['trashDeleteFromTrashOriginallyFromMyFiles'].
 testcase.trashDeleteFromTrashOriginallyFromMyFiles = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -253,6 +264,8 @@ testcase.trashDeleteFromTrashOriginallyFromMyFiles = async () => {
 /**
  * Delete files then restore via progress center panel button 'Undo'.
  */
+// @ts-ignore: error TS4111: Property 'trashRestoreFromToast' comes from an
+// index signature, so it must be accessed with ['trashRestoreFromToast'].
 testcase.trashRestoreFromToast = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -282,6 +295,8 @@ testcase.trashRestoreFromToast = async () => {
 /**
  * Delete files then restore via Trash file context menu.
  */
+// @ts-ignore: error TS4111: Property 'trashRestoreFromTrash' comes from an
+// index signature, so it must be accessed with ['trashRestoreFromTrash'].
 testcase.trashRestoreFromTrash = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -307,6 +322,7 @@ testcase.trashRestoreFromTrash = async () => {
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
   // Check that 'Restore from Trash' and 'Delete' are shown.
+  // @ts-ignore: error TS7006: Parameter 'command' implicitly has an 'any' type.
   const checkMenu = async command => {
     await remoteCall.waitForElement(
         appId,
@@ -331,6 +347,9 @@ testcase.trashRestoreFromTrash = async () => {
 /**
  * Delete files then restore via keyboard shortcut.
  */
+// @ts-ignore: error TS4111: Property 'trashRestoreFromTrashShortcut' comes from
+// an index signature, so it must be accessed with
+// ['trashRestoreFromTrashShortcut'].
 testcase.trashRestoreFromTrashShortcut = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -367,6 +386,8 @@ testcase.trashRestoreFromTrashShortcut = async () => {
 /**
  * Delete files (move them into trash) then empty trash using the banner.
  */
+// @ts-ignore: error TS4111: Property 'trashEmptyTrash' comes from an index
+// signature, so it must be accessed with ['trashEmptyTrash'].
 testcase.trashEmptyTrash = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -403,6 +424,8 @@ testcase.trashEmptyTrash = async () => {
 /**
  * Delete files (move them into trash) then empty trash using shortcut.
  */
+// @ts-ignore: error TS4111: Property 'trashEmptyTrashShortcut' comes from an
+// index signature, so it must be accessed with ['trashEmptyTrashShortcut'].
 testcase.trashEmptyTrashShortcut = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -439,6 +462,8 @@ testcase.trashEmptyTrashShortcut = async () => {
 /**
  * Delete files (move them into trash) then permanently delete.
  */
+// @ts-ignore: error TS4111: Property 'trashDeleteFromTrash' comes from an index
+// signature, so it must be accessed with ['trashDeleteFromTrash'].
 testcase.trashDeleteFromTrash = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -465,6 +490,9 @@ testcase.trashDeleteFromTrash = async () => {
 /**
  * Delete files (move them into trash) then permanently delete.
  */
+// @ts-ignore: error TS4111: Property 'trashDeleteFromTrashOriginallyFromDrive'
+// comes from an index signature, so it must be accessed with
+// ['trashDeleteFromTrashOriginallyFromDrive'].
 testcase.trashDeleteFromTrashOriginallyFromDrive = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -493,6 +521,8 @@ testcase.trashDeleteFromTrashOriginallyFromDrive = async () => {
  * When selecting items whilst in the trash root, no files tasks should be
  * available.
  */
+// @ts-ignore: error TS4111: Property 'trashNoTasksInTrashRoot' comes from an
+// index signature, so it must be accessed with ['trashNoTasksInTrashRoot'].
 testcase.trashNoTasksInTrashRoot = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -521,6 +551,9 @@ testcase.trashNoTasksInTrashRoot = async () => {
 /**
  * Double clicking on a file while in Trash shows a disallowed alert dialog.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashDoubleClickOnFileInTrashRootShowsDialog' comes from an index signature,
+// so it must be accessed with ['trashDoubleClickOnFileInTrashRootShowsDialog'].
 testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -533,6 +566,7 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseDoubleClick', appId, ['#file-list [file-name="hello.txt"]']));
   await remoteCall.waitUntilTaskExecutes(
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       appId, DOWNLOADS_FAKE_TASKS[0].descriptor, ['hello.txt']);
 
   // Delete item and wait for it to be removed (no dialog).
@@ -557,6 +591,10 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
  * Pressing Enter on a file while in Trash shows a disallowed confirm dialog
  * with a restore button that performs restoration on the file.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton' comes from
+// an index signature, so it must be accessed with
+// ['trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton'].
 testcase.trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton =
     async () => {
   const appId = await setupAndWaitUntilReady(
@@ -579,6 +617,8 @@ testcase.trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton =
 
   // Press "Enter" on the file and ensure an alert dialog is displayed.
   const enterKey = ['#file-list', 'Enter', false, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...enterKey);
   await remoteCall.waitForElement(appId, '.files-confirm-dialog');
 
@@ -592,6 +632,9 @@ testcase.trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton =
 /**
  * Double clicking on a file while in Trash shows a disallowed alert dialog.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashTraversingFolderShowsDisallowedDialog' comes from an index signature,
+// so it must be accessed with ['trashTraversingFolderShowsDisallowedDialog'].
 testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -621,6 +664,8 @@ testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
   const enterKey = ['#file-list', 'Enter', false, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...enterKey);
   await remoteCall.waitForElement(appId, '.files-confirm-dialog');
 };
@@ -629,6 +674,9 @@ testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
  * Tests that dragging an accepted file over Trash shows that it accepts the
  * action and performs a trash operation (move a move).
  */
+// @ts-ignore: error TS4111: Property 'trashDragDropRootAcceptsEntries' comes
+// from an index signature, so it must be accessed with
+// ['trashDragDropRootAcceptsEntries'].
 testcase.trashDragDropRootAcceptsEntries = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -667,6 +715,9 @@ testcase.trashDragDropRootAcceptsEntries = async () => {
  * Tests that dragging a file from a location that Trash is not enabled (Android
  * files in this case) shows it is denied.
  */
+// @ts-ignore: error TS4111: Property 'trashDragDropFromDisallowedRootsFails'
+// comes from an index signature, so it must be accessed with
+// ['trashDragDropFromDisallowedRootsFails'].
 testcase.trashDragDropFromDisallowedRootsFails = async () => {
   // Open Files app on Play Files.
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
@@ -677,6 +728,7 @@ testcase.trashDragDropFromDisallowedRootsFails = async () => {
 
   // Set the source of the drag event to the name of the file.
   const source = `#file-list li[file-name="${
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       BASIC_ANDROID_ENTRY_SET[0].nameText}"] .entry-name`;
 
   // Select the source file.
@@ -709,6 +761,9 @@ testcase.trashDragDropFromDisallowedRootsFails = async () => {
  * Tests that dragging and dropping on the Trash root actually trashes the item
  * and it appears in Trash after drop completed.
  */
+// @ts-ignore: error TS4111: Property 'trashDragDropRootPerformsTrashAction'
+// comes from an index signature, so it must be accessed with
+// ['trashDragDropRootPerformsTrashAction'].
 testcase.trashDragDropRootPerformsTrashAction = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -743,6 +798,10 @@ testcase.trashDragDropRootPerformsTrashAction = async () => {
  * Tests that dragging an entry that is non-modifiable (Downloads in this case)
  * should not be allowed despite residing in a trashable location.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashDragDropNonModifiableEntriesCantBeTrashed' comes from an index
+// signature, so it must be accessed with
+// ['trashDragDropNonModifiableEntriesCantBeTrashed'].
 testcase.trashDragDropNonModifiableEntriesCantBeTrashed = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -779,10 +838,15 @@ testcase.trashDragDropNonModifiableEntriesCantBeTrashed = async () => {
  * Tests the Trash root is not visible when opening Files app as a select file
  * dialog.
  */
+// @ts-ignore: error TS4111: Property 'trashDontShowTrashRootOnSelectFileDialog'
+// comes from an index signature, so it must be accessed with
+// ['trashDontShowTrashRootOnSelectFileDialog'].
 testcase.trashDontShowTrashRootOnSelectFileDialog = async () => {
   // Open Files app on Downloads as a select file dialog.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, [],
+      // @ts-ignore: error TS2345: Argument of type '{ type: string; }' is not
+      // assignable to parameter of type 'FilesAppState'.
       {type: DialogType.SELECT_OPEN_FILE});
 
   // Navigate to the My files directory to ensure the directory tree has fully
@@ -799,10 +863,16 @@ testcase.trashDontShowTrashRootOnSelectFileDialog = async () => {
  * Tests the Trash root is not visible when Files app is used as a select file
  * dialog within Android applications.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashDontShowTrashRootWhenOpeningAsAndroidFilePicker' comes from an index
+// signature, so it must be accessed with
+// ['trashDontShowTrashRootWhenOpeningAsAndroidFilePicker'].
 testcase.trashDontShowTrashRootWhenOpeningAsAndroidFilePicker = async () => {
   // Open Files app on Downloads as an Android file picker.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, [],
+      // @ts-ignore: error TS2345: Argument of type '{ volumeFilter: string[];
+      // }' is not assignable to parameter of type 'FilesAppState'.
       {volumeFilter: ['media-store-files-only']});
 
   // Navigate to the My files directory to ensure the directory tree has fully
@@ -819,6 +889,9 @@ testcase.trashDontShowTrashRootWhenOpeningAsAndroidFilePicker = async () => {
  * Tests that a trashed file with a deletion date >30 days gets permanently
  * removed.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashEnsureOldEntriesArePeriodicallyRemoved' comes from an index signature,
+// so it must be accessed with ['trashEnsureOldEntriesArePeriodicallyRemoved'].
 testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -863,6 +936,9 @@ testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
  * Tests that dragging and dropping out of the Trash root restore files to the
  * location that was requested (i.e. the drop target).
  */
+// @ts-ignore: error TS4111: Property
+// 'trashDragDropOutOfTrashPerformsRestoration' comes from an index signature,
+// so it must be accessed with ['trashDragDropOutOfTrashPerformsRestoration'].
 testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -903,6 +979,10 @@ testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
  * Tests that the "Moving to trash" visual signal that is shown whilst a trash
  * operation is in progress, does not contain the "Undo" button.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashRestorationDialogInProgressDoesntShowUndo' comes from an index
+// signature, so it must be accessed with
+// ['trashRestorationDialogInProgressDoesntShowUndo'].
 testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -935,6 +1015,10 @@ testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
  * Tests that the `TrashEnabled` preference adds and removes the trash root
  * from the directory tree.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashTogglingTrashEnabledPrefUpdatesDirectoryTree' comes from an index
+// signature, so it must be accessed with
+// ['trashTogglingTrashEnabledPrefUpdatesDirectoryTree'].
 testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -980,6 +1064,10 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
  * from the directory tree and when navigated on the Trash root, removal
  * navigates the user back to My files.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashTogglingTrashEnabledNavigatesAwayFromTrashRoot' comes from an index
+// signature, so it must be accessed with
+// ['trashTogglingTrashEnabledNavigatesAwayFromTrashRoot'].
 testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -1002,6 +1090,9 @@ testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
  * Verify that files that have their parents trashed show an alert dialog to
  * indicate that restoration is not possible.
  */
+// @ts-ignore: error TS4111: Property 'trashCantRestoreWhenParentDoesntExist'
+// comes from an index signature, so it must be accessed with
+// ['trashCantRestoreWhenParentDoesntExist'].
 testcase.trashCantRestoreWhenParentDoesntExist = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, NESTED_ENTRY_SET, []);
@@ -1047,6 +1138,10 @@ testcase.trashCantRestoreWhenParentDoesntExist = async () => {
  * Verify that infeasible actions within Trash root are disabled and hidden when
  * right clicking a file. Verify that feasible actions are enabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot' comes from an
+// index signature, so it must be accessed with
+// ['trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot'].
 testcase.trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot =
     async () => {
   const appId =
@@ -1105,6 +1200,10 @@ testcase.trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot =
  * Verify that infeasible actions within Trash root are disabled and hidden when
  * right clicking a folder. Verify that feasible actions are enabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot' comes from an
+// index signature, so it must be accessed with
+// ['trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot'].
 testcase.trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot =
     async () => {
   const appId = await setupAndWaitUntilReady(
@@ -1168,6 +1267,10 @@ testcase.trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot =
  * Verify that Extract All within Trash root is disabled and hidden when right
  * clicking a zip file.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashExtractAllForZipHiddenAndDisabledInTrashRoot' comes from an index
+// signature, so it must be accessed with
+// ['trashExtractAllForZipHiddenAndDisabledInTrashRoot'].
 testcase.trashExtractAllForZipHiddenAndDisabledInTrashRoot = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
@@ -1199,6 +1302,10 @@ testcase.trashExtractAllForZipHiddenAndDisabledInTrashRoot = async () => {
  * Verify that infeasible actions within Trash root are disabled and hidden when
  * right clicking a blank space. Verify that Cut is disabled but not hidden.
  */
+// @ts-ignore: error TS4111: Property
+// 'trashAllActionsDisabledForBlankSpaceInTrashRoot' comes from an index
+// signature, so it must be accessed with
+// ['trashAllActionsDisabledForBlankSpaceInTrashRoot'].
 testcase.trashAllActionsDisabledForBlankSpaceInTrashRoot = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -1236,6 +1343,10 @@ testcase.trashAllActionsDisabledForBlankSpaceInTrashRoot = async () => {
       appId, contextMenuSelector + ' [command="#cut"][disabled]:not([hidden])');
 };
 
+// @ts-ignore: error TS4111: Property
+// 'trashStaleTrashInfoFilesAreRemovedAfterOneHour' comes from an index
+// signature, so it must be accessed with
+// ['trashStaleTrashInfoFilesAreRemovedAfterOneHour'].
 testcase.trashStaleTrashInfoFilesAreRemovedAfterOneHour = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);

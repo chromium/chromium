@@ -221,6 +221,15 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   AddThrottle(
       SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
+  // Defer subframe navigation in bfcached page if it hasn't sent a network
+  // request.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
+    AddThrottle(
+        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+            request));
+  }
+
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),

@@ -101,7 +101,7 @@ void RecordDurationMetrics(
     const char* jank_name,
     const char* duration_name_short,
     const char* duration_name_long) {
-  DCHECK(data.frames_expected);
+  DCHECK(data.frames_expected_v3);
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller())
@@ -109,8 +109,8 @@ void RecordDurationMetrics(
 
   int duration_ms = (base::TimeTicks::Now() - start).InMilliseconds();
   int smoothness, jank;
-  smoothness = metrics_util::CalculateSmoothness(data);
-  jank = metrics_util::CalculateJank(data);
+  smoothness = metrics_util::CalculateSmoothnessV3(data);
+  jank = metrics_util::CalculateJankV3(data);
 
   std::string suffix = GetDeviceModeSuffix();
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
@@ -137,7 +137,7 @@ void RecordDurationMetrics(
 void ReportLoginTotalAnimationThroughput(
     base::TimeTicks start,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected) {
+  if (!data.frames_expected_v3) {
     LOG(WARNING) << "Zero frames expected in login animation throughput data";
     return;
   }
@@ -156,14 +156,14 @@ void ReportLoginTotalAnimationThroughput(
 void RecordSmoothnessMetrics(
     const cc::FrameSequenceMetrics::CustomReportData& data,
     const char* smoothness_name) {
-  DCHECK(data.frames_expected);
+  DCHECK(data.frames_expected_v3);
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller()) {
     return;
   }
 
-  const int smoothness = metrics_util::CalculateSmoothness(data);
+  const int smoothness = metrics_util::CalculateSmoothnessV3(data);
 
   const std::string suffix = GetDeviceModeSuffix();
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
@@ -172,7 +172,7 @@ void RecordSmoothnessMetrics(
 }
 
 void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected) {
+  if (!data.frames_expected_v3) {
     LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
     return;
   }
@@ -694,7 +694,6 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
   TRACE_EVENT0(
       "startup",
       "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
-  login_finished_reported_ = true;
   post_login_deferred_task_runner_->Start();
 }
 

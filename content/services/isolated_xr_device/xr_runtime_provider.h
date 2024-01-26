@@ -21,9 +21,11 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #endif
 
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 namespace device {
 class OpenXrDevice;
 }  // namespace device
+#endif
 
 namespace viz {
 class Gpu;

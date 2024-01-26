@@ -130,7 +130,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
     display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                     "app.background.crashed." + extension_id,
-                                    absl::nullopt, absl::nullopt);
+                                    std::nullopt, std::nullopt);
     scoped_refptr<const Extension> extension =
         observer.WaitForExtensionLoaded();
     extensions::ExtensionBackgroundPageWaiter(profile(), *extension.get())

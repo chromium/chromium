@@ -89,8 +89,7 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
                         mNativeOfflineContentAggregatorBridge,
                         OfflineContentAggregatorBridge.this,
                         id.namespace,
-                        id.id,
-                        true);
+                        id.id);
     }
 
     @Override
@@ -251,8 +250,7 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
                 String nameSpace,
-                String id,
-                boolean hasUserGesture);
+                String id);
 
         void getItemById(
                 long nativeOfflineContentAggregatorBridge,

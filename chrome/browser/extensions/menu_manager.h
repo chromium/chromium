@@ -404,7 +404,7 @@ class MenuManager : public ProfileObserver,
   // Reads menu items for the extension from the state storage. Any invalid
   // items are ignored.
   void ReadFromStorage(const std::string& extension_id,
-                       absl::optional<base::Value> value);
+                       std::optional<base::Value> value);
 
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();

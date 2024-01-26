@@ -248,6 +248,12 @@ inline constexpr char kSystemWebAppLastAttemptedLocale[] =
 inline constexpr char kLoginDisplayPasswordButtonEnabled[] =
     "login_display_password_button_enabled";
 
+// A boolean user profile pref which indicates that the current Managed Guest
+// Session is lockable. Set by the chrome.login extension API and read by
+// `UserManager`.
+inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
+    "extensions_api.login.can_lock_managed_guest_session";
+
 // Boolean pref indicating whether the user has enabled Suggested Content in
 // OS settings > Privacy > "Suggest new content to explore".
 inline constexpr char kSuggestedContentEnabled[] =
@@ -761,6 +767,8 @@ inline constexpr char kAllowMGSToStoreDisplayProperties[] =
 // A list of all displays used by the user and reported to popularity metrics.
 const char kDisplayPopularityUserReportedDisplays[] =
     "display_popularity.user_reported_displays";
+// A list of all displays used by the user and reported to popularity metrics.
+const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
 
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
@@ -791,6 +799,16 @@ inline constexpr char kLocalStateDevicePeripheralDataAccessEnabled[] =
 // static
 inline constexpr char kLoginShutdownTimestampPrefName[] =
     "ash.shelf.login_shutdown_timestamp";
+
+// A `TimeDelta` pref indicates the length of time for taking the pine
+// screenshot on shutdown.
+inline constexpr char kPineScreenshotTakenDuration[] =
+    "ash.pine.screenshot_taken_duration";
+
+// A `TimeDelta` pref indicates the length of time for encoding and writing the
+// pine screenshot to the disk.
+inline constexpr char kPineScreenshotEncodeAndSaveDuration[] =
+    "ash.pine.sreenshot_encode_and_save_duration";
 
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a
@@ -1903,13 +1921,6 @@ inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
 inline constexpr char kTouchpadDefaultSettings[] =
     "ash.settings.touchpad.defaults";
 
-// An integer pref that controls the state (Disabled, Ctrl, etc) of the
-// F11/F12 settings found in the customize keyboard keys subpage in device
-// settings. Can be controlled through device policy
-// DeviceExtendedFkeysMofidier.
-inline constexpr char kExtendedFkeysModifier[] =
-    "ash.settings.extended_fkeys_modifier";
-
 // An integer pref that counts the number of times we have shown a form of
 // screen capture education (a nudge or tutorial).
 inline constexpr char kCaptureModeEducationShownCount[] =
@@ -1932,6 +1943,16 @@ inline constexpr char kAshAppIconSortableColorGroupCache[] =
 // A dictionary that stores the hue component of app icons' sortable colors.
 inline constexpr char kAshAppIconSortableColorHueCache[] =
     "ash.app_icon_sortable_color_hue_cache";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F11 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F11KeyModifier policy.
+inline constexpr char kF11KeyModifier[] = "ash.settings.f11_key_modifier";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F12 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F12KeyModifier policy.
+inline constexpr char kF12KeyModifier[] = "ash.settings.f12_key_modifier";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

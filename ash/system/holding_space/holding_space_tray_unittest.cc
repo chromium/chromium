@@ -230,13 +230,6 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
-  return types;
-}
-
 std::vector<HoldingSpaceCommandId> GetHoldingSpaceCommandIds() {
   std::vector<HoldingSpaceCommandId> ids;
   for (int i = static_cast<int>(HoldingSpaceCommandId::kMinValue);
@@ -3990,9 +3983,10 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayPrimaryAndSecondaryActionsTest,
-                         testing::ValuesIn(GetHoldingSpaceItemTypes()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceTrayPrimaryAndSecondaryActionsTest,
+    testing::ValuesIn(holding_space_util::GetAllItemTypes()));
 
 // Verifies that holding space item views have the expected primary and
 // secondary actions for their state of progress, both inline and in their
@@ -4196,7 +4190,7 @@ class HoldingSpaceTrayVisibilityTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTrayVisibilityTest,
-    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
                      /*predictability_enabled=*/testing::Bool(),
                      /*suggestions_enabled=*/testing::Bool()));
 

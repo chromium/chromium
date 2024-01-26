@@ -10,17 +10,17 @@
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -69,7 +69,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     };
     searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     SeaPenRouterElement.instance().goToRoute(
-        SeaPenPaths.RESULTS, {seaPenTemplateId: QUERY});
+        SeaPenPaths.RESULTS, {seaPenTemplateId: 'Query'});
   }
 
   private getSearchButtonText_(path: string|null): string {

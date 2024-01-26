@@ -3249,7 +3249,7 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHosts) {
   // Now set the parameter and try again.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
+      {{blink::features::kDeprecateUnloadByAllowList,
         {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
       /*disabled_features=*/{});
 
@@ -3265,7 +3265,7 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHostsEmpty) {
   // Now set the parameter and try again.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kDeprecateUnload,
+      {{blink::features::kDeprecateUnloadByAllowList,
         {{features::kDeprecateUnloadAllowlist.name,
           "testing1,, testing2,testing1"}}}},
       /*disabled_features=*/{});
@@ -3306,7 +3306,7 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForHostHostLists) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kDeprecateUnload,
+        {{blink::features::kDeprecateUnloadByAllowList,
           {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
         /*disabled_features=*/{});
 
@@ -3353,6 +3353,22 @@ TEST_F(PermissionsPolicyTest,
     EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(testing_origin));
     EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(
         testing_origin.DeriveNewOpaqueOrigin()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kDeprecateUnload,
+          {{features::kDeprecateUnloadPercent.name, "100"},
+           {features::kDeprecateUnloadBucket.name, "0"}}},
+         {blink::features::kDeprecateUnloadByAllowList,
+          {{features::kDeprecateUnloadAllowlist.name, "testing"}}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(testing_origin));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(
+        testing_origin.DeriveNewOpaqueOrigin()));
+    const url::Origin disallowed_testing_origin =
+        url::Origin::Create(GURL("http://disallowed-testing"));
+    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(disallowed_testing_origin));
   }
 }
 }  // namespace blink

@@ -618,7 +618,7 @@ bool SkipSearchKeyRemapping(EventRewriterAsh::Delegate* delegate,
 
 bool ShouldBlockSixPackEventRewrite(
     EventRewriterAsh::Delegate* delegate,
-    absl::optional<ui::mojom::SixPackShortcutModifier> modifier,
+    std::optional<ui::mojom::SixPackShortcutModifier> modifier,
     int flags,
     ui::KeyboardCode key_code,
     int device_id) {
@@ -1333,7 +1333,7 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
   const bool alt_click_down = AreFlagsSet(flags, kAltLeftButton);
   const bool search_click_down = AreFlagsSet(flags, kSearchLeftButton);
   if (ash::features::IsAltClickAndSixPackCustomizationEnabled()) {
-    absl::optional<ui::mojom::SimulateRightClickModifier> modifier =
+    std::optional<ui::mojom::SimulateRightClickModifier> modifier =
         delegate_->GetRemapRightClickModifier(mouse_event.source_device_id());
     if (!modifier.has_value()) {
       return false;

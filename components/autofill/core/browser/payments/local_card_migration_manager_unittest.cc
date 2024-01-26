@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -76,8 +77,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
         std::unique_ptr<payments::TestPaymentsNetworkInterface>(
             payments_network_interface_));
     credit_card_save_manager_ = new TestCreditCardSaveManager(
-        autofill_driver_.get(), &autofill_client_, payments_network_interface_,
-        &personal_data());
+        autofill_driver_.get(), &autofill_client_, &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     local_card_migration_manager_ = new TestLocalCardMigrationManager(
         autofill_driver_.get(), &autofill_client_, &personal_data());
@@ -314,6 +314,11 @@ class LocalCardMigrationManagerTest : public testing::Test {
  protected:
   TestPersonalDataManager& personal_data() {
     return *autofill_client_.GetPersonalDataManager();
+  }
+
+  payments::TestPaymentsAutofillClient& payments_autofill_client() {
+    return static_cast<payments::TestPaymentsAutofillClient&>(
+        *autofill_client_.GetPaymentsAutofillClient());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -824,7 +829,7 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_ToggleIsChosen) {
 
   local_card_migration_manager_->GetMigratableCreditCards();
 
-  autofill_client_.set_migration_card_selections(
+  payments_autofill_client().set_migration_card_selections(
       std::vector<std::string>{guid1.AsLowercaseString()});
   local_card_migration_manager_->AttemptToOfferLocalCardMigration(true);
 
@@ -927,8 +932,9 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_StrikeCountUMALogged) {
   base::HistogramTester histogram_tester;
 
   // Select the cards.
-  autofill_client_.set_migration_card_selections(std::vector<std::string>{
-      guid1.AsLowercaseString(), guid2.AsLowercaseString()});
+  payments_autofill_client().set_migration_card_selections(
+      std::vector<std::string>{guid1.AsLowercaseString(),
+                               guid2.AsLowercaseString()});
   local_card_migration_manager_->AttemptToOfferLocalCardMigration(true);
 
   // Verify that the strike count was logged when card migration accepted.

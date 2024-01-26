@@ -89,6 +89,8 @@ source_set("v4l2") {
   if (is_chromeos) {
     sources += [
       # AV1 delegate depends on header files only in ChromeOS SDK
+      "stateless/av1_delegate.cc",
+      "stateless/av1_delegate.h",
       "v4l2_video_decoder_delegate_av1.cc",
       "v4l2_video_decoder_delegate_av1.h",
 

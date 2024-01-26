@@ -5,11 +5,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
@@ -61,13 +61,13 @@ void IsolatedWebAppPendingInstallInfo::set_isolated_web_app_location(
   location_ = location;
 }
 
-const absl::optional<IsolatedWebAppLocation>&
+const std::optional<IsolatedWebAppLocation>&
 IsolatedWebAppPendingInstallInfo::location() const {
   return location_;
 }
 
 void IsolatedWebAppPendingInstallInfo::ResetIsolatedWebAppLocation() {
-  location_ = absl::nullopt;
+  location_ = std::nullopt;
 }
 
 }  // namespace web_app

@@ -154,7 +154,7 @@ class PrivacySandboxPromptHelperTestWithParam
     // search engine choice or has already made a choice in a previous Chrome
     // run.
     std::vector<base::test::FeatureRef> enabled_features = {
-        switches::kSearchEngineChoice};
+        switches::kSearchEngineChoiceTrigger};
     std::vector<base::test::FeatureRef> disabled_features;
 
     test_prompt_type_ = GetParam();

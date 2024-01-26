@@ -41,6 +41,7 @@ import org.chromium.ui.interpolators.Interpolators;
 class CustomTabToolbarAnimationDelegate {
     private final SecurityButtonAnimationDelegate mSecurityButtonAnimationDelegate;
     private final BrandingSecurityButtonAnimationDelegate mBrandingAnimationDelegate;
+    private final Runnable mAnimationEndRunnable;
 
     private TextView mUrlBar;
     private TextView mTitleBar;
@@ -55,6 +56,7 @@ class CustomTabToolbarAnimationDelegate {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mIsInAnimation = false;
+                    mAnimationEndRunnable.run();
                 }
             };
 
@@ -76,6 +78,7 @@ class CustomTabToolbarAnimationDelegate {
     CustomTabToolbarAnimationDelegate(
             ImageButton securityButton,
             final View titleUrlContainer,
+            Runnable animationEndRunnable,
             @DimenRes int securityStatusIconSize) {
         int securityButtonWidth =
                 securityButton.getResources().getDimensionPixelSize(securityStatusIconSize);
@@ -84,6 +87,7 @@ class CustomTabToolbarAnimationDelegate {
                 new SecurityButtonAnimationDelegate(
                         securityButton, titleUrlContainer, securityStatusIconSize);
         mBrandingAnimationDelegate = new BrandingSecurityButtonAnimationDelegate(securityButton);
+        mAnimationEndRunnable = animationEndRunnable;
     }
 
     /** Sets whether the title scaling animation is enabled. */

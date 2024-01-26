@@ -321,7 +321,7 @@ pub enum IncludeCrateTargets {
 
 /// Collect the source and input files (i.e. `CrateFiles`) for each library that
 /// is part of the standard library build.
-pub fn collect_std_crate_files<'a>(
+pub fn collect_std_crate_files(
     p: &deps::Package,
     config: &BuildConfig,
     include_targets: IncludeCrateTargets,
@@ -426,11 +426,10 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
         let dir_name = vendored_crate.file_name().to_string_lossy().into_owned();
         let std_path = std_crate_path(&crate_id).to_str().unwrap().to_string();
         let std_path_no_version = std_path
-            .rfind("-")
-            .and_then(|pos| Some(std_path[..pos].to_string()))
-            .or(Some(std_path.to_string()))
-            .unwrap();
-        if &std_path != &dir_name && &std_path_no_version != &dir_name {
+            .rfind('-')
+            .map(|pos| std_path[..pos].to_string())
+            .unwrap_or(std_path.to_string());
+        if std_path != dir_name && std_path_no_version != dir_name {
             return Err(io::Error::new(
                 io::ErrorKind::Other,
                 format!(
@@ -464,7 +463,7 @@ enum CollectCrateFiles {
 // Adds a `filepath` to `CrateFiles` depending on the type of file and the
 // `mode` of collection.
 fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: &Path) {
-    match filepath.extension().map(std::ffi::OsStr::to_str).flatten() {
+    match filepath.extension().and_then(std::ffi::OsStr::to_str) {
         Some("rs") => match mode {
             CollectCrateFiles::Internal => files.sources.push(filepath.to_owned()),
             CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),

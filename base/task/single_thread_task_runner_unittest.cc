@@ -28,6 +28,8 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, Basic) {
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
 }
 
+// Verify that instantiating a `CurrentDefaultHandle` without `MayAlreadyExist`
+// fails if there is already a current default `SingleThreadTaskRunner`.
 TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnImplicitOverride) {
   scoped_refptr<SingleThreadTaskRunner> task_runner(
       MakeRefCounted<TestSimpleTaskRunner>());
@@ -41,7 +43,9 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnImplicitOverride) {
   });
 }
 
-TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideExistingSTTCD) {
+// Verify nested instantiations of `CurrentHandleOverrideForTesting` in a scope
+// with a `CurrentDefaultHandle`.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, NestedOverrideForTesting) {
   scoped_refptr<SingleThreadTaskRunner> task_runner_1(
       MakeRefCounted<TestSimpleTaskRunner>());
   scoped_refptr<SingleThreadTaskRunner> task_runner_2(
@@ -93,6 +97,126 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideExistingSTTCD) {
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
 }
 
+// Same as above, but using `CurrentDefaultHandle` with `MayAlreadyExist`
+// instead of `CurrentHandleOverrideForTesting`.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+     NestedOverrideWithMayAlreadyExist) {
+  scoped_refptr<SingleThreadTaskRunner> task_runner_1(
+      MakeRefCounted<TestSimpleTaskRunner>());
+  scoped_refptr<SingleThreadTaskRunner> task_runner_2(
+      MakeRefCounted<TestSimpleTaskRunner>());
+  scoped_refptr<SingleThreadTaskRunner> task_runner_3(
+      MakeRefCounted<TestSimpleTaskRunner>());
+  scoped_refptr<SingleThreadTaskRunner> task_runner_4(
+      MakeRefCounted<TestSimpleTaskRunner>());
+
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  {
+    // STTCD in place prior to override.
+    SingleThreadTaskRunner::CurrentDefaultHandle sttcd1(task_runner_1);
+    EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+    EXPECT_EQ(task_runner_1, SingleThreadTaskRunner::GetCurrentDefault());
+
+    {
+      // Override.
+      SingleThreadTaskRunner::CurrentDefaultHandle sttcd_override_2(
+          task_runner_2,
+          SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+      EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+      EXPECT_EQ(task_runner_2, SingleThreadTaskRunner::GetCurrentDefault());
+
+      {
+        // Nested override.
+        SingleThreadTaskRunner::CurrentDefaultHandle sttcd_override_3(
+            task_runner_3,
+            SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+        EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+        EXPECT_EQ(task_runner_3, SingleThreadTaskRunner::GetCurrentDefault());
+      }
+
+      // Back to single override.
+      EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+      EXPECT_EQ(task_runner_2, SingleThreadTaskRunner::GetCurrentDefault());
+
+      {
+        // Backup to double override with another STTCD.
+        SingleThreadTaskRunner::CurrentDefaultHandle sttcd_override_4(
+            task_runner_4,
+            SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+        EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+        EXPECT_EQ(task_runner_4, SingleThreadTaskRunner::GetCurrentDefault());
+      }
+    }
+
+    // Back to simple STTCD.
+    EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+    EXPECT_EQ(task_runner_1, SingleThreadTaskRunner::GetCurrentDefault());
+  }
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+}
+
+// Verify that `CurrentDefaultHandle` can be used to set the current default
+// `SingleThreadTaskRunner` and `SequencedTaskRunner` to null in a scope that
+// already has a default.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideWithNull) {
+  auto tr1 = MakeRefCounted<TestSimpleTaskRunner>();
+
+  SingleThreadTaskRunner::CurrentDefaultHandle handle(
+      tr1, SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SequencedTaskRunner::GetCurrentDefault());
+
+  {
+    SingleThreadTaskRunner::CurrentDefaultHandle nested_handle(
+        nullptr,
+        SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+    EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+    EXPECT_CHECK_DEATH(
+        { auto tr2 = SingleThreadTaskRunner::GetCurrentDefault(); });
+    EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
+    EXPECT_CHECK_DEATH(
+        { auto tr2 = SequencedTaskRunner::GetCurrentDefault(); });
+  }
+
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SequencedTaskRunner::GetCurrentDefault());
+}
+
+// Verify that `CurrentDefaultHandle` can be used to set the current default
+// `SingleThreadTaskRunner` and `SequencedTaskRunner` to a non-null value in a
+// scope that already has a default.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideWithNonNull) {
+  auto tr1 = MakeRefCounted<TestSimpleTaskRunner>();
+  auto tr2 = MakeRefCounted<TestSimpleTaskRunner>();
+
+  SingleThreadTaskRunner::CurrentDefaultHandle handle(
+      tr1, SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SequencedTaskRunner::GetCurrentDefault());
+
+  {
+    SingleThreadTaskRunner::CurrentDefaultHandle nested_handle(
+        tr2, SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
+    EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+    EXPECT_EQ(tr2, SingleThreadTaskRunner::GetCurrentDefault());
+    EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+    EXPECT_EQ(tr2, SequencedTaskRunner::GetCurrentDefault());
+  }
+
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SingleThreadTaskRunner::GetCurrentDefault());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(tr1, SequencedTaskRunner::GetCurrentDefault());
+}
+
+// Verify nested instantiations of `CurrentHandleOverrideForTesting` in a scope
+// without a `CurrentDefaultHandle`.
 TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideNoExistingSTTCD) {
   scoped_refptr<SingleThreadTaskRunner> task_runner_1(
       MakeRefCounted<TestSimpleTaskRunner>());
@@ -122,6 +246,8 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, OverrideNoExistingSTTCD) {
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
 }
 
+// Verify that `CurrentDefaultHandle` can't be instantiated without
+// `MayAlreadyExist` in the scope of a `CurrentHandleOverrideForTesting`.
 TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnSTTCDOverOverride) {
   scoped_refptr<SingleThreadTaskRunner> task_runner(
       MakeRefCounted<TestSimpleTaskRunner>());
@@ -136,21 +262,27 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnSTTCDOverOverride) {
   });
 }
 
-TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, NestedRunLoop) {
+// Verify that running a `RunLoop` is supported in the scope of a
+// `CurrentDefaultHandle` with `MayAlreadyExist`.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+     NestedRunLoopAllowedUnderHandleOverride) {
   test::SingleThreadTaskEnvironment task_environment;
   EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
   scoped_refptr<SingleThreadTaskRunner> task_runner(
       MakeRefCounted<TestSimpleTaskRunner>());
-  SingleThreadTaskRunner::CurrentHandleOverride sttrcd_override(
+  SingleThreadTaskRunner::CurrentDefaultHandle sttrcd_override(
       task_runner,
-      /*allow_nested_runloop=*/true);
+      SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{});
   EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
   EXPECT_EQ(task_runner, SingleThreadTaskRunner::GetCurrentDefault());
   EXPECT_EQ(task_runner, SequencedTaskRunner::GetCurrentDefault());
   RunLoop().RunUntilIdle();
 }
 
-TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnNestedRunLoop) {
+// Verify that running a `RunLoop` fails in the scope of a
+// `CurrentHandleOverrideForTesting`.
+TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest,
+     NestedRunLoopDisallowedUnderHandleOverrideForTesting) {
   test::SingleThreadTaskEnvironment task_environment;
   EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
   scoped_refptr<SingleThreadTaskRunner> task_runner(

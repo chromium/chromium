@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mediator.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
@@ -16,7 +17,7 @@
 
 @implementation TabGroupMediator {
   // Web state list which contains groups.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   // Tab group consumer.
   __weak id<TabGroupConsumer> _consumer;
   // Grid consumer.

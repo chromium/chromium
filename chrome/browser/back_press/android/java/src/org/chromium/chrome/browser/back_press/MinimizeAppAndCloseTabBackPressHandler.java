@@ -12,12 +12,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  */
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
     public static final BooleanCachedFieldTrialParameter SYSTEM_BACK =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
 
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";

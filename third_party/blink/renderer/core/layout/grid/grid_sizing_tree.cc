@@ -12,8 +12,8 @@ GridSizingTree GridSizingTree::CopyForFragmentation() const {
 
   for (const auto& sizing_data : tree_data_) {
     DCHECK(sizing_data);
-    auto& sizing_data_copy = tree_copy.CreateSizingData();
-    sizing_data_copy = *sizing_data;
+    tree_copy.tree_data_.emplace_back(
+        std::make_unique<GridTreeNode>(*sizing_data));
   }
   return tree_copy;
 }
@@ -46,12 +46,20 @@ scoped_refptr<const GridLayoutTree> GridSizingTree::FinalizeTree() const {
 }
 
 GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(
-    const SubgriddedItemData& subgrid_data) {
-  if (subgrid_data) {
-    const auto* subgrid_layout_box = subgrid_data->node.GetLayoutBox();
+    const BlockNode& grid_node) {
+#if DCHECK_IS_ON()
+  // In debug mode, we want to insert the root grid node into the lookup map
+  // since it will be queried by `GridSizingSubtree::HasValidRootFor`.
+  const bool needs_to_insert_root_grid_for_lookup = true;
+#else
+  const bool needs_to_insert_root_grid_for_lookup = !tree_data_.empty();
+#endif
 
-    DCHECK(!subgrid_index_lookup_map_.Contains(subgrid_layout_box));
-    subgrid_index_lookup_map_.insert(subgrid_layout_box, tree_data_.size());
+  if (needs_to_insert_root_grid_for_lookup) {
+    const auto* grid_layout_box = grid_node.GetLayoutBox();
+
+    DCHECK(!subgrid_index_lookup_map_.Contains(grid_layout_box));
+    subgrid_index_lookup_map_.insert(grid_layout_box, tree_data_.size());
   }
   return *tree_data_.emplace_back(std::make_unique<GridTreeNode>());
 }
@@ -74,11 +82,11 @@ SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
 }
 
 wtf_size_t GridSizingTree::LookupSubgridIndex(
-    const GridItemData& subgrid_data) const {
-  const auto* subgrid_layout_box = subgrid_data.node.GetLayoutBox();
+    const BlockNode& grid_node) const {
+  const auto* grid_layout_box = grid_node.GetLayoutBox();
 
-  DCHECK(subgrid_index_lookup_map_.Contains(subgrid_layout_box));
-  return subgrid_index_lookup_map_.at(subgrid_layout_box);
+  DCHECK(subgrid_index_lookup_map_.Contains(grid_layout_box));
+  return subgrid_index_lookup_map_.at(grid_layout_box);
 }
 
 }  // namespace blink

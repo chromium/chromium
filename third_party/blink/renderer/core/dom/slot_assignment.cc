@@ -331,32 +331,14 @@ void SlotAssignment::RecalcAssignment() {
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    // TODO(https://crbug.com/576815): Once incorrect use of
-    // FlatTreeTraversal is fixed, this can probably move into
-    // DidRecalcAssignedNodes above.
-    for (HTMLSlotElement* slot : Slots()) {
-      if (slot->HasDirectionAuto()) {
-        slot->AdjustDirectionAutoAfterRecalcAssignedNodes();
-      }
+  // This needs to happen outside of the scope above, when flat tree traversal
+  // is allowed, because Element::UpdateDescendantHasDirAutoAttribute uses
+  // FlatTreeTraversal.
+  for (HTMLSlotElement* slot : Slots()) {
+    if (slot->HasDirectionAuto()) {
+      slot->AdjustDirectionAutoAfterRecalcAssignedNodes();
     }
   }
-
-  // Update an dir=auto flag from a host of slots to its all descendants.
-  // We should call below functions outside FlatTreeTraversalForbiddenScope
-  // because we can go a tree walk to either their ancestors or descendants
-  // if needed.
-  if (owner_->NeedsDirAutoAttributeUpdate()) {
-    CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-    owner_->SetNeedsDirAutoAttributeUpdate(false);
-    if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
-      element->UpdateDescendantHasDirAutoAttribute(
-          element->SelfOrAncestorHasDirAutoAttribute());
-    }
-  }
-  // Resolve the directionality of elements deferred their adjustment.
-  HTMLElement::AdjustCandidateDirectionalityForSlot(
-      std::move(candidate_directionality_set_));
 }
 
 const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
@@ -413,7 +395,6 @@ void SlotAssignment::Trace(Visitor* visitor) const {
   visitor->Trace(slots_);
   visitor->Trace(slot_map_);
   visitor->Trace(owner_);
-  visitor->Trace(candidate_directionality_set_);
 }
 
 }  // namespace blink

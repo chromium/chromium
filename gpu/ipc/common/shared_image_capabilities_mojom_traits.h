@@ -32,6 +32,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     return input.supports_r16_shared_images;
   }
 
+  static bool is_r16f_supported(const gpu::SharedImageCapabilities& input) {
+    return input.is_r16f_supported;
+  }
+
   static bool disable_r8_shared_images(
       const gpu::SharedImageCapabilities& input) {
     return input.disable_r8_shared_images;

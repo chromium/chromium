@@ -182,6 +182,23 @@ views::View* GetMatchingViewInRootWindow(int64_t display_id,
   return nullptr;
 }
 
+TimeBucket GetTimeBucket(base::TimeDelta delta) {
+  if (delta <= base::Minutes(1)) {
+    return TimeBucket::kOneMinute;
+  } else if (delta <= base::Minutes(10)) {
+    return TimeBucket::kTenMinutes;
+  } else if (delta <= base::Hours(1)) {
+    return TimeBucket::kOneHour;
+  } else if (delta <= base::Days(1)) {
+    return TimeBucket::kOneDay;
+  } else if (delta <= base::Days(7)) {
+    return TimeBucket::kOneWeek;
+  } else if (delta <= base::Days(14)) {
+    return TimeBucket::kTwoWeeks;
+  }
+  return TimeBucket::kOverTwoWeeks;
+}
+
 std::optional<user_manager::UserType> GetUserType(const AccountId& account_id) {
   if (const auto* ctrlr = Shell::Get()->session_controller()) {
     if (const auto* session = ctrlr->GetUserSessionByAccountId(account_id)) {

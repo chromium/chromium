@@ -15,9 +15,7 @@ found in the LICENSE file.
     android:layout_gravity="start|bottom"
     android:orientation="vertical"
     android:animateLayoutChanges="true"
-    android:visibility="gone"
-    android:clickable="true"
-    android:focusable="true">
+    android:visibility="gone">
 
     <!-- Shadow -->
     <ImageView
@@ -151,7 +149,7 @@ found in the LICENSE file.
                     android:focusable="false">
                     <TextView
                         android:id="@+id/title"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.TextMediumThick"
                         android:ellipsize="end"
@@ -175,6 +173,7 @@ found in the LICENSE file.
                 android:layout_height="@dimen/readaloud_close_button_size"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:background="@drawable/rounded_ripple"
                 android:scaleType="fitCenter"/>
 
         </RelativeLayout>

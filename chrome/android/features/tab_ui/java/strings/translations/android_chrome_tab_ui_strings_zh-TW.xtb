@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
+<translation id="427987768447457592">新分頁群組</translation>
 <translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。如要開始建立，請輕觸並按住連結。</translation>
+<translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個最近未使用的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個最近未使用分頁}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5490235265819901748">已展開分頁群組</translation>

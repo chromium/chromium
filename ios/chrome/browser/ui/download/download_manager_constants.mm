@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_constants.h"
 
-NSString* const kDownloadManagerDownloadToFilesAccessibilityIdentifier =
-    @"kDownloadManagerDownloadToFilesAccessibilityIdentifier";
-NSString* const kDownloadManagerDownloadToDriveAccessibilityIdentifier =
-    @"kDownloadManagerDownloadToDriveAccessibilityIdentifier";
+NSString* const kDownloadManagerDownloadAccessibilityIdentifier =
+    @"kDownloadManagerDownloadAccessibilityIdentifier";
 NSString* const kDownloadManagerOpenInAccessibilityIdentifier =
     @"kDownloadManagerOpenInAccessibilityIdentifier";
+NSString* const kDownloadManagerOpenInDriveAccessibilityIdentifier =
+    @"kDownloadManagerOpenInDriveAccessibilityIdentifier";
+NSString* const kDownloadManagerInstallAppAccessibilityIdentifier =
+    @"kDownloadManagerInstallAppAccessibilityIdentifier";
 NSString* const kDownloadManagerTryAgainAccessibilityIdentifier =
     @"kDownloadManagerTryAgainAccessibilityIdentifier";
 

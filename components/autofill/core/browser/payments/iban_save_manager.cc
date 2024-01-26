@@ -153,8 +153,6 @@ bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
     observer_for_testing_->OnOfferLocalSave();
   }
 
-  // If the max strikes limit has been reached, do not show the IBAN save
-  // prompt.
   bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
   if (!show_save_prompt) {
@@ -170,7 +168,6 @@ bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
 }
 
 bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
-  // If the max strikes limit has been reached, do not show the save prompt.
   bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
   client_->GetPaymentsNetworkInterface()->GetIbanUploadDetails(

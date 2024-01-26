@@ -26,7 +26,7 @@ class MimeTypesHandler {
 
   // extension id
   extensions::ExtensionId extension_id() const { return extension_id_; }
-  void set_extension_id(const std::string& extension_id) {
+  void set_extension_id(const extensions::ExtensionId& extension_id) {
     extension_id_ = extension_id;
   }
 

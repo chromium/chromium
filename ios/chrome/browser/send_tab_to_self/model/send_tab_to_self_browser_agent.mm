@@ -36,8 +36,8 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
       model_(SendTabToSelfSyncServiceFactory::GetForBrowserState(
                  browser_->GetBrowserState())
                  ->GetSendTabToSelfModel()) {
-  model_observation_.Observe(model_);
-  browser_observation_.Observe(browser_);
+  model_observation_.Observe(model_.get());
+  browser_observation_.Observe(browser_.get());
 }
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
@@ -63,7 +63,7 @@ void SendTabToSelfBrowserAgent::EntriesAddedRemotely(
     if (web_state) {
       pending_web_state_ = web_state;
       web_state_observation_.Reset();
-      web_state_observation_.Observe(pending_web_state_);
+      web_state_observation_.Observe(pending_web_state_.get());
     }
 
     if (!web_state_list_observation_.IsObserving()) {

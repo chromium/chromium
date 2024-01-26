@@ -73,16 +73,9 @@ ScriptPromise FileSystemWritableFileStream::write(
     return ScriptPromise();
   }
 
-  v8::Local<v8::Value> v8_data;
-  {
-    v8::TryCatch v8_try_block(script_state->GetIsolate());
-    if (!ToV8Traits<V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams>::ToV8(
-             script_state, data)
-             .ToLocal(&v8_data)) {
-      exception_state.RethrowV8Exception(v8_try_block.Exception());
-      return ScriptPromise();
-    }
-  }
+  v8::Local<v8::Value> v8_data =
+      ToV8Traits<V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams>::ToV8(
+          script_state, data);
   ScriptPromise promise = writer->write(
       script_state, ScriptValue(script_state->GetIsolate(), v8_data),
       exception_state);

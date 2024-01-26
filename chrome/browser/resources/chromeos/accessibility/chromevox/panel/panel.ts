@@ -5,9 +5,10 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
-import {BrowserUtil} from '../../common/browser_util.js';
-import {constants} from '../../common/constants.js';
-import {LocalStorage} from '../../common/local_storage.js';
+import {BrowserUtil} from '/common/browser_util.js';
+import {constants} from '/common/constants.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -15,7 +16,7 @@ import {Command} from '../common/command.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import { PanelNodeMenuItemData } from '../common/panel_menu_data.js';
+import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 import {ISearchUI} from './i_search_ui.js';
@@ -297,29 +298,24 @@ export class Panel implements PanelInterface {
     const sideBySide = SettingsManager.get('brailleSideBySide');
 
     this.brailleContainer_!.addEventListener(
-        'mouseover', event => PanelCaptions.braille.addBorders(
-            event.target as Element));
+        'mouseover',
+        event => PanelCaptions.braille.addBorders(
+            event.target as HTMLTableCellElement));
     this.brailleContainer_!.addEventListener(
-        'mouseout', event => PanelCaptions.braille.removeBorders(
-            event.target as Element));
+        'mouseout',
+        event => PanelCaptions.braille.removeBorders(
+            event.target as HTMLTableCellElement));
     this.brailleContainer_!.addEventListener(
-        'click', event => PanelCaptions.braille.routeCursor(
-            event.target as Element));
+        'click',
+        event => PanelCaptions.braille.routeCursor(
+            event.target as HTMLTableCellElement));
 
-    // Clear the tables.
-    let rowCount = this.brailleTableElement_.rows.length;
-    for (let i = 0; i < rowCount; i++) {
-      this.brailleTableElement_.deleteRow(0);
-    }
-    rowCount = this.brailleTableElement2_.rows.length;
-    for (let i = 0; i < rowCount; i++) {
-      this.brailleTableElement2_.deleteRow(0);
-    }
+    PanelCaptions.braille.clearTables();
 
     let row1;
     let row2;
     // Number of rows already written.
-    rowCount = 0;
+    let rowCount = 0;
     // Number of cells already written in this row.
     let cellCount = cols;
     for (let i = 0; i < groups.length; i++) {

@@ -228,7 +228,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sõrmejäljega avamine</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="1908992311423394684">Uus installimine</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1918022425394817322">Kaamera kinnitati paremasse ülanurka</translation>
@@ -267,7 +266,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2075520525463668108">Lülitage <ph name="CAPTURE_MEDIUM" /> sisse/välja. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2083190527011054446">Head ööd, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Emotikonide valija avamine</translation>
@@ -283,7 +281,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2149229036084364364">Mine eelmisele loole</translation>
 <translation id="2152895518047545149">Tundub, et midagi ei ole puudu. Väga hea!</translation>
 <translation id="2161132820593978283">Proovige kaamera kadreerimist, et oleksite videokõnedes ekraanikuva keskel. Lülitage see sisse kiirseadete kaudu.</translation>
-<translation id="2170530631236737939">Ülevaatest lahkumiseks pühkige kolme sõrmega alla</translation>
 <translation id="2185166372312820725">Eelmisele vahelehele liikumine</translation>
 <translation id="2185444992308415167">Vahelehtede 1 kuni 8 läbivaatamine</translation>
 <translation id="2198625180564913276">Profiili lisamine. See võib võtta mõne minuti.</translation>
@@ -412,10 +409,12 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2726420622004325180">Teie telefonil peab kuumkoha pakkumiseks olema mobiilne andmesideühendus</translation>
 <translation id="2727175239389218057">Vasta</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
+<translation id="2744221223678373668">Jagatud</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Kustuta“</translation>
 <translation id="2750941250130734256">Aktiivne aken dokiti lahti.</translation>
 <translation id="2761723519669354964">Riiulil esile tõstetud üksuse avamine</translation>
+<translation id="2762000892062317888">just praegu</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />–<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + otsinguklahv + s</translation>
 <translation id="2778650143428714839">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
 <translation id="3580650856351781466">Kõnefailide allalaadimine</translation>
 <translation id="3585296979871889131">Teie telefoni hiljutiste fotode, meediafailide, märguannete ja rakenduste kuvamine</translation>
+<translation id="3590441166907930941">Küljenupp</translation>
 <translation id="3593039967545720377">Uurige oma lõikelaua ajalugu, vajutades klahvikombinatsiooni <ph name="SHORTCUT_KEY_NAME" /> + V, et lõikelauda vaadata. Alustamiseks kopeerige üksus.</translation>
 <translation id="3593646411856133110">Avatud rakenduste nägemiseks pühkige üles ja hoidke sõrme ekraanil</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
@@ -733,6 +733,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3986082989454912832">Vasta</translation>
 <translation id="3990002060657467458">Sageli kasutatavad juhtelemendid, näiteks WiFi, Bluetooth ja helitugevus, asuvad kiirseadetes. Siin saate teha ka ekraanipilte.</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
+<translation id="4002066346123236978">Pealkiri</translation>
 <translation id="40062176907008878">Käsitsi kirjutamine</translation>
 <translation id="4011112806063830608">Režiim Mitte segada on sees.</translation>
 <translation id="4017989525502048489">Laserkursor</translation>
@@ -1036,6 +1037,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5163434717504750796">Aku seisukord: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Tsüklite arv: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salvesta töölaud mallina</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
+<translation id="5168753792967365150">Muutke rakenduses Google Tasks</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5187627942836026988">Kuumkoha üksikasjade kuvamine. Teie administraator on kuumkoha blokeerinud.</translation>
@@ -1305,6 +1307,8 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6168622430237609329">Teie installitud rakendused</translation>
 <translation id="6173151025443907148">Teise kasutaja sisselogimist ei toetata, kui Lacros on lubatud. Kasutage selle asemel brauseris Lacros teist brauseriprofiili või keelake Lacros ja proovige uuesti.</translation>
 <translation id="6179832488876878285">Saate oma olulised failid siia kinnitada. Alustamiseks avage rakendus Failid.</translation>
+<translation id="6180193585172850042">Tagasinupp</translation>
+<translation id="6180651297859206670">Edasinupp</translation>
 <translation id="6182592640011875895">Ava töölaud</translation>
 <translation id="6185696379715117369">Lehel üles</translation>
 <translation id="619335566042889110">Laadi nüüd täielikult täis</translation>
@@ -1694,7 +1698,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7850320739366109486">Mitte segada</translation>
 <translation id="7851039877802112575">Hüpik- ja dialoogiakende esile tõstmine</translation>
 <translation id="7851768487828137624">Kanaarilind</translation>
-<translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>
 <translation id="7862292329216937261">Seadme külalisena kasutamiseks peate välja logima ja seejärel ekraani allservas tegema valiku Sirvi külalisena.</translation>
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7872786842639831132">Väljas</translation>
@@ -1805,7 +1808,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
-<translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8308637677604853869">Eelmine menüü</translation>

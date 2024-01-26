@@ -32,7 +32,19 @@
 
 namespace blink {
 namespace {
-static float INTERSECTION_RATIO_THRESHOLD = 0.5f;
+constexpr float kIntersectionRatioThreshold = 0.5f;
+
+// Returns true if `document` should have an associated
+// AnchorElementMetricsSender.
+bool ShouldHaveAnchorElementMetricsSender(Document& document) {
+  bool is_feature_enabled =
+      base::FeatureList::IsEnabled(features::kNavigationPredictor);
+  const KURL& url = document.Url();
+  return is_feature_enabled && document.IsInOutermostMainFrame() &&
+         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
+         document.GetExecutionContext() &&
+         document.GetExecutionContext()->IsSecureContext();
+}
 
 }  // namespace
 
@@ -45,13 +57,14 @@ AnchorElementMetricsSender::~AnchorElementMetricsSender() = default;
 // static
 AnchorElementMetricsSender* AnchorElementMetricsSender::From(
     Document& document) {
-  if (!HasAnchorElementMetricsSender(document)) {
-    return nullptr;
-  }
+  // Note that this method is on a hot path. If `sender` already exists, we
+  // avoid a call to `ShouldHaveAnchorElementMetricsSender`. If we instead had
+  // `ShouldHaveAnchorElementMetricsSender` as a guard clause here, that would
+  // cause a measurable performance regression.
 
   AnchorElementMetricsSender* sender =
       Supplement<Document>::From<AnchorElementMetricsSender>(document);
-  if (!sender) {
+  if (!sender && ShouldHaveAnchorElementMetricsSender(document)) {
     sender = MakeGarbageCollected<AnchorElementMetricsSender>(document);
     ProvideTo(document, sender);
   }
@@ -59,15 +72,27 @@ AnchorElementMetricsSender* AnchorElementMetricsSender::From(
 }
 
 // static
-bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
-    Document& document) {
-  bool is_feature_enabled =
-      base::FeatureList::IsEnabled(features::kNavigationPredictor);
-  const KURL& url = document.BaseURL();
-  return is_feature_enabled && document.IsInOutermostMainFrame() &&
-         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
-         document.GetExecutionContext() &&
-         document.GetExecutionContext()->IsSecureContext();
+AnchorElementMetricsSender* AnchorElementMetricsSender::GetForFrame(
+    LocalFrame* frame) {
+  if (!frame) {
+    return nullptr;
+  }
+
+  if (frame->IsCrossOriginToOutermostMainFrame()) {
+    return nullptr;
+  }
+
+  LocalFrame* local_main_frame = DynamicTo<LocalFrame>(frame->Tree().Top());
+  if (!local_main_frame) {
+    return nullptr;
+  }
+
+  Document* main_document = local_main_frame->GetDocument();
+  if (!main_document) {
+    return nullptr;
+  }
+
+  return From(*main_document);
 }
 
 void AnchorElementMetricsSender::
@@ -78,9 +103,8 @@ void AnchorElementMetricsSender::
   if (!AssociateInterface()) {
     return;
   }
-  auto msg = mojom::blink::AnchorElementPointerDataOnHoverTimerFired::New();
-  msg->anchor_id = anchor_id;
-  msg->pointer_data = std::move(pointer_data);
+  auto msg = mojom::blink::AnchorElementPointerDataOnHoverTimerFired::New(
+      anchor_id, std::move(pointer_data));
   metrics_host_->ReportAnchorElementPointerDataOnHoverTimerFired(
       std::move(msg));
 }
@@ -88,26 +112,26 @@ void AnchorElementMetricsSender::
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElement& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  if (!anchor_element.Href().ProtocolIsInHTTPFamily() ||
-      !GetRootDocument(anchor_element)->Url().ProtocolIsInHTTPFamily() ||
-      !anchor_element.GetDocument().BaseURL().ProtocolIsInHTTPFamily()) {
+  Document* top_document = GetTopDocument(anchor_element);
+  if (!anchor_element.Href().ProtocolIsInHTTPFamily() || !top_document ||
+      !top_document->Url().ProtocolIsInHTTPFamily() ||
+      !anchor_element.GetDocument().Url().ProtocolIsInHTTPFamily()) {
     return;
   }
   if (!AssociateInterface()) {
     return;
   }
-  auto click = mojom::blink::AnchorElementClick::New();
-  click->anchor_id = AnchorElementId(anchor_element);
-  click->target_url = anchor_element.Href();
   base::TimeDelta navigation_start_to_click =
       clock_->NowTicks() - NavigationStart(anchor_element);
-  click->navigation_start_to_click = navigation_start_to_click;
+  auto click = mojom::blink::AnchorElementClick::New(
+      AnchorElementId(anchor_element), anchor_element.Href(),
+      navigation_start_to_click);
   metrics_host_->ReportAnchorElementClick(std::move(click));
 }
 
 void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -126,13 +150,15 @@ void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
 }
 
 bool AnchorElementMetricsSender::AssociateInterface() {
-  if (metrics_host_.is_bound())
+  if (metrics_host_.is_bound()) {
     return true;
+  }
 
   Document* document = GetSupplementable();
   // Unable to associate since no frame is attached.
-  if (!document->GetFrame())
+  if (!document->GetFrame()) {
     return false;
+  }
 
   document->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       metrics_host_.BindNewPipeAndPassReceiver(
@@ -153,6 +179,10 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
                         TaskType::kInternalDefault),
                     this,
                     &AnchorElementMetricsSender::UpdateMetrics),
+      random_anchor_sampling_period_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kNavigationPredictor,
+          "random_anchor_sampling_period",
+          100)),
       clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(document.IsInOutermostMainFrame());
@@ -161,7 +191,7 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   intersection_observer_ = IntersectionObserver::Create(
       /* (root) margin */ Vector<Length>(),
       /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ {INTERSECTION_RATIO_THRESHOLD},
+      /* thresholds */ {kIntersectionRatioThreshold},
       /* document */ &document,
       /* callback */
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
@@ -207,7 +237,7 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   DCHECK(!entries.empty());
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -230,18 +260,20 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
 base::TimeTicks AnchorElementMetricsSender::NavigationStart(
     const HTMLAnchorElement& element) {
-  return mock_navigation_start_for_testing_.has_value()
-             ? mock_navigation_start_for_testing_.value()
-             : GetRootDocument(element)
-                   ->Loader()
-                   ->GetTiming()
-                   .NavigationStart();
+  if (mock_navigation_start_for_testing_.has_value()) {
+    return mock_navigation_start_for_testing_.value();
+  }
+
+  Document* top_document = GetTopDocument(element);
+  DCHECK(top_document);
+
+  return top_document->Loader()->GetTiming().NavigationStart();
 }
 
 void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     HTMLAnchorElement& element,
     const PointerEvent& pointer_event) {
-  if (!metrics_host_.is_bound()) {
+  if (!AssociateInterface()) {
     return;
   }
 
@@ -270,30 +302,28 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
   if (it == anchor_elements_timing_stats_.end()) {
     return;
   }
-  auto& element_timing = it->value;
+  AnchorElementTimingStats& element_timing = it->value;
   if (event_type == event_type_names::kPointerover) {
-    if (!element_timing->pointer_over_timer_.has_value()) {
-      element_timing->pointer_over_timer_ = clock_->NowTicks();
+    if (!element_timing.pointer_over_timer_.has_value()) {
+      element_timing.pointer_over_timer_ = clock_->NowTicks();
 
-      auto msg = mojom::blink::AnchorElementPointerOver::New();
-      msg->anchor_id = anchor_id;
       base::TimeDelta navigation_start_to_pointer_over =
           clock_->NowTicks() - NavigationStart(element);
-      msg->navigation_start_to_pointer_over = navigation_start_to_pointer_over;
+      auto msg = mojom::blink::AnchorElementPointerOver::New(
+          anchor_id, navigation_start_to_pointer_over);
 
       metrics_host_->ReportAnchorElementPointerOver(std::move(msg));
     }
   } else if (event_type == event_type_names::kPointerout) {
-    if (!element_timing->pointer_over_timer_.has_value()) {
+    if (!element_timing.pointer_over_timer_.has_value()) {
       return;
     }
 
-    auto msg = mojom::blink::AnchorElementPointerOut::New();
-    msg->anchor_id = anchor_id;
     base::TimeDelta hover_dwell_time =
-        clock_->NowTicks() - element_timing->pointer_over_timer_.value();
-    element_timing->pointer_over_timer_.reset();
-    msg->hover_dwell_time = hover_dwell_time;
+        clock_->NowTicks() - element_timing.pointer_over_timer_.value();
+    element_timing.pointer_over_timer_.reset();
+    auto msg =
+        mojom::blink::AnchorElementPointerOut::New(anchor_id, hover_dwell_time);
     metrics_host_->ReportAnchorElementPointerOut(std::move(msg));
   } else if (event_type == event_type_names::kPointerdown) {
     // TODO(crbug.com/1297312): Check if user changed the default mouse
@@ -305,11 +335,10 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
       return;
     }
 
-    auto msg = mojom::blink::AnchorElementPointerDown::New();
-    msg->anchor_id = anchor_id;
     base::TimeDelta navigation_start_to_pointer_down =
         clock_->NowTicks() - NavigationStart(element);
-    msg->navigation_start_to_pointer_down = navigation_start_to_pointer_down;
+    auto msg = mojom::blink::AnchorElementPointerDown::New(
+        anchor_id, navigation_start_to_pointer_down);
     metrics_host_->ReportAnchorElementPointerDown(std::move(msg));
   }
 }
@@ -317,40 +346,40 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
 void AnchorElementMetricsSender::EnqueueLeftViewport(
     const HTMLAnchorElement& element) {
   const auto anchor_id = AnchorElementId(element);
-  DCHECK(anchor_elements_timing_stats_.Contains(anchor_id));
-  auto* timing_stats = anchor_elements_timing_stats_.at(anchor_id);
-  timing_stats->entered_viewport_should_be_enqueued_ = true;
+  auto it = anchor_elements_timing_stats_.find(anchor_id);
+  DCHECK(it != anchor_elements_timing_stats_.end());
+  AnchorElementTimingStats& timing_stats = it->value;
+  timing_stats.entered_viewport_should_be_enqueued_ = true;
   absl::optional<base::TimeTicks>& entered_viewport =
-      timing_stats->viewport_entry_time_;
+      timing_stats.viewport_entry_time_;
   if (!entered_viewport.has_value()) {
     return;
   }
 
-  auto msg = mojom::blink::AnchorElementLeftViewport::New();
-  msg->anchor_id = anchor_id;
   base::TimeDelta time_in_viewport =
       clock_->NowTicks() - entered_viewport.value();
   entered_viewport.reset();
-  msg->time_in_viewport = time_in_viewport;
+  auto msg =
+      mojom::blink::AnchorElementLeftViewport::New(anchor_id, time_in_viewport);
   left_viewport_messages_.push_back(std::move(msg));
 }
 
 void AnchorElementMetricsSender::EnqueueEnteredViewport(
     const HTMLAnchorElement& element) {
   const auto anchor_id = AnchorElementId(element);
-  DCHECK(anchor_elements_timing_stats_.Contains(anchor_id));
-  auto* timing_stats = anchor_elements_timing_stats_.at(anchor_id);
-  timing_stats->viewport_entry_time_ = clock_->NowTicks();
-  if (!timing_stats->entered_viewport_should_be_enqueued_) {
+  auto it = anchor_elements_timing_stats_.find(anchor_id);
+  DCHECK(it != anchor_elements_timing_stats_.end());
+  AnchorElementTimingStats& timing_stats = it->value;
+  timing_stats.viewport_entry_time_ = clock_->NowTicks();
+  if (!timing_stats.entered_viewport_should_be_enqueued_) {
     return;
   }
-  timing_stats->entered_viewport_should_be_enqueued_ = false;
+  timing_stats.entered_viewport_should_be_enqueued_ = false;
 
-  auto msg = mojom::blink::AnchorElementEnteredViewport::New();
-  msg->anchor_id = anchor_id;
   base::TimeDelta time_entered_viewport =
       clock_->NowTicks() - NavigationStart(element);
-  msg->navigation_start_to_entered_viewport = time_entered_viewport;
+  auto msg = mojom::blink::AnchorElementEnteredViewport::New(
+      anchor_id, time_entered_viewport);
   entered_viewport_messages_.push_back(std::move(msg));
 }
 
@@ -374,7 +403,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       DocumentLifecycle::kAfterPerformLayout) {
     return;
   }
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -386,7 +415,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
 
     // If the anchor doesn't have a valid frame/root document, skip it.
     if (!anchor_element.GetDocument().GetFrame() ||
-        !GetRootDocument(anchor_element)) {
+        !GetTopDocument(anchor_element)) {
       continue;
     }
 
@@ -398,22 +427,12 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     mojom::blink::AnchorElementMetricsPtr anchor_element_metrics =
         CreateAnchorElementMetrics(anchor_element);
 
-    int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
-        blink::features::kNavigationPredictor, "random_anchor_sampling_period",
-        100);
-    int random = base::RandInt(1, sampling_period);
+    int random = base::RandInt(1, random_anchor_sampling_period_);
     if (random == 1) {
       // This anchor element is sampled in.
       const auto anchor_id = AnchorElementId(anchor_element);
-      if (!anchor_elements_timing_stats_.Contains(anchor_id)) {
-        anchor_elements_timing_stats_.insert(
-            anchor_id, std::make_unique<AnchorElementTimingStats>());
-      }
-      if (anchor_element_metrics->ratio_visible_area >=
-          INTERSECTION_RATIO_THRESHOLD) {
-        // The element is already visible.
-        EnqueueEnteredViewport(anchor_element);
-      }
+      anchor_elements_timing_stats_.insert(anchor_id,
+                                           AnchorElementTimingStats{});
       // Observe the element to collect time_in_viewport stats.
       intersection_observer_->observe(&anchor_element);
     }
@@ -447,8 +466,12 @@ void AnchorElementMetricsSender::MaybeUpdateMetrics() {
 void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
-  if (!execution_context || !metrics_host_.is_bound()) {
+  if (metrics_.empty() && entered_viewport_messages_.empty() &&
+      left_viewport_messages_.empty()) {
+    return;
+  }
+
+  if (!AssociateInterface()) {
     return;
   }
 

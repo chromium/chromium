@@ -224,6 +224,18 @@ class USER_MANAGER_EXPORT UserManager {
                             bool browser_restart,
                             bool is_child) = 0;
 
+  // Called when the Profile instance for a user identified by `account_id`
+  // is created. `prefs` should be the one that is owned by Profile.
+  // The 'prefs' must be kept alive until OnUserProfileWillBeDestroyed
+  // for the user is called.
+  // Returns whether actually the prefs are used or not.
+  virtual bool OnUserProfileCreated(const AccountId& account_id,
+                                    PrefService* prefs) = 0;
+
+  // Called just before the Profile for a user identified by `account_id`
+  // will be destroyed.
+  virtual void OnUserProfileWillBeDestroyed(const AccountId& account_id) = 0;
+
   // Switches to active user identified by |account_id|. User has to be logged
   // in.
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;

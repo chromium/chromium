@@ -61,7 +61,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   void RemoveObserver(display::DisplayObserver* observer);
 
   const std::vector<display::Display>& displays() const { return displays_; }
-  gfx::Point GetCursorLocation() const;
 
   // Returns current workspace.
   std::string GetCurrentWorkspace();

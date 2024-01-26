@@ -361,6 +361,7 @@ text-overflow: clip
 text-rendering: auto
 text-shadow: none
 text-size-adjust: auto
+text-spacing-trim: normal
 text-transform: none
 text-underline-position: auto
 text-wrap: wrap

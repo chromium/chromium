@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -32,9 +33,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
@@ -48,7 +49,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Mock private PaneManager mPaneManager;
     @Mock private Pane mTabSwitcherPane;
-    @Mock private Pane mBookmarksPane;
+    @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private FullButtonData mFullButtonData;
     @Mock private PaneOrderController mPaneOrderController;
     @Mock private DisplayButtonData mDisplayButtonData;
@@ -70,20 +71,23 @@ public class HubToolbarMediatorUnitTest {
         mModel.addObserver(mPropertyObserver);
 
         when(mPaneOrderController.getPaneOrder())
-                .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.BOOKMARKS));
+                .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
-        when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
+        when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER))
+                .thenReturn(mIncognitoTabSwitcherPane);
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
         when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonSupplier);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
 
-        when(mBookmarksPane.getReferenceButtonDataSupplier())
+        when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mBookmarksReferenceButtonDataSupplier2);
-        when(mBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
+        when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mBookmarksReferenceButtonDataSupplier2.set(mDisplayButtonData);
@@ -137,7 +141,7 @@ public class HubToolbarMediatorUnitTest {
         assertEquals(2, paneSwitcherButtonData.size());
 
         paneSwitcherButtonData.get(1).getOnPressRunnable().run();
-        verify(mPaneManager).focusPane(PaneId.BOOKMARKS);
+        verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
 
         paneSwitcherButtonData.get(0).getOnPressRunnable().run();
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
@@ -146,7 +150,7 @@ public class HubToolbarMediatorUnitTest {
     @Test
     @SmallTest
     public void testNullPane() {
-        when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(null);
+        when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(null);
 
         new HubToolbarMediator(mModel, mPaneManager);
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
@@ -196,7 +200,7 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
 
-        mFocusedPaneSupplier.set(mBookmarksPane);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertEquals(1, mModel.get(PANE_SWITCHER_INDEX));
 
         mFocusedPaneSupplier.set(null);
@@ -206,7 +210,7 @@ public class HubToolbarMediatorUnitTest {
         mTabSwitcherReferenceButtonDataSupplier1.set(null);
         assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
 
-        mFocusedPaneSupplier.set(mBookmarksPane);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
@@ -214,5 +218,19 @@ public class HubToolbarMediatorUnitTest {
 
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
+    }
+
+    @Test
+    @SmallTest
+    public void testHubColorScheme() {
+        new HubToolbarMediator(mModel, mPaneManager);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertEquals(HubColorScheme.DEFAULT, mModel.get(COLOR_SCHEME));
+
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertEquals(HubColorScheme.INCOGNITO, mModel.get(COLOR_SCHEME));
+
+        mFocusedPaneSupplier.set(null);
+        assertEquals(HubColorScheme.DEFAULT, mModel.get(COLOR_SCHEME));
     }
 }

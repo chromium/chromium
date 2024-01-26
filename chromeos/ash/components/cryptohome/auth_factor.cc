@@ -65,10 +65,19 @@ PasswordMetadata PasswordMetadata::CreateWithoutSalt() {
   return PasswordMetadata(std::nullopt);
 }
 
-PasswordMetadata PasswordMetadata::Create(SystemSalt salt) {
+PasswordMetadata PasswordMetadata::CreateForOnlinePassword(SystemSalt salt) {
   return PasswordMetadata(KnowledgeFactorHashInfo{
       .algorithm = KnowledgeFactorHashAlgorithmWrapper::kSha256TopHalf,
       .salt = std::move(*salt),
+      .should_generate_key_store = false,
+  });
+}
+
+PasswordMetadata PasswordMetadata::CreateForLocalPassword(SystemSalt salt) {
+  return PasswordMetadata(KnowledgeFactorHashInfo{
+      .algorithm = KnowledgeFactorHashAlgorithmWrapper::kSha256TopHalf,
+      .salt = std::move(*salt),
+      .should_generate_key_store = true,
   });
 }
 
@@ -91,6 +100,7 @@ PinMetadata PinMetadata::Create(PinSalt salt) {
   return PinMetadata(KnowledgeFactorHashInfo{
       .algorithm = KnowledgeFactorHashAlgorithmWrapper::kPbkdf2Aes2561234,
       .salt = std::move(*salt),
+      .should_generate_key_store = true,
   });
 }
 

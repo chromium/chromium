@@ -54,7 +54,7 @@ NTSTATUS SignedPolicy::CreateSectionAction(
       &local_section_handle,
       SECTION_QUERY | SECTION_MAP_WRITE | SECTION_MAP_READ |
           SECTION_MAP_EXECUTE,
-      nullptr, 0, PAGE_EXECUTE, SEC_IMAGE, local_file_handle.Get());
+      nullptr, 0, PAGE_EXECUTE, SEC_IMAGE, local_file_handle.get());
   if (!local_section_handle)
     return status;
 

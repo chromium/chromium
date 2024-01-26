@@ -336,10 +336,12 @@ TEST_F(V8ContextTrackerHelpersTest,
                 /* world_name */ absl::nullopt, blink::AudioWorkletToken())));
 }
 
-TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionRegExpWorld) {
-  // A valid regexp world.
+TEST_F(V8ContextTrackerHelpersTest,
+       ValidateV8ContextDescriptionNonJSExposedWorld) {
+  // A valid internal non-js exposed world.
   auto desc = mojom::V8ContextDescription(
-      blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
+      blink::V8ContextToken(),
+      mojom::V8ContextWorldType::kBlinkInternalNonJSExposed,
       /* world_name */ absl::nullopt,
       /* execution_context_token */ absl::nullopt);
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
@@ -347,18 +349,21 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionRegExpWorld) {
   EXPECT_EQ(false,
             ExpectIframeAttributionDataForV8ContextDescription(desc, graph()));
 
-  // A regexp world must not have a |world_name|.
-  EXPECT_EQ(V8ContextDescriptionStatus::kUnexpectedWorldName,
-            ValidateV8ContextDescription(mojom::V8ContextDescription(
-                blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
-                kWorldName,
-                /* execution_context_token */ absl::nullopt)));
+  // An internal non-js exposed world must not have a |world_name|.
+  EXPECT_EQ(
+      V8ContextDescriptionStatus::kUnexpectedWorldName,
+      ValidateV8ContextDescription(mojom::V8ContextDescription(
+          blink::V8ContextToken(),
+          mojom::V8ContextWorldType::kBlinkInternalNonJSExposed, kWorldName,
+          /* execution_context_token */ absl::nullopt)));
 
-  // A regexp world must not have an |execution_context_token|.
+  // An internal non-js exposed world must not have an
+  // |execution_context_token|.
   EXPECT_EQ(
       V8ContextDescriptionStatus::kUnexpectedExecutionContextToken,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
-          blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
+          blink::V8ContextToken(),
+          mojom::V8ContextWorldType::kBlinkInternalNonJSExposed,
           /* world_name */ absl::nullopt, mock_graph->frame->GetFrameToken())));
 }
 

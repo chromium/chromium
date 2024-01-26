@@ -13,9 +13,13 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/media_preview/media_view_controller_base.h"
 
+namespace media {
+struct AudioDeviceDescription;
+}  // namespace media
 class MediaView;
-class MicSelectorComboboxModel;
-struct AudioSourceInfo;
+namespace ui {
+class SimpleComboboxModel;
+}  // namespace ui
 
 // The MediaViewController for the mic view. It sets up the mic view, and
 // updates it based on the data it receives from the Coordinator. Also it
@@ -24,7 +28,7 @@ class MicViewController {
  public:
   MicViewController(MediaView& base_view,
                     bool needs_borders,
-                    MicSelectorComboboxModel& combobox_model,
+                    ui::SimpleComboboxModel& combobox_model,
                     MediaViewControllerBase::SourceChangeCallback callback);
   MicViewController(const MicViewController&) = delete;
   MicViewController& operator=(const MicViewController&) = delete;
@@ -36,10 +40,11 @@ class MicViewController {
   // `audio_source_infos` is  a list of connected devices. When a new device
   // gets connected or a device gets disconnected, this function is called to
   // update the list of devices in the combobox.
-  void UpdateAudioSourceInfos(std::vector<AudioSourceInfo> audio_source_infos);
+  void UpdateAudioSourceInfos(
+      const std::vector<media::AudioDeviceDescription>& audio_source_infos);
 
  private:
-  const raw_ref<MicSelectorComboboxModel> combobox_model_;
+  const raw_ref<ui::SimpleComboboxModel> combobox_model_;
   std::unique_ptr<MediaViewControllerBase> base_controller_;
 };
 

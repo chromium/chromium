@@ -1,3 +1,6 @@
-monorail: {
-  component: "OS>Software>Enterprise>Certificates"
+buganizer_public {
+  component_id: 1243851  # ChromeOS Public Tracker > Enterprise & Edu > Commercial Networking
+}
+buganizer {
+  component_id: 1243853
 }

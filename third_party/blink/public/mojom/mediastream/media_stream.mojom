@@ -73,6 +73,7 @@ enum MediaStreamRequestResult {
   KILL_SWITCH_ON,
   SYSTEM_PERMISSION_DENIED,
   DEVICE_IN_USE,
+  REQUEST_CANCELLED,
   NUM_MEDIA_REQUEST_RESULTS
 };
 
@@ -151,9 +152,20 @@ struct GetOpenDeviceResponse {
 
 // Mouse-wheel events to be delivered from a capturing app to a captured tab.
 // https://screen-share.github.io/captured-surface-control/
+//
+// |relative_x| is a value from [0, 1). It denotes the relative position
+// in the coordinate space of the captured surface, which is unknown to the
+// capturer. A value of 0 denotes the leftmost pixel; increasing values denote
+// values further to the right. The sender of the message scales from its own
+// coordinate space down to the relative values, and the receiver scales
+// back up to its own coordinates.
+//
+// |relative_y| is defined analogously to |relative_x|.
+//
+// |wheel_delta_x| and |wheel_delta_y| represent the scroll deltas in pixels.
 struct CapturedWheelAction {
-  int32 x;
-  int32 y;
+  double relative_x;
+  double relative_y;
   int32 wheel_delta_x;
   int32 wheel_delta_y;
 };
@@ -164,7 +176,10 @@ enum CapturedSurfaceControlResult {
   kSuccess,
   kUnknownError,
   kNoPermissionError,
+  kCapturerNotFoundError,
   kCapturedSurfaceNotFoundError,
+  kDisallowedForSelfCaptureError,
+  kCapturerNotFocusedError,
 };
 
 // Per-frame renderer-side interface that receives device stopped/change
@@ -182,6 +197,9 @@ interface MediaStreamDeviceObserver {
   // Informs the renderer-side that the device's capture handle has changed.
   OnDeviceCaptureHandleChange(string label,
                               MediaStreamDevice device);
+  // Informs the renderer-side that captured surface's the zoom-level has
+  // changed.
+  OnZoomLevelChange(string label, MediaStreamDevice device, int32 zoom_level);
 };
 
 // Contains devices that are assigned to a specific stream. At least one of

@@ -106,6 +106,7 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kAudioWorklet:
     case network::mojom::RequestDestination::kFont:
     case network::mojom::RequestDestination::kImage:
+    case network::mojom::RequestDestination::kJson:
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
     case network::mojom::RequestDestination::kReport:

@@ -274,6 +274,9 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
               });
           break;
 
+        case mojom::QueryParameters::SortField::kSharedWithMe:
+          NOTIMPLEMENTED();
+          break;
         case mojom::QueryParameters::SortField::kFileSize:
           NOTIMPLEMENTED();
           break;

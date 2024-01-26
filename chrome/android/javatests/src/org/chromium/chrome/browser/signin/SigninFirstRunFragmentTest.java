@@ -62,7 +62,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -335,7 +334,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1434098")
     public void testFragmentWhenSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -391,7 +389,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1434098")
     public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(

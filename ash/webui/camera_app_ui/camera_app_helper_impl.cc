@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "chromeos/utils/pdf_conversion.h"
+#include "components/onc/onc_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"
@@ -31,11 +32,11 @@ using chromeos::machine_learning::mojom::Rotation;
 camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
   switch (s) {
     case ScreenBacklightState::ON:
-      return camera_app::mojom::ScreenState::ON;
+      return camera_app::mojom::ScreenState::kOn;
     case ScreenBacklightState::OFF:
-      return camera_app::mojom::ScreenState::OFF;
+      return camera_app::mojom::ScreenState::kOff;
     case ScreenBacklightState::OFF_AUTO:
-      return camera_app::mojom::ScreenState::OFF_AUTO;
+      return camera_app::mojom::ScreenState::kOffAuto;
     default:
       NOTREACHED();
   }
@@ -44,12 +45,12 @@ camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
 camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
     CameraAppUIDelegate::FileMonitorResult result) {
   switch (result) {
-    case CameraAppUIDelegate::FileMonitorResult::DELETED:
-      return camera_app::mojom::FileMonitorResult::DELETED;
-    case CameraAppUIDelegate::FileMonitorResult::CANCELED:
-      return camera_app::mojom::FileMonitorResult::CANCELED;
-    case CameraAppUIDelegate::FileMonitorResult::ERROR:
-      return camera_app::mojom::FileMonitorResult::ERROR;
+    case CameraAppUIDelegate::FileMonitorResult::kDeleted:
+      return camera_app::mojom::FileMonitorResult::kDeleted;
+    case CameraAppUIDelegate::FileMonitorResult::kCanceled:
+      return camera_app::mojom::FileMonitorResult::kCanceled;
+    case CameraAppUIDelegate::FileMonitorResult::kError:
+      return camera_app::mojom::FileMonitorResult::kError;
     default:
       NOTREACHED();
   }
@@ -58,17 +59,92 @@ camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
 camera_app::mojom::StorageMonitorStatus ToMojoStorageMonitorStatus(
     CameraAppUIDelegate::StorageMonitorStatus status) {
   switch (status) {
-    case CameraAppUIDelegate::StorageMonitorStatus::NORMAL:
-      return camera_app::mojom::StorageMonitorStatus::NORMAL;
-    case CameraAppUIDelegate::StorageMonitorStatus::LOW:
-      return camera_app::mojom::StorageMonitorStatus::LOW;
-    case CameraAppUIDelegate::StorageMonitorStatus::CRITICALLY_LOW:
-      return camera_app::mojom::StorageMonitorStatus::CRITICALLY_LOW;
-    case CameraAppUIDelegate::StorageMonitorStatus::CANCELED:
-      return camera_app::mojom::StorageMonitorStatus::CANCELED;
-    case CameraAppUIDelegate::StorageMonitorStatus::ERROR:
-      return camera_app::mojom::StorageMonitorStatus::ERROR;
+    case CameraAppUIDelegate::StorageMonitorStatus::kNormal:
+      return camera_app::mojom::StorageMonitorStatus::kNormal;
+    case CameraAppUIDelegate::StorageMonitorStatus::kLow:
+      return camera_app::mojom::StorageMonitorStatus::kLow;
+    case CameraAppUIDelegate::StorageMonitorStatus::kCriticallyLow:
+      return camera_app::mojom::StorageMonitorStatus::kCriticallyLow;
+    case CameraAppUIDelegate::StorageMonitorStatus::kCanceled:
+      return camera_app::mojom::StorageMonitorStatus::kCanceled;
+    case CameraAppUIDelegate::StorageMonitorStatus::kError:
+      return camera_app::mojom::StorageMonitorStatus::kError;
   }
+}
+
+std::string FromMojoSecurityType(
+    camera_app::mojom::WifiSecurityType security_type) {
+  switch (security_type) {
+    case camera_app::mojom::WifiSecurityType::kNone:
+      return "";
+    case camera_app::mojom::WifiSecurityType::kEap:
+      return onc::wifi::kWPA_EAP;
+    case camera_app::mojom::WifiSecurityType::kWep:
+      return onc::wifi::kWEP_PSK;
+    case camera_app::mojom::WifiSecurityType::kWpa:
+      return onc::wifi::kWPA_PSK;
+    default:
+      NOTREACHED() << "Unexpected security type: "
+                   << static_cast<int>(security_type);
+  }
+}
+
+std::string FromMojoEapMethod(camera_app::mojom::WifiEapMethod eap_method) {
+  switch (eap_method) {
+    case camera_app::mojom::WifiEapMethod::kEapTls:
+      return onc::eap::kEAP_TLS;
+    case camera_app::mojom::WifiEapMethod::kEapTtls:
+      return onc::eap::kEAP_TTLS;
+    case camera_app::mojom::WifiEapMethod::kLeap:
+      return onc::eap::kLEAP;
+    case camera_app::mojom::WifiEapMethod::kPeap:
+      return onc::eap::kPEAP;
+    default:
+      NOTREACHED() << "Unexpected EAP method: " << static_cast<int>(eap_method);
+  }
+}
+
+std::string FromMojoEapPhase2Method(
+    camera_app::mojom::WifiEapPhase2Method eap_phase2_method) {
+  switch (eap_phase2_method) {
+    case camera_app::mojom::WifiEapPhase2Method::kAutomatic:
+      return onc::eap::kAutomatic;
+    case camera_app::mojom::WifiEapPhase2Method::kChap:
+      return onc::eap::kCHAP;
+    case camera_app::mojom::WifiEapPhase2Method::kGtc:
+      return onc::eap::kGTC;
+    case camera_app::mojom::WifiEapPhase2Method::kMd5:
+      return onc::eap::kMD5;
+    case camera_app::mojom::WifiEapPhase2Method::kMschap:
+      return onc::eap::kMSCHAP;
+    case camera_app::mojom::WifiEapPhase2Method::kMschapv2:
+      return onc::eap::kMSCHAPv2;
+    case camera_app::mojom::WifiEapPhase2Method::kPap:
+      return onc::eap::kPAP;
+    default:
+      NOTREACHED() << "Unexpected EAP Phase2 method: "
+                   << static_cast<int>(eap_phase2_method);
+  }
+}
+
+CameraAppUIDelegate::WifiConfig FromMojoWifiConfig(
+    camera_app::mojom::WifiConfigPtr mojo_wifi_config) {
+  CameraAppUIDelegate::WifiConfig config;
+  config.ssid = mojo_wifi_config->ssid;
+  config.security = FromMojoSecurityType(mojo_wifi_config->security);
+  config.password = mojo_wifi_config->password;
+  config.eap_method = mojo_wifi_config->eap_method.has_value()
+                          ? std::make_optional<std::string>(FromMojoEapMethod(
+                                mojo_wifi_config->eap_method.value()))
+                          : std::nullopt;
+  config.eap_phase2_method =
+      mojo_wifi_config->eap_phase2_method.has_value()
+          ? std::make_optional<std::string>(FromMojoEapPhase2Method(
+                mojo_wifi_config->eap_phase2_method.value()))
+          : std::nullopt;
+  config.eap_identity = mojo_wifi_config->eap_identity;
+  config.eap_anonymous_identity = mojo_wifi_config->eap_anonymous_identity;
+  return config;
 }
 
 bool HasExternalScreen() {
@@ -203,12 +279,14 @@ void CameraAppHelperImpl::SetExternalScreenMonitor(
 }
 
 void CameraAppHelperImpl::CheckExternalScreenState() {
-  if (has_external_screen_ == HasExternalScreen())
+  if (has_external_screen_ == HasExternalScreen()) {
     return;
+  }
   has_external_screen_ = !has_external_screen_;
 
-  if (external_screen_monitor_.is_bound())
+  if (external_screen_monitor_.is_bound()) {
     external_screen_monitor_->Update(has_external_screen_);
+  }
 }
 
 void CameraAppHelperImpl::OnScannedDocumentCorners(
@@ -235,10 +313,10 @@ void CameraAppHelperImpl::OnConvertedToDocument(
   }
 
   switch (output_format) {
-    case DocumentOutputFormat::JPEG:
+    case DocumentOutputFormat::kJpeg:
       std::move(callback).Run(processed_jpeg_image);
       return;
-    case DocumentOutputFormat::PDF: {
+    case DocumentOutputFormat::kPdf: {
       std::vector<uint8_t> pdf_data;
       if (!chromeos::ConvertJpgImagesToPdf({processed_jpeg_image}, &pdf_data)) {
         LOG(ERROR) << "Failed to convert jpeg image to PDF format";
@@ -298,23 +376,23 @@ void CameraAppHelperImpl::NotifyTote(const ToteMetricFormat format,
   base::FilePath file_path =
       camera_app_ui_->delegate()->GetFilePathByName(name);
   switch (format) {
-    case ToteMetricFormat::PHOTO:
+    case ToteMetricFormat::kPhoto:
       holding_space_client_->AddItemOfType(
           HoldingSpaceItem::Type::kCameraAppPhoto, file_path);
       return;
-    case ToteMetricFormat::SCAN_JPG:
+    case ToteMetricFormat::kScanJpg:
       holding_space_client_->AddItemOfType(
           HoldingSpaceItem::Type::kCameraAppScanJpg, file_path);
       return;
-    case ToteMetricFormat::SCAN_PDF:
+    case ToteMetricFormat::kScanPdf:
       holding_space_client_->AddItemOfType(
           HoldingSpaceItem::Type::kCameraAppScanPdf, file_path);
       return;
-    case ToteMetricFormat::VIDEO_GIF:
+    case ToteMetricFormat::kVideoGif:
       holding_space_client_->AddItemOfType(
           HoldingSpaceItem::Type::kCameraAppVideoGif, file_path);
       return;
-    case ToteMetricFormat::VIDEO_MP4:
+    case ToteMetricFormat::kVideoMp4:
       holding_space_client_->AddItemOfType(
           HoldingSpaceItem::Type::kCameraAppVideoMp4, file_path);
       return;
@@ -439,7 +517,7 @@ void CameraAppHelperImpl::StopStorageMonitor() {
   camera_app_ui_->delegate()->StopStorageMonitor();
   if (!storage_callback_.is_null()) {
     std::move(storage_callback_)
-        .Run(camera_app::mojom::StorageMonitorStatus::CANCELED);
+        .Run(camera_app::mojom::StorageMonitorStatus::kCanceled);
   }
   if (storage_monitor_.is_bound()) {
     storage_monitor_.reset();
@@ -467,8 +545,9 @@ void CameraAppHelperImpl::OnDisplayTabletStateChanged(
 
 void CameraAppHelperImpl::OnScreenBacklightStateChanged(
     ScreenBacklightState screen_backlight_state) {
-  if (screen_state_monitor_.is_bound())
+  if (screen_state_monitor_.is_bound()) {
     screen_state_monitor_->Update(ToMojoScreenState(screen_backlight_state));
+  }
 }
 
 void CameraAppHelperImpl::OnDisplayAdded(const display::Display& new_display) {
@@ -493,6 +572,12 @@ void CameraAppHelperImpl::OnStorageStatusUpdated(
 
 void CameraAppHelperImpl::OpenStorageManagement() {
   camera_app_ui_->delegate()->OpenStorageManagement();
+}
+
+void CameraAppHelperImpl::OpenWifiDialog(
+    camera_app::mojom::WifiConfigPtr wifi_config) {
+  camera_app_ui_->delegate()->OpenWifiDialog(
+      FromMojoWifiConfig(std::move(wifi_config)));
 }
 
 }  // namespace ash

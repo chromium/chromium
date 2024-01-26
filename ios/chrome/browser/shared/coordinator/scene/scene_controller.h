@@ -19,6 +19,7 @@
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
+                                       ApplicationSettingsCommands,
                                        ConnectionInformation,
                                        TabOpening,
                                        WebStateListObserving>

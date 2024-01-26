@@ -61,6 +61,7 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
@@ -342,7 +343,9 @@ void PostProcessFoundTasks(Profile* profile,
         resulting_tasks->tasks.erase(it);
       }
       if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(
-              profile)) {
+              profile) &&
+          (!profile->GetProfilePolicyConnector()->IsManaged() ||
+           ash::cloud_upload::IsODFSInstalled(profile))) {
         office_task.task_descriptor.action_id =
             ToSwaActionId(kActionIdOpenInOffice);
         // A transfer to OneDrive is required for the Office PWA to open

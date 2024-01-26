@@ -4,12 +4,12 @@
 
 #include "device/fido/make_credential_request_handler.h"
 
+#include <map>
 #include <set>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -604,7 +604,7 @@ bool MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
   state_ = State::kWaitingForToken;
   selected_authenticator_for_pin_uv_auth_token_ = authenticator;
 
-  base::EraseIf(auth_token_requester_map_, [authenticator](auto& entry) {
+  std::erase_if(auth_token_requester_map_, [authenticator](auto& entry) {
     return entry.first != authenticator;
   });
   CancelActiveAuthenticators(authenticator->GetId());

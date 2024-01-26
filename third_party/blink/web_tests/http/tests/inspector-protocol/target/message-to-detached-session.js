@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests that sending message to detached session will return an error.');
 
   const createChildFrame = function(url) {

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -35,7 +36,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -479,7 +479,7 @@ TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_NotInScope) {
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
   Notification notification = GetDisplayedNotificationForType(
       NotificationHandler::Type::WEB_NON_PERSISTENT);
-  EXPECT_EQ(absl::nullopt, notification.notifier_id().web_app_id);
+  EXPECT_EQ(std::nullopt, notification.notifier_id().web_app_id);
 
   service()->DisplayPersistentNotification(kNotificationId, kOutOfScopeUrl,
                                            kWebAppOrigin, kNotificationData,
@@ -488,7 +488,7 @@ TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_NotInScope) {
                     NotificationHandler::Type::WEB_PERSISTENT));
   notification = GetDisplayedNotificationForType(
       NotificationHandler::Type::WEB_PERSISTENT);
-  EXPECT_EQ(absl::nullopt, notification.notifier_id().web_app_id);
+  EXPECT_EQ(std::nullopt, notification.notifier_id().web_app_id);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -601,7 +601,7 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 
   provider->Start();
 
-  absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
+  std::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
       icon_and_title = service()->FindWebAppIconAndTitle(web_app_url);
 
   ASSERT_TRUE(icon_and_title.has_value());

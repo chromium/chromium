@@ -11,7 +11,8 @@ import '../settings_shared.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList} from './security_keys_browser_proxy.js';
+import type {SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesList} from './security_keys_browser_proxy.js';
+import {SecurityKeysPhonesBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {getTemplate} from './security_keys_phones_subpage.html.js';
 
 declare global {

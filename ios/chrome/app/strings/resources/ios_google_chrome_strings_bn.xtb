@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1066101356081285416">Chrome আপনার ভিজিট করা সাইটে ট্র্যাকিং নম্বর শনাক্ত করবে এবং 'নতুন ট্যাব' পৃষ্ঠায় প্যাকেজ সংক্রান্ত আপডেট দেবে। সকলের জন্য এই ফিচার দিতে ও Google 'শপিং' ফিচারের উন্নতি করতে প্যাকেজ ট্র্যাকিং নম্বর ও ওয়েবসাইটের নাম Google-এ পাঠানো হবে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />প্যাকেজ ট্র্যাকিং সেটিংস<ph name="END_LINK" /> থেকে এটি আপডেট করতে পারবেন।</translation>
 <translation id="1085696779717592361">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="1105362920864247682">Chrome-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="1113057722807951993">পাসফ্রেজ এনক্রিপশনে Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত করা হয় না।
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">আপনার Chrome ডেটা সিঙ্ক করুন</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome-এ আপনার বুকমার্কে ইনপুট করা URL যোগ করে।</translation>
+<translation id="1799920918471566157">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1830634592642484976">এই ঠিকানাটি বর্তমানে Chrome-এ সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="USER_EMAIL" />।</translation>
 <translation id="1843217788865538014">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে আপনি ট্যাপ করলে, Chrome ব্রাউজারে ওয়েবপেজ অটোমেটিক খুলে যায়।</translation>
 <translation id="1910975740091000991">iOS-এর জন্য Chrome</translation>
 <translation id="1917964099031477364">এই ডিভাইসের Chrome এবং অন্যান্য Google অ্যাপ থেকে এই অ্যাকাউন্টটি এবং কোনও সেভ না করা ডেটা থাকলে তা সরানো হবে।</translation>
 <translation id="1965935827552890526">আপনার খুলে রাখা অন্যান্য Chrome উইন্ডোতে যেসব কাজ করছেন, সেগুলি সম্পূর্ণ করুন।</translation>
 <translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
-<translation id="2008357574463816229">আপনি নিজের পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome সম্পর্কিত ডেটা মুছুন<ph name="END_LINK" />।</translation>
 <translation id="2056123005618757196">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Google Chrome-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="2120238739383482109">Chrome-এর বুকমার্ক খোলে।</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> যে এই ওয়েবসাইটের সার্টিফিকেট প্রকাশ করেছে Chrome তা যাচাই করেছে।</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chrome-এ পড়ার তালিকার আইটেম যোগ করুন</translation>
 <translation id="2736805085127235148">আপনার ডিভাইস সেটিংসে বর্তমান Chrome বিজ্ঞপ্তিগুলি বন্ধ করা আছে।</translation>
 <translation id="2767464022270041271">কোনও সেভ করা পাসওয়ার্ড নেই। আপনি পাসওয়ার্ড সেভ করলে Google Password Manager সেটি চেক করতে পারবে।</translation>
+<translation id="2789947168960170215">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome সম্পর্কিত ডেটা মুছুন<ph name="END_LINK" />।</translation>
 <translation id="2868822340714096138">Chrome-এ ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="3522659714780527202">সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="3577555362230509265">অন্যান্য অ্যাপের জন্য Chrome ব্যবহার করুন।</translation>
-<translation id="3594076341410558780">"Chrome থেকে সবচেয়ে বেশি সুবিধা পান" মেনু লুকান</translation>
 <translation id="364480321352456989">আপনার Chrome পুরনো হয়ে গেছে।</translation>
 <translation id="3646736009628185125">আপনার পরিবারের সদস্য এই মুহূর্তে পাসওয়ার্ড রিসিভ করতে পারবেন না। তাকে Chrome আপডেট করে পাসওয়ার্ড সিঙ্ক করতে বলুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">এর মানে Chrome প্রতিবার মোবাইল সাইটের অনুরোধ করবে।</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">আপনার Google অ্যাকাউন্টে <ph name="BEGIN_LINK" />কোন Chrome-এর কোন ডেটা সেভ করা হবে তা ম্যানেজ<ph name="END_LINK" /> করতে পারবেন।
 
 আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
-<translation id="687586529977635009">Chrome আপনার ভিজিট করা সাইটে ট্র্যাকিং নম্বর শনাক্ত করবে এবং 'নতুন ট্যাব' পৃষ্ঠায় প্যাকেজ সংক্রান্ত আপডেট দেবে। এই ফিচারটি ব্যবহারের সুযোগ দেওয়া এবং সকলের জন্য Shopping পরিষেবা আরও ভাল করে তুলতে আপনার ডেটা Google-এর সাথে শেয়ার করা হবে। আপনি <ph name="BEGIN_LINK" />প্যাকেজ ট্র্যাকিং সেটিংস<ph name="END_LINK" /> পৃষ্ঠায় গিয়ে এটি পরিবর্তন করতে পারেন।</translation>
 <translation id="6916015246697034114">Chrome-এ ভয়েসের মাধ্যমে সার্চ করুন</translation>
 <translation id="6964931465519938134">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ করে তা সরাসরি Chrome ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="6975725306479268850">অটোফিলের জন্য Chrome বেছে নিন</translation>

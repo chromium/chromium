@@ -79,9 +79,9 @@ void SetMigrationRun(Profile* profile,
 
 // Returns whether the device has a stylus-enabled internal touchscreen, used
 // for determining whether the device should enable/disable particular
-// preinstalled apps. Returns absl::nullopt if attached devices could not be
+// preinstalled apps. Returns std::nullopt if attached devices could not be
 // determined, due to ui::DeviceDataManager not being fully initialized.
-absl::optional<bool> DeviceHasStylusEnabledTouchscreen();
+std::optional<bool> DeviceHasStylusEnabledTouchscreen();
 
 }  // namespace web_app
 

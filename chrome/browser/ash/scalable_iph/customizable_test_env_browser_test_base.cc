@@ -147,7 +147,7 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
           &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
           embedded_test_server(), this, /*should_launch_browser=*/false,
-          /*account_id=*/absl::nullopt, /*include_initial_user=*/false);
+          /*account_id=*/std::nullopt, /*include_initial_user=*/false);
       break;
   }
 

@@ -22,13 +22,13 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsLacrosBrowserTest, SetPinnedApps) {
           ->GetForBrowserContext(browser()->profile());
   ASSERT_TRUE(remote_apps_proxy);
 
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
 
   std::vector<std::string> ids = {"invalid id"};
   remote_apps_proxy->SetPinnedApps(
-      ids, future.GetCallback<const absl::optional<std::string>&>());
+      ids, future.GetCallback<const std::optional<std::string>&>());
 
-  absl::optional<const std::string> result = future.Get();
+  std::optional<const std::string> result = future.Get();
   ASSERT_TRUE(result);
   uint32_t ash_remote_apps_version =
       remote_apps_proxy->AshRemoteAppsVersionForTests();

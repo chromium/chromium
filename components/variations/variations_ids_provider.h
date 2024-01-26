@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Sets low entropy source value that was used for client-side randomization
   // of variations.
-  void SetLowEntropySourceValue(absl::optional<int> low_entropy_source_value);
+  void SetLowEntropySourceValue(std::optional<int> low_entropy_source_value);
 
   // Result of ForceVariationIds() call.
   enum class ForceIdsResult {
@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Low entropy source value from client that was used for client-side
   // randomization of variations.
-  absl::optional<int> low_entropy_source_value_;
+  std::optional<int> low_entropy_source_value_;
 
   // Whether or not we've initialized the caches.
   bool variation_ids_cache_initialized_;

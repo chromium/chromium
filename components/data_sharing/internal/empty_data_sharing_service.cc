@@ -14,4 +14,9 @@ bool EmptyDataSharingService::IsEmptyService() {
   return true;
 }
 
+DataSharingNetworkLoader*
+EmptyDataSharingService::GetDataSharingNetworkLoader() {
+  return nullptr;
+}
+
 }  // namespace data_sharing

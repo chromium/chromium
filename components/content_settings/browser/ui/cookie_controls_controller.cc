@@ -142,10 +142,13 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   int bounce_count = GetStatefulBounceCount();
 
   for (auto& observer : observers_) {
-    observer.OnStatusChanged(status.status, status.enforcement,
+    observer.OnStatusChanged(status.status, status.controls_visible,
+                             status.protections_on, status.enforcement,
                              status.blocking_status, status.expiration);
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
+    observer.OnUserBypassIconStatusChanged(
+        status.controls_visible, status.protections_on, status.blocking_status);
     observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
         status.status, status.enforcement, third_party_allowed_sites,
         third_party_blocked_sites, bounce_count));
@@ -156,15 +159,21 @@ CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return {CookieControlsStatus::kDisabled,
+            /*controls_visible=*/false,
+            /*protections_on=*/false,
             CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
+            CookieBlocking3pcdStatus::kNotIn3pcd,
+            base::Time()};
   }
   const GURL& url = web_contents->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
     return {CookieControlsStatus::kDisabled,
+            /*controls_visible=*/false,
+            /*protections_on=*/false,
             CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
+            CookieBlocking3pcdStatus::kNotIn3pcd,
+            base::Time()};
   }
 
   SettingInfo info;
@@ -205,8 +214,10 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             : CookieBlocking3pcdStatus::kLimited;
   }
   CookieControlsEnforcement enforcement;
+  bool controls_visible = true;
   if (info.source == SETTING_SOURCE_TPCD_GRANT &&
       blocking_status == CookieBlocking3pcdStatus::kLimited) {
+    controls_visible = false;
     enforcement = CookieControlsEnforcement::kEnforcedByTpcdGrant;
   } else if (info.source == SETTING_SOURCE_POLICY) {
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
@@ -220,7 +231,12 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   } else {
     enforcement = CookieControlsEnforcement::kNoEnforcement;
   }
-  return {status, enforcement, blocking_status, info.metadata.expiration()};
+  return {status,
+          /*controls_visible=*/controls_visible,
+          /*protections_on=*/!is_allowed,
+          enforcement,
+          blocking_status,
+          info.metadata.expiration()};
 }
 
 CookieControlsBreakageConfidenceLevel

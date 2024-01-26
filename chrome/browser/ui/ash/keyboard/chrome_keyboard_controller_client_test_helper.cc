@@ -80,6 +80,7 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
                                   base::Milliseconds(1000)};
   }
   bool AreTopRowKeysFunctionKeys() override { return false; }
+  void SetSmartVisibilityEnabled(bool enabled) override {}
 
  private:
   keyboard::KeyboardConfig keyboard_config_;

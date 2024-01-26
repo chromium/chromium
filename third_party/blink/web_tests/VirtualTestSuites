@@ -194,7 +194,9 @@
     "prefix": "off-main-thread-css-paint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-paint-api",
-              "http/tests/csspaint"],
+              "http/tests/csspaint",
+	      "http/tests/inspector-protocol/paint-worklet"],
+    "exclusive_tests": ["http/tests/inspector-protocol/paint-worklet"],
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=OffMainThreadCSSPaint",
              "--enable-gpu-rasterization",
@@ -276,7 +278,8 @@
               "webexposed",
               "compositing/filters",
               "external/wpt/performance-timeline/tentative/with-filter-options-originA.html",
-              "external/wpt/soft-navigation-heuristics/disabled.html"
+              "external/wpt/soft-navigation-heuristics/disabled.html",
+              "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html"
             ],
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",
@@ -456,6 +459,7 @@
     "prefix": "scalefactor150",
     "platforms": ["Linux", "Win"],
     "bases": ["fast/events/synthetic-events",
+              "fast/events/wheel/wheelevent-in-scrolling-div.html",
               "fast/hidpi/static"],
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=1.5",
@@ -667,6 +671,11 @@
   "Skip below.  Note that by default Site Isolation isolates *sites* rather",
   "than *origin* and therefore avoids problems related to document.domain",
   "compatibility.",
+  "TODO(crbug.com/1515794): fast/dom/raf-throttling-out-of-view-cross-origin-page.html",
+  "  fails when run with IsolateSandboxedIframes enabled as it needs to be same-process",
+  "  to run reliably. We should investigate whether it's possible to rewrite the",
+  "  test to run reliably with process-isolation for sandboxed iframes",
+  "  enabled, If not, it can continue to run in this virtual test suite.",
   {
     "prefix": "not-site-per-process",
     "platforms": ["Linux", "Mac", "Win"],
@@ -695,7 +704,8 @@
       "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html",
       "external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html",
       "external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html",
-      "http/tests/security/drag-drop-same-unique-origin.html"
+      "http/tests/security/drag-drop-same-unique-origin.html",
+      "fast/dom/raf-throttling-out-of-view-cross-origin-page.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
@@ -1028,15 +1038,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "disable-ua-client-hint",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
-    "args": ["--disable-features=UserAgentClientHint",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2024",
-    "owners": ["victortan@chromium.org"]
-  },
-  {
     "prefix": "web-bluetooth-new-permissions-backend",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
@@ -1065,7 +1066,7 @@
   },
   {
     "prefix": "dom-parts-disabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/dom/parts",
@@ -1073,6 +1074,28 @@
     ],
     "args": ["--disable-features=DOMPartsAPI",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "template-shadowroot-enabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/shadow-dom/declarative",
+      "shadow-dom/template-shadowroot-reflection.html"
+    ],
+    "args": ["--enable-blink-features=DeprecatedTemplateShadowRoot"],
+    "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "new-shadowroot-attach-behavior-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/shadow-dom/declarative",
+      "shadow-dom"
+    ],
+    "args": ["--disable-blink-features=ShadowRootAttachmentNewBehavior"],
     "expires": "Jul 1, 2024"
   },
   {
@@ -1088,91 +1111,6 @@
     "args": ["--disable-blink-features=DetailsStyling",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Apr 1, 2024"
-  },
-  {
-    "prefix": "dir-pseudo-disabled",
-    "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/css/selectors/dir-pseudo-on-bdi-element.html",
-      "external/wpt/css/selectors/dir-pseudo-on-input-element.html",
-      "external/wpt/css/selectors/dir-selector-auto.html",
-      "external/wpt/css/selectors/dir-selector-querySelector.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-assorted.window.js",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-bdi-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-bdi-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-dir_auto-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-dir_auto-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-dir-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-dir-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-script-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-script-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-style-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-style-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-textarea-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-contained-textarea-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-auto-div-append-child.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-auto-dynamic-changes.window.js",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.js",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-N-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-N-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-N-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-N-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-N-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-input-script-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-isolate.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-N-L.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-N-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-pre-mixed.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-pre-N-between-Rs.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-pre-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-R.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-mixed.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-N-between-Rs.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-mixed.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html",
-      "external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-EN.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-bdi-script.html",
-      "external/wpt/html/dom/elements/global-attributes/dir-slots-directionality.html",
-      "external/wpt/html/dom/elements/global-attributes/document-dir.html",
-      "external/wpt/html/dom/elements/global-attributes/lang-attribute-shadow.window.js",
-      "external/wpt/html/dom/elements/global-attributes/lang-attribute.window.js",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-002.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-003.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-004.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-005.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-006.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-007.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-008.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-009.html",
-      "external/wpt/html/dom/elements/global-attributes/the-lang-attribute-010.html"
-    ],
-    "args": ["--disable-blink-features=CSSPseudoDir",
-             "--disable-blink-features=HTMLLangNewInheritance",
-             "--disable-blink-features=BdiElementDirInheritance",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Feb 1, 2024"
   },
   {
     "prefix": "backface-visibility-interop",
@@ -1307,21 +1245,12 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "web-app-window-controls-overlay",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.html"],
-    "args": ["--enable-features=WebAppWindowControlsOverlay",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "first-party-sets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "http/tests/inspector-protocol/network",
-      "http/tests/inspector-protocol/issues"
+      "http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js"
     ],
-    "args": ["--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
+    "args": ["--test-third-party-cookie-phaseout", "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2024",
     "owners": ["chrome-first-party-sets@chromium.org"]
@@ -1504,7 +1433,9 @@
       "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types.html",
-      "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html"
+      "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-light-dismiss-hint.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
@@ -1958,22 +1889,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "mediastreamtrack-transfer",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html",
-      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-blink-features=MediaStreamTrackTransfer",
-      "--enable-features=MediaStreamTrackTransfer",
-      "--use-fake-device-for-media-stream=display-media-type=browser",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "force-defer-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],
@@ -2214,11 +2129,21 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "fedcm-authz",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-authz/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmAuthz"],
+    "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
+    "expires": "May 1, 2025"
+  },
+  {
     "prefix": "fedcm-login-status",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/credential-management/fedcm-login-status/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmIdpSigninStatusEnabled",
+             "--enable-features=FedCmSameSiteLoginStatus",
              "--enable-features=FencedFramesDefaultMode",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
@@ -2315,6 +2240,7 @@
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html",
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-blocked.sub.html",
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-redirect-to-blocked.sub.html",
+      "external/wpt/content-security-policy/reporting/",
       "external/wpt/fetch/",
       "external/wpt/xhr/"
     ],
@@ -2592,7 +2518,7 @@
     "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
   },
   {
-    "prefix": "deprecate-unload",
+    "prefix": "unload-allowed",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "http/tests/devtools/sources/debugger/skip-pause-during-navigation.js",
@@ -2646,7 +2572,7 @@
       "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html",
       "wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html"
      ],
-    "args": ["--enable-features=DeprecateUnload"],
+    "args": ["--disable-features=DeprecateUnload"],
     "expires": "Jun 1, 2024",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
@@ -2662,5 +2588,28 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Jun 1, 2024"
+  },
+  {
+    "prefix": "import-attributes-json-css-modules",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/content-security-policy/connect-src/connect-src-json-import-allowed.sub.html",
+      "external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html",
+      "external/wpt/content-security-policy/style-src/import-style-allowed.sub.html",
+      "external/wpt/content-security-policy/style-src/import-style-blocked.sub.html"
+    ],
+    "args": ["--js-flags=--harmony-import-attributes"],
+    "expires": "Apr 1, 2024"
+  },
+  {
+    "prefix": "stylable-select-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element/select-parsing.tentative.html",
+      "fast/forms/select/button-or-datalist-in-select-usecounter.html"
+    ],
+    "args": ["--disable-features=StylableSelect"],
+    "expires": "Oct 1, 2024",
+    "owners": ["jarhar@chromium.org", "masonf@chromium.org"]
   }
 ]

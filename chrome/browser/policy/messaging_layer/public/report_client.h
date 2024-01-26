@@ -67,6 +67,7 @@ class ReportingClient : public ReportQueueProvider {
       scoped_refptr<StorageModuleInterface> storage_module);
 
   static void AsyncStartUploader(
+      base::WeakPtr<ReportQueueProvider> instance,
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 

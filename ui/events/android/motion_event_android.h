@@ -14,7 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "ui/events/events_export.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -58,7 +58,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      jfloat ticks_x,
                      jfloat ticks_y,
                      jfloat tick_multiplier,
-                     base::TimeTicks time,
+                     base::TimeTicks oldest_event_time,
                      jint android_action,
                      jint pointer_count,
                      jint history_size,
@@ -72,6 +72,29 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      jboolean for_touch_handle,
                      const Pointer* const pointer0,
                      const Pointer* const pointer1);
+
+  MotionEventAndroid(JNIEnv* env,
+                     jobject event,
+                     jfloat pix_to_dip,
+                     jfloat ticks_x,
+                     jfloat ticks_y,
+                     jfloat tick_multiplier,
+                     base::TimeTicks oldest_event_time,
+                     base::TimeTicks latest_event_time,
+                     jint android_action,
+                     jint pointer_count,
+                     jint history_size,
+                     jint action_index,
+                     jint android_action_button,
+                     jint android_gesture_classification,
+                     jint android_button_state,
+                     jint meta_state,
+                     jfloat raw_offset_x_pixels,
+                     jfloat raw_offset_y_pixels,
+                     jboolean for_touch_handle,
+                     const Pointer* const pointer0,
+                     const Pointer* const pointer1);
+
   ~MotionEventAndroid() override;
 
   // Create a new instance from |this| with its cached pointers set
@@ -102,7 +125,14 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   float GetTiltY(size_t pointer_index) const override;
   float GetTwist(size_t pointer_index) const override;
   float GetTangentialPressure(size_t pointer_index) const override;
+
+  // TODO(1520879): Cleanup GetEventTime method to have same semantics as
+  // Android side of MotionEvent.GetEventTime().
+  // On Android side GetEventTime() gives timestamp of the most recent input
+  // event, while in chromium it gives timestamp of the oldest input event for
+  // batched inputs.
   base::TimeTicks GetEventTime() const override;
+  base::TimeTicks GetLatestEventTime() const override;
   size_t GetHistorySize() const override;
   base::TimeTicks GetHistoricalEventTime(
       size_t historical_index) const override;
@@ -158,7 +188,8 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   const bool for_touch_handle_;
 
-  const base::TimeTicks cached_time_;
+  const base::TimeTicks cached_oldest_event_time_;
+  const base::TimeTicks cached_latest_event_time_;
   const Action cached_action_;
   const size_t cached_pointer_count_;
   const size_t cached_history_size_;

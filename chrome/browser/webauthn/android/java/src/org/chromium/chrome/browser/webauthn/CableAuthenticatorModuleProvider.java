@@ -272,11 +272,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
     /** Calls back into native code with whether we are running in a work profile. */
     @CalledByNative
     public static void amInWorkProfile(long pointer) {
-        if (!DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_DONT_PRELINK_IN_PROFILES)) {
-            CableAuthenticatorModuleProviderJni.get().onHaveWorkProfileResult(pointer, false);
-            return;
-        }
-
         ThreadUtils.assertOnUiThread();
         EnterpriseInfo enterpriseInfo = EnterpriseInfo.getInstance();
         enterpriseInfo.getDeviceEnterpriseInfo(

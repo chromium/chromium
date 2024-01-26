@@ -55,6 +55,8 @@
   callback Callback3 = void(MyType1 arg);
   callback Callback4 = void(MyType2[] arg);
   callback Callback5 = void(EnumType type);
+  callback OptionalArgCallback = void(optional DOMString arg0);
+
   // A comment on a callback.
   // |x|: A parameter.
   callback Callback6 = void(long x);
@@ -114,6 +116,22 @@
     static EnumType[] function28();
     static idl_other_namespace.SomeType function29();
     static idl_other_namespace.SomeType[] function30();
+
+    static void funcAsync(Callback4 cb);
+
+    [doesNotSupportPromises]
+    static void funcOptionalArgAndNotPromiseBased(OptionalArgCallback cb);
+
+    static void funcOptionalArgCallback(OptionalArgCallback cb);
+
+    [doesNotSupportPromises]
+    static void funcOptionalCallbackNotPromiseBased(optional Callback2 cb);
+
+    static void funcOptionalCallback(optional Callback2 cb);
+
+
+    static void funcWithEntry([instanceOf=Entry] object[] entries);
+    static void funcWithArrayObj(object[] entries);
   };
 
   interface Events {

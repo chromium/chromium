@@ -13,8 +13,9 @@ import './user_note_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_note.html.js';
-import {Note} from './user_notes.mojom-webui.js';
-import {UserNotesApiProxy, UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
+import type {Note} from './user_notes.mojom-webui.js';
+import type {UserNotesApiProxy} from './user_notes_api_proxy.js';
+import {UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
 
 export interface UserNoteElement {
   $: {

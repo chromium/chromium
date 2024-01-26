@@ -53,7 +53,7 @@
           .shadowRoot;
   const playPauseButton = toolbar.getElementById('play-pause');
   const dispatchTarget =
-      readAnythingApp.shadowRoot.querySelector('#flex-parent');
+      readAnythingApp.shadowRoot.querySelector('#flexParent');
   const keyK = new KeyboardEvent('keydown', {key: 'k'});
 
   // Unpause by pressing k

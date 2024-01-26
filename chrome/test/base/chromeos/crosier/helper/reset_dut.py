@@ -63,6 +63,8 @@ DAEMONS = [
     "update-engine",
     # Biod
     "biod",
+    # Need to stop to release dmcrypt mounts for `lvremove`.
+    "vm_concierge",
 ]
 
 
@@ -76,9 +78,10 @@ def _is_chromeos() -> bool:
     return os_release.get("ID") in ["chromeos", "chromiumos"]
 
 
-def _run_cmd(args: List[str]):
+def _run_cmd(args: List[str], shell=False):
     logging.info("Run: %s", args)
     process = subprocess.run(args,
+                             shell=shell,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
     logging.info("Output: %s", process.stdout[:80])
@@ -86,6 +89,11 @@ def _run_cmd(args: List[str]):
 
 def reset_system_state_files():
     """Resets a known list of system state files and restart daemons"""
+
+    # Clean-ups before resetting states.
+    _run_cmd(["cryptohome", "--action=pkcs11_terminate"])
+    _run_cmd(["cryptohome", "--action=unmount"])
+    _run_cmd(["umount", "/run/namespaces/mnt_chrome"])
 
     # Stops daemons that touch the system state files. Note the script does
     # not touch `ui` service because it runs as part of
@@ -100,7 +108,8 @@ def reset_system_state_files():
 
     logging.info("Update LVM.")
     _run_cmd(["vgchange", "-ay"])
-    _run_cmd(["lvremove", "-ff", "/dev/*/cryptohome*"])
+    # Run with shell so that globing in `"/dev/*/cryptohome*"` works.
+    _run_cmd(["lvremove -ff /dev/*/cryptohome*"], shell=True)
 
     logging.info("Run tmpfiles to restore the removed folders and permissions.")
     _run_cmd([

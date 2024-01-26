@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -163,13 +162,8 @@ bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
 v8::Local<v8::Value> WebNode::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
-  v8::Local<v8::Value> value;
-  if (!ToV8Traits<Node>::ToV8(ScriptState::From(isolate->GetCurrentContext()),
-                              private_.Get())
-           .ToLocal(&value)) {
-    return v8::Local<v8::Value>();
-  }
-  return value;
+  return ToV8Traits<Node>::ToV8(ScriptState::From(isolate->GetCurrentContext()),
+                                private_.Get());
 }
 
 bool WebNode::IsElementNode() const {

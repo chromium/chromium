@@ -43,7 +43,6 @@ namespace blink {
 
 class Document;
 class ExceptionState;
-class GetInnerHTMLOptions;
 class SlotAssignment;
 class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
@@ -96,6 +95,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
 
+  bool serializable() const { return serializable_; }
+  void setSerializable(bool serializable) { serializable_ = serializable; }
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -126,7 +128,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void DistributeIfNeeded();
 
   String innerHTML() const;
-  String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   void setHTMLUnsafe(const String& html, ExceptionState&);
 
@@ -168,13 +169,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   }
   bool IsAvailableToElementInternals() const {
     return available_to_element_internals_;
-  }
-
-  void SetNeedsDirAutoAttributeUpdate(bool flag) {
-    needs_dir_auto_attribute_update_ = flag;
-  }
-  bool NeedsDirAutoAttributeUpdate() const {
-    return needs_dir_auto_attribute_update_;
   }
 
   void SetHasFocusgroupAttributeOnDescendant(bool flag) {
@@ -222,9 +216,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned slot_assignment_mode_ : 1;
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
-  unsigned needs_dir_auto_attribute_update_ : 1;
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
-  unsigned unused_ : 7;
+  unsigned serializable_ : 1;
+  unsigned unused_ : 6;
 };
 
 inline bool Node::IsInUserAgentShadowRoot() const {

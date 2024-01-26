@@ -90,6 +90,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web de façon autonome.</translation>
 <translation id="268602741124540128">Bienvenue dans Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3258596308407688501">Chromium ne peut pas lire et écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 est le moteur JavaScript et WebAssembly de Chromium utilisé pour améliorer les performances du site</translation>
 <translation id="3283186697780795848">La version <ph name="PRODUCT_VERSION" /> de Chromium est installée</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés d'API Google sont manquantes. Certaines fonctionnalités de Chromium seront désactivées</translation>
@@ -142,7 +144,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3533435340678213462">Afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chromium les prenne en compte.</translation>
 <translation id="3567254597502212821">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="3593091352817399191">Un autre compte est déjà connecté. Pour maintenir votre navigation séparée, Chromium peut créer un profil juste pour vous.</translation>
-<translation id="363078681319665186">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. Cet ordinateur fonctionne sous macOS 10.13.</translation>
 <translation id="3639635944603682591">Les données de navigation de cette personne seront supprimées de cet appareil. Pour récupérer ces données, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez.}=1{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3651803019964686660">Pour envoyer un numéro de <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chromium sur les deux appareils.</translation>
@@ -159,7 +160,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Obtenir de l'aide pour Chromium OS</translation>
 <translation id="3871664619793219264">Profitez de vos données du navigateur Chromium associées au compte <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. Cet ordinateur fonctionne sous macOS 10.14.</translation>
 <translation id="388648406173476553">Personnaliser et gérer Chromium. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> est déjà connecté à ce profil Chromium. Pour maintenir votre navigation séparée, Chromium peut créer un profil pour vous.</translation>
@@ -220,6 +220,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4814736265800133385">Utiliser Chromium sans compte</translation>
 <translation id="4888717733111232871">Règle de trafic entrant pour Chrome afin d'autoriser le trafic mDNS.</translation>
 <translation id="4893347770495441059">Relancer &amp;Chromium pour le mettre à jour</translation>
+<translation id="4942295735032723435">Vous devez disposer de macOS 11 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. Cet ordinateur fonctionne sous macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium fonctionne en mode arrière-plan.</translation>
 <translation id="4987820182225656817">Les invités peuvent utiliser Chromium sans rien laisser derrière eux.</translation>
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
@@ -248,7 +249,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est proposée}=1{Une mise à jour de Chromium est proposée}one{Une mise à jour de Chromium est proposée depuis # jour}other{Une mise à jour de Chromium est proposée depuis # jours}}</translation>
 <translation id="5643865575100044307">Supprimez toujours les données relatives aux sites sur votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
-<translation id="5675598751761067447">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Chromium peut vérifier ce téléchargement pour vous si vous fournissez le mot de passe (votre mot de passe reste sur votre appareil)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur mandataire nécessite une authentification.</translation>
@@ -408,6 +408,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8105840573057009683">Chromium requiert l'autorisation de localisation pour ce site</translation>
 <translation id="8133124826068723441">Chromium OS n'a pas pu synchroniser vos données, car la synchronisation n'est pas offerte pour votre domaine.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
+<translation id="8166782796394721554">Activez une protection supplémentaire dans le moteur JavaScript et WebAssembly de Chromium</translation>
 <translation id="81770708095080097">Chromium a bloqué ce fichier, car il est dangereux.</translation>
 <translation id="8213374284266571500">Chromium a bloqué le téléchargement parce que ce type de fichier est dangereux</translation>
 <translation id="8248265253516264921">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>

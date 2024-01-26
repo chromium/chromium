@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_INCIDENT_REPORTING_PREFERENCE_VALIDATION_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -40,7 +40,7 @@ class PreferenceValidationDelegate
   // TrackedPreferenceValidationDelegate methods.
   void OnAtomicPreferenceValidation(
       const std::string& pref_path,
-      absl::optional<base::Value> value,
+      std::optional<base::Value> value,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState value_state,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
           external_validation_value_state,

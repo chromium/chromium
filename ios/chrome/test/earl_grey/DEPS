@@ -33,6 +33,11 @@ specific_include_rules = {
     "+ios/third_party/edo",
   ],
 
+  "chrome_test_case_app_interface\.mm":[
+   "+components/feature_engagement/public/feature_constants.h",
+   "+components/feature_engagement/public/tracker.h",
+  ],
+
   "eg_tests_hook\.mm": [
    "+components/signin/internal/identity_manager",
    "+components/password_manager/ios",

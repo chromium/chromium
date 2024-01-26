@@ -230,11 +230,9 @@
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
+            wantsToStartDownload:(web::DownloadTask*)download {
   DCHECK_EQ(_downloadTask, download);
-  base::RecordAction(
-      base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
-  _mediator.StartDownloading();
+  [self tryDownload];
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -289,7 +287,13 @@
 
 - (void)downloadManagerViewControllerDidStartDownload:
     (UIViewController*)controller {
-  [self tryDownload];
+  if (!_mediator.IsSaveToDriveAvailable()) {
+    [self tryDownload];
+    return;
+  }
+  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
 - (void)downloadManagerViewControllerDidRetry:(UIViewController*)controller {
@@ -304,12 +308,15 @@
   [self tryDownload];
 }
 
-- (void)downloadManagerViewControllerDidStartDownloadToDrive:
+- (void)downloadManagerViewControllerDidOpenInDriveApp:
     (UIViewController*)controller {
   CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
-  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
+  UploadTask* uploadTask = _mediator.GetUploadTask();
+  CHECK(uploadTask);
+  [UIApplication.sharedApplication
+                openURL:uploadTask->GetResponseLink()
+                options:@{UIApplicationOpenURLOptionUniversalLinksOnly : @YES}
+      completionHandler:nil];
 }
 
 - (void)presentOpenInForDownloadManagerViewController:
@@ -351,6 +358,9 @@
 - (void)tryDownload {
   if (_downloadTask->GetErrorCode() != net::OK) {
     base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
+  } else if (_mediator.GetUploadTask() != nullptr) {
+    base::RecordAction(
+        base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
   } else {
     base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
     _unopenedDownloads.Add(_downloadTask);

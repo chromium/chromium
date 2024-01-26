@@ -115,4 +115,9 @@ void AcceleratorLauncherStateMachine::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
+void AcceleratorLauncherStateMachine::SetCanHandleLauncherForTesting(
+    bool can_handle) {
+  current_state_ = can_handle ? LauncherState::kTrigger : LauncherState::kStart;
+}
+
 }  // namespace ash

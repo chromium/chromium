@@ -121,12 +121,27 @@ bool HasPrintingPermission(content::RenderFrameHost& rfh) {
          blink::mojom::PermissionStatus::GRANTED;
 }
 
+void InvokeFetchAttributesCallback(
+    WebPrintingServiceChromeOS::FetchAttributesCallback callback,
+    blink::mojom::WebPrinterAttributesPtr printer_attributes) {
+  if (!printer_attributes) {
+    std::move(callback).Run(blink::mojom::WebPrinterFetchResult::NewError(
+        blink::mojom::WebPrinterFetchError::kPrinterUnreachable));
+    return;
+  }
+  std::move(callback).Run(
+      blink::mojom::WebPrinterFetchResult::NewPrinterAttributes(
+          std::move(printer_attributes)));
+}
+
 }  // namespace
 
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver)
+    mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver,
+    const std::string& app_id)
     : DocumentService(*render_frame_host, std::move(receiver)),
+      app_id_(app_id),
       cups_wrapper_(chromeos::CupsWrapper::Create()),
       pdf_flattener_(std::make_unique<PdfBlobDataFlattener>(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
@@ -150,6 +165,8 @@ void WebPrintingServiceChromeOS::GetPrinters(GetPrintersCallback callback) {
 void WebPrintingServiceChromeOS::FetchAttributes(
     FetchAttributesCallback callback) {
   if (!HasPrintingPermission(render_frame_host())) {
+    std::move(callback).Run(blink::mojom::WebPrinterFetchResult::NewError(
+        blink::mojom::WebPrinterFetchError::kUserPermissionDenied));
     return;
   }
 
@@ -167,6 +184,8 @@ void WebPrintingServiceChromeOS::Print(
     std::unique_ptr<PrintSettings> attributes,
     PrintCallback callback) {
   if (!HasPrintingPermission(render_frame_host())) {
+    std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
+        blink::mojom::WebPrintError::kUserPermissionDenied));
     return;
   }
 
@@ -185,7 +204,8 @@ void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
     GetPrintersCallback callback,
     blink::mojom::PermissionStatus permission_status) {
   if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
-    std::move(callback).Run(/*printers=*/{});
+    std::move(callback).Run(blink::mojom::GetPrintersResult::NewError(
+        blink::mojom::GetPrintersError::kUserPermissionDenied));
     return;
   }
   GetLocalPrinterInterface()->GetPrinters(
@@ -208,7 +228,8 @@ void WebPrintingServiceChromeOS::OnPrintersRetrieved(
     printer_info->printer_remote = std::move(printer_remote);
     web_printers.push_back(std::move(printer_info));
   }
-  std::move(callback).Run(std::move(web_printers));
+  std::move(callback).Run(
+      blink::mojom::GetPrintersResult::NewPrinters(std::move(web_printers)));
 }
 
 void WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved(
@@ -216,13 +237,15 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved(
     FetchAttributesCallback callback,
     blink::mojom::WebPrinterAttributesPtr printer_attributes) {
   if (!printer_attributes) {
-    std::move(callback).Run(nullptr);
+    InvokeFetchAttributesCallback(std::move(callback),
+                                  /*printer_attributes=*/nullptr);
     return;
   }
   cups_wrapper_->QueryCupsPrinterStatus(
       printer_id, base::BindOnce(&MergePrinterAttributesAndStatus,
                                  std::move(printer_attributes))
-                      .Then(std::move(callback)));
+                      .Then(base::BindOnce(&InvokeFetchAttributesCallback,
+                                           std::move(callback))));
 }
 
 void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
@@ -257,8 +280,8 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
 void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
     std::unique_ptr<PrintSettings> settings,
     PrintCallback callback,
-    std::unique_ptr<MetafileSkia> flattened_pdf) {
-  if (!flattened_pdf) {
+    std::unique_ptr<FlattenPdfResult> flatten_pdf_result) {
+  if (!flatten_pdf_result) {
     std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
         blink::mojom::WebPrintError::kDocumentMalformed));
     return;
@@ -267,13 +290,15 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
   mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer;
   auto job_info = blink::mojom::WebPrintJobInfo::New();
   job_info->job_name = base::UTF16ToUTF8(settings->title());
+  // Total number of pages in all copies.
+  job_info->job_pages = flatten_pdf_result->page_count * settings->copies();
   job_info->observer = observer.InitWithNewPipeAndPassReceiver();
 
-  // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   print_job_controller_->CreatePrintJob(
-      std::move(flattened_pdf), std::move(settings),
+      std::move(flatten_pdf_result->flattened_pdf), std::move(settings),
+      flatten_pdf_result->page_count,
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
-      /*source_id=*/"",
+      /*source_id=*/app_id_,
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintJobCreated,
                      weak_factory_.GetWeakPtr(), std::move(observer)));
 
@@ -286,8 +311,10 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
     std::optional<PrintJobCreatedInfo> creation_info) {
   if (!creation_info) {
     // Dispatches a notification and deletes itself.
+    auto update = blink::mojom::WebPrintJobUpdate::New();
+    update->state = blink::mojom::WebPrintJobState::kAborted;
     mojo::Remote<blink::mojom::WebPrintJobStateObserver>(std::move(observer))
-        ->OnWebPrintJobStateChanged(blink::mojom::WebPrintJobState::kAborted);
+        ->OnWebPrintJobUpdate(std::move(update));
     return;
   }
 
@@ -297,11 +324,10 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
       printer_id, creation_info->job_id, std::move(observer));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   NotifyAshJobCreated(
       creation_info->job_id, *creation_info->document,
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
-      /*source_id=*/"", GetLocalPrinterInterface());
+      /*source_id=*/app_id_, GetLocalPrinterInterface());
 #endif
 }
 

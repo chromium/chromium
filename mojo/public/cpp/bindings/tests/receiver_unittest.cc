@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
-#include <utility>
 
 #include <optional>
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

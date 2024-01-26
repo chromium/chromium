@@ -150,8 +150,10 @@ struct InterestGroup {
   // `trusted_bidding_signals_url` must match the current frame URL's origin.
   url.mojom.Url? trusted_bidding_signals_url;
   array<string>? trusted_bidding_signals_keys;
+  // Must not be a negative value.
+  int32 max_trusted_bidding_signals_url_length = 0;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
-  string?        user_bidding_signals;
+  string? user_bidding_signals;
   array<InterestGroupAd>? ads;
   array<InterestGroupAd>? ad_components;
   map<string, AdSize>? ad_sizes;
@@ -318,6 +320,14 @@ struct AuctionAdServerResponseConfig {
   mojo_base.mojom.Uuid request_id;
 };
 
+// TODO(alexmt): Consider merging with DebugModeDetails.
+struct AuctionReportBuyerDebugModeConfig {
+  bool is_enabled = false;
+
+  // Must be null if `is_enabled` is false. Otherwise, optional.
+  uint64? debug_key;
+};
+
 // For each report type, provides the bucket offset and scalar multiplier for
 // that report.
 //
@@ -430,6 +440,10 @@ struct AuctionAdConfigNonSharedParams {
   // provides the bucket offset and scalar multiplier for that event.
   map<BuyerReportType, AuctionReportBuyersConfig>? auction_report_buyers;
 
+  // Whether debug mode has been enabled for the auction report buyer extended
+  // private aggregation reporting and, if so, any debug key that has been set.
+  AuctionReportBuyerDebugModeConfig? auction_report_buyer_debug_mode_config;
+
   // The set of capabilities that each interest group must declare to
   // participate in the auction. Interest groups that don't declare all these
   // capabilities will not participate in the auction.
@@ -485,6 +499,11 @@ struct AuctionAdConfig {
   // Base URL for per-bid data passed to the seller worklet. Must be same
   // origin with `seller`.
   url.mojom.Url? trusted_scoring_signals_url;
+
+  // The maximum length limit for the trusted scoring signal fetch URL. Can
+  // only be set as either 0 or a positive number. A value of 0 indicates
+  // that there is no limit.
+  int32 max_trusted_scoring_signals_url_length = 0;
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;

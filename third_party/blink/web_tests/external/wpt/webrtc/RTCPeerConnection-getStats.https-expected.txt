@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] getStats() audio and video validate all mandatory stats
-  assert_equals: Expect dictionary.sdpFmtpLine to be string expected "string" but got "undefined"
-[FAIL] getStats() with connected peer connections having tracks and data channel should return all mandatory to implement stats
-  assert_unreached: test failed with error: Error: assert_equals: Expect dictionary.sdpFmtpLine to be string expected "string" but got "undefined" Reached unreachable code
-Harness: the test ran to completion.
-

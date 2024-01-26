@@ -62,7 +62,8 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, HtmlFieldType::kAddressLine2},
-         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2}});
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The
@@ -86,7 +87,8 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, ADDRESS_HOME_LINE2},
-         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2}});
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE3}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
@@ -166,14 +168,8 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
     believed_html_types.erase_all(
         {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
   }
-  // If the field is credit-card related or the feature
-  // `kAutofillPredictionsForAutocompleteUnrecognized` is enabled, we always
-  // override unrecognized autocomplete attributes.
-  if (is_credit_card_prediction ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillPredictionsForAutocompleteUnrecognized)) {
-    believed_html_types.erase(HtmlFieldType::kUnrecognized);
-  }
+  // Always override unrecognized autocomplete attributes.
+  believed_html_types.erase(HtmlFieldType::kUnrecognized);
   return believed_html_types;
 }
 

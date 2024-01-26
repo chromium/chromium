@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -170,7 +170,7 @@ ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
 void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
                                          int primary_tab_id) {
   thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
-  base::EraseIf(static_layer_cache_, [&priority_ids](const auto& pair) {
+  std::erase_if(static_layer_cache_, [&priority_ids](const auto& pair) {
     bool not_priority = !base::Contains(priority_ids, pair.first);
     if (not_priority && pair.second) {
       pair.second->layer()->RemoveFromParent();
@@ -266,13 +266,20 @@ void TabContentManager::CaptureThumbnail(
     }
     return;
   }
-  if (write_to_cache && !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
-                            tab_id, tab_android->GetURL())) {
+  if (write_to_cache &&
+      !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+          tab_id, tab_android->GetURL(), /*force_update=*/false)) {
     return;
+  }
+  std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
+      tracker(nullptr, base::OnTaskRunnerDeleter(
+                           base::SequencedTaskRunner::GetCurrentDefault()));
+  if (write_to_cache) {
+    tracker = TrackCapture(tab_id);
   }
   TabReadbackCallback readback_done_callback =
       base::BindOnce(&TabContentManager::OnTabReadback,
-                     weak_factory_.GetWeakPtr(), tab_id, TrackCapture(tab_id),
+                     weak_factory_.GetWeakPtr(), tab_id, std::move(tracker),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
                      write_to_cache, return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
@@ -292,8 +299,13 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
   SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
   skbitmap.setImmutable();
 
-  if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(tab_id, url)) {
-    OnTabReadback(tab_id, TrackCapture(tab_id), nullptr, true,
+  // Native pages have their own throttling behavior so force the update if that
+  // happens.
+  if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+          tab_id, url, tab_android->IsNativePage())) {
+    OnTabReadback(tab_id, TrackCapture(tab_id),
+                  /*j_callback=*/nullptr,
+                  /*write_to_cache=*/true,
                   /*return_bitmap=*/false, thumbnail_scale, skbitmap);
   }
 }
@@ -383,12 +395,7 @@ void TabContentManager::OnTabReadback(
     bool return_bitmap,
     float thumbnail_scale,
     const SkBitmap& bitmap) {
-  TabReadbackRequestMap::iterator readback_iter =
-      pending_tab_readbacks_.find(tab_id);
-
-  if (readback_iter != pending_tab_readbacks_.end()) {
-    pending_tab_readbacks_.erase(tab_id);
-  }
+  pending_tab_readbacks_.erase(tab_id);
 
   if (j_callback) {
     SendThumbnailToJava(j_callback, write_to_cache, return_bitmap, bitmap);
@@ -396,6 +403,8 @@ void TabContentManager::OnTabReadback(
 
   if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty()) {
     thumbnail_cache_->Put(tab_id, std::move(tracker), bitmap, thumbnail_scale);
+  } else if (tracker) {
+    tracker->MarkCaptureFailed();
   }
 }
 

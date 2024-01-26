@@ -72,6 +72,9 @@ class OneTimePermissionsTracker : public KeyedService {
   // Fires all running timers for testing purposes.
   void FireRunningTimersForTesting();
 
+ protected:
+  void NotifyLastPageFromOriginClosed(const url::Origin& origin);
+
  private:
   // Struct to hold the state of an origin
   struct OriginTrackEntry {

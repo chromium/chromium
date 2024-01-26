@@ -14,13 +14,17 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
 namespace ash {
@@ -33,6 +37,39 @@ constexpr int kPreferredWindowWidthDip = 768;
 
 // The minimum margin of the window to the edges of the screen.
 constexpr int kMinWindowMarginDip = 48;
+
+class AssistantWebContainerClientView : public views::ClientView {
+ public:
+  AssistantWebContainerClientView(views::Widget* frame,
+                                  AssistantWebContainerView* container)
+      : views::ClientView(frame, container) {}
+
+  AssistantWebContainerClientView(const AssistantWebContainerClientView&) =
+      delete;
+  AssistantWebContainerClientView& operator=(
+      const AssistantWebContainerClientView&) = delete;
+
+  ~AssistantWebContainerClientView() override = default;
+
+  // views::ClientView:
+  void UpdateWindowRoundedCorners(int corner_radius) override {
+    // `NonClientFrameViewAsh` rounds the top corners of the window. The
+    // client-view is responsible for rounding the bottom corners.
+
+    DCHECK(GetWidget());
+
+    const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+
+    auto* container =
+        views::AsViewClass<AssistantWebContainerView>(contents_view());
+    container->SetBackgroundRadii(radii);
+
+    // Match the radii of existing webview with the client view's background.
+    if (AshWebView* web_view = container->web_view()) {
+      web_view->SetCornerRadii(radii);
+    }
+  }
+};
 
 }  // namespace
 
@@ -73,17 +110,28 @@ void AssistantWebContainerView::ChildPreferredSizeChanged(views::View* child) {
   SchedulePaint();
 }
 
+views::ClientView* AssistantWebContainerView::CreateClientView(
+    views::Widget* widget) {
+  return new AssistantWebContainerClientView(widget, this);
+}
+
+void AssistantWebContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateBackground();
+}
+
 void AssistantWebContainerView::DidStopLoading() {
-  // We should only respond to the |DidStopLoading| event the first time, to add
+  // We should only respond to the `DidStopLoading` event the first time, to add
   // the view for contents to our view hierarchy and perform other one-time view
   // initializations.
-  if (!contents_view_)
+  if (!web_view_) {
     return;
+  }
 
-  contents_view_->SetPreferredSize(GetPreferredSize());
-  contents_view_ptr_ = AddChildView(std::move(contents_view_));
+  web_view_->SetPreferredSize(GetPreferredSize());
+  web_view_ptr_ = AddChildView(std::move(web_view_));
   constexpr int kTopPaddingDip = 8;
-  contents_view_ptr_->SetBorder(
+  web_view_ptr_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(kTopPaddingDip, 0, 0, 0)));
 }
 
@@ -105,7 +153,7 @@ void AssistantWebContainerView::DidSuppressNavigation(
   }
 
   // Otherwise we'll allow our WebContents to navigate freely.
-  ContentsView()->Navigate(url);
+  web_view()->Navigate(url);
 }
 
 void AssistantWebContainerView::DidChangeCanGoBack(bool can_go_back) {
@@ -115,7 +163,7 @@ void AssistantWebContainerView::DidChangeCanGoBack(bool can_go_back) {
 }
 
 bool AssistantWebContainerView::GoBack() {
-  return ContentsView() && ContentsView()->GoBack();
+  return web_view() && web_view()->GoBack();
 }
 
 void AssistantWebContainerView::OpenUrl(const GURL& url) {
@@ -125,22 +173,32 @@ void AssistantWebContainerView::OpenUrl(const GURL& url) {
   contents_params.suppress_navigation = true;
   contents_params.minimize_on_back_key = true;
 
-  contents_view_ = AshWebViewFactory::Get()->Create(contents_params);
+  // The webview radii needs to match the radii of the background to have
+  // correct bottom rounded corners for the window.
+  contents_params.rounded_corners = background_radii_;
 
-  // We observe |contents_view_| so that we can handle events from the
+  web_view_ = AshWebViewFactory::Get()->Create(contents_params);
+
+  // We observe `web_view_` so that we can handle events from the
   // underlying WebContents.
-  ContentsView()->AddObserver(this);
+  web_view()->AddObserver(this);
 
   // Navigate to the specified |url|.
-  ContentsView()->Navigate(url);
+  web_view()->Navigate(url);
+}
+
+void AssistantWebContainerView::SetBackgroundRadii(
+    const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
+  background_radii_ = radii;
+  UpdateBackground();
 }
 
 void AssistantWebContainerView::SetCanGoBackForTesting(bool can_go_back) {
   DidChangeCanGoBack(can_go_back);
-}
-
-AshWebView* AssistantWebContainerView::ContentsView() {
-  return contents_view_ptr_ ? contents_view_ptr_.get() : contents_view_.get();
 }
 
 void AssistantWebContainerView::InitLayout() {
@@ -149,23 +207,35 @@ void AssistantWebContainerView::InitLayout() {
   params.delegate = this;
   params.name = GetClassName();
 
+  // Specify the radius of drop shadow of the window.
+  params.corner_radius = chromeos::features::RoundedWindowsRadius();
+
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  UpdateBackground();
 }
 
 void AssistantWebContainerView::RemoveContents() {
-  if (!contents_view_ptr_)
+  if (!web_view_ptr_) {
     return;
+  }
 
   // Remove back button.
   web_container_view_delegate_->UpdateBackButtonVisibility(
       GetWidget(),
-      /*can_go_back=*/false);
-  RemoveChildViewT(contents_view_ptr_.get())->RemoveObserver(this);
-  contents_view_ptr_ = nullptr;
+      /*visibility=*/false);
+  RemoveChildViewT(web_view_ptr_.get())->RemoveObserver(this);
+  web_view_ptr_ = nullptr;
+}
+
+void AssistantWebContainerView::UpdateBackground() {
+  // Paint a theme aware background to be displayed while the web content is
+  // still loading.
+  const SkColor color =
+      GetColorProvider()->GetColor(ui::kColorEndpointBackground);
+  SetBackground(views::CreateRoundedRectBackground(color, background_radii_));
 }
 
 BEGIN_METADATA(AssistantWebContainerView, views::WidgetDelegateView)

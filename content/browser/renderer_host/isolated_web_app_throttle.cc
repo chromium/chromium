@@ -19,8 +19,15 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/page_navigator.h"
+#include "content/public/common/referrer.h"
+#include "ui/base/window_open_disposition.h"
+#endif
 
 namespace content {
 
@@ -143,6 +150,23 @@ IsolatedWebAppThrottle::WillProcessResponse() {
 }
 
 bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
+  ui::PageTransition transition =
+      navigation_handle()->GetRedirectChain().size() > 1
+          ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
+          : ui::PageTransition::PAGE_TRANSITION_LINK;
+#if BUILDFLAG(IS_CHROMEOS)
+  // The default browser can't be changed in ChromeOS, so just open the URL
+  // directly.
+  // TODO(crbug.com/1310207): Should we set the referrer?
+  OpenURLParams params(url, Referrer(),
+                       WindowOpenDisposition::NEW_FOREGROUND_TAB, transition,
+                       /*is_renderer_initiated=*/false);
+  params.open_app_window_if_possible = true;
+  GetContentClient()->browser()->OpenURL(
+      navigation_handle()->GetStartingSiteInstance(), params,
+      base::DoNothing());
+  return true;
+#else
   NavigationRequest* navigation_request =
       NavigationRequest::From(navigation_handle());
   const FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
@@ -157,13 +181,11 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
       frame_tree_node->frame_tree_node_id(),
       navigation_request->GetNavigationUIData(),
       /*is_primary_main_frame=*/true, /*is_in_fenced_frame_tree=*/false,
-      network::mojom::WebSandboxFlags::kNone,
-      (navigation_handle()->GetRedirectChain().size() > 1)
-          ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
-          : ui::PageTransition::PAGE_TRANSITION_LINK,
+      network::mojom::WebSandboxFlags::kNone, transition,
       navigation_request->HasUserGesture(),
       /*initiating_origin=*/std::nullopt,
       /*initiator_document=*/nullptr, &loader_factory);
+#endif
 }
 
 NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(

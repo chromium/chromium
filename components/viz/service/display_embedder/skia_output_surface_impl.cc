@@ -765,10 +765,8 @@ SkiaOutputSurfaceImpl::CreateImageContext(
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_disable_makecurrent",
                force_disable_makecurrent)
-#endif
 
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -796,18 +794,14 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   auto callback =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
                      base::Unretained(impl_on_gpu_.get()), std::move(frame));
+
+  // Normally MakeCurrent isn't needed for SwapBuffers, but it used to be called
+  // unconditionally, both for historical reasons and edge cases too.
+  // Now, we call MakeCurrent here only appropriated, and delay it in some other
+  // circumstances.
   bool make_current =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Normally we don't need MakeCurrent for SwapBuffers, but it is done
-      // historically and there are edge cases too.
-      // For lacros, we do not call MakeCurrent here, and delay it where
-      // appropriated.
-      //
-      // TODO(crbug.com/1494032): Extend that approach for other platforms.
-      false;
-#else
+      capabilities_.present_requires_make_current &&
       !force_disable_makecurrent();  // Defaults to false.
-#endif
 
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
                  make_current,

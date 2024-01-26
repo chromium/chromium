@@ -88,6 +88,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2583187216237139145">Kõik Chromiumi andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Jätkan Chromiumi kasutamist</translation>
 <translation id="259935314519650377">Allalaaditud installiprogrammi vahemällu salvestamine ebaõnnestus. Viga: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil (soovitatav)</translation>
 <translation id="2648074677641340862">Installimisel ilmnes operatsioonisüsteemi viga. Laadige Chromium uuesti alla.</translation>
 <translation id="2661879430930417727">Kui jagate seadet, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chromiumi just nii, nagu neile meeldib.</translation>
 <translation id="268602741124540128">Tere tulemast Chromiumi, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
@@ -123,6 +124,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3258596308407688501">Chromium ei saa andmekataloogi lugeda ega sellesse kirjutada:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 on Chromiumi JavaScripti ja WebAssembly mootor, mida kasutatakse saidi jõudluse parandamiseks</translation>
 <translation id="3283186697780795848">Chromiumi versioon <ph name="PRODUCT_VERSION" /> on installitud</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
 <translation id="328888136576916638">Google API võtmed on puudu. Teatud Chromiumi funktsioonid keelatakse.</translation>
@@ -140,7 +142,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3533435340678213462">Teie privaatsuse kaitsmiseks kustutame automaatselt teie huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chromiumil arvesse võtta.</translation>
 <translation id="3567254597502212821">Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>
 <translation id="3593091352817399191">Teine konto on juba sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chromium teile luua oma profiili.</translation>
-<translation id="363078681319665186">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.15 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.13.</translation>
 <translation id="3639635944603682591">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel.}=1{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Teie inkognito akent ei avata uuesti.}other{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="3651803019964686660">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chromiumi sisse.</translation>
@@ -157,7 +158,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Chromium OS-i puhul abi hankimine</translation>
 <translation id="3871664619793219264">Hankige oma Chromiumi brauseri sisu kontolt <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.15 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.14.</translation>
 <translation id="388648406173476553">Chromiumi kohandamine ja haldamine. Miski vajab teie tähelepanu – klõpsake üksikasjade nägemiseks.</translation>
 <translation id="3889543394854987837">Chromiumi avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> on juba sellele Chromiumi profiilile sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chromium teile luua oma profiili.</translation>
@@ -218,6 +218,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4814736265800133385">Kasuta Chromiumit ilma kontota</translation>
 <translation id="4888717733111232871">Sissetuleku reegel Chromiumile mDNS-liikluse lubamiseks.</translation>
 <translation id="4893347770495441059">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
+<translation id="4942295735032723435">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 11 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium on taustarežiimis.</translation>
 <translation id="4987820182225656817">Külastajad saavad kasutada Chromiumi jälgi jätmata.</translation>
 <translation id="4994636714258228724">Lisa Chromiumi</translation>
@@ -246,7 +247,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5623402015214259806">{0,plural, =0{Chromiumi värskendus on saadaval}=1{Chromiumi värskendus on saadaval}other{Chromiumi värskendus on # päeva saadaval olnud}}</translation>
 <translation id="5643865575100044307">Saidiandmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>
 <translation id="5653831366781983928">Käivitage Chromium kohe uuesti</translation>
-<translation id="5675598751761067447">See fail võib olla ohtlik<ph name="LINE_BREAK" />Chromium saab seda allalaadimist teie eest kontrollida, kui sisestate parooli — parool jääb teie seadmesse</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
 <translation id="569897634095159764">Internetiga ei õnnestu ühendust luua. Puhverserver nõuab autentimist.</translation>
@@ -406,6 +406,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8105840573057009683">Chromium vajab selle saidi puhul asukohale juurdepääsu luba</translation>
 <translation id="8133124826068723441">Chromium OS ei saanud teie andmeid sünkroonida, sest teie domeenil pole sünkroonimine saadaval.</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
+<translation id="8166782796394721554">Lülitage Chromiumi JavaScripti ja WebAssembly mootoris sisse lisakaitse</translation>
 <translation id="81770708095080097">Chromium blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8213374284266571500">Chromium blokeeris selle faili, kuna see failitüüp on ohtlik</translation>
 <translation id="8248265253516264921">Kui pildil puudub kasulik kirjeldus, üritab Chromium selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>

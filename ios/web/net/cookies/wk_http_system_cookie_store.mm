@@ -11,7 +11,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cookies/canonical_cookie.h"
 #import "net/cookies/cookie_constants.h"
 #import "url/gurl.h"

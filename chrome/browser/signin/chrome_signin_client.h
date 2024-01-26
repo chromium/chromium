@@ -83,8 +83,8 @@ class ChromeSigninClient : public SigninClient {
           event_source) override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
-  absl::optional<bool> IsInitialPrimaryAccountChild() const override;
+  std::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  std::optional<bool> IsInitialPrimaryAccountChild() const override;
   void RemoveAccount(const account_manager::AccountKey& account_key) override;
   void RemoveAllAccounts() override;
 #endif
@@ -105,8 +105,7 @@ class ChromeSigninClient : public SigninClient {
   // restriction, otherwise the decision is made based on the profile's status.
   SigninClient::SignoutDecision GetSignoutDecision(
       bool has_sync_account,
-      const absl::optional<signin_metrics::ProfileSignout> signout_source)
-      const;
+      const std::optional<signin_metrics::ProfileSignout> signout_source) const;
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
@@ -122,13 +121,13 @@ class ChromeSigninClient : public SigninClient {
 #endif
 
   // virtual for unit testing: cut down dependency on `BookmarkModel`.
-  // The following two functions will return `absl::nullopt` if the
+  // The following two functions will return `std::nullopt` if the
   // `BookmarkModel` is nullptr.
-  virtual absl::optional<size_t> GetAllBookmarksCount();
-  virtual absl::optional<size_t> GetBookmarkBarBookmarksCount();
+  virtual std::optional<size_t> GetAllBookmarksCount();
+  virtual std::optional<size_t> GetBookmarkBarBookmarksCount();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Returns `absl::nullopt` if the `ExtensionRegistry` is nullptr.
-  virtual absl::optional<size_t> GetExtensionsCount();
+  // Returns `std::nullopt` if the `ExtensionRegistry` is nullptr.
+  virtual std::optional<size_t> GetExtensionsCount();
 #endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>

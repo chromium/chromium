@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Ооба</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="4212246570487010370">Серептөөнү улантуу</translation>
+<translation id="427987768447457592">Жаңы өтмөктөр тобу</translation>
 <translation id="4648718555153979859">Өтмөктөрүңүз бул жерге топтолот</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> сын-пикир)}other{(<ph name="REVIEWS_COUNT_MANY" /> сын-пикир)}}</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Толук экран торчосун жашыруу</translation>
 <translation id="5076161749301278626">Дүкөн жөнүндө жазылган сын-пикирлерди көрөсүзбү?</translation>
 <translation id="5082793167783849073">Барактарды топко бириктирип, тез салыштырып чыгыңыз. Баштоо үчүн, шилтемени коё бербей басып туруңуз.</translation>
+<translation id="5161254044473106830">Аталышы керек</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Жакында колдонулбаган <ph name="TABS_COUNT_ONE" /> өтмөк бар}other{Жакында колдонулбаган <ph name="TABS_COUNT_MANY" /> өтмөк бар}}</translation>
 <translation id="5339733443032484186">Акыркы өтмөгүңүз</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>

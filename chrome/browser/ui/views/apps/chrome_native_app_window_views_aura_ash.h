@@ -93,7 +93,6 @@ class ChromeNativeAppWindowViewsAuraAsh
       views::Widget* widget) override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   ui::ImageModel GetWindowIcon() override;
-  void OnWidgetInitialized() override;
 
   // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;
@@ -134,7 +133,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   bool IsImmersiveModeEnabled() const override;
   gfx::Rect GetTopContainerBoundsInScreen() override;
   void DestroyAnyExclusiveAccessBubble() override;
-  bool CanTriggerOnMouse() const override;
+  bool CanTriggerOnMousePointer() const override;
 
   // WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

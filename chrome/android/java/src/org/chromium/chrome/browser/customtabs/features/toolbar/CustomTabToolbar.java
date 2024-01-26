@@ -158,6 +158,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private final Handler mTaskHandler = new Handler();
 
+    // The resource ID of the most recently set security icon. Used for testing since
+    // VectorDrawables can't be straightforwardly tested for equality..
+    private int mSecurityIconResourceForTesting;
+
     /** Whether to use the toolbar as handle to resize the Window height. */
     public interface HandleStrategy {
         /**
@@ -438,7 +442,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         ViewStub minimizeButtonStub = findViewById(R.id.minimize_button_stub);
         minimizeButtonStub.inflate();
         var minimizeButton = (ImageButton) findViewById(R.id.custom_tabs_minimize_button);
-        var d = UiUtils.getTintedDrawable(getContext(), R.drawable.ic_minimize, mTint);
+        var d =
+                UiUtils.getTintedDrawable(
+                        getContext(), MinimizedFeatureUtils.getMinimizeIcon(), mTint);
         minimizeButton.setTag(R.id.custom_tabs_toolbar_tintable, true);
         minimizeButton.setImageDrawable(d);
         updateButtonTint(minimizeButton);
@@ -1017,7 +1023,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Custom tab-specific implementation of the LocationBar interface. */
     @VisibleForTesting
-    class CustomTabLocationBar
+    public class CustomTabLocationBar
             implements LocationBar,
                     UrlBar.UrlBarDelegate,
                     LocationBarDataProvider.Observer,
@@ -1069,6 +1075,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
         private PageInfoIPHController mPageInfoIPHController;
+        private int mTouchTargetSize;
 
         public View getLayout() {
             return mLocationBarFrameLayout;
@@ -1180,7 +1187,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mSecurityButton = container.findViewById(R.id.security_button);
             mAnimDelegate =
                     new CustomTabToolbarAnimationDelegate(
-                            mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
+                            mSecurityButton,
+                            mTitleUrlContainer,
+                            this::adjustTitleUrlBarPadding,
+                            R.dimen.location_bar_icon_width);
             addButtonsVisibilityUpdater();
         }
 
@@ -1216,6 +1226,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             locationBarDataProvider.isIncognito(),
                             ChromePureJavaExceptionReporter::reportJavaException);
             mTabCreator = tabCreator;
+            mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
@@ -1446,11 +1457,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             }
             mAnimDelegate.updateSecurityButton(securityIconResource);
+            mSecurityIconResourceForTesting = securityIconResource;
 
             int contentDescriptionId =
                     mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
             String contentDescription = getContext().getString(contentDescriptionId);
             mSecurityButton.setContentDescription(contentDescription);
+        }
+
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        public int getSecurityIconResourceForTesting() {
+            return mSecurityIconResourceForTesting;
         }
 
         private void animateCookieControlsIcon() {
@@ -1493,6 +1510,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
 
             mTitleBar.setText(title);
+        }
+
+        private void adjustTitleUrlBarPadding() {
+            // Title/URL container height should get bigger to meet GAR guideline. Distribute
+            // the diff evenly as a padding of title/URL view to keep them staying where
+            // they are, and only make the content-wrapping container get bigger accordingly.
+            // TODO(jinsukkim): Make the animation work for further navigation like
+            //     title/url -> url -> title/url 1) the url-only view should be centered,
+            //     and 2) the animation for the transition to title/url should work as well.
+            int padding = (mTouchTargetSize - mTitleUrlContainer.getHeight()) / 2;
+            mTitleUrlContainer.setMinimumHeight(mTouchTargetSize);
+            mUrlBar.setPadding(0, 0, 0, padding);
+            mTitleBar.setPadding(0, padding, 0, 0);
         }
 
         private void updateUrlBar() {
@@ -1616,6 +1646,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             } else {
                 mState = STATE_DOMAIN_ONLY;
                 mTitleBar.setVisibility(View.GONE);
+
+                // URL bar height should be as big as the touch target size. Update its minHeight
+                // and center it vertically.
+                var params = (FrameLayout.LayoutParams) mUrlBar.getLayoutParams();
+                params.gravity = Gravity.CENTER_VERTICAL;
+                mUrlBar.setLayoutParams(params);
+                mUrlBar.setMinimumHeight(mTouchTargetSize);
             }
             mLocationBarModel.notifyTitleChanged();
         }

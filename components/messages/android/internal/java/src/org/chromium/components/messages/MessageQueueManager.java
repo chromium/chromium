@@ -55,8 +55,11 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
 
     private ScopeChangeController mScopeChangeController = new ScopeChangeController(this);
 
+    private final boolean mAreExtraHistogramsEnabled;
+
     public MessageQueueManager(MessageAnimationCoordinator animationCoordinator) {
         mAnimationCoordinator = animationCoordinator;
+        mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
 
     /**
@@ -83,13 +86,25 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             mScopeChangeController.firstMessageEnqueued(scopeKey);
         }
 
+        if (mAreExtraHistogramsEnabled) {
+            MessagesMetrics.recordMessageEnqueuedScopeActive(
+                    message.getMessageIdentifier(), mScopeChangeController.isActive(scopeKey));
+
+            MessagesMetrics.recordMessageEnqueuedQueueSuspended(
+                    message.getMessageIdentifier(), isQueueSuspended());
+        }
+
         MessageState messageState = new MessageState(scopeKey, messageKey, message, highPriority);
         messageQueue.add(messageState);
         mMessages.put(messageKey, messageState);
 
         MessagesMetrics.recordMessageEnqueued(message.getMessageIdentifier());
+        // The candidate which will be fully visible. Null if no message will be displayed.
+        MessageState primaryCandidate;
         if (MessageFeatureList.isStackAnimationEnabled()) {
-            updateCurrentDisplayedWithStacking();
+            List<MessageState> candidates = updateCurrentDisplayedWithStacking();
+            assert candidates.size() == 2 : "There must be 2 candidates when stacking is enabled.";
+            primaryCandidate = candidates.get(0);
         } else {
             MessageState candidate = updateCurrentDisplayedWithoutStacking();
             if (candidate != null) {
@@ -99,15 +114,18 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
                         candidate.handler.getMessageIdentifier(),
                         candidate.messageKey);
             }
+            primaryCandidate = candidate;
+        }
 
-            if (candidate == messageState) {
-                MessagesMetrics.recordMessageEnqueuedVisible(message.getMessageIdentifier());
-            } else {
-                @MessageIdentifier int visibleMessageId = MessageIdentifier.INVALID_MESSAGE;
-                if (candidate != null) visibleMessageId = candidate.handler.getMessageIdentifier();
-                MessagesMetrics.recordMessageEnqueuedHidden(
-                        message.getMessageIdentifier(), visibleMessageId);
+        if (primaryCandidate == messageState) {
+            MessagesMetrics.recordMessageEnqueuedVisible(message.getMessageIdentifier());
+        } else if (mAreExtraHistogramsEnabled) {
+            @MessageIdentifier int visibleMessageId = MessageIdentifier.INVALID_MESSAGE;
+            if (primaryCandidate != null) {
+                visibleMessageId = primaryCandidate.handler.getMessageIdentifier();
             }
+            MessagesMetrics.recordMessageEnqueuedHidden(
+                    message.getMessageIdentifier(), visibleMessageId);
         }
     }
 

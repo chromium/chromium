@@ -31,7 +31,7 @@ class ExtensionNotifierController : public NotifierController,
       const std::string& id,
       const gfx::ImageSkia& image,
       bool is_placeholder_icon,
-      const absl::optional<gfx::ImageSkia>& badge_image) override;
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   std::unique_ptr<AppIconLoader> app_icon_loader_;
 

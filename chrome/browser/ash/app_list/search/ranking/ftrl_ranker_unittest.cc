@@ -253,7 +253,7 @@ TEST_F(BestResultCategoryRankerTest, Rank) {
                              {.category = Category::kSettings},
                              {.category = Category::kFiles}});
 
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
 
   // Only the app category should be scored, because that's the only one to have
   // returned.

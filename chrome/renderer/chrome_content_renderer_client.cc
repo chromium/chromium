@@ -287,7 +287,9 @@ using content::RenderFrame;
 using content::RenderThread;
 using content::WebPluginInfo;
 using content::WebPluginMimeType;
-using extensions::Extension;
+using UsesKeyboardAccessoryForSuggestions =
+    AutofillAgent::UsesKeyboardAccessoryForSuggestions;
+using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
 
 namespace {
 
@@ -687,9 +689,12 @@ void ChromeContentRendererClient::RenderFrameCreated(
         render_frame, associated_interfaces);
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
         render_frame, password_autofill_agent.get(), associated_interfaces);
-    new AutofillAgent(render_frame, std::move(password_autofill_agent),
-                      std::move(password_generation_agent),
-                      associated_interfaces);
+    new AutofillAgent(
+        render_frame,
+        {UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
+         ExtractAllDatalists(false)},
+        std::move(password_autofill_agent),
+        std::move(password_generation_agent), associated_interfaces);
 
 #if BUILDFLAG(IS_ANDROID)
     if (render_frame->IsMainFrame() &&
@@ -1040,7 +1045,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             app_url = manifest_url;
           }
           bool is_module_allowed = false;
-          const Extension* extension =
+          const extensions::Extension* extension =
               extensions::RendererExtensionRegistry::Get()
                   ->GetExtensionOrAppByURL(manifest_url);
           if (IsNaclAllowed()) {
@@ -1221,7 +1226,7 @@ void ChromeContentRendererClient::GetInterface(
 bool ChromeContentRendererClient::IsNativeNaClAllowed(
     const GURL& app_url,
     bool is_nacl_unrestricted,
-    const Extension* extension) {
+    const extensions::Extension* extension) {
   bool is_invoked_by_webstore_installed_extension = false;
   bool is_extension_unrestricted = false;
   bool is_extension_force_installed = false;
@@ -1263,7 +1268,7 @@ bool ChromeContentRendererClient::IsNativeNaClAllowed(
 // static
 void ChromeContentRendererClient::ReportNaClAppType(
     bool is_pnacl,
-    const Extension* extension) {
+    const extensions::Extension* extension) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class NaClAppType {
@@ -1767,8 +1772,8 @@ GURL ChromeContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 ChromeContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType provider_type) {
-  return std::make_unique<URLLoaderThrottleProviderImpl>(
-      browser_interface_broker_.get(), provider_type, this);
+  return URLLoaderThrottleProviderImpl::Create(provider_type, this,
+                                               browser_interface_broker_.get());
 }
 
 blink::WebFrame* ChromeContentRendererClient::FindFrame(

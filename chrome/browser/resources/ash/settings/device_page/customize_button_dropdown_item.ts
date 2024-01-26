@@ -25,6 +25,12 @@ export interface DropdownMenuOption {
   hidden?: boolean;
 }
 
+export interface CustomizeButtonDropdownItemElement {
+  $: {
+    container: HTMLDivElement,
+  };
+}
+
 export class CustomizeButtonDropdownItemElement extends PolymerElement {
   static get is() {
     return 'customize-button-dropdown-item' as const;
@@ -50,6 +56,12 @@ export class CustomizeButtonDropdownItemElement extends PolymerElement {
 
   selected: boolean;
   option: DropdownMenuOption;
+
+  override focus(): void {
+    super.focus();
+
+    this.$.container.focus();
+  }
 
   private onDropdownItemSelected_(): void {
     this.dispatchEvent(new CustomEvent('customize-button-dropdown-selected', {

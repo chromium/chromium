@@ -69,13 +69,16 @@ public class TintedDrawable extends BitmapDrawable {
         updateTintColor();
     }
 
-    /**
-     * Sets the tint color for the given Drawable for all states.
-     * @param tint The tint.
-     */
     @Override
     public void setTint(@ColorInt int tint) {
+        // Use our bespoke tint implementation instead of calling into the base class.
         setTint(ColorStateList.valueOf(tint));
+    }
+
+    @Override
+    public void setTintList(ColorStateList tint) {
+        // Use our bespoke tint implementation instead of calling into the base class.
+        setTint(tint);
     }
 
     /** Factory method for creating a {@link TintedDrawable} with a resource id. */

@@ -4354,7 +4354,6 @@ interface HTMLTableSectionElement : HTMLElement
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
-    getter shadowRoot
     getter shadowRootMode
     method constructor
     setter shadowRootMode
@@ -4681,6 +4680,7 @@ interface IIRFilterNode : AudioNode
     method constructor
     method getFrequencyResponse
 interface IdentityCredential : Credential
+    static method disconnect
     attribute @@toStringTag
     getter isAutoSelected
     getter token
@@ -5513,12 +5513,14 @@ interface MessageEvent : Event
     method initMessageEvent
 interface MessagePort : EventTarget
     attribute @@toStringTag
+    getter onclose
     getter onmessage
     getter onmessageerror
     method close
     method constructor
     method postMessage
     method start
+    setter onclose
     setter onmessage
     setter onmessageerror
 interface MimeType
@@ -6206,6 +6208,15 @@ interface PerformanceEventTiming : PerformanceEntry
     getter target
     method constructor
     method toJSON
+interface PerformanceLongAnimationFrameTiming : PerformanceEntry
+    attribute @@toStringTag
+    getter blockingDuration
+    getter firstUIEventTimestamp
+    getter renderStart
+    getter scripts
+    getter styleAndLayoutStart
+    method constructor
+    method toJSON
 interface PerformanceLongTaskTiming : PerformanceEntry
     attribute @@toStringTag
     getter attribution
@@ -6285,6 +6296,18 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter serverTiming
     getter transferSize
     getter workerStart
+    method constructor
+    method toJSON
+interface PerformanceScriptTiming : PerformanceEntry
+    attribute @@toStringTag
+    getter executionStart
+    getter forcedStyleAndLayoutDuration
+    getter invoker
+    getter invokerType
+    getter pauseDuration
+    getter sourceLocation
+    getter window
+    getter windowAttribution
     method constructor
     method toJSON
 interface PerformanceServerTiming

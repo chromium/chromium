@@ -5,10 +5,8 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos)
-
-if (is_chromeos_ash) {
-  source_set("structured") {
+source_set("structured") {
+  if (is_chromeos_ash) {
     sources = [
       "ash_event_storage.cc",
       "ash_event_storage.h",
@@ -17,12 +15,29 @@ if (is_chromeos_ash) {
       "key_data_provider_ash.cc",
       "key_data_provider_ash.h",
     ]
-    deps = [
-      "//components/metrics",
-      "//components/metrics/structured",
-      "//components/metrics/structured:external_metrics",
-      "//components/metrics/structured:structured_metrics_validator",
+  } else if (is_win || is_linux || is_mac || is_chromeos_lacros) {
+    sources = [
+      "chrome_event_storage.cc",
+      "chrome_event_storage.h",
+      "chrome_structured_metrics_recorder.cc",
+      "chrome_structured_metrics_recorder.h",
+      "key_data_provider_chrome.cc",
+      "key_data_provider_chrome.h",
     ]
+  } else {
+    sources = []
+  }
+
+  deps = [
+    "//components/metrics",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_metrics_validator",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//components/metrics/structured:external_metrics" ]
+  } else if (is_win || is_linux || is_mac || is_chromeos_lacros) {
+    deps += [ "//components/prefs" ]
   }
 }
 

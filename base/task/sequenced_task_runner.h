@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -43,6 +44,7 @@ class DelayedTaskManager;
 class DeadlineTimer;
 class MetronomeTimer;
 class PreFreezeBackgroundMemoryTrimmer;
+class SingleThreadTaskRunner;
 class TimeDelta;
 class TimeTicks;
 
@@ -330,9 +332,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
 
   class BASE_EXPORT CurrentDefaultHandle {
    public:
-    // Binds `task_runner` to the current thread so that it is returned by
-    // GetCurrentDefault() in the scope of the constructed
-    // `CurrentDefaultHandle`.
+    // Sets the value returned by `SequencedTaskRunner::GetCurrentDefault()` to
+    // `task_runner` within its scope. `task_runner` must belong to the current
+    // sequence. There must not already be a current default
+    // `SequencedTaskRunner` on this thread.
     explicit CurrentDefaultHandle(
         scoped_refptr<SequencedTaskRunner> task_runner);
 
@@ -343,23 +346,31 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
 
    private:
     friend class SequencedTaskRunner;
-    friend class CurrentHandleOverride;
 
-    const AutoReset<CurrentDefaultHandle*> resetter_;
+    // Overriding an existing current default SingleThreadTaskRunner should only
+    // be needed under special circumstances. Require them to be enumerated as
+    // friends to require //base/OWNERS review. Use
+    // SingleThreadTaskRunner::CurrentHandleOverrideForTesting in unit tests to
+    // avoid the friend requirement.
+    friend class SingleThreadTaskRunner;
+    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
+                             OverrideWithNull);
+    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
+                             OverrideWithNonNull);
+
+    struct MayAlreadyExist {};
+
+    // Same as the public constructor, but there may already be a current
+    // default `SequencedTaskRunner` on this thread.
+    CurrentDefaultHandle(scoped_refptr<SequencedTaskRunner> task_runner,
+                         MayAlreadyExist);
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
+    raw_ptr<CurrentDefaultHandle> previous_handle_;
   };
 
  protected:
   ~SequencedTaskRunner() override = default;
-
-  // Helper to allow SingleThreadTaskRunner::CurrentDefaultHandle to double as a
-  // SequencedTaskRunner::CurrentDefaultHandle.
-  static void SetCurrentDefaultHandleTaskRunner(
-      CurrentDefaultHandle& current_default,
-      scoped_refptr<SequencedTaskRunner> task_runner) {
-    current_default.task_runner_ = task_runner;
-  }
 
   virtual bool DeleteOrReleaseSoonInternal(const Location& from_here,
                                            void (*deleter)(const void*),

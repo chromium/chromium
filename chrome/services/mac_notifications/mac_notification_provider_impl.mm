@@ -33,8 +33,12 @@ void MacNotificationProviderImpl::BindNotificationService(
   // Use the UNNotification API if available and enabled.
   if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
     service_ = std::make_unique<MacNotificationServiceUN>(
-        std::move(service), std::move(handler),
+        std::move(handler),
         [UNUserNotificationCenter currentNotificationCenter]);
+    auto* service_un = static_cast<MacNotificationServiceUN*>(service_.get());
+    service_un->Bind(std::move(service));
+    // TODO(crbug.com/1129366): Determine when to ask for permissions.
+    service_un->RequestPermission();
     return;
   }
 

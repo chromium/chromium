@@ -63,7 +63,7 @@ class ChromeImpl : public Chrome {
              std::unique_ptr<DevToolsClient> websocket_client,
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
-             absl::optional<MobileDevice> mobile_device,
+             std::optional<MobileDevice> mobile_device,
              std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
@@ -88,7 +88,7 @@ class ChromeImpl : public Chrome {
                          std::unique_ptr<base::Value::Dict> bounds);
 
   bool quit_ = false;
-  absl::optional<MobileDevice> mobile_device_;
+  std::optional<MobileDevice> mobile_device_;
   BrowserInfo browser_info_;
   std::set<WebViewInfo::Type> window_types_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;

@@ -31,7 +31,6 @@ AmbientAnimationStaticResources::Create(AmbientUiSettings ui_settings,
                 "To enable, an internal chrome-branded checkout is required, "
                 "and the include_ash_ambient_animation_resources GN flag must "
                 "be true.";
-  return nullptr;
 }
 
 }  // namespace ash

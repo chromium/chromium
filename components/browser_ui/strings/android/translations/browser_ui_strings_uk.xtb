@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Завантаження призупинено</translation>
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1426410128494586442">Так</translation>
+<translation id="1434873037477293673">картка "Зниження ціни"</translation>
 <translation id="1448064542941920355">Зменшити масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
 <translation id="1510341833810331442">Сайтам заборонено зберігати дані на вашому пристрої</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Сайти можуть показувати підказки щодо входу від сервісів ідентифікації</translation>
 <translation id="2790501146643349491">Якщо цей параметр увімкнено, нещодавно закриті сайти можуть завершувати надсилання й отримання даних. Якщо його вимкнено, нещодавно закриті сайти не можуть завершувати надсилання або отримання даних.</translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Запит на мобільну версію</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
+<translation id="6452138246455930388">Зниження ціни на відкритій вкладці з <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Коли вікно завузьке, показувати мобільну версію</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="652937045869844725">Спробуйте дозволити сторонні файли cookie. Це зменшить рівень захисту, але функції сайту з більшою імовірністю працюватимуть.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="6749077623962119521">Скинути дозволи?</translation>
 <translation id="6766622839693428701">Проведіть пальцем униз, щоб закрити.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> З пристрою <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Виберіть варіант для сайту <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6818926723028410516">Виберіть елементи</translation>
 <translation id="6864395892908308021">Цей пристрій не підтримує NFC</translation>
+<translation id="6867014948848323204">З пристрою <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Не дозволяти сайтам переглядати тексти й зображення в буфері обміну</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6950072572526089586">Сайт, який ви відвідуєте, може зберігати інформацію про ваші дії, щоб вам було зручніше взаємодіяти з ним, наприклад не виходити з облікового запису чи запам’ятовувати товари в кошику для покупок. Часто сайти тимчасово зберігають таку інформацію на вашому пристрої.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Чарівник країни Оз</translation>
 <translation id="7684642910516280563">Заборонити сайту використовувати сторонні файли cookie</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
+<translation id="7770832849480336015">Приховати модуль "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="780301667611848630">Ні, дякую</translation>

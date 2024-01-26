@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ਅੰਦਰੂਨੀ ਗੜਬੜ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ਗੁਣਾ ਕਰੋ</translation>
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
 <translation id="1154390310959620237">ਤੁਸੀਂ ਸਿਰਫ਼ 5 ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਕਿਸੇ ਇੱਕ ਨੂੰ ਮਿਟਾਓ।</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="1367951781824006909">ਇੱਕ ਫਾਈਲ ਚੁਣੋ</translation>
+<translation id="1371650399987522809">Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਵਾਲਪੇਪਰ ਲਈ ਵਿਚਾਰ</translation>
 <translation id="1387854245479784695">ਇਹ ਸਾਰੇ ਕੋਰ ਅੰਕੜਿਆਂ ਦਾ ਇਕੱਤਰੀਕਰਨ ਹੈ</translation>
 <translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
 <translation id="1561927818299383735">ਬੈਕਲਿਟ ਰੰਗ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1566493343215789965">ਭਾਗ ਕਰੋ</translation>
 <translation id="1567064801249837505">ਐਲਬਮਾਂ</translation>
 <translation id="1572585716423026576">ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1578784163189013834">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੈਕਗ੍ਰਾਊਂਡ ਚੁਣੋ</translation>
 <translation id="160633243685262989">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1611649489706141841">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ਤੋਂ ਡਾਟਾ ਵਰਤੋਂ</translation>
+<translation id="1615576200479539465">ਚਿੱਤਰ ਸਿਰਜੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
+<translation id="1626590945318984973">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਫੰਕਸ਼ਨ ਅਤੇ <ph name="META_KEY" /> ਕੁੰਜੀਆਂ ਨੂੰ ਵਰਤੇ ਬਿਨਾਂ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1641857168437328880">ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ (ਇੱਕ ਪਾਸੜ)</translation>
 <translation id="1643449475550628585">ਵਾਲਪੇਪਰ ਚਿੱਤਰ ਨੂੰ ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="1885577615937958993">ਮੀਡੀਆ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਅੱਗੇ ਕਰੋ</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
-<translation id="1897672602657312171">ਖੋਜ ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਕੁਝ ਐਪਾਂ ਦੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਾਂ ਖੋਜ ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕੋਈ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="1904932688895783618">ਇੱਥੇ ਕੁਝ ਹੋਰ ਲਾਹੇਵੰਦ ਸਰੋਤ ਦਿੱਤੇ ਗਏ ਹਨ:</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
 <translation id="1908234395526491708">UDP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ਫ਼ੋਟੋਆਂ</translation>
 <translation id="2157660087437850958">ਇਮੋਜੀ ਚੋਣਕਾਰ</translation>
 <translation id="2157959690810728433">ਕਤਾਰਬੱਧ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਅਤੇ <ph name="APP_NAME_2" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=3{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ <ph name="APP_NAME_3" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="215916044711630446">'APN ਸ਼ਾਮਲ ਕਰੋ' ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APN ਵੇਰਵਿਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2209788852729124853">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2212733584906323460">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
+<translation id="2215920961700443347">ਇੰਟਰਨੈੱਟ ਨਹੀਂ ਹੈ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2217935453350629363">ਮੌਜੂਦਾ ਗਤੀ</translation>
 <translation id="2224337661447660594">ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
 <translation id="222447520299472966">ਘੱਟੋ-ਘੱਟ ਇੱਕ ਕਲਾ ਗੈਲਰੀ ਐਲਬਮ ਨੂੰ ਚੁਣਨ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /> ਚਿੱਤਰ</translation>
 <translation id="2446553403094072641">ਫ਼ਲੋਟਿੰਗ ਪੁਆਇੰਟ ਸਟੀਕਤਾ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
+<translation id="2465272316171730950">ਸਾਡੇ ਕੋਲ ਹਾਲੇ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਦੇਰ ਬਾਅਦ ਵਾਪਸ ਆਓ।</translation>
 <translation id="248546197012830854">ਡੀਵਾਈਸ ਆਫ਼ਲਾਈਨ ਹੈ। ਮਦਦ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="2491955442992294626">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋਵੋ, ਤਾਂ ਕੁੰਜੀਆਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="2493126929778606526">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚੁਣੀਆਂ ਗਈਆਂ, ਤੁਹਾਡੀਆਂ ਬਿਹਤਰੀਨ ਫ਼ੋਟੋਆਂ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">ਮੌਜੂਦਾ ਵਾਲਪੇਪਰ ਚਿੱਤਰ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="2512979179176933762">ਵਿੰਡੋਆਂ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="2513396635448525189">ਲੌਗ-ਇਨ ਚਿੱਤਰ</translation>
-<translation id="2515109918609218604">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਫੰਕਸ਼ਨ ਅਤੇ ਖੋਜ ਕੁੰਜੀਆਂ ਨੂੰ ਵਰਤੇ ਬਿਨਾਂ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2521835766824839541">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="2526590354069164005">ਡੈਸਕਟਾਪ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਖਤਮ ਹੋਈ।</translation>
 <translation id="2880569433548999039">ਬੱਦਲ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="2926057806159140518">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ ਜਾਂ ਆਪਣਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
+<translation id="2938573842839598578">ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CONVERSION_RATE" /> 'ਤੇ <ph name="OPERATOR_TEXT" /> ਨੂੰ <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="2940811910881150316">ਡੀਵਾਈਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਜਾਂਚ ਕਰਨ ਲਈ ਢੱਕਣ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="2941112035454246133">ਘੱਟ</translation>
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
+<translation id="3547264467365135390">ਫ਼ਾਰਮੂਲਾ</translation>
 <translation id="3557205324756024651">ਸਥਾਨਕ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
 <translation id="3569407787324516067">ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">ਤੁਹਾਡੇ ਕੋਲ ਹੁਣ ਨਵੇਂ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ਵਾਲਪੇਪਰਾਂ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ਤੱਕ ਪਹੁੰਚ ਹੈ</translation>
 <translation id="4117637339509843559">ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="4130035430755296270">ਖਾਕੇ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਰਸਰ ਘੁਮਾਉਂਦੇ ਰਹੋ</translation>
+<translation id="4130750466177569591">ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}one{# ਐਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}other{# ਐਪਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈਆਂ ਸਨ}}</translation>
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">ਚਮਕ ਘਟਾਓ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4176659219503619100">ਕੰਟਰੋਲ ਪੈਨਲ</translation>
-<translation id="4185315616950253617">ਸਿਖਰਲੀ ਕਤਾਰ ਨਾਲ ਕੁੰਜੀਆਂ ਵਾਲੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਖੋਜ ਕੁੰਜੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="420283545744377356">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4213104098953699324">USB ਕੀ-ਬੋਰਡ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">ਬੰਦ ਕਰੋ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4395835743215824109">ਕੀ-ਬੋਰਡ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਕੁਝ ਐਪਾਂ ਦੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਾਂ <ph name="KEY" /> ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕੋਈ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="4415951057168511744">ਮੌਜੂਦਾ ਅਵਤਾਰ</translation>
+<translation id="4417830657741848074">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੁਝ ਐਪਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕੁਝ ਐਪਾਂ ਬੰਦ ਨਾ ਹੋਣ।</translation>
 <translation id="4422041425070339732">ਹੇਠਾਂ ਤੀਰ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ਬੰਦ ਹੈ</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">ਧਰਤੀ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="4500722292849917410">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, shift ਜਾਂ <ph name="META_KEY" />) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="4500966230243561393">ਇੰਟਰਫ਼ੇਸ ਦਾ ਰੰਗ</translation>
 <translation id="4503223151711056411">ਖੱਬਾ ਤੀਰ</translation>
 <translation id="4507392511610824664">ਚਮਕ ਵਧਾਓ</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files ਐਪ ਵਿੱਚ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ...</translation>
 <translation id="4835901797422965222">ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹਨ</translation>
 <translation id="4839698083503556542">ਆਪਣੀ ਖੁਦ ਦੀ ਫ਼ਿਲਮ ਬਣਾਓ</translation>
+<translation id="48409034532829769">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ "<ph name="APP_NAME" />" ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਐਪ ਬੰਦ ਨਾ ਹੋਵੇ।</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ਚੁਣਿਆ ਗਿਆ, <ph name="TOPIC_SOURCE" /> ਐਲਬਮਾਂ ਨੂੰ ਚੁਣਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="484790837831576105">(Android) DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">ਵੰਡਿਆ</translation>
 <translation id="4972592110715526173">ਮੋਡ ਬਦਲੋ</translation>
 <translation id="498186245079027698">ਸਕੈਨਰ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਹੈ।</translation>
+<translation id="4982627662315910959">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। Shift ਅਤੇ 1 ਹੋਰ ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt ਜਾਂ <ph name="META_KEY" />) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="4985509611418653372">ਚਲਾਓ</translation>
 <translation id="4987769320337599931">ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4988526792673242964">ਸਫ਼ੇ</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ਗੂੜ੍ਹਾ ਥੀਮ ਨਿਯਮ ਕਰੋ</translation>
 <translation id="5229344016299762883">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}}</translation>
 <translation id="5252456968953390977">ਰੋਮਿੰਗ</translation>
 <translation id="5257811368506016604">ਹਲਕੇ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5264277876637023664">CPU ਟੈਸਟ ਚਲਾਓ</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7180865173735832675">ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7184043045742675738">ਆਪਣੇ ਬਟਨ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਮਾਊਸ ਜਾਂ ਤੀਰ ਕੁੰਜੀਆਂ ਨਾਲ ਕੁੰਜੀ ਦੀ ਥਾਂ ਬਦਲੋ।</translation>
+<translation id="7206979415662233817">ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="7212547870105584639">ਨੈੱਟਵਰਕ APN ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। APN ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ ਵਿਚਕਾਰ ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਕਰਦੇ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="725133483556299729">ਈਮੇਲ ਚੁਣੋ</translation>
 <translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="7273347807225967898">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, shift, ਖੋਜ ਜਾਂ ਲਾਂਚਰ) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
+<translation id="7271932918253517778">ਸਿਖਰਲੀ ਕਤਾਰ ਨਾਲ ਕੁੰਜੀਆਂ ਵਾਲੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ <ph name="META_KEY" /> ਕੁੰਜੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ਹਵਾ ਨੂੰ ਮਹਿਸੂਸ ਕਰੋ</translation>
 <translation id="7287310195820267359">ਵਾਲਪੇਪਰ ਸੰਗ੍ਰਹਿ</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">ਕੀ-ਬੋਰਡ ਦਾ ਰੰਗ</translation>
 <translation id="7317831949569936035">ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ਤੁਹਾਡੀ ਉਮਰ ਘੱਟੋ-ਘੱਟ 18 ਸਾਲ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੀ AI ਵਾਲਪੇਪਰਾਂ ਦੀ ਵਰਤੋਂ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ਅਤੇ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ਜਨਰੇਟਿਵ AI ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ਦੇ ਅਧੀਨ ਹੈ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ਤੁਸੀਂ ਸਿਰਫ਼ ਨਿੱਜੀ ਅਤੇ ਗੈਰ-ਵਪਾਰਕ ਵਰਤੋਂ ਲਈ AI ਨਾਲ ਵਾਲਪੇਪਰ ਬਣਾ ਸਕਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ ਵਾਲਪੇਪਰ ਸੰਬੰਧੀ ਸਹਾਇਤਾ ਪ੍ਰਾਪਤ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੀ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਵਾਲਪੇਪਰ ਸੰਬੰਧੀ ਸੁਝਾਅ ਤਿਆਰ ਕਰਨ ਲਈ ਲਿਖਤ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖਣ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="7343649194310845056">ਨੈੱਟਵਰਕ ਡੀਵਾਈਸ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ਵਿੱਚੋਂ <ph name="LIST_POSITION" /> ਖੋਜ ਨਤੀਜਾ: <ph name="SEARCH_RESULT_TEXT" />। ਸ਼ਾਰਟਕੱਟ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">ਆਮ ਕੰਟਰੋਲ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="7978412674231730200">ਨਿੱਜੀ ਕੁੰਜੀ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}one{# ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}other{# ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}}</translation>
 <translation id="7994702968232966508">EAP ਵਿਧੀ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8017679124341497925">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="8094062939584182041">Google ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਬਾਰੇ ਤੁਹਾਨੂੰ ਈਮੇਲ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="8104083085214006426">ਤੁਸੀਂ ਕੋਈ ਖੁੱਲ੍ਹਾ ਅਤੇ ਅਸੁਰੱਖਿਅਤ ਨੈੱਟਵਰਕ ਵਰਤ ਰਹੇ ਹੋ</translation>
-<translation id="8111706652656628199">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। Shift ਅਤੇ 1 ਹੋਰ ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, ਖੋਜ ਜਾਂ ਲਾਂਚਰ) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="811820734797650957">(Android) ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>

@@ -378,7 +378,7 @@ void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
                 "CacheStorage", "CacheStorage::Keys::Callback",
                 TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "key_list",
                 CacheStorageTracedValue(keys));
-            resolver->Resolve(keys);
+            resolver->Resolve<IDLSequence<IDLString>>(keys);
           },
           base::TimeTicks::Now(), trace_id)));
 }

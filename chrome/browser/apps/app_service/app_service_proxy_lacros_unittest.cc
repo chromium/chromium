@@ -51,7 +51,7 @@ TEST(AppServiceProxyLacrosTest, Launch) {
       std::make_unique<WindowInfo>(display::kDefaultDisplayId),
       base::BindOnce(
           [](base::OnceClosure callback, LaunchResult&& result_arg) {
-            EXPECT_EQ(LaunchResult::State::SUCCESS, result_arg.state);
+            EXPECT_EQ(LaunchResult::State::kSuccess, result_arg.state);
             std::move(callback).Run();
           },
           waiter.QuitClosure()));

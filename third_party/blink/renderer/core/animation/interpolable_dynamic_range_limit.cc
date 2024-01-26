@@ -54,6 +54,8 @@ void InterpolableDynamicRangeLimit::Interpolate(
   InterpolableDynamicRangeLimit& result_limit =
       To<InterpolableDynamicRangeLimit>(result);
 
+  // Percentages are required to be in the range 0% to 100% for
+  // dynamic-range-limit-mix().
   double normalized_progress = ClampTo<double>(progress, 0.0, 1.0);
 
   if (normalized_progress == 0 ||

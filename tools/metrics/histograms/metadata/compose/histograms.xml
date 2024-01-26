@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ContextMenu.OpenComposeDialogResult"
+    enum="OpenComposeDialogResult" expires_after="2024-06-02">
+  <owner>carlosk@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Tracks situations when the user requested to open the Compose dialog but it
+    was impossible to do so. Recorded whenever a situation is detected that
+    causes the dialog opening to be aborted, or when it succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
     expires_after="2024-06-02">
   <owner>sophey@chromium.org</owner>
@@ -42,6 +53,17 @@ chromium-metrics-reviews@google.com.
     Histogram that records the show status of the Compose context menu item.
     Logged each time the menu item is displayed or blocked from displaying (with
     a reason why).
+  </summary>
+</histogram>
+
+<histogram name="Compose.Dialog.InnerTextNodeOffsetFound"
+    enum="ComposeInnerTextNodeOffset" expires_after="2024-07-02">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records if a Compose request generated a valid node offset for the inner
+    text. Logged each time the dialog is opened when the inner text response is
+    sent to the new compose session.
   </summary>
 </histogram>
 
@@ -88,6 +110,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Request.Duration.Error" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for an invalid Compose request to complete. Logged each
+    time a request receives a response status not equal to OK.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Request.Duration.Ok" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for a valid Compose request to complete. Logged each
+    time a request receives a response OK status.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
     expires_after="2024-07-02">
   <owner>cuianthony@chromium.org</owner>
@@ -100,33 +142,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Response.Duration.Error" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for an invalid response from the Compose service.
-    Logged each time a response with status not equal to OK is received.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Response.Duration.Ok" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for a valid response from the Compose service. Logged
-    each time a response with status OK is received.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Response.Status" enum="ComposeResponseStatus"
+<histogram name="Compose.Request.Status" enum="ComposeResponseStatus"
     expires_after="2024-06-02">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Histogram for recording the Compose server response status. Logged each time
-    a response from the server is received.
+    Histogram for recording the Compose server request status. Logged each time
+    a Compose request receives a response.
   </summary>
 </histogram>
 
@@ -167,6 +189,47 @@ chromium-metrics-reviews@google.com.
     <variant name="Accepted" summary="the Compose response was inserted"/>
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
+</histogram>
+
+<histogram name="Compose.Session.Duration.OverOneDay" enum="BooleanYesNo"
+    expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Wether or not the ComposeSession was open for more than one day. Recorded
+    once per session when the session closes for any reason.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Session.Duration.{SessionType}" units="ms"
+    expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The length of a ComposeSession in ms that end {SessionType}. Recorded once
+    per session when the session closes for any reason.
+  </summary>
+  <token key="SessionType">
+    <variant name="FRE" summary="on the FRE dialog"/>
+    <variant name="Ignored" summary="without an insert"/>
+    <variant name="Inserted" summary="with an insert"/>
+    <variant name="MSBB" summary="on the MSBB dialog"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.Session.EventCounts" enum="ComposeSessionEventTypes"
+    expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Enumerated histogram that records counts for events that happen during a
+    Compose Session. This histogram answers the question: How many sessions had
+    each event type. Even if an event occurs multiple times in a session only
+    one event is recorded Dialog Shown will be the number of sessions and should
+    be used as the denominator for all values.
+
+    All buckets are emitted once at the end of each Compose Session.
+  </summary>
 </histogram>
 
 <histogram name="Compose.Session.FRE.Disclaimer.CloseReason"

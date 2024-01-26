@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"

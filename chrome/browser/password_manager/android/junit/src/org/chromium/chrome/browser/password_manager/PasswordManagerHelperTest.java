@@ -47,11 +47,12 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,8 +65,6 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -94,7 +93,6 @@ public class PasswordManagerHelperTest {
     private static final String TEST_NO_EMAIL_ADDRESS = null;
 
     // TODO(crbug.com/1500673): Deduplicate the histogram names with those in PasswordManagerHelper.
-    // TODO(crbug.com/1500676): Use HistogramWatcher to check histogram records.
     // TODO(crbug.com/1511244): Parametrize the tests for account and local storage.
     private static final String ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.GetIntent.Latency";
@@ -618,6 +616,13 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testRecordsSuccessMetricsForAccountIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0)
+                        .expectIntRecord(ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1)
+                        .expectNoRecords(ACCOUNT_GET_INTENT_ERROR_HISTOGRAM)
+                        .expectIntRecord(ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
 
@@ -628,26 +633,19 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsSuccessMetricsForLocalIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0)
+                        .expectIntRecord(LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1)
+                        .expectNoRecords(LOCAL_GET_INTENT_ERROR_HISTOGRAM)
+                        .expectIntRecord(LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1)
+                        .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
@@ -660,25 +658,21 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForAccountIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.UNCATEGORIZED)
+                        .expectIntRecord(ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectNoRecords(ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM)
+                        .expectNoRecords(ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForAccount(CredentialManagerError.UNCATEGORIZED);
 
@@ -690,26 +684,20 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.UNCATEGORIZED));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForLocalIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                LOCAL_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.UNCATEGORIZED)
+                        .expectIntRecord(LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectNoRecords(LOCAL_GET_INTENT_LATENCY_HISTOGRAM)
+                        .expectNoRecords(LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
@@ -723,26 +711,18 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.UNCATEGORIZED));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsMetricsWhenAccountIntentFails() throws CanceledException {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0)
+                        .expectIntRecord(ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1)
+                        .expectNoRecords(ACCOUNT_GET_INTENT_ERROR_HISTOGRAM)
+                        .expectIntRecord(ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
         doThrow(CanceledException.class).when(mPendingIntentMock).send();
@@ -755,26 +735,18 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsMetricsWhenLocalIntentFails() throws CanceledException {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0)
+                        .expectIntRecord(LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1)
+                        .expectNoRecords(LOCAL_GET_INTENT_ERROR_HISTOGRAM)
+                        .expectIntRecord(LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0)
+                        .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
@@ -789,21 +761,7 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+        histogram.assertExpected();
     }
 
     @Test
@@ -875,9 +833,11 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testRecordsSuccessMetricsForPasswordCheckupIntentForAccount() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
         HistogramWatcher histogram =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
+                builder.expectIntRecord(
                                 PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1)
                         .build();
 
@@ -890,14 +850,19 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_EMAIL_ADDRESS);
-        checkPasswordCheckupSuccessHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
 
         histogram.assertExpected();
     }
 
     @Test
     public void testRecordsSuccessMetricsForPasswordCheckupIntentForLocal() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
+        HistogramWatcher histogram =
+                builder.expectIntRecord(
+                                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1)
+                        .build();
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_NO_EMAIL_ADDRESS);
@@ -908,16 +873,22 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_NO_EMAIL_ADDRESS);
-        checkPasswordCheckupSuccessHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForPasswordCheckupIntentForAccount() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+                        CredentialManagerError.UNCATEGORIZED,
+                        OptionalInt.empty());
+        HistogramWatcher histogram =
+                builder.expectNoRecords(
+                                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
+
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForPasswordCheckup(
                 new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
@@ -930,21 +901,18 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 TEST_EMAIL_ADDRESS);
 
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                CredentialManagerError.UNCATEGORIZED,
-                OptionalInt.empty());
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForPasswordCheckupIntentForLocal() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+                        CredentialManagerError.UNCATEGORIZED,
+                        OptionalInt.empty());
         HistogramWatcher histogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
+                builder.expectNoRecords(
                                 PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
 
@@ -960,20 +928,19 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_NO_EMAIL_ADDRESS);
-
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                CredentialManagerError.UNCATEGORIZED,
-                OptionalInt.empty());
 
         histogram.assertExpected();
     }
 
     @Test
     public void testRecordsApiErrorMetricsForPasswordCheckupIntentForAccount() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+                        CredentialManagerError.API_ERROR,
+                        OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
         HistogramWatcher histogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
+                builder.expectNoRecords(
                                 PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
 
@@ -988,16 +955,21 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_EMAIL_ADDRESS);
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                CredentialManagerError.API_ERROR,
-                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
 
         histogram.assertExpected();
     }
 
     @Test
     public void testRecordsApiErrorMetricsForPasswordCheckupIntentForLocal() {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+                        CredentialManagerError.API_ERROR,
+                        OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+        HistogramWatcher histogram =
+                builder.expectNoRecords(
+                                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
         returnErrorWhenFetchingIntentForPasswordCheckup(
@@ -1010,115 +982,142 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_NO_EMAIL_ADDRESS);
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                CredentialManagerError.API_ERROR,
-                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
 
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsSuccessMetricsForRunPasswordCheckup() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.RUN_PASSWORD_CHECKUP)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulRunPasswordCheckup();
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupSuccessHistogramsForOperation(
-                PasswordCheckOperation.RUN_PASSWORD_CHECKUP);
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForRunPasswordCheckup() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
+
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenRunningPasswordCheckup(
                 new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-                CredentialManagerError.UNCATEGORIZED,
-                OptionalInt.empty());
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsApiErrorMetricsForRunPasswordCheckup() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
+                                CredentialManagerError.API_ERROR,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
+
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenRunningPasswordCheckup(
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-                CredentialManagerError.API_ERROR,
-                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsSuccessMetricsForGetBreachedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT)
+                        .build();
+
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulGetBreachedCredentialsCount();
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupSuccessHistogramsForOperation(
-                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT);
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsErrorMetricsForGetBreachedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenGettingBreachedCredentialsCount(
                 new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-                CredentialManagerError.UNCATEGORIZED,
-                OptionalInt.empty());
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsApiErrorMetricsForGetBreachedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
+                                CredentialManagerError.API_ERROR,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenGettingBreachedCredentialsCount(
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
-        checkPasswordCheckupFailureHistogramsForOperation(
-                PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-                CredentialManagerError.API_ERROR,
-                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsMetricsWhenPasswordCheckupIntentFails() throws CanceledException {
+        HistogramWatcher.Builder builder =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
+        HistogramWatcher histogram =
+                builder.expectIntRecord(
+                                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_EMAIL_ADDRESS);
         doThrow(CanceledException.class).when(mPendingIntentMock).send();
@@ -1129,12 +1128,8 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock,
                 mModalDialogManagerSupplier,
                 TEST_EMAIL_ADDRESS);
-        checkPasswordCheckupSuccessHistogramsForOperation(
-                PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -1722,7 +1717,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
     }
@@ -1736,13 +1731,25 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
     }
 
     @Test
     public void testRecordsApiErrorWhenFetchingAccountCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.API_ERROR)
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
+                                CommonStatusCodes.INTERNAL_ERROR)
+                        .expectNoRecords(ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM)
+                        .expectNoRecords(ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
@@ -1756,30 +1763,18 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM, CommonStatusCodes.INTERNAL_ERROR));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsApiErrorWhenFetchingLocalCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR)
+                        .expectNoRecords(LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
@@ -1796,22 +1791,26 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsConnectionResultWhenFetchingAccountCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.API_ERROR)
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
+                                CommonStatusCodes.API_NOT_CONNECTED)
+                        .expectIntRecord(
+                                ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM,
+                                ConnectionResult.API_UNAVAILABLE)
+                        .expectNoRecords(ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
+
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException =
                 new ApiException(
@@ -1826,32 +1825,18 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
-                        CommonStatusCodes.API_NOT_CONNECTED));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM,
-                        ConnectionResult.API_UNAVAILABLE));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
     public void testRecordsConnectionResultWhenFetchingLocalCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR)
+                        .expectNoRecords(LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(true);
@@ -1869,18 +1854,7 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false);
 
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+        histogram.assertExpected();
     }
 
     @Test
@@ -2047,10 +2021,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .runPasswordCheckupInBackground(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void setUpSuccessfulGetBreachedCredentialsCount() {
@@ -2062,10 +2033,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenRunningPasswordCheckup(Exception error) {
@@ -2077,10 +2045,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .runPasswordCheckupInBackground(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenGettingBreachedCredentialsCount(Exception error) {
@@ -2092,63 +2057,45 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
-    private void checkPasswordCheckupSuccessHistogramsForOperation(
-            @PasswordCheckOperation int operation) {
+    private HistogramWatcher.Builder
+            histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                    @PasswordCheckOperation int operation) {
         final String nameWithSuffix =
                 PASSWORD_CHECKUP_HISTOGRAM_BASE
                         + "."
                         + getPasswordCheckupHistogramSuffixForOperation(operation);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Success", 1));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Latency", 0));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".ErrorLatency"));
-        assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Error"));
-        assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".ApiError"));
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord(nameWithSuffix + ".Success", 1)
+                .expectIntRecord(nameWithSuffix + ".Latency", 0)
+                .expectNoRecords(nameWithSuffix + ".ErrorLatency")
+                .expectNoRecords(nameWithSuffix + ".Error")
+                .expectNoRecords(nameWithSuffix + ".ApiError");
     }
 
-    private void checkPasswordCheckupFailureHistogramsForOperation(
-            @PasswordCheckOperation int operation, int errorCode, OptionalInt apiErrorCode) {
+    private HistogramWatcher.Builder
+            histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                    @PasswordCheckOperation int operation,
+                    int errorCode,
+                    OptionalInt apiErrorCode) {
         final String nameWithSuffix =
                 PASSWORD_CHECKUP_HISTOGRAM_BASE
                         + "."
                         + getPasswordCheckupHistogramSuffixForOperation(operation);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Success", 0));
-        assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Latency"));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffix + ".ErrorLatency", 0));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffix + ".Error", errorCode));
-        apiErrorCode.ifPresentOrElse(
-                apiError ->
-                        assertEquals(
-                                1,
-                                RecordHistogram.getHistogramValueCountForTesting(
-                                        nameWithSuffix + ".APIError", apiError)),
-                () ->
-                        assertEquals(
-                                0,
-                                RecordHistogram.getHistogramTotalCountForTesting(
-                                        nameWithSuffix + ".APIError")));
+
+        HistogramWatcher.Builder builder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(nameWithSuffix + ".Success", 0)
+                        .expectNoRecords(nameWithSuffix + ".Latency")
+                        .expectIntRecord(nameWithSuffix + ".ErrorLatency", 0)
+                        .expectIntRecord(nameWithSuffix + ".Error", errorCode);
+        if (apiErrorCode.isPresent()) {
+            return builder.expectIntRecord(nameWithSuffix + ".APIError", apiErrorCode.getAsInt());
+        } else {
+            return builder.expectNoRecords(nameWithSuffix + ".APIError");
+        }
     }
 
     private String getPasswordCheckupHistogramSuffixForOperation(

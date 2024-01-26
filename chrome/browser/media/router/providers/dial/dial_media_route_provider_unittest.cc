@@ -122,9 +122,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   void TearDown() override { provider_.reset(); }
 
   void ExpectRouteResult(mojom::RouteRequestResultCode expected_result_code,
-                         const absl::optional<MediaRoute>& media_route,
+                         const std::optional<MediaRoute>& media_route,
                          mojom::RoutePresentationConnectionPtr,
-                         const absl::optional<std::string>& error_text,
+                         const std::optional<std::string>& error_text,
                          mojom::RouteRequestResultCode result_code) {
     EXPECT_EQ(expected_result_code, result_code);
     if (result_code == mojom::RouteRequestResultCode::OK) {
@@ -187,9 +187,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
   void TestJoinRoute(
       mojom::RouteRequestResultCode expected_result,
-      absl::optional<std::string> source_to_join = absl::nullopt,
-      absl::optional<std::string> presentation_to_join = absl::nullopt,
-      absl::optional<url::Origin> client_origin = absl::nullopt) {
+      std::optional<std::string> source_to_join = std::nullopt,
+      std::optional<std::string> presentation_to_join = std::nullopt,
+      std::optional<url::Origin> client_origin = std::nullopt) {
     CreateRoute();
     ASSERT_TRUE(route_);
 
@@ -297,7 +297,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     const MediaRoute::Id& route_id = route_->media_route_id();
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          absl::nullopt);
+                                          std::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
                                 network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
@@ -337,7 +337,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          absl::nullopt);
+                                          std::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
                                 network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
@@ -373,7 +373,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     const MediaRoute::Id& route_id = route_->media_route_id();
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          absl::nullopt);
+                                          std::nullopt);
     loader_factory_.AddResponse(
         app_instance_url_, network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
@@ -402,7 +402,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   }
 
   MOCK_METHOD2(OnTerminateRoute,
-               void(const absl::optional<std::string>&,
+               void(const std::optional<std::string>&,
                     mojom::RouteRequestResultCode));
 
  protected:
@@ -590,13 +590,13 @@ TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongMediaSource) {
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongPresentationId) {
-  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, std::nullopt,
                 "wrong-presentation-id");
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongOrigin) {
-  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
-                absl::nullopt,
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, std::nullopt,
+                std::nullopt,
                 url::Origin::Create(GURL("https://wrong-origin.com")));
 }
 

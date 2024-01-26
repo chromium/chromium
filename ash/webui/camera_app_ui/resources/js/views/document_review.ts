@@ -255,11 +255,11 @@ export class DocumentReview extends View {
     const name = (new Filenamer()).newDocumentName(mimeType);
     if (mimeType === MimeType.JPEG) {
       await this.resultSaver.savePhoto(
-          blobs[0], ToteMetricFormat.SCAN_JPG, name, null);
+          blobs[0], ToteMetricFormat.kScanJpg, name, null);
     } else {
       const pdfBlob = await ChromeHelper.getInstance().convertToPdf(blobs);
       await this.resultSaver.savePhoto(
-          pdfBlob, ToteMetricFormat.SCAN_PDF, name, null);
+          pdfBlob, ToteMetricFormat.kScanPdf, name, null);
     }
   }
 

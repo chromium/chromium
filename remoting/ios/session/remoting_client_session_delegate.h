@@ -5,6 +5,7 @@
 #ifndef REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 #define REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/protocol/connection_to_host.h"
@@ -46,7 +47,7 @@ class RemotingClientSessionDelegate : public ChromotingSession::Delegate {
   base::WeakPtr<RemotingClientSessionDelegate> GetWeakPtr();
 
  private:
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
   __weak id client_;
 
   base::WeakPtrFactory<RemotingClientSessionDelegate> weak_factory_;

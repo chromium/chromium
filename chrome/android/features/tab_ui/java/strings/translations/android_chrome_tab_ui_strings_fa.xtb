@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">دریافت اعلان</translation>
 <translation id="4133493477912226187">به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="4212246570487010370">ادامه مرور</translation>
+<translation id="427987768447457592">گروه برگه جدید</translation>
 <translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
 <translation id="5082793167783849073">با ایجاد گروه، صفحه‌ها را سریع مقایسه کنید. برای شروع، پیوندی را لمس کنید و نگه دارید.</translation>
+<translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه دارید که اخیراً از آن استفاده نکرده‌اید}one{<ph name="TABS_COUNT_MANY" /> برگه دارید که اخیراً از آن استفاده نکرده‌اید}other{<ph name="TABS_COUNT_MANY" /> برگه دارید که اخیراً از آن‌ها استفاده نکرده‌اید}}</translation>
 <translation id="5339733443032484186">آخرین برگه شما</translation>
 <translation id="5490235265819901748">گروه برگه گسترده شد</translation>

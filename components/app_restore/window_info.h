@@ -22,11 +22,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
  public:
   // This struct is the ARC specific window info.
   struct ArcExtraInfo {
-    ArcExtraInfo();
-    ArcExtraInfo(const WindowInfo::ArcExtraInfo&);
-    ArcExtraInfo& operator=(const WindowInfo::ArcExtraInfo&);
-    ~ArcExtraInfo();
-
     std::optional<gfx::Size> maximum_size;
     std::optional<gfx::Size> minimum_size;
     std::optional<gfx::Rect> bounds_in_root;

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Rep una notificació</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
+<translation id="427987768447457592">Grup de pestanyes nou</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ressenya)}other{(<ph name="REVIEWS_COUNT_MANY" /> ressenyes)}}</translation>
 <translation id="4850886885716139402">Mostra</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5082793167783849073">Crea un grup per comparar pàgines ràpidament. Per començar, mantén premut un enllaç.</translation>
+<translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya que no has utilitzat recentment}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes que no has utilitzat recentment}}</translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>

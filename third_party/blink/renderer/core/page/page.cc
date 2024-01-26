@@ -471,8 +471,22 @@ void Page::ColorSchemeChanged() {
 }
 
 void Page::ColorProvidersChanged() {
-  for (Page* page : AllPages())
+  for (Page* page : AllPages()) {
     page->InvalidatePaint();
+  }
+}
+
+void Page::EmulateForcedColors(bool is_dark_theme) {
+  emulated_forced_colors_provider_ =
+      WebTestSupport::IsRunningWebTest()
+          ? std::make_unique<ui::ColorProvider>(
+                ui::CreateEmulatedForcedColorsColorProviderForTest())
+          : std::make_unique<ui::ColorProvider>(
+                ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme));
+}
+
+void Page::DisableEmulatedForcedColors() {
+  emulated_forced_colors_provider_.reset();
 }
 
 void Page::UpdateColorProviders(
@@ -511,6 +525,9 @@ const ui::ColorProvider* Page::GetColorProviderForPainting(
     mojom::blink::ColorScheme color_scheme,
     bool in_forced_colors) const {
   if (in_forced_colors) {
+    if (emulated_forced_colors_provider_) {
+      return emulated_forced_colors_provider_.get();
+    }
     return forced_colors_color_provider_.get();
   }
 

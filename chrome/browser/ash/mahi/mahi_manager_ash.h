@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_ASH_H_
 
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
@@ -18,6 +19,16 @@ class MahiManagerAsh : public chromeos::MahiManager {
   MahiManagerAsh& operator=(const MahiManagerAsh&) = delete;
 
   ~MahiManagerAsh() override;
+
+  // chromeos::MahiManager:
+  void OpenMahiPanel(int64_t display_id) override;
+  void GetSummary(MahiSummaryCallback callback) override;
+
+ private:
+  friend class MahiManagerAshTest;
+
+  // The widget contains the Mahi main panel.
+  views::UniqueWidgetPtr mahi_panel_widget_;
 };
 
 }  // namespace ash

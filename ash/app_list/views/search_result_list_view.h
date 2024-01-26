@@ -110,7 +110,9 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // This should not be called on a disabled list view as list_type_ will be
   // reset.
-  SearchResultListType list_type_for_test() { return list_type_.value(); }
+  const std::optional<SearchResultListType>& list_type_for_test() const {
+    return list_type_;
+  }
 
   views::Label* title_label_for_test() { return title_label_; }
 

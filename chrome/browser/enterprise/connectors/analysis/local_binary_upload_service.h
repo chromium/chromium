@@ -149,7 +149,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void HandleResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
       safe_browsing::BinaryUploadService::Request::Data data,
-      absl::optional<content_analysis::sdk::ContentAnalysisResponse>
+      std::optional<content_analysis::sdk::ContentAnalysisResponse>
           sdk_response);
 
   // Starts a local content analysis ack request.

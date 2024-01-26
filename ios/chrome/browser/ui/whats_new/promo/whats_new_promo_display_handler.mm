@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_promo_display_handler.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
@@ -13,7 +14,7 @@
 
 @implementation WhatsNewPromoDisplayHandler {
   // Promos Manager to alert if the user uses What's New.
-  PromosManager* _promosManager;
+  raw_ptr<PromosManager> _promosManager;
 }
 
 #pragma mark - StandardPromoDisplayHandler

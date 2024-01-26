@@ -77,10 +77,7 @@ source_set("password_store_impl") {
     "//url",
   ]
   if (is_android) {
-    sources += [
-      "android_backend_error.cc",
-      "android_backend_error.h",
-    ]
+    sources += [ "android_backend_error.h" ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {

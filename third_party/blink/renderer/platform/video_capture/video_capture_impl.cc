@@ -449,7 +449,6 @@ VideoCaptureImpl::CreateVideoFrameInitData(
             break;
           default:
             LOG(FATAL) << "Unsupported pixel format";
-            return absl::nullopt;
         }
         // The GpuMemoryBuffer is allocated and owned by the video capture
         // buffer pool from the video capture service process, so we don't need
@@ -578,7 +577,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   // if OOP-R is not enabled.
   // NOTE: GLES2_READ can be removed once OOP-R ships definitively.
   uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_APPLE)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
@@ -1064,6 +1063,7 @@ void VideoCaptureImpl::OnBufferReady(
                        (reference_time - base::TimeTicks()).InMicroseconds(),
                        "time_delta", buffer->info->timestamp.InMicroseconds());
 
+  const int buffer_id = buffer->buffer_id;
   // Convert `buffer` into a media::VideoFrame or a gfx::GpuMemoryBuffer.
   absl::optional<VideoFrameInitData> video_frame_init_data =
       CreateVideoFrameInitData(std::move(buffer));
@@ -1071,9 +1071,8 @@ void VideoCaptureImpl::OnBufferReady(
     // Error during initialization of the frame or buffer.
     OnFrameDropped(media::VideoCaptureFrameDropReason::
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
-    GetVideoCaptureHost()->ReleaseBuffer(
-        device_id_, video_frame_init_data->ready_buffer->buffer_id,
-        DefaultFeedback());
+    GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer_id,
+                                         DefaultFeedback());
     return;
   }
 

@@ -801,10 +801,9 @@ void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,
 }
 
 std::string SharedImageStub::GetLabel(const std::string& debug_label) const {
-  // For cross process shared images, compose the label from the client id and
-  // client pid for easier identification in debug tools.
-  return debug_label + "_Cid:" + base::NumberToString(channel_->client_id()) +
-         "_Pid:" + base::NumberToString(channel_->client_pid());
+  // For cross process shared images, compose the label from the client pid for
+  // easier identification in debug tools.
+  return debug_label + "_Pid:" + base::NumberToString(channel_->client_pid());
 }
 
 }  // namespace gpu

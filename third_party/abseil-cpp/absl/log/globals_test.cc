@@ -88,6 +88,20 @@ TEST(TestGlobals, LogPrefix) {
   EXPECT_TRUE(absl::ShouldPrependLogPrefix());
 }
 
+TEST(TestGlobals, SetGlobalVLogLevel) {
+  EXPECT_EQ(absl::SetGlobalVLogLevel(42), 0);
+  EXPECT_EQ(absl::SetGlobalVLogLevel(1337), 42);
+  // Restore the value since it affects the default unset module value for
+  // `SetVLogLevel()`.
+  EXPECT_EQ(absl::SetGlobalVLogLevel(0), 1337);
+}
+
+TEST(TestGlobals, SetVLogLevel) {
+  EXPECT_EQ(absl::SetVLogLevel("setvloglevel", 42), 0);
+  EXPECT_EQ(absl::SetVLogLevel("setvloglevel", 1337), 42);
+  EXPECT_EQ(absl::SetVLogLevel("othersetvloglevel", 50), 0);
+}
+
 TEST(TestGlobals, AndroidLogTag) {
   // Verify invalid tags result in a check failure.
   EXPECT_DEATH_IF_SUPPORTED(absl::SetAndroidNativeTag(nullptr), ".*");

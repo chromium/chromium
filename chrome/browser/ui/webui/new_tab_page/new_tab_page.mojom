@@ -45,6 +45,7 @@ struct CollectionImage {
   kThirdPartyTheme,
   kUploadedImage,
   kWallpaperSearch,
+  kWallpaperSearchInspiration,
 };
 
 // Enum representing the in product help promo to trigger.
@@ -83,8 +84,6 @@ struct Theme {
   bool daily_refresh_enabled;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
-  // True if the realbox icons should be themed based on the background color.
-  bool theme_realbox_icons;
   // Color of Google logo. If not set show the logo multi-colored.
   skia.mojom.SkColor? logo_color;
   // Collection id of the background image.

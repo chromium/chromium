@@ -16,11 +16,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -277,10 +277,9 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
   }
 
-  void InstallIwa(
-      const base::Version installed_version,
-      const absl::optional<WebApp::IsolationData::PendingUpdateInfo>&
-          pending_update_info = absl::nullopt) {
+  void InstallIwa(const base::Version installed_version,
+                  const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
+                      pending_update_info = std::nullopt) {
     AddDummyIsolatedAppToRegistry(
         profile(), url_info_.origin().GetURL(), "installed iwa",
         WebApp::IsolationData(installed_bundle_location_, installed_version,
@@ -369,7 +368,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
                               Eq(installed_bundle_location_),
                               Eq(base::Version("1.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))))
+                              /*pending_update_info=*/Eq(std::nullopt))))
       << task.AsDebugValue();
 }
 

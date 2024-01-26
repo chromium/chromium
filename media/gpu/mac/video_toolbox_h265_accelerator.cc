@@ -233,8 +233,7 @@ bool VideoToolboxH265Accelerator::ExtractChangedParameterSetData(
       // Update active parameter set data.
       (*active_parameter_set_data_out)[parameter_set_id] = seen_it->second;
       // Extract the parameter set data.
-      parameter_set_data_out->push_back(
-          base::make_span(seen_it->second.data(), seen_it->second.size()));
+      parameter_set_data_out->push_back(base::make_span(seen_it->second));
     }
   }
   return true;

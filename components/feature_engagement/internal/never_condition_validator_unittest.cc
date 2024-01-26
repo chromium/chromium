@@ -51,6 +51,8 @@ class NeverTestEventModel : public EventModel {
 
   void IncrementEvent(const std::string& event_name, uint32_t day) override {}
 
+  void ClearEvent(const std::string& event_name) override {}
+
   void IncrementSnooze(const std::string& event_name,
                        uint32_t day,
                        base::Time time) override {}

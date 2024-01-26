@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
-import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
@@ -310,6 +309,7 @@ template("chrome_extra_paks") {
         "//ash/webui/common/resources:resources",
         "//ash/webui/common/resources/office_fallback:resources",
         "//ash/webui/connectivity_diagnostics/resources:resources",
+        "//ash/webui/diagnostics_ui/resources:resources",
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/firmware_update_ui/resources:resources",
@@ -319,7 +319,6 @@ template("chrome_extra_paks") {
         "//ash/webui/print_management/resources:resources",
         "//ash/webui/resources:camera_app_resources",
         "//ash/webui/resources:demo_mode_app_resources",
-        "//ash/webui/resources:diagnostics_app_resources",
         "//ash/webui/resources:eche_app_resources",
         "//ash/webui/resources:eche_bundle_resources",
         "//ash/webui/resources:files_internals_resources",
@@ -443,12 +442,6 @@ template("chrome_extra_paks") {
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
       deps += [ "//chrome/browser/resources/tab_strip:resources" ]
-    }
-    if (is_cfm) {
-      sources += [ "$root_gen_dir/chrome/cfm_network_settings_resources.pak" ]
-      deps += [
-        "//chrome/browser/resources/chromeos/chromebox_for_meetings:resources",
-      ]
     }
 
     if (headless_enable_commands && !is_android) {

@@ -507,4 +507,44 @@ TEST_F(FencedFrameConfigMojomTraitsTest,
   EXPECT_TRUE(output_properties.has_fenced_frame_reporting());
 }
 
+// Test `can_disable_untrusted_network`, which only appears in
+// FencedFrameProperties, and does not use the redacted mechanism used by other
+// fields.
+TEST_F(FencedFrameConfigMojomTraitsTest,
+       PropertiesCanDisableUntrustedNetworkTest) {
+  FencedFrameProperties properties;
+  RedactedFencedFrameProperties input_properties;
+  RedactedFencedFrameProperties output_properties;
+
+  properties.can_disable_untrusted_network_ = true;
+  input_properties =
+      properties.RedactFor(FencedFrameEntity::kSameOriginContent);
+  EXPECT_TRUE(input_properties.can_disable_untrusted_network());
+  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
+      input_properties, output_properties);
+  EXPECT_TRUE(output_properties.can_disable_untrusted_network());
+  // `can_disable_untrusted_network` is always redacted to false for
+  // cross-origin contexts.
+  input_properties =
+      properties.RedactFor(FencedFrameEntity::kCrossOriginContent);
+  EXPECT_FALSE(input_properties.can_disable_untrusted_network());
+  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
+      input_properties, output_properties);
+  EXPECT_FALSE(output_properties.can_disable_untrusted_network());
+
+  properties.can_disable_untrusted_network_ = false;
+  input_properties =
+      properties.RedactFor(FencedFrameEntity::kSameOriginContent);
+  EXPECT_FALSE(input_properties.can_disable_untrusted_network());
+  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
+      input_properties, output_properties);
+  EXPECT_FALSE(output_properties.can_disable_untrusted_network());
+  input_properties =
+      properties.RedactFor(FencedFrameEntity::kCrossOriginContent);
+  EXPECT_FALSE(input_properties.can_disable_untrusted_network());
+  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
+      input_properties, output_properties);
+  EXPECT_FALSE(output_properties.can_disable_untrusted_network());
+}
+
 }  // namespace content

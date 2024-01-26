@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Categorizes the primary account of the active user profile into a FamilyLink
 // supervision type to segment the Chrome user population.

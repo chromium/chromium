@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivity
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
@@ -167,7 +169,11 @@ public class DigitalGoodsTest {
 
         mClient.connectAndExecute(
                 Uri.parse(TWA_SERVICE_SCOPE),
-                (origin1, service) ->
+                new TrustedWebActivityClient.ExecutionCallback() {
+                    @Override
+                    public void onConnected(
+                            Origin origin, TrustedWebActivityClientWrappers.Connection service)
+                            throws RemoteException {
                         service.sendExtraCommand(
                                 COMMAND_SET_RESPONSE,
                                 response,
@@ -177,7 +183,12 @@ public class DigitalGoodsTest {
                                             @NonNull String callbackName, @Nullable Bundle args) {
                                         helper.notifyCalled();
                                     }
-                                }));
+                                });
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {}
+                });
         helper.waitForFirst();
     }
 

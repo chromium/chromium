@@ -680,11 +680,9 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       base::FeatureList::IsEnabled(
           ntp_features::kRealboxCr23ExpandedStateLayout) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
-  source->AddBoolean(
-      "realboxCr23ConsistentRowHeight",
-      base::FeatureList::IsEnabled(
-          ntp_features::kRealboxCr23ConsistentRowHeight) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean("realboxCr23ConsistentRowHeight",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kRealboxCr23ConsistentRowHeight));
   source->AddBoolean(
       "realboxCr23HoverFillShape",
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23HoverFillShape) ||
@@ -1098,10 +1096,15 @@ omnibox::mojom::SelectionLineState ConvertLineState(
   return omnibox::mojom::SelectionLineState::kNormal;
 }
 
-void RealboxHandler::UpdateSelection(OmniboxPopupSelection selection) {
-  page_->UpdateSelection(omnibox::mojom::OmniboxPopupSelection::New(
-      selection.line, ConvertLineState(selection.state),
-      selection.action_index));
+void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
+                                     OmniboxPopupSelection selection) {
+  page_->UpdateSelection(
+      omnibox::mojom::OmniboxPopupSelection::New(
+          old_selection.line, ConvertLineState(old_selection.state),
+          old_selection.action_index),
+      omnibox::mojom::OmniboxPopupSelection::New(
+          selection.line, ConvertLineState(selection.state),
+          selection.action_index));
 }
 
 // LocationBarModel:

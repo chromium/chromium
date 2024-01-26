@@ -4,18 +4,29 @@
 
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_factory.h"
+#include "device_management_backend.pb.h"
 
 namespace policy {
+
+BASE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents,
+             "UseEncryptedReportingPipelineToReportArcAppInstallEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 AppInstallEventLogManagerWrapper::~AppInstallEventLogManagerWrapper() = default;
 
@@ -37,7 +48,9 @@ void AppInstallEventLogManagerWrapper::RegisterProfilePrefs(
 
 AppInstallEventLogManagerWrapper::AppInstallEventLogManagerWrapper(
     Profile* profile)
-    : profile_(profile) {
+    : use_encrypted_reporting_pipeline_(base::FeatureList::IsEnabled(
+          kUseEncryptedReportingPipelineToReportArcAppInstallEvents)),
+      profile_(profile) {
   log_task_runner_ =
       std::make_unique<ArcAppInstallEventLogManager::LogTaskRunnerWrapper>();
 
@@ -67,14 +80,47 @@ void AppInstallEventLogManagerWrapper::DestroyManager() {
   log_manager_.reset();
 }
 
+void AppInstallEventLogManagerWrapper::CreateEncryptedReporter() {
+  // Log events using the encrypted reporting pipeline.
+  ::reporting::SourceInfo source_info;
+  source_info.set_source(::reporting::SourceInfo::ASH);
+  auto report_queue =
+      ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
+          ::reporting::ReportQueueConfiguration::Create(
+              {.event_type = ::reporting::EventType::kUser,
+               .destination = ::reporting::Destination::ARC_INSTALL})
+              .SetSourceInfo(std::move(source_info)));
+  encrypted_reporter_ = std::make_unique<ArcAppInstallEventEncryptedReporter>(
+      std::move(report_queue), profile_);
+}
+
+void AppInstallEventLogManagerWrapper::DestroyEncryptedReporter() {
+  encrypted_reporter_.reset();
+}
+
+void AppInstallEventLogManagerWrapper::InitLogging() {
+  if (use_encrypted_reporting_pipeline_) {
+    CreateEncryptedReporter();
+  } else if (!log_manager_) {
+    // Log events using the cloud policy client.
+    CreateManager();
+  }
+}
+
+void AppInstallEventLogManagerWrapper::DisableLogging() {
+  if (use_encrypted_reporting_pipeline_) {
+    DestroyEncryptedReporter();
+  } else {
+    DestroyManager();
+  }
+}
+
 void AppInstallEventLogManagerWrapper::EvaluatePref() {
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kArcAppInstallEventLoggingEnabled)) {
-    if (!log_manager_) {
-      CreateManager();
-    }
+    InitLogging();
   } else {
-    DestroyManager();
+    DisableLogging();
     ArcAppInstallEventLogManager::Clear(log_task_runner_.get(), profile_);
   }
 }

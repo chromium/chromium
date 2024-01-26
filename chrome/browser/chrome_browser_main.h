@@ -34,7 +34,7 @@ class WebUsbDetector;
 namespace base {
 class CommandLine;
 class RunLoop;
-}
+}  // namespace base
 
 namespace content {
 class SyntheticTrialSyncer;

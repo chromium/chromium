@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/views/view_tracker.h"
 
 namespace views {
@@ -18,7 +19,8 @@ namespace ash {
 class NotificationCenterView;
 
 // Manages and updates `NotificationCenterView`.
-class ASH_EXPORT NotificationCenterController {
+class ASH_EXPORT NotificationCenterController
+    : public message_center::MessageCenterObserver {
  public:
   NotificationCenterController();
 
@@ -26,7 +28,7 @@ class ASH_EXPORT NotificationCenterController {
   NotificationCenterController& operator=(const NotificationCenterController&) =
       delete;
 
-  ~NotificationCenterController();
+  ~NotificationCenterController() override;
 
   // Creates a `NotificationCenterView` object and returns it so it can be added
   // to the parent bubble view.
@@ -35,11 +37,19 @@ class ASH_EXPORT NotificationCenterController {
   // Inits the tracked `NotificationCenterView`.
   void InitView();
 
-  // Returns the view tracked by `notification_center_view_tracker_`.
-  NotificationCenterView* GetNotificationCenterView();
+  // message_center::MessageCenterObserver:
+  void OnNotificationAdded(const std::string& id) override;
+  void OnNotificationRemoved(const std::string& id, bool by_user) override;
+  void OnNotificationUpdated(const std::string& id) override;
+
+  NotificationCenterView* notification_center_view() {
+    return notification_center_view_;
+  }
 
  private:
-  // View tracker to safely access `NotificationCenterView`.
+  raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
+
+  // View tracker to safely clear `notification_center_view_` when deleted.
   views::ViewTracker notification_center_view_tracker_;
 };
 

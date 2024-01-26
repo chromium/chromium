@@ -54,11 +54,28 @@ process_version("generate_version_constants") {
   process_only = true
   template_file = "java/VersionConstants.java.version"
   output = _version_constants_java_file
-  sources = [ "//chrome/VERSION" ]
   extra_args = [
     "-e",
     "CHANNEL=str.upper('$android_channel')",
   ]
+
+  # This dependency currently breaks webrtc which pulls in //base
+  # (but not //chrome). crbug.com/webrtc/13662 tracks removing webrtc's
+  # dependency on //base. For now we fake the check version far into the future.
+  if (build_with_chromium) {
+    sources = [ "//chrome/VERSION" ]
+  } else {
+    extra_args += [
+      "-e",
+      "MAJOR=\"9999\"",
+      "-e",
+      "MINOR=\"9999\"",
+      "-e",
+      "BUILD=\"9999\"",
+      "-e",
+      "PATCH=\"9999\"",
+    ]
+  }
 }
 
 generate_jni("version_constants_bridge_jni") {

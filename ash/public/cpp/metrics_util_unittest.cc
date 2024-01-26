@@ -15,8 +15,8 @@ namespace metrics_util {
 
 TEST(MetricsUtilTest, ReportSmoothness) {
   cc::FrameSequenceMetrics::CustomReportData report_data;
-  report_data.frames_produced = 30;
-  report_data.frames_expected = 60;
+  report_data.frames_dropped_v3 = 30;
+  report_data.frames_expected_v3 = 60;
   constexpr int kExpectedSmoothes = 50;
 
   std::optional<int> reported_smoothness;
@@ -48,7 +48,7 @@ TEST(MetricsUtilTest, ReportSmoothness) {
 
     reported_smoothness.reset();
     ReportCallback report_callback =
-        ForSmoothness(smoothness_callback, test.exclude_from_collection);
+        ForSmoothnessV3(smoothness_callback, test.exclude_from_collection);
     report_callback.Run(report_data);
     ASSERT_TRUE(reported_smoothness.has_value());
     EXPECT_EQ(kExpectedSmoothes, reported_smoothness.value());

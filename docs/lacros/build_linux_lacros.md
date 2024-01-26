@@ -37,7 +37,7 @@ out_linux_ash: the directory that holds artifacts for ash-chrome running on linu
 % gn args out_linux_ash/Release
 
 target_os="chromeos"
-use_remoteeec=true          # speeds up compilation
+use_remoteexec=true          # speeds up compilation
 ```
 out_linux_lacros: the directory that holds artifacts for lacros-chrome running on linux
 ```shell

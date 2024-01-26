@@ -15,12 +15,7 @@ BASE_FEATURE(kOverflowMenuCustomization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewOverflowMenuEnabled() {
-  if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kNewOverflowMenu);
-  }
-  // The new overflow menu isn't available on iOS <= 14 because it relies on
-  // `UISheetPresentationController`, which was introduced in iOS 15.
-  return false;
+  return base::FeatureList::IsEnabled(kNewOverflowMenu);
 }
 
 bool IsOverflowMenuCustomizationEnabled() {

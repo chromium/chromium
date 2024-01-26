@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/angle_instanced_arrays.h"
-#include "third_party/blink/renderer/modules/webgl/ext_blend_func_extended.h"
 #include "third_party/blink/renderer/modules/webgl/ext_blend_min_max.h"
 #include "third_party/blink/renderer/modules/webgl/ext_clip_control.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_half_float.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/renderer/modules/webgl/oes_texture_half_float.h"
 #include "third_party/blink/renderer/modules/webgl/oes_texture_half_float_linear.h"
 #include "third_party/blink/renderer/modules/webgl/oes_vertex_array_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_blend_func_extended.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_color_buffer_float.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_astc.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_etc.h"
@@ -181,9 +181,8 @@ ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
 
 void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(angle_instanced_arrays_);
-  RegisterExtension(ext_blend_func_extended_, kDraftExtension);
   RegisterExtension(ext_blend_min_max_);
-  RegisterExtension(ext_clip_control_, kDraftExtension);
+  RegisterExtension(ext_clip_control_);
   RegisterExtension(ext_color_buffer_half_float_);
   RegisterExtension(ext_depth_clamp_);
   RegisterExtension(ext_disjoint_timer_query_, TimerQueryExtensionsEnabled()
@@ -191,7 +190,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
                                                    : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_frag_depth_);
-  RegisterExtension(ext_polygon_offset_clamp_, kDraftExtension);
+  RegisterExtension(ext_polygon_offset_clamp_);
   RegisterExtension(ext_shader_texture_lod_);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
@@ -207,6 +206,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(oes_texture_half_float_);
   RegisterExtension(oes_texture_half_float_linear_);
   RegisterExtension(oes_vertex_array_object_);
+  RegisterExtension(webgl_blend_func_extended_);
   RegisterExtension(webgl_color_buffer_float_);
   RegisterExtension(webgl_compressed_texture_astc_);
   RegisterExtension(webgl_compressed_texture_etc_);
@@ -225,7 +225,6 @@ void WebGLRenderingContext::RegisterContextExtensions() {
 
 void WebGLRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(angle_instanced_arrays_);
-  visitor->Trace(ext_blend_func_extended_);
   visitor->Trace(ext_blend_min_max_);
   visitor->Trace(ext_clip_control_);
   visitor->Trace(ext_color_buffer_half_float_);
@@ -249,6 +248,7 @@ void WebGLRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(oes_texture_half_float_);
   visitor->Trace(oes_texture_half_float_linear_);
   visitor->Trace(oes_vertex_array_object_);
+  visitor->Trace(webgl_blend_func_extended_);
   visitor->Trace(webgl_color_buffer_float_);
   visitor->Trace(webgl_compressed_texture_astc_);
   visitor->Trace(webgl_compressed_texture_etc_);

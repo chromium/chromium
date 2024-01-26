@@ -5,9 +5,11 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 
 #include <ostream>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 
 namespace autofill {
 
@@ -18,7 +20,7 @@ std::ostream& operator<<(std::ostream& out, const AddressComponent& component) {
       << ", value=" << base::UTF16ToUTF8(component.GetValue())
       << ", status=" << static_cast<int>(component.GetVerificationStatus())
       << std::endl;
-  for (const auto& sub_component : component.Subcomponents()) {
+  for (const AddressComponent* sub_component : component.Subcomponents()) {
     out << "\t" << *sub_component;
   }
   return out;
@@ -31,7 +33,7 @@ void TestMerging(
     bool is_mergeable,
     int merge_modes,
     bool newer_was_more_recently_used) {
-  older_component->SetMergeModeForTesting(merge_modes);
+  test_api(older_component).SetMergeMode(merge_modes);
 
   SCOPED_TRACE(is_mergeable);
   SCOPED_TRACE(merge_modes);

@@ -51,7 +51,12 @@ std::optional<PartitionKey> PartitionKey::Deserialize(const std::string& data) {
   const std::string* name = (*list)[1].GetIfString();
   const std::optional<bool> in_memory = (*list)[2].GetIfBool();
   if (domain && name && in_memory) {
-    return std::make_optional(PartitionKey(*domain, *name, *in_memory));
+    auto key = std::make_optional(PartitionKey(*domain, *name, *in_memory));
+    if (key->Serialize() != data) {
+      // Reject non-canonical serialized key.
+      return std::nullopt;
+    }
+    return key;
   }
 
   return std::nullopt;

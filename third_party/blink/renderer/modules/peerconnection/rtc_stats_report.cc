@@ -960,7 +960,7 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
     const auto& media_source =
         static_cast<const webrtc::RTCMediaSourceStats&>(stat);
     DCHECK(media_source.kind.has_value());
-    std::string kind = media_source.kind.ValueOrDefault("");
+    std::string kind = media_source.kind.value_or("");
     if (kind == "audio") {
       v8_stats =
           ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());

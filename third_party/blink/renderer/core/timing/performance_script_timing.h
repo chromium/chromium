@@ -37,7 +37,8 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   LocalDOMWindow* window() const;
   WTF::String sourceLocation() const;
   const AtomicString& windowAttribution() const;
-  AtomicString type() const;
+  AtomicString invokerType() const;
+  AtomicString invoker() const;
   void Trace(Visitor*) const override;
 
  private:

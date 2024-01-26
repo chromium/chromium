@@ -26,12 +26,10 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
 
   CupsPrintJobNotificationManager(Profile* profile,
                                   CupsPrintJobManager* print_job_manager);
-
   CupsPrintJobNotificationManager(const CupsPrintJobNotificationManager&) =
       delete;
   CupsPrintJobNotificationManager& operator=(
       const CupsPrintJobNotificationManager&) = delete;
-
   ~CupsPrintJobNotificationManager() override;
 
   // CupsPrintJobManager::Observer overrides:
@@ -47,8 +45,7 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
   void OnPrintJobNotificationRemoved(CupsPrintJobNotification* notification);
 
   // Return the notification for the given print job, or nullptr if not found.
-  std::optional<CupsPrintJobNotification*> GetNotificationForTesting(
-      CupsPrintJob* job);
+  CupsPrintJobNotification* GetNotificationForTesting(CupsPrintJob* job);
 
  private:
   void UpdateNotification(base::WeakPtr<CupsPrintJob> job);

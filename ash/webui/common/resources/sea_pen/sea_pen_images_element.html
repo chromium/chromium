@@ -38,16 +38,31 @@
     right: 10px;
     visibility: hidden;
     width: 88px;
-    z-index: 1;
+    z-index: 2;
   }
 
   .thumbnail-item-container:hover > .feedback-icon-container {
     visibility: visible;
   }
 
+  .thumbnail-item-container paper-spinner-lite {
+    width: 60px;
+    height: 60px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  wallpaper-grid-item[aria-disabled='true']::part(image) {
+    filter: grayscale(80%);
+  }
+
   .feedback-icon-container-inner {
     align-items: flex-end;
     background-color: var(--cros-bg-color);
+    border-bottom-right-radius: var(--personalization-app-grid-item-border-radius);
     border-top-left-radius: 24px;
     bottom: 0;
     display: flex;
@@ -85,12 +100,6 @@
     bottom: 36px;
   }
 
-  .thumb-icon-button {
-    --cr-icon-button-size: 24px;
-    background-color: var(--cros-bg-color);
-    margin-inline: 0;
-  }
-
   .error-container {
     align-items: center;
     display: flex;
@@ -100,7 +109,7 @@
     width: 100%;
   }
 
-  iron-icon[icon='personalization-shared-illo:network_error'] {
+  iron-icon[icon^='personalization-shared-illo:'] {
     --iron-icon-width: 400px;
     --iron-icon-height: 177px;
     top: -24px;
@@ -117,7 +126,7 @@
 <template is="dom-if" if="[[showError_]]" restamp>
   <div class="error-container">
     <!-- TODO(b/319171051): Add other error images when available. -->
-    <iron-icon icon="personalization-shared-illo:network_error"></iron-icon>
+    <iron-icon icon$="[[getErrorIllo_(thumbnailResponseStatusCode_)]]"></iron-icon>
     <p class="error-message">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
   </div>
 </template>
@@ -144,33 +153,35 @@
       </template>
     </iron-list>
   </template>
-  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]">
+  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
     <iron-list id="grid"
         items="[[thumbnails_]]"
         grid
         role="listbox">
       <template>
         <div class="thumbnail-item-container">
+          <template
+              is="dom-if"
+              if="[[isThumbnailLoading_(item, pendingSelected_)]]"
+              restamp>
+            <paper-spinner-lite active></paper-spinner-lite>
+          </template>
           <div class="feedback-icon-container">
-            <div class="feedback-icon-container-inner">
-              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
-                  role="button" on-click="onClickThumbsUp_">
-              </cr-icon-button>
-              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
-                  role="button" on-click="onClickThumbsDown_">
-              </cr-icon-button>
-            </div>
+            <sea-pen-feedback
+                on-selected-feedback-changed="onSelectedFeedbackChanged_">
+            </sea-pen-feedback>
             <div class="feedback-icon-container-shadow-left"></div>
             <div class="feedback-icon-container-shadow-top"></div>
           </div>
           <wallpaper-grid-item
               class="sea-pen-image"
+              disabled="[[isThumbnailLoading_(item, pendingSelected_)]]"
               index="[[index]]"
               data-sea-pen-image
               aria-posinset$="[[getAriaIndex_(index)]]"
               on-wallpaper-grid-item-selected="onThumbnailSelected_"
               role="option"
-              selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
+              selected="[[isThumbnailSelected_(item, currentSelected_, pendingSelected_)]]"
               src="[[item.image]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>

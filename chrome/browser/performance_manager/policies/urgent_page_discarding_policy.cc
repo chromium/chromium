@@ -25,8 +25,8 @@ namespace performance_manager::policies {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-absl::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
-  absl::optional<memory_pressure::ReclaimTarget> reclaim_target = absl::nullopt;
+std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
+  std::optional<memory_pressure::ReclaimTarget> reclaim_target = std::nullopt;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* evaluator = LacrosMemoryPressureEvaluator::Get();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -62,7 +62,7 @@ void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void UrgentPageDiscardingPolicy::OnReclaimTarget(
-    absl::optional<memory_pressure::ReclaimTarget> reclaim_target) {
+    std::optional<memory_pressure::ReclaimTarget> reclaim_target) {
   PageDiscardingHelper::GetFromGraph(graph_)->DiscardMultiplePages(
       reclaim_target, true,
       base::BindOnce(

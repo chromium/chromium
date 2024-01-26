@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -55,6 +56,8 @@ sk_sp<SkData> GrShaderCache::load(const SkData& key) {
 
   CacheKey cache_key(SkData::MakeWithoutCopy(key.data(), key.size()));
   auto it = store_.Get(cache_key);
+  UMA_HISTOGRAM_BOOLEAN("Gpu.GrShaderCacheLoadHitInCache",
+                        (it != store_.end()));
 
   if (it == store_.end())
     return nullptr;
@@ -274,7 +277,7 @@ GrShaderCache::ScopedCacheUse::~ScopedCacheUse() {
 }
 
 GrShaderCache::CacheKey::CacheKey(sk_sp<SkData> data) : data(std::move(data)) {
-  hash = base::Hash(this->data->data(), this->data->size());
+  hash = base::FastHash(base::span(this->data->bytes(), this->data->size()));
 }
 GrShaderCache::CacheKey::CacheKey(const CacheKey& other) = default;
 GrShaderCache::CacheKey::CacheKey(CacheKey&& other) = default;

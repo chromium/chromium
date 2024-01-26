@@ -858,11 +858,17 @@ def cleanup_jail_symlinks(install_root: str) -> None:
 
                 # Check if the symlink is absolute and points inside the
                 # install_root.
-                if os.path.isabs(target_path) and target_path.startswith(
-                        install_root):
-                    # Compute the relative path from the symlink to the target
-                    relative_path = os.path.relpath(target_path,
-                                                    os.path.dirname(full_path))
+                if os.path.isabs(target_path):
+                    # Compute the relative path from the symlink to the target.
+                    relative_path = os.path.relpath(
+                        os.path.join(install_root, target_path.strip("/")),
+                        os.path.dirname(full_path))
+                    # Verify that the target exists inside the install_root.
+                    joined_path = os.path.join(os.path.dirname(full_path),
+                                               relative_path)
+                    if not os.path.exists(joined_path):
+                        raise Exception(
+                            f"Link target doesn't exist: {joined_path}")
                     os.remove(full_path)
                     os.symlink(relative_path, full_path)
 

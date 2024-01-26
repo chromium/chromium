@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,15 +27,14 @@ class SharingDeviceSource {
   // returns an empty list.
   virtual bool IsReady() = 0;
 
-  // Returns the device matching |guid|, or nullptr if no match was found.
-  virtual std::unique_ptr<SharingTargetDeviceInfo> GetDeviceByGuid(
+  // Returns the device matching |guid| or nullopt if no match was found.
+  virtual std::optional<SharingTargetDeviceInfo> GetDeviceByGuid(
       const std::string& guid) = 0;
 
   // Returns all device candidates for |required_feature|. Internally filters
   // out older devices and returns them in (not strictly) decreasing order of
   // last updated timestamp.
-  virtual std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-  GetDeviceCandidates(
+  virtual std::vector<SharingTargetDeviceInfo> GetDeviceCandidates(
       sync_pb::SharingSpecificFields::EnabledFeatures required_feature) = 0;
 
   // Adds a callback to be run when the SharingDeviceSource is ready. If a

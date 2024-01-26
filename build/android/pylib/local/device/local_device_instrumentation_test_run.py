@@ -795,8 +795,11 @@ class LocalDeviceInstrumentationTestRun(
           device)
       # "%2m" is used to expand to 2 raw profiles at runtime. "%p" writes
       # process ID.
-      # See https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
-      clang_profile_filename = '%s_%s.profraw' % (coverage_basename, '%2m_%p')
+      # "%c" enables continuous mode. See crbug.com/1468343, crbug.com/1518474
+      # For more details, refer to:
+      #   https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
+      clang_profile_filename = ('%s_%s.profraw' %
+                                (coverage_basename, '%2m_%p%c'))
       extras[EXTRA_CLANG_COVERAGE_DEVICE_FILE] = posixpath.join(
           device_clang_profile_dir, clang_profile_filename)
 

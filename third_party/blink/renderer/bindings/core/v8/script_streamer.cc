@@ -989,7 +989,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
   CHECK_EQ(begin_read_result, MOJO_RESULT_OK);
 
   response_body_loader_client_->DidReceiveData(
-      base::make_span(reinterpret_cast<const char*>(data), data_size));
+      base::make_span(static_cast<const char*>(data), data_size));
   if (DecodingEnabled()) {
     auto copy_for_decoding = std::make_unique<char[]>(data_size);
     memcpy(copy_for_decoding.get(), data, data_size);

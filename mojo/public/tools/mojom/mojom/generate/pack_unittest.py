@@ -77,7 +77,7 @@ class PackTest(unittest.TestCase):
              mojom.MSGPIPE.MakeNullableKind(),
              mojom.Interface('test_interface').MakeNullableKind(),
              mojom.SHAREDBUFFER.MakeNullableKind(),
-             mojom.InterfaceRequest().MakeNullableKind())
+             mojom.PendingReceiver().MakeNullableKind())
     fields = (1, 2, 4, 3, 5, 6, 8, 7, 9, 10, 11)
     offsets = (0, 8, 12, 16, 24, 32, 36, 40, 48, 56, 60)
     return self._CheckPackSequence(kinds, fields, offsets)
@@ -238,16 +238,6 @@ class PackTest(unittest.TestCase):
     of an interface is 8 bytes.
     """
     kinds = (mojom.INT32, mojom.Interface('test_interface'))
-    fields = (1, 2)
-    offsets = (0, 4)
-    self._CheckPackSequence(kinds, fields, offsets)
-
-  def testAssociatedInterfaceAlignment(self):
-    """Tests that associated interfaces are aligned on 4-byte boundaries,
-    although the size of an associated interface is 8 bytes.
-    """
-    kinds = (mojom.INT32,
-             mojom.AssociatedInterface(mojom.Interface('test_interface')))
     fields = (1, 2)
     offsets = (0, 4)
     self._CheckPackSequence(kinds, fields, offsets)

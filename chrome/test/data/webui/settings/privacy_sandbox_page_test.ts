@@ -5,11 +5,11 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
+import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -907,34 +907,69 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
 
 suite('ManageTopics', function() {
   let page: SettingsPrivacySandboxManageTopicsSubpageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
     });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
   });
 
   setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
+        getFirstLevelTopicsState());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(settingsPrefs);
     page = document.createElement(
         'settings-privacy-sandbox-manage-topics-subpage');
-    page.prefs = settingsPrefs.prefs!;
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
     document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
+    return flushTasks();
   });
 
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('ManageTopicsPage', async function() {
+  function getFirstLevelTopicsState() {
+    return {
+      firstLevelTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+        {
+          topicId: 4,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-4',
+          description: 'test-topic-4-description',
+        },
+      ],
+      blockedTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+        {
+          topicId: 2,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-2',
+          description: '',
+        },
+      ],
+    };
+  }
+
+  test('ManageTopicsPageTestExplanationText', async function() {
     const manageTopicsExplanationText =
-        page.shadowRoot!.querySelector<HTMLElement>('#explanationText');
+        page.shadowRoot!.querySelector('#explanationText');
     assertTrue(!!manageTopicsExplanationText);
     assertTrue(isVisible(manageTopicsExplanationText));
     const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
@@ -946,9 +981,91 @@ suite('ManageTopics', function() {
             link.getAttribute('aria-description'),
             loadTimeData.getString('opensInNewTab'),
             'the link should indicate that it will be opened in a new tab'));
-    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const hrefs = Array.from(links).map(link => link.href);
     const expectedLinks = ['https://support.google.com/chrome?p=ad_privacy'];
-    assertDeepEquals(hrefs, expectedLinks);
+    assertDeepEquals(expectedLinks, hrefs);
+  });
+
+  test('ManageTopicsPageTestLabelsAndSubLabels', async function() {
+    const firstLevelTopics = page.shadowRoot!.querySelectorAll('.topic-toggle');
+    assertEquals(2, firstLevelTopics.length);
+    const labels = Array.from(page.shadowRoot!.querySelectorAll('.label'))
+                       .map(label => label.textContent);
+    assertDeepEquals(['test-topic-1', 'test-topic-4'], labels);
+    const subLabels =
+        Array.from(page.shadowRoot!.querySelectorAll('.sub-label-text'))
+            .map(subLabel => subLabel.textContent);
+    assertDeepEquals(
+        ['test-topic-1-description', 'test-topic-4-description'], subLabels);
+  });
+
+  test('ManageTopicsPageTestToggles', async function() {
+    const toggles = page.shadowRoot!.querySelectorAll('cr-toggle');
+    assertEquals(2, toggles.length);
+    const toggleIds = Array.from(toggles).map(topicToggle => topicToggle.id);
+    assertDeepEquals(['toggle-1', 'toggle-4'], toggleIds);
+    // Toggle 1 (topic 1) is also blocked so it is toggled OFF.
+    assertFalse(toggles[0]!.checked);
+    // Toggle 2 (topic 4) is not blocked so it is toggled ON.
+    assertTrue(toggles[1]!.checked);
+  });
+
+  test('ManageTopicsPageChangeToggle', async function() {
+    testPrivacySandboxBrowserProxy.setChildTopics([{
+      topicId: 3,
+      taxonomyVersion: 1,
+      displayString: 'test-topic-3',
+      description: '',
+    }]);
+    const toggles = page.shadowRoot!.querySelectorAll('cr-toggle');
+    assertEquals(2, toggles.length);
+    toggles[0]!.click();
+    assertTrue(toggles[0]!.checked);
+    // Attempting to block topic 1, causes a dialog to open due to
+    // getChildTopicsCurrentlyAssigned returning a non empty
+    // list of child topics that would be blocked
+    // if they choose to continue.
+    toggles[0]!.click();
+    await flushTasks();
+
+    let blockTopicDialog =
+        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#blockTopicDialog');
+    assertTrue(!!blockTopicDialog);
+    await (whenAttributeIs(blockTopicDialog.$.dialog, 'open', ''));
+
+    blockTopicDialog.$.cancel.click();
+    await eventToPromise('close', blockTopicDialog);
+    await flushTasks();
+
+    // After closing the dialog and choosing to not block it, the
+    // toggle is turned back ON.
+    assertTrue(toggles[0]!.checked);
+
+    // Attempt to block topic 1 again
+    toggles[0]!.click();
+    await flushTasks();
+    blockTopicDialog =
+        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#blockTopicDialog');
+    assertTrue(!!blockTopicDialog);
+    await (whenAttributeIs(blockTopicDialog.$.dialog, 'open', ''));
+
+    blockTopicDialog.$.confirm.click();
+    await eventToPromise('close', blockTopicDialog);
+    await flushTasks();
+
+    // The block button blocks the topic and changes the
+    // toggle to be turned OFF.
+    assertFalse(toggles[0]!.checked);
+
+    testPrivacySandboxBrowserProxy.setChildTopics([]);
+    // Toggle 2 (topic 4) has no child topics
+    // that are currently assigned which is why the
+    // dialog does not appear and the toggle is turned OFF.
+    toggles[1]!.click();
+    await flushTasks();
+    assertFalse(toggles[1]!.checked);
   });
 });
 

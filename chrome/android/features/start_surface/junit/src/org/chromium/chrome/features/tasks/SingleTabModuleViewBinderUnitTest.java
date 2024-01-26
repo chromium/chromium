@@ -200,8 +200,9 @@ public class SingleTabModuleViewBinderUnitTest {
                         mPropertyModel,
                         mTabModelSelector,
                         mTabListFaviconProvider,
-                        null,
-                        false);
+                        /* TabContentManager= */ null,
+                        /* isSurfacePolishEnabled= */ false,
+                        /* moduleDelegate= */ null);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mSingleTabModuleView.performClick();
         assertEquals(

@@ -410,12 +410,11 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
         // Duplicate the FD's that are present. If there are more planes than
         // FD's, then duplicate the fd of the last plane until the number of
         // fds are the same as the number of planes.
-        const base::ScopedFD& source_fd = (i < video_frame->NumDmabufFds())
-                                              ? video_frame->GetDmabufFd(i)
-                                              : duped_fds.back();
+        int source_fd = (i < video_frame->NumDmabufFds())
+                            ? video_frame->GetDmabufFd(i)
+                            : duped_fds.back().get();
 
-        base::ScopedFD dup_fd =
-            base::ScopedFD(HANDLE_EINTR(dup(source_fd.get())));
+        base::ScopedFD dup_fd = base::ScopedFD(HANDLE_EINTR(dup(source_fd)));
         // TODO(crbug.com/1097956): handle a failure gracefully.
         PCHECK(dup_fd.is_valid());
         duped_fds.push_back(std::move(dup_fd));
@@ -475,6 +474,17 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
 
   DCHECK(native_pixmap->AreDmaBufFdsValid());
   return native_pixmap;
+}
+
+gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame) {
+  if (auto* gmb = frame.GetGpuMemoryBuffer()) {
+    return gmb->GetId();
+  }
+  if (frame.HasDmaBufs()) {
+    return gfx::GenericSharedMemoryId(frame.GetDmabufFd(0));
+  }
+  NOTREACHED() << "The frame is not backed by shared memory";
+  return gfx::GenericSharedMemoryId();  // Invalid
 }
 
 bool CanImportGpuMemoryBufferHandle(

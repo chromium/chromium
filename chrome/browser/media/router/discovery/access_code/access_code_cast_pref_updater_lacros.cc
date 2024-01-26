@@ -23,12 +23,12 @@ chromeos::LacrosService* GetLacrosService() {
   return lacros_service;
 }
 
-void GetPref(crosapi::mojom::PrefPath path,
-             base::OnceCallback<void(absl::optional<base::Value>)>
-                 on_get_pref_callback) {
+void GetPref(
+    crosapi::mojom::PrefPath path,
+    base::OnceCallback<void(std::optional<base::Value>)> on_get_pref_callback) {
   auto* lacros_service = GetLacrosService();
   if (!lacros_service) {
-    std::move(on_get_pref_callback).Run(absl::nullopt);
+    std::move(on_get_pref_callback).Run(std::nullopt);
     return;
   }
   lacros_service->GetRemote<crosapi::mojom::Prefs>()->GetPref(
@@ -55,7 +55,7 @@ void AddToPref(crosapi::mojom::PrefPath path,
           base::BindOnce(
               [](crosapi::mojom::PrefPath path, const std::string& key,
                  base::Value value, base::OnceClosure on_sink_added_callback,
-                 absl::optional<base::Value> pref_value) {
+                 std::optional<base::Value> pref_value) {
                 auto dict = pref_value.has_value() && pref_value->is_dict()
                                 ? std::move(*pref_value).TakeDict()
                                 : base::Value::Dict();
@@ -78,7 +78,7 @@ void RemoveFromPref(crosapi::mojom::PrefPath path,
   GetPref(path, base::BindOnce(
                     [](crosapi::mojom::PrefPath path, const std::string& key,
                        base::OnceClosure on_sink_removed_callback,
-                       absl::optional<base::Value> pref_value) {
+                       std::optional<base::Value> pref_value) {
                       auto dict =
                           pref_value.has_value() && pref_value->is_dict()
                               ? std::move(*pref_value).TakeDict()
@@ -106,7 +106,7 @@ void AccessCodeCastPrefUpdaterLacros::IsAccessCodeCastDevicePrefAvailable(
   GetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
           base::BindOnce(
               [](base::OnceCallback<void(bool)> availability_callback,
-                 absl::optional<base::Value> pref_value) {
+                 std::optional<base::Value> pref_value) {
                 std::move(availability_callback).Run(pref_value.has_value());
               },
               std::move(availability_callback)));
@@ -119,7 +119,7 @@ void AccessCodeCastPrefUpdaterLacros::UpdateDevicesDict(
           base::BindOnce(
               [](const MediaSinkInternal& sink,
                  base::OnceClosure on_updated_callback,
-                 absl::optional<base::Value> pref_value) {
+                 std::optional<base::Value> pref_value) {
                 auto dict = pref_value.has_value() && pref_value->is_dict()
                                 ? std::move(*pref_value).TakeDict()
                                 : base::Value::Dict();
@@ -202,7 +202,7 @@ void AccessCodeCastPrefUpdaterLacros::UpdateDevicesDictForTest(
 
 void AccessCodeCastPrefUpdaterLacros::PrefServiceCallbackAdapter(
     base::OnceCallback<void(base::Value::Dict)> on_get_dict_callback,
-    absl::optional<base::Value> pref_value) {
+    std::optional<base::Value> pref_value) {
   std::move(on_get_dict_callback)
       .Run(pref_value.has_value() && pref_value.value().is_dict()
                ? std::move(pref_value.value()).TakeDict()

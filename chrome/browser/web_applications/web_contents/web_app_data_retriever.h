@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -19,7 +20,6 @@
 #include "components/webapps/common/web_page_metadata_agent.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
@@ -81,12 +81,12 @@ class WebAppDataRetriever : content::WebContentsObserver {
   virtual void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       CheckInstallabilityCallback callback,
-      absl::optional<webapps::InstallableParams> params = absl::nullopt);
+      std::optional<webapps::InstallableParams> params = std::nullopt);
 
   // Downloads icons from |icon_urls|. Runs |callback| with a map of
   // the retrieved icons.
   virtual void GetIcons(content::WebContents* web_contents,
-                        const base::flat_set<GURL>& extra_favicon_urls,
+                        const IconUrlSizeSet& extra_favicon_urls,
                         bool skip_page_favicons,
                         bool fail_all_if_any_fail,
                         GetIconsCallback callback);
@@ -108,7 +108,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
                          DownloadedIconsHttpResults icons_http_results);
 
   void CallCallbackOnError(
-      absl::optional<webapps::InstallableStatusCode> error_code);
+      std::optional<webapps::InstallableStatusCode> error_code);
   bool ShouldStopRetrieval() const;
 
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;

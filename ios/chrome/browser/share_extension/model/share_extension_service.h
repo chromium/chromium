@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARE_EXTENSION_MODEL_SHARE_EXTENSION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SHARE_EXTENSION_MODEL_SHARE_EXTENSION_SERVICE_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
@@ -48,9 +49,9 @@ class ShareExtensionService : public KeyedService,
   // initialize the ShareExtensionItemReceiver if they are all loaded.
   void AnyModelLoaded();
 
-  ReadingListModel* reading_list_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   bool reading_list_model_loaded_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   bool bookmark_model_loaded_;
   __strong ShareExtensionItemReceiver* receiver_;
 };

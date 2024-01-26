@@ -228,7 +228,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
-<translation id="1888656773939766144">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Jauna instalācija</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
@@ -267,7 +266,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2064048859448024834">Kameras priekšskatījums tiek rādīts</translation>
 <translation id="2067602449040652523">Tastatūras spilgtums</translation>
 <translation id="2075520525463668108">Pārslēgt funkciju “<ph name="CAPTURE_MEDIUM" />”. Funkcija “<ph name="CAPTURE_MEDIUM" />” ir <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Lai pārslēgtos uz nākamo darbvietu, ar četriem pirkstiem velciet pa labi</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2083190527011054446">Arlabunakti, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Atvērt emocijzīmju atlasītāju</translation>
@@ -283,7 +281,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2149229036084364364">Pāriet uz iepriekšējo ierakstu</translation>
 <translation id="2152895518047545149">Šķiet, viss vajadzīgais ir iesniegts. Lieliski!</translation>
 <translation id="2161132820593978283">Izmēģiniet kameras kadrēšanu, lai videozvanu laikā jūs būtu ekrāna centrā. Varat to ieslēgt ātrajos iestatījumos.</translation>
-<translation id="2170530631236737939">Lai aizvērtu pārskatu, ar trim pirkstiem velciet lejup</translation>
 <translation id="2185166372312820725">Pāriet uz iepriekšējo cilni</translation>
 <translation id="2185444992308415167">Secīgi pāriet no 1. līdz 8. cilnei</translation>
 <translation id="2198625180564913276">Notiek profila pievienošana. Tas var ilgt dažas minūtes.</translation>
@@ -392,7 +389,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2624588537172718173">Ierīces audio un mikrofons</translation>
 <translation id="263399434338050016">“Select all” (Atlasīt visu)</translation>
 <translation id="2644422758626431000">Piespraust logu kreisajā malā</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Loga uzņemšana</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2658778018866295321">Noklikšķiniet un velciet</translation>
@@ -412,10 +409,12 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2726420622004325180">Jūsu tālrunī ir jābūt aktivizētiem mobilajiem datiem, lai iespējotu tīklāju.</translation>
 <translation id="2727175239389218057">Atbildēt</translation>
 <translation id="2727977024730340865">Pievienots lādētājs ar mazu strāvas padevi. Akumulatora uzlāde var nebūt uzticama.</translation>
+<translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“Delete” (Dzēst)</translation>
 <translation id="2750941250130734256">Aktīvā loga dokošana ir atcelta.</translation>
 <translation id="2761723519669354964">Atvērt plauktā izcelto vienumu</translation>
+<translation id="2762000892062317888">tikko</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> no <ph name="KEY_ONE" /> līdz <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
@@ -441,7 +440,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2860184359326882502">Precīzākā atbilstība</translation>
 <translation id="2865888419503095837">Tīkla informācija</translation>
 <translation id="2872353916818027657">Samainīt galveno monitoru</translation>
-<translation id="2872961005593481000">Beidzēt</translation>
+<translation id="2872961005593481000">Izslēgt</translation>
 <translation id="2876338922445400217">Tuvināt ekrāna saturu</translation>
 <translation id="2878884018241093801">Nav nesenu vienumu</translation>
 <translation id="2885950158625301909">Uzzināt vairāk</translation>
@@ -624,6 +623,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3580650856351781466">Notiek subtitru failu lejupielāde</translation>
 <translation id="3585296979871889131">Skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes</translation>
+<translation id="3590441166907930941">Sānu poga</translation>
 <translation id="3593039967545720377">Lai skatītu starpliktuvi un piekļūtu starpliktuves vēsturei, nospiediet taustiņu kombināciju <ph name="SHORTCUT_KEY_NAME" />+V. Lai sāktu darbu, kopējiet kādu vienumu.</translation>
 <translation id="3593646411856133110">Velciet augšup un turiet, lai skatītu atvērtās lietotnes.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
@@ -732,6 +732,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3986082989454912832">Atbildēt</translation>
 <translation id="3990002060657467458">Bieži izmantotās vadīklas, piemēram, Wi-Fi, Bluetooth un skaļums, ir pieejamas ātrajos iestatījumos. Šeit varat arī izveidot ekrānuzņēmumus.</translation>
 <translation id="3995138139523574647">USB-C ierīce (pieslēgvieta labajā pusē aizmugurē)</translation>
+<translation id="4002066346123236978">Nosaukums</translation>
 <translation id="40062176907008878">Rokraksts</translation>
 <translation id="4011112806063830608">Ir ieslēgts režīms “Netraucēt”.</translation>
 <translation id="4017989525502048489">Lāzera rādītājs</translation>
@@ -1035,6 +1036,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5163434717504750796">Akumulatora stāvoklis: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Ciklu skaits: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Saglabāt darbvietu kā veidni</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
+<translation id="5168753792967365150">Rediģēt pakalpojumā Google uzdevumi</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
 <translation id="5187627942836026988">Tīklāja informācijas rādīšana. Tīklāju bloķēja jūsu administrators.</translation>
@@ -1304,6 +1306,8 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="6168622430237609329">Instalētās lietotnes</translation>
 <translation id="6173151025443907148">Otra lietotāja pierakstīšanās netiek atbalstīta, kamēr ir iespējots pārlūks Lacros. Izmantojiet otru pārlūka profilu vai atspējojiet pārlūku Lacros un mēģiniet vēlreiz.</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
+<translation id="6180193585172850042">Poga Atpakaļ</translation>
+<translation id="6180651297859206670">Poga Tālāk</translation>
 <translation id="6182592640011875895">Atvērt darbvietu</translation>
 <translation id="6185696379715117369">Augšup</translation>
 <translation id="619335566042889110">Pilnībā uzlādēt</translation>
@@ -1693,7 +1697,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7850320739366109486">Netraucēt</translation>
 <translation id="7851039877802112575">Izcelt uznirstošos logus un dialoglodziņus</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup</translation>
 <translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
 <translation id="7866482334467279021">ieslēgts</translation>
 <translation id="7872786842639831132">Izslēgts</translation>
@@ -1804,7 +1807,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas stundas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}}</translation>
 <translation id="8277261673056602147">Ekrānā atzīmējiet tekstu</translation>
-<translation id="8284362522226889623">Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
 <translation id="8308637677604853869">Iepriekšējā izvēlne</translation>

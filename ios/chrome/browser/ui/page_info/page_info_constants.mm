@@ -7,5 +7,11 @@
 NSString* const kPageInfoViewAccessibilityIdentifier =
     @"PageInfoViewAccessibilityIdentifier";
 
+NSString* const kPageInfoSecurityViewAccessibilityIdentifier =
+    @"PageInfoSecurityViewAccessibilityIdentifier";
+
+NSString* const kPageInfoSecurityFooterAccessibilityIdentifier =
+    @"PageInfoSecurityFooterAccessibilityIdentifier";
+
 NSString* const kPageInfoViewNavigationBarAccessibilityIdentifier =
     @"PageInfoViewNavigationBarAccessibilityIdentifier";

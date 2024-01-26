@@ -160,7 +160,7 @@ std::u16string HoldingSpaceItemScreenCaptureView::GetTooltipText(
 
 void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
-    uint32_t updated_fields) {
+    const HoldingSpaceItemUpdatedFields& updated_fields) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item, updated_fields);
   if (this->item() == item)
     TooltipTextChanged();

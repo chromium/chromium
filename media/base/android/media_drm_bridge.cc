@@ -456,8 +456,8 @@ void MediaDrmBridge::SetServerCertificate(
       cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_certificate = base::android::ToJavaByteArray(
-      env, certificate.data(), certificate.size());
+  ScopedJavaLocalRef<jbyteArray> j_certificate =
+      base::android::ToJavaByteArray(env, certificate);
   if (Java_MediaDrmBridge_setServerCertificate(env, j_media_drm_,
                                                j_certificate)) {
     ResolvePromise(promise_id);
@@ -517,8 +517,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
       }
       if (!init_data_from_delegate.empty()) {
         j_init_data =
-            base::android::ToJavaByteArray(env, init_data_from_delegate.data(),
-                                           init_data_from_delegate.size());
+            base::android::ToJavaByteArray(env, init_data_from_delegate);
       }
       if (!optional_parameters_from_delegate.empty()) {
         j_optional_parameters = base::android::ToJavaArrayOfStrings(
@@ -528,8 +527,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
   }
 
   if (!j_init_data) {
-    j_init_data =
-        base::android::ToJavaByteArray(env, init_data.data(), init_data.size());
+    j_init_data = base::android::ToJavaByteArray(env, init_data);
   }
 
   ScopedJavaLocalRef<jstring> j_mime =
@@ -576,7 +574,7 @@ void MediaDrmBridge::UpdateSession(const std::string& session_id,
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_response =
-      base::android::ToJavaByteArray(env, response.data(), response.size());
+      base::android::ToJavaByteArray(env, response);
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
   uint32_t promise_id =

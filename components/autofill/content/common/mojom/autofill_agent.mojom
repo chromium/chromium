@@ -20,14 +20,12 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
-  // Fills or previews the form identified by `form_renderer_id` with
-  // the data in `fields`.
-  // `action_type` denotes if the action is a Fill or Undo.
+  // Fills or previews the form identified by `form` with the data of its
+  // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
   ApplyFormAction(ActionType action_type,
                   ActionPersistence action_persistence,
-                  FormRendererId form_renderer_id,
-                  array<FormFieldData> fields);
+                  FormData_FillData form);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.

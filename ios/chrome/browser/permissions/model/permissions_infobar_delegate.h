@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_INFOBAR_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
+
+#import "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace web {
@@ -37,7 +39,7 @@ class PermissionsInfobarDelegate : public ConfirmInfoBarDelegate {
  private:
   NSArray<NSNumber*>* recently_accessible_permissions_;
 
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_INFOBAR_DELEGATE_H_

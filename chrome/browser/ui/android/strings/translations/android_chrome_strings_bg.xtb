@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Променете стандартното местоположение за изтегляне по всяко време</translation>
 <translation id="1796666869097395659">Намалете раздела, за да се върнете към него по-късно</translation>
 <translation id="1807246157184219062">Светло</translation>
+<translation id="1807709131360304325">Отваряне на нов прозорец</translation>
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
 <translation id="2067805253194386918">текст</translation>
+<translation id="2079545284768500474">Отмяна</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Показва се компактният изглед</translation>
 <translation id="2093731487903423814">последните 15 минути</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2239812875700136898">Контролирайте материалите от бутона „Опции за Discover“</translation>
-<translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2247789808226901522">Картата е изтекла</translation>
 <translation id="2248941474044011069">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google</translation>
 <translation id="2249635629516220541">Персонализиране на информацията, използвана от сайтовете с цел показване на реклами</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
-<translation id="2327226657832576859">Да се отварят ли автоматично PDF файловете?</translation>
 <translation id="2328985652426384049">Влизането в профила не е възможно</translation>
 <translation id="2341410551640223969">Инсталирането на <ph name="WEBAPK_NAME" /> не бе успешно.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Менюто на картата за емисията се показва на половината височина</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">Chrome се актуализира, за да може да се свързва с други устройства</translation>
 <translation id="2951071800649516099">Добавете страници към списъка за четене по-късно</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
-<translation id="2961210776189273067">Обръщение</translation>
 <translation id="296370266220139811">Пестете време и пишете по-малко</translation>
 <translation id="2977350910003566746">Сортиране по последно отваряне</translation>
 <translation id="297771753501244313">Сорт. по посл. отваряне</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4307992518367153382">Основни положения</translation>
+<translation id="4311652497846705514">Да се отвори ли PDF файлът?</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="433213510553688132">Започвате да следите...</translation>
 <translation id="4335835283689002019">„Безопасно сърфиране“ е изключено</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">последния час</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
-<translation id="4541505619120536051">Да, винаги</translation>
 <translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">Лого на съобщението за поверителност за Центъра за статистика за страницата, което пренасочва към страницата „Моята активност“.</translation>
 <translation id="5487521232677179737">Изчиств. на данните</translation>
 <translation id="5492637351392383067">Шифроване на устройството</translation>
-<translation id="5509866835115085009">Chrome може автоматично да отвори даден PDF файл, когато го изтеглите.</translation>
 <translation id="5514904542973294328">Деактивирано от администратора на това устройство</translation>
 <translation id="5515439363601853141">Отключете, за да видите паролата си</translation>
 <translation id="5517095782334947753">Имате отметки, история, пароли и други настройки от <ph name="FROM_ACCOUNT" /></translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5964869237734432770">Спиране на описанията</translation>
 <translation id="5966233851250124270">Chrome ще запомни избора ви</translation>
+<translation id="5977976211062815271">На това устройство</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5995726099713306770">Искате ли отново да изтеглите страницата?</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">Отваряне със…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Всички файлове, 1 файл в списъка}other{Всички файлове, # файла в списъка}}</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
+<translation id="7821130663268546430">Можете да видите всички отворени раздели чрез функцията „Превключвател на раздели“</translation>
 <translation id="7822705602465980873">Тези данни се свързват с профила ви в Google, когато сте влезли в него, с цел защита в услугите ни (например повишаване на нивото на защита в Gmail след инцидент, свързан със сигурността).</translation>
 <translation id="78270725016672455">Компютърът ви иска да регистрира това устройство с цел влизане в сайт</translation>
 <translation id="7844171778363018843">Няма избрани данни за синхронизиране</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> не е актуален.</translation>
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>
 <translation id="7947953824732555851">Приемам и влизам</translation>
+<translation id="7951102827450076904">Изтеглените PDF файлове да се отварят винаги</translation>
 <translation id="7957413488482743710">Виртуалната карта скрива действителната ви, за да ви защити от потенциална измама. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Бутон за връщане назад към Page Insights</translation>
 <translation id="7961926449547174351">Деактивирахте достъпа до хранилището. Моля, отворете настройките, за да го активирате.</translation>

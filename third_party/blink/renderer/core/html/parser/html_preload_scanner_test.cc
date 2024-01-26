@@ -45,6 +45,12 @@ struct PreloadScannerTestCase {
   ClientHintsPreferences preferences;
 };
 
+struct RenderBlockingTestCase {
+  const char* base_url;
+  const char* input_html;
+  RenderBlockingBehavior renderBlocking;
+};
+
 struct HTMLPreconnectTestCase {
   const char* base_url;
   const char* input_html;
@@ -213,6 +219,12 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
               resource->GetResourceRequest().ReferrerString());
   }
 
+  void RenderBlockingRequestVerification(
+      RenderBlockingBehavior renderBlocking) {
+    ASSERT_TRUE(preload_request_);
+    EXPECT_EQ(preload_request_->GetRenderBlockingBehavior(), renderBlocking);
+  }
+
   void PreconnectRequestVerification(const String& host,
                                      CrossOriginAttributeValue cross_origin) {
     if (!host.IsNull()) {
@@ -379,6 +391,18 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.PreloadRequestVerification(
         test_case.type, test_case.preloaded_url, test_case.output_base_url,
         test_case.resource_width, test_case.preferences);
+  }
+
+  void Test(RenderBlockingTestCase test_case) {
+    SCOPED_TRACE(test_case.input_html);
+    RunSetUp(kViewportEnabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault, true);
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url(test_case.base_url);
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.RenderBlockingRequestVerification(test_case.renderBlocking);
   }
 
   void Test(HTMLPreconnectTestCase test_case) {
@@ -903,6 +927,40 @@ TEST_F(HTMLPreloadScannerTest, testMetaAcceptCHInsecureDocument) {
            network::mojom::ReferrerPolicy::kDefault,
            true /* use_secure_document_url */);
   Test(expect_client_hint);
+}
+
+TEST_F(HTMLPreloadScannerTest, testRenderBlocking) {
+  RenderBlockingTestCase test_cases[] = {
+      {"http://example.test", "<link rel=preload href='bla.gif' as=image>",
+       RenderBlockingBehavior::kNonBlocking},
+      {"http://example.test",
+       "<script type='module' src='test.js' defer></script>",
+       RenderBlockingBehavior::kNonBlocking},
+      {"http://example.test",
+       "<script type='module' src='test.js' async></script>",
+       RenderBlockingBehavior::kPotentiallyBlocking},
+      {"http://example.test",
+       "<script type='module' src='test.js' defer blocking='render'></script>",
+       RenderBlockingBehavior::kBlocking},
+      {"http://example.test", "<script src='test.js'></script>",
+       RenderBlockingBehavior::kBlocking},
+      {"http://example.test", "<body><script src='test.js'></script></body>",
+       RenderBlockingBehavior::kInBodyParserBlocking},
+      {"http://example.test", "<script src='test.js' disabled></script>",
+       RenderBlockingBehavior::kBlocking},
+      {"http://example.test", "<link rel=stylesheet href=http://example2.test>",
+       RenderBlockingBehavior::kBlocking},
+      {"http://example.test",
+       "<body><link rel=stylesheet href=http://example2.test></body>",
+       RenderBlockingBehavior::kInBodyParserBlocking},
+      {"http://example.test",
+       "<link rel=stylesheet href=http://example2.test disabled>",
+       RenderBlockingBehavior::kNonBlocking},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
 }
 
 TEST_F(HTMLPreloadScannerTest, testPreconnect) {

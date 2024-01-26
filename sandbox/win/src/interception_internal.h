@@ -74,6 +74,17 @@ struct DllInterceptionData {
   ThunkData thunks[1];
 };
 
+// Used for setting up interception thunks for the child process.
+struct PatchClientResultData {
+  // A table of the original unpatched functions that were intercepted. This
+  // data is copied to `g_originals` in the child process.
+  OriginalFunctions originals;
+
+  // A local buffer used for building DllInterceptionData before it is copied
+  // to the child process.
+  DllInterceptionData dll_data;
+};
+
 #pragma pack(pop)
 
 }  // namespace sandbox

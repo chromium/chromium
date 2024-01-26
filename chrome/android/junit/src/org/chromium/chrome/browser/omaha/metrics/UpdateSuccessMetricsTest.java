@@ -30,11 +30,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Type;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Tests the API surface of UpdateSuccessMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)

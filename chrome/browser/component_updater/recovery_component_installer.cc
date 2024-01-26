@@ -393,7 +393,7 @@ void RecoveryComponentInstaller::Install(
 }
 
 bool RecoveryComponentInstaller::DoInstall(const base::FilePath& unpack_path) {
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       update_client::ReadManifest(unpack_path);
   if (!manifest.has_value()) {
     return false;

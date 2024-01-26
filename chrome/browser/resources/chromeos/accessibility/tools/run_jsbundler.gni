@@ -38,7 +38,8 @@ template("run_jsbundler") {
   }
 
   action(target_name) {
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
+    script =
+        "//chrome/browser/resources/chromeos/accessibility/tools/jsbundler.py"
     inputs = jsbundler_modules
     sources = invoker.sources
     forward_variables_from(invoker, [ "deps" ])

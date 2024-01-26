@@ -296,13 +296,13 @@ class TermsOfServicePage {
     this.termsView_.addContentScripts([
       {
         name: 'preProcess',
-        matches: ['https://play.google.com/*'],
+        matches: ['<all_urls>'],
         js: {code: scriptInitTermsView},
         run_at: 'document_start',
       },
       {
         name: 'postProcess',
-        matches: ['https://play.google.com/*'],
+        matches: ['<all_urls>'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
         run_at: 'document_end',
@@ -371,8 +371,7 @@ class TermsOfServicePage {
     this.nextButton_.hidden = false;
     this.updateTermsHeight_();
     this.nextButton_.focus();
-    if (!this.termsView_.src.startsWith(
-            'https://play.google.com/about/play-terms')) {
+    if (!this.termsView_.src.startsWith('https://play.google/play-terms')) {
       // This is reload due to language selection. Set focus on dropdown to pass
       // GAR criteria(b/308537845)
       const getDropDown = {code: 'getLangZoneSelect();'};
@@ -431,7 +430,7 @@ class TermsOfServicePage {
       return;
     }
 
-    const defaultLocation = 'https://play.google.com/about/play-terms/';
+    const defaultLocation = 'https://play.google/play-terms/';
     if (this.termsView_.src) {
       // This is reloading the page, typically clicked RETRY on error page.
       this.fastLocation_ = undefined;
@@ -493,6 +492,7 @@ class TermsOfServicePage {
         this.onTermsViewLoadAborted_('unable to get ToS content');
         return;
       }
+      onTosLoadResult(true /*success*/);
       this.state_ = LoadState.LOADED;
       this.tosContent_ = results[0];
       this.tosShown_ = true;
@@ -515,6 +515,7 @@ class TermsOfServicePage {
     // Mark ABORTED so that onTermsViewLoaded_() won't show the content view.
     this.fastLocation_ = undefined;
     this.state_ = LoadState.ABORTED;
+    onTosLoadResult(false /*success*/);
     showErrorPage(
         appWindow.contentWindow.loadTimeData.getString('serverError'),
         true /*opt_shouldShowSendFeedback*/,
@@ -530,7 +531,7 @@ class TermsOfServicePage {
     // In case we failed with fast location let retry default scheme.
     if (this.fastLocation_) {
       this.fastLocation_ = undefined;
-      this.termsView_.src = 'https://play.google.com/about/play-terms/';
+      this.termsView_.src = 'https://play.google/play-terms/';
       return;
     }
     this.onTermsViewLoadAborted_(
@@ -698,6 +699,16 @@ function showPage(pageDivId) {
   if (pageDivId == 'terms' || pageDivId == 'arc-loading') {
     appWindow.contentWindow.startProgressAnimation(pageDivId);
   }
+}
+
+/**
+ * Sends a message to host that TOS load has failed or succeeded.
+ *
+ * @param {boolean} success If set to true, loading has succeeded. False
+ *     otherwise.
+ */
+function onTosLoadResult(success) {
+  sendNativeMessage('onTosLoadResult', {success: success});
 }
 
 /**

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
@@ -12,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 @implementation ParcelTrackingOptInMediator {
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState {

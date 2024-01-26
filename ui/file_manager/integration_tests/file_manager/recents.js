@@ -99,6 +99,8 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
   await remoteCall.waitForElement(
       appId, [`[file-type-filter="${type}"].active`]);
   // Breadcrumb should always be "/Recents" if the flag is on.
+  // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+  // assignable to parameter of type 'string'.
   await verifyBreadcrumbsPath(appId, breadcrumbMap[RecentFilterType.ALL]);
 }
 
@@ -281,6 +283,8 @@ async function renameFile(appId, fileName, newName) {
   // Input the new name.
   await remoteCall.inputText(appId, textInput, newName);
   const inputElement = await remoteCall.waitForElement(appId, textInput);
+  // @ts-ignore: error TS2339: Property 'value' does not exist on type
+  // 'ElementObject'.
   chrome.test.assertEq(newName, inputElement.value);
   // Press Enter to commit renaming.
   const keyDown = [textInput, 'Enter', false, false, false];
@@ -359,6 +363,8 @@ async function waitForEmptyFolderMessage(appId, expectedMessage) {
  * Tests that file entries populated in the Downloads folder recently will be
  * displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsDownloads' comes from an index
+// signature, so it must be accessed with ['recentsDownloads'].
 testcase.recentsDownloads = async () => {
   // Populate downloads.
   const appId = await setupAndWaitUntilReady(
@@ -380,6 +386,8 @@ testcase.recentsDownloads = async () => {
  * Tests that file entries populated in My Drive folder recently will be
  * displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsDrive' comes from an index
+// signature, so it must be accessed with ['recentsDrive'].
 testcase.recentsDrive = async () => {
   // Populate drive.
   const appId =
@@ -400,10 +408,16 @@ testcase.recentsDrive = async () => {
  * Tests that file entries populated in Play Files folder recently will be
  * displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsPlayFiles' comes from an index
+// signature, so it must be accessed with ['recentsPlayFiles'].
 testcase.recentsPlayFiles = async () => {
   // Populate Play Files.
   await addPlayFileEntries();
+  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+  // parameter of type 'FilesAppState'.
   const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Verifies file list in Recents. Audio files from Play Files folder are
@@ -419,6 +433,8 @@ testcase.recentsPlayFiles = async () => {
  * Tests that file entries populated in the My Files folder recently will be
  * displayed in the Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsMyFiles' comes from an index
+// signature, so it must be accessed with ['recentsMyFiles'].
 testcase.recentsMyFiles = async () => {
   // Populate My Files.
   addEntries(['my_files'], [ENTRIES.beautiful, ENTRIES.photos]);
@@ -433,6 +449,8 @@ testcase.recentsMyFiles = async () => {
  * Tests that file entries populated in Crostini folder recently won't be
  * displayed in Recent folder when Crostini has not been mounted.
  */
+// @ts-ignore: error TS4111: Property 'recentsCrostiniNotMounted' comes from an
+// index signature, so it must be accessed with ['recentsCrostiniNotMounted'].
 testcase.recentsCrostiniNotMounted = async () => {
   // Add entries to crostini volume, but do not mount.
   // The crostini entries should not show up in recents.
@@ -447,6 +465,8 @@ testcase.recentsCrostiniNotMounted = async () => {
  * Tests that file entries populated in Downloads folder and Crostini folder
  * recently will be displayed in Recent folder when Crostini has been mounted.
  */
+// @ts-ignore: error TS4111: Property 'recentsCrostiniMounted' comes from an
+// index signature, so it must be accessed with ['recentsCrostiniMounted'].
 testcase.recentsCrostiniMounted = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
@@ -459,6 +479,8 @@ testcase.recentsCrostiniMounted = async () => {
  * Tests that file entries populated in Downloads folder and My Drive folder
  * recently will be displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDrive' comes from an
+// index signature, so it must be accessed with ['recentsDownloadsAndDrive'].
 testcase.recentsDownloadsAndDrive = async () => {
   // Populate both downloads and drive with disjoint sets of files.
   const appId = await setupAndWaitUntilReady(
@@ -471,6 +493,9 @@ testcase.recentsDownloadsAndDrive = async () => {
  * Tests that file entries populated in Downloads, Drive and Play Files folder
  * recently will be displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDriveAndPlayFiles'
+// comes from an index signature, so it must be accessed with
+// ['recentsDownloadsAndDriveAndPlayFiles'].
 testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
   // Populate downloads, drive and play files.
   await addPlayFileEntries();
@@ -490,6 +515,9 @@ testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
  * folder recently will be displayed in Recent folder twice when the file
  * entries are the same.
  */
+// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDriveWithOverlap'
+// comes from an index signature, so it must be accessed with
+// ['recentsDownloadsAndDriveWithOverlap'].
 testcase.recentsDownloadsAndDriveWithOverlap = async () => {
   // Populate both downloads and drive with overlapping sets of files.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -501,23 +529,25 @@ testcase.recentsDownloadsAndDriveWithOverlap = async () => {
  * Tests that the nested file entries populated in Downloads folder recently
  * will be displayed in Recent folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsNested' comes from an index
+// signature, so it must be accessed with ['recentsNested'].
 testcase.recentsNested = async () => {
   // Populate downloads with nested folder structure. |desktop| is added to
   // ensure Recents has different files to Downloads/A/B/C
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
-      NESTED_ENTRY_SET.concat([ENTRIES.deeplyBurriedSmallJpeg]), []);
+      NESTED_ENTRY_SET.concat([ENTRIES.deeplyBuriedSmallJpeg]), []);
 
   // Verifies file list in Recents.
   await verifyRecents(
-      appId, [ENTRIES.deeplyBurriedSmallJpeg], /*trashButton=*/ true);
+      appId, [ENTRIES.deeplyBuriedSmallJpeg], /*trashButton=*/ true);
 
   // Tests that selecting "Go to file location" for a file navigates to
   // Downloads/A/B/C since the file in Recents is from Downloads/A/B/C.
-  await goToFileLocation(appId, ENTRIES.deeplyBurriedSmallJpeg.nameText);
+  await goToFileLocation(appId, ENTRIES.deeplyBuriedSmallJpeg.nameText);
   await remoteCall.waitForElement(appId, `[scan-completed="C"]`);
   await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows([ENTRIES.deeplyBurriedSmallJpeg]));
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.deeplyBuriedSmallJpeg]));
   await verifyBreadcrumbsPath(appId, '/My files/Downloads/A/B/C');
 
   // Check: The directory should be highlighted in the directory tree.
@@ -530,6 +560,8 @@ testcase.recentsNested = async () => {
  * Tests that the audio file entries populated in Downloads folder recently
  * will be displayed in Recent Audio folder.
  */
+// @ts-ignore: error TS4111: Property 'recentAudioDownloads' comes from an index
+// signature, so it must be accessed with ['recentAudioDownloads'].
 testcase.recentAudioDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -542,6 +574,9 @@ testcase.recentAudioDownloads = async () => {
  * in both Downloads folder and My Drive folder, only the ones from Downloads
  * folder will be displayed in Recent Audio folder.
  */
+// @ts-ignore: error TS4111: Property 'recentAudioDownloadsAndDrive' comes from
+// an index signature, so it must be accessed with
+// ['recentAudioDownloadsAndDrive'].
 testcase.recentAudioDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
@@ -564,6 +599,9 @@ testcase.recentAudioDownloadsAndDrive = async () => {
  * Tests that the audio file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Audio folder.
  */
+// @ts-ignore: error TS4111: Property 'recentAudioDownloadsAndDriveAndPlayFiles'
+// comes from an index signature, so it must be accessed with
+// ['recentAudioDownloadsAndDriveAndPlayFiles'].
 testcase.recentAudioDownloadsAndDriveAndPlayFiles = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -581,6 +619,8 @@ testcase.recentAudioDownloadsAndDriveAndPlayFiles = async () => {
  * Tests that the image file entries populated in Downloads folder recently will
  * be displayed in Recents Image folder.
  */
+// @ts-ignore: error TS4111: Property 'recentImagesDownloads' comes from an
+// index signature, so it must be accessed with ['recentImagesDownloads'].
 testcase.recentImagesDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -594,6 +634,9 @@ testcase.recentImagesDownloads = async () => {
  * displayed in Recent Audio folder regardless of whether it's from Downloads
  * or My Drive.
  */
+// @ts-ignore: error TS4111: Property 'recentImagesDownloadsAndDrive' comes from
+// an index signature, so it must be accessed with
+// ['recentImagesDownloadsAndDrive'].
 testcase.recentImagesDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
@@ -610,6 +653,9 @@ testcase.recentImagesDownloadsAndDrive = async () => {
  * Tests that the image file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recents Image folder.
  */
+// @ts-ignore: error TS4111: Property
+// 'recentImagesDownloadsAndDriveAndPlayFiles' comes from an index signature, so
+// it must be accessed with ['recentImagesDownloadsAndDriveAndPlayFiles'].
 testcase.recentImagesDownloadsAndDriveAndPlayFiles = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -625,6 +671,8 @@ testcase.recentImagesDownloadsAndDriveAndPlayFiles = async () => {
  * Tests that the video file entries populated in Downloads folder recently will
  * be displayed in Recent Videos folder.
  */
+// @ts-ignore: error TS4111: Property 'recentVideosDownloads' comes from an
+// index signature, so it must be accessed with ['recentVideosDownloads'].
 testcase.recentVideosDownloads = async () => {
   // RECENTLY_MODIFIED_VIDEO is recently-modified and has .ogv file extension.
   // It should be shown in Videos.
@@ -644,6 +692,9 @@ testcase.recentVideosDownloads = async () => {
  * displayed in Recent Video folder regardless of whether it's from Downloads
  * or My Drive.
  */
+// @ts-ignore: error TS4111: Property 'recentVideosDownloadsAndDrive' comes from
+// an index signature, so it must be accessed with
+// ['recentVideosDownloadsAndDrive'].
 testcase.recentVideosDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
@@ -665,6 +716,9 @@ testcase.recentVideosDownloadsAndDrive = async () => {
  * Tests that the video file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Image folder.
  */
+// @ts-ignore: error TS4111: Property
+// 'recentVideosDownloadsAndDriveAndPlayFiles' comes from an index signature, so
+// it must be accessed with ['recentVideosDownloadsAndDriveAndPlayFiles'].
 testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -686,6 +740,8 @@ testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
  * Tests that the document file entries populated in Downloads folder recently
  * will be displayed in Recent Document folder.
  */
+// @ts-ignore: error TS4111: Property 'recentDocumentsDownloads' comes from an
+// index signature, so it must be accessed with ['recentDocumentsDownloads'].
 testcase.recentDocumentsDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT], []);
@@ -699,6 +755,9 @@ testcase.recentDocumentsDownloads = async () => {
  * displayed in Recent Document folder regardless of whether it's from Downloads
  * or My Drive.
  */
+// @ts-ignore: error TS4111: Property 'recentDocumentsDownloadsAndDrive' comes
+// from an index signature, so it must be accessed with
+// ['recentDocumentsDownloadsAndDrive'].
 testcase.recentDocumentsDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
@@ -714,6 +773,9 @@ testcase.recentDocumentsDownloadsAndDrive = async () => {
  * Tests that the document file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Document folder.
  */
+// @ts-ignore: error TS4111: Property
+// 'recentDocumentsDownloadsAndDriveAndPlayFiles' comes from an index signature,
+// so it must be accessed with ['recentDocumentsDownloadsAndDriveAndPlayFiles'].
 testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -730,6 +792,8 @@ testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
  * Tests if an active filter button is clicked again, it will become inactive
  * and the "All" filter button will become active and focus.
  */
+// @ts-ignore: error TS4111: Property 'recentsFilterResetToAll' comes from an
+// index signature, so it must be accessed with ['recentsFilterResetToAll'].
 testcase.recentsFilterResetToAll = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -749,6 +813,8 @@ testcase.recentsFilterResetToAll = async () => {
  * Tests when we switch the active filter button between All and others, the
  * correct a11y messages will be announced.
  */
+// @ts-ignore: error TS4111: Property 'recentsA11yMessages' comes from an index
+// signature, so it must be accessed with ['recentsA11yMessages'].
 testcase.recentsA11yMessages = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -784,6 +850,8 @@ testcase.recentsA11yMessages = async () => {
 /**
  * Tests the read only flag on Recents view should be hidden.
  */
+// @ts-ignore: error TS4111: Property 'recentsReadOnlyHidden' comes from an
+// index signature, so it must be accessed with ['recentsReadOnlyHidden'].
 testcase.recentsReadOnlyHidden = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await navigateToRecent(appId);
@@ -797,6 +865,8 @@ testcase.recentsReadOnlyHidden = async () => {
  * Tests delete operation can be performed in Recents view on files from
  * Downloads, Drive and Play Files.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowDeletion' comes from an index
+// signature, so it must be accessed with ['recentsAllowDeletion'].
 testcase.recentsAllowDeletion = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -842,6 +912,9 @@ testcase.recentsAllowDeletion = async () => {
  * Tests delete operation can be performed in Recents view with multiple files
  * from different sources including Downloads, Drive and Play Files.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowMultipleFilesDeletion' comes
+// from an index signature, so it must be accessed with
+// ['recentsAllowMultipleFilesDeletion'].
 testcase.recentsAllowMultipleFilesDeletion = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -892,6 +965,8 @@ testcase.recentsAllowMultipleFilesDeletion = async () => {
  * Tests rename operation can be performed in Recents view on files from
  * Downloads, Drive.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowRename' comes from an index
+// signature, so it must be accessed with ['recentsAllowRename'].
 testcase.recentsAllowRename = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
@@ -923,6 +998,9 @@ testcase.recentsAllowRename = async () => {
  * Tests rename operation is not allowed in Recents view for files from
  * Play files.
  */
+// @ts-ignore: error TS4111: Property 'recentsNoRenameForPlayFiles' comes from
+// an index signature, so it must be accessed with
+// ['recentsNoRenameForPlayFiles'].
 testcase.recentsNoRenameForPlayFiles = async () => {
   await addPlayFileEntries();
   const appId =
@@ -953,6 +1031,9 @@ testcase.recentsNoRenameForPlayFiles = async () => {
  * Tests cut operation can be performed in Recents view on files from
  * Downloads.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowCutForDownloads' comes from
+// an index signature, so it must be accessed with
+// ['recentsAllowCutForDownloads'].
 testcase.recentsAllowCutForDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA], []);
@@ -982,6 +1063,8 @@ testcase.recentsAllowCutForDownloads = async () => {
  * Tests cut operation can be performed in Recents view on files from
  * Drive.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowCutForDrive' comes from an
+// index signature, so it must be accessed with ['recentsAllowCutForDrive'].
 testcase.recentsAllowCutForDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], [ENTRIES.desktop]);
@@ -1010,6 +1093,9 @@ testcase.recentsAllowCutForDrive = async () => {
  * Tests cut operation can be performed in Recents view on files from
  * Play Files.
  */
+// @ts-ignore: error TS4111: Property 'recentsAllowCutForPlayFiles' comes from
+// an index signature, so it must be accessed with
+// ['recentsAllowCutForPlayFiles'].
 testcase.recentsAllowCutForPlayFiles = async () => {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -1045,6 +1131,8 @@ testcase.recentsAllowCutForPlayFiles = async () => {
 /**
  * Tests the time-period group heading can be displayed in Recents.
  */
+// @ts-ignore: error TS4111: Property 'recentsTimePeriodHeadings' comes from an
+// index signature, so it must be accessed with ['recentsTimePeriodHeadings'].
 testcase.recentsTimePeriodHeadings = async () => {
   const todayFile = ENTRIES.hello.cloneWithModifiedDate(getDateWithDayDiff(0));
   const yesterdayFile =
@@ -1094,6 +1182,8 @@ testcase.recentsTimePeriodHeadings = async () => {
 /**
  * Tests message will show in Recents for empty folder.
  */
+// @ts-ignore: error TS4111: Property 'recentsEmptyFolderMessage' comes from an
+// index signature, so it must be accessed with ['recentsEmptyFolderMessage'].
 testcase.recentsEmptyFolderMessage = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
@@ -1120,6 +1210,9 @@ testcase.recentsEmptyFolderMessage = async () => {
  * Tests message will show in Recents after the last file is
  * deleted.
  */
+// @ts-ignore: error TS4111: Property 'recentsEmptyFolderMessageAfterDeletion'
+// comes from an index signature, so it must be accessed with
+// ['recentsEmptyFolderMessageAfterDeletion'].
 testcase.recentsEmptyFolderMessageAfterDeletion = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
@@ -1156,6 +1249,9 @@ function prepareFileFor1AMToday(timezone) {
  * Tests the group heading and modified date column in the list view will
  * change once the timezone changes.
  */
+// @ts-ignore: error TS4111: Property
+// 'recentsRespondToTimezoneChangeForListView' comes from an index signature, so
+// it must be accessed with ['recentsRespondToTimezoneChangeForListView'].
 testcase.recentsRespondToTimezoneChangeForListView = async () => {
   // Set timezone to Brisbane (GMT+10).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
@@ -1167,6 +1263,10 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
+      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
+      // | null | undefined; ignoreFileSize: boolean | null | undefined;
+      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, TestEntryInfo.getExpectedRows([testFile]), {
         // Ignore last modified time because it will show Today/Yesterday
         // instead of the actual date.
@@ -1221,6 +1321,9 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
  * Tests the group heading in the grid view will change once the
  * timezone changes.
  */
+// @ts-ignore: error TS4111: Property
+// 'recentsRespondToTimezoneChangeForGridView' comes from an index signature, so
+// it must be accessed with ['recentsRespondToTimezoneChangeForGridView'].
 testcase.recentsRespondToTimezoneChangeForGridView = async () => {
   // Set timezone to Brisbane (GMT+10).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
@@ -1232,6 +1335,10 @@ testcase.recentsRespondToTimezoneChangeForGridView = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
+      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
+      // | null | undefined; ignoreFileSize: boolean | null | undefined;
+      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, TestEntryInfo.getExpectedRows([testFile]), {
         // Ignore last modified time because it will show Today/Yesterday
         // instead of the actual date.
@@ -1270,6 +1377,9 @@ testcase.recentsRespondToTimezoneChangeForGridView = async () => {
  * Tests the search term will be respected when switching between different
  * filter buttons.
  */
+// @ts-ignore: error TS4111: Property 'recentsRespectSearchWhenSwitchingFilter'
+// comes from an index signature, so it must be accessed with
+// ['recentsRespectSearchWhenSwitchingFilter'].
 testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
   // tall.txt
   const txtFile1 =
@@ -1305,6 +1415,9 @@ testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
 /**
  * Checks that Recents folder shows files from file system provider.
  */
+// @ts-ignore: error TS4111: Property 'recentFileSystemProviderFiles' comes from
+// an index signature, so it must be accessed with
+// ['recentFileSystemProviderFiles'].
 testcase.recentFileSystemProviderFiles = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);

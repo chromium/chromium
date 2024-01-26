@@ -383,7 +383,7 @@ void PaymentInstruments::onKeysOfPaymentInstruments(
   DCHECK(resolver);
   if (rejectError(resolver, status))
     return;
-  resolver->Resolve(keys);
+  resolver->Resolve<IDLSequence<IDLString>>(keys);
 }
 
 void PaymentInstruments::onHasPaymentInstrument(

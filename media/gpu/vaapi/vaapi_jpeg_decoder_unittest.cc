@@ -95,8 +95,7 @@ DecodedImagePtr GetSwDecode(base::span<const uint8_t> encoded_image,
                             std::vector<uint8_t>* dest_v) {
   DCHECK(dest_y && dest_u && dest_v);
   JpegParseResult parse_result;
-  const bool result = ParseJpegPicture(encoded_image.data(),
-                                       encoded_image.size(), &parse_result);
+  const bool result = ParseJpegPicture(encoded_image, &parse_result);
   if (!result)
     return nullptr;
 
@@ -319,7 +318,7 @@ TEST_P(VaapiJpegDecoderTest, DecodeSucceeds) {
   std::string jpeg_data;
   ASSERT_TRUE(base::ReadFileToString(input_file, &jpeg_data))
       << "failed to read input data from " << input_file.value();
-  const auto encoded_image = base::as_bytes(base::make_span(jpeg_data));
+  const auto encoded_image = base::as_byte_span(jpeg_data);
 
   // Skip the image if the VAAPI driver doesn't claim to support its chroma
   // subsampling format. However, we expect at least 4:2:0 and 4:2:2 support.
@@ -328,8 +327,7 @@ TEST_P(VaapiJpegDecoderTest, DecodeSucceeds) {
   ASSERT_TRUE(supported_internal_formats.yuv420);
   ASSERT_TRUE(supported_internal_formats.yuv422);
   JpegParseResult parse_result;
-  ASSERT_TRUE(ParseJpegPicture(encoded_image.data(), encoded_image.size(),
-                               &parse_result));
+  ASSERT_TRUE(ParseJpegPicture(encoded_image, &parse_result));
   const unsigned int rt_format =
       VaSurfaceFormatForJpeg(parse_result.frame_header);
   ASSERT_NE(kInvalidVaRtFormat, rt_format);
@@ -480,7 +478,7 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   std::string jpeg_data;
   ASSERT_TRUE(base::ReadFileToString(input_file, &jpeg_data))
       << "failed to read input data from " << input_file.value();
-  const auto encoded_image = base::as_bytes(base::make_span(jpeg_data));
+  const auto encoded_image = base::as_byte_span(jpeg_data);
 
   // Decode into a VAAPI-allocated surface.
   const VaapiImageDecodeStatus decode_status = Decoder()->Decode(encoded_image);
@@ -492,8 +490,7 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   // The size stored in the ScopedVASurface should be the visible size of the
   // JPEG.
   JpegParseResult parse_result;
-  ASSERT_TRUE(ParseJpegPicture(encoded_image.data(), encoded_image.size(),
-                               &parse_result));
+  ASSERT_TRUE(ParseJpegPicture(encoded_image, &parse_result));
   EXPECT_EQ(gfx::Size(parse_result.frame_header.visible_width,
                       parse_result.frame_header.visible_height),
             va_surface_visible_size);

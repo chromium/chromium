@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
   base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
-                         absl::optional<base::Time>>
+                         std::optional<base::Time>>
       future;
   auto* ipp_proxy_delegate = getter->last_remote_for_testing();
   ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
@@ -324,19 +324,19 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   base::Time dont_retry = base::Time::Max();
   base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
-                         absl::optional<base::Time>>
+                         std::optional<base::Time>>
       future;
   main_profile_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const absl::optional<base::Time>& main_profile_first_attempt_result =
-      future.Get<absl::optional<base::Time>>();
+  const std::optional<base::Time>& main_profile_first_attempt_result =
+      future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_first_attempt_result.value(), dont_retry);
 
   future.Clear();
   incognito_profile_ipp_proxy_delegate
       ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
-  const absl::optional<base::Time>& incognito_profile_first_attempt_result =
-      future.Get<absl::optional<base::Time>>();
+  const std::optional<base::Time>& incognito_profile_first_attempt_result =
+      future.Get<std::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_first_attempt_result.value(), dont_retry);
 
   // Make the interceptors return tokens now so that if the network service
@@ -350,15 +350,15 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   future.Clear();
   main_profile_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const absl::optional<base::Time>& main_profile_second_attempt_result =
-      future.Get<absl::optional<base::Time>>();
+  const std::optional<base::Time>& main_profile_second_attempt_result =
+      future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_second_attempt_result.value(), dont_retry);
 
   future.Clear();
   incognito_profile_ipp_proxy_delegate
       ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
-  const absl::optional<base::Time>& incognito_profile_second_attempt_result =
-      future.Get<absl::optional<base::Time>>();
+  const std::optional<base::Time>& incognito_profile_second_attempt_result =
+      future.Get<std::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_second_attempt_result.value(), dont_retry);
 
 // Simulate the account becoming active again, which should cause `provider`

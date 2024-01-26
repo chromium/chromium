@@ -18,18 +18,23 @@ import './reading_list_item.js';
 import '../strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {IronSelectableBehavior} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selectable.js';
-import {DomRepeat, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
-import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
-import {MARKED_AS_READ_UI_EVENT, ReadingListItemElement} from './reading_list_item.js';
+import type {ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
+import {CurrentPageActionButtonState} from './reading_list.mojom-webui.js';
+import type {ReadingListApiProxy} from './reading_list_api_proxy.js';
+import {ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
+import type {ReadingListItemElement} from './reading_list_item.js';
+import {MARKED_AS_READ_UI_EVENT} from './reading_list_item.js';
 
 const navigationKeys: Set<string> = new Set(['ArrowDown', 'ArrowUp']);
 
@@ -163,7 +168,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.$.unreadItemsList.addEventListener(
         'rendered-item-count-changed', () => {
           const firstUnreadItem =
-              this.root!.querySelector('.unread-item') as HTMLElement | null;
+              this.root!.querySelector<HTMLElement>('.unread-item');
           if (firstUnreadItem) {
             this.registerHelpBubble(
                 READING_LIST_UNREAD_ELEMENT_ID, firstUnreadItem);

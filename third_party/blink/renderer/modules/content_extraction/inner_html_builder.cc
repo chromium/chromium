@@ -25,7 +25,7 @@ InnerHtmlBuilder::InnerHtmlBuilder(Document& d)
     : MarkupAccumulator(kDoNotResolveURLs,
                         IsA<HTMLDocument>(d) ? SerializationType::kHTML
                                              : SerializationType::kXML,
-                        kNoShadowRoots) {}
+                        ShadowRootInclusion()) {}
 
 String InnerHtmlBuilder::Build(HTMLElement& body) {
   return SerializeNodes<EditingStrategy>(body, kIncludeNode);

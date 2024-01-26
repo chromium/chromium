@@ -134,16 +134,16 @@ ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
 ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
 
 // Returns the redacted, fixed-up error report if the user consented to have it
-// sent. Returns absl::nullopt if the user did not consent or we otherwise
+// sent. Returns std::nullopt if the user did not consent or we otherwise
 // should not send the report. All the MayBlock work should be done in here.
-absl::optional<JavaScriptErrorReport>
+std::optional<JavaScriptErrorReport>
 ChromeJsErrorReportProcessor::CheckConsentAndRedact(
     JavaScriptErrorReport error_report) {
   // Consent is handled at the OS level by crash_reporter so we don't need to
   // check it here for Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (!crash_reporter::GetClientCollectStatsConsent()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 #endif
 
@@ -198,7 +198,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::TimeDelta browser_process_uptime,
     base::Time report_time,
-    absl::optional<JavaScriptErrorReport> error_report) {
+    std::optional<JavaScriptErrorReport> error_report) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!error_report) {
     // User didn't consent. This isn't an error so don't log an error.

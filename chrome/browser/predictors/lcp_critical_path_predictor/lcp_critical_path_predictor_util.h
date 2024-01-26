@@ -5,16 +5,17 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_UTIL_H_
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_UTIL_H_
 
+#include <optional>
+
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
 
 // Converts LcppData to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
-absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppData& data);
 

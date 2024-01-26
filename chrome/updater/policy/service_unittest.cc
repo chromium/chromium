@@ -44,6 +44,9 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
+  std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override {
+    return std::nullopt;
+  }
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override {
     return std::nullopt;
   }

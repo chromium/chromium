@@ -53,6 +53,7 @@ public class MenuItem extends FrameLayout {
     private final ImageView mPlayButton;
     private final ProgressBar mPlayButtonSpinner;
     private Callback<Boolean> mToggleHandler;
+    private final String mLabel;
 
     /**
      * @param context Context.
@@ -74,7 +75,7 @@ public class MenuItem extends FrameLayout {
         mMenu = parentMenu;
         mId = itemId;
         mActionType = action;
-
+        mLabel = label;
         LayoutInflater inflater = LayoutInflater.from(context);
         LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.readaloud_menu_item, null);
         layout.setOnClickListener(
@@ -129,6 +130,8 @@ public class MenuItem extends FrameLayout {
         addView(layout);
 
         mPlayButton = (ImageView) findViewById(R.id.play_button);
+        mPlayButton.setContentDescription(
+                context.getResources().getString(R.string.readaloud_play) + " " + mLabel);
         mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
     }
 
@@ -147,6 +150,9 @@ public class MenuItem extends FrameLayout {
     void setItemEnabled(boolean enabled) {
         mLayout.setClickable(enabled);
         mLayout.setFocusable(enabled);
+        if (mActionType == Action.TOGGLE) {
+            getToggleSwitch().setEnabled(enabled);
+        }
     }
 
     void setValue(boolean value) {
@@ -169,10 +175,20 @@ public class MenuItem extends FrameLayout {
 
     void setPlayButtonStopped() {
         mPlayButton.setImageResource(R.drawable.mini_play_button);
+        mPlayButton.setContentDescription(
+                getContext().getResources().getString(R.string.readaloud_play) + " " + mLabel);
     }
 
     void setPlayButtonPlaying() {
         mPlayButton.setImageResource(R.drawable.mini_pause_button);
+        mPlayButton.setContentDescription(
+                getContext().getResources().getString(R.string.readaloud_pause) + " " + mLabel);
+    }
+
+    void setSecondLine(String text) {
+        TextView view = mLayout.findViewById(R.id.item_sublabel);
+        view.setText(text);
+        view.setVisibility(View.VISIBLE);
     }
 
     private void setEndView(LinearLayout layout, View view) {

@@ -9,14 +9,17 @@ import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
-import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {ShoppingServiceApiProxy} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import {ShoppingServiceApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
-import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {getTemplate} from './power_bookmarks_context_menu.html.js';
 import {editingDisabledByPolicy} from './power_bookmarks_service.js';
 

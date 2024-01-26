@@ -21,14 +21,14 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoice};
+      switches::kSearchEngineChoiceTrigger};
   base::AutoReset<bool> scoped_chrome_build_override_ =
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
 };
 
-// TODO(crbug.com/1509119) Fix test flakes and re-enable it.
+// TODO(https://crbug.com/1521334) Tests are flaky
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTest,
                        DISABLED_SearchEngineChoiceTest) {
   RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");

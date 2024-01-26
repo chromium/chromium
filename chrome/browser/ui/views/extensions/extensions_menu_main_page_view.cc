@@ -606,8 +606,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               &chrome::ShowWebStore, browser_,
                               extension_urls::kExtensionsMenuUtmSource),
                           vector_icons::kGoogleChromeWebstoreIcon, icon_size))
-                      .SetAccessibleName(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_TOOLTIP))
                       .CustomConfigure(
                           base::BindOnce([](views::ImageButton* view) {
                             view->SizeToPreferredSize();
@@ -665,6 +665,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetDrawOverflowIndicator(false)
               .SetHorizontalScrollBarMode(
                   views::ScrollView::ScrollBarMode::kDisabled)
+              // Add bottom dialog margins since it's the last view. Its last
+              // child view will be a HoverButton with has its own inset. Thus,
+              // we subtract such insets from the dialog bottom inset.
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::TLBR(0, 0,
+                                             dialog_insets.bottom() -
+                                                 hover_button_vertical_spacing,
+                                             0))
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -693,15 +701,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
-                              // Add bottom dialog margins since it's the last
-                              // element.
-                              .SetProperty(
-                                  views::kMarginsKey,
-                                  gfx::Insets::TLBR(
-                                      0, 0,
-                                      dialog_insets.bottom() -
-                                          hover_button_vertical_spacing,
-                                      0))
                               .SetOrientation(
                                   views::BoxLayout::Orientation::kVertical))))
 

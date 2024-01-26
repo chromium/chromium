@@ -1192,6 +1192,15 @@ policies:
   1191: CACertificates
   1192: CADistrustedCertificates
   1193: CAHintCertificates
+  1194: DeviceLoginScreenTouchVirtualKeyboardEnabled
+  1195: DeviceExtendedAutoUpdateEnabled
+  1196: CAPlatformIntegrationEnabled
+  1197: FloatingSsoEnabled
+  1198: FloatingSsoDomainBlocklist
+  1199: FloatingSsoDomainBlocklistExceptions
+  1200: F11KeyModifier
+  1201: F12KeyModifier
+  1202: VirtualKeyboardSmartVisibilityEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1242,3 +1251,4 @@ atomic_groups:
   47: ThirdPartyStoragePartitioningSettings
   48: MidiSettings
   49: ProfileSeparation
+  50: FloatingSso

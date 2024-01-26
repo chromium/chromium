@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -47,7 +47,7 @@ class VerifyTrustAPI::IOPart {
   // with the result (see the declaration of VerifyCallback).
   // Will not call back after this object is destructed or the verifier for this
   // extension is deleted (see OnExtensionUnloaded).
-  void Verify(absl::optional<Params> params,
+  void Verify(std::optional<Params> params,
               const std::string& extension_id,
               VerifyCallback callback);
 
@@ -102,7 +102,7 @@ VerifyTrustAPI::~VerifyTrustAPI() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void VerifyTrustAPI::Verify(absl::optional<Params> params,
+void VerifyTrustAPI::Verify(std::optional<Params> params,
                             const std::string& extension_id,
                             VerifyCallback ui_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -155,7 +155,7 @@ VerifyTrustAPI::IOPart::~IOPart() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
-void VerifyTrustAPI::IOPart::Verify(absl::optional<Params> params,
+void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
                                     const std::string& extension_id,
                                     VerifyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

@@ -12,15 +12,14 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -182,6 +181,7 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
+  ProcessPendingSignals();
   state_.UpdateLengthConversionData();
 
   CascadeResolver resolver(filter, ++generation_);
@@ -400,6 +400,14 @@ void StyleCascade::AnalyzeMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
+    // We expect signals to be very rare, so to avoid the cost of checking
+    // against Signal::kNone for every *declaration*, we check once for
+    // every declaration *block* (i.e. rule), and then use a separate call to
+    // ExpandCascade (via ExpandSignals) to handle the signals.
+    if (Signal signal = static_cast<Signal>(properties.types_.signal);
+        signal != Signal::kNone) {
+      ExpandSignals(properties, index, signal);
+    }
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,
@@ -737,7 +745,7 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   DCHECK(value);
   CascadeOrigin origin = priority->GetOrigin();
   value = Resolve(property, *value, *priority, origin, resolver);
-  DCHECK(!value->IsVariableReferenceValue());
+  DCHECK(IsA<CustomProperty>(property) || !value->IsUnparsedDeclaration());
   DCHECK(!value->IsPendingSubstitutionValue());
   const TreeScope* tree_scope{nullptr};
   if (origin == CascadeOrigin::kAuthor) {
@@ -909,11 +917,12 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
 const CSSValue* StyleCascade::ResolveSubstitutions(const CSSProperty& property,
                                                    const CSSValue& value,
                                                    CascadeResolver& resolver) {
-  if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    return ResolveCustomProperty(property, *v, resolver);
-  }
-  if (const auto* v = DynamicTo<CSSVariableReferenceValue>(value)) {
-    return ResolveVariableReference(property, *v, resolver);
+  if (const auto* v = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    if (property.GetCSSPropertyName().IsCustomProperty()) {
+      return ResolveCustomProperty(property, *v, resolver);
+    } else {
+      return ResolveVariableReference(property, *v, resolver);
+    }
   }
   if (const auto* v = DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value)) {
     return ResolvePendingSubstitution(property, *v, resolver);
@@ -923,14 +932,14 @@ const CSSValue* StyleCascade::ResolveSubstitutions(const CSSProperty& property,
 
 const CSSValue* StyleCascade::ResolveCustomProperty(
     const CSSProperty& property,
-    const CSSCustomPropertyDeclaration& decl,
+    const CSSUnparsedDeclarationValue& decl,
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
-  scoped_refptr<CSSVariableData> data = &decl.Value();
+  scoped_refptr<CSSVariableData> data = decl.VariableDataValue();
 
   if (data->NeedsVariableResolution()) {
     data = ResolveVariableData(data.get(), resolver);
@@ -952,7 +961,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     return CSSInvalidVariableValue::Create();
   }
 
-  if (data == &decl.Value()) {
+  if (data == decl.VariableDataValue()) {
     return &decl;
   }
 
@@ -972,13 +981,13 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     }
   }
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       data, decl.ParserContext());
 }
 
 const CSSValue* StyleCascade::ResolveVariableReference(
     const CSSProperty& property,
-    const CSSVariableReferenceValue& value,
+    const CSSUnparsedDeclarationValue& value,
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
   DCHECK(!resolver.IsLocked(property));
@@ -1025,7 +1034,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   bool is_cached = resolver.shorthand_cache_.value == &value;
 
   if (!is_cached) {
-    CSSVariableReferenceValue* shorthand_value = value.ShorthandValue();
+    CSSUnparsedDeclarationValue* shorthand_value = value.ShorthandValue();
     const auto* shorthand_data = shorthand_value->VariableDataValue();
     CSSPropertyID shorthand_property_id = value.ShorthandPropertyId();
 
@@ -1309,8 +1318,8 @@ CSSVariableData* StyleCascade::GetEnvironmentVariable(
 }
 
 const CSSParserContext* StyleCascade::GetParserContext(
-    const CSSVariableReferenceValue& value) {
-  // TODO(crbug.com/985028): CSSVariableReferenceValue should always have a
+    const CSSUnparsedDeclarationValue& value) {
+  // TODO(crbug.com/985028): CSSUnparsedDeclarationValue should always have a
   // CSSParserContext. (CSSUnparsedValue violates this).
   if (value.ParserContext()) {
     return value.ParserContext();
@@ -1407,6 +1416,77 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (value.IsRevertValue()) {
     CountUse(WebFeature::kCSSKeywordRevert);
+  }
+}
+
+void StyleCascade::ExpandSignals(const MatchedProperties& properties,
+                                 int index,
+                                 Signal signal) {
+  ExpandCascade(
+      properties, GetDocument(), index,
+      [this, signal](CascadePriority cascade_priority,
+                     const AtomicString& custom_property_name) {
+        MaybeAddPendingSignal(CSSPropertyName(custom_property_name),
+                              cascade_priority, signal);
+      },
+      [this, signal](CascadePriority cascade_priority,
+                     CSSPropertyID property_id) {
+        if (kSurrogateProperties.Has(property_id)) {
+          const CSSProperty& property =
+              ResolveSurrogate(CSSProperty::Get(property_id));
+          MaybeAddPendingSignal(property.GetCSSPropertyName(), cascade_priority,
+                                signal);
+        } else {
+          MaybeAddPendingSignal(CSSPropertyName(property_id), cascade_priority,
+                                signal);
+        }
+      });
+}
+
+void StyleCascade::MaybeAddPendingSignal(const CSSPropertyName& name,
+                                         CascadePriority priority,
+                                         Signal signal) {
+  CHECK_NE(signal, Signal::kNone);
+
+  const CascadePriority* existing_priority = map_.Find(name);
+
+  bool add_would_change_value =
+      !existing_priority ||
+      (ValueAt(match_result_, existing_priority->GetPosition()) !=
+       ValueAt(match_result_, priority.GetPosition()));
+
+  // We only add a pending signal if the declaration actually makes
+  // a difference to the cascade. The pending signals then either get
+  // converted to actual use-counting during `ProcessPendingSignals`
+  // if they end up winning the cascade, or they just get ignored.
+  if (add_would_change_value) {
+    wtf_size_t index = static_cast<wtf_size_t>(signal) - 1;
+    CHECK_LT(index, static_cast<wtf_size_t>(Signal::kMax));
+    pending_signals_[index].Set(name, priority);
+  }
+}
+
+void StyleCascade::ProcessPendingSignals() {
+  static_assert(static_cast<int>(Signal::kBareDeclarationShift) == 1);
+  static_assert(static_cast<int>(Signal::kNestedGroupRuleSpecificity) == 2);
+  static_assert(static_cast<int>(Signal::kMax) == 2);
+  ProcessPendingSignals(WebFeature::kCSSBareDeclarationShift,
+                        pending_signals_[0]);
+  pending_signals_[0].clear();
+  ProcessPendingSignals(WebFeature::kCSSNestedGroupRuleSpecificity,
+                        pending_signals_[1]);
+  pending_signals_[1].clear();
+}
+
+void StyleCascade::ProcessPendingSignals(
+    WebFeature feature,
+    const HashMap<CSSPropertyName, CascadePriority>& signals) {
+  for (const auto& [name, signal_priority] : signals) {
+    // Only trigger the use-counter if the signaling declaration
+    // won the cascade.
+    if (signal_priority == map_.At(name)) {
+      CountUse(feature);
+    }
   }
 }
 

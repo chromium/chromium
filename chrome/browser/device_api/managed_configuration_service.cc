@@ -55,9 +55,9 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       origin(), keys,
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
-             absl::optional<base::Value::Dict> result) {
+             std::optional<base::Value::Dict> result) {
             if (!result) {
-              return std::move(callback).Run(absl::nullopt);
+              return std::move(callback).Run(std::nullopt);
             }
             std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
                 *result, {},

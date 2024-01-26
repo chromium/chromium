@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"

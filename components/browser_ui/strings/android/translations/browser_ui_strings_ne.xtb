@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1415402041810619267">URL छोटो बनाइयो</translation>
 <translation id="1426410128494586442">हो</translation>
+<translation id="1434873037477293673">मूल्य घटेको जानकारी दिने कार्ड</translation>
 <translation id="1448064542941920355">जुमको स्तर घटाउनुहोस्</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> वटा साइट}}</translation>
 <translation id="1510341833810331442">साइटहरूलाई तपाईंको डिभाइसमा जानकारी सेभ गर्ने अनुमति दिइएको छैन</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन गर्ने प्रम्प्टहरू देखाउन सक्छन्।</translation>
 <translation id="2790501146643349491">यो सेटिङ अन भएका बेला हालसालै बन्द गरिएका साइटहरूले डेटा पठाउने र प्राप्त गर्ने कार्य पूरा गर्न सक्छन्। यो सेटिङ अफ भएका बेला हालसालै बन्द गरिएका साइटहरूले डेटा पठाउने र प्राप्त गर्ने कार्य पूरा गर्न सक्दैनन्।</translation>
 <translation id="2822354292072154809">तपाईं साँच्चिकै <ph name="CHOSEN_OBJECT_NAME" /> का साइटसम्बन्धी सम्पूर्ण अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">मोबाइल भ्यू देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
+<translation id="6452138246455930388">तपाईंको खुला ट्याब <ph name="DOMAIN_NAME" /> मा भएको <ph name="PRODUCT_NAME" /> को मूल्य <ph name="OLD_PRICE" /> बाट घटेर <ph name="NEW_PRICE" /> पुगेको छ</translation>
 <translation id="6500423977866688905">विन्डो सानो भएका बेला मोबाइल भ्यूमा हेर्ने अनुरोध गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="652937045869844725">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसको अर्थ सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले काम गर्न सक्छन्</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
 <translation id="6749077623962119521">अनुमति रिसेट गर्ने हो?</translation>
 <translation id="6766622839693428701">बन्द गर्न तलतिर स्वाइप गर्नुहोस्।</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> बाट</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> का लागि एउटा विकल्प चयन गर्नुहोस्</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6818926723028410516">वस्तुहरू छनाैट गर्नुहोस्</translation>
 <translation id="6864395892908308021">यस यन्त्रले NFC पढ्न सक्दैन</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> बाट</translation>
 <translation id="6912998170423641340">साइटहरूलाई क्लिपबोर्डका पाठ तथा फोटो पढ्नबाट रोक लगाउनुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6950072572526089586">तपाईंले खोल्ने साइटले अपेक्षा गरेअनुसार काम गर्न (उदाहरणका लागि, तपाईंलाई कुनै साइटमा साइन इन अवस्थामै राखिराख्न वा तपाईंको सपिङ कार्टमा भएका सामग्रीहरू सेभ गर्न) सकोस् भन्नाका लागि तपाईंको हालको गतिविधिका बारेमा जानकारी सेभ गर्न सक्छ। साइटहरूले प्रायः जसो तपाईंको डिभाइसमा यो जानकारी केही समयका लागि सेभ गर्छन्।</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">कुनै साइटलाई तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="7719367874908701697">पृष्ठ जुम</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" लुकाइयोस्</translation>
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>

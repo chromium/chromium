@@ -262,9 +262,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   void SetMainThreadWantsBeginMainFrameNotExpectedMessages(bool new_state);
-  bool wants_begin_main_frame_not_expected_messages() const {
-    return wants_begin_main_frame_not_expected_;
-  }
 
   // Requests a single impl frame (after the current frame if there is one
   // active).
@@ -337,7 +334,6 @@ class CC_EXPORT SchedulerStateMachine {
   void SetPauseRendering(bool pause_rendering);
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
-  bool video_needs_begin_frames() const { return video_needs_begin_frames_; }
 
   bool did_submit_in_last_frame() const { return did_submit_in_last_frame_; }
   bool draw_succeeded_in_last_frame() const {
@@ -361,22 +357,11 @@ class CC_EXPORT SchedulerStateMachine {
     return should_defer_invalidation_for_fast_main_frame_;
   }
 
-  int aborted_begin_main_frame_count() const {
-    return aborted_begin_main_frame_count_;
-  }
-
   bool pending_tree_is_ready_for_activation() const {
     return pending_tree_is_ready_for_activation_;
   }
 
   bool resourceless_draw() const { return resourceless_draw_; }
-
-  bool processing_animation_worklets_for_pending_tree() const {
-    return processing_animation_worklets_for_pending_tree_;
-  }
-  bool processing_paint_worklets_for_pending_tree() const {
-    return processing_paint_worklets_for_pending_tree_;
-  }
 
  protected:
   bool BeginFrameRequiredForAction() const;
@@ -515,9 +500,6 @@ class CC_EXPORT SchedulerStateMachine {
   // If set to true, the pending tree must be drawn at least once after
   // activation before a new tree can be activated.
   bool pending_tree_needs_first_draw_on_activation_ = false;
-
-  // Number of consecutive BeginMainFrames that were aborted without updates.
-  int aborted_begin_main_frame_count_ = 0;
 
   bool draw_aborted_for_paused_begin_frame_ = false;
 

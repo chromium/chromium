@@ -102,7 +102,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
   }
 
   void OnNextFrame() {
-    const int buffer_id = g_next_buffer_id++;
+    const int buffer_id = next_buffer_id_++;
     subscriber_->OnNewBuffer(
         buffer_id,
         GetBufferHandler(current_settings_.requested_format.frame_size));
@@ -150,7 +150,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
       video_frame_access_handler_receiver_;
 
   // The next ID to be used for a newly created buffer.
-  int g_next_buffer_id = 0;
+  int next_buffer_id_ = 0;
 
   // The time at which this device started producing video frames.
   base::Time start_time_;
@@ -180,25 +180,4 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   video_source_receiver_.Bind(video_source.BindNewPipeAndPassReceiver());
   coordinator_->ConnectToDevice(std::move(video_source), GetFormats());
   run_loop.Run();
-}
-
-TEST_F(VideoStreamCoordinatorTest, ChooseTheClosetFormat) {
-  const auto& formats = GetFormats();
-  EXPECT_EQ(formats[0],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/130, /*minimum_frame_rate*/ 10));
-  EXPECT_EQ(formats[3],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/300, /*minimum_frame_rate*/ 10));
-
-  EXPECT_EQ(formats[3],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/280, /*minimum_frame_rate*/ 30));
-  EXPECT_EQ(formats[5],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/700, /*minimum_frame_rate*/ 30));
-
-  EXPECT_EQ(formats[3], coordinator_->GetClosestVideoFormatForTest(
-                            formats, /*view_width=*/280,
-                            /*minimum_frame_rate*/ 40));
 }

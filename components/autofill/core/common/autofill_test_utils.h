@@ -138,6 +138,7 @@ FormFieldData WithoutUnserializedData(FormFieldData field);
 
 // A valid France IBAN number.
 inline constexpr char kIbanValue[] = "FR76 3000 6000 0112 3456 7890 189";
+inline constexpr char16_t kIbanValue16[] = u"FR76 3000 6000 0112 3456 7890 189";
 // Two valid Switzerland IBAN numbers.
 inline constexpr char kIbanValue_1[] = "CH56 0483 5012 3456 7800 9";
 inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
@@ -220,18 +221,6 @@ MATCHER_P(DeepEqualsFormData,
           form_data,
           negation ? "does not equal" : "equals") {
   return FormData::DeepEqual(arg, form_data);
-}
-
-MATCHER_P(SameFieldsAs, fields, negation ? "does not equal" : "equals") {
-  if (fields.size() != arg.fields.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < arg.fields.size(); ++i) {
-    if (!arg.fields[i].SameFieldAs(fields[i])) {
-      return false;
-    }
-  }
-  return true;
 }
 
 }  // namespace test

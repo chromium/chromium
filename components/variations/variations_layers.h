@@ -6,12 +6,12 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_LAYERS_H_
 
 #include <map>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/variations_seed.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -23,7 +23,8 @@ enum class InvalidLayerReason {
   kSlotsDoNotDivideLowEntropyDomain = 4,
   kInvalidSlotBounds = 5,
   kUnknownFields = 6,
-  kMaxValue = kUnknownFields,
+  LayerIDNotUnique = 7,
+  kMaxValue = LayerIDNotUnique,
 };
 
 // A view over the layers defined within a variations seed.
@@ -72,6 +73,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
 
   void ConstructLayer(const EntropyProviders& entropy_providers,
                       const Layer& layer_proto);
+
+  // Finds the layer with the given `layer_id`. Returns nullptr if there isn't a
+  // layer with this id or the layer is invalid.
+  const LayerInfo* FindActiveLayer(uint32_t layer_id) const;
 
   NormalizedMurmurHashEntropyProvider nil_entropy;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;

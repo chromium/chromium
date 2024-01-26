@@ -145,7 +145,7 @@ void OfflineItemModel::Resume() {
   if (!offline_item_)
     return;
 
-  GetProvider()->ResumeDownload(offline_item_->id, true /* has_user_gesture */);
+  GetProvider()->ResumeDownload(offline_item_->id);
 }
 
 void OfflineItemModel::Cancel(bool user_cancel) {
@@ -272,7 +272,7 @@ void OfflineItemModel::OnItemRemoved(const ContentId& id) {
 
 void OfflineItemModel::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   offline_item_ = std::make_unique<OfflineItem>(item);
   if (delegate_)
     delegate_->OnDownloadUpdated();

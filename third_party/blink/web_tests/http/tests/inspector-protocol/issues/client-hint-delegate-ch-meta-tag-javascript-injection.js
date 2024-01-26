@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const { page, dp } = await testRunner.startBlank(`Test JS Injection Delegate-CH`);
     await dp.Network.enable();
     await dp.Audits.enable();

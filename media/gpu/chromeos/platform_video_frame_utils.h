@@ -62,6 +62,11 @@ MEDIA_GPU_EXPORT gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
 MEDIA_GPU_EXPORT scoped_refptr<gfx::NativePixmapDmaBuf>
 CreateNativePixmapDmaBuf(const VideoFrame* video_frame);
 
+// Returns either the GPU MemoryBuffer ID or the FD of the first file
+// descriptor depending on the storage type.
+MEDIA_GPU_EXPORT gfx::GenericSharedMemoryId GetSharedMemoryId(
+    const VideoFrame& frame);
+
 // Returns true if |gmb_handle| can be imported into minigbm and false
 // otherwise.
 bool CanImportGpuMemoryBufferHandle(

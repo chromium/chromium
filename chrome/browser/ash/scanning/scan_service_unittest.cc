@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -470,7 +470,7 @@ TEST_F(ScanServiceTest, NoCapabilities) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
   fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
-      absl::nullopt);
+      std::nullopt);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
   auto caps = GetScannerCapabilities(scanners[0]->id);

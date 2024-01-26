@@ -77,6 +77,17 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
   return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
 }
 
+absl::optional<gfx::Size> GetImageSize(AImage* image) {
+  int32_t width = 0, height = 0;
+  if (AImage_getWidth(image, &width) != AMEDIA_OK ||
+      AImage_getHeight(image, &height) != AMEDIA_OK || width <= 0 ||
+      height <= 0) {
+    return absl::nullopt;
+  }
+
+  return gfx::Size(width, height);
+}
+
 }  // namespace
 
 // This class is safe to be created/destroyed on different threads. This is made
@@ -220,6 +231,7 @@ void ImageReaderGLOwner::ReleaseResources() {
     // valid |image_reader_|.
     image_refs_.clear();
     current_image_ref_.reset();
+    total_estimated_size_in_bytes_ = 0;
   }
 }
 
@@ -381,8 +393,20 @@ void ImageReaderGLOwner::RegisterRefOnImageLocked(AImage* image) {
   lock_.AssertAcquired();
   DCHECK(image_reader_);
 
+  auto& ref = image_refs_[image];
   // Add a ref that the caller will release.
-  image_refs_[image].count++;
+  if (ref.count++ == 0) {
+    if (auto size = GetImageSize(image)) {
+      ref.size = size.value();
+
+      // We don't know the exact format of the image so we use NV12 as
+      // approximation as the most popular format.
+      constexpr auto format = viz::MultiPlaneFormat::kNV12;
+      ref.estimated_size_in_bytes = format.EstimatedSizeInBytes(ref.size);
+
+      total_estimated_size_in_bytes_ += ref.estimated_size_in_bytes;
+    }
+  }
 }
 
 void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
@@ -423,6 +447,8 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
   } else {
     AImage_delete(image);
   }
+
+  total_estimated_size_in_bytes_ -= it->second.estimated_size_in_bytes;
 
   image_refs_.erase(it);
   DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
@@ -531,6 +557,42 @@ bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
 
   *visible_rect = GetCropRectLocked();
   *coded_size = gfx::Size(desc.width, desc.height);
+
+  return true;
+}
+
+bool ImageReaderGLOwner::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (args.level_of_detail ==
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+    auto dump_name =
+        base::StringPrintf("gpu/media_texture_owner_%d/", tracing_id());
+
+    base::trace_event::MemoryAllocatorDump* dump =
+        pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    total_estimated_size_in_bytes_);
+    // Early out, no need for more detail in a BACKGROUND dump.
+    return true;
+  }
+
+  int i = 0;
+  base::AutoLock auto_lock(lock_);
+  for (const auto& image : image_refs_) {
+    std::string dump_name = base::StringPrintf(
+        "gpu/media_texture_owner_%d/image_%d", tracing_id(), i++);
+
+    // If we fail to get AImage size for any reason, we still report the image
+    // as a empty size, so it can be diagnosed in necessary.
+    base::trace_event::MemoryAllocatorDump* dump =
+        pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    image.second.estimated_size_in_bytes);
+    dump->AddString("dimensions", "", image.second.size.ToString());
+  }
 
   return true;
 }

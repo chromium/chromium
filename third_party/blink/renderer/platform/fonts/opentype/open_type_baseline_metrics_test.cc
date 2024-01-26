@@ -36,9 +36,6 @@ class OpenTypeBaselineMetricsTest : public FontTestBase {
         blink::test::BlinkWebTestsFontsTestDataPath(kAhemFontName), size,
         &ligatures);
   }
-
-  FontDescription font_description;
-  Font font;
 };
 
 TEST_F(OpenTypeBaselineMetricsTest, AlphabeticBaseline) {

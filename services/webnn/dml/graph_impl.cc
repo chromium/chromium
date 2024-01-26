@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +30,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/fp16/src/include/fp16.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
@@ -201,17 +203,18 @@ HRESULT CopyInputDataToUploadBuffer(
 // by using dml::GraphBuilder as a helper. dml::GraphBuilder should be decoupled
 // from mojo graph structs and focus on manipulating DML graph structs.
 //
-// Create the input node of graph for computation with the default tensor flag,
-// specifying the DML_TENSOR_FLAG_OWNED_BY_DML is to create input node for
-// constant weight data.
-//
 // The return value is the GraphInputIndex assigned by graph builder.
 uint32_t CreateInputNode(const IdToOperandMap& id_to_operand_map,
                          uint64_t input_id,
                          GraphBuilder& graph_builder,
-                         IdToNodeOutputMap& id_to_node_output_map,
-                         DML_TENSOR_FLAGS flags = DML_TENSOR_FLAG_NONE) {
+                         IdToNodeOutputMap& id_to_node_output_map) {
   const OperandPtr& operand = id_to_operand_map.at(input_id);
+  // If the operand is constant, the tensor is identified by
+  // DML_TENSOR_FLAG_OWNED_BY_DML which must be bound to the binding table
+  // during the graph initialization, and not during execution.
+  DML_TENSOR_FLAGS flags = operand->kind == Operand::Kind::kConstant
+                               ? DML_TENSOR_FLAG_OWNED_BY_DML
+                               : DML_TENSOR_FLAG_NONE;
   TensorDesc input_tensor_desc(GetTensorDataType(operand->data_type), flags,
                                operand->dimensions);
   const InputNode* input_node = graph_builder.CreateInputNode();
@@ -230,6 +233,51 @@ const NodeOutput* GetNodeOutputForOperand(
   CHECK(input_iterator != id_to_node_output_map.end());
   CHECK(input_iterator->second);
   return input_iterator->second;
+}
+
+// Build a one-element constant operand with specified rank for float value and
+// add it into the graph info. For example, if the rank is 3, the operand
+// dimensions would be {1, 1, 1}.
+uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
+                                           uint64_t& next_operand_id,
+                                           Operand::DataType data_type,
+                                           size_t rank,
+                                           float value) {
+  OperandPtr constant_operand = Operand::New();
+  constant_operand->kind = Operand::Kind::kConstant;
+  constant_operand->dimensions = std::vector<uint32_t>(rank, 1);
+  constant_operand->data_type = data_type;
+
+  uint64_t constant_id = next_operand_id++;
+  CHECK(graph_info->id_to_operand_map
+            .try_emplace(constant_id, std::move(constant_operand))
+            .second);
+
+  mojo_base::BigBuffer buffer;
+
+  switch (data_type) {
+    case Operand::DataType::kFloat32: {
+      buffer = mojo_base::BigBuffer(base::make_span(
+          reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      break;
+    }
+    case Operand::DataType::kFloat16: {
+      uint16_t fp16_value = fp16_ieee_from_fp32_value(value);
+      buffer = mojo_base::BigBuffer(base::make_span(
+          reinterpret_cast<const uint8_t*>(&fp16_value), sizeof(fp16_value)));
+      break;
+    }
+    default:
+      DLOG(ERROR)
+          << "The data type must be one of the floating point data types.";
+      NOTREACHED_NORETURN();
+  }
+
+  CHECK(graph_info->constant_id_to_buffer_map
+            .try_emplace(constant_id, std::move(buffer))
+            .second);
+
+  return constant_id;
 }
 
 const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
@@ -404,14 +452,23 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
-    const IdToOperandMap& id_to_operand_map,
     const mojom::BatchNormalizationPtr& batch_normalization,
+    mojom::GraphInfoPtr& graph_info,
     GraphBuilder& graph_builder,
-    IdToNodeOutputMap& id_to_node_output_map) {
+    IdToNodeOutputMap& id_to_node_output_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    uint64_t& next_operand_id) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, batch_normalization->input_operand_id);
   const TensorDesc& input_tensor_desc = input->GetTensorDesc();
   const auto input_rank = input_tensor_desc.GetDimensions().size();
+
+  auto& id_to_operand_map = graph_info->id_to_operand_map;
+  uint64_t output_id = batch_normalization->output_operand_id;
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  Operand::DataType data_type = output_operand->data_type;
+  const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
+                                      output_operand->dimensions);
 
   const NodeOutput* mean = GetNodeOutputForOperand(
       id_to_node_output_map, batch_normalization->mean_operand_id);
@@ -440,17 +497,29 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
   variance_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
 
-  auto& scale_operand_id = batch_normalization->scale_operand_id;
-  if (!scale_operand_id) {
-    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
-                                        "scale can't be nullptr."));
+  uint64_t scale_operand_id;
+  if (batch_normalization->scale_operand_id.has_value()) {
+    scale_operand_id = batch_normalization->scale_operand_id.value();
+  } else {
+    // If the scale is not present, create a constant operand for scale and
+    // insert the operand into the graph.
+    scale_operand_id = BuildConstantOperandForFloatValue(
+        graph_info, next_operand_id, data_type,
+        /*rank*/ 1, /*default scale*/ 1.0);
+
+    // Create an input node for the scale operand and store the assigned input
+    // index in `constant_id_to_input_index_map`, which will be used for
+    // constant buffer binding.
+    uint32_t scale_input_index =
+        CreateInputNode(id_to_operand_map, scale_operand_id, graph_builder,
+                        id_to_node_output_map);
+    CHECK(constant_id_to_input_index_map
+              .try_emplace(scale_operand_id, scale_input_index)
+              .second);
   }
 
-  const auto scale_node_output_iterator =
-      id_to_node_output_map.find(scale_operand_id.value());
-  CHECK(scale_node_output_iterator != id_to_node_output_map.end());
-  const NodeOutput* scale = scale_node_output_iterator->second;
-  CHECK(scale);
+  const NodeOutput* scale =
+      GetNodeOutputForOperand(id_to_node_output_map, scale_operand_id);
   auto scale_tensor_desc = scale->GetTensorDesc();
   auto scale_rank = scale_tensor_desc.GetDimensions().size();
   CHECK_EQ(scale_rank, 1U);
@@ -461,17 +530,29 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
   scale_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
 
-  auto& bias_operand_id = batch_normalization->bias_operand_id;
-  if (!bias_operand_id) {
-    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
-                                        "bias can't be nullptr."));
+  uint64_t bias_operand_id;
+  if (batch_normalization->bias_operand_id.has_value()) {
+    bias_operand_id = batch_normalization->bias_operand_id.value();
+  } else {
+    // If the bias is not present, create a constant operand for bias and insert
+    // the operand into the graph.
+    bias_operand_id = BuildConstantOperandForFloatValue(
+        graph_info, next_operand_id, data_type,
+        /*rank*/ 1, /*default bias*/ 0);
+
+    // Create an input node for the bias operand and store the assigned input
+    // index in `constant_id_to_input_index_map`, which will be used for
+    // constant buffer binding.
+    uint32_t bias_input_index =
+        CreateInputNode(id_to_operand_map, bias_operand_id, graph_builder,
+                        id_to_node_output_map);
+    CHECK(constant_id_to_input_index_map
+              .try_emplace(bias_operand_id, bias_input_index)
+              .second);
   }
 
-  const auto bias_node_output_iterator =
-      id_to_node_output_map.find(bias_operand_id.value());
-  CHECK(bias_node_output_iterator != id_to_node_output_map.end());
-  const NodeOutput* bias = bias_node_output_iterator->second;
-  CHECK(bias);
+  const NodeOutput* bias =
+      GetNodeOutputForOperand(id_to_node_output_map, bias_operand_id);
   auto bias_tensor_desc = bias->GetTensorDesc();
   auto bias_rank = bias_tensor_desc.GetDimensions().size();
   CHECK_EQ(bias_rank, 1U);
@@ -497,10 +578,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
     activation_operator_desc = std::move(create_activation_result.value());
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
-
-  uint64_t output_id = batch_normalization->output_operand_id;
-  const TensorDesc& output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   DML_BATCH_NORMALIZATION_OPERATOR_DESC batch_normalization_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
@@ -1848,10 +1925,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
 template <typename NormalizationPtr>
 base::expected<void, mojom::ErrorPtr>
 CreateOperatorNodeForMeanVarianceNormalization(
-    const IdToOperandMap& id_to_operand_map,
     const NormalizationPtr& normalization,
+    mojom::GraphInfoPtr& graph_info,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    uint64_t& next_operand_id,
     base::span<const uint32_t> mean_variance_axes,
     base::span<const uint32_t> scale_bias_broadcast_axes,
     mojom::Operation::Tag op) {
@@ -1859,6 +1938,13 @@ CreateOperatorNodeForMeanVarianceNormalization(
       id_to_node_output_map, normalization->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
   size_t input_rank = input_tensor_desc.GetDimensions().size();
+
+  auto& id_to_operand_map = graph_info->id_to_operand_map;
+  uint64_t output_id = normalization->output_operand_id;
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  Operand::DataType data_type = output_operand->data_type;
+  const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
+                                      output_operand->dimensions);
 
   const NodeOutput* scale =
       normalization->scale_operand_id.has_value()
@@ -1871,14 +1957,50 @@ CreateOperatorNodeForMeanVarianceNormalization(
                                     normalization->bias_operand_id.value())
           : nullptr;
 
-  // `scale` and `bias` should be both given or not given when DML_FEATURE_LEVEL
-  // is less than DML_FEATURE_LEVEL_5_2.
-  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc
+  // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC requires `ScaleTensor` and
+  // `BiasTensor` to be both present or not present when DML_FEATURE_LEVEL is
+  // less than DML_FEATURE_LEVEL_5_2.
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc.
+  //
+  // If one of scale/bias is not present, create a constant operand for it and
+  // insert the operand into the graph.
   if ((scale && !bias) || (!scale && bias)) {
-    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
-                                        OpTagToString(op) +
-                                            ": The scale and bias must be both "
-                                            "given or not given."));
+    if (!scale) {
+      uint64_t scale_operand_id = BuildConstantOperandForFloatValue(
+          graph_info, next_operand_id, data_type,
+          scale_bias_broadcast_axes.size(),
+          /*default scale*/ 1.0);
+
+      // Create an input node for the scale operand and store the assigned input
+      // index in `constant_id_to_input_index_map`, which will be used for
+      // constant buffer binding.
+      uint32_t scale_input_index =
+          CreateInputNode(id_to_operand_map, scale_operand_id, graph_builder,
+                          id_to_node_output_map);
+      CHECK(constant_id_to_input_index_map
+                .try_emplace(scale_operand_id, scale_input_index)
+                .second);
+
+      scale = GetNodeOutputForOperand(id_to_node_output_map, scale_operand_id);
+    }
+    if (!bias) {
+      uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
+          graph_info, next_operand_id, data_type,
+          scale_bias_broadcast_axes.size(),
+          /*default bias*/ 0);
+
+      // Create an input node for the bias operand and store the assigned input
+      // index in `constant_id_to_input_index_map`, which will be used for
+      // constant buffer binding.
+      uint32_t bias_input_index =
+          CreateInputNode(id_to_operand_map, bias_operand_id, graph_builder,
+                          id_to_node_output_map);
+      CHECK(constant_id_to_input_index_map
+                .try_emplace(bias_operand_id, bias_input_index)
+                .second);
+
+      bias = GetNodeOutputForOperand(id_to_node_output_map, bias_operand_id);
+    }
   }
 
   if (!base::MakeCheckedNum(mean_variance_axes.size()).IsValid<uint32_t>()) {
@@ -1907,10 +2029,6 @@ CreateOperatorNodeForMeanVarianceNormalization(
     bias_tensor_desc->MakeBroadcastCompatible(input_rank,
                                               scale_bias_broadcast_axes);
   }
-
-  uint64_t output_id = normalization->output_operand_id;
-  const auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
   normalization_operator_desc{
@@ -2724,7 +2842,7 @@ void GraphImpl::OnInitializationComplete(
 void GraphImpl::CreateAndBuild(
     scoped_refptr<CommandQueue> command_queue,
     ComPtr<IDMLDevice> dml_device,
-    const mojom::GraphInfoPtr& graph_info,
+    mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
@@ -2755,15 +2873,21 @@ void GraphImpl::CreateAndBuild(
   }
 
   // The constant operand in WebNNGraph also is treated as input node in graph
-  // desc, the tensor is identified by DML_TENSOR_FLAG_OWNED_BY_DML which must
-  // be bound to the binding table during the graph initialization, and not
-  // during execution.
+  // desc.
   for (auto& [constant_id, _] : graph_info->constant_id_to_buffer_map) {
-    auto graph_input_index =
-        CreateInputNode(id_to_operand_map, constant_id, graph_builder,
-                        id_to_node_output_map, DML_TENSOR_FLAG_OWNED_BY_DML);
+    auto graph_input_index = CreateInputNode(
+        id_to_operand_map, constant_id, graph_builder, id_to_node_output_map);
     constant_id_to_input_index_map[constant_id] = graph_input_index;
   }
+
+  // Find out the next operand id that can be used as the key in
+  // `id_to_operand_map`. It might be used for inserting new operands into maps
+  // when adding operations.
+  uint64_t next_operand_id = 0;
+  base::ranges::for_each(
+      id_to_operand_map, [&next_operand_id](auto& key_value) {
+        next_operand_id = std::max(next_operand_id, key_value.first + 1);
+      });
 
   // Add operations.
   for (auto& operation : graph_info->operations) {
@@ -2780,8 +2904,9 @@ void GraphImpl::CreateAndBuild(
       }
       case mojom::Operation::Tag::kBatchNormalization: {
         create_operator_result = CreateOperatorNodeForBatchNormalization(
-            id_to_operand_map, operation->get_batch_normalization(),
-            graph_builder, id_to_node_output_map);
+            operation->get_batch_normalization(), graph_info, graph_builder,
+            id_to_node_output_map, constant_id_to_input_index_map,
+            next_operand_id);
         break;
       }
       case Operation::Tag::kClamp: {
@@ -2862,18 +2987,19 @@ void GraphImpl::CreateAndBuild(
             break;
         }
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
-            id_to_operand_map, instance_normalization, graph_builder,
-            id_to_node_output_map, mean_variance_axes,
-            scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
+            instance_normalization, graph_info, graph_builder,
+            id_to_node_output_map, constant_id_to_input_index_map,
+            next_operand_id, mean_variance_axes, scale_bias_broadcast_axes,
+            Operation::Tag::kInstanceNormalization);
         break;
       }
       case Operation::Tag::kLayerNormalization: {
         const auto& layer_normalization = operation->get_layer_normalization();
         const auto axes = layer_normalization->axes;
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
-            id_to_operand_map, layer_normalization, graph_builder,
-            id_to_node_output_map, axes, axes,
-            Operation::Tag::kLayerNormalization);
+            layer_normalization, graph_info, graph_builder,
+            id_to_node_output_map, constant_id_to_input_index_map,
+            next_operand_id, axes, axes, Operation::Tag::kLayerNormalization);
         break;
       }
       case Operation::Tag::kLeakyRelu: {

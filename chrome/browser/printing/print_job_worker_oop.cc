@@ -4,6 +4,8 @@
 
 #include "chrome/browser/printing/print_job_worker_oop.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,7 +23,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/printed_document.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
@@ -52,8 +53,8 @@ constexpr char kPrintOopPrintResultHistogramName[] = "Printing.Oop.PrintResult";
 PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
-    absl::optional<PrintBackendServiceManager::ClientId> client_id,
-    absl::optional<PrintBackendServiceManager::ContextId> context_id,
+    std::optional<PrintBackendServiceManager::ClientId> client_id,
+    std::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
     bool print_from_system_dialog)
     : PrintJobWorkerOop(std::move(printing_context_delegate),
@@ -67,8 +68,8 @@ PrintJobWorkerOop::PrintJobWorkerOop(
 PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
-    absl::optional<PrintBackendServiceManager::ClientId> client_id,
-    absl::optional<PrintBackendServiceManager::ContextId> context_id,
+    std::optional<PrintBackendServiceManager::ClientId> client_id,
+    std::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
     bool print_from_system_dialog,
     bool simulate_spooling_memory_errors)
@@ -123,7 +124,8 @@ void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
 }
 #endif
 
-void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
+void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result,
+                                           int job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error initiating printing via service for document "
@@ -132,6 +134,10 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
       NotifyFailure(result);
     return;
   }
+
+  // Retain the job ID that was set in the service.
+  printing_context()->SetJobId(job_id);
+
   VLOG(1) << "Printing initiated with service for document "
           << document_oop_->cookie();
   task_runner()->PostTask(FROM_HERE,
@@ -310,6 +316,12 @@ void PrintJobWorkerOop::OnDocumentDone() {
   // PrintBackend service.
 }
 
+void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
+  // Helper function to get onto worker thread, since using the protected base
+  // class method directly with `base::BindOnce()` calls is not allowed.
+  PrintJobWorker::FinishDocumentDone(job_id);
+}
+
 void PrintJobWorkerOop::OnCancel() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&PrintJobWorkerOop::NotifyFailure,
@@ -409,10 +421,6 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
                             base::WrapRefCounted(print_job()), result));
 }
 
-void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
-  PrintJobWorker::FinishDocumentDone(job_id);
-}
-
 void PrintJobWorkerOop::SendEstablishPrintingContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(ShouldPrintJobOop());
@@ -462,7 +470,7 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   }
 
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  absl::optional<PrintSettings> settings;
+  std::optional<PrintSettings> settings;
   if (print_from_system_dialog_) {
     settings = document_oop_->settings();
   }

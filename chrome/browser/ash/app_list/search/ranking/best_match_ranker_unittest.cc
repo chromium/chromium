@@ -241,7 +241,7 @@ TEST_F(BestMatchRankerTest, RankerResetBetweenQueries) {
   ResultsMap results_1;
   CategoriesList categories_1;
 
-  ranker_.Start(u"ABC", results_1, categories_1);
+  ranker_.Start(u"ABC", categories_1);
   results_1[ResultType::kOmnibox] =
       MakeAnswers({{"omni_1", 0.92}, {"omni_2", 0.3}});
   ranker_.UpdateResultRanks(results_1, ProviderType::kOmnibox);
@@ -251,7 +251,7 @@ TEST_F(BestMatchRankerTest, RankerResetBetweenQueries) {
   ResultsMap results_2;
   CategoriesList categories_2;
 
-  ranker_.Start(u"ABC", results_2, categories_2);
+  ranker_.Start(u"ABC", categories_2);
   results_2[ResultType::kFileSearch] =
       MakeAnswers({{"files_1", 0.7}, {"files_2", 0.97}});
   ranker_.UpdateResultRanks(results_2, ProviderType::kFileSearch);

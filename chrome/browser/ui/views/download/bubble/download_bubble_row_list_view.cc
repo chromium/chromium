@@ -19,11 +19,13 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     int fixed_width,
-    const DownloadBubbleRowListViewInfo& info)
+    const DownloadBubbleRowListViewInfo& info,
+    bool is_in_partial_view)
     : browser_(browser),
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler),
       fixed_width_(fixed_width),
+      is_in_partial_view_(is_in_partial_view),
       info_(info) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
@@ -43,8 +45,8 @@ void DownloadBubbleRowListView::AddRow(
   const ContentId& id = row_info.model()->GetContentId();
   CHECK(!base::Contains(rows_by_id_, id));
   auto* child = AddChildView(std::make_unique<DownloadBubbleRowView>(
-      row_info, bubble_controller_, navigation_handler_, browser_,
-      fixed_width_));
+      row_info, bubble_controller_, navigation_handler_, browser_, fixed_width_,
+      is_in_partial_view_));
   rows_by_id_[id] = child;
 }
 

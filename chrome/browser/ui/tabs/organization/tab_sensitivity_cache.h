@@ -29,7 +29,7 @@ class TabSensitivityCache final
 
   // Returns the sensitivity score for `url`, if it currently has one. The score
   // is a float from 0 to 1, where 1 is most likely to be sensitive.
-  absl::optional<float> GetScore(const GURL& url) const;
+  std::optional<float> GetScore(const GURL& url) const;
 
   // optimization_guide
   //     ::PageContentAnnotationsService

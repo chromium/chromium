@@ -53,7 +53,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const absl::optional<std::u16string>& reply) override {
+      const std::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_clicked_arguments_.emplace(
         ButtonClickedArguments{button_index, reply});
@@ -67,7 +67,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
 
   struct ButtonClickedArguments {
     int button_index;
-    absl::optional<std::u16string> reply;
+    std::optional<std::u16string> reply;
   };
 
   // Public because this is test code.
@@ -76,7 +76,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
   int button_clicked_count_ = 0;
   int settings_button_clicked_count_ = 0;
   int disabled_count_ = 0;
-  absl::optional<ButtonClickedArguments> last_button_clicked_arguments_;
+  std::optional<ButtonClickedArguments> last_button_clicked_arguments_;
 };
 
 // Simulates MessageCenterAsh in ash-chrome.
@@ -233,12 +233,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
   // Create a message_center notification.
-  message_center::NotificationItem item1;
-  item1.title = u"title1";
-  item1.message = u"message1";
-  message_center::NotificationItem item2;
-  item2.title = u"title2";
-  item2.message = u"message2";
+  message_center::NotificationItem item1(u"title1", u"message1");
+  message_center::NotificationItem item2(u"title2", u"message2");
   message_center::RichNotificationData rich_data;
   rich_data.items = {item1, item2};
   message_center::Notification ui_notification(
@@ -390,7 +386,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
   EXPECT_EQ(1, bridge_delegate_.clicked_count_);
 
   notification_delegate_remote->OnNotificationButtonClicked(
-      /*button_index=*/0, /*reply=*/absl::nullopt);
+      /*button_index=*/0, /*reply=*/std::nullopt);
   notification_delegate_remote.FlushForTesting();
   EXPECT_EQ(1, bridge_delegate_.button_clicked_count_);
 
@@ -401,7 +397,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
 
   // Test Inline reply.
   notification_delegate_remote->OnNotificationButtonClicked(
-      /*button_index=*/1, /*reply=*/absl::make_optional(u"test"));
+      /*button_index=*/1, /*reply=*/std::make_optional(u"test"));
   notification_delegate_remote.FlushForTesting();
   EXPECT_EQ(2, bridge_delegate_.button_clicked_count_);
 

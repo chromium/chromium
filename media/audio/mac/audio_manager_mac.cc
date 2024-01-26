@@ -26,14 +26,14 @@
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/audio/apple/audio_auhal.h"
+#include "media/audio/apple/audio_input.h"
+#include "media/audio/apple/audio_low_latency_input.h"
+#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/mac/audio_auhal_mac.h"
-#include "media/audio/mac/audio_input_mac.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
-#include "media/audio/mac/audio_low_latency_input_mac.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/audio/mac/coreaudio_dispatch_override.h"
-#include "media/audio/mac/scoped_audio_unit.h"
 #include "media/audio/mac/screen_capture_kit_swizzler.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -818,7 +818,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   }
 
   AUHALStream* stream = new AUHALStream(this, params, device, log_callback);
-  output_streams_.push_back(stream);
+  output_streams_.insert(stream);
   return stream;
 }
 
@@ -863,7 +863,7 @@ AudioInputStream* AudioManagerMac::MakeLinearInputStream(
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  basic_input_streams_.push_back(stream);
+  basic_input_streams_.insert(stream);
   return stream;
 }
 
@@ -897,7 +897,7 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
 
   auto* stream = new AUAudioInputStream(this, params, audio_device_id,
                                         log_callback, voice_processing_mode);
-  low_latency_input_streams_.push_back(stream);
+  low_latency_input_streams_.insert(stream);
   return stream;
 }
 
@@ -1026,11 +1026,6 @@ base::TimeDelta AudioManagerMac::GetDeferStreamStartTimeout() const {
     return base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents);
   }
   return base::TimeDelta();
-}
-
-base::SingleThreadTaskRunner* AudioManagerMac::GetTaskRunnerForStreamClient()
-    const {
-  return AudioManagerBase::GetTaskRunner();
 }
 
 void AudioManagerMac::StopAmplitudePeakTrace() {
@@ -1240,67 +1235,30 @@ void AudioManagerMac::UnsuppressNoiseReduction(AudioDeviceID device_id) {
   }
 }
 
-bool AudioManagerMac::AudioDeviceIsUsedForInput(AudioDeviceID device_id) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (!basic_input_streams_.empty()) {
-    // For Audio Queues and in the default case (Mac OS X), the audio comes
-    // from the system’s default audio input device as set by a user in System
-    // Preferences.
-    AudioDeviceID default_id;
-    GetDefaultDevice(&default_id, true);
-    if (default_id == device_id) {
-      return true;
-    }
-  }
-
-  // Each low latency streams has its own device ID.
-  for (auto* stream : low_latency_input_streams_) {
-    if (stream->device_id() == device_id) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void AudioManagerMac::ReleaseOutputStream(AudioOutputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
+  CHECK(stream);
+
+  auto it = output_streams_.find(static_cast<AUHALStream*>(stream));
+  if (it != output_streams_.end()) {
+    output_streams_.erase(it);
+  }
+
   AudioManagerBase::ReleaseOutputStream(stream);
 }
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
-  } else {
+  auto stream_it = basic_input_streams_.find(stream);
+  if (stream_it != basic_input_streams_.end()) {
     basic_input_streams_.erase(stream_it);
-  }
-
-  AudioManagerBase::ReleaseInputStream(stream);
-}
-
-void AudioManagerMac::ReleaseOutputStreamUsingRealDevice(
-    AudioOutputStream* stream,
-    AudioDeviceID device_id) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DVLOG(1) << __FUNCTION__ << " Closing output stream with id=0x" << std::hex
-           << device_id << " requested_buffer_size: "
-           << static_cast<AUHALStream*>(stream)->requested_buffer_size();
-
-  // Start by closing down the specified output stream.
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
-  AudioManagerBase::ReleaseOutputStream(stream);
-}
-
-void AudioManagerMac::ReleaseInputStreamUsingRealDevice(
-    AudioInputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
   } else {
-    basic_input_streams_.erase(stream_it);
+    auto it = low_latency_input_streams_.find(
+        static_cast<AUAudioInputStream*>(stream));
+    if (it != low_latency_input_streams_.end()) {
+      low_latency_input_streams_.erase(
+          static_cast<AUAudioInputStream*>(stream));
+    }
   }
 
   AudioManagerBase::ReleaseInputStream(stream);

@@ -72,8 +72,8 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
   void PublishWebApp(apps::AppPtr app) override { num_publish_called_++; }
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override {}
+      std::optional<bool> accessing_camera,
+      std::optional<bool> accessing_microphone) override {}
   int num_publish_called_ = 0;
 };
 
@@ -393,7 +393,7 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
                                 *notification, nullptr);
   stub_display_service->ProcessNotificationOperation(
       NotificationOperation::kClose, NotificationHandler::Type::WEB_PERSISTENT,
-      origin, notification_id, absl::nullopt, absl::nullopt, true);
+      origin, notification_id, std::nullopt, std::nullopt, true);
   EXPECT_EQ(0, no_op_delegate_.num_publish_called());
   stub_display_service->RemoveObserver(publisher_.get());
 
@@ -494,7 +494,7 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
                                 *notification, nullptr);
   stub_display_service->ProcessNotificationOperation(
       NotificationOperation::kClose, NotificationHandler::Type::WEB_PERSISTENT,
-      origin, notification_id, absl::nullopt, absl::nullopt, true);
+      origin, notification_id, std::nullopt, std::nullopt, true);
   EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
   stub_display_service->RemoveObserver(publisher_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS)

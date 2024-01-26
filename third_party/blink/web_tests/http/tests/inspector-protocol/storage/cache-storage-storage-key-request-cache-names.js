@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   async function testBucket(bucketName) {
     const bucket = bucketName === undefined ?
       'self' :

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_BROWSERTEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -15,7 +16,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -23,8 +23,8 @@ namespace enterprise_connectors::test {
 
 class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
  protected:
-  explicit DeviceTrustBrowserTestBase(absl::optional<DeviceTrustConnectorState>
-                                          connector_state = absl::nullopt);
+  explicit DeviceTrustBrowserTestBase(
+      std::optional<DeviceTrustConnectorState> connector_state = std::nullopt);
 
   ~DeviceTrustBrowserTestBase() override;
 
@@ -43,7 +43,7 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
   // Will trigger a URL navigation to `url`. This function will block until the
   // navigation is fully finished.
   // If `url` is not set, the regular `GetRedirectUrl` will be used.
-  void TriggerUrlNavigation(absl::optional<GURL> url = absl::nullopt);
+  void TriggerUrlNavigation(std::optional<GURL> url = std::nullopt);
 
   // Will parse the challenge-response header out of the captured requests.
   // This function will "expect" that the inline flow was completed
@@ -58,7 +58,7 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
   // logged properly.
   void VerifyAttestationFlowSuccessful(
       DTAttestationResult success_result = DTAttestationResult::kSuccess,
-      absl::optional<DTAttestationPolicyLevel> policy_level = absl::nullopt);
+      std::optional<DTAttestationPolicyLevel> policy_level = std::nullopt);
 
   // Verifies that an attestation flow was started, but failed early.
   // `expected_challenge_response` will be used to verify what error challenge
@@ -89,9 +89,9 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
 
   std::string challenge_value_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  absl::optional<const net::test_server::HttpRequest>
+  std::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
-  absl::optional<const net::test_server::HttpRequest>
+  std::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };

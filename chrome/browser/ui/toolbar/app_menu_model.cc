@@ -60,9 +60,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -595,6 +595,12 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           ui::ImageModel::FromVectorIcon(kCastChromeRefreshIcon,
                                          ui::kColorMenuIcon, kDefaultIconSize));
     }
+  }
+  if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
+    AddItemWithStringIdAndIcon(
+        IDC_SHARING_HUB_SCREENSHOT, IDS_SHARING_HUB_SCREENSHOT_LABEL,
+        ui::ImageModel::FromVectorIcon(kSharingHubScreenshotIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
   }
 }
 

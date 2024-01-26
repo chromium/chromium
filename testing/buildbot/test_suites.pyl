@@ -64,7 +64,6 @@
         'args': [
           '--gtest_filter=QuicConnectionMigrationTest.*',
         ],
-        'ci_only': True,
       },
     },
 
@@ -1403,6 +1402,7 @@
         'args': [
           '--flag-specific=enable-skia-graphite',
           '--skipped=always',
+          '--timeout-ms=20000',
           '--num-retries=3',
         ],
         'swarming': {
@@ -1425,6 +1425,7 @@
         'args': [
           '--flag-specific=enable-skia-graphite',
           '--skipped=always',
+          '--timeout-ms=20000',
           '--num-retries=3',
         ],
         'swarming': {
@@ -2327,25 +2328,6 @@
       'content_unittests': {},
     },
 
-    'goma_mac_gtests': {
-      'base_unittests': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Mac-13',
-          },
-        },
-      },
-      'content_unittests': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Mac-13',
-          },
-        },
-      },
-    },
-
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'mixins': [
@@ -2463,6 +2445,7 @@
         ],
         'chromeos_args': [
           '--stop-ui',
+          '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile',
         ],
         'desktop_args': [
           '--use-gpu-in-tests',
@@ -2741,7 +2724,7 @@
           'webgpu_telemetry_cts',
         ],
         'args': [
-          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features',
+          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-blink-features=WebGPUExperimentalFeatures',
         ],
         'swarming': {
           'shards': 14,
@@ -4023,11 +4006,21 @@
       'angle_unittests': {
         'use_isolated_scripts_api': True,
       },
-      'base_unittests': {},
+      'base_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter',
+        ],
+      },
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
@@ -4759,7 +4752,25 @@
       },
     },
 
-    'optimization_guide_gtests': {
+    'optimization_guide_desktop_gtests': {
+      'chrome_ml_unittests': {},
+      'optimization_guide_browser_tests': {
+        'test': 'browser_tests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+        ],
+      },
+      'optimization_guide_components_unittests': {
+        'test': 'components_unittests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+        ],
+      },
+      'optimization_guide_gpu_unittests': {},
+      'optimization_guide_unittests': {},
+    },
+
+    'optimization_guide_desktop_gtests_nogpu': {
       'chrome_ml_unittests': {},
       'optimization_guide_browser_tests': {
         'test': 'browser_tests',
@@ -5711,6 +5722,7 @@
             '--verbose',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -5751,6 +5763,7 @@
             '--verbose',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -5772,6 +5785,7 @@
             '--verbose',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
   },
@@ -6375,7 +6389,7 @@
     ],
 
     'gpu_fyi_chromeos_release_gtests': [
-      'gpu_common_gtests_validating',
+      'gpu_common_gtests_passthrough',
     ],
 
     'gpu_fyi_chromeos_release_telemetry_tests': [
@@ -6744,6 +6758,25 @@
     },
 
     'android_13_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+      'android_smoke_tests': {},
+      'android_specific_chromium_gtests': {},
+      'android_trichrome_smoke_tests': {},
+      'chromium_gtests': {},
+      'chromium_gtests_for_devices_with_graphical_output': {},
+      'linux_flavor_specific_chromium_gtests': {},
+      'system_webview_shell_instrumentation_tests': {},
+      'webview_trichrome_64_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ],
+      },
+      'webview_trichrome_64_cts_tests_no_field_trial': {},
+      'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_14_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
       'android_smoke_tests': {},
       'android_specific_chromium_gtests': {},
@@ -7684,6 +7717,22 @@
       },
     },
 
+    'lacros_skylab_tests_amd64_generic_rel_gtest': {
+      'chromeos_integration_tests': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_LKGM',
+        ],
+      },
+    },
+
+    'lacros_skylab_tests_amd64_generic_rel_tast': {
+      'lacros_skylab_tests': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_LKGM',
+        ],
+      },
+    },
+
     'linux_lacros_gtests': {
       'aura_gtests': {},
       'chromium_gtests': {},
@@ -7849,6 +7898,15 @@
 
     'webview_trichrome_10_cts_tests_gtest': {
       'webview_trichrome_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ],
+      },
+    },
+
+    'webview_trichrome_64_cts_hostside_gtests': {
+      'webview_trichrome_64_cts_hostside_tests': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',

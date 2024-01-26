@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -1286,11 +1287,12 @@ CanvasResourceProvider::CanvasResourceProvider(
     : type_(type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       resource_dispatcher_(resource_dispatcher),
+      info_(info),
       filter_quality_(filter_quality),
       is_origin_top_left_(is_origin_top_left),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      resource_host_(resource_host) {
-  info_ = info;
+      resource_host_(resource_host),
+      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
+      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
@@ -1301,7 +1303,6 @@ CanvasResourceProvider::CanvasResourceProvider(
   }
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  recorder_.beginRecording(Size());
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
@@ -1317,14 +1318,30 @@ CanvasResourceProvider::~CanvasResourceProvider() {
   }
 }
 
+std::unique_ptr<MemoryManagedPaintRecorder>
+CanvasResourceProvider::ReleaseRecorder() {
+  // When releasing the recorder, we swap it with a new, valid one. This way,
+  // the `recorder_` member is guarantied to be always valid.
+  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_->SetClient(nullptr);
+  recorder_.swap(recorder);
+  return recorder;
+}
+
+void CanvasResourceProvider::SetRecorder(
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+  recorder->SetClient(this);
+  recorder_ = std::move(recorder);
+}
+
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(TotalImageBytesUsed() > max_pinned_image_bytes_)) {
+  if (UNLIKELY(recorder_->OpBytesUsed() > max_recorded_op_bytes_) ||
+      UNLIKELY(recorder_->ImageBytesUsed() > max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }
@@ -1392,14 +1409,23 @@ void CanvasResourceProvider::InitializeForRecording(
   }
 }
 
-cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
+void CanvasResourceProvider::RecordingCleared() {
+  // Since the recording has been cleared, it contains no draw commands and it
+  // is now safe to update `mode_` to discard the old copy of canvas content.
+  mode_ = SkSurface::kDiscard_ContentChangeMode;
+  clear_frame_ = true;
+  last_flush_reason_ = FlushReason::kNone;
+  printing_fallback_reason_ = FlushReason::kNone;
+}
+
+MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas(bool needs_will_draw) {
   // TODO(https://crbug.com/1211912): Video frames don't work without
   // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
   // with it. There should be a better way to solve this.
   if (needs_will_draw)
     WillDrawIfNeeded();
 
-  return recorder_.getRecordingCanvas();
+  return recorder_->getRecordingCanvas();
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {
@@ -1409,12 +1435,8 @@ void CanvasResourceProvider::OnContextDestroyed() {
 }
 
 void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
-  if (Canvas()) {
-    MemoryManagedPaintCanvas* canvas =
-        static_cast<MemoryManagedPaintCanvas*>(Canvas());
-    if (canvas->IsCachingImage(content_id)) {
-      FlushCanvas(FlushReason::kSourceImageWillChange);
-    }
+  if (Canvas().IsCachingImage(content_id)) {
+    FlushCanvas(FlushReason::kSourceImageWillChange);
   }
 }
 
@@ -1494,7 +1516,7 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
 
 absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
-  if (!HasRecordedDrawOps()) {
+  if (!recorder_->HasRecordedDrawOps()) {
     return absl::nullopt;
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
@@ -1517,7 +1539,7 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     clear_frame_ = true;
     printing_fallback_reason_ = FlushReason::kNone;
   }
-  cc::PaintRecord recording = recorder_.finishRecordingAsPicture();
+  cc::PaintRecord recording = recorder_->finishRecordingAsPicture();
   RasterRecord(recording);
   last_recording_ =
       preserve_recording ? absl::optional(recording) : absl::nullopt;
@@ -1584,7 +1606,7 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
 
   DCHECK(IsValid());
-  DCHECK(!HasRecordedDrawOps());
+  DCHECK(!recorder_->HasRecordedDrawOps());
 
   EnsureSkiaCanvas();
 
@@ -1609,9 +1631,9 @@ void CanvasResourceProvider::Clear() {
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
   if (info_.alphaType() == kOpaque_SkAlphaType)
-    Canvas()->clear(SkColors::kBlack);
+    Canvas().clear(SkColors::kBlack);
   else
-    Canvas()->clear(SkColors::kTransparent);
+    Canvas().clear(SkColors::kTransparent);
 
   FlushCanvas(FlushReason::kClear);
 }
@@ -1716,38 +1738,6 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
   return canvas_resources_.back();
 }
 
-void CanvasResourceProvider::SkipQueuedDrawCommands() {
-  // Notify the provider that the recording has been cleared.
-  RecordingCleared();
-
-  // If no draw calls have been recorded, we have nothing to skip. The recoding
-  // could still contain layers or matrix clip stack levels. As an optimization,
-  // we can early abort as there is no need to discard the layer matrix clip
-  // stack just to rebuild it again.
-  if (!HasRecordedDrawOps()) {
-    return;
-  }
-
-  // Discards the whole recording and rebuilds the layer and matrix clip stack.
-  recorder_.finishRecordingAsPicture();
-}
-
-void CanvasResourceProvider::RestartRecording() {
-  // Notify the provider that the recording has been cleared.
-  RecordingCleared();
-  // Discard the whole recording and re-initialize it.
-  recorder_.finishRecordingAsPicture();
-}
-
-void CanvasResourceProvider::RecordingCleared() {
-  // The recording was cleared from any draw command it might have had.
-  // It's now safe to update `mode_` to discard the old copy of canvas content.
-  mode_ = SkSurface::kDiscard_ContentChangeMode;
-  clear_frame_ = true;
-  last_flush_reason_ = FlushReason::kNone;
-  printing_fallback_reason_ = FlushReason::kNone;
-}
-
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
@@ -1759,10 +1749,6 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   // PaintImage::GetSwSkImage above
   sk_image->peekPixels(&map);
   WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
-}
-
-bool CanvasResourceProvider::HasRecordedDrawOps() const {
-  return recorder_.HasRecordedDrawOps();
 }
 
 void CanvasResourceProvider::TearDownSkSurface() {

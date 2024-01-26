@@ -4,6 +4,8 @@
 
 #include "net/cert/ct_objects_extractor.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_serialization.h"
@@ -39,7 +41,7 @@ class CTObjectsExtractorTest : public ::testing::Test {
     std::string sct_list;
     ASSERT_TRUE(ExtractEmbeddedSCTList(cert->cert_buffer(), &sct_list));
 
-    std::vector<base::StringPiece> parsed_scts;
+    std::vector<std::string_view> parsed_scts;
     // Make sure the SCT list can be decoded properly
     ASSERT_TRUE(DecodeSCTList(sct_list, &parsed_scts));
     ASSERT_EQ(1u, parsed_scts.size());

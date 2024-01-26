@@ -101,6 +101,9 @@ class CopyOrMoveIOTaskImpl {
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url);
 
+  // Helper function to generate FILE_ERROR_NO_SPACE errors in testing.
+  static void SetDestinationNoSpaceForTesting(bool destination_no_space);
+
  protected:
   // A helper for `GetHookDelegate`.
   bool ShouldSkipEncryptedFiles();

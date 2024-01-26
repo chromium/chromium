@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.quick_delete;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -19,6 +22,16 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     /** {@link SettingsLauncher} used to launch the Clear browsing data settings fragment. */
     private final SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
+
+    private final @NonNull Supplier<TabSwitcher> mTabSwitcherSupplier;
+
+    /**
+     * @param tabSwitcherSupplier A supplier for {@link TabSwitcher} interface that will be used to
+     *     trigger the Quick Delete animation.
+     */
+    public QuickDeleteDelegateImpl(@NonNull Supplier<TabSwitcher> tabSwitcherSupplier) {
+        mTabSwitcherSupplier = tabSwitcherSupplier;
+    }
 
     @Override
     public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
@@ -39,5 +52,15 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     @Override
     SettingsLauncher getSettingsLauncher() {
         return mSettingsLauncher;
+    }
+
+    @Override
+    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd) {
+        @Nullable TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
+        if (tabSwitcher == null) {
+            onAnimationEnd.run();
+            return;
+        }
+        tabSwitcher.showQuickDeleteAnimation(onAnimationEnd);
     }
 }

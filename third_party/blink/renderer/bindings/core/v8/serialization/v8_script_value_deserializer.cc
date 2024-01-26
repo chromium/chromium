@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
@@ -236,16 +236,12 @@ void V8ScriptValueDeserializer::Transfer() {
   if (!unpacked_value_)
     return;
 
-  v8::Isolate* isolate = script_state_->GetIsolate();
-  v8::Local<v8::Context> context = script_state_->GetContext();
-  v8::Local<v8::Object> creation_context = context->Global();
-
   // Transfer array buffers.
   const auto& array_buffers = unpacked_value_->ArrayBuffers();
   for (unsigned i = 0; i < array_buffers.size(); i++) {
     DOMArrayBufferBase* array_buffer = array_buffers.at(i);
     v8::Local<v8::Value> wrapper =
-        ToV8(array_buffer, creation_context, isolate);
+        ToV8Traits<DOMArrayBufferBase>::ToV8(script_state_, array_buffer);
     if (array_buffer->IsShared()) {
       // Crash if we are receiving a SharedArrayBuffer and this isn't allowed.
       auto* execution_context = ExecutionContext::From(script_state_);
@@ -875,9 +871,8 @@ v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
                                       "Unable to deserialize cloned data.");
     return v8::MaybeLocal<v8::Object>();
   }
-  v8::Local<v8::Object> creation_context =
-      script_state_->GetContext()->Global();
-  v8::Local<v8::Value> wrapper = ToV8(wrappable, creation_context, isolate);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<ScriptWrappable>::ToV8(script_state_, wrappable);
   DCHECK(wrapper->IsObject());
   return wrapper.As<v8::Object>();
 }
@@ -902,10 +897,8 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     ArrayBufferContents& contents = shared_array_buffers_contents.at(id);
     DOMSharedArrayBuffer* shared_array_buffer =
         DOMSharedArrayBuffer::Create(contents);
-    v8::Local<v8::Object> creation_context =
-        script_state_->GetContext()->Global();
-    v8::Local<v8::Value> wrapper =
-        ToV8(shared_array_buffer, creation_context, isolate);
+    v8::Local<v8::Value> wrapper = ToV8Traits<DOMSharedArrayBuffer>::ToV8(
+        script_state_, shared_array_buffer);
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }

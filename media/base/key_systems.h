@@ -14,7 +14,6 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
-#include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -28,6 +27,8 @@ namespace media {
 // |key_system| to every method. http://crbug.com/457438
 class MEDIA_EXPORT KeySystems {
  public:
+  // TODO(b/267698934): Remove this API when migrating KeySystems to be a
+  // per-frame instance.
   // Returns the KeySystems singleton which may or may not be updated yet.
   static KeySystems* GetInstance();
 
@@ -94,12 +95,10 @@ class MEDIA_EXPORT KeySystems {
       const std::string& key_system) const = 0;
 
  protected:
-  virtual ~KeySystems() {}
+  virtual ~KeySystems() = default;
 };
 
-// TODO(ddorwin): WebContentDecryptionModuleSessionImpl::initializeNewSession()
-// is violating this rule! https://crbug.com/249976.
-// Use for prefixed EME only!
+// Returns whether a key systems is supported with init data type.
 MEDIA_EXPORT bool IsSupportedKeySystemWithInitDataType(
     const std::string& key_system,
     EmeInitDataType init_data_type);

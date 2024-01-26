@@ -16,8 +16,6 @@ PrerewrittenEventForwarder::~PrerewrittenEventForwarder() = default;
 ui::EventDispatchDetails PrerewrittenEventForwarder::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  DCHECK(::features::IsShortcutCustomizationEnabled() ||
-         features::IsPeripheralCustomizationEnabled());
   if (event.IsKeyEvent()) {
     const ui::KeyEvent& key_event = *event.AsKeyEvent();
     if (!key_event.is_repeat()) {

@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -120,6 +121,16 @@ void HandleImageUrlResponse(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       callback, url::GURLAndroid::FromNativeGURL(env, image_url));
+}
+
+const bookmarks::BookmarkNode* GetNodeFromReadingListIfLoaded(
+    const ReadingListManager* manager,
+    const GURL& url) {
+  if (manager->IsLoaded()) {
+    return manager->Get(url);
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -265,34 +276,39 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
 const bookmarks::BookmarkNode*
 BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrlImpl(const GURL& url) {
   std::vector<const bookmarks::BookmarkNode*> nodes;
-  const auto* reading_list_node =
-      local_or_syncable_reading_list_manager_->Get(url);
+  const auto* reading_list_node = GetNodeFromReadingListIfLoaded(
+      local_or_syncable_reading_list_manager_.get(), url);
   if (reading_list_node) {
     nodes.push_back(reading_list_node);
   }
 
   if (account_reading_list_manager_) {
-    reading_list_node = account_reading_list_manager_->Get(url);
+    reading_list_node = GetNodeFromReadingListIfLoaded(
+        account_reading_list_manager_.get(), url);
     if (reading_list_node) {
       nodes.push_back(reading_list_node);
     }
   }
 
   // Get all the nodes for |url| from BookmarkModel and sort them by date added.
+  bookmarks::ManagedBookmarkService* managed =
+      ManagedBookmarkServiceFactory::GetForProfile(profile_);
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      bookmarkModelResult =
-          BookmarkModelFactory::GetForBrowserContext(profile_)->GetNodesByURL(
-              url);
-  nodes.insert(nodes.end(), bookmarkModelResult.begin(),
-               bookmarkModelResult.end());
+      bookmark_model_result = bookmark_model_->GetNodesByURL(url);
+  nodes.insert(nodes.end(), bookmark_model_result.begin(),
+               bookmark_model_result.end());
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
-  if (nodes.size() == 0) {
-    return nullptr;
+  // Return the first node matching the search criteria.
+  for (const auto* node : nodes) {
+    // Skip any managed nodes because they're not user bookmarks.
+    if (managed->IsNodeManaged(node)) {
+      continue;
+    }
+    return node;
   }
 
-  // Return the first node matching the search criteria.
-  return nodes.front();
+  return nullptr;
 }
 
 jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
@@ -390,33 +406,32 @@ void BookmarkBridge::GetAllFoldersWithDepths(
 
 void BookmarkBridge::GetTopLevelFolderIds(
     JNIEnv* env,
+    jboolean j_ignore_visibility,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
-  AddBookmarkNodesToBookmarkIdList(env, j_result_obj,
-                                   GetTopLevelFolderIdsImpl());
+  AddBookmarkNodesToBookmarkIdList(
+      env, j_result_obj, GetTopLevelFolderIdsImpl(j_ignore_visibility));
 }
-std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl() {
+std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
+    bool ignore_visibility) {
   std::vector<const BookmarkNode*> top_level_folders;
   // Query for the top-level folders:
   // bookmarks bar, mobile node, other node, and managed node (if it exists).
   // Account bookmarks come first, and local bookmarks after.
 
-  // TODO(crbug.com/1509189): Include account bookmarks when they're available.
-  // TODO(crbug.com/1509189): Hide empty local folders by default and add
-  // another function to get all top level folders to use when moving.
-  if (account_reading_list_manager_ &&
-      account_reading_list_manager_->GetRoot()) {
-    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
-  }
-
   for (const auto& root_child : bookmark_model_->root_node()->children()) {
-    if (!root_child->IsVisible()) {
+    if (!ignore_visibility && !root_child->IsVisible()) {
       continue;
     }
 
     top_level_folders.push_back(root_child.get());
+  }
+
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->GetRoot()) {
+    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
   }
 
   if (local_or_syncable_reading_list_manager_->GetRoot()) {
@@ -454,6 +469,46 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetOtherFolderId(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetDesktopFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* desktop_node = bookmark_model_->bookmark_bar_node();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, desktop_node->id(), GetBookmarkType(desktop_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountMobileFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* mobile_node = bookmark_model_->account_mobile_node();
+  if (!mobile_node) {
+    return nullptr;
+  }
+
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, mobile_node->id(), GetBookmarkType(mobile_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountOtherFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* other_node = bookmark_model_->account_other_node();
+  if (!other_node) {
+    return nullptr;
+  }
+
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, other_node->id(), GetBookmarkType(other_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountDesktopFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* desktop_node =
+      bookmark_model_->account_bookmark_bar_node();
+  if (!desktop_node) {
+    return nullptr;
+  }
+
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, desktop_node->id(), GetBookmarkType(desktop_node));
   return folder_id_obj;
@@ -684,11 +739,10 @@ ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
   int size = meta->ByteSize();
   std::string proto_bytes;
   meta->SerializeToString(&proto_bytes);
-  std::vector<uint8_t> data;
-  data.resize(size);
+  std::vector<uint8_t> data(size);
   meta->SerializeToArray(data.data(), size);
 
-  return base::android::ToJavaByteArray(env, data.data(), size);
+  return base::android::ToJavaByteArray(env, data);
 }
 
 void BookmarkBridge::DeletePowerBookmarkMeta(
@@ -1021,8 +1075,18 @@ bool BookmarkBridge::IsAccountBookmarkImpl(const BookmarkNode* node) {
     return true;
   }
 
-  // TODO(crbug.com/1509189): Also check the bookmark model for account-ness
-  // when it's ready.
+  std::set<const BookmarkNode*> account_bookmark_root_folders = {
+      bookmark_model_->account_bookmark_bar_node(),
+      bookmark_model_->account_other_node(),
+      bookmark_model_->account_mobile_node()};
+  while (node != nullptr) {
+    if (account_bookmark_root_folders.find(node) !=
+        account_bookmark_root_folders.end()) {
+      return true;
+    }
+    node = node->parent();
+  }
+
   return false;
 }
 

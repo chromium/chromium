@@ -233,7 +233,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
   // that no further actions are performed following the call to
   // CloseWebContentsAt(). See (https://crbug.com/1175507).
-  auto* tab_strip_model = optional_details->tab_strip_model;
+  auto* tab_strip_model = optional_details->tab_strip_model.get();
   const int tab_index = optional_details->index;
   tab_strip_model->CloseWebContentsAt(
       tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
@@ -446,7 +446,7 @@ void TabSearchPageHandler::RequestTabOrganization() {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
   }
-  session->StartRequest();
+  organization_service_->StartRequest(browser);
 }
 
 void TabSearchPageHandler::RemoveTabFromOrganization(
@@ -472,7 +472,7 @@ void TabSearchPageHandler::RemoveTabFromOrganization(
   }
 }
 
-void TabSearchPageHandler::ResetSession() {
+void TabSearchPageHandler::RestartSession() {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
     return;
@@ -482,7 +482,21 @@ void TabSearchPageHandler::ResetSession() {
     return;
   }
 
-  organization_service_->ResetSessionForBrowser(browser);
+  restarting_ = true;
+
+  // Don't notify observers to avoid a repaint
+  TabOrganizationSession* session =
+      organization_service_->ResetSessionForBrowser(browser, nullptr);
+  if (!base::Contains(listened_sessions_, session)) {
+    session->AddObserver(this);
+    listened_sessions_.emplace_back(session);
+  }
+
+  organization_service_->StartRequest(browser);
+
+  restarting_ = false;
+
+  OnTabOrganizationSessionUpdated(session);
 }
 
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
@@ -1102,7 +1116,7 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
 
 void TabSearchPageHandler::OnTabOrganizationSessionUpdated(
     const TabOrganizationSession* session) {
-  if (!base::Contains(listened_sessions_, session)) {
+  if (restarting_ || !base::Contains(listened_sessions_, session)) {
     return;
   }
 
@@ -1118,7 +1132,11 @@ void TabSearchPageHandler::OnTabOrganizationSessionDestroyed(
        session_iter != listened_sessions_.end(); session_iter++) {
     if (session_id == (*session_iter)->session_id()) {
       listened_sessions_.erase(session_iter);
-      page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
+      // Ignore this update when restarting, as it will be replaced by the new
+      // session.
+      if (!restarting_) {
+        page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
+      }
       return;
     }
   }
@@ -1127,7 +1145,7 @@ void TabSearchPageHandler::OnTabOrganizationSessionDestroyed(
 void TabSearchPageHandler::OnSessionCreated(const Browser* browser,
                                             TabOrganizationSession* session) {
   Profile* const profile = Profile::FromWebUI(web_ui_);
-  if (!browser || browser->profile() != profile) {
+  if (restarting_ || !browser || browser->profile() != profile) {
     return;
   }
 

@@ -1665,10 +1665,11 @@
     "numbers",
     "words",
 
-    // ([video]-dynamic-range) media feature
+    // ([video]-dynamic-range) media feature, and dynamic-range-limit property
     "standard",
     "high",
     "constrained-high",
+    "dynamic-range-limit-mix",
 
     // Layered @import rule
     "layer",
@@ -1774,5 +1775,15 @@
     "x-self-end",
     "y-self-start",
     "y-self-end",
+
+    // resize
+    // none
+    // both
+    // horizontal
+    // vertical
+    // block
+    // inline
+    // auto (legacy version of -internal-textarea-auto)
+    "-internal-textarea-auto",
   ],
 }

@@ -42,10 +42,9 @@ class AshEventStorage : public EventStorage {
   void AddBatchEvents(
       const google::protobuf::RepeatedPtrField<StructuredEventProto>& events)
       override;
-
   // Populates |proto| with a copy of the events currently recorded across both
   // |pre_user_events_| and |user_events_|.
-  void GetEvents(EventsProto* proto);
+  void CopyEvents(EventsProto* events_proto) const override;
 
  private:
   void OnWrite(const WriteStatus status);
@@ -53,7 +52,10 @@ class AshEventStorage : public EventStorage {
   void OnProfileRead(const ReadStatus status);
 
   EventsProto* pre_user_events() { return pre_user_events_->get(); }
+  const EventsProto* pre_user_events() const { return pre_user_events_->get(); }
+
   EventsProto* user_events() { return user_events_->get(); }
+  const EventsProto* user_events() const { return user_events_->get(); }
 
   // Retrieves the approproiate event store to write the event. Returns nullptr
   // if there is no appropriate place to persist the event.

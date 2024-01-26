@@ -33,6 +33,17 @@ bool CheckRange(std::vector<uint8_t>::const_iterator it,
 
 }  // namespace internal
 
+// Represents application requirements for admin.
+enum class NeedsAdmin {
+  // The application will install per user.
+  kNo = 0,
+  // The application will install machine-wide.
+  kYes,
+  // The application will install machine-wide if permissions allow, else will
+  // install per-user.
+  kPrefers,
+};
+
 // This struct contains the attributes for a given app parsed from a part of the
 // metainstaller tag. It contains minimal policy and is intended to be a
 // near-direct mapping from tag to memory. See TagArgs, which stores a list of
@@ -41,17 +52,6 @@ bool CheckRange(std::vector<uint8_t>::const_iterator it,
 // An empty string in std::string members indicates that the given attribute did
 // not appear in the tag for this app.
 struct AppArgs {
-  // Represents application requirements for admin.
-  enum class NeedsAdmin {
-    // The application will install per user.
-    kNo = 0,
-    // The application will install machine-wide.
-    kYes,
-    // The application will install machine-wide if permissions allow, else will
-    // install per-user.
-    kPrefers,
-  };
-
   // |app_id| must not be empty and will be made lowercase.
   explicit AppArgs(base::StringPiece app_id);
 
@@ -72,7 +72,12 @@ struct AppArgs {
   std::optional<NeedsAdmin> needs_admin;
 };
 
-std::ostream& operator<<(std::ostream&, const AppArgs::NeedsAdmin&);
+std::ostream& operator<<(std::ostream&, const NeedsAdmin&);
+
+// This struct contains the "runtime mode" parsed from the metainstaller tag.
+struct RuntimeModeArgs {
+  std::optional<NeedsAdmin> needs_admin;
+};
 
 // This struct contains the attributes parsed from a metainstaller tag. An empty
 // string in std::string members indicates that the given attribute did not
@@ -111,6 +116,10 @@ struct TagArgs {
 
   // List of apps to install.
   std::vector<AppArgs> apps;
+
+  // This member is present if the "runtime mode" was provided on the command
+  // line.
+  std::optional<RuntimeModeArgs> runtime_mode;
 
   // The original tag string.
   std::string tag_string;
@@ -176,6 +185,14 @@ enum class ErrorCode {
   // Note: A value of 2 is considered the same as not specifying the usage
   // stats.
   kGlobal_UsageStatsValueIsInvalid,
+
+  // The runtime value must be "true", "persist", or "false". The values
+  // "persist" and "false" are only for backward compatibility in case someone
+  // uses it as an oversight, and are treated the same as "true".
+  kGlobal_RuntimeModeValueIsInvalid,
+
+  // The needsadmin value must be "yes", "no", or "prefers".
+  kRuntimeMode_NeedsAdminValueIsInvalid,
 };
 
 std::ostream& operator<<(std::ostream&, const ErrorCode&);

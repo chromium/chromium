@@ -45,13 +45,14 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,
                                ColorScheme color_scheme) const override;
-  void PaintArrowButton(cc::PaintCanvas* gc,
-                        const ColorProvider* color_provider,
-                        const gfx::Rect& rect,
-                        Part direction,
-                        State state,
-                        ColorScheme color_scheme,
-                        const ScrollbarArrowExtraParams& arrow) const override;
+  void PaintArrowButton(
+      cc::PaintCanvas* gc,
+      const ColorProvider* color_provider,
+      const gfx::Rect& rect,
+      Part direction,
+      State state,
+      ColorScheme color_scheme,
+      const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            Part part,

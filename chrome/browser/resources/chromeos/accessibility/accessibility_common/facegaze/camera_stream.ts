@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DrawingUtils, FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_vision.js';
-import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
+import {DrawingUtils, FaceLandmarker, FilesetResolver} from '../third_party/mediapipe/task_vision/task_vision.js';
+import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+
 import {MouseController} from './mouse_controller.js';
 
 /**
@@ -62,7 +63,8 @@ export class WebCamFaceLandmarker {
       return;
     }
 
-    const videoElement = document.getElementById('cameraStream');
+    const videoElement =
+        document.getElementById('cameraStream') as HTMLVideoElement;
     const result = this.faceLandmarker_.detectForVideo(
         /*videoFrame=*/ videoElement, /*timestamp=*/ performance.now());
     // Send result to the background page for processing.
@@ -91,13 +93,13 @@ export class WebCamFaceLandmarker {
     for (const landmarks of result.faceLandmarks) {
       this.drawingUtils_.drawConnectors(
           landmarks, FaceLandmarker.FACE_LANDMARKS_CONTOURS,
-          {color: '#C0C0C060', lineWidth: 2});
+          {color: '#F5005760', lineWidth: 2});
     }
 
     // Center point.
     ctx.beginPath();
     ctx.arc(overlay.width / 2, overlay.height / 2, 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = 'blue';
+    ctx.strokeStyle = '#3D5AFE';
     ctx.stroke();
 
     // Forehead point.
@@ -107,7 +109,7 @@ export class WebCamFaceLandmarker {
     const y = foreheadLocation.y;
     ctx.beginPath();
     ctx.arc(x * overlay.width, y * overlay.height, 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = '#FFEA00';
     ctx.stroke();
   }
 }

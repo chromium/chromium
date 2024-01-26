@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -180,8 +181,8 @@ class PriceNotificationsPriceTrackingMediatorTest
 
   bookmarks::BookmarkModel* GetBookmarkModelUsedForSync() {
     return ShouldEnablekReplaceSyncPromosWithSignInPromos()
-               ? account_bookmark_model_
-               : local_or_syncable_bookmark_model_;
+               ? account_bookmark_model_.get()
+               : local_or_syncable_bookmark_model_.get();
   }
 
  protected:
@@ -191,10 +192,10 @@ class PriceNotificationsPriceTrackingMediatorTest
   PriceNotificationsPriceTrackingMediator* mediator_;
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  commerce::MockShoppingService* shopping_service_;
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_;
-  bookmarks::BookmarkModel* account_bookmark_model_;
-  BrowserList* browser_list_;
+  raw_ptr<commerce::MockShoppingService> shopping_service_;
+  raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
+  raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   TestPriceNotificationsConsumer* consumer_ =

@@ -4,15 +4,16 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/test/mock_attribution_host.h"
-#include "content/browser/attribution_reporting/test/mock_data_host.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -33,9 +34,13 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::EventTriggerData;
+using ::attribution_reporting::TriggerRegistration;
 using ::attribution_reporting::mojom::RegistrationEligibility;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::StrictMock;
 
 }  // namespace
 
@@ -63,17 +68,22 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
         "content/test/data/attribution_reporting");
     ASSERT_TRUE(https_server_->Start());
 
-    MockAttributionHost::Override(web_contents());
+    auto mock_manager = std::make_unique<StrictMock<MockAttributionManager>>();
+    auto data_host_manager =
+        std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get());
+    mock_manager->SetDataHostManager(std::move(data_host_manager));
+    static_cast<StoragePartitionImpl*>(
+        web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
+        ->OverrideAttributionManagerForTesting(std::move(mock_manager));
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  MockAttributionHost& mock_attribution_host() {
-    AttributionHost* attribution_host =
-        AttributionHost::FromWebContents(web_contents());
-    return *static_cast<MockAttributionHost*>(attribution_host);
+  StrictMock<MockAttributionManager>& mock_attribution_manager() {
+    return *static_cast<StrictMock<MockAttributionManager>*>(
+        AttributionManager::FromWebContents(web_contents()));
   }
 
  private:
@@ -89,17 +99,26 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
 
-  std::vector<std::unique_ptr<MockDataHost>> data_hosts;
-  base::RunLoop loop;
-  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillRepeatedly(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              RegistrationEligibility) {
-            data_hosts.push_back(GetRegisteredDataHost(std::move(host)));
-            if (data_hosts.size() == 2) {
-              loop.Quit();
-            }
-          });
+  base::RunLoop run_loop;
+  const auto on_trigger = base::BarrierClosure(2, run_loop.QuitClosure());
+  EXPECT_CALL(
+      mock_attribution_manager(),
+      HandleTrigger(
+          Property(&AttributionTrigger::registration,
+                   Field(&TriggerRegistration::event_triggers,
+                         ElementsAre(Field(&EventTriggerData::data, 5u)))),
+          _))
+      .Times(1)
+      .WillOnce([&on_trigger]() { on_trigger.Run(); });
+  EXPECT_CALL(
+      mock_attribution_manager(),
+      HandleTrigger(
+          Property(&AttributionTrigger::registration,
+                   Field(&TriggerRegistration::event_triggers,
+                         ElementsAre(Field(&EventTriggerData::data, 7u)))),
+          _))
+      .Times(1)
+      .WillOnce([&on_trigger]() { on_trigger.Run(); });
 
   GURL register_url = https_server()->GetURL(
       "c.test", "/register_trigger_headers_and_redirect.html");
@@ -107,27 +126,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", register_url)));
 
-  if (data_hosts.size() != 2) {
-    loop.Run();
-  }
-
-  data_hosts.front()->WaitForTriggerData(/*num_trigger_data=*/1);
-  const auto& trigger_data1 = data_hosts.front()->trigger_data();
-
-  EXPECT_THAT(trigger_data1,
-              ElementsAre(Field(
-                  &attribution_reporting::TriggerRegistration::event_triggers,
-                  ElementsAre(Field(
-                      &attribution_reporting::EventTriggerData::data, 5)))));
-
-  data_hosts.back()->WaitForTriggerData(/*num_trigger_data=*/1);
-  const auto& trigger_data2 = data_hosts.back()->trigger_data();
-
-  EXPECT_THAT(trigger_data2,
-              ElementsAre(Field(
-                  &attribution_reporting::TriggerRegistration::event_triggers,
-                  ElementsAre(Field(
-                      &attribution_reporting::EventTriggerData::data, 7)))));
+  run_loop.Run();
 }
 
 }  // namespace content

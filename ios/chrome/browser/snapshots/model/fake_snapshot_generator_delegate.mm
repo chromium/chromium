@@ -8,27 +8,24 @@
 
 @synthesize view = _view;
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    canTakeSnapshotForWebState:(web::WebState*)webState {
+- (BOOL)canTakeSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
   return YES;
 }
 
-- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    snapshotEdgeInsetsForWebState:(web::WebState*)webState {
+- (void)willUpdateSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+}
+
+- (UIEdgeInsets)snapshotEdgeInsetsWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
   return UIEdgeInsetsZero;
 }
 
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
+- (NSArray<UIView*>*)snapshotOverlaysWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
   return nil;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    willUpdateSnapshotForWebState:(web::WebState*)webState {
-}
-
-- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-         baseViewForWebState:(web::WebState*)webState {
+- (UIView*)baseViewWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
   return self.view;
 }
 

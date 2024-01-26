@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/notifications/update_notification.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -23,7 +25,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -91,7 +92,7 @@ class UpdateNotificationTest : public testing::Test,
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
   }
 
-  absl::optional<message_center::Notification> GetNotification() {
+  std::optional<message_center::Notification> GetNotification() {
     UserSessionManager::GetInstance()->MaybeShowUpdateNotification(
         ProfileManager::GetPrimaryUserProfile());
     return display_service_->GetNotification("chrome://update_notification");
@@ -114,7 +115,7 @@ INSTANTIATE_TEST_SUITE_P(UpdateNotification,
                          testing::Bool());
 
 TEST_P(UpdateNotificationTest, ShowNotification) {
-  absl::optional<message_center::Notification> notification = GetNotification();
+  std::optional<message_center::Notification> notification = GetNotification();
 
   // Should not show the update notification if the flag is not enabled.
   if (!IsUpdateNotificationEnabled()) {

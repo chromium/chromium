@@ -15,25 +15,20 @@
 
 // static
 std::unique_ptr<AutoPipSettingHelper>
-AutoPipSettingHelper::CreateForWebContents(content::WebContents* web_contents,
-                                           base::OnceClosure close_pip_cb) {
-  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-      web_contents->GetBrowserContext());
-  auto* auto_blocker = PermissionDecisionAutoBlockerFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+AutoPipSettingHelper::CreateForWebContents(
+    content::WebContents* web_contents,
+    HostContentSettingsMap* settings_map,
+    permissions::PermissionDecisionAutoBlockerBase* auto_blocker) {
   return std::make_unique<AutoPipSettingHelper>(
-      web_contents->GetLastCommittedURL(), settings_map, auto_blocker,
-      std::move(close_pip_cb));
+      web_contents->GetLastCommittedURL(), settings_map, auto_blocker);
 }
 
 AutoPipSettingHelper::AutoPipSettingHelper(
     const GURL& origin,
     HostContentSettingsMap* settings_map,
-    permissions::PermissionDecisionAutoBlockerBase* auto_blocker,
-    base::OnceClosure close_pip_cb)
+    permissions::PermissionDecisionAutoBlockerBase* auto_blocker)
     : origin_(origin),
       settings_map_(settings_map),
-      close_pip_cb_(std::move(close_pip_cb)),
       auto_blocker_(auto_blocker) {}
 
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
@@ -41,6 +36,15 @@ AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 void AutoPipSettingHelper::OnUserClosedWindow() {
   if (ui_was_shown_but_not_acknowledged_) {
     RecordResult(PromptResult::kIgnored);
+
+    // Usually, this isn't needed, since any later pip window that re-uses us
+    // will be for the same site and will still be set to 'ASK'.  In that case,
+    // we'll show the permission UI.  However, if the permission changes out
+    // from under us somehow (e.g., the user sets it to allow via the permission
+    // chip), then future windows might not show the prompt.  This ensures that
+    // closing those windows, which were allowed, don't fiddle with the embargo.
+    // It doesn't really matter, but for completeness we do it.
+    ui_was_shown_but_not_acknowledged_ = false;
 
     if (auto_blocker_) {
       auto_blocker_->RecordDismissAndEmbargo(
@@ -74,39 +78,47 @@ void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
       ContentSettingsType::AUTO_PICTURE_IN_PICTURE, new_setting, constraints);
 }
 
-AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb() {
+AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb(
+    base::OnceClosure close_pip_cb) {
   weak_factory_.InvalidateWeakPtrs();
   return base::BindOnce(&AutoPipSettingHelper::OnUiResult,
-                        weak_factory_.GetWeakPtr());
+                        weak_factory_.GetWeakPtr(), std::move(close_pip_cb));
 }
 
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPipSettingHelper::CreateOverlayViewIfNeeded(
+    base::OnceClosure close_pip_cb,
     const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   switch (GetEffectiveContentSetting()) {
     case CONTENT_SETTING_ASK:
+      // If the user already said to allow once, then continue allowing.  It's
+      // assumed that we're used for at most one visit to a site.
+      if (already_selected_allow_once_) {
+        return nullptr;
+      }
       // Create and return the UI to ask the user.
       ui_was_shown_but_not_acknowledged_ = true;
       return std::make_unique<AutoPipSettingOverlayView>(
-          CreateResultCb(), origin_, browser_view_overridden_bounds,
-          anchor_view, arrow);
+          CreateResultCb(std::move(close_pip_cb)), origin_,
+          browser_view_overridden_bounds, anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
       return nullptr;
     case CONTENT_SETTING_BLOCK:
       // Auto-pip is not allowed.  Close the window.
-      std::move(close_pip_cb_).Run();
+      std::move(close_pip_cb).Run();
       return nullptr;
     default:
       NOTREACHED() << " AutoPiP unknown effective content setting";
-      std::move(close_pip_cb_).Run();
+      std::move(close_pip_cb).Run();
       return nullptr;
   }
 }
 
-void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
+void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
+                                      AutoPipSettingView::UiResult result) {
   // The UI was both shown and acknoweledged, so we don't have to worry about it
   // being dismissed without being acted on for the permission embargo.
   ui_was_shown_but_not_acknowledged_ = false;
@@ -115,13 +127,14 @@ void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
       RecordResult(PromptResult::kBlock);
       UpdateContentSetting(CONTENT_SETTING_BLOCK);
       // Also close the pip window.
-      std::move(close_pip_cb_).Run();
+      std::move(close_pip_cb).Run();
       break;
     case AutoPipSettingView::UiResult::kAllowOnEveryVisit:
       RecordResult(PromptResult::kAllowOnEveryVisit);
       UpdateContentSetting(CONTENT_SETTING_ALLOW);
       break;
     case AutoPipSettingView::UiResult::kAllowOnce:
+      already_selected_allow_once_ = true;
       RecordResult(PromptResult::kAllowOnce);
       // Leave at 'ASK'.  Do not update the embargo, since the user allowed the
       // feature to continue.  If anything, this should vote for 'anti-embargo'.

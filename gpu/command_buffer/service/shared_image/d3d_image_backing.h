@@ -56,6 +56,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
       const GLFormatCaps& gl_format_caps,
@@ -105,7 +106,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
 #endif  // BUILDFLAG(USE_DAWN)
   void UpdateExternalFence(
       scoped_refptr<gfx::D3DSharedFence> external_fence) override;
@@ -224,6 +226,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   GrSurfaceOrigin surface_origin,
                   SkAlphaType alpha_type,
                   uint32_t usage,
+                  std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
                   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
                   const GLFormatCaps& gl_format_caps,

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Bodite obveščeni</translation>
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
+<translation id="427987768447457592">Nova skupina zavihkov</translation>
 <translation id="4648718555153979859">Zavihki so združeni tukaj</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
 <translation id="4850886885716139402">Prikaži</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Skrij celozaslonsko mrežo</translation>
 <translation id="5076161749301278626">Si želite ogledati mnenja o trgovini?</translation>
 <translation id="5082793167783849073">Hitro primerjate strani tako, da ustvarite skupino. Če želite začeti, se dotaknite povezave in jo pridržite.</translation>
+<translation id="5161254044473106830">Naslov je obvezen</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> zavihek, ki ga nedavno niste uporabljali}one{Imate <ph name="TABS_COUNT_MANY" /> zavihek, ki jih nedavno niste uporabljali}two{Imate <ph name="TABS_COUNT_MANY" /> zavihka, ki ju nedavno niste uporabljali}few{Imate <ph name="TABS_COUNT_MANY" /> zavihke, ki jih nedavno niste uporabljali}other{Imate <ph name="TABS_COUNT_MANY" /> zavihkov, ki jih nedavno niste uporabljali}}</translation>
 <translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>

@@ -19,7 +19,6 @@ import android.text.TextUtils;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,7 +87,6 @@ public class WebApkUpdateIntegrationTest {
     private static final String DARK_BACKGROUND_COLOR = "4L";
 
     private EmbeddedTestServer mTestServer;
-    private Context mContextToRestore;
     private TestContext mTestContext;
 
     private Bundle mTestMetaData;
@@ -120,21 +118,13 @@ public class WebApkUpdateIntegrationTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
-        mContextToRestore = ContextUtils.getApplicationContext();
-        mTestContext = new TestContext(mContextToRestore);
+        mTestContext = new TestContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mTestContext);
         mTestServer = mActivityTestRule.getTestServer();
         mTestMetaData = defaultMetaData();
 
         WebApkValidator.setDisableValidationForTesting(true);
         WebApkUpdateManager.setUpdatesDisabledForTesting(false);
-    }
-
-    @After
-    public void tearDown() {
-        if (mContextToRestore != null) {
-            ContextUtils.initApplicationContextForTests(mContextToRestore);
-        }
     }
 
     private Bundle defaultMetaData() throws Exception {

@@ -19,7 +19,6 @@
 
 namespace blink {
 
-class AudioContext;
 class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
@@ -63,7 +62,7 @@ class RealtimeAudioDestinationHandler final
               const AudioIOPosition& output_position,
               const AudioCallbackMetric& metric) final;
 
-  // Returns a hadrware callback buffer size from audio infra.
+  // Returns a hardware callback buffer size from audio infra.
   uint32_t GetCallbackBufferSize() const;
 
   // Returns a given frames-per-buffer size from audio infra.
@@ -126,7 +125,7 @@ class RealtimeAudioDestinationHandler final
   //
   // Must be modified only in StartPlatformDestination (via
   // EnablePullingAudioGraph) or StopPlatformDestination (via
-  // DisablePullingAudioGraph) .  This is modified only by the main threda and
+  // DisablePullingAudioGraph). This is modified only by the main thread and
   // the audio thread only reads this.
   std::atomic_bool allow_pulling_audio_graph_;
 

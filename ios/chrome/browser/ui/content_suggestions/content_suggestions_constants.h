@@ -76,7 +76,7 @@ extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
 extern NSString* const
     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier;
 
-// Represents the "Continue Browsing" module in the magic stack.
+// Represents the "Continue with This Tab" module in the magic stack.
 extern NSString* const
     kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
 
@@ -99,5 +99,8 @@ const int kMaxTrendingQueries = 4;
 // SetUpListItemType `type`.
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     SetUpListItemType type);
+
+// Returns true if the module type is one of the SetUpList types.
+bool IsSetUpListModuleType(ContentSuggestionsModuleType type);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_

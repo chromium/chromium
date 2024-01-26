@@ -338,8 +338,6 @@ NsswitchReader::ReadAndParseHosts() {
     return GetDefaultHosts();
 
   base::StringPiece hosts = FindDatabase(file, "hosts:");
-  UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.HostsFound",
-                        !hosts.empty());
   if (hosts.empty())
     return GetDefaultHosts();
 

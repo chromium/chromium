@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_REMOVER_HELPER_H_
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -47,7 +48,7 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   void BookmarksRemoved(bool success);
 
   Callback completion_;
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
                                      bookmarks::BookmarkModelObserver>
       bookmark_model_observations_{this};

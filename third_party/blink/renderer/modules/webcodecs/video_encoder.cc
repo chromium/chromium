@@ -1485,8 +1485,7 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
 
     return ScriptPromise::Cast(
         script_state,
-        ToV8Traits<VideoEncoderSupport>::ToV8(script_state, support)
-            .ToLocalChecked());
+        ToV8Traits<VideoEncoderSupport>::ToV8(script_state, support));
   }
 
   // Create promises for resolving hardware and software encoding support and

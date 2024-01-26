@@ -29,7 +29,7 @@ class TestRegistration : public Registration {
 
   void PrepareContactID() override {}
   void RotateContactID() override {}
-  absl::optional<std::vector<uint8_t>> contact_id() const override {
+  std::optional<std::vector<uint8_t>> contact_id() const override {
     return contact_id_;
   }
 
@@ -38,7 +38,7 @@ class TestRegistration : public Registration {
   base::OnceCallback<void()> on_ready_;
   const base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
       on_event_;
-  absl::optional<std::vector<uint8_t>> contact_id_ = ContactID();
+  std::optional<std::vector<uint8_t>> contact_id_ = ContactID();
 };
 
 class TestSystemInterface : public RegistrationState::SystemInterface {
@@ -93,7 +93,7 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
   }
 
   void GetPrelinkFromPlayServices(
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback)
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
       override {
     CHECK(!prelink_callback_);
     prelink_callback_ = std::move(callback);
@@ -108,7 +108,7 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
   base::OnceCallback<void(bool)> support_callback_;
   base::OnceCallback<void(bool)> work_profile_callback_;
   base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> identity_key_callback_;
-  base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+  base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
       prelink_callback_;
 };
 
@@ -164,7 +164,7 @@ TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   EXPECT_FALSE(state_->have_data_for_sync());
   state_->SignalSyncWhenReady();
   EXPECT_FALSE(state_->have_data_for_sync());
-  std::move(interface_->prelink_callback_).Run(absl::nullopt);
+  std::move(interface_->prelink_callback_).Run(std::nullopt);
   EXPECT_FALSE(interface_->refresh_local_device_info_called_);
   EXPECT_FALSE(state_->have_data_for_sync());
   std::move(interface_->work_profile_callback_).Run(true);
@@ -180,7 +180,7 @@ TEST_F(CableRegistrationStateTest,
   state_->Register();
   EXPECT_FALSE(interface_->on_cloud_message_called_);
 
-  interface_->linking_registration_->contact_id_ = absl::nullopt;
+  interface_->linking_registration_->contact_id_ = std::nullopt;
   auto event = std::make_unique<Registration::Event>();
   event->source = Registration::Type::LINKING;
   interface_->linking_registration_->on_event_.Run(std::move(event));

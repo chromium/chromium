@@ -128,12 +128,6 @@ There are some fundamental metrics.
 : Counts of `Worklet#addModule()` calls in `Document`. This includes all worklet
 types. Each worklet type has its own counter, too.
 
-## UMA
-
-The UMA data is internal-only.
-
-- WorkerThread.ExitCode : Records the exit code of `WorkerThread`.
-
 # Tests
 
 When you add a new worker or worklet type, please consider adding tests in

@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -25,6 +24,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
@@ -100,7 +100,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     @Override
-    public Intent createLinkIntent(String urlString) {
+    public Intent createUrlIntent(String urlString, @UrlIntentSource int intentSrc) {
         Intent intent = null;
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             intent =
@@ -108,7 +108,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                             mContext,
                             urlString,
                             MultiWindowUtils.getInstanceIdForLinkIntent(
-                                    ContextUtils.activityFromContext(mContext)));
+                                    ContextUtils.activityFromContext(mContext)),
+                            intentSrc);
         }
         return intent;
     }
@@ -119,7 +120,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
         Intent intent = null;
         if (!TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue()) {
-            intent = createLinkIntent(chromeDropDataAndroid.mTab.getUrl().getSpec());
+            intent =
+                    createUrlIntent(
+                            chromeDropDataAndroid.mTab.getUrl().getSpec(),
+                            UrlIntentSource.TAB_IN_STRIP);
         }
         return new ClipData(
                 null,

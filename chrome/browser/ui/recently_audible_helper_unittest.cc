@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/current_thread.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,7 +36,6 @@ class RecentlyAudibleHelperTest : public testing::Test {
     scoped_context_ =
         std::make_unique<base::TestMockTimeTaskRunner::ScopedContext>(
             task_runner_);
-    base::CurrentThread::Get()->SetTaskRunner(task_runner_);
 
     RecentlyAudibleHelper::CreateForWebContents(contents_);
     helper_ = RecentlyAudibleHelper::FromWebContents(contents_);

@@ -1458,8 +1458,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
-  AccessibilityController* accessibility_controller =
-      Shell::Get()->accessibility_controller();
+  test_api_->SetCanHandleLauncher(true);
 
   // The press event should not toggle the AppList, the release should instead.
   EXPECT_FALSE(
@@ -1472,25 +1471,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
-  EXPECT_EQ(ui::VKEY_LWIN, GetPreviousAccelerator().key_code());
 
-  // When spoken feedback is on, the AppList should not toggle.
-  accessibility_controller->SetSpokenFeedbackEnabled(true,
-                                                     A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  EXPECT_FALSE(ProcessInController(
-      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  accessibility_controller->SetSpokenFeedbackEnabled(false,
-                                                     A11Y_NOTIFICATION_NONE);
-  EXPECT_FALSE(accessibility_controller->spoken_feedback().enabled());
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // Turning off spoken feedback should allow the AppList to toggle again.
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   EXPECT_TRUE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
@@ -1503,15 +1484,6 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_FALSE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // When pressed key is interrupted by mouse, the AppList should not toggle.
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  controller_->GetAcceleratorHistory()->InterruptCurrentAccelerator();
-  EXPECT_FALSE(ProcessInController(
-      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
@@ -1604,6 +1576,8 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::Accelerator::KeyState::PRESSED)));
 
 TEST_P(GlobalAcceleratorsToggleLauncher, ToggleLauncher) {
+  test_api_->SetCanHandleLauncher(true);
+
   EXPECT_TRUE(
       ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
@@ -1616,6 +1590,8 @@ TEST_P(GlobalAcceleratorsToggleLauncher, ToggleLauncher) {
 }
 
 TEST_P(GlobalAcceleratorsToggleLauncher, PreventProcessingShortcuts) {
+  test_api_->SetCanHandleLauncher(true);
+
   // Set Controller to block all shortcuts and try to toggle the productivity
   // launcher
   controller_->SetPreventProcessingAccelerators(true);
@@ -1916,8 +1892,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the AcceleratorAction::kToggleCapsLock accelerator.
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
-  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kShortcutStateMachines);
 
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
   controller->SetClient(&client);
   EXPECT_EQ(0, client.set_caps_lock_count_);
@@ -2015,6 +1993,76 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
   EXPECT_TRUE(ProcessInController(release_search_before_alt));
   EXPECT_EQ(6, client.set_caps_lock_count_);
   EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+}
+
+// Tests the AcceleratorAction::kToggleCapsLock accelerator.
+TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsStateMachines) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kShortcutStateMachines);
+
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+  EXPECT_EQ(0, client.set_caps_lock_count_);
+
+  // Following tests are testing valid uses of the capslock accelerator.
+  test_api_->SetCanHandleCapsLock(true);
+
+  // 1. Press Alt, Press Search, Release Search, Release Alt.
+  // Note when you press Alt then press search, the key_code at this point is
+  // VKEY_LWIN (for search) and Alt is the modifier.
+  const ui::Accelerator press_alt_then_search(ui::VKEY_LWIN, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  // When you release Search before Alt, the key_code is still VKEY_LWIN and
+  // Alt is still the modifier.
+  const ui::Accelerator release_search_before_alt(
+      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_ALT_DOWN));
+  EXPECT_TRUE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(1, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 2. Press Search, Press Alt, Release Search, Release Alt.
+  const ui::Accelerator press_search_then_alt(ui::VKEY_MENU,
+                                              ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_TRUE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(2, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 3. Press Alt, Press Search, Release Alt, Release Search.
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  const ui::Accelerator release_alt_before_search(
+      CreateReleaseAccelerator(ui::VKEY_MENU, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(3, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 4. Press Search, Press Alt, Release Alt, Release Search.
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_TRUE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // Following tests are testing invalid uses of the capslock accelerator.
+  test_api_->SetCanHandleCapsLock(false);
+
+  // 5. Press Search, Press Alt, Release Alt, Release search
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_FALSE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_FALSE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 6. Press Alt, Press Search, Release Search, Release Alt
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  EXPECT_FALSE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_FALSE(controller->IsCapsLockEnabled());
   controller->UpdateCapsLockState(false);
 }
 

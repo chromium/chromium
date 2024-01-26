@@ -353,7 +353,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // If input events for our `WebContents` have been ignored, then this is the
   // closure to re-enable them.
-  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
 
   // A reference to the top level web contents of the tab whose content is

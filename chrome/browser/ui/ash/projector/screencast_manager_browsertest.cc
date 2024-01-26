@@ -155,7 +155,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     drivefs::mojom::SyncingStatus syncing_status;
     for (const std::string& path : paths) {
       syncing_status.item_events.emplace_back(
-          absl::in_place, /*stable_id=*/1, /*group_id=*/1, path,
+          std::in_place, /*stable_id=*/1, /*group_id=*/1, path,
           drivefs::mojom::ItemEvent::State::kInProgress,
           /*bytes_transferred=*/50, /*bytes_to_transfer=*/100,
           drivefs::mojom::ItemEventReason::kTransfer);

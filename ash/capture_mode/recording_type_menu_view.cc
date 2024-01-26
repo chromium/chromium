@@ -89,7 +89,11 @@ gfx::Rect RecordingTypeMenuView::GetIdealScreenBounds(
     views::View* contents_view) {
   const auto size = GetIdealSize(contents_view);
   const auto bottom_center = capture_label_widget_screen_bounds.bottom_center();
-  const int x = bottom_center.x() - (size.width() / 2);
+  // Make sure the left and right edges are within the screen bounds.
+  int x = std::max(0, bottom_center.x() - (size.width() / 2));
+  if (x + size.width() > target_display_screen_bounds.right()) {
+    x = target_display_screen_bounds.right() - size.width();
+  }
 
   // Try positioning the menu below the bar first, if this makes it outside the
   // bounds of the display, then try positioning it above.
@@ -99,7 +103,12 @@ gfx::Rect RecordingTypeMenuView::GetIdealScreenBounds(
     result.set_y(capture_label_widget_screen_bounds.y() -
                  kYOffsetFromLabelWidget - size.height());
   }
-  CHECK(target_display_screen_bounds.Contains(result));
+
+  CHECK(target_display_screen_bounds.Contains(result))
+      << "display bounds (screen) = " << target_display_screen_bounds.ToString()
+      << ", recording type menu bounds (screen) = " << result.ToString()
+      << ", user region bounds (root) = "
+      << CaptureModeController::Get()->user_capture_region().ToString();
   return result;
 }
 

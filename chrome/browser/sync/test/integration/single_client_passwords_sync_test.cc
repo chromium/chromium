@@ -23,7 +23,6 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -95,55 +94,6 @@ class SingleClientPasswordsSyncTestWithVerifier
     // TODO(crbug.com/1137740): rewrite tests to not use verifier.
     return true;
   }
-};
-
-class SingleClientPasswordsSyncTestWithNotes : public SyncTest {
- public:
-  SingleClientPasswordsSyncTestWithNotes() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kPasswordNotesWithBackup},
-        /*disabled_features=*/{});
-  }
-  ~SingleClientPasswordsSyncTestWithNotes() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// This is a test the server behaviour of preserving passwords note across
-// commits from clients to support and don't support password notes.
-class SingleClientPasswordsSyncTestWithNotesDisableAfterEnable
-    : public SyncTest {
- public:
-  SingleClientPasswordsSyncTestWithNotesDisableAfterEnable()
-      : SyncTest(SINGLE_CLIENT) {
-    // Enabled the features when there are even numbers of PRE's to achieve an
-    // alternating behaviour.
-    feature_list_.InitWithFeatureState(syncer::kPasswordNotesWithBackup,
-                                       GetTestPreCount() % 2 == 0);
-    password_form_ = CreateTestPasswordForm(0);
-  }
-  ~SingleClientPasswordsSyncTestWithNotesDisableAfterEnable() override =
-      default;
-  const PasswordForm& password_form() { return password_form_; }
-
- private:
-  PasswordForm password_form_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/1491411): Fix flakes.
-class SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt
-    : public SingleClientPasswordsSyncTestWithNotesDisableAfterEnable {
- public:
-  SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt() {
-    feature_list_.InitAndDisableFeature(
-        net::features::kEnableIpProtectionProxy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
@@ -651,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                   cryptographer.get(), "new_password", kUnsupportedField)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotes,
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        PreservesUnsupportedNotesFieldsDataOnCommits) {
   // Create an unsupported field in the PasswordSpecificsData_Notes with an
   // unused tag.
@@ -730,117 +680,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotes,
   }
 }
 
-// The follow 3 tests are testing the interaction between clients that support
-// and don't support notes. The test fixture enables the features for even
-// number of PREs.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
-    PRE_PRE_ServerPreservesNotesBackup) {
-  // Enabled by the test fixture.
-  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-  // Add password with a note and commit it to the server.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  PasswordForm form = password_form();
-  form.notes.emplace_back(u"example note", base::Time::Now());
-  GetProfilePasswordStoreInterface(0)->AddLogin(form);
-  EXPECT_EQ(1, GetPasswordCount(0));
-  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
-    PRE_ServerPreservesNotesBackup) {
-  // Disabled by the test fixture.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
-  // The server should still contains the entity with the note.
-  ASSERT_EQ(1U,
-            fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size());
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-  password_manager::PasswordStoreInterface* store =
-      GetProfilePasswordStoreInterface(0);
-
-  // Stop password sync and delete the local copy to simulate downloading to a
-  // legacy client that doesn't support notes.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPasswords));
-  passwords_helper::RemoveLogins(store);
-
-  // Re-enable sync which should force downloading the password with the note
-  // to the legacy client.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPasswords));
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
-
-  // Make sure the password showed up in the profile store.
-  ASSERT_EQ(1, GetPasswordCount(0));
-  // Update the password to simulate a commit from a legacy client that doesn't
-  // support password notes.
-  PasswordForm form = password_form();
-  form.password_value = u"new_password";
-  store->UpdateLogin(form);
-  // Add another arbitrary credentials to wait until 2 passwords have reached
-  // the server.
-  store->AddLogin(CreateTestPasswordForm(1));
-  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
-    ServerPreservesNotesBackup) {
-  // Enabled by the test fixture.
-  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
-  // The server now should have two entities.
-  ASSERT_EQ(2U,
-            fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size());
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  password_manager::PasswordStoreInterface* store =
-      GetProfilePasswordStoreInterface(0);
-
-  // Disable password sync and delete the local copy to simulate downloading to
-  // a modern client that supports notes.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPasswords));
-  passwords_helper::RemoveLogins(store);
-
-  // Now re-enable sync which should force downloading the password with the
-  // note to the legacy client.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPasswords));
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
-
-  // Make sure the both password showed up in the profile store.
-  ASSERT_THAT(passwords_helper::GetAllLogins(store), testing::SizeIs(2));
-  // Test that the note appears in the credentials added in the first test. This
-  // is possible because the server carries over the notes across commits from
-  // modern and legacy clients.
-  EXPECT_THAT(
-      passwords_helper::GetAllLogins(store),
-      Contains(Pointee(AllOf(
-          Field(&PasswordForm::signon_realm, password_form().signon_realm),
-          Field(&PasswordForm::username_value, password_form().username_value),
-          Field(&PasswordForm::password_value, u"new_password"),
-          Field(&PasswordForm::notes,
-                Contains(Field(&password_manager::PasswordNote::value,
-                               u"example note")))))));
-}
-
-class SingleClientPasswordsSyncTestConsumesNotesBackup : public SyncTest {
- public:
-  SingleClientPasswordsSyncTestConsumesNotesBackup() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-  }
-  ~SingleClientPasswordsSyncTestConsumesNotesBackup() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestConsumesNotesBackup,
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        ClientReadsNotesFromTheBackup) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
   base::HistogramTester histogram_tester;
 
   const std::string& kEncryptionPassphrase =

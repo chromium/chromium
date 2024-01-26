@@ -42,11 +42,11 @@ ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
 }  // namespace
 
 FragmentItem::FragmentItem(const InlineItem& inline_item,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const TextOffsetRange& text_offset,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
-    : text_({std::move(shape_result), nullptr, text_offset}),
+    : text_({shape_result, nullptr, text_offset}),
       rect_({PhysicalOffset(), size}),
       layout_object_(inline_item.GetLayoutObject()),
       const_type_(kText),
@@ -71,11 +71,11 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
                            TextItemType text_type,
                            StyleVariant style_variant,
                            TextDirection direction,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const String& text_content,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
-    : generated_text_({std::move(shape_result), text_content}),
+    : generated_text_({shape_result, text_content}),
       rect_({PhysicalOffset(), size}),
       layout_object_(&layout_object),
       const_type_(kGeneratedText),
@@ -93,7 +93,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
 }
 
 FragmentItem::FragmentItem(const InlineItem& inline_item,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const String& text_content,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
@@ -101,7 +101,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
                    inline_item.TextType(),
                    inline_item.GetStyleVariant(),
                    inline_item.Direction(),
-                   std::move(shape_result),
+                   shape_result,
                    text_content,
                    size,
                    is_hidden_for_paint) {}
@@ -349,11 +349,11 @@ LayoutObject& FragmentItem::BlockInInline() const {
   return *block;
 }
 
-void FragmentItem::SetSvgFragmentData(scoped_refptr<const SvgFragmentData> data,
+void FragmentItem::SetSvgFragmentData(const SvgFragmentData* data,
                                       const PhysicalRect& unscaled_rect,
                                       bool is_hidden) {
   DCHECK_EQ(Type(), kText);
-  text_.svg_data = std::move(data);
+  text_.svg_data = data;
   rect_ = unscaled_rect;
   is_hidden_for_paint_ = is_hidden;
 }
@@ -519,9 +519,9 @@ PhysicalRect FragmentItem::InkOverflowRect() const {
 
 const ShapeResultView* FragmentItem::TextShapeResult() const {
   if (Type() == kText)
-    return text_.shape_result.get();
+    return text_.shape_result.Get();
   if (Type() == kGeneratedText)
-    return generated_text_.shape_result.get();
+    return generated_text_.shape_result.Get();
   NOTREACHED();
   return nullptr;
 }
@@ -570,11 +570,11 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
-            text_.text_offset.end, text_.shape_result.get()};
+            text_.text_offset.end, text_.shape_result.Get()};
   }
   if (Type() == kGeneratedText) {
     return {generated_text_.text, 0, generated_text_.text.length(),
-            generated_text_.shape_result.get()};
+            generated_text_.shape_result.Get()};
   }
   NOTREACHED();
   return {};
@@ -939,13 +939,8 @@ void FragmentItem::SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const {
   delta_to_next_for_same_layout_object_ = delta;
 }
 
-// Compute the inline position from text offset, in logical coordinate relative
-// to this fragment.
-LayoutUnit FragmentItem::InlinePositionForOffset(
-    StringView text,
-    unsigned offset,
-    LayoutUnit (*round_function)(float),
-    AdjustMidCluster adjust_mid_cluster) const {
+LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
+                                                      unsigned offset) const {
   DCHECK_GE(offset, StartOffset());
   DCHECK_LE(offset, EndOffset());
   DCHECK_EQ(text.length(), TextLength());
@@ -955,9 +950,9 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
     // TODO(layout-dev): Move caret position out of ShapeResult and into a
     // separate support class that can take a ShapeResult or ShapeResultView.
     // Allows for better code separation and avoids the extra copy below.
-    return round_function(
+    return LayoutUnit::FromFloatRound(
         TextShapeResult()->CreateShapeResult()->CaretPositionForOffset(
-            offset, text, adjust_mid_cluster));
+            offset, text, AdjustMidCluster::kToEnd));
   }
 
   // This fragment is a flow control because otherwise ShapeResult exists.
@@ -972,25 +967,61 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
   return IsHorizontal() ? Size().width : Size().height;
 }
 
-LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
-                                                      unsigned offset) const {
-  return InlinePositionForOffset(text, offset, LayoutUnit::FromFloatRound,
-                                 AdjustMidCluster::kToEnd);
-}
-
 std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
     StringView text,
     unsigned start_offset,
     unsigned end_offset) const {
   DCHECK_LE(start_offset, EndOffset());
   DCHECK_GE(start_offset, StartOffset());
+  DCHECK_GE(end_offset, StartOffset());
   DCHECK_LE(end_offset, EndOffset());
+  DCHECK_EQ(text.length(), TextLength());
 
-  const LayoutUnit start_position =
-      InlinePositionForOffset(text, start_offset, LayoutUnit::FromFloatFloor,
-                              AdjustMidCluster::kToStart);
-  const LayoutUnit end_position = InlinePositionForOffset(
-      text, end_offset, LayoutUnit::FromFloatCeil, AdjustMidCluster::kToEnd);
+  start_offset -= StartOffset();
+  end_offset -= StartOffset();
+
+  LayoutUnit start_position;
+  LayoutUnit end_position;
+  if (TextShapeResult()) {
+    // TODO(layout-dev): Move caret position out of ShapeResult and into a
+    // separate support class that can take a ShapeResult or ShapeResultView.
+    // Allows for better code separation and avoids the extra copy below.
+    const ShapeResult* shape_result = TextShapeResult()->CreateShapeResult();
+    float unrounded_start_position = shape_result->CaretPositionForOffset(
+        start_offset, text, AdjustMidCluster::kToStart);
+    float unrounded_end_position = shape_result->CaretPositionForOffset(
+        end_offset, text, AdjustMidCluster::kToEnd);
+    if (UNLIKELY(unrounded_start_position > unrounded_end_position)) {
+      start_position = LayoutUnit::FromFloatCeil(unrounded_start_position);
+      end_position = LayoutUnit::FromFloatFloor(unrounded_end_position);
+    } else {
+      start_position = LayoutUnit::FromFloatFloor(unrounded_start_position);
+      end_position = LayoutUnit::FromFloatCeil(unrounded_end_position);
+    }
+  } else {
+    // This fragment is a flow control because otherwise ShapeResult exists.
+    DCHECK(IsFlowControl());
+    DCHECK_EQ(1u, text.length());
+    if (!start_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+      start_position = LayoutUnit();
+    } else if (IsSvgText()) {
+      start_position =
+          LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
+                                    : GetSvgFragmentData()->rect.height());
+    } else {
+      start_position = IsHorizontal() ? Size().width : Size().height;
+    }
+
+    if (!end_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+      end_position = LayoutUnit();
+    } else if (IsSvgText()) {
+      end_position =
+          LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
+                                    : GetSvgFragmentData()->rect.height());
+    } else {
+      end_position = IsHorizontal() ? Size().width : Size().height;
+    }
+  }
 
   // Swap positions if RTL.
   return (UNLIKELY(start_position > end_position))
@@ -1122,8 +1153,12 @@ void FragmentItem::Trace(Visitor* visitor) const {
   // Looking up |const_type_| inside Trace() is safe since it is const.
   switch (const_type_) {
     case kInvalid:
+      break;
     case kText:
+      visitor->Trace(text_);
+      break;
     case kGeneratedText:
+      visitor->Trace(generated_text_);
       break;
     case kLine:
       visitor->Trace(line_);

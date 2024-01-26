@@ -105,11 +105,7 @@ struct SimpleEntryCreationResults {
   explicit SimpleEntryCreationResults(SimpleEntryStat entry_stat);
   ~SimpleEntryCreationResults();
 
-  // This dangling raw_ptr occurred in:
-  // content_unittests:
-  // GeneratedCodeCacheTest/GeneratedCodeCacheTest.StressVeryLargeEntries/1
-  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425125/test-results?q=ExactID%3Aninja%3A%2F%2Fcontent%2Ftest%3Acontent_unittests%2FGeneratedCodeCacheTest.StressVeryLargeEntries%2FGeneratedCodeCacheTest.1+VHash%3Ab3ba0803668e9981&sortby=&groupby=
-  raw_ptr<SimpleSynchronousEntry, FlakyDanglingUntriaged> sync_entry;
+  raw_ptr<SimpleSynchronousEntry> sync_entry;
   // This is set when `sync_entry` is null.
   std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations;
 

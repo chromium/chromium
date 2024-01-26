@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -243,7 +244,7 @@ struct BASE_EXPORT LoggingSettings {
   // |log_file_path| will be ignored, and the logging system will take ownership
   // of the FILE. If there's an error writing to this file, no fallback paths
   // will be opened.
-  FILE* log_file = nullptr;
+  raw_ptr<FILE> log_file = nullptr;
   // ChromeOS uses the syslog log format by default.
   LogFormat log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
@@ -392,16 +393,12 @@ constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...)                  \
   ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DFATAL, \
                        ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...)                  \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DCHECK, \
-                       ##__VA_ARGS__)
 
 #define COMPACT_GOOGLE_LOG_INFO COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
 #define COMPACT_GOOGLE_LOG_WARNING COMPACT_GOOGLE_LOG_EX_WARNING(LogMessage)
 #define COMPACT_GOOGLE_LOG_ERROR COMPACT_GOOGLE_LOG_EX_ERROR(LogMessage)
 #define COMPACT_GOOGLE_LOG_FATAL COMPACT_GOOGLE_LOG_EX_FATAL(LogMessage)
 #define COMPACT_GOOGLE_LOG_DFATAL COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
-#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_EX_DCHECK(LogMessage)
 
 #if BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call LOG(ERROR), it gets
@@ -420,10 +417,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 // As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
 // LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
-// TODO(crbug.com/1409729): Make sure LOG(FATAL) is understood as [[noreturn]]
-// by making sure the compiler knowns that it's unconditionally ON.
-#define LOG_IS_ON(severity) \
-  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+// FATAL is always enabled and required to be resolved in compile time for
+// LOG(FATAL) to be properly understood as [[noreturn]].
+#define LOG_IS_ON(severity)                                     \
+  (::logging::LOGGING_##severity == ::logging::LOGGING_FATAL || \
+   ::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
 
 // Define a default ENABLED_VLOG_LEVEL if it is not defined. The macros allows
 // code to enable vlog level at build time without the need of --vmodule
@@ -533,12 +531,22 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 #if DCHECK_IS_ON()
 
-#define DLOG_IS_ON(severity) LOG_IS_ON(severity)
-#define DLOG_IF(severity, condition) LOG_IF(severity, condition)
-#define DLOG_ASSERT(condition) LOG_ASSERT(condition)
-#define DPLOG_IF(severity, condition) PLOG_IF(severity, condition)
+// All of these definitions use DLOG_IS_ON() rather than define to their LOG()
+// equivalents, as DLOG(FATAL) and friends can't be understood as [[noreturn]]
+// but LOG(FATAL) is.
+#define DLOG_IS_ON(severity) \
+  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+
+#define DLOG(severity) LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DLOG_IF(severity, condition) \
+  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity) && (condition))
+#define DPLOG(severity) LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DPLOG_IF(severity, condition) \
+  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity) && (condition))
 #define DVLOG_IF(verboselevel, condition) VLOG_IF(verboselevel, condition)
 #define DVPLOG_IF(verboselevel, condition) VPLOG_IF(verboselevel, condition)
+#define DLOG_ASSERT(condition) \
+  DLOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
 
 #else  // DCHECK_IS_ON()
 
@@ -547,26 +555,24 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 // Contrast this with DCHECK et al., which has different behavior.
 
 #define DLOG_IS_ON(severity) false
+#define DLOG(severity) EAT_STREAM_PARAMETERS
 #define DLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
-#define DLOG_ASSERT(condition) EAT_STREAM_PARAMETERS
+#define DPLOG(severity) EAT_STREAM_PARAMETERS
 #define DPLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
 #define DVLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
 #define DVPLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
+#define DLOG_ASSERT(condition) EAT_STREAM_PARAMETERS
 
 #endif  // DCHECK_IS_ON()
 
-#define DLOG(severity)                                          \
-  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
-
-#define DPLOG(severity)                                         \
-  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
-
 #define DVLOG(verboselevel) DVLOG_IF(verboselevel, true)
-
 #define DVPLOG(verboselevel) DVPLOG_IF(verboselevel, true)
 
 // Definitions for DCHECK et al.
 
+// TODO(pbos): Move this to check.h. Probably find a better name. Maybe this
+// means that we want LogSeverity in a separate file, but maybe we can just have
+// this as a bool DCHECK_IS_FATAL.
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 BASE_EXPORT extern LogSeverity LOGGING_DCHECK;
 #else

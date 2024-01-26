@@ -68,6 +68,10 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
     is_resizing_with_divider_ = is_resizing_with_divider;
   }
 
+  // Updates `divider_position_` according to the current event location on the
+  // divider widget during resizing.
+  void UpdateDividerPosition(const gfx::Point& location_in_screen);
+
   // Resizing functions used when resizing with `split_view_divider_` in the
   // tablet split view mode or clamshell mode if `kSnapGroup` is enabled.
   void StartResizeWithDivider(const gfx::Point& location_in_screen);
@@ -138,6 +142,17 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void StopObservingTransientChild(aura::Window* transient);
 
   const raw_ptr<LayoutDividerController> controller_;
+
+  // The distance between the origin of `divider_widget_` and the origin
+  // of the current display's work area in screen coordinates.
+  //     |<---     divider_position_    --->|
+  //     ---------------------------------------------------------------
+  //     |                                  | |                        |
+  //     |        primary_window_           | |   secondary_window_    |
+  //     |                                  | |                        |
+  //     ---------------------------------------------------------------
+  // Initialized as -1 before `divider_widget_` is created and shown.
+  int divider_position_ = -1;
 
   // Split view divider widget. It's a black bar stretching from one edge of the
   // screen to the other, containing a small white drag bar in the middle. As

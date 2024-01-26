@@ -83,7 +83,7 @@ TEST_F(OfdsConfigPrivateApiUnittest, GetMountSuccessful) {
         RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
 
     ASSERT_TRUE(returned_mount_info_value);
-    absl::optional<extensions::api::odfs_config_private::MountInfo>
+    std::optional<extensions::api::odfs_config_private::MountInfo>
         returned_mount_info =
             extensions::api::odfs_config_private::MountInfo::FromValue(
                 *returned_mount_info_value);
@@ -112,8 +112,7 @@ TEST_F(OfdsConfigPrivateApiUnittest, GetAccountRestrictionsSuccessful) {
         RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
 
     ASSERT_TRUE(returned_restrictions_value);
-    absl::optional<
-        extensions::api::odfs_config_private::AccountRestrictionsInfo>
+    std::optional<extensions::api::odfs_config_private::AccountRestrictionsInfo>
         returned_account_restrictions = extensions::api::odfs_config_private::
             AccountRestrictionsInfo::FromValue(*returned_restrictions_value);
 

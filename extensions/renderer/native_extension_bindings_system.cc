@@ -27,6 +27,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
 #include "extensions/renderer/api/dom_hooks_delegate.h"
 #include "extensions/renderer/api/feedback_private_hooks_delegate.h"
@@ -693,7 +694,7 @@ void NativeExtensionBindingsSystem::UpdateBindings(
   }
 
   script_context_set->ForEach(
-      extension_id,
+      GenerateHostIdFromExtensionId(extension_id),
       base::BindRepeating(
           &NativeExtensionBindingsSystem::UpdateBindingsForContext,
           // Called synchronously.

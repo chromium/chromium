@@ -19,14 +19,13 @@
 
 namespace base {
 
-// WARNING: This hash functions should not be used for any cryptographic
+// WARNING: These hash functions should not be used for any cryptographic
 // purpose.
 
 // Deprecated: Computes a hash of a memory buffer, use FastHash() instead.
 // If you need to persist a change on disk or between computers, use
 // PersistentHash().
 // TODO(https://crbug.com/1025358): Migrate client code to new hash function.
-BASE_EXPORT uint32_t Hash(const void* data, size_t length);
 BASE_EXPORT uint32_t Hash(const std::string& str);
 
 // Really *fast* and high quality hash.

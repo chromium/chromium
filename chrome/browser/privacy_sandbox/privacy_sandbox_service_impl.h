@@ -77,9 +77,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   bool IsFirstPartySetsDataAccessManaged() const override;
   base::flat_map<net::SchemefulSite, net::SchemefulSite>
   GetSampleFirstPartySets() const override;
-  absl::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  std::optional<net::SchemefulSite> GetFirstPartySetOwner(
       const GURL& site_url) const override;
-  absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const override;
   bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const override;
@@ -93,6 +93,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics()
       const override;
+  std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
+      const override;
+  std::vector<privacy_sandbox::CanonicalTopic> GetChildTopicsCurrentlyAssigned(
+      const privacy_sandbox::CanonicalTopic& topic) const override;
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override;
   void TopicsToggleChanged(bool new_value) const override;

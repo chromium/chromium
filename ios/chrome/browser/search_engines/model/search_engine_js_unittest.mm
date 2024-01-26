@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
@@ -68,13 +69,13 @@ class SearchEngineJsTest : public PlatformTest,
 
   // Stores paramaeters passed to `SetSearchableUrl`.
   struct ReceivedSearchableUrl {
-    web::WebState* web_state;
+    raw_ptr<web::WebState> web_state;
     GURL searchable_url;
   };
 
   // Stores paramaeters passed to `AddTemplateURLByOSDD`.
   struct ReceivedTemplateUrlByOsdd {
-    web::WebState* web_state;
+    raw_ptr<web::WebState> web_state;
     GURL template_page_url;
     GURL osdd_url;
   };

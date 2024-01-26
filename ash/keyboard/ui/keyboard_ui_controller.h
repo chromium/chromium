@@ -170,6 +170,10 @@ class KEYBOARD_EXPORT KeyboardUIController
   // lock the keyboard
   void ShowKeyboardInDisplay(const display::Display& display);
 
+  // Controls whether `ShowKeyboardIfWithinTransientBlurThreshold` should show
+  // the keyboard.
+  void SetShouldShowOnTransientBlur(bool should_show);
+
   // Returns the bounds in root window for the visible portion of the keyboard.
   // An empty rectangle will get returned when the keyboard is hidden.
   const gfx::Rect& visual_bounds_in_root() const {
@@ -456,6 +460,7 @@ class KEYBOARD_EXPORT KeyboardUIController
   NotificationManager notification_manager_;
 
   base::Time time_of_last_blur_ = base::Time::UnixEpoch();
+  bool should_show_on_transient_blur_ = true;
 
   DisplayUtil display_util_;
 

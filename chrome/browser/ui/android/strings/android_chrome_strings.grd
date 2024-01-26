@@ -484,9 +484,6 @@ CHAR_LIMIT guidelines:
      <message name="IDS_AUTOFILL_PROFILE_EDITOR_COUNTRY" desc="Label for a spinner input field containing a list of countries or regions [CHAR_LIMIT=32]">
         Country/Region
       </message>
-      <message name="IDS_AUTOFILL_PROFILE_EDITOR_HONORIFIC_PREFIX" desc="Label for text input field containing a title that can be auto-filled by Chrome. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [CHAR_LIMIT=32]" meaning="Honorific">
-        Title
-      </message>
       <message name="IDS_AUTOFILL_PROFILE_EDITOR_EMAIL_ADDRESS" desc="Label for text input field containing an e-mail address. [CHAR_LIMIT=32]">
         Email
       </message>
@@ -1479,8 +1476,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_CHECK_UPDATES_TITLE" desc="Title for the updates section.">
         Updates
       </message>
-      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords section.">
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords check for the local passwords stored on user's device only.">
         Passwords
+      </message>
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_ACCOUNT_TITLE" desc="Title for the passwords check for the synced passwords stored in the user's account store.">
+        Passwords saved on <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>.
       </message>
       <message name="IDS_SAFETY_CHECK_BUTTON" desc="Text for the button to start Safety check.">
         Check now
@@ -1910,19 +1910,31 @@ Your Google account may have other forms of browsing history like searches and a
 
       <!-- Download open dialog -->
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
-        Automatically open PDFs?
+        Open PDF?
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
-        Chrome can automatically open a PDF when you download them.
+      <message name="IDS_OPEN_DOWNLOAD_WITH_APP_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file with another app.">
+        Open PDF with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>?
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the download always.">
-        Always open
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the downloaded pdf.">
+        Open
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_JUST_ONCE_TEXT" desc="Text label for the button on the open download dialog for user to just open the current download once.">
-        Just once
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CONTINUE_TEXT" desc="Text label for the button on the open download dialog for user to continue to select pdf viewers to open the downloaded pdf.">
+        Continue
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CANCEL_TEXT" desc="Text label for the button on the open download dialog for user to cancel opening a downloaded pdf.">
+        Cancel
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_AUTO_OPEN_TEXT" desc="Text label for the check box on the open download dialog that allows user to auto-open downloaded PDF files in future.">
+        Always open downloaded PDFs
       </message>
       <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
-        Automatically open pdf after download
+        Automatically open PDFs
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_DESCRIPTION" desc="Description for preference that allows other apps to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with one of the PDF viewers on your device
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_WITH_APP_DESCRIPTION" desc="Description for preference that allows another app to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>
       </message>
 
       <!-- About Chrome preferences -->
@@ -2647,6 +2659,21 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_NOTIFICATION_SITE_SETTINGS_BUTTON" desc="Text of a button shown on notifications, that opens the Site Settings of the website that showed the notification. (If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters). [CHAR_LIMIT=9]">
         Settings
+      </message>
+      <message name="IDS_NOTIFICATION_UNSUBSCRIBE_BUTTON" desc="Text of a button shown by the system on all notifications, allowing the user to unsubscribe from notifications from a web site in a single click (with an option to undo later). Note: there is very little horizontal space for this button. If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters. [CHAR_LIMIT=11]">
+        Unsubscribe
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_TITLE" desc="Title of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        Unsubscribed from notifications
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY" desc="Body text of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        You'll no longer receive notifications from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
+      </message>
+      <message name="IDS_NOTIFICATION_UNDO_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to undo unsubscribing, and continue receiving notifications instead.">
+        Undo
+      </message>
+      <message name="IDS_NOTIFICATION_COMMIT_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to acknowledge unsubscribing and dismiss this notification.">
+        Okay
       </message>
       <message name="IDS_NOTIFICATION_MANAGE_BUTTON" desc="Text of a button shown on notifications, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications. [CHAR_LIMIT=9]">
         Manage
@@ -3920,11 +3947,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Account bookmarks strings -->
-      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER">
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER" desc="The section header of local top-level bookmark folders.">
         Only on this device
       </message>
-      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER">
+      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
         In your Google Account
+      </message>
+      <!-- Power bookmarks strings-->
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_TITLE" desc="The title of the save flow when a user chooses save a bookmarks.">
+        Saved in <ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_SUBTITLE_LOCAL" desc="The subtitle of the save flow when a user saves a bokmark locally.">
+        On this device
       </message>
 
       <!-- Read later strings -->
@@ -4557,6 +4591,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Keyboard shortcuts in Android N-->
+      <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_WINDOW" desc="A text label that appears next to the keyboard shortcut to open a new window in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open a new window
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_TAB" desc="A text label that appears next to the keyboard shortcut to open a new tab in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open a new tab
       </message>

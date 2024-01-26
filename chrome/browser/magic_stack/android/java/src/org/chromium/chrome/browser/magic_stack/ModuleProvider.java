@@ -27,9 +27,10 @@ public interface ModuleProvider {
     int getModuleType();
 
     /**
-     * Returns whether the given context menu item is supported. The option of
-     * ContextMenuItemId.HIDE_MODULE and ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS are supported by
-     * default.
+     * Returns whether the given context menu item is supported.
+     * ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS: supported by all modules by default;
+     * ContextMenuItemId.HIDE_MODULE: supported by all modules by default expect the {@link
+     * ModuleType.SINGLE_TAB}.
      */
     default boolean isContextMenuItemSupported(@ContextMenuItemId int menuItemId) {
         return false;

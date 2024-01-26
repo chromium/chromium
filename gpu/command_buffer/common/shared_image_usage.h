@@ -19,8 +19,8 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_GLES2_READ = 1 << 0,
   // Image will be used as a framebuffer (hint)
   SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT = 1 << 1,
-  // Image will be used in RasterInterface
-  SHARED_IMAGE_USAGE_RASTER = 1 << 2,
+  // Image will be read via RasterInterface
+  SHARED_IMAGE_USAGE_RASTER_READ = 1 << 2,
   // Image will be read from inside Display Compositor
   SHARED_IMAGE_USAGE_DISPLAY_READ = 1 << 3,
   // Image will be written to inside Display Compositor
@@ -28,9 +28,9 @@ enum SharedImageUsage : uint32_t {
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 5,
   // Image will be used in OOP rasterization. This flag is used on top of
-  // SHARED_IMAGE_USAGE_RASTER to indicate that the client will only use
-  // RasterInterface for OOP rasterization. TODO(backer): Eliminate once we can
-  // CPU raster to SkImage via RasterInterface.
+  // SHARED_IMAGE_USAGE_RASTER_{READ, WRITE} to indicate that the client will
+  // only use RasterInterface for OOP rasterization. TODO(backer): Eliminate
+  // once we can CPU raster to SkImage via RasterInterface.
   SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 6,
   // Image will be used by Dawn (for WebGPU)
   SHARED_IMAGE_USAGE_WEBGPU = 1 << 7,
@@ -53,9 +53,11 @@ enum SharedImageUsage : uint32_t {
   // Image will be used in RasterInterface with RawDraw.
   SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 14,
   // Image will be used in RasterInterface for DelegatedCompositing.
-  // TODO(crbug.com/1254033): this usage shall be removed after cc is able to
-  // set a single (duplicated) fence for bunch of tiles instead of having the SI
-  // framework creating fences for each single message when write access ends.
+  // This is intended to avoid the overhead of a GPU fence per tile.
+  // TODO(crbug.com/1519911): In order to delegate buffers we need all buffer
+  // allocations to be set as SCANOUT. This will cause a fence per rastered
+  // tiled. A new buffer concept that avoids scanout but allows delegation might
+  // enable us to remove this usage.
   SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 15,
   // Image will be created on the high performance GPU if supported.
   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 16,
@@ -71,14 +73,17 @@ enum SharedImageUsage : uint32_t {
   // Image will be written via GLES2Interface
   SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 19,
 
+  // Image will be written via RasterInterface
+  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 20,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_GLES2_WRITE,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_RASTER_WRITE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 20,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 21,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

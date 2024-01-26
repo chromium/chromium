@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/simple_test_clock.h"
 #import "base/test/task_environment.h"
 #import "components/optimization_guide/core/tab_url_provider.h"
@@ -79,7 +80,7 @@ class TabUrlProviderImplTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> other_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 };
 

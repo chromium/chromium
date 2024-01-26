@@ -43,7 +43,7 @@ class StylusInterface {
  public:
   virtual ~StylusInterface() = default;
 
-  virtual bool RequestStartStylusWriting() = 0;
+  virtual bool ShouldInitiateStylusWriting() = 0;
   virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
 };
 

@@ -42,8 +42,7 @@ TEST(AnimationEffectInputTest, SortedOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   Element* element = AppendElement(scope.GetDocument());
   KeyframeEffectModelBase* effect = EffectInput::Convert(
@@ -69,8 +68,7 @@ TEST(AnimationEffectInputTest, UnsortedOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,
@@ -99,8 +97,7 @@ TEST(AnimationEffectInputTest, LooslySorted) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   Element* element = AppendElement(scope.GetDocument());
   KeyframeEffectModelBase* effect = EffectInput::Convert(
@@ -133,8 +130,7 @@ TEST(AnimationEffectInputTest, OutOfOrderWithNullOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,
@@ -162,8 +158,7 @@ TEST(AnimationEffectInputTest, Invalid) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,

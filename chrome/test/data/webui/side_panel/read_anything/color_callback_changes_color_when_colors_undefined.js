@@ -43,7 +43,19 @@
     return isEqual;
   };
 
-
+  // On certain platforms, sometimes in tests the color tokens are actually
+  // available. When this happens, we don't need to execute the rest of the
+  // test because this behavior is tested in color_callback_changes_color.js
+  // when areColorTokensUnavailable always returns false to simulate color
+  // tokens being available. areColorTokensUnavailable returning false naturally
+  // in tests doesn't happen consistently, so getting rid of this early return
+  // can result in flaky tests.
+  // Alternatively, we could set areColorTokensUnavailable to always return
+  // true in this test, but since that obscures the actual check in
+  // areColorTokensUnavailable, this approach is preferable.
+  if (!readAnythingApp.areColorTokensUnavailable()) {
+    return result;
+  }
 
   const buttons = Array.from(colorMenu.querySelectorAll('.dropdown-item'));
   buttons.forEach((button) => {

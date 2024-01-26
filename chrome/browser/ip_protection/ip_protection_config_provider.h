@@ -210,14 +210,14 @@ class IpProtectionConfigProvider
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
   // its callback.
   void TryGetAuthTokensComplete(
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           bsa_tokens,
       TryGetAuthTokensCallback callback,
       IpProtectionTryGetAuthTokensResult result);
 
   // Calculates the backoff time for the given result, based on
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
-  absl::optional<base::TimeDelta> CalculateBackoff(
+  std::optional<base::TimeDelta> CalculateBackoff(
       IpProtectionTryGetAuthTokensResult result);
 
   // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
@@ -256,7 +256,7 @@ class IpProtectionConfigProvider
   // (so, from either the main profile or an associated incognito mode profile).
   IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
       IpProtectionTryGetAuthTokensResult::kSuccess;
-  absl::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
+  std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.

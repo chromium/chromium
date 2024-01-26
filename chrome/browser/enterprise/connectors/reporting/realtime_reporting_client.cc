@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -37,7 +38,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -399,11 +399,11 @@ void RealtimeReportingClient::OnCloudPolicyClientAvailable(
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-absl::optional<ReportingSettings>
+std::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(context_);
   if (!service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);

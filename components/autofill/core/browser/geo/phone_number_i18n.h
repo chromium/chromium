@@ -115,9 +115,7 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 // The cached phone number, does parsing only once, improves performance.
 class PhoneObject {
  public:
-  PhoneObject(const std::u16string& number,
-              const std::string& default_region,
-              bool infer_country_code);
+  PhoneObject(const std::u16string& number, const std::string& default_region);
   PhoneObject(const PhoneObject&);
   PhoneObject();
   ~PhoneObject();

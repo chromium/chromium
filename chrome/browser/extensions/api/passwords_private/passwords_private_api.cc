@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_api.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -22,7 +24,6 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -145,7 +146,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 }
 
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
-    absl::optional<std::u16string> password) {
+    std::optional<std::u16string> password) {
   if (password) {
     Respond(WithArguments(std::move(*password)));
     return;
@@ -561,7 +562,7 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
       api::passwords_private::GetUrlCollection::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const absl::optional<api::passwords_private::UrlCollection> url_collection =
+  const std::optional<api::passwords_private::UrlCollection> url_collection =
       GetDelegate(browser_context())->GetUrlCollection(parameters->url);
   if (!url_collection) {
     return RespondNow(

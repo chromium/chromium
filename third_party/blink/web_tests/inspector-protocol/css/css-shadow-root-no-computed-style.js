@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(
     `<div id='shadow-host'></div>`,
     'Tests that the shadow root itself has no computed style and there is no DCHECK failure');

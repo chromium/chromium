@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' href='${testRunner.url('resources/set-try-rule-style-text.css')}'/>
 <div id='anchor'></div>

@@ -25,7 +25,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
  public:
   ClientSharedImageInterface(SharedImageInterfaceProxy* proxy,
                              scoped_refptr<gpu::GpuChannelHost> channel);
-  ~ClientSharedImageInterface() override;
 
   // SharedImageInterface implementation.
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -96,6 +95,19 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
+
+  // Used by the software compositor only. |usage| must be
+  // gpu::SHARED_IMAGE_USAGE_CPU_WRITE. Call client_shared_image->Map() later to
+  // get the shared memory mapping.
+  SharedImageInterface::SharedImageMapping CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label) override;
+
   // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
   // single planar eg. RGB BufferFormats. Please use the equivalent method above
   // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
@@ -115,12 +127,12 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                          scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
                          const Mailbox& mailbox) override;
 #endif
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override;
+  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(
@@ -138,6 +150,9 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   const SharedImageCapabilities& GetCapabilities() override;
 
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
+
+ protected:
+  ~ClientSharedImageInterface() override;
 
  private:
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;

@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
   <int value="100158" label="NetworkEasterEggHighScore"/>
   <int value="100159" label="NetworkPredictionOptions"/>
   <int value="100160" label="NetworkQualities"/>
-  <int value="100161" label="NtpAppPageNames"/>
+  <int value="100161" label="(obsolete) NtpAppPageNames"/>
   <int value="100162" label="PageColors"/>
   <int value="100163" label="PerformanceTracingEnabled"/>
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
@@ -460,6 +460,28 @@ chromium-metrics-reviews@google.com.
   <int value="100248" label="ListenToThisPageEnabled"/>
   <int value="100249" label="IpProtectionEnabled"/>
   <int value="100250" label="AccessibilityReadAnythingLinksEnabled"/>
+  <int value="100251"
+      label="kProfileContentSettingsPartitionedExceptionsAntiAbuse"/>
+  <int value="100252"
+      label="kProfileContentSettingsPartitionedExceptionsAutomaticDownloads"/>
+  <int value="100253"
+      label="kProfileContentSettingsPartitionedExceptionsCookies"/>
+  <int value="100254"
+      label="kProfileContentSettingsPartitionedExceptionsGetDisplayMediaSetSelectAllScreens"/>
+  <int value="100255"
+      label="kProfileContentSettingsPartitionedExceptionsImages"/>
+  <int value="100256"
+      label="kProfileContentSettingsPartitionedExceptionsJavascript"/>
+  <int value="100257"
+      label="kProfileContentSettingsPartitionedExceptionsLocalFonts"/>
+  <int value="100258"
+      label="kProfileContentSettingsPartitionedExceptionsMouselock"/>
+  <int value="100259"
+      label="kProfileContentSettingsPartitionedExceptionsPopups"/>
+  <int value="100260"
+      label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
+  <int value="100261" label="kStandaloneWindowMigrationNudgeShown"/>
+  <int value="100262" label="TabDiscardingExceptionsWithTime"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
@@ -750,6 +772,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Incoming Password Sharing Invitations"/>
   <int value="60" label="Outgoing Password Sharing Invitations"/>
   <int value="61" label="Autofill Wallet Credential"/>
+  <int value="62" label="WebAPKs"/>
 </enum>
 
 <enum name="SyncPassphraseType">
@@ -958,6 +981,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Profile menu"/>
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
+  <int value="4" label="Password Manager Error Message"/>
 </enum>
 
 </enums>

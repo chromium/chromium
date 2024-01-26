@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that Page.navigateWithinDocument is issued for history API and anchor navigation.`);
 

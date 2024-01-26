@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -49,7 +50,7 @@ class FactoryForMain : public IOSChromeURLRequestContextFactory {
   }
 
  private:
-  const ChromeBrowserStateIOData* const io_data_;
+  const raw_ptr<const ChromeBrowserStateIOData> io_data_;
   ProtocolHandlerMap protocol_handlers_;
 };
 

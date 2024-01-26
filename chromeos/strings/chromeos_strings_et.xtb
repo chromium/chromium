@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">edasi</translation>
 <translation id="1615335640928990664">Andmekasutus alates: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Käita laadimistest</translation>
+<translation id="1626590945318984973">Otsetee pole saadaval. Vajutage uut otseteed ilma funktsiooni ja klahve <ph name="META_KEY" /> kasutamata.</translation>
 <translation id="1639239467298939599">Laadimine</translation>
 <translation id="1641857168437328880">Dokumendisöötur (ühepoolne)</translation>
 <translation id="1643449475550628585">Taustapildi muutmine igapäevaselt</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Tumeda režiim väljalülitamine</translation>
 <translation id="1885577615937958993">kerib meediasisu edasi</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
-<translation id="1897672602657312171">Otsetee ilma otsinguklahvita võib olla vastuolus mõne rakenduse otseteega. Kasutamise jätkamiseks vajutage seda otseteed uuesti või vajutage otsinguklahvi abil uut otseteed.</translation>
 <translation id="1904932688895783618">Allpool on veel kasulikke allikaid</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotot</translation>
 <translation id="2157660087437850958">emotikonide valija</translation>
 <translation id="2157959690810728433">JÄRJEKORRAS</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administraator on määranud rakenduse <ph name="APP_NAME_1" /> käivituma automaatselt iga kord, kui sisse logite.}=2{Administraator on määranud rakendused <ph name="APP_NAME_1" /> ja <ph name="APP_NAME_2" /> käivituma automaatselt iga kord, kui sisse logite.}=3{Administraator on määranud rakendused <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> käivituma automaatselt iga kord, kui sisse logite.}other{Administraator on määranud rakendused <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ja veel # rakendust käivituma automaatselt iga kord, kui sisse logite.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: proovige uuesti</translation>
 <translation id="215916044711630446">APN-i nupp Lisa on nüüd keelatud</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN-i üksikasjade muutmine</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
+<translation id="2215920961700443347">Internetiühendus puudub. Looge ühendus internetiga ja proovige uuesti.</translation>
 <translation id="2217935453350629363">Praegune kiirus</translation>
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="222447520299472966">Valima peab vähemalt ühe kunstigalerii albumi</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Pilt <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
+<translation id="2465272316171730950">Maht on täis. Tulge hiljem tagasi.</translation>
 <translation id="248546197012830854">Seade on võrguühenduseta. Abimaterjalide nägemiseks looge ühendus WiFi-võrguga.</translation>
 <translation id="2491955442992294626">Klahve ei testita, kui kasutate teist akent</translation>
 <translation id="2493126929778606526">Teie parimad fotod, valitud automaatselt</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2512979179176933762">kuvab aknad</translation>
 <translation id="2513396635448525189">Profiilipilt</translation>
-<translation id="2515109918609218604">Otsetee pole saadaval. Vajutage uut otseteed ilma funktsiooni- ja otsinguklahve kasutamata.</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2521835766824839541">eelmine lugu</translation>
 <translation id="2526590354069164005">Töölaud</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Teil on nüüd juurdepääs uutele <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustapiltidele<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tume režiim</translation>
 <translation id="4130035430755296270">Jätkake hõljutamist, et näha rohkem paigutuse valikuid</translation>
+<translation id="4130750466177569591">Nõustun</translation>
 <translation id="4131410914670010031">Mustvalge</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> käivitati automaatselt}other{# rakendust käivitati automaatselt}}</translation>
 <translation id="4145784616224233563">HTTP tulemüür</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Kuva</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">vähendab heledust</translation>
 <translation id="4176463684765177261">Keelatud</translation>
 <translation id="4176659219503619100">Juhtpaneel</translation>
-<translation id="4185315616950253617">Ülemise rea klahvidega otseteed peavad sisaldama otsinguklahvi.</translation>
 <translation id="420283545744377356">Lülita ekraanisäästja välja</translation>
 <translation id="4213104098953699324">USB-klaviatuur</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Keela</translation>
 <translation id="439429847087949098">Seadme <ph name="DEVICE_NAME" /> taaskäivitamine</translation>
 <translation id="4395835743215824109">klaviatuuri kohandamine</translation>
+<translation id="4403262788869804671">Otsetee ilma klahvita <ph name="META_KEY" /> võib olla vastuolus mõne rakenduse otseteega. Kasutamise jätkamiseks vajutage seda otseteed uuesti või vajutage klahvi <ph name="KEY" /> abil uut otseteed.</translation>
 <translation id="4415951057168511744">Praegune avatar</translation>
+<translation id="4417830657741848074">Teie administraator on seadistanud mõned rakendused automaatselt käivituma. Mõned neist rakendustest ei pruugi olla suletud.</translation>
 <translation id="4422041425070339732">allanool</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> on välja lülitatud</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Maa pöörlemise ekraanisäästja</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="4500722292849917410">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades muuteklahvi (Ctrl, Alt, tõstuklahv või <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Liidese värv</translation>
 <translation id="4503223151711056411">Vasaknool</translation>
 <translation id="4507392511610824664">suurendab heledust</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4835901797422965222">Aktiivseid võrke pole</translation>
 <translation id="4839698083503556542">Enda filmi loomine</translation>
+<translation id="48409034532829769">Teie administraator on seadistanud rakenduse „<ph name="APP_NAME" />” automaatse käivitamise. See rakendus ei pruugi olla suletud.</translation>
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="4847902821209177679">Valitud on taust „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”. Vajutage sisestusklahvi, et valida tausta „<ph name="TOPIC_SOURCE" />” jaoks albumid</translation>
 <translation id="484790837831576105">(Android) DNS-lahendus</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Jagatud</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
+<translation id="4982627662315910959">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades tõstuklahvi ja veel ühte muuteklahvi (Ctrl, Alt või <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="4987769320337599931">Tulemüür</translation>
 <translation id="4988526792673242964">Leheküljed</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Tumeda teema ajakava</translation>
 <translation id="5229344016299762883">Välju täisekraanilt</translation>
 <translation id="5234764350956374838">Loobu</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ käivituma automaatselt iga kord, kui sisse logite.}=2{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel ühe rakenduse käivituma automaatselt iga kord, kui sisse logite.}other{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel # rakenduse käivituma automaatselt iga kord, kui sisse logite.}}</translation>
 <translation id="5252456968953390977">Rändlus</translation>
 <translation id="5257811368506016604">Luba hele värvirežiim</translation>
 <translation id="5264277876637023664">Käita protsessori test</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="725133483556299729">Valige e-posti aadress</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
-<translation id="7273347807225967898">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades muuteklahvi (Ctrl, Alt, tõstuklahv, otsinguklahv või käivitaja).</translation>
+<translation id="7271932918253517778">Ülemise rea klahvidega otseteed peavad sisaldama klahvi <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Tunnetage briisi</translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Üldised juhtelemendid</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" />-võrguga ühendamiseks avage leht Seaded</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ käivitati automaatselt}other{# rakendust käivitati automaatselt}}</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8017679124341497925">Otsetee on muudetud</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8094062939584182041">Luban Google'il endale selle teema kohta meile saata</translation>
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
-<translation id="8111706652656628199">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades tõstuklahvi ja veel ühte muuteklahvi (Ctrl, Alt, otsinguklahv või käivitaja).</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>

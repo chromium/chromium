@@ -101,8 +101,7 @@ TEST(JsonWriterTest, KeysWithPeriods) {
 }
 
 TEST(JsonWriterTest, BinaryValues) {
-  const auto kBinaryData =
-      base::make_span(reinterpret_cast<const uint8_t*>("asdf"), 4u);
+  const auto kBinaryData = base::as_bytes(base::make_span("asdf", 4u));
 
   // Binary values should return errors unless suppressed via the
   // `OPTIONS_OMIT_BINARY_VALUES` flag.

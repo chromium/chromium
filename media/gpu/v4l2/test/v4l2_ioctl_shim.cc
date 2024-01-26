@@ -544,7 +544,6 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
     while ((num_tries != 0) && !Ioctl(VIDIOC_DQBUF, &v4l2_buffer)) {
       if (errno != EAGAIN) {
         LOGF(FATAL) << "VIDIOC_DQBUF failed with errno: " << errno << ".";
-        return;
       }
 
       num_tries--;
@@ -553,7 +552,6 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
     if (num_tries == 0) {
       LOGF(FATAL)
           << "Decoder appeared to stall. VIDIOC_DQBUF ioctl call timed out.";
-      return;
     } else {
       // Successfully dequeued a buffer. Reset the |num_tries| counter.
       num_tries = kMaxRetryCount;

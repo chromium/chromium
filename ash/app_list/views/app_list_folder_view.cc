@@ -279,6 +279,16 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 class TopIconAnimation : public AppListFolderView::Animation,
                          public TopIconAnimationObserver {
  public:
+  // The item view bounds such that the item icon matches the bounds of the icon
+  // within the folder icon. The icon position within the app list item view
+  // depends on whether the app item is badge or not.
+  struct TopItemViewBounds {
+    // Item view bounds for non-badge icon.
+    const gfx::Rect not_badged;
+    // Item view bounds for badged icon.
+    const gfx::Rect badged;
+  };
+
   TopIconAnimation(bool show,
                    AppListFolderView* folder_view,
                    views::ScrollView* scroll_view,
@@ -309,7 +319,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
 
     // Calculate the start and end bounds of the top item icons in the
     // animation.
-    std::vector<gfx::Rect> top_item_views_bounds =
+    std::vector<TopItemViewBounds> top_item_views_bounds =
         GetTopItemViewsBoundsInFolderIcon();
     std::vector<gfx::Rect> first_page_item_views_bounds =
         GetFirstPageItemViewsBounds();
@@ -341,13 +351,20 @@ class TopIconAnimation : public AppListFolderView::Animation,
     for (size_t i = 0; i < top_items.size(); ++i) {
       const AppListItem* top_item = top_items[i];
       bool item_in_folder_icon = i < top_item_views_bounds.size();
-      gfx::Rect scaled_rect = item_in_folder_icon
-                                  ? top_item_views_bounds[i]
-                                  : folder_view_->folder_item_icon_bounds();
+      gfx::Rect scaled_rect;
+      if (item_in_folder_icon) {
+        if (top_item->GetHostBadgeIcon().isNull()) {
+          scaled_rect = top_item_views_bounds[i].not_badged;
+        } else {
+          scaled_rect = top_item_views_bounds[i].badged;
+        }
+      } else {
+        scaled_rect = folder_view_->folder_item_icon_bounds();
+      }
 
       auto icon_view = std::make_unique<TopIconAnimationView>(
           folder_view_->items_grid_view(),
-          top_item->GetIcon(app_list_config_type),
+          top_item->GetIcon(app_list_config_type), top_item->GetHostBadgeIcon(),
           base::UTF8ToUTF16(top_item->GetDisplayName()), scaled_rect, show_,
           item_in_folder_icon);
       auto* icon_view_ptr = icon_view.get();
@@ -398,7 +415,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   }
 
  private:
-  std::vector<gfx::Rect> GetTopItemViewsBoundsInFolderIcon() {
+  std::vector<TopItemViewBounds> GetTopItemViewsBoundsInFolderIcon() {
     const AppListConfig* const app_list_config =
         folder_view_->GetAppListConfig();
     size_t effective_folder_size =
@@ -412,23 +429,35 @@ class TopIconAnimation : public AppListFolderView::Animation,
     std::vector<gfx::Rect> top_icons_bounds = FolderImage::GetTopIconsBounds(
         *app_list_config, folder_view_->folder_item_icon_bounds(),
         std::min(effective_folder_size, FolderImage::kNumFolderTopItems));
-    std::vector<gfx::Rect> top_item_views_bounds;
-    const int icon_dimension = app_list_config->grid_icon_dimension();
+
+    std::vector<TopItemViewBounds> top_item_views_bounds;
+    const int not_badged_icon_dimension =
+        app_list_config->grid_icon_dimension();
+    const int badged_icon_dimension =
+        app_list_config->GetShortcutIconSize().width();
     const int icon_bottom_padding = app_list_config->grid_icon_bottom_padding();
     const int tile_width = app_list_config->grid_tile_width();
     const int tile_height = app_list_config->grid_tile_height();
-    for (gfx::Rect bounds : top_icons_bounds) {
+
+    auto get_item_bounds = [&](const gfx::Rect& target_icon_bounds,
+                               int icon_dimension) {
       // Calculate the item view's bounds based on the icon bounds.
       gfx::Rect item_bounds(
           (icon_dimension - tile_width) / 2,
           (icon_dimension + icon_bottom_padding - tile_height) / 2, tile_width,
           tile_height);
       item_bounds = gfx::ScaleToRoundedRect(
-          item_bounds, bounds.width() / static_cast<float>(icon_dimension),
-          bounds.height() / static_cast<float>(icon_dimension));
-      item_bounds.Offset(bounds.x(), bounds.y());
+          item_bounds,
+          target_icon_bounds.width() / static_cast<float>(icon_dimension),
+          target_icon_bounds.height() / static_cast<float>(icon_dimension));
+      item_bounds.Offset(target_icon_bounds.x(), target_icon_bounds.y());
+      return item_bounds;
+    };
 
-      top_item_views_bounds.emplace_back(item_bounds);
+    for (gfx::Rect bounds : top_icons_bounds) {
+      top_item_views_bounds.push_back(
+          {.not_badged = get_item_bounds(bounds, not_badged_icon_dimension),
+           .badged = get_item_bounds(bounds, badged_icon_dimension)});
     }
     return top_item_views_bounds;
   }
@@ -459,8 +488,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
       gfx::RectF bounds_in_container(item->GetLocalBounds());
       views::View::ConvertRectToTarget(item, scroll_view_,
                                        &bounds_in_container);
-      if (!container_bounds.Contains(bounds_in_container))
+      if (!container_bounds.Intersects(bounds_in_container)) {
         break;
+      }
 
       // Return the item bounds in AppListFolderView coordinates.
       gfx::RectF bounds_in_folder(item->GetLocalBounds());
@@ -785,7 +815,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(
             "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));
@@ -928,6 +958,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   // Transition all the states immediately to the end of folder closing
   // animation.
   background_view_->SetVisible(false);
+  contents_container_->SetTransform(gfx::Transform());
 
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);

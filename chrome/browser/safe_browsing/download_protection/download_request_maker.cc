@@ -54,7 +54,7 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
 }
 
 void SetDownloadItemWarningData(download::DownloadItem* item,
-                                const absl::optional<std::string>& password,
+                                const std::optional<std::string>& password,
                                 const FileAnalyzer::Results& results) {
   DownloadItemWarningData::SetIsEncryptedArchive(
       item, results.encryption_info.is_encrypted);
@@ -141,7 +141,7 @@ DownloadRequestMaker::CreateFromFileSystemAccess(
       item.full_path, GetFileSystemAccessDownloadUrl(item.frame_url),
       item.sha256_hash, item.size,
       std::vector<ClientDownloadRequest::Resource>{resource},
-      item.has_user_gesture, referrer_chain_data.get(), absl::nullopt,
+      item.has_user_gesture, referrer_chain_data.get(), std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 }
 

@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,11 +26,10 @@
 class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  public:
   SearchEngineChoiceDialogServiceTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSearchEngineChoice,
-                              switches::kSearchEngineChoiceFre},
-        /*disabled_features=*/{});
-
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
     scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
         SearchEngineChoiceDialogServiceFactory::
             ScopedChromeBuildOverrideForTesting(
@@ -38,17 +42,26 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 
-    PrefService* pref_service = profile()->GetPrefs();
     // The search engine choice feature is only enabled for countries in the
     // EEA region.
     const int kBelgiumCountryId =
         country_codes::CountryCharsToCountryID('B', 'E');
-    pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                             kBelgiumCountryId);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::CountryIDToCountryString(kBelgiumCountryId));
+  }
+
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    // Dialog eligibility checks require a `WebContentsModalDialogHost`.
+    return std::make_unique<DialogTestBrowserWindow>();
   }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
+  }
+
+  const base::UserActionTester& user_action_tester() const {
+    return user_action_tester_;
   }
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
@@ -56,6 +69,7 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
@@ -88,24 +102,39 @@ TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
-  feature_list().Reset();
-  feature_list().InitWithFeatures(
-      /*enabled_features=*/{switches::kSearchEngineChoiceFre},
-      /*disabled_features=*/{switches::kSearchEngineChoice});
-
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
 
+  // The `DialogTestBrowserWindow` reports a {0,0} size window.
   EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kFeatureSuppressed,
+      search_engines::SearchEngineChoiceScreenConditions::
+          kBrowserWindowTooSmall,
       1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
+
+  search_engine_choice_dialog_service->NotifyDialogOpened(browser(),
+                                                          base::DoNothing());
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
+      1);
+
+  EXPECT_EQ(
+      user_action_tester().GetActionCount("SearchEngineChoiceScreenShown"), 1);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,

@@ -178,6 +178,17 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetNetworkProxyAuthRequired() {
+    GetPrefs()->SetBoolean(::proxy_config::prefs::kUseSharedProxies, true);
+    proxy_config::SetProxyConfigForNetwork(
+        ProxyConfigDictionary(ProxyConfigDictionary::CreateAutoDetect()),
+        GetDefaultNetwork());
+    base::RunLoop().RunUntilIdle();
+    NetworkHandler::Get()->network_state_handler()->SetNetworkChromePortalState(
+        GetDefaultNetwork().path(),
+        NetworkState::PortalState::kProxyAuthRequired);
+  }
+
   void ShowSignin(
       NetworkPortalSigninController::SigninSource source =
           NetworkPortalSigninController::SigninSource::kNotification) {
@@ -209,6 +220,16 @@ TEST_F(NetworkPortalSigninControllerTest, KioskMode) {
   EXPECT_EQ(controller_->tab_url(), expected_url);
   ASSERT_TRUE(controller_->profile());
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
+}
+
+TEST_F(NetworkPortalSigninControllerTest, ProxyAuthRequired) {
+  SimulateLogin();
+  std::string expected_url = SetProbeUrl(kTestPortalUrl);
+  SetNetworkProxyAuthRequired();
+  ShowSignin();
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  ASSERT_TRUE(controller_->profile());
+  EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, AuthenticationIgnoresProxyTrue) {

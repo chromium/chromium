@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCodeData} from '../common/key_code.js';
+import {KeyCodeData} from '/common/key_code.js';
 
 export namespace SelectToSpeakConstants {
   export const SEARCH_KEY_CODE: number = KeyCodeData.SEARCH.code;

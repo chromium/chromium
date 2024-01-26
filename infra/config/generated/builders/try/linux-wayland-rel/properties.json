@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "linux-wayland-rel-compilator",
-    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
@@ -26,7 +22,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -52,7 +49,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -92,6 +90,11 @@
     ],
     "use_clang_coverage": true
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -100,5 +103,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.linux",
-  "recipe": "chromium/orchestrator"
+  "recipe": "chromium_trybot"
 }

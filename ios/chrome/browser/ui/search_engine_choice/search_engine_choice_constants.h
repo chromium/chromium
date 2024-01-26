@@ -26,6 +26,10 @@ extern const CGFloat kFakeOmniboxFieldLeadingInset;
 
 // Accessibility identifier for the choice screen title.
 extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
+// Accessibility identifier for the fake empty omnibox illustration.
+extern NSString* const kFakeEmptyOmniboxAccessibilityIdentifier;
+// Accessibility identifier for the fake omnibox illustration.
+extern NSString* const kFakeOmniboxAccessibilityIdentifier;
 // Prefix for the SearchEngineCell accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // `Set as Default` button accessibility identifier.
@@ -34,5 +38,8 @@ extern NSString* const kSetAsDefaultSearchEngineIdentifier;
 extern NSString* const kSearchEngineTableViewIdentifier;
 // `More` button accessibility identifier.
 extern NSString* const kSearchEngineMoreButtonIdentifier;
+
+// Flags that allow to enable the search engine choice in tests.
+extern NSString* const kSearchEngineForceEnabled;
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_CONSTANTS_H_

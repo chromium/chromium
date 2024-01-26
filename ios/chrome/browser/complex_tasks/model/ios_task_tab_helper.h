@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -37,7 +38,7 @@ class IOSTaskTabHelper : public web::WebStateObserver,
   friend class web::WebStateUserData<IOSTaskTabHelper>;
   std::unordered_map<int, IOSContentRecordTaskId>
       ios_content_record_task_id_map_;
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   int prev_item_unique_id_ = -1;
   WEB_STATE_USER_DATA_KEY_DECL();
 };

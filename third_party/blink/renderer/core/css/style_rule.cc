@@ -67,6 +67,7 @@ namespace blink {
 struct SameSizeAsStyleRuleBase final
     : public GarbageCollected<SameSizeAsStyleRuleBase> {
   uint8_t field;
+  bool has_signal;
 };
 
 ASSERT_SIZE(StyleRuleBase, SameSizeAsStyleRuleBase);
@@ -81,6 +82,12 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
   return CreateCSSOMWrapper(position_hint, nullptr, parent_rule);
 }
 
+bool StyleRuleBase::IsSignaling() const {
+  auto* style_rule = DynamicTo<StyleRule>(this);
+  return style_rule && (style_rule->FirstSelector()->GetSignal() !=
+                        CSSSelector::Signal::kNone);
+}
+
 void StyleRuleBase::Trace(Visitor* visitor) const {
   switch (GetType()) {
     case kCharset:
@@ -91,6 +98,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kPage:
       To<StyleRulePage>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kPageMargin:
+      To<StyleRulePageMargin>(this)->TraceAfterDispatch(visitor);
       return;
     case kProperty:
       To<StyleRuleProperty>(this)->TraceAfterDispatch(visitor);
@@ -167,6 +177,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kPage:
       To<StyleRulePage>(this)->~StyleRulePage();
       return;
+    case kPageMargin:
+      To<StyleRulePageMargin>(this)->~StyleRulePageMargin();
+      return;
     case kProperty:
       To<StyleRuleProperty>(this)->~StyleRuleProperty();
       return;
@@ -237,6 +250,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRule>(this)->Copy();
     case kPage:
       return To<StyleRulePage>(this)->Copy();
+    case kPageMargin:
+      return To<StyleRulePageMargin>(this)->Copy();
     case kProperty:
       return To<StyleRuleProperty>(this)->Copy();
     case kFontFace:
@@ -376,6 +391,7 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kFontFeature:
     case kKeyframe:
     case kCharset:
+    case kPageMargin:
       NOTREACHED();
       return nullptr;
   }
@@ -444,6 +460,7 @@ StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
       child_rules_->push_back(child_rule->Copy());
     }
   }
+  SetHasSignalingChildRule(other.HasSignalingChildRule());
 }
 
 StyleRule::~StyleRule() {
@@ -470,6 +487,14 @@ MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
 
 bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
   return properties_ && properties_->HasFailedOrCanceledSubresources();
+}
+
+void StyleRule::AddChildRule(StyleRuleBase* child) {
+  EnsureChildRules();
+  child_rules_->push_back(child);
+  if (child->IsSignaling()) {
+    SetHasSignalingChildRule(true);
+  }
 }
 
 bool StyleRule::HasParsedProperties() const {
@@ -510,6 +535,12 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
       }
       break;
     case kPage:
+      for (StyleRuleBase* child :
+           DynamicTo<StyleRulePage>(this)->ChildRules()) {
+        child->Reparent(old_parent, new_parent);
+      }
+      break;
+    case kPageMargin:
     case kProperty:
     case kFontFace:
     case kFontPaletteValues:
@@ -531,10 +562,12 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
 }
 
 StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
-                             CSSPropertyValueSet* properties)
+                             CSSPropertyValueSet* properties,
+                             HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleBase(kPage),
       properties_(properties),
-      selector_list_(selector_list) {}
+      selector_list_(selector_list),
+      child_rules_(std::move(child_rules)) {}
 
 StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
     : StyleRuleBase(page_rule),
@@ -552,6 +585,28 @@ void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(layer_);
   visitor->Trace(selector_list_);
+  visitor->Trace(child_rules_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRulePageMargin::StyleRulePageMargin(CSSAtRuleID id,
+                                         CSSPropertyValueSet* properties)
+    : StyleRuleBase(kPageMargin), id_(id), properties_(properties) {}
+
+StyleRulePageMargin::StyleRulePageMargin(
+    const StyleRulePageMargin& page_margin_rule)
+    : StyleRuleBase(page_margin_rule),
+      properties_(page_margin_rule.properties_->MutableCopy()) {}
+
+MutableCSSPropertyValueSet& StyleRulePageMargin::MutableProperties() {
+  if (!properties_->IsMutable()) {
+    properties_ = properties_->MutableCopy();
+  }
+  return *To<MutableCSSPropertyValueSet>(properties_.Get());
+}
+
+void StyleRulePageMargin::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(properties_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
@@ -654,13 +709,20 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
-    : StyleRuleBase(type), child_rules_(std::move(rules)) {}
+    : StyleRuleBase(type), child_rules_(std::move(rules)) {
+  for (const StyleRuleBase* rule : child_rules_) {
+    if (rule->IsSignaling()) {
+      SetHasSignalingChildRule(true);
+    }
+  }
+}
 
 StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& group_rule)
     : StyleRuleBase(group_rule), child_rules_(group_rule.child_rules_.size()) {
   for (unsigned i = 0; i < child_rules_.size(); ++i) {
     child_rules_[i] = group_rule.child_rules_[i]->Copy();
   }
+  SetHasSignalingChildRule(group_rule.HasSignalingChildRule());
 }
 
 void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,

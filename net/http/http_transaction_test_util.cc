@@ -224,15 +224,11 @@ std::string MockHttpRequest::CacheKey() {
 
 //-----------------------------------------------------------------------------
 
-// static
-int TestTransactionConsumer::quit_counter_ = 0;
-
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
     HttpTransactionFactory* factory) {
   // Disregard the error code.
   factory->CreateTransaction(priority, &trans_);
-  ++quit_counter_;
 }
 
 TestTransactionConsumer::~TestTransactionConsumer() = default;
@@ -247,6 +243,10 @@ void TestTransactionConsumer::Start(const HttpRequestInfo* request,
                     net_log);
   if (result != ERR_IO_PENDING)
     DidStart(result);
+
+  base::RunLoop loop;
+  quit_closure_ = loop.QuitClosure();
+  loop.Run();
 }
 
 void TestTransactionConsumer::DidStart(int result) {
@@ -269,8 +269,9 @@ void TestTransactionConsumer::DidRead(int result) {
 void TestTransactionConsumer::DidFinish(int result) {
   state_ = State::kDone;
   error_ = result;
-  if (--quit_counter_ == 0)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (!quit_closure_.is_null()) {
+    std::move(quit_closure_).Run();
+  }
 }
 
 void TestTransactionConsumer::Read() {
@@ -728,6 +729,10 @@ ConnectionAttempts MockNetworkTransaction::GetConnectionAttempts() const {
 
 void MockNetworkTransaction::CloseConnectionOnDestruction() {
   NOTIMPLEMENTED();
+}
+
+bool MockNetworkTransaction::IsMdlMatchForMetrics() const {
+  return false;
 }
 
 void MockNetworkTransaction::CallbackLater(CompletionOnceCallback callback,

@@ -5,8 +5,10 @@
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/no_destructor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 
@@ -29,8 +31,8 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // Razer Naga Pro (Bluetooth)
-          {{0x1532, 0x0092},
+          // Logitech ERGO M575 (USB Dongle)
+          {{0x46d, 0x4096},
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
@@ -49,6 +51,18 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
             mojom::MouseButtonConfig::kFiveKey}},
       });
   return *mouse_metadata_list;
+}
+
+const base::flat_map<VendorProductId, GraphicsTabletMetadata>&
+GetGraphicsTabletMetadataList() {
+  const static base::NoDestructor<
+      base::flat_map<VendorProductId, GraphicsTabletMetadata>>
+      graphics_tablet_metadata_list({
+          // Fake data for testing.
+          {{0xeeee, 0xeeee},
+           {mojom::CustomizationRestriction::kAllowCustomizations}},
+      });
+  return *graphics_tablet_metadata_list;
 }
 
 const base::flat_map<VendorProductId, KeyboardMetadata>&
@@ -130,7 +144,24 @@ GetKeyboardMouseComboMetadataList() {
   return *keyboard_mouse_combo_metadata_list;
 }
 
+const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
+  const static base::NoDestructor<
+      base::flat_map<VendorProductId, VendorProductId>>
+      vid_pid_alias_list({
+          // Razer Naga Pro (Bluetooth -> USB Dongle)
+          {{0x1532, 0x0092}, {0x1532, 0x0090}},
+          // Logitech ERGO M575 (Bluetooth -> USB Dongle)
+          {{0x46d, 0xb027}, {0x46d, 0x4096}},
+      });
+  return *vid_pid_alias_list;
+}
+
 bool MouseMetadata::operator==(const MouseMetadata& other) const {
+  return customization_restriction == other.customization_restriction;
+}
+
+bool GraphicsTabletMetadata::operator==(
+    const GraphicsTabletMetadata& other) const {
   return customization_restriction == other.customization_restriction;
 }
 
@@ -140,30 +171,69 @@ bool KeyboardMouseComboMetadata::operator==(
 }
 
 const MouseMetadata* GetMouseMetadata(const ui::InputDevice& device) {
-  const auto iter =
-      GetMouseMetadataList().find({device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetMouseMetadataList().find(vid_pid);
   if (iter != GetMouseMetadataList().end()) {
     return &(iter->second);
   }
+
+  return nullptr;
+}
+
+const GraphicsTabletMetadata* GetGraphicsTabletMetadata(
+    const ui::InputDevice& device) {
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetGraphicsTabletMetadataList().find(
+      {vid_pid.vendor_id, vid_pid.product_id});
+  if (iter != GetGraphicsTabletMetadataList().end()) {
+    return &(iter->second);
+  }
+
   return nullptr;
 }
 
 const KeyboardMetadata* GetKeyboardMetadata(const ui::InputDevice& device) {
-  const auto iter =
-      GetKeyboardMetadataList().find({device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetKeyboardMetadataList().find(vid_pid);
   if (iter != GetKeyboardMetadataList().end()) {
     return &(iter->second);
   }
+
   return nullptr;
 }
 
 const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
     const ui::InputDevice& device) {
-  const auto iter = GetKeyboardMouseComboMetadataList().find(
-      {device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetKeyboardMouseComboMetadataList().find(vid_pid);
   if (iter != GetKeyboardMouseComboMetadataList().end()) {
     return &(iter->second);
   }
+
   return nullptr;
 }
 
@@ -191,21 +261,23 @@ std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
   return {};
 }
 
-// TODO(dpad, b/286930911): Translate button names
 std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Middle button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Forward button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
@@ -215,22 +287,26 @@ std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
 std::vector<mojom::ButtonRemappingPtr> GetLogitechSixKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Middle button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Forward button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Side button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_SIDE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       /*remapping_action=*/nullptr));

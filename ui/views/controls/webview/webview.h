@@ -168,6 +168,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // Overridden from content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

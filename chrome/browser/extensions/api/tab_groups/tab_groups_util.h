@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_UTIL_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -41,7 +41,7 @@ int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 api::tab_groups::TabGroup CreateTabGroupObject(
     const tab_groups::TabGroupId& id,
     const tab_groups::TabGroupVisualData& visual_data);
-absl::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
+std::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
     const tab_groups::TabGroupId& id);
 
 // Gets the metadata for the group with ID |group_id|. Sets the |error| if not

@@ -50,7 +50,6 @@ void SandboxIPCHandler::Run() {
       PLOG(WARNING) << "poll";
       if (failed_polls++ == 3) {
         LOG(FATAL) << "poll(2) failing. SandboxIPCHandler aborting.";
-        return;
       }
       continue;
     }

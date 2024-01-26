@@ -151,9 +151,10 @@ void AutofillDriverRouter::FormsSeen(
 void AutofillDriverRouter::SetFormToBeProbablySubmitted(
     AutofillDriver* source,
     std::optional<FormData> form,
-    void (*callback)(AutofillDriver* target, const FormData* optional_form)) {
+    void (*callback)(AutofillDriver* target,
+                     base::optional_ref<const FormData> form)) {
   if (!form) {
-    callback(source, nullptr);
+    callback(source, std::nullopt);
     return;
   }
 
@@ -418,8 +419,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     void (*callback)(AutofillDriver* target,
                      mojom::ActionType action_type,
                      mojom::ActionPersistence action_persistence,
-                     FormRendererId form_renderer_id,
-                     const std::vector<FormFieldData>& fields)) {
+                     const FormData::FillData& form)) {
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -438,7 +438,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
             return !renderer_forms.safe_fields.contains(field.global_id());
           });
       callback(target, action_type, action_persistence,
-               renderer_form.unique_renderer_id, renderer_form.fields);
+               FormData::FillData(renderer_form));
     }
   }
   return renderer_forms.safe_fields;

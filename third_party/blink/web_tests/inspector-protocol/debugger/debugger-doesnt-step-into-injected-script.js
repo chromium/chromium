@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Check that stepInto at then end of the script go to next user script instead InjectedScriptSource.js.');
 
   function logStack(event) {

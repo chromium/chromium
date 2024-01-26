@@ -38,6 +38,7 @@ android_library("java") {
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/signin/public/android:java_resources",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

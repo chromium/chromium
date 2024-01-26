@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -27,7 +29,7 @@ using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
 using mojom::blink::PermissionObserver;
 using mojom::blink::PermissionService;
-using mojom::blink::PermissionStatus;
+using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
 namespace {
 
@@ -138,7 +140,7 @@ class PermissionStatusChangeWaiter : public PermissionObserver {
       : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
 
   // PermissionObserver override
-  void OnPermissionStatusChange(PermissionStatus status) override {
+  void OnPermissionStatusChange(MojoPermissionStatus status) override {
     if (callback_) {
       std::move(callback_).Run();
     }
@@ -165,10 +167,10 @@ class TestPermissionService : public PermissionService {
       Vector<PermissionDescriptorPtr> permissions,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
           pending_client) override {
-    Vector<PermissionStatus> statuses =
+    Vector<MojoPermissionStatus> statuses =
         initial_statuses_.empty()
-            ? Vector<PermissionStatus>(permissions.size(),
-                                       PermissionStatus::ASK)
+            ? Vector<MojoPermissionStatus>(permissions.size(),
+                                           MojoPermissionStatus::ASK)
             : initial_statuses_;
     mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client(
         std::move(pending_client));
@@ -188,7 +190,7 @@ class TestPermissionService : public PermissionService {
                         RevokePermissionCallback) override {}
   void AddPermissionObserver(
       PermissionDescriptorPtr permission,
-      PermissionStatus last_known_status,
+      MojoPermissionStatus last_known_status,
       mojo::PendingRemote<PermissionObserver> observer) override {
     auto inserted_result = observers_.insert(
         permission->name,
@@ -204,14 +206,14 @@ class TestPermissionService : public PermissionService {
                            bool is_added) override {}
 
   void NotifyPermissionStatusChange(PermissionName name,
-                                    PermissionStatus status) {
+                                    MojoPermissionStatus status) {
     auto it = observers_.find(name);
     CHECK(it != observers_.end());
     it->value->OnPermissionStatusChange(status);
     WaitForPermissionStatusChange(status);
   }
 
-  void WaitForPermissionStatusChange(PermissionStatus status) {
+  void WaitForPermissionStatusChange(MojoPermissionStatus status) {
     mojo::Remote<PermissionObserver> observer;
     base::RunLoop run_loop;
     auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
@@ -225,7 +227,7 @@ class TestPermissionService : public PermissionService {
     run_loop_->Run();
   }
 
-  void set_initial_statuses(const Vector<PermissionStatus>& statuses) {
+  void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses) {
     initial_statuses_ = statuses;
   }
 
@@ -233,7 +235,7 @@ class TestPermissionService : public PermissionService {
   mojo::Receiver<PermissionService> receiver_;
   HashMap<PermissionName, mojo::Remote<PermissionObserver>> observers_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  Vector<PermissionStatus> initial_statuses_;
+  Vector<MojoPermissionStatus> initial_statuses_;
 };
 
 class InnerTextChangeWaiter {
@@ -306,18 +308,18 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
 TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
   const struct {
     const char* type;
-    PermissionStatus status;
+    MojoPermissionStatus status;
     String expected_text;
   } kTestData[] = {
-      {"geolocation", PermissionStatus::ASK, kGeolocationString},
-      {"microphone", PermissionStatus::ASK, kMicrophoneString},
-      {"camera", PermissionStatus::ASK, kCameraString},
-      {"geolocation", PermissionStatus::DENIED, kGeolocationString},
-      {"microphone", PermissionStatus::DENIED, kMicrophoneString},
-      {"camera", PermissionStatus::DENIED, kCameraString},
-      {"geolocation", PermissionStatus::GRANTED, kGeolocationAllowedString},
-      {"microphone", PermissionStatus::GRANTED, kMicrophoneAllowedString},
-      {"camera", PermissionStatus::GRANTED, kCameraAllowedString}};
+      {"geolocation", MojoPermissionStatus::ASK, kGeolocationString},
+      {"microphone", MojoPermissionStatus::ASK, kMicrophoneString},
+      {"camera", MojoPermissionStatus::ASK, kCameraString},
+      {"geolocation", MojoPermissionStatus::DENIED, kGeolocationString},
+      {"microphone", MojoPermissionStatus::DENIED, kMicrophoneString},
+      {"camera", MojoPermissionStatus::DENIED, kCameraString},
+      {"geolocation", MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
+      {"microphone", MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
+      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString}};
   for (const auto& data : kTestData) {
     auto* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
@@ -336,26 +338,27 @@ TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
 TEST_F(HTMLPemissionElementTest,
        SetInnerTextAfterRegistrationCameraMicrophonePermissions) {
   const struct {
-    PermissionStatus camera_status;
-    PermissionStatus microphone_status;
+    MojoPermissionStatus camera_status;
+    MojoPermissionStatus microphone_status;
     String expected_text;
   } kTestData[] = {
-      {PermissionStatus::DENIED, PermissionStatus::DENIED,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::DENIED,
        kCameraMicrophoneString},
-      {PermissionStatus::DENIED, PermissionStatus::ASK,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::DENIED, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::ASK, kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::DENIED,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::ASK,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::DENIED,
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::DENIED,
+       kCameraMicrophoneString},
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneAllowedString},
   };
   for (const auto& data : kTestData) {
@@ -378,26 +381,26 @@ TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
   const struct {
     const char* type;
     PermissionName name;
-    PermissionStatus status;
+    MojoPermissionStatus status;
     String expected_text;
   } kTestData[] = {{"geolocation", PermissionName::GEOLOCATION,
-                    PermissionStatus::ASK, kGeolocationString},
+                    MojoPermissionStatus::ASK, kGeolocationString},
                    {"microphone", PermissionName::AUDIO_CAPTURE,
-                    PermissionStatus::ASK, kMicrophoneString},
+                    MojoPermissionStatus::ASK, kMicrophoneString},
                    {"camera", PermissionName::VIDEO_CAPTURE,
-                    PermissionStatus::ASK, kCameraString},
+                    MojoPermissionStatus::ASK, kCameraString},
                    {"geolocation", PermissionName::GEOLOCATION,
-                    PermissionStatus::DENIED, kGeolocationString},
+                    MojoPermissionStatus::DENIED, kGeolocationString},
                    {"microphone", PermissionName::AUDIO_CAPTURE,
-                    PermissionStatus::DENIED, kMicrophoneString},
+                    MojoPermissionStatus::DENIED, kMicrophoneString},
                    {"camera", PermissionName::VIDEO_CAPTURE,
-                    PermissionStatus::DENIED, kCameraString},
+                    MojoPermissionStatus::DENIED, kCameraString},
                    {"geolocation", PermissionName::GEOLOCATION,
-                    PermissionStatus::GRANTED, kGeolocationAllowedString},
+                    MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
                    {"microphone", PermissionName::AUDIO_CAPTURE,
-                    PermissionStatus::GRANTED, kMicrophoneAllowedString},
+                    MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
                    {"camera", PermissionName::VIDEO_CAPTURE,
-                    PermissionStatus::GRANTED, kCameraAllowedString}};
+                    MojoPermissionStatus::GRANTED, kCameraAllowedString}};
   for (const auto& data : kTestData) {
     auto* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
@@ -414,26 +417,27 @@ TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
 TEST_F(HTMLPemissionElementTest,
        StatusesChangeCameraMicrophonePermissionsElement) {
   const struct {
-    PermissionStatus camera_status;
-    PermissionStatus microphone_status;
+    MojoPermissionStatus camera_status;
+    MojoPermissionStatus microphone_status;
     String expected_text;
   } kTestData[] = {
-      {PermissionStatus::DENIED, PermissionStatus::DENIED,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::DENIED,
        kCameraMicrophoneString},
-      {PermissionStatus::DENIED, PermissionStatus::ASK,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::DENIED, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::DENIED, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::ASK, kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::ASK, PermissionStatus::DENIED,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::ASK,
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::DENIED,
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::ASK,
        kCameraMicrophoneString},
-      {PermissionStatus::GRANTED, PermissionStatus::GRANTED,
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::DENIED,
+       kCameraMicrophoneString},
+      {MojoPermissionStatus::GRANTED, MojoPermissionStatus::GRANTED,
        kCameraMicrophoneAllowedString},
   };
   for (const auto& data : kTestData) {
@@ -449,6 +453,57 @@ TEST_F(HTMLPemissionElementTest,
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
+  }
+}
+
+using HTMLPemissionElementSimTest = SimTest;
+TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  SimRequest first_iframe_resource("https://example.com/foo1.html",
+                                   "text/html");
+  SimRequest last_iframe_resource("https://example.com/foo2.html", "text/html");
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://example.com/foo1.html'
+        allow="camera 'none';microphone 'none';geolocation 'none'">
+      </iframe>
+      <iframe src='https://example.com/foo2.html'
+        allow="camera *;microphone *;geolocation *">
+      </iframe>
+    </body>
+  )");
+  first_iframe_resource.Finish();
+  last_iframe_resource.Finish();
+
+  auto* first_child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
+  for (const char* permission : {"camera", "microphone", "geolocation"}) {
+    auto* permission_element = MakeGarbageCollected<HTMLPermissionElement>(
+        *first_child_frame->GetFrame()->GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    // Should console log a error message due to PermissionsPolicy
+    auto& console_messages =
+        static_cast<frame_test_helpers::TestWebFrameClient*>(
+            first_child_frame->Client())
+            ->ConsoleMessages();
+    EXPECT_EQ(console_messages.size(), 1u);
+    for (const auto& message : console_messages) {
+      EXPECT_TRUE(message.Contains(
+          "is not allowed in the current context due to PermissionsPolicy"));
+    }
+    console_messages.clear();
+
+    permission_element = MakeGarbageCollected<HTMLPermissionElement>(
+        *last_child_frame->GetFrame()->GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    // PermissionsPolicy passed with no console log.
+    console_messages = static_cast<frame_test_helpers::TestWebFrameClient*>(
+                           last_child_frame->Client())
+                           ->ConsoleMessages();
+    EXPECT_EQ(console_messages.size(), 0u);
   }
 }
 

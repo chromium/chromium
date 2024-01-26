@@ -18,7 +18,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"

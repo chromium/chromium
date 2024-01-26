@@ -88,7 +88,7 @@ void AppPublisher::LaunchAppWithIntent(const std::string& app_id,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(LaunchResult(State::FAILED));
+  std::move(callback).Run(LaunchResult(State::kFailed));
 }
 
 void AppPublisher::SetPermission(const std::string& app_id,

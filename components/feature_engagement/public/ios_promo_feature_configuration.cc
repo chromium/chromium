@@ -17,7 +17,8 @@ namespace feature_engagement {
 namespace {
 
 // Returns a config for a standard promo. This includes a rule for "only show
-// this feature once every month."
+// this feature once every month." Promos here can be unit tested in
+// `PromosManagerFeatureEngagementTest`.
 absl::optional<FeatureConfig> GetStandardPromoConfig(
     const base::Feature* feature) {
   absl::optional<FeatureConfig> config;
@@ -32,6 +33,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
         EventConfig("app_store_promo_trigger", Comparator(EQUAL, 0), 365, 365);
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
   }
 
   if (kIPHiOSPromoWhatsNewFeature.name == feature->name) {
@@ -50,8 +54,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kViewedWhatsNew,
                     Comparator(LESS_THAN, 1), 365, 365));
-    config->event_configs.insert(EventConfig(
-        "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
   }
 
   if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
@@ -62,6 +67,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->used =
         EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
     if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
@@ -76,14 +82,66 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
       config->trigger = EventConfig("default_browser_promo_trigger",
                                     Comparator(LESS_THAN, 4), 365, 365);
     }
+  }
 
+  if (kIPHiOSPromoAllTabsFeature.name == feature->name) {
+    // Should show this promo only once if promo specific and group conditions
+    // are met.
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+
+    config->trigger =
+        EventConfig("all_tabs_promo_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     config->event_configs.insert(EventConfig(
-        "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
-    // Default Browser promo shouldn't be shown if the Post Restore Default
-    // Browser Promo has been shown in the past 7 days.
-    config->event_configs.insert(
-        EventConfig("post_restore_default_browser_promo_trigger",
-                    Comparator(EQUAL, 0), 7, 365));
+        "all_tabs_promo_conditions_met", Comparator(GREATER_THAN, 0),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+  }
+
+  if (kIPHiOSPromoMadeForIOSFeature.name == feature->name) {
+    // Should show this promo only once if promo specific and group conditions
+    // are met.
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+
+    config->trigger =
+        EventConfig("made_for_ios_promo_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        "made_for_ios_promo_conditions_met", Comparator(GREATER_THAN, 0),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+  }
+
+  if (kIPHiOSPromoStaySafeFeature.name == feature->name) {
+    // Should show this promo only once if promo specific and group conditions
+    // are met.
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+
+    config->trigger =
+        EventConfig("stay_safe_promo_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        "stay_safe_promo_conditions_met", Comparator(GREATER_THAN, 0),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
   }
 
   if (kIPHiOSPromoCredentialProviderExtensionFeature.name == feature->name) {
@@ -107,7 +165,6 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig("credential_provider_extension_promo_snoozed",
                     Comparator(EQUAL, 0), 1, 365));
-    return config;
   }
 
   if (kIPHiOSPromoOmniboxPositionFeature.name == feature->name) {
@@ -144,7 +201,6 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->trigger = EventConfig("docking_promo_trigger", Comparator(EQUAL, 0),
                                   feature_engagement::kMaxStoragePeriod,
                                   feature_engagement::kMaxStoragePeriod);
-    return config;
   }
 
   // All standard promos can only be shown once per month.

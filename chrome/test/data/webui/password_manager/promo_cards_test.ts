@@ -4,17 +4,20 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, PasswordsSectionElement, PromoCardsProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, PasswordsSectionElement, PromoCardsProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPromoCardsProxy} from './test_promo_cards_browser_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
 
 suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let promoCardsProxy: TestPromoCardsProxy;
+  let syncProxy: TestSyncBrowserProxy;
 
   async function createPasswordsSection(): Promise<PasswordsSectionElement> {
     const section: PasswordsSectionElement =
@@ -32,6 +35,8 @@ suite('PasswordsSectionTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     promoCardsProxy = new TestPromoCardsProxy();
     PromoCardsProxyImpl.setInstance(promoCardsProxy);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
     Router.getInstance().updateRouterParams(new URLSearchParams());
     return flushTasks();
   });
@@ -126,5 +131,120 @@ suite('PasswordsSectionTest', function() {
     // Verify that the promo card is hidden.
     promoCardElement = section.shadowRoot!.querySelector('promo-card');
     assertFalse(!!promoCardElement);
+  });
+
+  test('move passwords promo hidden if no local passwords', async function() {
+    promoCardsProxy.promo = {
+      id: 'move_passwords_promo',
+      title: 'Move passwords promo',
+      description: 'Move passwords description.',
+      actionButtonText: 'Move passwords',
+    };
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry({
+        username: 'user',
+        id: 0,
+        inProfileStore: false,
+        inAccountStore: true,
+      })],
+    })];
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const section = await createPasswordsSection();
+    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    assertFalse(!!promoCardElement);
+  });
+
+  test('move passwords promo hidden if butter disabled', async function() {
+    promoCardsProxy.promo = {
+      id: 'move_passwords_promo',
+      title: 'Move passwords promo',
+      description: 'Move passwords description.',
+      actionButtonText: 'Move passwords',
+    };
+    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry(
+          {username: 'user', id: 0, inProfileStore: true})],
+    })];
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const section = await createPasswordsSection();
+    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    assertFalse(!!promoCardElement);
+  });
+
+  test('move passwords promo hidden if sync issues', async function() {
+    promoCardsProxy.promo = {
+      id: 'move_passwords_promo',
+      title: 'Move passwords promo',
+      description: 'Move passwords description.',
+      actionButtonText: 'Move passwords',
+    };
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry(
+          {username: 'user', id: 0, inProfileStore: true})],
+    })];
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: false,
+    };
+
+    const section = await createPasswordsSection();
+    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    assertFalse(!!promoCardElement);
+  });
+
+  test('move passwords promo visible is requirements met', async function() {
+    promoCardsProxy.promo = {
+      id: 'move_passwords_promo',
+      title: 'Move passwords promo',
+      description: 'Move passwords description.',
+      actionButtonText: 'Move passwords',
+    };
+    passwordManager.data.isOptedInAccountStorage = true;
+
+    const password = createPasswordEntry({
+      id: 1234,
+      username: 'user1',
+      password: 'sTr0nGp@@s',
+      affiliatedDomains: [createAffiliatedDomain('test.com')],
+      inProfileStore: true,
+    });
+
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [password],
+    })];
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    passwordManager.setRequestCredentialsDetailsResponse([password]);
+
+    const section = await createPasswordsSection();
+    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    assertTrue(!!promoCardElement);
+    assertTrue(isVisible(promoCardElement.$.actionButton));
+
+    promoCardElement.$.actionButton.click();
+    await flushTasks();
+
+    const moveDialog =
+        section.shadowRoot!.querySelector('move-passwords-dialog');
+    assertTrue(!!moveDialog);
+    assertTrue(isVisible(moveDialog.$.move));
   });
 });

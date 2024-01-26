@@ -25,8 +25,6 @@ using ui::OSExchangeData;
 
 namespace views {
 
-class RootView;
-
 // DropHelper provides support for managing the view a drop is going to occur
 // at during dnd as well as sending the view the appropriate dnd methods.
 // DropHelper is intended to be used by a class that interacts with the system
@@ -122,7 +120,7 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  raw_ptr<View, DanglingUntriaged> root_view_;
+  const raw_ptr<View> root_view_;
 
   // View we're targeting events at.
   raw_ptr<View> target_view_ = nullptr;

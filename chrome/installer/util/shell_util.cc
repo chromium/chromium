@@ -1790,14 +1790,14 @@ std::wstring ShellUtil::FormatIconLocation(const base::FilePath& icon_path,
       {icon_path.value(), L",", base::NumberToWString(icon_index)});
 }
 
-absl::optional<std::pair<base::FilePath, int>> ShellUtil::ParseIconLocation(
+std::optional<std::pair<base::FilePath, int>> ShellUtil::ParseIconLocation(
     const std::wstring& argument) {
   std::vector<std::wstring> icon_parts =
       base::SplitString(argument, std::wstring(L","), base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
 
   if (icon_parts.size() < 2)
-    return absl::nullopt;
+    return std::nullopt;
 
   int icon_index = 0;
   base::StringToInt(icon_parts[1], &icon_index);
@@ -2147,6 +2147,8 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
     return false;
   }
 
+  ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+
   bool succeeded = true;
   bool is_default =
       (GetChromeDefaultProtocolClientState(protocol) == IS_DEFAULT);
@@ -2201,7 +2203,7 @@ std::wstring ShellUtil::ProtocolAssociations::ToCommandLineArgument() const {
   return cmd_arg;
 }
 
-absl::optional<ShellUtil::ProtocolAssociations>
+std::optional<ShellUtil::ProtocolAssociations>
 ShellUtil::ProtocolAssociations::FromCommandLineArgument(
     const std::wstring& argument) {
   // Given that protocol associations are stored in a string in the following
@@ -2213,7 +2215,7 @@ ShellUtil::ProtocolAssociations::FromCommandLineArgument(
                                      &protocol_association_string_pairs);
 
   if (protocol_association_string_pairs.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<std::pair<std::wstring, std::wstring>> protocol_association_pairs;
   protocol_association_pairs.reserve(protocol_association_string_pairs.size());
@@ -2267,6 +2269,16 @@ bool ShellUtil::RegisterChromeForProtocols(
     // Write in the capability for the protocol.
     std::vector<std::unique_ptr<RegistryEntry>> entries;
     GetProtocolCapabilityEntries(suffix, protocol_associations, &entries);
+
+    // This registry value tells Windows that this 'class' is a URL scheme.
+    // HKEY_CURRENT_USER\Software\Classes\<protocol>\URL Protocol
+    for (const auto& association : protocol_associations.associations) {
+      std::wstring url_key = base::StrCat(
+          {ShellUtil::kRegClasses, kFilePathSeparator, association.first});
+      entries.push_back(std::make_unique<RegistryEntry>(
+          url_key, ShellUtil::kRegUrlProtocol, std::wstring()));
+    }
+
     return AddRegistryEntries(root, entries);
   } else if (elevate_if_not_admin) {
     // Elevate to do the whole job
@@ -2605,7 +2617,7 @@ ShellUtil::ApplicationInfo ShellUtil::GetApplicationInfoForProgId(
 
   std::wstring file_type_icon_value;
   file_type_icon_key.ReadValue(L"", &file_type_icon_value);
-  absl::optional<std::pair<base::FilePath, int>> file_type_icon_parts =
+  std::optional<std::pair<base::FilePath, int>> file_type_icon_parts =
       ShellUtil::ParseIconLocation(file_type_icon_value);
 
   if (file_type_icon_parts.has_value()) {
@@ -2636,7 +2648,7 @@ ShellUtil::ApplicationInfo ShellUtil::GetApplicationInfoForProgId(
   std::wstring application_icon_value;
   application_key.ReadValue(ShellUtil::kRegApplicationIcon,
                             &application_icon_value);
-  absl::optional<std::pair<base::FilePath, int>> application_icon_parts =
+  std::optional<std::pair<base::FilePath, int>> application_icon_parts =
       ShellUtil::ParseIconLocation(application_icon_value);
 
   if (application_icon_parts.has_value()) {

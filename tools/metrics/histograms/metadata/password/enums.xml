@@ -471,6 +471,15 @@ chromium-metrics-reviews@google.com.
   <int value="16"
       label="Opened automatically / Notifying the user about incoming shared
              passwords"/>
+  <int value="17"
+      label="Opened automatically / Offering to add an username to the saved
+             password"/>
+  <int value="18"
+      label="Opened manually / Offering to add an username to the saved
+             password"/>
+  <int value="19"
+      label="Opened automatically / Offering to relaunch chrome as a result
+             of a keychain issue"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">
@@ -650,6 +659,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Full note selected"/>
   <int value="15" label="Part of a note copied"/>
   <int value="16" label="Full note copied"/>
+  <int value="17" label="Move password link clicked in details footer"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">
@@ -674,8 +684,8 @@ chromium-metrics-reviews@google.com.
     Recorded only on Win/Mac/Linux.
   </int>
   <int value="1" label="kExplicitlyTriggeredInSettings">
-    The user explicitly asked to move a password listed in Settings. Recorded
-    only on iOS.
+    The user explicitly asked to move a password listed in Settings. Recorded on
+    iOS/Win/Mac/Linux.
   </int>
   <int value="2" label="kExplicitlyTriggeredForMultiplePasswordsInSettings">
     The user explicitly asked to move multiple passwords at once in Settings.
@@ -1148,12 +1158,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Downstream implementation not available."/>
   <int value="10"
       label="Failed to create FacetId to obtain affiliated matches."/>
+  <int value="11" label="Job cancelled because the sync state changed"/>
 </enum>
 
 <enum name="PasswordStoreAndroidBackendRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Timeout"/>
   <int value="2" label="Completed"/>
+  <int value="3" label="Cancelled: password sync status changed"/>
 </enum>
 
 <enum name="PasswordStoreBackendErrorType">
@@ -1161,6 +1173,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AuthErrorResolvable"/>
   <int value="2" label="AuthErrorUnresolvable"/>
   <int value="3" label="KeychainError"/>
+  <int value="4" label="kKeyRetrievalRequired"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -15,13 +16,19 @@
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -31,11 +38,11 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Size kPickerSize(420, 480);
-constexpr int kBorderRadius = 20;
+constexpr gfx::Size kPickerSize(320, 340);
+constexpr int kBorderRadius = 12;
 constexpr int kShadowElevation = 3;
-constexpr ui::ColorId kBackgroundColor = cros_tokens::kCrosSysBaseElevated;
-constexpr auto kSearchFieldMargins = gfx::Insets::TLBR(16, 16, 8, 16);
+constexpr ui::ColorId kBackgroundColor =
+    cros_tokens::kCrosSysSystemBaseElevated;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
@@ -61,10 +68,14 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
       &session_metrics_));
-  search_field_view_->SetProperty(views::kMarginsKey, kSearchFieldMargins);
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
+
+  AddChildView(views::Builder<views::Separator>()
+                   .SetOrientation(views::Separator::Orientation::kHorizontal)
+                   .SetColorId(cros_tokens::kCrosSysSeparator)
+                   .Build());
 
   contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
   contents_view_->SetProperty(
@@ -79,14 +90,19 @@ PickerView::PickerView(PickerViewDelegate* delegate,
       std::make_unique<PickerZeroStateView>(base::BindRepeating(
           &PickerView::SelectCategory, base::Unretained(this))));
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
-      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this))));
-  search_results_view_ = contents_view_->AddPage(
-      std::make_unique<PickerSearchResultsView>(base::BindOnce(
-          &PickerView::SelectSearchResult, base::Unretained(this))));
+      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),
+      delegate_->GetAssetFetcher()));
+  search_results_view_ =
+      contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
+          base::BindOnce(&PickerView::SelectSearchResult,
+                         base::Unretained(this)),
+          delegate_->GetAssetFetcher()));
   contents_view_->SetActivePage(zero_state_view_);
 
   user_education_view_ =
       AddChildView(std::make_unique<PickerUserEducationView>());
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 PickerView::~PickerView() = default;
@@ -110,6 +126,14 @@ views::UniqueWidgetPtr PickerView::CreateWidget(
   return widget;
 }
 
+bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  if (auto* widget = GetWidget()) {
+    widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+  }
+  return true;
+}
+
 void PickerView::PaintChildren(const views::PaintInfo& paint_info) {
   if (delegate_->ShouldPaint()) {
     views::View::PaintChildren(paint_info);
@@ -126,10 +150,17 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
 
 void PickerView::AddedToWidget() {
   session_metrics_.StartRecording(*GetWidget());
+  // `base::Unretained` is safe here because this class owns
+  // `bubble_event_filter_`.
+  bubble_event_filter_ = std::make_unique<BubbleEventFilter>(
+      GetWidget(), /*button=*/nullptr,
+      base::BindRepeating(&PickerView::OnClickOutsideWidget,
+                          base::Unretained(this)));
 }
 
 void PickerView::RemovedFromWidget() {
   session_metrics_.StopRecording();
+  bubble_event_filter_.reset();
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
@@ -148,6 +179,7 @@ void PickerView::StartSearch(const std::u16string& query) {
 
 void PickerView::PublishSearchResults(const PickerSearchResults& results) {
   search_results_view_->SetSearchResults(results);
+  session_metrics_.MarkSearchResultsUpdated();
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
@@ -165,6 +197,12 @@ void PickerView::SelectCategory(PickerCategory category) {
 
 void PickerView::PublishCategoryResults(const PickerSearchResults& results) {
   category_view_->SetResults(results);
+}
+
+void PickerView::OnClickOutsideWidget() {
+  if (auto* widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 BEGIN_METADATA(PickerView, views::View)

@@ -152,8 +152,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));
     extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(
-            browser_view_->GetProfile(), extensions_container_);
+        std::make_unique<ExtensionsToolbarCoordinator>(browser_view_->browser(),
+                                                       extensions_container_);
 
     extensions_container_->GetExtensionsButton()
         ->SetAppearDisabledInInactiveWidget(true);

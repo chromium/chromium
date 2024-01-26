@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,13 +18,12 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeBoundSessionRefreshCookieFetcher::FakeBoundSessionRefreshCookieFetcher(
     network::mojom::CookieManager* cookie_manager,
     const GURL& url,
     base::flat_set<std::string> cookie_names,
-    absl::optional<base::TimeDelta> unlock_automatically_in)
+    std::optional<base::TimeDelta> unlock_automatically_in)
     : cookie_manager_(cookie_manager),
       url_(url),
       cookie_names_(std::move(cookie_names)),
@@ -53,7 +54,7 @@ void FakeBoundSessionRefreshCookieFetcher::Start(
 
 void FakeBoundSessionRefreshCookieFetcher::SimulateCompleteRefreshRequest(
     BoundSessionRefreshCookieFetcher::Result result,
-    absl::optional<base::Time> cookie_expiration) {
+    std::optional<base::Time> cookie_expiration) {
   if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
     CHECK(cookie_expiration);
     // Synchronous since tests use `BoundSessionTestCookieManager`.
@@ -134,7 +135,7 @@ FakeBoundSessionRefreshCookieFetcher::CreateFakeCookie(
           /*last_access_time=*/now, /*secure=*/true,
           /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
-          /*partition_key=*/absl::nullopt);
+          /*partition_key=*/std::nullopt);
 
   DCHECK(new_cookie);
   return new_cookie;

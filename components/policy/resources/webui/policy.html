@@ -70,7 +70,6 @@
         </label>
       </div>
     </div>
-    <div aria-live="polite" id="screen-reader-message"></div>
   </header>
   <main id="policy-ui">
     <section id="status-section" class="status-box-section" hidden>
@@ -81,6 +80,7 @@
       <!--  This is where policy tables get dynamically added. -->
     </section>
   </main>
+  <div id="toast-container" role="alert" aria-live="polite"></div>
 </body>
 
 <script type="module" src="policy.js"></script>

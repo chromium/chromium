@@ -12,6 +12,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/test/fidl_matchers.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,8 @@ Matcher<fuchsia::ui::composition::ImageProperties> IsImageProperties(
   return AllOf(
       Property("has_size", &fuchsia::ui::composition::ImageProperties::has_size,
                true),
-      Property("size", &fuchsia::ui::composition::ImageProperties::size, size));
+      Property("size", &fuchsia::ui::composition::ImageProperties::size,
+               ::base::test::FidlEq(size)));
 }
 
 Matcher<FakeGraph> IsSurfaceGraph(
@@ -62,9 +64,9 @@ Matcher<FakeGraph> IsSurfaceGraph(
           "root_transform", &FakeGraph::root_transform,
           Pointee(AllOf(
               Field("translation", &FakeTransform::translation,
-                    FakeTransform::kDefaultTranslation),
+                    ::base::test::FidlEq(FakeTransform::kDefaultTranslation)),
               Field("scale", &FakeTransform::scale,
-                    FakeTransform::kDefaultScale),
+                    ::base::test::FidlEq(FakeTransform::kDefaultScale)),
               Field("opacity", &FakeTransform::opacity,
                     FakeTransform::kDefaultOpacity),
               Field("children", &FakeTransform::children, IsEmpty()),
@@ -73,7 +75,7 @@ Matcher<FakeGraph> IsSurfaceGraph(
                         Field("image_properties", &FakeImage::image_properties,
                               IsImageProperties(size)),
                         Field("destination_size", &FakeImage::destination_size,
-                              destination_size),
+                              ::base::test::FidlEq(destination_size)),
                         Field("blend_mode", &FakeImage::blend_mode, blend_mode),
                         Field("opacity", &FakeImage::opacity, image_opacity)))))
 

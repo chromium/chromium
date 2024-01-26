@@ -27,14 +27,14 @@ struct LaunchResult {
   LaunchResult& operator=(const LaunchResult& launch_result) = delete;
   LaunchResult(const LaunchResult& launch_result) = delete;
 
-  enum State { SUCCESS, FAILED, FAILED_DIRECTORY_NOT_SHARED };
+  enum class State { kSuccess, kFailed, kFailedDirectoryNotShared };
   explicit LaunchResult(LaunchResult::State state);
 
   // A single launch event may result in multiple app instances being created.
   std::vector<base::UnguessableToken> instance_ids;
 
   // Indicates whether the launch attempt was successful or not.
-  State state = LaunchResult::State::FAILED;
+  State state = LaunchResult::State::kFailed;
 };
 
 using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;

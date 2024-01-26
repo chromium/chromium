@@ -1,0 +1,138 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='content tall'",
+      "bounds": [10, 200],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [96, 0],
+      "bounds": [4, 100],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='content wide'",
+      "bounds": [200, 10],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 96],
+      "bounds": [100, 4],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='content wide tall'",
+      "bounds": [200, 200],
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 96],
+      "bounds": [96, 4],
+      "transform": 3
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [96, 0],
+      "bounds": [4, 96],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container resizeWidget'",
+      "bounds": [100, 100],
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='content'",
+      "bounds": [10, 10],
+      "drawsContent": false,
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    }
+  ]
+}
+

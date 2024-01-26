@@ -533,11 +533,11 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   state.seller = seller;
   state.coordinator = coordinator;
 
-  GetInterestGroupManager().GetInterestGroupAdAuctionData(
-      GetTopWindowOrigin(),
-      /* generation_id=*/base::Uuid::GenerateRandomV4(),
-      base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+  ba_data_callbacks_.push(std::move(state));
+  // Only start this request if there isn't another request pending.
+  if (ba_data_callbacks_.size() == 1) {
+    LoadAuctionDataAndKeyForNextQueuedRequest();
+  }
 }
 
 void AdAuctionServiceImpl::CreateAdRequest(
@@ -913,52 +913,102 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
   }
 }
 
-void AdAuctionServiceImpl::OnGotAuctionData(
-    BiddingAndAuctionDataConstructionState state,
-    BiddingAndAuctionData data) {
-  if (data.request.empty()) {
-    std::move(state.callback).Run({}, {}, "");
-    return;
+void AdAuctionServiceImpl::ReturnEmptyGetInterestGroupAdAuctionDataCallback(
+    const std::string msg) {
+  if (!ba_data_callbacks_.empty()) {
+    std::move(ba_data_callbacks_.front().callback).Run({}, {}, msg);
+    ba_data_callbacks_.pop();
   }
+  if (!ba_data_callbacks_.empty()) {
+    LoadAuctionDataAndKeyForNextQueuedRequest();
+  }
+}
 
-  state.data = std::move(data);
-
-  std::optional<url::Origin> coordinator = state.coordinator;
+void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
+  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();
   network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      loader_ptr, std::move(coordinator),
+      loader_ptr, std::move(state.coordinator),
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state),
+                     weak_ptr_factory_.GetWeakPtr(), state.request_id,
                      std::move(loader)));
+
+  GetInterestGroupManager().GetInterestGroupAdAuctionData(
+      GetTopWindowOrigin(),
+      /* generation_id=*/base::Uuid::GenerateRandomV4(),
+      base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
+                     weak_ptr_factory_.GetWeakPtr(), state.request_id));
+}
+
+void AdAuctionServiceImpl::OnGotAuctionData(base::Uuid request_id,
+                                            BiddingAndAuctionData data) {
+  if (ba_data_callbacks_.empty() ||
+      request_id != ba_data_callbacks_.front().request_id) {
+    return;
+  }
+  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
+  state.data = std::make_unique<BiddingAndAuctionData>(std::move(data));
+  if (state.key) {
+    OnGotAuctionDataAndKey(request_id);
+  }
 }
 
 void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
-    BiddingAndAuctionDataConstructionState state,
+    base::Uuid request_id,
     scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
     base::expected<BiddingAndAuctionServerKey, std::string> maybe_key) {
-  if (!maybe_key.has_value()) {
-    std::move(state.callback).Run({}, {}, maybe_key.error());
+  if (ba_data_callbacks_.empty() ||
+      request_id != ba_data_callbacks_.front().request_id) {
     return;
   }
-  const bool use_new_format =
-      base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType);
+  if (!maybe_key.has_value()) {
+    ReturnEmptyGetInterestGroupAdAuctionDataCallback(maybe_key.error());
+    return;
+  }
+  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
+  state.key =
+      std::make_unique<BiddingAndAuctionServerKey>(std::move(*maybe_key));
+
+  if (state.data) {
+    OnGotAuctionDataAndKey(request_id);
+  }
+}
+
+void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
+  if (ba_data_callbacks_.empty() ||
+      request_id != ba_data_callbacks_.front().request_id) {
+    return;
+  }
+
+  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
+  DCHECK(state.data);
+  DCHECK(state.key);
+
+  if (state.data->request.empty()) {
+    ReturnEmptyGetInterestGroupAdAuctionDataCallback("");
+    return;
+  }
 
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      maybe_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      state.key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
       EVP_HPKE_AES_256_GCM);
   CHECK(maybe_key_config.ok()) << maybe_key_config.status();
 
+  const bool use_new_format =
+      base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType);
+
   auto maybe_request =
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
-          std::string(state.data.request.begin(), state.data.request.end()),
-          maybe_key->key, maybe_key_config.value(),
+          std::string(state.data->request.begin(), state.data->request.end()),
+          state.key->key, maybe_key_config.value(),
           use_new_format
               ? kBiddingAndAuctionEncryptionRequestMediaType
               : quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel);
   if (!maybe_request.ok()) {
-    std::move(state.callback).Run({}, {}, "Could not create request");
+    ReturnEmptyGetInterestGroupAdAuctionDataCallback(
+        "Could not create request");
     return;
   }
 
@@ -979,7 +1029,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
           render_frame_host().GetPage());
 
   AdAuctionRequestContext context(
-      std::move(state.seller), std::move(state.data.group_names),
+      state.seller, std::move(state.data->group_names),
       std::move(*maybe_request).ReleaseContext(), state.start_time);
   ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
@@ -1003,6 +1053,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   std::memcpy(&buf.data()[start_offset], data.data(), data.size());
 
   std::move(state.callback).Run(std::move(buf), state.request_id, "");
+  ba_data_callbacks_.pop();
+
   // Request sizes only increase by factors of two so we only need to sample
   // the powers of two. The maximum of 1 GB size is much larger than it should
   // ever be.
@@ -1011,6 +1063,10 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
                                  /*exclusive_max=*/1 << 30, /*buckets=*/30);
   base::UmaHistogramTimes(/*name=*/"Ads.InterestGroup.BaDataConstructionTime",
                           /*sample=*/base::TimeTicks::Now() - state.start_time);
+
+  if (!ba_data_callbacks_.empty()) {
+    LoadAuctionDataAndKeyForNextQueuedRequest();
+  }
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()

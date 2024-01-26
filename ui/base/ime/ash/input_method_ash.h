@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
                              uint32_t num_char16s_after_cursor) override;
   void ReplaceSurroundingText(uint32_t length_before_selection,
                               uint32_t length_after_selection,
-                              base::StringPiece16 replacement_text) override;
+                              std::u16string_view replacement_text) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(ui::KeyEvent* event) override;
   ui::InputMethod* GetInputMethod() override;

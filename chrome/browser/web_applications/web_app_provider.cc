@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <utility>
 
@@ -54,7 +55,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -322,6 +322,10 @@ void WebAppProvider::Shutdown() {
 
 base::WeakPtr<WebAppProvider> WebAppProvider::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+FakeWebAppProvider* WebAppProvider::AsFakeWebAppProviderForTesting() {
+  return nullptr;
 }
 
 void WebAppProvider::StartImpl() {

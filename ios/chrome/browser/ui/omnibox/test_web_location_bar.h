@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_TEST_WEB_LOCATION_BAR_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_TEST_WEB_LOCATION_BAR_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 
@@ -28,8 +29,8 @@ class TestWebLocationBar final : public WebLocationBar {
   LocationBarModel* GetLocationBarModel() override;
 
  private:
-  web::WebState* web_state_;
-  LocationBarModel* location_bar_model_;
+  raw_ptr<web::WebState> web_state_;
+  raw_ptr<LocationBarModel> location_bar_model_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_TEST_WEB_LOCATION_BAR_H_

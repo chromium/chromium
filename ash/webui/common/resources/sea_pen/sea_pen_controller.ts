@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MantaStatusCode, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
+import {isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
 
 export async function selectRecentSeaPenImage(
     image: FilePath, provider: SeaPenProviderInterface,
@@ -48,13 +48,26 @@ export async function searchSeaPenThumbnails(
 export async function selectSeaPenWallpaper(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  // TODO(b/305965517) show loading state.
+  store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
   const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
+  store.dispatch(
+      seaPenAction.endSelectSeaPenThumbnailAction(thumbnail, success));
+  if (store.data.loading.setImage === 0) {
+    // If the user has not already clicked on another thumbnail, treat this
+    // thumbnail as set.
+    // TODO(b/321252838) improve this with an async observer for VC Background.
+    store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
+        success ? `${thumbnail.id}.jpg` : null));
+  }
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
   if (success) {
     await fetchRecentSeaPenData(provider, store);
   }
+}
+
+export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
+  store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
 }
 
 export async function deleteRecentSeaPenImage(
@@ -144,4 +157,35 @@ async function getMissingRecentSeaPenImageData(
               {path}, {url, queryInfo}));
         }));
   }
+}
+
+export function openFeedbackDialog(
+    metadata: SeaPenFeedbackMetadata, provider: SeaPenProviderInterface) {
+  provider.openFeedbackDialog(metadata);
+}
+
+export async function getShouldShowSeaPenTermsOfServiceDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  const {shouldShowDialog} =
+      await provider.shouldShowSeaPenTermsOfServiceDialog();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(
+      shouldShowDialog));
+}
+
+export async function acceptSeaPenTermsOfService(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  if (!store.data.shouldShowSeaPenTermsOfServiceDialog) {
+    // Do nothing if the terms are already accepted;
+    return;
+  }
+
+  await provider.handleSeaPenTermsOfServiceAccepted();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(false));
 }

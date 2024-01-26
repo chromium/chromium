@@ -1165,14 +1165,15 @@ _CET_ENDBR
 .L128_dec_start:
 	vzeroupper
 	vmovdqa	(%rdx),%xmm0
+
+
+	vmovdqu	16(%rdx),%xmm15
+	vpor	OR_MASK(%rip),%xmm15,%xmm15
 	movq	%rdx,%rax
 
 	leaq	32(%rax),%rax
 	leaq	32(%rcx),%rcx
 
-
-	vmovdqu	(%rdi,%r9,1),%xmm15
-	vpor	OR_MASK(%rip),%xmm15,%xmm15
 	andq	$~15,%r9
 
 
@@ -2387,14 +2388,15 @@ _CET_ENDBR
 .L256_dec_start:
 	vzeroupper
 	vmovdqa	(%rdx),%xmm0
+
+
+	vmovdqu	16(%rdx),%xmm15
+	vpor	OR_MASK(%rip),%xmm15,%xmm15
 	movq	%rdx,%rax
 
 	leaq	32(%rax),%rax
 	leaq	32(%rcx),%rcx
 
-
-	vmovdqu	(%rdi,%r9,1),%xmm15
-	vpor	OR_MASK(%rip),%xmm15,%xmm15
 	andq	$~15,%r9
 
 

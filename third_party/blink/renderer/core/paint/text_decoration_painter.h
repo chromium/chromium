@@ -15,6 +15,7 @@ namespace blink {
 class ComputedStyle;
 class FragmentItem;
 class GraphicsContextStateSaver;
+class InlinePaintContext;
 class TextPainter;
 struct LineRelativeRect;
 struct PaintInfo;
@@ -37,6 +38,7 @@ class CORE_EXPORT TextDecorationPainter {
  public:
   explicit TextDecorationPainter(
       TextPainter& text_painter,
+      const InlinePaintContext* inline_context,
       const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
@@ -57,11 +59,14 @@ class CORE_EXPORT TextDecorationPainter {
   void PaintExceptLineThrough(const TextFragmentPaintInfo&);
   void PaintOnlyLineThrough();
 
+  const InlinePaintContext* InlineContext() const { return inline_context_; }
+
  private:
   enum Step { kBegin, kExcept, kOnly };
   void ClipIfNeeded(GraphicsContextStateSaver&);
 
   TextPainter& text_painter_;
+  const InlinePaintContext* inline_context_;
   const FragmentItem& text_item_;
   const PaintInfo& paint_info_;
   const ComputedStyle& style_;

@@ -82,7 +82,7 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
+crbug.com/626703 external/wpt/webnn/clamp.https.any.worker.html [ Crash Failure ]
 crbug.com/626703 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Timeout ]
 crbug.com/626703 virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/single-get-before-onload.https.html [ Timeout ]
 crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
@@ -116,10 +116,6 @@ crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.sub.tentative.
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Timeout ]
-crbug.com/626703 wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Timeout ]
-crbug.com/626703 wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Timeout ]
-crbug.com/626703 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
@@ -149,3 +145,7 @@ crbug.com/1487775 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced
 
 # No plans to run wdspec tests for this flag-specific suite.
 external/wpt/webdriver/tests/* [ Skip ]
+
+# crbug.com/1511285: Flaky
+crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Failure Timeout ]
+crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Failure Timeout ]

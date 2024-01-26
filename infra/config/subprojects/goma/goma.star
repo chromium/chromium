@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "builders", "cpu", "defaults", "goma", "os", "xcode")
+load("//lib/builders.star", "builder", "builders", "cpu", "defaults", "goma", "os")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 
@@ -90,67 +90,9 @@ fyi_goma_rbe_canary_builder(
 )
 
 fyi_goma_rbe_canary_builder(
-    name = "Mac Builder (dbg) Goma RBE Canary (clobber)",
-    builder_spec = builder_config.copy_from(
-        "ci/Mac Builder (dbg)",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "clobber",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "debug_builder",
-            "goma",
-        ],
-    ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    goma_jobs = goma.jobs.J80,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
-    builder_spec = builder_config.copy_from(
-        "ci/Mac Builder (dbg)",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "clobber",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "debug_builder",
-            "goma",
-            "arm64",
-        ],
-    ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    goma_jobs = goma.jobs.J80,
-)
-
-fyi_goma_rbe_canary_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-canary",
     builder_spec = builder_config.copy_from(
-        "ci/chromeos-amd64-generic-rel-renamed",
+        "ci/chromeos-amd64-generic-rel",
         lambda spec: structs.evolve(
             spec,
             chromium_config = structs.extend(
@@ -173,38 +115,6 @@ fyi_goma_rbe_canary_builder(
         ],
     ),
     goma_enable_ats = True,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "ios-device-goma-rbe-canary-clobber",
-    builder_spec = builder_config.copy_from(
-        "ci/ios-device",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "clobber",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "compile_only",
-            "ios_device",
-            "arm64",
-            "ios_google_cert",
-            "ios_disable_code_signing",
-            "release_builder",
-            "goma",
-        ],
-    ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    xcode = xcode.xcode_default,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -252,33 +162,6 @@ fyi_goma_rbe_canary_builder(
             "goma",
         ],
     ),
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "mac-archive-rel-goma-rbe-canary",
-    builder_spec = builder_config.copy_from(
-        "ci/mac-archive-rel",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-            "minimal_symbols",
-        ],
-    ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    goma_jobs = goma.jobs.J80,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -365,6 +248,7 @@ goma_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -387,6 +271,7 @@ goma_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -400,7 +285,7 @@ goma_builder(
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-staging",
-    builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel-renamed"),
+    builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel"),
     gn_args = gn_args.config(
         configs = [
             "chromeos_device",
@@ -415,64 +300,6 @@ goma_builder(
     ),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = True,
-)
-
-def goma_mac_builder(
-        *,
-        name,
-        cores = None,
-        os = os.MAC_DEFAULT,
-        **kwargs):
-    return goma_builder(
-        name = name,
-        goma_jobs = goma.jobs.J80,
-        cores = cores,
-        os = os,
-        **kwargs
-    )
-
-goma_mac_builder(
-    name = "Chromium Mac Goma RBE Staging",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-        ],
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-)
-
-goma_mac_builder(
-    name = "Chromium Mac Goma RBE Staging (dbg)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "goma",
-        ],
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
 )
 
 def goma_windows_builder(
@@ -500,6 +327,7 @@ goma_windows_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(

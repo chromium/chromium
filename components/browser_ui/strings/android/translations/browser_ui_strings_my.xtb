@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ဒေါင်းလုဒ်လုပ်မှု ဆိုင်းငံ့ထားသည်</translation>
 <translation id="1415402041810619267">URL ကို ဖြတ်လိုက်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1434873037477293673">လျှော့ဈေးကတ်</translation>
 <translation id="1448064542941920355">ဇူးမ်ချုံ့ရန်</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{ဝဘ်ဆိုက် <ph name="SITE_COUNT" /> ခု}other{ဝဘ်ဆိုက် <ph name="SITE_COUNT" /> ခု}}</translation>
 <translation id="1510341833810331442">ဝဘ်ဆိုက်များကို သင့်စက်တွင် ဒေတာသိမ်းရန် ခွင့်ပြုမထားပါ</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">ဝဘ်ဆိုက်များက အထောက်အထားဆိုင်ရာ ဝန်ဆောင်မှုများမှ လက်မှတ်ထိုးဝင်မှုဆိုင်ရာ အတည်ပြုစနစ်ကို ပြနိုင်သည်။</translation>
 <translation id="2790501146643349491">ဖွင့်ထားသောအခါ မကြာသေးမီက ပိတ်ထားသည့် ဝဘ်ဆိုက်များက ဒေတာပို့ခြင်းနှင့် လက်ခံခြင်းကို အပြီးသတ်နိုင်သည်။ ပိတ်ထားသောအခါ မကြာသေးမီက ပိတ်ထားသည့် ဝဘ်ဆိုက်များက ဒေတာပို့ခြင်းနှင့် လက်ခံခြင်းကို အပြီးမသတ်နိုင်ပါ။</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> အတွက် ဝဘ်ဆိုက်ခွင့်ပြုချက်အားလုံးကို ပြင်ဆင်သတ်မှတ်လိုသည်မှာ သေချာသလား။</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">မိုဘိုင်း မြင်ကွင်း တောင်းဆိုနိုင်သည်</translation>
 <translation id="2870560284913253234">ဆိုက်</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်အောင် ပိတ်ထားရန်</translation>
 <translation id="6447842834002726250">ကူကီးများ</translation>
+<translation id="6452138246455930388">ဖွင့်ထားသောတဘ်တွင် <ph name="OLD_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျခြင်း၊ <ph name="PRODUCT_NAME" />၊ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">ဝင်းဒိုးသည် ကျဉ်းပါက မိုဘိုင်းမြင်ကွင်းကို တောင်းဆိုပါ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="652937045869844725">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ခွင့်ပြုကြည့်ပါ။ ကာကွယ်မှု လျော့နည်းသွားသော်လည်း ဝဘ်ဆိုက်အင်္ဂါရပ်များ ပိုမိုလုပ်ဆောင်နိုင်ပါမည်</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">အောက်သို့ရွှေ့ပါ</translation>
 <translation id="6749077623962119521">ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်လိုပါသလား။</translation>
 <translation id="6766622839693428701">ပိတ်ရန် အောက်သို့ ပွတ်ဆွဲပါ။</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> မှ</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> အတွက် ရွေးရန်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6818926723028410516">စာရင်းမှ ရွေးရန်</translation>
 <translation id="6864395892908308021">ဤစက်က NFC ဖတ်၍မရပါ</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> မှ</translation>
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6950072572526089586">သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်တွင် မျှော်မှန်းထားသည့်အတိုင်း လုပ်ဆောင်နိုင်ရန်အတွက် သင်လုပ်ဆောင်နေသည့် အချက်အလက်ကို သိမ်းနိုင်သည် — ဥပမာ ဝဘ်ဆိုက်တစ်ခုတွင် လက်မှတ်ထိုးဝင်ထားစေရန် (သို့) ဈေးခြင်းတောင်းထဲရှိ ပစ္စည်းများကို မှတ်ထားရန်။ အများအားဖြင့် ဝဘ်ဆိုက်များသည် ဤအချက်အလက်ကို သင့်စက်တွင် ယာယီသိမ်းသည်။</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Oz ၏အံ့ဖွယ်ဝိဇ္ဇာ</translation>
 <translation id="7684642910516280563">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ သုံးရန် ဝဘ်ဆိုက်ကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="7719367874908701697">စာမျက်နှာဇူးမ်</translation>
+<translation id="7770832849480336015">“<ph name="TITLE_OF_MODULE" />” ဖျောက်ရန်</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>

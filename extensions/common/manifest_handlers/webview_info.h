@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -32,7 +33,7 @@ class WebviewInfo : public Extension::ManifestData {
                                             const std::string& partition_id);
 
   // Define out of line constructor/destructor to please Clang.
-  explicit WebviewInfo(const std::string& extension_id);
+  explicit WebviewInfo(const ExtensionId& extension_id);
 
   WebviewInfo(const WebviewInfo&) = delete;
   WebviewInfo& operator=(const WebviewInfo&) = delete;

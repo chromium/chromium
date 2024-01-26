@@ -60,6 +60,7 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
+  std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override;
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
@@ -96,6 +97,11 @@ bool DefaultValuesPolicyManager::HasActiveDevicePolicies() const {
 
 std::string DefaultValuesPolicyManager::source() const {
   return kSourceDefaultValuesPolicyManager;
+}
+
+std::optional<bool>
+DefaultValuesPolicyManager::CloudPolicyOverridesPlatformPolicy() const {
+  return std::nullopt;
 }
 
 std::optional<base::TimeDelta> DefaultValuesPolicyManager::GetLastCheckPeriod()

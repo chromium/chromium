@@ -350,10 +350,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
       SigninSpecifics());
 }
 
-MATCHER_P(HasDetails, expected, "") {
-  return expected == *content::Details<const std::string>(arg).ptr();
-}
-
 class ExistingUserControllerPublicSessionTest
     : public ExistingUserControllerTest,
       public user_manager::UserManager::Observer {

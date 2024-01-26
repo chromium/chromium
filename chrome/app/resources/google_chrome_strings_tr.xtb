@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">İnternete bağlanılamıyor. Güvenlik duvarı kullanıyorsanız <ph name="PRODUCT_EXE_NAME" /> dosyasını izin verilenler listesine ekleyin.</translation>
 <translation id="2131230230468101642">Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chrome'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="2139300032719313227">ChromeOS'i yeniden başlat</translation>
-<translation id="2146761408396054429">Bu dosya tehlikeli olabilir<ph name="LINE_BREAK" />Şifreyi sağlarsanız Chrome, indirme işlemini sizin için kontrol edebilir. Şifreniz cihazınızda kalır</translation>
 <translation id="2151406531797534936">Lütfen Chrome'u şimdi yeniden başlatın</translation>
 <translation id="2174917724755363426">Yükleme işlemi tamamlanmadı. İptal etmek istediğinizden emin misiniz?</translation>
 <translation id="2190166659037789668">Güncelleme denetimi hatası: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -135,7 +134,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chrome</translation>
 <translation id="3018957014024118866">Chrome'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex'i güncellemek için yeniden başlatın</translation>
-<translation id="303514781271618814">Chrome, sitelerin daha az veri kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
+<translation id="303514781271618814">Chrome, sitelerin daha az veri kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri deniyor</translation>
 <translation id="3037838751736561277">Google Chrome arka plan modunda.</translation>
 <translation id="3038232873781883849">Yüklenmesi bekleniyor...</translation>
 <translation id="3059710691562604940">Güvenli Tarama kapalı. Chrome bunun açılmasını öneriyor.</translation>
@@ -194,6 +193,7 @@
 <translation id="4053720452172726777">Google Chrome'u özelleştirin ve kontrol edin</translation>
 <translation id="4106587138345390261">Chrome, sitelerin size ait daha az bilgiyi kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
 <translation id="4110895483821904099">Yeni Chrome profilinizi oluşturun</translation>
+<translation id="4128488089242627000">Chrome daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır (önerilir)</translation>
 <translation id="4147555960264124640">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz.<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Yükleniyor...</translation>
 <translation id="4149882025268051530">Yükleyici arşivi açamadı. Lütfen Google Chrome'u yeniden indirin.</translation>
@@ -216,7 +216,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome'a eklendi</translation>
 <translation id="4384570495110188418">Oturum açmadığınızdan Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="4389991535395284064">Chrome, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
-<translation id="4393248995085527349">Gelecekteki Google Chrome güncellemelerini almak için macOS 10.15 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.13 kullanıyor.</translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
 <translation id="4450664632294415862">Chrome - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
@@ -241,6 +240,7 @@
 <translation id="4793679854893018356">Chrome'un güvenliğinizi nasıl sağladığını öğrenin</translation>
 <translation id="4828579605166583682">Google Chrome mevcut şifreleri değiştirmeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="4842397268809523050">Alanınızda senkronizasyon kullanılamadığı için ChromeOS Flex, verilerinizi senkronize edemedi.</translation>
+<translation id="4873692836499071887">Gelecekteki Google Chrome güncellemelerini almak için macOS 11 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.15 kullanıyor.</translation>
 <translation id="4873783916118289636">Chrome'daki önemli gizlilik ve güvenlik kontrollerini inceleyin</translation>
 <translation id="4891791193823137474">Google Chrome'un arka planda çalışmasına izin ver</translation>
 <translation id="4895437082222824641">Bağlantıyı yeni Chrome &amp;sekmesinde aç</translation>
@@ -302,7 +302,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5941830788786076944">Google Chrome varsayılan tarayıcı olsun</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>
-<translation id="6010556343189461180">Gelecekteki Google Chrome güncellemelerini almak için macOS 10.15 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.14 kullanıyor.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome araçları<ph name="END_LINK" /> ile güvenli bir şekilde göz atabilir ve kontrolü elinizde tutabilirsiniz</translation>
 <translation id="6022659036123304283">Chrome'u kendinize uyarlayın</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> sonra yeniden başlatılacak</translation>
@@ -348,6 +347,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="6794858689789885890">Chrome'u kapattığımda site verileri her zaman cihazımdan silinsin</translation>
 <translation id="683440813066116847">Google Chrome Canary'nin mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
+<translation id="6851981911629679515">Chrome'un JavaScript ve WebAssembly motorunda ek korumayı etkinleştirin</translation>
 <translation id="6881299373831449287">Chrome güncelleniyor</translation>
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6933858244219479645">ChromeOS Sistemi</translation>
@@ -469,6 +469,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="873133009373065397">Google Chrome, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">Chrome'un JavaScript ve WebAssembly motoru olan V8, site performansını iyileştirmek için kullanılır</translation>
 <translation id="8821043148920470810">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="8823341990149967727">Chrome Sürümü Eski</translation>
 <translation id="8825634023950448068">Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Chrome ilgi alanınızı yanlış algılarsa veya belirli reklamları görmek istemezseniz ilgi alanlarını kaldırabilirsiniz.</translation>

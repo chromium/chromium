@@ -146,6 +146,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1792959175193046959">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit</translation>
 <translation id="1796666869097395659">Minimizo skedën për t'u kthyer më vonë tek ajo</translation>
 <translation id="1807246157184219062">I lehtë</translation>
+<translation id="1807709131360304325">Hap një dritare të re</translation>
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nuk mund të vazhdojë të përdorë <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
@@ -189,6 +190,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2056878612599315956">Sajti në pauzë</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 shkarkim dështoi}other{# shkarkime dështuan}}</translation>
 <translation id="2067805253194386918">teksti</translation>
+<translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Po shfaqet pamja kompakte</translation>
 <translation id="2093731487903423814">15 minutat e fundit</translation>
@@ -218,7 +220,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="223356358902285214">Aktiviteti i uebit dhe i aplikacioneve</translation>
 <translation id="2234827758954819389">Udhëzuesi i privatësisë</translation>
 <translation id="2239812875700136898">Kontrollo historitë e tua nga butoni "Opsionet për Zbulo"</translation>
-<translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2247789808226901522">Karta ka skaduar</translation>
 <translation id="2248941474044011069">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="2249635629516220541">Personalizo informacionet e përdorura nga sajtet për të të shfaqur reklama</translation>
@@ -233,7 +234,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2318045970523081853">Trokit për të bërë një telefonatë</translation>
 <translation id="2321086116217818302">Po përgatit fjalëkalimet…</translation>
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
-<translation id="2327226657832576859">Të hapen automatikisht skedarët PDF?</translation>
 <translation id="2328985652426384049">Nuk mund të identifikohet</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> nuk mund të instalohej.</translation>
 <translation id="2349710944427398404">Të dhënat gjithsej të përdorura nga Chrome, duke përfshirë llogaritë, faqeshënuesit dhe cilësimet e ruajtura</translation>
@@ -316,6 +316,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
+<translation id="2789486458103222910">Në rregull</translation>
 <translation id="2800066122460699237">Skeda <ph name="TAB_TITLE" /> do të mbyllet</translation>
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Menyja e kartave të furnizimit në gjysmë lartësi</translation>
@@ -354,7 +355,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2946420957526726953">Chrome po përditësohet për t'u lidhur me pajisjet e tjera</translation>
 <translation id="2951071800649516099">Shto faqe në listën tënde të leximit për më vonë</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> faqe e palexuar}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> faqe të palexuara}}</translation>
-<translation id="2961210776189273067">Titulli</translation>
 <translation id="296370266220139811">Kurse kohën dhe shkruaj më pak</translation>
 <translation id="2977350910003566746">Po renditen sipas hapjes së fundit</translation>
 <translation id="297771753501244313">Rendit sipas hapjes së fundit</translation>
@@ -600,6 +600,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4307992518367153382">Bazat</translation>
+<translation id="4311652497846705514">Të hapet skedari PDF?</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
 <translation id="433213510553688132">Po ndjek...</translation>
 <translation id="4335835283689002019">Shfletimi i sigurt është joaktiv</translation>
@@ -639,7 +640,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4523326818319942067">ora e fundit</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
-<translation id="4541505619120536051">Hap gjithmonë</translation>
 <translation id="4543131175509360848">Asnjë fletë e çelësave të kalimit</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda, <ph name="TAB_COUNT_INCOGNITO" /> të fshehta}}</translation>
 <translation id="4554077758708533499">I lidhur me kabllo USB</translation>
@@ -831,7 +831,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5486841595534124508">Logoja e njoftimit të privatësisë për qendrën e statistikave të faqes, e cila ridrejton për te faqja "Aktiviteti im".</translation>
 <translation id="5487521232677179737">Pastro të dhënat</translation>
 <translation id="5492637351392383067">Enkriptimi në pajisje</translation>
-<translation id="5509866835115085009">Chrome mund ta hapë automatikisht një skedar PDF kur e shkarkon atë.</translation>
 <translation id="5514904542973294328">Çaktivizuar nga administratori i kësaj pajisjeje</translation>
 <translation id="5515439363601853141">Shkyçe për të parë fjalëkalimin</translation>
 <translation id="5517095782334947753">Ke faqeshënues, historik, fjalëkalime dhe cilësime të tjera nga <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5966233851250124270">Chrome do ta kujtojë këtë zgjedhje</translation>
+<translation id="5977976211062815271">Në këtë pajisje</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="5995726099713306770">Të shkarkohet faqja sërish?</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>
@@ -1302,6 +1302,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7810647596859435254">Hape me...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Të gjithë skedarët, 1 skedar në listë}other{Të gjithë skedarët, # skedarë në listë}}</translation>
 <translation id="7815484226266492798">Pamje e gjatë e ekranit</translation>
+<translation id="7821130663268546430">Mund t'i gjesh të gjitha skedat e hapura te ndërruesi i skedave</translation>
 <translation id="7822705602465980873">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
 <translation id="78270725016672455">Kompjuteri yt kërkon ta regjistrojë këtë pajisje për t'u identifikuar në një faqe</translation>
 <translation id="7844171778363018843">Nuk janë zgjedhur të dhëna për t'u sinkronizuar</translation>
@@ -1329,6 +1330,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7947953824732555851">Pranoje dhe identifikohu</translation>
+<translation id="7951102827450076904">Hap gjithmonë skedarët e shkarkuar PDF</translation>
 <translation id="7957413488482743710">Një kartë virtuale fsheh kartën tënde aktuale për të të mbrojtur nga mashtrimi i mundshëm. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Butoni i kthimit prapa te statistikat e faqes</translation>
 <translation id="7961926449547174351">Ke çaktivizuar qasjen te "Hapësira ruajtëse". Shko te "Cilësimet" për ta aktivizuar atë.</translation>

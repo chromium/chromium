@@ -751,7 +751,7 @@ class BrowserView : public BrowserWindow,
   bool IsImmersiveModeEnabled() const override;
   gfx::Rect GetTopContainerBoundsInScreen() override;
   void DestroyAnyExclusiveAccessBubble() override;
-  bool CanTriggerOnMouse() const override;
+  bool CanTriggerOnMousePointer() const override;
 
   // extension::ExtensionKeybindingRegistry::Delegate:
   content::WebContents* GetWebContentsForExtension() override;
@@ -791,8 +791,7 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
-  // Create and open the tab search bubble.
-  void CreateTabSearchBubble(const int tab_index = -1) override;
+  void CreateTabSearchBubble(int tab_index = -1) override;
   // Closes the tab search bubble if open for the given browser instance.
   void CloseTabSearchBubble() override;
 

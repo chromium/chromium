@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">هدایت</translation>
 <translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
+<translation id="1626590945318984973">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و <ph name="META_KEY" /> فشار دهید.</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
 <translation id="1643449475550628585">تغییر روزانه کاغذدیواری</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
 <translation id="1885577615937958993">جلو بردن سریع رسانه</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
-<translation id="1897672602657312171">اگر میان‌بر حاوی کلید جستجو نباشد ممکن است با میان‌بر برخی برنامه‌ها تداخل پیدا کند. اگر می‌خواهید به استفاده از این میان‌بر ادامه دهید آن را دوباره فشار دهید، یا میان‌بری جدید حاوی کلید جستجو اختصاص دهید.</translation>
 <translation id="1904932688895783618">در اینجا منابع مفید دیگری ارائه شده است:</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
 <translation id="2157660087437850958">انتخاب‌گر اموجی</translation>
 <translation id="2157959690810728433">در صف</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{سرپرست شما <ph name="APP_NAME_1" /> را طوری تنظیم کرده است که هربار به سیستم وارد می‌شوید به‌طور خودکار اجرا شود.}=2{سرپرست شما <ph name="APP_NAME_1" /> و <ph name="APP_NAME_2" /> را طوری تنظیم کرده است که هربار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}=3{سرپرست شما <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" />، و <ph name="APP_NAME_3" /> را طوری تنظیم کرده است که هربار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}one{سرپرست شما <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" />، و # برنامه دیگر را طوری تنظیم کرده است که هربار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}other{سرپرست شما <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" />، و # برنامه دیگر را طوری تنظیم کرده است که هربار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: امتحان مجدد</translation>
 <translation id="215916044711630446">‏دکمه «افزودن APN» اکنون غیرفعال است</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">‏ویرایش جزئیات APN</translation>
 <translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
+<translation id="2215920961700443347">به اینترنت متصل نیستید. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
 <translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
 <translation id="222447520299472966">باید حداقل یک آلبوم از «گالری هنری» انتخاب شود</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">تصویر <ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
+<translation id="2465272316171730950">تکمیل شده است. لطفاً کمی بعد دوباره سر بزنید.</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
 <translation id="2491955442992294626">وقتی درحال استفاده از پنجره دیگری هستید، کلیدها آزمایش نمی‌شوند</translation>
 <translation id="2493126929778606526">بهترین عکس‌هایتان که به‌طور خودکار انتخاب شده‌اند</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">بازآوری کاغذدیواری کنونی</translation>
 <translation id="2512979179176933762">نمایش پنجره‌ها</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
-<translation id="2515109918609218604">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و جستجو فشار دهید.</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2521835766824839541">آهنگ قبلی</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
@@ -290,7 +290,7 @@
 <translation id="3170673040743561620">سند را روی اسکنر قرار دهید</translation>
 <translation id="3174321110679064523">کاغذدیواری بامداد تا شامگاه</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
-<translation id="319101249942218879">تصویر چهره‌نما تغییر کرد</translation>
+<translation id="319101249942218879">تصویر چهرک تغییر کرد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3201315366910775591">دیگران می‌توانند آلبوم‌های مشترک را به‌روز کنند</translation>
@@ -300,7 +300,7 @@
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="324961752321393509">سرپرستتان اجازه نمی‌دهد این برنامه را ببندید</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
-<translation id="3275729367986477355">تصویر چهره‌نما</translation>
+<translation id="3275729367986477355">تصویر چهرک</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> گیگاهرتز</translation>
 <translation id="3291996639387199448">جهت کلید</translation>
@@ -347,7 +347,7 @@
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="3600339377155080675">قرینه صفحه‌نمایش</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
-<translation id="3603829704940252505">چهره‌نما</translation>
+<translation id="3603829704940252505">چهرک</translation>
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
@@ -372,7 +372,7 @@
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3845880861638660475">برای بستن کادر گفتگو، کلیدهای <ph name="ALT_SHORTCUT_START" />دگرساز<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />گریز<ph name="ESC_SHORTCUT_END" /> را فشار دهید.</translation>
 <translation id="3848280697030027394">صفحه‌کلید تاریک‌شده</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3862598938296403232">شرح الزامی است</translation>
 <translation id="386280020966669610">ایده جدید بده</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌های جدید<ph name="END_LINK_WALLPAPER_SUBPAGE" /> دسترسی دارید</translation>
 <translation id="4117637339509843559">حالت تاریک</translation>
 <translation id="4130035430755296270">برای گزینه‌های طرح‌بندی بیشتر، همچنان نشانگر را نگه دارید</translation>
+<translation id="4130750466177569591">موافقم</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{‫<ph name="APP_NAME_1" /> به‌طور خودکار اجرا شد}one{‫# برنامه به‌طور خودکار اجرا شد}other{‫# برنامه به‌طور خودکار اجرا شد}}</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">کاهش روشنایی</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4176659219503619100">صفحه کنترل</translation>
-<translation id="4185315616950253617">میان‌برهای دارای کلیدهای ردیف بالا باید حاوی کلید جستجو باشند.</translation>
 <translation id="420283545744377356">خاموش کردن محافظ صفحه</translation>
 <translation id="4213104098953699324">‏صفحه‌کلید USB</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">غیر فعال کردن</translation>
 <translation id="439429847087949098">درحال بازراه‌اندازی <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">سفارشی‌سازی صفحه‌کلید</translation>
-<translation id="4415951057168511744">چهره‌نمای کنونی</translation>
+<translation id="4403262788869804671">اگر میان‌بر کلید <ph name="META_KEY" /> داشته نباشد، ممکن است با میان‌بر برخی‌از برنامه‌ها تداخل پیدا کند. اگر می‌خواهید به استفاده از این میان‌بر ادامه دهید آن را دوباره فشار دهید، یا میان‌بر جدیدی را بااستفاده از کلید <ph name="KEY" /> فشار دهید.</translation>
+<translation id="4415951057168511744">چهرک کنونی</translation>
+<translation id="4417830657741848074">سرپرستتان برخی‌از برنامه‌ها را طوری تنظیم کرده است که خودکار اجرا شوند. برخی‌از این برنامه‌ها ممکن است بسته نشوند.</translation>
 <translation id="4422041425070339732">پیکان پایین</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> خاموش است</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">محافظ صفحه گردش زمین</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
+<translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای تغییردهنده (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
 <translation id="4507392511610824664">افزایش روشنایی</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
 <translation id="4835901797422965222">شبکه فعالی وجود ندارد</translation>
 <translation id="4839698083503556542">فیلم خودتان را بسازید</translation>
+<translation id="48409034532829769">سرپرست شما «<ph name="APP_NAME" />» را طوری تنظیم کرده است که خودکار اجرا شود. این برنامه ممکن است بسته نشود.</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4847902821209177679">‏<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> انتخاب شد، برای انتخاب کردن آلبوم‌های <ph name="TOPIC_SOURCE" />،‏ Enter را فشار دهید</translation>
 <translation id="484790837831576105">‏(Android) حل‌وفصل ساناد</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">تقسیم کردن</translation>
 <translation id="4972592110715526173">تغییر حالت</translation>
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
+<translation id="4982627662315910959">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از کلید تبدیل و یک کلید تغییردهنده دیگر (مهار، دگرساز، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="4987769320337599931">دیوار آتش</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">زمان‌بندی زمینه تیره</translation>
 <translation id="5229344016299762883">خروج از حالت تمام‌صفحه</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{سرپرستتان «<ph name="APP_NAME" />» را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید، به‌طور خودکار اجرا شود.}=2{سرپرستتان «<ph name="APP_NAME" />» و ۱ برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}one{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}other{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}}</translation>
 <translation id="5252456968953390977">فراگردی</translation>
 <translation id="5257811368506016604">فعال کردن حالت رنگ روشن</translation>
 <translation id="5264277876637023664">اجرای آزمایش واحد پردازش مرکزی</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="725133483556299729">انتخاب ایمیل</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
-<translation id="7273347807225967898">میان‌بر دردسترس نیست. میان‌بر جدید باید با یکی از کلیدهای تغییردهنده (مهار، دگرساز، تبدیل، جستجو، یا راه‌انداز) اختصاص داده شود.</translation>
+<translation id="7271932918253517778">میان‌برهای دارای کلیدهای ردیف بالا باید کلید <ph name="META_KEY" /> داشته باشند.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">احساس کردن نسیم</translation>
 <translation id="7287310195820267359">مجموعه کاغذدیواری</translation>
@@ -901,7 +906,7 @@
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7656388927906093505">دستگاه موش‌واره است.</translation>
 <translation id="7658239707568436148">لغو</translation>
-<translation id="7665800271478495366">تغییر چهره‌نما</translation>
+<translation id="7665800271478495366">تغییر چهرک</translation>
 <translation id="7683228889864052081">رنگ‌مایه صفحه‌کلید</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">کنترل‌های عمومی</translation>
 <translation id="7977800524392185497">برای پیوستن به <ph name="NETWORK_NAME" />، به «تنظیمات» بروید</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» به‌طور خودکار اجرا شد}one{# برنامه به‌طور خودکار اجرا شد}other{# برنامه به‌طور خودکار اجرا شد}}</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8017679124341497925">میان‌بر ویرایش شد</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
-<translation id="8111706652656628199">میان‌بر دردسترس نیست. بااستفاده از کلید تبدیل و یک کلید تغییردهنده دیگر (مهار، دگرساز، جستجو، یا راه‌انداز) میان‌بر جدیدی اختصاص دهید.</translation>
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>

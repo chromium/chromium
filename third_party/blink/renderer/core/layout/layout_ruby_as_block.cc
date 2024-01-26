@@ -34,7 +34,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   if (RuntimeEnabledFeatures::BlockRubyWrappingInlineRubyEnabled()) {
     LayoutObject* inline_ruby = FirstChild();
     if (!inline_ruby) {
-      inline_ruby = MakeGarbageCollected<LayoutRubyAsInline>(nullptr);
+      inline_ruby = MakeGarbageCollected<LayoutRuby>(nullptr);
       inline_ruby->SetDocumentForAnonymous(&GetDocument());
       ComputedStyleBuilder new_style_builder =
           GetDocument()
@@ -80,7 +80,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   // If the new child would be appended, try to add the child to the previous
   // column if possible, or create a new column otherwise.
   // (The LayoutRubyColumn object will handle the details)
-  auto* last_column = LayoutRubyAsInline::LastRubyColumn(*this);
+  auto* last_column = LayoutRuby::LastRubyColumn(*this);
   if (!last_column || last_column->HasRubyText()) {
     last_column = &LayoutRubyColumn::Create(this, *this);
     LayoutNGBlockFlow::AddChild(last_column, before_child);
@@ -93,7 +93,7 @@ void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::BlockRubyWrappingInlineRubyEnabled()) {
     if (child->Parent() == this) {
-      DCHECK(DynamicTo<LayoutRubyAsInline>(child));
+      DCHECK(DynamicTo<LayoutRuby>(child));
       LayoutNGBlockFlow::RemoveChild(child);
       return;
     }
@@ -115,7 +115,7 @@ void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
   }
 
   // Otherwise find the containing column and remove it from there.
-  auto* column = LayoutRubyAsInline::FindRubyColumnParent(child);
+  auto* column = LayoutRuby::FindRubyColumnParent(child);
   DCHECK(column);
   column->RemoveChild(child);
 }

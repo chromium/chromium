@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_CAST_REMOTING_CONNECTOR_H_
 #define CHROME_BROWSER_MEDIA_CAST_REMOTING_CONNECTOR_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -215,7 +215,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   void OnPrefChanged();
 
   // Returns the user's remoting preference, or nullopt if it isn't set.
-  absl::optional<bool> GetRemotingAllowedUserPref() const;
+  std::optional<bool> GetRemotingAllowedUserPref() const;
 
   void set_remoting_allowed_for_testing(bool remoting_allowed) {
     remoting_allowed_ = remoting_allowed;
@@ -245,7 +245,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
 
   // Permission is checked the first time remoting requested to start for each
   // casting session.
-  absl::optional<bool> remoting_allowed_;
+  std::optional<bool> remoting_allowed_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

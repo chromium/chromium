@@ -33,10 +33,6 @@ BASE_FEATURE(kDragAndDropRefactor,
              "AppListDragAndDropRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContinueSectionWithRecents,
-             "ContinueSectionWithRecents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
 }
@@ -70,10 +66,6 @@ bool IsLauncherPlayStoreSearchEnabled() {
 
 bool IsDragAndDropRefactorEnabled() {
   return base::FeatureList::IsEnabled(kDragAndDropRefactor);
-}
-
-bool IsContinueSectionWithRecentsEnabled() {
-  return base::FeatureList::IsEnabled(kContinueSectionWithRecents);
 }
 
 }  // namespace app_list_features

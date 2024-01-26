@@ -39,8 +39,7 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
   } else {
     text_style = UIFontTextStyleTitle2;
   }
-
-  DCHECK(text_style);
+  CHECK(text_style);
   UIFontDescriptor* descriptor =
       [UIFontDescriptor preferredFontDescriptorWithTextStyle:text_style];
   UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
@@ -127,11 +126,20 @@ void UpdatePrimaryButton(UIButton* button,
 
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   // Only works for prepopulated search engines.
-  CHECK_GT(template_url.prepopulate_id(), 0)
+  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M124)
       << base::UTF16ToUTF8(template_url.short_name());
   std::u16string engine_keyword = template_url.data().keyword();
   int resource_id = search_engines::GetIconResourceId(engine_keyword);
-  CHECK_NE(resource_id, -1) << base::UTF16ToUTF8(engine_keyword);
+  CHECK_NE(resource_id, -1, base::NotFatalUntil::M124)
+      << base::UTF16ToUTF8(engine_keyword);
+  if (resource_id == -1) {
+    return nil;
+  }
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   return resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
+}
+
+bool IsSearchEngineForceEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kSearchEngineForceEnabled];
 }

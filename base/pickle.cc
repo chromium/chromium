@@ -331,7 +331,7 @@ void Pickle::WriteData(std::string_view data) {
 }
 
 void Pickle::WriteBytes(const void* data, size_t length) {
-  WriteBytesCommon(make_span(reinterpret_cast<const uint8_t*>(data), length));
+  WriteBytesCommon(make_span(static_cast<const uint8_t*>(data), length));
 }
 
 void Pickle::WriteBytes(span<const uint8_t> data) {
@@ -423,7 +423,7 @@ bool Pickle::PeekNext(size_t header_size,
 
 template <size_t length>
 void Pickle::WriteBytesStatic(const void* data) {
-  WriteBytesCommon(make_span(reinterpret_cast<const uint8_t*>(data), length));
+  WriteBytesCommon(make_span(static_cast<const uint8_t*>(data), length));
 }
 
 template void Pickle::WriteBytesStatic<2>(const void* data);

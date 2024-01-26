@@ -29,18 +29,20 @@ struct CertVerifierConfig {
 };
 
 struct AdditionalCertificates {
-  // TODO(crbug.com/1477317): store these as bytestrings to avoid the extra
-  // overhead of parsing these with X509Certificate on both sides of the
-  // mojo interface.
-
   // List of untrusted certificates, which will be used during path building.
-  array<network.mojom.X509Certificate> all_certificates;
+  array<array<uint8>> all_certificates;
 
   // List of additional trust anchors.
-  array<network.mojom.X509Certificate> trust_anchors;
+  array<array<uint8>> trust_anchors;
+
+  // List of additional trust anchors that have enforced constraints.
+  array<array<uint8>> trust_anchors_with_enforced_constraints;
 
   // List of SPKIs that are explicitly distrusted.
   array<array<uint8>> distrusted_spkis;
+
+  // If true, use user-added certs in the system trust store.
+  bool include_system_trust_store = true;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startURL('../resources/dom-snapshot-includeTextColorOpacities.html', 'Tests DOMSnapshot.getSnapshot reports blended background colors of each node.');
 
   const response = await dp.DOMSnapshot.captureSnapshot({'computedStyles': [], 'includeTextColorOpacities': true});

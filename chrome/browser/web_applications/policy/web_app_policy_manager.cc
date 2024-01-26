@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,7 +52,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/url_constants.h"
 
@@ -354,7 +354,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
                    : PlaceholderResolutionBehavior::kWaitForAppWindowsClosed)
             : PlaceholderResolutionBehavior::kClose;
 
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         provider_->registrar_unsafe().LookupExternalAppId(
             install_options.install_url);
 
@@ -523,12 +523,12 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   const GURL install_gurl(CHECK_DEREF(install_url));
   const std::string* default_launch_container =
       entry.FindString(kDefaultLaunchContainerKey);
-  const absl::optional<bool> create_desktop_shortcut =
+  const std::optional<bool> create_desktop_shortcut =
       entry.FindBool(kCreateDesktopShortcutKey);
   const std::string* fallback_app_name = entry.FindString(kFallbackAppNameKey);
   const base::Value::List* uninstall_and_replace =
       entry.FindList(kUninstallAndReplaceKey);
-  const absl::optional<bool> install_as_shortcut =
+  const std::optional<bool> install_as_shortcut =
       entry.FindBool(kInstallAsShortcut);
 
   DCHECK(!default_launch_container ||
@@ -768,7 +768,7 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
   }
 
   if (IsForceUnregistrationPolicyEnabled()) {
-    absl::optional<bool> force_unregistration_value =
+    std::optional<bool> force_unregistration_value =
         dict.FindBool(kForceUnregisterOsIntegration);
     force_unregister_os_integration =
         force_unregistration_value.value_or(false);
@@ -888,7 +888,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(system_web_apps_delegate_map_);
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         GetAppIdForSystemApp(provider_->registrar_unsafe(),
                              *system_web_apps_delegate_map_, app_type);
     if (app_id.has_value()) {

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/web_state_impl.h"
 
@@ -265,14 +266,14 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
       base::OnceCallback<void(Args...)> callback);
 
   // Owner. Never null. Owns this object.
-  WebStateImpl* const owner_;
+  const raw_ptr<WebStateImpl> owner_;
 
   // The InterfaceBinder exposed by WebStateImpl. Used to handle Mojo
   // interface requests from the main frame.
   InterfaceBinder interface_binder_;
 
   // Delegate, not owned by this object.
-  WebStateDelegate* delegate_ = nullptr;
+  raw_ptr<WebStateDelegate> delegate_ = nullptr;
 
   // Stores whether the web state is currently loading a page.
   bool is_loading_ = false;

@@ -1,6 +1,6 @@
 {
-  "name": "unit_tests --gtest_filter=ExternallyConnectableTest.NothingSpecified",
+  "name": "extensions_unittests --gtest_filter=ExternallyConnectableTest.WarningNothingSpecified",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "externally_connectable": {}
 }

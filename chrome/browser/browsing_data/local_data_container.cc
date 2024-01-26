@@ -35,9 +35,6 @@ LocalDataContainer::CreateFromStoragePartition(
     content::StoragePartition* storage_partition,
     browsing_data::CookieHelper::IsDeletionDisabledCallback
         is_cookie_deletion_disabled_callback) {
-  // TODO(crbug.com/1271155): remove this flag.
-  CHECK(base::FeatureList::IsEnabled(
-      browsing_data::features::kMigrateStorageToBDM));
   return std::make_unique<LocalDataContainer>(
       base::FeatureList::IsEnabled(
           browsing_data::features::kDeprecateCookiesTreeModel)

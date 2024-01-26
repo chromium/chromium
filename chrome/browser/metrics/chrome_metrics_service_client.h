@@ -128,8 +128,8 @@ class ChromeMetricsServiceClient
   bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) override;
-  absl::optional<bool> GetCurrentUserMetricsConsent() const override;
-  absl::optional<std::string> GetCurrentUserId() const override;
+  std::optional<bool> GetCurrentUserMetricsConsent() const override;
+  std::optional<std::string> GetCurrentUserId() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ukm::HistoryDeleteObserver:
@@ -217,6 +217,9 @@ class ChromeMetricsServiceClient
   // is changed from on to off. For non-ChromeOS platforms, this will no-op.
   void ResetClientStateWhenMsbbOrAppConsentIsRevoked(
       ukm::UkmConsentState previous_consent_state);
+
+  // Creates the Structured Metrics Service based on the platform.
+  void CreateStructuredMetricsService();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

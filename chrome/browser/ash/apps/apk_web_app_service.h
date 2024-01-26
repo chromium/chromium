@@ -177,6 +177,7 @@ class ApkWebAppService : public KeyedService,
 
   // croapi::WebAppServiceAsh::Observer overrides:
   void OnWebAppProviderBridgeConnected() override;
+  void OnWebAppServiceAshDestroyed() override;
 
   void MaybeRemoveArcPackageForWebApp(const webapps::AppId& web_app_id);
   void OnDidGetWebAppIcon(const std::string& package_name,

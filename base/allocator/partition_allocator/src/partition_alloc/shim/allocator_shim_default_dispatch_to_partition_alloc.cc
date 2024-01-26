@@ -25,6 +25,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
+#include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 #include "partition_alloc/shim/nonscannable_allocator.h"
 
@@ -492,7 +493,6 @@ void ConfigurePartitions(
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
-    size_t scheduler_loop_quarantine_capacity_count,
     ZappingByFreeFlags zapping_by_free_flags) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
@@ -527,8 +527,6 @@ void ConfigurePartitions(
                 : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine_capacity_in_bytes =
             scheduler_loop_quarantine_capacity_in_bytes;
-        opts.scheduler_loop_quarantine_capacity_count =
-            scheduler_loop_quarantine_capacity_count;
         opts.memory_tagging = {
             .enabled = enable_memory_tagging
                            ? partition_alloc::PartitionOptions::kEnabled

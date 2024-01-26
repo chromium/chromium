@@ -34,8 +34,7 @@ TEST_F(FenceTest, ReportPrivateAggregationEvent) {
   V8TestingScope scope(base_url);
   Fence* fence =
       MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
-  fence->reportPrivateAggregationEvent(scope.GetScriptState(), "event",
-                                       scope.GetExceptionState());
+  fence->reportPrivateAggregationEvent("event", scope.GetExceptionState());
 
   // We expect this to make it past all the other checks, except for the
   // reporting metadata check. Since this is loaded in a vacuum and not the
@@ -51,7 +50,7 @@ TEST_F(FenceTest, ReportPrivateAggregationReservedEvent) {
   V8TestingScope scope(base_url);
   Fence* fence =
       MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
-  fence->reportPrivateAggregationEvent(scope.GetScriptState(), "reserved.event",
+  fence->reportPrivateAggregationEvent("reserved.event",
                                        scope.GetExceptionState());
 
   // There should be a "Reserved events cannot be triggered manually." console
@@ -70,8 +69,7 @@ TEST_F(FenceTest, ReportReservedEvent) {
   event->setEventType("reserved.top_navigation");
   V8UnionFenceEventOrString* event_union =
       MakeGarbageCollected<V8UnionFenceEventOrString>(event);
-  fence->reportEvent(scope.GetScriptState(), event_union,
-                     scope.GetExceptionState());
+  fence->reportEvent(event_union, scope.GetExceptionState());
 
   // There should be a "Reserved events cannot be triggered manually." console
   // warning.

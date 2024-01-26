@@ -29,6 +29,7 @@ class SandboxedRarAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
+  using WrappedFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
   // Factory function for creating SandboxedRarAnalyzers with the appropriate
   // deleter.
@@ -61,7 +62,7 @@ class SandboxedRarAnalyzer {
 
   // Starts the utility process and sends it a request to analyze the file
   // |file|.
-  void AnalyzeFile(base::File file);
+  void AnalyzeFile(WrappedFilePtr file);
 
   // The response containing the file analyze results.
   void AnalyzeFileDone(const safe_browsing::ArchiveAnalyzerResults& results);
@@ -73,7 +74,7 @@ class SandboxedRarAnalyzer {
   const base::FilePath file_path_;
 
   // The password to use for encrypted entries.
-  const absl::optional<std::string> password_;
+  const std::optional<std::string> password_;
 
   // Callback invoked on the UI thread with the file analyze results.
   ResultCallback callback_;
@@ -82,6 +83,9 @@ class SandboxedRarAnalyzer {
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
   TemporaryFileGetter temp_file_getter_;
+
+  // Task runner for blocking file operations
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   base::WeakPtrFactory<SandboxedRarAnalyzer> weak_ptr_factory_{this};
 };

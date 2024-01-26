@@ -47,11 +47,11 @@ class ModelFileObserver : public OptimizationTargetModelObserver {
     file_received_callback_ = std::move(callback);
   }
 
-  absl::optional<proto::OptimizationTarget> optimization_target() const {
+  std::optional<proto::OptimizationTarget> optimization_target() const {
     return optimization_target_;
   }
 
-  absl::optional<ModelInfo> model_info() { return model_info_; }
+  std::optional<ModelInfo> model_info() { return model_info_; }
 
   // OptimizationTargetModelObserver implementation:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
@@ -61,10 +61,10 @@ class ModelFileObserver : public OptimizationTargetModelObserver {
   ModelFileReceivedCallback file_received_callback_;
 
   // Holds the optimization target that was received from modelinfo updates.
-  absl::optional<proto::OptimizationTarget> optimization_target_;
+  std::optional<proto::OptimizationTarget> optimization_target_;
 
   // Holds the modelinfo that was received from modelinfo updates.
-  absl::optional<ModelInfo> model_info_;
+  std::optional<ModelInfo> model_info_;
 };
 
 }  // namespace optimization_guide

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/tab_pickup/tab_pickup_infobar_modal_overlay_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -26,9 +27,9 @@
 
 @implementation TabPickupInfobarModalOverlayMediator {
   // Preference service from the application context.
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Preference value for the tab pickup feature.

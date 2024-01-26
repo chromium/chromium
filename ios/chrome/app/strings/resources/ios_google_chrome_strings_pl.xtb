@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1066101356081285416">Chrome będzie wykrywać numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetlać aktualne informacje o przesyłkach na stronie Nowa karta. Numery śledzenia przesyłek i nazwy witryn będą wysyłane do Google i używane do obsługi tej funkcji oraz do ogólnego ulepszania funkcji zakupów. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
 <translation id="1105362920864247682">Wyczyść dane przeglądania w Chrome.</translation>
 <translation id="1113057722807951993">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
@@ -40,13 +41,13 @@ Pamiętaj, że:
 <translation id="1682483655351012182">Synchronizuj dane Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Dodaje wpisane adresy URL do zakładek w Chrome.</translation>
+<translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1830634592642484976">Ten adres jest obecnie zapisany w Chrome. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Automatycznie używaj Chrome, gdy klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>
 <translation id="1910975740091000991">Chrome na iOS</translation>
 <translation id="1917964099031477364">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chrome i innych aplikacji Google na tym urządzeniu.</translation>
 <translation id="1965935827552890526">Dokończ czynności rozpoczęte w innym otwartym oknie Chrome.</translation>
 <translation id="1987779152850321833">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chrome.</translation>
-<translation id="2008357574463816229">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Google Chrome.</translation>
 <translation id="2120238739383482109">Otwiera zakładki Chrome.</translation>
 <translation id="2147651015520127414">Chrome sprawdził, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
@@ -75,6 +76,7 @@ Pamiętaj, że:
 <translation id="2702250627063295552">Dodaj element listy Do przeczytania do Chrome</translation>
 <translation id="2736805085127235148">Powiadomienia Chrome są aktualnie wyłączone w ustawieniach urządzenia.</translation>
 <translation id="2767464022270041271">Brak zapisanych haseł. Menedżer haseł Google może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
+<translation id="2789947168960170215">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Wyczyść dane przeglądania w Chrome</translation>
 <translation id="2869959624320573933">Zaloguj się w Chrome</translation>
 <translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
@@ -98,7 +100,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>
 <translation id="3577555362230509265">Korzystaj z Chrome w innych aplikacjach.</translation>
-<translation id="3594076341410558780">Ukryj „W pełni wykorzystuj potencjał Chrome”</translation>
 <translation id="364480321352456989">Twoja przeglądarka Chrome jest nieaktualna.</translation>
 <translation id="3646736009628185125">W tej chwili członek Twojej grupy rodzinnej nie może otrzymać haseł. Poproś go, aby zaktualizował Chrome i zsynchronizował hasła. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę mobilną.</translation>
@@ -204,7 +205,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="686691656039982452">Możesz <ph name="BEGIN_LINK" />określić, jakie dane Chrome mają być zapisywane<ph name="END_LINK" /> na koncie Google.
 
 W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chrome.</translation>
-<translation id="687586529977635009">Chrome wykryje numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetli aktualne informacje o przesyłkach na stronie Nowa karta. Aby ta funkcja mogła działać, Twoje dane będą udostępniane Google. Pozwoli to też na ulepszanie Zakupów Google. Możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Wyszukaj głosowo w Chrome</translation>
 <translation id="6964931465519938134">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="6975725306479268850">Wybieranie Chrome do autouzupełniania</translation>

@@ -79,6 +79,6 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
 
     @Override
     public int getMaxItemWidth() {
-        return UiUtils.computeMaxWidthOfListAdapterItems(mAdapter, mListView);
+        return UiUtils.computeListAdapterContentDimensions(mAdapter, mListView)[0];
     }
 }

@@ -21,8 +21,8 @@ schema:
   type: array
   items:
     type: string
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:123-
 tags:
 - admin-sharing
 type: list

@@ -22,10 +22,13 @@ namespace blink {
 class ThrottlingURLLoader;
 }  // namespace blink
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace content {
 
 class BrowserContext;
-struct ResourceRequest;
 struct SubresourceLoaderParams;
 struct ResponseHeadUpdateParams;
 

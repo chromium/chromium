@@ -4,9 +4,9 @@
 
 #include "extensions/renderer/extension_throttle_manager.h"
 
+#include <map>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_util.h"
@@ -185,7 +185,7 @@ void ExtensionThrottleManager::GarbageCollectEntriesIfNecessary() {
 }
 
 void ExtensionThrottleManager::GarbageCollectEntries() {
-  base::EraseIf(url_entries_, [](const auto& entry) {
+  std::erase_if(url_entries_, [](const auto& entry) {
     return entry.second->IsEntryOutdated();
   });
 

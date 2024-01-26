@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -29,18 +30,18 @@ class View;
 namespace web_app {
 
 class CallbackDelayer;
-class IsolatedWebAppInstallerModel;
 class WebAppProvider;
 
 class IsolatedWebAppInstallerViewController
-    : public IsolatedWebAppInstallerView::Delegate {
+    : public IsolatedWebAppInstallerModel::Observer,
+      public IsolatedWebAppInstallerView::Delegate {
  public:
   IsolatedWebAppInstallerViewController(
       Profile* profile,
       WebAppProvider* web_app_provider,
       IsolatedWebAppInstallerModel* model,
       std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
-  virtual ~IsolatedWebAppInstallerViewController();
+  ~IsolatedWebAppInstallerViewController() override;
 
   // Starts the installer state transition. |initialized_callback| will be
   // called once the dialog is initialized and ready for display.
@@ -98,12 +99,12 @@ class IsolatedWebAppInstallerViewController
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;
-  void OnManageProfilesLinkClicked() override;
   void OnChildDialogCanceled() override;
   void OnChildDialogAccepted() override;
 
-  // Updates the View to reflect the current state of the model.
-  void OnModelChanged();
+  // `IsolatedWebAppInstallerModel::Observer`:
+  void OnStepChanged() override;
+  void OnChildDialogChanged() override;
 
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<views::View> contents_view);

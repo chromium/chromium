@@ -379,14 +379,14 @@ bool AccessCodeCastIntegrationBrowserTest::HasSinkInDevicesDict(
   return !media_sink.Get().empty();
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 AccessCodeCastIntegrationBrowserTest::GetDeviceAddedTimeFromDict(
     const MediaSink::Id& sink_id) {
   if (!GetPrefUpdater()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  base::test::TestFuture<absl::optional<base::Time>> time;
+  base::test::TestFuture<std::optional<base::Time>> time;
   GetPrefUpdater()->GetDeviceAddedTime(sink_id, time.GetCallback());
   return time.Get();
 }
@@ -638,7 +638,7 @@ void AccessCodeCastIntegrationBrowserTest::UpdateDeviceAddedTime(
 
   GetPrefUpdater()->GetDeviceAddedTime(
       sink_id,
-      base::BindLambdaForTesting([this](absl::optional<base::Time> time) {
+      base::BindLambdaForTesting([this](std::optional<base::Time> time) {
         if (time.has_value()) {
           this->device_added_time_ = time.value();
         }
@@ -656,7 +656,7 @@ void AccessCodeCastIntegrationBrowserTest::
 
 bool AccessCodeCastIntegrationBrowserTest::IsAccessCodeCastLacrosSyncEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::TestFuture<absl::optional<base::Value>> future;
+  base::test::TestFuture<std::optional<base::Value>> future;
   chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
       crosapi::mojom::PrefPath::kAccessCodeCastDevices, future.GetCallback());
   return future.Take().has_value();

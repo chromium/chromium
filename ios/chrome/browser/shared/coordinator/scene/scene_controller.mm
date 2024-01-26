@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -164,6 +165,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -178,7 +180,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -848,6 +850,9 @@ void InjectNTP(Browser* browser) {
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
+
+    [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                        HelpCommands) presentTabGridToolbarItemBubble];
   }
 
   [self recordWindowCreationForSceneState:self.sceneState];
@@ -922,10 +927,11 @@ void InjectNTP(Browser* browser) {
   SceneState* sceneState = self.sceneState;
   ChromeBrowserState* browserState = sceneState.appState.mainBrowserState;
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
-             initWithBrowserState:browserState
-                       sceneState:sceneState
-       applicationCommandEndpoint:self
-      browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
+      initWithBrowserState:browserState
+                sceneState:sceneState
+       applicationEndpoint:self
+          settingsEndpoint:self
+      browsingDataEndpoint:self.browsingDataCommandsHandler];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
@@ -1010,6 +1016,7 @@ void InjectNTP(Browser* browser) {
       initWithBrowserProviderInterface:self.browserViewWrangler];
   [sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
+  [self activateBVCAndMakeCurrentBVCPrimary];
   [self.browserViewWrangler loadSession];
   [self createInitialUI:[self initialUIMode]];
 
@@ -1032,7 +1039,7 @@ void InjectNTP(Browser* browser) {
   // scenarios.
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
                            initWithPromosManager:promosManager
-                                     prefService:browserState->GetPrefs()]];
+                                     prefService:prefService]];
 
   if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
     [sceneState addAgent:[[OmniboxPositionChoiceSceneAgent alloc]
@@ -1083,8 +1090,6 @@ void InjectNTP(Browser* browser) {
 // Creates and displays the initial UI in `launchMode`, performing other
 // setup and configuration as needed.
 - (void)createInitialUI:(ApplicationMode)launchMode {
-  DCHECK(self.sceneState.appState.mainBrowserState);
-
   // Set the Scene application URL loader on the URL loading browser interface
   // for the regular and incognito interfaces. This will lazily instantiate the
   // incognito interface if it isn't already created.
@@ -1182,7 +1187,9 @@ void InjectNTP(Browser* browser) {
 // Notifies the Feature Engagement Tracker that an eligibility criterion has
 // been met for the default browser blue dot promo.
 - (void)notifyFETAppOpenedViaFirstParty {
-  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
+  ChromeBrowserState* browserState =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   if (!browserState || browserState->IsOffTheRecord()) {
     return;
   }
@@ -1358,7 +1365,8 @@ void InjectNTP(Browser* browser) {
     return NO;
   }
   if (!signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.appState.mainBrowserState,
+          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetBrowserState(),
           version_info::GetVersion())) {
     return NO;
   }
@@ -1435,7 +1443,8 @@ void InjectNTP(Browser* browser) {
 - (BOOL)isSignedIn {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
-          self.sceneState.appState.mainBrowserState);
+          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetBrowserState());
   DCHECK(authenticationService);
   DCHECK(authenticationService->initialized());
 
@@ -1864,9 +1873,13 @@ void InjectNTP(Browser* browser) {
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(webState);
   DCHECK(infoBarManager);
+  CommandDispatcher* dispatcher =
+      self.mainInterface.browser->GetCommandDispatcher();
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetBrowserState(), self,
-      baseViewController);
+      infoBarManager, self.mainInterface.browser->GetBrowserState(),
+      settingsHandler, baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2653,10 +2666,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  id<ApplicationCommands> applicationCommandsHandler =
+  id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  [applicationCommandsHandler showCreditCardSettings];
+                         ApplicationSettingsCommands);
+  [settingsHandler showCreditCardSettings];
 }
 
 - (void)openClearBrowsingDataDialog {
@@ -2664,10 +2677,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  id<ApplicationCommands> applicationCommandsHandler =
+  id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  [applicationCommandsHandler showClearBrowsingDataSettings];
+                         ApplicationSettingsCommands);
+  [settingsHandler showClearBrowsingDataSettings];
 }
 
 - (void)openLatestTab {
@@ -3397,7 +3410,8 @@ void InjectNTP(Browser* browser) {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
-          self.sceneState.appState.mainBrowserState);
+          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetBrowserState());
   AuthenticationService::ServiceStatus statusService =
       authenticationService->GetServiceStatus();
   switch (statusService) {
@@ -3622,10 +3636,12 @@ void InjectNTP(Browser* browser) {
 // Clears incognito data that is specific to iOS and won't be cleared by
 // deleting the browser state.
 - (void)clearIOSSpecificIncognitoData {
-  DCHECK(self.sceneState.appState.mainBrowserState
+  DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+             ->GetBrowserState()
              ->HasOffTheRecordChromeBrowserState());
   ChromeBrowserState* otrBrowserState =
-      self.sceneState.appState.mainBrowserState
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState()
           ->GetOffTheRecordChromeBrowserState();
   [self.browsingDataCommandsHandler
       removeBrowsingDataForBrowserState:otrBrowserState
@@ -3646,8 +3662,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  self.mainInterface.userInteractionEnabled = YES;
-  self.incognitoInterface.userInteractionEnabled = YES;
+  WebUsageEnablerBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->SetWebUsageEnabled(true);
+  WebUsageEnablerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
+      ->SetWebUsageEnabled(true);
   [self.currentInterface setPrimary:YES];
 }
 
@@ -3748,7 +3766,8 @@ void InjectNTP(Browser* browser) {
 // BrowserState must not be destroyed).
 - (BOOL)shouldDestroyAndRebuildIncognitoBrowserState {
   ChromeBrowserState* mainBrowserState =
-      self.sceneState.appState.mainBrowserState;
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   if (!mainBrowserState->HasOffTheRecordChromeBrowserState()) {
     return NO;
   }
@@ -3781,7 +3800,8 @@ void InjectNTP(Browser* browser) {
   [self clearIOSSpecificIncognitoData];
 
   ChromeBrowserState* mainBrowserState =
-      self.sceneState.appState.mainBrowserState;
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   DCHECK(mainBrowserState->HasOffTheRecordChromeBrowserState());
   ChromeBrowserState* otrBrowserState =
       mainBrowserState->GetOffTheRecordChromeBrowserState();

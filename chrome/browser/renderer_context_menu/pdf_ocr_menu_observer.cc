@@ -7,8 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

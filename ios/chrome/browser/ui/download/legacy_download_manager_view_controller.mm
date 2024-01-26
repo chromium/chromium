@@ -801,8 +801,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   switch (_state) {
     case kDownloadManagerStateNotStarted:
       title = l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD);
-      accessibilityIdentifier =
-          kDownloadManagerDownloadToFilesAccessibilityIdentifier;
+      accessibilityIdentifier = kDownloadManagerDownloadAccessibilityIdentifier;
       break;
     case kDownloadManagerStateInProgress:
       break;

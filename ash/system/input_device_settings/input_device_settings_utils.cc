@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -28,6 +30,8 @@ namespace ash {
 
 namespace {
 
+const char kRedactedButtonName[] = "REDACTED";
+
 std::string HexEncode(uint16_t v) {
   // Load the bytes into the bytes array in reverse order as hex number should
   // be read from left to right.
@@ -37,7 +41,7 @@ std::string HexEncode(uint16_t v) {
   return base::ToLowerASCII(base::HexEncode(bytes));
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
+bool ExistingSettingsHasValue(std::string_view setting_key,
                               const base::Value::Dict* existing_settings_dict) {
   if (!existing_settings_dict) {
     return false;
@@ -113,7 +117,7 @@ std::string BuildDeviceKey(const ui::InputDevice& device) {
 }
 
 template <typename T>
-bool ShouldPersistSetting(base::StringPiece setting_key,
+bool ShouldPersistSetting(std::string_view setting_key,
                           T new_value,
                           T default_value,
                           bool force_persistence,
@@ -123,7 +127,7 @@ bool ShouldPersistSetting(base::StringPiece setting_key,
 }
 
 bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
-                          base::StringPiece setting_key,
+                          std::string_view setting_key,
                           bool new_value,
                           bool default_value,
                           bool force_persistence,
@@ -148,7 +152,7 @@ bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
 
 bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict) {
@@ -172,14 +176,14 @@ bool ShouldPersistFkeySetting(
 }
 
 template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     bool new_value,
     bool default_value,
     bool force_persistence,
     const base::Value::Dict* existing_settings_dict);
 
 template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     int value,
     int default_value,
     bool force_persistence,
@@ -252,6 +256,7 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
           {0x3434, 0x0311},  // Keychron V1
           {0x3496, 0x0006},  // Keyboardio Model 100
           {0x4c44, 0x0040},  // LazyDesigners Dimple
+          {0x594d, 0x4409},  // YMDK YMD09
           {0xfeed, 0x1307},  // ErgoDox EZ
       });
 
@@ -273,14 +278,16 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
 
 base::Value::Dict ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names) {
   base::Value::Dict dict;
 
   if (RestrictionBlocksRemapping(remapping, customization_restriction)) {
     return dict;
   }
 
-  dict.Set(prefs::kButtonRemappingName, remapping.name);
+  dict.Set(prefs::kButtonRemappingName,
+           redact_button_names ? kRedactedButtonName : remapping.name);
   if (remapping.button->is_customizable_button()) {
     dict.Set(prefs::kButtonRemappingCustomizableButton,
              static_cast<int>(remapping.button->get_customizable_button()));
@@ -322,11 +329,12 @@ base::Value::Dict ConvertButtonRemappingToDict(
 
 base::Value::List ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names) {
   base::Value::List list;
   for (const auto& remapping : remappings) {
-    base::Value::Dict dict =
-        ConvertButtonRemappingToDict(*remapping, customization_restriction);
+    base::Value::Dict dict = ConvertButtonRemappingToDict(
+        *remapping, customization_restriction, redact_button_names);
     // Remove empty dicts.
     if (dict.empty()) {
       continue;

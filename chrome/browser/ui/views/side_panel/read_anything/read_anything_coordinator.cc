@@ -39,20 +39,36 @@
 
 namespace {
 
-// Get the list of distillable URLs defined by the Finch experiment parameter.
+// Get the list of distillable URLs defined by the experiment parameter.
+// When ReadAnythingCoordinator observes a tab change, page load complete, or
+// primary page change, it compares the active url against this list of urls
+// to see whether the active page is considered "distillable". This information
+// is then passed on to observers which are gated behind the experiments listed
+// below: omnibox icon and IPH. The list of URLs will be associated as a param
+// of the experiment to ensure that the variation groups that have the
+// experiment enabled also have the list of urls as a param.
 std::vector<std::string> GetDistillableURLs() {
-  return base::SplitString(base::GetFieldTrialParamValueByFeature(
-                               features::kReadAnything, "distillable_urls"),
-                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  const base::Feature* feature = nullptr;
+  if (features::IsReadAnythingOmniboxIconEnabled()) {
+    feature = &features::kReadAnythingOmniboxIcon;
+  } else if (base::FeatureList::IsEnabled(
+                 feature_engagement::kIPHReadingModeSidePanelFeature)) {
+    feature = &feature_engagement::kIPHReadingModeSidePanelFeature;
+  }
+  if (feature) {
+    return base::SplitString(
+        base::GetFieldTrialParamValueByFeature(*feature, "distillable_urls"),
+        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+  return std::vector<std::string>();
 }
 
 base::TimeDelta GetDelaySeconds() {
-  // TODO(francisjp): Pull this value from Finch.
+  // TODO(francisjp): Pull this value from variation.
   return base::Seconds(2);
 }
 
 }  // namespace
-
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),
@@ -93,33 +109,35 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   std::string prefs_lang = language_model->GetLanguages().front().lang_code;
   prefs_lang = language::ExtractBaseLanguage(prefs_lang);
 
-  std::string prefs_font_name;
-  prefs_font_name = browser->profile()->GetPrefs()->GetString(
+  std::string prefs_font_name = browser->profile()->GetPrefs()->GetString(
       prefs::kAccessibilityReadAnythingFontName);
 
-  double prefs_font_scale;
-  prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
+  double prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
       prefs::kAccessibilityReadAnythingFontScale);
 
-  read_anything::mojom::Colors prefs_colors;
-  prefs_colors = static_cast<read_anything::mojom::Colors>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingColorInfo));
+  bool prefs_links_enabled = browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingLinksEnabled);
 
-  read_anything::mojom::LineSpacing prefs_line_spacing;
-  prefs_line_spacing = static_cast<read_anything::mojom::LineSpacing>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingLineSpacing));
+  read_anything::mojom::Colors prefs_colors =
+      static_cast<read_anything::mojom::Colors>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingColorInfo));
 
-  read_anything::mojom::LetterSpacing prefs_letter_spacing;
-  prefs_letter_spacing = static_cast<read_anything::mojom::LetterSpacing>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingLetterSpacing));
+  read_anything::mojom::LineSpacing prefs_line_spacing =
+      static_cast<read_anything::mojom::LineSpacing>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingLineSpacing));
+
+  read_anything::mojom::LetterSpacing prefs_letter_spacing =
+      static_cast<read_anything::mojom::LetterSpacing>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingLetterSpacing));
 
   model_->Init(
       /* lang code = */ prefs_lang,
-      /* font = */ prefs_font_name,
+      /* font name= */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
+      /* links enabled = */ prefs_links_enabled,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);

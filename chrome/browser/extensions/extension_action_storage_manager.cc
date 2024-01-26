@@ -116,7 +116,7 @@ void SetDefaultsFromValue(const base::Value::Dict& dict,
                               RawStringToSkColor(*badge_text_color));
   }
 
-  absl::optional<int> appearance_storage = dict.FindInt(kAppearanceStorageKey);
+  std::optional<int> appearance_storage = dict.FindInt(kAppearanceStorageKey);
   if (appearance_storage && !action->HasIsVisible(kDefaultTabId)) {
     switch (*appearance_storage) {
       case INVISIBLE:
@@ -247,7 +247,7 @@ void ExtensionActionStorageManager::WriteToStorage(
 
 void ExtensionActionStorageManager::ReadFromStorage(
     const std::string& extension_id,
-    absl::optional<base::Value> value) {
+    std::optional<base::Value> value) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)->
       enabled_extensions().GetByID(extension_id);
   if (!extension)

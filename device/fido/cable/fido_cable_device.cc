@@ -328,8 +328,7 @@ void FidoCableDevice::OnBleResponseReceived(
 
 void FidoCableDevice::ProcessBleDeviceError(base::span<const uint8_t> data) {
   if (data.size() != 1) {
-    FIDO_LOG(ERROR) << "Unknown BLE error received: "
-                    << base::HexEncode(data.data(), data.size());
+    FIDO_LOG(ERROR) << "Unknown BLE error received: " << base::HexEncode(data);
     state_ = State::kDeviceError;
     return;
   }

@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {createEmptySearchBubble, highlight, Range, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
+import type {Range} from 'chrome://resources/js/search_highlight_utils.js';
+import {createEmptySearchBubble, highlight, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 
 /**
  * @param element The element to update. Element should have a shadow root.

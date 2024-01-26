@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.download.dialogs.OpenDownloadCustomView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AlertDialogContent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/download_dialog_title_margin_bottom"
+            android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
+        <CheckBox
+            android:id="@+id/auto_open_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/download_dialog_checkbox_margin_top"
+            android:layout_marginStart="@dimen/download_dialog_checkbox_margin_start"
+            android:text="@string/open_download_dialog_auto_open_text"
+            style="@style/DefaultCheckboxStyle"/>
+
+    </LinearLayout>
+
+</org.chromium.chrome.browser.download.dialogs.OpenDownloadCustomView>

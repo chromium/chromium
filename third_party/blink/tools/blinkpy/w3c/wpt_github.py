@@ -52,6 +52,8 @@ class GitHubRepo(object):
         self._pr_history_window = pr_history_window
         self._main_branch = main_branch
         self.min_expected_prs = min_expected_prs
+        self.create_draft_pr = (
+            host.project_config.gerrit_project == 'chromium/src')
 
     @property
     def url(self):
@@ -144,6 +146,7 @@ class GitHubRepo(object):
             'body': body,
             'head': remote_branch_name,
             'base': self._main_branch,
+            'draft': self.create_draft_pr,
         }
         try:
             response = self.request(path, method='POST', body=body)
@@ -236,12 +239,12 @@ class GitHubRepo(object):
 
     def make_pr_from_item(self, item):
         labels = [label['name'] for label in item['labels']]
-        return PullRequest(
-            title=item['title'],
-            number=item['number'],
-            body=item['body'],
-            state=item['state'],
-            labels=labels)
+        return PullRequest(title=item['title'],
+                           number=item['number'],
+                           body=item['body'],
+                           state=item['state'],
+                           node_id=item['node_id'],
+                           labels=labels)
 
     def recent_failing_chromium_exports(self):
         """Fetches open PRs with an export label, failing status, and updated
@@ -583,5 +586,5 @@ class MergeError(GitHubError):
         super(MergeError, self).__init__(200, 405, 'merge PR %d' % pr_number)
 
 
-PullRequest = namedtuple('PullRequest',
-                         ['title', 'number', 'body', 'state', 'labels'])
+PullRequest = namedtuple(
+    'PullRequest', ['title', 'number', 'body', 'state', 'node_id', 'labels'])

@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Ichki xatolik</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">koʻpaytiring</translation>
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
 <translation id="1145516343487477149">Yordam maqolalari va umumiy Chromebook savollariga javoblar toping</translation>
 <translation id="1154390310959620237">5 tagacha tezkor tugmani moslash mumkin. Yangi tezkor tugma kiritish uchun boshqa birini oʻchiring.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanerlash sohasiga moslash</translation>
 <translation id="1367951781824006909">Fayl tanlang</translation>
+<translation id="1371650399987522809">Google AI yordamida yaratilgan fon rasmi yuzasidan fikr-mulohaza</translation>
 <translation id="1387854245479784695">Bu barcha yadrolarning faoliyati</translation>
 <translation id="1394661041439318933">Qurilma gʻilofining batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1561927818299383735">orqa chiroq rangi</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> yangilanmadi</translation>
+<translation id="1566493343215789965">boʻling</translation>
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
 <translation id="160633243685262989">Rasmga razm solish</translation>
 <translation id="1611649489706141841">oldinga</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sanasidan keyingi trafik sarfi</translation>
+<translation id="1615576200479539465">Rasmlar yaratilmoqda...</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
+<translation id="1626590945318984973">Tezkor tugma ishlamayapti. Funksiya va <ph name="META_KEY" /> tugmachalarini bosmasdan qayta urinib koʻring.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641857168437328880">Hujjat tasmasi (bir tomonlama)</translation>
 <translation id="1643449475550628585">Fon rasmi har kuni almashtirilsin</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">Tungi rejimdan chiqish</translation>
 <translation id="1885577615937958993">oldinga oʻtkazish</translation>
 <translation id="1887850431809612466">Qurilma versiyasi</translation>
-<translation id="1897672602657312171">Qidiruv tugmasisiz tezkor tugma ayrim ilovalar tezkor tugmasi bilan muammo qilishi mumkin. Foydalanishni davom ettirish uchun ushbu tezkor tugmani yana bosing yoki qidiruv tugmasi yordamida yangisini bosing.</translation>
 <translation id="1904932688895783618">Quyidagi manbalar foydali boʻlishi mumkin:</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ta rasm</translation>
 <translation id="2157660087437850958">emoji tanlash oynasi</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" /> ishga tushirilishini sozlagan.}=2{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" /> va <ph name="APP_NAME_2" /> ishga tushirilishini sozlagan.}=3{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> va <ph name="APP_NAME_3" /> ishga tushirilishini sozlagan.}other{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> va yana # ta ilova ishga tushirilishini sozlagan.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
 <translation id="215916044711630446">APN kiritish tugmasi faolsizlantirildi</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APN maʼlumotlarini tahrirlash</translation>
 <translation id="2209788852729124853">Traffik hisoblagichlarini tiklash</translation>
 <translation id="2212733584906323460">NS parametrlari</translation>
+<translation id="2215920961700443347">Internet yoʻq. Internetga ulanib, qaytadan urining.</translation>
 <translation id="2217935453350629363">Joriy tezlik</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /> ta rasm</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
 <translation id="2448312741937722512">Turi</translation>
+<translation id="2465272316171730950">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
 <translation id="248546197012830854">Qurilma internetga ulanmagan. Yordam sahifasini ochish uchun Wi-Fi tarmoqqa ulaning.</translation>
 <translation id="2491955442992294626">Tugmalar sinovi boshqa oynalarda bajarilmaydi</translation>
 <translation id="2493126929778606526">Avtomatik tanlangan eng yaxshi rasmlaringiz</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">Joriy fon rasmini yangilash</translation>
 <translation id="2512979179176933762">oynalarni koʻrsatish</translation>
 <translation id="2513396635448525189">Kirish ekranidagi rasm</translation>
-<translation id="2515109918609218604">Tezkor tugma ishlamayapti. Qidiruv va funksiya tugmachalarini bosmasdan qayta urinib koʻring.</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2521835766824839541">avvalgi trek</translation>
 <translation id="2526590354069164005">Ish soli</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="2880569433548999039">Bulut manzaralari ekran lavhasi</translation>
 <translation id="2926057806159140518">Login va parolingizni kiriting yoki QR kodni skanerlang</translation>
+<translation id="2938573842839598578">Yaqin natijalarni olish uchun <ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">Qurilmani sinash imkonsiz. Sinash uchun qurlimani yopib, keyin qayta oching</translation>
 <translation id="2941112035454246133">Past</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Qurilmadagi hisob (ixtiyoriy)</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
 <translation id="3569407787324516067">Ekran lavhasi</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlarini<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="4117637339509843559">Tungi rejim</translation>
 <translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
+<translation id="4130750466177569591">Men roziman</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">yorqinlikni pasaytirish</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
 <translation id="4176659219503619100">Boshqaruv paneli</translation>
-<translation id="4185315616950253617">Yuqori qator tugmalari mavjud tezkor tugmada search tugmasi ishlatilishi kerak.</translation>
 <translation id="420283545744377356">Ekran lavhasini faolsizlantirish</translation>
 <translation id="4213104098953699324">USB klaviatura</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">Faolsizlantirish</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> qayta ishga tushirilmoqda</translation>
 <translation id="4395835743215824109">klaviaturani moslash</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> tugmasisiz tezkor tugma ayrim ilovalar tezkor tugmasi bilan muammo qilishi mumkin. Foydalanishni davom ettirish uchun ushbu tezkor tugmani yana bosing yoki <ph name="KEY" /> tugmasi yordamida yangisini bosing.</translation>
 <translation id="4415951057168511744">Joriy avatar</translation>
+<translation id="4417830657741848074">Administrator ilovalarni avtomatik ishga tushadigan qilib sozlagan. Bu ilovalarning ayrimlari yopilmasligi mumkin.</translation>
 <translation id="4422041425070339732">pastga mil</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> yoqilmagan</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">Yer manzaralari ekran lavhasi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
+<translation id="4500722292849917410">Tezkor tugma ishlamayapti. Yangi tezkor tugmani oʻzgartirish tugmasi (ctrl, alt, shift yoki <ph name="META_KEY" />) bilan bosing.</translation>
 <translation id="4500966230243561393">Interfeys rangi</translation>
 <translation id="4503223151711056411">Chapga strelka</translation>
 <translation id="4507392511610824664">yorqinlikni koʻtarish</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
 <translation id="4839698083503556542">Oʻz filmingizni yarating</translation>
+<translation id="48409034532829769">Administrator <ph name="APP_NAME" /> ilovasini avtomatik ishga tushadigan qilib sozlagan. Bu ilova yopilmasligi mumkin.</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> tanlangan, <ph name="TOPIC_SOURCE" /> albomini tanlash uchun Enter tugmasini bosing</translation>
 <translation id="484790837831576105">(Android) DNS parametrlari</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">Ajratish</translation>
 <translation id="4972592110715526173">usulni oʻzgartirish</translation>
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
+<translation id="4982627662315910959">Tezkor tugma ishlamayapti. Yangi tezkor tugmani shift va yana 1 ta oʻzgartirish tugmasi (ctrl, alt yoki <ph name="META_KEY" />) bilan bosing.</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="4987769320337599931">Himoya devori</translation>
 <translation id="4988526792673242964">Sahifalar</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">Tungi mavzu rejasi</translation>
 <translation id="5229344016299762883">Butun ekran rejimidan chiqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratoringiz “<ph name="APP_NAME" />” ilovasini har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}=2{Administratoringiz “<ph name="APP_NAME" />” va yana 1 ta ilovani har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}other{Administratoringiz “<ph name="APP_NAME" />” va yana # ta ilovani har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}}</translation>
 <translation id="5252456968953390977">Rouming</translation>
 <translation id="5257811368506016604">Och rangli rejimni yoqish</translation>
 <translation id="5264277876637023664">Protsessor tezligini tekshirish</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7180865173735832675">Sozlash</translation>
 <translation id="7184043045742675738">Tugmani sozlash uchun istalgan klaviatura tugmasini bosing. Sichqoncha yoki strelka tugmalari bilan tugma joylashuvini oʻzgartiring</translation>
+<translation id="7206979415662233817">Xizmat shartlari</translation>
 <translation id="7212547870105584639">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Tashqi qurilmalar uchun mikrodastur yangilanishi</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
 <translation id="725133483556299729">Emailni tanlang</translation>
 <translation id="7271040990581020067">Skaner hozir band. Keyinroq urining.</translation>
-<translation id="7273347807225967898">Tezkor tugma ishlamayapti. Yangi tezkor tugmani modifikator tugmasi (ctrl, alt, shift, search yoki launcher) bilan bosing.</translation>
+<translation id="7271932918253517778">Yuqori qator tugmalari mavjud tezkor tugmada <ph name="META_KEY" /> tugmasi ishlatilishi kerak.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Qadab ilinadigan</translation>
 <translation id="7287310195820267359">Fon rasmlari termasi</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">klaviatura rangi</translation>
 <translation id="7317831949569936035">Maktab uchun yozilish</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">AI fon rasmidan foydalanish uchun kamida 18 yoshga kirgan boʻlishingiz kerak. Bu funksiya ishlashida <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google xizmat shartlari<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> va <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ AI qoʻshimcha xizmat shartlari<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> amal qiladi.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI yordamida fon rasmlarini faqat shaxsiy yoki notijoriy maqsadlar uchun yaratish mumkin. Fon rasmini yaratishda yordam olishda siz kiritgan matn Google AI serverlariga yuboriladi va fon rasmlarini yaratib taklif qiladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> ta natija: <ph name="SEARCH_RESULT_TEXT" />. Tezkor tugmani ochish uchun Enter tugmasini bosing.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">Umumiy boshqaruv tugmalari</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> nomli tarmoqqa ulanish uchun Sozlamalarni oching</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />” avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8017679124341497925">Yorliq tahrirlandi</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">Parolni almashtirish</translation>
 <translation id="8094062939584182041">Bu muammo yuzasidan Google email qaytarishiga ruxsat</translation>
 <translation id="8104083085214006426">Siz ochiq va himoyalanmagan tarmoqdan foydalanyapsiz</translation>
-<translation id="8111706652656628199">Tezkor tugma ishlamayapti. Yangi tezkor tugmani shift va yana 1 ta modifikator tugmasi (ctrl, alt, search yoki launcher) bilan bosing.</translation>
 <translation id="811820734797650957">(Android) Shlyuzni tekshirish mumkin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Traffik hisoblagichlarini chaqirish</translation>

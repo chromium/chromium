@@ -8,6 +8,7 @@
 
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/cpp/generic_sensor/orientation_util.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_information.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_reading.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_type.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -87,16 +87,26 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
   switch (type) {
     case V8VirtualSensorType::Enum::kAbsoluteOrientation:
     case V8VirtualSensorType::Enum::kRelativeOrientation: {
-      if (!reading->hasQuaternion()) {
-        return base::unexpected("Invalid quaternion reading format");
-      }
-      constexpr size_t kQuaternionSize = 4;
-      Vector<double> quaternion = reading->getQuaternionOr(Vector<double>());
-      if (quaternion.size() != kQuaternionSize) {
+      if (reading->hasAlpha() && reading->hasBeta() && reading->hasGamma()) {
+        const double alpha = reading->getAlphaOr(0);
+        const double beta = reading->getBetaOr(0);
+        const double gamma = reading->getGammaOr(0);
+        device::SensorReading quaternion_readings;
+        if (!device::ComputeQuaternionFromEulerAngles(alpha, beta, gamma,
+                                                      &quaternion_readings)) {
+          return base::unexpected("Invalid value for alpha, beta or gamma");
+        }
+        Vector<double> quaternion{
+            quaternion_readings.orientation_quat.x,
+            quaternion_readings.orientation_quat.y,
+            quaternion_readings.orientation_quat.z,
+            quaternion_readings.orientation_quat.w,
+        };
+        raw_reading->values.swap(quaternion);
+      } else {
         return base::unexpected(
-            "'quaternion' does not have the right number of elements");
+            "'alpha'/'beta'/'gamma' expected in the readings");
       }
-      raw_reading->values.swap(quaternion);
       break;
     }
     case V8VirtualSensorType::Enum::kAmbientLight:

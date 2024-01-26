@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
 @class CrURL;
+@class GroupTitleAndIdentifier;
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure. When using any action from this class, an histogram
@@ -128,6 +129,23 @@
 
 // Creates a UIAction instance for adding a tab in a new tab group.
 - (UIAction*)actionToAddTabToNewGroupWithBlock:(ProceduralBlock)block;
+
+// Creates a UIMenu instance for adding a tab to an existing group or to a new
+// group using a block that takes a group id as an argument, which is nil
+// when adding a tab to a new group.
+- (UIMenu*)menuToAddTabToGroupWithGroupTitleAndIdentifiers:
+               (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
+                                                     block:(void (^)(NSString*))
+                                                               block;
+
+@end
+
+// This object holds the necessary elements (id and title) to identify a tab
+// group.
+@interface GroupTitleAndIdentifier : NSObject
+
+@property(nonatomic, strong) NSString* groupID;
+@property(nonatomic, strong) NSString* groupTitle;
 
 @end
 

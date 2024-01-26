@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/inspector_websocket_events.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
@@ -364,11 +365,22 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   has_initiated_opening_handshake_ = true;
 
   if (handshake_throttle_) {
+    scoped_refptr<const SecurityOrigin> isolated_security_origin;
+    scoped_refptr<const DOMWrapperWorld> world =
+        execution_context_->GetCurrentWorld();
+    // TODO(crbug.com/702990): Current world can be null because of PPAPI. Null
+    // check can be cleaned up once PPAPI support is removed.
+    if (world && world->IsIsolatedWorld()) {
+      isolated_security_origin = world->IsolatedWorldSecurityOrigin(
+          execution_context_->GetAgentClusterID());
+    }
     // The use of WrapWeakPersistent is safe and motivated by the fact that if
     // the WebSocket is no longer referenced, there's no point in keeping it
     // alive just to receive the throttling result.
     handshake_throttle_->ThrottleHandshake(
         url, WebSecurityOrigin(execution_context_->GetSecurityOrigin()),
+        isolated_security_origin ? WebSecurityOrigin(isolated_security_origin)
+                                 : WebSecurityOrigin(),
         WTF::BindOnce(&WebSocketChannelImpl::OnCompletion,
                       WrapWeakPersistent(this)));
   } else {
@@ -1203,7 +1215,7 @@ String WebSocketChannelImpl::GetTextMessage(
       flatten.Append(chunk.data(),
                      base::checked_cast<wtf_size_t>(chunk.size()));
     }
-    span = base::make_span(flatten.data(), flatten.size());
+    span = base::span(flatten);
   } else if (chunks.size() == 1) {
     span = chunks[0];
   }

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pressing a key other than Enter or Space with focus on a webkitdirectory file input element does not launch a chooser
-  eventSender is not defined
-Harness: the test ran to completion.

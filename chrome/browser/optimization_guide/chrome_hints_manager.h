@@ -40,7 +40,7 @@ class ChromeHintsManager : public HintsManager,
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
-      const absl::optional<NavigationPredictorKeyedService::Prediction>
+      const std::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
 
  private:

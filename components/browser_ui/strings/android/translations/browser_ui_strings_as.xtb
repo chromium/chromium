@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">ডাইনল’ড পজ কৰা হৈছে</translation>
 <translation id="1415402041810619267">URL চুটি কৰা হ’ল</translation>
 <translation id="1426410128494586442">হয়</translation>
+<translation id="1434873037477293673">দাম কমিলে দেখুওৱা কাৰ্ড</translation>
 <translation id="1448064542941920355">জুম কমাওক</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> টা ছাইট}one{<ph name="SITE_COUNT" /> টা ছাইট}other{<ph name="SITE_COUNT" /> টা ছাইট}}</translation>
 <translation id="1510341833810331442">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ অনুমতি দিয়া নহয়</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">ছাইটবিলাকে পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব পাৰে।</translation>
 <translation id="2790501146643349491">অন কৰা থাকিলে, শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব পাৰে। অফ কৰা থাকিলে, শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব নোৱাৰে।</translation>
 <translation id="2822354292072154809">আপুনি <ph name="CHOSEN_OBJECT_NAME" />ৰ বাবে ছাইটৰ সকলো অনুমতি ৰিছেট কৰিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ম’বাইল ভিউৰ বাবে অনুৰোধ জনাওক</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ছাইটসমূহে আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰাটো অৱৰোধ কৰক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
+<translation id="6452138246455930388">আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য, <ph name="OLD_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">ৱিণ্ড’ৰ আকাৰ সৰু হ’লে, ম’বাইল ভিউৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="652937045869844725">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দি চাওক, যি কম সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে কাম কৰাৰ সম্ভাৱনা অধিক থাকে</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="6766622839693428701">বন্ধ কৰিবলৈ তললৈ ছোৱাইপ কৰক।</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />ৰ বাবে এটা বিকল্প বাছনি কৰক</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>
 <translation id="6864395892908308021">এই ডিভাইচটোৱে NFC পঢ়িব নোৱাৰে</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="6912998170423641340">ছাইটসমূহৰ ক্লিপব’ৰ্ডৰ পাঠ আৰু ছবি পঢ়াৰ সুবিধা অৱৰোধ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6950072572526089586">আপুনি চোৱা কোনো ছাইটে আপুনি কি কৰি আছে সেই সম্পৰ্কীয় তথ্য ছেভ কৰিব পাৰে, যাতে এইটোৱে আপুনি আশা কৰা ধৰণে কাম কৰিব পাৰে — উদাহৰণস্বৰূপে, আপোনাক কোনো ছাইটত ছাইন ইন কৰাই ৰখা অথবা আপোনাৰ শ্বপিং কাৰ্টত বস্তু ছেভ কৰা। ছাইটসমূহে প্ৰায়েই আপোনাৰ ডিভাইচত সাময়িকভাৱে এই তথ্য ছেভ কৰে।</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">অষ্ট্ৰেলিয়াৰ বিস্ময়কৰ যাদুকৰ</translation>
 <translation id="7684642910516280563">এটা ছাইটক তৃতীয় পক্ষৰ কুকি ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="7719367874908701697">পৃষ্ঠাৰ জুম</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" লুকুৱাওক</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>

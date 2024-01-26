@@ -14,7 +14,7 @@ WebStateDependencyInstallationObserver::WebStateDependencyInstallationObserver(
   DCHECK(web_state_list_);
   DCHECK(dependency_installer_);
 
-  web_state_list_observation_.Observe(web_state_list_);
+  web_state_list_observation_.Observe(web_state_list_.get());
   for (int i = 0; i < web_state_list_->count(); i++) {
     OnWebStateAdded(web_state_list_->GetWebStateAt(i));
   }

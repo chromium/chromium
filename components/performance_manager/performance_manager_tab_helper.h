@@ -12,11 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
-#include "components/performance_manager/web_contents_proxy_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -33,8 +31,7 @@ class FrameNodeImpl;
 // host to the frame graph entity.
 class PerformanceManagerTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<PerformanceManagerTabHelper>,
-      public WebContentsProxyImpl {
+      public content::WebContentsUserData<PerformanceManagerTabHelper> {
  public:
   // Observer interface to be notified when a PerformanceManagerTabHelper is
   // being teared down.
@@ -102,13 +99,6 @@ class PerformanceManagerTabHelper
       content::RenderWidgetHost* render_widget_host) override;
   void AboutToBeDiscarded(content::WebContents* new_contents) override;
 
-  // WebContentsProxyImpl overrides. Note that `LastNavigationId()` and
-  // `LastNewDocNavigationId()` refer to navigations associated with the
-  // primary page.
-  content::WebContents* GetWebContents() const override;
-  int64_t LastNavigationId() const override;
-  int64_t LastNewDocNavigationId() const override;
-
   void BindDocumentCoordinationUnit(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver);
@@ -132,7 +122,6 @@ class PerformanceManagerTabHelper
  private:
   friend class content::WebContentsUserData<PerformanceManagerTabHelper>;
   friend class PerformanceManagerRegistryImpl;
-  friend class WebContentsProxyImpl;
   FRIEND_TEST_ALL_PREFIXES(PerformanceManagerFencedFrameBrowserTest,
                            FencedFrameDoesNotHaveParentFrameNode);
 
@@ -142,7 +131,7 @@ class PerformanceManagerTabHelper
   // PerformanceManagerRegistry.
   using WebContentsUserData<PerformanceManagerTabHelper>::CreateForWebContents;
 
-  void OnMainFrameNavigation(int64_t navigation_id, bool same_doc);
+  void OnMainFrameNavigation(int64_t navigation_id);
 
   // Returns the FrameNodeImpl* associated with `render_frame_host`. This
   // CHECKs that it exists.
@@ -166,14 +155,6 @@ class PerformanceManagerTabHelper
     // is always supposed to happen.
     bool first_time_favicon_set = false;
     bool first_time_title_set = false;
-
-    // The last navigation ID that was committed to a main frame in this web
-    // contents.
-    int64_t last_navigation_id = 0;
-    // Similar to the above, but for the last non same-document navigation
-    // associated with this WebContents. This is always for a navigation that is
-    // older or equal to |last_navigation_id_|.
-    int64_t last_new_doc_navigation_id = 0;
   };
 
   // A transparent comparator for PageData. These are keyed by
@@ -225,8 +206,6 @@ class PerformanceManagerTabHelper
   base::ObserverList<Observer, true, false> observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  base::WeakPtrFactory<PerformanceManagerTabHelper> weak_factory_{this};
 };
 
 }  // namespace performance_manager

@@ -670,6 +670,29 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
   }
 }
 
+// Check that there is no crash when building the layer tree if
+// there are no overlays.
+// TODO(crbug.com/1519186): Change this test to check whether delegated
+// ink still works when root_surface_visual does not exist.
+TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
+  DCHECK(base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
+  std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
+      std::make_unique<gfx::DelegatedInkMetadata>(
+          gfx::PointF(12, 12), /*diameter=*/3, SK_ColorBLACK,
+          base::TimeTicks::Now(), gfx::RectF(10, 10, 90, 90),
+          /*hovering=*/false);
+
+  // Set start point to initialize ink renderer.
+  DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+  if (!layer_tree->SupportsDelegatedInk()) {
+    return;
+  }
+  layer_tree->SetDelegatedInkTrailStartPoint(std::move(metadata));
+
+  EXPECT_FALSE(layer_tree->HasPendingOverlaysForTesting());
+  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays(nullptr));
+}
+
 class DCompPresenterPixelTest : public DCompPresenterTest {
  public:
   DCompPresenterPixelTest()

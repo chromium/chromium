@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 using password_manager::WarningType;

@@ -134,7 +134,7 @@ void SearchController::StartSearch(const std::u16string& query) {
 
   // TODO(b/315709613): This should use toggable categories.
   categories_ = CreateAllCategories();
-  ranker_manager_->Start(truncated_query, results_, categories_);
+  ranker_manager_->Start(truncated_query, categories_);
 
   session_start_ = base::Time::Now();
   last_query_ = truncated_query;
@@ -155,7 +155,7 @@ void SearchController::ClearSearch() {
   search_engine_->StopQuery();
 
   Publish();
-  ranker_manager_->Start(u"", results_, categories_);
+  ranker_manager_->Start(u"", categories_);
 }
 
 void SearchController::StartZeroState(base::OnceClosure on_done,
@@ -169,7 +169,7 @@ void SearchController::StartZeroState(base::OnceClosure on_done,
   // sorting in SetResults.
   categories_ = CreateAllCategories();
 
-  ranker_manager_->Start(std::u16string(), results_, categories_);
+  ranker_manager_->Start(std::u16string(), categories_);
 
   last_query_.clear();
 

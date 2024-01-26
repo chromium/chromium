@@ -3043,9 +3043,9 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "ANGLE.*Samsung Xclipse 920.*",
+      "gl_renderer": "ANGLE.*Samsung Xclipse.*",
       "comment": [
-        "This issue affects the Samsung Galaxy S22 with Exynos chipsets which uses ANGLE",
+        "This issue affects the Samsung Galaxy S22/23/24 with Exynos chipsets which uses ANGLE",
         "as the system GLES driver, and the cause appears be overly strict validation."
       ],
       "features": [
@@ -3134,9 +3134,10 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "meteorlake"
-      ],
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
       "features": [
         "force_dcomp_triple_buffer_video_swap_chain"
       ]

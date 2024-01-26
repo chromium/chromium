@@ -191,7 +191,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
   CHECK(intent);
 
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -201,7 +201,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -228,7 +228,7 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -238,7 +238,7 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -342,9 +342,11 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
         !update.ShowInLauncher().value_or(false)) {
       return;
     }
-    if (exclude_browser_tab_apps &&
-        update.WindowMode() == WindowMode::kBrowser) {
-      return;
+    if (!chromeos::features::IsCrosShortstandEnabled()) {
+      if (exclude_browser_tab_apps &&
+          update.WindowMode() == WindowMode::kBrowser) {
+        return;
+      }
     }
     std::set<std::string> existing_activities;
     for (const auto& filter : update.IntentFilters()) {

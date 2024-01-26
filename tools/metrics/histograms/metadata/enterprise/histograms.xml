@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2024-02-25">
+    enum="NetErrorCodes" expires_after="2024-05-10">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -366,8 +366,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
-  <owner>anthonyvd@chromium.org</owner>
+    enum="EnterprisePolicyInvalidations" expires_after="2024-12-20">
+  <owner>zmin@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting CBCM policy invalidations received with and without
@@ -378,8 +378,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
-    expires_after="2023-08-08">
-  <owner>anthonyvd@chromium.org</owner>
+    expires_after="2024-12-20">
+  <owner>zmin@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing CBCM policy when invalidations
@@ -1213,7 +1213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ConfidentialContentsCount" units="entries"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>aidazolic@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1762,6 +1762,11 @@ chromium-metrics-reviews@google.com.
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".OidcRegistration"
+        summary="Registration with OIDC response.">
+      <owner>xzonghan@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
     <variant name=".PolicyFetch" summary="Policy Fetch.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
@@ -2033,6 +2038,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
+    units="ms" expires_after="2025-01-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>The time taken to run {ActionType} on idle timeout.</summary>
+  <token key="ActionType">
+    <variant name="AllActions" summary="All Actions"/>
+    <variant name="ClearBrowsingData" summary="Clear Browsing Data Action(s)"/>
+    <variant name="SignOut" summary="Signout Action"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutCase"
+    enum="IdleTimeoutCase" expires_after="2025-01-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    On mobile: whether idle timeout happened while the app was already
+    foregrounded or backgrounded. The metric is recorded when idle timeout is
+    detected while the app is foreground and when idle timeout is detected on
+    reforeground or start-up.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"
+    enum="IdleTimeoutDialogEvent" expires_after="2025-01-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    Tracks events related to the timeout dialog shown to the user for 30 seconds
+    before idle timeout actions run. The user either responds by clicking the
+    button in the dialog indicating activity or the dialog expires and actions
+    run.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutLaunchScreenEvent"
+    enum="IdleTimeoutLaunchScreenEvent" expires_after="2025-01-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    Tracks events related to the launch screen shown on mobile when idle timeout
+    actions run on app foreground. The launch screen can be dismissed after
+    actions complete or after it has reached its expiry deadline.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.Success.{ActionType}"
+    enum="BooleanSuccess" expires_after="2025-01-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.Origin</owner>
+  <summary>
+    Whether the {ActionType} ran successfully or not. The metric is recorded as
+    true if the action runs successfully and false if the action fails.
+  </summary>
+  <token key="ActionType">
+    <variant name="AllActions" summary="All Actions"/>
+    <variant name="ClearBrowsingData" summary="Clear Browsing Data Action(s)"/>
+    <variant name="CloseBrowsers" summary="Close Browsers Action"/>
+    <variant name="CloseTabs" summary="Close Tabs Action"/>
+    <variant name="ReloadPages" summary="Reload Pages Action"/>
+    <variant name="ShowProfilePicker" summary="Show Profile Picker Action"/>
+    <variant name="SignOut" summary="Signout Action"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.InstallAttributes.ValidOnEnrolledDevice"
     enum="Boolean" expires_after="2024-12-07">
   <owner>igorcov@chromium.org</owner>
@@ -2208,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -2452,7 +2523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -2556,7 +2627,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2024-05-10">
+    enum="NetErrorCodes" expires_after="2024-07-21">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2566,7 +2637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.StateDetermination.KillSwitchFetch.NumTries"
-    units="requests" expires_after="2024-05-10">
+    units="requests" expires_after="2024-07-21">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2801,7 +2872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2024-05-19">
+    enum="GoogleServiceAuthError" expires_after="2024-07-21">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <summary>Failure reason for OAuth token fetch for child user.</summary>
@@ -2937,6 +3008,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.EnrollementRecoveryOnBoot"
+    enum="EnrollmentRecoveryOnBootAction" expires_after="2025-01-12">
+  <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    The action taken on boot when enrollment recovery is marked in the local
+    state.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.InDomain" enum="BooleanEnabled"
     expires_after="2024-03-01">
   <owner>ydago@chromium.org</owner>
@@ -3008,7 +3089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>
@@ -3122,7 +3203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.OSType" enum="OsSuite"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

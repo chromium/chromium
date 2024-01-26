@@ -57,15 +57,10 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     logging.info('Found %d CBCM heartbeat events' % event_count)
     return event_count > 0
 
-  def GetReportingUrl(self, device_id, customer_id, use_prod=False):
-    api_key = self.GetEncryptedReportingAPIKey(use_prod)
+  def GetReportingUrl(self, device_id, customer_id):
+    api_key = self.GetEncryptedReportingAPIKey()
 
-    # Test url
     url = "https://autopush-chromereporting-pa.sandbox.googleapis.com/v1/test/events"
-
-    if (use_prod):
-      # Production url
-      url = "https://chromereporting-pa.googleapis.com/v1/test/events"
 
     # Add arguments to url
     args = "?key=%s&obfuscatedCustomerId=%s&deviceId=%s&destination=HEARTBEAT_EVENTS" % (
@@ -78,7 +73,6 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     test_start_time_in_microseconds = round(time.time() * 1000000)
 
     # Enroll browser to managedchrome.com domain
-    # managed_chrome_enrollment_token = "3e44bd4d-8c04-4e30-8fda-29762f5ab59b"
     managed_chrome_enrollment_token = self.GetManagedChromeDomainEnrollmentToken(
     )
     self.EnrollBrowserToDomain(managed_chrome_enrollment_token)
@@ -99,17 +93,7 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     # Customer id for managedchrome.com
     customer_id = "02gxaaci"
 
-    # Look in the test database first
-    look_for_events_in_production_database = False
+    url = self.GetReportingUrl(device_id, customer_id)
 
-    url = self.GetReportingUrl(device_id, customer_id,
-                               look_for_events_in_production_database)
-
-    if not self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url):
-      # Couldn't find the event in the test database.
-      # Try looking in production database.
-      look_for_events_in_production_database = True
-      url = self.GetReportingUrl(device_id, customer_id,
-                                 look_for_events_in_production_database)
-      self.assertTrue(
-          self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url))
+    self.assertTrue(
+        self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url))

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 
 class GURL;
 
@@ -59,7 +60,11 @@ class CommercePageActionController {
   void NotifyHost();
 
  private:
+  void RunHostUpdateCallback();
+
   base::RepeatingCallback<void()> host_update_callback_;
+
+  base::WeakPtrFactory<CommercePageActionController> weak_factory_{this};
 };
 
 }  // namespace commerce

@@ -60,7 +60,6 @@ class FastPairScannerImpl
   ~FastPairScannerImpl() override;
 
   void StartScanning();
-  void StopScanning();
 
   // device::BluetoothAdapter::Observer
   void DeviceChanged(device::BluetoothAdapter* adapter,

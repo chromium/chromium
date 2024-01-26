@@ -8,8 +8,6 @@ source_set("app_store_rating") {
     "app_store_rating_display_handler.mm",
     "app_store_rating_scene_agent.h",
     "app_store_rating_scene_agent.mm",
-    "constants.h",
-    "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
@@ -18,7 +16,7 @@ source_set("app_store_rating") {
     "//components/feature_engagement/public",
     "//components/password_manager/core/browser",
     "//components/prefs",
-    "//components/version_info:channel",
+    "//components/variations/service:service",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",

@@ -53,9 +53,10 @@ CertProvisioningInvalidationHandler::BuildAndRegister(
     CertScope scope,
     invalidation::InvalidationService* invalidation_service,
     const invalidation::Topic& topic,
-    OnInvalidationCallback on_invalidation_callback) {
+    OnInvalidationEventCallback on_invalidation_event_callback) {
   auto invalidator = std::make_unique<CertProvisioningInvalidationHandler>(
-      scope, invalidation_service, topic, std::move(on_invalidation_callback));
+      scope, invalidation_service, topic,
+      std::move(on_invalidation_event_callback));
 
   if (!invalidator->Register()) {
     return nullptr;
@@ -68,13 +69,14 @@ CertProvisioningInvalidationHandler::CertProvisioningInvalidationHandler(
     CertScope scope,
     invalidation::InvalidationService* invalidation_service,
     const invalidation::Topic& topic,
-    OnInvalidationCallback on_invalidation_callback)
+    OnInvalidationEventCallback on_invalidation_event_callback)
     : scope_(scope),
       invalidation_service_(invalidation_service),
       topic_(topic),
-      on_invalidation_callback_(std::move(on_invalidation_callback)) {
+      on_invalidation_event_callback_(
+          std::move(on_invalidation_event_callback)) {
   DCHECK(invalidation_service_);
-  DCHECK(!on_invalidation_callback_.is_null());
+  DCHECK(!on_invalidation_event_callback_.is_null());
 }
 
 CertProvisioningInvalidationHandler::~CertProvisioningInvalidationHandler() {
@@ -122,6 +124,16 @@ void CertProvisioningInvalidationHandler::OnInvalidatorStateChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void CertProvisioningInvalidationHandler::OnSuccessfullySubscribed(
+    const invalidation::Topic& topic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(topic, topic_)
+      << "Successfully subscribed notification for wrong topic";
+
+  on_invalidation_event_callback_.Run(
+      InvalidationEvent::kSuccessfullySubscribed);
+}
+
 void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
     const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -136,7 +148,7 @@ void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
 
   invalidation.Acknowledge();
 
-  on_invalidation_callback_.Run();
+  on_invalidation_event_callback_.Run(InvalidationEvent::kInvalidationReceived);
 }
 
 std::string CertProvisioningInvalidationHandler::GetOwnerName() const {
@@ -196,7 +208,7 @@ CertProvisioningUserInvalidator::CertProvisioningUserInvalidator(
 
 void CertProvisioningUserInvalidator::Register(
     const invalidation::Topic& topic,
-    OnInvalidationCallback on_invalidation_callback) {
+    OnInvalidationEventCallback on_invalidation_event_callback) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
   DCHECK(invalidation_provider);
@@ -208,7 +220,7 @@ void CertProvisioningUserInvalidator::Register(
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kUser, invalidation_service, topic,
-          std::move(on_invalidation_callback));
+          std::move(on_invalidation_event_callback));
   if (!invalidation_handler_) {
     LOG(ERROR) << "Failed to register for invalidation topic";
   }
@@ -247,10 +259,10 @@ CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
 
 void CertProvisioningDeviceInvalidator::Register(
     const invalidation::Topic& topic,
-    OnInvalidationCallback on_invalidation_callback) {
+    OnInvalidationEventCallback on_invalidation_event_callback) {
   topic_ = topic;
   DCHECK(!topic_.empty());
-  on_invalidation_callback_ = std::move(on_invalidation_callback);
+  on_invalidation_event_callback_ = std::move(on_invalidation_event_callback);
   service_provider_->RegisterConsumer(this);
 }
 
@@ -277,7 +289,7 @@ void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kDevice, invalidation_service, topic_,
-          on_invalidation_callback_);
+          on_invalidation_event_callback_);
   if (!invalidation_handler_) {
     LOG(ERROR) << "Failed to register for invalidation topic";
   }

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -91,7 +91,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns an webapps::AppId if there exists an app inside the registry that
   // has a specific install_url.
-  absl::optional<webapps::AppId> LookUpAppIdByInstallUrl(
+  std::optional<webapps::AppId> LookUpAppIdByInstallUrl(
       const GURL& install_url) const;
 
   // Returns a WebApp if there exists an app inside the registry that
@@ -167,7 +167,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // externally installed app for it. Note that the |install_url| is the URL
   // that the app was installed from, which may not necessarily match the app's
   // current start URL.
-  absl::optional<webapps::AppId> LookupExternalAppId(
+  std::optional<webapps::AppId> LookupExternalAppId(
       const GURL& install_url) const;
 
   // Returns whether the WebAppRegistrar has an externally installed app with
@@ -212,12 +212,12 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // All names are UTF8 encoded.
   std::string GetAppShortName(const webapps::AppId& app_id) const;
   std::string GetAppDescription(const webapps::AppId& app_id) const;
-  absl::optional<SkColor> GetAppThemeColor(const webapps::AppId& app_id) const;
-  absl::optional<SkColor> GetAppDarkModeThemeColor(
+  std::optional<SkColor> GetAppThemeColor(const webapps::AppId& app_id) const;
+  std::optional<SkColor> GetAppDarkModeThemeColor(
       const webapps::AppId& app_id) const;
-  absl::optional<SkColor> GetAppBackgroundColor(
+  std::optional<SkColor> GetAppBackgroundColor(
       const webapps::AppId& app_id) const;
-  absl::optional<SkColor> GetAppDarkModeBackgroundColor(
+  std::optional<SkColor> GetAppDarkModeBackgroundColor(
       const webapps::AppId& app_id) const;
   const GURL& GetAppStartUrl(const webapps::AppId& app_id) const;
   webapps::ManifestId GetAppManifestId(const webapps::AppId& app_id) const;
@@ -242,10 +242,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   GURL GetAppLaunchUrl(const webapps::AppId& app_id) const;
 
   // TODO(crbug.com/1469482): Replace uses of this with GetAppScope().
-  absl::optional<GURL> GetAppScopeInternal(const webapps::AppId& app_id) const;
+  std::optional<GURL> GetAppScopeInternal(const webapps::AppId& app_id) const;
 
   DisplayMode GetAppDisplayMode(const webapps::AppId& app_id) const;
-  absl::optional<mojom::UserDisplayMode> GetAppUserDisplayMode(
+  std::optional<mojom::UserDisplayMode> GetAppUserDisplayMode(
       const webapps::AppId& app_id) const;
   std::vector<DisplayMode> GetAppDisplayModeOverride(
       const webapps::AppId& app_id) const;
@@ -272,7 +272,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   base::Time GetAppLastLaunchTime(const webapps::AppId& app_id) const;
   base::Time GetAppFirstInstallTime(const webapps::AppId& app_id) const;
 
-  absl::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
+  std::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const webapps::AppId& app_id) const;
 
   // Returns the "icons" field from the app manifest, use |WebAppIconManager| to
@@ -295,7 +295,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns true iff it's expected that the app has been, **or is in
   // the process of being**, registered with the OS.
-  absl::optional<RunOnOsLoginMode> GetExpectedRunOnOsLoginOsIntegrationState(
+  std::optional<RunOnOsLoginMode> GetExpectedRunOnOsLoginOsIntegrationState(
       const webapps::AppId& app_id) const;
 
   bool GetWindowControlsOverlayEnabled(const webapps::AppId& app_id) const;
@@ -338,7 +338,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the app id of an app in the registry with the longest scope that is
   // a prefix of |url|, if any.
-  absl::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
+  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
   // Returns true if there exists at least one app installed under |scope|.
   bool DoesScopeContainAnyApp(const GURL& scope) const;
@@ -349,7 +349,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns the app id of an installed app in the registry with the longest
   // scope that is a prefix of |url|, if any. If |window_only| is specified,
   // only apps that open in app windows will be considered.
-  absl::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
+  std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
       const GURL& url,
       bool window_only = false) const;
 
@@ -374,7 +374,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns an |app_id| if there is a placeholder app for |install_url|.
   // Returning a nullopt does not mean that there is no app for |install_url|,
   // just that there is no *placeholder app*.
-  absl::optional<webapps::AppId> LookupPlaceholderAppId(
+  std::optional<webapps::AppId> LookupPlaceholderAppId(
       const GURL& install_url,
       const WebAppManagement::Type source_type) const;
 
@@ -382,7 +382,12 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Computes and returns the DisplayMode, accounting for user preference
   // to launch in a browser window and entries in the web app manifest.
-  DisplayMode GetAppEffectiveDisplayMode(const webapps::AppId& app_id) const;
+  //
+  // With shortstand enabled, this will be relative to whether the app is
+  // a shortcut app rather than the user_display_mode. Set `ignore_shortstand`
+  // to retrieve the original user_display_mode relative value.
+  DisplayMode GetAppEffectiveDisplayMode(const webapps::AppId& app_id,
+                                         bool ignore_shortstand = false) const;
 
   // Computes and returns the DisplayMode only accounting for
   // entries in the web app manifest.
@@ -400,11 +405,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the URL of the pinned home tab for tabbed apps which have this
   // enabled, otherwise returns nullopt.
-  absl::optional<GURL> GetAppPinnedHomeTabUrl(
+  std::optional<GURL> GetAppPinnedHomeTabUrl(
       const webapps::AppId& app_id) const;
 
   // Returns the current WebAppOsIntegrationState stored in the web_app DB.
-  absl::optional<proto::WebAppOsIntegrationState>
+  std::optional<proto::WebAppOsIntegrationState>
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;
 
   // Returns the StoragePartitionConfig of all StoragePartitions used by
@@ -418,7 +423,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // |isolated_web_app_in_memory_controlled_frame_partitions_|.
   // Then returns the StoragePartitionConfig of the in-memory
   // Controlled Frame partition.
-  absl::optional<content::StoragePartitionConfig>
+  std::optional<content::StoragePartitionConfig>
   SaveAndGetInMemoryControlledFramePartitionConfig(
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name);
@@ -435,7 +440,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Searches for all apps that can control this url, and chooses the best one
   // that also captures links.
-  absl::optional<webapps::AppId> FindAppThatCapturesLinksInScope(
+  std::optional<webapps::AppId> FindAppThatCapturesLinksInScope(
       const GURL& url) const;
 
   // Returns true or false depending on whether the given `app` can be set as a
@@ -592,6 +597,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // registrar-evaluated effective fields.
   base::Value AsDebugValue() const;
 
+  const Registry& registry_for_testing() { return registry_; }
+
  protected:
   Profile* profile() const { return profile_; }
 
@@ -658,9 +665,6 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 
   WebApp* GetAppByIdMutable(const webapps::AppId& app_id);
 
-  AppSet FilterAppsMutableForTesting(Filter filter);
-
-  AppSet GetAppsIncludingStubsMutable();
   AppSet GetAppsMutable();
 
   using WebAppRegistrar::CountMutation;
@@ -668,7 +672,9 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 };
 
 // For testing and debug purposes.
-bool IsRegistryEqual(const Registry& registry, const Registry& registry2);
+bool IsRegistryEqual(const Registry& registry,
+                     const Registry& registry2,
+                     bool exclude_current_os_integration = false);
 
 }  // namespace web_app
 

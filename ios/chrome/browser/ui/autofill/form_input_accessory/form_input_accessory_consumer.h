@@ -9,7 +9,6 @@
 
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/unique_ids.h"
-#import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 
 @class FormSuggestion;
 @protocol FormInputAccessoryViewDelegate;
@@ -44,6 +43,9 @@
 // Replace the keyboard accessory view with one showing the passed suggestions.
 // And form navigation buttons on iPhone (iPad already includes those).
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
+
+// Invoked after the user taps the `manual fill` button.
+- (void)manualFillButtonPressed:(UIButton*)button;
 
 // Preferred omnibox position was updated. `isBottomOmnibox`: whether the new
 // position is bottom omnibox.

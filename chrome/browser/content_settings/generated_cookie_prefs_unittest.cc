@@ -452,7 +452,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   // Ensure an allow content setting sets the preference to false and enabled.
   map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
-  absl::optional<extensions::api::settings_private::PrefObject> pref_object =
+  std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
   EXPECT_FALSE(pref_object->value->GetBool());
   EXPECT_FALSE(*pref_object->user_control_disabled);
@@ -547,7 +547,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref) {
   // Ensure that the preference represents the content setting value.
   map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                 CONTENT_SETTING_ALLOW);
-  absl::optional<extensions::api::settings_private::PrefObject> pref_object =
+  std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
   EXPECT_EQ(pref_object->value->GetString(), "allow");
 
@@ -611,7 +611,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider),
       HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
-  absl::optional<extensions::api::settings_private::PrefObject> pref_object =
+  std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by, settings_api::ControlledBy::kExtension);
   EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);

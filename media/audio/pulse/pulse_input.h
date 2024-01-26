@@ -93,8 +93,6 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   // Callback to send log messages to registered clients.
   AudioManager::LogCallback log_callback_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   raw_ptr<pa_stream> handle_;
 
   AmplitudePeakDetector peak_detector_;

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] where float32 0D scalars / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
+[FAIL] where float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
 [FAIL] where float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
 [FAIL] where float32 2D tensors / async

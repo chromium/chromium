@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
 #include <functional>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -33,7 +33,6 @@ class Display;
 }  // namespace display
 
 #if !BUILDFLAG(IS_ANDROID)
-class AutoPipSettingHelper;
 class PictureInPictureOcclusionTracker;
 
 namespace views {
@@ -129,7 +128,7 @@ class PictureInPictureWindowManager {
 
   // Returns the window bounds of the video picture-in-picture or the document
   // picture-in-picture if either of them is present.
-  absl::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
+  std::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
 
   // Used for Document picture-in-picture windows only. The returned dimensions
   // represent the outer window bounds.
@@ -180,10 +179,6 @@ class PictureInPictureWindowManager {
       const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
-
-  AutoPipSettingHelper* get_setting_helper_for_testing() {
-    return auto_pip_setting_helper_.get();
-  }
 
   // Returns the PictureInPictureOcclusionTracker, which can inform observers
   // when a widget has been occluded by a video or document picture-in-picture
@@ -245,9 +240,6 @@ class PictureInPictureWindowManager {
   static void ExitPictureInPictureSoon();
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Create the settings helper if this is auto-pip and we don't have one.
-  void CreateAutoPipSettingHelperIfNeeded();
-
   // Creates the `occlusion_tracker_` if it does not already exist and should
   // exist.
   void CreateOcclusionTrackerIfNecessary();
@@ -262,8 +254,6 @@ class PictureInPictureWindowManager {
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
-
-  std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
 
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
 #endif  //! BUILDFLAG(IS_ANDROID)

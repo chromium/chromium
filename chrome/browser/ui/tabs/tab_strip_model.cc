@@ -349,7 +349,7 @@ int TabStripModel::InsertDetachedTabAt(
     int index,
     std::unique_ptr<TabModel> tab,
     int add_types,
-    absl::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   tab->OnAddedToModel(this);
   return InsertTabAtImpl(index, std::move(tab), add_types, group);
@@ -1600,8 +1600,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
       UMA_HISTOGRAM_BOOLEAN("Tab.Organization.TabContextMenu.Clicked", true);
 
-      service->ResetSessionForBrowser(browser, GetWebContentsAt(context_index));
-      service->OnUserInvokedFeature(browser);
+      service->RestartSessionAndShowUI(browser,
+                                       GetWebContentsAt(context_index));
       break;
     }
 

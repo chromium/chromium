@@ -21,9 +21,7 @@
 namespace content {
 
 CookieStoreConfig::CookieStoreConfig()
-    : restore_old_session_cookies(false),
-      persist_session_cookies(false),
-      crypto_delegate(nullptr) {
+    : restore_old_session_cookies(false), persist_session_cookies(false) {
   // Default to an in-memory cookie store.
 }
 
@@ -32,17 +30,17 @@ CookieStoreConfig::CookieStoreConfig(const base::FilePath& path,
                                      bool persist_session_cookies)
     : path(path),
       restore_old_session_cookies(restore_old_session_cookies),
-      persist_session_cookies(persist_session_cookies),
-      crypto_delegate(nullptr) {
+      persist_session_cookies(persist_session_cookies) {
   CHECK(!path.empty() ||
         (!restore_old_session_cookies && !persist_session_cookies));
 }
 
+CookieStoreConfig::CookieStoreConfig(CookieStoreConfig&&) = default;
+
 CookieStoreConfig::~CookieStoreConfig() {}
 
-std::unique_ptr<net::CookieStore> CreateCookieStore(
-    const CookieStoreConfig& config,
-    net::NetLog* net_log) {
+std::unique_ptr<net::CookieStore> CreateCookieStore(CookieStoreConfig config,
+                                                    net::NetLog* net_log) {
   std::unique_ptr<net::CookieMonster> cookie_monster;
 
   if (config.path.empty()) {
@@ -68,7 +66,8 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
     scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
         new net::SQLitePersistentCookieStore(
             config.path, client_task_runner, background_task_runner,
-            config.restore_old_session_cookies, config.crypto_delegate,
+            config.restore_old_session_cookies,
+            std::move(config.crypto_delegate),
             /*enable_exclusive_access=*/false));
 
     cookie_monster =

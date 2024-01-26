@@ -560,6 +560,10 @@ class WizardController : public OobeUI::Observer {
   // `nullptr`.
   void ResetCurrentScreen();
 
+  // Aborts Quick Start if the flow is ongoing.
+  void MaybeAbortQuickStartFlow(
+      quick_start::QuickStartController::AbortFlowReason reason);
+
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;

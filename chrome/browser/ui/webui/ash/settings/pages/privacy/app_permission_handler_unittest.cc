@@ -8,10 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -181,6 +184,14 @@ class AppPermissionHandlerTest : public testing::Test {
 
   int GetNumberOfInstalledApps() { return handler_->GetAppList().size(); }
 
+  int GetNumberOfSystemAppsThatUseCamera() {
+    return handler_->GetSystemAppListThatUsesCamera().size();
+  }
+
+  int GetNumberOfSystemAppsThatUseMicrophone() {
+    return handler_->GetSystemAppListThatUsesMicrophone().size();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -253,6 +264,32 @@ TEST_F(AppPermissionHandlerTest, GetAppList) {
 
   UninstallApp("appWithMicrophonePermission");
   EXPECT_EQ(2, GetNumberOfInstalledApps());
+}
+
+TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseCamera) {
+  InstallApp(web_app::kCameraAppId,
+             {std::make_pair(apps::PermissionType::kCamera, true)});
+  InstallApp(web_app::kPersonalizationAppId,
+             {std::make_pair(apps::PermissionType::kCamera, true)});
+  InstallApp("systemAppThatDoesNotUseCamera",
+             {std::make_pair(apps::PermissionType::kCamera, true)});
+  InstallApp(ash::kChromeUIUntrustedProjectorSwaAppId,
+             {std::make_pair(apps::PermissionType::kCamera, true)});
+
+  EXPECT_EQ(3, GetNumberOfSystemAppsThatUseCamera());
+}
+
+TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseMicrophone) {
+  InstallApp(web_app::kCameraAppId,
+             {std::make_pair(apps::PermissionType::kMicrophone, true)});
+  InstallApp("systemAppThatDoesNotUseMicrophone",
+             {std::make_pair(apps::PermissionType::kMicrophone, true)});
+  InstallApp(ash::kChromeUIUntrustedProjectorSwaAppId,
+             {std::make_pair(apps::PermissionType::kMicrophone, true)});
+  InstallApp(ash::eche_app::kEcheAppId,
+             {std::make_pair(apps::PermissionType::kMicrophone, true)});
+
+  EXPECT_EQ(3, GetNumberOfSystemAppsThatUseMicrophone());
 }
 
 }  // namespace ash::settings

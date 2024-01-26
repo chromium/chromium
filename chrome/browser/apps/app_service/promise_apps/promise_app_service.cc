@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -202,6 +205,37 @@ void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
 void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
   promise_app_almanac_connector_->SetSkipApiKeyCheckForTesting(  // IN-TEST
       skip_api_key_check);
+}
+
+void PromiseAppService::UpdateInstallPriority(const std::string& id) {
+  const auto* promise_app =
+      promise_app_registry_cache_->GetPromiseAppForStringPackageId(id);
+  CHECK(promise_app);
+
+  // Currently, updating install priority is only supported for ARC promise
+  // apps.
+  if (promise_app->package_id.app_type() != AppType::kArc) {
+    return;
+  }
+
+  // Feature flag that enables interacing with promise icon.
+  if (!base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
+    return;
+  }
+
+  // We can only increase install priority for packages that are
+  // queued/ pending. Promise apps that are already actively installing are
+  // already treated as the highest priority installation and their installation
+  // progress cannot be accelerated any further.
+  if (promise_app->status != PromiseStatus::kPending) {
+    return;
+  }
+
+  ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
+  CHECK(arc_app_list_prefs);
+
+  arc_app_list_prefs->GetInstallPriorityHandler()->PromotePackageInstall(
+      promise_app->package_id.identifier());
 }
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(

@@ -33,11 +33,9 @@ using AllowStatus = borealis::BorealisFeatures::AllowStatus;
 
 namespace borealis {
 
-constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
-
 class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
  public:
-  explicit AsyncAllowChecker(Profile* profile) : profile_(profile) {}
+  AsyncAllowChecker() = default;
 
  private:
   void Build(RealCallback callback) override {
@@ -52,15 +50,15 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
       return;
     }
 
-    // Bail out if the prefs service is not up and running, this just means we
-    // retry later.
-    if (!profile_ || !profile_->GetPrefs()) {
-      std::move(callback).Run(Failure(Reject()));
+    // If the user has opted in to running on unsupported hardware then we don't
+    // need to actually check it.
+    if (base::FeatureList::IsEnabled(
+            ash::features::kBorealisEnableUnsupportedHardware)) {
+      std::move(callback).Run(Success(AllowStatus::kAllowed));
       return;
     }
 
     TokenHardwareChecker::GetData(
-        profile_->GetPrefs()->GetString(prefs::kBorealisVmTokenHash),
         base::BindOnce(
             [](RealCallback callback, TokenHardwareChecker::Data data) {
               base::ThreadPool::PostTaskAndReplyWithResult(
@@ -82,13 +80,10 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
             },
             std::move(callback)));
   }
-
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 BorealisFeatures::BorealisFeatures(Profile* profile)
-    : profile_(profile),
-      async_checker_(std::make_unique<AsyncAllowChecker>(profile_)) {
+    : profile_(profile), async_checker_(std::make_unique<AsyncAllowChecker>()) {
   // Issue a request for the status immediately upon creation, in case
   // it's needed later.
   IsAllowed(base::DoNothing());
@@ -177,32 +172,6 @@ void BorealisFeatures::OnTokenHardwareChecked(
 
 bool BorealisFeatures::IsEnabled() {
   return profile_->GetPrefs()->GetBoolean(prefs::kBorealisInstalledOnDevice);
-}
-
-void BorealisFeatures::SetVmToken(
-    std::string token,
-    base::OnceCallback<void(AllowStatus)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&TokenHardwareChecker::H, std::move(token),
-                     kSaltForPrefStorage),
-      base::BindOnce(&BorealisFeatures::OnVmTokenDetermined,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void BorealisFeatures::OnVmTokenDetermined(
-    base::OnceCallback<void(AllowStatus)> callback,
-    std::string hashed_token) {
-  // The user has given a new password, so we invalidate the old status first,
-  // that way things which monitor the below pref don't accidentally re-use the
-  // old status.
-  async_checker_->Invalidate();
-  // This has the effect that you could overwrite the correct token and disable
-  // borealis. Adding extra code to avoid that is not worth while because end
-  // users aren't supposed to have the correct token anyway.
-  profile_->GetPrefs()->SetString(prefs::kBorealisVmTokenHash, hashed_token);
-  // Finally, re-issue an allowedness check.
-  IsAllowed(std::move(callback));
 }
 
 }  // namespace borealis

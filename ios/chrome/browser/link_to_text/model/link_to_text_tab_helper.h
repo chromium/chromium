@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_TAB_HELPER_H_
 
 #include "base/gtest_prod_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/timer/elapsed_timer.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
@@ -65,13 +66,13 @@ class LinkToTextTabHelper : public web::WebStateObserver,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Regex for `IsOnlyBoundaryChars`. Lazily-initialized to avoid recompiling
   // each time we check.
   NSRegularExpression* not_boundary_char_regex_ = nil;
 
-  LinkToTextJavaScriptFeature* js_feature_for_testing_ = nullptr;
+  raw_ptr<LinkToTextJavaScriptFeature> js_feature_for_testing_ = nullptr;
 
   base::WeakPtrFactory<LinkToTextTabHelper> weak_ptr_factory_;
 

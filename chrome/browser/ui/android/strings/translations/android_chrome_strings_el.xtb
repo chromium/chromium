@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή</translation>
 <translation id="1796666869097395659">Ελαχιστοποιήστε την καρτέλα για να την επισκεφτείτε ξανά αργότερα</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
+<translation id="1807709131360304325">Άνοιγμα νέου παραθύρου</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1812027881030482584">Το <ph name="SITE_ETLD_PLUS_ONE" /> δεν μπορεί να συνεχίσει να χρησιμοποιεί το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">Ο ιστότοπος τέθηκε σε παύση</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>
 <translation id="2067805253194386918">κείμενο</translation>
+<translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Εμφάνιση συμπαγούς προβολής</translation>
 <translation id="2093731487903423814">τελευταία 15 λεπτά</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
 <translation id="2234827758954819389">Οδηγός απορρήτου</translation>
 <translation id="2239812875700136898">Ελέγξτε τις ιστορίες σας από το κουμπί Επιλογές για Discover</translation>
-<translation id="2241634353105152135">Μόνο μία φορά</translation>
 <translation id="2247789808226901522">Η κάρτα έχει λήξει</translation>
 <translation id="2248941474044011069">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="2249635629516220541">Προσαρμόστε τις πληροφορίες που χρησιμοποιούνται από ιστοτόπους για την προβολή διαφημίσεων</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
-<translation id="2327226657832576859">Αυτόματο άνοιγμα αρχείων PDF;</translation>
 <translation id="2328985652426384049">Δεν είναι δυνατή η σύνδεση</translation>
 <translation id="2341410551640223969">Δεν ήταν δυνατή η εγκατάσταση της εφαρμογής <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Σύνολο δεδομένων που χρησιμοποιούνται από το Chrome, συμπεριλαμβανομένων των λογαριασμών, των σελιδοδεικτών και των αποθηκευμένων ρυθμίσεων</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" />.</translation>
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Μενού της κάρτας ροής στο μισό ύψος</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">Γίνεται ενημέρωση του Chrome για σύνδεση σε άλλες συσκευές</translation>
 <translation id="2951071800649516099">Προσθέστε σελίστες στη λίστα ανάγνωσης για αργότερα.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
-<translation id="2961210776189273067">Τίτλος</translation>
 <translation id="296370266220139811">Εξοικον. χρόνο και πληκτρ. λιγότερο</translation>
 <translation id="2977350910003566746">Ταξινόμηση κατά τελευταίο άνοιγμα</translation>
 <translation id="297771753501244313">Ταξιν. κατά τελ. άνοιγμα</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Διαχειριστής κωδικών πρόσβασης</translation>
 <translation id="4307992518367153382">Βασικά στοιχεία</translation>
+<translation id="4311652497846705514">Άνοιγμα PDF;</translation>
 <translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="433213510553688132">Παρακολούθηση…</translation>
 <translation id="4335835283689002019">Η ασφαλής περιήγηση είναι απενεργοποιημένη.</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">τελευταία ώρα</translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
-<translation id="4541505619120536051">Να ανοίγει πάντα</translation>
 <translation id="4543131175509360848">Δεν υπάρχουν φύλλα κλειδιών πρόσβασης</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
 <translation id="4554077758708533499">Συνδέθηκε με καλώδιο USB</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">Λογότυπο της σημείωσης απορρήτου για το κέντρο insight σελίδας που ανακατευθύνει τους χρήστες στη σελίδα Η δραστηριότητά μου.</translation>
 <translation id="5487521232677179737">Διαγραφή δεδομένων</translation>
 <translation id="5492637351392383067">Κρυπτογράφηση στη συσκευή</translation>
-<translation id="5509866835115085009">Το Chrome μπορεί να ανοίγει αυτόματα τα αρχεία PDF όταν τα κατεβάζετε.</translation>
 <translation id="5514904542973294328">Απενεργοποιήθηκε από τον διαχειριστή αυτής της συσκευής</translation>
 <translation id="5515439363601853141">Ξεκλειδώστε για προβολή του κωδικού πρόσβασης</translation>
 <translation id="5517095782334947753">Έχετε σελιδοδείκτες, ιστορικό, κωδικούς πρόσβασης και άλλες ρυθμίσεις από τον λογαριασμό <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5964869237734432770">Διακοπή περιγραφών εικόνων</translation>
 <translation id="5966233851250124270">Το Chrome θα θυμάται την επιλογή σας</translation>
+<translation id="5977976211062815271">Σε αυτήν τη συσκευή</translation>
 <translation id="5979084224081478209">Έλεγχος κωδικών πρόσβασης</translation>
 <translation id="5995726099713306770">Εκ νέου λήψη της σελίδας;</translation>
 <translation id="6000066717592683814">Διατήρηση του Google</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">Άνοιγμα με…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Όλα τα αρχεία, 1 αρχείο στη λίστα}other{Όλα τα αρχεία, # αρχεία στη λίστα}}</translation>
 <translation id="7815484226266492798">Στιγμιότυπο οθόνης μεγάλης έκτασης</translation>
+<translation id="7821130663268546430">Μπορείτε να βρείτε όλες τις ανοιχτές καρτέλες στην Εναλλαγή καρτελών</translation>
 <translation id="7822705602465980873">Όταν είστε συνδεδεμένοι, αυτά τα δεδομένα συνδέονται με τον Λογαριασμό σας Google για την προστασία σας σε όλες τις υπηρεσίες Google. Για παράδειγμα, μετά από ένα περιστατικό ασφαλείας, αυξάνεται η προστασία στο Gmail.</translation>
 <translation id="78270725016672455">Ο υπολογιστής σας θέλει να εγγράψει αυτήν τη συσκευή για σύνδεση σε έναν ιστότοπο</translation>
 <translation id="7844171778363018843">Δεν έχουν επιλεχθεί δεδομένα για συγχρονισμό.</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342">Το <ph name="PRODUCT_NAME" /> δεν είναι ενημερωμένο.</translation>
 <translation id="7944772052836377867">Ο συγχρονισμός πρέπει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="7947953824732555851">Αποδοχή και σύνδεση</translation>
+<translation id="7951102827450076904">Να ανοίγουν πάντα τα ληφθέντα PDF</translation>
 <translation id="7957413488482743710">Μια εικονική κάρτα κρύβει την πραγματική κάρτα, προκειμένου να σας προστατεύσει από πιθανή απάτη. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Κουμπί πίσω των insight σελίδας</translation>
 <translation id="7961926449547174351">Έχετε απενεργοποιήσει την πρόσβαση αποθηκευτικού χώρου. Μεταβείτε στις Ρυθμίσεις για να την ενεργοποιήσετε.</translation>

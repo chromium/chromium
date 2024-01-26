@@ -6,13 +6,13 @@
 #define UI_EVENTS_ASH_KEYBOARD_CAPABILITY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -164,8 +164,8 @@ inline constexpr auto kSixPackKeyToAltSystemKeyMap =
 class KeyboardCapability : public InputDeviceEventObserver {
  public:
   using ScanCodeToEvdevKeyConverter =
-      base::RepeatingCallback<absl::optional<uint32_t>(const base::ScopedFD& fd,
-                                                       uint32_t scancode)>;
+      base::RepeatingCallback<std::optional<uint32_t>(const base::ScopedFD& fd,
+                                                      uint32_t scancode)>;
   enum class DeviceType {
     kDeviceUnknown = 0,
     kDeviceInternalKeyboard,
@@ -229,11 +229,11 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Converts from the given `key_code` to the corresponding meaning in
   // `TopRowActionKey` enum.
-  static absl::optional<TopRowActionKey> ConvertToTopRowActionKey(
+  static std::optional<TopRowActionKey> ConvertToTopRowActionKey(
       ui::KeyboardCode key_code);
 
   // Converts the given `action_key` to the corresponding `KeyboardCode` VKEY.
-  static absl::optional<KeyboardCode> ConvertToKeyboardCode(
+  static std::optional<KeyboardCode> ConvertToKeyboardCode(
       TopRowActionKey action_key);
 
   // Check if a key code is one of the top row keys.
@@ -245,7 +245,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Find the mapped function key if the given key code is a top row key for
   // the given keyboard.
   // TODO(zhangwenyu): Support custom vivaldi layouts.
-  absl::optional<KeyboardCode> GetMappedFKeyIfExists(
+  std::optional<KeyboardCode> GetMappedFKeyIfExists(
       const KeyboardCode& key_code,
       const KeyboardDevice& keyboard) const;
 
@@ -261,6 +261,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Check if the keycode is a function key.
   static bool IsFunctionKey(ui::KeyboardCode code);
+
+  // Check if the keycode is either the F11 or F12 function key.
+  static bool IsF11OrF12(ui::KeyboardCode code);
 
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(
@@ -346,13 +349,13 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
-  absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
+  std::optional<KeyboardCode> GetCorrespondingFunctionKey(
       const KeyboardDevice& keyboard,
       TopRowActionKey action_key) const;
 
   // Gets the corresponding action key for the given `key_code` which must be an
   // F-Key in the range of F1 to F24 for the given `keyboard`
-  absl::optional<TopRowActionKey> GetCorrespondingActionKeyForFKey(
+  std::optional<TopRowActionKey> GetCorrespondingActionKeyForFKey(
       const KeyboardDevice& keyboard,
       KeyboardCode key_code) const;
 

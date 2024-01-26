@@ -40,7 +40,7 @@ namespace web_app {
 //   void WriteCounter(base::OnceClosure next_step_callback, size_t count);
 //   void ReleaseFileLock(base::OnceClosure next_step_callback);
 //
-//   absl::optional<FileLock> lock_;
+//   std::optional<FileLock> lock_;
 //   base::WeakPtrFactory<CounterStorage> weak_ptr_factory_{this};
 // };
 //

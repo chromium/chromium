@@ -40,6 +40,11 @@ TEST(CharacterTest, Derived) {
     const UEastAsianWidth eaw = Character::EastAsianWidth(ch);
     EXPECT_EQ(Character::IsEastAsianWidthFullwidth(ch),
               eaw == UEastAsianWidth::U_EA_FULLWIDTH);
+
+    if (!Character::MaybeHanKerningOpenOrClose(ch)) {
+      DCHECK(!Character::MaybeHanKerningOpenSlow(ch));
+      DCHECK(!Character::MaybeHanKerningCloseSlow(ch));
+    }
   }
 }
 

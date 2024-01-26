@@ -12,11 +12,11 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -62,7 +62,7 @@ class IsolatedWebAppUninstallBrowserTest
     base::test::TestFuture<InstallResult> future;
     provider()->scheduler().InstallIsolatedWebApp(
         url_info_, src_location_,
-        /*expected_version=*/absl::nullopt,
+        /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     ASSERT_TRUE(future.Wait());
@@ -115,7 +115,7 @@ class IsolatedWebAppUninstallBrowserTest
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   ASSERT_NO_FATAL_FAILURE(CreateBundle());
-  absl::optional<base::FilePath> path_to_iwa_in_profile;
+  std::optional<base::FilePath> path_to_iwa_in_profile;
 
   // Install an IWA and check that it is in the desired stated.
   ASSERT_NO_FATAL_FAILURE(Install());

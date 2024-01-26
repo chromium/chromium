@@ -56,7 +56,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
     self.mock(test_apps, 'get_bundle_id', lambda _: "fake-bundle-id")
     self.mock(test_apps, 'is_running_rosetta', lambda: False)
-    self.mock(test_apps.plistlib, 'writePlist', lambda _1, _2: '')
+    self.mock(test_apps.plistlib, 'dump', lambda _1, _2: '')
     self.mock(test_runner.SimulatorTestRunner, 'tear_down', lambda _: None)
     self.mock(test_runner.DeviceTestRunner, 'tear_down', lambda _: None)
     self.mock(xcodebuild_runner.subprocess,
@@ -198,7 +198,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.mock(mac_util, 'stop_usbmuxd', lambda: None)
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
-  def test_launch(self, mock_result):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_launch(self, _, mock_result):
     """Tests launch method in DeviceXcodeTestRunner"""
     tr = xcodebuild_runner.DeviceXcodeTestRunner("fake-app-path",
                                                  "fake-host-app-path",
@@ -211,7 +212,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertEqual(len(tr.test_results['tests']), 2)
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
-  def test_unexpected_skipped_crash_reported(self, mock_result):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_unexpected_skipped_crash_reported(self, _, mock_result):
     """Tests launch method in DeviceXcodeTestRunner"""
     tr = xcodebuild_runner.DeviceXcodeTestRunner("fake-app-path",
                                                  "fake-host-app-path",
@@ -228,7 +230,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertEqual(tests['Class1/passedTest2']['expected'], 'PASS')
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
-  def test_unexpected_skipped_not_reported(self, mock_result):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_unexpected_skipped_not_reported(self, _, mock_result):
     """Unexpected skip not reported for these selecting tests at runtime."""
     crashed_collection = ResultCollection(
         test_results=[TestResult('Class1/passedTest1', TestStatus.PASS)])
@@ -246,7 +249,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
   @mock.patch('xcodebuild_runner.isinstance', return_value=True)
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('test_apps.EgtestsApp', autospec=True)
-  def test_disabled_reported(self, mock_test_app, mock_result, _):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_disabled_reported(self, _, mock_test_app, mock_result, __):
     """Tests launch method in DeviceXcodeTestRunner"""
     test_app = mock_test_app.return_value
     test_app.test_app_path = _EGTESTS_APP_PATH
@@ -323,7 +327,8 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
-  def test_launch_egtest(self, mock_result):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_launch_egtest(self, _, mock_result):
     """Tests launch method in SimulatorParallelTestRunner"""
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
         "fake-app-path", "fake-host-app-path", "fake-iossim_path",
@@ -337,7 +342,8 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('xcodebuild_runner.TestPluginServicerWrapper')
-  def test_launch_egtest_with_plugin_service(self, mock_plugin_service,
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_launch_egtest_with_plugin_service(self, _, mock_plugin_service,
                                              mock_result):
     """ Tests launch method in SimulatorParallelTestRunner
         with plugin service running """

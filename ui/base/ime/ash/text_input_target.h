@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   // Places the cursor at the end of |replacement_string|.
   virtual void ReplaceSurroundingText(uint32_t length_before_selection,
                                       uint32_t length_after_selection,
-                                      base::StringPiece16 replacement_text) = 0;
+                                      std::u16string_view replacement_text) = 0;
 
   // Called from the extension API.
   // WARNING: This could return a stale cache that doesn't reflect reality, due

@@ -19,14 +19,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/ash_notification_control_button_factory.h"
 #include "ash/system/notification_center/ash_notification_drag_controller.h"
-#include "ash/system/notification_center/views/ash_notification_expand_button.h"
-#include "ash/system/notification_center/views/ash_notification_input_container.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/notification_center/message_center_style.h"
@@ -34,6 +31,9 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/metrics_utils.h"
 #include "ash/system/notification_center/notification_grouping_controller.h"
+#include "ash/system/notification_center/notification_style_utils.h"
+#include "ash/system/notification_center/views/ash_notification_expand_button.h"
+#include "ash/system/notification_center/views/ash_notification_input_container.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -75,7 +75,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/large_image_view.h"
-#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
@@ -149,22 +148,16 @@ constexpr char16_t kTitleRowDivider[] = u"\u2022";
 
 constexpr char kGoogleSansFont[] = "Google Sans";
 
-constexpr int kAppIconViewSize = 24;
-constexpr int kAppIconImageSize = 16;
 constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
-constexpr int kTitleLabelSize = 13;
 constexpr int kTitleLabelExpandedMaxLines = 2;
 constexpr int kTitleLabelCollapsedMaxLines = 1;
 constexpr int kTimestampInCollapsedViewSize = 12;
-constexpr int kMessageLabelSize = 12;
+
 // The size for `icon_view_`, which is the icon within right content (between
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
-
-// Target contrast ratio to reach when adjusting colors in dark mode.
-constexpr float kDarkModeMinContrastRatio = 6.0;
 
 // If the image displayed in `icon_view()` is smaller in either width or height
 // than this value, we draw a background around the image.
@@ -178,24 +171,6 @@ constexpr int kControlButtonsHorizontalSpacing = 6;
 constexpr int kControlButtonsIconSize = 14;
 
 // Helpers ---------------------------------------------------------------------
-
-// Configure the style for labels in notification view. `is_color_primary`
-// indicates if the color of the text is primary or secondary text color.
-void ConfigureLabelStyle(
-    views::Label* label,
-    int size,
-    bool is_color_primary,
-    gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL) {
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetFontList(
-      gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, size, font_weight));
-  auto layer_type =
-      is_color_primary
-          ? ash::AshColorProvider::ContentLayerType::kTextColorPrimary
-          : ash::AshColorProvider::ContentLayerType::kTextColorSecondary;
-  label->SetEnabledColor(
-      ash::AshColorProvider::Get()->GetContentLayerColor(layer_type));
-}
 
 // Create a view that will contain the `content_row`,
 // `message_label_in_expanded_state_`, inline settings and the large image.
@@ -227,18 +202,20 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
       .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetVisible(false)
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(notification.title())
-                    .SetFontList(gfx::FontList(
-                        {kGoogleSansFont}, gfx::Font::NORMAL, kTitleLabelSize,
-                        gfx::Font::Weight::MEDIUM)))
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(notification.message())
-                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                    .SetTextStyle(views::style::STYLE_SECONDARY)
-                    .SetFontList(gfx::FontList(
-                        {kGoogleSansFont}, gfx::Font::NORMAL, kMessageLabelSize,
-                        gfx::Font::Weight::MEDIUM)));
+      .AddChild(
+          views::Builder<views::Label>()
+              .SetText(notification.title())
+              .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                         ash::kNotificationTitleLabelSize,
+                                         gfx::Font::Weight::MEDIUM)))
+      .AddChild(
+          views::Builder<views::Label>()
+              .SetText(notification.message())
+              .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+              .SetTextStyle(views::style::STYLE_SECONDARY)
+              .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                         ash::kNotificationMessageLabelSize,
+                                         gfx::Font::Weight::MEDIUM)));
 }
 
 views::Builder<ash::AshNotificationView::GroupedNotificationsContainer>
@@ -265,7 +242,7 @@ void ScaleAndTranslateView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      ash::metrics_util::ForSmoothness(base::BindRepeating(
+      ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
           [](const std::string& animation_histogram_name, int smoothness) {
             base::UmaHistogramPercentage(animation_histogram_name, smoothness);
           },
@@ -385,15 +362,17 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   title_view_->SetAllowCharacterBreak(true);
   title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
 
-  ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
-                      /*is_color_primary=*/false);
+  notification_style_utils::ConfigureLabelStyle(title_row_divider_,
+                                                kTimestampInCollapsedViewSize,
+                                                /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(title_row_divider_);
-  ConfigureLabelStyle(timestamp_in_collapsed_view_,
-                      kTimestampInCollapsedViewSize,
-                      /*is_color_primary=*/false);
+  notification_style_utils::ConfigureLabelStyle(timestamp_in_collapsed_view_,
+                                                kTimestampInCollapsedViewSize,
+                                                /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(timestamp_in_collapsed_view_);
-  ConfigureLabelStyle(title_view_, kTitleLabelSize,
-                      /*is_color_primary=*/true, gfx::Font::Weight::MEDIUM);
+  notification_style_utils::ConfigureLabelStyle(
+      title_view_, kNotificationTitleLabelSize,
+      /*is_color_primary=*/true, gfx::Font::Weight::MEDIUM);
 
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *title_view_);
@@ -598,8 +577,9 @@ AshNotificationView::AshNotificationView(
           .AddChild(CreateImageContainerBuilder().SetProperty(
               views::kMarginsKey, kImageContainerPadding));
 
-  ConfigureLabelStyle(message_label_in_expanded_state_, kMessageLabelSize,
-                      /*is_color_primary=*/false);
+  notification_style_utils::ConfigureLabelStyle(
+      message_label_in_expanded_state_, kNotificationMessageLabelSize,
+      /*is_color_primary=*/false);
 
   message_label_in_expanded_state_->SetEnabledColorId(
       cros_tokens::kCrosSysOnSurfaceVariant);
@@ -617,7 +597,8 @@ AshNotificationView::AshNotificationView(
                         .SetMainAxisAlignment(MainAxisAlignment::kStart)
                         .AddChild(views::Builder<RoundedImageView>()
                                       .CopyAddressTo(&app_icon_view_)
-                                      .SetCornerRadius(kAppIconViewSize / 2)))
+                                      .SetCornerRadius(
+                                          kNotificationAppIconViewSize / 2)))
           .AddChild(main_right_view_builder)
           .Build());
 
@@ -677,22 +658,6 @@ AshNotificationView::AshNotificationView(
 
   // This view should not be focusable since it does not act as a button.
   header_row()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-
-  // Corner radius for popups is handled below. We do not set corner radius if
-  // the view is  in the message center here. Rounded corners for message_views
-  // in the message center view are handled in `UnifiedMessageListView`.
-  if (shown_in_popup_ && !notification.group_child()) {
-    UpdateCornerRadius(kMessagePopupCornerRadius, kMessagePopupCornerRadius);
-
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kMessagePopupCornerRadius});
-    layer()->SetIsFastRoundedCorner(true);
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kMessagePopupCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  }
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
@@ -920,7 +885,7 @@ void AshNotificationView::AnimateSingleToGroup(
 
   ui::AnimationThroughputReporter reporter(
       left_content()->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(
             "Ash.NotificationView.ConvertSingleToGroup.FadeOut."
             "AnimationSmoothness",
@@ -1259,8 +1224,9 @@ void AshNotificationView::UpdateWithNotification(
   // Configure views style.
   UpdateIconAndButtonsColor(&notification);
   if (message_label()) {
-    ConfigureLabelStyle(message_label(), kMessageLabelSize,
-                        /*is_color_primary=*/false);
+    notification_style_utils::ConfigureLabelStyle(message_label(),
+                                                  kNotificationMessageLabelSize,
+                                                  /*is_color_primary=*/false);
     message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1, *message_label());
@@ -1325,8 +1291,9 @@ void AshNotificationView::CreateOrUpdateTitleView(
 void AshNotificationView::CreateOrUpdateSmallIconView(
     const message_center::Notification& notification) {
   if (is_grouped_child_view_ && !notification.icon().IsEmpty()) {
-    app_icon_view_->SetImage(notification.icon().Rasterize(GetColorProvider()),
-                             gfx::Size(kAppIconViewSize, kAppIconViewSize));
+    app_icon_view_->SetImage(
+        notification.icon().Rasterize(GetColorProvider()),
+        gfx::Size(kNotificationAppIconViewSize, kNotificationAppIconViewSize));
     return;
   }
 
@@ -1480,14 +1447,10 @@ void AshNotificationView::UpdateCornerRadius(int top_radius,
                                              int bottom_radius) {
   // Call parent's SetCornerRadius to update radius used for highlight path.
   NotificationViewBase::SetCornerRadius(top_radius, bottom_radius);
-  UpdateBackground(top_radius, bottom_radius);
 }
-
-void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
 
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  UpdateBackground(top_radius_, bottom_radius_);
 
   if (message_label()) {
     message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
@@ -1551,7 +1514,7 @@ gfx::Size AshNotificationView::GetIconViewSize() const {
 
 int AshNotificationView::GetLargeImageViewMaxWidth() const {
   return message_center::kNotificationWidth - kNotificationViewPadding.width() -
-         kAppIconViewSize - kMainRightViewChildPadding.width();
+         kNotificationAppIconViewSize - kMainRightViewChildPadding.width();
 }
 
 void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
@@ -1749,41 +1712,12 @@ void AshNotificationView::UpdateMessageLabelInExpandedState(
   message_label_in_expanded_state_->SetVisible(true);
 }
 
-void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
-  ui::ColorId background_color_id =
-      shown_in_popup_ ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-                      : cros_tokens::kCrosSysSystemOnBase;
-
-  if (background_color_id == background_color_id_ &&
-      top_radius_ == top_radius && bottom_radius_ == bottom_radius) {
-    return;
-  }
-
-  top_radius_ = top_radius;
-  bottom_radius_ = bottom_radius;
-
-  if (is_grouped_child_view_) {
-    // Grouped children are always transparent. Handle them separately.
-    SetBackground(views::CreateRoundedRectBackground(
-        SK_ColorTRANSPARENT,
-        gfx::RoundedCornersF(top_radius_, top_radius_, bottom_radius_,
-                             bottom_radius_),
-        /*border_thickness=*/0));
-    return;
-  }
-
-  background_color_id_ = background_color_id;
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id_, top_radius_, bottom_radius_,
-      /*border_thickness=*/0));
-}
-
 int AshNotificationView::GetExpandedMessageLabelWidth() {
   int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
                                            : kNotificationInMessageCenterWidth;
 
   return notification_width - kNotificationViewPadding.width() -
-         kAppIconViewSize - kMainRightViewChildPadding.width() -
+         kNotificationAppIconViewSize - kMainRightViewChildPadding.width() -
          kMessageLabelInExpandedStatePadding.width();
 }
 
@@ -1800,78 +1734,16 @@ void AshNotificationView::UpdateAppIconView(
     return;
   }
 
-  SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kInvertedButtonLabelColor);
-  if (GetWidget()) {
-    icon_color = GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary);
-  }
-  SkColor icon_background_color = CalculateIconAndButtonsColor(notification);
-
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
-  // cache images if so.
-  gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
-      kAppIconImageSize, icon_color, icon_background_color, icon_color);
-
-  gfx::ImageSkia app_icon =
-      masked_small_icon.IsEmpty()
-          ? gfx::CreateVectorIcon(message_center::kProductIcon,
-                                  kAppIconImageSize, icon_color)
-          : masked_small_icon.AsImageSkia();
-
   app_icon_view_->SetImage(
-      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-          kAppIconViewSize / 2, icon_background_color, app_icon));
-}
-
-SkColor AshNotificationView::CalculateIconAndButtonsColor(
-    const message_center::Notification* notification) {
-  SkColor default_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-
-  if (!notification) {
-    return default_color;
-  }
-
-  auto color_id = notification->accent_color_id();
-  std::optional<SkColor> accent_color = notification->accent_color();
-
-  if ((!color_id || !GetWidget()) && !accent_color.has_value()) {
-    return default_color;
-  }
-
-  SkColor fg_color;
-  // ColorProvider needs widget to be created.
-  if (color_id && GetWidget()) {
-    fg_color = GetColorProvider()->GetColor(color_id.value());
-  } else {
-    fg_color = accent_color.value();
-  }
-
-  // TODO(crbug/1351205): move color calculation logic to color mixer.
-  // TODO(crbug/1294459): re-evaluate contrast, maybe increase or use fixed HSL
-  float minContrastRatio =
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? minContrastRatio = kDarkModeMinContrastRatio
-          : color_utils::kMinimumReadableContrastRatio;
-
-  // Actual color is kTransparent80, but BlendForMinContrast requires opaque.
-  // GetColorProvider might be nullptr in tests.
-  const auto* color_provider = GetColorProvider();
-  const SkColor bg_color =
-      color_provider ? color_provider->GetColor(kColorAshShieldAndBaseOpaque)
-                     : gfx::kPlaceholderColor;
-  return color_utils::BlendForMinContrast(
-             fg_color, bg_color,
-             /*high_contrast_foreground=*/std::nullopt, minContrastRatio)
-      .color;
+      notification_style_utils::CreateNotificationAppIcon(notification));
 }
 
 void AshNotificationView::UpdateIconAndButtonsColor(
     const message_center::Notification* notification) {
   UpdateAppIconView(notification);
 
-  SkColor icon_color = CalculateIconAndButtonsColor(notification);
-  SkColor button_color = icon_color;
+  SkColor button_color =
+      notification_style_utils::CalculateIconBackgroundColor(notification);
   bool use_default_button_color =
       !notification ||
       notification->rich_notification_data().ignore_accent_color_for_text;
@@ -2092,12 +1964,13 @@ void AshNotificationView::PerformLargeImageAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       image_container_view()->layer()->GetAnimator(),
-      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
-        base::UmaHistogramPercentage(
-            "Ash.NotificationView.ImageContainerView.ScaleDown."
-            "AnimationSmoothness",
-            smoothness);
-      })));
+      ash::metrics_util::ForSmoothnessV3(
+          base::BindRepeating([](int smoothness) {
+            base::UmaHistogramPercentage(
+                "Ash.NotificationView.ImageContainerView.ScaleDown."
+                "AnimationSmoothness",
+                smoothness);
+          })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(

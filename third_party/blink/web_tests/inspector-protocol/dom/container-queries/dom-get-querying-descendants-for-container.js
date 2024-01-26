@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp } = await testRunner.startURL(
     '../resources/dom-get-querying-descendants-for-container.html',
     'Test CSS.getQueryingDescendantsForContainer method for container query containers');

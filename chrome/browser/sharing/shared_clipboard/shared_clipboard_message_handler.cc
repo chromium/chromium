@@ -31,10 +31,10 @@ void SharedClipboardMessageHandler::OnMessage(
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(base::UTF8ToUTF16(message.shared_clipboard_message().text()));
 
-  std::unique_ptr<SharingTargetDeviceInfo> device =
+  std::optional<SharingTargetDeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
   const std::string& device_name =
-      device ? device->client_name() : message.sender_device_name();
+      device.has_value() ? device->client_name() : message.sender_device_name();
   ShowNotification(device_name);
 
   std::move(done_callback).Run(/*response=*/nullptr);

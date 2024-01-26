@@ -361,7 +361,7 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
   return caller_origin == cmdline_allowed_origin;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
@@ -374,7 +374,7 @@ ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     return caller_origin.Serialize();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
@@ -401,11 +401,11 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
-absl::optional<bool> ChromeWebAuthenticationDelegate::
+std::optional<bool> ChromeWebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         content::RenderFrameHost* render_frame_host) {
   // If the testing API is active, its override takes precedence.
-  absl::optional<bool> testing_api_override =
+  std::optional<bool> testing_api_override =
       content::WebAuthenticationDelegate::
           IsUserVerifyingPlatformAuthenticatorAvailableOverride(
               render_frame_host);
@@ -427,7 +427,7 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
     return true;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 content::WebAuthenticationRequestProxy*
@@ -462,7 +462,7 @@ ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
       .metadata_secret = std::move(metadata_secret)};
 }
 
-absl::optional<ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+std::optional<ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 ChromeWebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
     content::BrowserContext* browser_context) {
   return TouchIdAuthenticatorConfigForProfile(
@@ -529,7 +529,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
           // we're still registering them. Thus we assume that they are not.
           /*is_active_profile_authenticator_user=*/false,
           IsICloudDriveEnabled(),
-          /*request_is_for_google_com=*/false, /*preference=*/absl::nullopt));
+          /*request_is_for_google_com=*/false, /*preference=*/std::nullopt));
 #endif
   cablev2::RegisterProfilePrefs(registry);
 }
@@ -714,7 +714,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     const std::string& rp_id,
     RequestSource request_source,
     device::FidoRequestType request_type,
-    absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+    std::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* discovery_factory) {
@@ -727,9 +727,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnRequireUIForComplexDiscoveries) &&
-      disable_ui_) {
+  if (disable_ui_) {
     return;
   }
 
@@ -821,9 +819,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
             device::ResidentKeyRequirement::kDiscouraged) ||
        base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere));
 
-  absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
+  std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
-  absl::optional<std::string> qr_string;
+  std::optional<std::string> qr_string;
   if (non_extension_cablev2_enabled || cablev2_extension_provided) {
     // A QR key is generated for all caBLEv2 cases but whether the QR code is
     // displayed is up to the UI.
@@ -863,7 +861,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
 
   if (cable_extension_accepted || non_extension_cablev2_enabled) {
-    absl::optional<bool> extension_is_v2;
+    std::optional<bool> extension_is_v2;
     if (cable_extension_provided) {
       extension_is_v2 = cablev2_extension_provided;
     }
@@ -1241,14 +1239,14 @@ void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(
 
 #if BUILDFLAG(IS_MAC)
 // static
-absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
+std::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
     const std::string& formatted_date,
     const base::Time now) {
   int year, month, day_of_month;
   // sscanf will ignore trailing garbage, but we don't need to be strict here.
   if (sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
              &day_of_month) != 3) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Time::Exploded exploded = {
@@ -1256,7 +1254,7 @@ absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
 
   base::Time t;
   if (!base::Time::FromUTCExploded(exploded, &t) || now < t) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::TimeDelta difference = now - t;
@@ -1264,12 +1262,12 @@ absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
 }
 
 // static
-absl::optional<bool> ChromeAuthenticatorRequestDelegate::GetICloudKeychainPref(
+std::optional<bool> ChromeAuthenticatorRequestDelegate::GetICloudKeychainPref(
     const PrefService* prefs) {
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kCreatePasskeysInICloudKeychain);
   if (pref->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return pref->GetValue()->GetBool();
 }
@@ -1281,7 +1279,7 @@ bool ChromeAuthenticatorRequestDelegate::IsActiveProfileAuthenticatorUser(
   if (last_used.empty()) {
     return false;
   }
-  const absl::optional<int> days = DaysSinceDate(last_used, base::Time::Now());
+  const std::optional<int> days = DaysSinceDate(last_used, base::Time::Now());
   return days.has_value() && days.value() <= kMacOsRecentlyUsedMaxDays;
 }
 
@@ -1291,7 +1289,7 @@ bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
     bool is_active_profile_authenticator_user,
     bool has_icloud_drive_enabled,
     bool request_is_for_google_com,
-    absl::optional<bool> preference) {
+    std::optional<bool> preference) {
   if (!base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain) ||
       // Secure Payment Confirmation and credit-card autofill continue to use
       // the profile authenticator.

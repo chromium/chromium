@@ -955,6 +955,60 @@ bool TimelineMatches(const ViewTimeline& timeline,
   return timeline.Matches(options.subject, options.axis, options.inset);
 }
 
+Vector<const CSSProperty*> PropertiesForTransitionAll(
+    bool with_discrete,
+    const ExecutionContext* execution_context) {
+  Vector<const CSSProperty*> properties;
+  for (CSSPropertyID id : CSSPropertyIDList()) {
+    // Avoid creating overlapping transitions with perspective-origin and
+    // transition-origin.
+    // transition:all shouldn't expand to itself
+    if (id == CSSPropertyID::kWebkitPerspectiveOriginX ||
+        id == CSSPropertyID::kWebkitPerspectiveOriginY ||
+        id == CSSPropertyID::kWebkitTransformOriginX ||
+        id == CSSPropertyID::kWebkitTransformOriginY ||
+        id == CSSPropertyID::kWebkitTransformOriginZ ||
+        id == CSSPropertyID::kAll) {
+      continue;
+    }
+    const CSSProperty& property = CSSProperty::Get(id);
+    if (!with_discrete && !property.IsInterpolable()) {
+      continue;
+    }
+    if (CSSAnimations::IsAnimationAffectingProperty(property) ||
+        property.IsShorthand()) {
+      DCHECK(with_discrete);
+      continue;
+    }
+    if (!property.IsWebExposed(execution_context)) {
+      continue;
+    }
+
+    properties.push_back(&property);
+  }
+  return properties;
+}
+
+const StylePropertyShorthand& PropertiesForTransitionAllDiscrete(
+    const ExecutionContext* execution_context) {
+  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
+                      (PropertiesForTransitionAll(true, execution_context)));
+  DEFINE_STATIC_LOCAL(
+      StylePropertyShorthand, property_shorthand,
+      (CSSPropertyID::kInvalid, properties.begin(), properties.size()));
+  return property_shorthand;
+}
+
+const StylePropertyShorthand& PropertiesForTransitionAllNormal(
+    const ExecutionContext* execution_context) {
+  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
+                      (PropertiesForTransitionAll(false, execution_context)));
+  DEFINE_STATIC_LOCAL(
+      StylePropertyShorthand, property_shorthand,
+      (CSSPropertyID::kInvalid, properties.begin(), properties.size()));
+  return property_shorthand;
+}
+
 }  // namespace
 
 void CSSAnimations::CalculateScrollTimelineUpdate(
@@ -2205,6 +2259,7 @@ bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
 
 void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
+    const CSSTransitionData::TransitionAnimationType type,
     const PropertyHandle& property,
     wtf_size_t transition_index,
     bool animate_all) {
@@ -2215,7 +2270,20 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   if (!CanCalculateTransitionUpdateForProperty(state, property))
     return;
 
-  if (IsAnimationAffectingProperty(property.GetCSSProperty())) {
+  bool is_animation_affecting = false;
+  if (!animate_all || type != CSSTransitionData::kTransitionKnownProperty) {
+    is_animation_affecting =
+        IsAnimationAffectingProperty(property.GetCSSProperty());
+  } else {
+    // For transition:all, the standard properties (kTransitionKnownProperty)
+    // to calculate update is filtered by PropertiesForTransitionAll(), which
+    // will have a check on IsAnimationAffectingProperty(). All the filtered
+    // properties stored in the static |properties| will return false on such
+    // check. So we can bypass this check here to reduce the repeated overhead
+    // for standard properties update of transition:all.
+    DCHECK_EQ(false, IsAnimationAffectingProperty(property.GetCSSProperty()));
+  }
+  if (is_animation_affecting) {
     return;
   }
 
@@ -2463,8 +2531,9 @@ void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
   bool animate_all = resolved_id == CSSPropertyID::kAll;
 
   CalculateTransitionUpdateForPropertyHandle(
-      state, PropertyHandle(transition_property.property_string),
-      transition_index, animate_all);
+      state, transition_property.property_type,
+      PropertyHandle(transition_property.property_string), transition_index,
+      animate_all);
 }
 
 void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
@@ -2506,8 +2575,9 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
       continue;
     }
 
-    CalculateTransitionUpdateForPropertyHandle(state, property_handle,
-                                               transition_index, animate_all);
+    CalculateTransitionUpdateForPropertyHandle(
+        state, transition_property.property_type, property_handle,
+        transition_index, animate_all);
   }
 }
 
@@ -3063,39 +3133,10 @@ void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
 const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
     bool with_discrete,
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand, ());
-  if (properties.empty()) {
-    for (CSSPropertyID id : CSSPropertyIDList()) {
-      // Avoid creating overlapping transitions with perspective-origin and
-      // transition-origin.
-      // transition:all shouldn't expand to itself
-      if (id == CSSPropertyID::kWebkitPerspectiveOriginX ||
-          id == CSSPropertyID::kWebkitPerspectiveOriginY ||
-          id == CSSPropertyID::kWebkitTransformOriginX ||
-          id == CSSPropertyID::kWebkitTransformOriginY ||
-          id == CSSPropertyID::kWebkitTransformOriginZ ||
-          id == CSSPropertyID::kAll) {
-        continue;
-      }
-      const CSSProperty& property = CSSProperty::Get(id);
-      if (!with_discrete && !property.IsInterpolable()) {
-        continue;
-      }
-      if (IsAnimationAffectingProperty(property) || property.IsShorthand()) {
-        DCHECK(with_discrete);
-        continue;
-      }
-      if (!property.IsWebExposed(execution_context)) {
-        continue;
-      }
-
-      properties.push_back(&property);
-    }
-    property_shorthand = StylePropertyShorthand(
-        CSSPropertyID::kInvalid, properties.begin(), properties.size());
+  if (UNLIKELY(with_discrete)) {
+    return PropertiesForTransitionAllDiscrete(execution_context);
   }
-  return property_shorthand;
+  return PropertiesForTransitionAllNormal(execution_context);
 }
 
 // Properties that affect animations are not allowed to be affected by

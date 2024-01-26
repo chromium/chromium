@@ -61,7 +61,7 @@ export const SelectMixin = dedupingMixin(
         }
 
         private getSelectElement(): HTMLSelectElement {
-          return this.shadowRoot!.querySelector('select') as HTMLSelectElement;
+          return this.shadowRoot!.querySelector('select')!;
         }
 
         /**

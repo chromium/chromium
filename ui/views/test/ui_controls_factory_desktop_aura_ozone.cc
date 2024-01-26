@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -281,6 +282,17 @@ bool SendTouchEventsNotifyWhenDone(int action,
       screen_location, std::move(task));
 
   return true;
+}
+
+// static
+void UpdateDisplaySync(const std::string& display_specs) {
+  DCHECK(g_ozone_ui_controls_test_helper);
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+
+  g_ozone_ui_controls_test_helper->UpdateDisplay(display_specs,
+                                                 run_loop.QuitClosure());
+
+  run_loop.Run();
 }
 #endif
 

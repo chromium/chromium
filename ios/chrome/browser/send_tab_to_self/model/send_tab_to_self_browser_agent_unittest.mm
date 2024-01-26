@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -23,7 +24,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -146,8 +147,8 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  SendTabToSelfBrowserAgent* agent_;
-  FakeSendTabToSelfModel* model_;
+  raw_ptr<SendTabToSelfBrowserAgent> agent_;
+  raw_ptr<FakeSendTabToSelfModel> model_;
   // Storage vector for navigation items created for test cases.
   std::vector<std::unique_ptr<web::NavigationItem>> navigation_items_;
 

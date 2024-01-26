@@ -142,9 +142,9 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
-    const absl::optional<bool>& by_user) {
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
+    const std::optional<bool>& by_user) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
   if (!handler) {
@@ -261,7 +261,7 @@ void NotificationDisplayServiceImpl::GetDisplayed(
 
   bridge_delegator_->GetDisplayed(
       base::BindOnce(&NotificationDisplayServiceImpl::OnGetDisplayed,
-                     weak_factory_.GetWeakPtr(), /*origin=*/absl::nullopt,
+                     weak_factory_.GetWeakPtr(), /*origin=*/std::nullopt,
                      std::move(callback)));
 }
 
@@ -296,9 +296,9 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
-    const absl::optional<bool>& by_user,
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
+    const std::optional<bool>& by_user,
     Profile* profile) {
   base::UmaHistogramBoolean("Notifications.LoadProfileResult",
                             profile != nullptr);
@@ -346,7 +346,7 @@ void NotificationDisplayServiceImpl::OnNotificationPlatformBridgeReady() {
 }
 
 void NotificationDisplayServiceImpl::OnGetDisplayed(
-    absl::optional<GURL> origin,
+    std::optional<GURL> origin,
     DisplayedNotificationsCallback callback,
     std::set<std::string> notification_ids,
     bool supports_synchronization) {

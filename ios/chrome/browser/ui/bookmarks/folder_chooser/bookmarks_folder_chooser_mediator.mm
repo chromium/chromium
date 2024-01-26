@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator.h"
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/base/features.h"
@@ -41,7 +42,7 @@ using bookmarks::BookmarkNode;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }

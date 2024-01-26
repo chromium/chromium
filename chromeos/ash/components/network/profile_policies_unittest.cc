@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/profile_policies.h"
 
+#include <string_view>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/test/values_test_util.h"
@@ -38,7 +40,7 @@ base::Value::List NetworkConfigsList(
 // {
 //   "guid": <passed_guid>
 // }
-base::Value::Dict NetworkConfig(base::StringPiece guid) {
+base::Value::Dict NetworkConfig(std::string_view guid) {
   return base::Value::Dict().Set(::onc::network_config::kGUID, guid);
 }
 

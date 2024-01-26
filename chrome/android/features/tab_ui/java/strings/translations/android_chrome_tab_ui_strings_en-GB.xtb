@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Get notified</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
 <translation id="4212246570487010370">Continue browsing</translation>
+<translation id="427987768447457592">New tab group</translation>
 <translation id="4648718555153979859">Your tabs are grouped together here</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Hide full-screen grid</translation>
 <translation id="5076161749301278626">See store reviews?</translation>
 <translation id="5082793167783849073">Quickly compare pages by making a group. To start, touch and hold a link.</translation>
+<translation id="5161254044473106830">Title required</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{You have <ph name="TABS_COUNT_ONE" /> tab you haven't used recently}other{You have <ph name="TABS_COUNT_MANY" /> tabs you haven't used recently}}</translation>
 <translation id="5339733443032484186">Your last tab</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>

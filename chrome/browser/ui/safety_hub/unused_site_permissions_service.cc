@@ -16,6 +16,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -30,6 +31,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -87,6 +89,34 @@ base::TimeDelta GetCleanUpThreshold() {
   }
   return content_settings::features::
       kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+}
+
+bool IsContentSetting(ContentSettingsType type) {
+  auto* content_setting_registry =
+      content_settings::ContentSettingsRegistry::GetInstance();
+  return content_setting_registry->Get(type);
+}
+
+bool IsWebsiteSetting(ContentSettingsType type) {
+  auto* website_setting_registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  return website_setting_registry->Get(type);
+}
+
+bool IsChooserPermissionSupported() {
+  return base::FeatureList::IsEnabled(
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
+}
+
+std::string ConvertContentSettingsTypeToKey(ContentSettingsType type) {
+  return base::NumberToString(static_cast<int32_t>(type));
+}
+
+ContentSettingsType ConvertKeyToContentSettingsType(std::string key) {
+  int number = -1;
+  DCHECK(base::StringToInt(key, &number));
+  return static_cast<ContentSettingsType>(number);
 }
 
 }  // namespace
@@ -343,20 +373,39 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
   base::Value::List* permission_type_list =
       stored_value.GetDict().FindList(permissions::kRevokedKey);
   CHECK(permission_type_list);
-
-  // Re-grant the permissions that are revoked. This service only auto-revokes
-  // permissions that were ALLOW, so re-granting will switch those permissions
-  // back to ALLOW again.
   for (auto& permission_type : *permission_type_list) {
     // Check if stored permission type is valid.
     auto type_int = permission_type.GetIfInt();
     if (!type_int.has_value()) {
       continue;
     }
-    hcsm()->SetContentSettingCustomScope(
-        info.primary_pattern, info.secondary_pattern,
-        static_cast<ContentSettingsType>(type_int.value()),
-        ContentSetting::CONTENT_SETTING_ALLOW);
+    // Look up ContentSettingsRegistry to see if type is content setting
+    // or website setting.
+    auto type = static_cast<ContentSettingsType>(type_int.value());
+    if (IsContentSetting(type)) {
+      // ContentSettingsRegistry-based permissions with ALLOW value were
+      // revoked; re-grant them by setting ALLOW again.
+      hcsm()->SetContentSettingCustomScope(
+          info.primary_pattern, info.secondary_pattern, type,
+          ContentSetting::CONTENT_SETTING_ALLOW);
+    } else if (IsChooserPermissionSupported() && IsWebsiteSetting(type)) {
+      auto* chooser_permissions_data = stored_value.GetDict().FindDict(
+          permissions::kRevokedChooserPermissionsKey);
+      // There should be always data attached for a revoked chooser permission.
+      DCHECK(chooser_permissions_data);
+      // Chooser permissions are WebsiteSettingsRegistry-based, so it is
+      // re-granted by restoring the previously revoked Website Setting value.
+      auto* revoked_value = chooser_permissions_data->FindDict(
+          ConvertContentSettingsTypeToKey(type));
+      DCHECK(revoked_value);
+      hcsm()->SetWebsiteSettingCustomScope(
+          info.primary_pattern, info.secondary_pattern, type,
+          base::Value(std::move(*revoked_value)));
+    } else {
+      NOTREACHED() << "Unable to find ContentSettingsType in neither "
+                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+                   << ConvertContentSettingsTypeToKey(type);
+    }
   }
 
   // Ignore origin from future auto-revocations.
@@ -378,17 +427,31 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 }
 
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
-    const std::set<ContentSettingsType> permissions,
-    const std::optional<content_settings::ContentSettingConstraints> constraint,
+    const std::set<ContentSettingsType>& permissions,
+    const base::Value::Dict& chooser_permissions_data,
+    const absl::optional<content_settings::ContentSettingConstraints>
+        constraint,
     const url::Origin origin) {
   for (const auto& permission : permissions) {
-    hcsm()->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
-        ContentSettingsPattern::Wildcard(), permission,
-        ContentSetting::CONTENT_SETTING_DEFAULT);
+    if (IsContentSetting(permission)) {
+      hcsm()->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
+          ContentSettingsPattern::Wildcard(), permission,
+          ContentSetting::CONTENT_SETTING_DEFAULT);
+    } else if (IsChooserPermissionSupported() && IsWebsiteSetting(permission)) {
+      hcsm()->SetWebsiteSettingDefaultScope(origin.GetURL(), GURL(), permission,
+                                            base::Value());
+    } else {
+      NOTREACHED() << "Unable to find ContentSettingsType in neither "
+                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+                   << ConvertContentSettingsTypeToKey(permission);
+    }
   }
 
-  StorePermissionInRevokedPermissionSetting(permissions, constraint, origin);
+  StorePermissionInRevokedPermissionSetting(
+      permissions, chooser_permissions_data, constraint,
+      ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
+      ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
@@ -464,11 +527,17 @@ UnusedSitePermissionsService::UpdateOnBackgroundThread(
     base::Clock* clock,
     const scoped_refptr<HostContentSettingsMap> hcsm) {
   UnusedSitePermissionsService::UnusedPermissionMap recently_unused;
-  base::Time threshold =
+  const base::Time threshold =
       clock->Now() - content_settings::GetCoarseVisitedTimePrecision();
-  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
-  for (const content_settings::ContentSettingsInfo* info : *registry) {
-    ContentSettingsType type = info->website_settings_info()->type();
+  auto* website_setting_registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  for (const content_settings::WebsiteSettingsInfo* info :
+       *website_setting_registry) {
+    ContentSettingsType type = info->type();
+    if (!IsContentSetting(type) && IsWebsiteSetting(type) &&
+        !IsChooserPermissionSupported()) {
+      continue;
+    }
     if (!content_settings::CanTrackLastVisit(type)) {
       continue;
     }
@@ -557,13 +626,13 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
         unused_site_permissions.front().source.secondary_pattern;
 
     std::set<ContentSettingsType> revoked_permissions;
+    base::Value::Dict chooser_permissions_data;
     for (auto permission_itr = unused_site_permissions.begin();
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
       // Check if the current permission can be auto revoked.
-      ContentSetting setting =
-          content_settings::ValueToContentSetting(entry.source.setting_value);
-      if (!content_settings::CanBeAutoRevoked(entry.type, setting)) {
+      if (!content_settings::CanBeAutoRevoked(entry.type,
+                                              entry.source.setting_value)) {
         permission_itr++;
         continue;
       }
@@ -585,9 +654,24 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
             entry.source.secondary_pattern, entry.type,
             permissions::PermissionSourceUI::SAFETY_HUB_AUTO_REVOCATION);
         revoked_permissions.insert(entry.type);
-        hcsm()->SetContentSettingCustomScope(
-            entry.source.primary_pattern, entry.source.secondary_pattern,
-            entry.type, ContentSetting::CONTENT_SETTING_DEFAULT);
+        if (IsContentSetting(entry.type)) {
+          hcsm()->SetContentSettingCustomScope(
+              entry.source.primary_pattern, entry.source.secondary_pattern,
+              entry.type, ContentSetting::CONTENT_SETTING_DEFAULT);
+        } else if (IsChooserPermissionSupported() &&
+                   IsWebsiteSetting(entry.type)) {
+          chooser_permissions_data.Set(
+              ConvertContentSettingsTypeToKey(entry.type),
+              entry.source.setting_value.Clone());
+          hcsm()->SetWebsiteSettingCustomScope(entry.source.primary_pattern,
+                                               entry.source.secondary_pattern,
+                                               entry.type, base::Value());
+        } else {
+          NOTREACHED()
+              << "Unable to find ContentSettingsType in neither "
+              << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+              << ConvertContentSettingsTypeToKey(entry.type);
+        }
         unused_site_permissions.erase(permission_itr++);
       } else {
         permission_itr++;
@@ -596,9 +680,9 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 
     // Store revoked permissions on HCSM.
     if (!revoked_permissions.empty()) {
-      StorePermissionInRevokedPermissionSetting(revoked_permissions,
-                                                std::nullopt, primary_pattern,
-                                                secondary_pattern);
+      StorePermissionInRevokedPermissionSetting(
+          revoked_permissions, chooser_permissions_data, absl::nullopt,
+          primary_pattern, secondary_pattern);
     }
 
     // Handle clean up of recently_unused_permissions_ map after revocation.
@@ -620,20 +704,24 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
-    const std::set<ContentSettingsType> permissions,
-    const std::optional<content_settings::ContentSettingConstraints> constraint,
+    const std::set<ContentSettingsType>& permissions,
+    const base::Value::Dict& chooser_permissions_data,
+    const absl::optional<content_settings::ContentSettingConstraints>
+        constraint,
     const url::Origin origin) {
   // The |secondary_pattern| for
   // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
   StorePermissionInRevokedPermissionSetting(
-      permissions, constraint,
+      permissions, chooser_permissions_data, constraint,
       ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
       ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
-    const std::set<ContentSettingsType> permissions,
-    const std::optional<content_settings::ContentSettingConstraints> constraint,
+    const std::set<ContentSettingsType>& permissions,
+    const base::Value::Dict& chooser_permissions_data,
+    const absl::optional<content_settings::ContentSettingConstraints>
+        constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
   GURL url = GURL(primary_pattern.ToString());
@@ -653,11 +741,32 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
           : base::Value::List();
 
   for (const auto& permission : permissions) {
+    // Chooser permissions (not ContentSettingsRegistry-based) should have
+    // corresponding data to be restored in `chooser_permissions_data`.
+    DCHECK(IsContentSetting(permission) || !IsChooserPermissionSupported() ||
+           chooser_permissions_data.contains(
+               ConvertContentSettingsTypeToKey(permission)));
     permission_type_list.Append(static_cast<int32_t>(permission));
   }
 
   dict.Set(permissions::kRevokedKey,
            base::Value::List(std::move(permission_type_list)));
+
+  if (IsChooserPermissionSupported() && !chooser_permissions_data.empty()) {
+    base::Value::Dict existing_chooser_permissions_data =
+        dict.FindDict(permissions::kRevokedChooserPermissionsKey)
+            ? std::move(
+                  *dict.FindDict(permissions::kRevokedChooserPermissionsKey))
+            : base::Value::Dict();
+    for (auto data : chooser_permissions_data) {
+      // Chooser permissions data should have its permission type included in
+      // `permissions` set.
+      DCHECK(permissions.contains(ConvertKeyToContentSettingsType(data.first)));
+      existing_chooser_permissions_data.Set(data.first, data.second.Clone());
+    }
+    dict.Set(permissions::kRevokedChooserPermissionsKey,
+             base::Value::Dict(std::move(existing_chooser_permissions_data)));
+  }
 
   content_settings::ContentSettingConstraints default_constraint(clock_->Now());
   default_constraint.set_lifetime(GetCleanUpThreshold());

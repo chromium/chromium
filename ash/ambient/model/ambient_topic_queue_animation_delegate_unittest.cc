@@ -5,12 +5,13 @@
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/test/ambient_test_util.h"
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
+
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,7 @@ using ::testing::UnorderedElementsAre;
 
 class AmbientTopicQueueAnimationDelegateTest : public ::testing::Test {
  protected:
-  void RegisterAsset(base::StringPiece resource_id,
+  void RegisterAsset(std::string_view resource_id,
                      std::optional<gfx::Size> size) {
     CHECK(resource_metadata_.RegisterAsset("test-path", "test-name",
                                            resource_id, std::move(size)))

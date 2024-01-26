@@ -11,11 +11,14 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -1889,18 +1893,6 @@ class TabListMediator {
         return TabModelUtils.getCurrentTabId(mCurrentTabModelFilterSupplier.get().getTabModel());
     }
 
-    /**
-     * Find the index of the given tab in the {@link TabListRecyclerView}.
-     * Note that Tabs may have different index in {@link TabListRecyclerView} and {@link
-     * TabModelSelector}, like when {@link resetWithListOfTabs} above is called with MRU mode
-     * enabled.
-     * @param tabId The given Tab id.
-     * @return The index of the Tab in the {@link TabListRecyclerView}.
-     */
-    int indexOfTab(int tabId) {
-        return mModel.indexFromId(tabId);
-    }
-
     private void setupPersistedTabDataFetcherForTab(PseudoTab pseudoTab, int index) {
         if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
             assert mProfile != null;
@@ -1987,14 +1979,13 @@ class TabListMediator {
     }
 
     /**
-     * Removes a special {@link @link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that
-     * has the given {@code uiType} and/or its {@link PropertyModel} has the given
-     * {@code itemIdentifier} from the current {@link TabListModel}.
+     * Removes a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the
+     * given {@code uiType} and/or its {@link PropertyModel} has the given {@code itemIdentifier}
+     * from the current {@link TabListModel}.
      *
      * @param uiType The uiType to match.
-     * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link @link
-     *         org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional
-     *         identifier.
+     * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link
+     *     org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional identifier.
      */
     void removeSpecialItemFromModel(
             @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
@@ -2116,7 +2107,7 @@ class TabListMediator {
      * @param tab the {@link Tab} to find the group index of.
      * @return the index for the tab group within {@link mModel}
      */
-    private int getIndexForTabWithRelatedTabs(Tab tab) {
+    int getIndexForTabWithRelatedTabs(Tab tab) {
         List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
         if (!relatedTabIds.isEmpty()) {
             for (int i = 0; i < mModel.size(); i++) {
@@ -2168,5 +2159,50 @@ class TabListMediator {
         if (filter instanceof TabGroupModelFilter groupFilter) {
             groupFilter.removeTabGroupObserver(mTabGroupObserver);
         }
+    }
+
+    /**
+     * @param itemIdentifier The itemIdentifier to match.
+     * @return whether a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} with the
+     *     given {@code itemIdentifier} for its {@link PropertyModel} exists in the current {@link
+     *     TabListModel}.
+     */
+    boolean specialItemExistsInModel(@MessageService.MessageType int itemIdentifier) {
+        if (itemIdentifier == MessageService.MessageType.ALL) {
+            return mModel.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX;
+        }
+        return mModel.lastIndexForMessageItemFromType(itemIdentifier) != TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Prepare and run the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param recyclerView The {@link TabListRecyclerView} that is showing the tab list UI.
+     */
+    public void showQuickDeleteAnimation(
+            @NonNull Runnable onAnimationEnd, @NonNull TabListRecyclerView recyclerView) {
+        recyclerView.setBlockTouchInput(true);
+        Drawable originalForeground = recyclerView.getForeground();
+
+        int tabGridHeight = recyclerView.getHeight();
+        QuickDeleteAnimationGradientDrawable gradientDrawable =
+                QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
+                        mContext, tabGridHeight);
+
+        Animator wipeAnimation = gradientDrawable.createWipeAnimator(tabGridHeight);
+
+        wipeAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        recyclerView.setBlockTouchInput(false);
+                        recyclerView.setForeground(originalForeground);
+                        onAnimationEnd.run();
+                    }
+                });
+
+        recyclerView.setForeground(gradientDrawable);
+        wipeAnimation.start();
     }
 }

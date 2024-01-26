@@ -11,6 +11,7 @@
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -24,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -34,21 +36,31 @@ namespace arc {
 
 namespace {
 
+// The following values must be the same with ARC-side hard-coded values.
+// Also usually you should not directly refer to `kPortraitPhoneDp` as it may be
+// adjusted on small displays (See `GetPossibleSizeInWorkArea`).
 constexpr gfx::Size kPortraitPhoneDp(412, 732);
 constexpr gfx::Size kLandscapeTabletDp(1064, 600);
-constexpr int kDisplayEdgeOffsetDp = 32;
+constexpr int kDisplayEdgeOffsetDp = 27;
 
 using ResizeCallback = base::OnceCallback<void(views::Widget*)>;
 
-gfx::Size GetPossibleSizeInWorkArea(views::Widget* widget,
+// The algorithm in `GetPossibleSizeInWorkArea` must be aligned with ARC-side.
+gfx::Size GetPossibleSizeInWorkArea(aura::Window* window,
                                     const gfx::Size& preferred_size) {
   auto size = gfx::SizeF(preferred_size);
   const float preferred_aspect_ratio = size.width() / size.height();
 
-  auto workarea = widget->GetWorkAreaBoundsInScreen();
+  auto workarea =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
 
   // Shrink workarea with the edge offset.
   workarea.Inset(gfx::Insets(kDisplayEdgeOffsetDp));
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  if (frame_view) {
+    workarea.Inset(
+        gfx::Insets().set_top(frame_view->NonClientTopBorderHeight()));
+  }
 
   // Limit |size| to |workarea| but keep the aspect ratio.
   if (size.width() > workarea.width()) {
@@ -60,13 +72,17 @@ gfx::Size GetPossibleSizeInWorkArea(views::Widget* widget,
     size.set_height(workarea.height());
   }
 
-  const auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(widget->GetNativeWindow());
+  const auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
   // |shell_surface_base| can be null in unittests.
   if (shell_surface_base)
     size.SetToMax(gfx::SizeF(shell_surface_base->GetMinimumSize()));
 
   return gfx::ToFlooredSize(size);
+}
+
+gfx::Size GetPossibleSizeInWorkArea(const views::Widget* widget,
+                                    const gfx::Size& preferred_size) {
+  return GetPossibleSizeInWorkArea(widget->GetNativeWindow(), preferred_size);
 }
 
 void ResizeToPhone(views::Widget* widget) {
@@ -194,8 +210,8 @@ bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {
   return true;
 }
 
-int GetPortraitPhoneSizeWidth() {
-  return kPortraitPhoneDp.width();
+int GetPortraitPhoneSizeWidth(aura::Window* window) {
+  return GetPossibleSizeInWorkArea(window, kPortraitPhoneDp).width();
 }
 
 }  // namespace arc

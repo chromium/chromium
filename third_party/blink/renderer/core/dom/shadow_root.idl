@@ -40,8 +40,17 @@ interface ShadowRoot : DocumentFragment {
     [RuntimeEnabled=ScopedCustomElementRegistry]
     readonly attribute CustomElementRegistry? registry;
 
-    // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    // Declarative Shadow DOM getInnerHTML() function. This version should be
+    // considered deprecated, as we work to standardize the version below,
+    // getHTML().
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+
+    // Declarative Shadow DOM getHTML() function.
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException, RuntimeEnabled=ElementGetHTML] HTMLString getHTML(optional GetHTMLOptions options = {});
+
+    // The serializable attribute controls whether the shadow root will be
+    // serialized by getHTML({includeShadowRoots:true}).
+    [RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 
     // Scoped element creation APIs
     // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries#scoped-element-creation-apis

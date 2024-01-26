@@ -240,12 +240,10 @@ class TestTabDialogs : public TabDialogs {
   void ShowDeprecatedAppsDialog(
       const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways) override {}
+      content::WebContents* web_contents) override {}
   void ShowForceInstalledDeprecatedAppsDialog(
       const extensions::ExtensionId& app_id,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways) override {}
+      content::WebContents* web_contents) override {}
   void ShowForceInstalledPreinstalledDeprecatedAppDialog(
       const extensions::ExtensionId& app_id,
       content::WebContents* web_contents) override {}
@@ -687,6 +685,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kForceSigninFlowInProfilePicker};
   feature_engagement::test::ScopedIphFeatureList feature_list_;
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
@@ -830,39 +830,45 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   auto* profile_picker_view =
       static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
 
-  // Wait for the force signin dialog to load.
-  LOG(WARNING)
-      << "DEBUG - Picker shown. Ensuring that the dialog is shown. "
-      << (profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting()
-              ? "We already"
-              : "We don't yet")
-      << " have a dialog delegate view.";
-  GURL force_signin_webui_url = signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
-  force_signin_webui_url =
-      AddFromProfilePickerURLParameter(force_signin_webui_url);
+  if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    // The DICE navigation happens in a new web contents (for the profile being
+    // created), wait for it.
+    profiles::testing::WaitForPickerUrl(GetSigninChromeSyncDiceUrl());
+  } else {
+    // Wait for the force signin dialog to load.
+    LOG(WARNING)
+        << "DEBUG - Picker shown. Ensuring that the dialog is shown. "
+        << (profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting()
+                ? "We already"
+                : "We don't yet")
+        << " have a dialog delegate view.";
+    GURL force_signin_webui_url = signin::GetEmbeddedPromoURL(
+        signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+        signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
+    force_signin_webui_url =
+        AddFromProfilePickerURLParameter(force_signin_webui_url);
 
-  // Memorize the WebContents that shows the sign-in URL.
-  auto* signin_web_contents =
-      profile_picker_view->get_dialog_web_contents_for_testing();
-  WaitForLoadStop(force_signin_webui_url, signin_web_contents);
-  LOG(WARNING) << "DEBUG - Finished waiting for the dialog.";
+    // Memorize the WebContents that shows the sign-in URL.
+    auto* signin_web_contents =
+        profile_picker_view->get_dialog_web_contents_for_testing();
+    WaitForLoadStop(force_signin_webui_url, signin_web_contents);
+    LOG(WARNING) << "DEBUG - Finished waiting for the dialog.";
 
-  // The dialog view should be created.
-  EXPECT_TRUE(
-      profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting());
+    // The dialog view should be created.
+    EXPECT_TRUE(
+        profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting());
 
-  // A new profile should have been created for the forced sign-in flow.
-  EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
-  // Get the profile that was used to load the `force_signin_webui_url`.
-  Profile* force_signin_profile =
-      Profile::FromBrowserContext(signin_web_contents->GetBrowserContext());
-  EXPECT_TRUE(force_signin_profile);
-  // Make sure that the force_signin profile is different from the main one.
-  EXPECT_FALSE(force_signin_profile->IsSameOrParent(browser()->profile()));
+    // A new profile should have been created for the forced sign-in flow.
+    EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+    // Get the profile that was used to load the `force_signin_webui_url`.
+    Profile* force_signin_profile =
+        Profile::FromBrowserContext(signin_web_contents->GetBrowserContext());
+    EXPECT_TRUE(force_signin_profile);
+    // Make sure that the force_signin profile is different from the main one.
+    EXPECT_FALSE(force_signin_profile->IsSameOrParent(browser()->profile()));
 
-  // The tail end of the flow is handled by inline_login_*
+    // The tail end of the flow is handled by inline_login_*
+  }
 }
 
 // Force signin is disabled on Linux and ChromeOS.
@@ -907,8 +913,6 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
  private:
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kForceSigninFlowInProfilePicker};
 };
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,

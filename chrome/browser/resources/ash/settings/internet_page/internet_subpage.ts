@@ -129,6 +129,17 @@ export class SettingsInternetSubpageElement extends
         },
       },
 
+      /**
+       * Return true if instant hotspot rebrand feature flag is enabled.
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
+        },
+      },
+
       isShowingVpn_: {
         type: Boolean,
         computed: 'computeIsShowingVpn_(deviceState)',
@@ -236,6 +247,7 @@ export class SettingsInternetSubpageElement extends
   private alwaysOnVpnService_: string|undefined;
   private browserProxy_: InternetPageBrowserProxy;
   private hasCompletedScanSinceLastEnabled_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private isManaged_: boolean;
   private isShowingVpn_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -497,7 +509,8 @@ export class SettingsInternetSubpageElement extends
     }
 
     // For the Cellular/Mobile subpage, also request Tether networks.
-    if (this.deviceState.type === NetworkType.kCellular &&
+    if (!this.isInstantHotspotRebrandEnabled_ &&
+        this.deviceState.type === NetworkType.kCellular &&
         this.tetherDeviceState) {
       const filter = {
         filter: FilterType.kVisible,
@@ -606,7 +619,9 @@ export class SettingsInternetSubpageElement extends
   private enableToggleIsVisible_(deviceState: OncMojo.DeviceStateProperties|
                                  undefined): boolean {
     return !!deviceState && deviceState.type !== NetworkType.kEthernet &&
-        deviceState.type !== NetworkType.kVPN;
+        deviceState.type !== NetworkType.kVPN &&
+        (!this.isInstantHotspotRebrandEnabled_ ||
+         deviceState.type !== NetworkType.kTether);
   }
 
   private enableToggleIsEnabled_(deviceState: OncMojo.DeviceStateProperties|
@@ -637,6 +652,7 @@ export class SettingsInternetSubpageElement extends
     }
     switch (deviceState!.type) {
       case NetworkType.kTether:
+        return this.i18n('internetToggleTetherA11yLabel');
       case NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:
@@ -869,7 +885,8 @@ export class SettingsInternetSubpageElement extends
       _tetherDeviceState: OncMojo.DeviceStateProperties|undefined): string {
     const type = deviceState.type;
     if (type === NetworkType.kTether ||
-        (type === NetworkType.kCellular && this.tetherDeviceState)) {
+        (!this.isInstantHotspotRebrandEnabled_ &&
+         type === NetworkType.kCellular && this.tetherDeviceState)) {
       return this.i18nAdvanced('internetNoNetworksMobileData').toString();
     }
 

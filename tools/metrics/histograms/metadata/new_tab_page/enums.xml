@@ -233,6 +233,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Third party theme"/>
   <int value="4" label="Uploaded image"/>
   <int value="5" label="Wallpaper search image"/>
+  <int value="6" label="Wallpaper search inspiration image"/>
 </enum>
 
 <enum name="NTPChromeWebStoreOpen">
@@ -301,6 +302,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Wallpaper search style value changed."/>
   <int value="13" label="Wallpaper search mood value changed."/>
   <int value="14" label="Wallpaper search color value changed."/>
+  <int value="15" label="Wallpaper search inspiration theme selected."/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
@@ -495,6 +497,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Open Performance Settings"/>
   <int value="9" label="Open New Tab Page and Start Customize Chrome Tutorial"/>
   <int value="10" label="Start Password Manager Tutorial"/>
+  <int value="11" label="Start Saved Tab Group Tutorial"/>
 </enum>
 
 <enum name="SearchResumptionModule.ModuleNotShownReason">

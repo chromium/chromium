@@ -127,4 +127,7 @@ specific_include_rules = {
   "ChromeAsyncTabLauncher\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
+  "DragAndDropLauncherActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
 }

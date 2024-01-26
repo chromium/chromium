@@ -48,8 +48,10 @@
 #include "url/url_util.h"
 
 namespace content {
-
 namespace {
+
+using testing::Contains;
+using testing::Pair;
 
 constexpr char16_t kPromiseResolvedPageTitle[] = u"Resolved";
 
@@ -118,7 +120,6 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                                 GetDisabledFeatures());
-    base::test::AllowCheckIsTestForTesting();
     ContentBrowserTest::SetUp();
   }
   virtual const FeaturesType& GetEnabledFeatures() {
@@ -400,6 +401,39 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(2);
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK, net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, RequestWithCookie) {
+  const std::string cookie = "keepaliveTestCookie=testCookieValue";
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+
+  // Navigate to an empty page first without making any requests.
+  ASSERT_TRUE(NavigateToURL(web_contents(), server()->GetURL("/empty.html")));
+  // Make a fetch keepalive request, expected to succeed.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    document.cookie = $1 + '; path=/';
+    fetch($2, {keepalive: true, method: $3});
+  )",
+                               cookie, kKeepAliveEndpoint, method),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Ensure the keepalive request is sent, but delay response.
+  request_handler->WaitForRequest();
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  // End the keepalive request by sending back response.
+  request_handler->Send(k200TextResponse);
+  request_handler->Done();
+
+  loaders_observer().WaitForTotalOnReceiveResponseForwarded(1);
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  // Expect the request to contain the cookie.
+  EXPECT_THAT(request_handler->http_request()->headers,
+              Contains(Pair(net::HttpRequestHeaders::kCookie, cookie)));
 }
 
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,

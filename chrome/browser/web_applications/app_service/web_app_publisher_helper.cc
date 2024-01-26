@@ -239,7 +239,7 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
 }
 
 apps::InstallSource GetInstallSource(
-    absl::optional<webapps::WebappInstallSource> source) {
+    std::optional<webapps::WebappInstallSource> source) {
   if (!source) {
     return apps::InstallSource::kUnknown;
   }
@@ -765,8 +765,13 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   }
 #endif
 
-  app->window_mode = ConvertDisplayModeToWindowMode(
-      registrar().GetAppEffectiveDisplayMode(web_app->app_id()));
+  // For the window mode setting in app service, with shortstand enabled, this
+  // field is no longer needed. However we want to keep populating the value
+  // with shortstand disabled so that we can use it to show a user education
+  // nudge when the display mode is changed by shortstand.
+  app->window_mode =
+      ConvertDisplayModeToWindowMode(registrar().GetAppEffectiveDisplayMode(
+          web_app->app_id(), /*ignore_shortstand = */ true));
 
   const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
   app->run_on_os_login = apps::RunOnOsLogin(
@@ -834,16 +839,12 @@ void WebAppPublisherHelper::UninstallWebApp(
       [](std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {},
       std::move(profile_keep_alive));
   content::ClearSiteData(
-      base::BindRepeating(
-          [](content::BrowserContext* browser_context) {
-            return browser_context;
-          },
-          base::Unretained(profile())),
-      /*storage_partition_config=*/absl::nullopt, origin,
+      profile()->GetWeakPtr(),
+      /*storage_partition_config=*/std::nullopt, origin,
       content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{}, /*avoid_closing_connections=*/false,
-      /*cookie_partition_key=*/absl::nullopt,
-      /*storage_key=*/absl::nullopt,
+      /*cookie_partition_key=*/std::nullopt,
+      /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, std::move(callback));
 }
 
@@ -1011,7 +1012,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
   CHECK(intent);
 
   if (IsShuttingDown()) {
-    std::move(callback).Run(apps::LaunchResult(apps::State::FAILED));
+    std::move(callback).Run(apps::LaunchResult(apps::State::kFailed));
     return;
   }
 
@@ -1039,7 +1040,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       base::BindOnce(
           [](apps::LaunchCallback callback, apps::LaunchSource launch_source,
-             const std::vector<content::WebContents*>& web_contentses) {
+             std::vector<content::WebContents*> web_contentses) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
             for (content::WebContents* web_contents : web_contentses) {
@@ -1072,7 +1073,7 @@ void WebAppPublisherHelper::LaunchAppWithParams(
       params.intent);
 
   bool is_system_web_app = false;
-  absl::optional<GURL> override_url = absl::nullopt;
+  std::optional<GURL> override_url = std::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
@@ -1442,8 +1443,12 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
   if (apps::AppServiceProxyFactory::GetForProfile(profile_)
           ->AppRegistryCache()
           .IsAppInstalled(app_id)) {
-    PublishWindowModeUpdate(app_id,
-                            registrar().GetAppEffectiveDisplayMode(app_id));
+    // For the window mode setting in app service, with shortstand enabled, this
+    // field is no longer needed. However we want to keep populating the value
+    // with shortstand disabled so that we can use it to show a user education
+    // nudge when the display mode is changed by shortstand.
+    PublishWindowModeUpdate(app_id, registrar().GetAppEffectiveDisplayMode(
+                                        app_id, /*ignore_shortstand = */ true));
   } else {
     const WebApp* web_app = GetWebApp(app_id);
     if (web_app) {
@@ -1703,8 +1708,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     apps::IntentPtr intent,
     apps::LaunchSource launch_source,
     int64_t display_id,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback) {
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   bool is_file_handling_launch =
       intent && !intent->files.empty() && !intent->IsShareIntent();
   auto params = apps::CreateAppLaunchParamsForIntent(
@@ -1721,7 +1725,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
   LaunchAppWithParams(
       std::move(params),
       base::BindOnce(
-          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          [](base::OnceCallback<void(std::vector<content::WebContents*>)>
                  callback,
              content::WebContents* contents) {
             // These calls are piped through LaunchWebAppCommand and can end
@@ -1743,7 +1747,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
 
   std::vector<std::string> policy_ids;
 
-  if (absl::optional<base::StringPiece> preinstalled_web_app_policy_id =
+  if (std::optional<base::StringPiece> preinstalled_web_app_policy_id =
           apps_util::GetPolicyIdForPreinstalledWebApp(app_id)) {
     policy_ids.emplace_back(*preinstalled_web_app_policy_id);
   }
@@ -1754,7 +1758,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     const auto& swa_data = web_app.client_data().system_web_app_data;
     DCHECK(swa_data);
     const ash::SystemWebAppType swa_type = swa_data->system_app_type;
-    const absl::optional<base::StringPiece> swa_policy_id =
+    const std::optional<base::StringPiece> swa_policy_id =
         apps_util::GetPolicyIdForSystemWebAppType(swa_type);
     if (swa_policy_id) {
       policy_ids.emplace_back(*swa_policy_id);
@@ -1852,7 +1856,7 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
 
   if (persistent_metadata) {
     // For persistent notifications, find the web app with the SW scope url.
-    absl::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
+    std::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
         profile(), persistent_metadata->service_worker_scope,
         /*window_only=*/false);
     if (app_id.has_value()) {
@@ -1890,8 +1894,7 @@ bool WebAppPublisherHelper::ShouldShowBadge(const std::string& app_id,
 void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     const std::string& app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback) {
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   std::vector<base::FilePath> file_paths = params.launch_files;
   auto launch_callback =
       base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,
@@ -1921,8 +1924,7 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     std::string app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback,
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     bool allowed,
     bool remember_user_choice) {
   if (remember_user_choice) {
@@ -1985,7 +1987,7 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
 void WebAppPublisherHelper::OnLaunchCompleted(
     apps::AppLaunchParams params_for_restore,
     bool is_system_web_app,
-    absl::optional<GURL> override_url,
+    std::optional<GURL> override_url,
     base::OnceCallback<void(content::WebContents*)> on_complete,
     base::WeakPtr<Browser> browser,
     base::WeakPtr<content::WebContents> web_contents,
@@ -2020,7 +2022,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 
 void WebAppPublisherHelper::OnGetWebAppSize(
     webapps::AppId app_id,
-    absl::optional<ComputedAppSize> size) {
+    std::optional<ComputedAppSize> size) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
   if (!size.has_value()) {
     return;

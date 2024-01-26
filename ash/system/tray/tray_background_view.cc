@@ -719,7 +719,7 @@ void TrayBackgroundView::FadeInAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         DCHECK(0 <= smoothness && smoothness <= 100);
         base::UmaHistogramPercentage(kFadeInAnimationSmoothnessHistogramName,
                                      smoothness);
@@ -790,7 +790,7 @@ void TrayBackgroundView::BounceInAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         DCHECK(0 <= smoothness && smoothness <= 100);
         base::UmaHistogramPercentage(kBounceInAnimationSmoothnessHistogramName,
                                      smoothness);
@@ -866,7 +866,7 @@ void TrayBackgroundView::HideAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         DCHECK(0 <= smoothness && smoothness <= 100);
         base::UmaHistogramPercentage(kHideAnimationSmoothnessHistogramName,
                                      smoothness);

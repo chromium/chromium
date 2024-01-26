@@ -46,7 +46,8 @@ OneTimePermissionProvider::~OneTimePermissionProvider() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
+// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
+// when we call NotifyObservers().
 std::unique_ptr<content_settings::RuleIterator>
 OneTimePermissionProvider::GetRuleIterator(
     ContentSettingsType content_type,
@@ -79,16 +80,15 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints,
     const content_settings::PartitionKey& partition_key) {
-  // The current implementation of this method doesn't handle website settings
-  // because this method doesn't know how to read the state in value for them.
-  // Additionally the transitions as well as responsibility sharing between this
-  // provider and the pref provider may be different in those cases. Such
-  // settings are currently rejected by
-  // `PermissionUtil::CanPermissionBeAllowedOnce`. If in the future such
-  // settings should be supported, this method will need to be amended
-  // accordingly.
   if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(
           content_settings_type)) {
+    return false;
+  }
+
+  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
+          content_settings_type)) {
+    // Object permissions cannot be mapped to a ContentSetting and thus cannot
+    // be handled by this provider.
     return false;
   }
 
@@ -187,14 +187,14 @@ bool OneTimePermissionProvider::UpdateLastVisitTime(
   return false;
 }
 
-absl::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
+std::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    absl::optional<ContentSetting> setting_to_match,
+    std::optional<ContentSetting> setting_to_match,
     const content_settings::PartitionKey& partition_key) {
   // Setting renewal is not supported for one-time permissions.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void OneTimePermissionProvider::ClearAllContentSettingsRules(
@@ -236,7 +236,8 @@ void OneTimePermissionProvider::ExpireWebsiteSetting(
   permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
       content_settings_type,
       permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME);
-  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
+                  /*partition_key=*/nullptr);
 }
 
 void OneTimePermissionProvider::OnSuspend() {
@@ -338,7 +339,7 @@ void OneTimePermissionProvider::DeleteEntriesAndNotify(
 
   for (const auto& pattern : entries_to_delete) {
     NotifyObservers(pattern.primary_pattern, pattern.secondary_pattern,
-                    pattern.type);
+                    pattern.type, /*partition_key=*/nullptr);
   }
 }
 

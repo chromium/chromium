@@ -164,6 +164,8 @@ class ArcMetricsService : public KeyedService,
                                     base::TimeDelta duration) override;
   void ReportWebViewProcessStarted() override;
   void ReportArcKeyMintError(mojom::ArcKeyMintError error) override;
+  void ReportDragResizeLatency(
+      const std::vector<base::TimeDelta>& durations) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

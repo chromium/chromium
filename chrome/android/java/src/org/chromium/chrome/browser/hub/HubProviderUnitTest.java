@@ -36,6 +36,9 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubProvider}. */
@@ -56,6 +59,9 @@ public class HubProviderUnitTest {
     @Mock private Pane mMockIncognitoTabSwitcherPane;
     @Mock private Pane mMockBookmarksPane;
     @Mock private BackPressManager mBackPressManagerMock;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
 
     private Activity mActivity;
     private HubProvider mHubProvider;
@@ -70,7 +76,6 @@ public class HubProviderUnitTest {
         when(mTabModelSelector.getCurrentModelTabCountSupplier()).thenReturn(mTabCountSupplier);
         mTabCountSupplier.set(0);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-
     }
 
     private void onActivity(Activity activity) {
@@ -81,7 +86,10 @@ public class HubProviderUnitTest {
                         mActivity,
                         new DefaultPaneOrderController(),
                         mBackPressManagerMock,
-                        () -> mTabModelSelector);
+                        mMenuOrKeyboardActionController,
+                        () -> mSnackbarManager,
+                        () -> mTabModelSelector,
+                        () -> mMenuButtonCoordinator);
     }
 
     @After
@@ -105,7 +113,6 @@ public class HubProviderUnitTest {
                 LazyOneshotSupplier.fromValue(mMockIncognitoTabSwitcherPane));
         builder.registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mMockBookmarksPane));
         assertFalse(builder.isBuilt());
-
 
         HubManager hubManager = hubManagerSupplier.get();
         assertNotNull(hubManager);

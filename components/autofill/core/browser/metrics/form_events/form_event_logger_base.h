@@ -49,6 +49,10 @@ class FormEventLoggerBase {
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       bool off_the_record);
 
+  void OnDidRefill(
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const FormStructure& form);
+
   void OnWillSubmitForm(
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const FormStructure& form);

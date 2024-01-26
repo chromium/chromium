@@ -36,21 +36,23 @@ namespace ash {
 using ::testing::ElementsAre;
 using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
 
+constexpr char kMetadataSuffix[] = ".metadata";
+
 // Matcher defined to compare BackgroundImageInfo.
 // We ignore the creation_time and last_accessed for now, because that were
 // obtained from the filesystem, which is hard to mock for now.
 auto BackgroundImageInfoMatcher(const base::FilePath& basename,
-                                const std::string& jpeg_bytes) {
+                                const std::string& jpeg_bytes,
+                                const std::string& metadata) {
   return testing::AllOf(
       testing::Field("basename", &BackgroundImageInfo::basename,
                      testing::Eq(basename)),
       testing::Field("jpeg_bytes", &BackgroundImageInfo::jpeg_bytes,
-                     testing::Eq(jpeg_bytes)));
-}
+                     testing::Eq(jpeg_bytes)),
+      testing::Field("metadata", &BackgroundImageInfo::metadata,
+                     testing::Eq(metadata))
 
-base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
-  return base::FilePath(
-      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpg"}));
+  );
 }
 
 constexpr char kTestAccount[] = "testuser@gmail.com";
@@ -83,9 +85,6 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         file_tmp_dir_.GetPath().AppendASCII("camera_background_run_dir_");
     ASSERT_TRUE(base::CreateDirectory(camera_background_img_dir_));
     ASSERT_TRUE(base::CreateDirectory(camera_background_run_dir_));
-
-    filename1_ = HashAsFileName(content1_);
-    filename2_ = HashAsFileName(content2_);
   }
 
   void TearDown() override {
@@ -197,11 +196,17 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
-  const std::string content1_ = "fake-content1_";
-  const std::string content2_ = "fake-content2_";
+  const SeaPenImage content1_ = SeaPenImage("fake-content1_", 12345);
+  const SeaPenImage content2_ = SeaPenImage("fake-content2_", 888);
+  const std::string metadata1_ = "metadata1_";
+  const std::string metadata2_ = "metadata2_";
 
-  base::FilePath filename1_;
-  base::FilePath filename2_;
+  const base::FilePath filename1_ = base::FilePath("12345.jpg");
+  const base::FilePath filename2_ = base::FilePath("888.jpg");
+  const base::FilePath metadata_filename1_ =
+      filename1_.AddExtensionASCII(kMetadataSuffix);
+  base::FilePath metadata_filename2_ =
+      filename2_.AddExtensionASCII(kMetadataSuffix);
 
   base::ScopedTempDir file_tmp_dir_;
   base::FilePath camera_background_img_dir_;
@@ -546,6 +551,23 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
   EXPECT_FALSE(camera_effects_controller()
                    ->GetCameraEffects()
                    ->background_filepath.has_value());
+
+  // Set background image again.
+  camera_effects_controller()->SetBackgroundImage(
+      base::FilePath(relative_path),
+      base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
+  task_environment()->RunUntilIdle();
+
+  // Check background replace result from pref.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(true, relative_path));
+
+  // Turn off backgroundblur or replace.
+  const auto off_state = CameraEffectsController::BackgroundBlurPrefValue::kOff;
+  SetBackgroundBlurEffectState(off_state);
+  EXPECT_EQ(GetBackgroundBlurPref(), off_state);
+
+  // Background replace should be turned off.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
@@ -590,7 +612,7 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
 
   // Set background image from content1_.
   camera_effects_controller()->SetBackgroundImageFromContent(
-      std::string(content1_),
+      content1_, metadata1_,
       base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
   task_environment()->RunUntilIdle();
 
@@ -602,15 +624,16 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
   camera_effects_controller()->GetRecentlyUsedBackgroundImages(
       3, base::BindLambdaForTesting(
              [&](const std::vector<BackgroundImageInfo>& info) {
-               EXPECT_THAT(info, ElementsAre(BackgroundImageInfoMatcher(
-                                     filename1_, content1_)));
+               EXPECT_THAT(info,
+                           ElementsAre(BackgroundImageInfoMatcher(
+                               filename1_, content1_.jpg_bytes, metadata1_)));
                EXPECT_EQ(GetFileInBackgroundRunDir(), filename1_);
              }));
   task_environment()->RunUntilIdle();
 
   // Set background image from content2_.
   camera_effects_controller()->SetBackgroundImageFromContent(
-      std::string(content2_),
+      content2_, metadata2_,
       base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
   task_environment()->RunUntilIdle();
 
@@ -619,15 +642,16 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
               testing::Pair(true, filename2_.value()));
 
   camera_effects_controller()->GetRecentlyUsedBackgroundImages(
-      3,
-      base::BindLambdaForTesting(
-          [&](const std::vector<BackgroundImageInfo>& info) {
-            EXPECT_THAT(
-                info,
-                ElementsAre(BackgroundImageInfoMatcher(filename2_, content2_),
-                            BackgroundImageInfoMatcher(filename1_, content1_)));
-            EXPECT_EQ(GetFileInBackgroundRunDir(), filename2_);
-          }));
+      3, base::BindLambdaForTesting(
+             [&](const std::vector<BackgroundImageInfo>& info) {
+               EXPECT_THAT(
+                   info, ElementsAre(
+                             BackgroundImageInfoMatcher(
+                                 filename2_, content2_.jpg_bytes, metadata2_),
+                             BackgroundImageInfoMatcher(
+                                 filename1_, content1_.jpg_bytes, metadata1_)));
+               EXPECT_EQ(GetFileInBackgroundRunDir(), filename2_);
+             }));
   task_environment()->RunUntilIdle();
 
   // SetBackgroundImage with filename1_ should update the last activity
@@ -642,15 +666,16 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
               testing::Pair(true, filename1_.value()));
 
   camera_effects_controller()->GetRecentlyUsedBackgroundImages(
-      3,
-      base::BindLambdaForTesting(
-          [&](const std::vector<BackgroundImageInfo>& info) {
-            EXPECT_THAT(
-                info,
-                ElementsAre(BackgroundImageInfoMatcher(filename1_, content1_),
-                            BackgroundImageInfoMatcher(filename2_, content2_)));
-            EXPECT_EQ(GetFileInBackgroundRunDir(), filename1_);
-          }));
+      3, base::BindLambdaForTesting(
+             [&](const std::vector<BackgroundImageInfo>& info) {
+               EXPECT_THAT(
+                   info, ElementsAre(
+                             BackgroundImageInfoMatcher(
+                                 filename1_, content1_.jpg_bytes, metadata1_),
+                             BackgroundImageInfoMatcher(
+                                 filename2_, content2_.jpg_bytes, metadata2_)));
+               EXPECT_EQ(GetFileInBackgroundRunDir(), filename1_);
+             }));
   task_environment()->RunUntilIdle();
 
   // Remove filename2_.
@@ -666,8 +691,9 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
   camera_effects_controller()->GetRecentlyUsedBackgroundImages(
       3, base::BindLambdaForTesting(
              [&](const std::vector<BackgroundImageInfo>& info) {
-               EXPECT_THAT(info, ElementsAre(BackgroundImageInfoMatcher(
-                                     filename1_, content1_)));
+               EXPECT_THAT(info,
+                           ElementsAre(BackgroundImageInfoMatcher(
+                               filename1_, content1_.jpg_bytes, metadata1_)));
              }));
   task_environment()->RunUntilIdle();
 
@@ -702,7 +728,7 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageFileNames) {
 
   // Set background image from content1_.
   camera_effects_controller()->SetBackgroundImageFromContent(
-      std::string(content1_),
+      content1_, metadata1_,
       base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
   task_environment()->RunUntilIdle();
 
@@ -715,7 +741,7 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageFileNames) {
 
   // Set background image from content2_.
   camera_effects_controller()->SetBackgroundImageFromContent(
-      std::string(content2_),
+      content2_, metadata2_,
       base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
   task_environment()->RunUntilIdle();
 
@@ -766,7 +792,7 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageInfo) {
 
   // Set background image from content1_.
   camera_effects_controller()->SetBackgroundImageFromContent(
-      std::string(content1_),
+      content1_, metadata1_,
       base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
   task_environment()->RunUntilIdle();
 
@@ -774,18 +800,35 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageInfo) {
   camera_effects_controller()->GetBackgroundImageInfo(
       filename1_, base::BindLambdaForTesting(
                       [&](const std::optional<BackgroundImageInfo>& info) {
-                        EXPECT_THAT(info.value(), BackgroundImageInfoMatcher(
-                                                      filename1_, content1_));
+                        EXPECT_THAT(
+                            info.value(),
+                            BackgroundImageInfoMatcher(
+                                filename1_, content1_.jpg_bytes, metadata1_));
+                      }));
+  task_environment()->RunUntilIdle();
+
+  // Delete metadata_filename1_ will return empty metadata.
+  camera_effects_controller()->RemoveBackgroundImage(
+      metadata_filename1_,
+      base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
+  task_environment()->RunUntilIdle();
+
+  camera_effects_controller()->GetBackgroundImageInfo(
+      filename1_, base::BindLambdaForTesting(
+                      [&](const std::optional<BackgroundImageInfo>& info) {
+                        EXPECT_THAT(info.value(),
+                                    BackgroundImageInfoMatcher(
+                                        filename1_, content1_.jpg_bytes, ""));
                       }));
   task_environment()->RunUntilIdle();
 
   // GetBackgroundImageInfo should return nullopt for filename2_ because the
   // file is not created.
   camera_effects_controller()->GetBackgroundImageInfo(
-      filename2_, base::BindLambdaForTesting(
-                      [&](const std::optional<BackgroundImageInfo>& info) {
-                        EXPECT_FALSE(info.has_value());
-                      }));
+      filename2_,
+      base::BindOnce([](const std::optional<BackgroundImageInfo>& info) {
+        EXPECT_FALSE(info.has_value());
+      }));
   task_environment()->RunUntilIdle();
 }
 

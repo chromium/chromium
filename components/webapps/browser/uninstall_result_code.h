@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_
 #define COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_
 
-#include <string>
+#include <iosfwd>
 
 namespace webapps {
 
@@ -19,7 +19,7 @@ enum class UninstallResultCode {
 
 bool UninstallSucceeded(UninstallResultCode code);
 
-std::string ConvertUninstallResultCodeToString(UninstallResultCode code);
+std::ostream& operator<<(std::ostream& os, UninstallResultCode code);
 
 }  // namespace webapps
 

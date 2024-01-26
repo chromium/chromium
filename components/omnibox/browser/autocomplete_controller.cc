@@ -5,8 +5,8 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 
 #include <inttypes.h>
-
 #include <limits.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <map>
@@ -84,6 +84,10 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/featured_search_provider.h"
+#endif
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/actions/history_clusters_action.h"
@@ -959,6 +963,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
     providers_.push_back(open_tab_provider_.get());
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
+    providers_.push_back(new FeaturedSearchProvider(provider_client_.get()));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type) {
@@ -1097,8 +1106,12 @@ void AutocompleteController::AggregateNewMatches() {
         match->swap_contents_and_description = true;
       }
 
-      if (omnibox_feature_configs::ForceAllowedToBeDefault::Get().enabled)
-        match->SetAllowedToBeDefault(input_);
+      if (omnibox_feature_configs::ForceAllowedToBeDefault::Get().enabled &&
+          !match->allowed_to_be_default_match && match->keyword.empty() &&
+          !input_.prevent_inline_autocomplete()) {
+        match->allowed_to_be_default_match = true;
+        match->RecordAdditionalInfo("force allowed to be default", "true");
+      }
     }
 
     internal_result_.MergeSuggestionGroupsMap(
@@ -1128,7 +1141,9 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
     return;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (OmniboxFieldTrial::GetMLConfig().stable_search_ranking) {
+  if (OmniboxFieldTrial::GetMLConfig().mapped_search_blending) {
+    RunBatchUrlScoringModelMappedSearchBlending(old_result);
+  } else if (OmniboxFieldTrial::GetMLConfig().stable_search_blending) {
     RunBatchUrlScoringModelWithStableSearches(old_result);
   } else {
     RunBatchUrlScoringModel(old_result);
@@ -1845,8 +1860,8 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
   // Redistribute shortcut boosting but preserve the # of URLs above searches.
   // Don't count boosted shortcuts that were traditionally the default, because
   // their position is already preserved when assuring the default suggestion
-  // remains a swearch or URL. Otherwise, if ML ranking picks a
-  // non-boosted-shortcted as the default, there would be an extra URL above
+  // remains a search or URL. Otherwise, if ML ranking picks a
+  // non-boosted-shortcut as the default, there would be an extra URL above
   // searches.
   size_t num_boosted_shortcuts_below_default = 0;
   std::vector<int> scores_pool;
@@ -1888,8 +1903,12 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
     return;
 
   std::vector<std::pair<float, size_t>> prediction_and_position_heap;
-  for (size_t i = 0; i < results.size(); ++i)
+  for (size_t i = 0; i < results.size(); ++i) {
+    auto& match = internal_result_.matches_[scored_positions[i]];
+    match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
+    match.RecordAdditionalInfo("ml model output", *results[i]);
     prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
+  }
   base::ranges::sort(prediction_and_position_heap, std::greater<>(),
                      [](const auto& pair) { return pair.first; });
 
@@ -1928,6 +1947,65 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
       num_boosted_shortcuts_below_default--;
     } else
       match.shortcut_boosted = false;
+  }
+
+  for (Observer& obs : observers_)
+    obs.OnMlScored(this, internal_result_);
+}
+
+void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
+    OldResult& old_result) {
+  TRACE_EVENT0(
+      "omnibox",
+      "AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending");
+
+  // Run the model for the eligible matches.
+  std::vector<const ScoringSignals*> batch_scoring_signals;
+  std::vector<size_t> scored_positions;
+  for (size_t i = 0; i < internal_result_.size(); ++i) {
+    const auto& match = internal_result_.matches_[i];
+    if (!match.IsUrlScoringEligible())
+      continue;
+    batch_scoring_signals.push_back(&match.scoring_signals.value());
+    scored_positions.push_back(i);
+  }
+
+  if (batch_scoring_signals.empty())
+    return;
+
+  auto elapsed_timer = base::ElapsedTimer();
+  const auto results = provider_client_->GetAutocompleteScoringModelService()
+                           ->BatchScoreAutocompleteUrlMatchesSync(
+                               std::move(batch_scoring_signals));
+  if (results.empty())
+    return;
+
+  // Record how many eligible matches the model was executed for.
+  base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
+                               results.size());
+
+  // Record how long it took to execute the model for all eligible matches.
+  base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
+                          elapsed_timer.Elapsed());
+
+  // Record whether the model was executed for at least one eligible match.
+  provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+      metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
+
+  if (OmniboxFieldTrial::IsMlUrlScoringCounterfactual())
+    return;
+
+  const int min = OmniboxFieldTrial::GetMLConfig().mapped_search_blending_min;
+  const int max = OmniboxFieldTrial::GetMLConfig().mapped_search_blending_max;
+  const int grouping_threshold = OmniboxFieldTrial::GetMLConfig()
+                                     .mapped_search_blending_grouping_threshold;
+
+  for (size_t i = 0; i < results.size(); ++i) {
+    auto& match = internal_result_.matches_[scored_positions[i]];
+    match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
+    match.RecordAdditionalInfo("ml model output", *results[i]);
+    match.relevance = min + *results[i] * (max - min);
+    match.shortcut_boosted = match.relevance > grouping_threshold;
   }
 
   for (Observer& obs : observers_)

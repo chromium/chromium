@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "content/public/common/process_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // ModuleInfoKey and ModuleInfoData are used in pair by the ModuleDatabase to
 // maintain information about a module, usually in a std::map.
@@ -110,7 +110,7 @@ struct ModuleInfoData {
   uint32_t module_properties;
 
   // The inspection result obtained via InspectModule().
-  absl::optional<ModuleInspectionResult> inspection_result;
+  std::optional<ModuleInspectionResult> inspection_result;
 };
 
 // Given a module located at |module_path|, returns a populated

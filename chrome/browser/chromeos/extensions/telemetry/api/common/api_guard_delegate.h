@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_API_GUARD_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -50,7 +50,7 @@ class ApiGuardDelegate {
   // is sent without a value, the user can access the API; otherwise, the
   // relevant error message is returned.
   using CanAccessApiCallback =
-      base::OnceCallback<void(absl::optional<std::string> error_message)>;
+      base::OnceCallback<void(std::optional<std::string> error_message)>;
 
   ApiGuardDelegate(const ApiGuardDelegate&) = delete;
   ApiGuardDelegate& operator=(const ApiGuardDelegate&) = delete;

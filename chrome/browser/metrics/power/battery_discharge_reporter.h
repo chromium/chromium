@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_POWER_BATTERY_DISCHARGE_REPORTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
@@ -14,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
  public:
@@ -31,14 +31,14 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
 
   // base::BatteryStateSampler::Observer:
   void OnBatteryStateSampled(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state) override;
 
  private:
   // Reports battery discharge histograms for a 1 minute interval.
   void ReportOneMinuteInterval(
       base::TimeDelta interval_duration,
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state);
 
 #if BUILDFLAG(IS_WIN)
@@ -51,7 +51,7 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
   // verify if using a longer interval alleviates the problem.
   void ReportTenMinutesInterval(
       base::TimeDelta interval_duration,
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -71,15 +71,15 @@ class BatteryDischargeReporter : public base::BatteryStateSampler::Observer {
 
   // The time and battery state at the last event received from
   // `sampling_event_source_`.
-  absl::optional<base::TimeTicks> one_minute_interval_start_time_;
-  absl::optional<base::BatteryLevelProvider::BatteryState>
+  std::optional<base::TimeTicks> one_minute_interval_start_time_;
+  std::optional<base::BatteryLevelProvider::BatteryState>
       one_minute_interval_start_battery_state_;
 
 #if BUILDFLAG(IS_WIN)
   // The time and battery state at an event received from
   // `sampling_event_source_` up to 10 minutes in the past.
-  absl::optional<base::TimeTicks> ten_minutes_interval_start_time_;
-  absl::optional<base::BatteryLevelProvider::BatteryState>
+  std::optional<base::TimeTicks> ten_minutes_interval_start_time_;
+  std::optional<base::BatteryLevelProvider::BatteryState>
       ten_minutes_interval_start_battery_state_;
 #endif  // BUILDFLAG(IS_WIN)
 

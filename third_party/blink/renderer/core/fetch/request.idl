@@ -8,7 +8,7 @@ typedef (Request or USVString) RequestInfo;
 
 enum RequestDestination {
     // https://fetch.spec.whatwg.org/#requestdestination
-    "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report",
+    "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "json", "manifest", "object", "paintworklet", "report",
     "script", "sharedworker", "style",  "track", "video", "worker", "xslt",
 
     // https://wicg.github.io/fenced-frame/#new-request-destination

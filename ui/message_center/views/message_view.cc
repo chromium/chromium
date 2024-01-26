@@ -69,6 +69,8 @@ MessageView::MessageView(const Notification& notification)
       notifier_id_(notification.notifier_id()),
       timestamp_(notification.timestamp()),
       slide_out_controller_(this, this) {
+  SetNotifyEnterExitOnChild(true);
+
   if (features::IsNotificationGesturesUpdateEnabled()) {
     slide_out_controller_.set_trackpad_gestures_enabled(true);
   }
@@ -127,7 +129,7 @@ std::u16string MessageView::CreateAccessibleName(
     accessible_lines.push_back(notification.context_message());
   std::vector<NotificationItem> items = notification.items();
   for (size_t i = 0; i < items.size() && i < kNotificationMaximumItems; ++i) {
-    accessible_lines.push_back(items[i].title + u" " + items[i].message);
+    accessible_lines.push_back(items[i].title() + u" " + items[i].message());
   }
   return base::JoinString(accessible_lines, u"\n");
 }
@@ -253,7 +255,12 @@ void MessageView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MessageView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateControlButtonsVisibility();
   MessageCenter::Get()->OnMessageViewHovered(notification_id_);
+}
+
+void MessageView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateControlButtonsVisibility();
 }
 
 bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -303,25 +310,10 @@ void MessageView::OnBlur() {
 }
 
 void MessageView::OnGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN: {
-      SetDrawBackgroundAsActive(true);
-      break;
-    }
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_END: {
-      SetDrawBackgroundAsActive(false);
-      break;
-    }
-    case ui::ET_GESTURE_TAP: {
-      SetDrawBackgroundAsActive(false);
-      MessageCenter::Get()->ClickOnNotification(notification_id_);
-      event->SetHandled();
-      return;
-    }
-    default: {
-      // Do nothing
-    }
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    MessageCenter::Get()->ClickOnNotification(notification_id_);
+    event->SetHandled();
+    return;
   }
 
   if (!event->IsScrollGestureEvent() && !event->IsFlingScrollEvent()) {
@@ -561,9 +553,8 @@ bool MessageView::ShouldParentHandleSlide() const {
 
 void MessageView::UpdateBackgroundPainter() {
   const auto* color_provider = GetColorProvider();
-  SkColor background_color = color_provider->GetColor(
-      is_active_ ? ui::kColorNotificationBackgroundActive
-                 : ui::kColorNotificationBackgroundInactive);
+  SkColor background_color =
+      color_provider->GetColor(ui::kColorNotificationBackgroundActive);
 
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
@@ -591,11 +582,6 @@ void MessageView::UpdateControlButtonsVisibility() {
   auto* control_buttons_view = GetControlButtonsView();
   if (control_buttons_view)
     control_buttons_view->ShowButtons(ShouldShowControlButtons());
-}
-
-void MessageView::SetDrawBackgroundAsActive(bool active) {
-  is_active_ = active;
-  UpdateBackgroundPainter();
 }
 
 void MessageView::UpdateControlButtonsVisibilityWithNotification(

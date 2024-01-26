@@ -58,6 +58,7 @@ ReduceAcceptLanguageService::ReduceAcceptLanguageService(
 ReduceAcceptLanguageService::~ReduceAcceptLanguageService() = default;
 
 void ReduceAcceptLanguageService::Shutdown() {
+  user_accept_languages_.clear();
   pref_accept_language_.Destroy();
 }
 

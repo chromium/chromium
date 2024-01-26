@@ -131,6 +131,12 @@ public class KeyboardShortcuts {
                 context,
                 tabShortcutGroup,
                 R.string.keyboard_shortcut_open_new_tab,
+                KeyEvent.KEYCODE_T,
+                KeyEvent.META_CTRL_ON);
+        addShortcut(
+                context,
+                tabShortcutGroup,
+                R.string.keyboard_shortcut_open_new_window,
                 KeyEvent.KEYCODE_N,
                 KeyEvent.META_CTRL_ON);
         addShortcut(

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -63,8 +64,8 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  PrefService* pref_service_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 

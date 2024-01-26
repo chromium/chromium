@@ -169,6 +169,10 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
       for (bool internal : {true, false}) {
         auto value = mojom::DisplaySettingsValue::New();
         value->is_internal_display = internal;
+        if (type == mojom::DisplaySettingsType::kOrientation) {
+          value->orientation =
+              mojom::DisplaySettingsOrientationOption::k90Degree;
+        }
         provider_->RecordChangingDisplaySettings(type, std::move(value));
 
         std::string histogram_name(
@@ -176,6 +180,32 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         histogram_name.append(internal ? ".Internal" : ".External");
         histogram_tester_.ExpectBucketCount(histogram_name, type, 1);
       }
+    }
+  }
+}
+
+// Test histogram is recorded when users change display orientation.
+TEST_F(DisplaySettingsProviderTest, ChangeDisplayOrientationHistogram) {
+  for (int orientationInt =
+           static_cast<int>(mojom::DisplaySettingsOrientationOption::kMinValue);
+       orientationInt <=
+       static_cast<int>(mojom::DisplaySettingsOrientationOption::kMaxValue);
+       orientationInt++) {
+    mojom::DisplaySettingsOrientationOption orientation =
+        static_cast<mojom::DisplaySettingsOrientationOption>(orientationInt);
+    // Settings applied to either internal or external displays.
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      value->orientation = orientation;
+      provider_->RecordChangingDisplaySettings(
+          mojom::DisplaySettingsType::kOrientation, std::move(value));
+
+      std::string histogram_name(
+          DisplaySettingsProvider::kDisplaySettingsHistogramName);
+      histogram_name.append(internal ? ".Internal" : ".External");
+      histogram_name.append(".Orientation");
+      histogram_tester_.ExpectBucketCount(histogram_name, orientation, 1);
     }
   }
 }

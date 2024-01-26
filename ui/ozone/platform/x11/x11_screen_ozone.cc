@@ -70,6 +70,26 @@ gfx::PointF PointDipToPx(const DisplayList& displays, gfx::Point point_dip) {
   return gfx::PointF(display.native_origin()) + delta_px;
 }
 
+gfx::Point GetCursorScreenPointPx(x11::Connection& connection) {
+  if (ui::X11EventSource::HasInstance()) {
+    auto point_in_pixels =
+        ui::X11EventSource::GetInstance()->last_cursor_location();
+    if (point_in_pixels.has_value()) {
+      return point_in_pixels.value();
+    }
+  }
+  // This call is expensive so we explicitly only call it when
+  // X11EventSource doesn't have a last_cursor_location set.
+  auto response = connection.QueryPointer({connection.default_root()}).Sync();
+  auto point_in_pixels =
+      response ? gfx::Point(response->root_x, response->root_y) : gfx::Point();
+  if (ui::X11EventSource::HasInstance()) {
+    ui::X11EventSource::GetInstance()->set_last_cursor_location(
+        point_in_pixels);
+  }
+  return point_in_pixels;
+}
+
 }  // namespace
 
 X11ScreenOzone::X11ScreenOzone()
@@ -85,14 +105,16 @@ X11ScreenOzone::X11ScreenOzone()
 }
 
 X11ScreenOzone::~X11ScreenOzone() {
-  if (x11_display_manager_->IsXrandrAvailable())
+  if (x11_display_manager_->IsXrandrAvailable()) {
     connection_->RemoveEventObserver(this);
+  }
 }
 
 void X11ScreenOzone::Init() {
   initialized_ = true;
-  if (x11_display_manager_->IsXrandrAvailable())
+  if (x11_display_manager_->IsXrandrAvailable()) {
     connection_->AddEventObserver(this);
+  }
   x11_display_manager_->Init();
 }
 
@@ -106,8 +128,9 @@ display::Display X11ScreenOzone::GetPrimaryDisplay() const {
 
 display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  if (widget == gfx::kNullAcceleratedWidget)
+  if (widget == gfx::kNullAcceleratedWidget) {
     return GetPrimaryDisplay();
+  }
 
   X11Window* window = window_manager_->GetWindow(widget);
   if (window) {
@@ -118,19 +141,9 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
 }
 
 gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
-  absl::optional<gfx::Point> point_in_pixels;
-  if (ui::X11EventSource::HasInstance()) {
-    point_in_pixels = ui::X11EventSource::GetInstance()
-                          ->GetRootCursorLocationFromCurrentEvent();
-  }
-  if (!point_in_pixels) {
-    // This call is expensive so we explicitly only call it when
-    // |point_in_pixels| is not set. We note that absl::optional::value_or()
-    // would cause it to be called regardless.
-    point_in_pixels = GetCursorLocation();
-  }
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
-  return gfx::ToFlooredPoint(PointPxToDip(GetAllDisplays(), *point_in_pixels));
+  return gfx::ToFlooredPoint(
+      PointPxToDip(GetAllDisplays(), GetCursorScreenPointPx(*connection_)));
 }
 
 bool X11ScreenOzone::IsAcceleratedWidgetUnderCursor(
@@ -163,8 +176,9 @@ gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
     gfx::Point point_in_pixels =
         gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
     base::flat_set<x11::Window> ignore_windows;
-    for (auto ignore_widget : ignore)
+    for (auto ignore_widget : ignore) {
       ignore_windows.insert(static_cast<x11::Window>(ignore_widget));
+    }
     widget = static_cast<gfx::AcceleratedWidget>(
         x11::GetWindowAtPoint(point_in_pixels, &ignore_windows));
   }
@@ -174,8 +188,9 @@ gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
 display::Display X11ScreenOzone::GetDisplayNearestPoint(
     const gfx::Point& point) const {
   auto displays = GetAllDisplays();
-  if (displays.size() <= 1)
+  if (displays.size() <= 1) {
     return GetPrimaryDisplay();
+  }
   return *display::FindDisplayNearestPoint(displays, point);
 }
 
@@ -247,10 +262,6 @@ void X11ScreenOzone::OnEvent(const x11::Event& xev) {
 
 void X11ScreenOzone::OnDeviceScaleFactorChanged() {
   x11_display_manager_->DispatchDelayedDisplayListUpdate();
-}
-
-gfx::Point X11ScreenOzone::GetCursorLocation() const {
-  return x11_display_manager_->GetCursorLocation();
 }
 
 void X11ScreenOzone::OnXDisplayListUpdated() {

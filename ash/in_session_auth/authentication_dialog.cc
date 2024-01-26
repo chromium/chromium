@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -184,8 +185,9 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
-    if (authentication_error.value().get_cryptohome_code() ==
-        user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+    if (cryptohome::ErrorMatches(
+            authentication_error.value().get_cryptohome_error(),
+            user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
       // Auth session expired for some reason, start it again and reattempt
       // authentication.
       // TODO(b/240147756): Choose the intent based on

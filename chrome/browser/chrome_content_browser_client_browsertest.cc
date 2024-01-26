@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapAllowed) {
       },
       clipboard_paste_data,
       base::BindOnce(
-          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                  clipboard_paste_data) {
             EXPECT_TRUE(clipboard_paste_data.has_value());
             EXPECT_EQ(clipboard_paste_data->image, "allowed");
@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapBlocked) {
       },
       clipboard_paste_data,
       base::BindOnce(
-          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                  clipboard_paste_data) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
             EXPECT_FALSE(clipboard_paste_data.has_value());
@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextAllowed) {
       },
       clipboard_paste_data,
       base::BindOnce(
-          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                  clipboard_paste_data) {
             EXPECT_TRUE(clipboard_paste_data.has_value());
           }));
@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextBlocked) {
       },
       clipboard_paste_data,
       base::BindOnce(
-          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                  clipboard_paste_data) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
             EXPECT_FALSE(clipboard_paste_data.has_value());
@@ -1037,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, AllFilesAllowed) {
       },
       clipboard_paste_data,
       base::BindLambdaForTesting(
-          [paths](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [paths](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                       clipboard_paste_data) {
             EXPECT_TRUE(clipboard_paste_data.has_value());
             EXPECT_EQ(paths[0], clipboard_paste_data->file_paths[0]);
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, AllFilesBlocked) {
       },
       clipboard_paste_data,
       base::BindLambdaForTesting(
-          [paths](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [paths](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                       clipboard_paste_data) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
             EXPECT_FALSE(clipboard_paste_data.has_value());
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SomeFilesBlocked) {
       },
       clipboard_paste_data,
       base::BindLambdaForTesting(
-          [paths](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+          [paths](std::optional<ChromeContentBrowserClient::ClipboardPasteData>
                       clipboard_paste_data) {
             EXPECT_TRUE(clipboard_paste_data.has_value());
             EXPECT_EQ(clipboard_paste_data->file_paths[0], paths[0]);

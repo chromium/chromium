@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">గుణకారం</translation>
 <translation id="1145018782460575098">బాహ్య పరికరాలకు ఫర్మ్‌వేర్‌‌ను అప్‌డేట్ చేసే విండో తెరిచి ఉంది. <ph name="NUM_UPDATES" /> అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="1145516343487477149">సాధారణ Chromebook ప్రశ్నలకు సహాయక ఆర్టికల్స్, సమాధానాలను కనుగొంటుంది</translation>
 <translation id="1154390310959620237">మీరు 5 షార్ట్‌కట్‌లను మాత్రమే అనుకూలంగా మార్చుకోగలరు. కొత్త షార్ట్‌కట్‌ను జోడించడానికి ఒక దాన్ని తొలగించండి.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1367951781824006909">ఒక ఫైల్‌ని ఎంచుకోండి</translation>
+<translation id="1371650399987522809">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్న వాల్‌పేపర్ కోసం ఫీడ్‌బ్యాక్</translation>
 <translation id="1387854245479784695">ఇది అన్ని కోర్‌ల సముదాయం</translation>
 <translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
 <translation id="1397738625398125236">గేట్‌వేను పింగ్ చేయవచ్చు</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1561927818299383735">బ్యాక్‌లైట్ రంగు</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
+<translation id="1566493343215789965">భాగహారం</translation>
 <translation id="1567064801249837505">ఆల్బమ్‌లు</translation>
 <translation id="1572585716423026576">వాల్‌పేపర్‌గా సెట్ చేయి</translation>
 <translation id="1578784163189013834">స్క్రీన్ సేవర్ బ్యాక్‌గ్రౌండ్ ఎంచుకోండి</translation>
 <translation id="160633243685262989">ఇమేజ్ ప్రివ్యూను చూడండి</translation>
 <translation id="1611649489706141841">ముందుకు</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
+<translation id="1615576200479539465">ఇమేజ్‌లను జెనరేట్ చేస్తుంది...</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
+<translation id="1626590945318984973">షార్ట్‌కట్ అందుబాటులో లేదు. ఫంక్షన్, <ph name="META_KEY" /> కీలను ఉపయోగించకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">డార్క్ మోడ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="1885577615937958993">మీడియాను ఫాస్ట్ ఫార్వర్డ్ చేస్తుంది</translation>
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
-<translation id="1897672602657312171">సెర్చ్ కీ లేని షార్ట్‌కట్ కొన్ని యాప్ షార్ట్‌కట్‌కు విరుద్ధంగా ఉండవచ్చు. దీన్ని ఉపయోగించడం కొనసాగించడానికి ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి లేదా సెర్చ్ కీని ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="1904932688895783618">కొన్ని ఇతర సహాయకరమైన రిసోర్స్‌లు ఇవిగోండి:</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ఫోటోలు</translation>
 <translation id="2157660087437850958">ఎమోజి సెలెక్టర్</translation>
 <translation id="2157959690810728433">క్యూలో ఉంచబడింది</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=2{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=3{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, ఇంకా <ph name="APP_NAME_3" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}other{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />‌తో పాటు, ఇంకా # ఇతర యాప్‌లు ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
 <translation id="215916044711630446">APNను జోడించండి బటన్ డిజేబుల్ చేయబడింది</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయండి</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APN వివరాలను ఎడిట్ చేయండి</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
+<translation id="2215920961700443347">ఇంటర్నెట్ లేదు. ఇంటర్నెట్‌కు కనెక్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="222447520299472966">కనీసం ఒక ఆర్ట్ గ్యాలరీ ఆల్బమ్‌ను ఎంచుకోవాలి</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" />వ ఇమేజ్</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
+<translation id="2465272316171730950">మేము ప్రస్తుతం మీకు సహాయం చేయలేము. దయచేసి కొంత సమయం తర్వాత ట్రై చేయండి.</translation>
 <translation id="248546197012830854">పరికరం ఆఫ్‌లైన్‌లో ఉంది. Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేసి, సహాయక కంటెంట్‌ను చూడండి.</translation>
 <translation id="2491955442992294626">మీరు మరొక విండోను ఉపయోగిస్తున్నప్పుడు కీలను టెస్ట్ చేయలేరు</translation>
 <translation id="2493126929778606526">ఆటోమేటిక్‌గా ఎంపిక చేసిన మీ ఉత్తమ ఫోటోలు</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">ప్రస్తుత వాల్‌పేపర్ ఇమేజ్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="2512979179176933762">విండోలను చూపుతుంది</translation>
 <translation id="2513396635448525189">లాగిన్ ఇమేజ్</translation>
-<translation id="2515109918609218604">షార్ట్‌కట్ అందుబాటులో లేదు. ఫంక్షన్, సెర్చ్ కీలను ఉపయోగించకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2521835766824839541">మునుపటి ట్రాక్</translation>
 <translation id="2526590354069164005">డెస్క్‌టాప్</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2880569433548999039">క్లౌడ్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
+<translation id="2938573842839598578">సమీప ఫలితం కోసం, <ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి మూతను మళ్లీ తెరవండి.</translation>
 <translation id="2941112035454246133">తక్కువ</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
+<translation id="3547264467365135390">ఫార్ములా</translation>
 <translation id="3557205324756024651">లోకల్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="3565064564551103223">అనుమతించబడిన IPలు</translation>
 <translation id="3569407787324516067">స్క్రీన్ సేవర్</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>
 <translation id="4117637339509843559">డార్క్ మోడ్</translation>
 <translation id="4130035430755296270">మరిన్ని లేఅవుట్ ఆప్షన్‌ల కోసం మౌస్ కర్సర్‌ని ఉంచడం కొనసాగించండి</translation>
+<translation id="4130750466177569591">నేను అంగీకరిస్తున్నాను</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ప్రారంభించబడింది}other{# యాప్‌లు ఆటోమేటిక్‌గా ప్రారంభించబడ్డాయి}}</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">బ్రైట్‌నెస్‌ను తగ్గిస్తుంది</translation>
 <translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
 <translation id="4176659219503619100">కంట్రోల్ ప్యానెల్</translation>
-<translation id="4185315616950253617">పైన ఉండే అడ్డు వరుసలోని కీలతో షార్ట్‌కట్‌ను క్రియేట్ చేయాలంటే, అందులో సెర్చ్ కీ కూడా ఉండాలి.</translation>
 <translation id="420283545744377356">స్క్రీన్ సేవర్‌ను ఆఫ్ చేయి</translation>
 <translation id="4213104098953699324">USB కీబోర్డ్</translation>
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> రీస్టార్ట్ అవుతోంది</translation>
 <translation id="4395835743215824109">కీబోర్డ్‌ను అనుకూలంగా మార్చవచ్చు</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> కీ లేని షార్ట్‌కట్ కొన్ని యాప్ షార్ట్‌కట్‌కు విరుద్ధంగా ఉండవచ్చు. దీన్ని ఉపయోగించడం కొనసాగించడానికి ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి లేదా <ph name="KEY" /> కీని ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4415951057168511744">ప్రస్తుత అవతార్</translation>
+<translation id="4417830657741848074">మీ అడ్మినిస్ట్రేటర్ ఆటోమేటిక్‌గా ప్రారంభించడానికి కొన్ని యాప్‌లను సెటప్ చేశారు. ఈ యాప్‌లలో కొన్ని మూసివేయబడకపోవచ్చు.</translation>
 <translation id="4422041425070339732">కింది వైపు బాణం</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ఆఫ్‌లో ఉంది</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">ఎర్త్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
+<translation id="4500722292849917410">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4500966230243561393">ఇంటర్‌ఫేస్ రంగు</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
 <translation id="4507392511610824664">బ్రైట్‌నెస్‌ను పెంచుతుంది</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4835901797422965222">యాక్టివ్‌గా ఉన్న నెట్‌వర్క్‌లు ఏవీ లేవు</translation>
 <translation id="4839698083503556542">మీ సొంత మూవీ క్రియేషన్</translation>
+<translation id="48409034532829769">మీ అడ్మినిస్ట్రేటర్ ఆటోమేటిక్‌గా ప్రారంభించడానికి "<ph name="APP_NAME" />" యాప్‌ను సెటప్ చేశారు. ఈ యాప్ మూసివేయబడకపోవచ్చు.</translation>
 <translation id="484462545196658690">ఆటో</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ఎంచుకోబడింది, <ph name="TOPIC_SOURCE" /> ఆల్బమ్‌లు ఎంచుకోవడానికి Enter నొక్కండి</translation>
 <translation id="484790837831576105">(Android) DNS రిజల్యూషన్</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">స్ప్లిట్ చేయండి</translation>
 <translation id="4972592110715526173">మోడ్‌ను మారుస్తుంది</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
+<translation id="4982627662315910959">షార్ట్‌కట్ అందుబాటులో లేదు. shift, ఇంకో 1 మోడిఫయర్ కీని (ctrl, alt, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="4987769320337599931">ఫైర్‌వాల్</translation>
 <translation id="4988526792673242964">పేజీలు</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ముదురు రంగు రూపం షెడ్యూల్</translation>
 <translation id="5229344016299762883">ఫుల్-స్క్రీన్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{మీరు లాగిన్ చేసిన ప్రతిసారీ ఆటోమేటిక్‌గా ప్రారంభించడానికి మీ అడ్మినిస్ట్రేటర్ "<ph name="APP_NAME" />"ను సెటప్ చేశారు.}=2{మీరు లాగిన్ చేసిన ప్రతిసారీ ఆటోమేటిక్‌గా ప్రారంభించడానికి మీ అడ్మినిస్ట్రేటర్ "<ph name="APP_NAME" />"ను, అలాగే మరో 1 యాప్‌ను సెటప్ చేశారు.}other{మీరు లాగిన్ చేసిన ప్రతిసారీ ఆటోమేటిక్‌గా ప్రారంభించడానికి మీ అడ్మినిస్ట్రేటర్ "<ph name="APP_NAME" />"ను, అలాగే మరో # యాప్‌లను సెటప్ చేశారు.}}</translation>
 <translation id="5252456968953390977">రోమింగ్</translation>
 <translation id="5257811368506016604">లేత రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="5264277876637023664">CPU పరీక్షను రన్ చేయండి</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
 <translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
+<translation id="7206979415662233817">సర్వీస్ నియమాలు</translation>
 <translation id="7212547870105584639">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="725133483556299729">ఈమెయిల్‌ను ఎంచుకోండి</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
-<translation id="7273347807225967898">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, సెర్చ్, లేదా లాంచర్) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
+<translation id="7271932918253517778">పైన ఉండే అడ్డు వరుసలోని కీలతో షార్ట్‌కట్‌ను క్రియేట్ చేయాలంటే, అందులో <ph name="META_KEY" /> కీ కూడా ఉండాలి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">చక్కని గాలిని ఆస్వాదించండి</translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">కీబోర్డ్ రంగు</translation>
 <translation id="7317831949569936035">స్కూల్ ఎన్‌రోల్‌మెంట్</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">మీరు తప్పనిసరిగా కనీసం 18 ఏళ్లు నిండి ఉండాలి, మీ AI వాల్‌పేపర్‌ల ఉపయోగం <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google సర్వీస్ నియమాలు<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />, <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />జెనరేటివ్ AI అదనపు సర్వీస్ నియమాలు<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> లోబడి ఉంటుందని అంగీకరిస్తున్నారు.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మీరు వ్యక్తిగత, వాణిజ్యేతర ఉపయోగం కోసం AIతో మాత్రమే వాల్‌పేపర్‌లను క్రియేట్ చేయగలరు. మీరు వాల్‌పేపర్ సహాయం పొందినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />కి లోబడి వాల్‌పేపర్ సూచనలను జెనరేట్ చేయడానికి Googleకు చెందిన AI టెక్నాలజీల సర్వర్‌లకు టెక్స్ట్ మెసేజ్ పంపబడుతుంది. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />లోని <ph name="LIST_POSITION" />లో ఉన్న సెర్చ్ ఫలితం: <ph name="SEARCH_RESULT_TEXT" />. షార్ట్‌కట్‌కు నావిగేట్ అవ్వడానికి 'Enter'ను నొక్కండి.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">సాధారణ కంట్రోల్స్</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> నెట్‌వర్క్‌లో చేరడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ఆటోమేటిక్‌గా ప్రారంభించబడింది}other{# యాప్‌లు ఆటోమేటిక్‌గా ప్రారంభించబడ్డాయి}}</translation>
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8017679124341497925">షార్ట్‌కట్ ఎడిట్ చేయబడింది</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8094062939584182041">ఈ సమస్యకు గురించి మీకు ఈమెయిల్ చేయడానికి Googleకు అనుమతినివ్వండి</translation>
 <translation id="8104083085214006426">మీరు ఓపెన్, అసురక్షిత నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
-<translation id="8111706652656628199">షార్ట్‌కట్ అందుబాటులో లేదు. shiftను, ఇంకో మోడిఫయర్ కీని (ctrl, alt, సెర్చ్, లేదా లాంచర్) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>

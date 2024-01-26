@@ -76,6 +76,6 @@ final class AccountInfoServiceImpl
     @Override
     public void legacyOnAccountsSeeded(
             List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
-        mIdentityManager.refreshAccountInfoIfStale();
+        mIdentityManager.refreshAccountInfoIfStale(accountInfos);
     }
 }

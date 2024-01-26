@@ -197,6 +197,10 @@ const char kTabletProductivityUserModelLabelNone[] = "None";
 const char kTabletProductivityUserModelLabelMedium[] = "Medium";
 const char kTabletProductivityUserModelLabelHigh[] = "High";
 
+// Labels for Android Home modules for ranking.
+const char kSingleTab[] = "SingleTab";
+const char kPriceChange[] = "PriceChange";
+
 // Labels for IOS modules for ranking.
 const char kMostVisitedTiles[] = "MostVisitedTiles";
 const char kShortcuts[] = "Shortcuts";

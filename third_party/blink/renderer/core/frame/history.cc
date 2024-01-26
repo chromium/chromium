@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -92,7 +93,6 @@ ScriptValue History::state(ScriptState* script_state,
       V8PrivateProperty::GetSymbol(isolate, kHistoryStatePrivateProperty);
   v8::Local<v8::Object> v8_history =
       ToV8Traits<History>::ToV8(script_state, this)
-          .ToLocalChecked()
           .As<v8::Object>();
   v8::Local<v8::Value> v8_state;
 

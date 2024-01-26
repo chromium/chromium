@@ -187,6 +187,11 @@ void FCMInvalidationListener::EmitSavedInvalidationForTest(
   EmitSavedInvalidation(invalidation);
 }
 
+void FCMInvalidationListener::EmitSuccessfullySubscribedForTest(
+    const Topic& topic) {
+  delegate_->OnSuccessfullySubscribed(topic);
+}
+
 void FCMInvalidationListener::Stop() {
   delegate_ = nullptr;
 
@@ -231,8 +236,19 @@ void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
   EmitStateChange();
 }
 
-void FCMInvalidationListener::OnSubscriptionRequestStarted(Topic topic) {}
+void FCMInvalidationListener::OnSubscriptionRequestStarted(
+    Topic topic,
+    PerUserTopicSubscriptionManager::RequestType request_type) {}
 
-void FCMInvalidationListener::OnSubscriptionRequestFinished(Topic topic,
-                                                            Status code) {}
+void FCMInvalidationListener::OnSubscriptionRequestFinished(
+    Topic topic,
+    PerUserTopicSubscriptionManager::RequestType request_type,
+    Status code) {
+  if (request_type ==
+          PerUserTopicSubscriptionManager::RequestType::kSubscribe &&
+      code.IsSuccess()) {
+    delegate_->OnSuccessfullySubscribed(topic);
+  }
+}
+
 }  // namespace invalidation

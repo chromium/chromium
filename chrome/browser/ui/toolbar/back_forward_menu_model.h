@@ -14,6 +14,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/favicon/core/favicon_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -35,7 +36,8 @@ class WebContents;
 // Interface for the showing of the dropdown menu for the Back/Forward buttons.
 // Actual implementations are platform-specific.
 ///////////////////////////////////////////////////////////////////////////////
-class BackForwardMenuModel : public ui::MenuModel {
+class BackForwardMenuModel : public ui::MenuModel,
+                             public content::WebContentsObserver {
  public:
   // These are IDs used to identify individual UI elements within the
   // browser window using View::GetViewByID.
@@ -68,6 +70,11 @@ class BackForwardMenuModel : public ui::MenuModel {
   void MenuWillShow() override;
   void MenuWillClose() override;
 
+  // content::WebContentsObserver:
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
+  void NavigationEntriesDeleted() override;
+
   // Is the item at |index| a separator?
   bool IsSeparator(size_t index) const;
 
@@ -78,6 +85,7 @@ class BackForwardMenuModel : public ui::MenuModel {
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, ChapterStops);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, EscapeLabel);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, FaviconLoadTest);
+  FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, NavigationWhenMenuShownTest);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelIncognitoTest, IncognitoCaseTest);
   FRIEND_TEST_ALL_PREFIXES(ChromeNavigationBrowserTest,
                            NoUserActivationSetSkipOnBackForward);

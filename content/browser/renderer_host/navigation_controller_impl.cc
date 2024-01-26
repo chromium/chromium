@@ -51,7 +51,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
-#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -508,6 +507,65 @@ bool DoesSandboxNavigationStayWithinSubtree(
       return false;
   }
   return true;
+}
+
+// Used for "Navigation.SessionHistoryCount" histogram.
+enum class HistoryNavTypeForHistogram {
+  // A same-doc or cross-doc navigation of the main frame. We can only have one
+  // main frame request per `NavigationController::GoToIndex()`.
+  kMainFrame = 0,
+  // `NavigationController::GoToIndex()` creates one main frame request and
+  // one or more subframe requests.
+  kMainFrameAndSubframe,
+  // `NavigationController::GoToIndex()` creates one or more subframe requests.
+  kSubframe,
+  // Used for histogram boundary.
+  kCount
+};
+
+void CountRequests(
+    const std::vector<std::unique_ptr<NavigationRequest>>& requests,
+    int& mutable_main_frame_cnt,
+    int& mutable_subframe_cnt) {
+  for (const auto& req : requests) {
+    if (req->IsInPrimaryMainFrame()) {
+      // We can only have one main frame navigation at a time.
+      CHECK_EQ(mutable_main_frame_cnt, 0);
+      ++mutable_main_frame_cnt;
+    } else if (req->GetNavigatingFrameType() == FrameType::kSubframe) {
+      ++mutable_subframe_cnt;
+    }
+  }
+}
+
+// Record the number of different types of navigations as histograms. See
+// `HistoryNavTypeForHistogram` for the types.
+void CountBrowserInitiatedMainframeAndSubframeHistoryNavigaions(
+    const std::vector<std::unique_ptr<NavigationRequest>>& cross_doc_requests,
+    const std::vector<std::unique_ptr<NavigationRequest>>& same_doc_requests) {
+  // We must have one request.
+  CHECK(!cross_doc_requests.empty() || !same_doc_requests.empty());
+
+  int main_frame_cnt = 0;
+  int subframe_cnt = 0;
+  CountRequests(cross_doc_requests, main_frame_cnt, subframe_cnt);
+  CountRequests(same_doc_requests, main_frame_cnt, subframe_cnt);
+
+  std::optional<HistoryNavTypeForHistogram> history_nav_type;
+  if (main_frame_cnt > 0) {
+    if (subframe_cnt == 0) {
+      history_nav_type = HistoryNavTypeForHistogram::kMainFrame;
+    } else {
+      history_nav_type = HistoryNavTypeForHistogram::kMainFrameAndSubframe;
+    }
+  } else if (subframe_cnt > 0) {
+    history_nav_type = HistoryNavTypeForHistogram::kSubframe;
+  }
+  if (history_nav_type.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("Navigation.BrowserInitiatedSessionHistoryCount",
+                              history_nav_type.value(),
+                              HistoryNavTypeForHistogram::kCount);
+  }
 }
 
 }  // namespace
@@ -1349,7 +1407,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     LoadCommittedDetails* details,
     bool is_same_document_navigation,
     bool was_on_initial_empty_document,
-    bool previous_document_was_activated,
+    bool previous_document_had_history_intervention_activation,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
 
@@ -1532,7 +1590,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     case NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY:
       RendererDidNavigateToNewEntry(
           rfh, params, details->is_same_document, details->did_replace_entry,
-          previous_document_was_activated, navigation_request, details);
+          previous_document_had_history_intervention_activation,
+          navigation_request, details);
       break;
     case NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY:
       RendererDidNavigateToExistingEntry(rfh, params, details->is_same_document,
@@ -1542,7 +1601,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     case NAVIGATION_TYPE_NEW_SUBFRAME:
       RendererDidNavigateNewSubframe(
           rfh, params, details->is_same_document, details->did_replace_entry,
-          previous_document_was_activated, navigation_request, details);
+          previous_document_had_history_intervention_activation,
+          navigation_request, details);
       break;
     case NAVIGATION_TYPE_AUTO_SUBFRAME:
       if (!RendererDidNavigateAutoSubframe(
@@ -1919,7 +1979,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
     bool replace_entry,
-    bool previous_document_was_activated,
+    bool previous_document_had_history_intervention_activation,
     NavigationRequest* request,
     LoadCommittedDetails* commit_details) {
   std::unique_ptr<NavigationEntryImpl> new_entry;
@@ -2065,7 +2125,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   }
 
   SetShouldSkipOnBackForwardUIIfNeeded(
-      replace_entry, previous_document_was_activated,
+      replace_entry, previous_document_had_history_intervention_activation,
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
 
   // If this is a history navigation and the old entry has an existing
@@ -2228,7 +2288,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
     bool replace_entry,
-    bool previous_document_was_activated,
+    bool previous_document_had_history_intervention_activation,
     NavigationRequest* request,
     LoadCommittedDetails* commit_details) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
@@ -2292,7 +2352,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
           frame_tree_->root());
 
   SetShouldSkipOnBackForwardUIIfNeeded(
-      replace_entry, previous_document_was_activated,
+      replace_entry, previous_document_had_history_intervention_activation,
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
 
   // TODO(creis): Update this to add the frame_entry if we can't find the one
@@ -3330,6 +3390,12 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     }
   }
 
+  if (!initiator_rfh) {
+    // A browser-initiated navigation won't have a `initiator_rfh`.
+    CountBrowserInitiatedMainframeAndSubframeHistoryNavigaions(
+        different_document_loads, same_document_loads);
+  }
+
   // Send all the same document frame loads before the different document loads.
   for (auto& item : same_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();
@@ -4134,13 +4200,6 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
 
   delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
   delegate_->NotifyNavigationEntryCommitted(*details);
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  NotificationDetails notification_details =
-      Details<LoadCommittedDetails>(details);
-  NotificationService::current()->Notify(NOTIFICATION_NAV_ENTRY_COMMITTED,
-                                         Source<NavigationController>(this),
-                                         notification_details);
 }
 
 // static
@@ -4332,13 +4391,14 @@ void NavigationControllerImpl::SetGetTimestampCallbackForTest(
 // History manipulation intervention:
 void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
     bool replace_entry,
-    bool previous_document_was_activated,
+    bool previous_document_had_history_intervention_activation,
     bool is_renderer_initiated,
     ukm::SourceId previous_page_load_ukm_source_id) {
-  // Note that for a subframe, previous_document_was_activated is true if the
+  // Note that for a subframe,
+  // previous_document_had_history_intervention_activation is true if the
   // gesture happened in any subframe (propagated to main frame) or in the main
   // frame itself.
-  if (replace_entry || previous_document_was_activated ||
+  if (replace_entry || previous_document_had_history_intervention_activation ||
       !is_renderer_initiated) {
     return;
   }

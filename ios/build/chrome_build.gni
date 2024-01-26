@@ -48,7 +48,7 @@ declare_args() {
   ios_credential_provider_extension_api_key = ""
 
   # Controls whether ScreenTime API is used.
-  ios_enable_screen_time = false
+  ios_enable_screen_time = true
 
   # Enable background fetch mode for feed refresh.
   ios_enable_background_mode = true
@@ -81,6 +81,9 @@ declare_args() {
 
   # Use perf_tests_hook if true
   ios_is_perf_test = false
+
+  # Enable memory debugging.
+  ios_enable_memory_debugging = !is_chrome_branded
 }
 
 if (target_environment == "catalyst") {

@@ -285,30 +285,7 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
     }
   }
 
-  // While we could call GLFence::ClientWait, this performs a busy wait on
-  // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This
-  // should have minimal impact, as we will only hit this path when we are
-  // more than one frame (16ms) behind.
-  //
-  // Note that on some platforms (10.9), fences appear to sometimes get
-  // lost and will never pass. Add a 32ms timeout to prevent these
-  // situations from causing a GPU process hang.
-  // https://crbug.com/618075
-  bool fence_completed = false;
-  for (int poll_iter = 0; !fence_completed && poll_iter < 32; ++poll_iter) {
-    if (poll_iter > 0) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-    }
-    {
-      TRACE_EVENT0("gpu", "GLFence::HasCompleted");
-      fence_completed = fence->HasCompleted();
-    }
-  }
-  if (!fence_completed) {
-    TRACE_EVENT0("gpu", "Finish");
-    // We timed out waiting for the above fence, just issue a glFinish.
-    glFinish();
-  }
+  fence->ClientWait();
   fence.reset();
 
   // Waiting on |fence_id| has implicitly waited on all previous fences, so

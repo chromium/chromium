@@ -10,6 +10,7 @@ import './help_resources_icons.html.js';
 import './os_feedback_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -139,7 +140,8 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   }
 
   focusPageTitle(): void {
-    const element = this.shadowRoot!.querySelector('#pageTitle') as HTMLElement;
+    const element = this.shadowRoot!.querySelector<HTMLElement>('#pageTitle');
+    assert(element);
     element.focus();
   }
 

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] navigator.clipboard.read() succeeds in paste event
-  assert_implements: window.internals is required undefined
-[FAIL] navigator.clipboard.write() succeeds in cut event
-  assert_implements: window.internals is required undefined
-[FAIL] navigator.clipboard.write() succeeds in copy event
-  assert_implements: window.internals is required undefined
-Harness: the test ran to completion.

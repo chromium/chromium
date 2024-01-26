@@ -56,7 +56,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
       browser_->GetBrowserState());
   DCHECK(auth_service_);
-  auth_service_observation_.Observe(auth_service_);
+  auth_service_observation_.Observe(auth_service_.get());
 
   // BrowserSignin policy: start observing the kSigninAllowed pref. When the
   // pref becomes false, send a UI command to sign the user out. This requires

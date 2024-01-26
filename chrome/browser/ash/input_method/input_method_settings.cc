@@ -637,7 +637,7 @@ bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs) {
   const base::Value::Dict& input_method_specific_pref =
       input_method_specific_pref_or_null ? *input_method_specific_pref_or_null
                                          : empty_value;
-  const absl::optional<bool> value =
+  const std::optional<bool> value =
       input_method_specific_pref.FindBool(kJapaneseMigrationCompleteKey);
   return value.has_value() && *value;
 }

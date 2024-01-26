@@ -10,7 +10,9 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -20,11 +22,12 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {WallpaperGridItemSelectedEvent} from '../personalization/wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
-import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
+import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
 
 export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   static get is() {
@@ -60,7 +63,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         value: null,
       },
 
-      currentSelected_: Object,
+      currentSelected_: String,
 
       pendingSelected_: Object,
     };
@@ -72,7 +75,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private recentImagesToDisplay_: FilePath[];
   private currentShowWallpaperInfoDialog_: number|null;
   private currentSelected_: string|null;
-  private pendingSelected_: FilePath|null;
+  private pendingSelected_: FilePath|SeaPenThumbnail|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -181,14 +184,27 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
   private isRecentImageSelected_(
       image: FilePath|null, currentSelected: string|null,
-      pendingSelected: FilePath|null) {
+      pendingSelected: FilePath|SeaPenThumbnail|null) {
     if (!isNonEmptyFilePath(image)) {
       return false;
     }
 
-    return (isNonEmptyFilePath(pendingSelected) &&
-            image.path === pendingSelected.path) ||
-        (!pendingSelected && image.path === currentSelected);
+    if (isNonEmptyFilePath(pendingSelected)) {
+      // User just clicked on a recent image.
+      return image.path === pendingSelected.path;
+    }
+
+    if (pendingSelected !== null) {
+      // User just clicked on a new thumbnail that will be saved as a recent
+      // image soon.
+      return false;
+    }
+
+    if (!currentSelected) {
+      return false;
+    }
+
+    return image.path.endsWith(currentSelected);
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
@@ -253,8 +269,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private shouldShowWallpaperInfoDialog_(
-      i: number, currentShowWallpaperInfoDialog: number|null): boolean {
-    return currentShowWallpaperInfoDialog === i;
+      _i: number, _currentShowWallpaperInfoDialog: number|null): boolean {
+    return false;
   }
 
   private onCloseDialog_() {

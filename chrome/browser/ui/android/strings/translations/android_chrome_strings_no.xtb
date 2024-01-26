@@ -146,6 +146,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1792959175193046959">Endre standard nedlastingssted når som helst</translation>
 <translation id="1796666869097395659">Minimer fanen for å gå tilbake til den senere</translation>
 <translation id="1807246157184219062">Lys</translation>
+<translation id="1807709131360304325">Åpne et nytt vindu</translation>
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan ikke fortsette å bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Finn på side</translation>
@@ -189,6 +190,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2056878612599315956">Nettstedet er satt på pause</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedlasting mislyktes}other{# nedlastinger mislyktes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2079545284768500474">Angre</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Viser kompakt visning</translation>
 <translation id="2093731487903423814">de siste 15 minuttene</translation>
@@ -218,7 +220,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
 <translation id="2234827758954819389">Personvernveiledning</translation>
 <translation id="2239812875700136898">Styr nyhetssakene dine via Alternativer for Discover-knappen</translation>
-<translation id="2241634353105152135">Bare én gang</translation>
 <translation id="2247789808226901522">Kortet er utløpt</translation>
 <translation id="2248941474044011069">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
 <translation id="2249635629516220541">Tilpass informasjonen som brukes av nettsteder for å vise deg annonser</translation>
@@ -233,7 +234,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2318045970523081853">Trykk for å ringe</translation>
 <translation id="2321086116217818302">Klargjør passordene …</translation>
 <translation id="2323763861024343754">Nettstedslagring</translation>
-<translation id="2327226657832576859">Vil du åpne PDF-filer automatisk?</translation>
 <translation id="2328985652426384049">Kan ikke logge på</translation>
 <translation id="2341410551640223969">Kunne ikke installere <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total datamengde som brukes av Chrome, deriblant kontoer, bokmerker og lagrede innstillinger</translation>
@@ -316,6 +316,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> blir lukket</translation>
 <translation id="281504910091592009">Se og administrer lagrede passord i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>
 <translation id="2827278682606527653">Feedkortmenyen er åpnet i halv høyde</translation>
@@ -354,7 +355,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2946420957526726953">Oppdaterer Chrome for å kunne koble til andre enheter</translation>
 <translation id="2951071800649516099">Legg til sider på leselisten til senere</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulest side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> uleste sider}}</translation>
-<translation id="2961210776189273067">Tittel</translation>
 <translation id="296370266220139811">Spar tid og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres etter sist åpnet</translation>
 <translation id="297771753501244313">Sorter etter sist åpnet</translation>
@@ -600,6 +600,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4303044213806199882">chrome_skjermdump_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4307992518367153382">Generelt</translation>
+<translation id="4311652497846705514">Vil du åpne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internettilkobling</translation>
 <translation id="433213510553688132">Følger …</translation>
 <translation id="4335835283689002019">Safe Browsing er av</translation>
@@ -639,7 +640,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4523326818319942067">den siste timen</translation>
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4532845899244822526">Velg en mappe</translation>
-<translation id="4541505619120536051">Åpne alltid</translation>
 <translation id="4543131175509360848">Ark for ingen passnøkler</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4554077758708533499">Tilkoblet med USB-kabel</translation>
@@ -831,7 +831,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5486841595534124508">Logo for merknaden om personvern for sidestatistikksenteret, som viderekobler til Min aktivitet-siden.</translation>
 <translation id="5487521232677179737">Slett data</translation>
 <translation id="5492637351392383067">Kryptering på enheten</translation>
-<translation id="5509866835115085009">Chrome kan åpne PDF-filer automatisk når du laster dem ned.</translation>
 <translation id="5514904542973294328">Deaktivert av administratoren for denne enheten</translation>
 <translation id="5515439363601853141">Lås opp for å se passordet ditt</translation>
 <translation id="5517095782334947753">Du har bokmerker, loggen, passord og andre innstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5962718611393537961">Trykk for å skjule</translation>
 <translation id="5964869237734432770">Stopp bildebeskrivelser</translation>
 <translation id="5966233851250124270">Chrome husker valget ditt</translation>
+<translation id="5977976211062815271">På denne enheten</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
 <translation id="5995726099713306770">Vil du laste ned siden på nytt?</translation>
 <translation id="6000066717592683814">Behold Google</translation>
@@ -1302,6 +1302,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
+<translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="78270725016672455">Datamaskinen din vil registrere denne enheten for pålogging på et nettsted</translation>
 <translation id="7844171778363018843">Ingen data er valgt for synkronisering</translation>
@@ -1329,6 +1330,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er utdatert.</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7947953824732555851">Godta og logg på</translation>
+<translation id="7951102827450076904">Åpne alltid nedlastede PDF-filer</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Tilbakeknapp for sidestatistikk</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>

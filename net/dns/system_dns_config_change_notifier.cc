@@ -5,6 +5,7 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -36,14 +37,14 @@ class WrappedObserver {
 
   ~WrappedObserver() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
-  void OnNotifyThreadsafe(absl::optional<DnsConfig> config) {
+  void OnNotifyThreadsafe(std::optional<DnsConfig> config) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WrappedObserver::OnNotify,
                        weak_ptr_factory_.GetWeakPtr(), std::move(config)));
   }
 
-  void OnNotify(absl::optional<DnsConfig> config) {
+  void OnNotify(std::optional<DnsConfig> config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!config || config.value().IsValid());
 
@@ -157,10 +158,10 @@ class SystemDnsConfigChangeNotifier::Core {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::AutoLock lock(lock_);
 
-    // |config_| is |absl::nullopt| if most recent config was invalid (or no
+    // |config_| is |std::nullopt| if most recent config was invalid (or no
     // valid config has yet been read), so convert |config| to a similar form
     // before comparing for change.
-    absl::optional<DnsConfig> new_config;
+    std::optional<DnsConfig> new_config;
     if (config.IsValid())
       new_config = config;
 
@@ -182,9 +183,9 @@ class SystemDnsConfigChangeNotifier::Core {
   // Fields that may be accessed from any sequence. Must protect access using
   // |lock_|.
   mutable base::Lock lock_;
-  // Only stores valid configs. |absl::nullopt| if most recent config was
+  // Only stores valid configs. |std::nullopt| if most recent config was
   // invalid (or no valid config has yet been read).
-  absl::optional<DnsConfig> config_;
+  std::optional<DnsConfig> config_;
   std::map<Observer*, std::unique_ptr<WrappedObserver>> wrapped_observers_;
 
   // Fields valid only on |task_runner_|.

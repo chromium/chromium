@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "chrome/common/chromeos/extensions/api/management.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -47,7 +47,7 @@ bool ManagementApiFunctionBase::IsCrosApiAvailable() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
-absl::optional<Params> ManagementApiFunctionBase::GetParams() {
+std::optional<Params> ManagementApiFunctionBase::GetParams() {
   auto params = Params::Create(args());
   if (!params) {
     SetBadMessage();
@@ -72,8 +72,28 @@ void OsManagementSetAudioGainFunction::RunIfAllowed() {
                                    params.value().args.gain, std::move(cb));
 }
 
-void OsManagementSetAudioGainFunction::OnResult() {
-  Respond(NoArguments());
+void OsManagementSetAudioGainFunction::OnResult(bool is_success) {
+  Respond(WithArguments(is_success));
+}
+
+// OsManagementSetAudioVolumeFunction ------------------------------------------
+
+void OsManagementSetAudioVolumeFunction::RunIfAllowed() {
+  // Clamping |volume| to [0, 100] is done in Telemetry Extension Service
+  // `TelemetryManagementServiceAsh::SetAudioVolume`.
+  const auto params = GetParams<cx_manage::SetAudioVolume::Params>();
+  if (!params) {
+    return;
+  }
+
+  auto cb = base::BindOnce(&OsManagementSetAudioVolumeFunction::OnResult, this);
+  GetRemoteService()->SetAudioVolume(
+      params.value().args.node_id, params.value().args.volume,
+      params.value().args.is_muted, std::move(cb));
+}
+
+void OsManagementSetAudioVolumeFunction::OnResult(bool is_success) {
+  Respond(WithArguments(is_success));
 }
 
 }  // namespace chromeos

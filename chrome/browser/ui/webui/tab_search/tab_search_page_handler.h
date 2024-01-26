@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
@@ -83,7 +82,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void RemoveTabFromOrganization(int32_t session_id,
                                  int32_t organization_id,
                                  tab_search::mojom::TabPtr tab) override;
-  void ResetSession() override;
+  void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;
@@ -145,12 +144,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
     TabDetails(Browser* browser, TabStripModel* tab_strip_model, int index)
         : browser(browser), tab_strip_model(tab_strip_model), index(index) {}
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION Browser* browser;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION TabStripModel* tab_strip_model;
+    raw_ptr<Browser> browser;
+    raw_ptr<TabStripModel> tab_strip_model;
     int index;
   };
 
@@ -218,6 +213,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // Tracks whether the user has evoked |SwitchToTab()| for metric collection
   // purposes.
   bool called_switch_to_tab_ = false;
+
+  // Tracks whether a session restart is currently in progress.
+  bool restarting_ = false;
 
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>

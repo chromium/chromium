@@ -27,6 +27,8 @@ function isNear(actual, expected, tolerance) {
   return Math.abs(actual - expected) <= tolerance;
 }
 
+window.onload = () => {
+
 promise_test(async () => {
   await waitForCompositorCommit();
 
@@ -76,4 +78,7 @@ promise_test(async () => {
                 -WHEEL_DELTA,
                 "Wheel event deltaY must be negative constant");
 }, "Using the mousewheel to scroll by a percentage on an empty iframe.");
+
+}
+
 </script>

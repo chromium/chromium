@@ -24,7 +24,7 @@ mojom::ActivationState ComputeActivationState(
     const MemoryMappedRuleset* ruleset) {
   DCHECK(ruleset);
 
-  IndexedRulesetMatcher matcher(ruleset->data(), ruleset->length());
+  IndexedRulesetMatcher matcher(ruleset->data());
   mojom::ActivationState activation_state = parent_activation_state;
   if (activation_state.filtering_disabled_for_document)
     return activation_state;

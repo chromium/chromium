@@ -124,13 +124,13 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
   return true;
 }
 
-absl::optional<base::EnvironmentMap>
+std::optional<base::EnvironmentMap>
 WVTestLicenseServerConfig::GetServerEnvironment() {
   // Add the Python protocol buffers files directory to Python path.
   base::FilePath pyproto_dir;
   if (!GetPyProtoPath(&pyproto_dir)) {
     LOG(WARNING) << "Cannot find pyproto directory required by license server.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::EnvironmentMap map;
@@ -148,7 +148,7 @@ bool WVTestLicenseServerConfig::SelectServerPort() {
     net::NetLogSource source;
     net::TCPServerSocket sock(nullptr, source);
     if (sock.Listen(net::IPEndPoint(net::IPAddress::IPv4Localhost(), try_port),
-                    1, /*ipv6_only=*/absl::nullopt) == net::OK) {
+                    1, /*ipv6_only=*/std::nullopt) == net::OK) {
       port_ = try_port;
       return true;
     }

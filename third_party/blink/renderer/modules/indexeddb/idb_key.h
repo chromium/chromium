@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
+class ScriptState;
 
 // An IndexedDB primary or index key.
 //
@@ -128,6 +130,8 @@ class MODULES_EXPORT IDBKey {
   bool IsLessThan(const IDBKey* other) const;
   bool IsEqual(const IDBKey* other) const;
   size_t SizeEstimate() const { return size_estimate_; }
+
+  v8::Local<v8::Value> ToV8(ScriptState*) const;
 
   // Returns a new key array with invalid keys and duplicates removed.
   //

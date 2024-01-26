@@ -355,8 +355,7 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   if (!decoded_response) {
     FIDO_LOG(ERROR) << "-> (CBOR parse error from GetInfo response '"
                     << cbor::Reader::ErrorCodeToString(error)
-                    << "' from raw message "
-                    << base::HexEncode(buffer.data(), buffer.size()) << ")";
+                    << "' from raw message " << base::HexEncode(buffer) << ")";
     return absl::nullopt;
   }
 

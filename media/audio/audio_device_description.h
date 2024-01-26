@@ -83,19 +83,25 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   static void LocalizeDeviceDescriptions(
       std::vector<AudioDeviceDescription>* device_descriptions);
 
-  AudioDeviceDescription() = default;
-  AudioDeviceDescription(const AudioDeviceDescription& other) = default;
+  AudioDeviceDescription();
+  AudioDeviceDescription(const AudioDeviceDescription& other);
+  AudioDeviceDescription& operator=(const AudioDeviceDescription& other);
+  AudioDeviceDescription(AudioDeviceDescription&& other);
+  AudioDeviceDescription& operator=(AudioDeviceDescription&& other);
   AudioDeviceDescription(std::string device_name,
                          std::string unique_id,
-                         std::string group_id);
+                         std::string group_id,
+                         bool is_system_default = false);
 
-  ~AudioDeviceDescription() = default;
+  ~AudioDeviceDescription();
 
   bool operator==(const AudioDeviceDescription& other) const;
 
-  std::string device_name;  // Friendly name of the device.
-  std::string unique_id;    // Unique identifier for the device.
-  std::string group_id;     // Group identifier.
+  std::string device_name;         // Friendly name of the device.
+  std::string unique_id;           // Unique identifier for the device.
+  std::string group_id;            // Group identifier.
+  bool is_system_default = false;  // True if the device represented by this
+                                   // description is the system default.
 };
 
 typedef std::vector<AudioDeviceDescription> AudioDeviceDescriptions;

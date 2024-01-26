@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>
@@ -119,6 +119,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time a
     web page enters fullscreen via the Fullscreen API.
+
+    Canary/Dev data from December 2023 - January 2024 may be inaccurate due to a
+    bug.
   </summary>
 </histogram>
 
@@ -133,30 +136,9 @@ chromium-metrics-reviews@google.com.
     Note that even when keyboard lock has been requested, it doesn't get
     activated when entering fullscreen through the browser UI. The Fullscreen
     API must (also) be called.
-  </summary>
-</histogram>
 
-<histogram name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime"
-    units="microseconds" expires_after="2019-09-30">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Time in which non-AppCache requests have been delayed after being discovered
-    by the HTMLPreloadScanner, due to document element not being yet available,
-    which is required for AppCache support. Recorded per document.
-  </summary>
-</histogram>
-
-<histogram
-    name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime.MainFrame"
-    units="microseconds" expires_after="2019-09-30">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Time in which non-AppCache requests have been delayed after being discovered
-    by the HTMLPreloadScanner, due to document element not being yet available,
-    which is required for AppCache support. Recorded per document, but applies
-    only to main frames.
+    Canary/Dev data from December 2023 - January 2024 may be inaccurate due to a
+    bug.
   </summary>
 </histogram>
 

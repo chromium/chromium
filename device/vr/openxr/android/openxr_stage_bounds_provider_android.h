@@ -8,6 +8,7 @@
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 
 #include "base/memory/raw_ref.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -27,6 +28,22 @@ class OpenXrStageBoundsProviderAndroid : public OpenXrStageBoundsProvider {
  private:
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSession session_;
+};
+
+class OpenXrStageBoundsProviderAndroidFactory
+    : public OpenXrExtensionHandlerFactory {
+ public:
+  OpenXrStageBoundsProviderAndroidFactory();
+  ~OpenXrStageBoundsProviderAndroidFactory() override;
+
+  const base::flat_set<std::string_view>& GetRequestedExtensions()
+      const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+
+  std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session) const override;
 };
 }  // namespace device
 

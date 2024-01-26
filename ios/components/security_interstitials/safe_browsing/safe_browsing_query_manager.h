@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -188,9 +189,9 @@ class SafeBrowsingQueryManager
           performed_check);
 
   // The WebState whose URL queries are being managed.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // The safe browsing client.
-  SafeBrowsingClient* client_ = nullptr;
+  raw_ptr<SafeBrowsingClient> client_ = nullptr;
   // The checker client.  Used to communicate with the database on the IO
   // thread. If kSafeBrowsingOnUIThread is enabled it'll be used on the UI
   // thread.

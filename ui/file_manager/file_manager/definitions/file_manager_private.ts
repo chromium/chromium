@@ -52,7 +52,7 @@ declare namespace chrome {
     export function getDriveConnectionState(
         callback: GetDriveConnectionStateCallback): void;
 
-    type IOTaskParams = {
+    type IoTaskParams = {
       destinationFolder?: DirectoryEntry,
       password?: string,
       showNotification?: boolean,

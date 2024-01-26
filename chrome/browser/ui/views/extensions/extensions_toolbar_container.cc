@@ -14,11 +14,11 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
@@ -142,12 +142,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
           extensions_features::kExtensionsMenuAccessControl)) {
     auto request_access_button =
         std::make_unique<ExtensionsRequestAccessButton>(browser_, this);
+    request_access_button->SetVisible(false);
     request_access_button_ = AddChildView(std::move(request_access_button));
-
-    // TODO(crbug.com/1511762): Remove extensions controls, since it's no longer
-    // a view, and move functionality to the extensions container.
-    extensions_controls_ = std::make_unique<ExtensionsToolbarControls>(
-        extensions_button_.get(), request_access_button_);
   }
 
   // Create close side panel button.
@@ -213,12 +209,6 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     GetTargetLayoutManager()->SetDefault(views::kMarginsKey,
                                          gfx::Insets::VH(0, 2));
   }
-
-  // Observers.
-  // TODO(pbos): Consider splitting out tab-strip observing into another class.
-  // Triggers for Extensions-related bubbles should preferably be separate from
-  // the container where they are shown.
-  browser_->tab_strip_model()->AddObserver(this);
 
   UpdateControlsVisibility();
 
@@ -338,11 +328,72 @@ void ExtensionsToolbarContainer::UpdatePinnedActions() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void ExtensionsToolbarContainer::UpdateExtensionsButton(
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* web_contents,
+    bool is_restricted_url) {
+  // Extensions button state can only change when feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
+  ExtensionsToolbarButton::State extensions_button_state =
+      ExtensionsToolbarButton::State::kDefault;
+
+  if (is_restricted_url || site_setting ==
+                               extensions::PermissionsManager::UserSiteSetting::
+                                   kBlockAllExtensions) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAllExtensionsBlocked;
+  } else if (ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+                 actions_, web_contents)) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
+  }
+
+  extensions_button_->UpdateState(extensions_button_state);
+}
+
 void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* web_contents) {
-  extensions_controls_->UpdateRequestAccessButton(actions_, site_setting,
-                                                  web_contents);
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
+  // Don't update the button if the confirmation message is currently showing;
+  // it'll go away after a few seconds. Once the confirmation is collapsed,
+  // button should be updated again.
+  if (request_access_button_->IsShowingConfirmation()) {
+    return;
+  }
+
+  // Extensions are included in the request access button only when the site
+  // allows customizing site access by extension, and when the extension
+  // itself can show access requests in the toolbar and hasn't been dismissed.
+  std::vector<extensions::ExtensionId> extensions;
+  if (site_setting ==
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
+    for (const auto& action : actions_) {
+      bool dismissed_requests =
+          extensions::TabHelper::FromWebContents(web_contents)
+              ->HasExtensionDismissedRequests(action->GetId());
+      if (action->ShouldShowSiteAccessRequestInToolbar(web_contents) &&
+          !dismissed_requests) {
+        extensions.push_back(action->GetId());
+      }
+    }
+  }
+
+  request_access_button_->Update(extensions);
+
+  // Extensions button has left flat edge iff request access button is visible.
+  // This will also update the button's background.
+  absl::optional<ToolbarButton::Edge> extensions_button_edge =
+      request_access_button_->GetVisible()
+          ? absl::optional<ToolbarButton::Edge>(ToolbarButton::Edge::kLeft)
+          : absl::nullopt;
+  extensions_button_->SetFlatEdge(extensions_button_edge);
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
@@ -622,58 +673,6 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
   return !actions_.empty();
-}
-
-void ExtensionsToolbarContainer::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (tab_strip_model->empty() || !selection.active_tab_changed())
-    return;
-
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
-  extensions::MaybeShowExtensionControlledNewTabPage(browser_,
-                                                     selection.new_contents);
-
-  // Request access button confirmation is tab-specific. Therefore, we need to
-  // reset if the active tab changes.
-  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation()) {
-    extensions_controls_->ResetConfirmation();
-    UpdateControlsVisibility();
-  }
-
-  MaybeShowIPH();
-}
-
-void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
-                                              int index,
-                                              TabChangeType change_type) {
-  // Ignore changes that don't affect all the tab contents (e.g loading
-  // changes).
-  if (change_type != TabChangeType::kAll) {
-    return;
-  }
-
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
-  // Request access button confirmation is tab-specific for a specific origin.
-  // Therefore, we need to reset it if it's currently showing, we are on the
-  // same tab and we have navigated to another origin.
-  // Note: When we switch tabs, `OnTabStripModelChanged` is called before
-  // `TabChangedAt` and takes care of resetting the confirmation if shown.
-  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation() &&
-      !extensions_controls_->IsShowingConfirmationFor(
-          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    extensions_controls_->ResetConfirmation();
-    UpdateControlsVisibility();
-  }
-
-  MaybeShowIPH();
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {
@@ -1027,8 +1026,10 @@ void ExtensionsToolbarContainer::DragDropCleanup(
 }
 
 void ExtensionsToolbarContainer::UpdateControlsVisibility() {
-  if (!extensions_controls_)
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
     return;
+  }
 
   content::WebContents* web_contents = GetCurrentWebContents();
   if (!web_contents)
@@ -1041,35 +1042,8 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
           ->GetUserSiteSetting(
               web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
-  extensions_controls_->UpdateControls(is_restricted_url, actions_,
-                                       site_setting, web_contents, browser_);
-}
-
-void ExtensionsToolbarContainer::MaybeShowIPH() {
-  // IPH is only shown for the kExtensionsMenuAccessControl feature.
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    return;
-  }
-
-  CHECK(browser_->window());
-
-  // Display IPH, with priority order.
-  if (extensions_controls_->request_access_button()->GetVisible()) {
-    const int extensions_size =
-        extensions_controls_->request_access_button()->GetExtensionsCount();
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
-    params.body_params = extensions_size;
-    params.title_params = extensions_size;
-    browser_->window()->MaybeShowFeaturePromo(std::move(params));
-  }
-
-  if (extensions_controls_->extensions_button()->state() ==
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsMenuFeature);
-  }
+  UpdateExtensionsButton(site_setting, web_contents, is_restricted_url);
+  UpdateRequestAccessButton(site_setting, web_contents);
 }
 
 void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
@@ -1083,11 +1057,11 @@ void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
 }
 
 void ExtensionsToolbarContainer::CollapseConfirmation() {
-  if (!extensions_controls_->IsShowingConfirmation()) {
+  if (!request_access_button_->IsShowingConfirmation()) {
     return;
   }
 
-  extensions_controls_->ResetConfirmation();
+  request_access_button_->ResetConfirmation();
   UpdateControlsVisibility();
 }
 

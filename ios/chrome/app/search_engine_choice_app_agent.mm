@@ -7,42 +7,19 @@
 #import <memory>
 
 #import "base/check.h"
-#import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
-#import "ios/public/provider/chrome/browser/signin/choice_api.h"
-
-namespace {
-bool IsChoiceEnabledInNormalRun() {
-  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
-    // This branch is only selected in tests that are related to choice screen.
-    return true;
-  }
-  if (tests_hook::DisableDefaultSearchEngineChoice()) {
-    // This branch is taken in every other tests.
-    return false;
-  }
-  if (ios::provider::DisableDefaultSearchEngineChoice()) {
-    // Outside of tests, this view should be disabled upstream.
-    return false;
-  }
-  return search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog);
-}
-}  // namespace
 
 @interface SearchEngineChoiceAppAgent () <SearchEngineChoiceCoordinatorDelegate>
 @end
@@ -52,6 +29,8 @@ bool IsChoiceEnabledInNormalRun() {
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
   // UI blocker used by the search engine selection screen.
   std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
+  // Scene state ID where the search engine choice dialog is displayed.
+  NSString* _searchEngineChoiceSceneStateID;
 }
 
 #pragma mark - SceneObservingAppAgent
@@ -62,14 +41,26 @@ bool IsChoiceEnabledInNormalRun() {
   if (self.appState.initStage > InitStageFirstRun) {
     switch (level) {
       case SceneActivationLevelForegroundInactive:
+      case SceneActivationLevelBackground:
         break;
       case SceneActivationLevelForegroundActive:
         [self maybeShowChoiceScreen:sceneState];
         break;
-      case SceneActivationLevelBackground:
       case SceneActivationLevelDisconnected:
       case SceneActivationLevelUnattached:
-        [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
+        if (_searchEngineChoiceCoordinator &&
+            [_searchEngineChoiceSceneStateID
+                isEqual:sceneState.sceneSessionID]) {
+          [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
+          // If the scene state where the search engine choice dialog is
+          // removed, is disconned, the search engine choice dialog needs to be
+          // added to the next foreground active scene (if one exists).
+          SceneState* nextActiveSceneState =
+              self.appState.foregroundActiveScene;
+          if (nextActiveSceneState) {
+            [self maybeShowChoiceScreen:nextActiveSceneState];
+          }
+        }
         break;
     }
   }
@@ -99,7 +90,9 @@ bool IsChoiceEnabledInNormalRun() {
 - (void)choiceScreenWillBeDismissed:
     (SearchEngineChoiceCoordinator*)coordinator {
   DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
+  DCHECK(_searchEngineChoiceSceneStateID);
   _searchEngineChoiceUIBlocker.reset();
+  _searchEngineChoiceSceneStateID = nil;
   [_searchEngineChoiceCoordinator stop];
   _searchEngineChoiceCoordinator = nil;
 }
@@ -110,13 +103,28 @@ bool IsChoiceEnabledInNormalRun() {
   // The application needs to be ready (i.e. the Browser created, ...) before
   // the choice screen can be presented. Assert this is the case.
   DCHECK_GT(self.appState.initStage, InitStageFirstRun);
+  BOOL hasPreRestoreAccountInfo =
+      GetPreRestoreIdentity(GetApplicationContext()->GetLocalState())
+          .has_value();
+  if (hasPreRestoreAccountInfo) {
+    // Do not override the post-restore signin promo. The choice screen should
+    // come after.
+    return;
+  }
   if (_searchEngineChoiceCoordinator) {
     return;
   }
-  if ([self shouldShowChoiceScreen:sceneState]) {
+  // Using main browser so that, even in incognito mode, the user is not
+  // re-asked which search engine to use.
+  if (ShouldDisplaySearchEngineChoiceScreen(
+          *sceneState.browserProviderInterface.mainBrowserProvider.browser
+               ->GetBrowserState(),
+          search_engines::ChoicePromo::kDialog)) {
     DCHECK(!_searchEngineChoiceUIBlocker);
+    DCHECK(!_searchEngineChoiceSceneStateID);
     _searchEngineChoiceUIBlocker =
         std::make_unique<ScopedUIBlocker>(sceneState);
+    _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
     _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
         initWithBaseViewController:sceneState.browserProviderInterface
                                        .currentBrowserProvider.viewController
@@ -125,25 +133,6 @@ bool IsChoiceEnabledInNormalRun() {
     _searchEngineChoiceCoordinator.delegate = self;
     [_searchEngineChoiceCoordinator start];
   }
-}
-
-- (BOOL)shouldShowChoiceScreen:(SceneState*)sceneState {
-  if (!IsChoiceEnabledInNormalRun()) {
-    return NO;
-  }
-  ChromeBrowserState* browserState =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  if (!browserState) {
-    return NO;
-  }
-  BrowserStatePolicyConnector* policyConnector =
-      browserState->GetPolicyConnector();
-  return search_engines::ShouldShowChoiceScreen(
-      *policyConnector->GetPolicyService(),
-      /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = browserState->GetPrefs()},
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState));
 }
 
 @end

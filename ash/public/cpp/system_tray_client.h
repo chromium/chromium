@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/strings/string_piece.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/version_info/channel.h"
 #include "url/gurl.h"
@@ -38,7 +38,7 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
   // provided the dialog will show the device list instead.
   virtual void ShowBluetoothPairingDialog(
-      std::optional<base::StringPiece> device_address) = 0;
+      std::optional<std::string_view> device_address) = 0;
 
   // Shows the settings related to date, timezone etc.
   virtual void ShowDateSettings() = 0;

@@ -49,6 +49,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -93,6 +94,45 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
+class TaskListScrollView : public views::ScrollView,
+                           public views::ViewObserver {
+  METADATA_HEADER(TaskListScrollView, views::ScrollView)
+ public:
+  TaskListScrollView() : scoped_observation_(this) {
+    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView));
+    ClipHeightTo(0, std::numeric_limits<int>::max());
+    SetBackgroundColor(std::nullopt);
+    SetDrawOverflowIndicator(false);
+  }
+
+  TaskListScrollView(const TaskListScrollView&) = delete;
+  TaskListScrollView& operator=(const TaskListScrollView&) = delete;
+  ~TaskListScrollView() override = default;
+
+  views::View* SetContents(std::unique_ptr<views::View> view) {
+    views::View* contents = views::ScrollView::SetContents(std::move(view));
+    scoped_observation_.Observe(contents);
+    return contents;
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override {
+    // Updates the preferred size of the scroll view when the content's
+    // preferred size changed.
+    if (contents_old_size_ != observed_view->size()) {
+      contents_old_size_ = observed_view->size();
+      PreferredSizeChanged();
+    }
+  }
+
+ private:
+  gfx::Size contents_old_size_;
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_;
+};
+
+BEGIN_METADATA(TaskListScrollView)
+END_METADATA
+
 }  // namespace
 
 GlanceablesTasksViewBase::GlanceablesTasksViewBase()
@@ -130,10 +170,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  auto* const scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
-  scroll_view->SetBackgroundColor(std::nullopt);
-  scroll_view->SetDrawOverflowIndicator(false);
+  auto* const scroll_view =
+      AddChildView(std::make_unique<TaskListScrollView>());
 
   auto* const list_view =
       scroll_view->SetContents(std::make_unique<views::View>());
@@ -213,7 +251,13 @@ GlanceablesTasksView::GlanceablesTasksView(
 GlanceablesTasksView::~GlanceablesTasksView() {
   if (first_task_list_shown_) {
     RecordTasksListChangeCount(tasks_list_change_count_);
+    RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
+                             user_with_no_tasks_);
   }
+}
+
+void GlanceablesTasksView::ChildPreferredSizeChanged(View* child) {
+  PreferredSizeChanged();
 }
 
 void GlanceablesTasksView::CancelUpdates() {
@@ -226,14 +270,6 @@ void GlanceablesTasksView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
-void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
-  RecordTasksLaunchSource(source);
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kTasksManagementPage),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
   const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
@@ -243,6 +279,9 @@ void GlanceablesTasksView::AddNewTaskButtonPressed() {
       /*index=*/0);
   pending_new_task->UpdateTaskTitleViewForState(
       GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+
+  RecordUserStartedAddingTask();
+
   PreferredSizeChanged();
 }
 
@@ -254,7 +293,10 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),
       base::BindRepeating(&GlanceablesTasksView::SaveTask,
-                          base::Unretained(this), task_list_id));
+                          base::Unretained(this), task_list_id),
+      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                          base::Unretained(this),
+                          TasksLaunchSource::kEditInGoogleTasksButton));
 }
 
 void GlanceablesTasksView::SelectedTasksListChanged() {
@@ -287,19 +329,26 @@ void GlanceablesTasksView::UpdateTasksList(
     const std::string& task_list_title,
     bool initial_update,
     const ui::ListModel<api::Task>* tasks) {
+  const gfx::Size old_preferred_size = GetPreferredSize();
+
   if (initial_update) {
     add_new_task_button_->SetVisible(true);
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
         tasks->item_count());
+  } else {
+    RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
+                             user_with_no_tasks_);
+    added_tasks_ = 0;
   }
 
-  const gfx::Size old_preferred_size = GetPreferredSize();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   task_items_container_view_->RemoveAllChildViews();
 
   size_t num_tasks_shown = 0;
+  user_with_no_tasks_ =
+      tasks->item_count() == 0 && tasks_combobox_model_->GetItemCount() == 1;
 
   for (const auto& task : *tasks) {
     if (task->completed) {
@@ -312,7 +361,7 @@ void GlanceablesTasksView::UpdateTasksList(
       ++num_tasks_shown;
     }
   }
-  task_items_container_view_->SetVisible(num_tasks_shown > 0);
+  task_list_initially_empty_ = num_tasks_shown == 0;
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
@@ -362,6 +411,17 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
+void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
+  if (user_with_no_tasks_) {
+    RecordUserWithNoTasksRedictedToTasksUI();
+  }
+  RecordTasksLaunchSource(source);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kTasksManagementPage),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 void GlanceablesTasksView::SaveTask(
     const std::string& task_list_id,
     base::WeakPtr<GlanceablesTaskViewV2> view,
@@ -369,13 +429,26 @@ void GlanceablesTasksView::SaveTask(
     const std::string& title,
     api::TasksClient::OnTaskSavedCallback callback) {
   if (task_id.empty()) {
+    // Manually deleting `view` may cause the focus manager try storing the
+    // dangling `view`'s descendants. Let native window handle the view deletion
+    // when it lost active.
+    if (GetWidget() &&
+        GetWidget()->GetNativeWindow() !=
+            Shell::Get()->focus_controller()->GetActiveWindow()) {
+      return;
+    }
+
     // Empty `task_id` means that the task has not yet been created. Verify that
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
     if (title.empty() && view) {
+      RecordTaskAdditionResult(TaskModificationResult::kCancelled);
       task_items_container_view_->RemoveChildViewT(view.get());
       return;
     }
+
+    ++added_tasks_;
+    RecordTaskAdditionResult(TaskModificationResult::kCommitted);
   }
 
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
@@ -404,6 +477,8 @@ void GlanceablesTasksView::OnTaskSaved(
       // error.
       task_items_container_view_->RemoveChildViewT(view.get());
     }
+  } else if (task->title.empty()) {
+    task_items_container_view_->RemoveChildViewT(view.get());
   }
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
   std::move(callback).Run(task);

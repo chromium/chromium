@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] DOMParser (includingShadowRoots is historical)
+[FAIL] DOMParser (includeShadowRoots is historical)
   assert_true: Shadow root FOUND - none should be present. expected true got false
 Harness: the test ran to completion.
 

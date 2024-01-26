@@ -83,7 +83,6 @@ class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class SlopBucket;
-class URLLoaderFactory;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,

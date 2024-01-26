@@ -109,7 +109,7 @@ bool ParseFrameTokenAndRestrictedId(const std::string& id_part,
     return false;
 
   InstantRestrictedID rid;
-  absl::optional<base::Token> frame_token = base::Token::FromString(tokens[0]);
+  std::optional<base::Token> frame_token = base::Token::FromString(tokens[0]);
   if (!frame_token || !base::StringToInt(tokens[1], &rid) || rid < 0) {
     return false;
   }

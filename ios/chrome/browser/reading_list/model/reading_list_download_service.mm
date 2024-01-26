@@ -94,7 +94,7 @@ ReadingListDownloadService::ReadingListDownloadService(
 ReadingListDownloadService::~ReadingListDownloadService() = default;
 
 void ReadingListDownloadService::Initialize() {
-  model_observation_.Observe(reading_list_model_);
+  model_observation_.Observe(reading_list_model_.get());
 }
 
 base::FilePath ReadingListDownloadService::OfflineRoot() const {

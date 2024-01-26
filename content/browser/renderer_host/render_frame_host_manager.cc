@@ -1570,16 +1570,18 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // considered an inactive state (i.e., not allowed to show any UI changes) it
   // is still allowed to navigate, fetch, load and run documents in the
   // background.
-  // 2) Subframes before ReadyToCommit in bfcached pages. Currently, when
-  // kEnableBackForwardCacheForOngoingSubframeNavigation is enabled, we only
-  // allow the page to be cached if subframe navigations don't need URL loaders
-  // and haven't reached the pending commit stage. Find more details in
-  // https://crbug.com/1511153.
+  // 2) Subframes in BFCached pages that have not (or will never) sent network
+  // requests, if kEnableBackForwardCacheForOngoingSubframeNavigation is
+  // enabled. Find more details in https://crbug.com/1511153.
   if (base::FeatureList::IsEnabled(
           features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
       current_frame_host()->lifecycle_state() ==
           LifecycleStateImpl::kInBackForwardCache) {
-    CHECK(!request->NeedsUrlLoader());
+    CHECK(!request->IsInMainFrame());
+    CHECK(!request->NeedsUrlLoader() ||
+          (!request->HasLoader() &&
+           request->state() <=
+               NavigationRequest::NavigationState::WILL_START_REQUEST));
   }
   if (!(current_frame_host()->lifecycle_state() ==
             LifecycleStateImpl::kPrerendering ||
@@ -2689,8 +2691,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (new_instance == current_instance) {
     // If we're navigating to the same site instance, we won't need to use the
     // current spare RenderProcessHost.
-    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-        browser_context);
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+        new_instance.get());
   }
 
   // Double-check that the new SiteInstance is associated with the right

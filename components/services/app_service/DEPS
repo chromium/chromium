@@ -4,8 +4,7 @@ include_rules = [
   "+components/crx_file",
   "+components/services/app_service/public/cpp",
   "+content/public",
-  "+ui/gfx/geometry",
-  "+ui/gfx/image",
+  "+ui/gfx",
 ]
 
 specific_include_rules = {
@@ -21,7 +20,6 @@ specific_include_rules = {
   ],
   "icon_cache_unittest\.cc": [
     "+chrome/test/base/testing_profile.h",
-    "+ui/gfx/geometry/size.h",
   ],
   "instance_registry_unittest\.cc": [
     "+ui/aura/window.h",
@@ -34,4 +32,10 @@ specific_include_rules = {
   "instance_update_unittest\.cc": [
     "+chrome/test/base/testing_profile.h",
   ],
+  "app_shortcut_image\.cc": [
+    "+cc/paint",
+  ],
+  "app_shortcut_image\.h": [
+    "+third_party/skia/include/core",
+  ]
 }

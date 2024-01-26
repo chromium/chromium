@@ -61,7 +61,7 @@ ArcKioskAppManager::~ArcKioskAppManager() {
 }
 
 const ArcKioskAppData* ArcKioskAppManager::GetAppByAccountId(
-    const AccountId& account_id) {
+    const AccountId& account_id) const {
   for (auto& app : apps_) {
     if (app->account_id() == account_id) {
       return app.get();

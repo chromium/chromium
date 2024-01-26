@@ -18,7 +18,9 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
 class SequencedTaskRunner;
+}  // namespace base
 
 namespace apps {
 

@@ -160,8 +160,9 @@ void PlatformKeysNatives::NormalizeAlgorithm(
       v8::Local<v8::Object>::Cast(call_info[0]), operation, &exception_code,
       &error_details, call_info.GetIsolate());
 
-  if (algorithm.IsNull())
+  if (algorithm.IsNull()) {
     return;
+  }
 
   call_info.GetReturnValue().Set(
       WebCryptoAlgorithmToV8Value(algorithm, context()->v8_context()));

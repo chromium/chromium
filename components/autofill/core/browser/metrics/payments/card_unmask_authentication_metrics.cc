@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 

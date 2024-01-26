@@ -43,7 +43,7 @@ class TestQuery : public PrinterQuery {
   TestQuery() : PrinterQuery(content::GlobalRenderFrameHostId()) {}
 
   void GetSettingsDone(base::OnceClosure callback,
-                       absl::optional<bool> maybe_is_modifiable,
+                       std::optional<bool> maybe_is_modifiable,
                        std::unique_ptr<PrintSettings> new_settings,
                        mojom::ResultCode result) override {
     FAIL();

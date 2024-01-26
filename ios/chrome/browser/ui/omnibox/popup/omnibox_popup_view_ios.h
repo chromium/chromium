@@ -9,6 +9,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/omnibox_popup_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
@@ -60,8 +61,8 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 
  private:
-  WebLocationBar* location_bar_;
-  OmniboxPopupViewSuggestionsDelegate* delegate_;  // weak
+  raw_ptr<WebLocationBar> location_bar_;
+  raw_ptr<OmniboxPopupViewSuggestionsDelegate> delegate_;  // weak
   OmniboxPopupMediator* mediator_;
 };
 

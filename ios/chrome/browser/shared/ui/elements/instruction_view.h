@@ -11,6 +11,7 @@
 typedef NS_ENUM(NSInteger, InstructionViewStyle) {
   InstructionViewStyleDefault = 0,
   InstructionViewStyleGrayscale,
+  InstructionViewStyleBold,
 };
 
 // View containing an instruction list with their step number.

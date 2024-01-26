@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
+import type {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 

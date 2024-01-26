@@ -53,7 +53,6 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual bool HasValidTilePriorities() const = 0;
   virtual bool RequiresHighResToDraw() const = 0;
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
-  virtual bool IsDirectlyCompositedImage() const = 0;
   virtual bool ScrollInteractionInProgress() const = 0;
   virtual bool CurrentScrollCheckerboardsDueToNoRecording() const = 0;
 
@@ -156,7 +155,7 @@ class CC_EXPORT PictureLayerTiling {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
     return client_->GetPaintWorkletRecords();
   }
-  gfx::Size tiling_size() const { return tiling_data_.tiling_size(); }
+  gfx::Size tiling_size() const { return tiling_data_.tiling_rect().size(); }
   gfx::Rect live_tiles_rect() const { return live_tiles_rect_; }
   gfx::Size tile_size() const { return tiling_data_.max_texture_size(); }
   // PictureLayerTilingSet uses the scale component of the raster transform
@@ -199,7 +198,7 @@ class CC_EXPORT PictureLayerTiling {
 
   // For testing functionality.
   void CreateAllTilesForTesting() {
-    SetLiveTilesRect(gfx::Rect(tiling_data_.tiling_size()));
+    SetLiveTilesRect(tiling_data_.tiling_rect());
   }
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
@@ -253,9 +252,7 @@ class CC_EXPORT PictureLayerTiling {
     bool AtEnd() const;
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    raw_ptr<PictureLayerTiling> tiling_;
     PictureLayerTiling::TileMap::iterator iter_;
   };
 
@@ -291,16 +288,16 @@ class CC_EXPORT PictureLayerTiling {
    private:
     gfx::Rect ComputeGeometryRect() const;
 
-    // `tiling_` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+    // profiler data and tab_search:top100:2020.
     RAW_PTR_EXCLUSION const PictureLayerTiling* tiling_ = nullptr;
 
     gfx::Size coverage_rect_max_bounds_;
     gfx::Rect coverage_rect_;
     gfx::AxisTransform2d coverage_to_content_;
 
-    // `current_tile_` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+    // profiler data and tab_search:top100:2020.
     RAW_PTR_EXCLUSION Tile* current_tile_ = nullptr;
 
     gfx::Rect current_geometry_rect_;
@@ -524,7 +521,7 @@ class CC_EXPORT PictureLayerTiling {
   bool may_contain_low_resolution_tiles_ = false;
 
   // Internal data.
-  TilingData tiling_data_ = TilingData(gfx::Size(), gfx::Size(), kBorderTexels);
+  TilingData tiling_data_{gfx::Size(), gfx::Rect(), kBorderTexels};
   TileMap tiles_;  // It is not legal to have a NULL tile in the tiles_ map.
   gfx::Rect live_tiles_rect_;
 

@@ -28,6 +28,61 @@ sys.path.insert(1, _JSON5_PATH)
 
 import json5 as json
 
+# Generates a function AreMatchingPatternsEqualImpl(a, b, lang_code), which
+# tests whether the patterns for PatternSources a and b in language lang_code
+# match. This can be used to avoid unnecessarily recomputing heuristics.
+# All return values are precomputed, making this a constant time operation at
+# runtime.
+# - `name_to_lang_to_id_to_patternrefs`: See `generate_cpp_constants()` for a
+#   description.
+# - `lang_array`: A sorted list language codes for which lookups should be
+#   precomputed.
+# - [`min_pattern_id`, `max_pattern_id`] all valid PatternSources IDs for which
+#   lookups should be precomputed.
+def generate_matching_pattern_equals(name_to_lang_to_id_to_patternrefs,
+    lang_array, min_pattern_id, max_pattern_id):
+  # Tests if all patterns of `lang` match between to pattern source ids.
+  # "PATTERN_SOURCE_DUMMY" is ignored, since it is only just to identify the
+  # patterns for debugging purposes.
+  def patterns_match(a_id, b_id, lang):
+    return all(lang_to_id_to_patternrefs[lang][a_id] ==
+      lang_to_id_to_patternrefs[lang][b_id]
+      for name, lang_to_id_to_patternrefs in
+      name_to_lang_to_id_to_patternrefs.items()
+      if name != "PATTERN_SOURCE_DUMMY")
+
+  yield '// Checks if all the matching patterns for the given PatternSources'
+  yield '// and language are the same - meaning that computing predictions for'
+  yield '// both is unnecessary, since it will yield the same result.'
+  yield 'constexpr bool AreMatchingPatternsEqualImpl(PatternSource a,'
+  yield '                                            PatternSource b,'
+  yield '                                            LanguageCode lang_code) {'
+  yield '  if (a == b) {'
+  yield '    return true;'
+  yield '  }'
+  yield '  auto a_id = base::to_underlying(a);'
+  yield '  auto b_id = base::to_underlying(b);'
+  yield '  if (a_id > b_id) {'
+  yield '    std::swap(a_id, b_id);'
+  yield '  }'
+
+  # Precompute the result for all provided pattern ids and languages.
+  for a_id in range(min_pattern_id, max_pattern_id + 1):
+    for b_id in range(a_id + 1, max_pattern_id + 1):
+      langs = [lang for lang in lang_array if patterns_match(a_id, b_id, lang)]
+      if langs == []:
+        continue
+      yield f'  if (a_id == {a_id} && b_id == {b_id}) {{'
+      if langs == lang_array:
+        yield '    return true;'
+      else:
+        disjunction = " || ".join(f"*lang_code == \"{lang}\"" for lang in langs)
+        yield f'    return {disjunction};'
+      yield '  }'
+
+  yield '  return false;'
+  yield '}'
+
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
 # MatchingPatterns by a given tuple (pattern name, language code).
 #
@@ -268,14 +323,19 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   yield ''
 
   language_array = sorted(
-      set(f'"{lang}"' for lang_to_id_to_patternrefs in
+      set(lang for lang_to_id_to_patternrefs in
           name_to_lang_to_id_to_patternrefs.values()
           for lang in lang_to_id_to_patternrefs.keys() if lang != ''))
   yield '// The set of language codes across all language source ids and'
   yield '// pattern names.'
   yield 'constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({'
-  yield f'  {", ".join(language_array)}'
+  quoted_languages = [f'"{lang}"' for lang in language_array]
+  yield f'  {", ".join(quoted_languages)}'
   yield '}, LanguageComparator());'
+
+  yield ''
+  yield from generate_matching_pattern_equals(name_to_lang_to_id_to_patternrefs,
+    language_array, min_pattern_id, max_pattern_id)
 
 def generate_cpp_lines(id_to_name_to_lang_to_patterns):
   yield """// Copyright 2022 The Chromium Authors
@@ -285,12 +345,14 @@ def generate_cpp_lines(id_to_name_to_lang_to_patterns):
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 
+#include <algorithm>
 #include <array>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/types/cxx23_to_underlying.h"
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/dense_set.h"

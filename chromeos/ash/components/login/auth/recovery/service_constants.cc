@@ -24,14 +24,14 @@ const char kTestingHsmPublicKey[] =
     "0b1793859f1d8725911005b4384edcda7f";
 
 // -----BEGIN PUBLIC KEY-----
-// MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEsZOjqidd3MwYuW48GUsGEaP1H0Pj
-// b2fKi6u3D3PdTuuao6iFNLbd3STNaiZ9O5F7+KKNieMN9/KsDWCMPKzRQw==
-//-----END PUBLIC KEY-----
+// MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdFTQOFwWlhLl5fT91iOSRrYBUaBM
+// rfy2N2FWRO2BWE1/lAu+kr1H9RhldOZkA89T9dX7pbPRehuueIO8xAPn9A==
+// -----END PUBLIC KEY-----
 // Converted from Base64 to hex string.
 const char kHsmPublicKey[] =
-    "3059301306072a8648ce3d020106082a8648ce3d03010703420004b193a3aa275ddccc18b9"
-    "6e3c194b0611a3f51f43e36f67ca8babb70f73dd4eeb9aa3a88534b6dddd24cd6a267d3b91"
-    "7bf8a28d89e30df7f2ac0d608c3cacd143";
+    "3059301306072a8648ce3d020106082a8648ce3d030107034200047454d0385c169612e5e5"
+    "f4fdd6239246b60151a04cadfcb637615644ed81584d7f940bbe92bd47f5186574e66403cf"
+    "53f5d5fba5b3d17a1bae7883bcc403e7f4";
 
 // Hard-coded ledger info, including the public key, name and key
 // hash. It mirrors the value from the server.

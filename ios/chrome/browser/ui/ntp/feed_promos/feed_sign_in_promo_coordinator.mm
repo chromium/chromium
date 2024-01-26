@@ -43,24 +43,17 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       [[FeedSignInPromoViewController alloc] init];
 
   signInPromoViewController.actionHandler = self;
-
-  if (@available(iOS 15, *)) {
-    signInPromoViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        signInPromoViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    signInPromoViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+  signInPromoViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      signInPromoViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   [self.baseViewController
       presentViewController:signInPromoViewController

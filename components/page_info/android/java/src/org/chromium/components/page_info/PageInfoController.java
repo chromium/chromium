@@ -73,7 +73,7 @@ public class PageInfoController
         int VR = 3;
     }
 
-    @ContentSettingsType
+    @ContentSettingsType.EnumType
     public static final int NO_HIGHLIGHTED_PERMISSION = ContentSettingsType.DEFAULT;
 
     private Context mContext;

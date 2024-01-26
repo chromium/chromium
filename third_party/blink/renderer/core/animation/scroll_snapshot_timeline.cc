@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 
 namespace blink {
@@ -17,7 +18,7 @@ ScrollSnapshotTimeline::ScrollSnapshotTimeline(Document* document)
     : AnimationTimeline(document), ScrollSnapshotClient(document->GetFrame()) {}
 
 bool ScrollSnapshotTimeline::IsResolved() const {
-  return ComputeIsResolved(ResolvedSource());
+  return ScrollContainer();
 }
 
 bool ScrollSnapshotTimeline::IsActive() const {
@@ -174,10 +175,22 @@ void ScrollSnapshotTimeline::UpdateSnapshot() {
   ResolveTimelineOffsets();
 }
 
-bool ScrollSnapshotTimeline::ComputeIsResolved(Node* resolved_source) {
-  LayoutBox* layout_box =
-      resolved_source ? resolved_source->GetLayoutBox() : nullptr;
-  return layout_box && layout_box->IsScrollContainer();
+LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
+    Node* resolved_source) {
+  if (!resolved_source) {
+    return nullptr;
+  }
+
+  LayoutBox* layout_box = resolved_source->GetLayoutBox();
+  if (!layout_box) {
+    return nullptr;
+  }
+
+  if (auto* field_set = DynamicTo<LayoutFieldset>(layout_box)) {
+    layout_box = field_set->FindAnonymousFieldsetContentBox();
+  }
+
+  return layout_box->IsScrollContainer() ? layout_box : nullptr;
 }
 
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {

@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   Profile* profile = browser()->profile();
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForTest(profile);
-  const absl::optional<webapps::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       web_app_provider->registrar_unsafe().FindAppWithUrlInScope(app_url);
   WebAppIconWaiter(profile, app_id.value()).Wait();
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =

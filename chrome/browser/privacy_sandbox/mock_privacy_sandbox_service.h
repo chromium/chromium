@@ -52,11 +52,11 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               GetSampleFirstPartySets,
               (),
               (const, override));
-  MOCK_METHOD(absl::optional<net::SchemefulSite>,
+  MOCK_METHOD(std::optional<net::SchemefulSite>,
               GetFirstPartySetOwner,
               (const GURL& site_url),
               (const, override));
-  MOCK_METHOD(absl::optional<std::u16string>,
+  MOCK_METHOD(std::optional<std::u16string>,
               GetFirstPartySetOwnerForDisplay,
               (const GURL& site_url),
               (const, override));
@@ -79,6 +79,14 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetCurrentTopTopics,
               (),
+              (const, override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetFirstLevelTopics,
+              (),
+              (const, override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetChildTopicsCurrentlyAssigned,
+              (const privacy_sandbox::CanonicalTopic& topic),
               (const, override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetBlockedTopics,

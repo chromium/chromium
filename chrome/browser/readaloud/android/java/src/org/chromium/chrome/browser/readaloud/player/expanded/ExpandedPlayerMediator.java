@@ -50,4 +50,8 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
     boolean getShowMiniPlayerOnDismiss() {
         return mModel.get(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS);
     }
+
+    void setHiddenAndPlaying(boolean value) {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, value);
+    }
 }

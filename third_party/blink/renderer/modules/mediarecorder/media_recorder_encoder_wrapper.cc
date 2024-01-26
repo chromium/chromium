@@ -11,7 +11,6 @@
 #include "media/media_buildflags.h"
 #include "media/video/alpha_video_encoder_wrapper.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -61,6 +60,7 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
       media::VideoCodec::kAV1,
   };
   CHECK(base::Contains(kSupportedCodecs, codec_));
+  options_.latency_mode = media::VideoEncoder::LatencyMode::Quality;
   options_.bitrate = media::Bitrate::VariableBitrate(
       bits_per_second, base::ClampMul(bits_per_second, 2u).RawValue());
   options_.content_hint = is_screencast

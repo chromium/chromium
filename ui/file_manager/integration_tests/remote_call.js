@@ -12,12 +12,24 @@ import {VolumeManagerCommonVolumeType} from './volume_manager_common_volume_type
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
+// @ts-ignore: error TS2339: Property 'autoStep' does not exist on type 'Window
+// & typeof globalThis'.
 window.autoStep = () => {
+  // @ts-ignore: error TS2339: Property 'autostep' does not exist on type
+  // 'Window & typeof globalThis'.
   window.autostep = window.autostep || false;
+  // @ts-ignore: error TS2339: Property 'autostep' does not exist on type
+  // 'Window & typeof globalThis'.
   if (!window.autostep) {
+    // @ts-ignore: error TS2339: Property 'autostep' does not exist on type
+    // 'Window & typeof globalThis'.
     window.autostep = true;
   }
+  // @ts-ignore: error TS2339: Property 'step' does not exist on type 'Window &
+  // typeof globalThis'.
   if (window.autostep && typeof window.step === 'function') {
+    // @ts-ignore: error TS2339: Property 'step' does not exist on type 'Window
+    // & typeof globalThis'.
     window.step();
   }
 };
@@ -27,6 +39,7 @@ window.autoStep = () => {
  * execute in the untrusted context produces an error.
  */
 export class ExecuteScriptError extends Error {
+  // @ts-ignore: error TS7006: Parameter 'message' implicitly has an 'any' type.
   constructor(message) {
     super(message);
     this.name = 'ExecuteScriptError';
@@ -58,10 +71,14 @@ export class RemoteCall {
   async isStepByStepEnabled_() {
     if (this.cachedStepByStepEnabled_ === null) {
       this.cachedStepByStepEnabled_ = await new Promise((fulfill) => {
+        // @ts-ignore: error TS2339: Property 'commandLinePrivate' does not
+        // exist on type 'typeof chrome'.
         chrome.commandLinePrivate.hasSwitch(
             'enable-file-manager-step-by-step-tests', fulfill);
       });
     }
+    // @ts-ignore: error TS2322: Type 'boolean | null' is not assignable to type
+    // 'boolean'.
     return this.cachedStepByStepEnabled_;
   }
 
@@ -73,6 +90,8 @@ export class RemoteCall {
    */
   sendMessage(message) {
     return new Promise((fulfill) => {
+      // @ts-ignore: error TS2339: Property 'sendMessage' does not exist on type
+      // 'typeof runtime'.
       chrome.runtime.sendMessage(this.origin_, message, {}, fulfill);
     });
   }
@@ -86,31 +105,53 @@ export class RemoteCall {
    *     window.
    * @param {?Array<*>=} args Array of arguments.
    * @param {function(*)=} opt_callback Callback handling the function's result.
-   * @return {!Promise} Promise to be fulfilled with the result of the remote
-   *     utility.
+   * @return {!Promise<any>} Promise to be fulfilled with the result of the
+   *     remote utility.
    */
   async callRemoteTestUtil(func, appId, args, opt_callback) {
     const stepByStep = await this.isStepByStepEnabled_();
     let finishCurrentStep;
     if (stepByStep) {
+      // @ts-ignore: error TS2339: Property 'currentStep' does not exist on type
+      // 'Window & typeof globalThis'.
       while (window.currentStep) {
+        // @ts-ignore: error TS2339: Property 'currentStep' does not exist on
+        // type 'Window & typeof globalThis'.
         await window.currentStep;
       }
+      // @ts-ignore: error TS2339: Property 'currentStep' does not exist on type
+      // 'Window & typeof globalThis'.
       window.currentStep = new Promise(resolve => {
         finishCurrentStep = () => {
           console.groupEnd();
+          // @ts-ignore: error TS2339: Property 'currentStep' does not exist on
+          // type 'Window & typeof globalThis'.
           window.currentStep = null;
+          // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+          // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+          // called without arguments.
           resolve();
         };
       });
       console.group('Executing: ' + func + ' on ' + appId + ' with args: ');
       console.info(args);
+      // @ts-ignore: error TS2339: Property 'autostep' does not exist on type
+      // 'Window & typeof globalThis'.
       if (window.autostep !== true) {
         await new Promise((onFulfilled) => {
           console.info('Type step() to continue...');
+          // @ts-ignore: error TS7014: Function type, which lacks return-type
+          // annotation, implicitly has an 'any' return type.
           /** @type {?function()} */
+          // @ts-ignore: error TS2339: Property 'step' does not exist on type
+          // 'Window & typeof globalThis'.
           window.step = function() {
+            // @ts-ignore: error TS2339: Property 'step' does not exist on type
+            // 'Window & typeof globalThis'.
             window.step = null;
+            // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+            // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+            // called without arguments.
             onFulfilled();
           };
         });
@@ -123,6 +164,8 @@ export class RemoteCall {
     if (stepByStep) {
       console.info('Returned value:');
       console.info(JSON.stringify(response));
+      // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
+      // 'undefined'.
       finishCurrentStep();
     }
     if (opt_callback) {
@@ -141,6 +184,9 @@ export class RemoteCall {
     const appId = await repeatUntil(async () => {
       const msg = {name: 'findSwaWindow'};
       if (debug) {
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type '"debug"' can't be used to index type '{
+        // name: string; }'.
         msg['debug'] = true;
       }
       const ret = await sendTestMessage(msg);
@@ -150,6 +196,8 @@ export class RemoteCall {
       return ret;
     });
 
+    // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+    // 'string'.
     return appId;
   }
 
@@ -161,6 +209,7 @@ export class RemoteCall {
    */
   waitForWindowGeometry(appId, width, height) {
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       const windows = await this.callRemoteTestUtil('getWindows', null, []);
       if (!windows[appId]) {
@@ -203,6 +252,8 @@ export class RemoteCall {
    */
   async waitForElementStyles(appId, query, styleNames) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+    // 'ElementObject'.
     return repeatUntil(async () => {
       const elements = await this.callRemoteTestUtil(
           'deepQueryAllElements', appId, [query, styleNames]);
@@ -224,12 +275,14 @@ export class RemoteCall {
    *     is the expected value.
    * @param {?Array<*>=} args Arguments to be provided to |funcName| when
    *     executing it.
-   * @return {Promise} Promise to be fulfilled when the |expectedResult| is
-   *     returned from |funcName| execution.
+   * @return {Promise<void>} Promise to be fulfilled when the |expectedResult|
+   *     is returned from |funcName| execution.
    */
   waitFor(funcName, appId, expectedResult, args) {
     const caller = getCaller();
     args = args || [];
+    // @ts-ignore: error TS2322: Type 'Promise<unknown>' is not assignable to
+    // type 'Promise<void>'.
     return repeatUntil(async () => {
       const result = await this.callRemoteTestUtil(funcName, appId, args);
       if (typeof expectedResult === 'function' && expectedResult(result)) {
@@ -252,10 +305,12 @@ export class RemoteCall {
    *     If query is an array, |query[0]| specifies the first
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
-   * @return {Promise} Promise to be fulfilled when the element is lost.
+   * @return {Promise<void>} Promise to be fulfilled when the element is lost.
    */
   waitForElementLost(appId, query) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'Promise<unknown>' is not assignable to
+    // type 'Promise<void>'.
     return repeatUntil(async () => {
       const elements =
           await this.callRemoteTestUtil('deepQueryAllElements', appId, [query]);
@@ -275,10 +330,12 @@ export class RemoteCall {
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
    * @param {number} count The expected element match count.
-   * @return {Promise} Promise to be fulfilled on success.
+   * @return {Promise<void>} Promise to be fulfilled on success.
    */
   async waitForElementsCount(appId, query, count) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+    // 'void'.
     return repeatUntil(async () => {
       const expect = `Waiting for [${query}] to match ${count} elements`;
       const result =
@@ -298,13 +355,15 @@ export class RemoteCall {
    * @param {boolean} ctrlKey Control key flag.
    * @param {boolean} shiftKey Shift key flag.
    * @param {boolean} altKey Alt key flag.
-   * @return {Promise} Promise to be fulfilled or rejected depending on the
-   *     result.
+   * @return {Promise<boolean>} Promise to be fulfilled or rejected depending on
+   *     the result.
    */
   async fakeKeyDown(appId, query, key, ctrlKey, shiftKey, altKey) {
     const result = await this.callRemoteTestUtil(
         'fakeKeyDown', appId, [query, key, ctrlKey, shiftKey, altKey]);
     if (result) {
+      // @ts-ignore: error TS2322: Type 'boolean' is not assignable to type
+      // 'void'.
       return true;
     } else {
       throw new Error('Fail to fake key down.');
@@ -328,8 +387,8 @@ export class RemoteCall {
    *
    * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
    * @param {Array<string>} names File name list.
-   * @return {Promise} Promise to be fulfilled with file entries or rejected
-   *     depending on the result.
+   * @return {Promise<void>} Promise to be fulfilled with file entries or
+   *     rejected depending on the result.
    */
   getFilesUnderVolume(volumeType, names) {
     return this.callRemoteTestUtil(
@@ -340,11 +399,15 @@ export class RemoteCall {
    * Waits for a single file.
    * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
    * @param {string} name File name.
-   * @return {!Promise} Promise to be fulfilled when the file had found.
+   * @return {!Promise<void>} Promise to be fulfilled when the file had found.
    */
   waitForAFile(volumeType, name) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'Promise<unknown>' is not assignable to
+    // type 'Promise<void>'.
     return repeatUntil(async () => {
+      // @ts-ignore: error TS2339: Property 'length' does not exist on type
+      // 'void'.
       if ((await this.getFilesUnderVolume(volumeType, [name])).length === 1) {
         return true;
       }
@@ -379,13 +442,16 @@ export class RemoteCall {
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
    * @param {KeyModifiers=} opt_keyModifiers Object
-   * @return {Promise} Promise to be fulfilled with the clicked element.
+   * @return {Promise<boolean>} Promise to be fulfilled with the clicked
+   *     element.
    */
   async waitAndRightClick(appId, query, opt_keyModifiers) {
     const element = await this.waitForElement(appId, query);
     const result = await this.callRemoteTestUtil(
         'fakeMouseRightClick', appId, [query, opt_keyModifiers]);
     chrome.test.assertTrue(result, 'mouse right-click failed.');
+    // @ts-ignore: error TS2322: Type 'ElementObject' is not assignable to type
+    // 'void'.
     return element;
   }
 
@@ -393,12 +459,14 @@ export class RemoteCall {
    * Shorthand for focusing an element.
    * @param {string} appId App window Id.
    * @param {!Array<string>} query Query to specify the element to be focused.
-   * @return {Promise} Promise to be fulfilled with the focused element.
+   * @return {Promise<void>} Promise to be fulfilled with the focused element.
    */
   async focus(appId, query) {
     const element = await this.waitForElement(appId, query);
     const result = await this.callRemoteTestUtil('focus', appId, query);
     chrome.test.assertTrue(result, 'focus failed.');
+    // @ts-ignore: error TS2322: Type 'ElementObject' is not assignable to type
+    // 'void'.
     return element;
   }
 
@@ -410,7 +478,7 @@ export class RemoteCall {
    * @param {string|!Array<string>} query Query to the element to be clicked.
    * @param {boolean} leftClick If true, simulate left click. Otherwise simulate
    *     right click.
-   * @return {!Promise} A promise fulfilled after the click event.
+   * @return {!Promise<unknown>} A promise fulfilled after the click event.
    */
   async simulateUiClick(appId, query, leftClick = true) {
     const element = /* @type {!Object} */ (
@@ -419,8 +487,10 @@ export class RemoteCall {
 
     // Find the middle of the element.
     const x =
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         Math.floor(element['renderedLeft'] + (element['renderedWidth'] / 2));
     const y =
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         Math.floor(element['renderedTop'] + (element['renderedHeight'] / 2));
 
     return sendTestMessage(
@@ -431,7 +501,7 @@ export class RemoteCall {
    * Simulate Right Click in blank/empty space of the file list element.
    * @param{string} appId App window ID contains the element. NOTE: The click is
    * simulated on most recent window in the window system.
-   * @return {!Promise} A promise fulfilled after the click event.
+   * @return {!Promise<void>} A promise fulfilled after the click event.
    */
   async rightClickFileListBlankSpace(appId) {
     await this.simulateUiClick(
@@ -472,11 +542,15 @@ export class RemoteCallFilesApp extends RemoteCall {
   sendMessage(message) {
     const command = {
       name: 'callSwaTestMessageListener',
+      // @ts-ignore: error TS2339: Property 'appId' does not exist on type
+      // 'Object'.
       appId: message.appId,
       data: JSON.stringify(message),
     };
 
     return new Promise((fulfill) => {
+      // @ts-ignore: error TS7006: Parameter 'response' implicitly has an 'any'
+      // type.
       chrome.test.sendMessage(JSON.stringify(command), (response) => {
         if (response === '"@undefined@"') {
           fulfill(undefined);
@@ -493,6 +567,8 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   async getWindows() {
+    // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+    // parameter of type 'string'.
     return JSON.parse(await sendTestMessage({name: 'getWindows'}));
   }
 
@@ -510,6 +586,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     <preview-tag>.
    * @return {!Promise<*>} resolved with the return value of the `statement`.
    */
+  // @ts-ignore: error TS6133: 'query' is declared but its value is never read.
   async executeJsInPreviewTag(appId, query, statement) {
     return this.executeJsInPreviewTagSwa_(statement);
   }
@@ -519,7 +596,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * page found and respond with its output.
    * @private
    * @param {string} statement
-   * @return {!Promise}
+   * @return {!Promise<void>}
    */
   async executeJsInPreviewTagSwa_(statement) {
     const script = `try {
@@ -540,6 +617,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     if (response === '"@undefined@"') {
       return undefined;
     }
+    // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+    // parameter of type 'string'.
     const output = JSON.parse(response);
     if ('@error@' in output) {
       console.error(output['@error@']);
@@ -554,11 +633,12 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * Waits until the expected URL shows in the last opened browser tab.
    * @param {string} expectedUrl
-   * @return {!Promise} Promise to be fulfilled when the expected URL is shown
-   *     in a browser window.
+   * @return {!Promise<string>} Promise to be fulfilled when the expected URL is
+   *     shown in a browser window.
    */
   async waitForLastOpenedBrowserTabUrl(expectedUrl) {
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       const command = {name: 'getLastActiveTabURL'};
       const activeBrowserTabURL = await sendTestMessage(command);
@@ -586,38 +666,50 @@ export class RemoteCallFilesApp extends RemoteCall {
    * Waits for the file list turns to the given contents.
    * @param {string} appId App window Id.
    * @param {Array<Array<string>>} expected Expected contents of file list.
-   * @param {{orderCheck:(?boolean|undefined), ignoreFileSize:
-   *     (?boolean|undefined), ignoreLastModifiedTime:(?boolean|undefined)}=}
+   * @param {{orderCheck?:(?boolean|undefined), ignoreFileSize?:
+   *     (?boolean|undefined), ignoreLastModifiedTime?:(?boolean|undefined)}=}
    *     opt_options Options of the comparison. If orderCheck is true, it also
    *     compares the order of files. If ignoreLastModifiedTime is true, it
    *     compares the file without its last modified time.
-   * @return {Promise} Promise to be fulfilled when the file list turns to the
-   *     given contents.
+   * @return {Promise<void>} Promise to be fulfilled when the file list turns to
+   *     the given contents.
    */
   waitForFiles(appId, expected, opt_options) {
     const options = opt_options || {};
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       const files = await this.callRemoteTestUtil('getFileList', appId, []);
+      // @ts-ignore: error TS2339: Property 'orderCheck' does not exist on type
+      // '{}'.
       if (!options.orderCheck) {
         files.sort();
         expected.sort();
       }
       for (let i = 0; i < Math.min(files.length, expected.length); i++) {
         // Change the value received from the UI to match when comparing.
+        // @ts-ignore: error TS2339: Property 'ignoreFileSize' does not exist on
+        // type '{}'.
         if (options.ignoreFileSize) {
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           files[i][1] = expected[i][1];
         }
+        // @ts-ignore: error TS2339: Property 'ignoreLastModifiedTime' does not
+        // exist on type '{}'.
         if (options.ignoreLastModifiedTime) {
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           if (expected[i].length < 4) {
             // expected sometimes doesn't include the modified time at all, so
             // just remove from the data from UI.
             files[i].splice(3, 1);
           } else {
+            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             files[i][3] = expected[i][3];
           }
         }
       }
+      // @ts-ignore: error TS2339: Property 'checkDeepEq' does not exist on type
+      // 'typeof test'.
       if (!chrome.test.checkDeepEq(expected, files)) {
         return pending(
             caller, 'waitForFiles: expected: %j actual %j.', expected, files);
@@ -632,15 +724,19 @@ export class RemoteCallFilesApp extends RemoteCall {
    *
    * @param {string} appId App window Id.
    * @param {number} lengthBefore Number of items visible before.
-   * @return {Promise} Promise to be fulfilled with the contents of files.
+   * @return {Promise<void>} Promise to be fulfilled with the contents of files.
    */
   waitForFileListChange(appId, lengthBefore) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'Promise<unknown>' is not assignable to
+    // type 'Promise<void>'.
     return repeatUntil(async () => {
       const files = await this.callRemoteTestUtil('getFileList', appId, []);
       files.sort();
 
       const notReadyRows =
+          // @ts-ignore: error TS7006: Parameter 'cell' implicitly has an 'any'
+          // type.
           files.filter((row) => row.filter((cell) => cell === '...').length);
 
       if (notReadyRows.length === 0 && files.length !== lengthBefore &&
@@ -656,21 +752,23 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * Waits until the given taskId appears in the executed task list.
    * @param {string} appId App window Id.
-   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task to
-   *     watch.
+   * @param {!FileTaskDescriptor} descriptor Task to watch.
    * @param {!Array<string>} fileNames Name of files that should have been
    *     passed to the executeTasks().
    * @param {Array<Object>=} replyArgs arguments to reply to executed task.
-   * @return {Promise} Promise to be fulfilled when the task appears in the
-   *     executed task list.
+   * @return {Promise<void>} Promise to be fulfilled when the task appears in
+   *     the executed task list.
    */
   waitUntilTaskExecutes(appId, descriptor, fileNames, replyArgs) {
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       if (!await this.callRemoteTestUtil(
               'taskWasExecuted', appId, [descriptor, fileNames])) {
         const tasks =
             await this.callRemoteTestUtil('getExecutedTasks', appId, []);
+        // @ts-ignore: error TS7006: Parameter 'task' implicitly has an 'any'
+        // type.
         const executedTasks = tasks.map((task) => {
           const {appId, taskType, actionId} = task.descriptor;
           const executedFileNames = task['fileNames'];
@@ -691,7 +789,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} appId App window Id.
    * @param {string} elementId String of 'id' attribute which the next
    *     tabfocus'd element should have.
-   * @return {Promise} Promise to be fulfilled with the result.
+   * @return {Promise<void>} Promise to be fulfilled with the result.
    */
   async checkNextTabFocus(appId, elementId) {
     const result = await sendTestMessage({name: 'dispatchTabKey'});
@@ -699,6 +797,8 @@ export class RemoteCallFilesApp extends RemoteCall {
         result, 'tabKeyDispatched', 'Tab key dispatch failure');
 
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+    // 'void'.
     return repeatUntil(async () => {
       const element =
           await this.callRemoteTestUtil('getActiveElement', appId, []);
@@ -726,6 +826,8 @@ export class RemoteCallFilesApp extends RemoteCall {
       const activeElements =
           await this.callRemoteTestUtil('deepGetActivePath', appId, []);
       const matches =
+          // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any'
+          // type.
           activeElements.filter(el => el.attributes['id'] === elementId);
       if (matches.length === 1) {
         return true;
@@ -757,6 +859,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    */
   waitUntilSelected(appId, fileName) {
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       const selected =
           await this.callRemoteTestUtil('selectFile', appId, [fileName]);
@@ -770,11 +873,12 @@ export class RemoteCallFilesApp extends RemoteCall {
    * Waits until the current directory is changed.
    * @param {string} appId App window Id.
    * @param {string} expectedPath Path to be changed to.
-   * @return {Promise} Promise to be fulfilled when the current directory is
-   *     changed to expectedPath.
+   * @return {Promise<void>} Promise to be fulfilled when the current directory
+   *     is changed to expectedPath.
    */
   waitUntilCurrentDirectoryIsChanged(appId, expectedPath) {
     const caller = getCaller();
+    // @ts-ignore: error TS7030: Not all code paths return a value.
     return repeatUntil(async () => {
       const path =
           await this.callRemoteTestUtil('getBreadcrumbPath', appId, []);
@@ -788,7 +892,7 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * Wait until the expected number of volumes is mounted.
    * @param {number} expectedVolumesCount Expected number of mounted volumes.
-   * @return {Promise} promise Promise to be fulfilled.
+   * @return {Promise<unknown>} promise Promise to be fulfilled.
    */
   async waitForVolumesCount(expectedVolumesCount) {
     const caller = getCaller();
@@ -811,6 +915,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} bannerTagName Banner tag name in lowercase to isolate.
    */
   async isolateBannerForTesting(appId, bannerTagName) {
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await this.waitFor('isFileManagerLoaded', appId, true);
     chrome.test.assertTrue(await this.callRemoteTestUtil(
         'isolateBannerForTesting', appId, [bannerTagName]));
@@ -821,6 +927,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} appId App window Id
    */
   async disableBannersForTesting(appId) {
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await this.waitFor('isFileManagerLoaded', appId, true);
     chrome.test.assertTrue(
         await this.callRemoteTestUtil('disableBannersForTesting', appId, []));
@@ -861,6 +969,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Return the result.
     const elements = await this.callRemoteTestUtil(
         'deepQueryAllElements', appId, ['#autocomplete-list li']);
+    // @ts-ignore: error TS7006: Parameter 'element' implicitly has an 'any'
+    // type.
     return elements.map((element) => element.text);
   }
 
@@ -869,6 +979,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} appId App window Id
    */
   async disableNudgeExpiry(appId) {
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await this.waitFor('isFileManagerLoaded', appId, true);
     chrome.test.assertTrue(
         await this.callRemoteTestUtil('disableNudgeExpiry', appId, []));
@@ -878,6 +990,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * Selects the file and displays the context menu for the file.
    * @return {!Promise<void>} resolved when the context menu is visible.
    */
+  // @ts-ignore: error TS7006: Parameter 'fileName' implicitly has an 'any'
+  // type.
   async showContextMenuFor(appId, fileName) {
     // Select the file.
     await this.waitUntilSelected(appId, fileName);
@@ -939,6 +1053,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Get the top level menu element.
     const menuElement = await this.waitForElement(appId, menuId);
     // Query all the menu items.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'ElementObject'.
     menuElement.items = await this.queryElements_(appId, `${menuId} > *`);
     return menuElement;
   }
@@ -960,6 +1076,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {boolean} status Pinned status to expect drive item to be.
    */
   async expectDriveItemPinnedStatus(appId, path, status) {
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await this.waitFor('isFileManagerLoaded', appId, true);
     chrome.test.assertEq(
         await sendTestMessage({
@@ -976,6 +1094,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} path Path from the drive mount point, e.g. /root/test.txt
    */
   async sendDriveCloudDeleteEvent(appId, path) {
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type '(arg0: Object) => boolean | Object'.
     await this.waitFor('isFileManagerLoaded', appId, true);
     await sendTestMessage({
       appId,
@@ -1005,9 +1125,13 @@ export class RemoteCallFilesApp extends RemoteCall {
    */
   async waitNudge(appId, expectedText) {
     const caller = getCaller();
+    // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+    // 'boolean'.
     return repeatUntil(async () => {
       const nudgeDot = await this.waitForElementStyles(
           appId, ['xf-nudge', '#dot'], ['left']);
+      // @ts-ignore: error TS18048: 'nudgeDot.renderedLeft' is possibly
+      // 'undefined'.
       if (nudgeDot.renderedLeft < 0) {
         return pending(caller, 'Wait nudge to appear');
       }
@@ -1031,7 +1155,11 @@ export class RemoteCallFilesApp extends RemoteCall {
       const styles = await this.waitForElementStyles(
           appId, ['xf-cloud-panel', 'cr-action-menu', 'dialog'], ['left']);
 
+      // @ts-ignore: error TS18048: 'styles.renderedWidth' is possibly
+      // 'undefined'.
       if (styles.renderedHeight > 0 && styles.renderedWidth > 0 &&
+          // @ts-ignore: error TS18048: 'styles.renderedLeft' is possibly
+          // 'undefined'.
           styles.renderedTop > 0 && styles.renderedLeft > 0) {
         return true;
       }
@@ -1065,6 +1193,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     return repeatUntil(async () => {
       const actualRequiredSpace =
           await sendTestMessage({name: 'getBulkPinningRequiredSpace'});
+      // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable
+      // to parameter of type 'string'.
       const parsedSpace = parseInt(actualRequiredSpace, 10);
       if (parsedSpace === want) {
         return true;
@@ -1124,7 +1254,11 @@ export class RemoteCallFilesApp extends RemoteCall {
       const actualPrimaryText = element.attributes['primary-text'];
       const actualSecondaryText = element.attributes['secondary-text'];
 
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string'.
       if (expectedPrimaryMessageRegex.test(actualPrimaryText) &&
+          // @ts-ignore: error TS2345: Argument of type 'string | undefined' is
+          // not assignable to parameter of type 'string'.
           expectedSecondaryMessageRegex.test(actualSecondaryText)) {
         return;
       }
@@ -1185,7 +1319,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string|!Array<string>} query_old The query when not using
    *     cros_components. See `waitAndClickElement` for details.
    * @param {KeyModifiers=} opt_keyModifiers Object
-   * @return {Promise} Promise to be fulfilled with the clicked element.
+   * @return {Promise<ElementObject>} Promise to be fulfilled with the clicked
+   *     element.
    */
   async waitAndClickElementJelly(
       appId, query_jelly, query_old, opt_keyModifiers) {

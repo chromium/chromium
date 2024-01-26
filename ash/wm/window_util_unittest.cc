@@ -227,6 +227,42 @@ TEST_F(WindowUtilTest,
   EXPECT_TRUE(state->was_visible_on_minimize());
 }
 
+TEST_F(WindowUtilTest, SortWindowsBottomToTop) {
+  auto window1 = CreateTestWindow();
+  auto window2 = CreateTestWindow();
+  auto window3 = CreateTestWindow();
+
+  EXPECT_EQ(
+      (std::vector<aura::Window*>{window1.get(), window2.get(), window3.get()}),
+      SortWindowsBottomToTop({window3.get(), window1.get(), window2.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window2.get(), window3.get()}),
+            SortWindowsBottomToTop({window3.get(), window2.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window1.get(), window2.get()}),
+            SortWindowsBottomToTop({window2.get(), window1.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window2.get()}),
+            SortWindowsBottomToTop({window2.get()}));
+
+  // Add some children to window2:
+  std::unique_ptr<aura::Window> window21 =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  window21->Init(ui::LAYER_NOT_DRAWN);
+  std::unique_ptr<aura::Window> window22 =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  window22->Init(ui::LAYER_NOT_DRAWN);
+
+  window2->AddChild(window21.get());
+  window2->AddChild(window22.get());
+
+  EXPECT_EQ(
+      (std::vector<aura::Window*>{window1.get(), window2.get(), window21.get(),
+                                  window22.get(), window3.get()}),
+      SortWindowsBottomToTop({window21.get(), window22.get(), window3.get(),
+                              window1.get(), window2.get()}));
+}
+
 TEST_F(WindowUtilTest, InteriorTargeter) {
   auto window = CreateTestWindow();
   window->SetBounds(gfx::Rect(0, 0, 100, 100));

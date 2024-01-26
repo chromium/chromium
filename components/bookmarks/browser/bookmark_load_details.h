@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/uuid_index.h"
 
@@ -24,24 +23,17 @@ class BookmarkPermanentNode;
 class TitledUrlIndex;
 class UrlIndex;
 
-// BookmarkLoadDetails is used by BookmarkStorage when loading bookmarks.
-// BookmarkModel creates a BookmarkLoadDetails and passes it (including
-// ownership) to BookmarkStorage. BookmarkStorage loads the bookmarks (and
-// index) in the background thread, then calls back to the BookmarkModel (on
-// the main thread) when loading is done, passing ownership back to the
-// BookmarkModel. While loading BookmarkModel does not maintain references to
-// the contents of the BookmarkLoadDetails, this ensures we don't have any
-// threading problems.
+// BookmarkLoadDetails represents the outcome of loading and parsing the JSON
+// file containing bookmarks. It is produced by ModelLoader in the backend task
+// runner, including the generation of indices, and posted to the UI thread to
+// finalize the loading of BookmarkModel.
 class BookmarkLoadDetails {
  public:
-  explicit BookmarkLoadDetails(BookmarkClient* client);
+  BookmarkLoadDetails();
   ~BookmarkLoadDetails();
 
   BookmarkLoadDetails(const BookmarkLoadDetails&) = delete;
   BookmarkLoadDetails& operator=(const BookmarkLoadDetails&) = delete;
-
-  // Loads the managed node and adds it to |root_|.
-  void LoadManagedNode();
 
   BookmarkNode* root_node() { return root_node_ptr_; }
   BookmarkPermanentNode* bb_node() { return bb_node_; }
@@ -53,13 +45,6 @@ class BookmarkLoadDetails {
   }
 
   UuidIndex owned_uuid_index() { return std::move(uuid_index_); }
-
-  const BookmarkNode::MetaInfoMap& model_meta_info_map() const {
-    return model_meta_info_map_;
-  }
-  void set_model_meta_info_map(const BookmarkNode::MetaInfoMap& meta_info_map) {
-    model_meta_info_map_ = meta_info_map;
-  }
 
   // Max id of the nodes.
   void set_max_id(int64_t max_id) { max_id_ = max_id; }
@@ -98,6 +83,7 @@ class BookmarkLoadDetails {
   void CreateIndices();
 
   const scoped_refptr<UrlIndex>& url_index() { return url_index_; }
+  scoped_refptr<const UrlIndex> url_index() const { return url_index_; }
 
   base::TimeTicks load_start() { return load_start_; }
 
@@ -112,10 +98,8 @@ class BookmarkLoadDetails {
       nullptr;
   raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_folder_node_ =
       nullptr;
-  LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
   UuidIndex uuid_index_;
-  BookmarkNode::MetaInfoMap model_meta_info_map_;
   int64_t max_id_ = 1;
   std::string computed_checksum_;
   std::string stored_checksum_;

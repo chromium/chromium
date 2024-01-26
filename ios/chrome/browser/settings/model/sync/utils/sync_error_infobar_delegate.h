@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -50,7 +51,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;
   std::u16string message_;

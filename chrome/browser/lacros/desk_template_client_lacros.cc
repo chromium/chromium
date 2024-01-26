@@ -157,7 +157,7 @@ void CreateBrowserWithProfile(
     return;
   }
 
-  const absl::optional<std::string>& browser_app_name =
+  const std::optional<std::string>& browser_app_name =
       additional_state->browser_app_name;
 
   Browser::CreateParams create_params =

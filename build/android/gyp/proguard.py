@@ -335,6 +335,10 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         tmp_mapping_path,
     ]
 
+    if options.uses_split:
+      # Provided by our CustomR8.java wrapper.
+      cmd += ['--enable-isolated-splits-asserts']
+
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
     cmd += ['--map-diagnostics', 'info', 'warning']

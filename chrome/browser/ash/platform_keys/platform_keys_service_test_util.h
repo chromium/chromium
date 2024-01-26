@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_TEST_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -52,10 +52,10 @@ class GetCertificatesExecutionWaiter
 using RemoveKeyExecutionWaiter = StatusWaiter;
 
 class IsKeyOnTokenExecutionWaiter
-    : public base::test::TestFuture<absl::optional<bool>,
+    : public base::test::TestFuture<std::optional<bool>,
                                     chromeos::platform_keys::Status> {
  public:
-  absl::optional<bool> on_slot();
+  std::optional<bool> on_slot();
   chromeos::platform_keys::Status status();
 };
 

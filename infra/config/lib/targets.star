@@ -10,7 +10,7 @@ load("./args.star", "args")
 load("./nodes.star", "nodes")
 
 # The binary for a target. gtests and isolated scripts must reference a binary,
-# or it defaults to one with the same name  as the test.
+# or it defaults to one with the same name as the test.
 _TARGET_BINARY = nodes.create_unscoped_node_type("target-binary")
 _TARGET_MIXIN = nodes.create_unscoped_node_type("target-mixin")
 _TARGET_VARIANT = nodes.create_unscoped_node_type("target-variant")
@@ -23,7 +23,7 @@ _LEGACY_MATRIX_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-matrix-c
 _LEGACY_MATRIX_CONFIG = nodes.create_scoped_node_type("legacy-matrix-config", _LEGACY_MATRIX_COMPOUND_SUITE.kind)
 
 _COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
-TARGET_BUNDLE = nodes.create_unscoped_node_type("bundle", allow_unnamed = True)
+_TARGET_BUNDLE = nodes.create_unscoped_node_type("bundle", allow_unnamed = True)
 
 def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
     """The details for a test provided by the test's binary.
@@ -113,7 +113,7 @@ def _create_legacy_test(*, name, basic_suite_test_config):
     ))
 
 def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
-    key = TARGET_BUNDLE.add(name, props = dict(
+    key = _TARGET_BUNDLE.add(name, props = dict(
         builder_group = builder_group,
         additional_compile_targets = set(additional_compile_targets),
         test_spec_by_name = test_spec_by_name,
@@ -125,7 +125,7 @@ def _create_bundle(*, name, additional_compile_targets = [], targets = [], build
     for t in additional_compile_targets:
         graph.add_edge(key, _COMPILE_TARGET.key(t))
     for t in targets:
-        graph.add_edge(key, TARGET_BUNDLE.key(t))
+        graph.add_edge(key, _TARGET_BUNDLE.key(t))
     return key
 
 def _create_test_target(*, name, spec_type, spec_value):
@@ -1089,6 +1089,123 @@ targets = struct(
     swarming = _swarming,
     skylab = _skylab,
 )
+
+################################################################################
+# Code for generating targets spec files                                       #
+################################################################################
+
+def register_targets(*, parent_key, name, targets):
+    """Register the targets for a builder.
+
+    This will create the necessary nodes and edges so that the targets spec for
+    the builder can be generated via get_targets_spec_generator.
+
+    Args:
+      parent_key - The graph key of the parent node to register the targets for.
+      name - The name to use for the registered bundle. This will allow for
+        other builders to specify their targets in terms of another builder's.
+      targets - The targets for the builder. Can take the form of the name of a
+        separately-declared bundle, an unnamed targets.bundle instance or a list
+        of such elements.
+    """
+    targets_key = _create_bundle(
+        name = name,
+        targets = args.listify(targets),
+    )
+
+    graph.add_edge(parent_key, targets_key)
+
+def _get_bundle_resolver():
+    def resolved_bundle(*, additional_compile_targets, test_spec_and_source_by_name):
+        return struct(
+            additional_compile_targets = additional_compile_targets,
+            test_spec_and_source_by_name = test_spec_and_source_by_name,
+        )
+
+    def visitor(_, children):
+        return [c for c in children if c.key.kind == _TARGET_BUNDLE.kind]
+
+    resolved_bundle_by_bundle_node = {}
+
+    def resolve(bundle_node):
+        for n in graph.descendants(bundle_node.key, visitor = visitor, topology = graph.DEPTH_FIRST):
+            if n in resolved_bundle_by_bundle_node:
+                continue
+
+            # TODO: crbug.com/1420012 - Update the handling of conflicting defs
+            # so that more context is provided about where the error is
+            # resulting from
+            additional_compile_targets = set(n.props.additional_compile_targets)
+            test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
+            for child in graph.children(n.key, kind = _TARGET_BUNDLE.kind):
+                child_resolved_bundle = resolved_bundle_by_bundle_node[child]
+                additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
+                for name, (spec, source) in child_resolved_bundle.test_spec_and_source_by_name.items():
+                    if name in test_spec_and_source_by_name:
+                        existing_spec, existing_source = test_spec_and_source_by_name[name]
+                        if existing_spec != spec:
+                            fail("target {} has conflicting definitions in deps of {}\n  {}: {}\n  {}: {}".format(
+                                name,
+                                n.key,
+                                existing_source,
+                                existing_spec,
+                                source,
+                                spec,
+                            ))
+                    test_spec_and_source_by_name[name] = (spec, source)
+
+            resolved_bundle_by_bundle_node[n] = resolved_bundle(
+                additional_compile_targets = additional_compile_targets,
+                test_spec_and_source_by_name = test_spec_and_source_by_name,
+            )
+
+        resolved = resolved_bundle_by_bundle_node[bundle_node]
+        return (
+            resolved.additional_compile_targets,
+            {name: spec for name, (spec, _) in resolved.test_spec_and_source_by_name.items()},
+        )
+
+    return resolve
+
+def get_targets_spec_generator():
+    """Get a generator for builders' targets specs.
+
+    Returns:
+      A function that can be used to get the targets specs for a builder. The
+      function takes a single argument that is a node. If the node corresponds
+      to a builder that has tests registered using register_targets, then a dict
+      will be returned with the target specs for the builder. Otherwise, None
+      will be returned.
+    """
+    bundle_resolver = _get_bundle_resolver()
+
+    def get_targets_spec(parent_node):
+        bundle_nodes = graph.children(parent_node.key, _TARGET_BUNDLE.kind)
+        if not bundle_nodes:
+            return None
+        if len(bundle_nodes) > 1:
+            fail("internal error: there should be at most 1 targets_spec")
+        bundle_node = bundle_nodes[0]
+
+        additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node)
+        sort_key_and_specs_by_type_key = {}
+        for name, spec in test_spec_by_name.items():
+            type_key, sort_key, spec = spec.spec_type.finalize(name, spec.spec_value)
+            sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, spec))
+
+        specs_by_type_key = {}
+        if additional_compile_targets:
+            specs_by_type_key["additional_compile_targets"] = sorted(additional_compile_targets)
+        for type_key, sort_key_and_specs in sorted(sort_key_and_specs_by_type_key.items()):
+            specs_by_type_key[type_key] = [spec for _, spec in sorted(sort_key_and_specs)]
+
+        return specs_by_type_key
+
+    return get_targets_spec
+
+################################################################################
+# Generators for legacy .pyl files                                             #
+################################################################################
 
 _PYL_HEADER_FMT = """\
 # THIS IS A GENERATED FILE DO NOT EDIT!!!

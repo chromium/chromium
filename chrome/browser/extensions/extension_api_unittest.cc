@@ -26,7 +26,7 @@ void ExtensionApiUnittest::SetUp() {
   extension_ = ExtensionBuilder("Test").Build();
 }
 
-absl::optional<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
+std::optional<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args) {
   function->set_extension(extension());
@@ -34,34 +34,33 @@ absl::optional<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
                                                  browser()->profile());
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 ExtensionApiUnittest::RunFunctionAndReturnDictionary(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args) {
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       RunFunctionAndReturnValue(std::move(function), args);
   // We expect to either have successfully retrieved a dictionary from the
   // value or the value to have been nullopt.
   EXPECT_TRUE(!value || value->is_dict());
 
   if (!value || !value->is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::move(*value).TakeDict();
 }
 
-absl::optional<base::Value::List>
-ExtensionApiUnittest::RunFunctionAndReturnList(
+std::optional<base::Value::List> ExtensionApiUnittest::RunFunctionAndReturnList(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args) {
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       RunFunctionAndReturnValue(std::move(function), args);
 
   // We expect to have successfully retrieved a list from the value.
   EXPECT_TRUE(!value || value->is_list());
 
   if (!value || !value->is_list()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(*value).TakeList();

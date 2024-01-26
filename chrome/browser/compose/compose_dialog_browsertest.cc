@@ -4,8 +4,11 @@
 
 #include "chrome/browser/compose/compose_session.h"
 
-#include "base/test/scoped_feature_list.h"
+#include <optional>
+
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -16,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -30,20 +34,23 @@ namespace compose {
 class ComposeSessionBrowserTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    ComposeEnabling::SetEnabledForTesting(true);
-    feature_list()->InitWithFeatures(
+    scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
+    feature_list()->InitWithExistingFeatures(
         {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution},
-        {});
+         optimization_guide::features::kOptimizationGuideModelExecution,
+         feature_engagement::kIPHComposeMSBBSettingsFeature});
     InteractiveBrowserTest::SetUp();
   }
 
-  void TearDown() override { ComposeEnabling::SetEnabledForTesting(false); }
+  void TearDown() override {}
 
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+  feature_engagement::test::ScopedIphFeatureList* feature_list() {
+    return &feature_list_;
+  }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
+  ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
@@ -129,6 +136,43 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
   client->DidGetUserInteraction(event);
 
   EXPECT_FALSE(client->IsDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, SettingsLaunchedTest) {
+  base::UserActionTester user_action_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/compose/test2.html")));
+  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
+
+  // get point of element
+  gfx::PointF textarea_center =
+      content::GetCenterCoordinatesOfElementWithId(web_contents, "elem1");
+  autofill::FormFieldData field_data;
+  field_data.bounds = gfx::RectF((textarea_center), gfx::SizeF(1, 1));
+
+  auto* client = ChromeComposeClient::FromWebContents(web_contents);
+  client->ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      field_data, std::nullopt, base::NullCallback());
+
+  client->OpenComposeSettings();
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.SessionPaused.MSBBSettingsShown"));
+
+  int tab_index = browser()->tab_strip_model()->count() - 1;
+
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  destroyed_watcher.Wait();
+
+  EXPECT_EQ(embedded_test_server()->GetURL("/compose/test2.html"),
+            web_contents->GetVisibleURL());
+  EXPECT_TRUE(client->IsDialogShowing());
 }
 
 }  // namespace compose

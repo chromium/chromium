@@ -13,7 +13,7 @@ source_set("context_menu") {
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_availability",

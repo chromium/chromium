@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {page, session, dp} = await testRunner.startURL(
     '/inspector-protocol/resources/empty.html',
     `Tests that browser.Target.setAutoAttach() attaches to new service workers.`);

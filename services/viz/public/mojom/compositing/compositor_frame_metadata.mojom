@@ -19,7 +19,7 @@ import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 
-// See components/viz/service/quads/compositor_frame_metadata.h.
+// See cc/trees/render_frame_metadata.h
 // This is sent from viz clients such as the browser and renderer to the viz
 // compositor in the GPU process.
 struct CompositorFrameMetadata {

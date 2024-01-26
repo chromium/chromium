@@ -16,6 +16,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/test/active_window_waiter.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -91,8 +92,6 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
@@ -122,40 +121,6 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
                           app_list::AppListSyncableService::Observer>
       observer_{this};
   size_t add_or_update_count_ = 0;
-};
-
-class ActiveWindowWaiter : public wm::ActivationChangeObserver {
- public:
-  explicit ActiveWindowWaiter(aura::Window* root_window) {
-    observation_.Observe(wm::GetActivationClient(root_window));
-  }
-
-  ActiveWindowWaiter(const ActiveWindowWaiter&) = delete;
-  ActiveWindowWaiter& operator=(const ActiveWindowWaiter&) = delete;
-
-  ~ActiveWindowWaiter() override = default;
-
-  aura::Window* Wait() {
-    run_loop_.Run();
-    return found_window_;
-  }
-
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
-    if (gained_active) {
-      found_window_ = gained_active;
-      observation_.Reset();
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> found_window_ = nullptr;
-
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      observation_{this};
 };
 
 }  // namespace
@@ -695,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   ASSERT_TRUE(model_updater);
 
-  ActiveWindowWaiter window_waiter(primary_root_window);
+  ash::ActiveWindowWaiter window_waiter(primary_root_window);
 
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ui::EF_NONE,
@@ -766,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   ASSERT_TRUE(model_updater);
 
-  ActiveWindowWaiter window_waiter(secondary_root_window);
+  ash::ActiveWindowWaiter window_waiter(secondary_root_window);
 
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ui::EF_NONE,

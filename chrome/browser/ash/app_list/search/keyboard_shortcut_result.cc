@@ -727,7 +727,7 @@ KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 void KeyboardShortcutResult::Open(int event_flags) {
   // Pass the action and category of the selected shortcuts to the app so that
   // the same shortcuts will be displayed in the app.
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
                                          accelerator_category_);
   } else {

@@ -20,7 +20,7 @@ WebPushMessage& WebPushMessage::operator=(WebPushMessage&& other) = default;
 
 void InvokeWebPushCallback(WebPushCallback callback,
                            SendWebPushMessageResult result,
-                           absl::optional<std::string> message_id) {
+                           std::optional<std::string> message_id) {
   DCHECK(message_id || result != SendWebPushMessageResult::kSuccessful);
   base::UmaHistogramEnumeration("GCM.SendWebPushMessageResult", result);
   std::move(callback).Run(result, std::move(message_id));

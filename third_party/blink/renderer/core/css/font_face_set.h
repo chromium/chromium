@@ -91,8 +91,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   bool ShouldSignalReady() const;
   void FireDoneEvent();
 
-  using ReadyProperty =
-      ScriptPromiseProperty<Member<FontFaceSet>, Member<DOMException>>;
+  using ReadyProperty = ScriptPromiseProperty<FontFaceSet, DOMException>;
 
   bool is_loading_ = false;
   bool should_fire_loading_event_ = false;

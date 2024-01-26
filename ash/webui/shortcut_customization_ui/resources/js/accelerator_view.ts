@@ -26,7 +26,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, canBypassErrorWithRetry, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidDefaultAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
+import {areAcceleratorsEqual, canBypassErrorWithRetry, containsAccelerator, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -158,12 +158,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   source: AcceleratorSource;
   sourceIsLocked: boolean;
   showEditIcon: boolean;
-  categoryIsLocked: boolean;
+  subcategoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
   hasLauncherButton: boolean;
   pendingKeyEvent: KeyEvent|null = null;
   shortcutInput: ShortcutInputElement|null;
+  defaultAccelerators: Accelerator[];
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
   protected lastResult: AcceleratorConfigResult;
@@ -174,12 +175,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private eventTracker: EventTracker = new EventTracker();
   private editAction: EditAction = EditAction.NONE;
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
-    this.categoryIsLocked = this.lookupManager.isCategoryLocked(
-        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+    this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
+        this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
     this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    this.defaultAccelerators =
+        (await this.shortcutProvider.getDefaultAcceleratorsForId(this.action))
+            .accelerators;
   }
 
   override disconnectedCallback(): void {
@@ -310,7 +314,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     // Only process valid accelerators.
-    if (isValidDefaultAccelerator(pendingAccelerator)) {
+    if (isValidAccelerator(pendingAccelerator) ||
+        containsAccelerator(this.defaultAccelerators, pendingAccelerator)) {
       // Store the pending key event.
       this.lastPendingKeyEvent = rewrittenKeyEvent;
       this.processPendingAccelerator(pendingAccelerator);
@@ -359,7 +364,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     switch (result.result) {
       // Shift is the only modifier.
       case AcceleratorConfigResult.kShiftOnlyNotAllowed: {
-        this.statusMessage = this.i18n('shiftOnlyNotAllowedStatusMessage');
+        this.statusMessage = this.i18n(
+            'shiftOnlyNotAllowedStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -369,22 +375,25 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         // This is a backup check, since only valid accelerators are processed
         // and a valid accelerator will have modifier(s) and a key or is
         // function key.
-        this.statusMessage = this.i18n('missingModifierStatusMessage');
+        this.statusMessage =
+            this.i18n('missingModifierStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       // Top row key used as activation keys(no search key pressed).
       case AcceleratorConfigResult.kKeyNotAllowed: {
-        this.statusMessage = this.i18n('keyNotAllowedStatusMessage');
+        this.statusMessage =
+            this.i18n('keyNotAllowedStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       // Search with function keys are not allowed.
       case AcceleratorConfigResult.kSearchWithFunctionKeyNotAllowed: {
-        this.statusMessage =
-            this.i18n('searchWithFunctionKeyNotAllowedStatusMessage');
+        this.statusMessage = this.i18n(
+            'searchWithFunctionKeyNotAllowedStatusMessage',
+            this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -417,7 +426,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       case AcceleratorConfigResult.kNonSearchAcceleratorWarning: {
         // TODO(jimmyxgong): Add the "Learn More" link when available.
-        this.statusMessage = this.i18n('warningSearchNotIncluded');
+        this.statusMessage =
+            this.i18n('warningSearchNotIncluded', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -494,7 +504,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowLockIcon(): boolean {
     // Do not show lock icon in each row if customization is disabled or its
     // category is locked.
-    if (!isCustomizationAllowed() || this.categoryIsLocked) {
+    if (!isCustomizationAllowed() || this.subcategoryIsLocked) {
       return false;
     }
     // Show lock icon if accelerator is locked.
@@ -506,7 +516,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     // Do not show edit icon in each row if customization is disabled, the row
     // is displayed in edit-dialog(!showEditIcon) or category is locked.
     if (!isCustomizationAllowed() || !this.showEditIcon ||
-        this.categoryIsLocked) {
+        this.subcategoryIsLocked) {
       return false;
     }
     // Show edit icon if accelerator is not locked.
@@ -557,6 +567,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     if (!this.recordedError && this.hasError) {
       this.recordedError = true;
     }
+  }
+
+  private getMetaKeyDisplay(): string {
+    return this.lookupManager.getHasLauncherButton() ?
+        this.i18n('iconLabelOpenLauncher') :
+        this.i18n('iconLabelOpenSearch');
   }
 }
 

@@ -14,12 +14,12 @@
 namespace cc {
 class FakeLayerTreeFrameSink;
 class TestTaskGraphRunner;
-class TestGpuMemoryBufferManager;
 }
 
 namespace viz {
 class CompositorFrame;
 class ContextProvider;
+class TestGpuMemoryBufferManager;
 }
 
 namespace ui {

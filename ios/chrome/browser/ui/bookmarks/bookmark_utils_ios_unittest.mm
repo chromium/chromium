@@ -77,8 +77,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
   const BookmarkNode* node = AddBookmark(mobile_node, title);
 
   GURL url_copy = node->GetTitledUrlNodeUrl();
-  // This call is a no-op, , so `CreateOrUpdateBookmark` should return `false`.
-  EXPECT_FALSE(bookmark_utils_ios::CreateOrUpdateBookmark(
+  // This call is a no-op, , so `UpdateBookmark` should return `false`.
+  EXPECT_FALSE(bookmark_utils_ios::UpdateBookmark(
       node, base::SysUTF16ToNSString(title), url_copy, mobile_node,
       local_or_syncable_bookmark_model_, account_bookmark_model_));
   EXPECT_EQ(node->GetTitle(), title);
@@ -92,7 +92,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
-  EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
+  EXPECT_TRUE(bookmark_utils_ios::UpdateBookmark(
       node, new_title, new_url, folder, local_or_syncable_bookmark_model_,
       account_bookmark_model_));
 
@@ -103,7 +103,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
   EXPECT_EQ(node->GetTitledUrlNodeUrl(), new_url);
 }
 
-// TODO(crbug.com/1446407): Add tests that call `CreateOrUpdateBookmark` with
+// TODO(crbug.com/1446407): Add tests that call `UpdateBookmark` with
 //                          the account storage.
 
 TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
@@ -115,7 +115,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
-  EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
+  EXPECT_TRUE(bookmark_utils_ios::UpdateBookmark(
       node, new_title, new_url, account_mobile_node,
       local_or_syncable_bookmark_model_, account_bookmark_model_));
 

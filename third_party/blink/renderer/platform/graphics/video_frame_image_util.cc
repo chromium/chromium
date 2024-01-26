@@ -292,7 +292,7 @@ bool DrawVideoFrameIntoResourceProvider(
   }
 
   video_renderer->Paint(
-      frame.get(), resource_provider->Canvas(/*needs_will_draw*/ true),
+      frame.get(), &resource_provider->Canvas(/*needs_will_draw*/ true),
       gfx::RectF(dest_rect), media_flags,
       ignore_video_transformation
           ? media::kNoTransformation

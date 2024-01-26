@@ -6,9 +6,10 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -170,13 +171,13 @@ bool FindMatchingSingleResponse(CBS* responses,
                                 const CRYPTO_BUFFER* issuer,
                                 const std::string& cert_serial_number,
                                 CBS* out_single_response) {
-  base::StringPiece issuer_spki;
+  std::string_view issuer_spki;
   if (!asn1::ExtractSPKIFromDERCert(
           x509_util::CryptoBufferAsStringPiece(issuer), &issuer_spki))
     return false;
 
   // In OCSP, only the key itself is under hash.
-  base::StringPiece issuer_spk;
+  std::string_view issuer_spk;
   if (!asn1::ExtractSubjectPublicKeyFromSPKI(issuer_spki, &issuer_spk))
     return false;
 
@@ -317,7 +318,7 @@ bool GetPrecertSignedEntry(const CRYPTO_BUFFER* leaf,
   bssl::UniquePtr<uint8_t> scoped_new_tbs_cert_der(new_tbs_cert_der);
 
   // Extract the issuer's public key.
-  base::StringPiece issuer_key;
+  std::string_view issuer_key;
   if (!asn1::ExtractSPKIFromDERCert(
           x509_util::CryptoBufferAsStringPiece(issuer), &issuer_key)) {
     return false;
@@ -345,7 +346,7 @@ bool GetX509SignedEntry(const CRYPTO_BUFFER* leaf, SignedEntryData* result) {
 
 bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
                                     const std::string& cert_serial_number,
-                                    base::StringPiece ocsp_response,
+                                    std::string_view ocsp_response,
                                     std::string* sct_list) {
   // The input is an bssl::OCSPResponse. See RFC2560, section 4.2.1. The SCT
   // list is in the extensions field of the SingleResponse which matches the

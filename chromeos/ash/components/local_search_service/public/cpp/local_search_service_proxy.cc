@@ -70,7 +70,6 @@ mojom::LocalSearchService* LocalSearchServiceProxy::GetService() {
     } else {
       LOG(FATAL) << "LocalSearchServiceProvider::Set() must be called "
                  << "before any instances of LocalSearchService can be used.";
-      return nullptr;
     }
     service_.reset_on_disconnect();
   }

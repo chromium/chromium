@@ -431,7 +431,6 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
   options_ = options;
-  input_coded_size_ = options.frame_size;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
   state_ = State::kWaitingForFirstFrame;
@@ -624,7 +623,6 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   absl::optional<gfx::Size> new_frame_size;
   if (options.frame_size != options_.frame_size) {
     if (supports_frame_size_change_) {
-      input_coded_size_ = options.frame_size;
       input_pool_.reset();
       gmb_frame_pool_.reset();
       new_frame_size = options.frame_size;
@@ -735,6 +733,8 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     size_t output_buffer_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   CHECK(state_ == State::kInitializing || state_ == State::kReconfiguring);
+
+  input_coded_size_ = input_coded_size;
 
   constexpr int kOutputBufferNumber = 2;
   output_buffer_handles_.clear();
@@ -1081,10 +1081,11 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
   auto status =
-      ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);
-  if (!status.is_ok())
+      frame_converter_.ConvertAndScale(*mapped_src_frame, *shared_frame);
+  if (!status.is_ok()) {
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
         .AddCause(std::move(status));
+  }
 
   shared_frame->BackWithSharedMemory(handle->region());
   shared_frame->AddDestructionObserver(
@@ -1126,7 +1127,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
   // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped
-  // view in CPU memory. It allows us to use ConvertAndScaleFrame() without
+  // view in CPU memory. It allows us to use ConvertAndScale() without
   // having to tinker with libyuv and GpuMemoryBuffer memory views.
   // |mapped_gpu_frame| doesn't own anything, but unmaps the buffer when freed.
   // This is true because |gpu_frame| is created with
@@ -1139,13 +1140,14 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
   auto status =
-      ConvertAndScaleFrame(*mapped_src_frame, *mapped_gpu_frame, resize_buf_);
-  if (!status.is_ok())
+      frame_converter_.ConvertAndScale(*mapped_src_frame, *mapped_gpu_frame);
+  if (!status.is_ok()) {
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
         .AddCause(std::move(status));
+  }
 
   // |mapped_gpu_frame| has the color space respecting the color conversion in
-  // ConvertAndScaleFrame().
+  // ConvertAndScale().
 #if BUILDFLAG(IS_MAC)
   gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
       mapped_gpu_frame->ColorSpace());

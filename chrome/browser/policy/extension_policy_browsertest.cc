@@ -226,14 +226,14 @@ const extensions::Extension* InstallExtensionWithContext(
       extensions::CrxInstaller::OffStoreInstallAllowReason::
           OffStoreInstallAllowedInTest);
 
-  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  TestFuture<std::optional<CrxInstallError>> installer_done_future;
 
   installer->AddInstallerCallback(
       installer_done_future
-          .GetCallback<const absl::optional<CrxInstallError>&>());
+          .GetCallback<const std::optional<CrxInstallError>&>());
   installer->InstallCrx(extension_path);
 
-  const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+  const std::optional<CrxInstallError>& error = installer_done_future.Get();
   if (error) {
     return nullptr;
   }
@@ -848,10 +848,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       "/extensions/good_v1_wrong_version_update_manifest.xml");
   PolicyMap policies;
 
-  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  TestFuture<std::optional<CrxInstallError>> installer_done_future;
   extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
       installer_done_future
-          .GetCallback<const absl::optional<CrxInstallError>&>());
+          .GetCallback<const std::optional<CrxInstallError>&>());
 
   // Add an entry in the extension force list policy.
   AddExtensionToForceList(&policies, kGoodCrxId, url);
@@ -859,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // Updating the policy triggers the extension installation process.
   UpdateProviderPolicy(policies);
   // Wait till the installer has finished.
-  const absl::optional<CrxInstallError>& install_error =
+  const std::optional<CrxInstallError>& install_error =
       installer_done_future.Get();
   // Check the extension is not installed.
   EXPECT_TRUE(install_error);
@@ -929,10 +929,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       embedded_test_server()->GetURL("/extensions/good2_update_manifest.xml");
   PolicyMap policies;
 
-  TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  TestFuture<std::optional<CrxInstallError>> installer_done_future;
   extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
       installer_done_future
-          .GetCallback<const absl::optional<CrxInstallError>&>());
+          .GetCallback<const std::optional<CrxInstallError>&>());
 
   // Add an entry in the extension force list policy.
   AddExtensionToForceList(&policies, kGoodCrxId, url);
@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // Wait till extension entry is found in the cache and installation fails due
   // to version mismatch as the cache entry informs extension version as
   // "1.0.0.1" while the crx file it points to belongs to "1.0.0.0".
-  const absl::optional<CrxInstallError>& install_error =
+  const std::optional<CrxInstallError>& install_error =
       installer_done_future.Get();
   EXPECT_TRUE(install_error);
 
@@ -2266,7 +2266,7 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
  protected:
   std::string test_page_;
   GURL policy_app_url_;
-  absl::optional<std::string> fallback_app_name_;
+  std::optional<std::string> fallback_app_name_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
@@ -2274,7 +2274,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
@@ -2307,7 +2307,7 @@ IN_PROC_BROWSER_TEST_F(
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
@@ -2340,7 +2340,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
@@ -2370,7 +2370,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
@@ -2405,7 +2405,7 @@ IN_PROC_BROWSER_TEST_F(
           ->registrar_unsafe();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(
       browser()->profile());
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();

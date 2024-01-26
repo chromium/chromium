@@ -268,7 +268,10 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$.dialog.get().showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
-    (this.shadowRoot!.querySelector('.action-button') as HTMLElement).focus();
+    const button =
+        this.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assert(button);
+    button.focus();
   }
 
   /////////////////////////////////////////////////////////////////////////////

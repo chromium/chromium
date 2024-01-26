@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -59,7 +60,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -195,16 +195,16 @@ class VariationsHttpHeadersBrowserTest
 
   // Returns the |header| received by |url| or nullopt if it hasn't been
   // received. Fails an EXPECT if |url| hasn't been observed.
-  absl::optional<std::string> GetReceivedHeader(
+  std::optional<std::string> GetReceivedHeader(
       const GURL& url,
       const std::string& header) const {
     auto it = received_headers_.find(url);
     EXPECT_TRUE(it != received_headers_.end());
     if (it == received_headers_.end())
-      return absl::nullopt;
+      return std::nullopt;
     auto it2 = it->second.find(header);
     if (it2 == it->second.end())
-      return absl::nullopt;
+      return std::nullopt;
     return it2->second;
   }
 
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, UserSignedIn) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
-  absl::optional<std::string> header =
+  std::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   // By default the user is not signed in.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
-  absl::optional<std::string> header =
+  std::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
   trial->Activate();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
-  absl::optional<std::string> header =
+  std::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 

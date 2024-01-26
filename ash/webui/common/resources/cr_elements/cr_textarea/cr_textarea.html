@@ -1,0 +1,128 @@
+<style include="cr-hidden-style cr-input-style cr-shared-style">
+  textarea {
+    display: block;
+    resize: none;
+  }
+
+  #input-container {
+    background-color: var(--cr-input-background-color);
+  }
+
+  :host([autogrow][has-max-height]) #input-container {
+    box-sizing: content-box;
+    max-height: var(--cr-textarea-autogrow-max-height);
+    min-height: 1lh;
+  }
+
+  :host([invalid]) #underline {
+    border-color: var(--cr-input-error-color);
+  }
+
+  :host-context([chrome-refresh-2023]) #input {
+    padding-bottom: var(--cr-input-padding-bottom);
+    padding-inline-end: var(--cr-input-padding-end);
+    padding-inline-start: var(--cr-input-padding-start);
+    padding-top: var(--cr-input-padding-top);
+  }
+
+  #footerContainer {
+    border-top: 0;
+    /* Components that use the footer should set this to "flex". */
+    display: var(--cr-textarea-footer-display, none);
+    font-size: var(--cr-form-field-label-font-size);
+    height: var(--cr-form-field-label-height);
+    justify-content: space-between;
+    line-height: var(--cr-form-field-label-line-height);
+    margin: 8px 0;
+    min-height: 0;
+    padding: 0;
+    white-space: var(--cr-input-error-white-space);
+  }
+
+  :host([invalid]) #label,
+  :host([invalid]) #footerContainer {
+    color: var(--cr-input-error-color);
+  }
+
+  #mirror {
+    display: none;
+  }
+
+  :host([autogrow]) #mirror {
+    display: block;
+    visibility: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  :host([autogrow]) #mirror,
+  :host([autogrow]) textarea {
+    border: 0;
+    box-sizing: border-box;
+    padding-bottom: var(--cr-input-padding-bottom, 6px);
+    padding-inline-end: var(--cr-input-padding-end, 8px);
+    padding-inline-start: var(--cr-input-padding-start, 8px);
+    padding-top: var(--cr-input-padding-top, 6px);
+  }
+
+  :host([autogrow]) textarea {
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    resize: none;
+    top: 0;
+    width: 100%;
+  }
+
+  :host([autogrow][has-max-height]) #mirror,
+  :host([autogrow][has-max-height]) textarea {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  :host-context([chrome-refresh-2023]) textarea {
+    /* Ensures content sits above the hover layer. */
+    position: relative;
+    z-index: 1;
+  }
+
+  :host-context([chrome-refresh-2023]):host([autogrow]) textarea {
+    position: absolute;
+  }
+
+  /* Must match textarea. */
+  :host-context([chrome-refresh-2023]) #mirror {
+    font-size: 12px;
+    line-height: 16px;
+  }
+</style>
+<div id="label" class="cr-form-field-label" hidden="[[!label]]"
+    aria-hidden="true">
+  [[label]]
+</div>
+<div id="input-container">
+  <!-- The mirror div is used to take up the required space when autogrow is
+       set. -->
+  <div id="mirror">[[calculateMirror_(value)]]</div>
+  <!-- The textarea is limited to |rows| height. If the content exceeds the
+       bounds, it scrolls by default unless autogrow is set. No space or
+       comments are allowed before the closing tag. -->
+  <div id="hover-layer"></div>
+  <textarea id="input" autofocus="[[autofocus]]" rows="[[rows]]"
+      value="{{value::input}}" aria-label$="[[label]]"
+      on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
+      on-change="onInputChange_" disabled="[[disabled]]"
+      maxlength$="[[maxlength]]" readonly$="[[readonly]]"
+      required$="[[required]]" placeholder$="[[placeholder]]"></textarea>
+  <div id="underline-base"></div>
+  <div id="underline"></div>
+</div>
+<div id="footerContainer" class="cr-row">
+  <div id="firstFooter" aria-live="[[getFooterAria_(invalid)]]">
+    [[firstFooter]]
+  </div>
+  <div id="secondFooter" aria-live="[[getFooterAria_(invalid)]]">
+    [[secondFooter]]
+  </div>
+</div>

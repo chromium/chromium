@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -47,6 +46,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -750,11 +749,6 @@ public class WebApkUpdateManagerUnitTest {
         storage.updateDidLastWebApkUpdateRequestSucceed(true);
 
         ChromeBackgroundTaskFactory.setAsDefault();
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     /**

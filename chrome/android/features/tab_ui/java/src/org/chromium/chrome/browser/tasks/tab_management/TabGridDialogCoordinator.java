@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -213,9 +214,27 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mMediator.isVisible();
     }
 
+    /**
+     * @param tabId The tab ID to get a rect for.
+     * @return a {@link Rect} for the tab's thumbnail (may be an empty rect if the tab is not
+     *     found).
+     */
+    @NonNull
+    Rect getTabThumbnailRect(int tabId) {
+        return mTabListCoordinator.getTabThumbnailRect(tabId);
+    }
+
+    @NonNull
+    Size getThumbnailSize() {
+        return mTabListCoordinator.getThumbnailSize();
+    }
+
+    void waitForLayoutWithTab(int tabId, Runnable r) {
+        mTabListCoordinator.waitForLayoutWithTab(tabId, r);
+    }
+
     @NonNull
     Rect getGlobalLocationOfCurrentThumbnail() {
-        mTabListCoordinator.updateThumbnailLocation();
         Rect thumbnail = mTabListCoordinator.getThumbnailLocationOfCurrentTab();
         Rect recyclerViewLocation = mTabListCoordinator.getRecyclerViewLocation();
         thumbnail.offset(recyclerViewLocation.left, recyclerViewLocation.top);

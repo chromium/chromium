@@ -4,6 +4,8 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -79,7 +81,6 @@
 #include "extensions/common/url_pattern.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -182,12 +183,12 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
     return nullptr;
   }
 
-  const absl::optional<content::OpenURLParams>& last_navigation_params() {
+  const std::optional<content::OpenURLParams>& last_navigation_params() {
     return last_navigation_params_;
   }
 
  private:
-  absl::optional<content::OpenURLParams> last_navigation_params_;
+  std::optional<content::OpenURLParams> last_navigation_params_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

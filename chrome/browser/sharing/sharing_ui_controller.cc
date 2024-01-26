@@ -129,15 +129,14 @@ void SharingUiController::ClearLastDialog() {
 }
 
 void SharingUiController::UpdateAndShowDialog(
-    const absl::optional<url::Origin>& initiating_origin) {
+    const std::optional<url::Origin>& initiating_origin) {
   ClearLastDialog();
   DoUpdateApps(base::BindOnce(&SharingUiController::OnAppsReceived,
                               weak_ptr_factory_.GetWeakPtr(), last_dialog_id_,
                               initiating_origin));
 }
 
-std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-SharingUiController::GetDevices() const {
+std::vector<SharingTargetDeviceInfo> SharingUiController::GetDevices() const {
   return sharing_service_->GetDeviceCandidates(GetRequiredFeature());
 }
 
@@ -180,9 +179,9 @@ bool SharingUiController::HasAccessibleUi() const {
 
 base::OnceClosure SharingUiController::SendMessageToDevice(
     const SharingTargetDeviceInfo& device,
-    absl::optional<base::TimeDelta> response_timeout,
+    std::optional<base::TimeDelta> response_timeout,
     chrome_browser_sharing::SharingMessage sharing_message,
-    absl::optional<SharingMessageSender::ResponseCallback> custom_callback) {
+    std::optional<SharingMessageSender::ResponseCallback> custom_callback) {
   send_result_ = SharingSendMessageResult::kSuccessful;
   target_device_name_ = device.client_name();
   if (ShouldShowLoadingIcon()) {
@@ -240,7 +239,7 @@ std::u16string SharingUiController::GetTargetDeviceName() const {
 
 void SharingUiController::OnResponse(
     int dialog_id,
-    absl::optional<SharingMessageSender::ResponseCallback> custom_callback,
+    std::optional<SharingMessageSender::ResponseCallback> custom_callback,
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (custom_callback)
@@ -257,7 +256,7 @@ void SharingUiController::OnResponse(
 
 void SharingUiController::OnAppsReceived(
     int dialog_id,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     std::vector<SharingApp> apps) {
   if (dialog_id != last_dialog_id_)
     return;

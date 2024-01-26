@@ -67,6 +67,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -88,7 +89,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -436,8 +436,8 @@ public class FeedV2NewTabPageTest {
                 recyclerView,
                 "feedContent_landscape"
                         + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt"
-                                : "_with_non_scrollable_mvt"));
+                                ? "_with_scrollable_mvt_v2"
+                                : "_with_non_scrollable_mvt_v2"));
     }
 
     @Test

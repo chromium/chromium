@@ -26,8 +26,8 @@
 #if BUILDFLAG(ENABLE_PRINTING)
 
 template <typename T>
-absl::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
-  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
+std::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
+  return maybe.has_value() ? std::optional<T>(maybe.value()) : std::nullopt;
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

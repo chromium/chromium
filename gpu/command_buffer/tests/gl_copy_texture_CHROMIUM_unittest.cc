@@ -181,7 +181,6 @@ void getExpectedColorAndMask(GLenum src_internal_format,
     case GL_RGB:
     case GL_RGB8:
     case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCBCR_422_CHROMIUM:
       setColor(color[0], color[1], color[2], 255, adjusted_color);
       break;
     case GL_RGBA:

@@ -149,7 +149,7 @@ void DetachableBaseHandler::BaseFirmwareUpdateFailed() {}
 
 void DetachableBaseHandler::PairChallengeSucceeded(
     const std::vector<uint8_t>& base_id) {
-  authenticated_base_id_ = base::HexEncode(base_id.data(), base_id.size());
+  authenticated_base_id_ = base::HexEncode(base_id);
   pairing_status_ = DetachableBasePairingStatus::kAuthenticated;
 
   if (GetPairingStatus() != DetachableBasePairingStatus::kNone)

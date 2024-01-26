@@ -160,6 +160,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() final;
+  MemoryManagedPaintRecorder* Recorder() override;
+
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
@@ -210,6 +212,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
+  int LayerCount() const override;
+
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   FontSelector* GetFontSelector() const final;
@@ -222,8 +226,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void SkipQueuedDrawCommands() override;
-  void RestartRecording() override;
   void TryRestoreContextEvent(TimerBase*) override;
 
   bool WillSetFont() const final;

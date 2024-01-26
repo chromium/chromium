@@ -53,8 +53,9 @@ base::Value::Dict GetMediaEngagementScoreDictForSettings(
 void GetIntegerFromScore(const base::Value::Dict& dict,
                          base::StringPiece key,
                          int* out) {
-  if (absl::optional<int> v = dict.FindInt(key))
+  if (std::optional<int> v = dict.FindInt(key)) {
     *out = v.value();
+  }
 }
 
 }  // namespace
@@ -107,12 +108,12 @@ MediaEngagementScore::MediaEngagementScore(base::Clock* clock,
   GetIntegerFromScore(score_dict_, kVisitsKey, &visits_);
   GetIntegerFromScore(score_dict_, kMediaPlaybacksKey, &media_playbacks_);
 
-  if (absl::optional<bool> has_high_score =
+  if (std::optional<bool> has_high_score =
           score_dict_.FindBool(kHasHighScoreKey)) {
     is_high_ = has_high_score.value();
   }
 
-  if (absl::optional<double> last_time =
+  if (std::optional<double> last_time =
           score_dict_.FindDouble(kLastMediaPlaybackTimeKey)) {
     last_media_playback_time_ =
         base::Time::FromInternalValue(last_time.value());
@@ -179,12 +180,12 @@ bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
     return false;
   }
 
-  if (absl::optional<bool> has_high_score =
+  if (std::optional<bool> has_high_score =
           score_dict_.FindBool(kHasHighScoreKey)) {
     is_high = has_high_score.value();
   }
 
-  if (absl::optional<double> last_time =
+  if (std::optional<double> last_time =
           score_dict_.FindDouble(kLastMediaPlaybackTimeKey)) {
     stored_last_media_playback_internal = last_time.value();
   }

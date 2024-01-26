@@ -404,6 +404,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   self.webContentAreaShowingOverlay = NO;
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.webContentAreaOverlayPresenter = nullptr;
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

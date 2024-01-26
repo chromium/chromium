@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SESSIONS_SESSION_SERVICE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -16,7 +17,6 @@
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -95,7 +95,7 @@ class SessionService : public SessionServiceBase {
   // multiple windows.
   void SetTabGroup(SessionID window_id,
                    SessionID tab_id,
-                   absl::optional<tab_groups::TabGroupId> group);
+                   std::optional<tab_groups::TabGroupId> group);
 
   // Updates the metadata associated with a tab group. |window_id| should be
   // the window where the group currently resides. Note that a group can't be
@@ -104,7 +104,7 @@ class SessionService : public SessionServiceBase {
       SessionID window_id,
       const tab_groups::TabGroupId& group_id,
       const tab_groups::TabGroupVisualData* visual_data,
-      const absl::optional<std::string> saved_guid = absl::nullopt);
+      const std::optional<std::string> saved_guid = std::nullopt);
 
   void AddTabExtraData(SessionID window_id,
                        SessionID tab_id,
@@ -183,7 +183,7 @@ class SessionService : public SessionServiceBase {
   void BuildCommandsForTab(SessionID window_id,
                            content::WebContents* tab,
                            int index_in_window,
-                           absl::optional<tab_groups::TabGroupId> group,
+                           std::optional<tab_groups::TabGroupId> group,
                            bool is_pinned,
                            IdToRange* tab_to_available_range) override;
 

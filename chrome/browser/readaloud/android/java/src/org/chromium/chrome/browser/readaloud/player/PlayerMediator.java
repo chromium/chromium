@@ -13,6 +13,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -30,12 +31,29 @@ class PlayerMediator implements InteractionHandler {
     private final PlayerCoordinator mCoordinator;
     private final PlayerCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;
+
+    /** Clock to use so we can mock time in tests. */
+    public interface Clock {
+        long currentTimeMillis();
+    }
+
+    private Clock mClock = System::currentTimeMillis;
+
+    // members to record total duration listened per playback
+    private @PlaybackListener.State int mLastState;
+    private long mLastStartTimeMillis;
+    private long mTotalTimeMillis;
+
+    // members to record total duration listened to playback with the screen locked
+    private boolean mScreenLocked;
+    private long mLastStartTimeMillisLockedScreen;
+    private long mTotalTimeMillisLockedScreen;
+
     private final PlaybackListener mPlaybackListener =
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
                     if (!isHiddenAndPlaying()) {
-                        setPlaybackState(data.state());
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                         float percent =
@@ -45,10 +63,33 @@ class PlayerMediator implements InteractionHandler {
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                     }
+
+                    if (data.state() != mLastState) {
+                        setPlaybackState(data.state());
+                        if (data.state() == PlaybackListener.State.PLAYING) {
+                            mLastStartTimeMillis = mClock.currentTimeMillis();
+                            if (mScreenLocked) {
+                                assert mLastStartTimeMillisLockedScreen == 0;
+                                mLastStartTimeMillisLockedScreen = mClock.currentTimeMillis();
+                            }
+                        } else {
+                            mTotalTimeMillis += mClock.currentTimeMillis() - mLastStartTimeMillis;
+                            if (mScreenLocked && mLastStartTimeMillisLockedScreen != 0) {
+                                mTotalTimeMillisLockedScreen +=
+                                        mClock.currentTimeMillis()
+                                                - mLastStartTimeMillisLockedScreen;
+                                mLastStartTimeMillisLockedScreen = 0;
+                            }
+                        }
+
+                        mLastState = data.state();
+                    }
                 }
             };
     private final OnSeekBarChangeListener mSeekBarChangeListener =
             new OnSeekBarChangeListener() {
+                @PlaybackListener.State int mPrevState;
+
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (!fromUser) {
@@ -59,10 +100,15 @@ class PlayerMediator implements InteractionHandler {
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    mPrevState = mModel.get(PlayerProperties.PLAYBACK_STATE);
+                    setPlaybackState(PlaybackListener.State.PAUSED);
+                }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {}
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    setPlaybackState(mPrevState);
+                }
             };
     private final PlaybackListener mPreviewPlaybackListener =
             new PlaybackListener() {
@@ -117,11 +163,43 @@ class PlayerMediator implements InteractionHandler {
                     mDelegate.getHighlightingEnabledSupplier().get());
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
+
+            mTotalTimeMillis = 0;
+            mLastStartTimeMillis = mClock.currentTimeMillis();
         }
     }
 
     void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {
         mModel.set(PlayerProperties.PLAYBACK_STATE, currentPlaybackState);
+    }
+
+    // Record time spent listening to the playback when playback is reset. Must be called after
+    // playback is released/reset or the timing will be off.
+    public void recordPlaybackDuration() {
+        ReadAloudMetrics.recordDurationMsListened(mTotalTimeMillis);
+        mTotalTimeMillis = 0;
+        mLastStartTimeMillis = 0;
+        ReadAloudMetrics.recordDurationMsListenedLockedScreen(mTotalTimeMillisLockedScreen);
+        mTotalTimeMillisLockedScreen = 0;
+        mLastStartTimeMillisLockedScreen = 0;
+    }
+
+    public void onScreenStatusChanged(boolean isScreenLocked) {
+        mScreenLocked = isScreenLocked;
+        // Screen locked
+        if (isScreenLocked) {
+            if (mModel.get(PlayerProperties.PLAYBACK_STATE) == PLAYING) {
+                assert mLastStartTimeMillisLockedScreen == 0;
+                mLastStartTimeMillisLockedScreen = mClock.currentTimeMillis();
+            }
+        } else {
+            if (mModel.get(PlayerProperties.PLAYBACK_STATE) == PLAYING
+                    && mLastStartTimeMillisLockedScreen != 0) {
+                mTotalTimeMillisLockedScreen +=
+                        mClock.currentTimeMillis() - mLastStartTimeMillisLockedScreen;
+                mLastStartTimeMillisLockedScreen = 0;
+            }
+        }
     }
 
     // InteractionHandler implementation
@@ -177,9 +255,8 @@ class PlayerMediator implements InteractionHandler {
                         mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
                 return;
             }
-            // Otherwise prepare for the new preview.
-            cleanUpVoicePreview();
         }
+        cleanUpVoicePreview();
 
         mModel.set(PlayerProperties.PREVIEWING_VOICE_ID, voice.getVoiceId());
         mModel.set(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE, PlaybackListener.State.BUFFERING);
@@ -236,8 +313,17 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
-    public void onExpandedPlayerClose() {
+    public void onShouldHideMiniPlayer() {
+        if (mPlayback != null) {
+        mCoordinator.hideMiniPlayer();
+        }
+    }
+
+    @Override
+    public void onShouldRestoreMiniPlayer() {
+        if (mPlayback != null) {
         mCoordinator.restoreMiniPlayer();
+        }
     }
 
     private void maybeSeekRelative(long nanos) {
@@ -308,5 +394,9 @@ class PlayerMediator implements InteractionHandler {
                     PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE, PlaybackListener.State.STOPPED);
             mModel.set(PlayerProperties.PREVIEWING_VOICE_ID, null);
         }
+    }
+
+    void setClockForTesting(Clock clock) {
+        mClock = clock;
     }
 }

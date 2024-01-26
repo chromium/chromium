@@ -26,6 +26,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -44,8 +45,7 @@
 namespace {
 
 class NavigationPredictorBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   NavigationPredictorBrowserTest() {
     // Report all anchors to avoid non-deterministic behavior.
@@ -66,6 +66,7 @@ class NavigationPredictorBrowserTest
   void SetUp() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/navigation_predictor");
     ASSERT_TRUE(https_server_->Start());
@@ -83,11 +84,12 @@ class NavigationPredictorBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
     host_resolver()->ClearRules();
     host_resolver()->AddRule("a.test", "127.0.0.1");
+    host_resolver()->AddRule("b.test", "127.0.0.1");
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   const GURL GetTestURL(const char* file) const {
-    return https_server_->GetURL(file);
+    return https_server_->GetURL("a.test", file);
   }
 
   const GURL GetTestURL(const char* hostname, const char* file) const {
@@ -100,17 +102,26 @@ class NavigationPredictorBrowserTest
 
   // Wait until at least |num_links| are reported as having entered the viewport
   // in UKM.
-  void WaitLinkEnteredViewport(size_t num_links) {
+  void WaitLinkEnteredViewport(size_t num_links,
+                               bool requires_polling = false) {
     EnsureLayout();
 
     const char* entry_name =
         ukm::builders::NavigationPredictorAnchorElementMetrics::kEntryName;
 
     while (ukm_recorder_->GetEntriesByName(entry_name).size() < num_links) {
-      base::RunLoop run_loop;
-      ukm_recorder_->SetOnAddEntryCallback(entry_name, run_loop.QuitClosure());
-      EnsureLayout();
-      run_loop.Run();
+      if (requires_polling) {
+        // We need to poll for the condition to become true instead of using
+        // `TestUkmRecorder::SetOnAddEntryCallback` if multiple lifecycle
+        // updates are needed to get the next report.
+        EnsureLayout();
+      } else {
+        base::RunLoop run_loop;
+        ukm_recorder_->SetOnAddEntryCallback(entry_name,
+                                             run_loop.QuitClosure());
+        EnsureLayout();
+        run_loop.Run();
+      }
     }
   }
 
@@ -146,7 +157,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  absl::optional<NavigationPredictorKeyedService::Prediction> last_prediction()
+  std::optional<NavigationPredictorKeyedService::Prediction> last_prediction()
       const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_prediction_;
@@ -174,7 +185,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
 
  private:
   void OnPredictionUpdated(
-      const absl::optional<NavigationPredictorKeyedService::Prediction>
+      const std::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ++count_predictions_;
@@ -188,12 +199,12 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
   size_t count_predictions_ = 0u;
 
   // last prediction received.
-  absl::optional<NavigationPredictorKeyedService::Prediction> last_prediction_;
+  std::optional<NavigationPredictorKeyedService::Prediction> last_prediction_;
 
   // If |wait_loop_| is non-null, then it quits as soon as count of received
   // notifications are at least |expected_notifications_count_|.
   std::unique_ptr<base::RunLoop> wait_loop_;
-  absl::optional<size_t> expected_notifications_count_;
+  std::optional<size_t> expected_notifications_count_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -359,9 +370,32 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
   EXPECT_EQ(7u, entries.size());
 }
 
+// Tests parameterized on whether site isolation is enabled, to ensure that the
+// metrics calculations in the renderer don't change based on the process model.
+class NavigationPredictorSiteIsolationBrowserTest
+    : public NavigationPredictorBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationPredictorBrowserTest::SetUpCommandLine(command_line);
+    if (SiteIsolationEnabled()) {
+      content::IsolateAllSitesForTesting(command_line);
+    } else {
+      command_line->RemoveSwitch(switches::kSitePerProcess);
+      command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    }
+  }
+
+  bool SiteIsolationEnabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationPredictorSiteIsolationBrowserTest,
+                         testing::Bool());
+
 // Tests cross-origin iframe. For now we don't log cross-origin links, so this
 // test just makes sure the iframe is ignored and the browser doesn't crash.
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
+IN_PROC_BROWSER_TEST_P(NavigationPredictorSiteIsolationBrowserTest,
                        PageWithCrossOriginIframe) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
@@ -370,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
       GetTestURL("/page_with_anchors_and_cross_origin_iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   const GURL& iframe_url =
-      GetTestURL("cross-origin.com", "/iframe_simple_page_with_anchors.html");
+      GetTestURL("b.test", "/iframe_simple_page_with_anchors.html");
   EXPECT_TRUE(content::NavigateIframeToURL(
       browser()->tab_strip_model()->GetActiveWebContents(), "crossFrame",
       iframe_url));
@@ -394,6 +428,55 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   EXPECT_EQ(0, get_metric(PageLinkEntry::kNumberOfAnchors_URLIncrementedName));
 
   // Same anchors in iframes should be reported as entering the viewport.
+  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
+  entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(4u, entries.size());
+}
+
+// Tests a frame hierarchy of A(B(A)). The cross-origin iframe B should be
+// ignored, but the same-origin iframe A should be included even though its
+// parent is cross-origin.
+IN_PROC_BROWSER_TEST_P(NavigationPredictorSiteIsolationBrowserTest,
+                       PageWithSameOriginIframeInCrossOriginIframe) {
+  // TODO(https://crbug.com/1519846): Flaky timeouts on linux rel and cros rel.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(NDEBUG)
+  if (SiteIsolationEnabled()) {
+    GTEST_SKIP() << "Flaky. https://crbug.com/1519846";
+  }
+#endif
+
+  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  ResetUKM();
+
+  const GURL url =
+      GetTestURL("a.test", "/page_with_anchor_and_cross_origin_iframe_b.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // The links in the same-origin iframe won't be reported until the next
+  // lifecycle update of the main frame, which WaitLinkEnteredViewport triggers.
+  // Given that this could race with the processing of the links in the iframe
+  // document, we may need to trigger updates multiple times.
+  const bool requires_polling = true;
+
+  WaitLinkEnteredViewport(4, requires_polling);
+
+  // Force recording NavigationPredictorPageLinkMetrics UKM.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
+  auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  auto get_metric = [&](auto name) {
+    return *test_ukm_recorder->GetEntryMetric(entry, name);
+  };
+  EXPECT_EQ(4, get_metric(PageLinkEntry::kNumberOfAnchors_TotalName));
+  EXPECT_EQ(1, get_metric(PageLinkEntry::kNumberOfAnchors_ContainsImageName));
+  EXPECT_EQ(3, get_metric(PageLinkEntry::kNumberOfAnchors_InIframeName));
+  EXPECT_EQ(1, get_metric(PageLinkEntry::kNumberOfAnchors_SameHostName));
+  EXPECT_EQ(0, get_metric(PageLinkEntry::kNumberOfAnchors_URLIncrementedName));
+
   using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
   entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
   EXPECT_EQ(4u, entries.size());

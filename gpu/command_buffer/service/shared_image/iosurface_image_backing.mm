@@ -553,19 +553,19 @@ DawnIOSurfaceRepresentation::DawnIOSurfaceRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     wgpu::Device device,
-    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    wgpu::SharedTextureMemory shared_texture_memory,
     const gfx::Size& io_surface_size,
     wgpu::TextureFormat wgpu_format,
     std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(std::move(device)),
-      io_surface_(std::move(io_surface)),
+      shared_texture_memory_(shared_texture_memory),
       io_surface_size_(io_surface_size),
       wgpu_format_(wgpu_format),
       view_formats_(std::move(view_formats)) {
   CHECK(device_);
   CHECK(device_.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
-  CHECK(io_surface_);
+  CHECK(shared_texture_memory);
 }
 
 DawnIOSurfaceRepresentation::~DawnIOSurfaceRepresentation() {
@@ -574,14 +574,6 @@ DawnIOSurfaceRepresentation::~DawnIOSurfaceRepresentation() {
 
 wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
     wgpu::TextureUsage wgpu_texture_usage) {
-  if (!shared_texture_memory_) {
-    wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
-    io_surface_desc.ioSurface = io_surface_.get();
-    wgpu::SharedTextureMemoryDescriptor desc = {};
-    desc.nextInChain = &io_surface_desc;
-    shared_texture_memory_ = device_.ImportSharedTextureMemory(&desc);
-  }
-
   const std::string debug_label =
       "IOSurface(" + CreateLabelForSharedImageUsage(usage()) + ")";
 
@@ -613,7 +605,7 @@ wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
 
   texture_descriptor.nextInChain = &internalDesc;
 
-  wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc;
+  wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
 
   std::vector<wgpu::SharedFence> shared_fences;
@@ -755,6 +747,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
@@ -767,6 +760,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
+                         std::move(debug_label),
                          format.EstimatedSizeInBytes(size),
                          /*is_thread_safe=*/false,
                          std::move(buffer_usage)),
@@ -1063,7 +1057,8 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format());
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
@@ -1085,9 +1080,61 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   }
 
   if (backend_type == wgpu::BackendType::Metal) {
+    // Clear out any cached SharedTextureMemory instances for which the
+    // associated Device has been lost - this both saves memory and more
+    // importantly ensures that a new SharedTextureMemory instance will be
+    // created if another Device occupies the same memory as a previously-used,
+    // now-lost Device.
+    for (auto iter : shared_texture_memory_cache_) {
+      if (iter.second.IsDeviceLost()) {
+        shared_texture_memory_cache_.erase(iter.first);
+      }
+    }
+
+    CHECK(device.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
+    auto iter = shared_texture_memory_cache_.find(device.Get());
+
+    wgpu::SharedTextureMemory shared_texture_memory;
+    if (iter == shared_texture_memory_cache_.end()) {
+      wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
+      io_surface_desc.ioSurface = io_surface_.get();
+      wgpu::SharedTextureMemoryDescriptor desc = {};
+      desc.nextInChain = &io_surface_desc;
+
+      shared_texture_memory = device.ImportSharedTextureMemory(&desc);
+      if (!shared_texture_memory) {
+        LOG(ERROR) << "Unable to create SharedTextureMemory - device lost?";
+        return nullptr;
+      }
+      // NOTE: We currently do not cache SharedTextureMemory objects that are
+      // associated with devices created for WebGPU. The reason is that
+      // SharedTextureMemory holds on to a reference for the device, and
+      // WebGPUDecoderImpl does not currently destroy devices that it creates
+      // on its own destruction. Hence, caching SharedTextureMemory objects for
+      // these devices could lead to memory leakage over time (e.g., for
+      // SharedImages maintained in a client-side pool on which WebGPU is used
+      // repeatedly). If Graphite is being used, however, we can and do cache
+      // the SharedTextureMemory instance that is associated with the Graphite
+      // device.
+      // TODO(crbug.com/1493854): Cache SharedTextureMemory objects for WebGPU
+      // as well once crbug.com/1515822 is resolved.
+      // NOTE: `dawn_context_provider` may be null if Graphite is not being
+      // used.
+      auto* dawn_context_provider = context_state->dawn_context_provider();
+      if (dawn_context_provider &&
+          dawn_context_provider->GetDevice().Get() == device.Get()) {
+        // This is the Graphite device, so its SharedTextureMemory instance can
+        // and should be cached.
+        shared_texture_memory_cache_[device.Get()] = shared_texture_memory;
+      }
+    } else {
+      shared_texture_memory = iter->second;
+    }
+
     return std::make_unique<DawnIOSurfaceRepresentation>(
-        manager, this, tracker, wgpu::Device(device), io_surface_,
-        io_surface_size_, wgpu_format, std::move(view_formats));
+        manager, this, tracker, wgpu::Device(device),
+        std::move(shared_texture_memory), io_surface_size_, wgpu_format,
+        std::move(view_formats));
   }
 
   CHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
@@ -1146,8 +1193,9 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
 #if BUILDFLAG(SKIA_USE_DAWN)
     auto device = context_state->dawn_context_provider()->GetDevice();
     auto backend_type = context_state->dawn_context_provider()->backend_type();
-    auto dawn_representation = ProduceDawn(manager, tracker, device,
-                                           backend_type, /*view_formats=*/{});
+    auto dawn_representation =
+        ProduceDawn(manager, tracker, device, backend_type, /*view_formats=*/{},
+                    context_state);
     if (!dawn_representation) {
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;

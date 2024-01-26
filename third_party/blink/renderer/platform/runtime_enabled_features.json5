@@ -258,12 +258,6 @@
       public: true,
     },
     {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "AccordionPattern",
-      status: "stable",
-    },
-    {
       name: "AddIdentityInCanMakePaymentEvent",
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "AddIdentityInCanMakePaymentEvent",
@@ -291,7 +285,7 @@
     {
       // crbug.com/1500511
       name: "AlignContentForBlocks",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
@@ -327,13 +321,8 @@
       status: "experimental",
     },
     {
-      // crbug.com/484651
-      name: "ArrowKeysInVerticalWritingModes",
-      status: "stable",
-    },
-    {
       name: "AsyncClipboardImplicitPermission",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AttributionReporting",
@@ -348,6 +337,7 @@
       origin_trial_feature_name: "AttributionReportingCrossAppWeb",
       origin_trial_allows_third_party: true,
       base_feature: "none",
+      public: true,
     },
     {
       // This only exists so we can use RuntimeEnabled in the IDL file
@@ -382,11 +372,6 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
-      name: "AutoDisableAccessibilityV2",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,
@@ -417,12 +402,6 @@
     // See crbug.com/1008483.
     {
       name: "BackfaceVisibilityInterop",
-    },
-    // This is a killswitch for the fix for crbug.com/954591 and should be
-    // removable a few weeks after M120 ships.
-    {
-      name: "BackfaceVisibilityNewInheritance",
-      status: "stable",
     },
     {
       name: "BackForwardCache",
@@ -511,17 +490,12 @@
       status: "experimental",
     },
     {
-      // crbug.com/880802
-      name: "BlockRubyConsoleMessage",
-      status: "stable",
-    },
-    {
       name: "BlockRubyWrappingInlineRuby",
       status: "stable",
     },
-    // Mouse and Pointer boundary event dispatch (i.e. dispatch of enter, leave,
-    // over, out events) tracks DOM node removal to fix event pairing on ancestor
-    // nodes.
+    // crbug.com/1147998: Mouse and Pointer boundary event dispatch (i.e. dispatch
+    // of enter, leave, over, out events) tracks DOM node removal to fix event
+    // pairing on ancestor nodes.
     {
       name: "BoundaryEventDispatchTracksNodeRemoval",
       public: true,
@@ -567,6 +541,11 @@
       base_feature: "none",
     },
     {
+      name: "Canvas2dMesh",
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "Canvas2dScrollPathIntoView",
       status: "experimental",
       base_feature: "none",
@@ -584,6 +563,10 @@
     {
       name: "CanvasImageSmoothing",
       status: "experimental",
+      base_feature: "none",
+    },
+    {
+      name: "CanvasWebGPUAccess",
       base_feature: "none",
     },
     {
@@ -607,16 +590,19 @@
     },
     {
       name: "CapturedSurfaceControl",
-      // TODO(crbug.com/1466247): Once implementation is further along,
-      // set "default" to "experimental". (Note that Android support
-      // is not planned.)
-      status: {"Android": ""},
+      origin_trial_feature_name: "CapturedSurfaceControl",
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
+    },
+    {
+      // https://www.w3.org/TR/cssom-view-1/#dom-document-caretpositionfrompoint
+      name: "CaretPositionFromPoint",
+      status: "test",
     },
     {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
@@ -632,18 +618,6 @@
       name: "ClickToCapturedPointer",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "ClientHintsMetaEquivDelegateCH",
-      status: "stable",
-    },
-    {
-      name: "ClientHintsMetaHTTPEquivAcceptCH",
-      status: "stable",
-    },
-    {
-      name: "ClientHintThirdPartyDelegation",
-      status: "stable",
     },
     {
       name: "ClipboardSupportedTypes",
@@ -717,7 +691,7 @@
     {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
-      origin_trial_feature_name: "CompressionDictionaryTransport",
+      origin_trial_feature_name: "CompressionDictionaryTransportForTest",
       origin_trial_allows_third_party: true,
       public: true,
     },
@@ -930,13 +904,6 @@
       base_feature: "none",
     },
     {
-      // If enabled,
-      // image-set values without the `-webkit-` prefix
-      // will be parsed.
-      name: "CSSImageSet",
-      status: "stable",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",
@@ -1029,11 +996,6 @@
       status: "stable",
     },
     {
-      name: "CSSPictureInPicture",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
       base_feature: "none",
@@ -1043,12 +1005,6 @@
     {
       name: "CSSProgressNotation",
       status: "experimental",
-    },
-    {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "CSSPseudoDir",
-      status: "stable",
     },
     {
       // When an audio, video, or similar resource is "playing"
@@ -1061,6 +1017,14 @@
     {
       // https://drafts.csswg.org/css-color-5/#relative-colors
       name: "CSSRelativeColor",
+      status: "stable",
+    },
+    {
+      // Non-standard 'auto' keyword for the CSS resize property. Used for
+      // selectively enable resize corner for textarea via UA stylesheet, but
+      // unintentionally exposed to author sheets. UA rule is now using
+      // -internal-textarea-auto instead.
+      name: "CSSResizeAuto",
       status: "stable",
     },
     {
@@ -1166,6 +1130,7 @@
     {
       // crbug.com/1463891: CSS `text-spacing-trim` property
       name: "CSSTextSpacingTrim",
+      status: "experimental",
     },
     // Use the `ScoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
@@ -1175,12 +1140,6 @@
     // `text-wrap: pretty`. crbug.com/1432798
     {
       name: "CSSTextWrapPretty",
-      status: "stable",
-    },
-    {
-      // Support for the 'border-box', 'content-box' and 'stroke-box' keywords
-      // for the 'transform-box' property.
-      name: "CSSTransformBoxAdditionalKeywords",
       status: "stable",
     },
     {
@@ -1194,6 +1153,14 @@
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
       base_feature: "none",
+    },
+    {
+      // Container query selectors containing uknown or unsupported queries
+      // never selects a container with this feature enabled.
+      // For instance, "@container (width > 0px) or (foo: bar)" will never
+      // select or match any containers.
+      name: "CSSUnknownContainerQueriesNoSelection",
+      status: "stable",
     },
     {
       name: "CSSUpdateMediaFeature",
@@ -1219,14 +1186,6 @@
     {
       name: "CSSVideoDynamicRangeMediaQueries",
       status: "experimental",
-      base_feature: "none",
-    },
-    {
-      // Support for viewport units added by css-values-4.
-      //
-      // https://drafts.csswg.org/css-values-4/#viewport-relative-units
-      name: "CSSViewportUnits4",
-      status: "stable",
       base_feature: "none",
     },
     {
@@ -1257,14 +1216,28 @@
       status: "stable",
     },
     {
+      // Makes the default display value of date type <input> elements
+      // inline-block for cross-browser compatibility. Enabled in M122, should
+      // be safe to remove in M126.
       name: "DateInputInlineBlock",
-      status: "test",
+      status: "stable",
     },
     {
-      // TODO(crbug.com/1396384) This is being disabled, very slowly, via
-      // Finch over 119 and 120. For now, it is enabled in code, and will be
-      // removed from code starting in M121, assuming things go well.
-      name: "DeprecatedNonStreamingDeclarativeShadowDOM",
+      // This is a killswitch (enabled by *enabling* the feature) for the
+      // removal of the IDL reflection of the old 'shadowroot' attribute.
+      // This should be removed in M124 (Feb 20, 2024) assuming no issues.
+      name: "DeprecatedTemplateShadowRoot",
+    },
+    // This allows pages to opt out of the unload deprecation. Enabling this
+    // allows unload event handers to be used in the frame regardless of any
+    // Permissions-Policy setting.
+    // https://crbug.com/1432116
+    {
+      name: "DeprecateUnloadOptOut",
+      origin_trial_feature_name: "DeprecateUnloadOptOut",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_third_party: true,
+      origin_trial_allows_insecure: true,
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",
@@ -1417,6 +1390,12 @@
       base_feature: "DispatchHiddenVisibilityTransitions",
     },
     {
+      // Allowing elements with display:contents to have focus.
+      // See https://crbug.com/1366037
+      name: "DisplayContentsFocusable",
+      status: "experimental",
+    },
+    {
       name: "DisplayCutoutAPI",
       base_feature: "none",
       public: true,
@@ -1485,6 +1464,12 @@
       name: "DocumentWrite",
       base_feature: "none",
     },
+    // Controls whether DOMParser.parseFromString() attempts to use the
+    // html fast path parser. This is a kill switch.
+    {
+      name: "DOMParserUsesHTMLFastPathParser",
+      status: "stable"
+    },
     {
       name: "DOMPartsAPI",
       status: "experimental",
@@ -1509,7 +1494,18 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
-      name: "EmptyCaretInVertical",
+      // This is the "new" version of getHTML() used for declarative shadow
+      // DOM, and this version will replace the deprecated getInnerHTML(), which
+      // is enabled by the ElementGetInnerHTML feature.
+      name: "ElementGetHTML",
+      status: "experimental",
+    },
+    {
+      // This is the "old" version of getInnerHTML() used for declarative shadow
+      // DOM, and this version is deprecated. The replacement is enabled by the
+      // ElementGetHTML feature. Once the new feature is stabilized and shipped,
+      // this feature (and its corresponding functionality) will be removed.
+      name: "ElementGetInnerHTML",
       status: "stable",
     },
     {
@@ -1623,7 +1619,7 @@
       name: "FedCmDisconnect",
       depends_on: ["FedCm"],
       base_feature: "none",
-      status: "test",
+      status: "stable",
       public: true,
     },
     {
@@ -1811,6 +1807,13 @@
       status: "stable",
     },
     {
+      name: "FledgeFeatureDetection",
+      // This will likely have to be enabled based on an OR of many
+      // base::Features.
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "FledgeNegativeTargeting",
       status: "stable",
     },
@@ -1921,7 +1924,6 @@
       // Allow text-based form controls to have vertical writing mode: textarea
       // and input types email, number, password, search, tel, text, url.
       name: "FormControlsVerticalWritingModeTextSupport",
-      depends_on: ["ArrowKeysInVerticalWritingModes"],
       status: "stable",
     },
     {
@@ -1979,6 +1981,10 @@
       name: "GetDisplayMediaRequiresUserActivation",
       depends_on: ["GetDisplayMedia"],
       status: "experimental",
+    },
+    {
+      name: "GetNextSiblingPositionWhenLastChild",
+      status: "stable",
     },
     {
       name: "GroupEffect",
@@ -2046,21 +2052,10 @@
       name: "HTMLInvokeTargetAttribute",
       status: "experimental",
     },
-    {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "HTMLLangNewInheritance",
-      status: "stable",
-    },
     // This is a killswitch. Removable a few weeks after M121 ships.
-    // Feature is conditional on CSSPseudoDir as
-    // Element::AdjustDirectionalityIfNeededAfterChildrenChanged() is
-    // non-trivial to update if CSSPseudoDir is false, but CSSPseudoDir is in
-    // the process of launching.
     {
       name: "HTMLParserFastPathBulkInsertNotify",
       status: "stable",
-      depends_on: ["CSSPseudoDir"],
     },
     {
       // A flag, just for local testing to make the
@@ -2109,12 +2104,14 @@
       status: "stable"
     },
     {
-      name: "IncomingCallNotifications",
+      // ImprovedXMLErrors tweaks the way that we emit XML parsing errors in
+      // some cases in order to comply with upstream changes to libxml.
+      // Shipping in M123, so should be safe to remove in M126.
+      name: "ImprovedXMLErrors",
+      status: "stable",
     },
     {
-      name: "InertAttribute",
-      status: "stable",
-      base_feature: "none",
+      name: "IncomingCallNotifications",
     },
     {
       name: "InertDisplayTransition",
@@ -2257,25 +2254,15 @@
       base_feature: "none",
     },
     {
-      // Enable AnimationFrameTimingMonitor, which measures long animation
-      // frames. Can be used for UKM or for the perofrmance API.
-      name: "LongAnimationFrameMonitoring",
-      implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM", "LongTaskFromLongAnimationFrame"],
-      status: "experimental",
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "LongAnimationFrameTiming"
+      name: "LockedMode",
+      status: "test",
+      // Enabled by features::kLockedMode.
+      public: true,
     },
     {
       // Enables long aniamtion frames as a performance API (the
       // "long-animation-frame" timeline entry)
       name: "LongAnimationFrameTiming",
-      status: "experimental",
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "LongAnimationFrameTiming"
-    },
-    {
-      // Enables long aniamtion frame logging to UKM
-      name: "LongAnimationFrameUKM",
       status: "stable"
     },
     {
@@ -2318,7 +2305,7 @@
     {
       // crbug.com/486880
       name: "MaskingGraphemeClusters",
-      status: "test",
+      status: "stable",
       depends_on: ["OffsetMappingUnitVariable"],
     },
     {
@@ -2426,11 +2413,6 @@
       status: "stable",
     },
     {
-      name: "MediaSessionSlides",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "MediaSourceExperimental",
       status: "experimental",
       base_feature: "none",
@@ -2453,7 +2435,7 @@
     },
     {
       name: "MessagePortCloseEvent",
-      status: "test",
+      status: "stable",
     },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
@@ -2465,6 +2447,11 @@
     {
       name: "MobileLayoutTheme",
       base_feature: "none",
+    },
+    {
+      name: "ModelExecutionAPI",
+      status: "test",
+      base_feature: "EnableModelExecutionAPI",
     },
     {
       name: "MojoJS",
@@ -2648,8 +2635,9 @@
       base_feature: "none",
     },
     {
+      // crbug.com/750990
       name: "OffsetMappingUnitVariable",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "OnDeviceChange",
@@ -2928,6 +2916,11 @@
       public: true,
     },
     {
+      // Enables performance.mark('mark_feature_usage'): crbug.com/1517170
+      name: "PerformanceMarkFeatureUsage",
+      status: "experimental"
+    },
+    {
       name: "PerformanceNavigateSystemEntropy",
       status: "experimental",
     },
@@ -2954,10 +2947,6 @@
       public: true,
       status: "stable",
       base_feature: "none",
-    },
-    {
-      name: "PermissionsPolicyReporting",
-      status: "stable",
     },
     {
       name: "PermissionsRequestRevoke",
@@ -2988,6 +2977,12 @@
       base_feature: "none",
       public: true,
     },
+    // Adds a web setting to disable CSS ScrollbarColor, ScrollbarWidth, and
+    // legacy ::-webkit-scrollbar* pseudo element styling.
+    {
+      name: "PreferDefaultScrollbarStyles",
+      base_feature: "none",
+    },
     // Prefer not using composited scrolling. Composited scrolling will still
     // be used if there are other reasons forcing compositing. For consistency,
     // any code calling Settings::GetPreferCompositingToLCDTextEnabled() should
@@ -3001,10 +2996,6 @@
       name: "PrefersReducedData",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "PrefersReducedTransparency",
-      status: "stable",
     },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
@@ -3049,6 +3040,10 @@
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
+    },
+    {
+      name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
+      status: "stable",
     },
     {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
@@ -3191,6 +3186,12 @@
       status: "test",
     },
     {
+      // See https://github.com/whatwg/html/issues/10034
+      name: "RenderBlockingInlineModuleScript",
+      status: "stable",
+      base_feature: "none",
+    },
+    {
       name: "RenderBlockingStatus",
       status: "stable",
       base_feature: "none",
@@ -3202,23 +3203,8 @@
       base_feature: "none",
     },
     {
-      name: "ResourceHintsLeastRestrictiveCSP",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ResourceTimingContentType",
       status: "experimental",
-      base_feature: "none",
-    },
-    {
-      name: "ResourceTimingInterimResponseTimes",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      name: "ResourceTimingResponseStatus",
-      status: "stable",
       base_feature: "none",
     },
     {
@@ -3334,10 +3320,6 @@
       public: true,
       status: "stable",
       base_feature: "none",
-    },
-    {
-      name: "ScriptingMediaFeature",
-      status: "stable",
     },
     {
       name: "ScrollbarColor",
@@ -3467,6 +3449,14 @@
       status: "experimental",
     },
     {
+      // This is a killswitch for the change in declarative/imperative shadow
+      // root attachment (see [1]). This should be removed in M124 (Feb 20,
+      // 2024) assuming no issues are encountered.
+      // [1] https://github.com/whatwg/dom/issues/1235
+      name: "ShadowRootAttachmentNewBehavior",
+      status: "stable",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,
@@ -3522,15 +3512,6 @@
       depends_on: ["MediaSession"],
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      // When hovering on an element that contains a title, skip converting the
-      // HitTestResult to the shadow host. This is used to ensure tooltips in
-      // the shadow tree appear correctly. This is to be used as a killswitch in
-      // case of any issues.
-      // TODO(crbug.com/1473774): Remove flag if no issues arise.
-      name: "SkipShadowHostWhenHoveringForTooltip",
-      status: "stable",
     },
     {
       // Skips the browser touch event filter, ensuring that events that reach
@@ -3618,7 +3599,7 @@
     },
     {
       name: "SpeculationRulesImplicitSource",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SpeculationRulesNoVarySearchHint",
@@ -3705,6 +3686,12 @@
       base_feature: "none",
     },
     {
+      // Allows <button> and <datalist> in <select> which replace the default
+      // button and listbox respectively.
+      name: "StylableSelect",
+      status: "experimental",
+    },
+    {
       name: "StylusHandwriting",
       base_feature: "none",
     },
@@ -3718,10 +3705,6 @@
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
-      name: "SvgTextFixHittestAfterScale",
       status: "stable",
     },
     {
@@ -3970,10 +3953,6 @@
       public: true,
     },
     {
-      name: "UserAgentClientHint",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5132477781245952
       name: "UserValidUserInvalid",
       status: "stable",
@@ -4040,11 +4019,6 @@
     },
     {
       name: "VisibilityCollapseColumn",
-      base_feature: "none",
-    },
-    {
-      name: "VisibilityStateEntry",
-      status: "stable",
       base_feature: "none",
     },
     {
@@ -4133,19 +4107,6 @@
       base_feature: "none",
       origin_trial_feature_name: "WebAppUrlHandling",
       origin_trial_os: ["win", "mac", "linux"],
-    },
-    {
-      name: "WebAppWindowControlsOverlay",
-      origin_trial_feature_name: "WebAppWindowControlsOverlay",
-      origin_trial_os: ["win", "mac", "linux", "chromeos"],
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      name: "WebAssemblyGC",
-      origin_trial_feature_name: "WebAssemblyGC",
-      status: "experimental",
-      base_feature: "none",
     },
     {
       name: "WebAssemblyJSStringBuiltins",
@@ -4289,6 +4250,13 @@
       public: true,
     },
     {
+      // WebGPU experimental features are meant for features that would
+      // eventually land in the WebGPU spec.
+      name: "WebGPUExperimentalFeatures",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
@@ -4311,13 +4279,6 @@
     {
       name: "WebIDLBigIntUsesToBigInt",
       status: "stable",
-    },
-    // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
-    // but configurable via WebPreferences.
-    {
-      name: "WebKitScrollbarStyling",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "WebNFC",

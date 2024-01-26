@@ -36,13 +36,15 @@ class DefaultSearchPolicyHandlerTest
   static const char kSearchURL[];
   static const char kSuggestURL[];
   static const char kName[];
-  static const char kKeyword[];
   static const char kReplacementKey[];
   static const char kImageURL[];
   static const char kImageParams[];
-  static const char kNewTabURL[];
   static const char kFileSearchURL[];
   static const char kHostName[];
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  static const char kKeyword[];
+  static const char kNewTabURL[];
+#endif
 
   // Build a default search policy by setting search-related keys in |policy| to
   // reasonable values. You can update any of the keys after calling this
@@ -58,17 +60,18 @@ const char DefaultSearchPolicyHandlerTest::kSuggestURL[] =
     "http://test.com/sugg?={searchTerms}";
 const char DefaultSearchPolicyHandlerTest::kName[] =
     "MyName";
-const char DefaultSearchPolicyHandlerTest::kKeyword[] =
-    "MyKeyword";
 const char DefaultSearchPolicyHandlerTest::kImageURL[] =
     "http://test.com/searchbyimage/upload";
 const char DefaultSearchPolicyHandlerTest::kImageParams[] =
     "image_content=content,image_url=http://test.com/test.png";
-const char DefaultSearchPolicyHandlerTest::kNewTabURL[] =
-    "http://test.com/newtab";
 const char DefaultSearchPolicyHandlerTest::kFileSearchURL[] =
     "file:///c:/path/to/search?t={searchTerms}";
 const char DefaultSearchPolicyHandlerTest::kHostName[] = "test.com";
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+const char DefaultSearchPolicyHandlerTest::kKeyword[] = "MyKeyword";
+const char DefaultSearchPolicyHandlerTest::kNewTabURL[] =
+    "http://test.com/newtab";
+#endif
 
 void DefaultSearchPolicyHandlerTest::
     BuildDefaultSearchPolicy(PolicyMap* policy) {
@@ -83,9 +86,6 @@ void DefaultSearchPolicyHandlerTest::
               nullptr);
   policy->Set(key::kDefaultSearchProviderName, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kName),
-              nullptr);
-  policy->Set(key::kDefaultSearchProviderKeyword, POLICY_LEVEL_MANDATORY,
-              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kKeyword),
               nullptr);
   policy->Set(key::kDefaultSearchProviderSuggestURL, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kSuggestURL),
@@ -102,9 +102,14 @@ void DefaultSearchPolicyHandlerTest::
   policy->Set(key::kDefaultSearchProviderImageURLPostParams,
               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
               base::Value(kImageParams), nullptr);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  policy->Set(key::kDefaultSearchProviderKeyword, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kKeyword),
+              nullptr);
   policy->Set(key::kDefaultSearchProviderNewTabURL, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kNewTabURL),
               nullptr);
+#endif
 }
 
 // Checks that if the default search policy is missing, that no elements of the
@@ -143,14 +148,17 @@ TEST_F(DefaultSearchPolicyHandlerTest, InvalidType) {
   const char* kPolicyNamesToCheck[] = {
       key::kDefaultSearchProviderEnabled,
       key::kDefaultSearchProviderName,
-      key::kDefaultSearchProviderKeyword,
       key::kDefaultSearchProviderSearchURL,
       key::kDefaultSearchProviderSuggestURL,
       key::kDefaultSearchProviderEncodings,
       key::kDefaultSearchProviderAlternateURLs,
       key::kDefaultSearchProviderImageURL,
+      key::kDefaultSearchProviderImageURLPostParams,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+      key::kDefaultSearchProviderKeyword,
       key::kDefaultSearchProviderNewTabURL,
-      key::kDefaultSearchProviderImageURLPostParams};
+#endif
+  };
 
   PolicyMap policy;
   BuildDefaultSearchPolicy(&policy);
@@ -202,8 +210,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
   EXPECT_EQ(kSearchURL, *value);
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kShortName));
   EXPECT_EQ(kName, *value);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kKeyword));
   EXPECT_EQ(kKeyword, *value);
+#endif
 
   ASSERT_TRUE(
       value = dictionary->FindString(DefaultSearchManager::kSuggestionsURL));

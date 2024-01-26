@@ -11,6 +11,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -78,7 +79,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/gl/gl_switches.h"
@@ -846,7 +846,7 @@ class CastV2PerformanceTest : public InProcessBrowserTest,
 
  protected:
   // Ensure best effort tasks are not required for this test to pass.
-  absl::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
       best_effort_fence_;
 
   // HTTPS server for loading pages from the test data dir.
@@ -914,7 +914,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 
   // CastMessageChannel implementation (inbound).
   void OnMessage(mirroring::mojom::CastMessagePtr message) override {
-    const absl::optional<base::Value> root_or_error =
+    const std::optional<base::Value> root_or_error =
         base::JSONReader::Read(message->json_format_data);
     ASSERT_TRUE(root_or_error);
     const base::Value::Dict& root = root_or_error->GetDict();

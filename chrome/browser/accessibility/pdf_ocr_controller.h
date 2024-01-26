@@ -8,11 +8,25 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/callback_list.h"
+#else
+#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#endif
+
 class Profile;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
+struct AccessibilityStatusEventDetails;
+}
+#endif
 
 namespace content {
 class WebContents;
@@ -25,7 +39,13 @@ class PdfOcrControllerFactory;
 // Manages the PDF OCR feature that extracts text from an inaccessible PDF.
 // Observes changes in the per-profile preference and updates the accessibility
 // mode of WebContents when it changes, provided its feature flag is enabled.
-class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
+class PdfOcrController : public KeyedService,
+                         public ScreenAIInstallState::Observer
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    ,
+                         public ui::AXModeObserver
+#endif
+{
  public:
   explicit PdfOcrController(Profile* profile);
   PdfOcrController(const PdfOcrController&) = delete;
@@ -37,16 +57,29 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   static std::vector<content::WebContents*> GetAllPdfWebContentsesForTesting(
       Profile* profile);
 
-  // Return true if the PDF OCR pref is true and we are not waiting for the
-  // service to become ready.
+  // Return true if PDF OCR is enabled for the profile.
   bool IsEnabled() const;
 
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // ui::AXModeObserver:
+  void OnAXModeAdded(ui::AXMode mode) override;
+#endif
+
  private:
   friend class PdfOcrControllerFactory;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnAccessibilityStatusEvent(
+      const ash::AccessibilityStatusEventDetails& details);
+#endif
+
+  // Handles a change to the activation state.
+  void OnActivationChanged();
+
+  // Handles a change to the user preference.
   void OnPdfOcrAlwaysActiveChanged();
 
   // Sends Pdf Ocr Always Active state to all relevant WebContents.
@@ -61,19 +94,28 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   //  - Returns true.
   bool MaybeScheduleRequest();
 
-  // Observes changes in Screen AI component download and readiness state.
-  base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
-
   // PdfOcrController will be created via PdfOcrControllerFactory on this
   // profile and then destroyed before the profile gets destroyed.
   raw_ptr<Profile> profile_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Observes spoken feedback and select to speak.
+  base::CallbackListSubscription accessibility_status_subscription_;
+#else
+  // Observes the presence of a screen reader.
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
+#endif
+
+  // Observes changes in Screen AI component download and readiness state.
+  base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
+      component_ready_observer_{this};
+
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Indicates that user has selected always active and we are waiting for the
-  // Screen AI service to be ready to send this bit.
-  bool send_always_active_state_when_service_is_ready_{false};
+  // True when the kPDFOcr accessibility mode flag is sent to all PDF tabs
+  // associated with the controller's profile.
+  bool is_enabled_ = false;
 
   base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
 };

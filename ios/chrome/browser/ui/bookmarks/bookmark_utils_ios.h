@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/common/storage_type.h"
@@ -45,7 +46,7 @@ struct BookmarkNodeReference {
   // Node id for the BookmarkNode.
   const base::Uuid uuid;
   // Bookmark model from the BookmarkNode.
-  bookmarks::BookmarkModel* bookmark_model;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model;
 };
 
 typedef std::vector<const bookmarks::BookmarkNode*> NodeVector;
@@ -114,25 +115,25 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
 // bookmark storage.
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
-// Creates the bookmark if `node` is NULL. Otherwise updates `node`.
+// Updates `node`.
 // `folder` is the intended parent of `node`.
 // Returns a boolean signifying whether any change was performed.
 // Note: This function might invalidate `node` if `folder` and `node` belong to
 // different `BookmarkModel` instances.
-bool CreateOrUpdateBookmark(const bookmarks::BookmarkNode* node,
-                            NSString* title,
-                            const GURL& url,
-                            const bookmarks::BookmarkNode* folder,
-                            bookmarks::BookmarkModel* local_or_syncable_model,
-                            bookmarks::BookmarkModel* account_model);
+bool UpdateBookmark(const bookmarks::BookmarkNode* node,
+                    NSString* title,
+                    const GURL& url,
+                    const bookmarks::BookmarkNode* folder,
+                    bookmarks::BookmarkModel* local_or_syncable_model,
+                    bookmarks::BookmarkModel* account_model);
 
-// Similar to `CreateOrUpdateBookmark`, but returns a snackbar that allows to
+// Similar to `UpdateBookmark`, but returns a snackbar that allows to
 // undo the performed action. Returns nil if there's nothing to undo.
 // Note: This function might invalidate `node` if `folder` and `node` belong to
 // different `BookmarkModel` instances.
 // TODO(crbug.com/1099901): Refactor to include position and replace two
 // functions below.
-MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
+MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* node,
     NSString* title,
     const GURL& url,

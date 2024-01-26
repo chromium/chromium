@@ -85,7 +85,8 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1511604): Re-enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
 #else
 #define MAYBE_InvokeUi_Consent InvokeUi_Consent

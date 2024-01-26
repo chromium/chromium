@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_REGISTRATION_TOKEN_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_REGISTRATION_TOKEN_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -15,7 +16,6 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -54,20 +54,20 @@ class RegistrationTokenHelper {
 
   // Invokes `callback` with a `Result` containing a new binding key ID and a
   // corresponding registration token on success. Otherwise, invokes `callback`
-  // with `absl::nullopt`.
+  // with `std::nullopt`.
   // `unexportable_key_service` must outlive `this`.
   // TODO(alexilin): support timeout.
   static std::unique_ptr<RegistrationTokenHelper> CreateForSessionBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       base::StringPiece challenge,
       const GURL& registration_url,
-      base::OnceCallback<void(absl::optional<Result>)> callback);
+      base::OnceCallback<void(std::optional<Result>)> callback);
   static std::unique_ptr<RegistrationTokenHelper> CreateForTokenBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       base::StringPiece client_id,
       base::StringPiece auth_code,
       const GURL& registration_url,
-      base::OnceCallback<void(absl::optional<Result>)> callback);
+      base::OnceCallback<void(std::optional<Result>)> callback);
 
   RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
   RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
@@ -79,7 +79,7 @@ class RegistrationTokenHelper {
 
  protected:
   using HeaderAndPayloadGenerator =
-      base::RepeatingCallback<absl::optional<std::string>(
+      base::RepeatingCallback<std::optional<std::string>(
           crypto::SignatureVerifier::SignatureAlgorithm,
           base::span<const uint8_t>,
           base::Time)>;
@@ -89,7 +89,7 @@ class RegistrationTokenHelper {
   explicit RegistrationTokenHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       HeaderAndPayloadGenerator header_and_payload_generator,
-      base::OnceCallback<void(absl::optional<Result>)> callback);
+      base::OnceCallback<void(std::optional<Result>)> callback);
 
  private:
   // Callback for `GenerateSigningKeySlowlyAsync()`.
@@ -105,7 +105,7 @@ class RegistrationTokenHelper {
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
   HeaderAndPayloadGenerator header_and_payload_generator_;
-  base::OnceCallback<void(absl::optional<Result>)> callback_;
+  base::OnceCallback<void(std::optional<Result>)> callback_;
 
   bool started_ = false;
   unexportable_keys::UnexportableKeyId key_id_;

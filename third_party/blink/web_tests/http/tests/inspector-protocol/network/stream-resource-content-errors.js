@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startURL(
     './resources/event-stream.html',
     `Test that fetch responses can be streamed`);

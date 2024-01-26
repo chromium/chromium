@@ -15,6 +15,15 @@
 
 namespace gpu {
 
+SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
+    scoped_refptr<gpu::ClientSharedImage> front_buffer,
+    scoped_refptr<gpu::ClientSharedImage> back_buffer)
+    : front_buffer(std::move(front_buffer)),
+      back_buffer(std::move(back_buffer)) {}
+SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
+    const SwapChainSharedImages& shared_images) = default;
+SharedImageInterface::SwapChainSharedImages::~SwapChainSharedImages() = default;
+
 scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -52,5 +61,17 @@ void SharedImageInterface::UpdateSharedImage(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+SharedImageInterface::SharedImageMapping::SharedImageMapping() = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    scoped_refptr<ClientSharedImage> shared_image,
+    base::WritableSharedMemoryMapping mapping)
+    : shared_image(std::move(shared_image)), mapping(std::move(mapping)) {}
+SharedImageInterface::SharedImageMapping&
+SharedImageInterface::SharedImageMapping::operator=(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::~SharedImageMapping() = default;
 
 }  // namespace gpu

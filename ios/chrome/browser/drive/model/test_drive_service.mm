@@ -22,4 +22,8 @@ std::unique_ptr<DriveFileUploader> TestDriveService::CreateFileUploader(
   return std::make_unique<TestDriveFileUploader>(identity);
 }
 
+std::string TestDriveService::GetSuggestedFolderName() const {
+  return std::string("test_drive_folder");
+}
+
 }  // namespace drive

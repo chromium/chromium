@@ -17,10 +17,10 @@ PictureInPictureBoundsCache::PictureInPictureBoundsCache(
 PictureInPictureBoundsCache::~PictureInPictureBoundsCache() = default;
 
 // static
-absl::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
+std::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
     content::WebContents* web_contents,
     const display::Display& display,
-    absl::optional<gfx::Size> requested_content_size) {
+    std::optional<gfx::Size> requested_content_size) {
   CHECK(web_contents);
 
   // This is a no-op if the cache already exists.
@@ -39,9 +39,9 @@ void PictureInPictureBoundsCache::UpdateCachedBounds(
   return cache->UpdateCachedBounds(most_recent_bounds);
 }
 
-absl::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
+std::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
     const display::Display& display,
-    const absl::optional<gfx::Size>& requested_content_size) {
+    const std::optional<gfx::Size>& requested_content_size) {
   // The cache is only valid if the requested size match the most recently
   // cached size or there is no requested size, and the origins match.  In other
   // words, if the current request does not specify a size, then it will match
@@ -59,7 +59,7 @@ absl::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
     origin_ = current_origin;
     display_id_ = display.id();
     requested_content_size_ = requested_content_size;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If we have most recent bounds, then send them.  It's possible that we

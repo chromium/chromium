@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -31,7 +32,6 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -66,7 +66,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
     JNIEnv* env,
     jstring title,
     const base::android::JavaRef<jobject>& url,
-    absl::optional<jstring> guid,
+    std::optional<jstring> guid,
     jstring parent_id,
     jstring parent_guid) {
   GURL gurl = *url::GURLAndroid::ToNativeGURL(env, url);
@@ -75,7 +75,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
                           << ") is not a valid URL.";
 
   fake_server::EntityBuilderFactory entity_builder_factory;
-  absl::optional<std::string> converted_guid = absl::nullopt;
+  std::optional<std::string> converted_guid = std::nullopt;
   if (guid) {
     converted_guid = base::android::ConvertJavaStringToUTF8(env, guid.value());
   }
@@ -275,7 +275,7 @@ static void JNI_FakeServerHelper_InjectBookmarkEntity(
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->InjectEntity(CreateBookmarkEntity(
-      env, title, url, /*guid=*/absl::nullopt, parent_id, parent_guid));
+      env, title, url, /*guid=*/std::nullopt, parent_id, parent_guid));
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(

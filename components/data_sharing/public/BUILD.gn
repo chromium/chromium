@@ -10,6 +10,7 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "data_sharing_network_loader.h",
     "data_sharing_service.h",
     "features.cc",
     "features.h",
@@ -18,13 +19,22 @@ source_set("public") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//net/traffic_annotation",
   ]
 }
 
 if (is_android) {
   android_library("public_java") {
-    sources = [ "android/java/src/org/chromium/components/data_sharing/DataSharingService.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
+    ]
 
-    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+    deps = [
+      "//base:base_java",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
   }
 }

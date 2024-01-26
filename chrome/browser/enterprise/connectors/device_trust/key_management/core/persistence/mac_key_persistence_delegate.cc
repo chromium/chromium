@@ -44,8 +44,7 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
     return client_->DeleteKey(SecureEnclaveClient::KeyType::kPermanent);
   }
 
-  auto key_type = SecureEnclaveClient::GetTypeFromWrappedKey(
-      base::make_span(wrapped.data(), wrapped.size()));
+  auto key_type = SecureEnclaveClient::GetTypeFromWrappedKey(wrapped);
 
   if (!key_type ||
       key_type.value() == SecureEnclaveClient::KeyType::kTemporary) {

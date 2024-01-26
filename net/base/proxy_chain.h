@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -24,10 +24,6 @@ namespace net {
 // servers means that a single connection will go through all of the proxies in
 // order, using a tunnel through the first proxy to connect to the second, etc.
 // A "direct" connection is a chain of length zero.
-//
-// TODO(crbug.com/1491092): Initial implementations of proxy chaining may, in
-// fact, not tunnel through the last proxy in the ProxyChain if the destination
-// is http.
 class NET_EXPORT ProxyChain {
  public:
   // Constructs an invalid ProxyChain.
@@ -77,6 +73,15 @@ class NET_EXPORT ProxyChain {
   // Get the ProxyServers in this chain. This must not be called on invalid
   // proxy chains. An empty vector is returned for direct proxy chains.
   const std::vector<ProxyServer>& proxy_servers() const;
+
+  // Return the last proxy server in the chain, together with all of the
+  // preceding proxies. The chain must have at least one proxy server. If it
+  // only has one proxy server, then the resulting chain will be direct.
+  std::pair<ProxyChain, const ProxyServer&> SplitLast() const;
+
+  // Get the last ProxyServer in this chain, which must have at least one
+  // server.
+  const ProxyServer& Last() const;
 
   // Get the ProxyServers in this chain, or `nullopt` if the chain is not valid.
   const std::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()

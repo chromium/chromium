@@ -231,7 +231,7 @@ class CastMirroringServiceHostBrowserTest
         .WillOnce(
             testing::Invoke([expected_delay_ms, &run_loop](
                                 mirroring::mojom::CastMessagePtr message) {
-              const absl::optional<base::Value> root_or_error =
+              const std::optional<base::Value> root_or_error =
                   base::JSONReader::Read(message->json_format_data);
               ASSERT_TRUE(root_or_error);
               const base::Value::Dict& root = root_or_error->GetDict();

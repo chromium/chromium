@@ -207,7 +207,8 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
         app_constants::kLacrosAppId, web_app->app_id());
     shortcut->name =
         provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
-    shortcut->shortcut_source = apps::ShortcutSource::kUser;
+    shortcut->shortcut_source = ConvertWebAppManagementTypeToShortcutSource(
+        web_app->GetHighestPrioritySource());
 
     apps::IconEffects icon_effects = apps::IconEffects::kRoundCorners;
     icon_effects |= web_app->is_generated_icon()

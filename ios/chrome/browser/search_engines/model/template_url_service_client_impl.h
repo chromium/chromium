@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -43,8 +44,8 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
                     const history::URLRow& url_row,
                     const history::VisitRow& new_visit) override;
 
-  TemplateURLService* owner_;
-  history::HistoryService* history_service_;
+  raw_ptr<TemplateURLService> owner_;
+  raw_ptr<history::HistoryService> history_service_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};

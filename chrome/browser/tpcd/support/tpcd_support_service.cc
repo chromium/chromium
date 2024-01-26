@@ -21,13 +21,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace tpcd::support {
+namespace tpcd::trial {
 namespace {
 
 const char kTrialName[] = "Tpcd";
 }  // namespace
 
-TpcdSupportService::TpcdSupportService(content::BrowserContext* browser_context)
+TpcdTrialService::TpcdTrialService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   ot_controller_ = browser_context->GetOriginTrialsControllerDelegate();
 
@@ -36,9 +36,9 @@ TpcdSupportService::TpcdSupportService(content::BrowserContext* browser_context)
   }
 }
 
-TpcdSupportService::~TpcdSupportService() = default;
+TpcdTrialService::~TpcdTrialService() = default;
 
-void TpcdSupportService::Shutdown() {
+void TpcdTrialService::Shutdown() {
   if (ot_controller_) {
     ot_controller_->RemoveObserver(this);
   }
@@ -47,16 +47,16 @@ void TpcdSupportService::Shutdown() {
   browser_context_ = nullptr;
 }
 
-void TpcdSupportService::Update3pcdSupportSettingsForTesting(
+void TpcdTrialService::Update3pcdTrialSettingsForTesting(
     const url::Origin& request_origin,
     const std::string& partition_site,
     bool match_subdomains,
     bool enabled) {
-  Update3pcdSupportSettings(request_origin, partition_site, match_subdomains,
-                            enabled);
+  Update3pcdTrialSettings(request_origin, partition_site, match_subdomains,
+                          enabled);
 }
 
-void TpcdSupportService::Update3pcdSupportSettings(
+void TpcdTrialService::Update3pcdTrialSettings(
     const url::Origin& request_origin,
     const std::string& partition_site,
     bool includes_subdomains,
@@ -70,12 +70,12 @@ void TpcdSupportService::Update3pcdSupportSettings(
   const GURL request_origin_as_url = request_origin.GetURL();
   const GURL partition_site_as_url = GURL(partition_site);
 
-  // Check for an existing `TPCD_SUPPORT` setting that allows the pair.
+  // Check for an existing `TPCD_TRIAL` setting that allows the pair.
   content_settings::SettingInfo existing_setting_info;
   bool setting_exists =
       (settings_map->GetContentSetting(
            request_origin_as_url, partition_site_as_url,
-           ContentSettingsType::TPCD_SUPPORT,
+           ContentSettingsType::TPCD_TRIAL,
            &existing_setting_info) == CONTENT_SETTING_ALLOW) &&
       (existing_setting_info.primary_pattern.HasDomainWildcard() ==
        includes_subdomains) &&
@@ -98,7 +98,7 @@ void TpcdSupportService::Update3pcdSupportSettings(
   } else {
     // In this case, the combination of `primary_setting_pattern` and
     // `secondary_setting_pattern` is equivalent to
-    // `ContentSettingsType::TPCD_SUPPORT`'s default scope
+    // `ContentSettingsType::TPCD_TRIAL`'s default scope
     // (`REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE`).
     primary_setting_pattern =
         ContentSettingsPattern::FromURLNoWildcard(request_origin_as_url);
@@ -107,7 +107,7 @@ void TpcdSupportService::Update3pcdSupportSettings(
   if (enabled) {
     settings_map->SetContentSettingCustomScope(
         primary_setting_pattern, secondary_setting_pattern,
-        ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
+        ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
   } else {
     CHECK(setting_exists);
 
@@ -121,42 +121,41 @@ void TpcdSupportService::Update3pcdSupportSettings(
     };
 
     settings_map->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::TPCD_SUPPORT, matches_pair);
+        ContentSettingsType::TPCD_TRIAL, matches_pair);
   }
 
-  ContentSettingsForOneType tpcd_support_settings =
-      settings_map->GetSettingsForOneType(ContentSettingsType::TPCD_SUPPORT);
+  ContentSettingsForOneType tpcd_trial_settings =
+      settings_map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 
   browser_context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetContentSettings(ContentSettingsType::TPCD_SUPPORT,
-                           std::move(tpcd_support_settings),
+      ->SetContentSettings(ContentSettingsType::TPCD_TRIAL,
+                           std::move(tpcd_trial_settings),
                            base::NullCallback());
 }
 
-void TpcdSupportService::ClearTpcdSupportSettings() {
+void TpcdTrialService::ClearTpcdTrialSettings() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context_);
   CHECK(settings_map);
 
-  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_SUPPORT);
+  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 }
 
-void TpcdSupportService::OnStatusChanged(const url::Origin& origin,
-                                         const std::string& partition_site,
-                                         bool includes_subdomains,
-                                         bool enabled) {
-  Update3pcdSupportSettings(origin, partition_site, includes_subdomains,
-                            enabled);
+void TpcdTrialService::OnStatusChanged(const url::Origin& origin,
+                                       const std::string& partition_site,
+                                       bool includes_subdomains,
+                                       bool enabled) {
+  Update3pcdTrialSettings(origin, partition_site, includes_subdomains, enabled);
 }
 
-void TpcdSupportService::OnPersistedTokensCleared() {
-  ClearTpcdSupportSettings();
+void TpcdTrialService::OnPersistedTokensCleared() {
+  ClearTpcdTrialSettings();
 }
 
-std::string TpcdSupportService::trial_name() {
+std::string TpcdTrialService::trial_name() {
   return kTrialName;
 }
 
-}  // namespace tpcd::support
+}  // namespace tpcd::trial

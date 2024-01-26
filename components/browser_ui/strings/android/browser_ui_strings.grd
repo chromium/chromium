@@ -1125,6 +1125,12 @@
          =1 {Price drop on your open tabs}
         other {Price drops on your open tabs}}
       </message>
+      <message name="IDS_PRICE_CHANGE_MODULE_CONTEXT_MENU_ITEM" desc="The string that is going to be part of the context menu item string to hide the price drop card.">
+        price drop card
+      </message>
+      <message name="IDS_PRICE_CHANGE_MODULE_ACCESSIBILITY_LABEL" desc="Accessibility label of the price change module that will be announced in the accessibility mode, indicating that there is a price drop on one of user's open tabs.">
+        Price drop on your open tab, from <ph name="OLD_PRICE">%1$s<ex>$899</ex></ph> to <ph name="NEW_PRICE">%2$s<ex>$799</ex></ph>, <ph name="PRODUCT_NAME">%3$s<ex>La Specialista Espresso Machine</ex></ph>, <ph name="DOMAIN_NAME">%4$s<ex>bestbuy.com</ex></ph>
+      </message>
 
       <!-- Magic stack strings -->
       <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_MODULE" desc="The context menu item to hide a module.">

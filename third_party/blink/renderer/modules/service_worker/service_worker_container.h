@@ -137,9 +137,8 @@ class MODULES_EXPORT ServiceWorkerContainer final
                                              ServiceWorkerErrorForUpdate>>
           callbacks);
 
-  using ReadyProperty =
-      ScriptPromiseProperty<Member<ServiceWorkerRegistration>,
-                            Member<ServiceWorkerRegistration>>;
+  using ReadyProperty = ScriptPromiseProperty<ServiceWorkerRegistration,
+                                              ServiceWorkerRegistration>;
   ReadyProperty* CreateReadyProperty();
 
   void EnableClientMessageQueue();

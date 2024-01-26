@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/grit/generated_resources.h"
 #include "media/base/video_transformation.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,10 +17,10 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
 
-VideoStreamView::VideoStreamView(float default_aspect_ratio)
-    : current_aspect_ratio_(default_aspect_ratio),
+VideoStreamView::VideoStreamView()
+    : current_aspect_ratio_(video_format_comparison::kDefaultAspectRatio),
       rounded_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kOmniboxExpandedRadius)) {
+          views::Emphasis::kHigh)) {
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
   SetAccessibleRole(ax::mojom::Role::kImage);
@@ -35,9 +37,12 @@ void VideoStreamView::ScheduleFramePaint(
 
   if (!has_updated_preferred_size_) {
     if (latest_frame_) {
-      gfx::Size frame_size = latest_frame_->natural_size();
+      // Caps the height to keep vertical videos from taking up too much
+      // vertical space.
       current_aspect_ratio_ =
-          frame_size.width() / static_cast<float>(frame_size.height());
+          std::max(video_format_comparison::kMinAspectRatio,
+                   video_format_comparison::GetFrameAspectRatio(
+                       latest_frame_->natural_size()));
     }
     PreferredSizeChanged();
     has_updated_preferred_size_ = true;
@@ -61,13 +66,21 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
+  // Centers the video frame horizontally in the view
+  int rendered_frame_width =
+      height() * video_format_comparison::GetFrameAspectRatio(
+                     latest_frame_->natural_size());
+  float x = (width() - rendered_frame_width) / 2.0;
+
   if (features::IsChromeRefresh2023()) {
     canvas->sk_canvas()->clipRRect(
-        SkRRect::MakeRectXY(SkRect::MakeIWH(width(), height()), rounded_radius_,
-                            rounded_radius_),
+        SkRRect::MakeRectXY(
+            SkRect::MakeXYWH(x, 0, rendered_frame_width, height()),
+            rounded_radius_, rounded_radius_),
         /*do_anti_alias=*/true);
   }
-  const gfx::RectF dest_rect(width(), height());
+
+  const gfx::RectF dest_rect(x, 0, rendered_frame_width, height());
   cc::PaintFlags flags;
   media::VideoTransformation transformation;
   transformation.mirrored = true;

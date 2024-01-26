@@ -92,7 +92,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private final ObserverList<BrowserControlsStateProvider.Observer> mControlsObservers =
             new ObserverList<>();
-    private FullscreenHtmlApiHandler mHtmlApiHandler;
+    private FullscreenHtmlApiHandlerBase mHtmlApiHandler;
     @Nullable private Tab mTab;
 
     /** The animator for the Android browser controls. */
@@ -181,7 +181,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mControlsPosition = controlsPosition;
         mControlsAtMinHeight.set(false);
         mHtmlApiHandler =
-                new FullscreenHtmlApiHandler(activity, mControlsAtMinHeight, exitFullscreenOnStop);
+                FullscreenHtmlApiHandlerFactory.createInstance(
+                        activity, mControlsAtMinHeight, exitFullscreenOnStop);
         mBrowserVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         mHtmlApiHandler.getPersistentFullscreenModeSupplier());

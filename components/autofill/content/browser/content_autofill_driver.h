@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -119,18 +120,13 @@ class ContentAutofillDriver : public AutofillDriver,
   static ContentAutofillDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
-  // Partially constructs the ContentAutofillDriver: afterwards, the caller
-  // *must* set a non-null AutofillManager with set_autofill_manager().
-  // Outside of unittests, this is done by ContentAutofillDriverFactory.
+  // Part of the initialization may be embedder-specific, implemented in
+  // ContentAutofillClient::CreateManager().
   ContentAutofillDriver(content::RenderFrameHost* render_frame_host,
                         ContentAutofillDriverFactory* owner);
   ContentAutofillDriver(const ContentAutofillDriver&) = delete;
   ContentAutofillDriver& operator=(const ContentAutofillDriver&) = delete;
   ~ContentAutofillDriver() override;
-
-  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
-    autofill_manager_ = std::move(autofill_manager);
-  }
 
   content::RenderFrameHost* render_frame_host() { return &*render_frame_host_; }
   const content::RenderFrameHost* render_frame_host() const {
@@ -303,14 +299,13 @@ class ContentAutofillDriver : public AutofillDriver,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box) override;
 
-  // Sets parameters of |form| and |optional_field| that can be extracted from
-  // |render_frame_host_|. |optional_field| is treated as if it is a field of
-  // |form|.
+  // Sets parameters of |form| and |field| that can be extracted from
+  // |render_frame_host_|. |field| is treated as if it is a field of |form|.
   //
   // These functions must be called for every FormData and FormFieldData
   // received from the renderer.
   void SetFrameAndFormMetaData(FormData& form,
-                               FormFieldData* optional_field) const;
+                               base::optional_ref<FormFieldData> field) const;
   // Returns a copy of `form` after applying `SetFormAndFormMetaData` to it.
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
   [[nodiscard]] std::optional<FormData> GetFormWithFrameAndFormMetaData(
@@ -347,11 +342,11 @@ class ContentAutofillDriver : public AutofillDriver,
   // to avoid duplicates fired by AutofillAgent.
   std::set<FormGlobalId> submitted_forms_;
 
-  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
-
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAgent> autofill_agent_;
+
+  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 
 }  // namespace autofill

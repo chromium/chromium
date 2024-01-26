@@ -9,12 +9,12 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 
@@ -33,11 +33,11 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
 
   // Parses the bytes in |data| and, on success, puts a new CRLSet in
   // |out_crl_set| and returns true.
-  static bool Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set);
+  static bool Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set);
 
   // CheckSPKI checks whether the given SPKI has been listed as blocked.
   //   spki_hash: the SHA256 of the SubjectPublicKeyInfo of the certificate.
-  Result CheckSPKI(base::StringPiece spki_hash) const;
+  Result CheckSPKI(std::string_view spki_hash) const;
 
   // CheckSerial returns the information contained in the set for a given
   // certificate:
@@ -45,19 +45,19 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   //       value
   //   issuer_spki_hash: the SHA256 of the SubjectPublicKeyInfo of the CRL
   //       signer
-  Result CheckSerial(base::StringPiece serial_number,
-                     base::StringPiece issuer_spki_hash) const;
+  Result CheckSerial(std::string_view serial_number,
+                     std::string_view issuer_spki_hash) const;
 
   // CheckSubject returns the information contained in the set for a given,
   // encoded subject name and SPKI SHA-256 hash. The subject name is encoded as
   // a DER X.501 Name (see https://tools.ietf.org/html/rfc5280#section-4.1.2.4).
-  Result CheckSubject(base::StringPiece asn1_subject,
-                      base::StringPiece spki_hash) const;
+  Result CheckSubject(std::string_view asn1_subject,
+                      std::string_view spki_hash) const;
 
   // Returns true if |spki_hash|, the SHA256 of the SubjectPublicKeyInfo,
   // is known to be used for interception by a party other than the device
   // or machine owner.
-  bool IsKnownInterceptionKey(base::StringPiece spki_hash) const;
+  bool IsKnownInterceptionKey(std::string_view spki_hash) const;
 
   // IsExpired returns true iff the current time is past the NotAfter time
   // specified in the CRLSet.
@@ -98,8 +98,8 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   static scoped_refptr<CRLSet> ForTesting(
       bool is_expired,
       const SHA256HashValue* issuer_spki,
-      base::StringPiece serial_number,
-      base::StringPiece utf8_common_name,
+      std::string_view serial_number,
+      std::string_view utf8_common_name,
       const std::vector<std::string>& acceptable_spki_hashes_for_cn);
 
  private:

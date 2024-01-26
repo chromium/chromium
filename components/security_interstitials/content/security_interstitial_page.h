@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
 
@@ -37,6 +39,9 @@ class SecurityInterstitialPage {
 
   virtual ~SecurityInterstitialPage();
 
+  // Called when the interstitial is committed.
+  void OnInterstitialShown();
+
   // Prevents creating the actual interstitial view for testing.
   void DontCreateViewForTesting();
 
@@ -53,6 +58,12 @@ class SecurityInterstitialPage {
 
   // Invoked when the user interacts with the interstitial.
   virtual void CommandReceived(const std::string& command) {}
+
+  // If `this` was created for a post commit error page,
+  // `error_page_navigation_handle` is the navigation created for this blocking
+  // page.
+  virtual void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) {}
 
   // Return the interstitial type for testing.
   virtual TypeID GetTypeForTesting();

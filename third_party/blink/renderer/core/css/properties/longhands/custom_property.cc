@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -134,16 +134,16 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
 
   bool is_inherited_property = IsInherited();
 
-  const auto* declaration = DynamicTo<CSSCustomPropertyDeclaration>(value);
+  const auto* declaration = DynamicTo<CSSUnparsedDeclarationValue>(value);
 
   // Unregistered custom properties can only accept
-  // CSSCustomPropertyDeclaration objects.
+  // CSSUnparsedDeclarationValue objects.
   if (!registration_) {
-    // We can reach here without a CSSCustomPropertyDeclaration
+    // We can reach here without a CSSUnparsedDeclarationValue
     // if we're removing a property registration while animating.
     // TODO(andruud): Cancel animations if the registration changed.
     if (declaration) {
-      CSSVariableData& data = declaration->Value();
+      CSSVariableData& data = *declaration->VariableDataValue();
       DCHECK(!data.NeedsVariableResolution());
       builder.SetVariableData(name_, &data, is_inherited_property);
     }
@@ -151,7 +151,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   }
 
   // Registered custom properties can accept either
-  // - A CSSCustomPropertyDeclaration, in which case we produce the
+  // - A CSSUnparsedDeclarationValue, in which case we produce the
   //   `registered_value` value from that, or:
   // - Some other value (typically an interpolated value), which we'll use
   //   as the `registered_value` directly.
@@ -177,7 +177,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
 
   if (!registered_value) {
     DCHECK(declaration);
-    CSSVariableData& data = declaration->Value();
+    CSSVariableData& data = *declaration->VariableDataValue();
     CSSTokenizer tokenizer(data.OriginalText());
     Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
     CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
@@ -235,7 +235,7 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
     return nullptr;
   }
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       data, /* parser_context */ nullptr);
 }
 

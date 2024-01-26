@@ -26,11 +26,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
-namespace gfx {
-class GpuMemoryBuffer;
-}
 namespace gpu {
 namespace raster {
 class RasterInterface;
@@ -58,12 +54,7 @@ struct StagingBuffer {
   const viz::SharedImageFormat format;
   base::TimeTicks last_usage;
 
-  // The following fields are initialized by OneCopyRasterBufferProvider.
-  // Storage for the staging buffer.  This can be a GPU native or shared memory
-  // GpuMemoryBuffer.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-
-  // The shared image bound to the GpuMemoryBuffer.
+  // The shared image used by this StagingBuffer instance.
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
 
   // Sync token for the last RasterInterface operations using the shared image.

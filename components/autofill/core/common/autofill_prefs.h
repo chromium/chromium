@@ -14,44 +14,102 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace autofill {
-namespace prefs {
+namespace autofill::prefs {
 
 // Alphabetical list of preference names specific to the Autofill
 // component. Keep alphabetized, and document each in the .cc file.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
-extern const char kAutofillCreditCardEnabled[];
-extern const char kAutofillCreditCardFidoAuthEnabled[];
+
+// Boolean that is true if Autofill is enabled and allowed to save credit card
+// data.
+inline constexpr char kAutofillCreditCardEnabled[] =
+    "autofill.credit_card_enabled";
+// Boolean that is true if FIDO Authentication is enabled for card unmasking.
+inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
+    "autofill.credit_card_fido_auth_enabled";
 #if BUILDFLAG(IS_ANDROID)
-extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
+// Boolean that is true if Autofill is enabled and allowed to save data.
+inline constexpr char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
+    "autofill.credit_card_fido_auth_offer_checkbox_state";
 #endif  // BUILDFLAG(IS_ANDROID)
 // Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
-extern const char kAutofillEnabledDeprecated[];
-extern const char kAutofillHasSeenIban[];
-extern const char kAutofillIbanEnabled[];
-extern const char kAutofillLastVersionDeduped[];
-extern const char kAutofillLastVersionDisusedAddressesDeleted[];
-extern const char kAutofillLastVersionDisusedCreditCardsDeleted[];
-extern const char kAutofillOrphanRowsRemoved[];
-extern const char kAutofillPaymentCvcStorage[];
+inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
+// Boolean that is true if a form with an IBAN field has ever been submitted, or
+// an IBAN has ever been saved via Chrome payments settings page. This helps to
+// enable IBAN functionality for those users who are not in a country where IBAN
+// is generally available but have used IBAN already.
+inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
+// Boolean that is true if Autofill is enabled and allowed to save IBAN data.
+inline constexpr char kAutofillIbanEnabled[] = "autofill.iban_enabled";
+// Integer that is set to the last version where the profile deduping routine
+// was run. This routine will be run once per version.
+inline constexpr char kAutofillLastVersionDeduped[] =
+    "autofill.last_version_deduped";
+// Integer that is set to the last version where disused addresses were
+// deleted. This deletion will be run once per version.
+inline constexpr char kAutofillLastVersionDisusedAddressesDeleted[] =
+    "autofill.last_version_disused_addresses_deleted";
+// Integer that is set to the last version where disused credit cards were
+// deleted. This deletion will be run once per version.
+inline constexpr char kAutofillLastVersionDisusedCreditCardsDeleted[] =
+    "autofill.last_version_disused_credit_cards_deleted";
+// Boolean that is true if the orphan rows in the autofill table were removed.
+inline constexpr char kAutofillOrphanRowsRemoved[] =
+    "autofill.orphan_rows_removed";
+// Boolean that is true, when users can save their CVCs.
+inline constexpr char kAutofillPaymentCvcStorage[] =
+    "autofill.payment_cvc_storage";
+// Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
-extern const char kAutofillProfileEnabled[];
-extern const char kAutofillSyncTransportOptIn[];
-extern const char kAutofillStatesDataDir[];
-extern const char kAutofillUploadEncodingSeed[];
-extern const char kAutofillUploadEvents[];
-extern const char kAutofillUploadEventsLastResetTimestamp[];
-extern const char kAutocompleteLastVersionRetentionPolicy[];
+inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";
+// The opt-ins for Sync Transport features for each client.
+inline constexpr char kAutofillSyncTransportOptIn[] =
+    "autofill.sync_transport_opt_ins";
+// The file path where the autofill states data is downloaded to.
+inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
+// The (randomly inititialied) seed value to use when encoding form/field
+// metadata for randomized uploads. The value of this pref is a string.
+inline constexpr char kAutofillUploadEncodingSeed[] =
+    "autofill.upload_encoding_seed";
+// Dictionary pref used to track which form signature uploads have been
+// performed. Each entry in the dictionary maps a form signature (reduced
+// via a 10-bit modulus) to a integer bit-field where each bit denotes whether
+// or not a given upload event has occurred.
+inline constexpr char kAutofillUploadEvents[] = "autofill.upload_events";
+// The timestamp (seconds since the Epoch UTC) for when the the upload event
+// pref was last reset.
+inline constexpr char kAutofillUploadEventsLastResetTimestamp[] =
+    "autofill.upload_events_last_reset_timestamp";
+// Integer that is set to the last major version where the Autocomplete
+// retention policy was run.
+inline constexpr char kAutocompleteLastVersionRetentionPolicy[] =
+    "autocomplete.retention_policy_last_version";
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
-extern const char kAutofillPaymentMethodsMandatoryReauth[];
+// Boolean that is set when payment methods mandatory re-auth is enabled by the
+// user.
+inline constexpr char kAutofillPaymentMethodsMandatoryReauth[] =
+    "autofill.payment_methods_mandatory_reauth";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-extern const char kAutofillPaymentMethodsMandatoryReauthPromoShownCounter[];
+// Integer that is incremented when the mandatory re-auth promo is shown. If
+// this is less than `kMaxValueForMandatoryReauthPromoShownCounter`, that
+// implies that the user has not yet decided whether or not to turn on the
+// payments mandatory re-auth feature.
+inline constexpr char
+    kAutofillPaymentMethodsMandatoryReauthPromoShownCounter[] =
+        "autofill.payment_methods_mandatory_reauth_promo_counter";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
-extern const char kAutofillUsingVirtualViewStructure[];
+// Boolean that is true iff Chrome only provdides a virtual view structure that
+// Android Autofill providers can use for filling. This pref is profile bound
+// since each profile may have a preference for filling. It is not syncable as
+// the setup on each device requires steps outside the browser. Enabling this
+// pref on a device without a proper provider may yield a surprising absence of
+// filling.
+inline constexpr char kAutofillUsingVirtualViewStructure[] =
+    "autofill.using_virtual_view_structure";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The maximum value for the
@@ -129,7 +187,6 @@ void ClearSyncTransportOptIns(PrefService* prefs);
 
 bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
 
-}  // namespace prefs
-}  // namespace autofill
+}  // namespace autofill::prefs
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_

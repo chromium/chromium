@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_WEB_STATE_WEB_STATE_IMPL_SERIALIZED_DATA_H_
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_SERIALIZED_DATA_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/web_state/web_state_impl.h"
 
@@ -82,10 +83,10 @@ class WebStateImpl::SerializedData {
   }
 
   // Owner. Never null. Owns this object.
-  WebStateImpl* const owner_;
+  const raw_ptr<WebStateImpl> owner_;
 
   // The owning BrowserState. Indirectly owns this object.
-  BrowserState* const browser_state_;
+  const raw_ptr<BrowserState> browser_state_;
 
   // The stable and unique identifiers.
   NSString* const stable_identifier_;

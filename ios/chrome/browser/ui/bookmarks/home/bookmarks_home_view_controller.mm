@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -31,8 +32,8 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -225,7 +226,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
   // The bookmark node that was choosen by an entity outside of the Bookmarks UI
   // and is selected when the view is loaded.
-  const bookmarks::BookmarkNode* _externalBookmark;
+  raw_ptr<const bookmarks::BookmarkNode> _externalBookmark;
   // Whether the view controller was requested to shutdown.
   BOOL _isShutDown;
 }
@@ -587,6 +588,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
   [self handleRefreshContextBar];
   [self.editingFolderCell stopEdit];
+  [self.tableView.contextMenuInteraction dismissMenu];
   [self.tableView reloadData];
   if (self.mediator.currentlyInEditMode &&
       !self.mediator.selectedNodesForEditMode.empty()) {

@@ -178,6 +178,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "read_anything_line_spacing_loose.icon",
     "read_anything_line_spacing_standard.icon",
     "read_anything_line_spacing_very_loose.icon",
+    "read_anything_links_disabled.icon",
+    "read_anything_links_enabled.icon",
     "read_later.icon",
     "read_later_add.icon",
     "reader_mode.icon",

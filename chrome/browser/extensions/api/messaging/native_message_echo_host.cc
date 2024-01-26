@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -11,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -42,7 +42,7 @@ void NativeMessageEchoHost::Start(Client* client) {
 }
 
 void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
-  absl::optional<base::Value> request_value =
+  std::optional<base::Value> request_value =
       base::JSONReader::Read(request_string);
   if (!request_value.has_value()) {
     client_->CloseChannel(kHostInputOutputError);

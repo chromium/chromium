@@ -403,6 +403,24 @@ class AutofillPrivateBulkDeleteAllCvcsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutofillPrivateSetAutofillSyncToggleEnabledFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateSetAutofillSyncToggleEnabledFunction() = default;
+  AutofillPrivateSetAutofillSyncToggleEnabledFunction(
+      const AutofillPrivateSetAutofillSyncToggleEnabledFunction&) = delete;
+  AutofillPrivateSetAutofillSyncToggleEnabledFunction& operator=(
+      const AutofillPrivateSetAutofillSyncToggleEnabledFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.setAutofillSyncToggleEnabled",
+                             AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED)
+
+ protected:
+  ~AutofillPrivateSetAutofillSyncToggleEnabledFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

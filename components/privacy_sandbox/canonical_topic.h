@@ -30,6 +30,10 @@ class CanonicalTopic {
   // is suitable for direct display to the user.
   std::u16string GetLocalizedRepresentation() const;
 
+  // Returns the localized string description of the Canonical Topic, this
+  // is suitable for direct display to the user.
+  std::u16string GetLocalizedDescription() const;
+
   // Functions for converting to and from values for storage in preferences.
   base::Value ToValue() const;
   static absl::optional<CanonicalTopic> FromValue(const base::Value& value);

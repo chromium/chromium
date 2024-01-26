@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_INSET_AREA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -94,6 +95,13 @@ class CORE_EXPORT InsetArea {
   const Length& UsedBottom() const;
   const Length& UsedLeft() const;
   const Length& UsedRight() const;
+
+  // Anchored elements using inset area align towards the unused area through
+  // different 'normal' behavior for align-self and justify-self. Compute the
+  // alignments to be passed into ResolvedAlignSelf()/ResolvedJustifySelf().
+  // Return value is an <align-self, justify-self> pair.
+  std::pair<ItemPosition, ItemPosition> AlignJustifySelfFromPhysical(
+      WritingDirectionMode container_writing_direction) const;
 
   // To be called from CoreInitializer only. Initializes global Length constants
   // at startup used by the methods above.

@@ -20,7 +20,7 @@ AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over th
 ce1.AXSelectedText='quick'
 // Select text inside a span.
 text=:8
-text.AXValue='lazy'
+text.AXValue=''
 text_range={anchor: {:8, 0, down}, focus: {:8, 4, down}}
 marker_0={:8, 0, down}
 marker_1={:8, 4, down}
@@ -37,12 +37,12 @@ ce1.AXSelectedTextMarkerRange={anchor: {:6, 0, down}, focus: {:6, 5, down}}
 AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
 ce1.AXSelectedText='jumps'
 // Select the text after a forced break.
-text=:14
+text=:15
 text.AXValue='with five dozen liquor jugs.'
-text_range={anchor: {:14, 0, down}, focus: {:14, 28, down}}
-marker_0={:14, 0, down}
-marker_1={:14, 4, down}
-target_selected_marker_range={anchor: {:14, 0, down}, focus: {:14, 4, down}}
-ce2.AXSelectedTextMarkerRange={anchor: {:14, 0, down}, focus: {:14, 4, down}}
+text_range={anchor: {:15, 0, down}, focus: {:15, 28, down}}
+marker_0={:15, 0, down}
+marker_1={:15, 4, down}
+target_selected_marker_range={anchor: {:15, 0, down}, focus: {:15, 4, down}}
+ce2.AXSelectedTextMarkerRange={anchor: {:15, 0, down}, focus: {:15, 4, down}}
 AXSelectedTextChanged on AXTextArea AXValue='Pack my box<newline>with five dozen liquor jugs.' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 ce2.AXSelectedText='with'

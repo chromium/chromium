@@ -74,6 +74,12 @@ BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
 // Returns the color of the search hint label in the fakebox.
 UIColor* SearchHintLabelColor();
 
+// Returns the string ID to be used to get the title of the SetUpList.
+int SetUpListTitleStringID();
+
+// Returns the localized title to be used for the SetUpList.
+NSString* SetUpListTitleString();
+
 }  // namespace content_suggestions
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COLLECTION_UTILS_H_

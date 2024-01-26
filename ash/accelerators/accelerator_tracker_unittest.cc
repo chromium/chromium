@@ -4,15 +4,16 @@
 
 #include "ash/accelerators/accelerator_tracker.h"
 
+#include <string_view>
+
 #include "ash/test/ash_test_base.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/user_action_tester.h"
 
 namespace ash {
 
 using AcceleratorTrackerTest = AshTestBase;
 
-constexpr base::StringPiece kUserActionPrefix = "AccelTracker_";
+constexpr std::string_view kUserActionPrefix = "AccelTracker_";
 
 // Tests user action string starts with "AccelTracker_". The user action
 // string locates in the kAcceleratorTrackerList table in accelerator_tracker.h
@@ -29,8 +30,7 @@ TEST_F(AcceleratorTrackerTest, TrackKeyEvent) {
   constexpr ui::KeyboardCode intended_key_code = ui::VKEY_A;
   constexpr ui::EventFlags intended_modifier =
       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
-  constexpr base::StringPiece intended_user_action =
-      "AccelTracker_Ctrl_Shift_A";
+  constexpr std::string_view intended_user_action = "AccelTracker_Ctrl_Shift_A";
 
   constexpr TrackerDataActionPair kAcceleratorTrackerListForTesting[] = {
       {{KeyState::PRESSED, intended_key_code, intended_modifier},

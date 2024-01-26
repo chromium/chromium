@@ -6,10 +6,12 @@
 load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     console_view = "checks",
+    health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )

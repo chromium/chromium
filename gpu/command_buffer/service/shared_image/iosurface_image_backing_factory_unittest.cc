@@ -262,7 +262,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
 
   // Create a DawnImageRepresentation.
   auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-      mailbox, device, backend_type(), {});
+      mailbox, device, backend_type(), {}, context_state_);
   EXPECT_TRUE(dawn_representation);
 
   // Clear the shared image to green using Dawn.
@@ -367,7 +367,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
 
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, backend_type(), {});
+        mailbox, device, backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -435,7 +435,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
 
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, backend_type(), {});
+        mailbox, device, backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -549,7 +549,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   auto dawn_image = shared_image_representation_factory_.ProduceDawn(
-      mailbox, device, backend_type(), {});
+      mailbox, device, backend_type(), {}, context_state_);
   ASSERT_NE(dawn_image, nullptr);
 
   RunDawnVideoSamplingTest(device, dawn_image, kYFillValue, kUFillValue,
@@ -747,7 +747,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
     auto* context_provider = context_state_->dawn_context_provider();
     auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, context_provider->backend_type(), {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
@@ -899,7 +899,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
     auto* context_provider = context_state_->dawn_context_provider();
     auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, context_provider->backend_type(), {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
@@ -967,7 +967,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
     auto* context_provider = context_state_->dawn_context_provider();
     auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, context_provider->backend_type(), {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
@@ -1227,7 +1227,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
     auto* context_provider = context_state_->dawn_context_provider();
     auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, context_provider->backend_type(), {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());

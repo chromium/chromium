@@ -372,7 +372,8 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
   }
   if (name == V8PermissionName::Enum::kCapturedSurfaceControl) {
-    if (!RuntimeEnabledFeatures::CapturedSurfaceControlEnabled()) {
+    if (!RuntimeEnabledFeatures::CapturedSurfaceControlEnabled(
+            ExecutionContext::From(script_state))) {
       exception_state.ThrowTypeError(
           "The Captured Surface Control API is not enabled.");
       return nullptr;

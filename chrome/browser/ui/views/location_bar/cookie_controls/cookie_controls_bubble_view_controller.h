@@ -33,7 +33,11 @@ class CookieControlsBubbleViewController
       content_settings::CookieControlsController* controller);
 
   // CookieControlsObserver:
+  // TODO(b/317975095): Remove `status` in favor of `controls_visible` and
+  // `protections_on`.
   void OnStatusChanged(CookieControlsStatus status,
+                       bool controls_visible,
+                       bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
@@ -70,12 +74,11 @@ class CookieControlsBubbleViewController
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents) const;
 
-  // The most recent status provided by the CookieControlsController. Cached
-  // so that updates to site counts can use the appropriate label.
-  CookieControlsStatus latest_status_ = CookieControlsStatus::kUninitialized;
+  // Whether protections are enabled for the given site.
+  bool protections_on_ = true;
   // The most recent status provided by the CookieControlsController, used to
   // determine the user's 3PCD status.
-  CookieBlocking3pcdStatus latest_blocking_status_ =
+  CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;

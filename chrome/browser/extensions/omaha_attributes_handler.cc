@@ -4,13 +4,14 @@
 
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -57,7 +58,7 @@ void ReportReenableExtension(ExtensionUpdateCheckDataKey reason) {
 // Checks whether the `state` is in the `attributes`.
 bool HasOmahaBlocklistStateInAttributes(const base::Value::Dict& attributes,
                                         BitMapBlocklistState state) {
-  absl::optional<bool> state_value;
+  std::optional<bool> state_value;
   switch (state) {
     case BitMapBlocklistState::BLOCKLISTED_MALWARE:
       state_value = attributes.FindBool("_malware");
@@ -72,7 +73,7 @@ bool HasOmahaBlocklistStateInAttributes(const base::Value::Dict& attributes,
     case BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
       NOTREACHED()
           << "The other states are not applicable in Omaha attributes.";
-      state_value = absl::nullopt;
+      state_value = std::nullopt;
       break;
   }
   return state_value.value_or(false);

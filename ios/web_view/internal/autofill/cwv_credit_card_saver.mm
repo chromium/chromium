@@ -12,7 +12,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "ui/gfx/range/range.h"
 
 NS_ASSUME_NONNULL_BEGIN

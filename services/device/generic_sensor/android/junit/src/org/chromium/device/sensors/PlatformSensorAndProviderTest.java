@@ -27,7 +27,6 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.util.SparseArray;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -125,11 +124,6 @@ public class PlatformSensorAndProviderTest {
                         any(Sensor.class),
                         anyInt(),
                         any(Handler.class));
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     /** Test that PlatformSensorProvider cannot create sensors if sensor manager is null. */

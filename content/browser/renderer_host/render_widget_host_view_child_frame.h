@@ -97,7 +97,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SetInsets(const gfx::Insets& insets) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  bool IsMouseLocked() override;
+  bool IsPointerLocked() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
 
   // RenderWidgetHostViewBase implementation.
@@ -127,11 +127,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
   void DidStopFlinging() override;
-  blink::mojom::PointerLockResult LockMouse(
+  blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) override;
-  void UnlockMouse() override;
+  void UnlockPointer() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void NotifyHitTestRegionUpdated(const viz::AggregatedHitTestRegion&) override;

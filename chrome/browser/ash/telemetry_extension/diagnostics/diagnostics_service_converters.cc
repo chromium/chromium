@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_converters.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::diagnostics {
 
@@ -72,7 +73,7 @@ cros_healthd::mojom::NullableUint32Ptr UncheckedConvertPtr(
 }
 }  // namespace unchecked
 
-absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
+std::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown:
@@ -142,7 +143,7 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     case cros_healthd::mojom::DiagnosticRoutineEnum::kFan:
       return crosapi::mojom::DiagnosticsRoutineEnum::kFan;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -150,7 +151,7 @@ std::vector<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
   std::vector<crosapi::mojom::DiagnosticsRoutineEnum> output;
   for (const auto element : input) {
-    absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> converted =
+    std::optional<crosapi::mojom::DiagnosticsRoutineEnum> converted =
         Convert(element);
     if (converted.has_value()) {
       output.push_back(converted.value());

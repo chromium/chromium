@@ -101,9 +101,9 @@ void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids);
 // Returns false and populates error_message string if deserialization
 // fails.
 bool ValidateCookieApiPartitionKey(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key,
-    absl::optional<net::CookiePartitionKey>& net_partition_key,
+    std::optional<net::CookiePartitionKey>& net_partition_key,
     std::string& error_message);
 
 // Returns empty collection if no partition_key.
@@ -112,7 +112,7 @@ bool ValidateCookieApiPartitionKey(
 // and top_level_site are both present.
 net::CookiePartitionKeyCollection
 CookiePartitionKeyCollectionFromApiPartitionKey(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key);
 
 // returns true if cookie_partition_key_collection::ContainsAll
@@ -124,7 +124,7 @@ bool CookieMatchesPartitionKeyCollection(
 // Returns true if the top_level_site values match or the optional does not
 // contain a value.
 bool CookieMatchesPartitionKeyInDetails(
-    const absl::optional<extensions::api::cookies::CookiePartitionKey>&
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key,
     const net::CanonicalCookie& cookie);
 

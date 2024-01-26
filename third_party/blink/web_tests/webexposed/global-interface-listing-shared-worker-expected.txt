@@ -741,6 +741,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method decodingInfo
 [Worker]     method encodingInfo
+[Worker] interface Mesh2DIndexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DUVBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DVertexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
@@ -882,6 +891,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method subscribe
+[Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
@@ -938,9 +948,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createConicGradient
 [Worker]     method createImageData
 [Worker]     method createLinearGradient
+[Worker]     method createMesh2DIndexBuffer
+[Worker]     method createMesh2DUVBuffer
+[Worker]     method createMesh2DVertexBuffer
 [Worker]     method createPattern
 [Worker]     method createRadialGradient
 [Worker]     method drawImage
+[Worker]     method drawMesh
 [Worker]     method ellipse
 [Worker]     method endLayer
 [Worker]     method fill

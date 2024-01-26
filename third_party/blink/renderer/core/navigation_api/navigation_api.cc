@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -76,8 +77,7 @@ NavigationResult* EarlyErrorResult(ScriptState* script_state,
 NavigationResult* EarlySuccessResult(ScriptState* script_state,
                                      NavigationHistoryEntry* entry) {
   auto* result = NavigationResult::Create();
-  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry)
-                      .ToLocalChecked();
+  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry);
   result->setCommitted(ScriptPromise::Cast(script_state, v8_entry));
   result->setFinished(ScriptPromise::Cast(script_state, v8_entry));
   return result;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -46,7 +47,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -99,7 +99,7 @@ class RequestCallbackReceiver {
     authenticator_id_ = authenticator_id;
     run_loop_->Quit();
   }
-  absl::optional<std::string> authenticator_id_;
+  std::optional<std::string> authenticator_id_;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
   base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
 };
@@ -268,16 +268,16 @@ std::unique_ptr<device::cablev2::Pairing> GetPairingFromQR() {
 
 const device::PublicKeyCredentialUserEntity kUser1({1, 2, 3, 4},
                                                    "A",
-                                                   absl::nullopt);
+                                                   std::nullopt);
 const device::PublicKeyCredentialUserEntity kUser2({5, 6, 7, 8},
                                                    "B",
-                                                   absl::nullopt);
+                                                   std::nullopt);
 const device::PublicKeyCredentialUserEntity kPhoneUser1({9, 0, 1, 2},
                                                         "C",
-                                                        absl::nullopt);
+                                                        std::nullopt);
 const device::PublicKeyCredentialUserEntity kPhoneUser2({3, 4, 5, 6},
                                                         "D",
-                                                        absl::nullopt);
+                                                        std::nullopt);
 
 const device::DiscoverableCredentialMetadata
     kCred1(device::AuthenticatorType::kOther, "rp.com", {0}, kUser1);
@@ -1413,7 +1413,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     AuthenticatorRequestDialogModel model(main_rfh());
 
-    absl::optional<bool> has_v2_cable_extension;
+    std::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasCableV1Extension)) {
       has_v2_cable_extension = false;
@@ -1438,7 +1438,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
 #endif
 
-    absl::optional<device::FidoTransportProtocol> hint_transport;
+    std::optional<device::FidoTransportProtocol> hint_transport;
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHintSecurityKeys)) {
       CHECK(!hint_transport.has_value());
@@ -1482,7 +1482,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
         phones.emplace_back(std::move(pairing));
       }
       model.set_cable_transport_info(has_v2_cable_extension, std::move(phones),
-                                     base::DoNothing(), absl::nullopt);
+                                     base::DoNothing(), std::nullopt);
     }
 
     bool is_conditional_ui = base::Contains(
@@ -1581,7 +1581,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
       model.saved_authenticators().AddAuthenticator(
           AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                                  device::AuthenticatorType::kWinNative));
-      model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
+      model.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
                                      "fido:/1234");
 
       model.StartFlow(std::move(tai),
@@ -1645,7 +1645,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel_AfterMatchingLocalCred) {
   model.saved_authenticators().AddAuthenticator(
       AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                              device::AuthenticatorType::kWinNative));
-  model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
+  model.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
                                  "fido:/1234");
   model.StartFlow(std::move(tai),
                   /*is_conditional_mediation=*/false);
@@ -1704,6 +1704,15 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // hybrid case.
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+  fake_win_webauthn_api.set_version(4);
+#endif  // BUILDFLAG(IS_WIN)
+
   enum class BLEPower {
     ON,
     OFF,
@@ -1762,8 +1771,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
     pairings.emplace_back(GetPairingFromQR());
     model.set_cable_transport_info(
-        /*extension_is_v2=*/absl::nullopt, std::move(pairings),
-        base::DoNothing(), absl::nullopt);
+        /*extension_is_v2=*/std::nullopt, std::move(pairings),
+        base::DoNothing(), std::nullopt);
 
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
@@ -1867,7 +1876,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     AuthenticatorRequestDialogModel model(main_rfh());
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
@@ -1896,7 +1905,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     AuthenticatorRequestDialogModel model(main_rfh());
     model.AddObserver(&mock_observer);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
 
@@ -1936,7 +1945,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     AuthenticatorRequestDialogModel model(main_rfh());
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
 
@@ -2104,7 +2113,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskey) {
   constexpr char kOldSyncedPhoneName[] = "Old synced phone";
   constexpr char kNewSyncedPhoneName[] = "New synced phone";
 
-  absl::optional<std::string> phone_name;
+  std::optional<std::string> phone_name;
   // Creates a new dialog model for the given list of |phones|.
   auto MakeModel = [&](bool include_old_phone)
       -> std::unique_ptr<AuthenticatorRequestDialogModel> {
@@ -2140,9 +2149,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskey) {
     recently_synced_phone->last_updated = today;
     recently_synced_phone->name = kNewSyncedPhoneName;
     phones.emplace_back(std::move(recently_synced_phone));
-    model->set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+    model->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                     std::move(phones), std::move(callback),
-                                    absl::nullopt);
+                                    std::nullopt);
 
     // Set up a single credential from a phone.
     device::DiscoverableCredentialMetadata credential = kCred1;
@@ -2256,9 +2265,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, InvalidPriorityPhonePref) {
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromSync());
-  model->set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+  model->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                   std::move(phones), std::move(callback),
-                                  absl::nullopt);
+                                  std::nullopt);
 
   // Set up a single credential from a phone.
   device::DiscoverableCredentialMetadata credential = kCred1;
@@ -2306,6 +2315,34 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+// Tests that a transport = internal virtual authenticator can be dispatched to
+// on Mac.
+// Regression test for crbug.com/1520898.
+TEST_F(AuthenticatorRequestDialogModelTest, PlatformVirtualAuthenticator) {
+  AuthenticatorRequestDialogModel model(main_rfh());
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
+  model.SetAccountPreselectedCallback(base::DoNothing());
+  base::RunLoop run_loop;
+  model.SetRequestCallback(
+      base::BindLambdaForTesting([&](const std::string& authenticator_id) {
+        EXPECT_EQ(authenticator_id, "virtual-authenticator");
+        run_loop.Quit();
+      }));
+  TransportAvailabilityInfo transports_info;
+  transports_info.user_verification_requirement =
+      device::UserVerificationRequirement::kRequired;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.has_empty_allow_list = false;
+  transports_info.recognized_credentials = {kCred2};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
   for (const bool has_empty_allow_list : {false, true}) {
     SCOPED_TRACE(::testing::Message()
@@ -2337,8 +2374,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
     transports_info.available_transports = kAllTransports;
     transports_info.has_empty_allow_list = has_empty_allow_list;
+#if BUILDFLAG(IS_MAC)
+    // The TouchID authenticator will be immediately dispatched to if the device
+    // has biometrics configured. Simulate a lack of biometrics to align with
+    // other platforms.
+    model.set_local_biometrics_override_for_testing(false);
+#endif  // BUILDFLAG(IS_MAC)
     transports_info.user_verification_requirement =
-        device::UserVerificationRequirement::kRequired;
+        device::UserVerificationRequirement::kPreferred;
     transports_info.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
     transports_info.recognized_credentials = {kCred1FromICloudKeychain, kCred2};
@@ -2348,11 +2391,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
     if (has_empty_allow_list) {
       EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
     } else {
-#if BUILDFLAG(IS_MAC)
-      EXPECT_EQ(model.current_step(), Step::kNotStarted);
-#else
       EXPECT_EQ(model.current_step(), Step::kPreSelectSingleAccount);
-#endif
     }
 #else
     if (has_empty_allow_list) {
@@ -2422,12 +2461,21 @@ TEST_F(AuthenticatorRequestDialogModelTest, JumpToWindowsWithNewUI) {
 // previously paired phone, no local matches, and only hybrid or internal
 // credentials in the allow-list.
 TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_NoSync) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // hybrid case.
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+  fake_win_webauthn_api.set_version(4);
+#endif  // BUILDFLAG(IS_WIN)
+
   AuthenticatorRequestDialogModel model(main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
-  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                  std::move(phones), base::DoNothing(),
-                                 absl::nullopt);
+                                 std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2458,9 +2506,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_WithSync) {
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
   phones.emplace_back(GetPairingFromSync());
-  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                  std::move(phones), base::DoNothing(),
-                                 absl::nullopt);
+                                 std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.recognized_credentials = {kPhoneCred1, kPhoneCred2};
   transports_info.is_ble_powered = true;
@@ -2495,9 +2543,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, BluetoothPermissionPrompt) {
       AuthenticatorRequestDialogModel model(main_rfh());
       std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
       phones.emplace_back(GetPairingFromQR());
-      model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+      model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                      std::move(phones), base::DoNothing(),
-                                     absl::nullopt);
+                                     std::nullopt);
       TransportAvailabilityInfo transports_info;
       transports_info.is_ble_powered = true;
       transports_info.ble_access_denied = ble_access_denied;
@@ -2535,8 +2583,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, BluetoothPermissionPrompt) {
 
 TEST_F(AuthenticatorRequestDialogModelTest, AdvanceThroughCableV2States) {
   AuthenticatorRequestDialogModel model(main_rfh());
-  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt, {},
-                                 base::DoNothing(), absl::nullopt);
+  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
+                                 base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2559,8 +2607,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, AdvanceThroughCableV2States) {
 TEST_F(AuthenticatorRequestDialogModelTest,
        AdvanceThroughCableV2StatesStopTimer) {
   AuthenticatorRequestDialogModel model(main_rfh());
-  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt, {},
-                                 base::DoNothing(), absl::nullopt);
+  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
+                                 base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2606,7 +2654,7 @@ class RepeatingValueCallbackReceiver {
     value_ = std::move(value);
     run_loop_->Quit();
   }
-  absl::optional<Value> value_;
+  std::optional<Value> value_;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
 };
 
@@ -2645,10 +2693,10 @@ TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
   using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   const struct {
     std::vector<device::DiscoverableCredentialMetadata> recognized_credentials;
-    absl::optional<Mechanism::Type> type_of_priority_mechanism;
+    std::optional<Mechanism::Type> type_of_priority_mechanism;
   } kTests[] = {
-      {{kCred1, kCred2, kPhoneCred1}, absl::nullopt},
-      {{kCred1, kCred2}, absl::nullopt},
+      {{kCred1, kCred2, kPhoneCred1}, std::nullopt},
+      {{kCred1, kCred2}, std::nullopt},
       {{kCred1, kCred1FromICloudKeychain},
        Mechanism::Credential(CredentialInfoFrom(kCred1FromICloudKeychain))},
       {{kCred1FromICloudKeychain, kCred1},
@@ -2875,8 +2923,8 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromQR());
     model.set_cable_transport_info(
-        /*extension_is_v2=*/absl::nullopt, std::move(phones), base::DoNothing(),
-        absl::nullopt);
+        /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
+        std::nullopt);
     model.StartFlow(transports_info,
                     /*is_conditional_mediation=*/true);
 
@@ -2888,8 +2936,8 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromSync());
     model.set_cable_transport_info(
-        /*extension_is_v2=*/absl::nullopt, std::move(phones), base::DoNothing(),
-        absl::nullopt);
+        /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
+        std::nullopt);
     model.StartFlow(transports_info,
                     /*is_conditional_mediation=*/true);
 
@@ -2924,8 +2972,8 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   RepeatingValueCallbackReceiver<std::unique_ptr<device::cablev2::Pairing>>
       contact_phone_callback;
   model.set_cable_transport_info(
-      /*extension_is_v2=*/absl::nullopt, std::move(phones),
-      contact_phone_callback.Callback(), absl::nullopt);
+      /*extension_is_v2=*/std::nullopt, std::move(phones),
+      contact_phone_callback.Callback(), std::nullopt);
   RepeatingValueCallbackReceiver<device::PublicKeyCredentialDescriptor>
       account_preselected_callback;
   model.SetAccountPreselectedCallback(account_preselected_callback.Callback());

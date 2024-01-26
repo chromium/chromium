@@ -10,13 +10,16 @@ android_library("java") {
     ":*",
     "//chrome/android:*",
 
-    # For access to resource IDs and view names for Hub public transit framework code.
+    # For access to resource IDs and view names for test code.
+    "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/browser/incognito:incognito_java_tests",
     "//chrome/test/android:chrome_java_transit",
   ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColors.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImpl.java",
@@ -47,6 +50,9 @@ android_library("java") {
     "//chrome/browser/hub:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
@@ -136,6 +142,8 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",

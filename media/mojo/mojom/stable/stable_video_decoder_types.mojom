@@ -449,11 +449,13 @@ struct NativeGpuMemoryBufferHandle {
 
 // Based on |media.mojom.VideoFrameMetadata| but does not depend on
 // |media.mojom.VideoTransformation|.
-// Next min field ID: 2
+// Next min field ID: 3
+// Next version: 2
 [Stable]
 struct VideoFrameMetadata {
   bool protected_video@0;
   bool hw_protected@1;
+  [MinVersion=1] bool needs_detiling@2;
 };
 
 // Based on |media.mojom.VideoFrame| but does not depend on

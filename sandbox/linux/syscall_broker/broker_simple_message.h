@@ -118,11 +118,10 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   // The statically allocated buffer of size |kMaxMessageLength|.
   uint8_t message_[kMaxMessageLength];
 
-  // Excluded for Async safety. Note that since these pointers are into
-  // the `message_` buffer above, they are valid whenever `this` is valid.
-  // Next location in the `message_` buffer to read from.
+  // Next location in the `message_` buffer to read from/write to.
+  // RAW_PTR_EXCLUSION: Point into the `message_` buffer above, so they are
+  // valid whenever `this` is valid.
   RAW_PTR_EXCLUSION uint8_t* read_next_ = message_;
-  // Next location in the `message_` buffer to write from.
   RAW_PTR_EXCLUSION uint8_t* write_next_ = message_;
 };
 

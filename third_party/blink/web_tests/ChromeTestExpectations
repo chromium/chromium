@@ -463,8 +463,6 @@ crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-grammar-e
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-002.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-001.html [ Timeout ]
-crbug.com/1499775 wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/hid/requestDevice/sandboxed_iframe.https.window.html [ Timeout ]
 crbug.com/1499775 wpt_internal/infrastructure/printing-reftest-pages.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/infrastructure/printing-set-size.html [ Failure ]  # Reftest image failure
@@ -480,10 +478,8 @@ crbug.com/1499775 wpt_internal/presentation/presentation-reconnect.https.html [ 
 crbug.com/1499775 wpt_internal/presentation/presentation-start-error.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/presentation/presentation-start.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.https.html [ Timeout ]
-crbug.com/1499775 wpt_internal/soft-navigation-heuristics/browser-initiated-popstate.tentative.html [ Timeout ]
 crbug.com/1499775 wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip Timeout ]
 crbug.com/1499775 wpt_internal/storage-access-api/storage-access-origin-trial.sub.https.window.html [ Timeout ]
-crbug.com/1499775 wpt_internal/webusb/usbDevice-iframe.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/webxr/ar/iframe-oopif.sub.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-overflow/incremental-scroll.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-scroll-anchoring/fullscreen-crash.html [ Timeout ]
@@ -593,6 +589,8 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout ]
 crbug.com/626703 external/wpt/fullscreen/rendering/backdrop-inherit.html [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure ]
@@ -676,6 +674,9 @@ crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capita
 crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-030.html [ Failure Pass ]
 crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure Pass ]
 
+# Flaky
+crbug.com/1515071 external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
+
 # 12-05-2023 Flaky tests that trigger shard level retry
 crbug.com/1499775 external/wpt/css/css-contain/contain-paint-clip-015.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
@@ -695,6 +696,7 @@ crbug.com/1517744 external/wpt/dpub-aam/role/roles.html [ Pass ]
 crbug.com/1517744 external/wpt/graphics-aria/graphics-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/html-aam/fragile/area-role.html [ Pass ]
 crbug.com/1517744 external/wpt/html-aam/fragile/optgroup-role.html [ Pass ]
+crbug.com/1517744 external/wpt/html-aam/names.html [ Timeout ]
 crbug.com/1517744 external/wpt/html-aam/roles-contextual.html [ Pass ]
 crbug.com/1517744 external/wpt/html-aam/roles-dynamic-switch.tentative.window.html [ Pass ]
 crbug.com/1517744 external/wpt/html-aam/roles-generic.html [ Pass ]
@@ -721,3 +723,10 @@ crbug.com/1517744 external/wpt/wai-aria/role/synonym-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tab-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Pass ]
+
+# Fix importer 2024-01-12
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fetch_error/fetch_error.py [ Failure Pass ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/script/add_preload_script/contexts.py [ Failure Pass ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/script/add_preload_script/invalid.py [ Failure Pass ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/script/call_function/target.py [ Failure Pass ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/script/evaluate/target.py [ Failure Pass ]

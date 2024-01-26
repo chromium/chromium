@@ -536,7 +536,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetScrollOffset(const gfx::PointF& offset);
 
   // ContentLayerClient implementation.
-  gfx::Rect PaintableRegion() const override;
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
 

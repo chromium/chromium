@@ -346,8 +346,8 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTracker) {
   base::RunLoop run_loop;
   tracker.Start(base::BindLambdaForTesting(
       [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
-        EXPECT_GT(data.frames_expected, 0u);
-        EXPECT_GT(data.frames_produced, 0u);
+        EXPECT_GT(data.frames_expected_v3, 0u);
+        EXPECT_GT(data.frames_expected_v3 - data.frames_dropped_v3, 0u);
         run_loop.Quit();
       }));
 

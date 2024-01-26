@@ -70,7 +70,7 @@
       </intent-filter>  # DIFF-ANCHOR: dea53031
     </activity>  # DIFF-ANCHOR: 610e8ccf
     <activity  # DIFF-ANCHOR: b5c66095
-        android:name="org.chromium.chrome.browser.DragAndDropLauncherActivity"
+        android:name="org.chromium.chrome.browser.dragdrop.DragAndDropLauncherActivity"
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleInstancePerTask"

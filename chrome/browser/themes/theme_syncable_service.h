@@ -69,17 +69,17 @@ class ThemeSyncableService final : public syncer::SyncableService,
   void NotifyOnSyncStartedForTesting(ThemeSyncState startup_state);
 
   // Returns the theme sync startup state or nullopt if it has not started yet.
-  absl::optional<ThemeSyncState> GetThemeSyncStartState();
+  std::optional<ThemeSyncState> GetThemeSyncStartState();
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
@@ -110,7 +110,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
       sync_pb::ThemeSpecifics* theme_specifics) const;
 
   // Updates theme specifics in sync to |theme_specifics|.
-  absl::optional<syncer::ModelError> ProcessNewTheme(
+  std::optional<syncer::ModelError> ProcessNewTheme(
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
@@ -128,7 +128,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
   bool use_system_theme_by_default_;
 
   // Captures the state of theme sync after initial data merge.
-  absl::optional<ThemeSyncState> startup_state_;
+  std::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
 

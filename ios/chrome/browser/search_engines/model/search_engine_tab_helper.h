@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/web/public/web_state_observer.h"
@@ -74,7 +75,7 @@ class SearchEngineTabHelper
       favicon_driver_observation_{this};
 
   // WebState this tab helper is attached to.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The searchable URL generated from <form> submission. This ivar is an empty
   // GURL by default. If a web page has a searchable <form>, a searchable URL is

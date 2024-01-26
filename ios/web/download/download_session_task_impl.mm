@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -20,7 +21,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_view/error_translation_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cookies/cookie_store.h"
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
@@ -373,7 +374,7 @@ class Session {
   // Pointer to the DownloadSessionTaskImpl that owns the Session instance.
   // Using a raw pointer is safe as the Session object will never outlive
   // the DownloadSessionTaskImpl instance.
-  DownloadSessionTaskImpl* owner_ = nullptr;
+  raw_ptr<DownloadSessionTaskImpl> owner_ = nullptr;
 
   // The delegate methods are invoked on a background queue managed by
   // the iOS runtime. The callbacks passed to the delegate use a weak

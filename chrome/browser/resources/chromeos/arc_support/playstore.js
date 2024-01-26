@@ -56,13 +56,13 @@ function navigateToLanguageAndCountryCode(language, countryCode) {
     // Check special case for en_us which may be mapped to en.
     const matchDefaultUs = null;
     if (window.location.href.startsWith(
-            'https://play.google.com/intl/en_us/about/play-terms') &&
+            'https://play.google/intl/en_us/play-terms') &&
         termsLang == 'en' && countryCode == 'us' &&
-        selectLangZoneTerms.value.startsWith('/intl/en/about/play-terms')) {
+        selectLangZoneTerms.value.startsWith('/intl/en/play-terms')) {
       return true;
     }
     const matchByLangZone =
-        '/intl/' + termsLang + '_' + countryCode + '/about/play-terms';
+        '/intl/' + termsLang + '_' + countryCode + '/play-terms';
     if (selectLangZoneTerms.value.startsWith(matchByLangZone)) {
       // Already selected what is needed.
       return true;
@@ -121,8 +121,8 @@ function processLangZoneTerms(initialLoad, language, countryCode) {
     matchByLangShort = '/intl/' + langSegments[0] + '_';
   }
 
-  const matchByZone = '_' + countryCode + '/about/play-terms';
-  const matchByDefault = '/intl/en/about/play-terms';
+  const matchByZone = '_' + countryCode + '/play-terms';
+  const matchByDefault = '/intl/en/play-terms';
 
   // We are allowed to display terms by default only in language that matches
   // current UI language. In other cases we have to switch to default version.
@@ -225,8 +225,8 @@ function processDocument() {
   }
   formatDocument();
 
-  const initialLoad = window.location.href.startsWith(
-      'https://play.google.com/about/play-terms');
+  const initialLoad =
+      window.location.href.startsWith('https://play.google/play-terms');
   let language = document.language;
   if (!language) {
     language = navigator.language;

@@ -55,7 +55,7 @@ class CWSInfoServiceTest : public ::testing::Test,
                                    base::Time last_update_time);
   void VerifyCWSInfoRetrieved(
       const StoreMetadata* metadata,
-      const absl::optional<CWSInfoService::CWSInfo>& cws_info);
+      const std::optional<CWSInfoService::CWSInfo>& cws_info);
 
   bool VerifyStats(uint32_t requests,
                    uint32_t responses,
@@ -157,7 +157,7 @@ StoreMetadata CWSInfoServiceTest::BuildStoreMetadata(
 
 void CWSInfoServiceTest::VerifyCWSInfoRetrieved(
     const StoreMetadata* metadata,
-    const absl::optional<CWSInfoService::CWSInfo>& cws_info) {
+    const std::optional<CWSInfoService::CWSInfo>& cws_info) {
   ASSERT_TRUE(cws_info.has_value());
   if (metadata == nullptr) {
     EXPECT_FALSE(cws_info->is_present);
@@ -225,7 +225,7 @@ TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 1);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == absl::nullopt);
+  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
 
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         "bad response");
@@ -237,7 +237,7 @@ TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
       "Extensions.CWSInfoService.NetworkResponseCodeOrError", net::HTTP_OK, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 2);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == absl::nullopt);
+  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
 }
 
 TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
@@ -272,7 +272,7 @@ TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
   histogram_tester.ExpectBucketCount(
       "Extensions.CWSInfoService.MetadataChanged", true, 1);
 
-  absl::optional<CWSInfoService::CWSInfo> info =
+  std::optional<CWSInfoService::CWSInfo> info =
       cws_info_service_->GetCWSInfo(*test1);
   VerifyCWSInfoRetrieved(&response_proto.store_metadatas(0), info);
 }
@@ -332,7 +332,7 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
                                      true, 1);
 
   // Retrieve information for 1st extension and verify.
-  absl::optional<CWSInfoService::CWSInfo> info =
+  std::optional<CWSInfoService::CWSInfo> info =
       cws_info_service_->GetCWSInfo(*test1);
   VerifyCWSInfoRetrieved(&test1_metadata, info);
 

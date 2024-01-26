@@ -43,43 +43,6 @@ constexpr UMAGroupId ToUMAGroupId(GroupId group_id) {
 
 }  // namespace
 
-const char kGroupIdToggledOffHistogram[] = "Omnibox.GroupId.ToggledOff";
-const char kGroupIdToggledOnHistogram[] = "Omnibox.GroupId.ToggledOn";
-
-// A client-side toggle for document (Drive) suggestions.
-// Also gated by a feature and server-side Admin Panel controls.
-const char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
-
-// Enum specifying the active behavior for the intranet redirect detector.
-// The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
-// Values are defined in omnibox::IntranetRedirectorBehavior.
-const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
-
-// Boolean that controls whether scoped search mode can be triggered by <space>.
-const char kKeywordSpaceTriggeringEnabled[] =
-    "omnibox.keyword_space_triggering_enabled";
-
-// A dictionary of visibility preferences for suggestion groups. The key is the
-// suggestion group ID serialized as a string, and the value is
-// SuggestionGroupVisibility serialized as an integer.
-const char kSuggestionGroupVisibility[] = "omnibox.suggestionGroupVisibility";
-
-// Boolean that specifies whether to always show full URLs in the omnibox.
-const char kPreventUrlElisionsInOmnibox[] = "omnibox.prevent_url_elisions";
-
-// A cache of NTP zero suggest results using a JSON dictionary serialized into a
-// string.
-const char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
-
-// A cache of SRP/Web zero suggest results using a JSON dictionary serialized
-// into a string keyed off the page URL.
-const char kZeroSuggestCachedResultsWithURL[] =
-    "zerosuggest.cachedresults_with_url";
-
-// Boolean that specifies whether user has successfully used the instant
-// keyword mode feature.
-const char kOmniboxInstantKeywordUsed[] = "omnibox.instant_keyword_used";
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
   registry->RegisterBooleanPref(

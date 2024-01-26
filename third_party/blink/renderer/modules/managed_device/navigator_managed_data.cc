@@ -242,7 +242,7 @@ void NavigatorManagedData::OnConfigurationReceived(
     if (v8::JSON::Parse(script_state->GetContext(),
                         V8String(script_state->GetIsolate(), config_pair.value))
             .ToLocal(&v8_object)) {
-      result.Add(config_pair.key, v8_object);
+      result.AddV8Value(config_pair.key, v8_object);
     }
   }
   scoped_resolver->Resolve(result.GetScriptValue());

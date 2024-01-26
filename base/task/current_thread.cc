@@ -4,6 +4,9 @@
 
 #include "base/task/current_thread.h"
 
+#include <utility>
+
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -87,9 +90,10 @@ void CurrentThread::SetAddQueueTimeToTasks(bool enable) {
   current_->SetAddQueueTimeToTasks(enable);
 }
 
-void CurrentThread::RegisterOnNextIdleCallback(
+CallbackListSubscription CurrentThread::RegisterOnNextIdleCallback(
+    RegisterOnNextIdleCallbackPasskey,
     OnceClosure on_next_idle_callback) {
-  current_->RegisterOnNextIdleCallback(std::move(on_next_idle_callback));
+  return current_->RegisterOnNextIdleCallback(std::move(on_next_idle_callback));
 }
 
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::

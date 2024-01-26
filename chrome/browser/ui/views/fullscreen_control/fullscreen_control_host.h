@@ -74,7 +74,7 @@ class FullscreenControlHost : public ui::EventObserver {
                          base::TimeDelta timeout);
   void OnPopupTimeout(InputEntryMethod expected_input_method);
   bool IsExitUiNeeded();
-  bool IsMouseLocked();
+  bool IsPointerLocked();
   float CalculateCursorBufferHeight() const;
   void OnExitFullscreenPopupClicked();
 

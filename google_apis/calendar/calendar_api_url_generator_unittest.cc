@@ -27,16 +27,18 @@ TEST(CalendarApiUrlGeneratorTest, GetEventListUrl) {
   base::Time end;
   EXPECT_TRUE(base::Time::FromString("16 Jun 2021 10:00 PST", &end));
   EXPECT_EQ(
-      "https://www.googleapis.com/calendar/v3/calendars/primary/"
+      "https://www.googleapis.com/calendar/v3/calendars/test1@google.com/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
       "&timeMax=2021-06-16T18%3A00%3A00.000Z"
       "&singleEvents=true"
       "&maxAttendees=1"
       "&maxResults=123",
       url_generator_
-          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
-                                   /*max_attendees=*/1,
-                                   /*max_results=*/123)
+          .GetCalendarEventListUrl(
+              /*calendar_id=*/"test1@google.com", start, end,
+              /*single_events=*/true,
+              /*max_attendees=*/1,
+              /*max_results=*/123)
           .spec());
 }
 
@@ -48,14 +50,16 @@ TEST(CalendarApiUrlGeneratorTest,
   base::Time end;
   EXPECT_TRUE(base::Time::FromString("16 Jun 2021 10:00 PST", &end));
   EXPECT_EQ(
-      "https://www.googleapis.com/calendar/v3/calendars/primary/"
+      "https://www.googleapis.com/calendar/v3/calendars/test1@google.com/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
       "&timeMax=2021-06-16T18%3A00%3A00.000Z"
       "&singleEvents=true",
       url_generator_
-          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
-                                   /*max_attendees=*/std::nullopt,
-                                   /*max_results=*/std::nullopt)
+          .GetCalendarEventListUrl(
+              /*calendar_id=*/"test1@google.com", start, end,
+              /*single_events=*/true,
+              /*max_attendees=*/std::nullopt,
+              /*max_results=*/std::nullopt)
           .spec());
 }
 

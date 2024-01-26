@@ -6,36 +6,8 @@
 PRESUBMIT_VERSION = '2.0.0'
 
 
-_IGNORE_FREEZE_FOOTER = 'Ignore-Freeze'
-
-# The time module's handling of timezones is abysmal, so the boundaries are
-# precomputed in UNIX time
-_FREEZE_START = 1702627200  # 2023/12/15 00:00 -0800
-_FREEZE_END = 1704182400  # 2024/01/02 00:00 -0800
-
-
 def CheckFreeze(input_api, output_api):
-  if _FREEZE_START <= input_api.time.time() < _FREEZE_END:
-    footers = input_api.change.GitFootersFromDescription()
-    if _IGNORE_FREEZE_FOOTER not in footers:
-
-      def convert(t):
-        ts = input_api.time.localtime(t)
-        return input_api.time.strftime('%Y/%m/%d %H:%M %z', ts)
-
-      # Don't report errors when on the presubmit --all bot or when testing
-      # with presubmit --files.
-      if input_api.no_diffs:
-        report_type = output_api.PresubmitPromptWarning
-      else:
-        report_type = output_api.PresubmitError
-      return [
-          report_type('There is a prod freeze in effect from {} until {},'
-                      ' files in //tools/mb cannot be modified'.format(
-                          convert(_FREEZE_START), convert(_FREEZE_END)))
-      ]
-
-  return []
+  return input_api.canned_checks.CheckInfraFreeze(input_api, output_api)
 
 
 def CheckTests(input_api, output_api):

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -22,10 +22,10 @@ namespace wallpaper_handlers {
 class SeaPenFetcher {
  public:
   using OnFetchThumbnailsComplete = base::OnceCallback<void(
-      absl::optional<std::vector<ash::SeaPenImage>> images,
+      std::optional<std::vector<ash::SeaPenImage>> images,
       manta::MantaStatusCode status_code)>;
   using OnFetchWallpaperComplete =
-      base::OnceCallback<void(absl::optional<ash::SeaPenImage> image)>;
+      base::OnceCallback<void(std::optional<ash::SeaPenImage> image)>;
 
   SeaPenFetcher();
 
@@ -37,11 +37,13 @@ class SeaPenFetcher {
   // Run `query` against the Manta API. `query` is required to be a valid UTF-8
   // string no longer than `kMaximumSearchWallpaperTextBytes`.
   virtual void FetchThumbnails(
+      manta::proto::FeatureName feature_name,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchThumbnailsComplete callback) = 0;
 
   // Calls the Manta API to fetch a higher resolution image of the thumbnail.
   virtual void FetchWallpaper(
+      manta::proto::FeatureName feature_name,
       const ash::SeaPenImage& thumbnail,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchWallpaperComplete callback) = 0;

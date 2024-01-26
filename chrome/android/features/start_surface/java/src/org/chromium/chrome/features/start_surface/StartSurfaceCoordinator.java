@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -321,7 +322,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mProfileSupplier = profileSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
-        mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
+        mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
@@ -391,12 +392,16 @@ public class StartSurfaceCoordinator implements StartSurface {
                         startSurfaceOneshotSupplier,
                         hadWarmStart,
                         initializeMVTilesRunnable,
+                        (moduleDelegateHost) ->
+                                new HomeModulesCoordinator(
+                                        mActivity,
+                                        moduleDelegateHost,
+                                        mView.findViewById(R.id.task_surface_header)),
                         mParentTabSupplier,
                         logoContainerView,
                         mGridTabSwitcher == null ? backPressManager : null,
                         feedPlaceholderParentView,
                         mActivityLifecycleDispatcher,
-                        tabSwitcherClickHandler,
                         mProfileSupplier);
 
         startSurfaceOneshotSupplier.set(this);
@@ -992,7 +997,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                             /* singleTabCardClickedCallback= */ null,
                             /* snapshotParentViewRunnable= */ null,
                             mTabContentManager,
-                            null);
+                            /* uiConfig= */ null,
+                            /* moduleDelegate= */ null);
         }
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
         mMostVisitedCoordinator =

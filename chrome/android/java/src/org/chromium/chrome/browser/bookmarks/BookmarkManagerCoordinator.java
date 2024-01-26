@@ -421,7 +421,11 @@ public class BookmarkManagerCoordinator
     }
 
     static @VisibleForTesting View buildSectionHeaderView(ViewGroup parent) {
-        return inflate(parent, R.layout.bookmark_section_header);
+        return inflate(
+                parent,
+                BookmarkFeatures.isBookmarksAccountStorageEnabled()
+                        ? R.layout.bookmark_section_header_v2
+                        : R.layout.bookmark_section_header);
     }
 
     private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {

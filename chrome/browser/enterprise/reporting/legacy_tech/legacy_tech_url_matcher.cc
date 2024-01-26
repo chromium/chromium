@@ -53,13 +53,13 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
   url_matcher_->AddConditionSets(conditions);
 }
 
-absl::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
+std::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
     const GURL& url) const {
   std::set<base::MatcherStringPattern::ID> matched_ids =
       url_matcher_->MatchURL(url);
 
   if (matched_ids.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t maximum_path_length = 0;
   base::MatcherStringPattern::ID maximum_path_id;

@@ -27,7 +27,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -45,7 +45,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     public static final String ENABLE_INSTANT_START_ANIMATION_PARAM =
             "enable-animation-on-instant-start";
     public static final BooleanCachedFieldTrialParameter ENABLE_INSTANT_START_ANIMATION =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.FEED_LOADING_PLACEHOLDER,
                     ENABLE_INSTANT_START_ANIMATION_PARAM,
                     false);

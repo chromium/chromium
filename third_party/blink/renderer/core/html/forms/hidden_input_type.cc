@@ -109,8 +109,7 @@ void HiddenInputType::ValueAttributeChanged() {
   UpdateView();
   // Hidden input need to adjust directionality explicitly since it has no
   // descendant to propagate dir from.
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
-      RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled() &&
+  if (RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled() &&
       GetElement().HasDirectionAuto()) {
     GetElement().UpdateAncestorWithDirAuto(
         Element::UpdateAncestorTraversal::IncludeSelf);

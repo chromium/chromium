@@ -10,8 +10,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: window.webkitStorageInfo will be available.
   value: true

@@ -62,6 +62,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
     SVCInterLayerPredMode inter_layer_pred_mode,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     const VideoBitrateAllocation& bitrate_allocation,
     bool reverse)
     : output_profile(output_profile),
@@ -73,6 +74,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       num_spatial_layers(
           std::max(spatial_layers.size(), static_cast<size_t>(1u))),
       inter_layer_pred_mode(inter_layer_pred_mode),
+      content_type(content_type),
       bitrate_allocation(bitrate_allocation),
       framerate(video->FrameRate()),
       num_frames_to_encode(video->NumFrames()),
@@ -395,27 +397,28 @@ void VideoEncoderClient::BitstreamBufferReady(
     current_stats_.total_encoded_frames_size += metadata.payload_size_bytes;
     if (metadata.dropped_frame()) {
       current_stats_.num_dropped_frames++;
-    }
-    if (metadata.vp9.has_value()) {
-      uint8_t temporal_id = metadata.vp9->temporal_idx;
-      uint8_t spatial_id = metadata.vp9->spatial_idx;
-      ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
-      ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
-      current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
-          metadata.payload_size_bytes;
-    } else if (metadata.h264.has_value()) {
-      uint8_t temporal_id = metadata.h264->temporal_idx;
-      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
-      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
-          metadata.payload_size_bytes;
-    } else if (metadata.vp8.has_value()) {
-      uint8_t temporal_id = metadata.vp8->temporal_idx;
-      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
-      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
-          metadata.payload_size_bytes;
+    } else {
+      if (metadata.vp9.has_value()) {
+        uint8_t temporal_id = metadata.vp9->temporal_idx;
+        uint8_t spatial_id = metadata.vp9->spatial_idx;
+        ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
+        ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
+        current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
+            metadata.payload_size_bytes;
+      } else if (metadata.h264.has_value()) {
+        uint8_t temporal_id = metadata.h264->temporal_idx;
+        ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+        current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+            metadata.payload_size_bytes;
+      } else if (metadata.vp8.has_value()) {
+        uint8_t temporal_id = metadata.vp8->temporal_idx;
+        ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+        current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+            metadata.payload_size_bytes;
+      }
     }
   }
 
@@ -439,16 +442,8 @@ void VideoEncoderClient::BitstreamBufferReady(
       bitstream_processor_->ProcessBitstream(bitstream_ref, frame_index_);
     }
   }
-  if (metadata.vp9.has_value()) {
-    if (!metadata.vp9->spatial_layer_resolutions.empty()) {
-      current_top_spatial_index_ =
-          metadata.vp9->spatial_layer_resolutions.size() - 1;
-    }
-    if (metadata.vp9->spatial_idx == current_top_spatial_index_) {
-      frame_index_++;
-      CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
-    }
-  } else {
+
+  if (metadata.end_of_picture) {
     frame_index_++;
     CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
   }
@@ -510,9 +505,10 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
 
   config.initial_framerate = encoder_client_config_.framerate;
   config.storage_type = encoder_client_config_.input_storage_type;
-  config.content_type = VideoEncodeAccelerator::Config::ContentType::kCamera;
+  config.content_type = encoder_client_config_.content_type;
   config.drop_frame_thresh_percentage =
       encoder_client_config_.drop_frame_thresh;
+
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 

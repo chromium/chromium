@@ -189,4 +189,10 @@ void AcceleratorCapslockStateMachine::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
+void AcceleratorCapslockStateMachine::SetCanHandleCapsLockForTesting(
+    bool can_handle) {
+  current_state_ =
+      can_handle ? CapslockState::kTriggerAlt : CapslockState::kStart;
+}
+
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_DLP_RULES_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/enterprise/data_controls/verdict.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -73,8 +73,8 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
   template <typename T>
   struct MatchedRuleInfo {
     MatchedRuleInfo(Level level,
-                    absl::optional<RuleId> rule_id,
-                    absl::optional<T> url_condition)
+                    std::optional<RuleId> rule_id,
+                    std::optional<T> url_condition)
         : level(level), rule_id(rule_id), url_condition(url_condition) {}
     MatchedRuleInfo(const MatchedRuleInfo&) = default;
     MatchedRuleInfo() = default;
@@ -82,8 +82,8 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
     ~MatchedRuleInfo() = default;
 
     Level level;
-    absl::optional<RuleId> rule_id;
-    absl::optional<T> url_condition;
+    std::optional<RuleId> rule_id;
+    std::optional<T> url_condition;
   };
 
   // Matches `url` against `url_matcher` patterns and returns the rules IDs

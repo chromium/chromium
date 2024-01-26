@@ -14,7 +14,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -79,11 +78,6 @@ public class AsyncInitTaskRunnerTest {
         // Allow test to run on all builds
         when(mRunner.shouldFetchVariationsSeedDuringFirstRun()).thenReturn(true);
         doNothing().when(mRunner).prefetchLibrary();
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     @Test

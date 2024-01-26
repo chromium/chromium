@@ -46,8 +46,8 @@ class ExtensionRequestNotification
 
  private:
   // message_center::NotificationObserver
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
   void Close(bool by_user) override;
 
   std::unique_ptr<message_center::Notification> notification_;

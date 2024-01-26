@@ -49,6 +49,7 @@ namespace {
 constexpr char kDmToken[] = "dm_token";
 constexpr char kUserActionId[] = "123";
 constexpr char kTabTitle[] = "tab_title";
+constexpr char kContentTransferMethod[] = "content_transfer_method";
 constexpr char kTestUrl[] = "http://example.com/";
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
@@ -195,14 +196,14 @@ class FilesRequestHandlerTest : public BaseTest {
   FilesRequestHandlerTest() = default;
 
  protected:
-  absl::optional<std::vector<RequestHandlerResult>> ScanUpload(
+  std::optional<std::vector<RequestHandlerResult>> ScanUpload(
       const std::vector<base::FilePath>& paths) {
     // The settings need to exist until the "scanning" has completed, we can
     // thus not pass it into test::FakeFilesRequestHandler as a rvalue
     // reference.
-    absl::optional<AnalysisSettings> settings = GetSettings();
+    std::optional<AnalysisSettings> settings = GetSettings();
     if (!settings.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     using ResultFuture =
@@ -218,7 +219,7 @@ class FilesRequestHandlerTest : public BaseTest {
                 weak_ptr_factory_.GetWeakPtr(),
                 settings->cloud_or_local_settings.is_cloud_analysis()),
             /*upload_service=*/nullptr, profile_, *settings, GURL(kTestUrl), "",
-            "", kUserActionId, kTabTitle,
+            "", kUserActionId, kTabTitle, kContentTransferMethod,
             safe_browsing::DeepScanAccessPoint::UPLOAD,
             ContentAnalysisRequest::FILE_PICKER_DIALOG, paths,
             future.GetCallback());
@@ -238,14 +239,14 @@ class FilesRequestHandlerTest : public BaseTest {
     return future.Take();
   }
 
-  absl::optional<enterprise_connectors::AnalysisSettings> GetSettings() {
+  std::optional<enterprise_connectors::AnalysisSettings> GetSettings() {
     auto* service =
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile());
     // If the corresponding Connector policy isn't set, no scans can be
     // performed.
     if (!service) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     EXPECT_TRUE(service->IsConnectorEnabled(AnalysisConnector::FILE_ATTACHED));
 
@@ -361,7 +362,7 @@ class FilesRequestHandlerTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  absl::optional<ContentAnalysisResponse> dlp_response_ = absl::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
 
   // To verify user action requests count in local content analysis request is
   // set correctly.

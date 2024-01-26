@@ -5,11 +5,13 @@
 #ifndef ASH_SYSTEM_CAMERA_CAMERA_EFFECTS_CONTROLLER_H_
 #define ASH_SYSTEM_CAMERA_CAMERA_EFFECTS_CONTROLLER_H_
 
+#include <string>
 #include <utility>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "base/memory/weak_ptr.h"
@@ -73,6 +75,14 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     base::Time last_accessed;
     base::FilePath basename;
     std::string jpeg_bytes;
+    std::string metadata;
+
+    BackgroundImageInfo(const BackgroundImageInfo& info);
+    BackgroundImageInfo(const base::Time& creation_time,
+                        const base::Time& last_accessed,
+                        const base::FilePath& basename,
+                        const std::string& jpeg_bytes,
+                        const std::string& metadata);
   };
 
   CameraEffectsController();
@@ -100,9 +110,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void SetBackgroundImage(const base::FilePath& relative_path,
                           base::OnceCallback<void(bool)> callback);
 
-  // Saves the `jpeg_bytes` as an image file and apply that as camera
-  // background.
-  void SetBackgroundImageFromContent(std::string&& jpeg_bytes,
+  // Saves the `jpeg_bytes` as an image file with `metadata` and apply that as
+  // camera background.
+  void SetBackgroundImageFromContent(const SeaPenImage& sea_pen_image,
+                                     const std::string& metadata,
                                      base::OnceCallback<void(bool)> callback);
 
   // Removes `basename` from the camera background directory; remove background

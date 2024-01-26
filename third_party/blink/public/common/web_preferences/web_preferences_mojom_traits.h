@@ -196,9 +196,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.hide_scrollbars;
   }
 
-  static bool enable_webkit_scrollbar_styling(
+  static bool prefers_default_scrollbar_styles(
       const blink::web_pref::WebPreferences& r) {
-    return r.enable_webkit_scrollbar_styling;
+    return r.prefers_default_scrollbar_styles;
   }
 
   static bool accelerated_2d_canvas_enabled(

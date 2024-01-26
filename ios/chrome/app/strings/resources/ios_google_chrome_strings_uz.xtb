@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1066101356081285416">Chrome siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani ishlashini taʼminlash va hamma uchun Google Shopping xizmatini yaxshilash uchun joʻnatmani kuzatish raqami va veb-sayt nomi Chrome brauzeriga yuboriladi. Buni istalgan vaqtda <ph name="BEGIN_LINK" />Joʻnatmani kuzatish raqamlari<ph name="END_LINK" /> orqali yangilash mumkin.</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1105362920864247682">Chrome brauzer maʼlumotlarini tozalash.</translation>
 <translation id="1113057722807951993">Kodli ibora bilan shifrlash ichiga Google Pay xizmatidagi toʻlov usullari va manzillar kirmaydi.
@@ -41,13 +42,13 @@ Bularni hisobga olish kerak:
 <translation id="1682483655351012182">Chrome axborotini sinxronlash</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Kiritilgan URL manzillarni Chrome bukmarklariga kiritadi.</translation>
+<translation id="1799920918471566157">Chrome maslahatlari</translation>
 <translation id="1830634592642484976">Hozir bu manzil Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="USER_EMAIL" />) saqlang.</translation>
 <translation id="1843217788865538014">Xabarlar, hujjatlar va boshqa ilovalardagi havola bosilganda Chrome avtomatik ochilsin</translation>
 <translation id="1910975740091000991">iOS uchun Chrome</translation>
 <translation id="1917964099031477364">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromedan olib tashlanadi.</translation>
 <translation id="1965935827552890526">Yopilmagan Chrome oynangizdagi ishni davom ettiring.</translation>
 <translation id="1987779152850321833">Chromedan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring.</translation>
-<translation id="2008357574463816229">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Oddiy, xavfsiz va har qachongidan tezkor Google Chrome brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="2120238739383482109">Chrome bukmarklarini ochadi.</translation>
 <translation id="2147651015520127414">Chrome ushbu veb-sayt haqiqiyligi <ph name="ISSUER" /> tomonidan tasdiqlanganligini aniqladi.</translation>
@@ -76,6 +77,7 @@ Bularni hisobga olish kerak:
 <translation id="2702250627063295552">Saqlangan sahifalar bandini Chromeʼa qoʻshish</translation>
 <translation id="2736805085127235148">Chrome bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
+<translation id="2789947168960170215">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Chrome brauzer maʼlumotlarini tozalash</translation>
 <translation id="2869959624320573933">Chrome hisobiga kirish</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome maʼlumotlaringizni qanday xavfsiz saqlashi<ph name="END_LINK" /> haqida batafsil</translation>
@@ -99,7 +101,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3503014945441706099">Bu Chrome profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="3577555362230509265">Chromedan boshqa ilovalarda foydalaning.</translation>
-<translation id="3594076341410558780">“Chromening barcha imkoniyatlaridan foydalanish” bildirgisini berkitish</translation>
 <translation id="364480321352456989">Chrome eskirgan.</translation>
 <translation id="3646736009628185125">Oila aʼzolaringiz hozir parollarni qabul qila olmaydi. Ulardan Chrome brauzerini yangilash va parollarini sinxronlashni soʻrang. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Bunda Chrome har safar saytning mobil versiyasini talab qiladi.</translation>
@@ -205,7 +206,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="686691656039982452">Google hisobida <ph name="BEGIN_LINK" />saqlangan Chrome maʼlumotlarini boshqarish<ph name="END_LINK" /> mumkin.
 
 Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
-<translation id="687586529977635009">Chrome siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim etish va xaridlarni yaxshilash uchun maʼlumotlaringiz Googleʼga ulashiladi. Siz buni <ph name="BEGIN_LINK" />Joʻnatmani kuzatish sozlamalari<ph name="END_LINK" /> orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="6916015246697034114">Chromeda ovoz bilan qidirish</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>

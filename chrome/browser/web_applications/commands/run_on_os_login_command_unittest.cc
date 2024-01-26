@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 

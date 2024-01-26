@@ -120,8 +120,9 @@ bool HandleCloser::InitializeTargetHandles(TargetProcess& target) {
 
   g_handles_to_close = reinterpret_cast<HandleCloserInfo*>(remote_data);
 
-  ResultCode rc = target.TransferVariable(
-      "g_handles_to_close", &g_handles_to_close, sizeof(g_handles_to_close));
+  ResultCode rc =
+      target.TransferVariable("g_handles_to_close", &remote_data,
+                              &g_handles_to_close, sizeof(g_handles_to_close));
 
   return (SBOX_ALL_OK == rc);
 }

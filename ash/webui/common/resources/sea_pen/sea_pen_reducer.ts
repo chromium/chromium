@@ -63,8 +63,10 @@ function loadingReducer(
         },
       };
     case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
       return {...state, setImage: state.setImage + 1};
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
       if (state.setImage <= 0) {
         console.error('Impossible state for loading.setImage');
         // Reset to 0.
@@ -72,6 +74,7 @@ function loadingReducer(
       }
       return {...state, setImage: state.setImage - 1};
     case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
       return {
         ...state,
         currentSelected: true,
@@ -117,8 +120,8 @@ function currentSelectedReducer(
  * selected state.
  */
 function pendingSelectedReducer(
-    state: FilePath|null, action: SeaPenActions,
-    globalState: SeaPenState): FilePath|null {
+    state: FilePath|SeaPenThumbnail|null, action: SeaPenActions,
+    globalState: SeaPenState): FilePath|SeaPenThumbnail|null {
   switch (action.name) {
     case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
       return action.image;
@@ -133,6 +136,7 @@ function pendingSelectedReducer(
       }
       return state;
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
       const {success} = action;
       if (!success && globalState.loading.setImage <= 1) {
         // Clear the pending selected state if an error occurs and
@@ -140,6 +144,8 @@ function pendingSelectedReducer(
         return null;
       }
       return state;
+    case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
+      return action.thumbnail;
     default:
       return state;
   }
@@ -183,6 +189,18 @@ function thumbnailsReducer(
     case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
       assert(!!action.query, 'input text is empty.');
       return action.images;
+    case SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS:
+      return null;
+    default:
+      return state;
+  }
+}
+
+function shouldShowSeaPenTermsOfServiceDialogReducer(
+    state: boolean, action: SeaPenActions): boolean {
+  switch (action.name) {
+    case SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG:
+      return action.shouldShowDialog;
     default:
       return state;
   }
@@ -200,6 +218,9 @@ export function seaPenReducer(
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
         pendingSelectedReducer(state.pendingSelected, action, state),
+    shouldShowSeaPenTermsOfServiceDialog:
+        shouldShowSeaPenTermsOfServiceDialogReducer(
+            state.shouldShowSeaPenTermsOfServiceDialog, action),
   };
   return newState;
 }

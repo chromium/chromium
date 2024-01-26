@@ -5,6 +5,7 @@
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -97,7 +97,7 @@ std::string ConvertValueToJson(const base::Value& value) {
 }
 
 base::Value ParseJsonToValue(const std::string& json) {
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   CHECK(value);
   return std::move(*value);
 }

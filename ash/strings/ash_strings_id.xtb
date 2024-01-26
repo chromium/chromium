@@ -228,7 +228,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
 <translation id="1882897271359938046">Mencerminkan ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Buka kunci dengan sidik jari</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Baru diinstal</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1918022425394817322">Kamera dipaskan ke pojok kanan atas</translation>
@@ -267,7 +266,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2064048859448024834">Pratinjau kamera aktif</translation>
 <translation id="2067602449040652523">Kecerahan keyboard</translation>
 <translation id="2075520525463668108">Tombol <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Buka Alat Pilih Emoji</translation>
@@ -283,7 +281,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2149229036084364364">Putar lagu sebelumnya</translation>
 <translation id="2152895518047545149">Sepertinya tidak ada yang belum diserahkan. Bagus!</translation>
 <translation id="2161132820593978283">Coba framing kamera agar Anda berada di tengah layar saat melakukan panggilan video. Aktifkan di Setelan Cepat.</translation>
-<translation id="2170530631236737939">Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan</translation>
 <translation id="2185166372312820725">Membuka tab sebelumnya</translation>
 <translation id="2185444992308415167">Buka tab 1 hingga 8</translation>
 <translation id="2198625180564913276">Menambahkan profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -412,10 +409,12 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2726420622004325180">Ponsel harus memiliki data seluler agar dapat mengaktifkan hotspot</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
+<translation id="2744221223678373668">Dibagikan</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Hapus"</translation>
 <translation id="2750941250130734256">Jendela yang aktif dilepas kaitannya.</translation>
 <translation id="2761723519669354964">Buka item yang ditandai dari rak</translation>
+<translation id="2762000892062317888">baru saja</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+penelusuran+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3580650856351781466">Mendownload file ucapan</translation>
 <translation id="3585296979871889131">Lihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
+<translation id="3590441166907930941">Tombol Samping</translation>
 <translation id="3593039967545720377">Akses histori papan klip dengan menekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Salin item untuk memulai.</translation>
 <translation id="3593646411856133110">Geser ke atas dan tahan untuk melihat aplikasi yang terbuka</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
@@ -732,6 +732,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3986082989454912832">Jawab</translation>
 <translation id="3990002060657467458">Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot.</translation>
 <translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
+<translation id="4002066346123236978">Judul</translation>
 <translation id="40062176907008878">Tulis tangan</translation>
 <translation id="4011112806063830608">Mode Jangan Ganggu aktif.</translation>
 <translation id="4017989525502048489">Penunjuk laser</translation>
@@ -1035,6 +1036,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5163434717504750796">Kesehatan baterai <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Jumlah siklus pengisian daya penuh <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Simpan desktop sebagai template</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
+<translation id="5168753792967365150">Edit di Google Tasks</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5176318573511391780">Rekam sebagian layar</translation>
 <translation id="5187627942836026988">Tampilkan detail hotspot. Hotspot diblokir oleh administrator Anda.</translation>
@@ -1304,6 +1306,8 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="6168622430237609329">Aplikasi terinstal Anda</translation>
 <translation id="6173151025443907148">Login sebagai pengguna kedua tidak didukung jika Lacros diaktifkan. Gunakan profil browser kedua di Lacros atau nonaktifkan Lacros lalu coba lagi.</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
+<translation id="6180193585172850042">Tombol Kembali</translation>
+<translation id="6180651297859206670">Tombol Teruskan</translation>
 <translation id="6182592640011875895">Buka desktop</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Isi daya penuh sekarang</translation>
@@ -1693,7 +1697,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7850320739366109486">Jangan Ganggu</translation>
 <translation id="7851039877802112575">Pindahkan fokus ke pop-up dan dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Geser ke atas dengan tiga jari untuk masuk ke Ringkasan</translation>
 <translation id="7862292329216937261">Untuk menggunakan perangkat sebagai tamu, Anda harus logout lalu memilih Jelajahi sebagai Tamu di bagian bawah layar.</translation>
 <translation id="7866482334467279021">aktif</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
@@ -1804,7 +1807,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8262312463845990408">Putar/Jeda pemutaran</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 jam}other{Ubah perangkat ke versi sebelumnya dalam # jam}}</translation>
 <translation id="8277261673056602147">Tandai teks di layar</translation>
-<translation id="8284362522226889623">Geser ke kiri dengan empat jari untuk beralih ke desktop sebelumnya</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>

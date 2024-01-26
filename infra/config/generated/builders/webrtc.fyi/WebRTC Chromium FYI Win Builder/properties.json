@@ -23,7 +23,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32
+                "target_bits": 32,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -50,7 +51,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32
+                "target_bits": 32,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium_webrtc_tot"

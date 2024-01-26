@@ -4,8 +4,7 @@
 
 #include "cc/paint/display_item_list.h"
 
-#include <stddef.h>
-
+#include <limits>
 #include <map>
 #include <string>
 
@@ -68,6 +67,10 @@ void IterateTextContentByOffsets(const PaintOpBuffer& buffer,
     ++index;
   }
 }
+
+constexpr gfx::Rect kMaxBounds(std::numeric_limits<int>::max(),
+                               std::numeric_limits<int>::max());
+
 }  // namespace
 
 DisplayItemList::DisplayItemList() {
@@ -238,15 +241,9 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
                                  bool include_items) const {
   state->BeginDictionary("params");
 
-  gfx::Rect bounds;
-  if (rtree_.has_valid_bounds()) {
-    bounds = rtree_.GetBoundsOrDie();
-  } else {
-    // For tracing code, just use the entire positive quadrant if the |rtree_|
-    // has invalid bounds.
-    bounds = gfx::Rect(INT_MAX, INT_MAX);
-  }
-
+  // For tracing code, just use the entire positive quadrant if the |rtree_|
+  // has invalid bounds.
+  gfx::Rect bounds = rtree_.bounds().value_or(kMaxBounds);
   if (include_items) {
     state->BeginArray("items");
 
@@ -306,16 +303,9 @@ void DisplayItemList::GenerateDiscardableImagesMetadata() const {
   image_generation_lock_.AssertAcquired();
   CHECK(!image_map_);
 
-  gfx::Rect bounds;
-  if (rtree_.has_valid_bounds()) {
-    bounds = rtree_.GetBoundsOrDie();
-  } else {
-    // Bounds are only used to size an SkNoDrawCanvas, pass INT_MAX.
-    bounds = gfx::Rect(INT_MAX, INT_MAX);
-  }
-
   image_map_.emplace();
-  image_map_->Generate(paint_op_buffer_, bounds);
+  // Bounds are only used to size an SkNoDrawCanvas.
+  image_map_->Generate(paint_op_buffer_, bounds().value_or(kMaxBounds));
 }
 
 void DisplayItemList::Reset() {
@@ -343,7 +333,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
                                             int max_ops_to_analyze) {
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
-  if (rtree_.has_valid_bounds() && !rect.Contains(rtree_.GetBoundsOrDie())) {
+  if (rtree_.has_valid_bounds() && !rect.Contains(*bounds())) {
     rtree_.Search(rect, &offsets);
     offsets_to_use = &offsets;
   }
@@ -360,8 +350,8 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
 
 namespace {
 
-std::optional<DisplayItemList::DirectlyCompositedImageResult>
-DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
+std::optional<DirectlyCompositedImageInfo>
+DirectlyCompositedImageInfoForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
   // A PaintOpBuffer for an image may have 1 (a kDrawimagerect or a kDrawrecord
   // that recursively contains a PaintOpBuffer for an image) or 4 paint
   // operations:
@@ -378,7 +368,7 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
     return std::nullopt;
 
   bool transpose_image_size = false;
-  std::optional<DisplayItemList::DirectlyCompositedImageResult> result;
+  std::optional<DirectlyCompositedImageInfo> result;
   for (const PaintOp& op : op_buffer) {
     switch (op.GetType()) {
       case PaintOpType::kSave:
@@ -428,7 +418,7 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
       case PaintOpType::kDrawRecord:
         if (result)
           return std::nullopt;
-        result = DirectlyCompositedImageResultForPaintOpBuffer(
+        result = DirectlyCompositedImageInfoForPaintOpBuffer(
             static_cast<const DrawRecordOp&>(op).record.buffer());
         if (!result)
           return std::nullopt;
@@ -447,9 +437,9 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
 
 }  // anonymous namespace
 
-std::optional<DisplayItemList::DirectlyCompositedImageResult>
-DisplayItemList::GetDirectlyCompositedImageResult() const {
-  return DirectlyCompositedImageResultForPaintOpBuffer(paint_op_buffer_);
+std::optional<DirectlyCompositedImageInfo>
+DisplayItemList::GetDirectlyCompositedImageInfo() const {
+  return DirectlyCompositedImageInfoForPaintOpBuffer(paint_op_buffer_);
 }
 
 }  // namespace cc

@@ -15,6 +15,7 @@ namespace network::shared_dictionary {
 
 // The default value (1 year) of expiration time in "use-as-dictionary"
 // HTTP header.
+// This will not be used when V2 backend is enabled.
 constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
 
 // The max expiration time (30 days) for Origin Trial. This is used when
@@ -34,30 +35,29 @@ COMPONENT_EXPORT(NETWORK_SERVICE)
 base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
 
-// The content encoding name of "sbr".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kSbrContentEncodingName[];
-
-// The content encoding name of "zstd-d".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kZstdDContentEncodingName[];
-
 // The header name of "sec-available-dictionary".
+// This will not be used when V2 backend is enabled.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kSecAvailableDictionaryHeaderName[];
+
+// The header name of "available-dictionary".
+COMPONENT_EXPORT(NETWORK_SERVICE)
+extern const char kAvailableDictionaryHeaderName[];
 
 // The header name of "use-as-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];
 
+// The header name of "content-dictionary".
+COMPONENT_EXPORT(NETWORK_SERVICE)
+extern const char kContentDictionaryHeaderName[];
+
 // The dictionary option name of "match".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 
 // The dictionary option name of "expires".
+// This will not be used when V2 backend is enabled.
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
-
-// The dictionary option name of "algorithms".
-COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameAlgorithms[];
 
 // The dictionary option name of "type".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameType[];

@@ -104,7 +104,6 @@ constexpr std::string_view kFloorStatus = "floor_status";
 constexpr std::string_view kAutofillProfileNamesTable =
     "autofill_profile_names";
 // kGuid = "guid"
-constexpr std::string_view kHonorificPrefix = "honorific_prefix";
 constexpr std::string_view kFirstName = "first_name";
 constexpr std::string_view kMiddleName = "middle_name";
 constexpr std::string_view kLastName = "last_name";
@@ -112,9 +111,6 @@ constexpr std::string_view kFirstLastName = "first_last_name";
 constexpr std::string_view kConjunctionLastName = "conjunction_last_name";
 constexpr std::string_view kSecondLastName = "second_last_name";
 constexpr std::string_view kFullName = "full_name";
-constexpr std::string_view kFullNameWithHonorificPrefix =
-    "full_name_with_honorific_prefix";
-constexpr std::string_view kHonorificPrefixStatus = "honorific_prefix_status";
 constexpr std::string_view kFirstNameStatus = "first_name_status";
 constexpr std::string_view kMiddleNameStatus = "middle_name_status";
 constexpr std::string_view kLastNameStatus = "last_name_status";
@@ -123,8 +119,6 @@ constexpr std::string_view kConjunctionLastNameStatus =
     "conjunction_last_name_status";
 constexpr std::string_view kSecondLastNameStatus = "second_last_name_status";
 constexpr std::string_view kFullNameStatus = "full_name_status";
-constexpr std::string_view kFullNameWithHonorificPrefixStatus =
-    "full_name_with_honorific_prefix_status";
 
 constexpr std::string_view kAutofillProfileEmailsTable =
     "autofill_profile_emails";
@@ -167,20 +161,17 @@ bool AddLegacyAutofillProfileNamesToProfile(sql::Database* db,
   sql::Statement s;
   if (SelectByGuid(
           db, s, kAutofillProfileNamesTable,
-          {kGuid, kHonorificPrefix, kHonorificPrefixStatus, kFirstName,
-           kFirstNameStatus, kMiddleName, kMiddleNameStatus, kFirstLastName,
-           kFirstLastNameStatus, kConjunctionLastName,
+          {kGuid, kFirstName, kFirstNameStatus, kMiddleName, kMiddleNameStatus,
+           kFirstLastName, kFirstLastNameStatus, kConjunctionLastName,
            kConjunctionLastNameStatus, kSecondLastName, kSecondLastNameStatus,
-           kLastName, kLastNameStatus, kFullName, kFullNameStatus,
-           kFullNameWithHonorificPrefix, kFullNameWithHonorificPrefixStatus},
+           kLastName, kLastNameStatus, kFullName, kFullNameStatus},
           profile->guid())) {
     DCHECK_EQ(profile->guid(), s.ColumnString(0));
 
     int index = 1;
     for (FieldType type :
-         {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
-          NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
-          NAME_FULL_WITH_HONORIFIC_PREFIX}) {
+         {NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST, NAME_LAST_CONJUNCTION,
+          NAME_LAST_SECOND, NAME_LAST, NAME_FULL}) {
       profile->SetRawInfoWithVerificationStatusInt(
           type, s.ColumnString16(index), s.ColumnInt(index + 1));
       index += 2;
@@ -815,18 +806,19 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
 }
 
 bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
-  for (std::string_view column : {kHonorificPrefix, kFirstLastName,
-                                  kConjunctionLastName, kSecondLastName}) {
+  for (std::string_view column :
+       std::vector<std::string_view>{"honorific_prefix", kFirstLastName,
+                                     kConjunctionLastName, kSecondLastName}) {
     if (!AddColumnIfNotExists(db_, kAutofillProfileNamesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (std::string_view column :
-       {kHonorificPrefixStatus, kFirstNameStatus, kMiddleNameStatus,
-        kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
-        kSecondLastNameStatus, kFullNameStatus}) {
+  for (std::string_view column : std::vector<std::string_view>{
+           "honorific_prefix_status", kFirstNameStatus, kMiddleNameStatus,
+           kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
+           kSecondLastNameStatus, kFullNameStatus}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
     if (!AddColumnIfNotExists(db_, kAutofillProfileNamesTable, column,
@@ -839,9 +831,9 @@ bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
 
 bool AddressAutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
   return AddColumnIfNotExists(db_, kAutofillProfileNamesTable,
-                              kFullNameWithHonorificPrefix, "VARCHAR") &&
+                              "full_name_with_honorific_prefix", "VARCHAR") &&
          AddColumnIfNotExists(db_, kAutofillProfileNamesTable,
-                              kFullNameWithHonorificPrefixStatus,
+                              "full_name_with_honorific_prefix_status",
                               "INTEGER DEFAULT 0");
 }
 

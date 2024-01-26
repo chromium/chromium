@@ -1,6 +1,6 @@
 Tests what elements have focus after pressing tab.
 
-DIV#tab-Styles:Styles
+DIV#tab-styles:Styles
 DIV:More tabs
 DIV:Filter Styles
 BUTTON:Toggle Element State
@@ -19,7 +19,7 @@ LI:<span id="node-to-select">​</span>​
 
 Shift+Tab:
 
-DIV#tab-Styles:Styles
+DIV#tab-styles:Styles
 LI:<span id="node-to-select">​</span>​
 BUTTON:Customize and control DevTools
 BUTTON:Settings

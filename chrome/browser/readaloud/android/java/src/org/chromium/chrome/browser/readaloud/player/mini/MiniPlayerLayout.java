@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Convenience class for manipulating mini player UI layout. */
@@ -99,6 +100,14 @@ public class MiniPlayerLayout extends LinearLayout {
             mMediator.onBackgroundColorUpdated(mBackgroundColorArgb);
         }
 
+        // TODO: Plug in WindowAndroid and use #isWindowOnTablet instead
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            int paddingPx =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.readaloud_mini_player_tablet_padding);
+            View container = findViewById(R.id.mini_player_container);
+            container.setPadding(paddingPx, 0, paddingPx, 0);
+        }
         mLastPlaybackState = PlaybackListener.State.UNKNOWN;
     }
 
@@ -223,7 +232,11 @@ public class MiniPlayerLayout extends LinearLayout {
 
             case STOPPED:
             case PAUSED:
-                if (mLastPlaybackState != PLAYING && mLastPlaybackState != PAUSED) {
+                // Buffering/unknown and error states have their own views, show back the normal
+                // layout if needed
+                if (mLastPlaybackState != PLAYING
+                        && mLastPlaybackState != PAUSED
+                        && mLastPlaybackState != ERROR) {
                     showOnly(mNormalLayout);
                     mProgressBar.setVisibility(View.VISIBLE);
                 }

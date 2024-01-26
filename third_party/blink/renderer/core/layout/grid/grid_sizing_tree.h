@@ -98,8 +98,7 @@ class CORE_EXPORT GridSizingTree {
   GridSizingTree& operator=(GridSizingTree&&) = default;
   GridSizingTree& operator=(const GridSizingTree&) = delete;
 
-  GridTreeNode& CreateSizingData(
-      const SubgriddedItemData& subgrid_data = kNoSubgriddedItemData);
+  GridTreeNode& CreateSizingData(const BlockNode& grid_node);
 
   GridTreeNode& At(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
@@ -126,7 +125,7 @@ class CORE_EXPORT GridSizingTree {
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 
-  wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const;
+  wtf_size_t LookupSubgridIndex(const BlockNode& grid_node) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(subgrid_index_lookup_map_);
@@ -175,7 +174,7 @@ class GridSizingSubtree
   wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const {
     DCHECK(grid_tree_);
     DCHECK(subgrid_data.IsSubgrid());
-    return grid_tree_->LookupSubgridIndex(subgrid_data);
+    return grid_tree_->LookupSubgridIndex(subgrid_data.node);
   }
 
   GridSizingSubtree SubgridSizingSubtree(
@@ -185,7 +184,14 @@ class GridSizingSubtree
 
     return GridSizingSubtree(
         *grid_tree_,
-        /* subtree_root */ grid_tree_->LookupSubgridIndex(subgrid_data));
+        /* subtree_root */ grid_tree_->LookupSubgridIndex(subgrid_data.node));
+  }
+
+  // This method is only intended to be used to validate that the given grid
+  // node is the respective root of the current subtree.
+  bool HasValidRootFor(const BlockNode& grid_node) const {
+    return grid_tree_ &&
+           grid_tree_->LookupSubgridIndex(grid_node) == subtree_root_;
   }
 
   GridItems& GridItems() const {

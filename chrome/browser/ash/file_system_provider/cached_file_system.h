@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -35,8 +36,8 @@ namespace ash::file_system_provider {
 // flag.
 class CachedFileSystem : public ProvidedFileSystemInterface {
  public:
-  explicit CachedFileSystem(
-      std::unique_ptr<ProvidedFileSystemInterface> file_system);
+  CachedFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
+                   ContentCache* content_cache);
 
   CachedFileSystem(const CachedFileSystem&) = delete;
   CachedFileSystem& operator=(const CachedFileSystem&) = delete;
@@ -131,6 +132,7 @@ class CachedFileSystem : public ProvidedFileSystemInterface {
  private:
   const std::string GetFileSystemId() const;
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
+  raw_ptr<ContentCache> content_cache_;  // Not owned.
 
   base::WeakPtrFactory<CachedFileSystem> weak_ptr_factory_{this};
 };

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -105,7 +106,7 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState web_state_;
   std::unique_ptr<MockTailoredSecurityService> mock_service_;
-  TailoredSecurityTabHelper* tab_helper_;
+  raw_ptr<TailoredSecurityTabHelper> tab_helper_;
 };
 
 // Tests if query request is added when a WebState is shown and removing the

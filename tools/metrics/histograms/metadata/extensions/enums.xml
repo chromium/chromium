@@ -752,6 +752,15 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED"/>
 </enum>
 
+<enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">
+  <int value="0" label="Gmail"/>
+  <int value="1" label="Docs"/>
+  <int value="2" label="Drive"/>
+  <int value="3" label="Sheets"/>
+  <int value="4" label="Slides"/>
+  <int value="5" label="Youtube"/>
+</enum>
+
 <enum name="ExtensionFromWebstoreInconcistencyEnum">
   <int value="0" label="Non-webstore update URL"/>
   <int value="1" label="External install location"/>
@@ -2705,6 +2714,10 @@ Called by update_extension_histograms.py.-->
   <int value="1864" label="CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSCREATE"/>
   <int value="1865" label="ODFSCONFIGPRIVATE_SHOWAUTOMATEDMOUNTERROR"/>
   <int value="1866" label="OS_TELEMETRY_GETTHERMALINFO"/>
+  <int value="1867" label="ACCESSIBILITY_PRIVATE_INSTALLFACEGAZEASSETS"/>
+  <int value="1868" label="OS_MANAGEMENT_SETAUDIOVOLUME"/>
+  <int value="1869" label="AUTOTESTPRIVATE_SETDEVICELANGUAGE"/>
+  <int value="1870" label="AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

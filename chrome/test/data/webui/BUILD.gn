@@ -180,6 +180,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash:ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/nearby_sharing/common:common",
       "//chromeos/ash/components/standalone_browser",
       "//components/manta",
     ]
@@ -315,13 +316,6 @@ ts_library("build_ts") {
 
   if (is_chromeos_ash) {
     in_files += [ "mocha_adapter.js" ]
-  }
-
-  if (!is_chromeos_lacros) {
-    in_files += [
-      "bluetooth_internals/bluetooth_internals_test.js",
-      "bluetooth_internals/test_utils.js",
-    ]
   }
 
   deps = [
@@ -562,9 +556,16 @@ generate_grd("build_grd") {
   }
 
   if (!is_chromeos_lacros) {
-    deps += [ "webview:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/webview/resources.grdp" ]
+    deps += [
+      "bluetooth_internals:build_grdp",
+      "webview:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/bluetooth_internals/resources.grdp",
+      "$target_gen_dir/webview/resources.grdp",
+    ]
   }
+
   if (enable_compose) {
     deps += [ "compose:build_grdp" ]
     grdp_files += [ "$target_gen_dir/compose/resources.grdp" ]

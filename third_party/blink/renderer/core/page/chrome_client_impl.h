@@ -36,6 +36,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "cc/input/overscroll_behavior.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -77,6 +78,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool CanTakeFocus(mojom::blink::FocusType) override;
   void TakeFocus(mojom::blink::FocusType) override;
   void SetKeyboardFocusURL(Element* new_focus_element) override;
+  bool SupportsAppRegion() override;
   void BeginLifecycleUpdates(LocalFrame& main_frame) override;
   void RegisterForCommitObservation(CommitObserver*) override;
   void UnregisterFromCommitObservation(CommitObserver*) override;
@@ -322,8 +324,11 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // returns nullable.
   WebAutofillClient* AutofillClientFromFrame(LocalFrame*);
 
-  // Returns a copy of |pending_rect|, adjusted for minimum window size.
-  gfx::Rect AdjustWindowRectForMinimum(const gfx::Rect& pending_rect);
+  // Returns a copy of `pending_rect`, adjusted for the given minimum window
+  // size. Defaulting to `blink::kMinimumWindowSize`.
+  gfx::Rect AdjustWindowRectForMinimum(
+      const gfx::Rect& pending_rect,
+      int minimum_size = blink::kMinimumWindowSize);
 
   // Returns a copy of |pending_rect|, adjusted for available screen area
   // constraints. This is used to synchronously estimate, or preemptively apply,
@@ -332,8 +337,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // cross-screen window placement requests may be honored.
   // TODO(crbug.com/897300): Use permission state for better sync estimates or
   // store unadjusted pending window rects if that will not break many sites.
-  gfx::Rect AdjustWindowRectForDisplay(const gfx::Rect& pending_rect,
-                                       LocalFrame& frame);
+  gfx::Rect AdjustWindowRectForDisplay(
+      const gfx::Rect& pending_rect,
+      LocalFrame& frame,
+      int minimum_size = blink::kMinimumWindowSize);
 
   WebViewImpl* web_view_;  // Weak pointer.
   HeapHashSet<WeakMember<PopupOpeningObserver>> popup_opening_observers_;

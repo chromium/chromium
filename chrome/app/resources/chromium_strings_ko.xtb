@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
+<translation id="264613044588233783">Chromium이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함(권장)</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />님, Chromium에 오신 것을 환영합니다</translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium에서 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8은 사이트 속도를 개선하는 데 사용되는 Chromium의 JavaScript 및 WebAssembly 엔진입니다.</translation>
 <translation id="3283186697780795848">Chromium 버전 <ph name="PRODUCT_VERSION" />이(가)가 설치됩니다.</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="328888136576916638">Google API 키가 누락되었습니다. Chromium의 일부 기능이 사용 중지됩니다.</translation>
@@ -142,7 +144,6 @@
 <translation id="3533435340678213462">개인 정보를 보호하기 위해 Chromium에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chromium에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="3567254597502212821">이 기기에서 Chromium을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="3593091352817399191">이미 다른 계정으로 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chromium에서 나만의 프로필을 만들 수 있습니다.</translation>
-<translation id="363078681319665186">향후 Chromium 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.13을 사용 중입니다.</translation>
 <translation id="3639635944603682591">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복구하려면 <ph name="USER_EMAIL" />(으)로 Chromium에 로그인하세요.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
@@ -159,7 +160,6 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS 도움말 보기</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> 계정으로 Chromium 브라우저 기능을 이용해 보세요</translation>
-<translation id="387966568917439637">향후 Chromium 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.14를 사용 중입니다.</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />님이 이미 Chromium 프로필에 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chromium에서 나만의 프로필을 만들 수 있습니다.</translation>
@@ -220,6 +220,7 @@
 <translation id="4814736265800133385">계정 없이 Chromium 사용</translation>
 <translation id="4888717733111232871">Chromium이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="4893347770495441059">다시 실행하여 Chromium 업데이트</translation>
+<translation id="4942295735032723435">향후 Chromium 업데이트를 받으려면 macOS 11 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.15를 사용 중입니다.</translation>
 <translation id="4943838377383847465">Chromium이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>
@@ -248,7 +249,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium 업데이트 출시}=1{Chromium 업데이트 출시}other{Chromium 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="5643865575100044307">Chromium 종료 시 기기에 있는 사이트 데이터를 항상 삭제</translation>
 <translation id="5653831366781983928">지금 Chromium을 다시 시작하세요</translation>
-<translation id="5675598751761067447">위험한 파일일 수도 있습니다.<ph name="LINE_BREAK" />비밀번호를 제공하면 Chromium에서 이 다운로드 항목을 확인할 수 있습니다. 비밀번호는 기기에 보관됩니다.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">이 언어로 Chromium 표시</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
@@ -409,6 +409,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8105840573057009683">Chromium에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="8133124826068723441">내 도메인에서 동기화를 사용할 수 없으므로 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="813913629614996137">초기화 중...</translation>
+<translation id="8166782796394721554">Chromium의 JavaScript 및 WebAssembly 엔진에서 추가 보호 기능 사용 설정</translation>
 <translation id="81770708095080097">이 파일은 위험하므로 Chromium에서 차단했습니다.</translation>
 <translation id="8213374284266571500">위험한 유형의 파일이기 때문에 Chromium에서 파일을 차단했습니다.</translation>
 <translation id="8248265253516264921">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>

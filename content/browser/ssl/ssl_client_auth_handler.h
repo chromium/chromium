@@ -51,17 +51,16 @@ class SSLClientAuthHandler {
     virtual ~Delegate() {}
   };
 
-  // Retrieves the calling context. If this returns null for the
-  // `BrowserContext`, it means the caller is no longer valid. `WebContents`
-  // may legitimately be null for cases where the calling context is not
-  // associated with a document, such as service workers.
-  using ContextGetter =
-      base::RepeatingCallback<std::pair<BrowserContext*, WebContents*>()>;
-
   // Creates a new SSLClientAuthHandler. The caller ensures that the handler
-  // does not outlive |delegate|.
+  // does not outlive `delegate`.
+  // `browser_context` is always set, but may become invalid if the caller is
+  // destroyed. `web_contents` may be null for cases where the calling context
+  // is not associated with a document, such as service workers. If
+  // `web_contents` is not null, it is guaranteed to be associated with the same
+  // BrowserContext as `browser_context`.
   SSLClientAuthHandler(std::unique_ptr<net::ClientCertStore> client_cert_store,
-                       ContextGetter context_getter,
+                       base::WeakPtr<BrowserContext> browser_context,
+                       base::WeakPtr<WebContents> web_contents,
                        net::SSLCertRequestInfo* cert_request_info,
                        Delegate* delegate);
 
@@ -89,7 +88,8 @@ class SSLClientAuthHandler {
   // will cancel the dialog corresponding to this certificate request.
   base::OnceClosure cancellation_callback_;
 
-  ContextGetter context_getter_;
+  base::WeakPtr<BrowserContext> browser_context_;
+  base::WeakPtr<WebContents> web_contents_;
 
   // The certs to choose from.
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;

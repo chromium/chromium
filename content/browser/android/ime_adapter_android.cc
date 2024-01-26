@@ -249,11 +249,8 @@ void ImeAdapterAndroid::UpdateFrameInfo(
   if (obj.is_null())
     return;
 
-  // The CursorAnchorInfo API in Android only supports zero width selection
-  // bounds.
   const jboolean has_insertion_marker =
-      selection_start.type() == gfx::SelectionBound::CENTER ||
-      selection_start.type() == gfx::SelectionBound::HIDDEN;
+      selection_start.type() != gfx::SelectionBound::EMPTY;
   const jboolean is_insertion_marker_visible = selection_start.visible();
   const jfloat insertion_marker_horizontal =
       has_insertion_marker ? selection_start.edge_start().x() : 0.0f;
@@ -394,11 +391,11 @@ void ImeAdapterAndroid::FocusedNodeChanged(
   }
 }
 
-bool ImeAdapterAndroid::RequestStartStylusWriting() {
+bool ImeAdapterAndroid::ShouldInitiateStylusWriting() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   if (!obj.is_null()) {
-    return Java_ImeAdapterImpl_requestStartStylusWriting(env, obj);
+    return Java_ImeAdapterImpl_shouldInitiateStylusWriting(env, obj);
   }
   return false;
 }

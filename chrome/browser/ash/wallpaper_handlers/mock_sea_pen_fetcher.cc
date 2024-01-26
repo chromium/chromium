@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,9 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/manta/manta_status.h"
-#include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wallpaper_handlers {
 
@@ -25,8 +24,7 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
   std::vector<ash::SeaPenImage> image_results;
   for (uint32_t i = 1; i < 5; i++) {
     image_results.emplace_back(base::StringPrintf("fake_sea_pen_image_%d", i),
-                               i,
-                               manta::proto::ImageResolution::RESOLUTION_1024);
+                               i);
   }
   return image_results;
 }
@@ -36,7 +34,8 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
 MockSeaPenFetcher::MockSeaPenFetcher() {
   ON_CALL(*this, FetchThumbnails)
       .WillByDefault(
-          [](const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+          [](manta::proto::FeatureName feature_name,
+             const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchThumbnailsComplete callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -46,11 +45,12 @@ MockSeaPenFetcher::MockSeaPenFetcher() {
 
   ON_CALL(*this, FetchWallpaper)
       .WillByDefault(
-          [](const ash::SeaPenImage& image,
+          [](manta::proto::FeatureName feature_name,
+             const ash::SeaPenImage& image,
              const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchWallpaperComplete callback) {
             std::move(callback).Run(
-                ash::SeaPenImage(image.jpg_bytes, image.id, image.resolution));
+                ash::SeaPenImage(image.jpg_bytes, image.id));
           });
 }
 

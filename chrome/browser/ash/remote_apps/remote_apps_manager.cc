@@ -342,7 +342,7 @@ void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserverForLacros(
     mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
   remote_apps_impl_.BindRemoteAppsAndAppLaunchObserver(
-      absl::nullopt, std::move(pending_remote_apps),
+      std::nullopt, std::move(pending_remote_apps),
       std::move(pending_observer));
 }
 

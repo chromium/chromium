@@ -66,7 +66,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const SharedImageInterfaceInProcess&) = delete;
 
   // SharedImageInterface:
-  ~SharedImageInterfaceInProcess() override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -115,6 +114,14 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
+  SharedImageInterface::SharedImageMapping CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -138,12 +145,12 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const SyncToken& sync_token,
       const Mailbox& mailbox,
       uint32_t usage) override;
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override;
+  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_FUCHSIA)
@@ -161,6 +168,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const gpu::Mailbox& mailbox) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
+
+ protected:
+  ~SharedImageInterfaceInProcess() override;
 
  private:
   // Parameters needed to be passed in to set up the class on the GPU.

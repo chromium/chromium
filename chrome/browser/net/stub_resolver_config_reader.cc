@@ -43,8 +43,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -409,7 +410,7 @@ void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<std::string>
+std::optional<std::string>
 StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
   ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
   doh_template_uri_resolver.UpdateFromPrefs(local_state_);
@@ -417,6 +418,6 @@ StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
   if (doh_template_uri_resolver.GetDohWithIdentifiersActive())
     return doh_template_uri_resolver.GetDisplayTemplates();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif

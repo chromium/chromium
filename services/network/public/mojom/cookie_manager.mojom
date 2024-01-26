@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
@@ -476,4 +477,9 @@ interface CookieManager {
 
   // Enables/Disables tracking protection for 3PCD (prefs + UX).
   SetTrackingProtectionEnabledFor3pcd(bool enable);
+
+  // Adds a pre-commit delay to the cookie database sqlite persistent store.
+  // This delay occurs before every commit and blocks the background task
+  // runner.
+  SetPreCommitCallbackDelayForTesting(mojo_base.mojom.TimeDelta delay);
 };

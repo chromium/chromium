@@ -40,15 +40,15 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}  // namespace mojom
+
 class SharedURLLoaderFactory;
 class WeakWrapperSharedURLLoaderFactory;
 }  // namespace network
 
 namespace content {
-
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 
 namespace service_worker_provider_context_unittest {
 class ServiceWorkerProviderContextTest;

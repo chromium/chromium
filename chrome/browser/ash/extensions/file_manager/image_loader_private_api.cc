@@ -110,10 +110,8 @@ std::string ReadMojoHandleToDataUrl(mojo::PlatformHandle&& handle) {
   if (!net::MatchesMimeType("image/*", mime_type)) {
     return std::string();
   }
-  return MakeThumbnailDataUrlOnThreadPool(
-      mime_type,
-      base::make_span(reinterpret_cast<const uint8_t*>(contents.c_str()),
-                      contents.size()));
+  return MakeThumbnailDataUrlOnThreadPool(mime_type,
+                                          base::as_byte_span(contents));
 }
 
 }  // namespace

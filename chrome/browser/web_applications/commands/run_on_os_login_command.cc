@@ -40,13 +40,13 @@ RunOnOsLoginCommand::CreateForSyncLoginMode(const webapps::AppId& app_id,
                                             base::OnceClosure callback) {
   return base::WrapUnique(new RunOnOsLoginCommand(
       app_id,
-      /*login_mode=*/absl::nullopt, RunOnOsLoginAction::kSyncModeFromDBToOS,
+      /*login_mode=*/std::nullopt, RunOnOsLoginAction::kSyncModeFromDBToOS,
       std::move(callback)));
 }
 
 RunOnOsLoginCommand::RunOnOsLoginCommand(
     webapps::AppId app_id,
-    absl::optional<RunOnOsLoginMode> login_mode,
+    std::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
     : WebAppCommand<AppLock>("RunOnOsLoginCommand",
@@ -167,7 +167,7 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
     // TODO(dmurph): Remove this after 'locally installed without os
     // integration' is implemented for preinstalled apps.
     // https://crbug.com/1480068
-    absl::optional<RunOnOsLoginMode> os_integration_state =
+    std::optional<RunOnOsLoginMode> os_integration_state =
         lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
     if (os_integration_state && login_mode_.value() == *os_integration_state) {
       RecordCompletionState(
@@ -186,7 +186,7 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
 
 void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
     base::RepeatingCallback<void(OsHooksErrors)> os_hooks_callback) {
-  absl::optional<RunOnOsLoginMode> os_integration_state =
+  std::optional<RunOnOsLoginMode> os_integration_state =
       lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
 
   if (os_integration_state && login_mode_.value() == *os_integration_state) {

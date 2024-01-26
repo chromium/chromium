@@ -8,7 +8,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 (async function() {
   TestRunner.addResult(
       `https://crbug.com/738932 Tests the snapshot view is not empty on repeatitive expand-collapse.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var instanceCount = 25;
   function createHeapSnapshot() {

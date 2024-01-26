@@ -112,6 +112,7 @@ presubmit_builder(
     },
     tryjob = try_.job(
         location_filters = [
+            "buildtools/reclient_cfgs/.+",
             "tools/clang/scripts/update.py",
             "DEPS",
         ],

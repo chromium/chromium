@@ -459,7 +459,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     // If the position has shifted the item and the shape result needs to be
     // adjusted to reflect the new start and end offsets.
     unsigned end = start + item.Length();
-    scoped_refptr<ShapeResult> adjusted_shape_result;
+    const ShapeResult* adjusted_shape_result = nullptr;
     if (item.TextShapeResult()) {
       DCHECK_EQ(item.Type(), InlineItem::kText);
       adjusted_shape_result = item.TextShapeResult()->CopyAdjustedOffset(start);
@@ -468,8 +468,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
       // The following should be true, but some unit tests fail.
       // DCHECK_EQ(item->Type(), InlineItem::kControl);
     }
-    InlineItem adjusted_item(item, start, end,
-                             std::move(adjusted_shape_result));
+    InlineItem adjusted_item(item, start, end, adjusted_shape_result);
 
 #if DCHECK_IS_ON()
     DCHECK_EQ(start, adjusted_item.StartOffset());
@@ -531,7 +530,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   String transformed =
       layout_text->TransformAndSecureText(original, offset_map);
   DCHECK_EQ(layout_text->TransformedText(), transformed);
-  const Vector<uint8_t> length_map = TransformedString::CreateLengthMap(
+  const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
   AppendText(TransformedString(layout_text->TransformedText(),
                                {length_map.data(), length_map.size()}),

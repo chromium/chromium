@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
+
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <random>
 #include <set>
 #include <string>
@@ -18,7 +21,6 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
-#include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
@@ -29,7 +31,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {

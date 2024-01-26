@@ -32,6 +32,10 @@ namespace gfx {
 class Rect;
 }
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace viz {
 class RasterContextProvider;
 struct TransferableResource;
@@ -43,9 +47,8 @@ class PepperPluginInstanceImpl;
 class PPB_ImageData_Impl;
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperGraphics2DHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperGraphics2DHost> {
+class CONTENT_EXPORT PepperGraphics2DHost final
+    : public ppapi::host::ResourceHost {
  public:
   static PepperGraphics2DHost* Create(
       RendererPpapiHost* host,
@@ -189,7 +192,7 @@ class CONTENT_EXPORT PepperGraphics2DHost
       base::WeakPtr<PepperGraphics2DHost> host,
       scoped_refptr<viz::RasterContextProvider> context,
       const gfx::Size& size,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       bool lost);
 
@@ -239,11 +242,12 @@ class CONTENT_EXPORT PepperGraphics2DHost
   scoped_refptr<viz::RasterContextProvider> main_thread_context_;
   struct SharedImageInfo {
     SharedImageInfo(gpu::SyncToken sync_token,
-                    gpu::Mailbox mailbox,
-                    gfx::Size size)
-        : sync_token(sync_token), mailbox(mailbox), size(size) {}
+                    scoped_refptr<gpu::ClientSharedImage> shared_image,
+                    gfx::Size size);
+    SharedImageInfo(const SharedImageInfo& shared_image_info);
+    ~SharedImageInfo();
     gpu::SyncToken sync_token;
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gfx::Size size;
   };
   // Shared images that are available for recycling.
@@ -258,6 +262,8 @@ class CONTENT_EXPORT PepperGraphics2DHost
 
   // Whether to use gpu memory for compositor resources.
   const bool enable_gpu_memory_buffer_;
+
+  base::WeakPtrFactory<PepperGraphics2DHost> weak_ptr_factory_{this};
 
   friend class PepperGraphics2DHostTest;
 };

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -164,6 +165,24 @@ void EmojiUI::BindInterface(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void EmojiUI::BindInterface(
+    mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver) {
+  new_window_proxy_ =
+      std::make_unique<ash::NewWindowProxy>(std::move(receiver));
+}
+
+void EmojiUI::BindInterface(
+    mojo::PendingReceiver<seal::mojom::SealService> receiver) {
+  if (SealUtils::ShouldEnable()) {
+    Profile* profile = Profile::FromWebUI(web_ui());
+    manta::MantaService* manta_service =
+        manta::MantaServiceFactory::GetForProfile(profile);
+    seal_service_ = std::make_unique<SealService>(
+        /*receiver=*/std::move(receiver),
+        /*snapper_provider=*/manta_service->CreateSnapperProvider());
+  }
 }
 
 void EmojiUI::CreatePageHandler(

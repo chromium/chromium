@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_
 #define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Message to be delivered to the other party via Web Push.
 struct WebPushMessage {
@@ -54,7 +54,7 @@ enum class SendWebPushMessageResult {
 };
 
 using WebPushCallback = base::OnceCallback<void(SendWebPushMessageResult,
-                                                absl::optional<std::string>)>;
+                                                std::optional<std::string>)>;
 
 // Invoke |callback| with |result| and logs the |result| to UMA. This should be
 // called when after a web push message is sent. If |result| is
@@ -62,6 +62,6 @@ using WebPushCallback = base::OnceCallback<void(SendWebPushMessageResult,
 void InvokeWebPushCallback(
     WebPushCallback callback,
     SendWebPushMessageResult result,
-    absl::optional<std::string> message_id = absl::nullopt);
+    std::optional<std::string> message_id = std::nullopt);
 
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_

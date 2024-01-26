@@ -2662,19 +2662,7 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-class ModelTypeWorkerPasswordsTestWithNotes
-    : public ModelTypeWorkerPasswordsTest {
- public:
-  ModelTypeWorkerPasswordsTestWithNotes() {
-    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-  }
-  ~ModelTypeWorkerPasswordsTestWithNotes() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+TEST_F(ModelTypeWorkerPasswordsTest,
        ShouldIgnoreTheEncryptedNotesBackupWhenNotesInPasswordSpecificsData) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordInSpecificsNote = "Note Value";
@@ -2723,7 +2711,7 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
       syncer::PasswordNotesStateForUMA::kSetInSpecificsData, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+TEST_F(ModelTypeWorkerPasswordsTest,
        ShouldUseTheEncryptedNotesBackupWhenMissingInPasswordSpecificsData) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordNoteBackup = "Note Backup";
@@ -2768,8 +2756,7 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackup, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
-       ShouldEmitUnsetWhenNoNotesInUpdate) {
+TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitUnsetWhenNoNotesInUpdate) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
 
@@ -2796,7 +2783,7 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
                                       1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
+TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitNotesBackupCorrupted) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordNoteBackup = "Note Backup";
   NormalInitialize();
@@ -2837,8 +2824,7 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
-       ShouldPopulatePasswordNotesBackup) {
+TEST_F(ModelTypeWorkerPasswordsTest, ShouldPopulatePasswordNotesBackup) {
   const std::string kPasswordInSpecificsNote = "Note Value";
   NormalInitialize();
 
@@ -2871,7 +2857,7 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
   EXPECT_EQ(kPasswordInSpecificsNote, decrypted_notes.note(0).value());
 }
 
-TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+TEST_F(ModelTypeWorkerPasswordsTest,
        ShouldPopulatePasswordNotesBackupWhenNoLocalNotes) {
   NormalInitialize();
 

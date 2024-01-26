@@ -247,6 +247,13 @@ int FeedbackCommon::GetChromeBrowserProductId() {
   return kChromeBrowserProductId;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+int FeedbackCommon::GetChromeOSProductId() {
+  return kChromeOSProductId;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 FeedbackCommon::~FeedbackCommon() = default;
 
 void FeedbackCommon::CompressFile(const base::FilePath& filename,

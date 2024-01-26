@@ -29,7 +29,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('color');
       treeOutline = treeElement.treeOutline;
 
-      treeElement.startEditing();
+      treeElement.startEditingName();
       treeElement.nameElement.textContent = 'color';
       treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 

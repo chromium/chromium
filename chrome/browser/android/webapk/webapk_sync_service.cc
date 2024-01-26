@@ -22,4 +22,16 @@ WebApkSyncService::WebApkSyncService(Profile* profile) {
 
 WebApkSyncService::~WebApkSyncService() = default;
 
+void WebApkSyncService::RegisterDoneInitializingCallback(
+    base::OnceCallback<void(bool)> init_done_callback) {
+  sync_bridge_->RegisterDoneInitializingCallback(std::move(init_done_callback));
+}
+
+void WebApkSyncService::MergeSyncDataForTesting(
+    std::vector<std::vector<std::string>> app_vector,
+    std::vector<int> last_used_days_vector) {
+  sync_bridge_->MergeSyncDataForTesting(
+      std::move(app_vector), std::move(last_used_days_vector));  // IN-TEST
+}
+
 }  // namespace webapk

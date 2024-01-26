@@ -1655,7 +1655,7 @@ TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
 
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction =
-          context.GetRedirectHeuristicURLs(first_party_url, absl::nullopt);
+          context.GetRedirectHeuristicURLs(first_party_url, std::nullopt);
   EXPECT_THAT(
       sites_to_url_and_current_interaction,
       testing::UnorderedElementsAre(
@@ -1730,7 +1730,7 @@ TEST(DIPSRedirectContextTest,
 
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction =
-          context.GetRedirectHeuristicURLs(first_party_url, absl::nullopt);
+          context.GetRedirectHeuristicURLs(first_party_url, std::nullopt);
   EXPECT_THAT(
       sites_to_url_and_current_interaction,
       testing::UnorderedElementsAre(

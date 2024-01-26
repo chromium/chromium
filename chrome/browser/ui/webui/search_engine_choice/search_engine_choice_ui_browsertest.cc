@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -47,6 +49,8 @@ class MockSearchEngineChoiceDialogService
   explicit MockSearchEngineChoiceDialogService(Profile* profile)
       : SearchEngineChoiceDialogService(
             *profile,
+            *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+                profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
       std::vector<std::unique_ptr<TemplateURL>> choices;
@@ -58,7 +62,13 @@ class MockSearchEngineChoiceDialogService
         // engines.
         choice.prepopulate_id = i + 1;
         choice.SetShortName(kShortName);
-        choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+        if (i % 2 == 0) {
+          // The bing icon should be bundled with Chrome.
+          choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+        } else {
+          // Uses the default generic favicon.
+          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
+        }
         choices.push_back(std::make_unique<TemplateURL>(choice));
       }
       return choices;
@@ -83,7 +93,6 @@ struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
-  bool show_search_engine_omnibox = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -97,8 +106,6 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 // Permutations of supported parameters.
 const TestParam kTestParams[] = {
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1515948): Fix and re-add test with
-    // "ShowSearchEngineOmnibox" parameter.
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
@@ -110,33 +117,6 @@ const TestParam kTestParams[] = {
     // The test will crash if we exceed that height.
     {.test_suffix = "ShortSize", .dialog_dimensions = gfx::Size(988, 376)},
 };
-
-class SearchEngineChoiceNavigationObserver
-    : public content::TestNavigationObserver {
- public:
-  explicit SearchEngineChoiceNavigationObserver(GURL url)
-      : content::TestNavigationObserver(url) {}
-
-  void NavigationOfInterestDidFinish(
-      content::NavigationHandle* navigation_handle) override {
-    web_contents_ = navigation_handle->GetWebContents();
-  }
-
-  content::WebContents* web_contents() const { return web_contents_; }
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
-};
-
-// Click on a search engine to display the search engine omnibox.
-const char kShowSearchEngineOmniboxJsString[] =
-    "(() => {"
-    "  const app = document.querySelector('search-engine-choice-app');"
-    "  const searchEngineList = app.shadowRoot.querySelectorAll("
-    "      'cr-radio-button');"
-    "  searchEngineList[0].click();"
-    "  return true;"
-    "})();";
 }  // namespace
 
 class SearchEngineChoiceUIPixelTest
@@ -151,8 +131,6 @@ class SearchEngineChoiceUIPixelTest
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
                           GetParam().use_right_to_left_language) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoice, {{"with-forced-scroll", "true"}});
   }
 
   ~SearchEngineChoiceUIPixelTest() override = default;
@@ -179,7 +157,7 @@ class SearchEngineChoiceUIPixelTest
         /*dialog_disabled=*/false);
 
     GURL url = GURL(chrome::kChromeUISearchEngineChoiceURL);
-    SearchEngineChoiceNavigationObserver observer(url);
+    content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
     views::NamedWidgetShownWaiter widget_waiter(
@@ -205,20 +183,13 @@ class SearchEngineChoiceUIPixelTest
     ShowSearchEngineChoiceDialog(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
-    content::WebContents* web_contents = observer.web_contents();
-    CHECK(web_contents);
-
-    if (GetParam().show_search_engine_omnibox) {
-      EXPECT_EQ(true, content::EvalJs(web_contents,
-                                      kShowSearchEngineOmniboxJsString));
-    }
-
     observer.Wait();
   }
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

@@ -174,6 +174,8 @@ interface PageHandler {
 interface Page {
   // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
-  // Updates the UI's selected line and action based on the |selection|.
-  UpdateSelection(OmniboxPopupSelection selection);
+  // Updates the UI's selected line and action based on the |selection| and
+  // |old_selection|.
+  UpdateSelection(OmniboxPopupSelection old_selection,
+                  OmniboxPopupSelection selection);
 };

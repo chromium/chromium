@@ -229,7 +229,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, IsSiteInManagedSet_SiteNotInConfig) {
       {{net::SchemefulSite(GURL("https://example.test")),
         net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
             net::SchemefulSite(GURL("https://primary.test")),
-            net::SiteType::kAssociated, absl::nullopt))}}));
+            net::SiteType::kAssociated, std::nullopt))}}));
   service()->InitForTesting();
 
   EXPECT_FALSE(service()->IsSiteInManagedSet(
@@ -253,7 +253,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   SetContextConfig(net::FirstPartySetsContextConfig(
       {{example_site, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                           net::SchemefulSite(GURL("https://primary.test")),
-                          net::SiteType::kAssociated, absl::nullopt))}}));
+                          net::SiteType::kAssociated, std::nullopt))}}));
   service()->InitForTesting();
   EXPECT_TRUE(service()->IsSiteInManagedSet(example_site));
   env().RunUntilIdle();
@@ -315,7 +315,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   SetContextConfig(net::FirstPartySetsContextConfig(
       {{example_site, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                           net::SchemefulSite(GURL("https://primary.test")),
-                          net::SiteType::kAssociated, absl::nullopt))}}));
+                          net::SiteType::kAssociated, std::nullopt))}}));
   SetRwsEnabledViaPref(false);
   service()->InitForTesting();
   EXPECT_FALSE(service()->IsSiteInManagedSet(example_site));
@@ -484,7 +484,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate_site(GURL("https://associate.test"));
   net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
-      primary_site, net::SiteType::kPrimary, absl::nullopt));
+      primary_site, net::SiteType::kPrimary, std::nullopt));
   net::FirstPartySetEntry associate_entry(
       net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
 
@@ -536,11 +536,11 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   net::SchemefulSite associate_site(GURL("https://associate.test"));
   net::SchemefulSite service_site(GURL("https://service.test"));
   net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
-      primary_site, net::SiteType::kPrimary, absl::nullopt));
+      primary_site, net::SiteType::kPrimary, std::nullopt));
   net::FirstPartySetEntry associate_entry(
       net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
   net::FirstPartySetEntry override_entry(net::FirstPartySetEntry(
-      primary_site, net::SiteType::kService, absl::nullopt));
+      primary_site, net::SiteType::kService, std::nullopt));
 
   // Create the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
@@ -573,7 +573,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnProfileConfigReady_InitDisabled_NotifiesReadyWithConfig) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
   SetContextConfig(test_config.Clone());
@@ -633,7 +633,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnFirstPartySetsEnabledChanged_Enables_WithConfig) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
   SetContextConfig(test_config.Clone());
@@ -698,7 +698,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 TEST_F(FirstPartySetsPolicyServiceTest, NotifiesReadyWithConfigAndCacheFilter) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
   net::FirstPartySetsCacheFilter test_cache_filter({{test_primary, 1}},
@@ -719,7 +719,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
        ComputeFirstPartySetMetadata_BeforeInitialization) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
 
@@ -739,7 +739,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
        ComputeFirstPartySetMetadata_AfterInitialization_StillAsync) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
 
@@ -757,7 +757,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
        ComputeFirstPartySetMetadata_AfterInitialization_Sync) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
 
@@ -776,7 +776,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
        ComputeFirstPartySetMetadata_PrefDisabled) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
-                                     absl::nullopt);
+                                     std::nullopt);
   net::FirstPartySetsContextConfig test_config(
       {{test_primary, net::FirstPartySetEntryOverride(test_entry)}});
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -27,7 +28,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -133,10 +133,10 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
       });
 
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
                                    future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
@@ -160,7 +160,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
           });
 
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  base::test::TestFuture<absl::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
                                    future.GetCallback());
   EXPECT_EQ(future.Get(), "test error");
@@ -169,7 +169,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
 class IsolatedWebAppValidatorMetadataTest
     : public IsolatedWebAppValidatorTest,
       public ::testing::WithParamInterface<
-          std::tuple<absl::optional<std::string>,
+          std::tuple<std::optional<std::string>,
                      std::vector<std::string>,
                      base::expected<void, UnusableSwbnFileError>>> {
  public:
@@ -182,7 +182,7 @@ class IsolatedWebAppValidatorMetadataTest
   }
 
  protected:
-  absl::optional<GURL> primary_url_;
+  std::optional<GURL> primary_url_;
   std::vector<GURL> entries_;
   base::expected<void, UnusableSwbnFileError> status_;
 };
@@ -203,18 +203,18 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppValidatorMetadataTest,
     ::testing::Values(
-        std::make_tuple(absl::nullopt,
+        std::make_tuple(std::nullopt,
                         std::vector<std::string>({kUrl}),
                         base::ok()),
         std::make_tuple(
-            absl::nullopt,
+            std::nullopt,
             std::vector<std::string>({kUrl, kUrl + "/foo#bar"}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
                 "The URL of an exchange is invalid: URLs must not have "
                 "a fragment part."))),
         std::make_tuple(
-            absl::nullopt,
+            std::nullopt,
             std::vector<std::string>({kUrl, kUrl + "/foo?bar"}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
@@ -228,14 +228,14 @@ INSTANTIATE_TEST_SUITE_P(
                 "Primary URL must not be present, but was isolated-app://"
                 "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"))),
         std::make_tuple(
-            absl::nullopt,
+            std::nullopt,
             std::vector<std::string>({kUrl, "https://foo/"}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
                 "The URL of an exchange is invalid: The URL scheme "
                 "must be isolated-app, but was https"))),
         std::make_tuple(
-            absl::nullopt,
+            std::nullopt,
             std::vector<std::string>({kUrl, kUrlFromAnotherIsolatedWebApp}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,

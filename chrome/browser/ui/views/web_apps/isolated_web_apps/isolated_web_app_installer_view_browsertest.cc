@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/test/widget_test.h"
 
@@ -45,13 +45,12 @@
 namespace web_app {
 namespace {
 
-using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
 using Step = IsolatedWebAppInstallerModel::Step;
 
 struct TestParam {
   std::string test_suffix;
   Step step;
-  absl::optional<DialogContent> dialog = absl::nullopt;
+  std::optional<IsolatedWebAppInstallerModel::Dialog> dialog = std::nullopt;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
 };
@@ -64,27 +63,25 @@ const TestParam kTestParam[] = {
     {.test_suffix = "Success", .step = Step::kInstallSuccess},
     {.test_suffix = "InvalidBundle",
      .step = Step::kGetMetadata,
-     .dialog = DialogContent(
-         /*is_error=*/true,
-         IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
-         IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)},
+     .dialog = IsolatedWebAppInstallerModel::BundleInvalidDialog{}},
+    {.test_suffix = "AlreadyInstalled",
+     .step = Step::kGetMetadata,
+     .dialog =
+         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
+             u"Test IWA", base::Version("1.0")}},
+    {.test_suffix = "Outdated",
+     .step = Step::kGetMetadata,
+     .dialog =
+         IsolatedWebAppInstallerModel::BundleOutdatedDialog{
+             u"Test IWA", base::Version("1.0"), base::Version("2.0")}},
     {.test_suffix = "ConfirmInstall",
      .step = Step::kShowMetadata,
-     .dialog = DialogContent(
-         /*is_error=*/false,
-         IDS_IWA_INSTALLER_CONFIRM_TITLE,
-         IDS_IWA_INSTALLER_CONFIRM_SUBTITLE,
-         std::make_pair(IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
-                        base::DoNothing()),
-         IDS_IWA_INSTALLER_CONFIRM_CONTINUE)},
+     .dialog =
+         IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+             base::DoNothing()}},
     {.test_suffix = "InstallationError",
      .step = Step::kInstall,
-     .dialog = DialogContent(
-         /*is_error=*/true,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
-         /*details_link=*/absl::nullopt,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY)},
+     .dialog = IsolatedWebAppInstallerModel::InstallationFailedDialog{}},
 };
 
 SignedWebBundleMetadata CreateTestMetadata() {
@@ -248,14 +245,13 @@ class IsolatedWebAppInstallerViewUiPixelTest
     controller.Start(future.GetCallback(), base::DoNothing());
     ASSERT_TRUE(future.Wait());
 
-    model.SetStep(GetParam().step);
     model.SetSignedWebBundleMetadata(CreateTestMetadata());
+    model.SetStep(GetParam().step);
 
     controller.Show();
 
     if (GetParam().dialog.has_value()) {
-      model.SetDialogContent(GetParam().dialog);
-      controller.OnModelChanged();
+      model.SetDialog(GetParam().dialog);
     }
   }
 

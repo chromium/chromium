@@ -111,9 +111,21 @@ class PopupViewViews : public PopupBaseView,
  private:
   friend class PopupViewViewsTestApi;
 
+  // Sets the `cell_index` cell as selected (or just unselects the selected
+  // cell if `nullopt` is passed). Only one cell can be selected at a time.
+  // Depending on the cell type and the suggestion, it makes the cell or
+  // the whole row highlighted. It may also trigger the form preview or
+  // a sub-popup to open, which depends on the suggestion acceptability, whether
+  // it has children children and the cell type. `autoselect_first_suggestion`
+  // and `suppress_popup` are relevant for cases when setting the cell triggers
+  // a sub-popup to open. Setting `suppress_popup` to `true` prevents
+  // the sub-popup from opening in such cases. `autoselect_first_suggestion`
+  // controls whether the first suggestion in the sub-popup will be selected,
+  // also capturing the keyboard focus if it is `true`.
   void SetSelectedCell(std::optional<CellIndex> cell_index,
                        PopupCellSelectionSource source,
-                       AutoselectFirstSuggestion autoselect_first_suggestion);
+                       AutoselectFirstSuggestion autoselect_first_suggestion,
+                       bool suppress_popup = false);
 
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will

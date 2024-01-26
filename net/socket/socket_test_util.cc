@@ -815,6 +815,11 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
       next_ssl_data->expected_ssl_version_max,
       ssl_config.version_max_override.value_or(context->config().version_max));
 
+  if (next_ssl_data->expected_early_data_enabled) {
+    EXPECT_EQ(*next_ssl_data->expected_early_data_enabled,
+              ssl_config.early_data_enabled);
+  }
+
   if (next_ssl_data->expected_send_client_cert) {
     // Client certificate preferences come from |context|.
     scoped_refptr<X509Certificate> client_cert;

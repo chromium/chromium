@@ -44,7 +44,10 @@
 
 namespace blink {
 
+#if INSIDE_BLINK
 class Frame;
+#endif
+
 class WebLocalFrame;
 class WebRemoteFrame;
 class WebSecurityOrigin;

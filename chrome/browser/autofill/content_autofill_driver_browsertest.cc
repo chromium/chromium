@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
   autofill_driver_factory()
       ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
       ->renderer_events()
-      .SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
+      .SetFormToBeProbablySubmitted(std::make_optional<FormData>());
 
   base::HistogramTester histogram_tester;
 

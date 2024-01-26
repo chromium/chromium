@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -40,7 +41,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -177,7 +177,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
   EXPECT_EQ(0u, os_integration_manager().num_register_run_on_os_login_calls());
 }
 
@@ -207,7 +207,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/absl::nullopt, info1->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info1->start_url));
           EXPECT_TRUE(os_hooks_errors.none());
           callback1_called = true;
           if (callback2_called)
@@ -225,7 +225,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/absl::nullopt, info2->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info2->start_url));
           EXPECT_TRUE(os_hooks_errors.none());
           callback2_called = true;
           if (callback1_called)
@@ -371,7 +371,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_FALSE(os_integration_manager().did_add_to_desktop().value());
@@ -391,7 +391,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_TRUE(os_integration_manager().did_add_to_desktop().value());
@@ -413,7 +413,7 @@ TEST_P(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_FALSE(os_integration_manager().did_add_to_desktop().value());
@@ -436,7 +436,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(0u, os_integration_manager().num_create_shortcuts_calls());
 }
@@ -453,7 +453,7 @@ TEST_P(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_file_handlers_calls());
 }
@@ -469,7 +469,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
@@ -512,7 +512,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   const WebApp::ExternalConfigMap& config_map =
@@ -542,7 +542,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info.start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info.start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);

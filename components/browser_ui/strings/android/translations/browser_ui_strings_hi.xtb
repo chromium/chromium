@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
 <translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
 <translation id="1426410128494586442">हां</translation>
+<translation id="1434873037477293673">कीमत में गिरावट वाला कार्ड</translation>
 <translation id="1448064542941920355">ज़ूम आउट करें</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}one{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइटें}}</translation>
 <translation id="1510341833810331442">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
@@ -41,7 +42,7 @@
 <translation id="1779089405699405702">इमेज डीकोडर</translation>
 <translation id="1785415724048343560">बेहतरीन अनुभव पाने के लिए इसे चुनें</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> को एआर (ऑगमेंटेड रिएलिटी) का इस्तेमाल करने देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
-<translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
+<translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1919950603503897840">संपर्कों को चुनें</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -93,7 +94,7 @@
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 कुकी को ब्लॉक किया गया}one{# कुकी को ब्लॉक किया गया}other{# कुकी ब्लॉक किए गए}}</translation>
-<translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
+<translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="257931822824936280">बड़ा किया गया - छोटा करने के लिए क्‍लिक करें.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटों पर गहरे रंग वाली थीम लागू न करें</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">साइटें, पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं.</translation>
 <translation id="2790501146643349491">इस सेटिंग के चालू होने पर, हाल ही में बंद की गई साइटें, डेटा भेजने और पाने की प्रोसेस पूरी कर सकती हैं. इस सेटिंग के बंद होने पर, हाल ही में बंद की गई साइटें, डेटा भेजने या पाने की प्रोसेस पूरी नहीं कर सकतीं.</translation>
 <translation id="2822354292072154809">क्या आप वाकई <ph name="CHOSEN_OBJECT_NAME" /> की सभी साइट अनुमतियां रीसेट करना चाहते हैं?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">मोबाइल व्यू के लिए अनुरोध करें</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
@@ -199,7 +201,7 @@
 <translation id="4336566011000459927">Chrome आज फिर से कुकी को सीमित करेगा</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> की सभी साइटें</translation>
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
-<translation id="4412992751769744546">तृतीय-पक्ष कुकी को अनुमति दें</translation>
+<translation id="4412992751769744546">तीसरे पक्ष की कुकी को अनुमति दें</translation>
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443552056913301231">इस कार्रवाई से, कुकी के साथ-साथ पूरा स्थानीय डेटा मिट जाएगा. साथ ही, <ph name="ORIGIN" /> की सभी अनुमतियां रीसेट हो जाएंगी</translation>
 <translation id="4468959413250150279">किसी खास साइट के लिए आवाज़ बंद करें.</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटों को अपने वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करने से रोकें</translation>
 <translation id="6447842834002726250">कुकी</translation>
+<translation id="6452138246455930388">आपके खुले हुए टैब पर कीमत में गिरावट हुई है, <ph name="DOMAIN_NAME" /> पर <ph name="PRODUCT_NAME" /> की कीमत अब<ph name="OLD_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है.</translation>
 <translation id="6500423977866688905">जब विंडो छोटी हो, तब साइट को मोबाइल व्यू में दिखाने का अनुरोध करें</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="652937045869844725">तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">नीचे ले जाएं</translation>
 <translation id="6749077623962119521">क्या आप अनुमतियां रीसेट करना चाहते हैं?</translation>
 <translation id="6766622839693428701">बंद करने के लिए नीचे स्वाइप करें.</translation>
+<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> से <ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> के लिए कोई विकल्प चुनें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6818926723028410516">आइटम चुनें</translation>
 <translation id="6864395892908308021">इस डिवाइस के साथ NFC काम नहीं कर सकता</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> से</translation>
 <translation id="6912998170423641340">साइटों को क्लिपबोर्ड से टेक्स्ट और इमेज पढ़ने से रोकें</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6950072572526089586">किसी साइट को विज़िट करने पर, वह आपकी गतिविधियों की जानकारी सेव कर सकती है. इससे वह साइट, आपकी पसंद को ध्यान में रख पाती है. उदाहरण के लिए, साइट में आपको साइन इन रखना या आपके शॉपिंग कार्ट में आइटम सेव रखना. आम तौर पर, साइटें आपके डिवाइस पर इस जानकारी को कुछ समय के लिए सेव करती हैं.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">द वंडरफ़ुल विज़र्ड ऑफ़ ऑज़</translation>
 <translation id="7684642910516280563">साइट को तीसरे पक्ष की कुकी इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="7719367874908701697">पेज ज़ूम</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" छिपाएं</translation>
 <translation id="7781829728241885113">बीता कल</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>

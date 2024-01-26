@@ -274,7 +274,7 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
   const bool add_new_task_button_visible = (num_tasks_shown_ == 0);
   if (add_new_task_button_visible) {
-    RecordAddTaskButtonShown();
+    RecordAddTaskButtonShownForTT();
     if (tasks_combobox_model_->GetItemCount() == 1) {
       RecordAddTaskButtonUsageForNewTasksUsersTT(/*pressed=*/false);
     }

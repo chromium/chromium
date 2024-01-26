@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -996,7 +997,20 @@ gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
     constexpr int multiple = 64;
     width = cc::MathUtil::CheckedRoundUp(width, multiple);
     height = cc::MathUtil::CheckedRoundUp(height, multiple);
+
+    // There are no guarantees that max texture size is a multiple of 64 so
+    // clamp the rounded up dimensions to avoid ending up with dimensions
+    // larger than max texture size. Note: Software surfaces and some
+    // test only surfaces does not have max_texture_size set so assume that
+    // we don't have to clamp the dimensions when max texture size is zero.
+    const int max_texture_size =
+        output_surface_->capabilities().max_texture_size;
+    if (max_texture_size > 0) {
+      width = std::min(max_texture_size, width);
+      height = std::min(max_texture_size, height);
+    }
   }
+
   return gfx::Size(width, height);
 }
 

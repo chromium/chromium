@@ -33,10 +33,10 @@ namespace {
 
 constexpr size_t kGeneralSignalUpperLimit = 128U;
 
-absl::optional<ParsedSignalsError> TryParseError(
+std::optional<ParsedSignalsError> TryParseError(
     const device_signals::SignalsAggregationResponse& response,
-    const absl::optional<device_signals::BaseSignalResponse>& bundle) {
-  absl::optional<std::string> error_string;
+    const std::optional<device_signals::BaseSignalResponse>& bundle) {
+  std::optional<std::string> error_string;
   if (response.top_level_error) {
     return ParsedSignalsError{response.top_level_error.value(),
                               /*is_top_level_error=*/true};
@@ -52,7 +52,7 @@ absl::optional<ParsedSignalsError> TryParseError(
                               /*is_top_level_error=*/false};
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 api::enterprise_reporting_private::PresenceValue ConvertPresenceValue(
@@ -89,7 +89,7 @@ std::vector<std::string> EncodeHashes(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-absl::optional<device_signals::RegistryHive> ConvertHiveFromApi(
+std::optional<device_signals::RegistryHive> ConvertHiveFromApi(
     api::enterprise_reporting_private::RegistryHive api_hive) {
   switch (api_hive) {
     case api::enterprise_reporting_private::RegistryHive::kHkeyClassesRoot:
@@ -99,12 +99,12 @@ absl::optional<device_signals::RegistryHive> ConvertHiveFromApi(
     case api::enterprise_reporting_private::RegistryHive::kHkeyCurrentUser:
       return device_signals::RegistryHive::kHkeyCurrentUser;
     case api::enterprise_reporting_private::RegistryHive::kNone:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 api::enterprise_reporting_private::RegistryHive ConvertHiveToApi(
-    absl::optional<device_signals::RegistryHive> hive) {
+    std::optional<device_signals::RegistryHive> hive) {
   if (!hive) {
     return api::enterprise_reporting_private::RegistryHive::kNone;
   }
@@ -141,7 +141,7 @@ ConvertFileSystemInfoOptions(
   return converted_options;
 }
 
-absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
+std::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
     const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>*
         arg_list) {
@@ -185,7 +185,7 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
   }
 
   *arg_list = std::move(api_responses);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -206,7 +206,7 @@ std::vector<device_signals::GetSettingsOptions> ConvertSettingsOptions(
   return converted_options;
 }
 
-absl::optional<ParsedSignalsError> ConvertSettingsResponse(
+std::optional<ParsedSignalsError> ConvertSettingsResponse(
     const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::GetSettingsResponse>*
         arg_list) {
@@ -235,14 +235,14 @@ absl::optional<ParsedSignalsError> ConvertSettingsResponse(
   }
 
   *arg_list = std::move(api_responses);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 
-absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
+std::optional<ParsedSignalsError> ConvertAvProductsResponse(
     const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::AntiVirusSignal>* arg_list) {
   auto error = TryParseError(aggregation_response,
@@ -285,10 +285,10 @@ absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
   }
 
   *arg_list = std::move(api_av_signals);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
+std::optional<ParsedSignalsError> ConvertHotfixesResponse(
     const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::HotfixSignal>* arg_list) {
   auto error = TryParseError(aggregation_response,
@@ -311,7 +311,7 @@ absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
   }
 
   *arg_list = std::move(api_hotfix_signals);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #endif  // BUILDFLAG(IS_WIN)

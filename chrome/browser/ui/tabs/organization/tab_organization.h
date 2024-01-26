@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -113,6 +114,7 @@ class TabOrganization : public TabData::Observer {
   bool invalidated_by_tab_change_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
+  base::WeakPtrFactory<TabOrganization> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_H_

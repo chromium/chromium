@@ -11,7 +11,7 @@ import './icons.html.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -28,11 +30,20 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
 
     application_commands_mock_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:application_commands_mock_
+                     forProtocol:@protocol(ApplicationCommands)];
+    settings_commands_mock_ =
+        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:settings_commands_mock_
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     AccountConsistencyBrowserAgent::CreateForBrowser(
-        browser_.get(), base_view_controller_mock_, application_commands_mock_);
+        browser_.get(), base_view_controller_mock_);
     agent_ = AccountConsistencyBrowserAgent::FromBrowser(browser_.get());
 
     WebStateList* web_state_list = browser_.get()->GetWebStateList();
@@ -51,8 +62,9 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  AccountConsistencyBrowserAgent* agent_;
+  raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<ApplicationCommands> application_commands_mock_;
+  id<ApplicationSettingsCommands> settings_commands_mock_;
   UIViewController* base_view_controller_mock_;
 };
 
@@ -123,4 +135,68 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
   EXPECT_EQ(received_command.promoAction,
             signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+}
+
+// Tests that calling the `OnRestoreGaiaCookies()` callback invokes the account
+// notification command.
+TEST_F(AccountConsistencyBrowserAgentTest, OnRestorGaiaCookiesCallsCommand) {
+  OCMExpect([application_commands_mock_
+      showSigninAccountNotificationFromViewController:
+          base_view_controller_mock_]);
+  agent_->OnRestoreGaiaCookies();
+  // Expect -showSigninAccountNotificationFromViewController to have
+  // been called. This is ensured by TearDown because application_commands_mock_
+  // is a strict mock.
+}
+
+// Tests that calling the `OnManageAccounts()` callback invokes the account
+// settings command.
+TEST_F(AccountConsistencyBrowserAgentTest, OnManageAccountsCallsCommand) {
+  OCMExpect([settings_commands_mock_
+      showAccountsSettingsFromViewController:base_view_controller_mock_
+                        skipIfUINotAvailable:YES]);
+  agent_->OnManageAccounts();
+  // Expect -showAccountsSettingsFromViewController:skipIfUINotAvailable: to
+  // have been called. This is ensured by TearDown because
+  // settings_commands_mock_ is a strict mock.
+}
+
+// Tests that calling the `OnShowConsistencyPromo()` callback with the active
+// web state invokes the command to show the signing promo.
+TEST_F(AccountConsistencyBrowserAgentTest,
+       OnShowConsistencyPromoWithCurrentWebState) {
+  const GURL url("https://www.example.com");
+  // Activate a web state and pass that web state into `OnShowConsistencyPromo`.
+  WebStateList* web_state_list = browser_.get()->GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  web::WebState* web_state =
+      browser_.get()->GetWebStateList()->GetActiveWebState();
+  OCMExpect([application_commands_mock_
+      showWebSigninPromoFromViewController:base_view_controller_mock_
+                                       URL:url]);
+  agent_->OnShowConsistencyPromo(url, web_state);
+  // Expect -showWebSigninPromoFromViewController:URL: to have been called.
+  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // mock.
+}
+
+// Tests that calling the `OnShowConsistencyPromo()` callback with a non-active
+// web state does not invoke the command to show the signing promo.
+TEST_F(AccountConsistencyBrowserAgentTest,
+       OnShowConsistencyPromoWithOtherWebState) {
+  const GURL url("https://www.example.com");
+  // Activate the first web state.
+  WebStateList* web_state_list = browser_.get()->GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  // Insert another web state, but don't activate it. Pass this web state in to
+  // `OnShowConsistencyPromo`.
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  WebStateOpener opener;
+  web_state_list->InsertWebState(1, std::move(test_web_state),
+                                 WebStateList::INSERT_FORCE_INDEX, opener);
+  web::WebState* web_state = web_state_list->GetWebStateAt(1);
+  agent_->OnShowConsistencyPromo(url, web_state);
+  // Expect -showWebSigninPromoFromViewController:URL: to have not been called.
+  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // mock.
 }

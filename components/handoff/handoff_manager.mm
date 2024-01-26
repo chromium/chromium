@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/handoff/pref_names_ios.h"

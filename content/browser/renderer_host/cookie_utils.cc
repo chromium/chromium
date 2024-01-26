@@ -91,15 +91,14 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
   // for cookies since it is a cross-site context. If the result of
   // ComputeSiteForCookies is first-party that means we are not in an ABA
   // embedded context.
-  if (render_frame_host_impl->ComputeSiteForCookies().IsFirstParty(
+  bool has_cross_site_ancestor =
+      !render_frame_host_impl->ComputeSiteForCookies().IsFirstParty(
           GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                             cookie.DomainWithoutDot()})))) {
-    return;
-  }
+                             cookie.DomainWithoutDot()})));
 
-  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContext(
+  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContextV2(
       render_frame_host_impl->GetPageUkmSourceId())
-      .SetCookiePresent(true)
+      .SetCookiePresent(has_cross_site_ancestor)
       .Record(ukm::UkmRecorder::Get());
 }
 

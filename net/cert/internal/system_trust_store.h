@@ -61,6 +61,12 @@ NET_EXPORT std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root);
 
+// Creates an instance of SystemTrustStore that only uses the Chrome Root Store
+// trust anchors.
+// This cannot return nullptr.
+NET_EXPORT std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
+    std::unique_ptr<TrustStoreChrome> chrome_root);
+
 NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
 CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,

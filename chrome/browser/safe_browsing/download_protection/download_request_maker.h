@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_REQUEST_MAKER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/file_system_access_write_item.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -37,7 +37,7 @@ class DownloadRequestMaker {
   static std::unique_ptr<DownloadRequestMaker> CreateFromDownloadItem(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
       download::DownloadItem* item,
-      base::optional_ref<const std::string> password = absl::nullopt);
+      base::optional_ref<const std::string> password = std::nullopt);
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromFileSystemAccess(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
@@ -100,7 +100,7 @@ class DownloadRequestMaker {
   // The current path to the file contents.
   const base::FilePath full_path_;
 
-  const absl::optional<std::string> password_;
+  const std::optional<std::string> password_;
 
   // Callback used for handling behavior specific to download items of file
   // system accesses.

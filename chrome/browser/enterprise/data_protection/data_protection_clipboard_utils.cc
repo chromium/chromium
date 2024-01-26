@@ -5,6 +5,8 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/rules_service.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
@@ -33,7 +35,7 @@ void HandleExpandedPaths(
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            absl::optional<content::ClipboardPasteData> clipboard_paste_data;
+            std::optional<content::ClipboardPasteData> clipboard_paste_data;
             auto blocked = fsd->IndexesToBlock(result.paths_results);
             if (blocked.size() != paths.size()) {
               std::vector<base::FilePath> allowed_paths;
@@ -71,7 +73,7 @@ void HandleStringData(
             // `callback`, changing the type from `const Data&` to just `Data`
             // would avoid a copy.
             if (!result.text_results[0] && !result.image_result) {
-              std::move(callback).Run(absl::nullopt);
+              std::move(callback).Run(std::nullopt);
               return;
             }
 
@@ -88,6 +90,26 @@ void HandleStringData(
       safe_browsing::DeepScanAccessPoint::PASTE);
 }
 
+bool SkipDataControlOrContentAnalysisPasteChecks(
+    const content::ClipboardEndpoint& destination) {
+  // Data Controls and content analysis paste checks require an active tab to be
+  // meaningful, so if it's gone they can be skipped.
+  auto* web_contents = destination.web_contents();
+  if (!web_contents) {
+    return true;
+  }
+
+  // Data Controls and content analysis paste checks are only meaningful in
+  // Chrome tabs, so they should always be skipped for source-only checks (ex.
+  // copy prevention checks).
+  if (!destination.data_transfer_endpoint().has_value() ||
+      !destination.data_transfer_endpoint()->IsUrlType()) {
+    return true;
+  }
+
+  return false;
+}
+
 void PasteIfAllowedByContentAnalysis(
     content::WebContents* web_contents,
     const content::ClipboardEndpoint& destination,
@@ -95,6 +117,8 @@ void PasteIfAllowedByContentAnalysis(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(web_contents);
+  DCHECK(!SkipDataControlOrContentAnalysisPasteChecks(destination));
+
   Profile* profile = Profile::FromBrowserContext(destination.browser_context());
   if (!profile) {
     std::move(callback).Run(std::move(clipboard_paste_data));
@@ -137,6 +161,32 @@ void PasteIfAllowedByContentAnalysis(
   }
 }
 
+void PasteIfAllowedByDataControls(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+  DCHECK(!SkipDataControlOrContentAnalysisPasteChecks(destination));
+
+  auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
+                     destination.browser_context())
+                     ->GetPasteVerdict(source, destination, metadata);
+
+  // TODO(b/302340176): Add support for verdicts other than "block".
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    data_controls::DataControlsDialog::Show(
+        destination.web_contents(),
+        data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  PasteIfAllowedByContentAnalysis(destination.web_contents(), destination,
+                                  metadata, std::move(clipboard_paste_data),
+                                  std::move(callback));
+}
+
 void OnDlpRulesCheckDone(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -144,29 +194,17 @@ void OnDlpRulesCheckDone(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
     bool allowed) {
-  // If DLP rules blocked the action, no further policy checks are required.
-  if (!allowed) {
+  // If DLP rules blocked the action or if there are no further policy checks
+  // required, return null to indicate the pasting is blocked or no longer
+  // applicable.
+  if (!allowed || SkipDataControlOrContentAnalysisPasteChecks(destination)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  // The following validations not passing imply that content analysis cannot be
-  // done, so `callback` can run early if any fails.
-  auto* web_contents = destination.web_contents();
-  if (!web_contents) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  if (!destination.data_transfer_endpoint().has_value() ||
-      !destination.data_transfer_endpoint()->IsUrlType()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  PasteIfAllowedByContentAnalysis(web_contents, destination, metadata,
-                                  std::move(clipboard_paste_data),
-                                  std::move(callback));
+  PasteIfAllowedByDataControls(source, destination, metadata,
+                               std::move(clipboard_paste_data),
+                               std::move(callback));
 }
 
 }  // namespace
@@ -177,18 +215,25 @@ void PasteIfAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
-  if (clipboard_paste_data.file_paths.empty()) {
-    DCHECK(metadata.size.has_value());
-    pasted_content = *metadata.size;
-  } else {
-    pasted_content = clipboard_paste_data.file_paths;
-  }
 
-  // TODO(b/302340176): Add logic for DataControlsRules.
   if (ui::DataTransferPolicyController::HasInstance()) {
+    absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
+    if (clipboard_paste_data.file_paths.empty()) {
+      DCHECK(metadata.size.has_value());
+      pasted_content = *metadata.size;
+    } else {
+      pasted_content = clipboard_paste_data.file_paths;
+    }
+
+    absl::optional<ui::DataTransferEndpoint> destination_endpoint =
+        absl::nullopt;
+    if (destination.browser_context() &&
+        !destination.browser_context()->IsOffTheRecord()) {
+      destination_endpoint = destination.data_transfer_endpoint();
+    }
+
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        source.data_transfer_endpoint(), destination.data_transfer_endpoint(),
+        source.data_transfer_endpoint(), destination_endpoint,
         std::move(pasted_content),
         destination.web_contents()
             ? destination.web_contents()->GetPrimaryMainFrame()

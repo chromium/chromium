@@ -10,7 +10,7 @@ declare_args() {
                              (current_cpu == "x64" || current_cpu == "x86" ||
                               (current_cpu == "arm64" && !is_win))
 
-  # This build flag enables WebNN on ChromeOS platform to access hardware
-  # acceleration by using ModelLoader mojo interface.
-  build_webnn_on_cros = is_chromeos
+  # This build flag enables WebNN to access hardware acceleration using TFLite
+  # via the ModelLoader mojo interface.
+  build_webnn_with_tflite_model_loader = is_chromeos
 }

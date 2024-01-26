@@ -25,7 +25,7 @@
 namespace blink {
 
 using AppInstalledCallbacks =
-    CallbackPromiseAdapter<HeapVector<Member<RelatedApplication>>, void>;
+    CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>;
 
 class MODULES_EXPORT InstalledAppController final
     : public GarbageCollected<InstalledAppController>,

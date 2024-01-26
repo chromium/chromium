@@ -2501,6 +2501,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
 // install.
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
                        WindowedShortcutAppsHaveActivityIndicatorSet) {
+  // With shortstand enabled, we no longer allow creating windowed shortcut.
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP();
+  }
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(AddTabAtIndex(

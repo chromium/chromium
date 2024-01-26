@@ -33,13 +33,12 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // user action.
   void HandleRecordAction(const base::Value::List& args);
 
-  // TODO(dbeam): http://crbug.com/104338
-
   // Callback for the "metricsHandler:recordInHistogram" message. This records
-  // into a histogram. |args| contains the histogram name, the value to record,
-  // and the maximum allowed value, which can be at most 4000. The histogram
-  // will use at most 100 buckets, one for each 1, 10, or 100 different values,
-  // depending on the maximum value.
+  // into a histogram. |args| contains three arguments:
+  //  1. The histogram name
+  //  2. The integer value to record as a sample
+  //  3. The exclusive max.
+  // These are passed directly to base::UmaHistogramExactLinear.
   void HandleRecordInHistogram(const base::Value::List& args);
 
   // Callback for the "metricsHandler:recordBooleanHistogram" message. This

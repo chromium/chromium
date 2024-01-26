@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -22,7 +23,6 @@
 #include "chrome/services/sharing/webrtc/p2p_socket_client_delegate.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/network/received_packet.h"
 
@@ -404,8 +404,7 @@ int IpcPacketSocket::SendTo(const void* data,
 
   uint64_t packet_id = client_->Send(
       address_chrome,
-      base::make_span(reinterpret_cast<const uint8_t*>(data), data_size),
-      options);
+      base::make_span(static_cast<const uint8_t*>(data), data_size), options);
 
   // Ensure packet_id is not 0. It can't be the case according to
   // P2PSocketClient::Send().
@@ -626,7 +625,7 @@ void AsyncDnsAddressResolverImpl::Start(const rtc::SocketAddress& addr,
   addr_ = addr;
   callback_ = std::move(callback);
   resolver_.Start(
-      addr, absl::nullopt,
+      addr, std::nullopt,
       base::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
                      base::Unretained(this)));
 }

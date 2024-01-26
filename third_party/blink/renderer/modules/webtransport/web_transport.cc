@@ -604,7 +604,10 @@ class WebTransport::StreamVendingUnderlyingSource final
   }
 
  private:
-  void Enqueue(ScriptWrappable* stream) { Controller()->Enqueue(stream); }
+  void Enqueue(ScriptWrappable* stream) {
+    Controller()->Enqueue(
+        ToV8Traits<ScriptWrappable>::ToV8(script_state_, stream));
+  }
 
   const Member<ScriptState> script_state_;
   const Member<StreamVendor> vendor_;
@@ -891,9 +894,8 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   }
 
   v8::Local<v8::Value> reason;
-  if (close_info &&
-      ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, close_info)
-          .ToLocal(&reason)) {
+  if (close_info) {
+    reason = ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, close_info);
   } else {
     reason = v8::Object::New(isolate);
   }
@@ -925,7 +927,8 @@ void WebTransport::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebTransport> web_transport,
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
         client_receiver,
-    network::mojom::blink::HttpResponseHeadersPtr response_headers) {
+    network::mojom::blink::HttpResponseHeadersPtr response_headers,
+    network::mojom::blink::WebTransportStatsPtr initial_stats) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   connector_.reset();
   handshake_client_receiver_.reset();
@@ -1036,7 +1039,8 @@ void WebTransport::OnReceivedStopSending(uint32_t stream_id,
 }
 
 void WebTransport::OnClosed(
-    network::mojom::blink::WebTransportCloseInfoPtr close_info) {
+    network::mojom::blink::WebTransportCloseInfoPtr close_info,
+    network::mojom::blink::WebTransportStatsPtr final_stats) {
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
@@ -1046,8 +1050,7 @@ void WebTransport::OnClosed(
     idl_close_info.setReason(close_info->reason);
   }
   v8::Local<v8::Value> reason =
-      ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, &idl_close_info)
-          .ToLocalChecked();
+      ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, &idl_close_info);
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/absl::nullopt, "The session is closed.",

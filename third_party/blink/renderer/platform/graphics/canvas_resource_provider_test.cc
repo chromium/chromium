@@ -196,7 +196,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(sync_token, resource->GetSyncToken());
 
   // Resource updated after draw.
-  provider->Canvas()->clear(SkColors::kWhite);
+  provider->Canvas().clear(SkColors::kWhite);
   auto new_resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_NE(resource, new_resource);
   EXPECT_NE(sync_token, new_resource->GetSyncToken());
@@ -209,7 +209,7 @@ TEST_F(CanvasResourceProviderTest,
   auto* resource_ptr = resource.get();
   std::move(release_callback).Run(std::move(resource), sync_token, false);
 
-  provider->Canvas()->clear(SkColors::kBlack);
+  provider->Canvas().clear(SkColors::kBlack);
   auto resource_again = provider->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, resource_again->GetSyncToken());
@@ -240,7 +240,7 @@ TEST_F(CanvasResourceProviderTest,
             image->GetMailboxHolder().mailbox);
 
   // Resource updated after draw.
-  provider->Canvas()->clear(SkColors::kWhite);
+  provider->Canvas().clear(SkColors::kWhite);
   provider->FlushCanvas(FlushReason::kTesting);
   new_image = provider->Snapshot(FlushReason::kTesting);
   EXPECT_NE(new_image->GetMailboxHolder().mailbox,
@@ -249,7 +249,7 @@ TEST_F(CanvasResourceProviderTest,
   // Resource recycled.
   auto original_mailbox = image->GetMailboxHolder().mailbox;
   image.reset();
-  provider->Canvas()->clear(SkColors::kBlack);
+  provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
   EXPECT_EQ(
       original_mailbox,
@@ -280,7 +280,7 @@ TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
           base::BindOnce([](scoped_refptr<CanvasResource> resource) {}));
 
   // Resource updated after draw.
-  provider->Canvas()->clear(SkColors::kWhite);
+  provider->Canvas().clear(SkColors::kWhite);
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot2 =
       provider->Snapshot(FlushReason::kTesting);
@@ -289,7 +289,7 @@ TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
 
   auto snapshot1_mailbox = snapshot1->GetMailboxHolder().mailbox;
   snapshot1.reset();  // resource not recycled due to LastUnrefCallback
-  provider->Canvas()->clear(SkColors::kBlack);
+  provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot3 =
       provider->Snapshot(FlushReason::kTesting);
@@ -565,26 +565,25 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
       context_provider_wrapper_, RasterMode::kGPU,
       /*shared_image_usage_flags=*/0u);
 
-  MemoryManagedPaintCanvas* dst_canvas =
-      static_cast<MemoryManagedPaintCanvas*>(dst_provider->Canvas());
+  MemoryManagedPaintCanvas& dst_canvas = dst_provider->Canvas();
 
   PaintImage paint_image = src_provider->Snapshot(FlushReason::kTesting)
                                ->PaintImageForCurrentFrame();
   PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
 
-  EXPECT_FALSE(dst_canvas->IsCachingImage(src_content_id));
+  EXPECT_FALSE(dst_canvas.IsCachingImage(src_content_id));
 
-  dst_canvas->drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
+  dst_canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
 
-  EXPECT_TRUE(dst_canvas->IsCachingImage(src_content_id));
+  EXPECT_TRUE(dst_canvas.IsCachingImage(src_content_id));
 
   // Modify the canvas to trigger OnFlushForImage
-  src_provider->Canvas()->clear(SkColors::kWhite);
+  src_provider->Canvas().clear(SkColors::kWhite);
   // So that all the cached draws are executed
   src_provider->ProduceCanvasResource(FlushReason::kTesting);
 
   // The paint canvas may have moved
-  dst_canvas = static_cast<MemoryManagedPaintCanvas*>(dst_provider->Canvas());
+  MemoryManagedPaintCanvas& new_dst_canvas = dst_provider->Canvas();
 
   // TODO(aaronhk): The resource on the src_provider should be the same before
   // and after the draw. Something about the program flow within
@@ -595,7 +594,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 
   // OnFlushForImage should detect the modification of the source resource and
   // clear the cache of the destination canvas to avoid a copy-on-write.
-  EXPECT_FALSE(dst_canvas->IsCachingImage(src_content_id));
+  EXPECT_FALSE(new_dst_canvas.IsCachingImage(src_content_id));
 }
 
 }  // namespace blink

@@ -33,58 +33,74 @@ bool IsExclusiveFeature(uint32_t tag) {
   return tags.Contains(tag);
 }
 
-// Detects `CharType` from glyph bounding box.
-class GlyphBoundsDetector {
-  STACK_ALLOCATED();
+inline float GetAdvance(const HarfBuzzShaper::GlyphData& glyph,
+                        bool is_horizontal) {
+  return is_horizontal ? glyph.advance.x() : glyph.advance.y();
+  ;
+}
 
- public:
-  GlyphBoundsDetector(float em, bool is_horizontal)
-      : half_em_(em / 2), quarter_em_(em / 4), is_horizontal_(is_horizontal) {}
-
-  // Get `CharType` from the glyph bounding box.
-  HanKerning::CharType GetCharType(const SkRect& bound) const {
-    if (is_horizontal_) {
-      if (bound.right() <= half_em_) {
-        return HanKerning::CharType::kClose;
-      }
-      if (bound.left() >= half_em_) {
-        return HanKerning::CharType::kOpen;
-      }
-      if (bound.left() >= quarter_em_ && bound.width() <= half_em_) {
-        return HanKerning::CharType::kMiddle;
-      }
-    } else {
-      if (bound.bottom() <= half_em_) {
-        return HanKerning::CharType::kClose;
-      }
-      if (bound.top() >= half_em_) {
-        return HanKerning::CharType::kOpen;
-      }
-      if (bound.top() >= quarter_em_ && bound.height() <= half_em_) {
-        return HanKerning::CharType::kMiddle;
-      }
+// Compute `CharType` from the glyph bounding box.
+HanKerning::CharType CharTypeFromBounds(float half_em,
+                                        const SkRect& bound,
+                                        bool is_horizontal) {
+  if (is_horizontal) {
+    if (bound.right() <= half_em) {
+      return HanKerning::CharType::kClose;
     }
-    return HanKerning::CharType::kOther;
+    if (bound.left() >= half_em) {
+      return HanKerning::CharType::kOpen;
+    }
+    if (bound.width() <= half_em && bound.left() >= half_em / 2) {
+      return HanKerning::CharType::kMiddle;
+    }
+  } else {
+    if (bound.bottom() <= half_em) {
+      return HanKerning::CharType::kClose;
+    }
+    if (bound.top() >= half_em) {
+      return HanKerning::CharType::kOpen;
+    }
+    if (bound.height() <= half_em && bound.top() >= half_em / 2) {
+      return HanKerning::CharType::kMiddle;
+    }
+  }
+  return HanKerning::CharType::kOther;
+}
+
+HanKerning::CharType CharTypeFromBounds(
+    base::span<HarfBuzzShaper::GlyphData> glyphs,
+    base::span<SkRect> bounds,
+    unsigned index,
+    bool is_horizontal) {
+  const float advance = GetAdvance(glyphs[index], is_horizontal);
+  return CharTypeFromBounds(advance / 2, bounds[index], is_horizontal);
+}
+
+HanKerning::CharType CharTypeFromBounds(
+    base::span<HarfBuzzShaper::GlyphData> glyphs,
+    base::span<SkRect> bounds,
+    bool is_horizontal) {
+  // If advances are not the same, `kOther`.
+  const float advance = GetAdvance(glyphs.front(), is_horizontal);
+  for (const HarfBuzzShaper::GlyphData& glyph : glyphs.subspan(1)) {
+    if (advance != GetAdvance(glyph, is_horizontal)) {
+      return HanKerning::CharType::kOther;
+    }
   }
 
-  // Get `CharType` from the glyph bounding box if all glyphs have the same
-  // `CharType`, otherwise `CharType::kOther`.
-  HanKerning::CharType GetCharType(base::span<SkRect> bounds) const {
-    const HanKerning::CharType type0 = GetCharType(bounds.front());
-    for (const SkRect bound : bounds.subspan(1)) {
-      const HanKerning::CharType type = GetCharType(bound);
-      if (type != type0) {
-        return HanKerning::CharType::kOther;
-      }
+  // Return the type if all glyphs have the same type. Otherwise `kOther`.
+  const float half_advance = advance / 2;
+  const HanKerning::CharType type0 =
+      CharTypeFromBounds(half_advance, bounds.front(), is_horizontal);
+  for (const SkRect& bound : bounds.subspan(1)) {
+    const HanKerning::CharType type =
+        CharTypeFromBounds(half_advance, bound, is_horizontal);
+    if (type != type0) {
+      return HanKerning::CharType::kOther;
     }
-    return type0;
   }
-
- private:
-  const float half_em_;
-  const float quarter_em_;
-  const bool is_horizontal_;
-};
+  return type0;
+}
 
 }  // namespace
 
@@ -130,11 +146,6 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED_NORETURN();
 }
 
-bool HanKerning::MaybeOpen(UChar ch) {
-  const CharType type = Character::GetHanKerningCharType(ch);
-  return type == CharType::kOpen || type == CharType::kOpenQuote;
-}
-
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -177,10 +188,10 @@ void HanKerning::Compute(const String& text,
   // Compute for the first character.
   Vector<wtf_size_t, 32> indices;
   CharType last_type;
-  if (options.apply_start) {
+  if (UNLIKELY(options.apply_start)) {
     indices.push_back(start);
     last_type = GetCharType(text[start], font_data);
-  } else if (start) {
+  } else if (start && !options.is_line_start) {
     last_type = GetCharType(text[start - 1], font_data);
     const CharType type = GetCharType(text[start], font_data);
     if (ShouldKern(type, last_type)) {
@@ -194,7 +205,9 @@ void HanKerning::Compute(const String& text,
   if (font_data.has_contextual_spacing) {
     // The `chws` feature can handle charcters in a run.
     // Compute the end edge if there are following runs.
-    if (end < text.length()) {
+    if (UNLIKELY(options.apply_end)) {
+      indices.push_back(end - 1);
+    } else if (end < text.length()) {
       if (end - 1 > start) {
         last_type = GetCharType(text[end - 1], font_data);
       }
@@ -212,13 +225,17 @@ void HanKerning::Compute(const String& text,
       if (ShouldKernLast(type, last_type)) {
         DCHECK_GT(i, 0u);
         indices.push_back(i - 1);
+        unsafe_to_break_before_.push_back(i);
       } else if (ShouldKern(type, last_type)) {
         indices.push_back(i);
+        unsafe_to_break_before_.push_back(i);
       }
     }
 
     // Compute for the last character.
-    if (end < text.length()) {
+    if (UNLIKELY(options.apply_end)) {
+      indices.push_back(end - 1);
+    } else if (end < text.length()) {
       type = GetCharType(text[end], font_data);
       if (ShouldKernLast(type, last_type)) {
         indices.push_back(end - 1);
@@ -303,6 +320,8 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
     has_alternate_spacing = false;
     return;
   }
+
+  Vector<Glyph, 256> glyphs;
   unsigned cluster = 0;
   for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
     if (!glyph_data.glyph || glyph_data.cluster != cluster) {
@@ -310,24 +329,36 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       return;
     }
     ++cluster;
-  }
-
-  // Quotes and other characters have different requirements for the advance.
-  // First, ensure all non-quote characters have 1ic advances. If not, this font
-  // isn't applicable.
-  Vector<Glyph, 256> glyphs;
-  const float em =
-      font.IdeographicInlineSize().value_or(font.PlatformData().size());
-  const base::span<HarfBuzzShaper::GlyphData> glyph_data_span(glyph_data_list);
-  for (const HarfBuzzShaper::GlyphData& glyph_data :
-       glyph_data_span.first(kQuoteStartIndex)) {
-    if ((is_horizontal ? glyph_data.advance.x() : glyph_data.advance.y()) !=
-        em) {
-      has_alternate_spacing = false;
-      return;
-    }
     glyphs.push_back(glyph_data.glyph);
   }
+
+  // Compute glyph bounds for all glyphs.
+  Vector<SkRect, 256> bounds(glyphs.size());
+  font.BoundsForGlyphs(glyphs, &bounds);
+
+  // `bounds` are relative to the glyph origin. Adjust them to be relative to
+  // the paint origin.
+  DCHECK_LE(bounds.size(), glyph_data_list.size());
+  for (wtf_size_t i = 0; i < bounds.size(); ++i) {
+    const HarfBuzzShaper::GlyphData& glyph_data = glyph_data_list[i];
+    bounds[i].offset({glyph_data.offset.x(), glyph_data.offset.y()});
+  }
+
+  // Compute types from glyph bounds.
+  //
+  // This logic allows each group of glyphs to have different advances, such as
+  // when comma and full stop are narrower than `1ch`, as long as:
+  // * The font has the `halt` feature.
+  // * Glyphs in each group have the same advances.
+  // * Glyphs have enough space to apply kerning.
+  base::span<HarfBuzzShaper::GlyphData> glyph_data_span(glyph_data_list);
+  base::span<SkRect> bounds_span(bounds);
+  type_for_dot = CharTypeFromBounds(glyph_data_span.first(kDotSize),
+                                    bounds_span.first(kDotSize), is_horizontal);
+  type_for_colon = CharTypeFromBounds(glyph_data_span, bounds_span, kColonIndex,
+                                      is_horizontal);
+  type_for_semicolon = CharTypeFromBounds(glyph_data_span, bounds_span,
+                                          kSemicolonIndex, is_horizontal);
 
   // Quotes not being fullwidth doesn't necessarily mean the font isn't
   // applicable. Quotes are unified by the Unicode unification process (i.e.,
@@ -339,48 +370,19 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   // Adobe has a convention to switch to CJK glyphs by the OpenType `fwid`
   // feature, but not all fonts follow this convention. The current logic
   // doesn't support this convention.
-  is_quote_fullwidth = true;
-  for (const HarfBuzzShaper::GlyphData& glyph_data :
-       glyph_data_span.subspan(kQuoteStartIndex)) {
-    if ((is_horizontal ? glyph_data.advance.x() : glyph_data.advance.y()) !=
-        em) {
-      is_quote_fullwidth = false;
-      glyphs.Shrink(kQuoteStartIndex);
-      break;
-    }
-    glyphs.push_back(glyph_data.glyph);
-  }
-  DCHECK((is_quote_fullwidth && glyphs.size() == std::size(kChars)) ||
-         (!is_quote_fullwidth && glyphs.size() == kQuoteStartIndex));
-
-  // Compute glyph bounds for all glyphs.
-  Vector<SkRect, 256> bounds(glyphs.size());
-  font.BoundsForGlyphs(glyphs, &bounds);
-  // `bounds` are relative to the glyph origin. Adjust them to be relative to
-  // the paint origin.
-  DCHECK_LE(bounds.size(), glyph_data_list.size());
-  for (wtf_size_t i = 0; i < bounds.size(); ++i) {
-    const HarfBuzzShaper::GlyphData& glyph_data = glyph_data_list[i];
-    bounds[i].offset({glyph_data.offset.x(), glyph_data.offset.y()});
-  }
-
-  // Compute types from glyph bounds.
-  const base::span<SkRect> bounds_span(bounds);
-  const GlyphBoundsDetector detector(em, is_horizontal);
-  type_for_dot = detector.GetCharType(bounds_span.first(kDotSize));
-  type_for_colon = detector.GetCharType(bounds[kColonIndex]);
-  type_for_semicolon = detector.GetCharType(bounds[kSemicolonIndex]);
-
+  //
   // Quotes are often misplaced, especially in Japanese vertical flow, due to
   // the lack of established conventions. In that case, treat such quotes the
-  // same as narrow quotes.
-  if (is_quote_fullwidth) {
-    const base::span<SkRect> quotes = bounds_span.subspan(kQuoteStartIndex);
-    DCHECK_EQ(quotes.size(), 4u);
-    if (detector.GetCharType(quotes.first(2)) != CharType::kOpen ||
-        detector.GetCharType(quotes.subspan(2)) != CharType::kClose) {
-      is_quote_fullwidth = false;
-    }
+  // same as narrow quotes. See `HanKerning::GetCharType`.
+  is_quote_fullwidth = true;
+  glyph_data_span = glyph_data_span.subspan(kQuoteStartIndex);
+  bounds_span = bounds_span.subspan(kQuoteStartIndex);
+  DCHECK_EQ(bounds_span.size(), 4u);
+  if (CharTypeFromBounds(glyph_data_span.first(2), bounds_span.first(2),
+                         is_horizontal) != CharType::kOpen ||
+      CharTypeFromBounds(glyph_data_span.subspan(2), bounds_span.subspan(2),
+                         is_horizontal) != CharType::kClose) {
+    is_quote_fullwidth = false;
   }
 }
 

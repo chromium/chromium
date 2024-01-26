@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <limits>
 #include <numeric>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -276,7 +276,7 @@ DnsResponse::DnsResponse(
     const std::vector<DnsResourceRecord>& answers,
     const std::vector<DnsResourceRecord>& authority_records,
     const std::vector<DnsResourceRecord>& additional_records,
-    const absl::optional<DnsQuery>& query,
+    const std::optional<DnsQuery>& query,
     uint8_t rcode,
     bool validate_records,
     bool validate_names_as_internet_hostnames) {
@@ -429,7 +429,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
     return false;
   }
 
-  absl::optional<std::string> dotted_qname =
+  std::optional<std::string> dotted_qname =
       dns_names_util::NetworkToDottedName(query.qname());
   if (!dotted_qname.has_value())
     return false;
@@ -482,9 +482,9 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   return true;
 }
 
-absl::optional<uint16_t> DnsResponse::id() const {
+std::optional<uint16_t> DnsResponse::id() const {
   if (!id_available_)
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::NetToHost16(header()->id);
 }
@@ -571,7 +571,7 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
     return false;
   }
 
-  absl::optional<std::vector<uint8_t>> domain_name =
+  std::optional<std::vector<uint8_t>> domain_name =
       dns_names_util::DottedNameToNetwork(record.name,
                                           validate_name_as_internet_hostname);
   if (!domain_name.has_value()) {
@@ -593,7 +593,7 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
 
 bool DnsResponse::WriteAnswer(base::BigEndianWriter* writer,
                               const DnsResourceRecord& answer,
-                              const absl::optional<DnsQuery>& query,
+                              const std::optional<DnsQuery>& query,
                               bool validate_record,
                               bool validate_name_as_internet_hostname) {
   // Generally assumed to be a mistake if we write answers that don't match the

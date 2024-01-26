@@ -40,9 +40,9 @@ ScriptValue ModuleImportMeta::Resolve::Call(ScriptState* script_state,
                                    specifier + ": " + failure_reason);
   }
 
-  return ScriptValue::From(script_state, ToV8Traits<IDLString>::ToV8(
-                                             script_state, result.GetString())
-                                             .ToLocalChecked());
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLString>::ToV8(script_state, result.GetString()));
 }
 
 void ModuleImportMeta::Resolve::Trace(Visitor* visitor) const {

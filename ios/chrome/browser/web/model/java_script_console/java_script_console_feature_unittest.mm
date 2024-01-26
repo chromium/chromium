@@ -7,6 +7,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_delegate.h"
@@ -67,8 +68,8 @@ class FakeJavaScriptConsoleFeatureDelegate
   }
 
   std::optional<JavaScriptConsoleMessage> last_received_message_;
-  web::WebFrame* last_received_web_frame_ = nullptr;
-  web::WebState* last_received_web_state_ = nullptr;
+  raw_ptr<web::WebFrame> last_received_web_frame_ = nullptr;
+  raw_ptr<web::WebState> last_received_web_state_ = nullptr;
 };
 
 const char kPageHtml[] =

@@ -203,7 +203,6 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
       }
       break;
     case mojom::HostID::HostType::kControlledFrameEmbedder:
-      [[fallthrough]];
     case mojom::HostID::HostType::kWebUi:
       injection_host = std::make_unique<WebUIInjectionHost>(host_id_);
       break;

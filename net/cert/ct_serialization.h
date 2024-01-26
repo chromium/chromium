@@ -6,10 +6,10 @@
 #define NET_CERT_CT_SERIALIZATION_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 
@@ -31,7 +31,7 @@ NET_EXPORT_PRIVATE bool EncodeDigitallySigned(const DigitallySigned& input,
 // Reads and decodes a DigitallySigned object from |input|.
 // The bytes read from |input| are discarded (i.e. |input|'s prefix removed)
 // Returns true and fills |output| if all fields can be read, false otherwise.
-NET_EXPORT_PRIVATE bool DecodeDigitallySigned(base::StringPiece* input,
+NET_EXPORT_PRIVATE bool DecodeDigitallySigned(std::string_view* input,
                                               DigitallySigned* output);
 
 // Encodes the |input| SignedEntryData to |output|. Returns true if the entry
@@ -75,14 +75,14 @@ NET_EXPORT_PRIVATE bool EncodeTreeHeadSignature(
 // Returns true if the list could be read and decoded successfully, false
 // otherwise (note that the validity of each individual SCT should be checked
 // separately).
-NET_EXPORT_PRIVATE bool DecodeSCTList(base::StringPiece input,
-                                      std::vector<base::StringPiece>* output);
+NET_EXPORT_PRIVATE bool DecodeSCTList(std::string_view input,
+                                      std::vector<std::string_view>* output);
 
 // Decodes a single SCT from |input| to |output|.
 // Returns true if all fields in the SCT could be read and decoded, false
 // otherwise.
 NET_EXPORT_PRIVATE bool DecodeSignedCertificateTimestamp(
-    base::StringPiece* input,
+    std::string_view* input,
     scoped_refptr<ct::SignedCertificateTimestamp>* output);
 
 // Serializes a Signed Certificate Timestamp (SCT) into |output|.

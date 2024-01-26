@@ -22,8 +22,9 @@
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector_impl.h"
-#include "chromeos/ash/services/secure_channel/timer_factory_impl.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash::secure_channel {
 
@@ -67,7 +68,7 @@ SecureChannelImpl::ConnectionRequestWaitingForDisconnection::
 SecureChannelImpl::SecureChannelImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
     : bluetooth_adapter_(std::move(bluetooth_adapter)),
-      timer_factory_(TimerFactoryImpl::Factory::Create()),
+      timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()),
       remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
       bluetooth_helper_(
           BluetoothHelperImpl::Factory::Create(remote_device_cache_.get())),
@@ -106,8 +107,9 @@ void SecureChannelImpl::ListenForConnectionFromDevice(
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   ProcessConnectionRequest(
       ApiFunctionName::kListenForConnection, device_to_connect, local_device,
-      ClientConnectionParametersImpl::Factory::Create(feature,
-                                                      std::move(delegate)),
+      ClientConnectionParametersImpl::Factory::Create(
+          feature, std::move(delegate),
+          /*secure_channel_structured_metrics_logger*/ mojo::NullRemote()),
       ConnectionRole::kListenerRole, connection_priority, connection_medium);
 }
 
@@ -117,11 +119,14 @@ void SecureChannelImpl::InitiateConnectionToDevice(
     const std::string& feature,
     ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
-    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
+    mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+        secure_channel_structured_metrics_logger) {
   ProcessConnectionRequest(
       ApiFunctionName::kInitiateConnection, device_to_connect, local_device,
-      ClientConnectionParametersImpl::Factory::Create(feature,
-                                                      std::move(delegate)),
+      ClientConnectionParametersImpl::Factory::Create(
+          feature, std::move(delegate),
+          std::move(secure_channel_structured_metrics_logger)),
       ConnectionRole::kInitiatorRole, connection_priority, connection_medium);
 }
 

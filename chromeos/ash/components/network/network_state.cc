@@ -460,6 +460,7 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
       connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   }
+  chrome_portal_state_ = PortalState::kUnknown;
 }
 
 bool NetworkState::IsManagedByPolicy() const {
@@ -528,7 +529,7 @@ bool NetworkState::IsSecure() const {
 }
 
 std::string NetworkState::GetHexSsid() const {
-  return base::HexEncode(raw_ssid().data(), raw_ssid().size());
+  return base::HexEncode(raw_ssid());
 }
 
 std::string NetworkState::GetDnsServersAsString() const {
@@ -713,21 +714,12 @@ void NetworkState::UpdateCaptivePortalState(
     return;
   }
 
-  int status_code =
-      properties.FindInt(shill::kPortalDetectionFailedStatusCodeProperty)
-          .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
     shill_portal_state_ = PortalState::kNoInternet;
   } else if (connection_state_ == shill::kStateRedirectFound) {
     shill_portal_state_ = PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
-    if (status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
-      // If Shill's portal detection HTTP probe returns a 407 response, Shill
-      // will treat that as a portal-suspected state.
-      shill_portal_state_ = PortalState::kProxyAuthRequired;
-    } else {
-      shill_portal_state_ = PortalState::kPortalSuspected;
-    }
+    shill_portal_state_ = PortalState::kPortalSuspected;
   } else if (connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   } else {
@@ -738,10 +730,7 @@ void NetworkState::UpdateCaptivePortalState(
                                 shill_portal_state_);
   if (shill_portal_state_ != PortalState::kOnline) {
     NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
-                   << " = " << shill_portal_state_
-                   << " ,status_code=" << status_code;
-    base::UmaHistogramSparse("Network.CaptivePortalStatusCode",
-                             std::abs(status_code));
+                   << " = " << shill_portal_state_;
   }
 }
 

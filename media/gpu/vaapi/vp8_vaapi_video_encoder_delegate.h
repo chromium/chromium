@@ -41,7 +41,8 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
     // The rate controller drop frame threshold. 0-100 as this is percentage.
     uint8_t drop_frame_thresh = 0;
-
+    // The encoding content is a screen content.
+    bool is_screen = false;
     // Error resilient mode.
     bool error_resilient_mode = false;
   };

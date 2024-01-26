@@ -137,6 +137,20 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  enum class GaiaAuthenticationResult {
+    kUnknownError = 0,
+    kSuccess = 1,
+    kResponseParsingError = 2,
+    kRejection = 3,
+    kAdditionalChallengesOnSource = 4,
+    kAdditionalChallengesOnTarget = 5,
+    kMaxValue = kAdditionalChallengesOnTarget,
+  };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class WifiTransferResultFailureReason {
     kConnectionDroppedDuringAttempt = 0,
     kEmptyResponseBytes = 1,
@@ -222,6 +236,11 @@ class QuickStartMetrics {
   void RecordAttestationCertificateRequestEnded(
       std::optional<AttestationCertificateRequestErrorCode> error_code);
 
+  void RecordGaiaAuthenticationStarted();
+
+  void RecordGaiaAuthenticationRequestEnded(
+      const GaiaAuthenticationResult& result);
+
   void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
 
   void RecordFastPairAdvertisementEnded(
@@ -269,6 +288,11 @@ class QuickStartMetrics {
   // should be set at the start of a certificate fetch and destroyed when a
   // response is received.
   std::unique_ptr<base::ElapsedTimer> attestation_certificate_timer_;
+
+  // Timer to keep track of Gaia authentication requests. It should be set at
+  // the start of a Gaia authentication request and destroyed when a response is
+  // received.
+  std::unique_ptr<base::ElapsedTimer> gaia_authentication_timer_;
 };
 
 }  // namespace ash::quick_start

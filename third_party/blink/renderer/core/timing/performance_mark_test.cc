@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 
 #include "base/json/json_reader.h"
+#include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -114,6 +115,18 @@ TEST(PerformanceMarkTest, BuildJSONValue) {
             parsed_json->GetDict().FindDouble("duration").value());
 
   EXPECT_EQ(5ul, parsed_json->GetDict().size());
+}
+
+TEST(PerformanceMarkTest, UserFeatureNamesHaveCorrespondingWebFeature) {
+  const PerformanceMark::UserFeatureNameToWebFeatureMap& map =
+      PerformanceMark::GetUseCounterMappingForTesting();
+  const UseCounterMetricsRecorder::UkmFeatureList& allowed_features =
+      UseCounterMetricsRecorder::GetAllowedUkmFeaturesForTesting();
+
+  // Each user feature name should be mapped to an allowed UKM feature.
+  for (auto [userFeatureName, webFeature] : map) {
+    ASSERT_TRUE(allowed_features.contains(webFeature));
+  }
 }
 
 }  // namespace blink

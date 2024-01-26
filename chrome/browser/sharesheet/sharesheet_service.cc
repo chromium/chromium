@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/view.h"
@@ -272,9 +272,9 @@ std::vector<TargetInfo> SharesheetService::GetActionsForIntent(
   auto iter = actions.begin();
   while (iter != actions.end()) {
     if ((*iter)->ShouldShowAction(intent, contains_hosted_document)) {
-      targets.emplace_back(TargetType::kAction, absl::nullopt,
+      targets.emplace_back(TargetType::kAction, std::nullopt,
                            (*iter)->GetActionName(), (*iter)->GetActionName(),
-                           absl::nullopt, absl::nullopt, false);
+                           std::nullopt, std::nullopt, false);
     }
     ++iter;
   }

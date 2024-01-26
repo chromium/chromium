@@ -199,19 +199,22 @@ Currently there are two backend implementations, V1 and V2. V2 is under active
 construction to catch up the following spec changes:
 
 - Change Content-Encoding name "br-d" "zstd-d"
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5185977.
 - Changed match to use URLPattern
   - Stauts: Not yet implemented.
 - Added support for a server-provided dictionary id
   - Stauts: Not yet implemented.
-- Updated the default dictionary ttl to 14 days since last fetched
-  - Stauts: Not yet implemented.
+- Stop using "expires" value of "Use-As-Dictionary" header, and use the cache
+  expiration time calculated from the response's freshness instead.
+  - Stauts: Removed by https://crrev.com/c/5227360.
 - Removed support for hash negotiation and force use of sha-256
-  - Stauts: Not yet implemented.
+  - Stauts: Removed by https://crrev.com/c/5223985.
 - Added the dictionary hash to the compressed response
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5226641.
 - Dictionary hashes changed to sf-binary
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5224886.
+- Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
+  - Stauts: Implemented by https://crrev.com/c/5224886.
 
 You can try the experimental V2 implementation by selecting
 "Enabled experimental V2" in

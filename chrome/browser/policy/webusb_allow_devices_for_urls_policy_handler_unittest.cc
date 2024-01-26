@@ -658,7 +658,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, &pref_value));
   EXPECT_TRUE(pref_value);
 
-  absl::optional<base::Value> expected_pref_value =
+  std::optional<base::Value> expected_pref_value =
       ParseJson(kInvalidPolicyUnknownPropertyAfterCleanup);
   EXPECT_EQ(*expected_pref_value, *pref_value);
 }

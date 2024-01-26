@@ -56,7 +56,6 @@ typedef const struct __CTFont* CTFontRef;
 
 namespace blink {
 
-class Font;
 class HarfBuzzFace;
 class OpenTypeVerticalData;
 

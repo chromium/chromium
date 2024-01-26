@@ -81,7 +81,6 @@
 <translation id="3366305173356742781">ข้อมูล Chromium ในบัญชี</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที ซึ่งอาจรวมถึงประวัติการเข้าชมและการป้อนข้อความอัตโนมัติ}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chromium เป็นเวลา {THRESHOLD} นาที ซึ่งอาจรวมถึงประวัติการเข้าชมและการป้อนข้อความอัตโนมัติ}}</translation>
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
-<translation id="3478750326643748149">ซ่อนการ์ด "รับประโยชน์สูงสุดจาก Chromium"</translation>
 <translation id="347967311580159871">หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chromium ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="3512168799938877162">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chromium แล้ว จากนั้นลองอีกครั้ง</translation>
 <translation id="3554027294407525061">ล้างข้อมูลการท่องเว็บใน Chromium</translation>
@@ -101,9 +100,9 @@
 
 หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="3955621079070267756">เปิด Chromium จากแอปใดก็ได้</translation>
-<translation id="4002314982058020967">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="4005283307739974863">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="4076589763479456892">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
 <translation id="4106512142782407609">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
 
@@ -114,7 +113,6 @@
 <translation id="4408912345039114853">เรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4445228361214254027">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chromium ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
-<translation id="4485517920713468480">Chromium จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะแชร์ข้อมูลของคุณกับ Google เพื่อให้บริการฟีเจอร์นี้และปรับปรุง Shopping สำหรับทุกคน คุณเปลี่ยนการตั้งค่านี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุ<ph name="END_LINK" /></translation>
 <translation id="4498832288620833153">เพิ่ม URL ที่ป้อนลงในเรื่องรออ่านใน Chromium</translation>
 <translation id="452436063477828504">ตรวจสอบว่าคุณใช้ข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@
 <translation id="5534584691915394889">ระบบจะใช้เพื่อสร้างกิจกรรมจาก Chromium และ Google Lens ในปฏิทินของ Apple</translation>
 <translation id="5571094606370987472">เปิดแท็บล่าสุดใน Chromium</translation>
 <translation id="5623083843656850677">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อคุณออกจาก Chromium หรือเปลี่ยนไปใช้แอปอื่น</translation>
+<translation id="5671188105328420281">เคล็ดลับในการใช้ Chromium</translation>
 <translation id="5688047395118852662">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chromium ให้เกิดประโยชน์สูงสุด</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="5777187867430702742">หน้า Chromium</translation>
@@ -286,6 +285,7 @@
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>
 <translation id="88376265765385899">เปิดบุ๊กมาร์ก Chromium</translation>
 <translation id="8860548555286245440">เปิด URL ใน Chromium ในโหมดไม่ระบุตัวตน</translation>
+<translation id="8866191443434488382">Chromium จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะส่งหมายเลขติดตามพัสดุและชื่อเว็บไซต์ไปยัง Chromium เพื่อให้บริการฟีเจอร์นี้และเพื่อปรับปรุงฟีเจอร์ต่างๆ ที่เกี่ยวกับการช็อปปิ้งสําหรับทุกคน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุภัณฑ์<ph name="END_LINK" /></translation>
 <translation id="8909995017390087892">Chromium สำหรับ iOS</translation>
 <translation id="8924617840944134898">เปิดแท็บที่ไม่ระบุตัวตนใน Chromium</translation>
 <translation id="894437814105052438">Chromium จะไม่ซิงค์ข้อมูลใหม่กับบัญชี Google ของคุณเมื่อออกจากระบบ แต่ข้อมูลที่ซิงค์ไว้ก่อนหน้านี้จะยังอยู่ในบัญชี</translation>

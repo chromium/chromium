@@ -34,7 +34,7 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   auto report = std::make_unique<ExtensionsWorkflowEvent>();
   report->set_id(extension_id);
   if (request_data) {
-    absl::optional<base::Time> timestamp = ::base::ValueToTime(
+    std::optional<base::Time> timestamp = ::base::ValueToTime(
         request_data->Find(extension_misc::kExtensionRequestTimestamp));
     if (timestamp) {
       report->set_request_timestamp_millis(

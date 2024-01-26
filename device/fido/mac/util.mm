@@ -75,8 +75,7 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key) {
   if (credential_id.empty() || credential_id.size() > 255) {
-    LOG(ERROR) << "invalid credential id: "
-               << base::HexEncode(credential_id.data(), credential_id.size());
+    LOG(ERROR) << "invalid credential id: " << base::HexEncode(credential_id);
     return absl::nullopt;
   }
   if (!public_key) {
@@ -155,8 +154,7 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {
-    LOG(ERROR) << "Unexpected public key format: "
-               << base::HexEncode(key_data.data(), key_data.size());
+    LOG(ERROR) << "Unexpected public key format: " << base::HexEncode(key_data);
     return nullptr;
   }
   return key;

@@ -35,6 +35,8 @@ namespace ui {
 class TableModel;
 }
 
+// Creates a dialog with two buttons. "Accept" causes the extension to be
+// uninstalled and closes the dialog. "Cancel" closes the dialog.
 class DeprecatedAppsDialogView : public views::DialogDelegateView {
   METADATA_HEADER(DeprecatedAppsDialogView, views::DialogDelegateView)
 
@@ -55,8 +57,7 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   static DeprecatedAppsDialogView* CreateAndShowDialog(
       const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways);
+      content::WebContents* web_contents);
 
   base::WeakPtr<DeprecatedAppsDialogView> AsWeakPtr();
 
@@ -70,8 +71,7 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   DeprecatedAppsDialogView(
       const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways);
+      content::WebContents* web_contents);
 
   // Initialize the dialog when the object is instantiated.
   void InitDialog();
@@ -98,7 +98,6 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   std::optional<std::u16string> launched_extension_name_;
   std::set<extensions::ExtensionId> deprecated_app_ids_;
   std::optional<std::u16string> single_app_name_;
-  base::OnceClosure launch_anyways_;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 

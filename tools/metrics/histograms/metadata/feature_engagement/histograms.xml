@@ -233,6 +233,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
+  <variant name="IPH_iOSPromoAllTabs"
+      summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"
       summary="showing the App Store Promo on iOS"/>
   <variant name="IPH_iOSPromoCredentialProviderExtension"
@@ -241,12 +243,16 @@ chromium-metrics-reviews@google.com.
       summary="showing the Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowserReminder"
       summary="showing the Default Browser Promo after remind me later on iOS"/>
+  <variant name="IPH_iOSPromoMadeForIOS"
+      summary="showing Made for iOS default browser promo"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"
       summary="showing the Password Manager widget promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"
       summary="showing the Post Restore Promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestoreDefaultBrowser"
       summary="showing the Post Restore Default Browser Promo on iOS"/>
+  <variant name="IPH_iOSPromoStaySafe"
+      summary="showing Stay Safe default browser promo"/>
   <variant name="IPH_iOSPromoWhatsNew"
       summary="showing the Whats New Promo on iOS"/>
   <variant name="IPH_iOSPullToRefreshFeature"
@@ -255,6 +261,9 @@ chromium-metrics-reviews@google.com.
       summary="account row in settings page"/>
   <variant name="IPH_iOSShareToolbarItemFeature"
       summary="the share tool bar item (bottom on iPhone, top on iPad)"/>
+  <variant name="IPH_iOSSwipeBackForward"
+      summary="the full screen IPH for edge swipe on page to go backward or
+               forward"/>
   <variant name="IPH_iOSTabGridSwipeLeftForIncognito"
       summary="the full screen IPH for left swipe on regular tab grid to
                browse in incognito"/>
@@ -506,7 +515,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help configuration is parsed correctly, and the
@@ -733,6 +742,54 @@ chromium-metrics-reviews@google.com.
     Records what type of In-Product Help was shown to the user. The type defines
     the behavior of the IPH, which can be many varieties (e.g. toast, snooze,
     custom action, etc.).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"
+    units="minutes" expires_after="2024-09-21">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Active Period of a User Education Session.
+    The timer starts when a session starts. The timer is stopped and recorded
+    when the current session is ended. Resolution is in minutes and the maximum
+    time recorded in this metric is 1 hour.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
+    units="minutes" expires_after="2024-09-21">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Active Period of a User Education Session.
+    The timer starts when a session starts. The timer is stopped and recorded
+    when the current session is ended. Resolution is in minutes and the maximum
+    time recorded in this metric is 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.IdlePeriodDuration.Hr.Under28Days"
+    units="hours" expires_after="2024-09-21">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Idle Period of a User Education Session.
+    The timer starts when a session ends. The timer is stopped and recorded when
+    a new session is started. Resolution in in hours and the maximum time
+    recorded in this metric is 28 days.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.IdlePeriodDuration.Min.Under24Hours"
+    units="minutes" expires_after="2024-09-21">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Idle Period of a User Education Session.
+    The timer starts when a session ends. The timer is stopped and recorded when
+    a new session is started. Resolution is in minutes and the maximum time
+    recorded in this metric is 24 hours.
   </summary>
 </histogram>
 

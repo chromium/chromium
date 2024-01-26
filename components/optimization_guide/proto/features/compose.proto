@@ -45,21 +45,6 @@ enum ComposeLength {
   COMPOSE_LONGER = 2;
 }
 
-// Information about a previous response in a compose session.
-message ComposePriorResponse {
-  // The model response.
-  string response_text = 1;
-  // The tone and length options used to generate the response.
-  // Allows the service to identify if tone/length options have changed,
-  // and potentially apply a lengthen/formalize operation on top of the
-  // response.
-  ComposeTone tone = 2;
-  ComposeLength length = 3;
-  // If true, we may ensure the next response is not too similar to
-  // this one.
-  bool regenerate_requested_since = 4;
-}
-
 // Stores the metadata associated with a single call to the model execution.
 // This excludes any explicit user input.
 message ComposePageMetadata {

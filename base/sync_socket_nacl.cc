@@ -9,8 +9,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <unistd.h>
 
-#include "base/notreached.h"
+#include "base/containers/span.h"
+#include "base/notimplemented.h"
 
 namespace base {
 
@@ -23,17 +25,32 @@ void SyncSocket::Close() {
   handle_.reset();
 }
 
-size_t SyncSocket::Send(const void* buffer, size_t length) {
-  const ssize_t bytes_written = write(handle(), buffer, length);
+size_t SyncSocket::Send(span<const uint8_t> data) {
+  const ssize_t bytes_written = write(handle(), data.data(), data.size());
   return bytes_written > 0 ? static_cast<size_t>(bytes_written) : 0;
 }
 
-size_t SyncSocket::Receive(void* buffer, size_t length) {
-  const ssize_t bytes_read = read(handle(), buffer, length);
+size_t SyncSocket::Send(const void* buffer, size_t length) {
+  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
+}
+
+size_t SyncSocket::Receive(span<uint8_t> buffer) {
+  const ssize_t bytes_read = read(handle(), buffer.data(), buffer.size());
   return bytes_read > 0 ? static_cast<size_t>(bytes_read) : 0;
 }
 
-size_t SyncSocket::ReceiveWithTimeout(void* buffer, size_t length, TimeDelta) {
+size_t SyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
+}
+
+size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+size_t SyncSocket::ReceiveWithTimeout(void* buffer,
+                                      size_t length,
+                                      TimeDelta timeout) {
   NOTIMPLEMENTED();
   return 0;
 }
@@ -55,8 +72,12 @@ SyncSocket::Handle SyncSocket::Release() {
   return handle_.release();
 }
 
+size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
+  return SyncSocket::Send(data);
+}
+
 size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  return SyncSocket::Send(buffer, length);
+  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 bool CancelableSyncSocket::Shutdown() {

@@ -22,6 +22,9 @@ struct ReadAnythingTheme {
   // The px value of the user's font size.
   float font_size;
 
+  // True if links are disabled.
+  bool links_enabled;
+
   // The various colors of the user's chosen theme.
   skia.mojom.SkColor foreground_color;
   skia.mojom.SkColor background_color;
@@ -38,6 +41,11 @@ interface UntrustedPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateUntrustedPageHandler(pending_remote<UntrustedPage> page,
                              pending_receiver<UntrustedPageHandler> handler);
+
+  // Signals that the side panel content has finished loading and it is now
+  // safe to show the UI. This is to avoid loading artifacts if the side panel
+  // is shown before ready.
+  ShouldShowUI();
 };
 
 // Used as identifiers for the Read Anything theme options.
@@ -102,6 +110,10 @@ interface UntrustedPageHandler {
   // Informs the browser controller that the user updated the font size via
   // the webui toolbar.
   OnFontSizeChange(double font_size);
+
+  // Informs the browser controller that the user has toggled links
+  // via the webui toolbar.
+  OnLinksEnabledChanged(bool enabled);
 
   // Informs the browser controller that the user updated the color theme via
   // the webui toolbar.
@@ -193,6 +205,7 @@ interface UntrustedPage {
                            read_anything.mojom.LetterSpacing letter_spacing,
                            string font,
                            double font_size,
+                           bool links_enabled,
                            read_anything.mojom.Colors color,
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,

@@ -960,7 +960,8 @@ TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
   EXPECT_EQ("'self'", csp->raw_directives[Directive::DefaultSrc]);
   EXPECT_EQ("'self' https: blob: data:",
             csp->raw_directives[Directive::FrameSrc]);
-  EXPECT_EQ("'self' https: wss:", csp->raw_directives[Directive::ConnectSrc]);
+  EXPECT_EQ("'self' https: wss: blob: data:",
+            csp->raw_directives[Directive::ConnectSrc]);
   EXPECT_EQ("'self' 'wasm-unsafe-eval'",
             csp->raw_directives[Directive::ScriptSrc]);
   EXPECT_EQ("'self' https: blob: data:",

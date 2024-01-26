@@ -309,14 +309,14 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
     const bool ignore_allow) const {
   auto restriction_it = restrictions_map.find(restriction);
   if (restriction_it == restrictions_map.end()) {
-    return MatchedRuleInfo<T>(Level::kAllow, absl::nullopt, absl::nullopt);
+    return MatchedRuleInfo<T>(Level::kAllow, std::nullopt, std::nullopt);
   }
 
   const std::map<RuleId, Level>& restriction_rules = restriction_it->second;
 
   Level max_level = Level::kNotSet;
-  absl::optional<T> url_condition = absl::nullopt;
-  absl::optional<RuleId> matched_rule_id = absl::nullopt;
+  std::optional<T> url_condition = std::nullopt;
+  std::optional<RuleId> matched_rule_id = std::nullopt;
 
   for (const auto& rule_pair : selected_rules) {
     const auto& restriction_rule_itr = restriction_rules.find(rule_pair.first);
@@ -334,7 +334,7 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
   }
 
   if (max_level == Level::kNotSet) {
-    return MatchedRuleInfo<T>(Level::kAllow, absl::nullopt, absl::nullopt);
+    return MatchedRuleInfo<T>(Level::kAllow, std::nullopt, std::nullopt);
   }
 
   return MatchedRuleInfo(max_level, matched_rule_id, url_condition);

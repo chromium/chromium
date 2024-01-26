@@ -9,6 +9,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.content.Context;
 import android.os.Build;
+import android.service.notification.StatusBarNotification;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
@@ -17,6 +18,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of the NotificationManagerProxy, which passes through
@@ -168,6 +170,40 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannelGroup")) {
             mNotificationManager.deleteNotificationChannelGroup(groupId);
+        }
+    }
+
+    private static class StatusBarNotificationAdaptor implements StatusBarNotificationProxy {
+        private final StatusBarNotification mStatusBarNotification;
+
+        public StatusBarNotificationAdaptor(StatusBarNotification sbNotification) {
+            this.mStatusBarNotification = sbNotification;
+        }
+
+        @Override
+        public int getId() {
+            return mStatusBarNotification.getId();
+        }
+
+        @Override
+        public String getTag() {
+            return mStatusBarNotification.getTag();
+        }
+
+        @Override
+        public Notification getNotification() {
+            return mStatusBarNotification.getNotification();
+        }
+    }
+
+    @Override
+    public List<? extends StatusBarNotificationProxy> getActiveNotifications() {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.getActiveNotifications")) {
+            return mNotificationManager.getActiveNotifications().stream()
+                    .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
+                    .collect(Collectors.toList());
         }
     }
 }

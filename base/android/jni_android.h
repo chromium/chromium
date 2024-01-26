@@ -81,65 +81,16 @@ inline void DisableJvmForTesting() {
   return jni_zero::DisableJvmForTesting();
 }
 
-// Initializes the global ClassLoader used by the GetClass and LazyGetClass
-// methods. This is needed because JNI will use the base ClassLoader when there
-// is no Java code on the stack. The base ClassLoader doesn't know about any of
-// the application classes and will fail to lookup anything other than system
-// classes.
-void InitGlobalClassLoader(JNIEnv* env);
-
 // Finds the class named |class_name| and returns it.
 // Use this method instead of invoking directly the JNI FindClass method (to
 // prevent leaking local references).
 // This method triggers a fatal assertion if the class could not be found.
 // Use HasClass if you need to check whether the class exists.
-BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                                const char* class_name,
-                                                const char* split_name);
-BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                                const char* class_name);
+inline ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
+                                           const char* class_name) {
+  return jni_zero::GetClass(env, class_name);
+}
 
-// The method will initialize |atomic_class_id| to contain a global ref to the
-// class. And will return that ref on subsequent calls.  It's the caller's
-// responsibility to release the ref when it is no longer needed.
-// The caller is responsible to zero-initialize |atomic_method_id|.
-// It's fine to simultaneously call this on multiple threads referencing the
-// same |atomic_method_id|.
-BASE_EXPORT jclass LazyGetClass(JNIEnv* env,
-                                const char* class_name,
-                                const char* split_name,
-                                std::atomic<jclass>* atomic_class_id);
-BASE_EXPORT jclass LazyGetClass(
-    JNIEnv* env,
-    const char* class_name,
-    std::atomic<jclass>* atomic_class_id);
-
-// This class is a wrapper for JNIEnv Get(Static)MethodID.
-class BASE_EXPORT MethodID {
- public:
-  enum Type {
-    TYPE_STATIC,
-    TYPE_INSTANCE,
-  };
-
-  // Returns the method ID for the method with the specified name and signature.
-  // This method triggers a fatal assertion if the method could not be found.
-  template<Type type>
-  static jmethodID Get(JNIEnv* env,
-                       jclass clazz,
-                       const char* method_name,
-                       const char* jni_signature);
-
-  // The caller is responsible to zero-initialize |atomic_method_id|.
-  // It's fine to simultaneously call this on multiple threads referencing the
-  // same |atomic_method_id|.
-  template<Type type>
-  static jmethodID LazyGet(JNIEnv* env,
-                           jclass clazz,
-                           const char* method_name,
-                           const char* jni_signature,
-                           std::atomic<jmethodID>* atomic_method_id);
-};
 
 // Returns true if an exception is pending in the provided JNIEnv*.
 inline bool HasException(JNIEnv* env) {
@@ -162,6 +113,7 @@ BASE_EXPORT std::string GetJavaExceptionInfo(
 // This returns a string representation of the java stack trace.
 BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
+using MethodID = jni_zero::MethodID;
 }  // namespace android
 }  // namespace base
 

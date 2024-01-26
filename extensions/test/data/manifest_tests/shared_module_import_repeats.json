@@ -1,0 +1,21 @@
+{
+  "name": "Import unit test",
+  "manifest_version": 3,
+  "version": "1",
+  "import": [
+    {
+      "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "minimum_version": "1.0"
+    },
+    {
+      "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "minimum_version": "1.1"
+    }
+  ]
+}

@@ -63,10 +63,8 @@ class TestRenderingContext2D final
       : BaseRenderingContext2D(
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()),
-        recorder_(this),
-        host_canvas_element_(nullptr) {
-    recorder_.beginRecording(gfx::Size(Width(), Height()));
-  }
+        recorder_(gfx::Size(Width(), Height()), this),
+        host_canvas_element_(nullptr) {}
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
@@ -96,10 +94,10 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
-    return recorder_.getRecordingCanvas();
+    return &recorder_.getRecordingCanvas();
   }
   cc::PaintCanvas* GetPaintCanvas() override {
-    return recorder_.getRecordingCanvas();
+    return &recorder_.getRecordingCanvas();
   }
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
@@ -136,9 +134,6 @@ class TestRenderingContext2D final
     return PredefinedColorSpace::kSRGB;
   }
 
-  void SkipQueuedDrawCommands() override { RestartRecording(); }
-  void RestartRecording() override { recorder_.finishRecordingAsPicture(); }
-
   HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
     return host_canvas_element_;
   }
@@ -149,10 +144,13 @@ class TestRenderingContext2D final
       RestoreMatrixClipStack(canvas);
     }
   }
+  void RecordingCleared() override {}
 
   absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
     return recorder_.finishRecordingAsPicture();
   }
+
+  MemoryManagedPaintRecorder* Recorder() override { return &recorder_; }
 
   bool ResolveFont(const String& new_font) override {
     if (host_canvas_element_ == nullptr) {
@@ -170,9 +168,9 @@ class TestRenderingContext2D final
   }
 
   Member<ExecutionContext> execution_context_;
-  MemoryManagedPaintRecorder recorder_;
-  bool context_lost_ = false;
   bool restore_matrix_enabled_ = true;
+  bool context_lost_ = false;
+  MemoryManagedPaintRecorder recorder_;
   Member<HTMLCanvasElement> host_canvas_element_;
 };
 

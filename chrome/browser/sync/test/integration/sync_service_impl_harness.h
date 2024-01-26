@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

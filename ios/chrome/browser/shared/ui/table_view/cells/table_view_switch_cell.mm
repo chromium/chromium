@@ -196,7 +196,8 @@ const CGFloat kSwitchTrailingPadding = 22;
 - (void)setIconImage:(UIImage*)image
            tintColor:(UIColor*)tintColor
      backgroundColor:(UIColor*)backgroundColor
-        cornerRadius:(CGFloat)cornerRadius {
+        cornerRadius:(CGFloat)cornerRadius
+         borderWidth:(CGFloat)borderWidth {
   BOOL hidden = (image == nil);
 
   self.iconImageView.image = image;
@@ -204,6 +205,9 @@ const CGFloat kSwitchTrailingPadding = 22;
 
   _iconBackground.backgroundColor = backgroundColor;
   _iconBackground.layer.cornerRadius = cornerRadius;
+  _iconBackground.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
+  _iconBackground.layer.borderWidth = borderWidth;
 
   _iconBackground.hidden = hidden;
   if (hidden) {
@@ -242,7 +246,11 @@ const CGFloat kSwitchTrailingPadding = 22;
 
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-  [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
+  [self setIconImage:nil
+            tintColor:nil
+      backgroundColor:nil
+         cornerRadius:0
+          borderWidth:0];
   [_switchView removeTarget:nil
                      action:nil
            forControlEvents:[_switchView allControlEvents]];

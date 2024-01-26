@@ -284,6 +284,14 @@
     This webpage requires data that you entered earlier in order to be properly displayed. You can send this data again, but by doing so you will repeat any action this page previously performed.
   </message>
 
+  <message name="IDS_ERRORPAGES_HEADING_LINKPREVIEW_NON_HTTPS_FORBIDDEN" desc="Heading in the error page when a user tries to preview non-HTTPS URL.">
+    Can't preview non-HTTPS URL
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_LINKPREVIEW_NON_HTTPS_FORBIDDEN" desc="Summary in the error page when a user tries to preview non-HTTPS URL.">
+    Previewing non-HTTPS URL is not allowed.
+  </message>
+
+
   <!-- Suggestions summary list messages. -->
   <message name="IDS_ERRORPAGES_SUGGESTION_LIST_HEADER" desc="Message that prefixes a list of suggestions to try when encountering a network error.">
     Try:

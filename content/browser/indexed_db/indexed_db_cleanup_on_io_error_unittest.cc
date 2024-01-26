@@ -23,8 +23,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-using base::StringPiece;
-
 namespace base {
 class TaskRunner;
 }

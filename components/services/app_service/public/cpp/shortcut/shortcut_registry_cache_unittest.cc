@@ -121,7 +121,7 @@ TEST_F(ShortcutRegistryCacheTest, UpdateShortcut) {
 
   auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
   shortcut_delta->name = "new name";
-  shortcut_delta->shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_delta->shortcut_source = ShortcutSource::kPolicy;
   shortcut_delta->icon_key =
       IconKey(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
   shortcut_delta->icon_key->update_version = true;
@@ -135,7 +135,7 @@ TEST_F(ShortcutRegistryCacheTest, UpdateShortcut) {
   ASSERT_TRUE(stored_shortcut);
   EXPECT_EQ(stored_shortcut->shortcut_id, shortcut_id);
   EXPECT_EQ(stored_shortcut->name, "new name");
-  EXPECT_EQ(stored_shortcut->shortcut_source, ShortcutSource::kDeveloper);
+  EXPECT_EQ(stored_shortcut->shortcut_source, ShortcutSource::kPolicy);
   EXPECT_EQ(stored_shortcut->host_app_id, host_app_id);
   EXPECT_EQ(stored_shortcut->local_id, local_id);
   IconKey icon_key(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
@@ -179,7 +179,7 @@ TEST_F(ShortcutRegistryCacheTest, Observer) {
 
   auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
   shortcut_delta->name = "new name";
-  shortcut_delta->shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_delta->shortcut_source = ShortcutSource::kPolicy;
   shortcut_delta->icon_key = IconKey(/*resource_id=*/1, /*icon_effects=*/1);
   shortcut_delta->icon_key->update_version = false;
   std::unique_ptr<Shortcut> current_state =

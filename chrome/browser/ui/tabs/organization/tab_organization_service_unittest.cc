@@ -292,7 +292,7 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
 
   std::unique_ptr<TabOrganizationSession> session =
       TabOrganizationSession::CreateSessionForBrowser(browser1, base_tab);
-  EXPECT_NE(session->request()->base_tab_id(), absl::nullopt);
+  EXPECT_NE(session->request()->base_tab_id(), std::nullopt);
 }
 
 TEST_F(TabOrganizationServiceTest, CanStartRequest) {

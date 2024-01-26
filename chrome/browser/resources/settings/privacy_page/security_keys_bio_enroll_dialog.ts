@@ -22,19 +22,20 @@ import '../site_favicon.js';
 import '../i18n_setup.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './security_keys_bio_enroll_dialog.html.js';
-import {Ctap2Status, Enrollment, EnrollmentResponse, SampleResponse, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl} from './security_keys_browser_proxy.js';
-import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
+import type {Enrollment, EnrollmentResponse, SampleResponse, SecurityKeysBioEnrollProxy} from './security_keys_browser_proxy.js';
+import {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from './security_keys_browser_proxy.js';
+import type {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
 export enum BioEnrollDialogPage {
   INITIAL = 'initial',

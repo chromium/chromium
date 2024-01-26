@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -35,6 +36,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -598,6 +600,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
       case RESTORE_MODE_DISABLED:
         return AutoEnrollmentResult::kDisabled;
       case RESTORE_MODE_REENROLLMENT_REQUESTED:
+        return AutoEnrollmentResult::kSuggestedEnrollment;
       case RESTORE_MODE_REENROLLMENT_ENFORCED:
       case INITIAL_MODE_ENROLLMENT_ENFORCED:
       case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
@@ -840,7 +843,7 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
   DCHECK(state_ == State::kRequestingServerStateAvailability);
 
   if (!result.has_value()) {
-    if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+    if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
       // At the moment, `AutoEnrollmentClientImpl` will not distinguish
       // between any of the PSM errors (except for connection error, and
       // server error) and will report final progress with given server state

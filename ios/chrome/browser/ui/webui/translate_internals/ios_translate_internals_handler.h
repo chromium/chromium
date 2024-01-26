@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
@@ -72,7 +73,7 @@ class IOSTranslateInternalsHandler
                                const WebStateListChange& change,
                                const WebStateListStatus& status) override;
 
-    IOSTranslateInternalsHandler* handler_;
+    raw_ptr<IOSTranslateInternalsHandler> handler_;
   };
 
   std::unique_ptr<AllWebStateListObservationRegistrar> registrar_;

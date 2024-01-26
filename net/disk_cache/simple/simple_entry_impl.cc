@@ -455,8 +455,12 @@ int SimpleEntryImpl::WriteData(int stream_index,
   // Stream 0 data is kept in memory, so can be written immediatly if there are
   // no IO operations pending.
   if (stream_index == 0 && state_ == STATE_READY &&
-      pending_operations_.size() == 0)
-    return SetStream0Data(buf, offset, buf_len, truncate);
+      pending_operations_.size() == 0) {
+    state_ = STATE_IO_PENDING;
+    SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_READY;
+    return buf_len;
+  }
 
   // We can only do optimistic Write if there is no pending operations, so
   // that we are sure that the next call to RunNextOperationIfNeeded will
@@ -1012,16 +1016,20 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
 
   // Since stream 0 data is kept in memory, it is read immediately.
   if (stream_index == 0) {
-    int rv = ReadFromBuffer(stream_0_data_.get(), offset, buf_len, buf);
-    return PostToCallbackIfNeeded(sync_possible, std::move(callback), rv);
+    state_ = STATE_IO_PENDING;
+    ReadFromBuffer(stream_0_data_.get(), offset, buf_len, buf);
+    state_ = STATE_READY;
+    return PostToCallbackIfNeeded(sync_possible, std::move(callback), buf_len);
   }
 
   // Sometimes we can read in-ram prefetched stream 1 data immediately, too.
   if (stream_index == 1) {
     if (stream_1_prefetch_data_) {
-      int rv =
-          ReadFromBuffer(stream_1_prefetch_data_.get(), offset, buf_len, buf);
-      return PostToCallbackIfNeeded(sync_possible, std::move(callback), rv);
+      state_ = STATE_IO_PENDING;
+      ReadFromBuffer(stream_1_prefetch_data_.get(), offset, buf_len, buf);
+      state_ = STATE_READY;
+      return PostToCallbackIfNeeded(sync_possible, std::move(callback),
+                                    buf_len);
     }
   }
 
@@ -1090,10 +1098,12 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
 
   // Since stream 0 data is kept in memory, it will be written immediatly.
   if (stream_index == 0) {
-    int ret_value = SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_IO_PENDING;
+    SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_READY;
     if (!callback.is_null()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), ret_value));
+          FROM_HERE, base::BindOnce(std::move(callback), buf_len));
     }
     return;
   }
@@ -1407,7 +1417,6 @@ void SimpleEntryImpl::CreationOperationComplete(
   if (backend_ && doom_state_ == DOOM_NONE)
     backend_->index()->Insert(entry_hash_);
 
-  state_ = STATE_READY;
   synchronous_entry_ = in_results->sync_entry;
 
   // Copy over any pre-fetched data and its CRCs.
@@ -1459,6 +1468,8 @@ void SimpleEntryImpl::CreationOperationComplete(
   // ultimately release `in_results->sync_entry`, and thus leading to having a
   // dangling pointer here.
   in_results = nullptr;
+
+  state_ = STATE_READY;
   if (result_state == SimpleEntryOperation::ENTRY_NEEDS_CALLBACK) {
     ReturnEntryToCallerAsync(!created, std::move(completion_callback));
   }
@@ -1474,8 +1485,8 @@ void SimpleEntryImpl::UpdateStateAfterOperationComplete(
     state_ = STATE_FAILURE;
     MarkAsDoomed(DOOM_COMPLETED);
   } else {
-    state_ = STATE_READY;
     UpdateDataFromEntryStat(entry_stat);
+    state_ = STATE_READY;
   }
 }
 
@@ -1637,7 +1648,10 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
     const SimpleEntryStat& entry_stat) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(synchronous_entry_);
-  DCHECK_EQ(STATE_READY, state_);
+  // We want to only be called in STATE_IO_PENDING so that if call to
+  // SimpleIndex::UpdateEntrySize() ends up triggering eviction and queuing
+  // Dooms it doesn't also run any queued operations.
+  CHECK_EQ(state_, STATE_IO_PENDING);
 
   last_used_ = entry_stat.last_used();
   last_modified_ = entry_stat.last_modified();
@@ -1662,23 +1676,22 @@ int64_t SimpleEntryImpl::GetDiskUsage() const {
   return file_size;
 }
 
-int SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
-                                    int offset,
-                                    int buf_len,
-                                    net::IOBuffer* out_buf) {
+void SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
+                                     int offset,
+                                     int buf_len,
+                                     net::IOBuffer* out_buf) {
   DCHECK_GE(buf_len, 0);
 
   std::copy(in_buf->data() + offset, in_buf->data() + offset + buf_len,
             out_buf->data());
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
-  return buf_len;
 }
 
-int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
-                                    int offset,
-                                    int buf_len,
-                                    bool truncate) {
+void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
+                                     int offset,
+                                     int buf_len,
+                                     bool truncate) {
   // Currently, stream 0 is only used for HTTP headers, and always writes them
   // with a single, truncating write. Detect these writes and record the size
   // changes of the headers. Also, support writes to stream 0 that have
@@ -1717,7 +1730,6 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   UpdateDataFromEntryStat(
       SimpleEntryStat(modification_time, modification_time, data_size_,
                       sparse_data_size_));
-  return buf_len;
 }
 
 }  // namespace disk_cache

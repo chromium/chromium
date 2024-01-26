@@ -10,6 +10,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/federated/federated_client.h"
+#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::federated {
@@ -66,9 +69,13 @@ TEST_F(FederatedClientManagerTest, ServicesAvailableAfterLogin) {
 // Demonstration of using a faked FederatedServiceController in a non-ash
 // test environment, i.e. a low-level unit test which does not inherit from
 // AshTestBase.
+// TODO(b/289140140): Refactor FederatedClientManager such that the testing
+// here can be simpler, considering that this will be an examplar for
+// prospective clients.
 class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
  public:
-  FederatedClientManagerFakeAshInteractionTest() {
+  FederatedClientManagerFakeAshInteractionTest()
+      : scoped_fake_for_test_(&fake_service_connection_) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFederatedService,
                               features::kFederatedStringsService},
@@ -92,18 +99,25 @@ class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
   std::unique_ptr<FederatedClientManager> manager_;
 
  private:
+  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  ash::federated::FakeServiceConnectionImpl fake_service_connection_;
+  ash::federated::ScopedFakeServiceConnectionForTest scoped_fake_for_test_;
 };
 
-// TODO(crbug.com/1478953): Disabled due to memory leak caught by sanitizer.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_ServicesAvailable DISABLED_ServicesAvailable
-#else
-#define MAYBE_ServicesAvailable ServicesAvailable
-#endif
-TEST_F(FederatedClientManagerFakeAshInteractionTest, MAYBE_ServicesAvailable) {
+TEST_F(FederatedClientManagerFakeAshInteractionTest, ServicesAvailable) {
   EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
   EXPECT_TRUE(manager_->IsFederatedStringsServiceAvailable());
+}
+
+TEST_F(FederatedClientManagerFakeAshInteractionTest, ReportExample) {
+  EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
+  EXPECT_EQ(0, manager_->get_num_successful_reports_for_test());
+
+  manager_->ReportSingleString("test_client_name", "example_feature_name",
+                               "example_string");
+  EXPECT_EQ(1, manager_->get_num_successful_reports_for_test());
 }
 
 }  // namespace ash::federated

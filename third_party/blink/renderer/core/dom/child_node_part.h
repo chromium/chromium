@@ -45,7 +45,7 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
                 Node& next_sibling,
-                const Vector<String> metadata);
+                Vector<String> metadata);
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -39,8 +40,8 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  WebStateList* web_state_list_;
-  WebUsageEnablerBrowserAgent* enabler_;
+  raw_ptr<WebStateList> web_state_list_;
+  raw_ptr<WebUsageEnablerBrowserAgent> enabler_;
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();

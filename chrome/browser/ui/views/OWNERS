@@ -17,6 +17,7 @@ pbos@chromium.org
 pkasting@chromium.org
 sky@chromium.org
 tbergquist@chromium.org
+dljames@chromium.org
 
 per-file content_settings*=file://components/content_settings/OWNERS
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_item_view.h"
@@ -28,6 +29,9 @@ const CGFloat kSetUpListItemSpacing = 5.0f;
 const CGFloat kSetUpListStackViewLeadingInset = 31.0f;
 const CGFloat kSetUpListStackViewTrailingInset = 20.0f;
 const CGFloat kSetUpListStackViewDescriptionSpacing = 33.0f;
+
+// A11y ID for the SetUpList title label.
+NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
 }  // namespace
 
@@ -78,9 +82,8 @@ const CGFloat kSetUpListStackViewDescriptionSpacing = 33.0f;
 
   UILabel* title = [[UILabel alloc] init];
   title.translatesAutoresizingMaskIntoConstraints = NO;
-  title.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
-  title.accessibilityIdentifier =
-      l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+  title.text = content_suggestions::SetUpListTitleString();
+  title.accessibilityIdentifier = kSetUpListTitleAxId;
   title.font = CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.numberOfLines = 0;
@@ -120,7 +123,7 @@ const CGFloat kSetUpListStackViewDescriptionSpacing = 33.0f;
 
   UIStackView* setUpListItemStackView = [[UIStackView alloc] init];
   setUpListItemStackView.axis = UILayoutConstraintAxisVertical;
-  setUpListItemStackView.alignment = UIStackViewAlignmentLeading;
+  setUpListItemStackView.alignment = UIStackViewAlignmentFill;
   setUpListItemStackView.distribution = UIStackViewDistributionFill;
   setUpListItemStackView.translatesAutoresizingMaskIntoConstraints = NO;
   setUpListItemStackView.spacing = kSetUpListItemSpacing;

@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/ash/network_health_data_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "components/feedback/redaction_tool/pii_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -111,7 +111,7 @@ void NetworkHealthDataCollector::CollectDataAndDetectPII(
 void NetworkHealthDataCollector::
     OnSystemLogSourceDataCollectorAdaptorCollectedData(
         DataCollectorDoneCallback on_data_collected_callback,
-        absl::optional<SupportToolError> error) {
+        std::optional<SupportToolError> error) {
   // `system_logs::kNetworkHealthSnapshotEntry` contains network names and they
   // should be detected specially since
   // `SystemLogSourceDataCollectorAdaptor::CollectDataAndDetectPII()` can't

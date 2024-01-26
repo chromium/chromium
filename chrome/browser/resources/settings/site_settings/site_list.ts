@@ -24,7 +24,7 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
@@ -32,7 +32,8 @@ import {TooltipMixin} from '../tooltip_mixin.js';
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
+import type {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteListElement {
   $: {

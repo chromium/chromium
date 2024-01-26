@@ -5,98 +5,226 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_B;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_D;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_E;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_F;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_G;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_H;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.ShoppingSpecifics;
+import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link BasicBookmarkQueryHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BasicBookmarkQueryHandlerTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final Features.JUnitProcessor mFeaturesRule = new Features.JUnitProcessor();
 
-    @Mock private BookmarkModel mBookmarkModel;
-    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
-
+    private BookmarkModel mBookmarkModel;
     private BasicBookmarkQueryHandler mHandler;
 
     @Before
     public void setup() {
-        SharedBookmarkModelMocks.initMocks(mBookmarkModel);
-        mHandler = new BasicBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs);
+        mBookmarkModel = FakeBookmarkModel.createModel();
+        mHandler =
+                new BasicBookmarkQueryHandler(mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class));
+    }
+
+    @Test
+    public void testBuildBookmarkListForParent_rootFolder() {
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForParent(mBookmarkModel.getRootFolderId());
+        assertEquals(4, result.size());
+        assertEquals(mBookmarkModel.getOtherFolderId(), result.get(0).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getDesktopFolderId(), result.get(1).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getMobileFolderId(), result.get(2).getBookmarkItem().getId());
+        assertEquals(
+                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                result.get(3).getBookmarkItem().getId());
     }
 
     @Test
     public void testBuildBookmarkListForParent_nonRootFolder() {
+        BookmarkId id1 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test1",
+                        new GURL("https://test1.com"));
+        BookmarkId id2 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test2",
+                        new GURL("https://test2.com"));
+        BookmarkId id3 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test3",
+                        new GURL("https://test3.com"));
+        BookmarkId id4 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test4",
+                        new GURL("https://test4.com"));
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
 
         assertEquals(5, result.size());
-        assertEquals(FOLDER_BOOKMARK_ID_A, result.get(0).getBookmarkItem().getId());
-        assertEquals(URL_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());
-        assertEquals(URL_BOOKMARK_ID_F, result.get(2).getBookmarkItem().getId());
-        assertEquals(URL_BOOKMARK_ID_G, result.get(3).getBookmarkItem().getId());
-        assertEquals(URL_BOOKMARK_ID_H, result.get(4).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getPartnerFolderId(), result.get(0).getBookmarkItem().getId());
+        assertEquals(id1, result.get(1).getBookmarkItem().getId());
+        assertEquals(id2, result.get(2).getBookmarkItem().getId());
+        assertEquals(id3, result.get(3).getBookmarkItem().getId());
+        assertEquals(id4, result.get(4).getBookmarkItem().getId());
     }
 
     @Test
     public void testBuildBookmarkListForParent_shopping() {
+        BookmarkId id =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test",
+                        new GURL("https://test.com"));
+
+        ShoppingSpecifics shoppingSpecifics =
+                ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build();
+        PowerBookmarkMeta powerBookmarkMeta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(shoppingSpecifics).build();
+        mBookmarkModel.setPowerBookmarkMeta(id, powerBookmarkMeta);
+
         List<BookmarkListEntry> result =
                 mHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
 
-        // Both URL_BOOKMARK_ID_B and URL_BOOKMARK_ID_C will be returned as children of
-        // BookmarkId.SHOPPING_FOLDER , but only URL_BOOKMARK_ID_B will have a correct meta.
         assertEquals(1, result.size());
-        assertEquals(URL_BOOKMARK_ID_B, result.get(0).getBookmarkItem().getId());
+        assertEquals(id, result.get(0).getBookmarkItem().getId());
     }
 
     @Test
     public void testBuildBookmarkListForParent_readingList() {
+        BookmarkId readId =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                        "test",
+                        new GURL("https://test.com"));
+        mBookmarkModel.setReadStatusForReadingList(readId, /* read= */ true);
+        BookmarkId unreadId =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                        "test1",
+                        new GURL("https://test1.com"));
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForParent(READING_LIST_BOOKMARK_ID);
+                mHandler.buildBookmarkListForParent(
+                        mBookmarkModel.getLocalOrSyncableReadingListFolder());
 
         assertEquals(4, result.size());
-        // While the getChildIds call will return [D, E], due to the read status, they should get
-        // flipped around to show the unread E first. Headers will also be inserted.
         assertEquals(ViewType.SECTION_HEADER, result.get(0).getViewType());
-        assertEquals(URL_BOOKMARK_ID_E, result.get(1).getBookmarkItem().getId());
+        assertEquals(unreadId, result.get(1).getBookmarkItem().getId());
         assertEquals(ViewType.SECTION_HEADER, result.get(2).getViewType());
-        assertEquals(URL_BOOKMARK_ID_D, result.get(3).getBookmarkItem().getId());
+        assertEquals(readId, result.get(3).getBookmarkItem().getId());
     }
 
     @Test
     public void testBuildBookmarkListForSearch() {
-        doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
-                .when(mBookmarkModel)
-                .searchBookmarks("A", 500);
+        BookmarkId foo1 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "foo1",
+                        new GURL("https://foo1.com"));
+        BookmarkId foo2 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "foo2",
+                        new GURL("https://foo2.com"));
+        BookmarkId baz1 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "baz1",
+                        new GURL("https://bar1.com"));
+        BookmarkId baz2 =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "baz2",
+                        new GURL("https://bar2.com"));
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForSearch("A", /* powerFilter= */ null);
+                mHandler.buildBookmarkListForSearch("foo", /* powerFilter= */ null);
         assertEquals(2, result.size());
+        assertEquals(foo1, result.get(0).getBookmarkItem().getId());
+        assertEquals(foo2, result.get(1).getBookmarkItem().getId());
+
+        result = mHandler.buildBookmarkListForSearch("baz", /* powerFilter= */ null);
+        assertEquals(2, result.size());
+        assertEquals(baz1, result.get(0).getBookmarkItem().getId());
+        assertEquals(baz2, result.get(1).getBookmarkItem().getId());
+
+        result = mHandler.buildBookmarkListForSearch("fdsa", /* powerFilter= */ null);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testBuildBookmarkListForFolderSelect() {
+        mBookmarkModel.addBookmark(
+                mBookmarkModel.getMobileFolderId(), 0, "test1", new GURL("https://test1.com"));
+        BookmarkId folder1 =
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 1");
+        BookmarkId folder2 =
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 2");
+        BookmarkId folder3 =
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 3");
+
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getMobileFolderId(), false);
+        assertEquals(3, result.size());
+        assertEquals(folder1, result.get(0).getBookmarkItem().getId());
+        assertEquals(folder2, result.get(1).getBookmarkItem().getId());
+        assertEquals(folder3, result.get(2).getBookmarkItem().getId());
+
+        result =
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getMobileFolderId(), true);
+        assertEquals(3, result.size());
+        assertEquals(folder1, result.get(0).getBookmarkItem().getId());
+        assertEquals(folder2, result.get(1).getBookmarkItem().getId());
+        assertEquals(folder3, result.get(2).getBookmarkItem().getId());
+    }
+
+    @Test
+    public void testBuildBookmarkListForFolderSelect_rootFolder() {
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId(), false);
+        assertEquals(4, result.size());
+        assertEquals(mBookmarkModel.getOtherFolderId(), result.get(0).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getDesktopFolderId(), result.get(1).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getMobileFolderId(), result.get(2).getBookmarkItem().getId());
+        assertEquals(
+                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                result.get(3).getBookmarkItem().getId());
+
+        result = mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId(), true);
+        assertEquals(3, result.size());
+        assertEquals(mBookmarkModel.getOtherFolderId(), result.get(0).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getDesktopFolderId(), result.get(1).getBookmarkItem().getId());
+        assertEquals(mBookmarkModel.getMobileFolderId(), result.get(2).getBookmarkItem().getId());
     }
 }

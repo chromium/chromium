@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 
 /** Tests for {@link MerchantTrustMessageContext}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -43,12 +42,12 @@ const char kDownloadNamespacePrefix[] = "LEGACY_DOWNLOAD";
 // The remaining time for a download item if it cannot be calculated.
 constexpr int64_t kUnknownRemainingTime = -1;
 
-absl::optional<OfflineItemFilter> FilterForSpecialMimeTypes(
+std::optional<OfflineItemFilter> FilterForSpecialMimeTypes(
     const std::string& mime_type) {
   if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg"))
     return OfflineItemFilter::FILTER_AUDIO;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
@@ -80,7 +79,7 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* item) {
   auto_resumption_size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
 #endif
 
-  return download::AutoResumptionHandler::IsInterruptedDownloadAutoResumable(
+  return download::IsInterruptedDownloadAutoResumable(
       item, auto_resumption_size_limit);
 }
 

@@ -348,7 +348,7 @@ pub fn collect_dependencies(
             &dep_graph.packages,
             &dep_graph.nodes,
             extra_config,
-        )?;
+        );
 
         // Make sure the package comes from our vendored source. If not, report
         // the error for later.

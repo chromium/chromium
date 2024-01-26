@@ -7,7 +7,6 @@
 #include "ash/app_menu/notification_item_view.h"
 #include "ash/app_menu/notification_menu_view_test_api.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,9 +70,7 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
   int overflow_added_or_removed_count_ = 0;
 
   // Owned by NotificationMenuViewTest.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION NotificationMenuView* notification_menu_view_ = nullptr;
+  raw_ptr<NotificationMenuView> notification_menu_view_ = nullptr;
 };
 
 }  // namespace

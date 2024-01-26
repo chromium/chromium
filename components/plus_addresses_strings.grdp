@@ -23,6 +23,15 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE" desc="The error message shown on the modal." translateable="false">
       Lorem ipsum or whatever
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT" desc="The text of the link shown on the Plus Address error message." translateable="false">
+      error-link
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP" desc="The error message shown on the desktop modal." translateable="false">
+      Lorem ipsum, consectetur adipiscing <ph name="LINK">$1</ph>.
+    </message>
+     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2" desc="The error message shown on the android bottom sheet." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER" desc="A placeholder for the plus address" translateable="false">
       Lorem Ipsum or whatever
     </message>

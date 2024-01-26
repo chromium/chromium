@@ -32,6 +32,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dev_tools_host.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -92,11 +93,11 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
       devtools_host_->DisconnectClient();
     devtools_host_ =
         MakeGarbageCollected<DevToolsHost>(this, GetSupplementable());
-    v8::Local<v8::Object> global = script_state->GetContext()->Global();
     v8::Local<v8::Value> devtools_host_obj =
-        ToV8(devtools_host_.Get(), global, script_state->GetIsolate());
+        ToV8Traits<DevToolsHost>::ToV8(script_state, devtools_host_.Get());
     DCHECK(!devtools_host_obj.IsEmpty());
-    global
+    script_state->GetContext()
+        ->Global()
         ->Set(script_state->GetContext(),
               V8AtomicString(isolate, "DevToolsHost"), devtools_host_obj)
         .Check();

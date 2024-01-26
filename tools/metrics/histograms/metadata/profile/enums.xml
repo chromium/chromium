@@ -100,6 +100,7 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="ProfileAlreadySetUp (syncing on Lacros or signed in on Dice)"/>
   <int value="3" label="SkippedByPolicies"/>
+  <int value="4" label="ForceSignin"/>
 </enum>
 
 <enum name="GuestProfileCreatedType">

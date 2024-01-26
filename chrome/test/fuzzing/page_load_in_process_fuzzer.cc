@@ -194,7 +194,6 @@ int PageLoadInProcessFuzzer::Fuzz(
         break;
       default:
         LOG(FATAL) << "Unexpected proto value for which server";
-        break;
     }
   }
 

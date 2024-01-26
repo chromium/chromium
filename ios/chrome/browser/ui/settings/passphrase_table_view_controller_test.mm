@@ -59,7 +59,7 @@ std::unique_ptr<KeyedService> CreateNiceMockSyncService(
 
 PassphraseTableViewControllerTest::PassphraseTableViewControllerTest()
     : LegacyChromeTableViewControllerTest(),
-      fake_sync_service_(NULL),
+      fake_sync_service_(nullptr),
       default_auth_error_(GoogleServiceAuthError::NONE) {}
 
 PassphraseTableViewControllerTest::~PassphraseTableViewControllerTest() {}

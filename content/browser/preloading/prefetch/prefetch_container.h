@@ -589,9 +589,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // speculation rules and can be different from actual `no_vary_search_data_`.
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
-  // The |PrefetchDocumentManager| that requested |this|. Initially it owns
-  // |this|, but once the network request for the prefetch is started,
-  // ownernship is transferred to |PrefetchService|.
+  // The |PrefetchDocumentManager| that requested |this|.
   base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager_;
 
   // The current status, if any, of the prefetch.

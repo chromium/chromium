@@ -102,6 +102,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
+                          bool links_enabled,
                           SkColor foreground_color,
                           SkColor background_color,
                           int line_spacing,
@@ -111,7 +112,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     auto letter_spacing_enum =
         static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
     model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        font_name, font_size, foreground_color, background_color,
+        font_name, font_size, links_enabled, foreground_color, background_color,
         line_spacing_enum, letter_spacing_enum));
   }
 
@@ -119,7 +120,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
       read_anything::mojom::LetterSpacing letter_spacing,
       read_anything::mojom::LineSpacing line_spacing) {
     model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        "Arial", 15.0, SkColorSetRGB(0x33, 0x40, 0x36),
+        "Arial", 15.0, false, SkColorSetRGB(0x33, 0x40, 0x36),
         SkColorSetRGB(0xDF, 0xD2, 0x63), line_spacing, letter_spacing));
   }
 
@@ -147,6 +148,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   std::string FontName() { return model_->font_name(); }
 
   float FontSize() { return model_->font_size(); }
+
+  bool LinksEnabled() { return model_->links_enabled(); }
 
   SkColor ForegroundColor() { return model_->foreground_color(); }
 
@@ -221,6 +224,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->set_selection_from_action(selection_from_action);
   }
 
+  void OnSelection(ax::mojom::EventFrom event_from) {
+    model_->OnSelection(event_from);
+  }
+
   void IncreaseTextSize() { model_->IncreaseTextSize(); }
 
   void DecreaseTextSize() { model_->DecreaseTextSize(); }
@@ -241,6 +248,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   bool IsPdf() { return model_->is_pdf(); }
   ui::AXTreeID GetPDFWebContents() { return model_->GetPDFWebContents(); }
 
+  size_t GetNextSentence(const std::u16string& text, size_t max_text_length) {
+    return model_->GetNextSentence(text, max_text_length);
+  }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -252,6 +263,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 TEST_F(ReadAnythingAppModelTest, Theme) {
   std::string font_name = "Roboto";
   float font_size = 18.0;
+  bool links_enabled = false;
   SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
   int letter_spacing =
@@ -260,10 +272,11 @@ TEST_F(ReadAnythingAppModelTest, Theme) {
   int line_spacing =
       static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
   float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, foreground, background, line_spacing,
-                     letter_spacing);
+  SetThemeForTesting(font_name, font_size, links_enabled, foreground,
+                     background, line_spacing, letter_spacing);
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
+  EXPECT_EQ(links_enabled, LinksEnabled());
   EXPECT_EQ(foreground, ForegroundColor());
   EXPECT_EQ(background, BackgroundColor());
   EXPECT_EQ(line_spacing_value, LineSpacing());
@@ -1456,4 +1469,113 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   update.nodes = {static_text_node};
   AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
+}
+
+TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+
+  // If there is a click and drag selection (the anchor object id and offset are
+  // the same as the prev selection received), the event_from eventually changes
+  // from kUser to kPage. Post process selection should be required in either
+  // case.
+  // SetRequiresPostProcessSelection(false) is needed to reset the flag to check
+  // that OnSelection(...) properly sets (or doesn't set) the flag.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kUser);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  // If the user drags the selection so that it is backwards, post process
+  // selection should still be required.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 1;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 2;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  // If the anchor changes (the user stopped dragging their cursor) and we
+  // receive an event with event_from kPage, post process selection should not
+  // be set to true.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_FALSE(RequiresPostProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextSentence_ReturnsCorrectIndex) {
+  const std::u16string first_sentence = u"This is a normal sentence. ";
+  const std::u16string second_sentence = u"This is a second sentence.";
+
+  const std::u16string sentence = first_sentence + second_sentence;
+  size_t index = GetNextSentence(sentence, 175);
+  EXPECT_EQ(index, first_sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), first_sentence);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextSentence_MaxLengthCutsOffSentence_ReturnsCorrectIndex) {
+  const std::u16string first_sentence = u"This is a normal sentence. ";
+  const std::u16string second_sentence = u"This is a second sentence.";
+
+  const std::u16string sentence = first_sentence + second_sentence;
+  size_t index = GetNextSentence(sentence, first_sentence.length() - 3);
+  EXPECT_TRUE(index < first_sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), u"This is a normal ");
+}
+TEST_F(ReadAnythingAppModelTest,
+       GetNextSentence_TextLongerThanMaxLength_ReturnsCorrectIndex) {
+  const std::u16string first_sentence = u"This is a normal sentence. ";
+  const std::u16string second_sentence = u"This is a second sentence.";
+
+  const std::u16string sentence = first_sentence + second_sentence;
+  size_t index = GetNextSentence(
+      sentence, first_sentence.length() + second_sentence.length() - 5);
+  EXPECT_EQ(index, first_sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), first_sentence);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextSentence_OnlyOneSentence_ReturnsCorrectIndex) {
+  const std::u16string sentence = u"Hello, this is a normal sentence.";
+
+  size_t index = GetNextSentence(sentence, 175);
+  EXPECT_EQ(index, sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), sentence);
+}
+
+TEST_F(
+    ReadAnythingAppModelTest,
+    GetNextSentence_MaxLengthCutsOffSentence_OnlyOneSentence_ReturnsCorrectIndex) {
+  const std::u16string sentence = u"Hello, this is a normal sentence.";
+
+  size_t index = GetNextSentence(sentence, 12);
+  EXPECT_TRUE(index < sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
 }

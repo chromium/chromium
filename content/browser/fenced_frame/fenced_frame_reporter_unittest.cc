@@ -1325,9 +1325,6 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
   private_aggregation_event_map2["event_type2"].push_back(
       kPrivateAggregationRequest.Clone());
 
-  // We expect two calls to `SendHistogramReport()` given the two events.
-  private_aggregation_manager_.set_allow_multiple_calls_per_origin(true);
-
   reporter->OnForEventPrivateAggregationRequestsReceived(
       std::move(private_aggregation_event_map2));
 

@@ -15,6 +15,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/string_resources.h"
@@ -89,7 +90,7 @@ using remoting::HostListService;
   HostFetchingViewController* _fetchingViewController;
   HostFetchingErrorViewController* _fetchingErrorViewController;
   HostSetupViewController* _setupViewController;
-  HostListService* _hostListService;
+  raw_ptr<HostListService> _hostListService;
   base::CallbackListSubscription _hostListStateSubscription;
   base::CallbackListSubscription _hostListFetchFailureSubscription;
 

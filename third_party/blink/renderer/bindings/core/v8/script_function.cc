@@ -4,14 +4,39 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 
-#include "third_party/blink/renderer/platform/bindings/custom_wrappable.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
 namespace {
 
-class CallableHolder final : public CustomWrappable {
+void InstallCallableHolderTemplate(v8::Isolate*,
+                                   const DOMWrapperWorld&,
+                                   v8::Local<v8::Template> interface_template) {
+  v8::Local<v8::ObjectTemplate> instance_template =
+      interface_template.As<v8::FunctionTemplate>()->InstanceTemplate();
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+}
+
+const WrapperTypeInfo callable_holder_info = {
+    gin::kEmbedderBlink,
+    InstallCallableHolderTemplate,
+    nullptr,
+    "ScriptFunctionCallableHolder",
+    nullptr,
+    WrapperTypeInfo::kWrapperTypeNoPrototype,
+    WrapperTypeInfo::kCustomWrappableId,
+    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
+    WrapperTypeInfo::kCustomWrappableKind,
+};
+
+}  // namespace
+
+class CORE_EXPORT CallableHolder final : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   static v8::Local<v8::Function> Create(ScriptState* script_state,
                                         ScriptFunction::Callable* callable) {
@@ -29,7 +54,7 @@ class CallableHolder final : public CustomWrappable {
     RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(args.GetIsolate(),
                                                  "Blink_CallCallback");
     v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(args.Data());
-    auto* holder = static_cast<CallableHolder*>(ToCustomWrappable(data));
+    auto* holder = static_cast<CallableHolder*>(ToScriptWrappable(data));
     ScriptState* script_state =
         ScriptState::From(args.GetIsolate()->GetCurrentContext());
     holder->callable_->CallRaw(script_state, args);
@@ -43,14 +68,18 @@ class CallableHolder final : public CustomWrappable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callable_);
-    CustomWrappable::Trace(visitor);
+    ScriptWrappable::Trace(visitor);
   }
 
  private:
   const Member<ScriptFunction::Callable> callable_;
 };
 
-}  // namespace
+// The generated bindings normally take care of initializing
+// `wrappable_type_info_`, but CallableHolder doesn't have generated bindings,
+// so this has to be done manually.
+const WrapperTypeInfo& CallableHolder::wrapper_type_info_ =
+    callable_holder_info;
 
 ScriptValue ScriptFunction::Callable::Call(ScriptState*, ScriptValue) {
   NOTREACHED();
@@ -65,10 +94,9 @@ void ScriptFunction::Callable::CallRaw(
   V8SetReturnValue(args, result.V8Value());
 }
 
-v8::Local<v8::Function> ScriptFunction::BindToV8Function(
-    ScriptState* script_state,
-    Callable* callable) {
-  return CallableHolder::Create(script_state, callable);
-}
+ScriptFunction::ScriptFunction(ScriptState* script_state, Callable* callable)
+    : script_state_(script_state),
+      function_(script_state->GetIsolate(),
+                CallableHolder::Create(script_state, callable)) {}
 
 }  // namespace blink

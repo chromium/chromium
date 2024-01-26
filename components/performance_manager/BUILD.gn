@@ -190,6 +190,8 @@ static_library("performance_manager") {
     "render_process_user_data.cc",
     "render_process_user_data.h",
     "resource_attribution/attribution_impl_helpers.h",
+    "resource_attribution/context_collection.cc",
+    "resource_attribution/context_collection.h",
     "resource_attribution/cpu_measurement_delegate.cc",
     "resource_attribution/cpu_measurement_monitor.cc",
     "resource_attribution/cpu_measurement_monitor.h",
@@ -230,8 +232,6 @@ static_library("performance_manager") {
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
     "web_contents_proxy.cc",
-    "web_contents_proxy_impl.cc",
-    "web_contents_proxy_impl.h",
     "worker_watcher.cc",
     "worker_watcher.h",
   ]

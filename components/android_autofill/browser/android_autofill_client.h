@@ -1,0 +1,200 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/android/jni_weak_ref.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "ui/android/view_android.h"
+
+namespace autofill {
+class AutocompleteHistoryManager;
+class AutofillPopupDelegate;
+class CreditCard;
+class PersonalDataManager;
+class StrikeDatabase;
+}  // namespace autofill
+
+namespace content {
+class WebContents;
+}
+
+namespace gfx {
+class RectF;
+}
+
+namespace syncer {
+class SyncService;
+}
+
+class PersonalDataManager;
+class PrefService;
+
+namespace android_autofill {
+
+// One Android implementation of the AutofillClient. If used, the Android
+// Autofill framework is responsible for autofill and password management.
+//
+// This client is
+//   a) always used on WebView, and
+//   b) used on Clank if users switch to a 3P provider and thus disable the
+//      built-in `BrowserAutofillManager`.
+//
+// By using this client, the embedder responds to requests from the Android
+// Autofill API asking for a "virtual view structure". This class defers to
+// parsing logic in renderer and components/autofill to identify forms. The
+// forms are translated into that virtual view structure by the Java-side of
+// this component (see AndroidAutofillClient.java using AutofillProvider.java).
+// Any higher layer only needs to forward the API requests to this client. The
+// same applies to filling: the data filling happens in renderer code and only
+// requires the embedder to forward the data to be filled.
+// The UI (except for datalist dropdowns) are handled entirely by the Platform.
+// Neither WebView nor Chrome can control whether e.g. a dropdown or
+// keyboard-inlined suggestion are served to the user.
+//
+// Lifetime is the same as the WebContents object it's attachted to.
+class AndroidAutofillClient : public autofill::ContentAutofillClient {
+ public:
+  static void CreateForWebContents(
+      content::WebContents* contents,
+      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
+          notify_client_created);
+
+  AndroidAutofillClient(const AndroidAutofillClient&) = delete;
+  AndroidAutofillClient& operator=(const AndroidAutofillClient&) = delete;
+
+  ~AndroidAutofillClient() override;
+
+  // AutofillClient:
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
+  autofill::PersonalDataManager* GetPersonalDataManager() override;
+  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
+      override;
+  PrefService* GetPrefs() override;
+  const PrefService* GetPrefs() const override;
+  syncer::SyncService* GetSyncService() override;
+  signin::IdentityManager* GetIdentityManager() override;
+  autofill::FormDataImporter* GetFormDataImporter() override;
+  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
+      override;
+  autofill::StrikeDatabase* GetStrikeDatabase() override;
+  ukm::UkmRecorder* GetUkmRecorder() override;
+  ukm::SourceId GetUkmSourceId() override;
+  autofill::AddressNormalizer* GetAddressNormalizer() override;
+  const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
+  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override;
+  security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
+  const translate::LanguageState* GetLanguageState() override;
+  translate::TranslateDriver* GetTranslateDriver() override;
+  void ShowAutofillSettings(
+      autofill::FillingProduct main_filling_product) override;
+  void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
+                                   base::OnceClosure callback) override;
+  void ConfirmSaveAddressProfile(
+      const autofill::AutofillProfile& profile,
+      const autofill::AutofillProfile* original_profile,
+      SaveAddressProfilePromptOptions options,
+      AddressProfileSavePromptCallback callback) override;
+  void ShowEditAddressProfileDialog(
+      const autofill::AutofillProfile& profile,
+      AddressProfileSavePromptCallback on_user_decision_callback) override;
+  void ShowDeleteAddressProfileDialog(
+      const autofill::AutofillProfile& profile,
+      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
+  bool HasCreditCardScanFeature() const override;
+  void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<autofill::TouchToFillDelegate> delegate,
+      base::span<const autofill::CreditCard> cards_to_suggest) override;
+  void HideTouchToFillCreditCard() override;
+  void ShowAutofillPopup(
+      const autofill::AutofillClient::PopupOpenArgs& open_args,
+      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
+  void UpdateAutofillPopupDataListValues(
+      base::span<const autofill::SelectOption> datalist) override;
+  std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
+  void PinPopupView() override;
+  autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs(
+      autofill::AutofillSuggestionTriggerSource trigger_source) const override;
+  void UpdatePopup(
+      const std::vector<autofill::Suggestion>& suggestions,
+      autofill::FillingProduct main_filling_product,
+      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+  void HideAutofillPopup(autofill::PopupHidingReason reason) override;
+  bool IsAutocompleteEnabled() const override;
+  bool IsPasswordManagerEnabled() override;
+  void DidFillOrPreviewForm(
+      autofill::mojom::ActionPersistence action_persistence,
+      autofill::AutofillTriggerSource trigger_source,
+      bool is_refill) override;
+  void DidFillOrPreviewField(const std::u16string& autofilled_value,
+                             const std::u16string& profile_full_name) override;
+  bool IsContextSecure() const override;
+  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
+
+  void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void SuggestionSelected(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& obj,
+                          jint position);
+
+  // ContentAutofillClient:
+  std::unique_ptr<autofill::AutofillManager> CreateManager(
+      base::PassKey<autofill::ContentAutofillDriver> pass_key,
+      autofill::ContentAutofillDriver& driver) override;
+  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
+                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
+                     agent) override;
+
+ private:
+  friend class content::WebContentsUserData<AndroidAutofillClient>;
+
+  // Ownership: The native object is created by either AwContents or
+  // ChromeAutofillClient and owned by the WebContents it's attached to.
+  // The native object creates the Java peer which delegates autofill
+  // functionality at the Java side to the Android Autofill API. The Java peer
+  // is owned by Java AwContents or the ContentView. The native object only
+  // maintains a weak ref to it.
+  // TODO(b/322164882): Use the WebContentsUserData template or return the Ref.
+  explicit AndroidAutofillClient(
+      content::WebContents* web_contents,
+      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
+          notify_client_created);
+
+  void ShowAutofillPopupImpl(
+      const gfx::RectF& element_bounds,
+      bool is_rtl,
+      const std::vector<autofill::Suggestion>& suggestions);
+
+  content::WebContents& GetWebContents() const;
+
+  JavaObjectWeakGlobalRef java_ref_;
+
+  ui::ViewAndroid::ScopedAnchorView anchor_view_;
+
+  // The current Autofill query values.
+  std::vector<autofill::Suggestion> suggestions_;
+  base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
+  std::unique_ptr<autofill::AutofillCrowdsourcingManager>
+      crowdsourcing_manager_;
+};
+
+}  // namespace android_autofill
+
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_

@@ -108,10 +108,15 @@ UIColor* DimColorIncognito() {
     // the name of the currently selected search engine, which for mobile we
     // suppress.
     NSString* detailText = nil;
-    if (self.isURL)
+    if (self.isURL) {
       detailText = base::SysUTF16ToNSString(_match.contents);
-    else if (_match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY)
+    } else if (_match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       detailText = base::SysUTF16ToNSString(_match.description);
+    }
+
+    if (!detailText.length) {
+      return nil;
+    }
     const ACMatchClassifications* classifications =
         self.isURL ? &_match.contents_class : nullptr;
     // The suggestion detail color should match the main text color for entity

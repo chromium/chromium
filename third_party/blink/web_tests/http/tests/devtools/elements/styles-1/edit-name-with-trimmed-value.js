@@ -24,7 +24,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     TestRunner.addResult('Viewing \'background\' value in Styles:');
     TestRunner.addResult(treeElement.valueElement.textContent);
 
-    treeElement.startEditing(treeElement.nameElement);
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'background-image';
     ElementsTestRunner.waitForStyleCommitted(step2);
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));

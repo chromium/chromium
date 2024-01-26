@@ -17,7 +17,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class SafetyCheckViewBinder {
-    private static final String PASSWORDS_KEY = "passwords";
+    public static final String PASSWORDS_KEY_ACCOUNT = "passwords_account";
+    public static final String PASSWORDS_KEY_LOCAL = "passwords_local";
     private static final String SAFE_BROWSING_KEY = "safe_browsing";
     private static final String UPDATES_KEY = "updates";
     private static final long MIN_TO_MS = 60 * 1000;
@@ -268,17 +269,18 @@ class SafetyCheckViewBinder {
         }
     }
 
-    static void bindPasswordSafetyCheck(
+    static void bindPasswordCheckPreferenceModel(
             PropertyModel safetyCheckModel,
             PropertyModel model,
             SafetyCheckSettingsFragment fragment,
-            PropertyKey propertyKey) {
+            PropertyKey propertyKey,
+            String preferenceViewId) {
         if (PasswordsCheckPreferenceProperties.PASSWORDS_STATE == propertyKey) {
             @PasswordsState
             int state = model.get(PasswordsCheckPreferenceProperties.PASSWORDS_STATE);
             fragment.updateElementStatus(
-                    PASSWORDS_KEY, getStringForPasswords(fragment.getContext(), model, state));
-            SafetyCheckElementPreference preference = fragment.findPreference(PASSWORDS_KEY);
+                    preferenceViewId, getStringForPasswords(fragment.getContext(), model, state));
+            SafetyCheckElementPreference preference = fragment.findPreference(preferenceViewId);
             preference.setEnabled(true);
             if (state == PasswordsState.UNCHECKED) {
                 preference.clearStatusIndicator();
@@ -293,7 +295,7 @@ class SafetyCheckViewBinder {
                 preference.setEnabled(true);
             }
         } else if (PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER == propertyKey) {
-            fragment.findPreference(PASSWORDS_KEY)
+            fragment.findPreference(preferenceViewId)
                     .setOnPreferenceClickListener(
                             (Preference.OnPreferenceClickListener)
                                     model.get(
@@ -302,6 +304,9 @@ class SafetyCheckViewBinder {
         } else if (PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
             // Do nothing - this is handled by the PASSWORDS_STATE update.
             return;
+        } else if (PasswordsCheckPreferenceProperties.PASSWORDS_TITLE == propertyKey) {
+            SafetyCheckElementPreference preference = fragment.findPreference(preferenceViewId);
+            preference.setTitle(model.get(PasswordsCheckPreferenceProperties.PASSWORDS_TITLE));
         } else {
             assert false : "Unhandled property detected in SafetyCheckViewBinder!";
         }

@@ -815,7 +815,7 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
 
 void ExtensionUpdater::OnInstallerDone(
     const UnguessableToken& token,
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   auto iter = running_crx_installs_.find(token);
   DCHECK(iter != running_crx_installs_.end());
   FetchedCRXFile& crx_file = iter->second;

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Jaso alertak</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
 <translation id="4212246570487010370">Jarraitu arakatzen</translation>
+<translation id="427987768447457592">Fitxa talde berria</translation>
 <translation id="4648718555153979859">Fitxak taldekatuta daude hemen</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> iritzi)}other{(<ph name="REVIEWS_COUNT_MANY" /> iritzi)}}</translation>
 <translation id="4850886885716139402">Ikusi</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Ezkutatu pantaila osoko sareta</translation>
 <translation id="5076161749301278626">Dendari buruzko iritziak ikusi nahi dituzu?</translation>
 <translation id="5082793167783849073">Egin talde bat orriak azkar konparatzeko. Hasteko, eduki sakatuta esteka bat.</translation>
+<translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Azkenaldian erabili ez duzun <ph name="TABS_COUNT_ONE" /> fitxa daukazu}other{Azkenaldian erabili ez dituzun <ph name="TABS_COUNT_MANY" /> fitxa dauzkazu}}</translation>
 <translation id="5339733443032484186">Azken fitxa</translation>
 <translation id="5490235265819901748">Fitxa taldea zabalduta</translation>

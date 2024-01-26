@@ -10,15 +10,19 @@ import './pdf_viewer_shared_style.css.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 
-import {BrowserApi} from './browser_api.js';
-import {ExtendedKeyEvent, FittingType} from './constants.js';
-import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
-import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
-import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
+import type {BrowserApi} from './browser_api.js';
+import type {ExtendedKeyEvent} from './constants.js';
+import {FittingType} from './constants.js';
+import type {MessageData, PrintPreviewParams} from './controller.js';
+import {PluginController} from './controller.js';
+import type {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
+import type {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
-import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
+import type {KeyEventData} from './pdf_viewer_base.js';
+import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getTemplate} from './pdf_viewer_print.html.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import {hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
 let pluginLoaderPolicy: TrustedTypePolicy|null = null;

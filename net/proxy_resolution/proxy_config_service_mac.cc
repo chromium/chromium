@@ -18,7 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
-#include "net/proxy_resolution/proxy_chain_util_mac.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -198,7 +198,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
+  config_watcher_ = std::make_unique<NetworkConfigWatcherApple>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {

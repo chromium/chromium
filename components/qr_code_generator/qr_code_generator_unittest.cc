@@ -7,6 +7,7 @@
 #include <limits>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,53 +84,29 @@ TEST_P(QRCodeGeneratorTest, Generate) {
 }
 
 TEST_P(QRCodeGeneratorTest, ManySizes) {
-  // Generate larger and larger QR codes until there's a clean failure. Ensures
-  // that there are no edge cases like crbug.com/1177437.
+  // Test multiple input sizes.  This test was originally designed to test for
+  // memory safety problems caused by off-by-one bugs in the old C++
+  // implementation. We are now shipping a memory-safe Rust implementation so we
+  // are now testing only sizes up to 90 - this helps to avoid flaky test
+  // timeouts.
   QRCodeGenerator qr;
   std::string input = "";
   std::map<int, size_t> max_input_length_for_qr_size;
 
   for (;;) {
     input.push_back('!');
-
-    // C++ can only handle up to 287 of arbitrary bytes, but Rust implementation
-    // wouldn't `break` out of the loop until hitting `input.size() > 700`
-    // below. Therefore to avoid timeouts we test only a subset of possible
-    // input lengths when Rusty QR code generation is enabled.
-    if (IsRustyQrCodeGeneratorFeatureEnabled()) {
-      // The "holes" below try to ensure coverage of lengths around the test
-      // assertions below that are shared across C++ and Rust + around a few
-      // longer lengths that Rust can handle.
-
-      if (input.size() > 710) {
-        break;
-      }
-      bool want_to_cover = input.size() < 125;  // 2-L (2-M in Rust), 5-M, 7-M
-      want_to_cover |= ((178 < input.size()) && (input.size() < 182));  // 9-M
-      want_to_cover |= ((285 < input.size()) && (input.size() < 289));  // 12-M
-      want_to_cover |= ((664 < input.size()) && (input.size() < 668));  // 20-M
-      want_to_cover |= ((698 < input.size()) && (input.size() < 702));  // max
-      if (!want_to_cover) {
-        continue;
-      }
+    if (input.size() > 90) {
+      break;
     }
 
     absl::optional<QRCodeGenerator::GeneratedCode> code =
-        qr.Generate(base::span<const uint8_t>(
-            reinterpret_cast<const uint8_t*>(input.data()), input.size()));
-    if (!code) {
-      break;
-    }
+        qr.Generate(base::as_byte_span(input));
+    ASSERT_TRUE(code);
     max_input_length_for_qr_size[code->qr_size] = input.size();
   }
 
-  ASSERT_GT(input.size(), 200u);
-
   // Capacities taken from https://www.qrcode.com/en/about/version.html
   EXPECT_EQ(max_input_length_for_qr_size[37], 84u);   // 5-M
-  EXPECT_EQ(max_input_length_for_qr_size[45], 122u);  // 7-M
-  EXPECT_EQ(max_input_length_for_qr_size[53], 180u);  // 9-M
-  EXPECT_EQ(max_input_length_for_qr_size[65], 287u);  // 12-M (max for C++)
   if (base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature)) {
     // Rust supports all QR versions from 1 to 40 and defaults to M error
     // correction.
@@ -138,16 +115,52 @@ TEST_P(QRCodeGeneratorTest, ManySizes) {
     EXPECT_EQ(max_input_length_for_qr_size[29], 42u);    // 3-M
     EXPECT_EQ(max_input_length_for_qr_size[33], 62u);    // 4-M
                                                          // 5-M covered above
-    EXPECT_EQ(max_input_length_for_qr_size[41], 106u);   // 6-M
-                                                         // 7-M covered above
-                                                         // 9-M covered above
-                                                         // 12-M covered above
-    EXPECT_EQ(max_input_length_for_qr_size[97], 666u);   // 20-M
-    EXPECT_EQ(max_input_length_for_qr_size[101], 701u);  // 21-M (not at max)
     // Other versions skipped - otherwise the test would timeout.
   } else {
     // C++ only supports 5 QR versions: 2-L, 5-M, 7-M, 9-M, 12-M.
     EXPECT_EQ(max_input_length_for_qr_size[25], 32u);  // 2-L
+  }
+}
+
+// Test helper that returns `GeneratedCode::qr_size` or -1 if there was a
+// failure.
+int GenerateAndGetQrCodeSize(size_t input_size) {
+  QRCodeGenerator qr;
+  std::string input(input_size, '!');
+
+  absl::optional<QRCodeGenerator::GeneratedCode> code =
+      qr.Generate(base::as_byte_span(input));
+  return code.has_value() ? code->qr_size : -1;
+}
+
+TEST_P(QRCodeGeneratorTest, InputSize106) {
+  if (base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature)) {
+    EXPECT_EQ(41, GenerateAndGetQrCodeSize(106u));  // 6-M
+  } else {
+    // C++ only supports 5 QR versions: 2-L, 5-M, 7-M, 9-M, 12-M.
+    // So input size 106u results in 7-M output (rather than the smaller 6-M).
+    EXPECT_EQ(45, GenerateAndGetQrCodeSize(106u));  // 7-M
+  }
+}
+
+TEST_P(QRCodeGeneratorTest, InputSize122) {
+  EXPECT_EQ(45, GenerateAndGetQrCodeSize(122u));  // 7-M
+}
+
+TEST_P(QRCodeGeneratorTest, InputSize180) {
+  EXPECT_EQ(53, GenerateAndGetQrCodeSize(180u));  // 9-M
+}
+
+TEST_P(QRCodeGeneratorTest, InputSize287) {
+  EXPECT_EQ(65, GenerateAndGetQrCodeSize(287u));  // 12-M
+}
+
+TEST_P(QRCodeGeneratorTest, InputSize666) {
+  if (base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature)) {
+    EXPECT_EQ(97, GenerateAndGetQrCodeSize(666u));  // 20-M
+  } else {
+    // C++ supports only QR codes up to 12-M and fails for bigger inputs.
+    EXPECT_EQ(-1, GenerateAndGetQrCodeSize(666u));
   }
 }
 

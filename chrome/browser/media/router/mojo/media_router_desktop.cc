@@ -226,7 +226,7 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
                                    MediaRouteResponseCallback callback,
                                    base::TimeDelta timeout) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForPresentation(presentation_id);
   if (!provider_id || !HasJoinableRoute()) {
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
@@ -251,7 +251,7 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
 
 void MediaRouterDesktop::TerminateRoute(const MediaRoute::Id& route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     MediaRouterMetrics::RecordJoinRouteResultCode(
@@ -267,7 +267,7 @@ void MediaRouterDesktop::TerminateRoute(const MediaRoute::Id& route_id) {
 
 void MediaRouterDesktop::DetachRoute(MediaRoute::Id route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -278,7 +278,7 @@ void MediaRouterDesktop::DetachRoute(MediaRoute::Id route_id) {
 void MediaRouterDesktop::SendRouteMessage(const MediaRoute::Id& route_id,
                                           const std::string& message) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -290,7 +290,7 @@ void MediaRouterDesktop::SendRouteBinaryMessage(
     const MediaRoute::Id& route_id,
     std::unique_ptr<std::vector<uint8_t>> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -352,7 +352,7 @@ void MediaRouterDesktop::GetMediaController(
     mojo::PendingReceiver<mojom::MediaController> controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   auto* route = GetRoute(route_id);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!route || !provider_id ||
       route->controller_type() == RouteControllerType::kNone) {
@@ -651,7 +651,7 @@ void MediaRouterDesktop::Shutdown() {
 void MediaRouterDesktop::OnTerminateRouteResult(
     const MediaRoute::Id& route_id,
     mojom::MediaRouteProviderId provider_id,
-    const absl::optional<std::string>& error_text,
+    const std::optional<std::string>& error_text,
     mojom::RouteRequestResultCode result_code) {
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(result_code,
                                                              provider_id);
@@ -669,9 +669,9 @@ void MediaRouterDesktop::RouteResponseReceived(
     mojom::MediaRouteProviderId provider_id,
     MediaRouteResponseCallback callback,
     bool is_join,
-    const absl::optional<MediaRoute>& media_route,
+    const std::optional<MediaRoute>& media_route,
     mojom::RoutePresentationConnectionPtr connection,
-    const absl::optional<std::string>& error_text,
+    const std::optional<std::string>& error_text,
     mojom::RouteRequestResultCode result_code) {
   DCHECK(!connection ||
          (connection->connection_remote && connection->connection_receiver));
@@ -845,14 +845,14 @@ void MediaRouterDesktop::CreateRouteWithSelectedDesktop(
     content::DesktopMediaID media_id) {
   if (!err.empty()) {
     std::move(mr_callback)
-        .Run(absl::nullopt, nullptr, err,
+        .Run(std::nullopt, nullptr, err,
              mojom::RouteRequestResultCode::DESKTOP_PICKER_FAILED);
     return;
   }
 
   if (media_id.is_null()) {
     std::move(mr_callback)
-        .Run(absl::nullopt, nullptr, "User canceled capture dialog",
+        .Run(std::nullopt, nullptr, "User canceled capture dialog",
              mojom::RouteRequestResultCode::CANCELLED);
     return;
   }
@@ -862,9 +862,9 @@ void MediaRouterDesktop::CreateRouteWithSelectedDesktop(
       sink_id, presentation_id, origin, kDefaultFrameTreeNodeId, timeout,
       base::BindOnce(
           [](mojom::MediaRouteProvider::CreateRouteCallback inner_callback,
-             const absl::optional<media_router::MediaRoute>& route,
+             const std::optional<media_router::MediaRoute>& route,
              mojom::RoutePresentationConnectionPtr connection,
-             const absl::optional<std::string>& error_text,
+             const std::optional<std::string>& error_text,
              mojom::RouteRequestResultCode result_code) {
             std::move(inner_callback)
                 .Run(route, std::move(connection), error_text, result_code);
@@ -872,7 +872,7 @@ void MediaRouterDesktop::CreateRouteWithSelectedDesktop(
           std::move(mr_callback)));
 }
 
-absl::optional<mojom::MediaRouteProviderId>
+std::optional<mojom::MediaRouteProviderId>
 MediaRouterDesktop::GetProviderIdForPresentation(
     const std::string& presentation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -891,10 +891,10 @@ MediaRouterDesktop::GetProviderIdForPresentation(
       return provider_id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<mojom::MediaRouteProviderId>
+std::optional<mojom::MediaRouteProviderId>
 MediaRouterDesktop::GetProviderIdForRoute(const MediaRoute::Id& route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {
@@ -904,15 +904,15 @@ MediaRouterDesktop::GetProviderIdForRoute(const MediaRoute::Id& route_id) {
       return provider_id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<mojom::MediaRouteProviderId>
+std::optional<mojom::MediaRouteProviderId>
 MediaRouterDesktop::GetProviderIdForSink(const MediaSink::Id& sink_id) {
   const MediaSink* sink = GetSinkById(sink_id);
-  return sink ? absl::make_optional<mojom::MediaRouteProviderId>(
+  return sink ? std::make_optional<mojom::MediaRouteProviderId>(
                     sink->provider_id())
-              : absl::nullopt;
+              : std::nullopt;
 }
 
 const MediaSink* MediaRouterDesktop::GetSinkById(

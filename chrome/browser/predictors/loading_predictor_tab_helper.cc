@@ -58,6 +58,7 @@ net::RequestPriority GetRequestPriority(
 
     case network::mojom::RequestDestination::kFont:
     case network::mojom::RequestDestination::kScript:
+    case network::mojom::RequestDestination::kJson:
       return net::MEDIUM;
 
     case network::mojom::RequestDestination::kEmpty:
@@ -178,7 +179,7 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  absl::optional<LcppData> lcpp_data =
+  std::optional<LcppData> lcpp_data =
       predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
   if (!lcpp_data) {
     base::UmaHistogramEnumeration(
@@ -192,9 +193,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
         LcppHintStatus::kInvalidLcppStat);
     return;
   }
-  absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-      hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-          *lcpp_data);
+  std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
+      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_data);
   if (hint) {
     navigation_handle.SetLCPPNavigationHint(*hint);
     base::UmaHistogramEnumeration(
@@ -480,7 +480,7 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
   resource_load_info.request_priority =
       GetRequestPriority(resource_load_info.request_destination);
   resource_load_info.network_info =
-      blink::mojom::CommonNetworkInfo::New(false, false, absl::nullopt);
+      blink::mojom::CommonNetworkInfo::New(false, false, std::nullopt);
   predictor_->loading_data_collector()->RecordResourceLoadComplete(
       page_data->navigation_id_, resource_load_info);
 }
@@ -500,7 +500,7 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
       page_data->last_optimization_guide_prediction_);
 
   // Clear out Optimization Guide Prediction, as it is no longer needed.
-  page_data->last_optimization_guide_prediction_ = absl::nullopt;
+  page_data->last_optimization_guide_prediction_ = std::nullopt;
 }
 
 void LoadingPredictorTabHelper::RecordFirstContentfulPaint(

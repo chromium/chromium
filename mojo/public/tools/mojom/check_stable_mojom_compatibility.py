@@ -18,6 +18,7 @@ import os
 import os.path
 import sys
 
+from mojom.generate import compatibility_checker
 from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
@@ -155,7 +156,7 @@ def _ValidateDelta(root, delta):
           'renamed, please add a [RenamedFrom] attribute to the new type. This '
           'can be deleted by a subsequent change.' % qualified_name)
 
-    checker = module.BackwardCompatibilityChecker()
+    checker = compatibility_checker.BackwardCompatibilityChecker()
     try:
       if not checker.IsBackwardCompatible(new_types[new_name], kind):
         raise Exception(

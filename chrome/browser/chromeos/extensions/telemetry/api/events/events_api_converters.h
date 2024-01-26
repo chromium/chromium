@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENTS_API_CONVERTERS_H_
 
 #include <cstdint>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::converters::events {
 
@@ -50,8 +50,7 @@ api::os_events::PowerEventInfo UncheckedConvertPtr(
 api::os_events::StylusGarageEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryStylusGarageEventInfoPtr ptr);
 
-absl::optional<uint32_t> UncheckedConvertPtr(
-    crosapi::mojom::UInt32ValuePtr ptr);
+std::optional<uint32_t> UncheckedConvertPtr(crosapi::mojom::UInt32ValuePtr ptr);
 
 api::os_events::TouchpadButtonEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryTouchpadButtonEventInfoPtr ptr);

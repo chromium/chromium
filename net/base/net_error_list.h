@@ -820,6 +820,9 @@ NET_ERROR(CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
 // The connection is blocked by private network access checks.
 NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
 
+// Content decoding failed due to the zstd window size being too big (over 8MB).
+NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
+
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)
 

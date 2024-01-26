@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -671,9 +670,7 @@ class FakeSoftwareFeatureManagerFactory
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSoftwareFeatureManager* instance_ = nullptr;
+  raw_ptr<FakeSoftwareFeatureManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 }  // namespace

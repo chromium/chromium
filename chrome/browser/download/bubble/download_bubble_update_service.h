@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UPDATE_SERVICE_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
@@ -23,7 +24,6 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -150,10 +150,9 @@ class DownloadBubbleUpdateService
       const offline_items_collection::OfflineContentProvider::OfflineItemList&
           items) override;
   void OnItemRemoved(const offline_items_collection::ContentId& id) override;
-  void OnItemUpdated(
-      const offline_items_collection::OfflineItem& item,
-      const absl::optional<offline_items_collection::UpdateDelta>& update_delta)
-      override;
+  void OnItemUpdated(const offline_items_collection::OfflineItem& item,
+                     const std::optional<offline_items_collection::UpdateDelta>&
+                         update_delta) override;
   void OnContentProviderGoingDown() override;
 
   OfflineItemModelManager* GetOfflineManager() const;
@@ -466,9 +465,9 @@ class DownloadBubbleUpdateService
   const raw_ptr<Profile> original_profile_ = nullptr;
 
   // Override for the number of combined items to return.
-  absl::optional<size_t> max_num_items_to_show_for_testing_;
+  std::optional<size_t> max_num_items_to_show_for_testing_;
   // Override for the number of extra items to cache.
-  absl::optional<size_t> extra_items_to_cache_for_testing_;
+  std::optional<size_t> extra_items_to_cache_for_testing_;
 
   // Notifier for the current profile's DownloadManager. Null until initialized
   // in Initialize().

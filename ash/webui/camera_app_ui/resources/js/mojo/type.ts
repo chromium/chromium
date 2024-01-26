@@ -24,9 +24,15 @@ export {
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   ToteMetricFormat,
+  WifiEapMethod,
+  WifiEapPhase2Method,
+  WifiSecurityType,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,
   WindowStateType,
+} from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
+export type {
+  WifiConfig,
 } from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
 export {
   Rotation,

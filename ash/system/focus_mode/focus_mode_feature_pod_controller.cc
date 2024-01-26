@@ -76,7 +76,8 @@ void FocusModeFeaturePodController::OnIconPressed() {
   }
 
   TrackToggleUMA(/*target_toggle_state=*/!controller->in_focus_session());
-  controller->ToggleFocusMode();
+  controller->ToggleFocusMode(
+      focus_mode_histogram_names::ToggleSource::kFeaturePod);
 }
 
 void FocusModeFeaturePodController::OnLabelPressed() {

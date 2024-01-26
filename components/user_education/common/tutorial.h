@@ -96,11 +96,18 @@ class Tutorial {
   // calling the abort callback if necessary.
   void Abort();
 
+  // Sets the temporary state associated with the tutorial.
+  void SetState(std::unique_ptr<ScopedTutorialState> tutorial_state);
+
  private:
   // Tutorial Constructor that takes an InteractionSequence. Should only be
   // used in cases where custom step logic must be called
   explicit Tutorial(
       std::unique_ptr<ui::InteractionSequence> interaction_sequence);
+
+  // The temporary state associated with the tutorial. The state is reset
+  // which this goes out of scope
+  std::unique_ptr<ScopedTutorialState> tutorial_state_;
 
   // The Interaction Sequence which controls the tutorial bubbles opening and
   // closing

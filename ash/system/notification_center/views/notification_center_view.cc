@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/notification_center/views/message_center_scroll_bar.h"
@@ -135,6 +136,34 @@ bool NotificationCenterView::IsScrollBarVisible() const {
 
 void NotificationCenterView::OnNotificationSlidOut() {
   UpdateNotificationBar();
+}
+
+void NotificationCenterView::OnNotificationAdded(const std::string& id) {
+  CHECK(features::IsNotificationCenterControllerEnabled());
+  if (!notification_list_view_) {
+    return;
+  }
+
+  notification_list_view_->OnNotificationAdded(id);
+}
+
+void NotificationCenterView::OnNotificationRemoved(const std::string& id,
+                                                   bool by_user) {
+  CHECK(features::IsNotificationCenterControllerEnabled());
+  if (!notification_list_view_) {
+    return;
+  }
+
+  notification_list_view_->OnNotificationRemoved(id, by_user);
+}
+
+void NotificationCenterView::OnNotificationUpdated(const std::string& id) {
+  CHECK(features::IsNotificationCenterControllerEnabled());
+  if (!notification_list_view_) {
+    return;
+  }
+
+  notification_list_view_->OnNotificationUpdated(id);
 }
 
 void NotificationCenterView::ListPreferredSizeChanged() {

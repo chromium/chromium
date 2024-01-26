@@ -98,6 +98,13 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& expected);
+
+  // Clicks on an element in the DOM. `element_id` is the identifier
+  // of the WebContents to query. `query` is a DeepQuery path to the
+  // element to start with, it can be {} to query the entire page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep ClickElement(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& query);
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_

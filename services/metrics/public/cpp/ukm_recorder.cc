@@ -46,14 +46,6 @@ ukm::SourceId UkmRecorder::GetSourceIdForPaymentAppFromScope(
 }
 
 // static
-ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
-    base::PassKey<WebApkUkmRecorder>,
-    const GURL& manifest_url) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(manifest_url,
-                                               SourceIdType::WEBAPK_ID);
-}
-
-// static
 ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
     base::PassKey<content::FedCmMetrics>,
     const GURL& provider_url) {

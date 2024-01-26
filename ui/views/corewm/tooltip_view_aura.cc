@@ -67,6 +67,14 @@ void TooltipViewAura::SetMaxWidth(int width) {
   ResetDisplayRect();
 }
 
+void TooltipViewAura::SetMaxLines(size_t max_lines) {
+  render_text_->SetMaxLines(max_lines);
+}
+
+void TooltipViewAura::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
+  render_text_->SetElideBehavior(elide_behavior);
+}
+
 void TooltipViewAura::OnPaint(gfx::Canvas* canvas) {
   OnPaintBackground(canvas);
   gfx::Size text_size = size();

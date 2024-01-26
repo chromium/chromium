@@ -3,7 +3,7 @@ Test started
 Number of cookies: 0
 Number of cookies: 1
 Cookie blocked: true
-Reasons: UserPreferences,ThirdPartyBlockedInFirstPartySet
+Reasons: ThirdPartyBlockedInFirstPartySet,ThirdPartyPhaseout
 {
     issue : {
         code : CookieIssue
@@ -16,6 +16,7 @@ Reasons: UserPreferences,ThirdPartyBlockedInFirstPartySet
                 }
                 cookieExclusionReasons : [
                     [0] : ExcludeThirdPartyCookieBlockedInFirstPartySet
+                    [1] : ExcludeThirdPartyPhaseout
                 ]
                 cookieUrl : https://cookie.test:8443/inspector-protocol/resources/iframe-third-party-cookie-child.php
                 cookieWarningReasons : [

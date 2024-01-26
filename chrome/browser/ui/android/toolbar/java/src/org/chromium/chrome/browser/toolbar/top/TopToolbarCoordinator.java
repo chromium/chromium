@@ -73,15 +73,20 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Observes toolbar color change. */
     public interface ToolbarColorObserver {
         /**
-         * @param color The toolbar color value.
+         * @param color The toolbar color.
          */
         void onToolbarColorChanged(@ColorInt int color);
     }
 
-    /** Observes toolbar alpha value change during overview mode fading animation. */
+    /**
+     * Observes alpha of the overview during a fade animation. The partially transparent overview is
+     * drawn over top of the toolbar during this time.
+     */
     public interface ToolbarAlphaInOverviewObserver {
-        /** @param fraction The toolbar alpha value. */
-        void onToolbarAlphaInOverviewChanged(float fraction);
+        /**
+         * @param fraction The overview's alpha value.
+         */
+        void onOverviewAlphaChanged(float fraction);
     }
 
     public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
@@ -365,8 +370,7 @@ public class TopToolbarCoordinator implements Toolbar {
         }
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DYNAMIC_TOP_CHROME)
-                && tabStripHeightResource > 0) {
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled() && tabStripHeightResource > 0) {
             mTabStripTransitionCoordinator =
                     new TabStripTransitionCoordinator(
                             browserControlsVisibilityManager,
@@ -375,15 +379,6 @@ public class TopToolbarCoordinator implements Toolbar {
                             tabStripHeightResource);
             mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
             mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
-            addTabStripHeightObserver(
-                    new TabStripHeightObserver() {
-                        @Override
-                        public void onTransitionRequested(int newHeight) {
-                            // Invalid the snapshot to make sure the tab strip is rendering
-                            // correctly.
-                            mControlContainer.invalidateBitmap();
-                        }
-                    });
         }
     }
 
@@ -739,6 +734,15 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbarLayout.onUrlFocusChange(hasFocus);
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlFocusChange(hasFocus);
+        }
+    }
+
+    public void onUrlAnimationFinished(boolean hasFocus) {
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlAnimationFinished(hasFocus);
+        }
     }
 
     /** Notified when a navigation to a different page has occurred. */

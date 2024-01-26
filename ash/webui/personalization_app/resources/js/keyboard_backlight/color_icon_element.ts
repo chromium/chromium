@@ -107,4 +107,10 @@ export class ColorIconElement extends WithPersonalizationStore {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'color-icon': ColorIconElement;
+  }
+}
+
 customElements.define(ColorIconElement.is, ColorIconElement);

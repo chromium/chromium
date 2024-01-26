@@ -243,9 +243,10 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
               cc::TouchAction::kInternalNotWritable)
         break;
 
-      // Request to start stylus writing as we have detected stylus writing
-      // movement, and treat scroll gesture as stylus input if started.
-      if (client_->GetStylusInterface()->RequestStartStylusWriting()) {
+      // Check if we can initiate stylus writing as we have detected stylus
+      // writing movement, and treat scroll gesture as stylus input if it can be
+      // initiated.
+      if (client_->GetStylusInterface()->ShouldInitiateStylusWriting()) {
         stylus_writing_started_ = true;
         // The below call is done to Focus the stylus writable input element.
         client_->OnStartStylusWriting();

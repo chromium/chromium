@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1017,27 +1018,32 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   // Unretained(this) is safe as the main message loop expected to run it is
   // stopped before ~BrowserMainLoop (in the event the message loop doesn't
   // reach idle before that point).
-  base::CurrentThread::Get()->RegisterOnNextIdleCallback(base::BindOnce(
-      [](BrowserMainLoop* self) {
-        if (self->parts_)
-          self->parts_->OnFirstIdle();
+  idle_callback_subscription_ =
+      base::CurrentThread::Get()->RegisterOnNextIdleCallback(
+          {}, base::BindOnce(
+                  [](BrowserMainLoop* self) {
+                    if (self->parts_) {
+                      self->parts_->OnFirstIdle();
+                    }
 
-        self->responsiveness_watcher_->OnFirstIdle();
+                    self->responsiveness_watcher_->OnFirstIdle();
 
-        // Enable MessagePumpPhases metrics/tracing on-first-idle, not before as
-        // queuing time is not relevant before first idle.
-        // TODO(1329717): Consider supporting the initial run (until first idle)
-        // as well.
-        auto enable_message_pump_metrics =
-            base::BindRepeating([](const char* thread_name) {
-              base::CurrentThread::Get()->EnableMessagePumpTimeKeeperMetrics(
-                  thread_name);
-            });
-        enable_message_pump_metrics.Run("BrowserUI");
-        GetIOThreadTaskRunner({})->PostTask(
-            FROM_HERE, BindOnce(enable_message_pump_metrics, "BrowserIO"));
-      },
-      base::Unretained(this)));
+                    // Enable MessagePumpPhases metrics/tracing on-first-idle,
+                    // not before as queuing time is not relevant before first
+                    // idle.
+                    // TODO(1329717): Consider supporting the initial run (until
+                    // first idle) as well.
+                    auto enable_message_pump_metrics =
+                        base::BindRepeating([](const char* thread_name) {
+                          base::CurrentThread::Get()
+                              ->EnableMessagePumpTimeKeeperMetrics(thread_name);
+                        });
+                    enable_message_pump_metrics.Run("BrowserUI");
+                    GetIOThreadTaskRunner({})->PostTask(
+                        FROM_HERE,
+                        BindOnce(enable_message_pump_metrics, "BrowserIO"));
+                  },
+                  base::Unretained(this)));
 
   // If the UI thread blocks, the whole UI is unresponsive. Do not allow
   // unresponsive tasks from the UI thread and instantiate a
@@ -1108,7 +1114,7 @@ void BrowserMainLoop::PreShutdown() {
   // Clear OnNextIdleCallback if it's still pending. Failure to do so can result
   // in an OnFirstIdle phase incorrectly triggering during shutdown if an early
   // exit paths results in a shutdown path that happens to RunLoop.
-  base::CurrentThread::Get()->RegisterOnNextIdleCallback(base::NullCallback());
+  idle_callback_subscription_ = {};
 
   ui::Clipboard::OnPreShutdownForCurrentThread();
 }

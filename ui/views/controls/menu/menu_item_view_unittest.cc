@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -645,6 +646,34 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
 // but not before.
 TEST_F(MenuItemViewAccessTest, DontAskForFontsWhenAddingSubmenu) {
   menu_item_view()->AppendSubMenu(1, u"My Submenu");
+}
+
+using MenuItemViewA11yTest = MenuItemViewPaintUnitTest;
+
+// A MenuItemView that has a submenu should open the submenu on kExpand and
+// close the submenu on kCollapse.
+TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
+  MenuItemView* submenu_item_view =
+      menu_item_view()->AppendSubMenu(1, u"Submenu");
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  // Pre-conditions: An expandable submenu item.
+  ASSERT_TRUE(submenu_item_view->HasSubmenu());
+  ASSERT_FALSE(submenu_item_view->SubmenuIsShowing());
+
+  // Send an expand action to the menu item.
+  ui::AXActionData expand_action_data;
+  expand_action_data.action = ax::mojom::Action::kExpand;
+  submenu_item_view->HandleAccessibleAction(expand_action_data);
+  EXPECT_TRUE(submenu_item_view->SubmenuIsShowing());
+
+  // Send a collapse action to the menu item.
+  ui::AXActionData collapse_action_data;
+  collapse_action_data.action = ax::mojom::Action::kCollapse;
+  submenu_item_view->HandleAccessibleAction(collapse_action_data);
+  EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
 }
 
 }  // namespace views

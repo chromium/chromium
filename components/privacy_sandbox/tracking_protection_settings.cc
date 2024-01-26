@@ -8,6 +8,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -84,7 +85,8 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
 }
 
 bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled) &&
+         base::FeatureList::IsEnabled(kIpProtectionV1);
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {

@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker_impl.h"
@@ -42,7 +43,7 @@ namespace base {
 #if BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
 #elif BUILDFLAG(IS_FUCHSIA)
-typedef zx_handle_t PlatformThreadId;
+typedef zx_koid_t PlatformThreadId;
 #elif BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
 #elif BUILDFLAG(IS_POSIX)
@@ -330,6 +331,7 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+BASE_EXPORT BASE_DECLARE_FEATURE(kSetRtForDisplayThreads);
 
 class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
  public:

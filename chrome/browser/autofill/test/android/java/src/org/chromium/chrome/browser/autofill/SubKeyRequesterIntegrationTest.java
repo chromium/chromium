@@ -15,8 +15,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 

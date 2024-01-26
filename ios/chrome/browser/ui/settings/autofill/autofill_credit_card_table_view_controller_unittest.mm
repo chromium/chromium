@@ -74,8 +74,7 @@ class AutofillCreditCardTableViewControllerTest
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
                            base::ASCIIToUTF16(card_number));
     personal_data_manager->OnAcceptedLocalCreditCardSave(credit_card);
-    personal_data_manager->personal_data_manager_cleaner_for_testing()
-        ->alternative_state_name_map_updater_for_testing()
+    personal_data_manager->get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state_.Get());
     waiter.Wait();  // Wait for completion of the asynchronous operation.
   }

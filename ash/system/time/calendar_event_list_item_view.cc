@@ -65,7 +65,7 @@ constexpr char kPastEventsColorId[] = "0";
 // id "0", it's not part of the Calendar API color, but it's used for past
 // events for a gray out effect.
 constexpr auto kEventHexColorCodes =
-    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"0", "1B1B1F"},
          {"1", "6994FF"},
          {"2", "3CBD8E"},

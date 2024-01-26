@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

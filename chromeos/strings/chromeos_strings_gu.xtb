@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ગુણાકાર</translation>
 <translation id="1145018782460575098">બાહ્ય ડિવાઇસનું ફર્મવેયર અપડેટ કરવા માટેની વિન્ડો ખુલ્લી છે. <ph name="NUM_UPDATES" /> અપડેટ ઉપલબ્ધ છે.</translation>
 <translation id="1145516343487477149">સહાય લેખ અને Chromebook વિશેના સામાન્ય પ્રશ્નોના જવાબો શોધો</translation>
 <translation id="1154390310959620237">તમે માત્ર 5 શૉર્ટકટ કસ્ટમાઇઝ કરી શકો છો. નવો શૉર્ટકટ ઉમેરવા માટે અસ્તિત્વમાં હોય એવો કોઈ શૉર્ટકટ ડિલીટ કરો.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">સ્કૅન કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
 <translation id="1367951781824006909">એક ફાઇલ પસંદ કરો</translation>
+<translation id="1371650399987522809">Google AI દ્વારા સંચાલિત વૉલપેપર માટે પ્રતિસાદ</translation>
 <translation id="1387854245479784695">આ બધા કોરનો સરવાળો હોય છે</translation>
 <translation id="1394661041439318933">ડિવાઇસના કેસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="1397738625398125236">ગેટવેને પિંગ કરી શકાય છે</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">બૅકલિટનો રંગ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> અપડેટ કરી શકાતું નથી</translation>
+<translation id="1566493343215789965">ભાગાકાર</translation>
 <translation id="1567064801249837505">આલ્બમ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="160633243685262989">છબીનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="1611649489706141841">ફોરવર્ડ કરો</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
+<translation id="1615576200479539465">છબીઓ જનરેટ કરી રહ્યાં છીએ...</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
+<translation id="1626590945318984973">શૉર્ટકટ ઉપલબ્ધ નથી. ફંક્શન અને <ph name="META_KEY" /> કીનો ઉપયોગ કર્યા વગર નવી શૉર્ટકટ કી દબાવો.</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
 <translation id="1643449475550628585">વૉલપેપરની છબી દરરોજ બદલો</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
 <translation id="1885577615937958993">મીડિયાને ફાસ્ટ ફૉરવર્ડ કરો</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
-<translation id="1897672602657312171">શોધ કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા શોધ કીનો ઉપયોગ કરતો હોય તેવો કોઈ નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="1904932688895783618">અહીં કેટલાક અન્ય સહાયરૂપ સંસાધનો આપવામાં આવ્યા છે:</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}=2{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને તથા <ph name="APP_NAME_2" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}=3{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા <ph name="APP_NAME_3" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}one{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા અન્ય # ઍપને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}other{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા અન્ય # ઍપને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
 <translation id="215916044711630446">APN ઉમેરો બટન હમણાં બંધ છે</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">APNની વિગતોમાં ફેરફાર કરો</translation>
 <translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
 <translation id="2212733584906323460">નામનું રિઝોલ્યુશન</translation>
+<translation id="2215920961700443347">કોઈ ઇન્ટરનેટ કનેક્શન નથી. ઇન્ટરનેટથી કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2217935453350629363">વર્તમાન ઝડપ</translation>
 <translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="222447520299472966">ઓછામાં ઓછું એક આર્ટ ગૅલરી આલ્બમ પસંદ કરો</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" />ની છબી</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
+<translation id="2465272316171730950">હમણાં અમે તમારી સહાય કરી શકીશું નહીં. કૃપા કરીને થોડા સમય પછી ફરી પાછા આવો.</translation>
 <translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
 <translation id="2491955442992294626">જ્યારે તમે અન્ય વિન્ડોનો ઉપયોગ કરી રહ્યાં હો, ત્યારે કીનું પરીક્ષણ કરવામાં આવતું નથી</translation>
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">હાલની વૉલપેપર છબી રિફ્રેશ કરો</translation>
 <translation id="2512979179176933762">વિન્ડો બતાવો</translation>
 <translation id="2513396635448525189">લૉગ ઇન છબી</translation>
-<translation id="2515109918609218604">શૉર્ટકટ ઉપલબ્ધ નથી. ફંક્શન અને શોધ કીનો ઉપયોગ કર્યા વગર નવી શૉર્ટકટ કી દબાવો.</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2521835766824839541">પહેલાનો ટ્રૅક</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
 <translation id="2880569433548999039">ક્લાઉડ ફ્લો સ્ક્રીન સેવર</translation>
 <translation id="2926057806159140518">તમારું વપરાશકર્તા નામ અને પાસવર્ડ દાખલ કરો અથવા તમારો QR કોડ સ્કૅન કરો</translation>
+<translation id="2938573842839598578">એક અંદાજિત પરિણામ માટે, <ph name="CATEGORY_TEXT" /> મૂલ્યને <ph name="CONVERSION_RATE" /> દ્વારા <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">ડિવાઇસનું પરીક્ષણ કરી શકતા નથી. પરીક્ષણ કરવા માટે ઢાંકણ ફરી ખોલો.</translation>
 <translation id="2941112035454246133">નીચું</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOSની અપડેટ</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
+<translation id="3547264467365135390">ફોર્મ્યુલા</translation>
 <translation id="3557205324756024651">સ્થાનિક ઓળખ (વૈકલ્પિક)</translation>
 <translation id="3565064564551103223">મંજૂર કરેલા IPs</translation>
 <translation id="3569407787324516067">સ્ક્રીન સેવર</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">તમે હવે નવા <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />વૉલપેપરનો<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ઍક્સેસ ધરાવો છો</translation>
 <translation id="4117637339509843559">ઘેરો મોડ</translation>
 <translation id="4130035430755296270">લેઆઉટના વધુ વિકલ્પો માટે માઉસ ફેરવતા રહો</translation>
+<translation id="4130750466177569591">હું સંમત છું</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}one{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}other{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}}</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">બ્રાઇટનેસ ઘટાડો</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4176659219503619100">કન્ટ્રોલ પૅનલ</translation>
-<translation id="4185315616950253617">જે શૉર્ટકટમાં સૌથી ઉપરની પંક્તિવાળી કી શામેલ હોય, તેમાં શોધ કી શામેલ કરવી જરૂરી છે.</translation>
 <translation id="420283545744377356">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="4213104098953699324">USB કીબોર્ડ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">બંધ કરો</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ફરી શરૂ કરી રહ્યાં છીએ</translation>
 <translation id="4395835743215824109">કીબોર્ડ કસ્ટમાઇઝ કરો</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા <ph name="KEY" /> કીનો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4415951057168511744">હાલનો અવતાર</translation>
+<translation id="4417830657741848074">ઑટોમૅટિક રીતે શરૂ કરવા માટે તમારા ઍડમિનિસ્ટ્રેટર દ્વારા અમુક ઍપનું સેટઅપ કરવામાં આવ્યું છે. આમાંની અમુક ઍપ કદાચ બંધ કરવામાં ન આવી હોઈ શકે.</translation>
 <translation id="4422041425070339732">તીર નીચે</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> બંધ છે</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">અર્થ ફ્લો સ્ક્રીન સેવર</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="4500722292849917410">શૉર્ટકટ ઉપલબ્ધ નથી. મૉડિફાયર કી (ctrl, alt, shift અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4500966230243561393">ઇન્ટરફેસ રંગ</translation>
 <translation id="4503223151711056411">ડાબી ઍરો કી</translation>
 <translation id="4507392511610824664">બ્રાઇટનેસ વધારો</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
 <translation id="4835901797422965222">કોઈ નેટવર્ક સક્રિય નથી</translation>
 <translation id="4839698083503556542">તમારી પોતાની મૂવી બનાવો</translation>
+<translation id="48409034532829769">ઑટોમૅટિક રીતે શરૂ કરવા માટે તમારા ઍડમિનિસ્ટ્રેટર દ્વારા "<ph name="APP_NAME" />"નું સેટઅપ કરવામાં આવ્યું છે. આ ઍપ કદાચ બંધ કરવામાં ન આવી હોઈ શકે.</translation>
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ની પસંદગી કરવામાં આવી, <ph name="TOPIC_SOURCE" /> આલ્બમ પસંદ કરવા માટે Enter કી દબાવો</translation>
 <translation id="484790837831576105">(Android) DNS રિઝોલ્યુશન</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">વિભાજન કરો</translation>
 <translation id="4972592110715526173">મોડમાં ફેરફાર</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
+<translation id="4982627662315910959">શૉર્ટકટ ઉપલબ્ધ નથી. shift અને વધુ 1 મૉડિફાયર કી (ctrl, alt અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4985509611418653372">ચલાવો</translation>
 <translation id="4987769320337599931">ફાયરવૉલ</translation>
 <translation id="4988526792673242964">પેજ</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ઘેરી થીમનું શેડ્યૂલ</translation>
 <translation id="5229344016299762883">પૂર્ણસ્ક્રીનમાંથી બહાર નીકળો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{જ્યારે પણ તમે લૉગ ઇન કરો, ત્યારે તમારા ઍડમિનિસ્ટ્રેટરે "<ph name="APP_NAME" />"ને ઑટોમૅટિક રીતે શરૂ થવા પર સેટ કરેલી છે.}=2{જ્યારે પણ તમે લૉગ ઇન કરો, ત્યારે તમારા ઍડમિનિસ્ટ્રેટરે "<ph name="APP_NAME" />" અને અન્ય 1 ઍપને ઑટોમૅટિક રીતે શરૂ થવા પર સેટ કરેલી છે.}one{જ્યારે પણ તમે લૉગ ઇન કરો, ત્યારે તમારા ઍડમિનિસ્ટ્રેટરે "<ph name="APP_NAME" />" અને અન્ય # ઍપને ઑટોમૅટિક રીતે શરૂ થવા પર સેટ કરેલી છે.}other{જ્યારે પણ તમે લૉગ ઇન કરો, ત્યારે તમારા ઍડમિનિસ્ટ્રેટરે "<ph name="APP_NAME" />" અને અન્ય # ઍપને ઑટોમૅટિક રીતે શરૂ થવા પર સેટ કરેલી છે.}}</translation>
 <translation id="5252456968953390977">રોમિંગ</translation>
 <translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
 <translation id="5264277876637023664">CPUનું પરીક્ષણ ચાલુ કરો</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
+<translation id="7206979415662233817">સેવાની શરતો</translation>
 <translation id="7212547870105584639">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">બાહ્ય ડિવાઇસ માટે ફર્મવેયરની અપડેટ</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
 <translation id="725133483556299729">ઇમેઇલ પસંદ કરો</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
-<translation id="7273347807225967898">શૉર્ટકટ ઉપલબ્ધ નથી. કોઈ મૉડિફાયર કી (ctrl, alt, shift, શોધ કે લૉન્ચર)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
+<translation id="7271932918253517778">જે શૉર્ટકટમાં સૌથી ઉપરની પંક્તિવાળી કી શામેલ હોય, તેમાં <ph name="META_KEY" /> કી શામેલ કરવી જરૂરી છે.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">પવનની લહેર અનુભવો</translation>
 <translation id="7287310195820267359">વૉલપેપરના સંગ્રહો</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">કીબોર્ડનો રંગ</translation>
 <translation id="7317831949569936035">સ્કૂલમાં પ્રવેશ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">તમે ઓછામાં ઓછા 18 વર્ષના હોવા આવશ્યક છે અને સંમત થવા જોઇએ કે તમારો AI વૉલપેપરનો ઉપયોગ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google સેવાની શરતો<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> અને <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />જનરેટિવ AIની વધારાની સેવાની શરતો<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />ને આધીન છે.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          તમે ફક્ત વ્યક્તિગત અને બિન-વ્યાવસાયિક ઉપયોગ માટે જ AI વડે વૉલપેપર બનાવી શકો છો. જ્યારે તમે વૉલપેપર સંબંધી સહાય મેળવો છો, ત્યારે <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleની પ્રાઇવસી પૉલિસી<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ને આધીન વૉલપેપર સંબંધી સૂચનો જનરેટ કરવા માટે ટેક્સ્ટ Google AI સર્વરને મોકલવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
 <translation id="7353413232959255829">શોધ પરિણામ <ph name="LIST_SIZE" />માંથી <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. શૉર્ટકટ પર નૅવિગેટ કરવા માટે Enter દબાવો.</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">સામાન્ય નિયંત્રણો</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> નેટવર્ક સાથે જોડાવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}one{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}other{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}}</translation>
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8017679124341497925">શૉર્ટકટમાં ફેરફાર કર્યો</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
-<translation id="8111706652656628199">શૉર્ટકટ ઉપલબ્ધ નથી. shift અને વધુ 1 મૉડિફાયર કી (ctrl, alt, શોધ કે લૉન્ચર)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>

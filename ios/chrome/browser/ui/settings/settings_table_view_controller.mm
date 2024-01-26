@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -138,7 +139,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -190,9 +191,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     SearchEngineObserving,
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   // The browser state for `_browser`. Never off the record.
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
   // Bridge for TemplateURLServiceObserver.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserverBridge;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -239,7 +240,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   PasswordsCoordinator* _passwordsCoordinator;
 
   // Feature engagement tracker for the signin IPH.
-  feature_engagement::Tracker* _featureEngagementTracker;
+  raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
   // Presenter for the signin IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
 
@@ -765,12 +766,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  if (@available(iOS 15, *)) {
-    defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  } else {
-    defaultBrowser.iconImage =
-        DefaultSettingsRootSymbol(kDefaultBrowseriOS14Symbol);
-  }
+  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
   defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
   defaultBrowser.iconTintColor = UIColor.whiteColor;
   defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
@@ -1598,13 +1594,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
-  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
   SyncSettingsAccountState accountState =
-      SyncServiceFactory::GetForBrowserState(_browserState)->HasSyncConsent()
-          ? SyncSettingsAccountState::kSyncing
-          : SyncSettingsAccountState::kSignedIn;
+      [self shouldReplaceSyncSettingsWithAccountSettings]
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser

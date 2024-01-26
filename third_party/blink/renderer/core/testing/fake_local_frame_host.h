@@ -186,6 +186,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
       bool once,
       bool cross_origin_exposed) override;
+  void DisableUntrustedNetworkInFencedFrame(
+      DisableUntrustedNetworkInFencedFrameCallback callback) override;
   void SendLegacyTechEvent(
       const WTF::String& type,
       mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;

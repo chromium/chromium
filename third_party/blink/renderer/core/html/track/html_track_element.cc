@@ -44,9 +44,11 @@ namespace blink {
 static String UrlForLoggingTrack(const KURL& url) {
   static const unsigned kMaximumURLLengthForLogging = 128;
 
-  if (url.GetString().length() < kMaximumURLLengthForLogging)
-    return url.GetString();
-  return url.GetString().Substring(0, kMaximumURLLengthForLogging) + "...";
+  const String& url_string = url.GetString();
+  if (url_string.length() < kMaximumURLLengthForLogging) {
+    return url_string;
+  }
+  return url_string.Substring(0, kMaximumURLLengthForLogging) + "...";
 }
 
 HTMLTrackElement::HTMLTrackElement(Document& document)

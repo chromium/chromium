@@ -88,6 +88,118 @@ example_value:
   restrictions:
   - class: CLIPBOARD
     level: BLOCK
+- description: Block pasting in non corp sites using a not condition
+  not:
+    destinations:
+      urls:
+      - corp.com
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block pasting in several cases using an if condition
+  or:
+    - destinations:
+        incognito: true
+    - destinations:
+        os_clipboard: true
+    - destinations:
+        other_profile: true
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block pasting to incognito with an exception of corp sites
+  and:
+    - destinations:
+        incognito: true
+    - not:
+        destinations:
+          urls:
+          - corp.com
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block copying from non corp sites using a not condition
+  not:
+    sources:
+      urls:
+      - corp.com
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block copying in several cases using an if condition
+  or:
+    - sources:
+        incognito: true
+    - sources:
+        os_clipboard: true
+    - sources:
+        other_profile: true
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block copying from incognito with an exception of corp sites
+  and:
+    - sources:
+        incognito: true
+    - not:
+        sources:
+          urls:
+          - corp.com
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
+- description: Block clipboard interactions with several nested conditions
+  and:
+    - and:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - not:
+        destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - or:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+  or:
+    - and:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - not:
+        destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - or:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+  not:
+    and:
+    - destinations:
+        incognito: true
+      sources:
+        incognito: true
+    not:
+      destinations:
+        incognito: true
+      sources:
+        incognito: true
+    or:
+    - destinations:
+        incognito: true
+      sources:
+        incognito: true
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
 features:
   cloud_only: true
   dynamic_refresh: true
@@ -99,6 +211,10 @@ owners:
 schema:
   items:
     properties:
+      and:
+        items:
+          $ref: DataControlsCondition
+        type: array
       description:
         type: string
       destinations:
@@ -116,6 +232,12 @@ schema:
         type: object
       name:
         type: string
+      not:
+        $ref: DataControlsCondition
+      or:
+        items:
+          $ref: DataControlsCondition
+        type: array
       restrictions:
         items:
           properties:

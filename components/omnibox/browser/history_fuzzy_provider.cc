@@ -625,6 +625,11 @@ void HistoryFuzzyProvider::DoAutocomplete() {
       }
       matches_.resize(provider_max_matches_);
     }
+
+    for (AutocompleteMatch& match : matches_) {
+      match.provider = this;
+    }
+
     RecordMatchConversion(kMetricMatchConversionHistoryQuick,
                           count_history_quick);
     RecordMatchConversion(kMetricMatchConversionBookmark, count_bookmark);
@@ -670,8 +675,6 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // input, so clear them to prevent the ml model assigning an
   // artificially high confidence to this suggestion.
   match.scoring_signals.reset();
-
-  match.provider = this;
 
   return 1;
 }

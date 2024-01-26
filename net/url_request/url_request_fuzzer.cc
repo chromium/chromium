@@ -45,6 +45,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto url_request_context = context_builder->Build();
 
   net::TestDelegate delegate;
+  base::RunLoop loop;
+  delegate.set_on_complete(loop.QuitWhenIdleClosure());
 
   std::unique_ptr<net::URLRequest> url_request(
       url_request_context->CreateRequest(GURL("http://foo/"),
@@ -52,6 +54,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                          TRAFFIC_ANNOTATION_FOR_TESTS));
   url_request->Start();
   // TestDelegate quits the message loop on completion.
-  base::RunLoop().Run();
+  loop.Run();
   return 0;
 }

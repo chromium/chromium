@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resources for Plus Addresses features. -->
+<grit-part>
+  <if expr="_google_chrome">
+    <then>
+      <include name="IDR_PLUS_ADDRESS_LOGO" file="../plus_addresses/resources/internal/plus_addresses_logo_100.png" type="BINDATA" />
+    </then>
+    <else>
+      <!-- Callers should override IDR_PLUS_ADDRESS_LOGO with alternate resources available on their platform.-->
+    </else>
+  </if>
+</grit-part>

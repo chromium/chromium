@@ -22,32 +22,324 @@ constexpr char kTestPref[] = "data_controls.test_pref";
 
 constexpr char kPolicyName[] = "PolicyForTesting";
 
+// Schema copied from out/Default/gen/chrome/app/policy/policy_templates.json
 constexpr char kSchema[] = R"(
-      {
-        "type": "object",
+{
+  "type": "object",
+  "properties": {
+    "PolicyForTesting": {
+      "items": {
         "properties": {
-          "PolicyForTesting": {
-            "type": "array",
+          "and": {
             "items": {
-              "type": "object",
+              "id": "DataControlsCondition",
               "properties": {
-                "url": { "type": "string" },
-                "incognito": { "type": "boolean" },
+                "and": {
+                  "items": {
+                    "$ref": "DataControlsCondition"
+                  },
+                  "type": "array"
+                },
+                "destinations": {
+                  "properties": {
+                    "incognito": {
+                      "type": "boolean"
+                    },
+                    "os_clipboard": {
+                      "type": "boolean"
+                    },
+                    "other_profile": {
+                      "type": "boolean"
+                    },
+                    "urls": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "not": {
+                  "$ref": "DataControlsCondition"
+                },
+                "or": {
+                  "items": {
+                    "$ref": "DataControlsCondition"
+                  },
+                  "type": "array"
+                },
+                "sources": {
+                  "properties": {
+                    "incognito": {
+                      "type": "boolean"
+                    },
+                    "os_clipboard": {
+                      "type": "boolean"
+                    },
+                    "other_profile": {
+                      "type": "boolean"
+                    },
+                    "urls": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "description": {
+            "type": "string"
+          },
+          "destinations": {
+            "properties": {
+              "incognito": {
+                "type": "boolean"
+              },
+              "os_clipboard": {
+                "type": "boolean"
+              },
+              "other_profile": {
+                "type": "boolean"
+              },
+              "urls": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
-            }
+            },
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "not": {
+            "properties": {
+              "and": {
+                "items": {
+                  "$ref": "DataControlsCondition"
+                },
+                "type": "array"
+              },
+              "destinations": {
+                "properties": {
+                  "incognito": {
+                    "type": "boolean"
+                  },
+                  "os_clipboard": {
+                    "type": "boolean"
+                  },
+                  "other_profile": {
+                    "type": "boolean"
+                  },
+                  "urls": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "not": {
+                "$ref": "DataControlsCondition"
+              },
+              "or": {
+                "items": {
+                  "$ref": "DataControlsCondition"
+                },
+                "type": "array"
+              },
+              "sources": {
+                "properties": {
+                  "incognito": {
+                    "type": "boolean"
+                  },
+                  "os_clipboard": {
+                    "type": "boolean"
+                  },
+                  "other_profile": {
+                    "type": "boolean"
+                  },
+                  "urls": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "or": {
+            "items": {
+              "properties": {
+                "and": {
+                  "items": {
+                    "$ref": "DataControlsCondition"
+                  },
+                  "type": "array"
+                },
+                "destinations": {
+                  "properties": {
+                    "incognito": {
+                      "type": "boolean"
+                    },
+                    "os_clipboard": {
+                      "type": "boolean"
+                    },
+                    "other_profile": {
+                      "type": "boolean"
+                    },
+                    "urls": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "not": {
+                  "$ref": "DataControlsCondition"
+                },
+                "or": {
+                  "items": {
+                    "$ref": "DataControlsCondition"
+                  },
+                  "type": "array"
+                },
+                "sources": {
+                  "properties": {
+                    "incognito": {
+                      "type": "boolean"
+                    },
+                    "os_clipboard": {
+                      "type": "boolean"
+                    },
+                    "other_profile": {
+                      "type": "boolean"
+                    },
+                    "urls": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "restrictions": {
+            "items": {
+              "properties": {
+                "class": {
+                  "enum": [
+                    "CLIPBOARD",
+                    "FILE_ATTACH",
+                    "FILE_DOWNLOAD",
+                    "PRINTING"
+                  ],
+                  "type": "string"
+                },
+                "level": {
+                  "enum": [
+                    "BLOCK",
+                    "WARN",
+                    "REPORT"
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "rule_id": {
+            "type": "string"
+          },
+          "sources": {
+            "properties": {
+              "byte_size_higher_than": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "byte_size_lower_than": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "file_number_higher_than": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "file_number_lower_than": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "file_type": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "incognito": {
+                "type": "boolean"
+              },
+              "mime_type": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "os_clipboard": {
+                "type": "boolean"
+              },
+              "other_profile": {
+                "type": "boolean"
+              },
+              "urls": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
           }
-        }
-      })";
+        },
+        "type": "object"
+      },
+      "type": "array"
+    }
+  }
+})";
 
 constexpr char kValidPolicy[] = R"(
   [
     {
-      "url": "https://google.com",
-      "incognito": true,
+      "destinations": {
+        "urls": ["https://google.com"],
+        "incognito": true,
+      }
     },
     {
-      "url": "https://foo.com",
-      "incognito": false,
+      "sources": {
+        "urls": ["https://foo.com"],
+        "incognito": false,
+      }
     }
   ]
 )";
@@ -66,6 +358,38 @@ constexpr policy::PolicySource kNonCloudSources[] = {
 };
 
 constexpr char kInvalidPolicy[] = "[1,2,3]";
+
+constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
+    {
+        R"([
+            {
+              "or": [],
+              "and": [],
+            }
+          ])",
+        u"Error at PolicyForTesting[0]: Keys \"and, or\" cannot be set in the "
+        u"same dictionary"},
+
+    {
+        R"([
+            {
+              "not": {},
+              "destinations": {}
+            }
+          ])",
+        u"Error at PolicyForTesting[0]: Keys \"destinations\" cannot be set in "
+        u"the same dictionary as the \"not\" keys"},
+    {
+        R"([
+            {
+              "sources": {
+                "os_clipboard": true,
+                "incognito": true
+              }
+            }
+          ])",
+        u"Error at PolicyForTesting[0].sources: Keys \"incognito\" cannot be "
+        u"set in the same dictionary as the \"os_clipboard\" keys"}};
 
 class DataControlsPolicyHandlerTest : public testing::Test {
  public:
@@ -91,6 +415,20 @@ class DataControlsPolicyHandlerTest : public testing::Test {
     return base::JSONReader::Read(policy, base::JSON_ALLOW_TRAILING_COMMAS);
   }
 };
+
+// Tests polices with a valid schema, but invalid key usages.
+class DataControlsPolicyHandlerInvalidKeysTest
+    : public testing::WithParamInterface<
+          std::pair<const char*, const char16_t*>>,
+      public DataControlsPolicyHandlerTest {
+ public:
+  const char* policy_value() { return GetParam().first; }
+  const char16_t* expected_messages() { return GetParam().second; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataControlsPolicyHandlerInvalidKeysTest,
+                         testing::ValuesIn(kInvalidTestCases));
 
 }  // namespace
 
@@ -132,7 +470,7 @@ TEST_F(DataControlsPolicyHandlerTest, BlocksNonCloudSources) {
   }
 }
 
-TEST_F(DataControlsPolicyHandlerTest, BlocksInvalidPolicy) {
+TEST_F(DataControlsPolicyHandlerTest, BlocksInvalidSchema) {
   for (auto scope : kCloudSources) {
     policy::PolicyMap map = CreatePolicyMap(kInvalidPolicy, scope);
     auto handler = std::make_unique<DataControlsPolicyHandler>(
@@ -147,6 +485,20 @@ TEST_F(DataControlsPolicyHandlerTest, BlocksInvalidPolicy) {
               u"Error at PolicyForTesting[0]: Schema validation error: Policy "
               u"type mismatch: expected: \"dictionary\", actual: \"integer\".");
   }
+}
+
+TEST_P(DataControlsPolicyHandlerInvalidKeysTest, Test) {
+  policy::PolicyMap map = CreatePolicyMap(
+      policy_value(), policy::PolicySource::POLICY_SOURCE_CLOUD);
+  auto handler = std::make_unique<DataControlsPolicyHandler>(
+      kPolicyName, kTestPref, schema());
+
+  policy::PolicyErrorMap errors;
+  ASSERT_FALSE(handler->CheckPolicySettings(map, &errors));
+  ASSERT_FALSE(errors.empty());
+  ASSERT_TRUE(errors.HasError(kPolicyName));
+  std::u16string messages = errors.GetErrorMessages(kPolicyName);
+  ASSERT_EQ(messages, expected_messages());
 }
 
 }  // namespace data_controls

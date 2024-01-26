@@ -86,7 +86,6 @@ inline int WorldToIndex(const DOMWrapperWorld& world) {
     return 1;
   } else {
     LOG(FATAL) << "Unknown DOMWrapperWorld";
-    return 1;
   }
 }
 
@@ -208,7 +207,6 @@ v8::StartupData SerializeInternalFieldCallback(v8::Local<v8::Object> object,
       value = InternalFieldSerializedValue::kSwWindow;
     } else {
       LOG(FATAL) << "Unknown WrapperTypeInfo";
-      return {nullptr, 0};
     }
   } else if (index == kV8DOMWrapperTypeIndex) {
     if (wrapper_type_info == V8HTMLDocument::GetWrapperTypeInfo()) {
@@ -217,11 +215,9 @@ v8::StartupData SerializeInternalFieldCallback(v8::Local<v8::Object> object,
       value = InternalFieldSerializedValue::kWtiWindow;
     } else {
       LOG(FATAL) << "Unknown WrapperTypeInfo";
-      return {nullptr, 0};
     }
   } else {
     LOG(FATAL) << "Unknown internal field";
-    return {nullptr, 0};
   }
 
   int size = 1;  // No endian support

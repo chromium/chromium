@@ -19,7 +19,7 @@
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
@@ -827,13 +827,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
 
 // Tests that __gCrWeb.findElementAtPoint finds an element at the bottom of a
 // very long page.
-TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
-  // TODO(crbug.com/1219869): Fix on iOS 15 and reenable. This test appears to
-  // fail flakily if the webview is not in the view hierarchy.
-  if (@available(iOS 15, *)) {
-    return;
-  }
-
+// TODO(crbug.com/1219869): Fix on iOS 15 and reenable. This test appears to
+// fail flakily if the webview is not in the view hierarchy.
+TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
   const char link[] = "http://destination/";
   NSString* body = @"<div style='height:4000px'></div>";
   body = [body stringByAppendingString:GetHtmlForLink(link, @"link")];

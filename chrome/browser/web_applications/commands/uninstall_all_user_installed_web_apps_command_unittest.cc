@@ -59,12 +59,12 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, NoUserInstalledWebApps) {
   }
   webapps::AppId app_id = observer.Wait();
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           webapps::WebappUninstallSource::kHealthcareUserInstallCleanup,
           *profile(), future.GetCallback()));
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 }
@@ -90,12 +90,12 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
   EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
   EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kSync));
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           webapps::WebappUninstallSource::kHealthcareUserInstallCleanup,
           *profile(), future.GetCallback()));
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
   EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
@@ -112,12 +112,12 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
       profile(), "app from sync", GURL("https://example2.com"),
       webapps::WebappInstallSource::SYNC);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           webapps::WebappUninstallSource::kHealthcareUserInstallCleanup,
           *profile(), future.GetCallback()));
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id2));
@@ -156,12 +156,12 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively)
       .WillOnce(testing::Return(false));
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           webapps::WebappUninstallSource::kHealthcareUserInstallCleanup,
           *profile(), future.GetCallback()));
-  EXPECT_EQ(future.Get(), app_id + "[Sync]: Error");
+  EXPECT_EQ(future.Get(), app_id + "[Sync]: kError");
 
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 }

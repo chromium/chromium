@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Benachrichtigungen erhalten</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="4212246570487010370">Mehr ansehen</translation>
+<translation id="427987768447457592">Neue Tabgruppe</translation>
 <translation id="4648718555153979859">Deine Tabs werden hier in Gruppen zusammengefasst</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
 <translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
+<translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> Tab, den du in letzter Zeit nicht verwendet hast}other{Du hast <ph name="TABS_COUNT_MANY" /> Tabs, die du in letzter Zeit nicht verwendet hast}}</translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>

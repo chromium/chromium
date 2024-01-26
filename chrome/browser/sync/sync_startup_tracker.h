@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 #define CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -12,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // `SyncStartupTracker` provides an easier way to wait for `SyncService` to be
 // successfully started up, or to be notified when startup has failed due to
@@ -84,11 +85,11 @@ namespace testing {
 class ScopedSyncStartupTimeoutOverride {
  public:
   explicit ScopedSyncStartupTimeoutOverride(
-      absl::optional<base::TimeDelta> wait_timeout);
+      std::optional<base::TimeDelta> wait_timeout);
   ~ScopedSyncStartupTimeoutOverride();
 
  private:
-  absl::optional<base::TimeDelta> old_wait_timeout_;
+  std::optional<base::TimeDelta> old_wait_timeout_;
 };
 }  // namespace testing
 

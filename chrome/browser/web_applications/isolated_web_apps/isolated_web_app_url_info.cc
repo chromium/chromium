@@ -5,7 +5,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,11 +25,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "crypto/sha2.h"
 
 namespace web_app {
 
 namespace {
-
 base::expected<IsolatedWebAppUrlInfo, std::string> MakeIsolatedWebAppUrlInfo(
     base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>
         bundle_id) {
@@ -167,10 +169,9 @@ bool IsolatedWebAppUrlInfo::operator==(
 }
 
 std::string IsolatedWebAppUrlInfo::partition_domain() const {
-  constexpr char kIsolatedWebAppPartitionPrefix[] = "iwa-";
-  // We add a prefix to `partition_domain` to avoid potential name conflicts
-  // with Chrome Apps, which use their id/hostname as `partition_domain`.
-  return kIsolatedWebAppPartitionPrefix + origin().host();
+  // We add a prefix to `partition_domain` to distinguish from other users of
+  // storage partitions.
+  return "i" + base::Base64Encode(crypto::SHA256HashString(app_id_));
 }
 
 }  // namespace web_app

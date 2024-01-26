@@ -5,12 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
-#include <set>
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "base/containers/flat_set.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -33,6 +34,18 @@ ASH_PUBLIC_EXPORT std::vector<base::FilePath> ExtractFilePaths(
     const ui::OSExchangeData& data,
     bool fallback_to_filenames);
 
+// Returns the set of all defined holding space file system types. This differs
+// from `base::EnumSet<HoldingSpaceFile::FileSystemType, ...>::All()` which
+// contains undefined values if the underlying enum is not contiguous within its
+// range.
+ASH_PUBLIC_EXPORT base::flat_set<HoldingSpaceFile::FileSystemType>
+GetAllFileSystemTypes();
+
+// Returns the set of all defined holding space item types. This differs from
+// `base::EnumSet<HoldingSpaceItem::Type, ...>::All()` which contains undefined
+// values if the underlying enum is not contiguous within its range.
+ASH_PUBLIC_EXPORT base::flat_set<HoldingSpaceItem::Type> GetAllItemTypes();
+
 // Returns the maximum image size required for a holding space item of `type`.
 ASH_PUBLIC_EXPORT gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type);
 
@@ -54,6 +67,9 @@ ASH_PUBLIC_EXPORT bool SupportsInProgressCommand(
 ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
     const HoldingSpaceItem* item,
     HoldingSpaceCommandId command_id);
+
+// Returns the string representation of the specified file system `type`.
+ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceFile::FileSystemType type);
 
 // Returns the string representation of the specified holding space item `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);

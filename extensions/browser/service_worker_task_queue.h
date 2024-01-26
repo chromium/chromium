@@ -7,7 +7,6 @@
 
 #include <map>
 #include <optional>
-#include <set>
 #include <vector>
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -93,13 +92,13 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Always returns true since we currently request a worker to start for every
   // task sent to it.
   bool ShouldEnqueueTask(content::BrowserContext* context,
-                         const Extension* extension) override;
+                         const Extension* extension) const override;
 
   // Returns true if the service worker is blink::EmbeddedWorkerStatus::Running.
   // This could, once service worker start logic is refactored in
   // crbug.com/1467015, be refactored into `ShouldEnqueueTask()`.
   bool IsReadyToRunTasks(content::BrowserContext* context,
-                         const Extension* extension) override;
+                         const Extension* extension) const override;
 
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
@@ -175,6 +174,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
     // registered.
     virtual void OnActivateExtension(const ExtensionId& extension_id,
                                      bool will_register_service_worker) {}
+
+    // Called immediately after we send a request to start the worker (whether
+    // it ultimately succeeds or fails).
+    virtual void RequestedWorkerStart(const ExtensionId& extension_id) {}
+
     virtual void DidStartWorkerFail(
         const ExtensionId& extension_id,
         size_t num_pending_tasks,
@@ -257,6 +261,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token) const;
 
+  const WorkerState* GetWorkerState(const SequencedContextId& context_id) const;
   WorkerState* GetWorkerState(const SequencedContextId& context_id);
 
   content::ServiceWorkerContext* GetServiceWorkerContext(
@@ -280,7 +285,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Emit histograms when we know we're going to start the worker.
   void EmitWorkerWillBeStartedHistograms(const ExtensionId& extension_id);
 
-  std::multiset<content::ServiceWorkerContext*> observing_worker_contexts_;
+  std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
 
   // The state of worker of each activated extension.
   std::map<SequencedContextId, WorkerState> worker_state_map_;

@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SecurityDomainId">
+  <variant name=".ChromeSync" summary="The security domain used for Zuul"/>
+  <variant name=".HwProtected" summary="The security domain used for passkeys"/>
+</variants>
+
+<histogram
+    name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
+    enum="DownloadAuthenticationFactorsRegistrationStateResult"
+    expires_after="2024-12-01">
+  <owner>agl@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the results of DownloadAuthenticationFactorsRegistrationState calls.
+    This function determines the recoverability state of a security domain.
+
+    It is recorded whenever DownloadAuthenticationFactorsRegistrationState is
+    called. For passkeys this happens during WebAuthn calls, in some cases
+    without a Google Password Manager passkey being selected, only present.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram
     name="TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain"
     enum="SecurityDomainId" expires_after="2024-06-14">
@@ -46,6 +69,55 @@ chromium-metrics-reviews@google.com.
     records whether the passed arguments could be successfully parsed (one
     sample per invocation).
   </summary>
+</histogram>
+
+<histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-31">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts of responses (both http code and net error code) for requests to the
+    recovery key store server (aka Vault Service). Note that requests that timed
+    out are not covered by this histogram.
+
+    {Reason}
+  </summary>
+  <token key="Reason">
+    <variant name="" summary="Any reason"/>
+    <variant name=".UpdateRecoveryKeyStore"
+        summary="Upload a set of recovery keys"/>
+  </token>
+</histogram>
+
+<histogram
+    name="TrustedVault.SecurityDomainServiceURLFetchResponse{Reason}{SecurityDomainId}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-31">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts of responses (both http code and net error code) for requests to the
+    Trusted Vault server (aka Security Domain Service), broken out by {Reason}
+    and {SecurityDomainId}. Note that requests that timed out are not covered by
+    this histogram.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId">
+    <variant name="" summary="Any security domain"/>
+  </token>
+  <token key="Reason">
+    <variant name="" summary="Any reason"/>
+    <variant name=".DownloadAuthenticationFactorsRegistrationState"
+        summary="Downloading of auth factor registrations"/>
+    <variant name=".DownloadIsRecoverabilityDegraded"
+        summary="Downloading of the recoverability-degraded state"/>
+    <variant name=".DownloadKeys" summary="Downloading of keys"/>
+    <variant name=".RegisterDevice" summary="Local device registration"/>
+    <variant name=".RegisterUnspecifiedAuthenticationFactor"
+        summary="Registration of an authentication factor of unspecified type"/>
+  </token>
 </histogram>
 
 <histogram name="TrustedVault.SetEncryptionKeysForSecurityDomain{ProfileType}"

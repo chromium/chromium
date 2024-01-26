@@ -49,8 +49,7 @@ class RegistrationTokenHelperTest : public testing::Test {
 
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
-      future;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   std::unique_ptr<RegistrationTokenHelper> helper =
       RegistrationTokenHelper::CreateForTokenBinding(
           unexportable_key_service(), "test_client_id", "test_auth_code",
@@ -63,8 +62,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
 
 TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
-      future;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   std::unique_ptr<RegistrationTokenHelper> helper =
       RegistrationTokenHelper::CreateForSessionBinding(
           unexportable_key_service(), "test_challenge",
@@ -78,8 +76,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
 TEST_F(RegistrationTokenHelperTest, Failure) {
   // Emulates key generation failure.
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider_;
-  base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
-      future;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   std::unique_ptr<RegistrationTokenHelper> helper =
       RegistrationTokenHelper::CreateForTokenBinding(
           unexportable_key_service(), "test_client_id", "test_auth_code",

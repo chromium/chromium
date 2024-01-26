@@ -74,7 +74,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2130870084309816036">Nije moguće povezati se s internetom. Ako koristite zaštitni zid, omogućite listu dozvoljenih <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromeu na razmatranje.</translation>
 <translation id="2139300032719313227">Ponovo pokrenite ChromeOS</translation>
-<translation id="2146761408396054429">Fajl je možda opasan<ph name="LINE_BREAK" />Chrome može za vas provjeriti ovo preuzimanje ako navedete lozinku — ona ostaje na uređaju</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome sada</translation>
 <translation id="2174917724755363426">Instalacija nije završena. Jeste li sigurni da želite otkazati?</translation>
 <translation id="2190166659037789668">Greška provjere ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -166,6 +165,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3426646014273736870">Ušteda memorije ubrzava rada Chromea</translation>
 <translation id="3428747202529429621">Štiti vas u Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3434246496373299699">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa</translation>
+<translation id="3450887623636316740">Fajl je možda opasan<ph name="LINE_BREAK" />Chrome može provjeriti ovo preuzimanje za vas ako unesete lozinku. Informacije o fajlu se šalju na Sigurno pregledanje na Googleu, ali sadržaj fajla i lozinka ostaju na vašem uređaju.</translation>
 <translation id="3451115285585441894">Dodavanje u Chrome...</translation>
 <translation id="345171907106878721">Dodajte sebe na Chrome</translation>
 <translation id="3453763134178591239">Uslovi korištenja ChromeOS-a</translation>
@@ -199,6 +199,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4053720452172726777">Prilagodite i kontrolirajte Google Chrome</translation>
 <translation id="4106587138345390261">Chrome istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja koristeći manje informacija o vama</translation>
 <translation id="4110895483821904099">Postavite novi Chrome profil</translation>
+<translation id="4128488089242627000">Chrome radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno (preporučeno)</translation>
 <translation id="4147555960264124640">Prijavljujete se upravljanim računom i dajete njegovom administratoru kontrolu nad svojim Google Chrome profilom. Vaši podaci iz Chromea, kao što su vaše aplikacije, oznake, historija, lozinke i druge postavke, bit će trajno vezani za korisnika <ph name="USER_NAME" />. Moći ćete izbrisati ove podatke na kontrolnoj tabli Google računa, ali nećete moći povezati ove podatke s drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instaliranje…</translation>
 <translation id="4149882025268051530">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Google Chrome.</translation>
@@ -221,7 +222,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4343195214584226067">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana u Chrome</translation>
 <translation id="4384570495110188418">Chrome ne može provjeravati vaše lozinke jer niste prijavljeni</translation>
 <translation id="4389991535395284064">Prilikom pregledanja u anonimnom načinu rada Chrome će vas upozoriti prije učitavanja web lokacije putem nesigurne veze</translation>
-<translation id="4393248995085527349">Da primate buduća ažuriranja za Google Chrome, trebat će vam macOS 10.15 ili novija verzija. Ovaj računar koristi macOS 10.13.</translation>
 <translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
 <translation id="4450664632294415862">Chrome – prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">U toku je druga radnja u Google Chromeu. Pokušajte ponovo kasnije.</translation>
@@ -246,6 +246,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
 <translation id="4828579605166583682">Google Chrome pokušava zamijeniti postojeće lozinke. Upišite lozinku za Windows da ovo dozvolite.</translation>
 <translation id="4842397268809523050">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
+<translation id="4873692836499071887">Da primate buduća ažuriranja za Google Chrome, trebat će vam macOS 11 ili novija verzija. Ovaj računar koristi macOS 10.15.</translation>
 <translation id="4873783916118289636">Pregledajte ključne kontrole privatnosti i sigurnosti u Chromeu</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
 <translation id="4895437082222824641">Otvori link u novoj &amp;kartici Chromea</translation>
@@ -292,7 +293,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nije moguće povezati se s internetom. Proksi server zahtijeva autentifikaciju.</translation>
-<translation id="570005089986962444">Kada je postavka uključena, Chrome oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chroma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
+<translation id="570005089986962444">Kada je postavka uključena, Chrome oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chromea. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5727531838415286053">Ako vas je Chrome nasumično ubacio u aktivni probni period, vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše interesovanja na mjesečnoj osnovi. Interesovanja se osvježavaju ukoliko ih ne uklonite.</translation>
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
@@ -309,7 +310,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
 <translation id="6003112304606738118">Preuzimanje… Preostalo je <ph name="HOURS" /> h</translation>
-<translation id="6010556343189461180">Da primate buduća ažuriranja za Google Chrome, trebat će vam macOS 10.15 ili novija verzija. Ovaj računar koristi macOS 10.14.</translation>
 <translation id="6014316319780893079">Pomoću <ph name="BEGIN_LINK" />Chromeovih alata<ph name="END_LINK" /> možete pregledati sigurno i zadržati kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6025087594896450715">Google Chrome će se ponovo pokrenuti za <ph name="REMAINING_TIME" /></translation>
@@ -355,6 +355,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
 <translation id="6794858689789885890">Uvijek izbrišite podatke web lokacije s uređaja kada zatvorite Chrome</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
+<translation id="6851981911629679515">Uključite dodatnu zaštitu za Chromeove programske jezike JavaScript i WebAssembly</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
@@ -476,6 +477,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="873133009373065397">Google Chrome ne može odrediti ili postaviti zadani preglednik</translation>
 <translation id="8765470054473112089">Kad pišete u traci za adresu ili u okviru za pretraživanje, Chrome šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="878572486461146056">Greška prilikom instaliranja: administrator mreže je primijenio pravila grupe koja sprečavaju instalaciju: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 je Chromeov pokretač programskih jezika JavaScript i WebAssembly koji se koristi za poboljšanje performansi web lokacija</translation>
 <translation id="8821043148920470810">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastario</translation>
 <translation id="8825634023950448068">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ako Chrome pogriješi ili ako ne želite gledati određene oglase, možete ukloniti interesovanje.</translation>

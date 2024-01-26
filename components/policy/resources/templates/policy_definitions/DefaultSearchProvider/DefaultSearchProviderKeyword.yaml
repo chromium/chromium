@@ -18,7 +18,7 @@ schema:
 supported_on:
 - chrome.*:8-
 - chrome_os:11-
-- android:30-
-- ios:88-
+- android:30-121
+- ios:88-121
 tags: []
 type: string

@@ -22,6 +22,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -169,14 +170,17 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // is true.
   void UpdateIconView(bool update_item_icon);
 
-  // Sets the icon of this image.
-  void SetIcon(const gfx::ImageSkia& icon);
+  // Sets the icon and host badge icon of this image.
+  void SetIconAndMaybeHostBadgeIcon(const gfx::ImageSkia& icon,
+                                    const gfx::ImageSkia& host_badge_icon);
 
-  // Returns the main app icon size for the associated item.
+  // Returns the main app icon size for the associated item. This is the actual
+  // size of the main app icon that is painted in the grid.
   gfx::Size GetIconSize() const;
 
-  // Whether the icon use on this item is a placeholder icon for a promise app.
-  bool HasPromiseIconPlaceholder();
+  // Whether the icon used on this item is a placeholder icon for a promise app.
+  // This is obtained from the value in the item's metadata.
+  bool ItemHasPlaceholderIcon();
 
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
@@ -341,11 +345,12 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool is_promise_app() const { return is_promise_app_; }
   std::optional<size_t> item_counter_count_for_test() const;
   ProgressIndicator* GetProgressIndicatorForTest() const;
-  views::ImageView* GetHostBadgeIconViewForTest() const;
+  bool has_host_badge_for_test() const { return has_host_badge_; }
 
  private:
   class FolderIconView;
 
+  friend class AppListFolderViewTest;
   friend class AppListItemViewTest;
   friend class AppListMainViewTest;
   friend class test::AppsGridViewTest;
@@ -453,6 +458,13 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // app icon has not been loaded yet.
   bool ShouldUseFallbackIconImageModel() const;
 
+  // Whether the image view has a placeholder icon in place. The placeholder
+  // icon is represented as a VectorIcon in the ImageModel. Depending on the
+  // case, the icon may use the `icon_image_model` or the
+  // `fallback_icon_image_model` (ie, when an animation in for the promise app
+  // is happening) for this calceulation.
+  bool ImageModelHasPlaceholderIcon() const;
+
   // Calculates the transform between the icon scaled by |icon_scale| and the
   // normal size icon.
   gfx::Transform GetScaleTransform(float icon_scale);
@@ -483,8 +495,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // active.
   void UpdateProgressRingBounds();
 
-  // Returns the preferred icon size for promise apps depending on the current
-  // app_state.
+  // Returns the preferred inner icon size for a promise app depending on the
+  // current app_state. Different from `GetIconSize()` since
+  // `GetPreferredIconSizeForProgressRing()` is used to adjust padding for the
+  // promise ring.
   gfx::Size GetPreferredIconSizeForProgressRing() const;
 
   // The app list config used to layout this view. The initial values is set
@@ -518,9 +532,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // The folder icon view used for refreshed folders.
   raw_ptr<FolderIconView> folder_icon_ = nullptr;
-
-  // The host badge icon view used for app shortcuts.
-  raw_ptr<views::ImageView> host_badge_icon_view_ = nullptr;
 
   raw_ptr<views::Label> title_ = nullptr;
 
@@ -572,6 +583,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // The bitmap image for this app list item's host badge icon.
   gfx::ImageSkia host_badge_icon_image_;
+
+  // The bitmap image for this app list item's main icon. This is separate from
+  // icon_->GetImage(), since the latter might contain the badge image in its
+  // imageSkia for shortcuts.
+  gfx::ImageSkia icon_image_;
 
   // If set, the icon that will be used for the AppListItemView until the actual
   // app icon loads. Used when animating an installed app into a place of a

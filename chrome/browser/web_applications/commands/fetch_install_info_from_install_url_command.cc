@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -12,12 +13,12 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -53,7 +54,7 @@ bool FetchInstallInfoFromInstallUrlCommand::
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     webapps::ManifestId manifest_id,
     GURL install_url,
-    absl::optional<webapps::ManifestId> parent_manifest_id,
+    std::optional<webapps::ManifestId> parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
     : WebAppCommand<SharedWebContentsLock, std::unique_ptr<WebAppInstallInfo>>(
           "FetchInstallInfoFromInstallUrlCommand",
@@ -192,7 +193,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
 
   // If the manifest specified icons, don't use the page icons.
   const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info);
 
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls), skip_page_favicons,

@@ -431,7 +431,7 @@ std::u16string HoldingSpaceItemChipView::GetTooltipText(
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
-    uint32_t updated_fields) {
+    const HoldingSpaceItemUpdatedFields& updated_fields) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item, updated_fields);
   if (this->item() == item) {
     UpdateImage();

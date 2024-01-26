@@ -169,7 +169,7 @@ int32_t PepperFileChooserHost::OnShow(
 
   params->requestor = renderer_ppapi_host_->GetDocumentURL(pp_instance());
 
-  handler_ = new CompletionHandler(AsWeakPtr());
+  handler_ = new CompletionHandler(weak_factory_.GetWeakPtr());
   RenderFrameImpl* render_frame = static_cast<RenderFrameImpl*>(
       renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance()));
 

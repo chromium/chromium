@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_client_certificates)
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [ "//components/enterprise/client_certificates/core:unit_tests" ]
+}

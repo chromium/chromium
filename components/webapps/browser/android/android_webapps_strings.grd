@@ -207,6 +207,15 @@
         Failed to install
       </message>
 
+      <!-- PWA Universal Install UI -->
+      <message name="IDS_PWA_UNI_INSTALL_TITLE" desc="The title for the Universal Install sheet.">
+         Add to home screen
+      </message>
+
+      <message name="IDS_PWA_UNI_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+         Choose how to add the app to the home screen
+      </message>
+
       <!-- PWA Restore Bottom Sheet UI -->
       <message name="IDS_PWA_RESTORE_BUTTON_PEEKING" desc="The button label when the PWA Restore BottomSheet UI is in peeking state.">
          Review web apps

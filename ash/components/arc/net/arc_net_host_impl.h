@@ -102,6 +102,8 @@ class ArcNetHostImpl : public KeyedService,
   void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
   void NotifySocketConnectionEvent(
       mojom::SocketConnectionEventPtr msg) override;
+  void NotifyARCVPNSocketConnectionEvent(
+      mojom::SocketConnectionEventPtr msg) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;

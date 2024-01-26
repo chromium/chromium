@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -64,6 +66,9 @@ public class FakeBookmarkModelTest {
                         mBookmarkModel.getOtherFolderId(),
                         mBookmarkModel.getDesktopFolderId(),
                         mBookmarkModel.getMobileFolderId(),
+                        mBookmarkModel.getAccountOtherFolderId(),
+                        mBookmarkModel.getAccountDesktopFolderId(),
+                        mBookmarkModel.getAccountMobileFolderId(),
                         mBookmarkModel.getLocalOrSyncableReadingListFolder(),
                         mBookmarkModel.getAccountReadingListFolder());
         assertEquals(expected, mBookmarkModel.getTopLevelFolderIds());
@@ -82,6 +87,7 @@ public class FakeBookmarkModelTest {
         assertEquals(expected, mBookmarkModel.getChildIds(mBookmarkModel.getOtherFolderId()));
 
         BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        assertNotNull(item);
         assertTrue(item.isFolder());
     }
 
@@ -96,6 +102,10 @@ public class FakeBookmarkModelTest {
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(mBookmarkModel.getOtherFolderId()));
+
+        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        assertNotNull(item);
+        assertFalse(item.isFolder());
     }
 
     @Test

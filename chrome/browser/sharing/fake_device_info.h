@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SHARING_FAKE_DEVICE_INFO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class DeviceInfo;
@@ -20,8 +20,8 @@ class DeviceInfo;
 std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
     const std::string& guid,
     const std::string& name = "name",
-    const absl::optional<syncer::DeviceInfo::SharingInfo>& sharing_info =
-        absl::nullopt,
+    const std::optional<syncer::DeviceInfo::SharingInfo>& sharing_info =
+        std::nullopt,
     sync_pb::SyncEnums_DeviceType device_type =
         sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
     syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux,

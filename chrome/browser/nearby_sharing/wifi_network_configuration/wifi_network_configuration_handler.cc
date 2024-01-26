@@ -63,7 +63,7 @@ void WifiNetworkConfigurationHandler::ConfigureWifiNetwork(
 void WifiNetworkConfigurationHandler::OnConfigureWifiNetworkResult(
     chromeos::network_config::mojom::CrosNetworkConfig::ConfigureNetworkCallback
         callback,
-    const absl::optional<std::string>& network_guid,
+    const std::optional<std::string>& network_guid,
     const std::string& error_message) {
   if (network_guid) {
     CD_LOG(VERBOSE, Feature::NS)

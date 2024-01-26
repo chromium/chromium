@@ -6,10 +6,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -26,7 +28,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/prefs_util.h"
@@ -328,6 +329,13 @@ void PrintViewManager::SetupScriptedPrintPreview(
     // didn't happen for some reason.
     bad_message::ReceivedBadMessage(
         rph, bad_message::PVM_SCRIPTED_PRINT_FENCED_FRAME);
+    std::move(callback).Run();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kCheckPrintRfhIsActive) &&
+      !rfh->IsActive()) {
+    // Only active RFHs should show UI elements.
     std::move(callback).Run();
     return;
   }

@@ -15,6 +15,8 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
+#include "ui/display/manager/configure_displays_task.h"
+#include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
@@ -2151,6 +2153,55 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_MultipleDisplays) {
                     .c_str(),
                 kModesetOutcomeSuccess, nullptr),
             log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_RaceWithDockMode) {
+  InitWithOutputs(&small_mode_, &big_mode_);
+  // Set up two displays with HRR native mode and eligible throttle candidate
+  // mode.
+  std::vector<std::unique_ptr<const DisplayMode>> modes;
+  modes.push_back(MakeDisplayMode(1366, 768, false, 120.0));
+  modes.push_back(MakeDisplayMode(1366, 768, false, 60.0));
+  SetOutput(0, FakeDisplaySnapshot::Builder()
+                   .SetId(kDisplayIds[0])
+                   .SetNativeMode(modes[0]->Clone())
+                   .SetCurrentMode(modes[0]->Clone())
+                   .AddMode(modes[1]->Clone())
+                   .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                   .SetBaseConnectorId(kEdpConnectorId)
+                   .SetIsAspectPreservingScaling(true)
+                   .Build());
+  SetOutput(1, FakeDisplaySnapshot::Builder()
+                   .SetId(kDisplayIds[1])
+                   .SetNativeMode(modes[0]->Clone())
+                   .SetCurrentMode(modes[0]->Clone())
+                   .AddMode(modes[1]->Clone())
+                   .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                   .SetBaseConnectorId(kSecondConnectorId)
+                   .SetIsAspectPreservingScaling(true)
+                   .Build());
+  UpdateOutputs(2, true);
+  EXPECT_EQ(120.0f, GetOutput(0)->current_mode()->refresh_rate());
+  EXPECT_EQ(120.0f, GetOutput(1)->current_mode()->refresh_rate());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Get DisplayConfigureRequests for a configuration that simultaneously
+  // attempts to enable refresh rate throttling, and docked mode.
+  std::vector<DisplayConfigureRequest> requests;
+  test_api_.GetDisplayLayoutManager()->GetDisplayLayout(
+      native_display_delegate_->GetOutputs(), MULTIPLE_DISPLAY_STATE_SINGLE,
+      chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON,
+      kRefreshRateThrottleEnabled, false, &requests);
+
+  bool has_internal_request = false;
+  for (auto& request: requests) {
+    if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+        has_internal_request = true;
+        EXPECT_EQ(request.mode, nullptr);
+    }
+  }
+  EXPECT_TRUE(has_internal_request);
 }
 
 TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {

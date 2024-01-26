@@ -13,6 +13,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 
+namespace search_engines {
+class SearchEngineChoiceService;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -96,10 +100,13 @@ class DefaultSearchManager {
   using ObserverCallback =
       base::RepeatingCallback<void(const TemplateURLData*, Source)>;
 
-  DefaultSearchManager(PrefService* pref_service,
-                       const ObserverCallback& change_observer
+  DefaultSearchManager(
+      PrefService* pref_service,
+      search_engines::SearchEngineChoiceService* search_engine_choice_service,
+      const ObserverCallback& change_observer
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-                       , bool for_lacros_main_profile
+      ,
+      bool for_lacros_main_profile
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 
@@ -173,7 +180,10 @@ class DefaultSearchManager {
   // Invokes |change_observer_| if it is not NULL.
   void NotifyObserver();
 
-  raw_ptr<PrefService> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_ = nullptr;
+
   const ObserverCallback change_observer_;
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -134,12 +134,27 @@ void AudioDeviceDescription::LocalizeDeviceDescriptions(
   }
 }
 
+AudioDeviceDescription::AudioDeviceDescription() = default;
+AudioDeviceDescription::~AudioDeviceDescription() = default;
+
+AudioDeviceDescription::AudioDeviceDescription(
+    const AudioDeviceDescription& other) = default;
+AudioDeviceDescription& AudioDeviceDescription::operator=(
+    const AudioDeviceDescription& other) = default;
+
+AudioDeviceDescription::AudioDeviceDescription(AudioDeviceDescription&& other) =
+    default;
+AudioDeviceDescription& AudioDeviceDescription::operator=(
+    AudioDeviceDescription&& other) = default;
+
 AudioDeviceDescription::AudioDeviceDescription(std::string device_name,
                                                std::string unique_id,
-                                               std::string group_id)
-    : device_name(std::move(device_name)),
-      unique_id(std::move(unique_id)),
-      group_id(std::move(group_id)) {}
+                                               std::string group_id,
+                                               bool is_system_default)
+    : device_name(device_name),
+      unique_id(unique_id),
+      group_id(group_id),
+      is_system_default(is_system_default) {}
 
 bool AudioDeviceDescription::operator==(
     const AudioDeviceDescription& other) const {

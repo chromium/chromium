@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 

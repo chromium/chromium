@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <atlcomcli.h>  // For CComBSTR
 #include <atlconv.h>
 #include <lm.h>
 #include <malloc.h>
@@ -92,6 +93,7 @@ OSUserManager::~OSUserManager() {}
       (has_upper + has_lower + has_digit + has_punct > 3)
 
 HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
+  LOGFN(VERBOSE);
   HRESULT hr;
   HCRYPTPROV prov;
 
@@ -319,6 +321,75 @@ HRESULT OSUserManager::AddUser(const wchar_t* username,
   return (nsts == NERR_Success ? S_OK : HRESULT_FROM_WIN32(nsts));
 }
 
+HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
+                                     const wchar_t* password,
+                                     const wchar_t* fullname,
+                                     const wchar_t* comment,
+                                     bool add_to_users_group,
+                                     int max_attempts,
+                                     BSTR* final_username,
+                                     BSTR* sid) {
+  DCHECK(base_username);
+  DCHECK(password);
+  DCHECK(fullname);
+  DCHECK(comment);
+  DCHECK(final_username);
+  DCHECK(sid);
+
+  LOGFN(VERBOSE) << "Creating a new user: " << base_username;
+
+  wchar_t new_username[kWindowsUsernameBufferLength];
+  errno_t err = wcscpy_s(new_username, std::size(new_username), base_username);
+  if (err != 0) {
+    LOGFN(ERROR) << "wcscpy_s errno=" << err;
+    return E_FAIL;
+  }
+
+  // Keep trying to create the user account until an unused username can be
+  // found or |max_attempts| has been reached.
+  for (int i = 0; i < max_attempts; ++i) {
+    CComBSTR new_sid;
+    DWORD error;
+    HRESULT hr = AddUser(new_username, password, fullname, comment,
+                         add_to_users_group, &new_sid, &error);
+    if (hr == HRESULT_FROM_WIN32(NERR_UserExists)) {
+      std::wstring next_username = base_username;
+      std::wstring next_username_suffix =
+          base::NumberToWString(i + kInitialDuplicateUsernameIndex);
+      // Create a new user name that fits in |kWindowsUsernameBufferLength|
+      if (next_username.size() + next_username_suffix.size() >
+          (kWindowsUsernameBufferLength - 1)) {
+        next_username =
+            next_username.substr(0, (kWindowsUsernameBufferLength - 1) -
+                                        next_username_suffix.size()) +
+            next_username_suffix;
+      } else {
+        next_username += next_username_suffix;
+      }
+      LOGFN(VERBOSE) << "Username '" << new_username
+                     << "' already exists. Trying '" << next_username << "'";
+
+      err = wcscpy_s(new_username, std::size(new_username),
+                     next_username.c_str());
+      if (err != 0) {
+        LOGFN(ERROR) << "wcscpy_s errno=" << err;
+        return E_FAIL;
+      }
+
+      continue;
+    } else if (FAILED(hr)) {
+      LOGFN(ERROR) << "AddUser hr=" << putHR(hr);
+      return hr;
+    }
+
+    *sid = ::SysAllocString(new_sid);
+    *final_username = ::SysAllocString(new_username);
+    return S_OK;
+  }
+
+  return HRESULT_FROM_WIN32(NERR_UserExists);
+}
+
 HRESULT OSUserManager::SetDefaultPasswordChangePolicies(
     const wchar_t* domain,
     const wchar_t* username) {
@@ -339,6 +410,7 @@ HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,
                                           const wchar_t* username,
                                           const wchar_t* old_password,
                                           const wchar_t* new_password) {
+  LOGFN(VERBOSE);
   LPBYTE domain_server_buffer = nullptr;
   HRESULT hr =
       GetDomainControllerServerForDomain(domain, &domain_server_buffer);
@@ -523,7 +595,7 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
       ::LocalFree(sid_buffer);
     } else {
       hr = HRESULT_FROM_WIN32(::GetLastError());
-      LOGFN(ERROR) << "ConvertStringSidToSid hr=" << putHR(hr);
+      LOGFN(ERROR) << "ConvertSidToStringSid hr=" << putHR(hr);
     }
     ::LocalFree(sid);
   }
@@ -559,7 +631,12 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
       return hr;
     }
 
-    ::ConvertStringSidToSid(sid_buffer_temp, sid);
+    if (!::ConvertStringSidToSid(sid_buffer_temp, sid)) {
+      hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ConvertStringSidToSid sid=" << sid
+                   << " hr=" << putHR(hr);
+      return hr;
+    }
 
     return S_OK;
   }

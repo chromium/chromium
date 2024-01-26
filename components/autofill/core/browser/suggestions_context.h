@@ -44,8 +44,6 @@ struct SuggestionsContext {
   bool is_autofill_available = false;
   bool is_context_secure = false;
   FillingProduct filling_product = FillingProduct::kNone;
-  // Flag to indicate whether all suggestions come from Google Payments.
-  bool should_display_gpay_logo = false;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
   // Indicates whether the form filling is under ablation, meaning that
   // autofill popups are suppressed.

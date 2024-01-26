@@ -110,7 +110,9 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 web_contents,
                 std::make_unique<security_interstitials::MetricsHelper>(
                     unsafe_resources[0].url,
-                    BaseBlockingPage::GetReportingInfo(unsafe_resources),
+                    BaseBlockingPage::GetReportingInfo(
+                        unsafe_resources,
+                        /*blocked_page_shown_timestamp=*/absl::nullopt),
                     /*history_service=*/nullptr),
                 /*prefs=*/nullptr,
                 manager->app_locale(),
@@ -118,6 +120,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 /*settings_helper=*/nullptr),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
                 BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
+                BaseBlockingPage::IsSubresource(unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed
                 false,                 // is_off_the_record
                 false,                 // is_extended_reporting_enabled
@@ -155,7 +158,8 @@ class TestSafeBrowsingBlockingPageFactory
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting) override {
+      bool should_trigger_reporting,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp) override {
     return new TestSafeBrowsingBlockingPage(delegate, web_contents,
                                             main_frame_url, unsafe_resources);
   }

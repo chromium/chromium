@@ -95,14 +95,15 @@ class SurveyClientAndroidTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
 };
 
-TEST_F(SurveyClientAndroidTest, CreateSurveyClient) {
+TEST_F(SurveyClientAndroidTest, CreateSurveyClientWithStaticTriggerId) {
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
       ui::WindowAndroid::CreateForTesting();
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<TestSurveyUiDelegate> delegate =
       std::make_unique<TestSurveyUiDelegate>(env);
   survey_client_ = std::make_unique<SurveyClientAndroid>(
-      kTestSurveyTrigger, delegate.get(), profile_);
+      kTestSurveyTrigger, delegate.get(), profile_,
+      /*supplied_trigger_id=*/std::nullopt);
 
   survey_client_->LaunchSurvey(window->get(),
                                kTestSurveyProductSpecificBitsData,
@@ -113,6 +114,31 @@ TEST_F(SurveyClientAndroidTest, CreateSurveyClient) {
   std::string last_shown_trigger =
       TestSurveyUtilsBridge::GetLastShownSurveyTriggerId();
   ASSERT_FALSE(last_shown_trigger.empty());
+  ASSERT_EQ(last_shown_trigger, kHatsNextSurveyTriggerIDTesting);
+}
+
+TEST_F(SurveyClientAndroidTest, CreateSurveyClientWithDynamicTriggerId) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::unique_ptr<TestSurveyUiDelegate> delegate =
+      std::make_unique<TestSurveyUiDelegate>(env);
+
+  const std::string kSuppliedTriggerId = "SomeOtherId";
+  survey_client_ = std::make_unique<SurveyClientAndroid>(
+      kTestSurveyTrigger, delegate.get(), profile_,
+      /*supplied_trigger_id=*/kSuppliedTriggerId);
+
+  survey_client_->LaunchSurvey(window->get(),
+                               kTestSurveyProductSpecificBitsData,
+                               kTestSurveyProductSpecificStringData);
+
+  delegate->AcceptSurvey();
+
+  std::string last_shown_trigger =
+      TestSurveyUtilsBridge::GetLastShownSurveyTriggerId();
+  ASSERT_FALSE(last_shown_trigger.empty());
+  ASSERT_EQ(last_shown_trigger, kSuppliedTriggerId);
 }
 
 }  // namespace hats

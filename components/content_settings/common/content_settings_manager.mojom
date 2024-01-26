@@ -4,6 +4,7 @@
 
 module content_settings.mojom;
 
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "components/content_settings/core/common/content_settings.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";

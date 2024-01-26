@@ -238,7 +238,8 @@ TEST_F(V8ContextTrackerTest, NormalV8ContextLifecycleNoExecutionContext) {
       ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
-          /* world_type */ mojom::V8ContextWorldType::kRegExp,
+          /* world_type */
+          mojom::V8ContextWorldType::kBlinkInternalNonJSExposed,
           /* world_name */ absl::nullopt,
           /* execution_context_token */ absl::nullopt),
       /* iframe_attribution_data */ nullptr);

@@ -19,9 +19,11 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/public_buildflags.h"
 
-namespace content {
-
+namespace webcrypto {
 class WebCryptoImpl;
+}  // namespace webcrypto
+
+namespace content {
 
 class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
  public:

@@ -23,11 +23,13 @@ namespace media {
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     bool keyframe,
     base::TimeDelta timestamp,
+    bool end_of_picture,
     VASurfaceID input_surface_id,
     scoped_refptr<CodecPicture> picture,
     std::unique_ptr<ScopedVABuffer> coded_buffer)
     : keyframe_(keyframe),
       timestamp_(timestamp),
+      end_of_picture_(end_of_picture),
       input_surface_id_(input_surface_id),
       picture_(std::move(picture)),
       coded_buffer_(std::move(coded_buffer)) {
@@ -37,9 +39,11 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
 
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(bool keyframe,
                                                 base::TimeDelta timestamp,
+                                                bool end_of_picture,
                                                 VASurfaceID input_surface_id)
     : keyframe_(keyframe),
       timestamp_(timestamp),
+      end_of_picture_(end_of_picture),
       input_surface_id_(input_surface_id) {}
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
@@ -52,6 +56,10 @@ VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
   return timestamp_;
+}
+
+bool VaapiVideoEncoderDelegate::EncodeJob::end_of_picture() const {
+  return end_of_picture_;
 }
 
 VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
@@ -115,8 +123,10 @@ BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return BitstreamBufferMetadata(payload_size, encode_job.IsKeyframeRequested(),
-                                 encode_job.timestamp());
+  BitstreamBufferMetadata md(payload_size, encode_job.IsKeyframeRequested(),
+                             encode_job.timestamp());
+  md.end_of_picture = encode_job.end_of_picture();
+  return md;
 }
 
 bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {

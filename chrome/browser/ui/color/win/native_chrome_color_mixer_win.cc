@@ -336,6 +336,14 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorNativeHighlightText};
+  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {
+      kColorTabBackgroundActiveFrameActive};
+  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {
+      kColorTabBackgroundActiveFrameInactive};
+  mixer[kColorNewTabButtonForegroundFrameActive] = {
+      kColorTabForegroundActiveFrameActive};
+  mixer[kColorNewTabButtonForegroundFrameInactive] = {
+      kColorTabForegroundActiveFrameActive};
   mixer[kColorToolbar] = {ui::kColorNativeWindow};
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
   const bool platform_high_contrast_ink_drop = base::FeatureList::IsEnabled(

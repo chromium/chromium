@@ -189,10 +189,10 @@ void AddInspectionResultToCache(
   DCHECK(insert_result.second);
 }
 
-absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
+std::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache) {
-  absl::optional<ModuleInspectionResult> inspection_result;
+  std::optional<ModuleInspectionResult> inspection_result;
 
   auto it = inspection_results_cache->find(module_key);
   if (it != inspection_results_cache->end()) {

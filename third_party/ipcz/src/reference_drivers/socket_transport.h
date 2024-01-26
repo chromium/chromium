@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <thread>
 #include <utility>
 #include <vector>
 
 #include "reference_drivers/file_descriptor.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
@@ -108,7 +108,7 @@ class SocketTransport : public RefCounted<SocketTransport> {
   // transmission. If null is returned, an unrecoverable error was encountered.
   //
   // This method is invoked by only one thread at a time.
-  absl::optional<size_t> TrySend(absl::Span<uint8_t> header, Message message);
+  std::optional<size_t> TrySend(absl::Span<uint8_t> header, Message message);
 
   // Static entry point for the I/O thread.
   static void RunIOThreadForTransport(Ref<SocketTransport> transport);

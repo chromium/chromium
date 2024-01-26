@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -50,7 +51,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -183,20 +183,20 @@ class ScopedSetDMToken {
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
 
 constexpr std::initializer_list<VolumeInfo> kVolumeInfos{
-    {file_manager::VOLUME_TYPE_TESTING, absl::nullopt, "TESTING"},
-    {file_manager::VOLUME_TYPE_GOOGLE_DRIVE, absl::nullopt, "GOOGLE_DRIVE"},
-    {file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, absl::nullopt, "MY_FILES"},
-    {file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, absl::nullopt,
+    {file_manager::VOLUME_TYPE_TESTING, std::nullopt, "TESTING"},
+    {file_manager::VOLUME_TYPE_GOOGLE_DRIVE, std::nullopt, "GOOGLE_DRIVE"},
+    {file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, std::nullopt, "MY_FILES"},
+    {file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, std::nullopt,
      "REMOVABLE"},
-    {file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE, absl::nullopt, "TESTING"},
-    {file_manager::VOLUME_TYPE_PROVIDED, absl::nullopt, "PROVIDED"},
-    {file_manager::VOLUME_TYPE_MTP, absl::nullopt, "DEVICE_MEDIA_STORAGE"},
-    {file_manager::VOLUME_TYPE_MEDIA_VIEW, absl::nullopt, "ARC"},
-    {file_manager::VOLUME_TYPE_CROSTINI, absl::nullopt, "CROSTINI"},
-    {file_manager::VOLUME_TYPE_ANDROID_FILES, absl::nullopt, "ARC"},
-    {file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, absl::nullopt, "ARC"},
-    {file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SMB"},
-    {file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, absl::nullopt, "UNKNOWN"},
+    {file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE, std::nullopt, "TESTING"},
+    {file_manager::VOLUME_TYPE_PROVIDED, std::nullopt, "PROVIDED"},
+    {file_manager::VOLUME_TYPE_MTP, std::nullopt, "DEVICE_MEDIA_STORAGE"},
+    {file_manager::VOLUME_TYPE_MEDIA_VIEW, std::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_CROSTINI, std::nullopt, "CROSTINI"},
+    {file_manager::VOLUME_TYPE_ANDROID_FILES, std::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, std::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_SMB, std::nullopt, "SMB"},
+    {file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, std::nullopt, "UNKNOWN"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::TERMINA, "CROSTINI"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::PLUGIN_VM,
      "PLUGIN_VM"},
@@ -206,7 +206,7 @@ constexpr std::initializer_list<VolumeInfo> kVolumeInfos{
      "BRUSCHETTA"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::UNKNOWN,
      "UNKNOWN_VM"},
-    {file_manager::VOLUME_TYPE_GUEST_OS, absl::nullopt, "UNKNOWN_VM"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, std::nullopt, "UNKNOWN_VM"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::ARCVM, "ARC"},
 };
 
@@ -868,9 +868,9 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   storage::FileSystemURL source_directory_url_;
   storage::FileSystemURL destination_directory_url_;
   VolumeInfo kSourceVolumeInfo{file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY,
-                               absl::nullopt, "MY_FILES"};
+                               std::nullopt, "MY_FILES"};
   VolumeInfo kDestinationVolumeInfo{
-      file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, absl::nullopt,
+      file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, std::nullopt,
       "REMOVABLE"};
 
  private:
@@ -887,7 +887,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  absl::optional<ContentAnalysisResponse> dlp_response_ = absl::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
 
   // URLs to verify source and destination.
   storage::FileSystemURL source_url_;
@@ -1002,7 +1002,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ scan_id);
+      /*scan_id*/ scan_id,
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1054,7 +1055,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id);
+        /*scan_id*/ scan_id,
+        /*content_transfer_method*/ absl::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1113,7 +1115,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id);
+        /*scan_id*/ scan_id,
+        /*content_transfer_method*/ absl::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1152,9 +1155,10 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
             safe_browsing::EventResult::BYPASSED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id);
+        /*scan_id*/ scan_id,
+        /*content_transfer_method*/ absl::nullopt);
 
-    file_transfer_analysis_delegate_->BypassWarnings(absl::nullopt);
+    file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
   }
 }
 
@@ -1259,7 +1263,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, CustomWarningSettingsSet) {
   ASSERT_EQ(file_transfer_analysis_delegate_->GetCustomMessage(kDlpTag),
             u"Custom message dlp");
   ASSERT_EQ(file_transfer_analysis_delegate_->GetCustomLearnMoreUrl(kDlpTag),
-            absl::optional<GURL>("https://learnmore-dlp.com"));
+            std::optional<GURL>("https://learnmore-dlp.com"));
 
   ASSERT_EQ(file_transfer_analysis_delegate_->BypassRequiresJustification(
                 kMalwareTag),
@@ -1268,7 +1272,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, CustomWarningSettingsSet) {
             u"Custom message malware");
   ASSERT_EQ(
       file_transfer_analysis_delegate_->GetCustomLearnMoreUrl(kMalwareTag),
-      absl::optional<GURL>("https://learnmore-malware.com"));
+      std::optional<GURL>("https://learnmore-malware.com"));
 
   const std::string wrong_tag = "wrong-tag";
   ASSERT_EQ(
@@ -1326,7 +1330,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ scan_id);
+      /*scan_id*/ scan_id,
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_url, destination_url);
 
@@ -1437,7 +1442,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncrypted) {
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
-      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1509,7 +1515,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ scan_id);
+      /*scan_id*/ scan_id,
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1591,7 +1598,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
        safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_ids*/ {scan_id, scan_id, scan_id});
+      /*scan_ids*/ {scan_id, scan_id, scan_id},
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1655,7 +1663,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
        safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_ids*/ {scan_id, scan_id});
+      /*scan_ids*/ {scan_id, scan_id},
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1742,7 +1751,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       expected_results,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_ids*/ expected_scan_ids);
+      /*scan_ids*/ expected_scan_ids,
+      /*content_transfer_method*/ absl::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1845,7 +1855,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         expected_results,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_ids*/ expected_scan_ids);
+        /*scan_ids*/ expected_scan_ids,
+        /*content_transfer_method*/ absl::nullopt);
 
     ScanUpload(source_directory_url_, destination_directory_url_);
   }
@@ -1924,9 +1935,10 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         expected_results,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_ids*/ expected_scan_ids);
+        /*scan_ids*/ expected_scan_ids,
+        /*content_transfer_method*/ absl::nullopt);
 
-    file_transfer_analysis_delegate_->BypassWarnings(absl::nullopt);
+    file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
   }
 
   // Should now no longer block bypassed files.

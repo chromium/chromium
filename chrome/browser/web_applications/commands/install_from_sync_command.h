@@ -26,7 +26,6 @@
 #include "url/gurl.h"
 
 class Profile;
-struct WebAppInstallInfo;
 
 namespace web_app {
 
@@ -47,16 +46,16 @@ class InstallFromSyncCommand
            const GURL& start_url,
            const std::string& title,
            const GURL& scope,
-           const absl::optional<SkColor>& theme_color,
-           const absl::optional<mojom::UserDisplayMode>& user_display_mode,
+           const std::optional<SkColor>& theme_color,
+           const std::optional<mojom::UserDisplayMode>& user_display_mode,
            const std::vector<apps::IconInfo>& icons);
     const webapps::AppId app_id;
     const webapps::ManifestId manifest_id;
     const GURL start_url;
     const std::string title;
     const GURL scope;
-    const absl::optional<SkColor> theme_color;
-    const absl::optional<mojom::UserDisplayMode> user_display_mode;
+    const std::optional<SkColor> theme_color;
+    const std::optional<mojom::UserDisplayMode> user_display_mode;
     const std::vector<apps::IconInfo> icons;
   };
   using DataRetrieverFactory =

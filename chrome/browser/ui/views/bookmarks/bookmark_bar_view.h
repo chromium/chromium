@@ -83,6 +83,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   BookmarkBarView& operator=(const BookmarkBarView&) = delete;
   ~BookmarkBarView() override;
 
+  static bool GetAnimationsEnabled();
+
   static void DisableAnimationsForTesting(bool disabled);
 
   // Returns the current browser.

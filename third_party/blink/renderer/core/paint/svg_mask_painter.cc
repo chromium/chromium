@@ -145,13 +145,14 @@ void PaintMaskLayer(const FillLayer& layer,
 
   const ComputedStyle& style = bg_paint_context.Style();
   const ImageResourceObserver& observer = object;
+  const bool uses_zoomed_coordinates = object.IsSVGForeignObject();
   GraphicsContextStateSaver saver(context, false);
 
   // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
   // this is a layer for a mask), then repeat, position, clip, origin and size
   // should have no effect.
   if (const auto* mask_source = ToMaskSourceIfSVGMask(*style_image)) {
-    const float zoom = object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+    const float zoom = uses_zoomed_coordinates ? style.EffectiveZoom() : 1;
     gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
         object, GeometryBox::kFillBox,
         SVGResources::ForeignObjectQuirk::kDisabled);
@@ -181,6 +182,14 @@ void PaintMaskLayer(const FillLayer& layer,
   ScopedImageRenderingSettings image_rendering_settings_context(
       context, style.GetInterpolationQuality(), style.GetDynamicRangeLimit());
 
+  // Adjust the coordinate space to consider zoom - which is applied to the
+  // computed image geometry.
+  if (!uses_zoomed_coordinates && style.EffectiveZoom() != 1) {
+    const float inv_zoom = 1 / style.EffectiveZoom();
+    saver.Save();
+    context.Scale(inv_zoom, inv_zoom);
+  }
+
   std::optional<GeometryBox> clip_box;
   switch (layer.Clip()) {
     case EFillBox::kText:
@@ -200,12 +209,11 @@ void PaintMaskLayer(const FillLayer& layer,
       break;
   }
   if (clip_box) {
-    const float zoom = object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
     gfx::RectF clip_rect = SVGResources::ReferenceBoxForEffects(
         object, *clip_box, SVGResources::ForeignObjectQuirk::kDisabled);
-    clip_rect.Scale(zoom);
+    clip_rect.Scale(style.EffectiveZoom());
 
-    saver.Save();
+    saver.SaveIfNeeded();
     context.Clip(clip_rect);
   }
 

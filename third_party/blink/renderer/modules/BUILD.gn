@@ -4,11 +4,11 @@
 
 import("//build/config/cast.gni")
 import("//build/config/python.gni")
+import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
-import("//third_party/webrtc/webrtc.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -112,6 +112,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/installedapp",
     "//third_party/blink/renderer/modules/keyboard",
     "//third_party/blink/renderer/modules/launch",
+    "//third_party/blink/renderer/modules/locked_mode",
     "//third_party/blink/renderer/modules/locks",
     "//third_party/blink/renderer/modules/lock_screen",
     "//third_party/blink/renderer/modules/manifest",
@@ -124,6 +125,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/media",
     "//third_party/blink/renderer/modules/ml",
+    "//third_party/blink/renderer/modules/model_execution",
     "//third_party/blink/renderer/modules/navigatorcontentutils",
     "//third_party/blink/renderer/modules/netinfo",
     "//third_party/blink/renderer/modules/nfc",
@@ -222,6 +224,8 @@ source_set("modules_testing") {
     "accessibility/testing/internals_accessibility.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
+    "fuzzing/internals_fuzzing.cc",
+    "fuzzing/internals_fuzzing.h",
     "mediastream/testing/internals_media_stream.cc",
     "mediastream/testing/internals_media_stream.h",
     "netinfo/testing/internals_net_info.cc",
@@ -264,10 +268,12 @@ source_set("modules_testing") {
     "//testing/gmock:gmock",
   ]
   deps = [
+    "//services/device/public/cpp/generic_sensor",
     "//third_party/blink/renderer/bindings/modules/v8:testing",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform:test_support",
   ]
 }
 
@@ -296,7 +302,6 @@ group("make_modules_generated") {
     "//third_party/blink/public/mojom:mojom_modules_blink_headers",
     "//third_party/blink/renderer/bindings/modules/v8:generated",
     "//third_party/blink/renderer/core:core_event_interfaces",
-    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//ui/accessibility:ax_enums_mojo_blink_headers",
     "//ui/display/mojom:mojom_blink_headers",
   ]
@@ -471,6 +476,7 @@ source_set("unit_tests") {
     "mediacapturefromelement/canvas_capture_handler_unittest.cc",
     "mediacapturefromelement/html_audio_element_capturer_source_unittest.cc",
     "mediacapturefromelement/html_video_element_capturer_source_unittest.cc",
+    "mediarecorder/audio_track_mojo_encoder_unittest.cc",
     "mediarecorder/audio_track_recorder_unittest.cc",
     "mediarecorder/fake_encoded_video_frame.h",
     "mediarecorder/key_frame_request_processor_unittest.cc",
@@ -634,7 +640,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (rtc_use_h264) {
+  if (media_use_openh264) {
     sources += [ "mediarecorder/h264_encoder_unittest.cc" ]
   }
 
@@ -682,7 +688,6 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules/hid:unit_tests",
     "//third_party/blink/renderer/modules/idle:unit_tests",
     "//third_party/blink/renderer/modules/indexeddb:unit_tests",
-    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
@@ -812,6 +817,7 @@ source_set("unit_tests_v2") {
     "mediacapturefromelement/canvas_capture_handler_unittest.cc",
     "mediacapturefromelement/html_audio_element_capturer_source_unittest.cc",
     "mediacapturefromelement/html_video_element_capturer_source_unittest.cc",
+    "mediarecorder/audio_track_mojo_encoder_unittest.cc",
     "mediarecorder/audio_track_recorder_unittest.cc",
     "mediarecorder/fake_encoded_video_frame.h",
     "mediarecorder/key_frame_request_processor_unittest.cc",
@@ -975,7 +981,7 @@ source_set("unit_tests_v2") {
     ]
   }
 
-  if (rtc_use_h264) {
+  if (media_use_openh264) {
     sources += [ "mediarecorder/h264_encoder_unittest.cc" ]
   }
 
@@ -1023,7 +1029,6 @@ source_set("unit_tests_v2") {
     "//third_party/blink/renderer/modules/hid:unit_tests",
     "//third_party/blink/renderer/modules/idle:unit_tests",
     "//third_party/blink/renderer/modules/indexeddb:unit_tests",
-    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",

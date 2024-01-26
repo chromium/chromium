@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
@@ -21,7 +22,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -62,7 +62,7 @@ class AppsSyncIsEnabledNotifiedToCrosapiObserverChecker
 
  private:
   bool expected_apps_sync_is_enabled_;
-  absl::optional<bool> last_notified_apps_sync_is_enabled_;
+  std::optional<bool> last_notified_apps_sync_is_enabled_;
   mojo::Receiver<crosapi::mojom::SyncUserSettingsClientObserver> receiver_{
       this};
 };

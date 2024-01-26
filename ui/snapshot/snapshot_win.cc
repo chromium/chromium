@@ -23,7 +23,7 @@ namespace ui {
 
 namespace {
 
-bool GrabHwndSnapshot(HWND window_handle,
+void GrabHwndSnapshot(HWND window_handle,
                       const gfx::Rect& snapshot_bounds_in_pixels,
                       const gfx::Rect& clip_rect_in_pixels,
                       gfx::Image* image) {
@@ -45,7 +45,7 @@ bool GrabHwndSnapshot(HWND window_handle,
   BOOL result = PrintWindow(window_handle, mem_hdc, flags);
   if (!result) {
     PLOG(ERROR) << "Failed to print window";
-    return false;
+    return;
   }
 
   SkBitmap bitmap;
@@ -69,23 +69,15 @@ bool GrabHwndSnapshot(HWND window_handle,
 
   *image = gfx::Image::CreateFrom1xBitmap(bitmap);
 
-  return true;
+  return;
 }
 
-}  // namespace
-
-bool GrabViewSnapshot(gfx::NativeView view_handle,
-                      const gfx::Rect& snapshot_bounds,
-                      gfx::Image* image) {
-  return GrabWindowSnapshot(view_handle, snapshot_bounds, image);
-}
-
-bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
-                        const gfx::Rect& snapshot_bounds,
-                        gfx::Image* image) {
-  DCHECK(window_handle);
-  gfx::Rect window_bounds = window_handle->GetBoundsInRootWindow();
-  aura::WindowTreeHost* host = window_handle->GetHost();
+void GrabNativeWindowSnapshot(gfx::NativeWindow native_window,
+                              const gfx::Rect& snapshot_bounds,
+                              gfx::Image* image) {
+  DCHECK(native_window);
+  gfx::Rect window_bounds = native_window->GetBoundsInRootWindow();
+  aura::WindowTreeHost* host = native_window->GetHost();
   DCHECK(host);
   HWND hwnd = host->GetAcceleratedWidget();
 
@@ -100,15 +92,17 @@ bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
 
   expanded_window_bounds_in_pixels.Intersect(client_area_rect);
 
-  return GrabHwndSnapshot(hwnd, snapshot_bounds_in_pixels,
-                          expanded_window_bounds_in_pixels, image);
+  GrabHwndSnapshot(hwnd, snapshot_bounds_in_pixels,
+                   expanded_window_bounds_in_pixels, image);
 }
+
+}  // namespace
 
 void GrabWindowSnapshotAsync(gfx::NativeWindow window,
                              const gfx::Rect& source_rect,
                              GrabSnapshotImageCallback callback) {
   gfx::Image image;
-  GrabWindowSnapshot(window, source_rect, &image);
+  GrabNativeWindowSnapshot(window, source_rect, &image);
   std::move(callback).Run(image);
 }
 
@@ -116,7 +110,7 @@ void GrabViewSnapshotAsync(gfx::NativeView view,
                            const gfx::Rect& source_rect,
                            GrabSnapshotImageCallback callback) {
   gfx::Image image;
-  GrabViewSnapshot(view, source_rect, &image);
+  GrabNativeWindowSnapshot(view, source_rect, &image);
   std::move(callback).Run(image);
 }
 

@@ -49,7 +49,7 @@ namespace {
 // this callback. See `LacrosWebAppsController::ReturnLaunchResults()` for more
 // details.
 using CommandFinishedCallback =
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>;
+    base::OnceCallback<void(std::vector<content::WebContents*>)>;
 
 // Helper to run `execute_command_callback`, with the option to bypass it if
 // `proceed` is false by running `command_finished_callback` right away and
@@ -241,7 +241,7 @@ void LacrosWebAppsController::ExecuteContextMenuCommandInternal(
   publisher_helper().ExecuteContextMenuCommand(
       app_id, id, display::kDefaultDisplayId,
       base::BindOnce(
-          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          [](base::OnceCallback<void(std::vector<content::WebContents*>)>
                  callback,
              content::WebContents* contents) {
             // These calls are piped through LaunchWebAppCommand and can end
@@ -317,7 +317,7 @@ void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
   publisher_helper().LaunchAppWithParams(
       std::move(params),
       base::BindOnce(
-          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          [](base::OnceCallback<void(std::vector<content::WebContents*>)>
                  callback,
              content::WebContents* contents) {
             // These calls are piped through LaunchWebAppCommand and can end
@@ -335,7 +335,7 @@ void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
 
 void LacrosWebAppsController::ReturnLaunchResults(
     base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback,
-    const std::vector<content::WebContents*>& web_contentses) {
+    std::vector<content::WebContents*> web_contentses) {
   auto* app_instance_tracker =
       apps::AppServiceProxyFactory::GetForProfile(profile_)
           ->BrowserAppInstanceTracker();
@@ -440,8 +440,8 @@ void LacrosWebAppsController::PublishWebApp(apps::AppPtr app) {
 
 void LacrosWebAppsController::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   if (!remote_publisher_) {
     return;
   }

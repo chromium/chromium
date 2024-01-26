@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_switcher {
 
@@ -111,7 +111,7 @@ XmlDownloader::XmlDownloader(Profile* profile,
 
   for (auto& source : sources_) {
     if (!source.url.is_valid())
-      DoneParsing(&source, ParsedXml({}, {}, absl::nullopt));
+      DoneParsing(&source, ParsedXml({}, {}, std::nullopt));
   }
 
   // Fetch in 1 minute.

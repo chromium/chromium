@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -35,7 +36,6 @@
 #include "net/dns/nsswitch_reader.h"
 #include "net/dns/public/resolv_reader.h"
 #include "net/dns/serial_worker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -58,15 +58,14 @@ constexpr base::FilePath::CharType kFilePathResolv[] = _PATH_RESCONF;
 
 constexpr base::FilePath::CharType kFilePathNsswitch[] = _PATH_NSSWITCH_CONF;
 
-absl::optional<DnsConfig> ConvertResStateToDnsConfig(
+std::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
-  absl::optional<std::vector<net::IPEndPoint>> nameservers =
-      GetNameservers(res);
+  std::optional<std::vector<net::IPEndPoint>> nameservers = GetNameservers(res);
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
   if (!nameservers.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Expected to be validated by GetNameservers()
   DCHECK(res.options & RES_INIT);
@@ -104,12 +103,12 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   if (dns_config.nameservers.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // If any name server is 0.0.0.0, assume the configuration is invalid.
   for (const IPEndPoint& nameserver : dns_config.nameservers) {
     if (nameserver.address().IsZero())
-      return absl::nullopt;
+      return std::nullopt;
   }
   return dns_config;
 }
@@ -204,7 +203,7 @@ enum class IncompatibleNsswitchReason {
 
 void RecordIncompatibleNsswitchReason(
     IncompatibleNsswitchReason reason,
-    absl::optional<NsswitchReader::Service> service_token) {
+    std::optional<NsswitchReader::Service> service_token) {
   if (service_token) {
     base::UmaHistogramEnumeration(
         "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
@@ -253,7 +252,7 @@ bool IsNsswitchConfigCompatible(
         if (!files_found) {
           RecordIncompatibleNsswitchReason(
               IncompatibleNsswitchReason::kFilesMissing,
-              /*service_token=*/absl::nullopt);
+              /*service_token=*/std::nullopt);
           return false;
         }
         // Chrome will always stop if DNS finds a result or will otherwise
@@ -321,7 +320,7 @@ bool IsNsswitchConfigCompatible(
   }
 
   RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason::kDnsMissing,
-                                   /*service_token=*/absl::nullopt);
+                                   /*service_token=*/std::nullopt);
   return false;
 }
 
@@ -376,7 +375,6 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
   }
 
   void OnNsswitchFilePathWatcherChange(const base::FilePath& path, bool error) {
-    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
     OnConfigChanged(!error);
   }
 
@@ -478,7 +476,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
 
    private:
     friend class ConfigReader;
-    absl::optional<DnsConfig> dns_config_;
+    std::optional<DnsConfig> dns_config_;
     std::unique_ptr<ResolvReader> resolv_reader_;
     std::unique_ptr<NsswitchReader> nsswitch_reader_;
   };

@@ -321,7 +321,10 @@ mojom("mojom_proxy_config") {
     "proxy_config_with_annotation.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    ":mojom_network_param",
+    "//mojo/public/mojom/base",
+  ]
 
   shared_cpp_typemaps = [
     {
@@ -886,6 +889,10 @@ mojom("mojom_network_param") {
           mojom = "network.mojom.NetLogSource"
           cpp = "::net::NetLogSource"
         },
+        {
+          mojom = "network.mojom.ProxyChain"
+          cpp = "::net::ProxyChain"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/network_param_mojom_traits.h" ]
@@ -913,10 +920,6 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.HttpVersion"
           cpp = "::net::HttpVersion"
-        },
-        {
-          mojom = "network.mojom.ProxyChain"
-          cpp = "::net::ProxyChain"
         },
         {
           mojom = "network.mojom.ProxyServer"
@@ -1107,6 +1110,7 @@ mojom("cookies_mojom") {
   public_deps = [
     ":mojom_first_party_sets",
     ":mojom_schemeful_site",
+    "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -1358,6 +1362,7 @@ mojom("mojom") {
     "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
+    "network_annotation_monitor.mojom",
     "network_context.mojom",
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",

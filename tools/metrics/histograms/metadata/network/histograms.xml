@@ -681,7 +681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.NonUserInitiated"
-    enum="ShillConnectResult" expires_after="2024-05-19">
+    enum="ShillConnectResult" expires_after="2024-07-21">
   <owner>jiajunz@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -704,7 +704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.{Filtering}"
-    enum="ShillConnectResult" expires_after="2024-05-12">
+    enum="ShillConnectResult" expires_after="2024-07-14">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.{NetworkType}.DisconnectionsWithoutUserAction.ShillError"
-    enum="ShillConnectResult" expires_after="2024-05-12">
+    enum="ShillConnectResult" expires_after="2024-07-21">
   <owner>chadduffin@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CaptivePortalResult" enum="CaptivePortalNetworkState"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -800,13 +800,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CaptivePortalStatusCode" enum="HttpResponseCode"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
-    Captive portal status code reported by Shill and received by NetworkState.
-    NOTE: This metric used to be CaptivePortal.NetworkStateStatusCode which was
-    expired from 2021-04-01 to 2022-09-18.
+    DEPRECATED: This metric is is invalid starting with M122 after the shill
+    change: https://crrev.com/c/5186197 Captive portal status code reported by
+    Shill and received by NetworkState.
   </summary>
 </histogram>
 
@@ -2025,7 +2025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2036,7 +2036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorResult"
-    enum="NetworkPortalStatus" expires_after="2024-05-19">
+    enum="NetworkPortalStatus" expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2047,7 +2047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2057,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorType" enum="NetworkTechnology"
-    expires_after="2024-05-12">
+    expires_after="2024-07-21">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2024-05-19">
+    enum="BooleanPresent" expires_after="2024-07-21">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2310,7 +2310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.PortalResult"
-    enum="NetworkPortalResult" expires_after="2024-05-12">
+    enum="NetworkPortalResult" expires_after="2024-07-14">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2588,6 +2588,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.PortalDector.CAPPORTAdvertised.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates how the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where CAPPORT was advertised, even if no captive portal was found
+    with HTTP probes.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
+    name matching the typo existing in the platform for m121 and m122 and fixed
+    in crrev/c/5223768. This metric can be removed once captive portal metrics
+    data on m121 and m121 is not needed anymore.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDector.CAPPORTSupported.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates if the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where a captive portal was found with an HTTP redirect.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
+    name matching the typo existing in the platform for m121 and m122 and fixed
+    in crrev/c/5223768. This metric can be removed once captive portal metrics
+    data on m121 and m121 is not needed anymore.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PortalDetector.AggregateResult.{Technology}"
     enum="PortalDetectorAggregateResult" expires_after="2024-12-31">
   <owner>hugobenichi@google.com</owner>
@@ -2599,158 +2636,129 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Cellular"
-    units="attempts" expires_after="2024-03-10">
+<histogram
+    name="Network.Shill.PortalDetector.AttemptsToDisconnect.{Technology}"
+    units="attempts" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before a Cellular network transitions to
-    a non connected state, recorded when Service.State transitions to a non
-    connected state.
+    Number of network validation attempts before a physical network transitions
+    to a non connected state, recorded when the Network transitions to the idle
+    state and network validation could not confirm Internet access on that
+    Network.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Ethernet"
-    units="attempts" expires_after="2024-01-05">
+<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.{Technology}"
+    units="attempts" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before an Ethernet network transitions
-    to a non connected state, recorded when Service.State transitions to a non
-    connected state.
+    Number of network validation attempts until a physical network transitions
+    to online, recorded when network validation confirms Internet access for the
+    first time on a given Network connection.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Wifi"
-    units="attempts" expires_after="2024-05-12">
+<histogram
+    name="Network.Shill.PortalDetector.AttemptsToRedirectFound.{Technology}"
+    units="attempts" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before a WiFi network transitions to a
-    non connected state, recorded when Service.State transitions to a non
-    connected state.
+    Number of network validation attempts before a physical network transitions
+    to redirect-found, recorded when network validation returns the first
+    portal-redirect result for a given Network connection.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Cellular"
-    units="attempts" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
+<histogram name="Network.Shill.PortalDetector.CAPPORTAdvertised.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts until a Cellular network transitions to
-    online, recorded when detection completes with an online result.
+    Indicates how the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where CAPPORT was advertised, even if no captive portal was found
+    with HTTP probes.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Ethernet"
-    units="attempts" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
+<histogram name="Network.Shill.PortalDetector.CAPPORTSupported.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts until an Ethernet network transitions to
-    online, recorded when detection completes with an online result.
+    Indicates if the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where a captive portal was found with an HTTP redirect.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Wifi"
-    units="attempts" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
+<histogram name="Network.Shill.PortalDetector.HTTPResponseCode.{Technology}"
+    units="response code" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts until a WiFi network transitions to
-    online, recorded when detection complets with an online result.
+    HTTP response code received by an HTTP probe used for network validation.
+    Response codes received for encrypted HTTPS probes are ignored because it is
+    assumed that HTTPS probes cannot be spoofed and always receive the expected
+    204 result.
+
+    Possible values are HTTP response codes in the [100, 599] range or one of
+    the three special values: 0 to indicate a bad response with an invalid
+    response code, 1 to indicate a 302 or 307 redirect response without a
+    Location header or with an invalid Location header which was not a URL, 2
+    for a 200 response without a Content-Length header or with an invalid
+    Content-Lenght header.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Cellular"
-    units="attempts" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
+<histogram
+    name="Network.Shill.PortalDetector.HTTPResponseContentLength.{Technology}"
+    units="bytes" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before a Cellular network transitions to
-    redirect-found, recorded when Service.State transitions to redirect-found.
+    Length in bytes of 200 responses received by a network validation HTTP probe
+    during a network validation attempt. 200 responses with no content or a
+    single byte of content are treated as 204 answers. These events are expected
+    to be recorded only once for a given network connection (network with
+    Internet acess). 200 responses with some actual content are treated as a
+    suspected portal redirect and trigger the portal sign-in flow. These events
+    are expected to be recorded multiple times until the user has signed into
+    the portal.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Ethernet"
-    units="attempts" expires_after="2024-05-12">
+<histogram name="Network.Shill.PortalDetector.InitialResult.{Technology}"
+    enum="PortalDetectorResult" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before an Ethernet network transitions
-    to redirect-found, recorded when Service.State transitions to
-    redirect-found.
+    Initial result of network validation for a given physical Network
+    connection, recorded once after the first network validation result.
   </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Wifi"
-    units="attempts" expires_after="2024-05-12">
+<histogram name="Network.Shill.PortalDetector.RepeatResult.{Technology}"
+    enum="PortalDetectorResult" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Number of portal detection attempts before a WiFi network transitions to
-    redirect-found, recorded when Service.State transitions to redirect-found.
+    Subsequent result of network validation for a given physical Network
+    connection, recorded after the first network validation result until
+    Internet access is confirmed.
   </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.InitialResult.Cellular"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection initial result for a Cellular network,
-    recorded after the initial portal detection attempt.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.InitialResult.Ethernet"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection initial result for an Ethernet network,
-    recorded after the initial portal detection attempt.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.InitialResult.Wifi"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection initial result for a WiFii network, recorded
-    after the initial portal detection attempt.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.RepeatResult.Cellular"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection retry result for a Cellular network, recorded
-    after a repeated detection attempt.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.RepeatResult.Ethernet"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection retry result for an Ethernet network,
-    recorded after a repeated detection attempt.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetector.RepeatResult.Wifi"
-    enum="PortalDetectorResult" expires_after="2024-05-12">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Shill captive portal detection retry result for a WiFi network, recorded
-    after a repeated detection attempt.
-  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
 <histogram
@@ -4348,7 +4356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
-    enum="BooleanSuccess" expires_after="2024-05-12">
+    enum="BooleanSuccess" expires_after="2024-07-14">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -4560,7 +4568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantSharedDictionaryAccess" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>

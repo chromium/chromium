@@ -8,29 +8,20 @@ use crate::UpdateCommandArgs;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
 
-pub fn update(
-    args: UpdateCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+pub fn update(args: UpdateCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Update needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || update_impl(args, tools, paths))?;
+    without_cargo_config_toml(paths, || update_impl(args, paths))?;
     println!("Update successful: run gnrt vendor to download new crate versions.");
     Ok(())
 }
 
-fn update_impl(
-    args: UpdateCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+fn update_impl(args: UpdateCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     println!("Updating crates from {}", paths.third_party_cargo_root.display());
 
     run_cargo_command(
         paths.third_party_cargo_root.into(),
         "update",
-        tools,
         args.passthrough,
         HashMap::new(),
     )

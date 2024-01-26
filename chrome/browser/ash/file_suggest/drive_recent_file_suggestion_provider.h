@@ -57,7 +57,7 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
   void OnSearchRequestComplete(
       base::RepeatingClosure callback,
       drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   const raw_ptr<Profile> profile_;
 

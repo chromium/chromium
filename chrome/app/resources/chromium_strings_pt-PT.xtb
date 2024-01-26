@@ -88,6 +88,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
 <translation id="2661879430930417727">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
 <translation id="268602741124540128">Damos-lhe as boas-vindas ao Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3258596308407688501">O Chromium não consegue ler e escrever no respetivo diretório de dados:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">O V8 é o motor JavaScript e WebAssembly do Chromium usado para melhorar o desempenho do site</translation>
 <translation id="3283186697780795848">A versão <ph name="PRODUCT_VERSION" /> do Chromium está instalada.</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google estão em falta. Algumas funcionalidades do Chromium serão desativadas.</translation>
@@ -140,7 +142,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3533435340678213462">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chromium considere.</translation>
 <translation id="3567254597502212821">O seu histórico de navegação, um registo dos sites que visitou através do Chromium neste dispositivo.</translation>
 <translation id="3593091352817399191">Já foi iniciada sessão com outra conta. Para manter a sua navegação separada, o Chromium pode criar-lhe o seu próprio perfil.</translation>
-<translation id="363078681319665186">Para obter atualizações futuras do Chromium, precisa do macOS 10.15 ou posterior. Este computador está a usar o macOS 10.13.</translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="3651803019964686660">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
@@ -157,11 +158,10 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Obter ajuda relacionada com o ChromiumOS</translation>
 <translation id="3871664619793219264">Obtenha os seus itens do navegador Chromium a partir de <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Para obter atualizações futuras do Chromium, precisa do macOS 10.15 ou posterior. Este computador está a usar o macOS 10.14.</translation>
 <translation id="388648406173476553">Personalize e controle o Chromium. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="3889543394854987837">Clique no seu nome para abrir o Chromium e começar a navegar.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chromium. Para manter a sua navegação separada, o Chromium pode criar-lhe o seu próprio perfil.</translation>
-<translation id="3909353120217047026">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="3909353120217047026">Esta extensão viola a Política da Chrome Web Store e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="391789666908693569">A sua conta é gerida por <ph name="MANAGER_NAME" />. O seu administrador pode ver e editar este perfil do navegador Chromium e os respetivos dados, como os marcadores, o histórico e as palavras-passe.</translation>
 <translation id="3922825997980843979">À medida que escreve, o Chromium envia o conteúdo da barra de endereço ou da caixa de pesquisa para o motor de pesquisa predefinido</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome de ficheiro do instalador é inválido ou não é suportado.</translation>
@@ -218,6 +218,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4814736265800133385">Usar o Chromium sem uma conta</translation>
 <translation id="4888717733111232871">Regra de importação para o Chromium permitir o tráfego mDNS.</translation>
 <translation id="4893347770495441059">Reiniciar para atualizar o &amp;Chromium</translation>
+<translation id="4942295735032723435">Para receber atualizações futuras do Chromium, precisa do macOS 11 ou posterior. Este computador está a usar o macOS 10.15.</translation>
 <translation id="4943838377383847465">O Chromium está no modo em segundo plano.</translation>
 <translation id="4987820182225656817">Os convidados podem utilizar o Chromium sem perder qualquer funcionalidade.</translation>
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
@@ -246,7 +247,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
-<translation id="5675598751761067447">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chromium pode verificar esta transferência se facultar a palavra-passe. A palavra-passe permanece no seu dispositivo</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>
@@ -280,6 +280,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6144416395842701622">Inicie sessão para tirar o máximo partido do Chromium</translation>
 <translation id="6145820983052037069">Pode alternar entre perfis do Chromium aqui</translation>
 <translation id="615103374448673771">Se permitir cookies, o Chromium pode usá-los durante o pré-carregamento</translation>
+<translation id="6174920971222007286">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chromium pode verificar esta transferência se facultar a palavra-passe. As informações sobre o ficheiro são enviadas para a Navegação Segura do Google, mas o conteúdo do ficheiro e a palavra-passe permanecem no seu dispositivo.</translation>
 <translation id="6175304430031192654">Consoante as suas definições, o Chromium também pode enviar cookies e o URL atual</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
@@ -407,6 +408,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8105840573057009683">O Chromium necessita da autorização de acesso à localização para este site</translation>
 <translation id="8133124826068723441">O ChromiumOS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="813913629614996137">A inicializar...</translation>
+<translation id="8166782796394721554">Ative a proteção adicional no motor WebAssembly e JavaScript do Chromium</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso. Como tal, o Chromium bloqueou-o.</translation>
 <translation id="8213374284266571500">O Chromium bloqueou este ficheiro porque este tipo de ficheiro é perigoso</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>

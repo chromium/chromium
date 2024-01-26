@@ -248,7 +248,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
     if (it != pending_subscriptions_.end() &&
-        it->second->type == PerUserTopicSubscriptionRequest::SUBSCRIBE) {
+        it->second->type == RequestType::kSubscribe) {
       // Do not update SubscriptionEntry if there is no changes, to not loose
       // backoff timer.
       continue;
@@ -264,7 +264,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
           base::BindRepeating(
               &PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic,
               base::Unretained(this)),
-          PerUserTopicSubscriptionRequest::SUBSCRIBE, topic.second.is_public);
+          RequestType::kSubscribe, topic.second.is_public);
     }
   }
 
@@ -279,8 +279,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
       // because topic immediately deleted from |topic_to_private_topic_| when
       // unsubscription request scheduled.
       DCHECK(pending_subscriptions_.count(topic) == 0 ||
-             pending_subscriptions_[topic]->type ==
-                 PerUserTopicSubscriptionRequest::SUBSCRIBE);
+             pending_subscriptions_[topic]->type == RequestType::kSubscribe);
       // If there was already a pending request for this topic, it'll get
       // destroyed and replaced by the new one.
       pending_subscriptions_[topic] = std::make_unique<SubscriptionEntry>(
@@ -288,7 +287,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
           base::BindRepeating(
               &PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic,
               base::Unretained(this)),
-          PerUserTopicSubscriptionRequest::UNSUBSCRIBE);
+          RequestType::kUnsubscribe);
       private_topic_to_topic_.erase(it->second);
       it = topic_to_private_topic_.erase(it);
       // The decision to unsubscribe from invalidations for |topic| was
@@ -362,7 +361,7 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
                          SubscriptionFinished,
                      base::Unretained(it->second.get())),
       url_loader_factory_);
-  NotifySubscriptionRequestStarted(topic);
+  NotifySubscriptionRequestStarted(topic, it->second->type);
 }
 
 void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
@@ -372,7 +371,7 @@ void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
   auto it = pending_subscriptions_.find(topic);
   it->second->request_backoff_.InformOfRequest(true);
   pending_subscriptions_.erase(it);
-  if (type == PerUserTopicSubscriptionRequest::SUBSCRIBE) {
+  if (type == RequestType::kSubscribe) {
     // If this was a subscription, update the prefs now (if it was an
     // unsubscription, we've already updated the prefs when scheduling the
     // request).
@@ -388,7 +387,7 @@ void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
   // pending.
   bool all_subscriptions_completed = true;
   for (const auto& entry : pending_subscriptions_) {
-    if (entry.second->type == PerUserTopicSubscriptionRequest::SUBSCRIBE) {
+    if (entry.second->type == RequestType::kSubscribe) {
       all_subscriptions_completed = false;
     }
   }
@@ -418,7 +417,7 @@ void PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic(
     Status code,
     std::string private_topic_name,
     PerUserTopicSubscriptionRequest::RequestType type) {
-  NotifySubscriptionRequestFinished(topic, code);
+  NotifySubscriptionRequestFinished(topic, type, code);
   if (code.IsSuccess()) {
     ActOnSuccessfulSubscription(topic, private_topic_name, type);
     return;
@@ -447,7 +446,7 @@ void PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic(
 
   // If one of the subscription requests failed (and we need to either observe
   // backoff before retrying, or won't retry at all), emit SUBSCRIPTION_FAILURE.
-  if (type == PerUserTopicSubscriptionRequest::SUBSCRIBE) {
+  if (type == RequestType::kSubscribe) {
     // TODO(crbug.com/1020117): case !code.ShouldRetry() now leads to
     // inconsistent behavior depending on requests completion order: if any
     // request was successful after it, we may have no |pending_subscriptions_|
@@ -592,17 +591,19 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionChannelStateChange(
 }
 
 void PerUserTopicSubscriptionManager::NotifySubscriptionRequestStarted(
-    Topic topic) {
+    Topic topic,
+    RequestType request_type) {
   for (auto& observer : observers_) {
-    observer.OnSubscriptionRequestStarted(topic);
+    observer.OnSubscriptionRequestStarted(topic, request_type);
   }
 }
 
 void PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
     Topic topic,
+    RequestType request_type,
     Status code) {
   for (auto& observer : observers_) {
-    observer.OnSubscriptionRequestFinished(topic, code);
+    observer.OnSubscriptionRequestFinished(topic, request_type, code);
   }
 }
 

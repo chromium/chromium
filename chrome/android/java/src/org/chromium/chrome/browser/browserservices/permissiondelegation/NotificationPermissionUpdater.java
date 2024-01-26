@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 public class NotificationPermissionUpdater {
     private static final String TAG = "PermissionUpdater";
 
-    private static final @ContentSettingsType int TYPE = ContentSettingsType.NOTIFICATIONS;
+    private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.NOTIFICATIONS;
 
     private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;

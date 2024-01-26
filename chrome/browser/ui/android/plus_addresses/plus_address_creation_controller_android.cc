@@ -68,8 +68,6 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
-  RecordModalShownDuration(
-      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
     return;
@@ -89,10 +87,17 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
 }
 
 void PlusAddressCreationControllerAndroid::OnCanceled() {
+  // TODO(b/320541525) ModalEvent is in sync with actual user action. May
+  // re-evaluate the use of this metric when modal becomes more complex.
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
-  RecordModalShownDuration(
-      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
+  if (modal_error_status_.has_value()) {
+    RecordModalShownDuration(modal_error_status_.value());
+    modal_error_status_.reset();
+  } else {
+    RecordModalShownDuration(
+        PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
+  }
 }
 
 void PlusAddressCreationControllerAndroid::OnDialogDestroyed() {
@@ -119,6 +124,9 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
   }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
+  } else {
+    modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
+        kReservePlusAddressError;
   }
 }
 
@@ -131,15 +139,21 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
   }
   if (maybe_plus_profile.has_value()) {
     std::move(callback_).Run(maybe_plus_profile->plus_address);
+    RecordModalShownDuration(
+        PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
+  } else {
+    modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
+        kConfirmPlusAddressError;
   }
 }
 
 void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
     const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
-  CHECK(modal_shown_time_.has_value());
-  PlusAddressMetrics::RecordModalShownDuration(
-      status, clock_->Now() - modal_shown_time_.value());
-  modal_shown_time_.reset();
+  if (modal_shown_time_.has_value()) {
+    PlusAddressMetrics::RecordModalShownDuration(
+        status, clock_->Now() - modal_shown_time_.value());
+    modal_shown_time_.reset();
+  }
 }
 
 base::WeakPtr<PlusAddressCreationControllerAndroid>

@@ -48,18 +48,15 @@ void TestAutofillExternalDelegate::OnQuery(
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
-    const std::vector<Suggestion>& suggestions,
-    bool is_all_server_suggestions) {
+    const std::vector<Suggestion>& suggestions) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  is_all_server_suggestions_ = is_all_server_suggestions;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
-                                                    is_all_server_suggestions);
+    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {
@@ -144,10 +141,6 @@ bool TestAutofillExternalDelegate::on_suggestions_returned_seen() const {
 AutofillSuggestionTriggerSource TestAutofillExternalDelegate::trigger_source()
     const {
   return trigger_source_;
-}
-
-bool TestAutofillExternalDelegate::is_all_server_suggestions() const {
-  return is_all_server_suggestions_;
 }
 
 bool TestAutofillExternalDelegate::popup_hidden() const {

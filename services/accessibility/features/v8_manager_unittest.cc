@@ -350,6 +350,25 @@ TEST_F(V8ManagerTest, MAYBE_ExecuteModuleWithImports) {
   module_waiter.Run();
 }
 
+TEST_F(V8ManagerTest, NormalizesPaths) {
+  std::string result = V8Environment::NormalizeRelativePath("a.txt", "b/c");
+  EXPECT_EQ(result, "b/c/a.txt");
+  result = V8Environment::NormalizeRelativePath("./a.txt", "b/c");
+  EXPECT_EQ(result, "b/c/a.txt");
+  result = V8Environment::NormalizeRelativePath("../d.txt", "b/c");
+  EXPECT_EQ(result, "b/d.txt");
+
+  // Should fail, no base directory to resolve to.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("e.txt", ""), "");
+
+  // Should fail, base directory ends with '/'.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("e.txt", "a/"), "");
+
+  // Should fail, relative path references parent of base directory.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("../../../e.txt", "a/b"),
+               "");
+}
+
 // TODO(b:313924294): add test to handle missing files.
 
 }  // namespace ax

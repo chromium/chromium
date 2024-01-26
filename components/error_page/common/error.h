@@ -12,6 +12,11 @@
 
 namespace error_page {
 
+enum LinkPreviewErrorCode {
+  // Non HTTPS URL is not allowed to preview.
+  kNonHttpsForbidden,
+};
+
 // Represents an error info necessary to show an error page.
 // This class is a copiable value class.
 class Error {
@@ -22,6 +27,8 @@ class Error {
   static const char kHttpErrorDomain[];
   // For DNS probe errors.
   static const char kDnsProbeErrorDomain[];
+  // For Link Preview errors.
+  static const char kLinkPreviewErrorDomain[];
 
   // Returns a kNetErrorDomain error.
   static Error NetError(const GURL& url,
@@ -35,6 +42,9 @@ class Error {
   static Error DnsProbeError(const GURL& url,
                              int status,
                              bool stale_copy_in_cache);
+  // Returns a kLinkPreviewErrorDomain error.
+  static Error LinkPreviewError(const GURL& url,
+                                LinkPreviewErrorCode error_code);
 
   ~Error();
   Error(const Error&);

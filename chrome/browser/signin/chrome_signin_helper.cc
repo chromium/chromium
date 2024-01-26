@@ -187,7 +187,7 @@ class ManageAccountsHeaderReceivedUserData
 void ProcessMirrorHeader(
     ManageAccountsParams manage_accounts_params,
     const content::WebContents::Getter& web_contents_getter,
-    const absl::optional<url::Origin>& request_initiator) {
+    const std::optional<url::Origin>& request_initiator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GAIAServiceType service_type = manage_accounts_params.service_type;

@@ -114,6 +114,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       scrollbar_(other.GetScrollbar()),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
       is_over_resizer_(other.is_over_resizer_),
+      is_over_scroll_corner_(other.is_over_scroll_corner_),
       canvas_region_id_(other.CanvasRegionId()) {
   // Only copy the NodeSet in case of list hit test.
   list_based_test_result_ =
@@ -161,6 +162,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   cacheable_ = other.cacheable_;
   canvas_region_id_ = other.CanvasRegionId();
   is_over_resizer_ = other.IsOverResizer();
+  is_over_scroll_corner_ = other.IsOverScrollCorner();
 
   // Only copy the NodeSet in case of list hit test.
   list_based_test_result_ =
@@ -550,9 +552,13 @@ HitTestResult::AddNodeToListBasedTestResultInternal(
     return std::make_tuple(false, kContinueHitTesting);
 
   MutableListBasedTestResult().insert(node);
-
-  if (GetHitTestRequest().PenetratingList())
-    return std::make_tuple(false, kContinueHitTesting);
+  if (GetHitTestRequest().PenetratingList()) {
+    ListBasedHitTestBehavior behavior = kContinueHitTesting;
+    if (GetHitTestRequest().UseHitNodeCb()) {
+      behavior = GetHitTestRequest().RunHitNodeCb(*node);
+    }
+    return std::make_tuple(false, behavior);
+  }
 
   // The second argument will be ignored.
   return std::make_tuple(true, kContinueHitTesting);
@@ -618,6 +624,7 @@ void HitTestResult::Append(const HitTestResult& other) {
     is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
     canvas_region_id_ = other.CanvasRegionId();
     is_over_resizer_ = other.IsOverResizer();
+    is_over_scroll_corner_ = other.is_over_scroll_corner_;
   }
 
   if (other.list_based_test_result_) {

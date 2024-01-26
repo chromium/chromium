@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class Browser;
@@ -18,7 +19,7 @@ class WebStateID;
 
 // Stores information about a tab.
 struct BrowserAndIndex {
-  Browser* browser = nullptr;
+  raw_ptr<Browser> browser = nullptr;
   int tab_index = WebStateList::kInvalidIndex;
 };
 

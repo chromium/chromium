@@ -8,6 +8,7 @@
 @class CollectionViewItem;
 class GURL;
 @class QuerySuggestionConfig;
+enum class SafetyCheckItemType;
 
 // Commands protocol allowing the ContentSuggestions ViewControllers to interact
 // with the coordinator layer, and from there to the rest of the application.

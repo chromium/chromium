@@ -54,8 +54,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   if (!node) {
     node = frame_->GetDocument()->FocusedElement();
   }
-  if (RuntimeEnabledFeatures::ArrowKeysInVerticalWritingModesEnabled() &&
-      node) {
+  if (node) {
     if (const ComputedStyle* style = node->GetComputedStyle()) {
       writing_mode = style->GetWritingMode();
     }

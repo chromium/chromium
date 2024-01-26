@@ -24,8 +24,6 @@ source_set("browser") {
     "android_protocol_handler.cc",
     "android_protocol_handler.h",
     "aw_apk_type.h",
-    "aw_autofill_client.cc",
-    "aw_autofill_client.h",
     "aw_browser_context.cc",
     "aw_browser_context.h",
     "aw_browser_context_store.cc",

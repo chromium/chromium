@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Pausouse a descarga</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1426410128494586442">Si</translation>
+<translation id="1434873037477293673">tarxeta de baixada de prezo</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
 <translation id="1510341833810331442">Os sitios non teñen permiso para gardar datos no teu dispositivo</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="2790501146643349491">Cando esta opción está activada, os sitios pechados recentemente poden terminar de enviar e recibir datos. Cando esta opción está desactivada, os sitios pechados recentemente non poden terminar de enviar nin de recibir datos.</translation>
 <translation id="2822354292072154809">Seguro que queres restablecer todos os permisos do sitio <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicita unha vista para dispositivos móbiles</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impide que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Baixada de prezo na pestana aberta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Solicitar vista para dispositivos móbiles cando a ventá sexa estreita</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="652937045869844725">Proba a permitir as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian ben</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>
 <translation id="6766622839693428701">Pasa o dedo cara abaixo para pechar o panel inferior.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Desde <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecciona unha opción para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Selecciona elementos</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
+<translation id="6867014948848323204">Desde <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Impedir que os sitios lean texto e imaxes do portapapeis</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar segundo o esperado (por exemplo, para manter a túa sesión iniciada ou gardar artigos que teñas no carro da compra). Os sitios adoitan almacenar esta información no teu dispositivo de forma temporal.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">O marabilloso mago de Oz</translation>
 <translation id="7684642910516280563">Non permite que un sitio use cookies de terceiros</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
+<translation id="7770832849480336015">Ocultar <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="780301667611848630">Non, grazas</translation>

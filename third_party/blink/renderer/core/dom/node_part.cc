@@ -29,8 +29,8 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
 NodePart::NodePart(PartRoot& root,
                    Node& node,
                    bool add_to_parts_list,
-                   const Vector<String> metadata)
-    : Part(root, metadata), node_(node) {
+                   Vector<String> metadata)
+    : Part(root, std::move(metadata)), node_(node) {
   CHECK(IsAcceptableNodeType(node));
   node.AddDOMPart(*this);
   if (add_to_parts_list) {
@@ -62,7 +62,7 @@ Node* NodePart::NodeToSortBy() const {
 Part* NodePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
   return MakeGarbageCollected<NodePart>(data.CurrentPartRoot(), node_clone,
-                                        metadata());
+                                        metadata().AsVector());
 }
 
 Document& NodePart::GetDocument() const {

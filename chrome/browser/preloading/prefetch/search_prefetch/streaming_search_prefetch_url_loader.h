@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This class starts a search prefetch and is able to serve it once headers are
 // received. This allows streaming the response from memory as the response
@@ -119,7 +119,7 @@ class StreamingSearchPrefetchURLLoader
         mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
         base::OnceCallback<void(ResponseReader*)>
             forwarding_disconnection_callback,
-        absl::optional<network::URLLoaderCompletionStatus>,
+        std::optional<network::URLLoaderCompletionStatus>,
         scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
     ~ResponseReader() override;
 
@@ -134,7 +134,7 @@ class StreamingSearchPrefetchURLLoader
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const absl::optional<GURL>& new_url) override;
+        const std::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override;
     void PauseReadingBodyFromNet() override;
@@ -209,7 +209,7 @@ class StreamingSearchPrefetchURLLoader
     scoped_refptr<StreamingSearchPrefetchURLLoader> loader_;
 
     // Records the completion status for the corresponding network loader.
-    absl::optional<network::URLLoaderCompletionStatus>
+    std::optional<network::URLLoaderCompletionStatus>
         url_loader_completion_status_;
 
     // TODO(crbug.com/1400881): We'd have a failure strategy to determine
@@ -267,7 +267,7 @@ class StreamingSearchPrefetchURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -278,7 +278,7 @@ class StreamingSearchPrefetchURLLoader
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -383,7 +383,7 @@ class StreamingSearchPrefetchURLLoader
   bool serving_from_data_ = false;
 
   // The status returned from |network_url_loader_|.
-  absl::optional<network::URLLoaderCompletionStatus> status_;
+  std::optional<network::URLLoaderCompletionStatus> status_;
 
   // Total amount of bytes to transfer.
   int bytes_of_raw_data_to_transfer_ = 0;

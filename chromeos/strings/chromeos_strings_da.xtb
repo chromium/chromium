@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">videresend</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
+<translation id="1626590945318984973">Genvejen er ikke tilgængelig. Tryk en ny genvej uden at bruge funktions- og <ph name="META_KEY" />-tasterne.</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
 <translation id="1643449475550628585">Skift baggrundsbillede dagligt</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Deaktiver mørk tilstand</translation>
 <translation id="1885577615937958993">spol frem i mediet</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
-<translation id="1897672602657312171">En genvej uden søgetast kan skabe problemer i forbindelse med genvejen for nogle apps. Tryk på denne genvej igen for at fortsætte med at bruge den, eller tryk på en ny genvej ved hjælp af søgetasten.</translation>
 <translation id="1904932688895783618">Her er nogle andre nyttige ressourcer:</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
 <translation id="2157660087437850958">emojivælger</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Din administrator har indstillet <ph name="APP_NAME_1" /> til at starte automatisk, hver gang du logger ind.}=2{Din administrator har indstillet <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> til at starte automatisk, hver gang du logger ind.}=3{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> til at starte automatisk, hver gang du logger ind.}one{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # anden app til at starte automatisk, hver gang du logger ind.}other{Din administrator har indstillet <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # andre apps til at starte automatisk, hver gang du logger ind.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="215916044711630446">Knappen Tilføj APN er nu deaktiveret</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Rediger APN-oplysninger</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
+<translation id="2215920961700443347">Intet internet. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="222447520299472966">Der skal vælges mindst ét album i kunstgalleriet</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Billede <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">Vi har ikke kapaciteten lige nu. Prøv igen om lidt.</translation>
 <translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
 <translation id="2491955442992294626">Taster testes ikke, når du bruger et andet vindue</translation>
 <translation id="2493126929778606526">Dine bedste billeder udvælges automatisk</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Opdater det aktuelle baggrundsbillede</translation>
 <translation id="2512979179176933762">se vinduer</translation>
 <translation id="2513396635448525189">Loginbillede</translation>
-<translation id="2515109918609218604">Genvejen er ikke tilgængelig. Tryk på en ny genvej uden at bruge funktions- og søgetasterne.</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2521835766824839541">forrige nummer</translation>
 <translation id="2526590354069164005">Skrivebord</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mørk tilstand</translation>
 <translation id="4130035430755296270">Bliv ved med at holde markøren over menuen for at se flere layoutmuligheder</translation>
+<translation id="4130750466177569591">Jeg accepterer</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> blev startet automatisk}one{# app blev startet automatisk}other{# apps blev startet automatisk}}</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Skærm</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">lysstyrke ned</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4176659219503619100">Kontrolpanel</translation>
-<translation id="4185315616950253617">Genvejen med taster i øverste række skal indeholde søgetasten.</translation>
 <translation id="420283545744377356">Deaktiver Pauseskærm</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Deaktiver</translation>
 <translation id="439429847087949098">Genstarter <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">tilpas tastatur</translation>
+<translation id="4403262788869804671">En genvej uden <ph name="META_KEY" />-tasten kan skabe problemer i forbindelse med genveje i visse apps. Tryk på denne genvej igen for at fortsætte med at bruge den, eller tryk en ny genvej ved hjælp af <ph name="KEY" />-tasten.</translation>
 <translation id="4415951057168511744">Aktuel avatar</translation>
+<translation id="4417830657741848074">Din administrator har konfigureret visse apps til at starte automatisk. Nogle af disse apps kan ikke lukkes.</translation>
 <translation id="4422041425070339732">pil ned</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Pauseskærmen Flow med Jorden</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4500722292849917410">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grænsefladefarve</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4507392511610824664">lysstyrke op</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
 <translation id="4839698083503556542">Lav din egen film</translation>
+<translation id="48409034532829769">Din administrator har konfigureret "<ph name="APP_NAME" />" til at starte automatisk. Denne app kan ikke lukkes.</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt. Tryk på Enter for at vælge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="484790837831576105">(Android) DNS-oversættelse</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Opdel</translation>
 <translation id="4972592110715526173">ændring af tilstand</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
+<translation id="4982627662315910959">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af Shift og 1 anden ændringstast (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Tidsplan for Mørkt tema</translation>
 <translation id="5229344016299762883">Afslut fuld skærm</translation>
 <translation id="5234764350956374838">Luk</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Din administrator har konfigureret "<ph name="APP_NAME" />" til at starte automatisk, hver gang du logger ind.}=2{Din administrator har konfigureret "<ph name="APP_NAME" />" og 1 anden app til at starte automatisk, hver gang du logger ind.}one{Din administrator har konfigureret "<ph name="APP_NAME" />" og # anden app til at starte automatisk, hver gang du logger ind.}other{Din administrator har konfigureret "<ph name="APP_NAME" />" og # andre apps til at starte automatisk, hver gang du logger ind.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Aktivér tilstanden med lyse farver</translation>
 <translation id="5264277876637023664">Kør CPU-test</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobilselskab</translation>
 <translation id="725133483556299729">Vælg mailadresse</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
-<translation id="7273347807225967898">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift, søgetasten eller applisten).</translation>
+<translation id="7271932918253517778">Genvejen med taster i øverste række skal indeholde <ph name="META_KEY" />-tasten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Generelle styringselementer</translation>
 <translation id="7977800524392185497">Gå til Indstillinger for at oprette forbindelse til et <ph name="NETWORK_NAME" />-netværk</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" blev startet automatisk}one{# app blev startet automatisk}other{# apps blev startet automatisk}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8094062939584182041">Giv Google tilladelse til at kontakte dig via mail vedrørende dette problem</translation>
 <translation id="8104083085214006426">Du bruger et åbent og usikkert netværk</translation>
-<translation id="8111706652656628199">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af Shift og 1 anden ændringstast (Ctrl, Alt, søgetasten eller applisten).</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>

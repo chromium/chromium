@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2024-05-19">
+    enum="NetworkSandboxState" expires_after="2024-07-21">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.DynamicColorOnLoad"
-    enum="DynamicChromeColorsInfo" expires_after="2024-05-12">
+    enum="DynamicChromeColorsInfo" expires_after="2024-07-14">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlacklistSetup"
+<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlocklistSetup"
     expires_after="M121">
   <owner>pmonette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>

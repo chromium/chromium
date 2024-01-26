@@ -13,7 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -53,6 +52,7 @@
 using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
+using password_manager::constants::kPasswordManagerAuthValidity;
 using password_manager::features::IsAuthOnEntryV2Enabled;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::PasswordNoteAction;
@@ -1261,8 +1261,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   [self.authValidityTimer invalidate];
   self.authValidityTimer = [NSTimer
-      scheduledTimerWithTimeInterval:syncer::kPasswordNotesAuthValidity.Get()
-                                         .InSeconds()
+      scheduledTimerWithTimeInterval:kPasswordManagerAuthValidity.InSeconds()
                               target:self
                             selector:@selector(authValidityTimerFired:)
                             userInfo:nil

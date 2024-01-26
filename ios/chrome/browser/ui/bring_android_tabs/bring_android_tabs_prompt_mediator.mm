@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
@@ -11,9 +12,9 @@
 
 @implementation BringAndroidTabsPromptMediator {
   // Keyed service to retrieve active tabs from Android.
-  BringAndroidTabsToIOSService* _bringAndroidTabsService;
+  raw_ptr<BringAndroidTabsToIOSService> _bringAndroidTabsService;
   // URL loader to open tabs when needed.
-  UrlLoadingBrowserAgent* _URLLoader;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   // Number of tabs active tabs from Android brought over.
   size_t _tabCount;
   // Whether the prompt view controller had been shown.

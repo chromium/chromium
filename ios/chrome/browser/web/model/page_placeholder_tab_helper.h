@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -71,7 +72,7 @@ class PagePlaceholderTabHelper
   void OnImageRetrieved(UIImage* image);
 
   // WebState this tab helper is attached to.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // View used to display the placeholder.
   TopAlignedImageView* placeholder_view_ = nil;

@@ -91,6 +91,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1416550906796893042">Versão da aplicação</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -146,6 +147,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1792959175193046959">Altere a localização de transferência predefinida em qualquer altura.</translation>
 <translation id="1796666869097395659">Minimize o separador para regressar mais tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1810845389119482123">A configuração da sincronização inicial não está concluída</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar a usar <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Localizar na página</translation>
@@ -189,6 +191,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2056878612599315956">Site em pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}other{# transferências falhadas}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2079545284768500474">Anular</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">A mostrar a vista compacta</translation>
 <translation id="2093731487903423814">últimos 15 minutos</translation>
@@ -218,7 +221,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="223356358902285214">Atividade da Web e de apps</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2239812875700136898">Controle as notícias a partir do botão Opções para o Discover</translation>
-<translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2247789808226901522">Cartão expirado</translation>
 <translation id="2248941474044011069">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para lhe mostrar anúncios</translation>
@@ -233,7 +235,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2318045970523081853">Toque para efetuar uma chamada</translation>
 <translation id="2321086116217818302">A preparar palavras-passe…</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
-<translation id="2327226657832576859">Abrir os PDFs automaticamente?</translation>
 <translation id="2328985652426384049">Não é possível iniciar sessão</translation>
 <translation id="2341410551640223969">Não foi possível instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total de dados utilizados pelo Chrome, incluindo contas, marcadores e definições guardadas</translation>
@@ -316,6 +317,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2777555524387840389">Faltam <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">falhou</translation>
 <translation id="2781151931089541271">Falta 1 segundo</translation>
+<translation id="2789486458103222910">Ok</translation>
 <translation id="2800066122460699237">O separador <ph name="TAB_TITLE" /> será fechado</translation>
 <translation id="281504910091592009">Veja e faça a gestão das palavras-passe guardadas na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="2827278682606527653">O menu do cartão do feed a meia altura.</translation>
@@ -340,6 +342,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2894821468041866720">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2901411048554510387">A mostrar sugestões para <ph name="WEBSITE_TITLE" />…</translation>
+<translation id="2904300462646366554">Os PDFs transferidos são abertos automaticamente com um dos visualizadores de PDFs no seu dispositivo</translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais quer partilhar um separador aberta à altura total.</translation>
 <translation id="2908243544703713905">Notícias não lidas disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
@@ -354,7 +357,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2946420957526726953">A atualizar o Chrome para ligar a outros dispositivos</translation>
 <translation id="2951071800649516099">Adicione páginas à sua lista de leitura para ler mais tarde</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
-<translation id="2961210776189273067">Título</translation>
 <translation id="296370266220139811">Poupe tempo e escreva menos</translation>
 <translation id="2977350910003566746">Ordenação por última abertura</translation>
 <translation id="297771753501244313">Ord. por última abertura</translation>
@@ -600,6 +602,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4307992518367153382">Noções básicas</translation>
+<translation id="4311652497846705514">Abrir o PDF?</translation>
 <translation id="4320177379694898372">Sem ligação à Internet</translation>
 <translation id="433213510553688132">A seguir…</translation>
 <translation id="4335835283689002019">A Navegação segura está desativada.</translation>
@@ -639,7 +642,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4523326818319942067">na última hora</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
-<translation id="4541505619120536051">Abrir sempre</translation>
 <translation id="4543131175509360848">Nenhuma página de chaves de acesso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}other{<ph name="TAB_COUNT_MANY" /> separadores, <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}}</translation>
 <translation id="4554077758708533499">Ligado com cabo USB</translation>
@@ -831,7 +833,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5486841595534124508">Logótipo do Aviso de Privacidade do Centro de estatísticas da página que redireciona para a página A minha atividade.</translation>
 <translation id="5487521232677179737">Limpar dados</translation>
 <translation id="5492637351392383067">Encriptação no dispositivo</translation>
-<translation id="5509866835115085009">O Chrome pode abrir automaticamente um PDF quando o transfere.</translation>
 <translation id="5514904542973294328">Desativada pelo gestor do dispositivo</translation>
 <translation id="5515439363601853141">Desbloqueie para ver a palavra-passe.</translation>
 <translation id="5517095782334947753">Tem marcadores, histórico, palavras-passe e outras definições de <ph name="FROM_ACCOUNT" />.</translation>
@@ -897,9 +898,11 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="5814749351757353073">Mantenha-se a par dos seus sites favoritos</translation>
 <translation id="5822875253699806474">Para voltar rapidamente aos sites que visitou, sincronize os separadores e o histórico</translation>
+<translation id="5829586821381540080">Guardado em <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Partilhar link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">Abrir o PDF com a app <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">em pausa</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Algo correu mal. Não foi possível atualizar a opção Monitorizar preço.</translation>
@@ -925,6 +928,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5962718611393537961">Toque para reduzir</translation>
 <translation id="5964869237734432770">Parar descrições de imagens</translation>
 <translation id="5966233851250124270">O Chrome vai memorizar a sua escolha</translation>
+<translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5979084224081478209">Rever palavras-passe</translation>
 <translation id="5995726099713306770">Quer transferir a página novamente?</translation>
 <translation id="6000066717592683814">Manter o Google</translation>
@@ -1128,7 +1132,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="694267552845942083">Está atualmente a personalizar as suas definições de sincronização. Para concluir a ativação da sincronização, toque no botão Confirmar junto à parte inferior do ecrã. Navegar para cima</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6955535239952325894">Esta definição está desativada em navegadores geridos.</translation>
-<translation id="6958103823951858863">Abrir automaticamente o PDF após a transferência</translation>
 <translation id="6963766334940102469">Eliminar marcadores</translation>
 <translation id="696447261358045621">Quer sair do Modo de navegação anónima?</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1303,6 +1306,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os ficheiros, 1 ficheiro na lista}other{Todos os ficheiros, # ficheiros na lista}}</translation>
 <translation id="7815484226266492798">Captura de ecrã longa</translation>
+<translation id="7821130663268546430">Pode encontrar todos os separadores abertos no Comutador de separadores</translation>
 <translation id="7822705602465980873">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="78270725016672455">O seu computador quer registar este dispositivo para iniciar sessão num site</translation>
 <translation id="7844171778363018843">Não existem dados selecionados a sincronizar.</translation>
@@ -1330,6 +1334,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7942131818088350342">O <ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
+<translation id="7951102827450076904">Abrir sempre os PDFs transferidos</translation>
 <translation id="7957413488482743710">Um cartão virtual oculta o seu cartão real como medida de proteção contra potenciais fraudes. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botão anterior das estatísticas da página</translation>
 <translation id="7961926449547174351">Desativou o acesso ao armazenamento. Aceda às Definições para o ativar.</translation>
@@ -1380,6 +1385,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="8130309322784422030">As suas informações de início de sessão armazenadas podem estar desatualizadas</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
+<translation id="8135406045838672858">Os PDFs transferidos são abertos automaticamente com a app <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google.</translation>
 <translation id="8186512483418048923">Faltam <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Falta 1 dia</translation>

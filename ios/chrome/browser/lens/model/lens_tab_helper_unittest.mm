@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -45,7 +46,7 @@ class LensTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   web::WebTaskEnvironment task_environment_;
-  LensTabHelper* helper_ = nullptr;
+  raw_ptr<LensTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;
 };
@@ -59,7 +60,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_WebSearchBar) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -97,7 +98,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_TranslateOnebox) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -135,7 +136,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_WebImagesSearchBar) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
       web::WebStatePolicyDecider::PolicyDecision::Allow();

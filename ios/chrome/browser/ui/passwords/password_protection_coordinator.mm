@@ -75,8 +75,8 @@
 #pragma mark - Private
 
 - (void)openSavedPasswordsSettings {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<ApplicationSettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
 
   [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
                                        showCancelButton:NO];

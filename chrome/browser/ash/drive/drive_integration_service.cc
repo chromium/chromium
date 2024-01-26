@@ -484,7 +484,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   void OnMountFailed(MountFailure failure,
-                     absl::optional<TimeDelta> remount_delay) override {
+                     std::optional<TimeDelta> remount_delay) override {
     mount_observer_->OnMountFailed(failure, std::move(remount_delay));
   }
 
@@ -492,7 +492,7 @@ class DriveIntegrationService::DriveFsHolder
     mount_observer_->OnMounted(path);
   }
 
-  void OnUnmounted(absl::optional<TimeDelta> remount_delay) override {
+  void OnUnmounted(std::optional<TimeDelta> remount_delay) override {
     mount_observer_->OnUnmounted(std::move(remount_delay));
   }
 
@@ -955,7 +955,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 }
 
 void DriveIntegrationService::MaybeRemountFileSystem(
-    absl::optional<TimeDelta> remount_delay,
+    std::optional<TimeDelta> remount_delay,
     bool failed_to_mount) {
   DCHECK_EQ(State::kInitialized, state_);
 
@@ -1098,7 +1098,7 @@ void DriveIntegrationService::SampleBulkPinningPref() {
 }
 
 void DriveIntegrationService::OnUnmounted(
-    absl::optional<TimeDelta> remount_delay) {
+    std::optional<TimeDelta> remount_delay) {
   UmaEmitUnmountOutcome(remount_delay ? DriveMountStatus::kTemporaryUnavailable
                                       : DriveMountStatus::kUnknownFailure);
   MaybeRemountFileSystem(remount_delay, false);
@@ -1106,7 +1106,7 @@ void DriveIntegrationService::OnUnmounted(
 
 void DriveIntegrationService::OnMountFailed(
     MountFailure failure,
-    absl::optional<TimeDelta> remount_delay) {
+    std::optional<TimeDelta> remount_delay) {
   PrefService* const prefs = GetPrefs();
   const DriveMountStatus status = ConvertMountFailure(failure);
   UmaEmitMountStatus(status);
@@ -1290,13 +1290,13 @@ void DriveIntegrationService::GetQuickAccessItems(
       std::move(query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), FILE_ERROR_ABORT,
-          absl::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
 }
 
 void DriveIntegrationService::OnGetQuickAccessItems(
     GetQuickAccessItemsCallback callback,
     FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != FILE_ERROR_OK || !items.has_value()) {
     std::move(callback).Run(error, {});
     return;
@@ -1337,13 +1337,13 @@ void DriveIntegrationService::SearchDriveByFileName(
       std::move(drive_query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), FILE_ERROR_ABORT,
-          absl::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
 }
 
 void DriveIntegrationService::OnSearchDriveByFileName(
     SearchDriveByFileNameCallback callback,
     FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != FILE_ERROR_OK || !items.has_value()) {
     std::move(callback).Run(error, {});
     return;
@@ -1798,19 +1798,17 @@ DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()
 
 DriveIntegrationServiceFactory::~DriveIntegrationServiceFactory() = default;
 
-KeyedService* DriveIntegrationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DriveIntegrationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  DriveIntegrationService* service = nullptr;
   if (!factory_for_test_) {
-    service =
-        new DriveIntegrationService(profile, std::string(), base::FilePath());
+    return std::make_unique<DriveIntegrationService>(profile, std::string(),
+                                                     base::FilePath());
   } else {
-    service = factory_for_test_->Run(profile);
+    return base::WrapUnique(factory_for_test_->Run(profile));
   }
-
-  return service;
 }
 
 DriveIntegrationService::Observer::~Observer() {

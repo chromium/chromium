@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_MEDIA_TEST_LICENSE_SERVER_CONFIG_H_
 #define CHROME_BROWSER_MEDIA_TEST_LICENSE_SERVER_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/environment.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -34,9 +34,9 @@ class TestLicenseServerConfig {
   // server with needed args and switches.
   virtual bool GetServerCommandLine(base::CommandLine* command_line) = 0;
 
-  // Returns the environment map to apply to the server, or absl::nullopt on
+  // Returns the environment map to apply to the server, or std::nullopt on
   // error.
-  virtual absl::optional<base::EnvironmentMap> GetServerEnvironment() = 0;
+  virtual std::optional<base::EnvironmentMap> GetServerEnvironment() = 0;
 
   // Returns true if the server is supported on current platform.
   virtual bool IsPlatformSupported() = 0;

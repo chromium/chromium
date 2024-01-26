@@ -10,7 +10,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -28,26 +28,26 @@ public class OmniboxFeatures {
     private static Boolean sIsLowMemoryDevice;
 
     public static final BooleanCachedFieldTrialParameter ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "enable_modernize_visual_update_on_tablet",
                     false);
 
     public static final BooleanCachedFieldTrialParameter
             MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX =
-                    new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                             "modernize_visual_update_active_color_on_omnibox",
                             true);
 
     public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_smallest_margins",
                     true);
 
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
 
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
@@ -156,6 +156,10 @@ public class OmniboxFeatures {
     /** Returns whether the visible url in the url bar should be truncated. */
     public static boolean shouldTruncateVisibleUrl() {
         return ChromeFeatureList.sVisibleUrlTruncation.isEnabled();
+    }
+
+    public static boolean shouldTruncateVisibleUrlV2() {
+        return ChromeFeatureList.sVisibleUrlTruncationV2.isEnabled();
     }
 
     /**

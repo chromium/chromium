@@ -153,6 +153,15 @@ absl::optional<uint64_t> GetProductClusterIdFromBookmark(
     const GURL& url,
     bookmarks::BookmarkModel* model);
 
+// Removes any subscriptions the user might have that are not tied to at least
+// one bookmark. The count of the number of dangling subscriptions will be
+// returned as part of the optionally provided callback.
+void RemoveDanglingSubscriptions(
+    ShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    base::OnceCallback<void(size_t)> completed_callback =
+        base::DoNothingAs<void(size_t)>());
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_PRICE_TRACKING_UTILS_H_

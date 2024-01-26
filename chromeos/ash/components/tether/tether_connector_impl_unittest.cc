@@ -200,13 +200,6 @@ class TetherConnectorImplTest : public testing::Test {
     SetUpTetherNetworks();
   }
 
-  void TearDown() override {
-    // Must delete |fake_wifi_hotspot_connector_| before NetworkStateHandler is
-    // destroyed to ensure that NetworkStateHandler has zero observers by the
-    // time it reaches its destructor.
-    fake_wifi_hotspot_connector_.reset();
-  }
-
   std::string GetTetherNetworkGuid(const std::string& device_id) {
     return device_id_tether_network_guid_map_->GetTetherNetworkGuidForDeviceId(
         device_id);
@@ -357,7 +350,7 @@ class TetherConnectorImplTest : public testing::Test {
   std::unique_ptr<TetherConnectorImpl> tether_connector_;
 };
 
-TEST_F(TetherConnectorImplTest, DISABLED_TestCannotFetchDevice) {
+TEST_F(TetherConnectorImplTest, TestCannotFetchDevice) {
   // Base64-encoded version of "nonexistentDeviceId".
   const char kNonexistentDeviceId[] = "bm9uZXhpc3RlbnREZXZpY2VJZA==";
 
@@ -381,7 +374,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCannotFetchDevice) {
       fake_notification_presenter_->is_connection_failed_notification_shown());
 }
 
-TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileOperationActive) {
+TEST_F(TetherConnectorImplTest, TestCancelWhileOperationActive) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
@@ -417,7 +410,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileOperationActive) {
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_SetupNotRequired) {
+       TestConnectTetheringOperationFails_SetupNotRequired) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::UNKNOWN_ERROR,
       false /* setup_required */,
@@ -427,7 +420,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_SetupRequired) {
+       TestConnectTetheringOperationFails_SetupRequired) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::UNKNOWN_ERROR,
       true /* setup_required */,
@@ -437,7 +430,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_ProvisioningFailed) {
+       TestConnectTetheringOperationFails_ProvisioningFailed) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::PROVISIONING_FAILED,
       false /* setup_required */,
@@ -445,9 +438,8 @@ TEST_F(TetherConnectorImplTest,
       std::nullopt);
 }
 
-TEST_F(
-    TetherConnectorImplTest,
-    DISABLED_TestConnectTetheringOperationFails_TetheringTimeout_SetupNotRequired) {
+TEST_F(TetherConnectorImplTest,
+       TestConnectTetheringOperationFails_TetheringTimeout_SetupNotRequired) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::TETHERING_TIMEOUT,
       false /* setup_required */,
@@ -456,9 +448,8 @@ TEST_F(
                         TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED));
 }
 
-TEST_F(
-    TetherConnectorImplTest,
-    DISABLED_TestConnectTetheringOperationFails_TetheringTimeout_SetupRequired) {
+TEST_F(TetherConnectorImplTest,
+       TestConnectTetheringOperationFails_TetheringTimeout_SetupRequired) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::TETHERING_TIMEOUT,
       true /* setup_required */,
@@ -468,7 +459,7 @@ TEST_F(
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_TetheringUnsupported) {
+       TestConnectTetheringOperationFails_TetheringUnsupported) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::TETHERING_UNSUPPORTED,
       false /* setup_required */,
@@ -477,8 +468,7 @@ TEST_F(TetherConnectorImplTest,
       std::nullopt);
 }
 
-TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_NoCellData) {
+TEST_F(TetherConnectorImplTest, TestConnectTetheringOperationFails_NoCellData) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::NO_CELL_DATA,
       false /* setup_required */,
@@ -487,7 +477,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_EnableHotspotFailed) {
+       TestConnectTetheringOperationFails_EnableHotspotFailed) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::ENABLING_HOTSPOT_FAILED,
       false /* setup_required */,
@@ -497,7 +487,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_EnableHotspotTimeout) {
+       TestConnectTetheringOperationFails_EnableHotspotTimeout) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::
           ENABLING_HOTSPOT_TIMEOUT,
@@ -507,17 +497,17 @@ TEST_F(TetherConnectorImplTest,
                         ENABLING_HOTSPOT_TIMEOUT));
 }
 
-TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_NoResponse) {
+TEST_F(TetherConnectorImplTest, TestConnectTetheringOperationFails_NoResponse) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::NO_RESPONSE,
       false /* setup_required */,
       HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
-      HostConnectionMetricsLogger::ConnectionToHostInternalError::NO_RESPONSE);
+      HostConnectionMetricsLogger::ConnectionToHostInternalError::
+          SUCCESSFUL_REQUEST_BUT_NO_RESPONSE);
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestConnectTetheringOperationFails_InvalidHotspotCredentials) {
+       TestConnectTetheringOperationFails_InvalidHotspotCredentials) {
   VerifyConnectTetheringOperationFails(
       ConnectTetheringOperation::HostResponseErrorCode::
           INVALID_HOTSPOT_CREDENTIALS,
@@ -528,7 +518,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_ConnectionToHostFailedNotificationRemovedWhenConnectionStarts) {
+       ConnectionToHostFailedNotificationRemovedWhenConnectionStarts) {
   // Start with the "connection to host failed" notification showing.
   fake_notification_presenter_->NotifyConnectionToHostFailed();
 
@@ -538,7 +528,7 @@ TEST_F(TetherConnectorImplTest,
       fake_notification_presenter_->is_connection_failed_notification_shown());
 }
 
-TEST_F(TetherConnectorImplTest, DISABLED_TestConnectingToWifiFails) {
+TEST_F(TetherConnectorImplTest, TestConnectingToWifiFails) {
   EXPECT_CALL(
       *mock_host_connection_metrics_logger_,
       RecordConnectionToHostResult(
@@ -584,7 +574,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestConnectingToWifiFails) {
       fake_notification_presenter_->is_connection_failed_notification_shown());
 }
 
-TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileConnectingToWifi) {
+TEST_F(TetherConnectorImplTest, TestCancelWhileConnectingToWifi) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
@@ -632,7 +622,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestCancelWhileConnectingToWifi) {
       fake_wifi_hotspot_disconnector_->last_disconnected_wifi_network_guid());
 }
 
-TEST_F(TetherConnectorImplTest, DISABLED_TestSuccessfulConnection) {
+TEST_F(TetherConnectorImplTest, TestSuccessfulConnection) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
@@ -684,8 +674,7 @@ TEST_F(TetherConnectorImplTest, DISABLED_TestSuccessfulConnection) {
       fake_notification_presenter_->is_connection_failed_notification_shown());
 }
 
-TEST_F(TetherConnectorImplTest,
-       DISABLED_TestSuccessfulConnection_SetupRequired) {
+TEST_F(TetherConnectorImplTest, TestSuccessfulConnection_SetupRequired) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
@@ -720,7 +709,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestNewConnectionAttemptDuringOperation_DifferentDevice) {
+       TestNewConnectionAttemptDuringOperation_DifferentDevice) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::
@@ -785,7 +774,7 @@ TEST_F(TetherConnectorImplTest,
 }
 
 TEST_F(TetherConnectorImplTest,
-       DISABLED_TestNewConnectionAttemptDuringWifiConnection_DifferentDevice) {
+       TestNewConnectionAttemptDuringWifiConnection_DifferentDevice) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::

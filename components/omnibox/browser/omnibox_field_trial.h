@@ -339,6 +339,7 @@ bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 bool IsOnDeviceHeadSuggestEnabledForLocale(const std::string& locale);
 bool IsOnDeviceTailSuggestEnabled();
 bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
+bool ShouldApplyOnDeviceHeadModelSelectionFix();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 
@@ -471,9 +472,9 @@ extern const char kUIMaxAutocompleteMatchesParam[];
 extern const char kDynamicMaxAutocompleteUrlCutoffParam[];
 extern const char kDynamicMaxAutocompleteIncreasedLimitParam[];
 
-// Parameter names used by on device head provider.
-// These four parameters are shared by both non-incognito and incognito.
+// Parameter names used by on device head model.
 extern const char kOnDeviceHeadModelLocaleConstraint[];
+extern const char kOnDeviceHeadModelSelectionFix[];
 
 // The amount of time to wait before sending a new suggest request after the
 // previous one unless overridden by a field trial parameter.
@@ -625,14 +626,41 @@ struct MLConfig {
   // has no effect if `ml_url_scoring_unlimited_num_candidates` is true.
   std::string ml_url_scoring_max_matches_by_provider;
 
-  // If false, search suggestions are mostly left untouched, and URLs are
-  // shuffled amongst themselves. But the default suggestion can still swap from
-  // a search to a  URL; or vice versa; and thus also shift the search group up
-  // or down by 1 position. When true, the default suggestion won't swap between
-  // a search to a URL or vice versa; but it may still change from 1 URL to
-  // another. Similarly, when enabled, avoids the number of shortcut boosted
-  // URLs above searches increasing or decreasing by 1 when the default swaps.
-  bool stable_search_ranking{false};
+  // There are 3 implementations for mapping ML scores [0, 1] to usable
+  // relevances scores.
+  // 1) The original implementation in `RunBatchUrlScoringModel()`. This
+  //    redistributes the traditional relevance scores and shortcut boosting so
+  //    that the highest ML scoring URLs are assigned the highest traditional
+  //    scores, but the overall set of scores remains unchanged. This results in
+  //    mostly stable search v URL balance, but can change the default match
+  //    from a URL to a search; or vice versa; and therefore also change the
+  //    number of URLs above searches by +/- 1; because it doesn't consider
+  //    `allowed_to_be_default`. We've experimented with this for multiple
+  //    milestone, so this has the advantage in potentially launching first.
+  // 2) The `stable_search_blending` implementation in
+  //    `RunBatchUrlScoringModelWithStableSearches()`. This is similar to (1)
+  //    but accounts for `allowed_to_be_default` and avoids changing the default
+  //    suggestion from a URL to a search; or vice versa; or the number of URLs
+  //    above searches. This is least likely to affect search metrics.
+  // 3) The `mapped_search_blending` implementation in
+  //    `RunBatchUrlScoringModelMappedSearchBlending()`. It maps ML scores
+  //    linearly to a relevance score. Unlike the above 2, instead of trying to
+  //    maintain search v URL balance for each individual input, it tries to
+  //    balance them across all inputs, but allows shifts for individual inputs.
+  //    Not keeping the search v URL balance fixed for each individual input is
+  //    the long term goal, though we may end up with a more complicated or ML
+  //    approach.
+
+  // Enables approach (2) above.
+  bool stable_search_blending{false};
+
+  // Enables approach (3) above. No affect if `stable_search_blending` is true.
+  // Map ML scores [0, 1] to [`min`, `max`]. Groups URLs above searches if their
+  // mapped relevance is greater than `grouping_threshold`
+  bool mapped_search_blending{false};
+  int mapped_search_blending_min{600};
+  int mapped_search_blending_max{2800};
+  int mapped_search_blending_grouping_threshold{1400};
 };
 
 // A testing utility class for overriding the current configuration returned

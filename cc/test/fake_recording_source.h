@@ -18,10 +18,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-namespace base {
-class WaitableEvent;
-}  // namespace base
-
 namespace cc {
 
 // This class provides method for test to add bitmap and draw rect to content
@@ -29,9 +25,6 @@ namespace cc {
 // display list.
 class FakeRecordingSource : public RecordingSource {
  public:
-  FakeRecordingSource();
-  ~FakeRecordingSource() override {}
-
   static std::unique_ptr<FakeRecordingSource> CreateRecordingSource(
       const gfx::Rect& recorded_viewport,
       const gfx::Size& layer_bounds) {
@@ -50,9 +43,6 @@ class FakeRecordingSource : public RecordingSource {
     recording_source->SetLayerBounds(layer_bounds);
     return recording_source;
   }
-
-  // RecordingSource overrides.
-  scoped_refptr<RasterSource> CreateRasterSource() const override;
 
   void SetRecordedViewport(const gfx::Rect& recorded_viewport) {
     recorded_viewport_ = recorded_viewport;
@@ -80,11 +70,7 @@ class FakeRecordingSource : public RecordingSource {
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);
     Region invalidation;
-    gfx::Rect new_recorded_viewport = client_.PaintableRegion();
-    scoped_refptr<DisplayItemList> display_list =
-        client_.PaintContentsToDisplayList();
-    UpdateAndExpandInvalidation(&invalidation, size_, new_recorded_viewport);
-    UpdateDisplayItemList(display_list, recording_scale_factor_);
+    Update(size_, recording_scale_factor_, client_, invalidation);
   }
 
   void add_draw_rect(const gfx::Rect& rect) {
@@ -134,10 +120,6 @@ class FakeRecordingSource : public RecordingSource {
     client_.set_bounds(size_);
   }
 
-  void SetPlaybackAllowedEvent(base::WaitableEvent* event) {
-    playback_allowed_event_ = event;
-  }
-
   void SetRecordingScaleFactor(float recording_scale_factor) {
     recording_scale_factor_ = recording_scale_factor;
   }
@@ -147,9 +129,10 @@ class FakeRecordingSource : public RecordingSource {
   }
 
  private:
+  FakeRecordingSource() = default;
+
   FakeContentLayerClient client_;
   PaintFlags default_flags_;
-  raw_ptr<base::WaitableEvent> playback_allowed_event_ = nullptr;
 };
 
 }  // namespace cc

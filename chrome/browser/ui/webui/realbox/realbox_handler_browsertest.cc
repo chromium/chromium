@@ -180,6 +180,7 @@ class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
   void AutocompleteResultChanged(
       omnibox::mojom::AutocompleteResultPtr result) override {}
   void UpdateSelection(
+      omnibox::mojom::OmniboxPopupSelectionPtr old_selection,
       omnibox::mojom::OmniboxPopupSelectionPtr selection) override {}
   mojo::PendingRemote<omnibox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

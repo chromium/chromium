@@ -58,7 +58,7 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
 };
 
 device::mojom::SerialPortInfoPtr CreatePersistentBluetoothPort(
-    absl::optional<std::string> name,
+    std::optional<std::string> name,
     const std::string& bluetooth_address) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -72,7 +72,7 @@ device::mojom::SerialPortInfoPtr CreatePersistentBluetoothPort(
 }
 
 device::mojom::SerialPortInfoPtr CreatePersistentUsbPort(
-    absl::optional<std::string> name,
+    std::optional<std::string> name,
     const std::string& persistent_id) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -227,7 +227,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port_1);
@@ -250,7 +250,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -283,7 +283,7 @@ TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port_1);
@@ -305,7 +305,7 @@ TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -337,7 +337,7 @@ TEST_F(SerialChooserContextTest, GrantAndCheckPersistentUsbPermission) {
   // Grant a persistent permission for the USB serial port.
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   context()->GrantPortPermission(origin, *port_1);
 
@@ -361,7 +361,7 @@ TEST_F(SerialChooserContextTest, GrantAndCheckPersistentBluetoothPermission) {
   // Grant a persistent permission for the Bluetooth serial port.
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   context()->GrantPortPermission(origin, *port_2);
 
@@ -386,7 +386,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentUsbPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port_1);
@@ -408,7 +408,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentUsbPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -441,7 +441,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentBluetoothPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port_1);
@@ -463,7 +463,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentBluetoothPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -496,7 +496,7 @@ TEST_F(SerialChooserContextTest, RevokePersistentPermissionByWebsite) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port_1);
@@ -518,7 +518,7 @@ TEST_F(SerialChooserContextTest, RevokePersistentPermissionByWebsite) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -546,7 +546,7 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
@@ -581,12 +581,12 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
   device::mojom::SerialPortInfoPtr port =
-      CreatePersistentUsbPort(/*name=*/absl::nullopt, "ABC123");
+      CreatePersistentUsbPort(/*name=*/std::nullopt, "ABC123");
   port_manager().AddPort(port.Clone());
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
@@ -628,7 +628,7 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(0);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin)).Times(0);

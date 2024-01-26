@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
     <div style="color: #666; background-color: white;">AAA issue only</div>
     <div style="color: white; background-color: white;">AA & AAA issue</div>

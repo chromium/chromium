@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1066101356081285416">Chrome sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Số vận đơn của gói hàng và tên trang web sẽ được gửi đến Google để cung cấp tính năng này và cải thiện các tính năng mua sắm của Google cho mọi người. Bạn có thể cập nhật tuỳ chọn này bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1105362920864247682">Xoá dữ liệu duyệt web trong Chrome.</translation>
 <translation id="1113057722807951993">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
@@ -40,13 +41,13 @@ Những yếu tố cần xem xét:
 <translation id="1682483655351012182">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Thêm các URL đã nhập vào danh sách dấu trang trong Chrome.</translation>
+<translation id="1799920918471566157">Mẹo khi dùng Chrome</translation>
 <translation id="1830634592642484976">Địa chỉ này hiện được lưu vào Chrome. Để sử dụng địa chỉ này trên các sản phẩm của Google, hãy lưu địa chỉ vào Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
 <translation id="1843217788865538014">Tự động sử dụng Chrome khi bạn nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="1910975740091000991">Chrome dành cho iOS</translation>
 <translation id="1917964099031477364">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chrome cũng như các ứng dụng khác của Google trên thiết bị này.</translation>
 <translation id="1965935827552890526">Hoàn thành những việc bạn đang làm trong cửa sổ Chrome đang mở khác.</translation>
 <translation id="1987779152850321833">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất.</translation>
-<translation id="2008357574463816229">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Bạn có thể làm được nhiều việc hơn với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay.</translation>
 <translation id="2120238739383482109">Mở dấu trang trên Chrome.</translation>
 <translation id="2147651015520127414">Chrome xác minh <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
@@ -75,6 +76,7 @@ Những yếu tố cần xem xét:
 <translation id="2702250627063295552">Thêm mục trong danh sách đọc vào Chrome</translation>
 <translation id="2736805085127235148">Thông báo của Chrome hiện đang tắt trong phần cài đặt của thiết bị.</translation>
 <translation id="2767464022270041271">Bạn chưa lưu mật khẩu nào. Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
+<translation id="2789947168960170215">Nếu bạn quên cụm mật khẩu hoặc muốn cài đặt khác đi, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome trong tài khoản<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Xoá dữ liệu duyệt web trong Chrome</translation>
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3503014945441706099">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chrome này</translation>
 <translation id="3522659714780527202">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="3577555362230509265">Sử dụng Chrome trong các ứng dụng khác.</translation>
-<translation id="3594076341410558780">Ẩn "Khai thác tối đa Chrome"</translation>
 <translation id="364480321352456989">Chrome của bạn đã lỗi thời.</translation>
 <translation id="3646736009628185125">Thành viên gia đình bạn hiện không thể nhận mật khẩu. Hãy đề nghị họ cập nhật Chrome và đồng bộ hoá mật khẩu của họ. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Tức là lần nào Chrome cũng yêu cầu trang web dành cho thiết bị di động.</translation>
@@ -204,7 +205,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="686691656039982452">Bạn có thể <ph name="BEGIN_LINK" />quy định những dữ liệu Chrome nào được lưu<ph name="END_LINK" /> vào Tài khoản Google của bạn.
 
 Để xem thêm các chế độ cài đặt khác có sử dụng dữ liệu để cải thiện trải nghiệm Chrome của bạn, hãy truy cập vào <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Dữ liệu của bạn sẽ được chia sẻ với Google để cung cấp tính năng này và cải thiện trải nghiệm Mua sắm cho mọi người. Bạn có thể thay đổi chế độ này trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Tìm kiếm bằng giọng nói trong Chrome</translation>
 <translation id="6964931465519938134">Giờ đây, bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="6975725306479268850">Chọn Chrome làm dịch vụ tự động điền</translation>

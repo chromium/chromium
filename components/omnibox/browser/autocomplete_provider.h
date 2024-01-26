@@ -175,6 +175,7 @@ class AutocompleteProvider
     TYPE_OPEN_TAB = 1 << 17,
     TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
     TYPE_CALCULATOR = 1 << 19,
+    TYPE_FEATURED_SEARCH = 1 << 20,
   };
 
   explicit AutocompleteProvider(Type type);

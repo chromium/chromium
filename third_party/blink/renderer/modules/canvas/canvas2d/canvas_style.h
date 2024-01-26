@@ -39,6 +39,10 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class CanvasGradient;
@@ -151,9 +155,11 @@ enum class ColorParseResult {
 
 // Parses the canvas color string and returns the result. If the result is
 // `kParsedColor`, `parsed_color` is set appropriately.
-ColorParseResult ParseCanvasColorString(const String& color_string,
-                                        mojom::blink::ColorScheme color_scheme,
-                                        Color& parsed_color);
+ColorParseResult ParseCanvasColorString(
+    const String& color_string,
+    mojom::blink::ColorScheme color_scheme,
+    Color& parsed_color,
+    const ui::ColorProvider* color_provider);
 
 // Parses the canvas color string, returning true on success. If `color_string`
 // indicates the current color should be used, `parsed_color` is set to black.

@@ -670,7 +670,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
     // Create a DawnImageRepresentation.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -767,7 +767,7 @@ void D3DImageBackingFactoryTest::DawnConcurrentReadTestHelper(
     const gfx::Size& size,
     const std::vector<uint8_t>& expected_color) {
   auto dawn_representation1 = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device, wgpu::BackendType::D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
   ASSERT_TRUE(dawn_representation1);
 
   auto dawn_access1 = dawn_representation1->BeginScopedAccess(
@@ -776,7 +776,7 @@ void D3DImageBackingFactoryTest::DawnConcurrentReadTestHelper(
   ASSERT_TRUE(dawn_access1);
 
   auto dawn_representation2 = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device, wgpu::BackendType::D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
   ASSERT_TRUE(dawn_representation2);
 
   auto dawn_access2 = dawn_representation2->BeginScopedAccess(
@@ -876,7 +876,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -990,7 +990,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -1069,7 +1069,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -1329,7 +1329,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -1365,7 +1365,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     // Check again that the texture is still green
@@ -1441,7 +1441,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device, wgpu::BackendType::D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {}, context_state_);
   ASSERT_NE(dawn_representation, nullptr);
 
   // Creating the Skia representation will also create a temporary GL texture.
@@ -1500,7 +1500,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
   // The video tests read from the created SharedImages via GL.
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   base::win::ScopedHandle shared_handle;
@@ -1982,8 +1983,9 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   constexpr uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   std::vector<std::unique_ptr<SharedImageBacking>> shared_image_backings;
   for (size_t i = 0; i < kNumPlanes; i++) {
     gfx::GpuMemoryBufferHandle shm_gmb_handle;
@@ -2144,9 +2146,11 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
   constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
   constexpr gfx::ColorSpace color_space;
-  constexpr uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                             gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                             gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
   constexpr auto format = viz::MultiPlaneFormat::kNV12;
   const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 

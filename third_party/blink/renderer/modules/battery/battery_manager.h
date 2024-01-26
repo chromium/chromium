@@ -70,8 +70,7 @@ class BatteryManager final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
-  using BatteryProperty =
-      ScriptPromiseProperty<Member<BatteryManager>, Member<DOMException>>;
+  using BatteryProperty = ScriptPromiseProperty<BatteryManager, DOMException>;
   Member<BatteryProperty> battery_property_;
   BatteryStatus battery_status_;
   Member<BatteryDispatcher> battery_dispatcher_;

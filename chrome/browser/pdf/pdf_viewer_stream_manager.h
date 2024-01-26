@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +18,6 @@
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 struct GlobalRenderFrameHostId;

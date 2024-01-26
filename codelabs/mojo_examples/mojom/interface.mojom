@@ -18,6 +18,15 @@ interface ObjectB {
   DoB();
 };
 
+// An associated object with the ChannelProxy. This is used
+// for the `04-legacy-ipc-with-separate-remote` which emulates standard
+// content process setup where this is the `content.mojom.ChildProcess`.
+// The AssociatedProcess is associated with the legacy IPC channel.
+interface AssociatedProcess {
+  // Set an intermediate process object that is unassociated.
+  SetProcess(pending_receiver<Process> process);
+};
+
 // This is a simple generic interface that serves no purpose but to transport a
 // message handle from the browser to the renderer. It's just a handle, so it
 // requires more type information to actually bind the handle properly on the

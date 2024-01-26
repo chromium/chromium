@@ -51,7 +51,7 @@
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cert/x509_util_apple.h"
 #import "net/ssl/ssl_info.h"
 #import "net/test/cert_test_util.h"
@@ -555,53 +555,51 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     // the interaction is a bit more complex as WebKit will call additional
     // methods on the WKNavigationDelegate before the DownloadTask is created.
     // Mock those necessary interactions.
-    if (@available(iOS 15, *)) {
-      if (*out_policy == WKNavigationResponsePolicyDownload) {
-        id mock_download = [OCMockObject mockForClass:[WKDownload class]];
+    if (*out_policy == WKNavigationResponsePolicyDownload) {
+      id mock_download = [OCMockObject mockForClass:[WKDownload class]];
 
-        __block bool delegate_set = false;
-        __block id download_delegate = nil;
-        OCMStub([mock_download setDelegate:[OCMArg any]])
-            .andDo(^(NSInvocation* invocation) {
-              // Using __unsafe_unretained is required to extract the parameter
-              // from the NSInvocation otherwise ARC will over-release.
-              __unsafe_unretained id argument = nil;
-              [invocation getArgument:&argument atIndex:2];
-              download_delegate = argument;
-              delegate_set = true;
-            });
+      __block bool delegate_set = false;
+      __block id download_delegate = nil;
+      OCMStub([mock_download setDelegate:[OCMArg any]])
+          .andDo(^(NSInvocation* invocation) {
+            // Using __unsafe_unretained is required to extract the parameter
+            // from the NSInvocation otherwise ARC will over-release.
+            __weak id argument = nil;
+            [invocation getArgument:&argument atIndex:2];
+            download_delegate = argument;
+            delegate_set = true;
+          });
 
-        [navigation_delegate_ webView:mock_web_view_
-                   navigationResponse:navigation_response
-                    didBecomeDownload:mock_download];
+      [navigation_delegate_ webView:mock_web_view_
+                 navigationResponse:navigation_response
+                  didBecomeDownload:mock_download];
 
-        if (!WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-              return delegate_set;
-            })) {
-          return false;
-        }
-
-        NSMutableURLRequest* request =
-            [[NSURLRequest requestWithURL:response.URL] mutableCopy];
-        if (has_post_data) {
-          request.HTTPMethod = @"POST";
-        }
-        OCMStub([mock_download originalRequest]).andReturn(request);
-        OCMStub([mock_download cancel:[OCMArg any]])
-            .andDo(^(NSInvocation* invocation) {
-              // Using __unsafe_unretained is required to extract the parameter
-              // from the NSInvocation otherwise ARC will over-release.
-              __unsafe_unretained void (^block)(NSData* data);
-              [invocation getArgument:&block atIndex:2];
-              block(nil);
-            });
-
-        [download_delegate download:mock_download
-            decideDestinationUsingResponse:response
-                         suggestedFilename:@"filename.txt"
-                         completionHandler:^(NSURL* destination){
-                         }];
+      if (!WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+            return delegate_set;
+          })) {
+        return false;
       }
+
+      NSMutableURLRequest* request =
+          [[NSURLRequest requestWithURL:response.URL] mutableCopy];
+      if (has_post_data) {
+        request.HTTPMethod = @"POST";
+      }
+      OCMStub([mock_download originalRequest]).andReturn(request);
+      OCMStub([mock_download cancel:[OCMArg any]])
+          .andDo(^(NSInvocation* invocation) {
+            // Using __unsafe_unretained is required to extract the parameter
+            // from the NSInvocation otherwise ARC will over-release.
+            __weak void (^block)(NSData* data);
+            [invocation getArgument:&block atIndex:2];
+            block(nil);
+          });
+
+      [download_delegate download:mock_download
+          decideDestinationUsingResponse:response
+                       suggestedFilename:@"filename.txt"
+                       completionHandler:^(NSURL* destination){
+                       }];
     }
 
     return true;
@@ -611,10 +609,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
   // or not (as the new download API requires CRWWKNavigationHandler to return
   // a different policy). This method returns the expected policy for the test.
   [[nodiscard]] static WKNavigationResponsePolicy ExpectedPolicyForDownload() {
-    if (@available(iOS 15, *)) {
-      return WKNavigationResponsePolicyDownload;
-    }
-    return WKNavigationResponsePolicyCancel;
+    return WKNavigationResponsePolicyDownload;
   }
 
   DownloadController* download_controller() {

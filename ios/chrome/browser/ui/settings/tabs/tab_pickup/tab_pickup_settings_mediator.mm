@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -25,13 +26,13 @@
 
 @implementation TabPickupSettingsMediator {
   // Preference service from the application context.
-  PrefService* _local_prefs;
+  raw_ptr<PrefService> _local_prefs;
   // Preference service from the browser state.
-  PrefService* _browser_prefs;
+  raw_ptr<PrefService> _browser_prefs;
   // Authentication service.
-  AuthenticationService* _authenticationService;
+  raw_ptr<AuthenticationService> _authenticationService;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Preference value for the tab pickup feature.

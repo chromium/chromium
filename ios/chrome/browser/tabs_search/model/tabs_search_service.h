@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 #include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
@@ -76,7 +76,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
 
     TabsSearchBrowserResults(const TabsSearchBrowserResults&);
 
-    const Browser* browser;
+    raw_ptr<const Browser> browser;
     const std::vector<web::WebState*> web_states;
   };
   // Searches through tabs in all the Browsers associated with `browser_state`

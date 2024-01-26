@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, dp} = await testRunner.startBlank(
       `Tests that dynamically created module scripts don't have a sourceURL and embedderName.`);
 

@@ -40,6 +40,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",

@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_PARAMS_STORAGE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefService;

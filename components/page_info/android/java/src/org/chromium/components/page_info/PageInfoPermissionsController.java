@@ -33,7 +33,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         implements SingleWebsiteSettings.Observer {
     /**  Parameters to represent a single permission. */
     public static class PermissionObject {
-        public @ContentSettingsType int type;
+        public @ContentSettingsType.EnumType int type;
         public CharSequence name;
         public CharSequence nameMidSentence;
         public boolean allowed;
@@ -47,14 +47,14 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private boolean mHasSoundPermission;
     private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
-    @ContentSettingsType private int mHighlightedPermission;
+    @ContentSettingsType.EnumType private int mHighlightedPermission;
     @ColorRes private int mHighlightColor;
 
     public PageInfoPermissionsController(
             PageInfoMainController mainController,
             PageInfoRowView view,
             PageInfoControllerDelegate delegate,
-            @ContentSettingsType int highlightedPermission) {
+            @ContentSettingsType.EnumType int highlightedPermission) {
         super(delegate);
         mMainController = mainController;
         mRowView = view;

@@ -454,8 +454,6 @@ Called by update_autofill_enums.py.-->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: accepted"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: edited"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
-  <int value="1872" label="NAME_FULL_WITH_HONORIFIC_PREFIX: edited"/>
-  <int value="1873" label="NAME_FULL_WITH_HONORIFIC_PREFIX: accepted"/>
   <int value="1888" label="BIRTHDATE_DAY: edited"/>
   <int value="1889" label="BIRTHDATE_DAY: accepted"/>
   <int value="1904" label="BIRTHDATE_MONTH: edited"/>
@@ -496,6 +494,16 @@ Called by update_autofill_enums.py.-->
   <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: accepted"/>
   <int value="2304" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: edited"/>
   <int value="2305" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: accepted"/>
+  <int value="2320" label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: edited"/>
+  <int value="2321"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: accepted"/>
+  <int value="2336" label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: edited"/>
+  <int value="2337"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: accepted"/>
+  <int value="2400"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: edited"/>
+  <int value="2401"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: accepted"/>
   <int value="2416" label="ADDRESS_HOME_BETWEEN_STREETS_1: edited"/>
   <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: accepted"/>
   <int value="2432" label="ADDRESS_HOME_BETWEEN_STREETS_2: edited"/>
@@ -539,6 +547,8 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Credit card expiration date"/>
   <int value="13" label="Credir card expiration year"/>
   <int value="14" label="Credit card expiration month"/>
+  <int value="15" label="City"/>
+  <int value="16" label="Company"/>
 </enum>
 
 <enum name="AutofillFieldPredictionQuality">
@@ -1084,6 +1094,91 @@ Called by update_autofill_enums.py.-->
   <int value="10761"
       label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: False Negative
              (Unknown)"/>
+  <int value="11008"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: True Positive"/>
+  <int value="11009"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: True Negative
+             (Ambiguous)"/>
+  <int value="11010"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: True Negative
+             (Unknown)"/>
+  <int value="11011"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: True Negative (Empty)"/>
+  <int value="11012"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Positive
+             (Mismatch)"/>
+  <int value="11013"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Positive
+             (Ambiguous)"/>
+  <int value="11014"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Positive
+             (Unknown)"/>
+  <int value="11015"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Positive
+             (Empty)"/>
+  <int value="11016"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Negative
+             (Mismatch)"/>
+  <int value="11017"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: False Negative
+             (Unknown)"/>
+  <int value="11264"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: True Positive"/>
+  <int value="11265"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: True Negative
+             (Ambiguous)"/>
+  <int value="11266"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: True Negative
+             (Unknown)"/>
+  <int value="11267"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: True Negative (Empty)"/>
+  <int value="11268"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Positive
+             (Mismatch)"/>
+  <int value="11269"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Positive
+             (Ambiguous)"/>
+  <int value="11270"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Positive
+             (Unknown)"/>
+  <int value="11271"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Positive
+             (Empty)"/>
+  <int value="11272"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Negative
+             (Mismatch)"/>
+  <int value="11273"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: False Negative
+             (Unknown)"/>
+  <int value="11520"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: True Positive"/>
+  <int value="11521"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: True Negative
+             (Ambiguous)"/>
+  <int value="11522"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: True Negative
+             (Unknown)"/>
+  <int value="11523"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: True Negative
+             (Empty)"/>
+  <int value="11524"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Positive
+             (Mismatch)"/>
+  <int value="11525"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Positive
+             (Ambiguous)"/>
+  <int value="11526"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Positive
+             (Unknown)"/>
+  <int value="11527"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Positive
+             (Empty)"/>
+  <int value="11528"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Negative
+             (Mismatch)"/>
+  <int value="11529"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Negative
+             (Unknown)"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -1110,10 +1205,14 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="Submitted with server suggestion filled (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
-  <int value="13" label="Masked server card suggestion selected">
+  <int value="13"
+      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
+             selected">
     The user selected a masked server card that triggered an unmask attempt.
   </int>
-  <int value="14" label="Masked server card suggestion selected (once)">
+  <int value="14"
+      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
+             selected (once)">
     The user selected a masked server card that triggered an unmask attempt at
     least once.
   </int>
@@ -1141,9 +1240,11 @@ Called by update_autofill_enums.py.-->
       label="Submitted with fail-luhn-check card without selecting
              suggestions (once)"/>
   <int value="26" label="The form changed dynamically (Deprecated)"/>
-  <int value="27" label="The form changed dynamically and was fillable"/>
+  <int value="27"
+      label="The form changed dynamically and was fillable (Deprecated)"/>
   <int value="28" label="The form changed dynamically and was re-filled"/>
-  <int value="29" label="The form changed dynamically again after the refill"/>
+  <int value="29"
+      label="The form changed dynamically again after the refill (Deprecated)"/>
   <int value="30" label="The popup was suppressed"/>
   <int value="31" label="The popup was suppressed (once)"/>
   <int value="32" label="The form was parsed"/>
@@ -1232,6 +1333,20 @@ Called by update_autofill_enums.py.-->
   <int value="78"
       label="A card was about to be submitted after a suggestion without
              metadata was filled (once)"/>
+  <int value="79" label="Suggestions for card with CVC shown"/>
+  <int value="80" label="Suggestions for card with CVC shown (once)"/>
+  <int value="81" label="Suggestion for card with CVC selected"/>
+  <int value="82" label="Suggestion for card with CVC selected (once)"/>
+  <int value="83" label="Suggestion for card with CVC filled"/>
+  <int value="84" label="Suggestion for card with CVC filled (once)"/>
+  <int value="85"
+      label="Form about to be submitted after any suggestion for card with
+             CVC was filled (once)"/>
+  <int value="86"
+      label="Form submitted after any suggestion for card with CVC was filled
+             (once)"/>
+  <int value="87" label="Masked server card suggestion selected"/>
+  <int value="88" label="Masked server card suggestion selected (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
@@ -2499,24 +2614,6 @@ Called by update_autofill_enums.py.-->
   <int value="702"
       label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
              both predictions"/>
-  <int value="703"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions equal - Value
-             agrees"/>
-  <int value="704"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions equal - Value
-             disagrees"/>
-  <int value="705"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="706"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="707"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="708"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX - Predictions different - Value
-             agrees with both predictions"/>
   <int value="709" label="BIRTHDATE_DAY - Predictions equal - Value agrees"/>
   <int value="710" label="BIRTHDATE_DAY - Predictions equal - Value disagrees"/>
   <int value="711"
@@ -2825,6 +2922,60 @@ Called by update_autofill_enums.py.-->
   <int value="870"
       label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions different
              - Value agrees with both predictions"/>
+  <int value="871"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions equal -
+             Value agrees"/>
+  <int value="872"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions equal -
+             Value disagrees"/>
+  <int value="873"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
+             different - Value agrees with old prediction"/>
+  <int value="874"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
+             different - Value agrees with new prediction"/>
+  <int value="875"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
+             different - Value agrees with neither prediction"/>
+  <int value="876"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
+             different - Value agrees with both predictions"/>
+  <int value="877"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions equal -
+             Value agrees"/>
+  <int value="878"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions equal -
+             Value disagrees"/>
+  <int value="879"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
+             different - Value agrees with old prediction"/>
+  <int value="880"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
+             different - Value agrees with new prediction"/>
+  <int value="881"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
+             different - Value agrees with neither prediction"/>
+  <int value="882"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
+             different - Value agrees with both predictions"/>
+  <int value="901"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions equal
+             - Value agrees"/>
+  <int value="902"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions equal
+             - Value disagrees"/>
+  <int value="903"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
+             different - Value agrees with old prediction"/>
+  <int value="904"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
+             different - Value agrees with new prediction"/>
+  <int value="905"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
+             different - Value agrees with neither prediction"/>
+  <int value="906"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
+             different - Value agrees with both predictions"/>
   <int value="907"
       label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions equal - Value
              agrees"/>

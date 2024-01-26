@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -107,8 +108,12 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
 
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
-  supervised_user_service->GetURLFilter()->InitAsyncURLChecker(
-      identity_manager, shared_url_loader_factory);
+
+  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
+      std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
+          identity_manager, shared_url_loader_factory, "");
+  supervised_user_service->GetURLFilter()->SetURLCheckerClientForTesting(
+      std::move(url_checker_client));
 }
 
 void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST

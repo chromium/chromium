@@ -5,9 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_ENUM_UTILS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_ENUM_UTILS_H_
 
+#include <optional>
 #include <type_traits>
 
-#include <optional>
 #include "base/numerics/safe_conversions.h"
 
 namespace mojo {

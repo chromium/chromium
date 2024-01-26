@@ -7,16 +7,24 @@ package org.chromium.chrome.features.start_surface;
 import android.animation.Animator;
 import android.content.Context;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.features.tasks.TasksView;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** A {@link Layout} that shows Start Surface home view. */
 public class StartSurfaceHomeLayout extends Layout {
@@ -167,7 +175,25 @@ public class StartSurfaceHomeLayout extends Layout {
 
     private void ensureSceneLayerCreated() {
         if (mSceneLayer != null) return;
-        mSceneLayer = new SceneLayer();
+
+        boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        if (isSurfacePolishEnabled || HubFieldTrial.isHubEnabled()) {
+            SolidColorSceneLayer sceneLayer = new SolidColorSceneLayer();
+            Context context = getContext();
+            @ColorInt int color;
+            if (isSurfacePolishEnabled) {
+                color =
+                        ChromeColors.getSurfaceColor(
+                                context, R.dimen.home_surface_background_color_elevation);
+            } else {
+                color = SemanticColorUtils.getDefaultBgColor(context);
+            }
+            sceneLayer.setBackgroundColor(color);
+
+            mSceneLayer = sceneLayer;
+        } else {
+            mSceneLayer = new SceneLayer();
+        }
     }
 
     private void onTabSelecting(int tabId) {

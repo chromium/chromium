@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './page_favicon.html.js';

@@ -47,8 +47,10 @@ void ScopedSetRasterScale::SetOrUpdateRasterScale(
 
 void ScopedSetRasterScale::Shutdown() {
   if (window_) {
-    Shell::Get()->raster_scale_controller()->PopRasterScale(window_,
-                                                            raster_scale_);
+    auto* rsc = Shell::Get()->raster_scale_controller();
+    if (rsc) {
+      rsc->PopRasterScale(window_, raster_scale_);
+    }
     window_->RemoveObserver(this);
     window_ = nullptr;
   }
@@ -68,7 +70,12 @@ ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
 }
 
 RasterScaleController::RasterScaleController() = default;
-RasterScaleController::~RasterScaleController() = default;
+RasterScaleController::~RasterScaleController() {
+  // Reset raster scales to 1.0 on destruction.
+  for (const auto& [window, _] : window_scales_) {
+    window->SetProperty(aura::client::kRasterScale, 1.0f);
+  }
+}
 
 float RasterScaleController::RasterScaleFromTransform(
     const gfx::Transform& transform) {

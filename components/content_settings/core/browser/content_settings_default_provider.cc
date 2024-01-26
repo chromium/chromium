@@ -157,19 +157,19 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
   if (should_record_metrics)
     RecordHistogramMetrics();
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs_);
+  pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &DefaultProvider::OnPreferenceChanged, base::Unretained(this));
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings)
-    pref_change_registrar_->Add(info->default_value_pref_name(), callback);
+    pref_change_registrar_.Add(info->default_value_pref_name(), callback);
 }
 
 DefaultProvider::~DefaultProvider() = default;
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
+// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
+// when we call NotifyObservers().
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -209,7 +209,8 @@ bool DefaultProvider::SetWebsiteSetting(
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 
   return true;
 }
@@ -271,7 +272,7 @@ void DefaultProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
   RemoveAllObservers();
-  pref_change_registrar_.reset();
+  pref_change_registrar_.Reset();
   prefs_ = nullptr;
 }
 
@@ -347,7 +348,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 }
 
 base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {

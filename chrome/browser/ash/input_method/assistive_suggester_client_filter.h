@@ -38,7 +38,7 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
       AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
       WindowProperties window_properties,
       const TextInputMethod::InputContext& context,
-      const absl::optional<GURL>& current_url);
+      const std::optional<GURL>& current_url);
 
   // Used to fetch the url from the current browser instance.
   GetUrlCallback get_url_;

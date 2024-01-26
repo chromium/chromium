@@ -86,12 +86,15 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/metrics/structured:features",
+    "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/app_service:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/embedder_support",
+    "//components/metrics/structured:structured_events",
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/site_engagement/content",
@@ -110,12 +113,7 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/metrics/structured:features",
-      "//chrome/browser/metrics/structured:test_support",
-      "//chromeos/constants",
-      "//components/metrics/structured:structured_events",
-    ]
+    deps += [ "//chromeos/constants" ]
   }
 }
 

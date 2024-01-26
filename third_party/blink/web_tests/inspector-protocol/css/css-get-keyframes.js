@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' type='text/css' href='${testRunner.url('resources/keyframes.css')}'></link>
 <style>

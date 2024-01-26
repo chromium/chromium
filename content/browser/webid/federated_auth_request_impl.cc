@@ -741,11 +741,48 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
-  if (!render_frame_host().GetPage().IsPrimary()) {
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
     mojo::ReportBadMessage(
-        "FedCM should not be allowed in nested frame trees.");
+        "FedCM should not be allowed in fenced frame trees.");
     return;
   }
+
+  if (!render_frame_host().GetPage().IsPrimary()) {
+    // This should not be possible but seems to be happening, so we log
+    // the lifecycle state for further investigation.
+    RenderFrameHostImpl* host_impl =
+        static_cast<RenderFrameHostImpl*>(&render_frame_host());
+    FedCmLifecycleStateFailureReason reason =
+        FedCmLifecycleStateFailureReason::kOther;
+    switch (host_impl->lifecycle_state()) {
+      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+        reason = FedCmLifecycleStateFailureReason::kSpeculative;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+        reason = FedCmLifecycleStateFailureReason::kPendingCommit;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+        reason = FedCmLifecycleStateFailureReason::kPrerendering;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+        reason = FedCmLifecycleStateFailureReason::kInBackForwardCache;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+        reason = FedCmLifecycleStateFailureReason::kRunningUnloadHandlers;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+        reason = FedCmLifecycleStateFailureReason::kReadyToBeDeleted;
+        break;
+      default:
+        break;
+    };
+    RecordLifecycleStateFailureReason(reason);
+    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                            /*error=*/nullptr,
+                            /*is_auto_selected=*/false);
+    return;
+  }
+
   // It should not be possible to receive multiple IDPs when the
   // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
   // could be received from a compromised renderer.
@@ -1611,7 +1648,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       idp_data_for_display_,
       identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                             : SignInMode::kAuto,
-      show_auto_reauthn_checkbox,
+      rp_mode_, show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
@@ -1734,15 +1771,18 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   login_url_ = idp_info->metadata.idp_login_url;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
-      FormatOriginForDisplay(idp_origin), idp_info->rp_context,
+      FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*can_append_hints=*/true));
-  fedcm_metrics_->RecordMismatchDialogShown();
+  fedcm_metrics_->RecordMismatchDialogShown(
+      has_shown_mismatch_, !idp_info->provider->login_hint.empty() ||
+                               !idp_info->provider->domain_hint.empty());
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
+  has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
@@ -2176,7 +2216,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-      idp_infos_[idp_config_url]->rp_context,
+      idp_infos_[idp_config_url]->rp_context, rp_mode_,
       idp_infos_[idp_config_url]->metadata, token_error,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
                      weak_ptr_factory_.GetWeakPtr(), idp_config_url, status,
@@ -2471,6 +2511,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_response_time_ = base::TimeTicks();
   accounts_dialog_shown_time_ = std::nullopt;
   mismatch_dialog_shown_time_ = std::nullopt;
+  has_shown_mismatch_ = false;
   idp_login_infos_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();

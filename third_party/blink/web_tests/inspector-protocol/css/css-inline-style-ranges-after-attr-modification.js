@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`<div id='inspected'></div>`, 'Verify inline style reports proper ranges after attr modification');
 
   await dp.DOM.enable();

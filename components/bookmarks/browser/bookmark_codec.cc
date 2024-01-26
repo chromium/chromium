@@ -72,15 +72,13 @@ BookmarkCodec::~BookmarkCodec() = default;
 base::Value::Dict BookmarkCodec::Encode(BookmarkModel* model,
                                         std::string sync_metadata_str) {
   return Encode(model->bookmark_bar_node(), model->other_node(),
-                model->mobile_node(), model->root_node()->GetMetaInfoMap(),
-                std::move(sync_metadata_str));
+                model->mobile_node(), std::move(sync_metadata_str));
 }
 
 base::Value::Dict BookmarkCodec::Encode(
     const BookmarkNode* bookmark_bar_node,
     const BookmarkNode* other_folder_node,
     const BookmarkNode* mobile_folder_node,
-    const BookmarkNode::MetaInfoMap* model_meta_info_map,
     std::string sync_metadata_str) {
   ids_reassigned_ = false;
   uuids_reassigned_ = false;
@@ -100,8 +98,6 @@ base::Value::Dict BookmarkCodec::Encode(
   roots.Set(kBookmarkBarFolderNameKey, EncodeNode(bookmark_bar_node));
   roots.Set(kOtherBookmarkFolderNameKey, EncodeNode(other_folder_node));
   roots.Set(kMobileBookmarkFolderNameKey, EncodeNode(mobile_folder_node));
-  if (model_meta_info_map)
-    roots.Set(kMetaInfo, EncodeMetaInfo(*model_meta_info_map));
 
   FinalizeChecksum();
   // We are going to store the computed checksum. So set stored checksum to be
@@ -220,9 +216,6 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
   DecodeNode(*bb_value, nullptr, bb_node);
   DecodeNode(*other_folder_value, nullptr, other_folder_node);
   DecodeNode(*mobile_folder_value, nullptr, mobile_folder_node);
-
-  if (!DecodeMetaInfo(*roots, &model_meta_info_map_))
-    return false;
 
   if (sync_metadata_str) {
     const std::string* sync_metadata_str_base64 =

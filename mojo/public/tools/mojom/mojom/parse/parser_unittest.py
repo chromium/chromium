@@ -1302,9 +1302,9 @@ class ParserTest(unittest.TestCase):
     """Tests parsing associated interfaces and requests."""
     source1 = """\
         struct MyStruct {
-          associated MyInterface a;
+          pending_receiver<MyInterface> a;
           pending_associated_receiver<MyInterface> b;
-          associated MyInterface? c;
+          pending_receiver<MyInterface>? c;
           pending_associated_receiver<MyInterface>? d;
         };
         """
@@ -1312,9 +1312,9 @@ class ParserTest(unittest.TestCase):
         ast.Struct(
             'MyStruct', None,
             ast.StructBody([
-                ast.StructField('a', None, None, 'asso<MyInterface>', None),
+                ast.StructField('a', None, None, 'rcv<MyInterface>', None),
                 ast.StructField('b', None, None, 'rca<MyInterface>', None),
-                ast.StructField('c', None, None, 'asso<MyInterface>?', None),
+                ast.StructField('c', None, None, 'rcv<MyInterface>?', None),
                 ast.StructField('d', None, None, 'rca<MyInterface>?', None)
             ]))
     ])
@@ -1322,7 +1322,7 @@ class ParserTest(unittest.TestCase):
 
     source2 = """\
         interface MyInterface {
-          MyMethod(associated A a) =>(pending_associated_receiver<B> b);
+          MyMethod(pending_receiver<A> a) =>(pending_associated_receiver<B> b);
         };"""
     expected2 = ast.Mojom(None, ast.ImportList(), [
         ast.Interface(
@@ -1330,46 +1330,11 @@ class ParserTest(unittest.TestCase):
             ast.InterfaceBody(
                 ast.Method(
                     'MyMethod', None, None,
-                    ast.ParameterList(ast.Parameter('a', None, None,
-                                                    'asso<A>')),
+                    ast.ParameterList(ast.Parameter('a', None, None, 'rcv<A>')),
                     ast.ParameterList(ast.Parameter('b', None, None,
                                                     'rca<B>')))))
     ])
     self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
-
-  def testInvalidAssociatedKinds(self):
-    """Tests that invalid associated interfaces and requests are correctly
-    detected."""
-    source1 = """\
-        struct MyStruct {
-          associated associated SomeInterface a;
-        };
-        """
-    with self.assertRaisesRegexp(
-        parser.ParseError,
-        r"^my_file\.mojom:2: Error: Unexpected 'associated':\n"
-        r" *associated associated SomeInterface a;$"):
-      parser.Parse(source1, "my_file.mojom")
-
-    source2 = """\
-        struct MyStruct {
-          associated handle a;
-        };
-        """
-    with self.assertRaisesRegexp(
-        parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'handle':\n"
-        r" *associated handle a;$"):
-      parser.Parse(source2, "my_file.mojom")
-
-    source3 = """\
-        struct MyStruct {
-          associated? MyInterface& a;
-        };
-        """
-    with self.assertRaisesRegexp(
-        parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '\?':\n"
-        r" *associated\? MyInterface& a;$"):
-      parser.Parse(source3, "my_file.mojom")
 
 if __name__ == "__main__":
   unittest.main()

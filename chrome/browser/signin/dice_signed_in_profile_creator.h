@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_SIGNED_IN_PROFILE_CREATOR_H_
 #define CHROME_BROWSER_SIGNIN_DICE_SIGNED_IN_PROFILE_CREATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TokensLoadedCallbackRunner;
 
@@ -33,7 +33,7 @@ class DiceSignedInProfileCreator {
   DiceSignedInProfileCreator(Profile* source_profile,
                              CoreAccountId account_id,
                              const std::u16string& local_profile_name,
-                             absl::optional<size_t> icon_index,
+                             std::optional<size_t> icon_index,
                              base::OnceCallback<void(Profile*)> callback);
 
   // Uses this version when the profile already exists at `target_profile_path`

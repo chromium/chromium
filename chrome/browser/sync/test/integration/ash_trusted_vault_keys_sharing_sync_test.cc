@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <ostream>
 
 #include "base/files/file_path.h"
@@ -38,7 +39,6 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -309,7 +309,7 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     return account_key;
   }
 
-  absl::optional<message_center::Notification> GetSyncNotification() {
+  std::optional<message_center::Notification> GetSyncNotification() {
     const std::string notification_id =
         ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0))
             ->GetNotificationIdForTesting();
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   EXPECT_TRUE(WifiConfigurationsSyncActiveChecker(GetSyncService(0)).Wait());
 
   // Key missing notification should be closed automatically.
-  EXPECT_THAT(GetSyncNotification(), Eq(absl::nullopt));
+  EXPECT_THAT(GetSyncNotification(), Eq(std::nullopt));
 
   // Lacros should be able to fetch stored keys through Crosapi.
   EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(kTestTrustedVaultKey));
@@ -468,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   // 3. Reauth page supplies Ash with kTestTrustedVaultKey.
   notification_display_service_tester().SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/absl::nullopt,
-      /*reply=*/absl::nullopt);
+      /*action_index=*/std::nullopt,
+      /*reply=*/std::nullopt);
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
 
   // Now Lacros should be able to fetch keys.
@@ -576,8 +576,8 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
               ExpectedNotification::kRecoverabilityStateChanged);
   notification_display_service_tester().SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_index=*/absl::nullopt,
-      /*reply=*/absl::nullopt);
+      /*action_index=*/std::nullopt,
+      /*reply=*/std::nullopt);
   ASSERT_TRUE(WaitForTrustedVaultReauthCompletion());
 
   EXPECT_TRUE(degraded_recoverability_notified_checker_2.Wait());
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)
                   .Wait());
-  EXPECT_THAT(GetSyncNotification(), Eq(absl::nullopt));
+  EXPECT_THAT(GetSyncNotification(), Eq(std::nullopt));
   EXPECT_TRUE(degraded_recoverability_notified_checker.Wait());
 }
 

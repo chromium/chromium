@@ -78,8 +78,8 @@ public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout 
     }
 
     @Override
-    public void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+    public void layout(int l, int t, int r, int b) {
+        super.layout(l, t, r, b);
         runOnNextLayoutRunnables();
     }
 

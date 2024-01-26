@@ -18,7 +18,8 @@ import '../i18n_setup.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
 
@@ -131,14 +132,14 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   private onSitesChanged_() {
-    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item') as
-        NodeListOf<HTMLElement>;
+    const items =
+        this.shadowRoot!.querySelectorAll<HTMLElement>('#siteList .list-item');
 
     // Polymer reuses the already rendered rows once |this.sites| changes,
     // some of which may have previously been made invisible at the end of the
     // hiding animation. Ensure that everything rendered is actually visible.
     for (const item of items) {
-      this.setVisibility_(item as HTMLElement, true);
+      this.setVisibility_(item, true);
     }
 
     // There's a delay between when |this.sites| is set and when the items
@@ -238,20 +239,20 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   private finalizeAnimation_() {
-    const items = this.shadowRoot!.querySelectorAll(
-                      '#siteList .list-item, #line') as NodeListOf<HTMLElement>;
+    const items = this.shadowRoot!.querySelectorAll<HTMLElement>(
+        '#siteList .list-item, #line');
 
     for (const item of items) {
       // Finish the ".showing" animation by making the element visible.
       if (item.classList.contains('showing')) {
         item.classList.remove('showing');
-        this.setVisibility_(item as HTMLElement, true);
+        this.setVisibility_(item, true);
       }
       // Finish the ".hiding" animation by making the element invisible.
       // This falls back to the default CSS of ".item" which is "display: none".
       if (item.classList.contains('hiding')) {
         item.classList.remove('hiding');
-        this.setVisibility_(item as HTMLElement, false);
+        this.setVisibility_(item, false);
       }
     }
   }

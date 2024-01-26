@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -884,31 +885,47 @@ void Window::UpdateVisualState() {
     delegate_->UpdateVisualState();
 }
 
-#if DCHECK_IS_ON()
-std::string Window::GetDebugInfo() const {
-  std::string name = GetName();
+void Window::GetDebugInfo(const aura::Window* active_window,
+                          const aura::Window* focused_window,
+                          const aura::Window* capture_window,
+                          std::ostringstream* out) const {
+  std::string name(GetName());
   if (name.empty())
-    name = "Unknown";
-  std::string layer_state = "NoLayer";
-  if (layer()) {
-    layer_state = base::StringPrintf(
-        "%s opacity=%.1f",
-        layer()->GetTargetVisibility() ? "LayerVisible" : "LayerHidden",
-        layer()->opacity());
+    name = "\"\"";
+  const gfx::Vector2dF& subpixel_position_offset = layer()->GetSubpixelOffset();
+  *out << " " << name << "<" << GetId() << ">";
+  *out << " (" << this << ")" << " type=" << GetType();
+  *out << ((this == active_window) ? " [active]" : "")
+       << ((this == focused_window) ? " [focused]" : "")
+       << ((this == capture_window) ? " [capture]" : "")
+       << (GetTransparent() ? " [transparent]" : "")
+       << (IsVisible() ? " [visible]" : "") << " "
+       << (GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
+               ? base::UTF16ToUTF8(
+                     aura::Window::OcclusionStateToString(GetOcclusionState()))
+                     .c_str()
+               : "")
+       << " " << bounds().ToString()
+       << " scale=" + transform().To2dScale().ToString();
+  if (!subpixel_position_offset.IsZero()) {
+    *out << " subpixel offset=" + subpixel_position_offset.ToString();
   }
-  return base::StringPrintf(
-      "%s<%d> bounds=%s %s %s occlusion_state=%s", name.c_str(), GetId(),
-      bounds().ToString().c_str(), visible_ ? "WindowVisible" : "WindowHidden",
-      layer_state.c_str(),
-      base::UTF16ToUTF8(OcclusionStateToString(occlusion_state_)).c_str());
+
+  *out << base::StringPrintf(" opacity=%.1f", layer()->opacity());
+  *out << (layer()->GetTargetVisibility() ? " layer-visible" : " layer-hidden");
 }
 
+#if DCHECK_IS_ON()
 std::string Window::GetWindowHierarchy(int depth) const {
-  std::string hierarchy =
-      base::StringPrintf("%*s%s\n", depth * 2, "", GetDebugInfo().c_str());
-  for (Window* child : children_)
-    hierarchy += child->GetWindowHierarchy(depth + 1);
-  return hierarchy;
+  std::ostringstream out;
+  std::string indent_str(depth * 2, ' ');
+  out << indent_str;
+  GetDebugInfo(nullptr, nullptr, nullptr, &out);
+  out << std::endl;
+  for (Window* child : children_) {
+    out << child->GetWindowHierarchy(depth + 1);
+  }
+  return out.str();
 }
 
 void Window::PrintWindowHierarchy(int depth) const {
@@ -1394,8 +1411,13 @@ const std::u16string Window::OcclusionStateToString(OcclusionState state) {
 
 void Window::SetOpaqueRegionsForOcclusion(
     const std::vector<gfx::Rect>& opaque_regions_for_occlusion) {
-  // Only transparent windows should try to set opaque regions for occlusion.
-  DCHECK(GetTransparent() || opaque_regions_for_occlusion.empty());
+  // Opaque regions for occlusion do not apply to opaque windows, so only
+  // allow opaque regions for occlusion to be set for them if they are the
+  // same as the window bounds size.
+  DCHECK(GetTransparent() || layer()->type() == ui::LAYER_NOT_DRAWN ||
+         opaque_regions_for_occlusion.empty() ||
+         (opaque_regions_for_occlusion.size() == 1 &&
+          opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())));
   if (opaque_regions_for_occlusion == opaque_regions_for_occlusion_)
     return;
   opaque_regions_for_occlusion_ = opaque_regions_for_occlusion;
@@ -1468,8 +1490,11 @@ void Window::OnLayerFillsBoundsOpaquelyChanged(
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   // Non-transparent windows should not have opaque regions for occlusion set.
-  if (!GetTransparent())
+#if DCHECK_IS_ON()
+  if (!GetTransparent() && layer()->type() != ui::LAYER_NOT_DRAWN) {
     DCHECK(opaque_regions_for_occlusion_.empty());
+  }
+#endif
 
   for (WindowObserver& observer : observers_)
     observer.OnWindowTransparentChanged(this, reason);

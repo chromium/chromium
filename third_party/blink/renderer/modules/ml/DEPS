@@ -1,4 +1,5 @@
 include_rules = [
+  "+base/containers/heap_array.h",
   "+base/types/fixed_array.h",
   "+components/ml/mojom",
   "+components/ml/webnn",

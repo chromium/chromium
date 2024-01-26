@@ -48,22 +48,22 @@ void GuestOsFileWatcher::Watch(
   req.set_path(path_.value());
   client->AddObserver(this);
   client->AddFileWatch(
-      req, base::BindOnce(
-               [](file_manager::FileWatcher::BoolCallback callback,
-                  absl::optional<vm_tools::cicerone::AddFileWatchResponse>
-                      response) {
-                 if (!response ||
-                     response->status() !=
-                         vm_tools::cicerone::AddFileWatchResponse::SUCCEEDED) {
-                   LOG(ERROR) << "Error adding file watch: "
-                              << (response ? response->failure_reason()
-                                           : "empty response");
-                   std::move(callback).Run(false);
-                   return;
-                 }
-                 std::move(callback).Run(true);
-               },
-               std::move(callback)));
+      req,
+      base::BindOnce(
+          [](file_manager::FileWatcher::BoolCallback callback,
+             std::optional<vm_tools::cicerone::AddFileWatchResponse> response) {
+            if (!response ||
+                response->status() !=
+                    vm_tools::cicerone::AddFileWatchResponse::SUCCEEDED) {
+              LOG(ERROR) << "Error adding file watch: "
+                         << (response ? response->failure_reason()
+                                      : "empty response");
+              std::move(callback).Run(false);
+              return;
+            }
+            std::move(callback).Run(true);
+          },
+          std::move(callback)));
 }
 
 void GuestOsFileWatcher::OnFileWatchTriggered(

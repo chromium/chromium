@@ -310,6 +310,11 @@ export class SettingsCursorAndTouchpadPageElement extends
     super.ready();
 
     this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
+    this.addFocusConfig(
+        routes.MANAGE_FACEGAZE_CURSOR_SETTINGS, '#faceGazeCursorControlButton');
+    this.addFocusConfig(
+        routes.MANAGE_FACEGAZE_FACIAL_EXPRESSIONS_SETTINGS,
+        '#faceGazeFacialExpressionsButton');
   }
 
   /**
@@ -324,6 +329,15 @@ export class SettingsCursorAndTouchpadPageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  private onFaceGazeCursorSettingsClick_(): void {
+    Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_CURSOR_SETTINGS);
+  }
+
+  private onFaceGazeFacialExpressionsSettingsClick_(): void {
+    Router.getInstance().navigateTo(
+        routes.MANAGE_FACEGAZE_FACIAL_EXPRESSIONS_SETTINGS);
   }
 
   pointersChanged(

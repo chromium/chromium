@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Accessiblility name calculation on child of content-visibility: auto does not destroy tree
-  accessibilityController is not defined
-Harness: the test ran to completion.

@@ -228,7 +228,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Unlock with fingerprint</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). The resolution was changed to <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">New install</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1918022425394817322">Camera snapped to the top-right corner</translation>
@@ -267,7 +266,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Open emoji picker</translation>
@@ -283,7 +281,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2149229036084364364">Go to previous track</translation>
 <translation id="2152895518047545149">Looks like nothing is missing. Nice work!</translation>
 <translation id="2161132820593978283">Try camera framing so that you’ll be in the centre of the screen on video calls. Turn it on in Quick Settings.</translation>
-<translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
 <translation id="2185166372312820725">Go to previous tab</translation>
 <translation id="2185444992308415167">Go through tabs 1 to 8</translation>
 <translation id="2198625180564913276">Adding profile. This may take a few minutes.</translation>
@@ -392,7 +389,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2624588537172718173">Device audio and microphone</translation>
 <translation id="263399434338050016">'Select all'</translation>
 <translation id="2644422758626431000">Pin window to left</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Window capture</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2658778018866295321">Click and drag</translation>
@@ -412,10 +409,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
+<translation id="2744221223678373668">Shared</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">'Delete'</translation>
 <translation id="2750941250130734256">Active window undocked.</translation>
 <translation id="2761723519669354964">Open highlighted item from shelf</translation>
+<translation id="2762000892062317888">just now</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> to <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3580650856351781466">Downloading speech files</translation>
 <translation id="3585296979871889131">View your phone's recent photos, media, notifications and apps</translation>
+<translation id="3590441166907930941">Side button</translation>
 <translation id="3593039967545720377">Access your clipboard history by pressing <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. Copy an item to get started.</translation>
 <translation id="3593646411856133110">Swipe up and hold to see open apps</translation>
 <translation id="3595596368722241419">Battery full</translation>
@@ -732,6 +732,7 @@ Connect your device to power.</translation>
 <translation id="3986082989454912832">Answer</translation>
 <translation id="3990002060657467458">Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots.</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
+<translation id="4002066346123236978">Title</translation>
 <translation id="40062176907008878">Handwriting</translation>
 <translation id="4011112806063830608">Do Not Disturb is on.</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
@@ -1035,6 +1036,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5163434717504750796">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Save desk as a template</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
+<translation id="5168753792967365150">Edit in Google Tasks</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
@@ -1304,6 +1306,8 @@ Some features are limited to increase battery life.</translation>
 <translation id="6168622430237609329">Your installed apps</translation>
 <translation id="6173151025443907148">Signing in a second user is not supported if Lacros is enabled. Please use a second browser profile in Lacros instead, or disable Lacros and try again.</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
+<translation id="6180193585172850042">Back button</translation>
+<translation id="6180651297859206670">Forward button</translation>
 <translation id="6182592640011875895">Open desk</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Fully charge now</translation>
@@ -1693,7 +1697,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7850320739366109486">Do not disturb</translation>
 <translation id="7851039877802112575">Move focus to pop-ups and dialogues</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Swipe up with three fingers to enter Overview</translation>
 <translation id="7862292329216937261">To use the device as a guest, you'll need to sign out and then select Browse as guest at the bottom of the screen.</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
@@ -1804,7 +1807,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8262312463845990408">Toggle -playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
-<translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8308637677604853869">Previous menu</translation>

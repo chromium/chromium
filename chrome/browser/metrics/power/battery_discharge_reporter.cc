@@ -42,7 +42,7 @@ BatteryDischargeReporter::BatteryDischargeReporter(
 BatteryDischargeReporter::~BatteryDischargeReporter() = default;
 
 void BatteryDischargeReporter::OnBatteryStateSampled(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   base::TimeTicks now_ticks = base::TimeTicks::Now();
 
@@ -82,7 +82,7 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
 
 void BatteryDischargeReporter::ReportOneMinuteInterval(
     base::TimeDelta interval_duration,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   // Evaluate battery discharge mode and rate.
   auto battery_discharge = GetBatteryDischargeDuringInterval(
@@ -138,7 +138,7 @@ void BatteryDischargeReporter::ReportOneMinuteInterval(
 #if BUILDFLAG(IS_WIN)
 void BatteryDischargeReporter::ReportTenMinutesInterval(
     base::TimeDelta interval_duration,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   auto battery_discharge = GetBatteryDischargeDuringInterval(
       ten_minutes_interval_start_battery_state_, battery_state,

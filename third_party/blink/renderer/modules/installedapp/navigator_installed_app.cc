@@ -50,7 +50,7 @@ ScriptPromise NavigatorInstalledApp::getInstalledRelatedApps(
   auto* app_controller = InstalledAppController::From(*navigator.DomWindow());
   app_controller->GetInstalledRelatedApps(
       std::make_unique<
-          CallbackPromiseAdapter<HeapVector<Member<RelatedApplication>>, void>>(
+          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
           resolver));
   return promise;
 }

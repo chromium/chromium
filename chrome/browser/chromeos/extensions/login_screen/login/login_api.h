@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_
 
+#include <optional>
+
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -15,7 +16,7 @@ class ExtensionFunctionWithOptionalErrorResult : public ExtensionFunction {
  protected:
   ~ExtensionFunctionWithOptionalErrorResult() override;
 
-  void OnResult(const absl::optional<std::string>& error);
+  void OnResult(const std::optional<std::string>& error);
 };
 
 class ExtensionFunctionWithStringResult : public ExtensionFunction {

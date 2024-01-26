@@ -104,8 +104,8 @@ constexpr const char* LogSeverityName(absl::LogSeverity s) {
     case absl::LogSeverity::kWarning: return "WARNING";
     case absl::LogSeverity::kError: return "ERROR";
     case absl::LogSeverity::kFatal: return "FATAL";
-    default: return "UNKNOWN";
   }
+  return "UNKNOWN";
 }
 
 // NormalizeLogSeverity()

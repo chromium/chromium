@@ -2303,7 +2303,7 @@ void GpuImageDecodeCache::InsertTransferCacheEntry(
   void* data = context_->ContextSupport()->MapTransferCacheEntry(size);
   if (data) {
     bool succeeded = image_entry.Serialize(
-        base::make_span(reinterpret_cast<uint8_t*>(data), size));
+        base::make_span(static_cast<uint8_t*>(data), size));
     DCHECK(succeeded);
     context_->ContextSupport()->UnmapAndCreateTransferCacheEntry(
         image_entry.UnsafeType(), image_entry.Id());

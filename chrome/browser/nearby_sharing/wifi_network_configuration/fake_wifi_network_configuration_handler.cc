@@ -23,7 +23,7 @@ void FakeWifiNetworkConfigurationHandler::ConfigureWifiNetwork(
 }
 
 void FakeWifiNetworkConfigurationHandler::SetOutput(
-    const absl::optional<std::string>& network_guid,
+    const std::optional<std::string>& network_guid,
     const std::string& error_message) {
   guid_ = network_guid;
   error_message_ = error_message;

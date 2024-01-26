@@ -33,9 +33,9 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
                 int index,
                 bool foreground,
                 std::optional<tab_groups::TabGroupId> group) override;
-  Browser* CreateNewStripWithContents(std::vector<NewStripContents> contentses,
-                                      const gfx::Rect& window_bounds,
-                                      bool maximize) override;
+  Browser* CreateNewStripWithTabs(std::vector<NewStripContents> tabs,
+                                  const gfx::Rect& window_bounds,
+                                  bool maximize) override;
   void WillAddWebContents(content::WebContents* contents) override;
   int GetDragActions() const override;
   bool CanDuplicateContentsAt(int index) override;

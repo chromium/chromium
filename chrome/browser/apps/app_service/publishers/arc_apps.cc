@@ -21,6 +21,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -420,9 +421,22 @@ bool AppShouldDefaultHandleLinksInApp(const std::string& app_id) {
   return app_id == arc::kPlayStoreAppId;
 }
 
-// Returns true if the given `profile` should open supported links inside the
-// app by default.
-bool ProfileShouldDefaultHandleLinksInApp(Profile* profile) {
+// Returns true if the package with the given |package_name| should open
+// supported links inside the browser by default, on managed devices.
+bool PackageShouldDefaultHandleLinksInBrowser(const std::string& package_name) {
+  constexpr auto allowlist = base::MakeFixedFlatSet<std::string_view>({
+      "com.google.android.apps.docs",                 // Google Drive
+      "com.google.android.apps.docs.editors.docs",    // Google Docs
+      "com.google.android.apps.docs.editors.sheets",  // Google Sheets
+      "com.google.android.apps.docs.editors.slides",  // Google Slides
+  });
+
+  return allowlist.contains(package_name);
+}
+
+// Returns true if the given `profile` is managed, and therefore should open
+// supported links inside the app by default.
+bool IsProfileManaged(Profile* profile) {
   // TODO(crbug.com/1454381): Remove once we have policy control over link
   // capturing behavior.
   return profile->GetProfilePolicyConnector()->IsManaged();
@@ -629,7 +643,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
                                   LaunchCallback callback) {
   auto user_interaction_type = GetUserInterationType(launch_source);
   if (!user_interaction_type.has_value()) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -644,14 +658,14 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
   const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       prefs->GetApp(app_id);
   if (!app_info) {
     LOG(ERROR) << "Launch App failed, could not find app with id " << app_id;
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -695,7 +709,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
             user_interaction_type.value(),
             MakeArcWindowInfo(std::move(new_window_info)))) {
       VLOG(2) << "Failed to launch app: " + app_id + ".";
-      std::move(callback).Run(LaunchResult(State::FAILED));
+      std::move(callback).Run(LaunchResult(State::kFailed));
       return;
     }
 
@@ -704,7 +718,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
         std::make_unique<app_restore::AppLaunchInfo>(
             app_id, event_flags, std::move(intent_for_full_restore), session_id,
             display_id));
-    std::move(callback).Run(LaunchResult(State::SUCCESS));
+    std::move(callback).Run(LaunchResult(State::kSuccess));
     return;
   }
 
@@ -720,7 +734,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // Store.
       if (app_id == arc::kPlayStoreAppId) {
         prefs->SetLastLaunchTime(app_id);
-        std::move(callback).Run(LaunchResult(State::SUCCESS));
+        std::move(callback).Run(LaunchResult(State::kSuccess));
         return;
       }
     }
@@ -730,7 +744,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // caller is responsible to not call this function in such case.  DCHECK
       // is here to prevent possible mistake.
       if (!arc::SetArcPlayStoreEnabledForProfile(profile_, true)) {
-        std::move(callback).Run(LaunchResult(State::FAILED));
+        std::move(callback).Run(LaunchResult(State::kFailed));
         return;
       }
       DCHECK(arc::IsArcPlayStoreEnabledForProfile(profile_));
@@ -741,7 +755,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // Store.
       if (app_id == arc::kPlayStoreAppId) {
         prefs->SetLastLaunchTime(app_id);
-        std::move(callback).Run(LaunchResult(State::FAILED));
+        std::move(callback).Run(LaunchResult(State::kFailed));
         return;
       }
     } else {
@@ -749,7 +763,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       DCHECK(arc::ShouldArcAlwaysStart());
     }
   }
-  std::move(callback).Run(LaunchResult(State::SUCCESS));
+  std::move(callback).Run(LaunchResult(State::kSuccess));
 }
 
 void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
@@ -1186,16 +1200,28 @@ void ArcApps::OnArcSupportedLinksChanged(
     }
 
     // ARC apps may handle links by default on the ARC side, but do not handle
-    // links by default on the Ash side. Therefore, we ignore any requests from
-    // the ARC system to change the default setting. We allow changes if they
-    // were initiated by user action, if the app already has a non-default
-    // setting on the Ash side, or if the app/profile should have an exception
-    // to the default behavior.
+    // links by default on the Ash side. This means that the default setting may
+    // be different between Ash and ARC. Any user action to change the setting
+    // will make it the same between both sides.
+    //
+    // To make this work, we need to ignore request from the ARC system to
+    // update the supported links setting. We allow updates in the following
+    // cases:
     bool allow_update =
+        // When the user explicitly changes the setting in Android Settings.
         source == arc::mojom::SupportedLinkChangeSource::kUserPreference ||
+        // If the app is already marked as preferred on the Ash side.
         proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
-        AppShouldDefaultHandleLinksInApp(app_id) ||
-        ProfileShouldDefaultHandleLinksInApp(profile_);
+        // If the app is specifically allowed to handle links by default.
+        AppShouldDefaultHandleLinksInApp(app_id);
+
+    // Managed users are temporarily opted out of this behavior (b/280056133)
+    // and always apply updates from the ARC side, except for an allowlist of
+    // apps which handle links in the browser to improve the user experience.
+    if (IsProfileManaged(profile_) && !PackageShouldDefaultHandleLinksInBrowser(
+                                          supported_link->package_name)) {
+      allow_update = true;
+    }
 
     if (!allow_update) {
       continue;

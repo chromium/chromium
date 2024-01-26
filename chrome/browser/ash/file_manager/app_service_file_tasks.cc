@@ -63,16 +63,16 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
   // on how the app will be opened in multiprofile.
   namespace fmp = extensions::api::file_manager_private;
   switch (result.state) {
-    case apps::State::SUCCESS:
+    case apps::State::kSuccess:
       if (task_type == TASK_TYPE_WEB_APP) {
         return fmp::TaskResult::kOpened;
       } else {
         return fmp::TaskResult::kMessageSent;
       }
-    case apps::State::FAILED_DIRECTORY_NOT_SHARED:
+    case apps::State::kFailedDirectoryNotShared:
       DCHECK(task_type == TASK_TYPE_PLUGIN_VM_APP);
       return fmp::TaskResult::kFailedPluginVmDirectoryNotShared;
-    case apps::State::FAILED:
+    case apps::State::kFailed:
       return fmp::TaskResult::kFailed;
   }
 }

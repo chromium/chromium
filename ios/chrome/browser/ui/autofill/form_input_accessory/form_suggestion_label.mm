@@ -13,7 +13,9 @@
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -31,6 +33,8 @@ const CGFloat kIphoneFontSize = 14.0f;
 const CGFloat kBorderWidth = 14.0f;
 // The space between items in the label.
 const CGFloat kSpacing = 4.0f;
+// The corner radius of the label.
+const CGFloat kCornerRadius = 8.0f;
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
@@ -85,8 +89,28 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:iconView];
     }
 
-    UILabel* valueLabel = TextLabel(
-        suggestion.value, [UIColor colorNamed:kTextPrimaryColor], YES);
+    NSString* suggestionText = suggestion.value;
+    if (base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade)) {
+      UIStackView* verticalStackView =
+          [[UIStackView alloc] initWithArrangedSubviews:@[]];
+      verticalStackView.axis = UILayoutConstraintAxisVertical;
+      verticalStackView.alignment = UIStackViewAlignmentLeading;
+      verticalStackView.layoutMarginsRelativeArrangement = YES;
+      verticalStackView.layoutMargins = UIEdgeInsetsMake(0, kBorderWidth, 0, 0);
+      [stackView addArrangedSubview:verticalStackView];
+
+      // Insert the next subviews vertically instead of horizonatally.
+      stackView = verticalStackView;
+
+      if ([suggestionText hasSuffix:kPasswordFormSuggestionSuffix]) {
+        suggestionText = [suggestionText
+            substringToIndex:suggestionText.length -
+                             kPasswordFormSuggestionSuffix.length];
+      }
+    }
+
+    UILabel* valueLabel =
+        TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor], YES);
     [stackView addArrangedSubview:valueLabel];
 
     if ([suggestion.minorValue length] > 0) {
@@ -102,7 +126,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:description];
     }
 
-    [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+    [self setBackgroundColor:[self customBackgroundColor]];
 
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
@@ -123,7 +147,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  self.layer.cornerRadius = self.bounds.size.height / 2.0;
+  self.layer.cornerRadius = [self cornerRadius];
 }
 
 #pragma mark - UIResponder
@@ -137,17 +161,32 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 }
 
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  [self setBackgroundColor:[self customBackgroundColor]];
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  [self setBackgroundColor:[self customBackgroundColor]];
 
   // Don't count touches ending outside the view as as taps.
   CGPoint locationInView = [touches.anyObject locationInView:self];
   if (CGRectContainsPoint(self.bounds, locationInView)) {
     [_delegate didTapFormSuggestionLabel:self];
   }
+}
+
+#pragma mark - Private
+
+// Color of the suggestion chips.
+- (UIColor*)customBackgroundColor {
+  return
+      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled() ? kSolidWhiteColor
+                                                              : kGrey100Color];
+}
+
+// Corner radius of the suggestion chips.
+- (CGFloat)cornerRadius {
+  return IsKeyboardAccessoryUpgradeEnabled() ? kCornerRadius
+                                             : self.bounds.size.height / 2.0;
 }
 
 @end

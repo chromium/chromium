@@ -652,24 +652,12 @@ std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
   }
 
   url::Origin error_origin = url::Origin::Create(error_url);
-  if (!network::IsOriginPotentiallyTrustworthy(error_origin)) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
-  std::string error_url_etld_plus_one =
-      webid::FormatUrlWithDomain(error_url, /*for_display=*/false);
-  if (error_url_etld_plus_one.empty()) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
   url::Origin idp_origin = url::Origin::Create(idp_url);
   if (error_origin == idp_origin) {
     return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
   }
 
-  std::string idp_etld_plus_one =
-      webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
-  if (error_url_etld_plus_one != idp_etld_plus_one) {
+  if (!webid::IsSameSite(error_origin, idp_origin)) {
     return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
   }
 
@@ -729,10 +717,16 @@ void OnTokenRequestParsed(
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     if (IsFedCmErrorEnabled()) {
-      token_result.error = TokenError{kServerError, GURL()};
+      ErrorDialogType type;
+      if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
+        token_result.error = TokenError{kServerError, GURL()};
+        type = ErrorDialogType::kServerErrorWithoutUrl;
+      } else {
+        token_result.error = TokenError{kGenericEmpty, GURL()};
+        type = ErrorDialogType::kGenericEmptyWithoutUrl;
+      }
       std::move(record_error_metrics_callback)
-          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
-               ErrorDialogType::kServerErrorWithoutUrl,
+          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
                /*error_url_type=*/std::nullopt);
     }
     std::move(callback).Run(fetch_status, token_result);

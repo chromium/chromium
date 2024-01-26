@@ -87,13 +87,13 @@ async function fileCopy(
       return;
     }
     switch (event.state) {
-      case chrome.fileManagerPrivate.IOTaskState.ERROR:
-      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
+      case chrome.fileManagerPrivate.IoTaskState.ERROR:
+      case chrome.fileManagerPrivate.IoTaskState.CANCELLED:
         chrome.fileManagerPrivate.onIOTaskProgressStatus.removeListener(
             onProgress);
         errorCallback('Copy failed.');
         return;
-      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
+      case chrome.fileManagerPrivate.IoTaskState.SUCCESS:
         chrome.fileManagerPrivate.onIOTaskProgressStatus.removeListener(
             onProgress);
         successCallback();
@@ -104,7 +104,7 @@ async function fileCopy(
 
   copyId = await promisifyWithLastError(
       chrome.fileManagerPrivate.startIOTask,
-      chrome.fileManagerPrivate.IOTaskType.COPY, [from],
+      chrome.fileManagerPrivate.IoTaskType.COPY, [from],
       {destinationFolder: to});
 }
 

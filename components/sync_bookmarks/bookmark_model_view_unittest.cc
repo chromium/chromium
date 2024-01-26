@@ -8,8 +8,12 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +22,7 @@ namespace sync_bookmarks {
 namespace {
 
 using testing::Eq;
+using testing::IsNull;
 using testing::NotNull;
 
 class BookmarkModelViewTest : public testing::Test {
@@ -26,7 +31,6 @@ class BookmarkModelViewTest : public testing::Test {
     // Enable all possible permanent folders to verify how BookmarkModelView
     // does the filtering.
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    client->AllowFoldersForAccountStorage();
     managed_node_ = client->EnableManagedNode();
     model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
@@ -48,6 +52,8 @@ class BookmarkModelViewTest : public testing::Test {
 
   ~BookmarkModelViewTest() override = default;
 
+  base::test::ScopedFeatureList features_{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
   std::unique_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::BookmarkNode> managed_node_;
 };
@@ -117,6 +123,33 @@ TEST_F(BookmarkModelViewTest, ShouldIdentifySyncableNodes) {
   EXPECT_FALSE(view1.IsNodeSyncable(managed_folder));
   EXPECT_FALSE(view2.IsNodeSyncable(managed_node_));
   EXPECT_FALSE(view2.IsNodeSyncable(managed_folder));
+}
+
+TEST_F(BookmarkModelViewTest, ShouldGetNodeByUuid) {
+  const bookmarks::BookmarkNode* folder1 = model_->AddFolder(
+      /*parent=*/model_->bookmark_bar_node(), /*index=*/0, u"Title 1");
+  const bookmarks::BookmarkNode* folder2 = model_->AddFolder(
+      /*parent=*/model_->account_bookmark_bar_node(), /*index=*/0, u"Title 2");
+
+  ASSERT_NE(folder1->uuid(), folder2->uuid());
+
+  BookmarkModelViewUsingLocalOrSyncableNodes view1(model_.get());
+  BookmarkModelViewUsingAccountNodes view2(model_.get());
+
+  EXPECT_THAT(view1.GetNodeByUuid(
+                  base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid)),
+              Eq(model_->bookmark_bar_node()));
+  EXPECT_THAT(view2.GetNodeByUuid(
+                  base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid)),
+              Eq(model_->account_bookmark_bar_node()));
+
+  // `folder1` should only be exposed in `view1`.
+  EXPECT_THAT(view1.GetNodeByUuid(folder1->uuid()), Eq(folder1));
+  EXPECT_THAT(view2.GetNodeByUuid(folder1->uuid()), IsNull());
+
+  // `folder2` should only be exposed in `view2`.
+  EXPECT_THAT(view1.GetNodeByUuid(folder2->uuid()), IsNull());
+  EXPECT_THAT(view2.GetNodeByUuid(folder2->uuid()), Eq(folder2));
 }
 
 }  // namespace

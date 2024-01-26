@@ -464,7 +464,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
     const std::string& version_response,
     bool& is_chrome) {
   // Parse version, append to package name if available,
-  absl::optional<base::Value::Dict> value_dict =
+  std::optional<base::Value::Dict> value_dict =
       base::JSONReader::ReadDict(version_response);
   if (!value_dict) {
     return;
@@ -521,7 +521,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   if (result < 0) {
     return;
   }
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value) {
     return;
   }

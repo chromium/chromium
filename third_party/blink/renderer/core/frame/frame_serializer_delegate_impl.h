@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_DELEGATE_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_DELEGATE_IMPL_H_
 
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
@@ -43,7 +44,12 @@ class FrameSerializerDelegateImpl final : public FrameSerializer::Delegate {
   bool RewriteLink(const Element&, String& rewritten_link) override;
   bool ShouldSkipResourceWithURL(const KURL&) override;
   Vector<Attribute> GetCustomAttributes(const Element&) override;
-  std::pair<Node*, Element*> GetAuxiliaryDOMTree(const Element&) const override;
+
+  // This overloaded version of GetShadowTree is used by
+  // FrameSerializer::GetShadowTree(), as part of serialization to an MHTML
+  // file. It serializes *all* open *and* closed (non-UA) shadow roots it finds.
+  std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
+      const Element&) const override;
 
  private:
   bool ShouldIgnoreHiddenElement(const Element&);

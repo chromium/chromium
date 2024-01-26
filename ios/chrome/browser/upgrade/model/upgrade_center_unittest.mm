@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
@@ -31,7 +32,7 @@ class UpgradeCenterTest : public PlatformTest {
 @end
 
 @implementation FakeUpgradeCenterClient {
-  UpgradeCenterTest* _test;
+  raw_ptr<UpgradeCenterTest> _test;
 }
 
 - (instancetype)initWithTest:(UpgradeCenterTest*)test {

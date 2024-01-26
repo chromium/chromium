@@ -24,7 +24,7 @@ using MimeTypesHandlerNotAllowedTest = ManifestTest;
 
 class MimeTypesHandlerTest : public ManifestTest {
  protected:
-  std::string GetTestExtensionID() const override {
+  ExtensionId GetTestExtensionID() const override {
     // Extension ID must correspond to a hashed extension ID in the allowlist
     // for "mime_types" and "mime_types_handler" in _manifest_features.json.
     return extension_misc::kMimeHandlerPrivateTestExtensionId;

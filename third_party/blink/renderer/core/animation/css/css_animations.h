@@ -316,6 +316,7 @@ class CORE_EXPORT CSSAnimations final {
 
   static void CalculateTransitionUpdateForPropertyHandle(
       TransitionUpdateState&,
+      const CSSTransitionData::TransitionAnimationType type,
       const PropertyHandle&,
       wtf_size_t transition_index,
       bool animate_all);

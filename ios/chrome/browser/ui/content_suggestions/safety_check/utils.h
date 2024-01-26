@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
@@ -22,14 +23,16 @@ class GURL;
 
 // Fires the proper UI command to navigate users to `chrome_upgrade_url` if the
 // app is on a valid channel.
-void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
-                                      id<ApplicationCommands> handler);
+void HandleSafetyCheckUpdateChromeTap(
+    const GURL& chrome_upgrade_url,
+    id<ApplicationCommands> applicationHandler);
 
 // Fires the proper UI command based on the current compromised credentials
 // list, `credentials`.
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& credentials,
-    id<ApplicationCommands> handler);
+    id<ApplicationCommands> applicationHandler,
+    id<ApplicationSettingsCommands> settingsHandler);
 
 // Returns true if `state` is considered an invalid state for the Update Chrome
 // check in the Safety Check (Magic Stack) module.

@@ -607,6 +607,12 @@ void ServiceWorkerRouterEvaluator::Compile() {
       return;
     }
     need_running_status_ |= rule->need_running_status();
+    for (const auto& s : r.sources) {
+      bool has_fetch_event =
+          (s.type == blink::ServiceWorkerRouterSource::Type::kFetchEvent);
+      has_fetch_event_source_ |= has_fetch_event;
+      has_non_fetch_event_source_ |= !has_fetch_event;
+    }
     compiled_rules_.emplace_back(std::move(rule));
   }
   RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kNoError);

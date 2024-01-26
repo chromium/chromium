@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -23,6 +24,9 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
+
+using css_test_helpers::MakeSignalingRule;
+using css_test_helpers::ParseRule;
 
 static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   auto* style_rule =
@@ -123,6 +127,22 @@ class ElementRuleCollectorTest : public PageTestBase {
                                           /*tracker=*/nullptr);
 
     return collector.MatchedCSSRuleList();
+  }
+
+  void CollectIntoMatchResult(Element* element,
+                              RuleSet* rule_set,
+                              MatchResult& result) {
+    ElementResolveContext context(*element);
+    SelectorFilter filter;
+    ElementRuleCollector collector(context, StyleRecalcContext(), filter,
+                                   result, InsideLink(element));
+
+    MatchRequest request(rule_set, {});
+
+    collector.CollectMatchingRules(request);
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
+                                          /*is_vtt_embedded_style=*/false,
+                                          /*tracker=*/nullptr);
   }
 };
 
@@ -248,9 +268,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
   ASSERT_TRUE(unvisited_host);
 
   ShadowRoot& visited_root =
-      visited_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      visited_host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   ShadowRoot& unvisited_root =
-      unvisited_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      unvisited_host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   visited_root.setInnerHTML(R"HTML(
     <style id=style></style>
@@ -552,6 +572,72 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   ASSERT_EQ(1u, bar_css_rules->size());
   CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
+}
+
+class ElementRuleCollectorSignalTest : public ElementRuleCollectorTest {
+ public:
+  void SetUp() override {
+    ElementRuleCollectorTest::SetUp();
+    UpdateAllLifecyclePhasesForTest();
+    body_ = GetDocument().body();
+    ASSERT_TRUE(body_);
+    medium_ =
+        MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
+  }
+
+  Persistent<Element> body_;
+  Persistent<MediaQueryEvaluator> medium_;
+};
+
+TEST_F(ElementRuleCollectorSignalTest, NoSignal) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kNone,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+}
+
+TEST_F(ElementRuleCollectorSignalTest, SignalAloneInMatchResult) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      MakeSignalingRule(DynamicTo<StyleRule>(
+                            ParseRule(GetDocument(), "body { color: green; }")),
+                        CSSSelector::Signal::kBareDeclarationShift),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kBareDeclarationShift,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+}
+
+// Like SignalAloneInMatchResult, but there's also a non-signaling rule
+// in the MatchResult.
+TEST_F(ElementRuleCollectorSignalTest, SignalInMatchResult) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
+      *medium_, kRuleHasNoSpecialState);
+  rule_set->AddStyleRule(
+      MakeSignalingRule(DynamicTo<StyleRule>(
+                            ParseRule(GetDocument(), "body { color: green; }")),
+                        CSSSelector::Signal::kBareDeclarationShift),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kNone,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+  EXPECT_EQ(CSSSelector::Signal::kBareDeclarationShift,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[1].types_.signal));
 }
 
 }  // namespace blink

@@ -9,8 +9,10 @@ import static android.view.PointerIcon.TYPE_HANDWRITING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -154,7 +156,7 @@ public class AndroidStylusWritingHandlerTest {
         // CursorAnchorInfo's matrix.
         EditorBoundsInfo editorBoundsInfo =
                 mHandler.onEditElementFocusedForStylusWriting(
-                        boundsInPix, cursorPositionInPix, 4, 10);
+                        boundsInPix, cursorPositionInPix, 4, 10, null);
         assertEquals(new RectF(5, 5, 20, 20), editorBoundsInfo.getEditorBounds());
         assertEquals(new RectF(5, 5, 20, 20), editorBoundsInfo.getHandwritingBounds());
     }
@@ -171,14 +173,37 @@ public class AndroidStylusWritingHandlerTest {
         assertEquals(new RectF(boundsInDips), editorBoundsInfo.getHandwritingBounds());
     }
 
+    /**
+     * Verify that stylus handwriting is started after edit element is focused so that
+     * InputConnection is current focused element. See https://crbug.com/1512519
+     */
+    @Test
+    public void testStartStylusHandwriting() {
+        ViewGroup containerView = mock(ViewGroup.class);
+        Rect boundsInPix = new Rect(20, 20, 80, 80);
+        Point cursorPositionInPix = new Point(40, 40);
+        mHandler.onEditElementFocusedForStylusWriting(
+                boundsInPix, cursorPositionInPix, 4, 10, containerView);
+        verify(mInputMethodManager).startStylusHandwriting(containerView);
+    }
+
     @Test
     public void testStylusHandwritingLogsApiOption() {
         ViewGroup containerView = mock(ViewGroup.class);
+        Rect boundsInPix = new Rect(20, 20, 80, 80);
+        Point cursorPositionInPix = new Point(40, 40);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "InputMethod.StylusHandwriting.Triggered", StylusApiOption.Api.ANDROID);
-        mHandler.requestStartStylusWriting(containerView);
+        mHandler.onEditElementFocusedForStylusWriting(
+                boundsInPix, cursorPositionInPix, 4, 10, containerView);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testShouldInitiateStylusWriting() {
+        assertTrue(mHandler.shouldInitiateStylusWriting());
+        verify(mInputMethodManager, never()).startStylusHandwriting(any());
     }
 
     @Test

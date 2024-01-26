@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/web/public/web_state_id.h"
 
 // TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
 // refactored.
@@ -78,6 +79,10 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 
 - (void)discardSavedClosedItems {
   NOTREACHED_NORETURN() << "Incognito tabs cannot be saved.";
+}
+
+- (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID {
+  NOTREACHED_NORETURN() << "Should not be called in incognito.";
 }
 
 #pragma mark - TabGridPageMutator

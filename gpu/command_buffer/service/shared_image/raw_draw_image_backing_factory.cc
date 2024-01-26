@@ -10,8 +10,9 @@
 
 namespace gpu {
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
+    SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+    SHARED_IMAGE_USAGE_RAW_DRAW;
 
 RawDrawImageBackingFactory::RawDrawImageBackingFactory()
     : SharedImageBackingFactory(kSupportedUsage) {}
@@ -32,7 +33,8 @@ RawDrawImageBackingFactory::CreateSharedImage(
     bool is_thread_safe) {
   DCHECK(is_thread_safe);
   auto texture = std::make_unique<RawDrawImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage);
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label));
   return texture;
 }
 

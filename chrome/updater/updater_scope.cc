@@ -26,14 +26,26 @@ bool IsSystemProcessForCommandLine(const base::CommandLine& command_line) {
 
 }  // namespace
 
+std::optional<tagging::NeedsAdmin> NeedsAdminFromTagArgs(
+    const std::optional<tagging::TagArgs> tag_args) {
+  if (!tag_args) {
+    return {};
+  }
+  if (!tag_args->apps.empty()) {
+    return tag_args->apps.front().needs_admin;
+  }
+  if (tag_args->runtime_mode) {
+    return tag_args->runtime_mode->needs_admin;
+  }
+
+  return {};
+}
+
 bool IsPrefersForCommandLine(const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_WIN)
-  const std::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(command_line).tag_args;
-  return tag_args && !tag_args->apps.empty() &&
-         tag_args->apps.front().needs_admin &&
-         *tag_args->apps.front().needs_admin ==
-             tagging::AppArgs::NeedsAdmin::kPrefers;
+  std::optional<tagging::NeedsAdmin> needs_admin =
+      NeedsAdminFromTagArgs(GetTagArgsForCommandLine(command_line).tag_args);
+  return needs_admin ? *needs_admin == tagging::NeedsAdmin::kPrefers : false;
 #else
   return false;
 #endif
@@ -47,16 +59,15 @@ UpdaterScope GetUpdaterScopeForCommandLine(
   }
 
   // Assume only one app is present since bundles are not supported.
-  const std::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(command_line).tag_args;
-  if (tag_args && !tag_args->apps.empty() &&
-      tag_args->apps.front().needs_admin) {
-    switch (*tag_args->apps.front().needs_admin) {
-      case tagging::AppArgs::NeedsAdmin::kYes:
+  std::optional<tagging::NeedsAdmin> needs_admin =
+      NeedsAdminFromTagArgs(GetTagArgsForCommandLine(command_line).tag_args);
+  if (needs_admin) {
+    switch (*needs_admin) {
+      case tagging::NeedsAdmin::kYes:
         return UpdaterScope::kSystem;
-      case tagging::AppArgs::NeedsAdmin::kNo:
+      case tagging::NeedsAdmin::kNo:
         return UpdaterScope::kUser;
-      case tagging::AppArgs::NeedsAdmin::kPrefers:
+      case tagging::NeedsAdmin::kPrefers:
         return command_line.HasSwitch(kCmdLinePrefersUser)
                    ? UpdaterScope::kUser
                    : UpdaterScope::kSystem;

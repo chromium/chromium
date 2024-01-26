@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.h"
+#include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/seal.h"
+#include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -59,6 +63,15 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<emoji_picker::mojom::PageHandlerFactory> receiver);
 
+  // Instantiates the implementor of the mojom::NewWindowProxy mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver);
+
+  // Instantiates the implementor of the seal::mojom::SealService mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<seal::mojom::SealService> receiver);
+
   // emoji_picker::mojom::PageHandlerFactory
   void CreatePageHandler(mojo::PendingReceiver<emoji_picker::mojom::PageHandler>
                              receiver) override;
@@ -68,6 +81,8 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
  private:
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<EmojiPageHandler> page_handler_;
+  std::unique_ptr<ash::NewWindowProxy> new_window_proxy_;
+  std::unique_ptr<ash::SealService> seal_service_;
 
   mojo::Receiver<emoji_picker::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

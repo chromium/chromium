@@ -100,7 +100,6 @@ found in the LICENSE file.
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_below="@+id/tab_title_view"
         android:layout_toEndOf="@+id/tab_images"
         android:gravity="start"
         android:singleLine="true"

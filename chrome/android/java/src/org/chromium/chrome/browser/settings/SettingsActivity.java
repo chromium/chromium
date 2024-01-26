@@ -94,6 +94,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -527,7 +528,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     mSettingsLauncher,
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
-                    SyncServiceFactory.getForProfile(mProfile));
+                    SyncServiceFactory.getForProfile(mProfile),
+                    UserPrefs.get(mProfile));
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(

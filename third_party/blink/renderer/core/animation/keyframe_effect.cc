@@ -329,7 +329,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     V8ObjectBuilder object_builder(script_state);
     keyframes[indices[i]]->AddKeyframePropertiesToV8Object(object_builder,
                                                            target());
-    object_builder.Add("computedOffset", computed_offsets[indices[i]]);
+    object_builder.AddNumber("computedOffset", computed_offsets[indices[i]]);
     computed_keyframes.push_back(object_builder.GetScriptValue());
   }
 

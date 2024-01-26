@@ -11,4 +11,5 @@ EMAIL_ADDRESS | shipTos[0].address.emailAddr | Email* |  | shipTos[0].address.fu
 EMAIL_ADDRESS | shipTos[0].confirmEmailAddr | Confirm Email* |  | shipTos[0].address.fullName_1
 UNKNOWN_TYPE | shipTos[0].shipType | Standard (5-7 business days) | Standard | shipTos[0].address.fullName_1
 UNKNOWN_TYPE | shipTos[0].shipType | Rush (2-3 business days) | Rush | shipTos[0].address.fullName_1
+
 UNKNOWN_TYPE | email | Enter your email address | Enter your email address | email_1

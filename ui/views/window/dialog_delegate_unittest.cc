@@ -66,6 +66,7 @@ class TestDialog : public DialogDelegateView {
   View* GetInitiallyFocusedView() override { return input_; }
 
   void TearDown() {
+    input_ = nullptr;
     GetWidget()->Close();
   }
 
@@ -80,7 +81,7 @@ class TestDialog : public DialogDelegateView {
   views::Textfield* input() { return input_; }
 
  private:
-  raw_ptr<views::Textfield> input_;
+  raw_ptr<views::Textfield> input_ = nullptr;
   std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
@@ -109,7 +110,7 @@ class DialogTest : public ViewsTestBase {
   }
 
   void TearDown() override {
-    dialog_raw_->TearDown();
+    dialog_raw_.ExtractAsDangling()->TearDown();
     parent_widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -155,7 +156,7 @@ class DialogTest : public ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> parent_widget_;
   std::unique_ptr<TestDialog> dialog_;
-  raw_ptr<TestDialog, DanglingUntriaged> dialog_raw_;
+  raw_ptr<TestDialog> dialog_raw_ = nullptr;
 };
 
 }  // namespace

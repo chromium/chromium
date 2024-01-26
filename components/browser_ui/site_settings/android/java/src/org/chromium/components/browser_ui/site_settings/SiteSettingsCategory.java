@@ -159,7 +159,7 @@ public class SiteSettingsCategory {
 
     public static SiteSettingsCategory createFromContentSettingsType(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         assert contentSettingsType != -1;
         assert Type.ALL_SITES == 0;
         for (@Type int i = Type.ALL_SITES; i < Type.NUM_ENTRIES; i++) {
@@ -182,7 +182,7 @@ public class SiteSettingsCategory {
     }
 
     /** Convert Type into {@link ContentSettingsType}. */
-    public static @ContentSettingsType int contentSettingsType(@Type int type) {
+    public static @ContentSettingsType.EnumType int contentSettingsType(@Type int type) {
         // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
@@ -252,7 +252,7 @@ public class SiteSettingsCategory {
      * Get the chooser data type {@link ContentSettingsType} corresponding to the given {@link
      * ContentSettingsType}.
      */
-    public static int objectChooserDataTypeFromGuard(@ContentSettingsType int type) {
+    public static int objectChooserDataTypeFromGuard(@ContentSettingsType.EnumType int type) {
         switch (type) {
             case ContentSettingsType.USB_GUARD:
                 return ContentSettingsType.USB_CHOOSER_DATA;
@@ -341,7 +341,7 @@ public class SiteSettingsCategory {
     }
 
     /** Returns the {@link ContentSettingsType} for this category, or -1 if no such type exists. */
-    public @ContentSettingsType int getContentSettingsType() {
+    public @ContentSettingsType.EnumType int getContentSettingsType() {
         return contentSettingsType(mCategory);
     }
 
@@ -349,7 +349,7 @@ public class SiteSettingsCategory {
      * Returns the {@link ContentSettingsType} representing the chooser data type for this category,
      * or -1 if this category does not have a chooser data type.
      */
-    public @ContentSettingsType int getObjectChooserDataType() {
+    public @ContentSettingsType.EnumType int getObjectChooserDataType() {
         return objectChooserDataTypeFromGuard(contentSettingsType(mCategory));
     }
 
@@ -551,7 +551,7 @@ public class SiteSettingsCategory {
      */
     protected String getMessageForEnablingOsPerAppPermission(
             Context context, boolean plural, String appName) {
-        @ContentSettingsType int type = this.getContentSettingsType();
+        @ContentSettingsType.EnumType int type = this.getContentSettingsType();
         int permission_string = R.string.android_permission_off;
         if (type == ContentSettingsType.GEOLOCATION) {
             permission_string = R.string.android_location_permission_off;

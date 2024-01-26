@@ -680,7 +680,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
           ClipboardEndpoint(ui::Clipboard::GetForCurrentThread()->GetSource(
               clipboard_buffer)),
           ClipboardEndpoint(
-              CreateDataEndpoint().get(),
+              CreateDataEndpoint(/*include_otr=*/true).get(),
               base::BindRepeating(
                   [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
                     auto* rfh = RenderFrameHost::FromID(rfh_id);
@@ -737,9 +737,10 @@ void ClipboardHostImpl::CleanupObsoleteRequests() {
   }
 }
 
-std::unique_ptr<ui::DataTransferEndpoint>
-ClipboardHostImpl::CreateDataEndpoint() {
-  if (render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
+std::unique_ptr<ui::DataTransferEndpoint> ClipboardHostImpl::CreateDataEndpoint(
+    bool include_otr) {
+  if (render_frame_host().GetBrowserContext()->IsOffTheRecord() &&
+      !include_otr) {
     return nullptr;
   }
   return std::make_unique<ui::DataTransferEndpoint>(

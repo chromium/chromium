@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_NEARBY_SHARING_SHARE_TARGET_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +16,6 @@
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/nearby_sharing/wifi_credentials_attachment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // A remote device.
@@ -29,9 +30,9 @@ struct ShareTarget {
       std::vector<FileAttachment> file_attachments,
       std::vector<WifiCredentialsAttachment> wifi_credentials_attachments,
       bool is_incoming,
-      absl::optional<std::string> full_name,
+      std::optional<std::string> full_name,
       bool is_known,
-      absl::optional<std::string> device_id,
+      std::optional<std::string> device_id,
       bool for_self_share);
   ShareTarget(const ShareTarget&);
   ShareTarget(ShareTarget&&);
@@ -53,17 +54,17 @@ struct ShareTarget {
   base::UnguessableToken id = base::UnguessableToken::Create();
   std::string device_name;
   // Uri that points to an image of the ShareTarget, if one exists.
-  absl::optional<GURL> image_url;
+  std::optional<GURL> image_url;
   nearby_share::mojom::ShareTargetType type =
       nearby_share::mojom::ShareTargetType::kUnknown;
   std::vector<TextAttachment> text_attachments;
   std::vector<FileAttachment> file_attachments;
   std::vector<WifiCredentialsAttachment> wifi_credentials_attachments;
   bool is_incoming = false;
-  absl::optional<std::string> full_name;
+  std::optional<std::string> full_name;
   // True if local device has the PublicCertificate this target is advertising.
   bool is_known = false;
-  absl::optional<std::string> device_id;
+  std::optional<std::string> device_id;
   // True if the remote device is also owned by the current user.
   bool for_self_share = false;
 };

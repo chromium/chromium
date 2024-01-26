@@ -322,6 +322,10 @@ BASE_FEATURE(kEvictOnAXEvents,
              "EvictOnAXEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDoNotEvictOnAXLocationChange,
+             "DoNotEvictOnAXLocationChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(https://crbug.com/1502760): This is a kill switch landed in M122. Please
 // remove after M124.
 BASE_FEATURE(kForceBrowserInitiatedPageClose,
@@ -2735,7 +2739,7 @@ RenderFrameHostImpl::GetRemoteAssociatedInterfaces() {
         remote_interfaces;
     if (GetAgentSchedulingGroup().GetChannel()) {
       GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
-          GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
+          GetFrameToken(), remote_interfaces.BindNewEndpointAndPassReceiver());
     } else {
       LOG(WARNING) << "Creating unbound remote associated interface provider";
       // The channel may not be initialized in some tests environments. In this
@@ -4045,6 +4049,35 @@ void RenderFrameHostImpl::DidNavigate(
     // frame owns both parent's required document policy and child frame's frame
     // owner element which contains child's required document policy, so there
     // is no need to store required document policy in proxies.
+  }
+
+  // Set `honor_sticky_activation_for_history_intervention_` to false if
+  // it's a browser-initiated same-document back/forward navigation.
+  // Note that `honor_sticky_activation_for_history_intervention_` is only
+  // tracked on the main frame so that same-document navigations on a child
+  // frame cannot be used as a work-around to the intervention.
+
+  // navigation_request->GetPageTransition only returns the bit set for
+  // PAGE_TRANSITION_FORWARD_BACK for back/forward transitions on the main
+  // frame so retrieve it from the pending entry instead of the
+  // navigation_request. Also navigation_request->IsSameDocument
+  // won't be true for the subframe's cross-document back/forward navigation
+  // case so instead check GetMainFrameDocumentSequenceNumber().
+  // TODO(creis): Add NavigationRequest::IsSessionHistory() and
+  // NavigationRequest::IsSamePage() to avoid needing to check either the
+  // pending NavigationEntry or the PageTransition.
+  NavigationControllerImpl& controller = frame_tree()->controller();
+  NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
+  // pending_entry should be non-nullptr for a back/forward navigation.
+  if (pending_entry) {
+    ui::PageTransition transition = pending_entry->GetTransitionType();
+    if (transition & ui::PAGE_TRANSITION_FORWARD_BACK &&
+        navigation_request->browser_initiated() &&
+        pending_entry->GetMainFrameDocumentSequenceNumber() ==
+            controller.GetLastCommittedEntry()
+                ->GetMainFrameDocumentSequenceNumber()) {
+      GetMainFrame()->honor_sticky_activation_for_history_intervention_ = false;
+    }
   }
 }
 
@@ -5737,8 +5770,11 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
       !blink::features::kSpeculativeServiceWorkerWarmUpDryRun.Get();
+  const bool kHttpDiskCachePrewarmingEnabled =
+      base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
+      !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
 
-  if (!kStartupEnabled && !kWarmUpEnabled) {
+  if (!kStartupEnabled && !kWarmUpEnabled && !kHttpDiskCachePrewarmingEnabled) {
     return;
   }
 
@@ -5765,6 +5801,11 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     if (GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url) ==
         RenderProcessHost::FilterURLResult::kBlocked) {
       continue;
+    }
+
+    if (filtered_url.SchemeIsHTTPOrHTTPS()) {
+      GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
+          *GetBrowserContext(), filtered_url);
     }
 
     if (!OriginCanAccessServiceWorkers(filtered_url)) {
@@ -5920,6 +5961,7 @@ bool RenderFrameHostImpl::IsActiveUserActivation() const {
 void RenderFrameHostImpl::ClearUserActivation() {
   user_activation_state_.Clear();
   history_user_activation_state_.Clear();
+  GetMainFrame()->honor_sticky_activation_for_history_intervention_ = true;
 }
 
 void RenderFrameHostImpl::ConsumeTransientUserActivation() {
@@ -5930,6 +5972,7 @@ void RenderFrameHostImpl::ActivateUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {
   user_activation_state_.Activate(notification_type);
   history_user_activation_state_.Activate();
+  GetMainFrame()->honor_sticky_activation_for_history_intervention_ = true;
 }
 
 void RenderFrameHostImpl::ActivateFocusSourceUserActivation() {
@@ -5946,6 +5989,17 @@ void RenderFrameHostImpl::ConsumeHistoryUserActivation() {
 
 void RenderFrameHostImpl::DeactivateFocusSourceUserActivation() {
   focus_source_user_activation_state_.Deactivate();
+}
+
+bool RenderFrameHostImpl::HasStickyUserActivationForHistoryIntervention()
+    const {
+  DCHECK(is_main_frame());
+  if (!base::FeatureList::IsEnabled(
+          features::kHistoryInterventionSameDocumentFix) ||
+      honor_sticky_activation_for_history_intervention_) {
+    return HasStickyUserActivation();
+  }
+  return false;
 }
 
 void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
@@ -7172,7 +7226,15 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
       // accessibility events without evicting unless the kEvictOnAXEvents flag
       // is on.
       if (!base::FeatureList::IsEnabled(features::kEvictOnAXEvents))
-        DCHECK_NE(reason, kAXEvent);
+        CHECK_NE(reason, kAXEvent);
+      // This function should not be called with kAXLocationChange when the
+      // page is in back/forward cache, because `HandleAXLocationChange()` will
+      // continue to process accessibility location changes unless
+      // kDoNotEvictOnAXLocationChange is off.
+      if (base::FeatureList::IsEnabled(
+              features::kDoNotEvictOnAXLocationChange)) {
+        CHECK_NE(reason, kAXLocationChange);
+      }
       BackForwardCacheCanStoreDocumentResult can_store_flat;
       can_store_flat.NoDueToDisallowActivation(reason);
       EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
@@ -8940,6 +9002,47 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
                                 event_type);
 }
 
+void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
+    DisableUntrustedNetworkInFencedFrameCallback callback) {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received while FencedFrames "
+        "not enabled.");
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received while "
+        "FencedFramesLocalUnpartitionedDataAccess not enabled.");
+    return;
+  }
+
+  absl::optional<FencedFrameProperties>& properties =
+      frame_tree_node_->GetFencedFrameProperties();
+
+  if (!properties.has_value() || !properties->can_disable_untrusted_network()) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received even though the API "
+        "that generated the fenced frame config does not support it.");
+    return;
+  }
+
+  if (!properties->mapped_url().has_value() ||
+      !frame_tree_node_->current_origin().IsSameOriginWith(url::Origin::Create(
+          properties->mapped_url()->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received from document that is "
+        "cross-origin to the mapped url from the fenced frame config, but this "
+        "should be checked by the renderer.");
+    return;
+  }
+
+  properties->DisableUntrustedNetwork();
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(
     blink::mojom::ViewTransitionSameOriginOptIn view_transition_opt_in) {
   ViewTransitionOptInState::GetOrCreateForCurrentDocument(this)
@@ -9378,9 +9481,12 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     return;
   }
 
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXLocationChange)) {
-    return;
+  if (!base::FeatureList::IsEnabled(features::kDoNotEvictOnAXLocationChange)) {
+    // If the flag is off, we should evict the back/forward cache entry.
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kAXLocationChange)) {
+      return;
+    }
   }
 
   BrowserAccessibilityManager* manager =
@@ -11597,6 +11703,14 @@ void RenderFrameHostImpl::CreatePaymentManager(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
+void RenderFrameHostImpl::CreatePaymentCredential(
+    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+  // TODO(crbug.com/1512605): Move the 'is SPC allowed' check from
+  // payments::CreatePaymentCredential to here.
+  GetContentClient()->browser()->CreatePaymentCredential(this,
+                                                         std::move(receiver));
+}
+
 void RenderFrameHostImpl::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   if (!base::FeatureList::IsEnabled(features::kWebUsb)) {
@@ -13453,10 +13567,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Store the required CSP (it will be used by the AncestorThrottle if
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
-
-  is_fenced_frame_root_originating_from_opaque_url_ =
-      navigation_request
-          ->is_target_fenced_frame_root_originating_from_opaque_url();
 
   RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
       this, navigation_request->GetRuntimeFeatureStateContext());

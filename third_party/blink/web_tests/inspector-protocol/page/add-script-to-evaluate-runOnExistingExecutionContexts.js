@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   await testRunner.startBlank(`Tests that Page.addScriptToEvaluateOnNewDocument can run for existing contexts.`);
 
   const bt = testRunner.browserP().Target;

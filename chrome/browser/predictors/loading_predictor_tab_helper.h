@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +16,6 @@
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -105,7 +106,7 @@ class LoadingPredictorTabHelper
 
     // The optimization guide prediction for the current navigation. If set,
     // this will be cleared on |DocumentOnLoadCompletedInPrimaryMainFrame|.
-    absl::optional<OptimizationGuidePrediction>
+    std::optional<OptimizationGuidePrediction>
         last_optimization_guide_prediction_;
 
     // Stores weak ptrs to the document and navigation page data holders, in

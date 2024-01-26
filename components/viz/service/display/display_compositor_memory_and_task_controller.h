@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
       controller_on_gpu_;
 
   // Accessed on the compositor thread.
-  std::unique_ptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
 };
 
 }  // namespace viz

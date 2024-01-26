@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that multiple sessions cannot trace simultaneously.');
   var page = await testRunner.createPage();
   var session1 = await page.createSession();

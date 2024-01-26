@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
     `Verifies that certain types of requests have or don't have Network.*ExtraInfo events, and makes sure that responseReceived.hasExtraInfo matches the presence of the ExtraInfo events.\n`);
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="1105362920864247682">Rensa webbinformation i Chrome.</translation>
 <translation id="1113057722807951993">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
@@ -40,13 +41,13 @@ Tänk på detta:
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Lägger till de angivna webbadresserna i dina bokmärken i Chrome.</translation>
+<translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Använd Chrome automatiskt varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="1910975740091000991">Chrome för iOS</translation>
 <translation id="1917964099031477364">Det här kontot och data som inte har sparats tas bort från Chrome och andra Google-appar på den här enheten.</translation>
 <translation id="1965935827552890526">Gör klart det du höll på med i det andra öppna Chrome-fönstret.</translation>
 <translation id="1987779152850321833">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome.</translation>
-<translation id="2008357574463816229">Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="2120238739383482109">Öppnar bokmärken i Chrome.</translation>
 <translation id="2147651015520127414">Chrome har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
@@ -75,6 +76,7 @@ Tänk på detta:
 <translation id="2702250627063295552">Lägg till ett objekt från läslistan i Chrome</translation>
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
+<translation id="2789947168960170215">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Rensa webbinformation i Chrome</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="3577555362230509265">Använd Chrome i andra appar.</translation>
-<translation id="3594076341410558780">Dölj Få ut mesta möjliga av Chrome</translation>
 <translation id="364480321352456989">Den här versionen av Chrome är inaktuell.</translation>
 <translation id="3646736009628185125">Dina familjemedlemmar kan inte ta emot lösenord just nu. Be dem att uppdatera Chrome och synkronisera sina lösenord. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chrome.</translation>
@@ -204,7 +205,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />styra vilken Chrome-data som sparas<ph name="END_LINK" /> i Google-kontot.
 
 Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>

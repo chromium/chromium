@@ -98,11 +98,11 @@ void CartProcessor::GetCartForCluster(
 
 void CartProcessor::RecordCartHistoryClusterAssociationMetrics(
     std::vector<CartDB::KeyAndValue>& active_carts,
-    std::vector<history::Cluster>& clusters) {
+    std::vector<history::Cluster*> clusters) {
   for (auto cart_pair : active_carts) {
     bool match_cluster = false;
     for (size_t i = 0; i < clusters.size(); i++) {
-      for (auto visit : clusters[i].visits) {
+      for (auto visit : clusters[i]->visits) {
         if (IsCartAssociatedWithVisitURL(cart_pair, visit.normalized_url)) {
           match_cluster = true;
           break;

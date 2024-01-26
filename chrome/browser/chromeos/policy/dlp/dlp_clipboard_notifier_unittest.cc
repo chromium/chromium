@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -22,7 +23,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,7 +107,7 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
 }  // namespace
 
 class ClipboardBubbleTestWithParam
-    : public ::testing::TestWithParam<absl::optional<ui::EndpointType>> {
+    : public ::testing::TestWithParam<std::optional<ui::EndpointType>> {
  public:
   ClipboardBubbleTestWithParam() = default;
   ClipboardBubbleTestWithParam(const ClipboardBubbleTestWithParam&) = delete;
@@ -123,7 +123,7 @@ class ClipboardBubbleTestWithParam
 TEST_P(ClipboardBubbleTestWithParam, BlockBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
-  absl::optional<ui::DataTransferEndpoint> data_dst;
+  std::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
     data_dst.emplace(CreateEndpoint(param.value()));
@@ -136,7 +136,7 @@ TEST_P(ClipboardBubbleTestWithParam, BlockBubble) {
 TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
-  absl::optional<ui::DataTransferEndpoint> data_dst;
+  std::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
     data_dst.emplace(CreateEndpoint(param.value()));
@@ -150,7 +150,7 @@ TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
                          ClipboardBubbleTestWithParam,
-                         ::testing::Values(absl::nullopt,
+                         ::testing::Values(std::nullopt,
                                            ui::EndpointType::kDefault,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUnknownVm,

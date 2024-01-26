@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -109,7 +110,7 @@ class ShareFileDownloadTabHelper
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Headers of the last response received for the current navigation.
   scoped_refptr<net::HttpResponseHeaders> response_headers_;

@@ -97,8 +97,8 @@ AXSelection::AXSelection(const AXTree& tree)
       tree_id_(tree.GetAXTreeID()) {}
 
 AXSelection& AXSelection::ToUnignoredSelection() {
-  DCHECK_NE(tree_id_, AXTreeIDUnknown())
-      << "Tree is not registered with a tree manager";
+  // If the tree is not registered with an AXTreeManager, it
+  // is a initial tree with no data, do not calculate selection.
   const AXTreeManager* manager = AXTreeManager::FromID(tree_id_);
   if (!manager)
     return *this;

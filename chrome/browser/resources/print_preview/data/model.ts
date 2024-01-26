@@ -7,20 +7,26 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
+import type {Policies} from '../native_layer.js';
+import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
+
 // <if expr="is_chromeos">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
 // </if>
-import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
-import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
-import {DocumentSettings} from './document_info.js';
-import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
-import {ScalingType} from './scaling.js';
-import {Size} from './size.js';
+
+import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
+import type {Destination, RecentDestination} from './destination.js';
+import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
+import type {DocumentSettings} from './document_info.js';
+import type {Margins, MarginsSetting} from './margins.js';
+import {CustomMarginsOrientation, MarginsType} from './margins.js';
 
 // <if expr="is_chromeos">
 import {PrinterStatusReason} from './printer_status_cros.js';
 // </if>
+
+import {ScalingType} from './scaling.js';
+import type {Size} from './size.js';
 
 /**
  * |key| is the field in the serialized settings state that corresponds to the

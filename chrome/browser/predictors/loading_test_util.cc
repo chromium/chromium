@@ -182,7 +182,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
   resource_load_info->method = "GET";
   resource_load_info->request_destination = request_destination;
   resource_load_info->network_info = blink::mojom::CommonNetworkInfo::New(
-      true, always_access_network, absl::nullopt);
+      true, always_access_network, std::nullopt);
   resource_load_info->request_priority = net::HIGHEST;
   return resource_load_info;
 }
@@ -206,7 +206,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfoWithRedirects(
   resource_load_info->request_destination = request_destination;
   resource_load_info->request_priority = net::HIGHEST;
   auto common_network_info =
-      blink::mojom::CommonNetworkInfo::New(true, false, absl::nullopt);
+      blink::mojom::CommonNetworkInfo::New(true, false, std::nullopt);
   resource_load_info->network_info = common_network_info.Clone();
   for (size_t i = 0; i + 1 < redirect_chain.size(); ++i) {
     resource_load_info->redirect_info_chain.push_back(

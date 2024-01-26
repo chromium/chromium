@@ -91,6 +91,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1428770807407000502">Isključiti sinkronizaciju?</translation>
 <translation id="1430915738399379752">Ispis</translation>
+<translation id="1435593198351412143">Automatsko otvaranje PDF-ova</translation>
 <translation id="1436784010935106834">Uklonjeno</translation>
 <translation id="1437543266176261764">Izvodi se u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Praćene proizvode organizirajte u mapi Oznake</translation>
@@ -146,6 +147,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1792959175193046959">Zadanu lokaciju preuzimanja možete promijeniti kad god želite</translation>
 <translation id="1796666869097395659">Minimizirajte karticu da biste se kasnije vratili na nju</translation>
 <translation id="1807246157184219062">Svijetlo</translation>
+<translation id="1807709131360304325">Otvaranje novog prozora</translation>
 <translation id="1810845389119482123">Početno postavljanje sinkronizacije nije dovršeno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne može nastaviti s upotrebom usluge <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Traži na stranici</translation>
@@ -189,6 +191,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2056878612599315956">Web-lokacija pauzirana</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 preuzimanje nije uspjelo}one{# preuzimanje nije uspjelo}few{# preuzimanja nisu uspjela}other{# preuzimanja nije uspjelo}}</translation>
 <translation id="2067805253194386918">SMS</translation>
+<translation id="2079545284768500474">Poništi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2091863218454846791">Prikazuje se kompaktni prikaz</translation>
 <translation id="2093731487903423814">posljednjih 15 minuta</translation>
@@ -218,7 +221,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2239812875700136898">Člancima možete upravljati pomoću gumba Opcije za Discover</translation>
-<translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2247789808226901522">Kartica je istekla</translation>
 <translation id="2248941474044011069">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki</translation>
 <translation id="2249635629516220541">Prilagodite podatke koje web-lokacije koriste da bi vam prikazivale oglase</translation>
@@ -233,7 +235,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="2321086116217818302">Priprema zaporki…</translation>
 <translation id="2323763861024343754">Pohrana web-lokacije</translation>
-<translation id="2327226657832576859">Želite li automatski otvarati PDF-ove?</translation>
 <translation id="2328985652426384049">Prijava nije moguća</translation>
 <translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspjelo.</translation>
 <translation id="2349710944427398404">Ukupna količina podataka koju Chrome upotrebljava, uključujući račune, oznake i spremljene postavke.</translation>
@@ -316,6 +317,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2777555524387840389">Preostalo sekundi: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">nije uspjelo</translation>
 <translation id="2781151931089541271">Još 1 s</translation>
+<translation id="2789486458103222910">U redu</translation>
 <translation id="2800066122460699237">Zatvorit će se kartica <ph name="TAB_TITLE" /></translation>
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -340,6 +342,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2894821468041866720">Ne usporava primjetno preglednik ili uređaj.</translation>
 <translation id="2900528713135656174">Stvori događaj</translation>
 <translation id="2901411048554510387">Prikazuju se prijedlozi za <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Preuzeti PDF-ovi automatski se otvaraju pomoću jednog od preglednika za PDF na vašem uređaju</translation>
 <translation id="2904414404539560095">Popis za odabir uređaja s kojim će se dijeliti kartica otvoren punom visinom.</translation>
 <translation id="2908243544703713905">Nepročitani članci su spremni</translation>
 <translation id="2909615210195135082">Googleova platforma za obavijesti</translation>
@@ -354,7 +357,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2946420957526726953">Ažuriranje Chromea radi povezivanja s drugim uređajima</translation>
 <translation id="2951071800649516099">Dodajte stranice na popis za čitanje za poslije</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
-<translation id="2961210776189273067">Titula</translation>
 <translation id="296370266220139811">Uštedite vrijeme i pišite manje</translation>
 <translation id="2977350910003566746">Sortiranje od posljednjeg otvaranja</translation>
 <translation id="297771753501244313">Poredaj od posljednjeg otvaranja</translation>
@@ -600,6 +602,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4303044213806199882">chrome_snimka_zaslona_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="4307992518367153382">Osnove</translation>
+<translation id="4311652497846705514">Želite li otvoriti PDF?</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
 <translation id="433213510553688132">Praćenje...</translation>
 <translation id="4335835283689002019">Sigurno je pregledavanje isključeno</translation>
@@ -609,7 +612,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ako se taj problem nastavi pojavljivati, možete isprobati nove načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Za pretraživanje se upotrebljava Sogou</translation>
-<translation id="4387647248986092471">Postavi zaključavanje profila automobila</translation>
+<translation id="4387647248986092471">Postavite zaključavanje profila automobila</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – preuzimanje…</translation>
 <translation id="4404568932422911380">Bez oznaka</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
@@ -639,7 +642,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4523326818319942067">posljednji sat</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4532845899244822526">Odabir mape</translation>
-<translation id="4541505619120536051">Uvijek otvoreno</translation>
 <translation id="4543131175509360848">Nema lista s pristupnim ključevima</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}}</translation>
 <translation id="4554077758708533499">Spojeno putem USB kabela</translation>
@@ -831,7 +833,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5486841595534124508">Logotip obavijesti o privatnosti za središte za uvide u stranicu koje preusmjerava na stranicu Moja aktivnost.</translation>
 <translation id="5487521232677179737">Izbriši podatke</translation>
 <translation id="5492637351392383067">Šifriranje na uređaju</translation>
-<translation id="5509866835115085009">Chrome može automatski otvoriti PDF-ove kada ih preuzmete.</translation>
 <translation id="5514904542973294328">Opciju je omogućio administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte za prikaz zaporke</translation>
 <translation id="5517095782334947753">Imate oznake, povijest, zaporke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
@@ -897,9 +898,11 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="5814749351757353073">Pratite svoje omiljene web-lokacije</translation>
 <translation id="5822875253699806474">Da biste se brzo vratili na web-lokacije koje ste posjetili, sinkronizirajte kartice i povijest</translation>
+<translation id="5829586821381540080">Spremljeno na popis <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5833984609253377421">Dijeli vezu</translation>
 <translation id="5839058148541733625">Dinosaur na Chromeu</translation>
+<translation id="5848257610304005265">Želite li otvoriti PDF pomoću aplikacije <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
 <translation id="5855546874025048181">Suzi pretraživanje: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Nešto nije u redu. Ažuriranje praćenja cijene nije uspjelo.</translation>
@@ -925,6 +928,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5962718611393537961">Dodirnite da biste saželi</translation>
 <translation id="5964869237734432770">Zaustavite opise slike</translation>
 <translation id="5966233851250124270">Chrome će zapamtiti vaš odabir</translation>
+<translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5995726099713306770">Ponovo preuzeti stranicu?</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
@@ -1302,6 +1306,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7810647596859435254">Otvori aplikacijom…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Sve datoteke, 1 datoteka na popisu}one{Sve datoteke, # datoteka na popisu}few{Sve datoteke, # datoteke na popisu}other{Sve datoteke, # datoteka na popisu}}</translation>
 <translation id="7815484226266492798">Duga snimka zaslona</translation>
+<translation id="7821130663268546430">Sve otvorene kartice možete pronaći u izmjenjivanju kartica</translation>
 <translation id="7822705602465980873">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="78270725016672455">Vaše računalo želi registrirati ovaj uređaj za prijavu na web-lokaciju</translation>
 <translation id="7844171778363018843">Za sinkronizaciju nije odabrana nijedna vrsta podataka</translation>
@@ -1329,6 +1334,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> zastario je.</translation>
 <translation id="7944772052836377867">Sinkronizacija treba potvrditi da ste to vi</translation>
 <translation id="7947953824732555851">Prihv. i prijavi se</translation>
+<translation id="7951102827450076904">Uvijek otvaraj preuzete PDF-ove</translation>
 <translation id="7957413488482743710">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Gumb za povratak na uvide u stranicu</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
@@ -1379,6 +1385,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8127542551745560481">Uređivanje početne stranice</translation>
 <translation id="8130309322784422030">Pohranjeni podaci o prijavi možda su zastarjeli</translation>
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
+<translation id="8135406045838672858">Preuzeti PDF-ovi automatski se otvaraju pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki.</translation>
 <translation id="8186512483418048923">Preostalo datoteka: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Još 1 dan</translation>

@@ -228,7 +228,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueio por impressão digital</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmera alinhada ao canto direito de cima</translation>
@@ -267,7 +266,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2064048859448024834">Visualização da câmera ativada</translation>
 <translation id="2067602449040652523">Brilho do teclado</translation>
 <translation id="2075520525463668108">Ativar ou desativar o recurso <ph name="CAPTURE_MEDIUM" />. O recurso <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Deslize para a direita com quatro dedos para acessar o próximo espaço de trabalho</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Abrir seletor de emojis</translation>
@@ -283,7 +281,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2149229036084364364">Ir para a faixa anterior</translation>
 <translation id="2152895518047545149">Parece que não há nada pendente. Bom trabalho!</translation>
 <translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações rápidas.</translation>
-<translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
 <translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="2185444992308415167">Percorrer as guias 1 a 8</translation>
 <translation id="2198625180564913276">Adicionando perfil. Pode levar alguns minutos..</translation>
@@ -412,10 +409,12 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2726420622004325180">Seu smartphone precisa usar dados móveis para fornecer um ponto de acesso</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
+<translation id="2744221223678373668">Compartilhadas</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Excluir"</translation>
 <translation id="2750941250130734256">Janela ativa desafixada.</translation>
 <translation id="2761723519669354964">Abrir item destacado na estante</translation>
+<translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + pesquisa + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3580650856351781466">Fazendo o download de arquivos de fala</translation>
 <translation id="3585296979871889131">Visualize arquivos de fotos, mídia, notificações e apps do smartphone</translation>
+<translation id="3590441166907930941">Botão lateral</translation>
 <translation id="3593039967545720377">Para acessar o histórico da área de transferência, pressione <ph name="SHORTCUT_KEY_NAME" /> + V. Copie um item para começar.</translation>
 <translation id="3593646411856133110">Deslize para cima e mantenha a tela pressionada para ver os apps abertos</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
@@ -732,6 +732,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3986082989454912832">Atender</translation>
 <translation id="3990002060657467458">Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira da direita)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="40062176907008878">Escrita à mão</translation>
 <translation id="4011112806063830608">O "Não perturbe" está ativado.</translation>
 <translation id="4017989525502048489">Apontador laser</translation>
@@ -1035,6 +1036,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5163434717504750796">Integridade da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Contagem de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salvar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
+<translation id="5168753792967365150">Editar no Google Tarefas</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5176318573511391780">Gravar tela parcial</translation>
 <translation id="5187627942836026988">Consulte detalhes do ponto de acesso. O ponto de acesso foi bloqueado pelo administrador.</translation>
@@ -1304,6 +1306,8 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6168622430237609329">Seus apps instalados</translation>
 <translation id="6173151025443907148">Não é possível fazer login em um segundo usuário se o navegador Lacros está ativado. Use um segundo perfil de navegador no Lacros ou desative-o e tente novamente.</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
+<translation id="6180193585172850042">Botão "Voltar"</translation>
+<translation id="6180651297859206670">Botão "Avançar"</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
@@ -1693,7 +1697,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7850320739366109486">Não Perturbe</translation>
 <translation id="7851039877802112575">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Deslize com três dedos para cima para abrir a Visão geral</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como visitante, é necessário sair da conta e selecionar a opção "Navegar como visitante" na parte de baixo da tela.</translation>
 <translation id="7866482334467279021">ativada</translation>
 <translation id="7872786842639831132">Desativado</translation>
@@ -1804,7 +1807,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8262312463845990408">Pausar/continuar a reprodução</translation>
 <translation id="8270450402312105425">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 hora}one{Reverta o dispositivo para a versão anterior em até # hora}other{Reverta o dispositivo para a versão anterior em até # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto na tela</translation>
-<translation id="8284362522226889623">Deslize para a esquerda com quatro dedos para acessar o espaço de trabalho anterior</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
 <translation id="8308637677604853869">Menu anterior</translation>

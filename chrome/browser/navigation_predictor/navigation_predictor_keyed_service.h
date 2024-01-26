@@ -6,17 +6,16 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_KEYED_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -39,13 +38,13 @@ class NavigationPredictorKeyedService : public KeyedService {
   class Prediction {
    public:
     Prediction(content::WebContents* web_contents,
-               const absl::optional<GURL>& source_document_url,
+               const std::optional<GURL>& source_document_url,
                PredictionSource prediction_source,
                const std::vector<GURL>& sorted_predicted_urls);
     Prediction(const Prediction& other);
     Prediction& operator=(const Prediction& other);
     ~Prediction();
-    const absl::optional<GURL>& source_document_url() const;
+    const std::optional<GURL>& source_document_url() const;
     PredictionSource prediction_source() const { return prediction_source_; }
     const std::vector<GURL>& sorted_predicted_urls() const;
 
@@ -56,15 +55,13 @@ class NavigationPredictorKeyedService : public KeyedService {
     // The WebContents from where the navigation may happen. Do not use this
     // pointer outside the observer's call stack unless its destruction is also
     // observed.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION content::WebContents* web_contents_;
+    raw_ptr<content::WebContents> web_contents_;
 
     // TODO(spelchat): this no longer needs to be optional. Optionality was
     // required because external app predictions didn't provide this field, but
     // external predictions are no longer supported.
     // Current URL of the document from where the navigtion may happen.
-    absl::optional<GURL> source_document_url_;
+    std::optional<GURL> source_document_url_;
 
     // |prediction_source_| indicates how the prediction was generated and
     // affects how the prediction should be consumed. If the
@@ -90,7 +87,7 @@ class NavigationPredictorKeyedService : public KeyedService {
   class Observer {
    public:
     virtual void OnPredictionUpdated(
-        const absl::optional<Prediction> prediction) = 0;
+        const std::optional<Prediction> prediction) = 0;
 
    protected:
     Observer() {}
@@ -149,7 +146,7 @@ class NavigationPredictorKeyedService : public KeyedService {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Last known prediction.
-  absl::optional<Prediction> last_prediction_;
+  std::optional<Prediction> last_prediction_;
 
   // Manages preconnecting to the user's default search engine.
   SearchEnginePreconnector search_engine_preconnector_;

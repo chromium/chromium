@@ -1181,8 +1181,6 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
 }
 
 TEST_F(ContainerQueryTest, QueryViewportDependency) {
-  ScopedCSSViewportUnits4ForTest viewport_units(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {

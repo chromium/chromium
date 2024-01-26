@@ -73,7 +73,9 @@ class PlusAddressCreationControllerDesktop
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
-  absl::optional<base::Time> modal_shown_time_;
+  std::optional<base::Time> modal_shown_time_;
+  std::optional<PlusAddressMetrics::PlusAddressModalCompletionStatus>
+      modal_error_status_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
       this};

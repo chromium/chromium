@@ -1,13 +1,73 @@
-# Copyright 2023 The Chromium Authors
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("model") {
   sources = [
+    "favicon_browser_agent.h",
+    "favicon_browser_agent.mm",
+    "favicon_client_impl.h",
+    "favicon_client_impl.mm",
     "favicon_loader.h",
+    "favicon_loader.mm",
+    "favicon_service_factory.cc",
     "favicon_service_factory.h",
     "ios_chrome_favicon_loader_factory.h",
+    "ios_chrome_favicon_loader_factory.mm",
+    "ios_chrome_large_icon_cache_factory.cc",
+    "ios_chrome_large_icon_cache_factory.h",
+    "ios_chrome_large_icon_service_factory.cc",
     "ios_chrome_large_icon_service_factory.h",
+    "large_icon_cache.cc",
+    "large_icon_cache.h",
   ]
-  public_deps = [ "//ios/chrome/browser/favicon" ]
+  deps = [
+    "//components/favicon/core",
+    "//components/favicon/core:history_implementation",
+    "//components/favicon/ios",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/ios",
+    "//components/resources",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/sessions:restoration_observer",
+    "//ios/chrome/browser/sessions:session_restoration_service",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/components/webui:url_constants",
+    "//ios/web",
+    "//skia",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [
+    "//base",
+    "//components/favicon_base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "favicon_loader_unittest.mm",
+    "large_icon_cache_unittest.cc",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//ios/chrome/common/ui/favicon",
+    "//skia",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+    "//url",
+  ]
 }

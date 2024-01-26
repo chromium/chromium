@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/net/model/crurl.h"
 
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 @implementation CrURL {
   // In an attempt to reduce the number of conversions to NSURL, we strive

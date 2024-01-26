@@ -75,9 +75,17 @@ extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 // from Android builds.
 
 // The key used for marking permissions as revoked, as per the unused site
-// permissions module of Safety Check.
+// permissions module of Safety Check, including both chooser and regular
+// permissions.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
+
+// The key for base::Value::Dict, holding the revoked chooser permission data.
+// The Dict has StringPiece of ContentSettingsType int as key,
+// and the corresponding revoked `base::Value` data as value.
+// For example, {"3": {"foo": "bar"}, "12": "baz", "24": ["item0", "item1"]}
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kRevokedChooserPermissionsKey[];
 
 // How long an explicit Storage Access API permission grant/denial should last
 // (not taking renewals into account).

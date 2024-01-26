@@ -113,31 +113,24 @@ class ReusingTextShaper final {
 
   void SetOptions(ShapeOptions options) { options_ = options; }
 
-  scoped_refptr<const ShapeResult> Shape(const InlineItem& start_item,
-                                         const Font& font,
-                                         unsigned end_offset) {
-    ShapeCacheEntry* entry = nullptr;
+  const ShapeResult* Shape(const InlineItem& start_item,
+                           const Font& font,
+                           unsigned end_offset) {
+    auto ShapeFunc = [&]() -> const ShapeResult* {
+      return ShapeWithoutCache(start_item, font, end_offset);
+    };
     if (allow_shape_cache_) {
       DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
-      NGShapeCache& cache = font.GetNGShapeCache();
-      const TextDirection direction = start_item.Direction();
-      entry = cache.Add(shaper_.GetText(), direction);
-      if (entry && *entry) {
-        return *entry;
-      }
+      return font.GetNGShapeCache().GetOrCreate(
+          shaper_.GetText(), start_item.Direction(), ShapeFunc);
     }
-    scoped_refptr<const ShapeResult> result =
-        ShapeWithoutCache(start_item, font, end_offset);
-    if (entry) {
-      *entry = result;
-    }
-    return result;
+    return ShapeFunc();
   }
 
  private:
-  scoped_refptr<ShapeResult> ShapeWithoutCache(const InlineItem& start_item,
-                                               const Font& font,
-                                               unsigned end_offset) {
+  const ShapeResult* ShapeWithoutCache(const InlineItem& start_item,
+                                       const Font& font,
+                                       unsigned end_offset) {
     const unsigned start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
@@ -148,13 +141,15 @@ class ReusingTextShaper final {
     if (data_.segments)
       return Reshape(start_item, font, start_offset, end_offset);
 
-    const Vector<const ShapeResult*> reusable_shape_results =
+    HeapVector<Member<const ShapeResult>> reusable_shape_results =
         CollectReusableShapeResults(start_offset, end_offset,
                                     font.PrimaryFont(), start_item.Direction());
+    ClearCollectionScope clear_scope(&reusable_shape_results);
+
     if (reusable_shape_results.empty())
       return Reshape(start_item, font, start_offset, end_offset);
 
-    const scoped_refptr<ShapeResult> shape_result =
+    ShapeResult* shape_result =
         ShapeResult::CreateEmpty(*reusable_shape_results.front());
     unsigned offset = start_offset;
     for (const ShapeResult* reusable_shape_result : reusable_shape_results) {
@@ -165,7 +160,7 @@ class ReusingTextShaper final {
       if (offset < reusable_shape_result->StartIndex()) {
         AppendShapeResult(*Reshape(start_item, font, offset,
                                    reusable_shape_result->StartIndex()),
-                          shape_result.get());
+                          shape_result);
         offset = shape_result->EndIndex();
         options_.han_kerning_start = false;
       }
@@ -174,14 +169,14 @@ class ReusingTextShaper final {
              shape_result->EndIndex() == offset);
       reusable_shape_result->CopyRange(
           offset, std::min(reusable_shape_result->EndIndex(), end_offset),
-          shape_result.get());
+          shape_result);
       offset = shape_result->EndIndex();
       if (offset == end_offset)
         return shape_result;
     }
     DCHECK_LT(offset, end_offset);
     AppendShapeResult(*Reshape(start_item, font, offset, end_offset),
-                      shape_result.get());
+                      shape_result);
     return shape_result;
   }
 
@@ -192,13 +187,13 @@ class ReusingTextShaper final {
                            target);
   }
 
-  Vector<const ShapeResult*> CollectReusableShapeResults(
+  HeapVector<Member<const ShapeResult>> CollectReusableShapeResults(
       unsigned start_offset,
       unsigned end_offset,
       const SimpleFontData* primary_font,
       TextDirection direction) {
     DCHECK_LT(start_offset, end_offset);
-    Vector<const ShapeResult*> shape_results;
+    HeapVector<Member<const ShapeResult>> shape_results;
     if (!reusable_items_)
       return shape_results;
     for (const InlineItem *item = std::lower_bound(
@@ -223,10 +218,10 @@ class ReusingTextShaper final {
     return shape_results;
   }
 
-  scoped_refptr<ShapeResult> Reshape(const InlineItem& start_item,
-                                     const Font& font,
-                                     unsigned start_offset,
-                                     unsigned end_offset) {
+  const ShapeResult* Reshape(const InlineItem& start_item,
+                             const Font& font,
+                             unsigned start_offset,
+                             unsigned end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
@@ -658,7 +653,7 @@ class InlineNodeDataEditor final {
     const unsigned end_offset = old_length - matched_length;
     DCHECK_LE(start_offset, end_offset);
     HeapVector<InlineItem> items;
-    ClearCollectionScope<HeapVector<InlineItem>> clear_scope(&items);
+    ClearCollectionScope clear_scope(&items);
 
     // +3 for before and after replaced text.
     items.ReserveInitialCapacity(data_->items.size() + 3);
@@ -1295,7 +1290,7 @@ bool InlineNode::IsNGShapeCacheAllowed(
   if (items.size() != 1) {
     return false;
   }
-  if (text_content.length() > NGShapeCache::MaxTextLengthOfEntries()) {
+  if (text_content.length() > NGShapeCache::kMaxTextLengthOfEntries) {
     return false;
   }
   const InlineItem& single_item = items[0];
@@ -1354,12 +1349,14 @@ void InlineNode::ShapeText(InlineItemsData* data,
     }
 #endif
     shaper.SetOptions({
+        .is_line_start = is_next_start_of_paragraph,
         .han_kerning_start =
             is_next_start_of_paragraph &&
             RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled() &&
             ShouldTrimStartOfParagraph(
                 font.GetFontDescription().GetTextSpacingTrim()) &&
-            HanKerning::MaybeOpen(text_content[start_item.StartOffset()]),
+            Character::MaybeHanKerningOpen(
+                text_content[start_item.StartOffset()]),
     });
     is_next_start_of_paragraph = false;
     TextDirection direction = start_item.Direction();
@@ -1462,7 +1459,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     }
 
     // Shape each item with the full context of the entire node.
-    scoped_refptr<const ShapeResult> shape_result =
+    const ShapeResult* shape_result =
         shaper.Shape(start_item, font, end_offset);
 
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
@@ -1470,12 +1467,12 @@ void InlineNode::ShapeText(InlineItemsData* data,
       DCHECK(!allow_shape_cache);
       // The ShapeResult is actually not a reusable entry of NGShapeCache,
       // so it is safe to mutate it.
-      const_cast<ShapeResult*>(shape_result.get())->ApplySpacing(spacing);
+      const_cast<ShapeResult*>(shape_result)->ApplySpacing(spacing);
     }
 
     // If the text is from one item, use the ShapeResult as is.
     if (end_offset == start_item.EndOffset()) {
-      start_item.shape_result_ = std::move(shape_result);
+      start_item.shape_result_ = shape_result;
       DCHECK_EQ(start_item.TextShapeResult()->StartIndex(),
                 start_item.StartOffset());
       DCHECK_EQ(start_item.TextShapeResult()->EndIndex(),
@@ -1488,8 +1485,10 @@ void InlineNode::ShapeText(InlineItemsData* data,
     // corresponding items.
     DCHECK_GT(num_text_items, 0u);
     // "32" is heuristic, most major sites are up to 8 or so, wikipedia is 21.
-    Vector<ShapeResult::ShapeRange, 32> text_item_ranges;
+    HeapVector<ShapeResult::ShapeRange, 32> text_item_ranges;
     text_item_ranges.ReserveInitialCapacity(num_text_items);
+    ClearCollectionScope clear_scope(&text_item_ranges);
+
     const bool has_ligatures =
         shape_result->NumGlyphs() < shape_result->NumCharacters();
     if (has_ligatures) {
@@ -1507,10 +1506,9 @@ void InlineNode::ShapeText(InlineItemsData* data,
       //
       // When multiple code units shape to one glyph, such as ligatures, the
       // item that has its first code unit keeps the glyph.
-      scoped_refptr<ShapeResult> item_result =
-          ShapeResult::CreateEmpty(*shape_result.get());
+      ShapeResult* item_result = ShapeResult::CreateEmpty(*shape_result);
       text_item_ranges.emplace_back(item.StartOffset(), item.EndOffset(),
-                                    item_result.get());
+                                    item_result);
       if (has_ligatures && item.EndOffset() < shape_result->EndIndex() &&
           shape_result->CachedNextSafeToBreakOffset(item.EndOffset()) !=
               item.EndOffset()) {
@@ -1519,7 +1517,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
         // See http://crbug.com/1409702
         item.SetUnsafeToReuseShapeResult();
       }
-      item.shape_result_ = std::move(item_result);
+      item.shape_result_ = item_result;
     }
     DCHECK_EQ(text_item_ranges.size(), num_text_items);
     shape_result->CopyRanges(text_item_ranges.data(), text_item_ranges.size());

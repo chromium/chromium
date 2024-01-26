@@ -16,10 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
@@ -39,7 +37,6 @@ class ExtensionsMenuCoordinator;
 // or be called out to the user.
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ExtensionsContainer,
-                                   public TabStripModelObserver,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
@@ -104,6 +101,13 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // visibility, reordering views if necessary.
   void UpdatePinnedActions();
 
+  // Updates `extensions_button_` icon given user `site_setting` and whether
+  // `is_restricted_url` in `web_contents`.
+  void UpdateExtensionsButton(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      content::WebContents* web_contents,
+      bool is_restricted_url);
+
   // Updates the `request_access_button_` given user `site_setting` for the
   // current `web_contents`.
   void UpdateRequestAccessButton(
@@ -123,9 +127,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extensions_button_;
   }
 
-  // Gets the extensions toolbar controls.
-  ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
-    return extensions_controls_.get();
+  // Get the request access button for the toolbar.
+  ExtensionsRequestAccessButton* GetRequestAccessButton() const {
+    return request_access_button_;
   }
 
   // Get the view corresponding to the extension |id|, if any.
@@ -288,20 +292,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // animation ends.
   void UpdateContainerVisibilityAfterAnimation();
 
-  // Maybe displays the In-Product-Help with a specific priority order.
-  void MaybeShowIPH();
-
   // Triggers the side panel to close.
   void CloseSidePanelButtonPressed();
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -334,9 +326,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
   raw_ptr<ExtensionsRequestAccessButton> request_access_button_ = nullptr;
-
-  // TODO(crbug.com/1511762): Remove controls.
-  std::unique_ptr<ExtensionsToolbarControls> extensions_controls_ = nullptr;
 
   DisplayMode display_mode_;
 

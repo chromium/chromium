@@ -16,6 +16,7 @@
 
 BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
                          SceneState* scene_state,
+                         CommandDispatcher* command_dispatcher,
                          BrowserImpl* active_browser,
                          InsertionPolicy insertion_policy,
                          ActivationPolicy activation_policy)
@@ -23,11 +24,10 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
       browser_state_(browser_state),
       web_state_list_(this),
       scene_state_(scene_state),
-      command_dispatcher_([[CommandDispatcher alloc] init]),
+      command_dispatcher_(command_dispatcher),
       active_browser_(active_browser ?: this) {
   DCHECK(browser_state_);
   DCHECK(active_browser_);
-  DCHECK(command_dispatcher_);
 
   AttachBrowserAgents(this);
 }
@@ -83,8 +83,8 @@ Browser* BrowserImpl::CreateInactiveBrowser() {
   CHECK(!inactive_browser_.get())
       << "This browser already links to its inactive counterpart.";
   inactive_browser_ = std::make_unique<BrowserImpl>(
-      browser_state_, scene_state_, /*active_browser=*/this,
-      BrowserImpl::InsertionPolicy::kAttachTabHelpers,
+      browser_state_, scene_state_, [[CommandDispatcher alloc] init],
+      /*active_browser=*/this, BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kDoNothing);
   return inactive_browser_.get();
 }
@@ -99,7 +99,8 @@ void BrowserImpl::DestroyInactiveBrowser() {
 std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state,
                                          SceneState* scene_state) {
   return std::make_unique<BrowserImpl>(
-      browser_state, scene_state, /*active_browser=*/nullptr,
+      browser_state, scene_state, [[CommandDispatcher alloc] init],
+      /*active_browser=*/nullptr,
       BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kForceRealization);
 }
@@ -108,7 +109,7 @@ std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state,
 std::unique_ptr<Browser> Browser::CreateTemporary(
     ChromeBrowserState* browser_state) {
   return std::make_unique<BrowserImpl>(
-      browser_state, /*scene_state=*/nil, /*active_browser=*/nullptr,
-      BrowserImpl::InsertionPolicy::kDoNothing,
+      browser_state, /*scene_state=*/nil, /*command_dispatcher=*/nil,
+      /*active_browser=*/nullptr, BrowserImpl::InsertionPolicy::kDoNothing,
       BrowserImpl::ActivationPolicy::kDoNothing);
 }

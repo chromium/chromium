@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SSL_MODEL_CAPTIVE_PORTAL_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SSL_MODEL_CAPTIVE_PORTAL_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -31,7 +32,7 @@ class CaptivePortalTabHelper
 
   CaptivePortalTabHelper(web::WebState* web_state);
 
-  TabInsertionBrowserAgent* insertionAgent_;
+  raw_ptr<TabInsertionBrowserAgent> insertionAgent_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

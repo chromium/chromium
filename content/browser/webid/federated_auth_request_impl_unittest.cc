@@ -675,6 +675,7 @@ class TestDialogController
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
@@ -729,7 +730,8 @@ class TestDialogController
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::LoginToIdPCallback
@@ -760,7 +762,8 @@ class TestDialogController
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -3124,6 +3127,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
@@ -3136,7 +3140,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
         top_frame_for_display, iframe_for_display,
-        std::move(identity_provider_data), sign_in_mode,
+        std::move(identity_provider_data), sign_in_mode, rp_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(on_add_account), std::move(dismiss_callback));
   }
@@ -5489,9 +5493,58 @@ TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
   EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kFirstWithoutHints, 1);
   ExpectUKMPresence("MismatchDialogShown");
   ExpectNoUKMPresence("AccountsDialogShown");
   CheckAllFedCmSessionIDs();
+}
+
+// Tests that a mismatch dialog is shown twice.
+TEST_F(FederatedAuthRequestImplTest, DoubleMismatchDialog) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+  MockConfiguration configuration = kConfigurationValid;
+
+  // Setup IdP sign-in status mismatch.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kHttpNotFoundError;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "hint";
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+
+  ukm_loop.Run();
+
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kFirstWithHints, 1);
+  CheckAllFedCmSessionIDs();
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
+      OriginFromString(kProviderUrlFull), true);
+  base::RunLoop().RunUntilIdle();
+
+  // The additional mismatch should be recorded in the metrics.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 2);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.MismatchDialogType", 2);
+  histogram_tester_.ExpectBucketCount(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kRepeatedWithHints, 1);
 }
 
 // Tests that when an accounts request is sent, the appropriate metrics are

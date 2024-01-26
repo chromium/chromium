@@ -81,7 +81,6 @@
 <translation id="3366305173356742781">ඔබේ ගිණුමේ Chromium දත්ත</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}one{Chromium මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}other{Chromium මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}}</translation>
 <translation id="3472200483164753384">Chromium කැනරි තුළ සහාය නොදක්වයි</translation>
-<translation id="3478750326643748149">“Chromium වෙතින් උපරිම ප්‍රයෝජන ගන්න” සඟවන්න</translation>
 <translation id="347967311580159871">ඔබේ Chromium අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="3512168799938877162">ඔබේ මුරපදය බෙදා ගෙන නැත. ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර ඔබ Chromium වෙත පුරනය වී ඇති බව සහතික කර ගන්න. අනතුරුව, නැවත උත්සාහ කරන්න.</translation>
 <translation id="3554027294407525061">Chromium තුළ බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න.</translation>
@@ -101,9 +100,9 @@
 
 මෙම සැකසීම වෙනස් කිරීමට <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chromium දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">ඕනෑම යෙදුමකින් Chromium විවෘත කරන්න</translation>
-<translation id="4002314982058020967">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම් <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chromium දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium තුළ ආරක්ෂක පරීක්ෂාව විවෘත කර ධාවනය කරයි.</translation>
 <translation id="4043291146360695975">මුරපද මෙම උපාංගයේ මුරපද කළමනාකරු තුළ පමණක් සුරැකේ.</translation>
+<translation id="4076589763479456892">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම් <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chromium දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Chromium බීටා තුළ සහාය නොදක්වයි</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> ලෙස පුරනය වී ඇත.
 
@@ -114,7 +113,6 @@
 <translation id="4408912345039114853">Chromium ආරක්ෂණ පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="4432744876818348753">Chromium වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට පුරන්න.</translation>
 <translation id="4445228361214254027">ඔබේ සංවිධානය ඔබේ Google ගිණුම තුළ Chromium දත්ත භාවිත කිරීමේ සහ සුරැකීමේ හැකියාව අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
-<translation id="4485517920713468480">Chromium විසින් ඔබ පිවිසෙන අඩවිවල නිරීක්ෂණ අංක හඳුනාගෙන නව පටිති පිටුවෙහි පැකේජ යාවත්කාලීන පෙන්වනු ඇත. මෙම විශේෂාංගය සැපයීමට සහ සැමට සාප්පු සවාරි දියුණු කිරීමට ඔබේ දත්ත Google සමග බෙදා ගනු ඇත. ඔබට මෙය <ph name="BEGIN_LINK" />පැකේජ නිරීක්ෂණ සැකසීම්<ph name="END_LINK" /> තුළ වෙනස් කළ හැක.</translation>
 <translation id="4498832288620833153">Chromium හි ඔබේ කියවීම් ලැයිස්තුවට ආදාන URL එක් කරයි.</translation>
 <translation id="452436063477828504">ඔබට සැම විටම ඔබේ Google ගිණුමේ Chromium දත්ත භාවිතා කළ හැකි බව සහතික කර ගන්න</translation>
 <translation id="4555020257205549924">මෙම විශේෂාංගය ක්‍රියාත්මක කර ඇති විට, Chromium විසින් Google පරිවර්තනය භාවිත කර වෙනත් භාෂාවලින් ලියා ඇති පිටු පරිවර්තනය කිරීම පිරිනමනු ඇත. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@
 <translation id="5534584691915394889">Chromium සහ Google Lens වෙතින් ඔබේ Apple දින දර්ශනයේ සිදුවීම් තැනීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="5571094606370987472">Chromium මෑත කාලීන පටිති විවෘත කරයි.</translation>
 <translation id="5623083843656850677">ඔබ Chromium හැර යන විට හෝ වෙනස් යෙදුමකට මාරු වන විට ඔබේ අප්‍රසිද්ධ පටිති අගුළු දමන්න.</translation>
+<translation id="5671188105328420281">Chromium ඉඟි</translation>
 <translation id="5688047395118852662">මෙම කාඩ්පත ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ගන්නා ආකාරය පිළිබඳ යෝජනා පෙන්වයි.</translation>
 <translation id="5700709190537129682">Chromium හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැකිය</translation>
 <translation id="5777187867430702742">Chromium පිටුව</translation>
@@ -284,6 +283,7 @@
 <translation id="8776843108004031667">මෙම ගිණුම සහ සුරැකීම් නොකළ දත්ත Chromium වෙතින් ඉවත් කෙරෙනු ඇත.</translation>
 <translation id="88376265765385899">Chromium පිටුසන් විවෘත කරයි.</translation>
 <translation id="8860548555286245440">අප්‍රසිද්ධ තුළ Chromium හි URLs විවෘත කරන්න</translation>
+<translation id="8866191443434488382">Chromium විසින් ඔබ පිවිසෙන අඩවිවල නිරීක්ෂණ අංක හඳුනාගෙන නව පටිති පිටුවෙහි පැකේජ යාවත්කාලීන පෙන්වනු ඇත. මෙම විශේෂාංගය සැපයීමට සහ සැමට සාප්පු සවාරි විශේෂාංග වැඩි දියුණු කිරීමට පැකේජ හඹා යාමේ අංකය සහ වෙබ් අඩවියේ නම Chromium වෙත යවනු ලැබේ. ඔබට මෙය ඕනෑම වේලාවක <ph name="BEGIN_LINK" />පැකේජය හඹා යෑමේ සැකසීම්<ph name="END_LINK" /> තුළ යාවත්කාලීන කළ හැක.</translation>
 <translation id="8909995017390087892">iOS සඳහා Chromium</translation>
 <translation id="8924617840944134898">Chromium අප්‍රකට පටිත්ත විවෘත කරන්න</translation>
 <translation id="894437814105052438">ඔබ වැරූ විට, Chromium ඔබගේ Google ගිණුමට නව දත්ත කිසිවක් සමමුහුර්ත නොකරයි. පෙරදී සමමුහුර්ත කළ දත්ත ගිණුමේ රැඳේ.</translation>

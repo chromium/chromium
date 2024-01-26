@@ -55,6 +55,12 @@ class UseCounterMetricsRecorder {
 
   using UkmFeatureList = base::flat_set<blink::mojom::WebFeature>;
 
+  // Allow test access to assert each user defined feature is mapped correctly
+  // to an allowed WebFeature.
+  static const UkmFeatureList& GetAllowedUkmFeaturesForTesting() {
+    return GetAllowedUkmFeatures();
+  }
+
  private:
   // Returns a list of opt-in UKM features for use counter.
   static const UkmFeatureList& GetAllowedUkmFeatures();

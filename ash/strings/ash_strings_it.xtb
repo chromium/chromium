@@ -228,7 +228,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> non supporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Nuova installazione</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
@@ -267,7 +266,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2075520525463668108">Attiva/disattiva <ph name="CAPTURE_MEDIUM" />. La funzionalità <ph name="CAPTURE_MEDIUM" /> è <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2083190527011054446">Buonanotte <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Aprire il selettore di emoji</translation>
@@ -283,7 +281,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2149229036084364364">Vai alla traccia precedente</translation>
 <translation id="2152895518047545149">Sembra che non manchi nulla. Ottimo!</translation>
 <translation id="2161132820593978283">Prova Zoom automatico per essere al centro dello schermo durante le videochiamate. Attiva la funzionalità nelle Impostazioni rapide.</translation>
-<translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="2185166372312820725">Passa alla scheda precedente</translation>
 <translation id="2185444992308415167">Scorri le schede da 1 a 8</translation>
 <translation id="2198625180564913276">Aggiunta del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
@@ -412,10 +409,12 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
 <translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
+<translation id="2744221223678373668">Condivise</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
+<translation id="2762000892062317888">in questo istante</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+ Tasto per la ricerca + S</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3580650856351781466">Download dei file di contenuti vocali in corso…</translation>
 <translation id="3585296979871889131">Visualizza app, notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
+<translation id="3590441166907930941">Tasto laterale</translation>
 <translation id="3593039967545720377">Accedi alla cronologia degli appunti premendo <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Copia un elemento per iniziare.</translation>
 <translation id="3593646411856133110">Scorri verso l'alto e tieni premuto per vedere le app aperte</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
@@ -729,6 +729,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3986082989454912832">Rispondi</translation>
 <translation id="3990002060657467458">I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire degli screenshot.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
+<translation id="4002066346123236978">Titolo</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4011112806063830608">Modalità Non disturbare attiva.</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
@@ -1032,6 +1033,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5163434717504750796">Integrità della batteria <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Numero di cicli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salva scrivania come modello</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
+<translation id="5168753792967365150">Modifica in Google Tasks</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5187627942836026988">Mostra i dettagli relativi all'hotspot. L'hotspot è stato bloccato dall'amministratore.</translation>
@@ -1301,6 +1303,8 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6168622430237609329">Le app che hai installato</translation>
 <translation id="6173151025443907148">L'accesso di un secondo utente non è supportato se Lacros è attivo. Usa un secondo profilo del browser in Lacros oppure disattiva Lacros e riprova.</translation>
 <translation id="6179832488876878285">Puoi bloccare qui i tuoi file importanti. Apri l'app File per iniziare.</translation>
+<translation id="6180193585172850042">Tasto Indietro</translation>
+<translation id="6180651297859206670">Tasto Avanti</translation>
 <translation id="6182592640011875895">Apri scrivania</translation>
 <translation id="6185696379715117369">Pagina su</translation>
 <translation id="619335566042889110">Ricarica completamente adesso</translation>
@@ -1690,7 +1694,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7850320739366109486">Non disturbare</translation>
 <translation id="7851039877802112575">Sposta lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Scorri con tre dita verso l'alto per attivare la modalità Panoramica</translation>
 <translation id="7862292329216937261">Per utilizzare il dispositivo come ospite, devi uscire e selezionare Naviga come ospite nella parte inferiore della schermata.</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
@@ -1801,7 +1804,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
-<translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8308637677604853869">Menu precedente</translation>

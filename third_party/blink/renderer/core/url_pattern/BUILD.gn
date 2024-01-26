@@ -13,8 +13,6 @@ blink_core_sources("url_pattern") {
     "url_pattern_canon.h",
     "url_pattern_component.cc",
     "url_pattern_component.h",
-    "url_pattern_parser.cc",
-    "url_pattern_parser.h",
   ]
 
   public_deps = [

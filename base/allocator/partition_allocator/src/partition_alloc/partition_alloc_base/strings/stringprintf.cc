@@ -4,11 +4,11 @@
 
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
+#include <cstdarg>
+#include <cstdio>
+
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
-
-#include <stdarg.h>
-#include <stdio.h>
 
 namespace partition_alloc::internal::base {
 

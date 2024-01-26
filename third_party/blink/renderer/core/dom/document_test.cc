@@ -1794,7 +1794,7 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
 TEST_F(UnassociatedListedElementTest,
        GetUnassociatedListedElementsFromShadowTree) {
   ShadowRoot& shadow_root =
-      GetDocument().body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+      GetDocument().body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
   HTMLInputElement* input =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());
   shadow_root.AppendChild(input);

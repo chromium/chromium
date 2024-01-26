@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
+#include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
@@ -138,6 +139,7 @@ class AnimationClock;
 class AriaNotificationOptions;
 class Attr;
 class BeforeUnloadEventListener;
+class CaretPosition;
 class CDATASection;
 class CSSStyleSheet;
 class CanvasFontCache;
@@ -268,19 +270,6 @@ struct WebPrintPageDescription;
 
 using MouseEventWithHitTestResults = EventWithHitTestResults<WebMouseEvent>;
 
-enum NodeListInvalidationType : int {
-  kDoNotInvalidateOnAttributeChanges = 0,
-  kInvalidateOnClassAttrChange,
-  kInvalidateOnIdNameAttrChange,
-  kInvalidateOnNameAttrChange,
-  kInvalidateOnForAttrChange,
-  kInvalidateForFormControls,
-  kInvalidateOnHRefAttrChange,
-  kInvalidateOnAnyAttrChange,
-  kInvalidateOnPopoverInvokerAttrChange,
-};
-const int kNumNodeListInvalidationTypes = kInvalidateOnAnyAttrChange + 1;
-
 // Specifies a class of document. Values are not mutually exclusive, and can be
 // combined using `DocumentClassFlags`.
 //
@@ -379,6 +368,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   static Range* CreateRangeAdjustedToTreeScope(const TreeScope&,
                                                const Position&);
+  static CaretPosition* CreateCaretPositionAdjustedToTreeScope(
+      const TreeScope& tree_scope,
+      const Position& position);
+
+  static const Position PositionAdjustedToTreeScope(const TreeScope&,
+                                                    const Position&);
 
   // Support JS introspection of frame policy (e.g. permissions policy).
   DOMFeaturePolicy* featurePolicy();
@@ -478,6 +473,7 @@ class CORE_EXPORT Document : public ContainerNode,
                             const CreateElementFlags = CreateElementFlags());
 
   Range* caretRangeFromPoint(int x, int y);
+  CaretPosition* caretPositionFromPoint(float x, float y);
   Element* scrollingElement();
 
   // When calling from C++ code, use this method. scrollingElement() is
@@ -499,6 +495,10 @@ class CORE_EXPORT Document : public ContainerNode,
   AtomicString EncodingName() const;
 
   void SetContent(const String&);
+
+  // DOMParser::parseFromString() calls to this. Does the same thing as
+  // `setContent()`, but may use the fast path parser.
+  void SetContentFromDOMParser(const String&);
 
   String SuggestedMIMEType() const;
   void SetMimeType(const AtomicString&);
@@ -1577,15 +1577,13 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HTMLElement* PopoverHintShowing() const {
-    return popover_hint_showing_.Get();
-  }
-  void SetPopoverHintShowing(HTMLElement* element);
-  HeapVector<Member<HTMLElement>>& PopoverStack() { return popover_stack_; }
-  const HeapVector<Member<HTMLElement>>& PopoverStack() const {
-    return popover_stack_;
-  }
-  bool PopoverAutoShowing() const { return !popover_stack_.empty(); }
+  using PopoverStack = HeapVector<Member<HTMLElement>>;
+  const PopoverStack& PopoverHintStack() const { return popover_hint_stack_; }
+  PopoverStack& PopoverHintStack() { return popover_hint_stack_; }
+  bool PopoverHintShowing() const { return !popover_hint_stack_.empty(); }
+  PopoverStack& PopoverAutoStack() { return popover_auto_stack_; }
+  const PopoverStack& PopoverAutoStack() const { return popover_auto_stack_; }
+  bool PopoverAutoShowing() const { return !popover_auto_stack_.empty(); }
   HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
     return all_open_popovers_;
   }
@@ -2070,6 +2068,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class MobileFriendlinessCheckerTest;
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   friend class TapFriendlinessCheckerTest;
+  friend class DocumentStorageAccess;
   FRIEND_TEST_ALL_PREFIXES(LazyLoadAutomaticImagesTest,
                            LoadAllImagesIfPrinting);
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextSubresourceFilterTest,
@@ -2243,10 +2242,19 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void RunPostPrerenderingActivationSteps();
 
+  // Attempt permission checks for unpartitioned storage access and enable
+  // unpartitioned cookie access based on success if
+  // `request_unpartitioned_cookie_access` is true.
+  ScriptPromise RequestStorageAccessImpl(
+      ScriptState* script_state,
+      bool request_unpartitioned_cookie_access);
+
   // Resolves the promise if the `status` can approve; rejects the promise
-  // otherwise, and consumes user activation.
+  // otherwise, and consumes user activation. Enables unpartitioned cookie
+  // access if `request_unpartitioned_cookie_access` is true.
   void ProcessStorageAccessPermissionState(
       ScriptPromiseResolver* resolver,
+      bool request_unpartitioned_cookie_access,
       mojom::blink::PermissionStatus status);
 
   // Similar to `ProcessStorageAccessPermissionState`, but for the top-level
@@ -2542,11 +2550,16 @@ class CORE_EXPORT Document : public ContainerNode,
   };
   VectorOf<TopLayerPendingRemoval> top_layer_elements_pending_removal_;
 
-  // The stack of currently-displayed `popover=auto` elements. Elements in the
-  // stack go from earliest (bottom-most) to latest (top-most).
-  HeapVector<Member<HTMLElement>> popover_stack_;
-  // The `popover=hint` that is currently showing, if any.
-  Member<HTMLElement> popover_hint_showing_;
+  // The stack of currently-displayed popover elements that descend from a root
+  // `popover=auto` element. Elements in the stack go from earliest
+  // (bottom-most) to latest (top-most). Note that `popover=hint` elements can
+  // exist in this stack, but there will never be a `popover=auto` that comes
+  // after that in the stack.
+  HeapVector<Member<HTMLElement>> popover_auto_stack_;
+  // The stack of currently-displayed `popover=hint` elements. Ordering in the
+  // stack is the same as for `popover_auto_stack_`. This stack will only ever
+  // contain `popover=hint` elements, and nothing else.
+  HeapVector<Member<HTMLElement>> popover_hint_stack_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
   // A set of popovers for which hidePopover() has been called, but animations

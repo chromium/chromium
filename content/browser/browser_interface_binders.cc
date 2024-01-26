@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -117,6 +118,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
@@ -153,6 +155,7 @@
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -927,6 +930,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderFrameHostImpl::GetWebAuthenticationService,
                           base::Unretained(host)));
 
+  map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
+      &RenderFrameHostImpl::CreatePaymentCredential, base::Unretained(host)));
+
   map->Add<blink::test::mojom::VirtualAuthenticatorManager>(
       base::BindRepeating(&RenderFrameHostImpl::GetVirtualAuthenticatorManager,
                           base::Unretained(host)));
@@ -1110,8 +1116,6 @@ void PopulateBinderMapWithContext(
   // production embedder (such as in tests).
   map->Add<blink::mojom::NoStatePrefetchProcessor>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::NoStatePrefetchProcessor>));
-  map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
-      &EmptyBinderForFrame<payments::mojom::PaymentCredential>));
   map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
       &EmptyBinderForFrame<payments::mojom::PaymentRequest>));
   map->Add<blink::mojom::AnchorElementMetricsHost>(base::BindRepeating(
@@ -1120,6 +1124,8 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
   map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
+  map->Add<blink::mojom::ModelManager>(
+      base::BindRepeating(&EmptyBinderForFrame<blink::mojom::ModelManager>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {

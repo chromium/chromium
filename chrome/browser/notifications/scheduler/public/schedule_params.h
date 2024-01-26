@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_SCHEDULE_PARAMS_H_
 
 #include <map>
+#include <optional>
 
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -40,15 +40,15 @@ struct ScheduleParams {
   std::map<UserFeedback, ImpressionResult> impression_mapping;
 
   // The start time of the deliver time window of the notification.
-  absl::optional<base::Time> deliver_time_start;
+  std::optional<base::Time> deliver_time_start;
 
   // The end time of the deliver time window of the notification. Use in pair
   // with |deliver_time_start|.
-  absl::optional<base::Time> deliver_time_end;
+  std::optional<base::Time> deliver_time_end;
 
   // Duration to mark notification without feedback as ignored.
   // when try to analyze the impressions.
-  absl::optional<base::TimeDelta> ignore_timeout_duration;
+  std::optional<base::TimeDelta> ignore_timeout_duration;
 };
 
 }  // namespace notifications

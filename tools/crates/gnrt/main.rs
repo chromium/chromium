@@ -17,10 +17,6 @@ use gnrt_lib::*;
 
 #[derive(Debug, Parser)]
 struct GnrtArgs {
-    #[arg(long, help = "path to the cargo executable")]
-    cargo_path: Option<String>,
-    #[arg(long, help = "path to the rustc executable")]
-    rustc_path: Option<String>,
     #[command(subcommand)]
     command: Command,
 }
@@ -103,13 +99,12 @@ fn main() -> Result<()> {
     let args = GnrtArgs::parse();
 
     let paths = paths::ChromiumPaths::new().context("Could not find chromium checkout paths")?;
-    let tools = paths::ToolPaths { cargo: args.cargo_path.clone(), rustc: args.rustc_path.clone() };
 
     match args.command {
-        Command::Add(args) => add::add(args, &tools, &paths),
-        Command::Gen(args) => gen::generate(args, &tools, &paths),
-        Command::Update(args) => update::update(args, &tools, &paths),
-        Command::Vendor(args) => vendor::vendor(args, &tools, &paths),
+        Command::Add(args) => add::add(args, &paths),
+        Command::Gen(args) => gen::generate(args, &paths),
+        Command::Update(args) => update::update(args, &paths),
+        Command::Vendor(args) => vendor::vendor(args, &paths),
     }
 }
 

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
-#include "base/base_paths.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -27,6 +25,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/base_paths.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -37,6 +36,7 @@
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -75,6 +75,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
@@ -2646,6 +2647,8 @@ void FileManagerBrowserTestBase::TearDownOnMainThread() {
   if (error_url_.is_valid()) {
     storage::CopyOrMoveOperationDelegate::SetErrorUrlForTest(nullptr);
   }
+  file_manager::io_task::CopyOrMoveIOTaskImpl::SetDestinationNoSpaceForTesting(
+      false);
 }
 
 void FileManagerBrowserTestBase::TearDown() {
@@ -4015,6 +4018,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         /*filesystem_id*/ "v2",
         /*mount_option*/ {});
     storage::CopyOrMoveOperationDelegate::SetErrorUrlForTest(&error_url_);
+    return;
+  }
+
+  if (name == "mockIOTaskDestinationNoSpace") {
+    file_manager::io_task::CopyOrMoveIOTaskImpl::
+        SetDestinationNoSpaceForTesting(true);
     return;
   }
 

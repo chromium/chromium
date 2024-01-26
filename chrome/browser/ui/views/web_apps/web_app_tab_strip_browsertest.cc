@@ -104,7 +104,8 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
-    web_app_info->user_display_mode = mojom::UserDisplayMode::kTabbed;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
     webapps::AppId app_id =
         test::InstallWebApp(profile, std::move(web_app_info));
 

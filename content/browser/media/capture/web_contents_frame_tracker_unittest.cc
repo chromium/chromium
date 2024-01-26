@@ -82,12 +82,18 @@ class SimpleContext : public WebContentsFrameTracker::Context {
 
 // The capture device is mostly for interacting with the frame tracker. We do
 // care about the frame tracker pushing back target updates, however.
-class MockCaptureDevice : public WebContentsVideoCaptureDevice,
-                          public base::SupportsWeakPtr<MockCaptureDevice> {
+class MockCaptureDevice : public WebContentsVideoCaptureDevice {
  public:
   MOCK_METHOD2(OnTargetChanged,
                void(const std::optional<viz::VideoCaptureTarget>&, uint32_t));
   MOCK_METHOD0(OnTargetPermanentlyLost, void());
+
+  base::WeakPtr<MockCaptureDevice> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockCaptureDevice> weak_ptr_factory_{this};
 };
 
 // This test class is intentionally quite similar to
@@ -183,7 +189,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   // The controller is ignored on Android, and must be initialized on all
   // other platforms.
   MouseCursorOverlayController* controller() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return nullptr;
 #else
     return &controller_;
@@ -194,7 +200,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   StrictMock<MockCaptureDevice>* device() { return device_.get(); }
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MouseCursorOverlayController controller_;
 #endif
 

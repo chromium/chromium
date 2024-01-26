@@ -10,7 +10,6 @@ chrome.runtime.onInstalled.addListener((details) => {
   }, 0);
 });
 
-// TODO(crbug.com/1441221): Why doesn't onCompleted work for our test?
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   // Asynchronously send the message that the listener fired so that the event
   // is considered ack'd in the browser C++ code.

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <optional>
 #include <utility>
 
 #include "ipcz/ipcz.h"
@@ -1423,8 +1424,8 @@ void Router::Flush(const OperationContext& context, FlushBehavior behavior) {
   Ref<RouterLink> dead_inward_link;
   Ref<RouterLink> dead_outward_link;
   Ref<RouterLink> dead_bridge_link;
-  absl::optional<SequenceNumber> final_inward_sequence_length;
-  absl::optional<SequenceNumber> final_outward_sequence_length;
+  std::optional<SequenceNumber> final_inward_sequence_length;
+  std::optional<SequenceNumber> final_outward_sequence_length;
   bool on_central_link = false;
   bool inward_link_decayed = false;
   bool outward_link_decayed = false;

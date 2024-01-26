@@ -193,11 +193,13 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     // TODO(crbug.com/1415486): Support variable window radii.
     DCHECK(IsRadiiUniform(window_radii.value()));
 
+    const int corner_radius = window_radii->upper_left();
+
     if (GetFrameEnabled()) {
-      header_view_->SetHeaderCornerRadius(window_radii->upper_left());
+      header_view_->SetHeaderCornerRadius(corner_radius);
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners();
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -269,21 +271,16 @@ class CustomClientView : public views::ClientView {
   ~CustomClientView() override = default;
 
   // ClientView:
-  void UpdateWindowRoundedCorners() override {
-    absl::optional<gfx::RoundedCornersF> window_radii =
-        shell_surface_->window_corners_radii();
-
+  void UpdateWindowRoundedCorners(int corner_radius) override {
     DCHECK(GetWidget());
     const bool frame_enabled = static_cast<CustomFrameView*>(
                                    GetWidget()->non_client_view()->frame_view())
                                    ->GetFrameEnabled();
 
-    // TODO(crbug.com/1415486): Support variable window radii.
-    DCHECK(IsRadiiUniform(window_radii.value()));
+    const float corner_radius_f = corner_radius;
     const gfx::RoundedCornersF root_surface_radii = {
-        frame_enabled ? 0 : window_radii->upper_left(),
-        frame_enabled ? 0 : window_radii->upper_right(),
-        window_radii->lower_right(), window_radii->lower_left()};
+        frame_enabled ? 0 : corner_radius_f,
+        frame_enabled ? 0 : corner_radius_f, corner_radius_f, corner_radius_f};
 
     const Surface* root_surface = shell_surface_->root_surface();
 
@@ -1164,8 +1161,23 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     return;
   }
 
-  bool frame_was_disabled = !frame_enabled();
   bool frame_type_changed = frame_type_ != frame_type;
+
+  // aura-shell's set_frame, when used with xdg-shell, works iff the frame type
+  // or frame colors were specified before firsrt buffer commit. If these are
+  // not specified, the widget's layer is set to 'NOT_DRAWN' and the frame can't
+  // be drawn. `ClientControlledShellSurface is not affected.
+  if (frame_type_changed && widget_ &&
+      widget_->GetNativeWindow()->layer()->type() == ui::LAYER_NOT_DRAWN) {
+    if (frame_type != SurfaceFrameType::NONE &&
+        frame_type != SurfaceFrameType::SHADOW) {
+      DLOG(FATAL)
+          << "A shell surface with NOT_DRAWN layer can't support visible frame";
+      return;
+    }
+  }
+  bool frame_was_disabled = !frame_enabled();
+
   frame_type_ = frame_type;
   switch (frame_type) {
     case SurfaceFrameType::NONE:
@@ -2066,6 +2078,25 @@ void ShellSurfaceBase::UpdateShadow() {
       shadow->SetElevation(wm::kShadowElevationMenuOrTooltip);
 
     UpdateShadowRoundedCorners();
+  }
+
+  if (window->layer()->type() == ui::LAYER_NOT_DRAWN) {
+    DCHECK(!window->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
+
+    // Snapped window should not be opaque because it can be drag-resized, in
+    // which case the widget's window can be exposed while waiting for
+    // configure_ack + commit.
+    bool window_is_opaque = widget_->IsFullscreen() || widget_->IsMaximized();
+    window->SetTransparent(!window_is_opaque);
+    if (root_surface()->FillsBoundsOpaquely()) {
+      // Manually control occlusion, but do not make the window
+      // opaque as the host window may not be at the same size unless the
+      // window state is either in fullscreen or maximized.
+      window->SetOpaqueRegionsForOcclusion(
+          {gfx::Rect(window->bounds().size())});
+    } else {
+      window->SetOpaqueRegionsForOcclusion({});
+    }
   }
 }
 

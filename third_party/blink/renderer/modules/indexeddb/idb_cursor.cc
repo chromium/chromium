@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
@@ -89,8 +88,7 @@ v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
     static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
     V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
         .Set(wrapper,
-             ToV8Traits<IDBRequest>::ToV8(isolate, request_.Get(), wrapper)
-                 .ToLocalChecked());
+             ToV8Traits<IDBRequest>::ToV8(isolate, request_.Get(), wrapper));
   }
   return wrapper;
 }
@@ -385,7 +383,7 @@ void IDBCursor::Close() {
 
 ScriptValue IDBCursor::key(ScriptState* script_state) {
   key_dirty_ = false;
-  return ScriptValue::From(script_state, key_.get());
+  return ScriptValue(script_state->GetIsolate(), key_->ToV8(script_state));
 }
 
 ScriptValue IDBCursor::primaryKey(ScriptState* script_state) {
@@ -402,7 +400,8 @@ ScriptValue IDBCursor::primaryKey(ScriptState* script_state) {
 
     primary_key = value_->Value()->PrimaryKey();
   }
-  return ScriptValue::From(script_state, primary_key);
+  return ScriptValue(script_state->GetIsolate(),
+                     primary_key->ToV8(script_state));
 }
 
 ScriptValue IDBCursor::value(ScriptState* script_state) {
@@ -425,8 +424,7 @@ ScriptValue IDBCursor::value(ScriptState* script_state) {
   }
 
   value_dirty_ = false;
-  ScriptValue script_value = ScriptValue::From(script_state, value);
-  return script_value;
+  return ScriptValue(script_state->GetIsolate(), value->ToV8(script_state));
 }
 
 const IDBCursor::Source* IDBCursor::source() const {

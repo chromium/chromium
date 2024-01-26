@@ -27,6 +27,7 @@ class FeaturePromoRegistry;
 class FeaturePromoSessionPolicy;
 class FeaturePromoStorageService;
 class HelpBubbleFactoryRegistry;
+class ProductMessagingController;
 class TutorialService;
 }  // namespace user_education
 
@@ -54,7 +55,8 @@ class BrowserFeaturePromoController
       user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
       user_education::FeaturePromoStorageService* storage_service,
       user_education::FeaturePromoSessionPolicy* session_policy,
-      user_education::TutorialService* tutorial_service);
+      user_education::TutorialService* tutorial_service,
+      user_education::ProductMessagingController* messaging_controller);
   ~BrowserFeaturePromoController() override;
 
   // Creates (or doesn't create) a FeaturePromoController for the specified

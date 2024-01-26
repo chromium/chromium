@@ -333,7 +333,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     extension_service_->AddExtension(extension);
   }
 
-  void InstallerDone(const absl::optional<CrxInstallError>& error) {
+  void InstallerDone(const std::optional<CrxInstallError>& error) {
     ASSERT_FALSE(error);
     waiter_.SignalCompleted();
   }

@@ -19,6 +19,7 @@ source_set("model") {
   ]
   deps = [
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
     "//ios/chrome/browser/omaha/model",

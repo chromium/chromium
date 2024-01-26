@@ -19,6 +19,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/flags/flag.h"
 #include "absl/log/flags.h"
+#include "absl/log/globals.h"
 #include "absl/log/log.h"
 #include "absl/log/scoped_mock_log.h"
 #include "absl/types/optional.h"

@@ -228,6 +228,18 @@
       <message name="IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
       Similar:
        </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_LABEL_TEXT" desc="The text that precedes a formula description in a Quick Answers unit conversion result card.">
+      Formula
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_MULTIPLICATION_OPERATOR_TEXT" desc="The text that denotes a multiplication operation in the formula in a Quick Answers unit conversion result card.">
+      multiply
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DIVISION_OPERATOR_TEXT" desc="The text that denotes a division operation in the formula in a Quick Answers unit conversion result card.">
+      divide
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DESCRIPTION_TEXT" desc="The formula description text format string used for Quick Answers unit conversion result card. The first placeholder contains the arithmetic operator, the second placeholder contains the unit conversion category, and the third placeholder contains the conversion rate number.">
+      For an approximate result, <ph name="OPERATOR_TEXT">$1<ex>multiply</ex></ph> the <ph name="CATEGORY_TEXT">$2<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$3<ex>3</ex></ph>
+       </message>
       <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
         pounds
       </message>
@@ -328,7 +340,7 @@
         Use Orca to create a draft or refine existing work, powered by Google AI
       </message>
       <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
-        Dismiss
+        No thanks
       </message>
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
         Try it
@@ -2487,7 +2499,7 @@
           Auto
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER" translateable="false" desc="In Personalization>Wallpaper, the warning text that tells users that system geolocation permission is needed for auto theme mode scheduling">
-          Current schedule is set to 6am - 6pm. To automatically update the dark mode schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+          Current schedule won't be updated. To automatically update the dark mode schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" translateable="false" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           Weather is not displayed because it doesn't know your location. To display local weather, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
@@ -3108,7 +3120,27 @@
         <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
           Something went wrong. Try again.
         </message>
-
+        <message name="IDS_SEA_PEN_THUMBNAILS_LOADING" desc="Placeholder text displayed when thumbnails are loading">
+          Generating images...
+        </message>
+        <message name="IDS_SEA_PEN_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
+          Feedback for wallpaper powered by Google AI
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_DIALOG_TITLE" desc="Title for the wallpaper terms of service dialog.">
+          Terms of service
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_ACCEPT_BUTTON" desc="The button which accepts and agrees to the terms for wallpaper service.">
+          I agree
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_REFUSE_BUTTON" desc="The button which refuses the terms for wallpaper service.">
+          No thanks
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC" desc="Title for the wallpaper terms of service dialog.">
+          You must be at least 18 years old and agree your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK">&lt;a target="_blank" href="https://policies.google.com/terms"&gt;</ph>Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;a target="_blank" href="https://policies.google.com/terms/generative-ai"&gt;</ph>Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;/a&gt;</ph>.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=copyeditor"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
@@ -3990,13 +4022,13 @@
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google." translateable="false">
           This update is provided by the external device manufacturer and hasn't been verified by Google.
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB device be unplugged and reinserted." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted." translateable="false">
           The update will continue when the device USB cable has been unplugged and then re-inserted.
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB device be unplugged." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged." translateable="false">
           The update will continue when the device USB cable has been unplugged.
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB device be reinserted." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be reinserted." translateable="false">
           The update will continue when the device USB cable has been re-inserted.
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated." translateable="false">
@@ -4007,6 +4039,9 @@
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
           Unplug and replug the device, then install the firmware.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER" desc="Request shown to the user during an update, requesting that the device power cable be unplugged and reinserted." translateable="false">
+          The update will continue when the device power cable has been unplugged and then re-inserted.
         </message>
         <!-- Search Page -->
         <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
@@ -4264,22 +4299,22 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that use only 'shift' as modifier">
-          Shortcut not available. Press a new shortcut using shift and 1 more modifier key (ctrl, alt, search, or launcher).
+          Shortcut not available. Press a new shortcut using shift and 1 more modifier key (ctrl, alt, or <ph name="meta_key">$1<ex>search</ex></ph>).
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that does not include a modifier key.">
-          Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, search, or launcher).
+          Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, or <ph name="meta_key">$1<ex>search</ex></ph>).
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that includes a top row key but does not include the search key">
-          Shortcut with top row keys need to include the search key.
+            that includes a top row key but does not include the search/launcher key">
+          Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that includes the search key with a function key.">
-          Shortcut not available. Press a new shortcut without using function and search keys.
+            that includes the search/launcher key with a function key.">
+          Shortcut not available. Press a new shortcut without using function and <ph name="meta_key">$1<ex>search</ex></ph> keys.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_RESERVED_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
@@ -4287,8 +4322,8 @@
           Shortcut not available. Press a new shortcut without <ph name="key">$1<ex>CapsLock</ex></ph>.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
-            desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/meta key.">
-          Shortcut without search key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the search key.
+            desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/launcher key.">
+          Shortcut without <ph name="meta_key">$1<ex>search</ex></ph> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="key">$1<ex>search</ex></ph> key.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
@@ -4743,22 +4778,72 @@
         <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_BODY" desc="Button placement mode rich nudge body text." translateable="false">
           Place control on game action to play with your keyboard
         </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY" desc="The instruction in the second last row of the Button Options Menu to assign a key from the keyboard to a newly created button." translateable="false">
+          Assign a keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY" desc="The label in the second last row of the Button Options Menu indicating which keyboard key has been assigned to the selected button." translateable="false">
+          Assigned keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_BUTTON_TYPE" desc="The text directly above the Joystick and Single Button options in the Button Options Menu saying to choose between the two options." translateable="false">
+          Select your control type
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_DELETE_TOOLTIP_TEXT" desc="The tooltip text for the trash button within Game Controls so that users know what the button does." translateable="false">
+          Delete
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_EDIT_INFO" desc="The text directly below the title of the Button Options Menu explaining that you can choose keyboard keys for the current mobile game." translateable="false">
+          Place controls on game actions to play with keyboard keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL" desc="The button label of the single button fir choosing that button type in the 'Create Button' menu." translateable="false">
+          Button
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL" desc="The button label of the joystick button for choosing that button type in the 'Create Button' menu." translateable="false">
+          Joystick
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu." translateable="false">
+          Done
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
+          Assign first control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu having created at least one button." translateable="false">
+          Assign another control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_TITLE" desc="The title of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Quickly switch keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_SUB_TITLE" desc="The subtitle of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Reassign by selecting a new key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_TITLE" desc="The title in the header row of the Game Controls editor menu." translateable="false">
+          Controls
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_HELP_BUTTON_NAME" desc="Helper button tooltip text and a11y label." translateable="false">
+          Get help
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL" desc="Done button a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Done editing
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 
       <!-- Strings for WebAppSettings -->
-      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
-        {NUM_ROOL_APPS, plural, offset:2
-          =1 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> to start automatically every time you log in.}
-          =2 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> and <ph name="APP_NAME_2">{APP_NAME_2}</ph> to start automatically every time you log in.}
-          =3 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and <ph name="APP_NAME_3">{APP_NAME_3}</ph> to start automatically every time you log in.}
-          other {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and # other apps to start automatically every time you log in.}
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_NO_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
+        {NUM_ROOL_APPS, plural, offset:1
+          =1 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically every time you log in.}
+          =2 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and 1 other app to start automatically every time you log in.}
+          other {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and # other apps to start automatically every time you log in.}
         }
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_ONE_APP_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when one application is automatically started on OS login and is prevented from closing.">
+        Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically. This app may not be closed.
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MULTIPLE_APPS_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when multiple applications are automatically started on OS login and are prevented from closing.">
+        Your administrator has set up some apps to start automatically. Some of these apps may not be closed.
       </message>
 
       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_TITLE" desc="This is the title of the notification when an application is automatically started on OS login. [ICU Syntax]">
         {NUM_ROOL_APPS, plural,
-          =1 {<ph name="APP_NAME_1">{APP_NAME_1}</ph> was started automatically}
+          =1 {"<ph name="APP_NAME_1">{APP_NAME_1}</ph>" was started automatically}
           other {# apps were started automatically}
         }
       </message>

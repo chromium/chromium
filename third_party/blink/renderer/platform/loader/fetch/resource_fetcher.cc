@@ -922,8 +922,10 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     const ResourceFactory& factory,
     bool is_static_data,
     bool same_top_frame_site_resource_cached) const {
-  if (is_static_data)
+  // Do not count static data or data not associated with the MemoryCache.
+  if (is_static_data || !IsMainThread()) {
     return;
+  }
 
   if (params.IsSpeculativePreload() || params.IsLinkPreload()) {
     RecordResourceHistogram("Preload.", factory.GetType(), policy);
@@ -1250,7 +1252,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   ImageLoadBlockingPolicy load_blocking_policy =
       ImageLoadBlockingPolicy::kDefault;
   if (resource->GetType() == ResourceType::kImage) {
-    image_resources_.insert(resource);
     not_loaded_image_resources_.insert(resource);
     if (params.GetImageRequestBehavior() ==
         FetchParameters::ImageRequestBehavior::kNonBlockingImage) {
@@ -1281,7 +1282,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
         TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)),
         "outcome", "Fail");
   }
-
   return resource;
 }
 
@@ -2744,9 +2744,7 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
   const size_t resource_size =
       static_cast<size_t>(resource->GetResponse().DecodedBodyLength());
   const bool size_is_small_enough = resource_size <= resource_size_threshold &&
-                                    resource_size <= total_size_threshold &&
-                                    document_resource_strong_refs_total_size_ <=
-                                        total_size_threshold - resource_size;
+                                    resource_size <= total_size_threshold;
 
   if (!size_is_small_enough) {
     return;
@@ -2758,13 +2756,23 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
     return;
   }
 
-  document_resource_strong_refs_.insert(resource);
-  document_resource_strong_refs_total_size_ += resource_size;
-  freezable_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                    WrapWeakPersistent(this), WrapWeakPersistent(resource)),
-      GetResourceStrongReferenceTimeout(resource));
+  if (base::FeatureList::IsEnabled(
+          features::kResourceFetcherStoresStrongReferences)) {
+    // If the size would take us over, don't store it.
+    if (document_resource_strong_refs_total_size_ + resource_size >
+        total_size_threshold) {
+      return;
+    }
+    document_resource_strong_refs_.insert(resource);
+    document_resource_strong_refs_total_size_ += resource_size;
+    freezable_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                      WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+        GetResourceStrongReferenceTimeout(resource));
+  } else {
+    MemoryCache::Get()->SaveStrongReference(resource);
+  }
 }
 
 void ResourceFetcher::OnMemoryPressure(
@@ -2797,7 +2805,6 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(non_blocking_loaders_);
   visitor->Trace(cached_resources_map_);
   visitor->Trace(emulated_load_started_for_inspector_resources_map_);
-  visitor->Trace(image_resources_);
   visitor->Trace(not_loaded_image_resources_);
   visitor->Trace(preloads_);
   visitor->Trace(matched_preloads_);

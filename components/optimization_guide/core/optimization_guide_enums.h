@@ -271,12 +271,15 @@ enum class OnDeviceModelEligibilityReason {
   kTooManyRecentTimeouts = 7,
   // The on-device safety model was required but not available.
   kSafetyModelNotAvailable = 8,
+  // The on-device safety model was available but there was not a safety config
+  // available for the feature.
+  kSafetyConfigNotAvailableForFeature = 9,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kSafetyModelNotAvailable,
+  kMaxValue = kSafetyConfigNotAvailableForFeature,
 };
 
 // Status of the on-device model.
@@ -383,6 +386,31 @@ enum class OnDeviceModelLoadResult {
 
   // Insert new values before this line.
   kMaxValue = kFailedToLoadLibrary,
+};
+
+// The validity of the model metadata packaged with the text safety model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TextSafetyModelMetadataValidity {
+  kUnknown = 0,
+
+  // No metadata packaged with model.
+  kNoMetadata = 1,
+
+  // Metadata packaged with model is of the wrong type.
+  kMetadataWrongType = 2,
+
+  // Metadata packaged with model has no feature configs.
+  kNoFeatureConfigs = 3,
+
+  // Metadata was valid.
+  kValid = 4,
+
+  // This must be kept in sync with TextSafetyModelMetadataValidity in
+  // optimization/enums.xml.
+
+  kMaxValue = kValid,
 };
 
 }  // namespace optimization_guide

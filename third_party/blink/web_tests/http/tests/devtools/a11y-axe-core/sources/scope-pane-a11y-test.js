@@ -12,7 +12,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   await TestRunner.showPanel('sources');
-  await UI.ViewManager.ViewManager.instance().showView('sources.scopeChain');
+  await UI.ViewManager.ViewManager.instance().showView('sources.scope-chain');
 
   TestRunner.addResult('Testing accessibility in the scope pane.\n');
   await SourcesTestRunner.startDebuggerTestPromise();

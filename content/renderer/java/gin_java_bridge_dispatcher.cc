@@ -59,8 +59,8 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     if (objects_.Lookup(iter->second))
       objects_.Remove(iter->second);
     GinJavaBridgeObject* object = GinJavaBridgeObject::InjectNamed(
-        render_frame()->GetWebFrame(), AsWeakPtr(), iter->first, iter->second,
-        enable_mojo_);
+        render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
+        iter->first, iter->second, enable_mojo_);
     if (object) {
       objects_.AddWithID(object, iter->second);
     } else if (enable_mojo_) {
@@ -133,7 +133,8 @@ GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {
   GinJavaBridgeObject* result = objects_.Lookup(object_id);
   if (!result) {
     result = GinJavaBridgeObject::InjectAnonymous(
-        render_frame()->GetWebFrame(), AsWeakPtr(), object_id, enable_mojo_);
+        render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
+        object_id, enable_mojo_);
     if (result)
       objects_.AddWithID(result, object_id);
   }

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/user_education/user_education_types.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -30,23 +31,12 @@ using welcome_tour_metrics::PreventedReason;
 
 static constexpr char kTimeOfFirstInteractionPrefPrefix[] =
     "ash.welcome_tour.interaction_time.";
+static constexpr char kTimeOfFirstTourCompletion[] =
+    "ash.welcome_tour.completed.first_time";
 static constexpr char kTimeOfFirstTourPrevention[] =
     "ash.welcome_tour.prevented.first_time";
 static constexpr char kReasonForFirstTourPrevention[] =
     "ash.welcome_tour.prevented.first_reason";
-
-// Helpers ---------------------------------------------------------------------
-
-// Fetches the time pref associated with the first time of a given interaction.
-std::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
-                                                    Interaction interaction) {
-  auto pref_name = base::StrCat({kTimeOfFirstInteractionPrefPrefix,
-                                 welcome_tour_metrics::ToString(interaction),
-                                 ".first_time"});
-  auto* pref = prefs->FindPreference(pref_name);
-  return pref->IsDefaultValue() ? std::nullopt
-                                : base::ValueToTime(pref->GetValue());
-}
 
 }  // namespace
 
@@ -73,13 +63,16 @@ class WelcomeTourPrefsTest : public testing::Test {
 
 // Expects the first interaction time prefs can be set exactly once.
 TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
+  MarkTimeOfFirstTourCompletion(pref_service());
+
   for (auto interaction : kAllInteractionsSet) {
     // Should be unset by default.
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
               std::nullopt);
 
     // The first time the mark method is called, it should succeed and mark the
-    // time as now.
+    // time as now, and the time bucket as `kOneMinute`, since that is the
+    // smallest increment.
     auto before = base::Time::Now();
     EXPECT_TRUE(MarkTimeOfFirstInteraction(pref_service(), interaction));
     auto after = base::Time::Now();
@@ -90,11 +83,18 @@ TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
     EXPECT_GE(interaction_time, before);
     EXPECT_LE(interaction_time, after);
 
+    auto interaction_time_bucket =
+        GetTimeBucketOfFirstInteraction(pref_service(), interaction);
+    ASSERT_TRUE(interaction_time_bucket);
+    EXPECT_EQ(interaction_time_bucket, TimeBucket::kOneMinute);
+
     // For any call beyond the first, the function should return false and the
     // marked time should not change.
     EXPECT_FALSE(MarkTimeOfFirstInteraction(pref_service(), interaction));
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
               interaction_time);
+    EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
+              interaction_time_bucket);
   }
 }
 
@@ -176,4 +176,56 @@ TEST_F(WelcomeTourPrefsTest, ReasonForFirstTourPrevention) {
             PreventedReason::kUnknown);
 }
 
+// Expects that `SyncInteractionPrefs()` will sync the continuous and quantized
+// interaction prefs synced properly when the bucket is not set.
+TEST_F(WelcomeTourPrefsTest, BackfillInteractionTimeBucketPref) {
+  MarkTimeOfFirstTourCompletion(pref_service());
+
+  for (auto interaction : kAllInteractionsSet) {
+    // Should be unset by default.
+    EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
+              std::nullopt);
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              std::nullopt);
+
+    // Manually set the time pref, as though it was set before the time bucket
+    // pref existed.
+    auto time_pref_name = base::StrCat(
+        {kTimeOfFirstInteractionPrefPrefix,
+         welcome_tour_metrics::ToString(interaction), ".first_time"});
+    pref_service()->SetTime(time_pref_name, base::Time::Now());
+
+    SyncInteractionPrefs(pref_service());
+    EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
+              TimeBucket::kOneMinute);
+  }
+}
+
+// Expects that `SyncInteractionPrefs()` will mark the quantized interaction
+// prefs with the max value once the max period is exceeded.
+TEST_F(WelcomeTourPrefsTest, InteractionTimeBucketPrefMaxPassed) {
+  // Manually set tour to have been completed over two weeks ago so that
+  // backfill will be triggered.
+  pref_service()->SetTime(kTimeOfFirstTourCompletion,
+                          base::Time::Now() - base::Days(15));
+
+  for (auto interaction : kAllInteractionsSet) {
+    // Should be unset by default.
+    EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
+              std::nullopt);
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              std::nullopt);
+  }
+
+  SyncInteractionPrefs(pref_service());
+
+  for (auto interaction : kAllInteractionsSet) {
+    // Expect that syncing fills in the time bucket prefs with the appropriate
+    // value while leaving the continuous prefs untouched.
+    EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
+              TimeBucket::kOverTwoWeeks);
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              std::nullopt);
+  }
+}
 }  // namespace ash::welcome_tour_prefs

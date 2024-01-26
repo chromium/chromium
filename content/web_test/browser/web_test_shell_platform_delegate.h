@@ -34,7 +34,7 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
   void MainFrameCreated(Shell* shell) override;
   std::unique_ptr<JavaScriptDialogManager> CreateJavaScriptDialogManager(
       Shell* shell) override;
-  bool HandleRequestToLockMouse(Shell* shell,
+  bool HandlePointerLockRequest(Shell* shell,
                                 WebContents* web_contents,
                                 bool user_gesture,
                                 bool last_unlocked_by_target) override;

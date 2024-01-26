@@ -112,8 +112,8 @@ class FakeRegistrationTokenHelper : public RegistrationTokenHelper {
             base::BindRepeating(
                 [](crypto::SignatureVerifier::SignatureAlgorithm,
                    base::span<const uint8_t>,
-                   base::Time) -> absl::optional<std::string> {
-                  return absl::nullopt;
+                   base::Time) -> std::optional<std::string> {
+                  return std::nullopt;
                 }),
             base::DoNothing()) {}
 
@@ -237,7 +237,7 @@ class DiceResponseHandlerTest : public testing::Test,
   }
 
   void SimulateRegistrationTokenHelperResult(
-      absl::optional<RegistrationTokenHelper::Result> result) {
+      std::optional<RegistrationTokenHelper::Result> result) {
     ASSERT_FALSE(binding_registration_callback_.is_null());
     std::move(binding_registration_callback_).Run(std::move(result));
   }
@@ -272,7 +272,7 @@ class DiceResponseHandlerTest : public testing::Test,
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;
-  base::OnceCallback<void(absl::optional<RegistrationTokenHelper::Result>)>
+  base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
       binding_registration_callback_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
@@ -394,7 +394,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
   // Token fetch should be blocked on the binding registration token generation.
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate failed token generation.
-  SimulateRegistrationTokenHelperResult(absl::nullopt);
+  SimulateRegistrationTokenHelperResult(std::nullopt);
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();

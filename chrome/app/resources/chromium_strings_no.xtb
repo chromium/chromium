@@ -88,6 +88,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2583187216237139145">Alle Chromium-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
 <translation id="259935314519650377">Kunne ikke bufre det nedlastede installasjonsprogrammet. Feil: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium kjører raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet (anbefales)</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil</translation>
 <translation id="268602741124540128">Velkommen til Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3258596308407688501">Chromium kan ikke lese og skrive til egen datakatalog:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 er JavaScript- og WebAssembly-motoren som Chromium bruker til å forbedre nettstedsytelsen</translation>
 <translation id="3283186697780795848">Versjon <ph name="PRODUCT_VERSION" /> av Chromium er installert</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="328888136576916638">API-nøkler for Google mangler. Noe funksjonalitet i Chromium blir deaktivert.</translation>
@@ -140,7 +142,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3533435340678213462">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chromium skal vurdere.</translation>
 <translation id="3567254597502212821">Nettleserloggen din, som er en logg over nettsteder du har besøkt med Chromium på denne enheten.</translation>
 <translation id="3593091352817399191">En annen konto er allerede pålogget. For å holde surfingen din atskilt kan Chromium opprette en egen profil til deg.</translation>
-<translation id="363078681319665186">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.15 eller nyere. Denne datamaskinen bruker macOS 10.13.</translation>
 <translation id="3639635944603682591">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt.}=1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3651803019964686660">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
@@ -157,7 +158,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Få hjelp med ChromiumOS</translation>
 <translation id="3871664619793219264">Få Chromium-nettlesertingene dine fra <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.15 eller nyere. Denne datamaskinen bruker macOS 10.14.</translation>
 <translation id="388648406173476553">Tilpass og kontroller Chromium. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="3889543394854987837">Klikk på navnet ditt for å åpne Chromium og starte surfingen.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. For å holde surfingen din atskilt kan Chromium opprette en egen profil til deg.</translation>
@@ -218,6 +218,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4814736265800133385">Bruk Chromium uten noen konto</translation>
 <translation id="4888717733111232871">Regel om innkommende trafikk for Chromium for å tillate mDNS-trafikk.</translation>
 <translation id="4893347770495441059">Start på nytt for å oppdatere &amp;Chromium</translation>
+<translation id="4942295735032723435">For å få fremtidige Chromium-oppdateringer må du ha macOS 11 eller nyere. Denne datamaskinen bruker macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium er i bakgrunnsmodus.</translation>
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
@@ -246,7 +247,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5623402015214259806">{0,plural, =0{En Chromium-oppdatering er tilgjengelig}=1{En Chromium-oppdatering er tilgjengelig}other{En Chromium-oppdatering har vært tilgjengelig i # dager}}</translation>
 <translation id="5643865575100044307">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
-<translation id="5675598751761067447">Denne filen kan være farlig<ph name="LINE_BREAK" />Chromium kan sjekke denne nedlastingen for deg hvis du oppgir passordet. Passordet blir værende på denne enheten.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
@@ -406,6 +406,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8105840573057009683">Chromium trenger posisjonstillatelse for dette nettstedet</translation>
 <translation id="8133124826068723441">ChromiumOS kunne ikke synkronisere dataene dine, ettersom synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
+<translation id="8166782796394721554">Slå på ekstra beskyttelse i JavaScript- og WebAssembly-motoren i Chromium</translation>
 <translation id="81770708095080097">Denne filen er farlig, så Chromium har blokkert den.</translation>
 <translation id="8213374284266571500">Chromium har blokkert denne filen fordi denne filtypen er farlig</translation>
 <translation id="8248265253516264921">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>

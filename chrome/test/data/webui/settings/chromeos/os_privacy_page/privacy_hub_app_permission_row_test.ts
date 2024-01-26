@@ -11,7 +11,8 @@ import {createTriStatePermission, isTriStateValue} from 'chrome://resources/cr_c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -121,24 +122,14 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     }
   });
 
-  test('Clicking on the toggle triggers permission update', async () => {
-    assertEquals(
-        0,
-        metrics.countMetricValue(
-            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
-            PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
+  test('Type of permission changed is correct', async () => {
     assertEquals(
         PermissionType.kUnknown,
         fakeHandler.getLastUpdatedPermission().permissionType);
 
-    getPermissionToggle().click();
+    testRow.click();
     await fakeHandler.whenCalled('setPermission');
 
-    assertEquals(
-        1,
-        metrics.countMetricValue(
-            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
-            PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
     const updatedPermission = fakeHandler.getLastUpdatedPermission();
     assertEquals(
         permissionType, PermissionType[updatedPermission.permissionType]);
@@ -146,11 +137,48 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     assertEquals(TriState.kAllow, updatedPermission.value.tristateValue);
   });
 
+  function getPermissionChangeCount(): number {
+    return metrics.countMetricValue(
+        'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+        PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED);
+  }
+
+  test('Clicking on the toggle button triggers permission change', async () => {
+    assertEquals(0, getPermissionChangeCount());
+
+    getPermissionToggle().click();
+    await fakeHandler.whenCalled('setPermission');
+
+    assertEquals(1, getPermissionChangeCount());
+  });
+
+  test('Clicking anywhere on the row triggers permission change', async () => {
+    assertEquals(0, getPermissionChangeCount());
+
+    testRow.click();
+    await fakeHandler.whenCalled('setPermission');
+
+    assertEquals(1, getPermissionChangeCount());
+  });
+
+  test(
+      'Pressing Enter when toggle button selected triggers permission change',
+      async () => {
+        assertEquals(0, getPermissionChangeCount());
+
+        getPermissionToggle().dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter'}));
+        await fakeHandler.whenCalled('setPermission');
+
+        assertEquals(1, getPermissionChangeCount());
+      });
+
   function isPermissionManaged(): boolean {
     const permission = app.permissions[PermissionType[permissionType]];
     assertTrue(!!permission);
     return permission.isManaged;
   }
+
 
   test('Managed icon displayed when permission is managed', () => {
     assertFalse(isPermissionManaged());
@@ -168,13 +196,41 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     assertTrue(getPermissionToggle().disabled);
   });
 
+  test('Clicking on the row is no-op when permission is managed', async () => {
+    assertFalse(isPermissionManaged());
+
+    // Toggle managed state.
+    testRow.set(
+        'app.permissions.' + PermissionType[permissionType] + '.isManaged',
+        true);
+    flush();
+
+    assertTrue(isPermissionManaged());
+    assertEquals(0, getPermissionChangeCount());
+
+    testRow.click();
+    await flushTasks();
+
+    assertEquals(0, getPermissionChangeCount());
+  });
+
   function getAndroidSettingsLinkButton(): CrIconButtonElement|null {
     return testRow.shadowRoot!.querySelector('cr-icon-button');
   }
 
   test('Link to android settings displayed', async () => {
-    assertNull(getAndroidSettingsLinkButton());
+    assertFalse(isVisible(getAndroidSettingsLinkButton()));
 
+    loadTimeData.overrideValues({
+      isArcReadOnlyPermissionsEnabled: true,
+    });
+    testRow.set('app.type', AppType.kArc);
+    flush();
+
+    assertTrue(isVisible(getAndroidSettingsLinkButton()));
+  });
+
+  test('Android settings link click metric recorded', async () => {
     loadTimeData.overrideValues({
       isArcReadOnlyPermissionsEnabled: true,
     });
@@ -187,9 +243,7 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
             'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
             PrivacyHubSensorSubpageUserAction.ANDROID_SETTINGS_LINK_CLICKED));
 
-    const linkButton = getAndroidSettingsLinkButton();
-    assertTrue(!!linkButton);
-    linkButton.click();
+    testRow.click();
     await fakeHandler.whenCalled('openNativeSettings');
 
     assertEquals(
@@ -197,6 +251,38 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
         metrics.countMetricValue(
             'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
             PrivacyHubSensorSubpageUserAction.ANDROID_SETTINGS_LINK_CLICKED));
+  });
+
+  test(
+      'Clicking the android settings link opens android settings', async () => {
+        loadTimeData.overrideValues({
+          isArcReadOnlyPermissionsEnabled: true,
+        });
+        testRow.set('app.type', AppType.kArc);
+        flush();
+
+        assertEquals(0, fakeHandler.getNativeSettingsOpenedCount());
+
+        const linkButton = getAndroidSettingsLinkButton();
+        assertTrue(!!linkButton);
+        linkButton.click();
+        await fakeHandler.whenCalled('openNativeSettings');
+
+        assertEquals(1, fakeHandler.getNativeSettingsOpenedCount());
+      });
+
+  test('Clicking anywhere on the row opens android settings', async () => {
+    loadTimeData.overrideValues({
+      isArcReadOnlyPermissionsEnabled: true,
+    });
+    testRow.set('app.type', AppType.kArc);
+    flush();
+
+    assertEquals(0, fakeHandler.getNativeSettingsOpenedCount());
+
+    testRow.click();
+    await fakeHandler.whenCalled('openNativeSettings');
+
     assertEquals(1, fakeHandler.getNativeSettingsOpenedCount());
   });
 });

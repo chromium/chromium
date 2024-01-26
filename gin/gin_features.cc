@@ -61,6 +61,11 @@ BASE_FEATURE(kV8PerContextMarkingWorklist,
              "V8PerContextMarkingWorklist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables profile guided tiering heuristics in V8 GC.
+BASE_FEATURE(kV8ProfileGuidedOptimization,
+             "V8ProfileGuidedOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables flushing of the instruction cache for the embedded blob.
 BASE_FEATURE(kV8FlushEmbeddedBlobICache,
              "V8FlushEmbeddedBlobICache",
@@ -252,6 +257,11 @@ BASE_FEATURE(kJavaScriptRegExpModifiers,
 // Enables the `with` syntax for the Import Attributes proposal.
 BASE_FEATURE(kJavaScriptImportAttributes,
              "kJavaScriptImportAttributes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the set methods proposal.
+BASE_FEATURE(kJavaScriptSetMethods,
+             "JavaScriptSetMethods",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // WebAssembly features.

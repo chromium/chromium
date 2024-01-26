@@ -126,7 +126,7 @@ class CompanionMetricsLogger {
   CompanionMetricsLogger& operator=(const CompanionMetricsLogger&) = delete;
   ~CompanionMetricsLogger();
 
-  void RecordOpenTrigger(absl::optional<SidePanelOpenTrigger> open_trigger);
+  void RecordOpenTrigger(std::optional<SidePanelOpenTrigger> open_trigger);
 
   // For the following methods, please refer CompanionPageHandler in
   // companion.mojom for detailed documentation.
@@ -168,17 +168,17 @@ class CompanionMetricsLogger {
   std::map<UiSurface, UiSurfaceMetrics> ui_surface_metrics_;
 
   // Last event on the promo surfaces.
-  absl::optional<PromoEvent> last_promo_event_;
+  std::optional<PromoEvent> last_promo_event_;
 
   // Last event on the promo surfaces.
-  absl::optional<PhFeedback> last_ph_feedback_;
+  std::optional<PhFeedback> last_ph_feedback_;
 
   // Indicates how the companion side panel was opened. Non-empty for the first
   // navigation.
-  absl::optional<SidePanelOpenTrigger> open_trigger_;
+  std::optional<SidePanelOpenTrigger> open_trigger_;
 
   // Stores metrics for visual query suggestions.
-  absl::optional<VisualSuggestionsMetrics> visual_suggestions_;
+  std::optional<VisualSuggestionsMetrics> visual_suggestions_;
 };
 
 }  // namespace companion

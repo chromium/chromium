@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"

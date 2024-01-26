@@ -21,7 +21,7 @@ class SyncedWindowDelegatesGetter;
 
 // Interface for clients of a sync sessions datatype. Should be used as a getter
 // for services and data the Sync Sessions datatype depends on.
-class SyncSessionsClient : public base::SupportsWeakPtr<SyncSessionsClient> {
+class SyncSessionsClient {
  public:
   SyncSessionsClient();
 
@@ -54,6 +54,9 @@ class SyncSessionsClient : public base::SupportsWeakPtr<SyncSessionsClient> {
   // Returns a LocalSessionEventRouter instance that is customized for the
   // embedder's context.
   virtual LocalSessionEventRouter* GetLocalSessionEventRouter() = 0;
+
+  // Returns a weak pointer to the implementation instance.
+  virtual base::WeakPtr<SyncSessionsClient> AsWeakPtr() = 0;
 };
 
 }  // namespace sync_sessions

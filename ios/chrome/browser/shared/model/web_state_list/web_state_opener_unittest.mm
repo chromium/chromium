@@ -50,7 +50,7 @@ class WebStateOpenerTest : public PlatformTest {
 TEST_F(WebStateOpenerTest, NullWebState) {
   WebStateOpener opener(nullptr);
 
-  EXPECT_EQ(nullptr, opener.opener);
+  EXPECT_EQ(nullptr, opener.opener.get());
   EXPECT_EQ(-1, opener.navigation_index);
 }
 

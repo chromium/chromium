@@ -73,7 +73,7 @@ TEST_F(TextAutoSpaceTest, Unapply) {
   const float size = 40;
   const Font font = test::CreateAhemFont(size);
   HarfBuzzShaper shaper(u"01234");
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
   EXPECT_THAT(GetAdvances(*result), ElementsAre(size, size, size, size, size));
 
   // Apply auto-spacing.
@@ -85,7 +85,7 @@ TEST_F(TextAutoSpaceTest, Unapply) {
 
   // Compute the line-end by unapplying the spacing.
   for (unsigned end_offset : {2u, 5u}) {
-    scoped_refptr<ShapeResult> line_end =
+    const ShapeResult* line_end =
         result->UnapplyAutoSpacing(end_offset - 1, end_offset);
     DCHECK_EQ(line_end->Width(), size);
 

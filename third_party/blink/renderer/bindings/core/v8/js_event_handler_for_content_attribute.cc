@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -190,15 +191,18 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   size_t scopes_size = 0;
   if (element) {
     scopes[scopes_size++] =
-        ToV8(document, script_state_of_event_target).As<v8::Object>();
+        ToV8Traits<Document>::ToV8(script_state_of_event_target, document)
+            .As<v8::Object>();
   }
   if (form_owner) {
-    scopes[scopes_size++] =
-        ToV8(form_owner, script_state_of_event_target).As<v8::Object>();
+    scopes[scopes_size++] = ToV8Traits<HTMLFormElement>::ToV8(
+                                script_state_of_event_target, form_owner)
+                                .As<v8::Object>();
   }
   if (element) {
     scopes[scopes_size++] =
-        ToV8(element, script_state_of_event_target).As<v8::Object>();
+        ToV8Traits<Element>::ToV8(script_state_of_event_target, element)
+            .As<v8::Object>();
   }
   DCHECK_LE(scopes_size, std::size(scopes));
 

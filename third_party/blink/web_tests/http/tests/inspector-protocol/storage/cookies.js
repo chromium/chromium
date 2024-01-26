@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, page} = await testRunner.startBlank(
       `Tests that cookies are read and written.`);
 

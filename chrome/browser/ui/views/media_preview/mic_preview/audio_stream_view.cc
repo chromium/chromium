@@ -40,14 +40,12 @@ void AudioStreamView::OnPaint(gfx::Canvas* canvas) {
 
   gfx::RectF base_rect(x, y, width(), rect_height);
   cc::PaintFlags base_rect_flags;
-  base_rect_flags.setColor(
-      GetColorProvider()->GetColor(ui::kColorMenuIconDisabled));
+  base_rect_flags.setColor(GetColorProvider()->GetColor(ui::kColorSysSurface5));
   canvas->DrawRoundRect(base_rect, rounded_radius_, base_rect_flags);
 
   gfx::RectF value_rect(x, y, width() * last_audio_level_, rect_height);
   cc::PaintFlags value_rect_flags;
-  value_rect_flags.setColor(
-      GetColorProvider()->GetColor(ui::kColorSliderThumb));
+  value_rect_flags.setColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
   canvas->DrawRoundRect(value_rect, rounded_radius_, value_rect_flags);
 }
 

@@ -167,13 +167,13 @@ void PrintJobSubmitter::ReadDocumentData() {
 }
 
 void PrintJobSubmitter::OnPdfReadAndFlattened(
-    std::unique_ptr<printing::MetafileSkia> flattened_pdf) {
-  if (!flattened_pdf) {
+    std::unique_ptr<printing::FlattenPdfResult> result) {
+  if (!result) {
     FireErrorCallback(kInvalidData);
     return;
   }
 
-  flattened_pdf_ = std::move(flattened_pdf);
+  flatten_pdf_result_ = std::move(result);
 
   // Directly submit the job if the extension is allowed.
   if (!IsUserConfirmationRequired(browser_context_, extension_->id())) {
@@ -212,7 +212,7 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
                         .Contains(extension_->id())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback_), base::unexpected(absl::nullopt)));
+        base::BindOnce(std::move(callback_), base::unexpected(std::nullopt)));
     return;
   }
   StartPrintJob();
@@ -221,16 +221,20 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
 void PrintJobSubmitter::StartPrintJob() {
   CHECK(extension_);
   CHECK(settings_);
-  CHECK(flattened_pdf_);
+  CHECK(flatten_pdf_result_);
+
+  auto flatten_pdf_result = std::move(flatten_pdf_result_);
+  uint32_t page_count = flatten_pdf_result->page_count;
   print_job_controller_->CreatePrintJob(
-      std::move(flattened_pdf_), std::move(settings_),
-      crosapi::mojom::PrintJob::Source::kExtension, extension_->id(),
+      std::move(flatten_pdf_result->flattened_pdf), std::move(settings_),
+      page_count, crosapi::mojom::PrintJob::Source::kExtension,
+      extension_->id(),
       base::BindOnce(&PrintJobSubmitter::OnPrintJobCreated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PrintJobSubmitter::OnPrintJobCreated(
-    absl::optional<printing::PrintJobCreatedInfo> info) {
+    std::optional<printing::PrintJobCreatedInfo> info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!info) {
     FireErrorCallback(kPrintingFailed);

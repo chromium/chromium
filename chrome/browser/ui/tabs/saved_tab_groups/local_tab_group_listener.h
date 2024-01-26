@@ -40,6 +40,8 @@ class LocalTabGroupListener {
   // CHECKed).
   void ResumeTracking();
 
+  bool IsTrackingPaused() const;
+
   void UpdateVisualDataFromLocal(
       const TabGroupChange::VisualsChange* visuals_change);
 

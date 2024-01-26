@@ -22,6 +22,7 @@ namespace mojom {
 class AuctionSharedStorageHost;
 }  // namespace mojom
 
+class AuctionV8Logger;
 class ForDebuggingOnlyBindings;
 class PrivateAggregationBindings;
 class SharedStorageBindings;
@@ -177,6 +178,10 @@ class CONTENT_EXPORT ContextRecycler {
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
   v8::Global<v8::Context> context_;
+
+  // Must be after `v8_helper` and `context_`, but before lazy bindings, which
+  // may use it.
+  std::unique_ptr<AuctionV8Logger> v8_logger_;
 
   std::unique_ptr<ForDebuggingOnlyBindings> for_debugging_only_bindings_;
   std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;

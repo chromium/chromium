@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div id='node' style='background-color: red; height: 100px'></div>
   `, 'Tests that animation creation and start are reported over protocol.');

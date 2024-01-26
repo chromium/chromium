@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#import "base/memory/raw_ptr.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -94,7 +95,7 @@ class ChromeIOSTranslateClient
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   translate::IOSTranslateDriver translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;

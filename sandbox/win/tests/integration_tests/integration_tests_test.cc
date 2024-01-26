@@ -37,7 +37,7 @@ struct PolicyDiagnosticsWaiter {
   std::unique_ptr<PolicyList> policies;
 
   std::unique_ptr<PolicyList> WaitForPolicies() {
-    ::WaitForSingleObject(event.Get(), INFINITE);
+    ::WaitForSingleObject(event.get(), INFINITE);
     return std::move(policies);
   }
 };
@@ -51,7 +51,7 @@ class TestDiagnosticsReceiver final : public PolicyDiagnosticsReceiver {
   raw_ptr<PolicyDiagnosticsWaiter> waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);
-    ::SetEvent(waiter_->event.Get());
+    ::SetEvent(waiter_->event.get());
   }
   void OnError(ResultCode error) override {
     // Tests should not result in this function being called.
@@ -121,19 +121,23 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
 
   base::win::ScopedHandle handle_started(
       reinterpret_cast<HANDLE>(wcstoul(argv[0], nullptr, 16)));
-  if (!handle_started.IsValid())
+  if (!handle_started.is_valid()) {
     return SBOX_TEST_NOT_FOUND;
+  }
 
   base::win::ScopedHandle handle_done(
       reinterpret_cast<HANDLE>(wcstoul(argv[1], nullptr, 16)));
-  if (!handle_done.IsValid())
+  if (!handle_done.is_valid()) {
     return SBOX_TEST_NOT_FOUND;
+  }
 
-  if (!::SetEvent(handle_started.Get()))
+  if (!::SetEvent(handle_started.get())) {
     return SBOX_TEST_FIRST_ERROR;
+  }
 
-  if (WAIT_OBJECT_0 != ::WaitForSingleObject(handle_done.Get(), 1000))
+  if (WAIT_OBJECT_0 != ::WaitForSingleObject(handle_done.get(), 1000)) {
     return SBOX_TEST_SECOND_ERROR;
+  }
 
   return SBOX_TEST_SUCCEEDED;
 }
@@ -146,11 +150,11 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_memory(int argc, wchar_t** argv) {
 
   base::win::ScopedHandle handle_started(
       reinterpret_cast<HANDLE>(wcstoul(argv[0], nullptr, 16)));
-  if (!handle_started.IsValid()) {
+  if (!handle_started.is_valid()) {
     return SBOX_TEST_NOT_FOUND;
   }
 
-  if (!::SetEvent(handle_started.Get())) {
+  if (!::SetEvent(handle_started.get())) {
     return SBOX_TEST_FIRST_ERROR;
   }
 
@@ -303,15 +307,15 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   base::win::ScopedHandle handle_done(
       CreateEventW(nullptr, true, false, nullptr));
 
-  runner.GetPolicy()->AddHandleToShare(handle_started.Get());
-  runner.GetPolicy()->AddHandleToShare(handle_done.Get());
+  runner.GetPolicy()->AddHandleToShare(handle_started.get());
+  runner.GetPolicy()->AddHandleToShare(handle_done.get());
   auto cmd_line = base::ASCIIToWide(
       base::StringPrintf("IntegrationTestsTest_event %p %p",
-                         handle_started.Get(), handle_done.Get()));
+                         handle_started.get(), handle_done.get()));
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
   ASSERT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(handle_started.Get(),
+            ::WaitForSingleObject(handle_started.get(),
                                   sandbox::SboxTestEventTimeout()));
 
   {
@@ -323,7 +327,7 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
     ASSERT_EQ(policies->size(), 1U);
   }
 
-  SetEvent(handle_done.Get());
+  SetEvent(handle_done.get());
   ASSERT_TRUE(runner.WaitForAllTargets());
 
   // TODO(ajgo) WaitForAllTargets is satisfied when the final process
@@ -349,14 +353,14 @@ TEST(IntegrationTestsTest, JobMemoryLimitCounted) {
   base::win::ScopedHandle handle_started(
       CreateEventW(nullptr, true, false, nullptr));
 
-  runner.GetPolicy()->AddHandleToShare(handle_started.Get());
+  runner.GetPolicy()->AddHandleToShare(handle_started.get());
   runner.GetPolicy()->GetConfig()->SetJobMemoryLimit(256 * 1000 * 1000);
   auto cmd_line = base::ASCIIToWide(base::StringPrintf(
-      "IntegrationTestsTest_memory %p", handle_started.Get()));
+      "IntegrationTestsTest_memory %p", handle_started.get()));
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
   ASSERT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(handle_started.Get(),
+            ::WaitForSingleObject(handle_started.get(),
                                   sandbox::SboxTestEventTimeout()));
   ASSERT_TRUE(runner.WaitForAllTargets());
   DWORD exit_code = 0;

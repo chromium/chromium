@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 
+#include <optional>
+
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -13,7 +15,6 @@
 #include "components/memory_pressure/reclaim_target.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -44,7 +45,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
 #if BUILDFLAG(IS_CHROMEOS)
   // Called when the reclaim target is ready.
   void OnReclaimTarget(
-      absl::optional<memory_pressure::ReclaimTarget> reclaim_target_kb);
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target_kb);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // True while we are in the process of discarding tab(s) in response to a

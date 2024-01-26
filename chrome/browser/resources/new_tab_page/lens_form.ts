@@ -5,7 +5,8 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from './i18n_setup.js';
-import {ProcessedFile, processFile, SUPPORTED_FILE_TYPES} from './image_processor.js';
+import type {ProcessedFile} from './image_processor.js';
+import {processFile, SUPPORTED_FILE_TYPES} from './image_processor.js';
 import {getTemplate} from './lens_form.html.js';
 
 /** Lens service endpoint for the Upload by File action. */

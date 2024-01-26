@@ -31,6 +31,8 @@ component("app_shim") {
     "color_panel_bridge.h",
     "color_panel_bridge.mm",
     "drag_drop_client.h",
+    "features.cc",
+    "features.h",
     "immersive_mode_controller_cocoa.h",
     "immersive_mode_controller_cocoa.mm",
     "immersive_mode_delegate_mac.h",

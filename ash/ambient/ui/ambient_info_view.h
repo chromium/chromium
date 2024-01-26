@@ -47,6 +47,8 @@ class ASH_EXPORT AmbientInfoView : public views::View,
 
   int GetAdjustedLeftPaddingToMatchBottom();
 
+  GlanceableInfoView* GetGlanceableInfoViewForTesting() const;
+
  private:
   void InitLayout();
 

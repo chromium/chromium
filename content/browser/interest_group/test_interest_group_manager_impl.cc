@@ -89,10 +89,14 @@ void TestInterestGroupManagerImpl::EnqueueReports(
 }
 
 void TestInterestGroupManagerImpl::OnInterestGroupAccessed(
-    const base::Time& access_time,
+    base::optional_ref<const std::string> devtools_auction_id,
+    base::Time access_time,
     AccessType type,
     const url::Origin& owner_origin,
-    const std::string& name) {
+    const std::string& name,
+    base::optional_ref<const url::Origin> component_seller_origin,
+    std::optional<double> bid,
+    base::optional_ref<const std::string> bid_currency) {
   if (type == AccessType::kBid) {
     interest_groups_that_bid_.emplace_back(owner_origin, name);
   }

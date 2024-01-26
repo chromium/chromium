@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -34,7 +34,7 @@ class CleanupManager {
   virtual ~CleanupManager();
 
   using CleanupCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& error)>;
+      base::OnceCallback<void(const std::optional<std::string>& error)>;
   // Calls the cleanup handlers  and runs `callback` when the cleanup has
   // finished. After `Cleanup` is called and before `callback` is run,
   // `is_cleanup_in_progress()` returns true. Fails if there is another cleanup
@@ -56,7 +56,7 @@ class CleanupManager {
 
   void OnCleanupHandlerDone(base::RepeatingClosure barrier_closure,
                             const std::string& handler_name,
-                            const absl::optional<std::string>& error);
+                            const std::optional<std::string>& error);
 
   void OnAllCleanupHandlersDone();
 

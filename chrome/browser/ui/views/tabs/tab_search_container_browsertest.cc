@@ -175,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
                                       true, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -192,6 +193,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
                                       false, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -209,4 +211,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
                                       false, 1);
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
 }

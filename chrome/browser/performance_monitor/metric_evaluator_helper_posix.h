@@ -20,7 +20,7 @@ class MetricEvaluatorsHelperPosix : public MetricEvaluatorsHelper {
   ~MetricEvaluatorsHelperPosix() override;
 
   // MetricEvaluatorsHelper:
-  absl::optional<int> GetFreePhysicalMemoryMb() override;
+  std::optional<int> GetFreePhysicalMemoryMb() override;
 };
 
 }  // namespace performance_monitor

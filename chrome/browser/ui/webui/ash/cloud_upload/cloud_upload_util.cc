@@ -310,6 +310,13 @@ void GetODFSEntryMetadata(
       {path}, base::BindOnce(&OnGetODFSEntryActions, std::move(callback)));
 }
 
+bool PathIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  base::FilePath relative_path;
+  return integration_service->GetRelativeDrivePath(file_path, &relative_path);
+}
+
 std::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status) {
   for (const auto* entries : {&status.sources, &status.outputs}) {

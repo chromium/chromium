@@ -4,6 +4,8 @@
 
 #include "chrome/common/google_url_loader_throttle.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,7 +21,6 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
@@ -339,7 +340,7 @@ void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
         "Signin.BoundSessionCredentials.DeferredNavigationRequestDelay",
         duration);
   }
-  bound_session_request_throttled_start_time_ = absl::nullopt;
+  bound_session_request_throttled_start_time_ = std::nullopt;
 
   switch (unblock_action) {
     case BoundSessionRequestThrottledHandler::UnblockAction::kResume:

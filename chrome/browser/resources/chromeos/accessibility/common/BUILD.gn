@@ -15,7 +15,6 @@ assert(is_chromeos_ash)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
-tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
 tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
@@ -27,7 +26,6 @@ group("build") {
 
 js_sources = [
   "async_util.js",
-  "automation_predicate.js",
   "browser_util.js",
   "gdocs_script.js",
   "key_code.js",
@@ -38,6 +36,8 @@ js_sources = [
 # Add typescript files to compile here.
 ts_modules = [
   "array_util.ts",
+  "automation_predicate.ts",
+  "automation_util.ts",
   "chrome_event_handler.ts",
   "constants.ts",
   "cursors/cursor.ts",
@@ -48,18 +48,17 @@ ts_modules = [
   "flags.ts",
   "instance_checker.ts",
   "local_storage.ts",
-  "paragraph_utils.ts",
-  "automation_util.ts",
   "node_navigation_utils.ts",
   "node_utils.ts",
-  "tree_walker.ts",
-  "word_utils.ts",
+  "paragraph_utils.ts",
   "rect_util.ts",
   "repeated_event_handler.ts",
   "repeated_tree_change_handler.ts",
   "sentence_utils.ts",
   "settings.ts",
   "string_util.ts",
+  "word_utils.ts",
+  "tree_walker.ts",
 ]
 
 ts_definitions = [
@@ -77,26 +76,15 @@ ts_definitions = [
   "//tools/typescript/definitions/windows.d.ts",
 ]
 
-# Generated TS definition files.
-generated_ts_definitions =
-    [ "$tsc_preprocess_folder/definitions/chrome_event.d.ts" ]
-
 ts_library("ts_build") {
-  root_dir = "$tsc_preprocess_folder"
   out_dir = tsc_out_dir
-  definitions = ts_definitions + generated_ts_definitions
+  definitions = ts_definitions
+  composite = true
+  in_files = ts_modules + js_sources
 
-  in_files = []
-  foreach(_ts_file, ts_modules) {
-    in_files += [ "common/" + _ts_file ]
-  }
+  deps = []
 
   tsconfig_base = "../tsconfig.base.json"
-
-  extra_deps = [
-    ":preprocess_files_for_ts_build",
-    "..:preprocess_files_for_ts_build",
-  ]
 }
 
 run_jsbundler("copied_files") {
@@ -107,7 +95,7 @@ run_jsbundler("copied_files") {
       js_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path("$tsc_out_dir/common", root_build_dir) + ":",
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
   ]
 }
@@ -146,6 +134,7 @@ js2gtest("accessibility_tests") {
     "rect_util_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
+    "string_util_test.js",
     "tree_walker_test.js",
   ]
 
@@ -180,12 +169,4 @@ js2gtest("accessibility_tests") {
     ]
   }
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
-# Copy all JS and TS sources to a preprocess folder. All generated TS/JS files
-# will also be copied into this folder, which will allow us to support a TS
-# build that uses both checked-in and generated files.
-copy("preprocess_files_for_ts_build") {
-  sources = js_sources + ts_modules
-  outputs = [ "$tsc_preprocess_folder/common/{{source_target_relative}}" ]
 }

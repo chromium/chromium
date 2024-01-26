@@ -330,7 +330,7 @@ crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-ble
 crbug.com/1081534 [ Mac12 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac12-arm64 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac13 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
+crbug.com/1081534 [ Debug Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
 crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
@@ -510,7 +510,6 @@ crbug.com/874695 [ Release Win ] fast/css-grid-layout/grid-auto-repeat-huge-grid
 crbug.com/874695 [ Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Linux Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac11 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
-crbug.com/874695 [ Mac11-arm64 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac12 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac12-arm64 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Release Win ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
@@ -1270,7 +1269,7 @@ crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keypath-special-identifiers.h
 crbug.com/1195814 [ Mac11 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac12 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac12-arm64 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
-crbug.com/1195814 [ Mac13 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
+crbug.com/1195814 [ Mac13 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1418947 [ Mac ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
@@ -1342,7 +1341,6 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-
 crbug.com/1412278 [ Debug Linux ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
 crbug.com/1412278 [ Debug Mac13 ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
 crbug.com/1412278 [ Release ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
-crbug.com/1412278 http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-disabled.js [ Slow ]
 
 crbug.com/1404951 [ Debug Mac ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Linux ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
@@ -1351,6 +1349,7 @@ crbug.com/1404951 [ Mac12 Release ] external/wpt/credential-management/fedcm-ifr
 crbug.com/1404951 [ Mac13 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Release Win ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1494119 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1489239 virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
 crbug.com/1423483 [ Linux ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]

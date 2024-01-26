@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -35,21 +35,25 @@ class PrintJobController {
   class PendingJobStorage;
 
   using PrintJobCreatedCallback =
-      base::OnceCallback<void(absl::optional<PrintJobCreatedInfo>)>;
+      base::OnceCallback<void(std::optional<PrintJobCreatedInfo>)>;
 
   PrintJobController();
   PrintJobController(const PrintJobController&) = delete;
   PrintJobController& operator=(const PrintJobController&) = delete;
   virtual ~PrintJobController();
 
-  // Creates a print job for the given `pdf` file with provided `settings`.
-  // Invokes `callback` with job info once the job is acknowledged by the
-  // printing system. If the job fails to start for some reason, invokes
-  // `callback` with absl::nullopt.
+  // Creates a print job for the given `pdf` file with provided `settings` and
+  // `page_count`; `page_count` should be equal to the number of pages in the
+  // `pdf`.
+  // Invokes `callback` with job info once the job is acknowledged
+  // by the printing system.
+  // If the job fails to start for some reason, invokes `callback` with
+  // std::nullopt.
   // `this` indirectly owns `callback`.
   // Virtual for testing.
   virtual void CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
                               std::unique_ptr<PrintSettings> settings,
+                              uint32_t page_count,
                               crosapi::mojom::PrintJob::Source source,
                               const std::string& source_id,
                               PrintJobCreatedCallback callback);
@@ -57,7 +61,7 @@ class PrintJobController {
  protected:
   // Starts watching the provided `print_job` and invokes `callback` with job
   // info once the job is acknowledged by the printing system. If the job fails
-  // to start for some reason, invokes `callback` with absl::nullopt.
+  // to start for some reason, invokes `callback` with std::nullopt.
   void StartWatchingPrintJob(scoped_refptr<PrintJob> print_job,
                              PrintJobCreatedCallback callback);
 

@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
@@ -37,6 +38,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
@@ -101,7 +103,9 @@ class MockDropHandler : public WmDropHandler {
   MockDropHandler() = default;
   ~MockDropHandler() override = default;
 
-  MOCK_METHOD0(MockOnDragEnter, void());
+  MOCK_METHOD3(OnDragEnter,
+               void(const gfx::PointF& point, int operation, int modifiers));
+  MOCK_METHOD0(MockOnDragDataAvailable, void());
   MOCK_METHOD3(MockDragMotion,
                int(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDrop, void());
@@ -120,15 +124,11 @@ class MockDropHandler : public WmDropHandler {
   int available_operations() const { return available_operations_; }
 
  protected:
-  void OnDragEnter(const gfx::PointF& point,
-                   std::unique_ptr<ui::OSExchangeData> data,
-                   int operation,
-                   int modifiers) override {
+  void OnDragDataAvailable(std::unique_ptr<ui::OSExchangeData> data) override {
     dropped_data_ = std::move(data);
-    MockOnDragEnter();
+    MockOnDragDataAvailable();
   }
-  void OnDragDrop(std::unique_ptr<OSExchangeData> data,
-                  int modifiers) override {
+  void OnDragDrop(int modifiers) override {
     MockOnDragDrop();
     if (on_drop_closure_) {
       on_drop_closure_.Run();
@@ -201,6 +201,17 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     os_exchange_data.SetString(sample_text_for_dnd());
     origin_window->StartDrag(
         os_exchange_data, operations, DragEventSource::kMouse, /*cursor=*/{},
+        /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
+        /*loation delegate=*/nullptr);
+  }
+
+  void RunTouchDragWithSampleData(WaylandWindow* origin_window,
+                                  int operations) {
+    ASSERT_TRUE(origin_window);
+    OSExchangeData os_exchange_data;
+    os_exchange_data.SetString(sample_text_for_dnd());
+    origin_window->StartDrag(
+        os_exchange_data, operations, DragEventSource::kTouch, /*cursor=*/{},
         /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
         /*loation delegate=*/nullptr);
   }
@@ -507,9 +518,10 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
   // condition to quit the loop and verify the expectations, otherwise some
   // flakiness may be observed, see https://crbug.com/1395127.
   base::RunLoop loop;
-  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).WillOnce([&loop]() {
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).WillOnce([&loop]() {
     loop.Quit();
   });
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_offer =
         server->data_device_manager()->data_device()->CreateAndSendDataOffer();
@@ -563,7 +575,8 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
                  {"/home/user/file", "/home/guest/file"}}};
 
   for (const auto& kCase : kCases) {
-    EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
     const uint32_t surface_id = window_->root_surface()->get_surface_id();
     PostToServerAndWait([surface_id, content = kCase.content](
                             wl::TestWaylandServerThread* server) {
@@ -627,7 +640,8 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
        "file:///files/are/ok", u"The policy allows that"}};
 
   for (const auto& kCase : kCases) {
-    EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
     const uint32_t surface_id = window_->root_surface()->get_surface_id();
     PostToServerAndWait([surface_id, content = kCase.content](
                             wl::TestWaylandServerThread* server) {
@@ -836,7 +850,7 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
     EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
     self->SendDndLeave();
 
-    EXPECT_CALL(*self->drop_handler(), MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*self->drop_handler(), OnDragEnter(_, _, _)).Times(1);
     EXPECT_CALL(*self->drop_handler(), MockDragMotion(_, _, _)).Times(1);
     self->SendDndEnter(aux_window.get(), {});
 
@@ -845,7 +859,7 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
     EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
     self->SendDndLeave();
 
-    EXPECT_CALL(*self->drop_handler(), MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*self->drop_handler(), OnDragEnter(_, _, _)).Times(1);
     EXPECT_CALL(*self->drop_handler(), MockDragMotion(_, _, _)).Times(1);
     self->SendDndEnter(self->window(), {});
 
@@ -1122,7 +1136,8 @@ TEST_P(WaylandDataDragControllerTest, DropWhileFetchingData) {
   // in PostToServerAndWait() impl - isn't enough to fetch all the data, which
   // is exactly the goal in this test case, so that we can send the "early" drop
   // and ensure it does not crash in the next step.
-  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_device = server->data_device_manager()->data_device();
     auto* data_offer = data_device->CreateAndSendDataOffer();
@@ -1153,7 +1168,8 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 
   // Consume the move event from pointer enter.
-  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _));
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
 
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     // Place the window onto the output.
@@ -1192,9 +1208,13 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   ASSERT_TRUE(main_thread_test_task_runnner);
   ASSERT_TRUE(window_);
 
-  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+
+  // None other event expected because the window gets destroyed in the middle
+  // of the test.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
   EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
-  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(0);
   EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
 
   // 3 mime types are offered, which gives as time to hook partial data transfer
@@ -1224,11 +1244,70 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   WaitForDragDropTasks();
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kStarted);
+
   SendDndLeave();
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kIdle);
+}
+
+// Cursor position should be updated during a (outgoing) drag with mouse.
+TEST_P(WaylandDataDragControllerTest,
+       CursorPositionShouldBeUpdatedDuringMouseDrag) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Post an asynchronously task that runs once the drag session gets started.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_position = connection()->wayland_cursor_position();
+    ASSERT_TRUE(cursor_position);
+
+    // Forcibly update the cursor position before sending motion event.
+    cursor_position->OnCursorPositionChanged(gfx::Point(1, 2));
+
+    // Send a drag motion and see if cursor position is updated.
+    SendDndMotion(gfx::Point(10, 11));
+    WaitForDragDropTasks();
+    // Cursor position should be updated.
+    EXPECT_EQ(gfx::Point(10, 11), cursor_position->GetCursorSurfacePoint());
+
+    SendDndLeave();
+    SendDndCancelled();
+  }));
+
+  RunMouseDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
+}
+
+// Cursor position should not be updated during a (outgoing) drag with touch.
+TEST_P(WaylandDataDragControllerTest,
+       CursorPositionShouldNotBeUpdatedDuringTouchDrag) {
+  SendTouchDown(window_.get(), &delegate_, 1, gfx::Point(0, 0));
+
+  // Post an asynchronously task that runs once the drag session gets started.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_position = connection()->wayland_cursor_position();
+    ASSERT_TRUE(cursor_position);
+
+    // Forcibly update the cursor position before sending drag motion event.
+    cursor_position->OnCursorPositionChanged(gfx::Point(1, 2));
+
+    // Send a drag motion and see if cursor position is updated.
+    SendDndMotion(gfx::Point(10, 11));
+    WaitForDragDropTasks();
+    // Cursor position should be the same as before.
+    EXPECT_EQ(gfx::Point(1, 2), cursor_position->GetCursorSurfacePoint());
+
+    SendDndLeave();
+    SendDndCancelled();
+  }));
+
+  RunTouchDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

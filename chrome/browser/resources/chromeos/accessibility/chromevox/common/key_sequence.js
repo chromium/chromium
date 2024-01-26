@@ -25,7 +25,7 @@
  * - Whether sticky mode was active.
  */
 
-import {Key, KeyCode} from '../../common/key_code.js';
+import {Key, KeyCode} from '/common/key_code.js';
 
 import {Command} from './command.js';
 

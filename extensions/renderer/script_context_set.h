@@ -96,11 +96,17 @@ class ScriptContextSet : public ScriptContextSetIterable {
   static ScriptContext* GetMainWorldContextForFrame(
       content::RenderFrame* render_frame);
 
-  // ScriptContextIterable:
+  // ScriptContextSetIterable:
   void ForEach(
-      const std::string& extension_id,
+      const mojom::HostID& host_id,
       content::RenderFrame* render_frame,
       const base::RepeatingCallback<void(ScriptContext*)>& callback) override;
+
+  // Runs |callback| after verifying |render_frame| matches context's.
+  void ExecuteCallbackWithContext(
+      ScriptContext* context,
+      content::RenderFrame* render_frame,
+      const base::RepeatingCallback<void(ScriptContext*)>& callback);
 
   // Cleans up contexts belonging to an unloaded extension.
   void OnExtensionUnloaded(const std::string& extension_id);

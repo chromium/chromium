@@ -16,9 +16,6 @@ namespace internal {
 // This checks all the basic requirements for the side panel to be enabled.
 bool IsSidePanelEnabled(content::WebContents* web_contents);
 
-// Helper to return if the web contents are viewed in a progressive web app.
-bool IsInProgressiveWebApp(content::WebContents* web_contents);
-
 // Helper to return the template url service from the given web contents.
 TemplateURLService* GetTemplateURLService(content::WebContents* web_contents);
 

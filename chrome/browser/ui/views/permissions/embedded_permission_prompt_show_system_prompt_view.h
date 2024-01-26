@@ -29,6 +29,7 @@ class EmbeddedPermissionPromptShowSystemPromptView
 
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
+  bool ShowLoadingIcon() const override;
   void RunButtonCallback(int type) override;
 
  protected:

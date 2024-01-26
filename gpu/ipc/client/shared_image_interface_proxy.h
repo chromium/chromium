@@ -35,6 +35,11 @@ class GpuChannelHost;
 // Proxy that sends commands over GPU channel IPCs for managing shared images.
 class SharedImageInterfaceProxy {
  public:
+  struct SwapChainMailboxes {
+    Mailbox front_buffer;
+    Mailbox back_buffer;
+  };
+
   explicit SharedImageInterfaceProxy(
       GpuChannelHost* host,
       int32_t route_id,
@@ -121,13 +126,12 @@ class SharedImageInterfaceProxy {
   void WaitSyncToken(const SyncToken& sync_token);
   void Flush();
 
-  SharedImageInterface::SwapChainMailboxes CreateSwapChain(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage);
+  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
+                                     const gfx::Size& size,
+                                     const gfx::ColorSpace& color_space,
+                                     GrSurfaceOrigin surface_origin,
+                                     SkAlphaType alpha_type,
+                                     uint32_t usage);
   void PresentSwapChain(const SyncToken& sync_token, const Mailbox& mailbox);
 
 #if BUILDFLAG(IS_FUCHSIA)

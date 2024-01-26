@@ -30,10 +30,8 @@ class GinJavaBridgeObject;
 // bound to the window object of the main frame when that window object is next
 // cleared. These objects remain bound until the window object is cleared
 // again.
-class GinJavaBridgeDispatcher
-    : public base::SupportsWeakPtr<GinJavaBridgeDispatcher>,
-      public mojom::GinJavaBridge,
-      public RenderFrameObserver {
+class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
+                                      public RenderFrameObserver {
  public:
   // GinJavaBridgeObjects are managed by gin. An object gets destroyed
   // when it is no more referenced from JS. As GinJavaBridgeObject reports
@@ -81,6 +79,8 @@ class GinJavaBridgeDispatcher
   const bool enable_mojo_;
 
   mojo::Remote<mojom::GinJavaBridgeHost> remote_;
+
+  base::WeakPtrFactory<GinJavaBridgeDispatcher> weak_ptr_factory_{this};
 };
 
 }  // namespace content

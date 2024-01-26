@@ -21,7 +21,7 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_security_origin_util.h"
 #import "ios/web/webui/mojo_facade.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 

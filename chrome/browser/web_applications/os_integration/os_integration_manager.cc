@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -45,7 +46,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
@@ -83,7 +83,7 @@ OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
     :
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       scope_(&g_suppress_os_hooks_for_testing_, true)
 #else
       scope_(&g_suppress_os_hooks_for_testing_, false)
@@ -213,7 +213,7 @@ void OsIntegrationManager::Start() {
 void OsIntegrationManager::Synchronize(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
-    absl::optional<SynchronizeOsOptions> options) {
+    std::optional<SynchronizeOsOptions> options) {
   first_synchronize_called_ = true;
 
   // This is usually called to clean up OS integration states on the OS,
@@ -455,11 +455,11 @@ const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
   return file_handler_manager_->GetEnabledFileHandlers(app_id);
 }
 
-absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
+std::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
     const webapps::AppId& app_id,
     const GURL& protocol_url) {
   if (!protocol_handler_manager_)
-    return absl::optional<GURL>();
+    return std::optional<GURL>();
 
   return protocol_handler_manager_->TranslateProtocolUrl(app_id, protocol_url);
 }
@@ -965,7 +965,7 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
 
 void OsIntegrationManager::StartSubManagerExecutionIfRequired(
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> options,
+    std::optional<SynchronizeOsOptions> options,
     std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure on_all_execution_done) {
   // This can never be a use-case where we execute OS integration registration/
@@ -1004,7 +1004,7 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
 
 void OsIntegrationManager::ExecuteNextSubmanager(
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> options,
+    std::optional<SynchronizeOsOptions> options,
     proto::WebAppOsIntegrationState* desired_state,
     const proto::WebAppOsIntegrationState current_state,
     size_t index,

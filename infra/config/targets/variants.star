@@ -554,7 +554,7 @@ targets.variant(
         "--chromedriver",
         "chromedriver",
         "--binary",
-        "Chromium.app/Contents/MacOS/Chromium",
+        "Google Chrome.app/Contents/MacOS/Google Chrome",
     ],
     win_args = [
         "--chromedriver",

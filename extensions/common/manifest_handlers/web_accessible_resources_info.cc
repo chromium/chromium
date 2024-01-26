@@ -133,7 +133,7 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     bool allow_all_extensions = false;
     if (web_accessible_resource.extension_ids) {
       extension_id_list.reserve(web_accessible_resource.extension_ids->size());
-      for (std::string& extension_id : *web_accessible_resource.extension_ids) {
+      for (ExtensionId& extension_id : *web_accessible_resource.extension_ids) {
         if (extension_id == kExtensionIdWildcard) {
           allow_all_extensions = true;
           continue;

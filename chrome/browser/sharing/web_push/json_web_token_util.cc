@@ -21,7 +21,7 @@ const char kKeyTyp[] = "typ";
 const char kTypJwt[] = "JWT";
 }  // namespace
 
-absl::optional<std::string> CreateJSONWebToken(
+std::optional<std::string> CreateJSONWebToken(
     const base::Value::Dict& claims,
     crypto::ECPrivateKey* private_key) {
   // Generate header.
@@ -33,7 +33,7 @@ absl::optional<std::string> CreateJSONWebToken(
   std::string header_serialized;
   if (!base::JSONWriter::Write(header, &header_serialized)) {
     LOG(ERROR) << "Failed to write header as JSON";
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string header_base64;
   base::Base64UrlEncode(header_serialized,
@@ -44,7 +44,7 @@ absl::optional<std::string> CreateJSONWebToken(
   std::string payload_serialized;
   if (!base::JSONWriter::Write(claims, &payload_serialized)) {
     LOG(ERROR) << "Failed to write claims as JSON";
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string payload_base64;
   base::Base64UrlEncode(payload_serialized,
@@ -57,11 +57,11 @@ absl::optional<std::string> CreateJSONWebToken(
   std::vector<uint8_t> der_signature, raw_signature;
   if (!signer->Sign(base::as_bytes(base::make_span(data)), &der_signature)) {
     LOG(ERROR) << "Failed to create DER signature";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!signer->DecodeSignature(der_signature, &raw_signature)) {
     LOG(ERROR) << "Failed to decode DER signature";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Serialize signature.

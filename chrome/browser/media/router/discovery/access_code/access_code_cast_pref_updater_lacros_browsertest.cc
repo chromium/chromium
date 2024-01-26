@@ -26,7 +26,7 @@
 namespace {
 
 base::Value::Dict GetDictFromPrefService(crosapi::mojom::PrefPath pref_path) {
-  base::test::TestFuture<absl::optional<base::Value>> future;
+  base::test::TestFuture<std::optional<base::Value>> future;
   chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
       pref_path, future.GetCallback());
   auto out_value = future.Take();
@@ -52,7 +52,7 @@ class AccessCodeCastPrefUpdaterLacrosTest : public InProcessBrowserTest {
     ASSERT_TRUE(lacros_service);
     ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::Prefs>());
 
-    base::test::TestFuture<absl::optional<base::Value>> future;
+    base::test::TestFuture<std::optional<base::Value>> future;
     chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
         crosapi::mojom::PrefPath::kAccessCodeCastDevices, future.GetCallback());
 

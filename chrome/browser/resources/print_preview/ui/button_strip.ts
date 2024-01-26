@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // <if expr="is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -15,7 +15,8 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 // </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, PrinterType} from '../data/destination.js';
+import type {Destination} from '../data/destination.js';
+import {PrinterType} from '../data/destination.js';
 import {State} from '../data/state.js';
 
 import {getTemplate} from './button_strip.html.js';

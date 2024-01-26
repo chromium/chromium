@@ -65,6 +65,7 @@
 #include "chromeos/crosapi/mojom/content_protection.mojom.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/debug_interface.mojom.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "chromeos/crosapi/mojom/desk_profiles.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
@@ -313,7 +314,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 130,
+static_assert(crosapi::mojom::Crosapi::Version_ == 131,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -345,6 +346,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::ContentProtection>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CrosDisplayConfigController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Crosapi>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DebugInterfaceRegisterer>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Desk>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeskProfileObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeskTemplate>(),

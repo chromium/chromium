@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -35,7 +36,7 @@ class AuthenticationServiceObserverBridgeTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  AuthenticationService* auth_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
 };
 
 // Tests that `OnServiceStatusChanged` is forwarded from the service.

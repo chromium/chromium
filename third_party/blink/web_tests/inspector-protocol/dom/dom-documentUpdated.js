@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const testUrl = 'resources/dom-get-document-test.html';
   const { dp } = await testRunner.startBlank('Tests DOM.documentUpdated event');
 

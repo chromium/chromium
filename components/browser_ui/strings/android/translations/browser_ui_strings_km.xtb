@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">បានផ្អាកការទាញយក</translation>
 <translation id="1415402041810619267">បានបង្រួម URL</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
+<translation id="1434873037477293673">កាតធ្លាក់តម្លៃ</translation>
 <translation id="1448064542941920355">បន្ថយការពង្រីកបង្រួម</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{គេហទំព័រ <ph name="SITE_COUNT" />}other{គេហទំព័រ <ph name="SITE_COUNT" />}}</translation>
 <translation id="1510341833810331442">គេហទំព័រ​មិន​ត្រូវបាន​អនុញ្ញាត​ឱ្យ​រក្សាទុក​ទិន្នន័យ​លើ​ឧបករណ៍​របស់​អ្នក​ទេ</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">គេហទំព័រអាចបង្ហាញសារចូលគណនីពីសេវាកម្មដែលសួររកអត្តសញ្ញាណ។</translation>
 <translation id="2790501146643349491">នៅពេល​បើក គេហទំព័រ​ដែលបាន​បិទថ្មីៗ​អាចបញ្ចប់​ការផ្ញើ និង​ការទទួល​ទិន្នន័យ​បាន។ នៅពេល​បិទ គេហទំព័រ​ដែលបានបិទថ្មីៗ​មិនអាច​បញ្ចប់ការផ្ញើ ឬ​ការទទួល​ទិន្នន័យ​បានទេ។</translation>
 <translation id="2822354292072154809">តើ​អ្នកប្រាកដថា​ចង់​កំណត់​ការអនុញ្ញាត​គេហទំព័រ​ទាំងអស់​ឡើងវិញ​សម្រាប់ <ph name="CHOSEN_OBJECT_NAME" /> ដែរទេ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ស្នើសុំ​ទិដ្ឋភាពលើ​ទូរសព្ទ</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
 <translation id="2874939134665556319">បទ​មុន</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក</translation>
 <translation id="6447842834002726250">ខុកឃី</translation>
+<translation id="6452138246455930388">ការធ្លាក់តម្លៃ​នៅលើ​ផ្ទាំងដែលអ្នកបើក​ពី <ph name="OLD_PRICE" /> ទៅ <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">នៅពេល​វិនដូ​មានភាពចង្អៀត សូមស្នើសុំ​ទិដ្ឋភាពលើ​ទូរសព្ទ</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
 <translation id="652937045869844725">សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី ដែលមានន័យថា​មានការការពារតិចជាងមុន ប៉ុន្តែ​មុខងារ​គេហទំព័រ​កាន់តែទំនងជាដំណើរការ</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">រំកិលចុះ</translation>
 <translation id="6749077623962119521">កំណត់ការអនុញ្ញាតឡើងវិញឬ?</translation>
 <translation id="6766622839693428701">អូស​ចុះ​ក្រោម​ដើម្បី​បិទ។</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ពី <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ជ្រើសរើស​ជម្រើស​សម្រាប់ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>
 <translation id="6864395892908308021">ឧបករណ៍នេះ​មិនអាចអាន NFC បានទេ</translation>
+<translation id="6867014948848323204">ពី <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">ទប់ស្កាត់​ទំព័រ​មិន​ឱ្យ​អាន​អក្សរ និង​រូបភាព​ពី​អង្គ​ចង​ចាំ</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6950072572526089586">គេហទំព័រ​ដែល​អ្នក​ចូលមើល​អាច​រក្សាទុក​ព័ត៌មាន​អំពី​អ្វី​ដែល​អ្នក​កំពុង​ធ្វើ ដើម្បី​ឱ្យ​គេហទំព័រនេះ​ដំណើរការ​ដូច​ដែល​បាន​រំពឹង​ទុក — ឧទាហរណ៍ ដើម្បី​ឱ្យ​អ្នក​បន្តចូល​គេហទំព័រ ឬ​ដើម្បី​រក្សាទុក​ទំនិញ​នៅ​ក្នុង​កន្ត្រកទិញ​ទំនិញ​របស់​អ្នក។ ជារឿយៗ គេហទំព័រ​រក្សាទុក​ព័ត៌មាននេះ​ជា​បណ្ដោះអាសន្ន​នៅលើ​ឧបករណ៍​របស់​អ្នក។</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">កុំ​អនុញ្ញាត​ឱ្យ​គេហទំព័រ​ប្រើ​ខូគី​ភាគីទីបី</translation>
 <translation id="7719367874908701697">ពង្រីកទំព័រ</translation>
+<translation id="7770832849480336015">លាក់ "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>

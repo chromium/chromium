@@ -303,9 +303,15 @@ if (is_win || is_mac || is_linux) {
         "//chrome/installer/util:constants",
         "//chrome/installer/util:metainstaller_utils",
         "//chrome/installer/util:work_item",
-        "//chrome/updater/app/server/win:updater_idl_idl",
-        "//chrome/updater/app/server/win:updater_internal_idl_idl",
-        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+        "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/updater/app/server/win:updater_idl_system",
+        "//chrome/updater/app/server/win:updater_idl_user",
+        "//chrome/updater/app/server/win:updater_internal_idl",
+        "//chrome/updater/app/server/win:updater_internal_idl_system",
+        "//chrome/updater/app/server/win:updater_internal_idl_user",
+        "//chrome/updater/app/server/win:updater_legacy_idl",
+        "//chrome/updater/app/server/win:updater_legacy_idl_system",
+        "//chrome/updater/app/server/win:updater_legacy_idl_user",
         "//chrome/updater/win/ui/resources",
         "//chrome/updater/win/ui/resources:strings",
         "//components/winhttp",
@@ -591,7 +597,7 @@ if (is_win || is_mac || is_linux) {
         "win/win_constants.h",
       ]
 
-      deps += [ "//chrome/updater/app/server/win:updater_idl_idl" ]
+      deps += [ "//chrome/updater/app/server/win:updater_idl" ]
 
       configs -= [ "//build/config/win:winver" ]
       configs += [
@@ -864,9 +870,9 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "app/server/win:updater_idl_idl",
-        "app/server/win:updater_internal_idl_idl",
-        "app/server/win:updater_legacy_idl_idl",
+        "app/server/win:updater_idl",
+        "app/server/win:updater_internal_idl",
+        "app/server/win:updater_legacy_idl",
         "win/installer:lib",
         "win/installer:msi_custom_action_sources",
         "win/test:test_executables",

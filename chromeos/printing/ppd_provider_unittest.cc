@@ -1256,5 +1256,19 @@ TEST_F(PpdProviderTest, RemotePpdResolveFailureResultsInServerError) {
   EXPECT_TRUE(captured_resolve_ppd_[0].ppd_contents.empty());
 }
 
+// Test that PPD result codes have the expected names.
+TEST_F(PpdProviderTest, ResultCodeNames) {
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::SUCCESS),
+            "SUCCESS");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::NOT_FOUND),
+            "NOT_FOUND");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::SERVER_ERROR),
+            "SERVER_ERROR");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::INTERNAL_ERROR),
+            "INTERNAL_ERROR");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::PPD_TOO_LARGE),
+            "PPD_TOO_LARGE");
+}
+
 }  // namespace
 }  // namespace chromeos

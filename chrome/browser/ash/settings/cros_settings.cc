@@ -149,7 +149,7 @@ bool CrosSettings::GetInteger(base::StringPiece path, int* out_value) const {
 bool CrosSettings::GetDouble(base::StringPiece path, double* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // `GetIfDouble` incapsulates type check.
-  absl::optional<double> maybe_value = GetPref(path)->GetIfDouble();
+  std::optional<double> maybe_value = GetPref(path)->GetIfDouble();
   if (maybe_value.has_value()) {
     *out_value = maybe_value.value();
     return true;
@@ -193,7 +193,7 @@ bool CrosSettings::GetDictionary(base::StringPiece path,
 bool CrosSettings::IsUserAllowlisted(
     const std::string& username,
     bool* wildcard_match,
-    const absl::optional<user_manager::UserType>& user_type) const {
+    const std::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
   if (switches::ShouldSkipOobePostLogin()) {
     return true;

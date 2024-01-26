@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
+<translation id="1626590945318984973">Кратенката не е достапна. Притиснете нова кратенка без користење на функциските и копчињата за <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1641857168437328880">Внесувач на документи (едностран)</translation>
 <translation id="1643449475550628585">Менувајте ја сликата за тапет секојдневно</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Исклучи темен режим</translation>
 <translation id="1885577615937958993">премотување аудиовизуелни содржини нанапред</translation>
 <translation id="1887850431809612466">Ревизија на хардвер</translation>
-<translation id="1897672602657312171">Можно е да се јави конфликт меѓу кратенка без копче за пребарување и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за пребарување.</translation>
 <translation id="1904932688895783618">Еве неколку други корисни ресурси:</translation>
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотографии</translation>
 <translation id="2157660087437850958">избирач на емоџија</translation>
 <translation id="2157959690810728433">ЧЕКА НА РЕД</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Вашиот администратор поставил <ph name="APP_NAME_1" /> да се стартува автоматски при секое најавување.}=2{Вашиот администратор поставил <ph name="APP_NAME_1" /> и <ph name="APP_NAME_2" /> да се стартуваат автоматски при секое најавување.}=3{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да се стартуваат автоматски при секое најавување.}one{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и уште # апликација да се стартуваат автоматски при секое најавување.}other{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и уште # апликации да се стартуваат автоматски при секое најавување.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="215916044711630446">Копчето „Додај“ во APN сега е оневозможено</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Изменете ги деталите за APN</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
+<translation id="2215920961700443347">Нема интернет. Поврзете се на интернет, па обидете се повторно.</translation>
 <translation id="2217935453350629363">Моментална брзина</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="222447520299472966">Треба да се избере минимум еден албум во „Уметничката галерија“</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Слика <ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2465272316171730950">Нема пристап во моментов. Проверете повторно за кратко.</translation>
 <translation id="248546197012830854">Уредот е офлајн. Поврзете се на Wi-Fi мрежа за да ги видите содржините за помош.</translation>
 <translation id="2491955442992294626">Копчињата не се тестираат кога користите друг прозорец</translation>
 <translation id="2493126929778606526">Вашите најдобри фотографии, избрани автоматски</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Освежете ја тековната слика за тапет</translation>
 <translation id="2512979179176933762">прикажување прозорци</translation>
 <translation id="2513396635448525189">Слика при најавување</translation>
-<translation id="2515109918609218604">Кратенката не е достапна. Притиснете нова кратенка без користење на функциските и копчињата за пребарување.</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2521835766824839541">претходна песна</translation>
 <translation id="2526590354069164005">Десктоп</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темен режим</translation>
 <translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
+<translation id="4130750466177569591">Се согласувам</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> се стартуваше автоматски}one{# апликација се стартуваа автоматски}other{# апликации се стартуваа автоматски}}</translation>
 <translation id="4145784616224233563">Заштитен ѕид со HTTP</translation>
 <translation id="4147897805161313378">Фотографии на Google</translation>
 <translation id="4150201353443180367">Екран</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">намалување на осветленоста</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4176659219503619100">Контролна табла</translation>
-<translation id="4185315616950253617">Конкретна кратенка со копчиња во најгорниот ред треба да го опфаќа копчето за пребарување</translation>
 <translation id="420283545744377356">Исклучете го штедачот на екранот</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Оневозможи</translation>
 <translation id="439429847087949098">Се рестартира <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">приспособување на тастатурата</translation>
+<translation id="4403262788869804671">Можно е да дојде до поклопување меѓу кратенка без копче за <ph name="META_KEY" /> и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Тековен аватар</translation>
+<translation id="4417830657741848074">Администраторот поставил некои апликации да се стартуваат автоматски. Некои од апликацииве не може да се затворат.</translation>
 <translation id="4422041425070339732">стрелка надолу</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Штедач на екран Earth Flow</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
+<translation id="4500722292849917410">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја на интерфејсот</translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
 <translation id="4507392511610824664">зголемување на осветленоста</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Изберете папка во апликацијата „Датотеки“…</translation>
 <translation id="4835901797422965222">Нема активни мрежи</translation>
 <translation id="4839698083503556542">Создајте сопствен филм</translation>
+<translation id="48409034532829769">Администраторот поставил „<ph name="APP_NAME" />“ да се стартува автоматски. Апликацијава не може да се затвори.</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="4847902821209177679">Избрано е <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, притиснете Enter за да изберете албуми од <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Одредување со DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Поделено</translation>
 <translation id="4972592110715526173">променување режим</translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
+<translation id="4982627662315910959">Кратенката не е достапна. Притиснете нова кратенка со копчето Shift и уште 1 копче модификатор (Ctrl, Alt или <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="4987769320337599931">Заштитен ѕид</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Распоред за темна тема</translation>
 <translation id="5229344016299762883">Излези од цел екран</translation>
 <translation id="5234764350956374838">Отфрли</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Вашиот администратор поставил „<ph name="APP_NAME" />“ да се стартува автоматски при секое најавување.}=2{Вашиот администратор поставил „<ph name="APP_NAME" />“ и уште 1 апликација да се стартуваат автоматски при секое најавување.}one{Вашиот администратор поставил „<ph name="APP_NAME" />“ и уште # апликација да се стартуваат автоматски при секое најавување.}other{Вашиот администратор поставил „<ph name="APP_NAME" />“ и уште # апликации да се стартуваат автоматски при секое најавување.}}</translation>
 <translation id="5252456968953390977">Роаминг</translation>
 <translation id="5257811368506016604">Овозможете режим во светла боја</translation>
 <translation id="5264277876637023664">Изврши CPU-тест</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="725133483556299729">Избери е-пошта</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
-<translation id="7273347807225967898">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift, копчето за пребарување или копчето за стартување).</translation>
+<translation id="7271932918253517778">Кратенка со копчиња во најгорниот ред треба да го опфаќа копчето за <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Почувствувајте го ветрето</translation>
 <translation id="7287310195820267359">Збирки тапети</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Општи контроли</translation>
 <translation id="7977800524392185497">За да се придружите на мрежата <ph name="NETWORK_NAME" />, одете во „Поставки“</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ се стартуваше автоматски}one{# апликација се стартуваа автоматски}other{# апликации се стартуваа автоматски}}</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8017679124341497925">Кратенката е изменета</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8094062939584182041">Дозволете Google да ви праќа е-пораки за проблемов</translation>
 <translation id="8104083085214006426">Користите отворена и небезбедна мрежа</translation>
-<translation id="8111706652656628199">Кратенката не е достапна. Притиснете нова кратенка со копчето Shift и уште 1 копче модификатор (Ctrl, Alt, копчето за пребарување или копчето за стартување).</translation>
 <translation id="811820734797650957">(Android) Може да се испрати пинг до порталот</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Побарајте бројачи на сообраќај</translation>

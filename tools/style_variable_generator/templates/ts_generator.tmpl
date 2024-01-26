@@ -60,6 +60,15 @@ const UNTYPED_CSS = window ? `
 ` : '';
 
 const TYPOGRAPHY_CSS = window ? `
+{%- if font_faces %}
+  /* font faces */
+{%- for _, value in font_faces.items() %}
+  @font-face {
+    font-family: "{{value.family}}";
+    src: local("{{value.local_src}}");
+  }
+{%- endfor %}
+{% endif %}
 {%- if font_families or typefaces %}
   /* font families */
 {%-   for name, value in font_families.items() %}

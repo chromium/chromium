@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'hsl(from hsl(20 30 40 / 0.8) calc(h + 1) calc(s + 1) calc(l + 1) / calc(alpha + 0.01))'
+  Colors do not match.\nActual:   color(srgb 0.88 1.556 1.92 / 0.81)\nExpected: color(srgb 0.54 0.37 0.28 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.54 +/- 0.01, expected 0.54 but got 0.88
+[FAIL] Property color value 'hwb(from hwb(20 30 40 / 0.8) calc(h + 1) calc(w + 1) calc(b + 1) / calc(alpha + 0.01))'
+  Colors do not match.\nActual:   color(srgb 0.481481 0.481481 0.481481 / 0.81)\nExpected: color(srgb 0.59 0.41 0.31 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.59 +/- 0.01, expected 0.59 but got 0.481481
+Harness: the test ran to completion.
+

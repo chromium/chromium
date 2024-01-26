@@ -143,7 +143,7 @@ const FieldTrialTestingExperiment
          std::size(array_kEarlyBootFieldTrialConfig_platforms),
          /*form_factors=*/{},
          /*form_factors_size=*/0,
-         /*is_low_end_device=*/absl::nullopt,
+         /*is_low_end_device=*/std::nullopt,
          /*min_os_version=*/nullptr,
          /*params=*/array_kEarlyBootFieldTrialConfig_params,
          /*params_size=*/std::size(array_kEarlyBootFieldTrialConfig_params),
@@ -510,7 +510,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_EnableFeatures) {
   ASSERT_EQ(read_output.overrides_size(), 1);
   const featured::FeatureOverride& feature = read_output.overrides(0);
   EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
-  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.override_state(), featured::OVERRIDE_ENABLE_FEATURE);
   // These names are auto-generated from the feature name in
   // base/feature_list.cc in ParseEnableFeatures().
   EXPECT_EQ(feature.trial_name(), "StudyCrOSEarlyBootTestFeature");
@@ -544,7 +544,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest,
   ASSERT_EQ(read_output.overrides_size(), 1);
   const featured::FeatureOverride& feature = read_output.overrides(0);
   EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
-  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.override_state(), featured::OVERRIDE_ENABLE_FEATURE);
   EXPECT_EQ(feature.trial_name(), "ATrial");
   EXPECT_EQ(feature.group_name(), "AGroup");
   ASSERT_EQ(feature.params_size(), 1);
@@ -572,7 +572,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_NormalSeed) {
   ASSERT_EQ(read_output.overrides_size(), 1);
   const featured::FeatureOverride& feature = read_output.overrides(0);
   EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
-  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.override_state(), featured::OVERRIDE_ENABLE_FEATURE);
   EXPECT_EQ(feature.trial_name(), "EarlyBootStudy");
   EXPECT_EQ(feature.group_name(), "Enabled");
   ASSERT_EQ(feature.params_size(), 1);
@@ -617,7 +617,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
   ASSERT_EQ(read_output.overrides_size(), 1);
   const featured::FeatureOverride& feature = read_output.overrides(0);
   EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
-  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.override_state(), featured::OVERRIDE_ENABLE_FEATURE);
   EXPECT_EQ(feature.trial_name(), "EarlyBootStudy");
   EXPECT_EQ(feature.group_name(), "Enabled");
   ASSERT_EQ(feature.params_size(), 1);
@@ -669,7 +669,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_FieldTrialConfig) {
   ASSERT_EQ(read_output.overrides_size(), 1);
   const featured::FeatureOverride& feature = read_output.overrides(0);
   EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
-  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.override_state(), featured::OVERRIDE_ENABLE_FEATURE);
   EXPECT_EQ(feature.trial_name(), "CrOSEarlyBootTestStudy");
   EXPECT_EQ(feature.group_name(), "Enabled");
   ASSERT_EQ(feature.params_size(), 1);

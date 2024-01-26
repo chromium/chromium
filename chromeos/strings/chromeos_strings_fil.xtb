@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
+<translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
 <translation id="1643449475550628585">Araw-araw na palitan ang larawan sa wallpaper</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">I-off ang dark mode</translation>
 <translation id="1885577615937958993">mag-fast forward ng media</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
-<translation id="1897672602657312171">Posibleng salungat sa shortcut ng ilang app ang shortcut na walang key sa paghahanap. Pindutin ulit ang shortcut na ito para patuloy itong magamit, o pumindot ng bagong shortcut gamit ang key sa paghahanap.</translation>
 <translation id="1904932688895783618">Narito ang ilang pang kapaki-pakinabang na resource:</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> (na) larawan</translation>
 <translation id="2157660087437850958">picker ng emoji</translation>
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" /> tuwing magla-log in ka.}=2{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" /> at <ph name="APP_NAME_2" /> tuwing magla-log in ka.}=3{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at <ph name="APP_NAME_3" /> tuwing magla-log in ka.}one{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at # pang app tuwing magla-log in ka.}other{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at # pang app tuwing magla-log in ka.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="215916044711630446">Naka-disable na ang button na Magdagdag ng APN</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">I-edit ang mga detalye ng APN</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
+<translation id="2215920961700443347">Walang internet. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
 <translation id="2224337661447660594">Walang internet</translation>
 <translation id="222447520299472966">Kailangang pumili ng hindi bababa sa isang album sa Art gallery</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
+<translation id="2465272316171730950">Puno kami ngayon. Bumalik sa loob ng ilang sandali.</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
 <translation id="2491955442992294626">Hindi sinusubukan ang mga key kapag gumagamit ka ng ibang window</translation>
 <translation id="2493126929778606526">Ang iyong mga pinakamagandang larawang awtomatikong napili</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
-<translation id="2515109918609218604">Hindi available ang shortcut. Pumindot ng bagong shortcut na hindi ginagamit ang function key at search key.</translation>
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2521835766824839541">nakaraang track</translation>
 <translation id="2526590354069164005">Desktop</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">May access ka na ngayon sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
+<translation id="4130750466177569591">Sumasang-ayon ako</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang <ph name="APP_NAME_1" />}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">babaan ang liwanag</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4176659219503619100">Control Panel</translation>
-<translation id="4185315616950253617">Kailangang kasama ang key sa paghahanap sa shortcut na may mga top row key.</translation>
 <translation id="420283545744377356">I-off ang screen saver</translation>
 <translation id="4213104098953699324">USB na keyboard</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Huwag paganahin</translation>
 <translation id="439429847087949098">Nire-restart ang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">pag-customize ng keyboard</translation>
+<translation id="4403262788869804671">Posibleng sumalungat sa shortcut ng ilang app ang shortcut na walang <ph name="META_KEY" /> key. Pindutin ulit ang shortcut na ito para ituloy ang paggamit nito, o pumindot ng bagong shortcut gamit ang <ph name="KEY" /> key.</translation>
 <translation id="4415951057168511744">Kasalukuyang Avatar</translation>
+<translation id="4417830657741848074">Na-set up ng iyong administrator na awtomatikong magsisimula ang ilang app. Posibleng hindi maisasara ang ilan sa mga app na ito.</translation>
 <translation id="4422041425070339732">pababang arrow</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
 <translation id="4428374560396076622">Naka-off ang <ph name="NETWORK_NAME" /></translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Screen saver na paggalaw ng mundo</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
+<translation id="4500722292849917410">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang modifier key (ctrl, alt, shift, o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kulay ng interface</translation>
 <translation id="4503223151711056411">Kaliwang arrow</translation>
 <translation id="4507392511610824664">taasan ang liwanag</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Pumili ng folder sa Files app...</translation>
 <translation id="4835901797422965222">Walang aktibong network</translation>
 <translation id="4839698083503556542">Gumawa ng pelikula mo</translation>
+<translation id="48409034532829769">Na-set up ng iyong administrator na awtomatikong magsisimula ang "<ph name="APP_NAME" />." Posibleng hindi maisasara ang app na ito.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679">Pinili ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pindutin ang Enter para piliin ang mga album sa <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">I-split</translation>
 <translation id="4972592110715526173">pagbabago ng mode</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
+<translation id="4982627662315910959">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Mga Page</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Iskedyul ng madilim na tema</translation>
 <translation id="5229344016299762883">Lumabas sa fullscreen</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" sa tuwing magla-log in ka.}=2{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at 1 iba pang app sa tuwing magla-log in ka.}one{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at # iba pang app sa tuwing magla-log in ka.}other{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at # na iba pang app sa tuwing magla-log in ka.}}</translation>
 <translation id="5252456968953390977">Nagro-roam</translation>
 <translation id="5257811368506016604">I-enable ang light color mode</translation>
 <translation id="5264277876637023664">Patakbuhin ang pagsusuri sa CPU</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
-<translation id="7273347807225967898">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang isang modifier key (ctrl, alt, shift, maghanap, o launcher).</translation>
+<translation id="7271932918253517778">Kailangang kasama ang <ph name="META_KEY" /> key sa shortcut na may mga top row key.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Mga pangkalahatang kontrol</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang "<ph name="APP_NAME_1" />"}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Na-edit ang shortcut</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
-<translation id="8111706652656628199">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, maghanap, o launcher).</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>

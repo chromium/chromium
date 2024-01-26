@@ -11,6 +11,7 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -83,7 +84,9 @@ const CGFloat kSuggestionHorizontalMargin = 6;
         self.contentInset = lockedContentInsets;
       }
       completion:^(BOOL finished) {
-        self.delegate = self;
+        if (!IsKeyboardAccessoryUpgradeEnabled()) {
+          self.delegate = self;
+        }
       }];
 }
 
@@ -175,7 +178,11 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   }
 }
 
+#pragma mark - UIScrollViewDelegate
+
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  DCHECK(!IsKeyboardAccessoryUpgradeEnabled());
+
   CGFloat offset = self.contentOffset.x;
   CGFloat inset = self.contentInset.left;  // Inset is negative when locked.
   CGFloat diff = offset + inset;

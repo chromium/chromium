@@ -6,6 +6,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
+#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -35,9 +37,9 @@ void RegisterChromeWebUIConfigs() {
   ash::RegisterAshChromeWebUIConfigs();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
   auto& map = content::WebUIConfigMap::GetInstance();
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  map.AddWebUIConfig(std::make_unique<AutofillInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<PasswordManagerInternalsUIConfig>());
 
 #if !BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());

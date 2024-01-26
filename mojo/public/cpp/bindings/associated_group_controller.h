@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_GROUP_CONTROLLER_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"

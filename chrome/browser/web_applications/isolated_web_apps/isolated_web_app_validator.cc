@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -32,7 +32,7 @@ IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
 void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-    base::OnceCallback<void(absl::optional<std::string>)> callback) {
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
   // In here, we would also validate other properties of the Integrity Block,
   // such as whether its version is supported (once we support multiple
   // Integrity Block versions).
@@ -45,13 +45,13 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 base::expected<void, UnusableSwbnFileError>
 IsolatedWebAppValidator::ValidateMetadata(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const absl::optional<GURL>& primary_url,
+    const std::optional<GURL>& primary_url,
     const std::vector<GURL>& entries) {
   const auto validate = [&]() -> base::expected<void, std::string> {
     // Verify that the Signed Web Bundle does not have a primary URL set.

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_INSTALLABILITY_FOR_CHROME_MANAGEMENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -37,14 +37,14 @@ enum class InstallableCheckResult {
 
 using FetchInstallabilityForChromeManagementCallback =
     base::OnceCallback<void(InstallableCheckResult result,
-                            absl::optional<webapps::AppId> app_id)>;
+                            std::optional<webapps::AppId> app_id)>;
 
 // Given a url and web contents, this command determines if the given url is
 // installable, what the webapps::AppId is, and if it is already installed.
 class FetchInstallabilityForChromeManagement
     : public WebAppCommand<NoopLock,
                            InstallableCheckResult,
-                           absl::optional<webapps::AppId>> {
+                           std::optional<webapps::AppId>> {
  public:
   FetchInstallabilityForChromeManagement(
       const GURL& url,

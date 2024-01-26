@@ -392,8 +392,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
               // Act.
               await waitAfterNextRender(modulesElement);
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
-                const undoButton = modulesElement.shadowRoot!.querySelector(
-                                       '#undoButton') as HTMLElement;
+                const undoButton =
+                    modulesElement.shadowRoot!.querySelector<HTMLElement>(
+                        '#undoButton');
+                assertTrue(!!undoButton);
                 undoButton.click();
               } else if (undoStrategy === UndoStrategy.SHORTCUT_KEY) {
                 window.dispatchEvent(new KeyboardEvent('keydown', {
@@ -469,8 +471,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
               await waitAfterNextRender(modulesElement);
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {
-                const undoButton = modulesElement.shadowRoot!.querySelector(
-                                       '#undoButton') as HTMLElement;
+                const undoButton =
+                    modulesElement.shadowRoot!.querySelector<HTMLElement>(
+                        '#undoButton');
+                assertTrue(!!undoButton);
                 undoButton.click();
               } else if (undoStrategy === UndoStrategy.SHORTCUT_KEY) {
                 window.dispatchEvent(new KeyboardEvent('keydown', {

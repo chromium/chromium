@@ -9,7 +9,7 @@ static_js_files = [
 ]
 
 ts_files = [
-  "base/js/tests/testing_convert_to_ts.ts",
+  "testing_convert_to_ts.ts",
   # Common.
   "file_manager/common/js/api.ts",
   "file_manager/common/js/cr_ui.ts",

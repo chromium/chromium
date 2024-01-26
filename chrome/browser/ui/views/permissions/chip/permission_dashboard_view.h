@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
-class OmniboxChipButton;
+class PermissionChipView;
 
 // UI component for activity indicators and chip button located in the omnibox.
 class PermissionDashboardView : public views::View {
@@ -22,16 +22,16 @@ class PermissionDashboardView : public views::View {
       delete;
   ~PermissionDashboardView() override;
 
-  OmniboxChipButton* GetRequestChip() { return request_chip_; }
-  OmniboxChipButton* GetIndicatorChip() { return indicator_chip_; }
+  PermissionChipView* GetRequestChip() { return request_chip_; }
+  PermissionChipView* GetIndicatorChip() { return indicator_chip_; }
 
   // views::View.
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
 
  private:
-  raw_ptr<OmniboxChipButton> indicator_chip_;
-  raw_ptr<OmniboxChipButton> request_chip_;
+  raw_ptr<PermissionChipView> indicator_chip_;
+  raw_ptr<PermissionChipView> request_chip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_VIEW_H_

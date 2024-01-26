@@ -571,6 +571,7 @@ absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::BEACON:
     case mojom::blink::RequestContextType::EVENT_SOURCE:
     case mojom::blink::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::JSON:
     case mojom::blink::RequestContextType::PING:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::SUBRESOURCE:
@@ -694,10 +695,6 @@ bool ContentSecurityPolicy::AllowRequest(
   // executing "Does resource hint request violate policy?" on request and
   // policy.
   if (context == mojom::blink::RequestContextType::PREFETCH) {
-    if (!RuntimeEnabledFeatures::ResourceHintsLeastRestrictiveCSPEnabled()) {
-      return true;
-    }
-
     return base::ranges::all_of(policies_, [&](const auto& policy) {
       return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                      policy->header->type) ||

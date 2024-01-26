@@ -7,5 +7,6 @@ rootWebArea
 ++++++++genericContainer display='inline'
 ++++++++++checkBox display='inline-block' name='checkbox' checkedState=false
 ++++++++genericContainer display='block'
-++++++++++staticText name='done'
-++++++++++++inlineTextBox name='done'
+++++++++++code display='inline'
+++++++++++++staticText name='done'
+++++++++++++++inlineTextBox name='done'

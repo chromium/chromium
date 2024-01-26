@@ -267,6 +267,8 @@ static_library("core") {
       "model_execution/optimization_guide_model_execution_error.h",
       "model_execution/redactor.cc",
       "model_execution/redactor.h",
+      "model_execution/repetition_checker.cc",
+      "model_execution/repetition_checker.h",
       "model_execution/session_impl.cc",
       "model_execution/session_impl.h",
       "model_execution/settings_enabled_observer.cc",
@@ -508,6 +510,7 @@ source_set("unit_tests") {
       "model_execution/on_device_model_service_controller_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
       "model_execution/redactor_unittest.cc",
+      "model_execution/repetition_checker_unittest.cc",
       "model_execution/test_on_device_model_component.cc",
       "model_execution/test_on_device_model_component.h",
     ]

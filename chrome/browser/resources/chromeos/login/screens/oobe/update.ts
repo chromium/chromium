@@ -297,24 +297,20 @@ export class Update extends UpdateBase {
     // Sets aria-live polite on percent and timeleft container every time new
     // threshold has been achieved otherwise do not initiate spoken feedback
     // update by setting aria-live off.
+    const betterUpdatePercent = this.shadowRoot?.
+        querySelector('#betterUpdatePercent');
+    const betterUpdateTimeleft = this.shadowRoot?.
+        querySelector('#betterUpdateTimeleft');
     if (percent >= PERCENT_THRESHOLDS[this.thresholdIndex]) {
       while (percent >= PERCENT_THRESHOLDS[this.thresholdIndex]) {
         this.thresholdIndex = this.thresholdIndex + 1;
       }
-      const betterUpdatePercent = this.shadowRoot?.
-          querySelector('#betterUpdatePercent');
-      const betterUpdateTimeleft = this.shadowRoot?.
-          querySelector('#betterUpdateTimeleft');
       if (betterUpdatePercent instanceof HTMLElement
           && betterUpdateTimeleft instanceof HTMLElement){
         betterUpdatePercent.setAttribute('aria-live', 'polite');
         betterUpdateTimeleft.setAttribute('aria-live', 'polite');
       }
     } else {
-      const betterUpdatePercent = this.shadowRoot?.
-          querySelector('#betterUpdatePercent');
-      const betterUpdateTimeleft = this.shadowRoot?.
-          querySelector('#betterUpdateTimeleft');
       if (betterUpdatePercent instanceof HTMLElement
           && betterUpdateTimeleft instanceof HTMLElement){
         betterUpdatePercent.setAttribute('aria-live', 'off');

@@ -30,17 +30,6 @@ extern "C" {
 
 namespace media {
 
-#if BUILDFLAG(ENABLE_LIBVPX)
-BASE_FEATURE(kLibvpxUseChromeThreads,
-             "LibvpxUseChromeThreads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_LIBVPX)
-#if BUILDFLAG(ENABLE_LIBAOM)
-BASE_FEATURE(kLibaomUseChromeThreads,
-             "LibaomUseChromeThreads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
-
 // Media must only be initialized once; use a thread-safe static to do this.
 class MediaInitializer {
  public:

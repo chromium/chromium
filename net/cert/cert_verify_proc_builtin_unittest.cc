@@ -4,6 +4,8 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -97,7 +99,7 @@ std::string MakeRandomHexString(size_t num_bytes) {
   return base::HexEncode(rand_bytes.data(), rand_bytes.size());
 }
 
-static std::string MakeRandomPath(base::StringPiece suffix) {
+static std::string MakeRandomPath(std::string_view suffix) {
   return "/" + MakeRandomHexString(12) + std::string(suffix);
 }
 
@@ -167,8 +169,8 @@ class MockCTVerifier : public CTVerifier {
  public:
   MOCK_CONST_METHOD5(Verify,
                      void(X509Certificate*,
-                          base::StringPiece,
-                          base::StringPiece,
+                          std::string_view,
+                          std::string_view,
                           SignedCertificateTimestampAndStatusList*,
                           const NetLogWithSource&));
 };
@@ -191,7 +193,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
 
-    InitializeVerifyProc({});
+    InitializeVerifyProc(CreateParams({}));
 
     context_ = CreateTestURLRequestContextBuilder()->Build();
 
@@ -200,19 +202,17 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   void TearDown() override { cert_net_fetcher_->Shutdown(); }
 
-  void InitializeVerifyProc(const CertificateList& additional_trust_anchors) {
-    InitializeVerifyProc(/*additional_trust_anchors=*/additional_trust_anchors,
-                         /*additional_distrusted_certificates=*/{});
-  }
-
-  void InitializeVerifyProc(
+  CertVerifyProc::InstanceParams CreateParams(
       const CertificateList& additional_trust_anchors,
-      const CertificateList& additional_distrusted_certificates) {
-    auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
-    mock_system_trust_store_ = mock_system_trust_store.get();
+      const CertificateList&
+          additional_trust_anchors_with_enforced_constraints = {},
+      const CertificateList& additional_distrusted_certificates = {}) {
     CertVerifyProc::InstanceParams instance_params;
     instance_params.additional_trust_anchors =
-        net::x509_util::ParseAllCerts(additional_trust_anchors);
+        net::x509_util::ParseAllValidCerts(additional_trust_anchors);
+    instance_params.additional_trust_anchors_with_enforced_constraints =
+        net::x509_util::ParseAllValidCerts(
+            additional_trust_anchors_with_enforced_constraints);
     std::vector<std::vector<uint8_t>> distrusted_spkis;
     for (const auto& x509_cert : additional_distrusted_certificates) {
       std::shared_ptr<const bssl::ParsedCertificate> cert =
@@ -226,6 +226,13 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
           std::vector<uint8_t>(spki_string.begin(), spki_string.end()));
     }
     instance_params.additional_distrusted_spkis = distrusted_spkis;
+    return instance_params;
+  }
+
+  void InitializeVerifyProc(
+      const CertVerifyProc::InstanceParams& instance_params) {
+    auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
+    mock_system_trust_store_ = mock_system_trust_store.get();
     auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
     mock_ct_verifier_ = mock_ct_verifier.get();
     mock_ct_policy_enforcer_ = base::MakeRefCounted<MockCTPolicyEnforcer>();
@@ -323,8 +330,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
 TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -360,8 +367,8 @@ TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
 
 TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
@@ -382,8 +389,8 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
 TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   const std::string kOcspResponse = "OCSP response";
   const std::string kSctList = "SCT list";
@@ -431,8 +438,8 @@ TEST_F(CertVerifyProcBuiltinTest, EVCertStatusMaintainedForCompliantCert) {
       EVRootCAMetadata::GetInstance(),
       X509Certificate::CalculateFingerprint256(root->GetCertBuffer()),
       kEVTestCertPolicy);
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _));
   EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
@@ -481,10 +488,11 @@ TEST_F(CertVerifyProcBuiltinTest, DoesNotCallsCtVerifierOnFailedPaths) {
 
 TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
+  InitializeVerifyProc(CreateParams(
       /*additional_trust_anchors=*/{root->GetX509Certificate()},
-      /*additional_distrusted_certificates=*/{
-          intermediate->GetX509Certificate()});
+      /*additional_trust_anchors_with_enforced_constraints=*/{},
+      /*additional_distrusted_certificates=*/
+      {intermediate->GetX509Certificate()}));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
@@ -504,10 +512,108 @@ TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
               testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraints) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  root->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
+                                   /*excluded_dns_names=*/{});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{},
+      /*additional_trust_anchors_with_enforced_constraints=*/
+      {root->GetX509Certificate()},
+      /*additional_distrusted_certificates=*/{}));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  // Doesn't chain back to any valid root.
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraintsNotEnforced) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  root->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
+                                   /*excluded_dns_names=*/{});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()},
+      /*additional_trust_anchors_with_enforced_constraints=*/{},
+      /*additional_distrusted_certificates=*/{}));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  // Constraint isn't enforced.
+  EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTime) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
+                    /*not_after=*/base::Time::Now() - base::Days(5));
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{},
+      /*additional_trust_anchors_with_enforced_constraints=*/
+      {root->GetX509Certificate()},
+      /*additional_distrusted_certificates=*/{}));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  // Root is valid but expired and we check it.
+  EXPECT_THAT(error, IsError(ERR_CERT_DATE_INVALID));
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTimeButNotEnforced) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
+                    /*not_after=*/base::Time::Now() - base::Days(5));
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()},
+      /*additional_trust_anchors_with_enforced_constraints=*/{},
+      /*additional_distrusted_certificates=*/{}));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  // Root is valid but expired, but we don't check it.
+  EXPECT_THAT(error, IsOk());
+}
+
 TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -560,8 +666,8 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
 // checking, additional CRL fetches will not be attempted.
 TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
@@ -636,8 +742,8 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
 // checking, additional OCSP fetches will not be attempted.
 TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
@@ -709,8 +815,8 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
 // is done.
 TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   // Add test EV policy to leaf and intermediate.
   static const char kEVTestCertPolicy[] = "1.2.3.4";
@@ -790,8 +896,8 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
 
 TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   BlockingTrustStore trust_store;
   AddTrustStore(&trust_store);

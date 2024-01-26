@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_action_delegate.h"
+
+@protocol AccountPickerConsumer;
+@protocol FileDestinationPickerConsumer;
 @protocol SaveToDriveCommands;
 @protocol SystemIdentity;
 
@@ -15,7 +19,11 @@ class DownloadTask;
 }
 
 // Mediator for the Save to Drive feature.
-@interface SaveToDriveMediator : NSObject
+@interface SaveToDriveMediator : NSObject <FileDestinationPickerActionDelegate>
+
+@property(nonatomic, weak) id<AccountPickerConsumer> accountPickerConsumer;
+@property(nonatomic, weak) id<FileDestinationPickerConsumer>
+    destinationPickerConsumer;
 
 // Initialization
 - (instancetype)initWithDownloadTask:(web::DownloadTask*)downloadTask
@@ -28,7 +36,7 @@ class DownloadTask;
 
 // Starts the current download task and prepare to save the downloaded file to
 // Drive.
-- (void)startDownloadAndSaveToDriveWithIdentity:(id<SystemIdentity>)identity;
+- (void)startDownloadWithIdentity:(id<SystemIdentity>)identity;
 
 @end
 

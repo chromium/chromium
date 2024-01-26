@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -258,14 +259,22 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @DisableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
     public void editButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
+
+        var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
         verify(mSuggestionHost).onRefineSuggestion(mMatch);
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
+
+        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Edit"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 
     @Test
     public void shareButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
+
+        var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
         verify(mSuggestionHost).finishInteraction();
         verify(mShareDelegate, times(1))
@@ -273,6 +282,10 @@ public final class EditUrlSuggestionProcessorUnitTest {
         // Note: UkmRecorder requires WebContents to report metrics.
         // In the even WebContents is not available, we should not interact with UkmRecorder.
         verifyNoMoreInteractions(mUkmRecorderJniMock);
+
+        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Share"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 
     @Test
@@ -294,9 +307,15 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public void suggestionView_clickReloadsPage() {
         assertFalse(OmniboxFeatures.noopEditUrlSuggestionClicks());
         mProcessor.populateModel(mMatch, mModel, 0);
+
+        var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
         verify(mSuggestionHost).onSuggestionClicked(mMatch, 0, mMatch.getUrl());
         verifyNoMoreInteractions(mSuggestionHost);
+
+        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Tap"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 
     @Test
@@ -304,14 +323,20 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public void suggestionView_clickReturnsToPage() {
         assertTrue(OmniboxFeatures.noopEditUrlSuggestionClicks());
         mProcessor.populateModel(mMatch, mModel, 0);
+        var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
         verify(mSuggestionHost).finishInteraction();
         verifyNoMoreInteractions(mSuggestionHost);
+
+        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Tap"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 
     @Test
     public void copyButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
+        var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 
         ArgumentCaptor<ClipData> argument = ArgumentCaptor.forClass(ClipData.class);
@@ -326,6 +351,10 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         new ClipData.Item(SEARCH_URL_1.getSpec()));
         assertEquals(clip.toString(), argument.getValue().toString());
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
+
+        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Copy"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
     }
 
     @Test

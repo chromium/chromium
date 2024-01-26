@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.Promise;
+import org.chromium.chrome.browser.notifications.NotificationSuspender;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -17,9 +21,9 @@ public class SuspensionTracker {
     private final Promise<List<String>> mRootPromise;
     private Promise<Void> mWritePromise;
 
-    public SuspensionTracker(UsageStatsBridge bridge, NotificationSuspender notificationSuspender) {
+    public SuspensionTracker(UsageStatsBridge bridge, Profile profile) {
         mBridge = bridge;
-        mNotificationSuspender = notificationSuspender;
+        mNotificationSuspender = new NotificationSuspender(profile);
         mRootPromise = new Promise<>();
         mBridge.getAllSuspensions(
                 (result) -> {
@@ -58,11 +62,14 @@ public class SuspensionTracker {
                                             if (didSucceed) {
                                                 if (suspended) {
                                                     result.addAll(fqdns);
+                                                    mNotificationSuspender
+                                                            .suspendNotificationsFromDomains(fqdns);
                                                 } else {
                                                     result.removeAll(fqdns);
+                                                    mNotificationSuspender
+                                                            .unsuspendNotificationsFromDomains(
+                                                                    fqdns);
                                                 }
-                                                mNotificationSuspender.setWebsitesSuspended(
-                                                        fqdns, suspended);
                                                 newWritePromise.fulfill(null);
                                             } else {
                                                 newWritePromise.reject();
@@ -79,6 +86,30 @@ public class SuspensionTracker {
 
         mWritePromise = newWritePromise;
         return newWritePromise;
+    }
+
+    /**
+     * Stores the notification's resources if the notification originates from a suspended domain,
+     * so that in that case it will be shown later.
+     *
+     * @param notification The notification whose resources to store for later display.
+     * @return A {@link Promise} that resolves to whether the domain is suspended and thus the
+     *     resources were stored.
+     */
+    public Promise<Boolean> storeNotificationResourcesIfSuspended(
+            NotificationWrapper notification) {
+        return getAllSuspendedWebsites()
+                .then(
+                        (List<String> fqdns) -> {
+                            if (!fqdns.contains(
+                                    NotificationSuspender.getValidFqdnOrEmptyString(
+                                            notification))) {
+                                return false;
+                            }
+                            mNotificationSuspender.storeNotificationResources(
+                                    Collections.singletonList(notification));
+                            return true;
+                        });
     }
 
     public Promise<List<String>> getAllSuspendedWebsites() {

@@ -33,6 +33,10 @@ inline bool ShouldTrimStartOfWrappedLine(TextSpacingTrim value) {
          value == TextSpacingTrim::kTrimStart;
 }
 
+inline bool ShouldTrimEnd(TextSpacingTrim value) {
+  return value != TextSpacingTrim::kSpaceAll;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_TEXT_SPACING_TRIM_H_

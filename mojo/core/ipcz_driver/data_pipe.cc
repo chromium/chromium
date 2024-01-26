@@ -9,9 +9,9 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <optional>
 #include <tuple>
 
-#include <optional>
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"

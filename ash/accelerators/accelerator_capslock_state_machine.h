@@ -59,8 +59,9 @@ class ASH_EXPORT AcceleratorCapslockStateMachine : public ui::EventHandler {
     return current_state_ == CapslockState::kTriggerAlt ||
            current_state_ == CapslockState::kTriggerSearch;
   }
-
   CapslockState current_state() const { return current_state_; }
+
+  void SetCanHandleCapsLockForTesting(bool can_handle);
 
  private:
   CapslockState current_state_ = CapslockState::kStart;

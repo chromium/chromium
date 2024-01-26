@@ -26,6 +26,12 @@ struct DescriptorB {
 union DescriptorDValue {
   skia.mojom.SkColor color;
   float hue;
+  DescriptorDName name;
+};
+
+// Accepted color names for descriptor d.
+enum DescriptorDName {
+  kYellow,
 };
 
 // Full list of possible subject, style, and mood descriptors for the
@@ -37,12 +43,15 @@ struct Descriptors {
 };
 
 struct Inspiration {
+  mojo_base.mojom.Token id;
+  string description;
   url.mojom.Url background_url;
   url.mojom.Url thumbnail_url;
 };
 
-struct Inspirations {
-  array<Inspiration> inspiration_a;
+struct InspirationGroup {
+  ResultDescriptors descriptors;
+  array<Inspiration> inspirations;
 };
 
 struct WallpaperSearchResult {
@@ -93,7 +102,7 @@ interface WallpaperSearchHandler {
   GetDescriptors() => (Descriptors? descriptors);
 
   // Retrieves image URLs of example results.
-  GetInspirations() => (Inspirations? inspirations);
+  GetInspirations() => (array<InspirationGroup>? inspirationGroups);
 
   // Searches NTP wallpaper for descriptors.
   // Returns list of sanitized image data.
@@ -108,6 +117,11 @@ interface WallpaperSearchHandler {
   // image.
   SetBackgroundToHistoryImage(mojo_base.mojom.Token result_id,
       ResultDescriptors descriptors);
+
+  // Sets the inspiration image identified by `id` as the current background
+  // image.
+  SetBackgroundToInspirationImage(mojo_base.mojom.Token id,
+      url.mojom.Url background_url);
 
   // Sets wallpaper search result identified by `result_id` to background image.
   // `time` is Unix epoch time stamp of when the user selected the respective
@@ -124,6 +138,9 @@ interface WallpaperSearchHandler {
   // Opens help article about the feature in a new tab when use clicks
   // "Learn more".
   OpenHelpArticle();
+
+  // Triggers the wallpaper search HaTS survey if eligible.
+  LaunchHatsSurvey();
 };
 
 // WebUI-side handler for requests from the browser.

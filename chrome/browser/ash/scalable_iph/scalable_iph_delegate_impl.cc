@@ -226,8 +226,8 @@ class ScalableIphNotificationDelegate
         action_(action) {}
 
   // message_center::NotificationDelegate:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index.has_value() || button_index.value() != kButtonIndex) {
       return;
     }

@@ -240,9 +240,25 @@ a {
   text-decoration: underline;
 }
 
-#screen-reader-message {
-  clip: rect(0,0,0,0);
+#toast-container {
   position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+}
+
+.toast {
+  background-color: var(--toast-background);
+  border: 1px solid var(--table-border);
+  border-radius: 15px;
+  color: var(--toast-text-color);
+  margin: 0 auto 5px auto;
+  padding: 20px;
+  text-align: center;
+  width: 240px;
+  max-width: 100%;
+  z-index: 999;
 }
 
 /* Remove the flex gap after the searchbar on smaller width devices. */

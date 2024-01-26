@@ -483,7 +483,7 @@ TEST_F(DownloadUIAdapterTest, PauseAndResume) {
 
   // Resume the download. It should fire OnChanged again and move the item to
   // IN_PROGRESS.
-  adapter->ResumeDownload(kTestContentId1, true);
+  adapter->ResumeDownload(kTestContentId1);
   PumpLoop();
 
   EXPECT_GE(updated_guids.size(), num_updates);

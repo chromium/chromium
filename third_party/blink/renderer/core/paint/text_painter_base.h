@@ -28,7 +28,6 @@ namespace blink {
 class ComputedStyle;
 class Document;
 class GraphicsContext;
-class InlinePaintContext;
 class Node;
 
 namespace {
@@ -51,11 +50,8 @@ class CORE_EXPORT TextPainterBase {
   TextPainterBase(GraphicsContext&,
                   const Font&,
                   const LineRelativeOffset& text_origin,
-                  InlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
-
-  const InlinePaintContext* InlineContext() const { return inline_context_; }
 
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
 
@@ -63,13 +59,13 @@ class CORE_EXPORT TextPainterBase {
   static void UpdateGraphicsContext(GraphicsContext&,
                                     const TextPaintStyle&,
                                     GraphicsContextStateSaver&,
-                                    ShadowMode = kBothShadowsAndTextProper);
+                                    ShadowMode);
   static sk_sp<SkDrawLooper> CreateDrawLooper(
       const ShadowList* shadow_list,
       DrawLooperBuilder::ShadowAlphaMode,
       const Color& current_color,
       mojom::blink::ColorScheme color_scheme,
-      ShadowMode = kBothShadowsAndTextProper);
+      ShadowMode);
 
   static Color TextColorForWhiteBackground(Color);
   static TextPaintStyle TextPaintingStyle(const Document&,
@@ -88,10 +84,6 @@ class CORE_EXPORT TextPainterBase {
   static AffineTransform Rotation(const PhysicalRect& box_rect, WritingMode);
 
  protected:
-  void UpdateGraphicsContext(const TextPaintStyle& style,
-                             GraphicsContextStateSaver& saver) {
-    UpdateGraphicsContext(graphics_context_, style, saver);
-  }
   void DecorationsStripeIntercepts(
       float upper,
       float stripe_width,
@@ -99,7 +91,6 @@ class CORE_EXPORT TextPainterBase {
       const Vector<Font::TextIntercept>& text_intercepts);
 
   void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
-                                       const PaintInfo&,
                                        const TextPaintStyle&,
                                        const cc::PaintFlags* flags = nullptr);
 
@@ -113,7 +104,6 @@ class CORE_EXPORT TextPainterBase {
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const PaintInfo& paint_info,
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 
@@ -124,7 +114,6 @@ class CORE_EXPORT TextPainterBase {
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
-  InlinePaintContext* inline_context_ = nullptr;
   GraphicsContext& graphics_context_;
   const Font& font_;
   const LineRelativeOffset text_origin_;
@@ -135,7 +124,6 @@ class CORE_EXPORT TextPainterBase {
  private:
   void PaintDecorationUnderOrOverLine(
       const TextFragmentPaintInfo& fragment_paint_info,
-      GraphicsContext& context,
       TextDecorationInfo& decoration_info,
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
@@ -146,16 +134,14 @@ class CORE_EXPORT TextPainterBase {
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
-      const TextPaintStyle& text_style,
-      GraphicsContext& context);
+      const TextPaintStyle& text_style);
 
   void PaintUnderOrOverLineDecorations(
       const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags,
-      GraphicsContext& context);
+      const cc::PaintFlags* flags);
 };
 
 }  // namespace blink

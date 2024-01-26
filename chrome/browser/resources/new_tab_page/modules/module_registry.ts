@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModuleIdName} from '../new_tab_page.mojom-webui.js';
+import type {ModuleIdName} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
-import {Module, ModuleDescriptor} from './module_descriptor.js';
+import type {Module, ModuleDescriptor} from './module_descriptor.js';
 import {descriptors} from './module_descriptors.js';
 
 /**

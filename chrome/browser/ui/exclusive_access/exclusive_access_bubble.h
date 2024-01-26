@@ -20,7 +20,7 @@ class Rect;
 
 // Bubble that informs the user when an exclusive access state is in effect and
 // as to how to exit out of the state. Currently there are three exclusive
-// access states: fullscreen, keyboard lock, and mouse lock.
+// access states: fullscreen, keyboard lock, and pointer lock.
 //
 // Notification display design note: if the #simplified-fullscreen-ui flag is
 // enabled, the bubble has the following behaviour:
@@ -45,11 +45,15 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   void OnUserInput();
 
  protected:
-  static const int kPaddingPx;        // Amount of padding around the link
-  static const int kInitialDelayMs;   // Initial time bubble remains onscreen
-  static const int kIdleTimeMs;       // Time before mouse idle triggers hide
+  // Amount of padding around the link.
+  static const int kPaddingPx;
+  // Initial time bubble remains onscreen.
+  static const int kInitialDelayMs;
+  // Time before mouse pointer position idle triggers hide.
+  static const int kIdleTimeMs;
   static const int kSnoozeNotificationsTimeMs;
-  static const int kPositionCheckHz;  // How fast to check the mouse position
+  // How fast to check the mouse pointer position.
+  static const int kPositionCheckHz;
   // Height of region triggering slide-in.
   static const int kSlideInRegionHeightPx;
   // Space between the popup and the top of the screen (excluding shadow).
@@ -75,17 +79,17 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
 
   virtual bool IsAnimating() = 0;
 
-  // True if the mouse position can trigger showing the exit fullscreen bubble
-  // when the bubble is hidden.
-  virtual bool CanTriggerOnMouse() const = 0;
+  // True if the mouse pointer position can trigger showing the exit fullscreen
+  // bubble when the bubble is hidden.
+  virtual bool CanTriggerOnMousePointer() const = 0;
 
-  void StartWatchingMouse();
-  void StopWatchingMouse();
-  bool IsWatchingMouse() const;
+  void StartWatchingMousePointer();
+  void StopWatchingMousePointer();
+  bool IsWatchingMousePointer() const;
 
-  // Called repeatedly to get the current mouse position and animate the bubble
-  // on or off the screen as appropriate.
-  void CheckMousePosition();
+  // Called repeatedly to get the current mouse pointer position and animate the
+  // bubble on or off the screen as appropriate.
+  void CheckMousePointerPosition();
 
   void ExitExclusiveAccess();
 
@@ -125,28 +129,29 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
 
   // When this timer is active, prevent the bubble from hiding. This ensures it
   // will be displayed for a minimum amount of time (which can be extended by
-  // the user moving the mouse to the top of the screen and holding it there).
+  // the user moving the mouse pointer to the top of the screen and holding it
+  // there).
   base::RetainingOneShotTimer hide_timeout_;
 
   // Timer to see how long the user has been idle (from all input sources).
   base::RetainingOneShotTimer idle_timeout_;
 
-  // When this timer has elapsed, on the next mouse input, we will notify the
-  // user about any currently active exclusive access. This is used to enact
-  // both the initial debounce period, and the snooze period before re-notifying
-  // the user (see notification display design note above).
+  // When this timer has elapsed, on the next mouse pointer input, we will
+  // notify the user about any currently active exclusive access. This is used
+  // to enact both the initial debounce period, and the snooze period before
+  // re-notifying the user (see notification display design note above).
   base::RetainingOneShotTimer suppress_notify_timeout_;
 
-  // Timer to poll the current mouse position.  We can't just listen for mouse
-  // events without putting a non-empty HWND onscreen (or hooking Windows, which
-  // has other problems), so instead we run a low-frequency poller to see if the
-  // user has moved in or out of our show/hide regions.
-  base::RepeatingTimer mouse_position_checker_;
+  // Timer to poll the current mouse pointer position.  We can't just listen for
+  // mouse pointer events without putting a non-empty HWND onscreen (or hooking
+  // Windows, which has other problems), so instead we run a low-frequency
+  // poller to see if the user has moved in or out of our show/hide regions.
+  base::RepeatingTimer mouse_pointer_position_checker_;
 
-  // The most recently seen mouse position, in screen coordinates.  Used to see
-  // if the mouse has moved since our last check. Only used in non-simplified
-  // fullscreen mode.
-  gfx::Point last_mouse_pos_;
+  // The most recently seen mouse pointer position, in screen coordinates.  Used
+  // to see if the mouse pointer has moved since our last check. Only used in
+  // non-simplified fullscreen mode.
+  gfx::Point last_mouse_pointer_pos_;
 
   // Indicates if the exit bubble should re-show once input is first detected.
   bool reshow_on_first_input_ = false;

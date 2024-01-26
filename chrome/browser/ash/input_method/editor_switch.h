@@ -17,14 +17,14 @@ namespace ash::input_method {
 // EditorSwitch is the centralized switch that decides whether the feature is
 // available for use, and if available, further decides whether the feature
 // should be popped up given a particular input context.
-class EditorSwitch : public EditorConsentStore::Delegate {
+class EditorSwitch {
  public:
   // country_code in the lowercase ISO 3166-1 alpha-2 format to determine
   // the country where the device is situated.
   EditorSwitch(Profile* profile, std::string_view country_code);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
-  ~EditorSwitch() override;
+  ~EditorSwitch();
 
   // Determines if the feature trace is ever allowed to be visible.
   bool IsAllowedForUse() const;
@@ -42,8 +42,11 @@ class EditorSwitch : public EditorConsentStore::Delegate {
 
   void SetProfile(Profile* profile);
 
-  EditorMode GetEditorMode() const override;
+  EditorMode GetEditorMode() const;
+
   EditorOpportunityMode GetEditorOpportunityMode() const;
+
+  std::vector<EditorBlockedReason> GetBlockedReasons() const;
 
  private:
   raw_ptr<Profile> profile_;

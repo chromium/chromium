@@ -24,19 +24,7 @@
 
 namespace autofill {
 
-namespace {
-
-// Factory for the structured tree to be used in NameInfo.
-std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
-  if (HonorificPrefixEnabled()) {
-    return std::make_unique<NameFullWithPrefix>();
-  }
-  return std::make_unique<NameFull>();
-}
-
-}  // namespace
-
-NameInfo::NameInfo() : name_(CreateStructuredNameTree()) {}
+NameInfo::NameInfo() : name_(std::make_unique<NameFull>()) {}
 
 NameInfo::NameInfo(const NameInfo& info) : NameInfo() {
   *this = info;
@@ -79,18 +67,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
 
 std::u16string NameInfo::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-
-  // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
-  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
-    type = NAME_FULL;
-  }
-    // Without the second generation of the structured name tree, honorific
-    // prefixes and the name including the prefix are unsupported types.
-  if (type == NAME_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
-    return std::u16string();
-  }
-
-    return name_->GetValueForType(type);
+  return name_->GetValueForType(type);
 }
 
 void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
@@ -126,19 +103,6 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   }
   return FormGroup::SetInfoWithVerificationStatusImpl(type, value, app_locale,
                                                       status);
-}
-
-void NameInfo::GetMatchingTypes(const std::u16string& text,
-                                const std::string& app_locale,
-                                FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
-  // Replace type matches for |NAME_FULL_WITH_HONORIFIC_PREFIX| with |NAME_FULL|
-  // to always vote for a full name field even if the user decides to add an
-  // additional honorific prefix to their name.
-  if (matching_types->contains(NAME_FULL_WITH_HONORIFIC_PREFIX)) {
-    matching_types->erase(NAME_FULL_WITH_HONORIFIC_PREFIX);
-    matching_types->insert(NAME_FULL);
-  }
 }
 
 VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {

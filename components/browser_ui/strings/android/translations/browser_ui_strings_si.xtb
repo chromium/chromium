@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">බාගැනීම විරාමයි</translation>
 <translation id="1415402041810619267">URL කපන ලදි</translation>
 <translation id="1426410128494586442">ඔව්</translation>
+<translation id="1434873037477293673">මිල පහත වැටීමේ කාඩ්පත</translation>
 <translation id="1448064542941920355">විශාලනය අඩු කරන්න</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> අඩවියක්}one{අඩවි <ph name="SITE_COUNT" /> ක්}other{අඩවි <ph name="SITE_COUNT" /> ක්}}</translation>
 <translation id="1510341833810331442">ඔබේ උපාංගයෙහි දත්ත සුරැකීමට අඩවිවලට ඉඩ නොදෙයි</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">අඩවිවලට අනන්‍යතා සේවාවලින් පිරීමේ ප්‍රේරක පෙන්විය හැකිය.</translation>
 <translation id="2790501146643349491">සක්‍රීය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම සහ ලැබීම අවසන් කළ හැක. අක්‍රිය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම හෝ ලැබීම අවසන් කළ නොහැක.</translation>
 <translation id="2822354292072154809">ඔබට <ph name="CHOSEN_OBJECT_NAME" /> සඳහා සියලුම වෙබ් අඩවි අවසර යළි සැකසිය යුතු බව ඔබට තහවුරුද?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ජංගම දසුන ඉල්ලන්න</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">වෙබ් අඩවි ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත හඹා යෑමෙන් අවහිර කරන්න</translation>
 <translation id="6447842834002726250">කුකීස්</translation>
+<translation id="6452138246455930388">ඔබේ විවෘත පටිත්ත මත මිල පහත වැටීම, <ph name="OLD_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">කවුළුව පටු වූ විට, ජංගම දසුන ඉල්ලා සිටින්න</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
 <translation id="652937045869844725">තෙවන පාර්ශ්ව කුකීස්වලට ඉඩ දීමට උත්සාහ කරන්න, එයින් අඩු ආරක්ෂණයක් අදහස් වන නමුත් අඩවි විශේෂාංග වැඩ කිරීමට වැඩි ඉඩක් ඇත</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">පහළට ගෙන යන්න</translation>
 <translation id="6749077623962119521">අවසර යළි සකසන්නද?</translation>
 <translation id="6766622839693428701">වැසීමට පහළට ස්වයිප් කරන්න.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> සිට</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> සඳහා විකල්පයක් තෝරන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6818926723028410516">අයිතම තෝරන්න</translation>
 <translation id="6864395892908308021">මෙම උපාංගය NFC කියවිය නොහැක</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> සිට</translation>
 <translation id="6912998170423641340">පසුරු පුවරුවෙන් පෙළ සහ රූප කියවීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6950072572526089586">ඔබ පිවිසෙන අඩවියකට ඔබ කරන දේ පිළිබඳ තතු සුරැකිය හැකි අතර, එවිට එය අපේක්ෂා කරන පරිදි ක්‍රියා කරයි — උදාහරණයක් ලෙස, ඔබව අඩවියකට පුරනය වී තබා ගැනීමට හෝ ඔබේ සාප්පු කරත්තයේ අයිතම සුරැකීමට. බොහෝ විට අඩවි මෙම තතු ඔබේ උපාංගයෙහි තාවකාලිකව සුරකියි.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">තෙවන පාර්ශවීය කුකීස් භාවිතා කිරීමට වෙබ් අඩවියකට ඉඩ නොදෙන්න</translation>
 <translation id="7719367874908701697">පිටු විශාලනය:</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" සඟවන්න</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>

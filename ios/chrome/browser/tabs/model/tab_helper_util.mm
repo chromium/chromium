@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"

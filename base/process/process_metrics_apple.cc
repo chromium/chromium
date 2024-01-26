@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_math.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

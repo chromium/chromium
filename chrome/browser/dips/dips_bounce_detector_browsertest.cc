@@ -4,27 +4,39 @@
 
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
+#include <iterator>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -34,12 +46,16 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -51,6 +67,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -60,6 +77,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -82,6 +100,7 @@ using testing::Gt;
 using testing::IsEmpty;
 using testing::Pair;
 using ukm::builders::DIPS_Redirect;
+using AttributionData = std::set<content::AttributionDataModel::DataKey>;
 
 namespace {
 
@@ -138,6 +157,14 @@ void AppendSitesInReport(std::vector<std::string>* reports,
                          const std::set<std::string>& sites) {
   reports->push_back(base::JoinString(
       std::vector<base::StringPiece>(sites.begin(), sites.end()), ", "));
+}
+
+std::vector<url::Origin> GetOrigins(const AttributionData& data) {
+  std::vector<url::Origin> origins;
+  base::ranges::transform(
+      data, std::back_inserter(origins),
+      &content::AttributionDataModel::DataKey::reporting_origin);
+  return origins;
 }
 
 }  // namespace
@@ -1202,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   observer.Wait();
 
   // Verify interaction was recorded for d.test, before proceeding.
-  absl::optional<StateValue> state =
+  std::optional<StateValue> state =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->user_interaction_times.has_value());
@@ -2535,7 +2562,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify web authn assertion was recorded for `authn_hostname`, before
   // proceeding.
-  absl::optional<StateValue> state =
+  std::optional<StateValue> state =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_FALSE(state->user_interaction_times.has_value());
@@ -2821,3 +2848,134 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
                   first_party_url_),
               testing::IsEmpty());
 }
+
+class DIPSPrivacySandboxDataTest : public PlatformBrowserTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  DIPSPrivacySandboxDataTest()
+      : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
+    (ShouldPreservePSData() ? enabled_features : disabled_features)
+        .emplace_back(features::kDIPSPreservePSData);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool ShouldPreservePSData() const { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    // Enable Privacy Sandbox APIs on all sites.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(true);
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server_.ServeFilesFromSourceDirectory(
+        "content/test/data/");
+    embedded_https_test_server_.SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(embedded_https_test_server_.Start());
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  base::expected<AttributionData, std::string> WaitForAttributionData() {
+    WebContents* web_contents = GetActiveWebContents();
+    content::AttributionDataModel* model = web_contents->GetBrowserContext()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetAttributionDataModel();
+    if (!model) {
+      return base::unexpected("null attribution data model");
+    }
+    // Poll until data appears, failing if action_timeout() passes
+    base::Time deadline = base::Time::Now() + TestTimeouts::action_timeout();
+    while (base::Time::Now() < deadline) {
+      base::test::TestFuture<AttributionData> future;
+      model->GetAllDataKeys(future.GetCallback());
+      AttributionData data = future.Get();
+      if (!data.empty()) {
+        return data;
+      }
+      Sleep(TestTimeouts::tiny_timeout());
+    }
+    return base::unexpected("timed out waiting for data");
+  }
+
+  // TODO: crbug.com/1509946 - When embedded_https_test_server() is added to
+  // AndroidBrowserTest, switch to using
+  // PlatformBrowserTest::embedded_https_test_server() and delete this.
+  net::EmbeddedTestServer embedded_https_test_server_;
+
+ private:
+  static void Sleep(base::TimeDelta delay) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), delay);
+    run_loop.Run();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DIPSPrivacySandboxDataTest,
+                       DontClearAttributionReportingApiData) {
+  WebContents* web_contents = GetActiveWebContents();
+  // Enable Privacy Sandbox APIs in the current profile.
+  PrivacySandboxSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
+      ->SetAllPrivacySandboxAllowedForTesting();
+
+  GURL toplevel_url =
+      embedded_https_test_server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+
+  // Create image that registers an attribution source.
+  GURL attribution_url = embedded_https_test_server_.GetURL(
+      "b.test", "/attribution_reporting/register_source_headers.html");
+  ASSERT_TRUE(content::ExecJs(web_contents, content::JsReplace(
+                                                R"(
+    let img = document.createElement('img');
+    img.attributionSrc = $1;
+    document.body.appendChild(img);)",
+                                                attribution_url)));
+
+  // Wait for the AttributionDataModel to show that source.
+  ASSERT_OK_AND_ASSIGN(AttributionData data, WaitForAttributionData());
+  ASSERT_THAT(GetOrigins(data),
+              ElementsAre(url::Origin::Create(attribution_url)));
+
+  // Make the attribution site eligible for DIPS deletion.
+  DIPSService* dips = DIPSService::Get(web_contents->GetBrowserContext());
+  ASSERT_TRUE(dips != nullptr);
+  base::test::TestFuture<void> record_bounce;
+  dips->storage()
+      ->AsyncCall(&DIPSStorage::RecordBounce)
+      .WithArgs(attribution_url, base::Time::Now(), /*stateful=*/true)
+      .Then(record_bounce.GetCallback());
+  ASSERT_TRUE(record_bounce.Wait());
+
+  // Trigger DIPS deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  EXPECT_THAT(deleted_sites.Get(),
+              ElementsAre(GetSiteForDIPS(attribution_url)));
+
+  base::test::TestFuture<AttributionData> post_deletion_data;
+  web_contents->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetAttributionDataModel()
+      ->GetAllDataKeys(post_deletion_data.GetCallback());
+  if (ShouldPreservePSData()) {
+    // Confirm the attribution data was not deleted.
+    EXPECT_THAT(GetOrigins(post_deletion_data.Get()),
+                ElementsAre(url::Origin::Create(attribution_url)));
+  } else {
+    // Confirm the attribution data was deleted.
+    EXPECT_THAT(post_deletion_data.Get(), IsEmpty());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DIPSPrivacySandboxDataTest, ::testing::Bool());

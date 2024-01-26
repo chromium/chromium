@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_UTILS_H_
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_UTILS_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/export_template.h"
@@ -43,7 +45,7 @@ ASH_EXPORT std::string BuildDeviceKey(const ui::InputDevice& device);
 //   device is being transitioned from the old global settings to per-device
 //   settings and the user specified the specific value for this setting.
 template <typename T>
-bool ShouldPersistSetting(base::StringPiece setting_key,
+bool ShouldPersistSetting(std::string_view setting_key,
                           T new_value,
                           T default_value,
                           bool force_persistence,
@@ -68,7 +70,7 @@ bool ShouldPersistSetting(base::StringPiece setting_key,
 // value.
 ASH_EXPORT bool ShouldPersistSetting(
     const mojom::InputDeviceSettingsPolicyPtr& policy,
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     bool new_value,
     bool default_value,
     bool force_persistence,
@@ -76,21 +78,21 @@ ASH_EXPORT bool ShouldPersistSetting(
 
 ASH_EXPORT bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict);
 
 // Templates exported for each valid value type.
 extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     bool new_value,
     bool default_value,
     bool force_persistence,
     const base::Value::Dict* existing_settings_dict);
 
 extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     int new_value,
     int default_value,
     bool force_persistence,
@@ -112,7 +114,8 @@ ASH_EXPORT const base::Value::List* GetLoginScreenButtonRemappingList(
 // in order to save the mojom object to the prefs as a dict.
 ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
-    mojom::CustomizationRestriction customization_restriction);
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names = false);
 ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
     const base::Value::Dict& dict,
     mojom::CustomizationRestriction customization_restriction);
@@ -121,7 +124,8 @@ ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 // to a list of dicts to be stored in prefs.
 ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
-    mojom::CustomizationRestriction customization_restriction);
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names = false);
 
 // This helper function converts a list of dicts to
 // a button remapping object array. The dicts will be stored in prefs.

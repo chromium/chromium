@@ -133,7 +133,7 @@ void CrosDiagnosticsImpl::GetNetworkInterfaces(
 
 void CrosDiagnosticsImpl::GetNetworkInterfacesGetNetworkListCallback(
     GetNetworkInterfacesCallback callback,
-    const absl::optional<net::NetworkInterfaceList>& interface_list) {
+    const std::optional<net::NetworkInterfaceList>& interface_list) {
   if (!interface_list.has_value()) {
     auto error =
         blink::mojom::GetNetworkInterfacesError::kNetworkInterfaceLookupFailed;

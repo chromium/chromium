@@ -151,7 +151,7 @@ class ContextProviderCommandBuffer
   // |shared_image_interface_| must be torn down after |command_buffer_| to
   // ensure any dependent commands in the command stream are flushed before the
   // associated shared images are destroyed.
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   //////////////////////////////////////////////////////////////////////////////
   // IMPORTANT NOTE: All of the objects in this block are part of a complex   //

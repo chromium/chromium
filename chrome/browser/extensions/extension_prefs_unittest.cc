@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
@@ -39,7 +40,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Time;
 using extensions::mojom::APIPermissionID;
@@ -409,7 +409,7 @@ class ExtensionPrefsAcknowledgment : public ExtensionPrefsTest {
       std::string name = "test" + base::NumberToString(i);
       extensions_.push_back(prefs_.AddExtension(name));
     }
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               prefs()->GetInstalledExtensionInfo(not_installed_id_));
 
     ExtensionList::const_iterator iter;
@@ -488,7 +488,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
   // Verifies that we get back expected idle install information previously
   // set by SetIdleInfo.
   void VerifyIdleInfo(const std::string& id, int num) {
-    absl::optional<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
+    std::optional<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
         info->extension_manifest->FindString("version");
@@ -701,9 +701,9 @@ class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
     // Re-create migration scenario by removing the new first_install_time,
     // last_update_time pref keys and adding back the legacy install_time key.
     prefs()->UpdateExtensionPref(extension_->id(), kLastUpdateTimePrefKey,
-                                 absl::nullopt);
+                                 std::nullopt);
     prefs()->UpdateExtensionPref(extension_->id(), kFirstInstallTimePrefKey,
-                                 absl::nullopt);
+                                 std::nullopt);
     time_str_ = base::NumberToString(
         base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     prefs()->SetStringPref(extension_->id(), kOldInstallTimePrefMap, time_str_);
@@ -1216,11 +1216,11 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
   // We need to explicitly remove the default value for the new pref as it is
   // added on install by default.
   prefs.prefs()->UpdateExtensionPref(previous_false_id, kNewPrefKey,
-                                     absl::nullopt);
+                                     std::nullopt);
   prefs.prefs()->UpdateExtensionPref(previous_true_id, kNewPrefKey,
-                                     absl::nullopt);
+                                     std::nullopt);
   prefs.prefs()->UpdateExtensionPref(previous_empty_id, kNewPrefKey,
-                                     absl::nullopt);
+                                     std::nullopt);
 
   prefs.prefs()->UpdateExtensionPref(previous_false_id, kOldPrefKey,
                                      base::Value(false));

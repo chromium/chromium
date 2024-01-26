@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -36,7 +37,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -1057,7 +1057,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
       profile().GetTestingPrefService();
 
   base::Token token = base::Token::CreateRandom();
-  custom_background_service_->SetBackgroundToLocalResourceWithId(token);
+  custom_background_service_->SetBackgroundToLocalResourceWithId(token, true);
   task_environment_.RunUntilIdle();
 
   // Check that local background image was set.
@@ -1071,6 +1071,8 @@ TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_EQ(pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId),
             token.ToString());
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpCustomBackgroundInspiration));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
+  EXPECT_TRUE(custom_background->is_inspiration_image);
 }

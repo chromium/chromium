@@ -23,9 +23,10 @@ import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -34,12 +35,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
-import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
-import {DotsIbanMenuClickEvent} from './iban_list_entry.js';
-import {SettingsPaymentsListElement} from './payments_list.js';
-import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
+import type {PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import type {DotsIbanMenuClickEvent} from './iban_list_entry.js';
+import type {SettingsPaymentsListElement} from './payments_list.js';
+import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
+import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
 type DotsCardMenuiClickEvent = CustomEvent<{

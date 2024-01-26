@@ -146,6 +146,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1792959175193046959">Allalaadimise vaikeasukohta saab alati muuta</translation>
 <translation id="1796666869097395659">Minimeerige vaheleht, et sellele hiljem naasta</translation>
 <translation id="1807246157184219062">Hele</translation>
+<translation id="1807709131360304325">Uue akna avamine</translation>
 <translation id="1810845389119482123">Sünkroonimise algseadistus ei jõudnud lõpule</translation>
 <translation id="1812027881030482584">Sait <ph name="SITE_ETLD_PLUS_ONE" /> ei saa teenuse <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kasutamisega jätkata</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
@@ -189,6 +190,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2056878612599315956">Sait on peatatud</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus}other{# allalaadimist ebaõnnestusid}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Näidatakse kompaktset vaadet</translation>
 <translation id="2093731487903423814">viimase 15 minuti jooksul</translation>
@@ -218,7 +220,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="223356358902285214">Veebi- ja rakendustegevused</translation>
 <translation id="2234827758954819389">Privaatsusjuhend</translation>
 <translation id="2239812875700136898">Hallake oma lugusid funktsiooni Discover nupuga Valikud</translation>
-<translation id="2241634353105152135">Ainult ühe korra</translation>
 <translation id="2247789808226901522">Kaart on aegunud</translation>
 <translation id="2248941474044011069">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse</translation>
 <translation id="2249635629516220541">Kohandage teavet, mida saidid teile reklaamide kuvamiseks kasutavad</translation>
@@ -233,7 +234,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2318045970523081853">Puudutage helistamiseks</translation>
 <translation id="2321086116217818302">Paroolide ettevalmistamine …</translation>
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
-<translation id="2327226657832576859">Kas avada PDF-id automaatselt?</translation>
 <translation id="2328985652426384049">Ei saa sisse logida</translation>
 <translation id="2341410551640223969">Rakendust <ph name="WEBAPK_NAME" /> ei saanud installida.</translation>
 <translation id="2349710944427398404">Chrome'i kasutatav andmemaht kokku, sh kontod, järjehoidjad ja salvestatud seaded</translation>
@@ -316,6 +316,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
+<translation id="2789486458103222910">Selge</translation>
 <translation id="2800066122460699237">Vaheleht <ph name="TAB_TITLE" /> suletakse</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Voo kaardimenüü on poole kõrgusega</translation>
@@ -354,7 +355,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2946420957526726953">Chrome'i värskendamine, et luua ühendus teiste seadmetega</translation>
 <translation id="2951071800649516099">Lisage lugemisloendisse lehti, mida hiljem lugeda</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> lugemata leht}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> lugemata lehte}}</translation>
-<translation id="2961210776189273067">Pealkiri</translation>
 <translation id="296370266220139811">Säästke aega ja tippige vähem</translation>
 <translation id="2977350910003566746">Sortimine viimase avamise järgi</translation>
 <translation id="297771753501244313">Sorditud: viimati avatud</translation>
@@ -581,7 +581,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
 <translation id="4202218894997543208">Teie blokeeritud teemad</translation>
 <translation id="4214315110991671325">Kui lubate küpsised, võib Chrome neid kasutada eellaadimise jaoks.</translation>
-<translation id="4216511743389425832">Kuula seda lehte</translation>
+<translation id="4216511743389425832">Kuulake seda lehte</translation>
 <translation id="4225725533026049334">Jälgitav</translation>
 <translation id="4225895483398857530">Tööriistariba otsetee</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
@@ -600,6 +600,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Paroolihaldur</translation>
 <translation id="4307992518367153382">Põhiteave</translation>
+<translation id="4311652497846705514">Kas soovite PDF-faili avada?</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
 <translation id="433213510553688132">Jälgimine …</translation>
 <translation id="4335835283689002019">Google'i ohutu sirvimine on väljas</translation>
@@ -639,7 +640,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4523326818319942067">viimase tunni jooksul</translation>
 <translation id="452750746583162491">Vaadake oma sünkroonitud andmed üle</translation>
 <translation id="4532845899244822526">Kausta valimine</translation>
-<translation id="4541505619120536051">Alati avatud</translation>
 <translation id="4543131175509360848">Pääsuvõtmete puudumise leht</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4554077758708533499">Ühendatud USB-kaabliga</translation>
@@ -831,7 +831,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5486841595534124508">Lehe statistikakeskuse privaatsusteatise logo, mis suunab ümber lehele Minu tegevused.</translation>
 <translation id="5487521232677179737">Kustuta andmed</translation>
 <translation id="5492637351392383067">Krüpteerimine seadmes</translation>
-<translation id="5509866835115085009">Chrome saab PDF-faili allalaadimisel automaatselt avada.</translation>
 <translation id="5514904542973294328">Keelas selle seadme administraator</translation>
 <translation id="5515439363601853141">Avage oma parooli vaatamiseks</translation>
 <translation id="5517095782334947753">Teil on järjehoidjad, ajalugu, paroolid ja muud seaded kontolt <ph name="FROM_ACCOUNT" />.</translation>
@@ -925,6 +924,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5962718611393537961">Ahendamiseks puudutage</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5966233851250124270">Chrome jätab teie valiku meelde</translation>
+<translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="5995726099713306770">Kas soovite lehe uuesti alla laadida?</translation>
 <translation id="6000066717592683814">Säilita Google</translation>
@@ -1302,6 +1302,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7810647596859435254">Ava rakendusega …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kõik failid, loendis on 1 fail}other{Kõik failid, loendis on # faili}}</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
+<translation id="7821130663268546430">Kõik avatud vahelehed leiate vahelehtede vahetist</translation>
 <translation id="7822705602465980873">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
 <translation id="78270725016672455">Teie arvuti soovib selle seadme registreerida, et saidile sisse logida</translation>
 <translation id="7844171778363018843">Sünkroonimiseks pole andmeid valitud</translation>
@@ -1329,6 +1330,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7942131818088350342">Teenus <ph name="PRODUCT_NAME" /> on aegunud.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7947953824732555851">Nõustu ja logi sisse</translation>
+<translation id="7951102827450076904">Ava alati allalaaditud PDF-id</translation>
 <translation id="7957413488482743710">Virtuaalkaart peidab teie päriskaardi, et teid võimalike pettuste eest kaitsta. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Lehe statistika tagasiliikumise nupp</translation>
 <translation id="7961926449547174351">Olete keelanud juurdepääsu salvestusruumile. Selle lubamiseks avage menüü Seaded.</translation>

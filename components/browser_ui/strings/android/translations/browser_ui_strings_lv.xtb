@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1426410128494586442">Jā</translation>
+<translation id="1434873037477293673">cenas krituma kartīte</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
 <translation id="1510341833810331442">Vietnēm nav atļauts saglabāt datus jūsu ierīcē</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi.</translation>
 <translation id="2790501146643349491">Kad šis slēdzis ir ieslēgts, nesen aizvērtās vietnes var pabeigt datu sūtīšanu un saņemšanu. Kad šis slēdzis ir izslēgts, nesen aizvērtās vietnes nevar pabeigt datu sūtīšanu vai saņemšanu.</translation>
 <translation id="2822354292072154809">Vai tiešām vēlaties atiestatīt visas vietņu atļaujas, kas piešķirtas šim objektam: <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pieprasiet skatu mobilajā ierīcē</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīci un datus</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
+<translation id="6452138246455930388">Cenas kritums atvērtajā cilnē no <ph name="OLD_PRICE" /> uz <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Ja logs ir šaurs, pieprasīt skatu mobilajā ierīcē</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="652937045869844725">Varat atļaut trešo pušu sīkfailus. Tas nozīmē, ka aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka darbosies vietnes funkcijas.</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Pārvietot uz leju</translation>
 <translation id="6749077623962119521">Vai atiestatīt atļaujas?</translation>
 <translation id="6766622839693428701">Velciet uz leju, lai aizvērtu.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> No ierīces “<ph name="FROM_DEVICE" />”</translation>
 <translation id="6787751205395685251">Atlasiet opciju vietnei <ph name="SITE_NAME" />.</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6818926723028410516">Vienumu atlase</translation>
 <translation id="6864395892908308021">Šī ierīce nevar lasīt NFC</translation>
+<translation id="6867014948848323204">No ierīces “<ph name="FROM_DEVICE" />”</translation>
 <translation id="6912998170423641340">Bloķēt vietņu piekļuvi teksta un attēlu lasīšanai no starpliktuves</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6950072572526089586">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Brīnumainais burvis no Oza zemes</translation>
 <translation id="7684642910516280563">Neatļaujiet vietnei izmantot trešo pušu sīkfailus.</translation>
 <translation id="7719367874908701697">Lapas tālummaiņa</translation>
+<translation id="7770832849480336015">Paslēpt moduli “<ph name="TITLE_OF_MODULE" />”</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="780301667611848630">Nē, paldies</translation>

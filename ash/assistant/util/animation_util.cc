@@ -123,7 +123,7 @@ void StartLayerAnimationSequence(
 
   std::optional<ui::AnimationThroughputReporter> reporter;
   if (smoothness_callback) {
-    reporter.emplace(layer_animator, ash::metrics_util::ForSmoothness(
+    reporter.emplace(layer_animator, ash::metrics_util::ForSmoothnessV3(
                                          smoothness_callback.value()));
   }
   layer_animator->StartAnimation(layer_animation_sequence);

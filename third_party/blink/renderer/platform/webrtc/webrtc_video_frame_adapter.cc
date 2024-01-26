@@ -136,43 +136,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
 }  // namespace
 
-WebRtcVideoFrameAdapter::VectorBufferPool::VectorBufferPool()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
-
-std::unique_ptr<std::vector<uint8_t>>
-WebRtcVideoFrameAdapter::VectorBufferPool::Allocate() {
-  base::AutoLock autolock(buffer_lock_);
-  if (!free_buffers_.empty()) {
-    auto buffer = std::move(free_buffers_.back().buffer);
-    free_buffers_.pop_back();
-    return buffer;
-  }
-
-  return std::make_unique<std::vector<uint8_t>>();
-}
-
-void WebRtcVideoFrameAdapter::VectorBufferPool::Return(
-    std::unique_ptr<std::vector<uint8_t>> buffer) {
-  base::AutoLock autolock(buffer_lock_);
-  const base::TimeTicks now = tick_clock_->NowTicks();
-  free_buffers_.push_back(BufferEntry{now, std::move(buffer)});
-
-  // After this loop, |stale_index| is pointing to the first non-stale buffer.
-  // Such an index must exist because |buffer| is never stale.
-  constexpr base::TimeDelta kStaleBufferLimit = base::Seconds(10);
-  for (wtf_size_t stale_index = 0; stale_index < free_buffers_.size();
-       ++stale_index) {
-    if (now - free_buffers_[stale_index].last_use_time < kStaleBufferLimit) {
-      DCHECK_LT(stale_index, free_buffers_.size());
-      if (stale_index > 0) {
-        free_buffers_.erase(free_buffers_.begin(),
-                            free_buffers_.begin() + stale_index);
-      }
-      break;
-    }
-  }
-}
-
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
@@ -184,14 +147,12 @@ WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
                            timestamp);
 }
 
-std::unique_ptr<std::vector<uint8_t>>
-WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryVectorBuffer() {
-  return pool_for_tmp_vectors_.Allocate();
-}
-
-void WebRtcVideoFrameAdapter::SharedResources::ReleaseTemporaryVectorBuffer(
-    std::unique_ptr<std::vector<uint8_t>> buffer) {
-  pool_for_tmp_vectors_.Return(std::move(buffer));
+media::EncoderStatus WebRtcVideoFrameAdapter::SharedResources::ConvertAndScale(
+    const media::VideoFrame& src_frame,
+    media::VideoFrame& dest_frame) {
+  // The converter is thread safe so multiple threads may convert frames at
+  // once.
+  return frame_converter_.ConvertAndScale(src_frame, dest_frame);
 }
 
 scoped_refptr<viz::RasterContextProvider>

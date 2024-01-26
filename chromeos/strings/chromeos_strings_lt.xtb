@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
+<translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Išjungti tamsų režimą</translation>
 <translation id="1885577615937958993">sukti pirmyn mediją</translation>
 <translation id="1887850431809612466">Aparatinės įrangos taisymas</translation>
-<translation id="1897672602657312171">Spartusis klavišas be paieškos rakto gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami paieškos klavišą.</translation>
 <translation id="1904932688895783618">Toliau pateikiami dar keli naudingi šaltiniai.</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">jaustukų rinkiklis</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME_1" />“ kaskart, kai prisijungiate.}=2{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“ ir „<ph name="APP_NAME_2" />“ kaskart, kai prisijungiate.}=3{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ kaskart, kai prisijungiate.}one{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programą kaskart, kai prisijungiate.}few{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programas kaskart, kai prisijungiate.}many{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programos kaskart, kai prisijungiate.}other{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programų kaskart, kai prisijungiate.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="215916044711630446">APN pridėjimo mygtukas dabar išjungtas</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN išsamios informacijos redagavimas</translation>
 <translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
 <translation id="2212733584906323460">Pavadinimo skyra</translation>
+<translation id="2215920961700443347">Nėra interneto ryšio. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
 <translation id="2217935453350629363">Dabartinė sparta</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="222447520299472966">Reikia pasirinkti bent vieną meno galerijos albumą</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" /> vaizdas iš <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
+<translation id="2465272316171730950">Esame užimti. Sugrįžkite šiek tiek vėliau.</translation>
 <translation id="248546197012830854">Įrenginys neprijungtas prie interneto. Prisijunkite prie „Wi-Fi“ tinklo, kad galėtumėte peržiūrėti pagalbos turinį.</translation>
 <translation id="2491955442992294626">Klavišai nėra testuojami, kai naudojate kitą langą</translation>
 <translation id="2493126929778606526">Geriausios nuotraukos, parinktos automatiškai</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Atnaujinti dabartinio ekrano fono vaizdą</translation>
 <translation id="2512979179176933762">rodyti langus</translation>
 <translation id="2513396635448525189">Prisijungimo vaizdas</translation>
-<translation id="2515109918609218604">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų ir paieškos klavišų.</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2521835766824839541">ankstesnis takelis</translation>
 <translation id="2526590354069164005">Darbalaukis</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
+<translation id="4130750466177569591">Sutinku</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ buvo paleista automatiškai}one{# programa buvo paleista automatiškai}few{# programos buvo paleistos automatiškai}many{# programos buvo paleista automatiškai}other{# programų buvo paleista automatiškai}}</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4150201353443180367">Pateiktis</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">sumažinti šviesumą</translation>
 <translation id="4176463684765177261">Išjungta</translation>
 <translation id="4176659219503619100">Valdymo skydelis</translation>
-<translation id="4185315616950253617">Į spartųjį klavišą su viršutinės eilutės klavišais turi būti įtrauktas paieškos klavišas.</translation>
 <translation id="420283545744377356">Išjungti ekrano užsklandą</translation>
 <translation id="4213104098953699324">USB klaviatūra</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Neleisti</translation>
 <translation id="439429847087949098">Įrenginys „<ph name="DEVICE_NAME" />“ paleidžiamas iš naujo</translation>
 <translation id="4395835743215824109">klaviatūros tinkinimas</translation>
+<translation id="4403262788869804671">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“.</translation>
 <translation id="4415951057168511744">Dabartinis pseudoportretas</translation>
+<translation id="4417830657741848074">Administratorius nustatė, kad kai kurios programos būtų paleidžiamos automatiškai. Kai kurių iš šių programų negalima uždaryti.</translation>
 <translation id="4422041425070339732">rodyklė žemyn</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4428374560396076622">„<ph name="NETWORK_NAME" />“ išjungta</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">„Earth“ srauto ekrano užsklanda</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4500722292849917410">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami modifikavimo klavišą („Ctrl“, „Alt“, „Shift“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Sąsajos spalva</translation>
 <translation id="4503223151711056411">Rodyklė kairėn</translation>
 <translation id="4507392511610824664">padidinti šviesumą</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
 <translation id="4839698083503556542">Sukurkite savo filmą</translation>
+<translation id="48409034532829769">Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME" />“. Ši programa negali būti uždaryta.</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="4847902821209177679">Pasirinkta <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; jei norite pasirinkti <ph name="TOPIC_SOURCE" /> albumus, paspauskite „Enter“</translation>
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Padalyti</translation>
 <translation id="4972592110715526173">keisti režimą</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
+<translation id="4982627662315910959">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami „Shift“ ir dar vieną modifikavimo klavišą („Ctrl“, „Alt“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="4987769320337599931">Užkarda</translation>
 <translation id="4988526792673242964">Psl.</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Tamsiosios temos planavimas</translation>
 <translation id="5229344016299762883">Išeiti iš viso ekrano režimo</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME" />“ kaskart, kai prisijungiate.}=2{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME" />“ ir dar vieną programą kaskart, kai prisijungiate.}one{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME" />“ ir dar # programą kaskart, kai prisijungiate.}few{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME" />“ ir dar # programas kaskart, kai prisijungiate.}many{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME" />“ ir dar # programos kaskart, kai prisijungiate.}other{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME" />“ ir dar # programų kaskart, kai prisijungiate.}}</translation>
 <translation id="5252456968953390977">Tarptinklinis ryšys</translation>
 <translation id="5257811368506016604">Įgalinti šviesių spalvų režimą</translation>
 <translation id="5264277876637023664">Vykdyti centrinio procesoriaus bandymą</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="725133483556299729">El. pašto adreso pasirinkimas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
-<translation id="7273347807225967898">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami modifikavimo klavišą („Ctrl“, „Alt“, „Shift“, paieškos arba paleidimo priemonės klavišą).</translation>
+<translation id="7271932918253517778">Į spartųjį klavišą su viršutinės eilutės klavišais turi būti įtrauktas klavišas „<ph name="META_KEY" />“.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Pajusk vėjo dvelksmą</translation>
 <translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Bendrieji valdikliai</translation>
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
 <translation id="7978412674231730200">Asmeninis raktas</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Programa „<ph name="APP_NAME_1" />“ buvo paleista automatiškai}one{# programa buvo paleista automatiškai}few{# programos buvo paleistos automatiškai}many{# programos buvo paleista automatiškai}other{# programų buvo paleista automatiškai}}</translation>
 <translation id="7994702968232966508">EAP metodas</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8017679124341497925">Spartusis klavišas redaguotas</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8094062939584182041">Leisti „Google“ siųsti jums el. laišką apie šią problemą</translation>
 <translation id="8104083085214006426">Naudojate atvirąjį ir nesaugų tinklą</translation>
-<translation id="8111706652656628199">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami „Shift“ ir dar vieną modifikavimo klavišą („Ctrl“, „Alt“, paieškos arba paleidimo priemonės klavišą).</translation>
 <translation id="811820734797650957">(„Android“) Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Pateikti srauto skaitiklių užklausą</translation>

@@ -2,9 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * To have the IDE support for types when writing inspector-protocol tests:
+ *
+ * - `npm i devtools-protocol -g`
+ * - `cd $HOME && npm link devtools-protocol`
+ *
+ * Note that `devtools-protocol` package won't include your local changes
+ * to the protocol and might be slightly out-of-date. Update it from time to time.
+ */
 var TestRunner = class {
   constructor(testBaseURL, targetBaseURL, log, completeTest, fetch, params) {
     this._dumpInspectorProtocolMessages = false;
+    this._protocolTimeout = 0;
     this._testBaseURL = testBaseURL;
     this._targetBaseURL = targetBaseURL;
     this._log = log;
@@ -42,7 +52,7 @@ var TestRunner = class {
     ];
   }
 
-  static extendStabilizeNames(extended){
+  static extendStabilizeNames(extended) {
     return [
       ...TestRunner.stabilizeNames,
       ...extended
@@ -403,7 +413,9 @@ TestRunner.Session = class {
   }
 
   async disconnect() {
-    await DevToolsAPI._sendCommandOrDie(this._parentSessionId, 'Target.detachFromTarget', {sessionId: this._sessionId});
+    await DevToolsAPI._sendCommandOrDie(
+        this._parentSessionId, 'Target.detachFromTarget',
+        {sessionId: this._sessionId}, this._testRunner._protocolTimeout);
   }
 
   createChild(sessionId) {
@@ -418,10 +430,10 @@ TestRunner.Session = class {
   }
 
   async sendCommand(method, params) {
-    var requestId = ++this._requestId;
     if (this._testRunner._dumpInspectorProtocolMessages)
       this._testRunner.log(`frontend => backend: ${JSON.stringify({method, params, sessionId: this._sessionId})}`);
-    const result = await DevToolsAPI._sendCommand(this._sessionId, method, params);
+    const result = await DevToolsAPI._sendCommand(
+        this._sessionId, method, params, this._testRunner._protocolTimeout);
     if (this._testRunner._dumpInspectorProtocolMessages)
       this._testRunner.log(`backend => frontend: ${JSON.stringify(result)}`);
     return result;
@@ -475,6 +487,9 @@ TestRunner.Session = class {
       handler(message);
   }
 
+  /**
+   * @returns {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi.ProtocolApi}
+   */
   _setupProtocol() {
     return new Proxy({}, {
       get: (target, agentName, receiver) => new Proxy({}, {
@@ -515,15 +530,18 @@ TestRunner.Session = class {
   }
 
   _waitForEvent(eventName, eventMatcher) {
-    return new Promise(callback => {
-      var handler = result => {
-        if (eventMatcher && !eventMatcher(result))
-          return;
-        this._removeEventHandler(eventName, handler);
-        callback(result);
-      };
-      this._addEventHandler(eventName, handler);
-    });
+    return TestRunner.wrapPromiseWithTimeout(
+        new Promise(callback => {
+          var handler = result => {
+            if (eventMatcher && !eventMatcher(result))
+              return;
+            this._removeEventHandler(eventName, handler);
+            callback(result);
+          };
+          this._addEventHandler(eventName, handler);
+        }),
+        this._testRunner._protocolTimeout,
+        `Waiting for ${eventName} timed out`);
   }
 };
 
@@ -630,22 +648,27 @@ DevToolsAPI.dispatchMessage = function(messageOrObject) {
   }
 };
 
-DevToolsAPI._sendCommand = function(sessionId, method, params) {
+DevToolsAPI._sendCommand = function(sessionId, method, params, timeout = 0) {
   var requestId = ++DevToolsAPI._requestId;
   var messageObject = {'id': requestId, 'method': method, 'params': params};
   if (sessionId)
     messageObject.sessionId = sessionId;
   var embedderMessage = {'id': ++DevToolsAPI._embedderMessageId, 'method': 'dispatchProtocolMessage', 'params': [JSON.stringify(messageObject)]};
   DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
-  return new Promise(f => DevToolsAPI._dispatchTable.set(requestId, f));
+  return TestRunner.wrapPromiseWithTimeout(
+      new Promise(f => DevToolsAPI._dispatchTable.set(requestId, f)), timeout,
+      `${method} command timed out`);
 };
 
-DevToolsAPI._sendCommandOrDie = function(sessionId, method, params) {
-  return DevToolsAPI._sendCommand(sessionId, method, params).then(message => {
-    if (message.error)
-      DevToolsAPI._die('Error communicating with harness', new Error(JSON.stringify(message.error)));
-    return message.result;
-  });
+DevToolsAPI._sendCommandOrDie = function(sessionId, method, params, timeout) {
+  return DevToolsAPI._sendCommand(sessionId, method, params, timeout)
+      .then(message => {
+        if (message.error)
+          DevToolsAPI._die(
+              'Error communicating with harness',
+              new Error(JSON.stringify(message.error)));
+        return message.result;
+      });
 };
 
 DevToolsAPI._fetch = function(url) {
@@ -715,3 +738,23 @@ window.addEventListener('unhandledrejection', e => {
   DevToolsAPI._log(`Promise rejection: ${e.reason}\n${e.reason ? e.reason.stack : ''}`);
   DevToolsAPI._completeTest();
 }, false);
+
+TestRunner.wrapPromiseWithTimeout = (promise, timeout, label) => {
+  if (!timeout)
+    return promise;
+  let timerId;
+  // For a clearer stack trace, creating the error first.
+  const error = new Error(`Timed out at ${label}`);
+  const timeoutPromise = new Promise(resolve => {
+    timerId = setTimeout(resolve, timeout);
+  });
+  return Promise.race([
+    promise.then(result => {
+      clearTimeout(timerId);
+      return result;
+    }),
+    timeoutPromise.then(() => Promise.reject(error))
+  ]);
+};
+
+exports.TestRunner = TestRunner;

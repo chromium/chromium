@@ -43,6 +43,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -64,7 +65,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -182,7 +182,7 @@ public class QuickDeleteControllerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-
+    @DisabledTest(message = "https://crbug.com/1477790")
     public void testSnackbarShown_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());

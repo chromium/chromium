@@ -15,6 +15,7 @@ public abstract class MessageFeatureList {
             "MessagesForAndroidStackingAnimation";
     public static final String MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK =
             "MessagesForAndroidFullyVisibleCallback";
+    public static final String MESSAGES_ANDROID_EXTRA_HISTOGRAMS = "MessagesAndroidExtraHistograms";
 
     public static boolean isStackAnimationEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_STACKING_ANIMATION);
@@ -22,5 +23,9 @@ public abstract class MessageFeatureList {
 
     public static boolean isFullyVisibleCallbackEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK);
+    }
+
+    public static boolean areExtraHistogramsEnabled() {
+        return MessageFeatureMap.isEnabled(MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
     }
 }

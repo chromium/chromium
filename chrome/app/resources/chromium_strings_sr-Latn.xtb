@@ -90,6 +90,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2583187216237139145">Administrator poslovnog profila može da ukloni sve podatke Chromium-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno (preporučeno)</translation>
 <translation id="2648074677641340862">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Chromium ponovo.</translation>
 <translation id="2661879430930417727">Ako delite uređaj, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele</translation>
 <translation id="268602741124540128">Dobro došli u Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="3258596308407688501">Chromium ne može da čita podatke iz direktorijuma sa podacima niti da ih upisuje u njega:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 je Chromium alatka za JavaScript i WebAssembly koja se koristi za poboljšanje performansi sajta</translation>
 <translation id="3283186697780795848">Instalirana je verzija Chromium-a <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
 <translation id="328888136576916638">Nedostaju šifre za Google API. Neke funkcije Chromium-a će biti onemogućene.</translation>
@@ -142,7 +144,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="3533435340678213462">Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chromium uzima u obzir.</translation>
 <translation id="3567254597502212821">Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chromium-a na ovom uređaju.</translation>
 <translation id="3593091352817399191">Drugi nalog je već prijavljen. Da bi vam pregledanje bilo razdvojeno, Chromium može da napravi zaseban profil za vas.</translation>
-<translation id="363078681319665186">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 10.15 ili novija verzija. Ovaj računar koristi macOS 10.13.</translation>
 <translation id="3639635944603682591">Podaci pregledanja ove osobe će biti izbrisani sa ovog uređaja. Da biste vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete.}=1{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="3651803019964686660">Da biste poslali broj sa <ph name="ORIGIN" /> na Android telefon, prijavite se u Chromium na oba uređaja.</translation>
@@ -159,7 +160,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pronađite pomoć za Chromium OS</translation>
 <translation id="3871664619793219264">Preuzmite sadržaj iz Chromium pregledača sa: <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 10.15 ili novija verzija. Ovaj računar koristi macOS 10.14.</translation>
 <translation id="388648406173476553">Prilagodite i kontrolišite Chromium. Treba da obratite pažnju na nešto – kliknite za više detalja.</translation>
 <translation id="3889543394854987837">Kliknite na ime da biste otvorili Chromium i počnite da pregledate.</translation>
 <translation id="390528597099634151">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chromium profil. Da bi vam pregledanje bilo razdvojeno, Chromium može da napravi zaseban profil za vas.</translation>
@@ -220,6 +220,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4814736265800133385">Koristite Chromium bez naloga</translation>
 <translation id="4888717733111232871">Pravilo za dolazni saobraćaj za Chromium da bi se omogućio mDNS saobraćaj.</translation>
 <translation id="4893347770495441059">Ponovo pokreni da bi se &amp;Chromium ažurirao</translation>
+<translation id="4942295735032723435">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 11 ili novija verzija. Ovaj računar koristi macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium je u pozadinskom režimu.</translation>
 <translation id="4987820182225656817">Gosti mogu da koriste Chromium a da ne ostavljaju nikakve tragove.</translation>
 <translation id="4994636714258228724">Dodajte sebe u Chromium</translation>
@@ -248,7 +249,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
 <translation id="5643865575100044307">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
-<translation id="5675598751761067447">Ovaj fajl može da bude opasan<ph name="LINE_BREAK" />Chromium može da proveri ovo preuzimanje umesto vas ako navedete lozinku – lozinka ostaje na uređaju</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikazuj Chromium na ovom jeziku</translation>
 <translation id="569897634095159764">Povezivanje sa internetom nije uspelo. Proksi server zahteva potvrdu identiteta.</translation>
@@ -409,6 +409,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8105840573057009683">Chromium-u treba dozvola za lokaciju za ovaj sajt</translation>
 <translation id="8133124826068723441">Chromium OS ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
+<translation id="8166782796394721554">Uključite dodatnu zaštitu u Chromium alatki za JavaScript i WebAssembly</translation>
 <translation id="81770708095080097">Ova datoteka je opasna, pa ju je Chromium blokirao.</translation>
 <translation id="8213374284266571500">Chromium je blokirao ovaj fajl jer je ovaj tip fajla opasan</translation>
 <translation id="8248265253516264921">Ako slika nema koristan opis, Chromium će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa. To možete da isključite u podešavanjima u svakom trenutku.</translation>

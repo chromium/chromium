@@ -85,9 +85,9 @@ void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
   observer.Wait();
 }
 
-absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
-                                        const GURL& url) {
-  absl::optional<StateValue> state;
+std::optional<StateValue> GetDIPSState(DIPSService* dips_service,
+                                       const GURL& url) {
+  std::optional<StateValue> state;
 
   auto* storage = dips_service->storage();
   DCHECK(storage);

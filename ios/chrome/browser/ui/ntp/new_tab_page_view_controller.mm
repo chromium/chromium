@@ -62,7 +62,6 @@ const CGFloat kModuleMinMargin = 16;
 // the omnibox to allow it to stick to the top of the NTP.
 // With Web Channels enabled, also determines if the feed header is stuck to the
 // top.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
 
 // Whether or not the fake omnibox is pinned to the top of the NTP. Redefined
@@ -80,7 +79,6 @@ const CGFloat kModuleMinMargin = 16;
 
 // Array of constraints used to pin the feed header to the top of the NTP. Only
 // applicable with Web Channels enabled.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
@@ -789,6 +787,11 @@ const CGFloat kModuleMinMargin = 16;
   if (!self.feedWrapperViewController) {
     return;
   }
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self updateFakeOmniboxForScrollPosition];
 
@@ -805,6 +808,11 @@ const CGFloat kModuleMinMargin = 16;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   // User has interacted with the surface, so it is safe to assume that a saved
   // scroll position can now be overriden.
   self.hasSavedOffsetFromPreviousScrollState = NO;
@@ -815,6 +823,11 @@ const CGFloat kModuleMinMargin = 16;
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController
       scrollViewWillEndDragging:scrollView
                    withVelocity:velocity
@@ -823,6 +836,11 @@ const CGFloat kModuleMinMargin = 16;
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
   if (self.isFeedVisible) {
@@ -848,6 +866,11 @@ const CGFloat kModuleMinMargin = 16;
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return YES;
+  }
   // User has tapped the status bar to scroll to the top.
   // Prevent scrolling back to pre-focus state, making sure we don't have
   // two scrolling animations running at the same time.
@@ -1371,7 +1394,6 @@ const CGFloat kModuleMinMargin = 16;
 // `force` is YES, the sticky elements will always be set based on the scroll
 // position. If `force` is NO, the sticky elements will only based on
 // `isScrolledIntoFeed` to prevent pinning them multiple times.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
   // Handles the sticky omnibox. Does not stick for iPads.
@@ -1597,7 +1619,7 @@ const CGFloat kModuleMinMargin = 16;
     [elements addObject:viewController.view];
   }
   [elements addObject:self.collectionView];
-  self.accessibilityElements = elements;
+  self.view.accessibilityElements = elements;
 }
 
 // Calculate the scroll position that should be saved in the NTP state and

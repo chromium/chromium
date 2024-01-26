@@ -16,6 +16,7 @@ component("impl") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/login/auth",

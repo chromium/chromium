@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
@@ -296,6 +297,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<viz::TestGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<TestTaskGraphRunner> task_graph_runner_;
   base::CancelableOnceClosure timeout_;
+  base::OnceClosure quit_closure_;
   scoped_refptr<viz::TestContextProvider> compositor_contexts_;
   bool skip_allocate_initial_local_surface_id_ = false;
   viz::ParentLocalSurfaceIdAllocator allocator_;

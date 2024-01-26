@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">ਕੋਈ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ਲਈ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="1885785240814121742">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਰੱਖਣ ਲਈ ਤਸਦੀਕ ਕਰੋ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1908992311423394684">ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1918022425394817322">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਚਾਲੂ ਹੈ</translation>
 <translation id="2067602449040652523">ਕੀ-ਬੋਰਡ ਚਮਕ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ਹੈ</translation>
-<translation id="2078034614700056995">ਅਗਲੇ ਡੈਸਕ 'ਤੇ ਜਾਣ ਲਈ ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2083190527011054446">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ਇਮੋਜੀ ਚੋਣਕਾਰ ਖੋਲ੍ਹੋ</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">ਪਿਛਲੇ ਟਰੈਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="2152895518047545149">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਕੁਝ ਵੀ ਖੁੰਝਿਆ ਹੋਇਆ ਨਹੀਂ ਹੈ। ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="2161132820593978283">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਵੀਡੀਓ ਕਾਲਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਹੋਵੋ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
-<translation id="2170530631236737939">ਰੂਪ-ਰੇਖਾ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਤਿੰਨ ਉਂਗਲਾਂ ਨਾਲ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2185166372312820725">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="2185444992308415167">1 ਤੋਂ 8 ਤੱਕ ਟੈਬਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">ਹੌਟਸਪੌਟ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਮੋਬਾਈਲ ਡਾਟਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
+<translation id="2744221223678373668">ਸ਼ੇਅਰ ਕੀਤਾ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ਮਿਟਾਓ"</translation>
 <translation id="2750941250130734256">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਅਣਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="2761723519669354964">ਸ਼ੈਲਫ ਤੋਂ ਉਜਾਗਰ ਕੀਤੀ ਆਈਟਮ ਖੋਲ੍ਹੋ</translation>
+<translation id="2762000892062317888">ਹੁਣੇ ਹੀ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ਤੋਂ <ph name="KEY_TWO" /> ਤੱਕ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ਡੋਮੇਨ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3580650856351781466">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3585296979871889131">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
+<translation id="3590441166907930941">ਸਾਈਡ ਬਟਨ</translation>
 <translation id="3593039967545720377">ਆਪਣਾ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਦਬਾ ਕੇ ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਦੇ ਇਤਿਹਾਸ ਤੱਕ ਪਹੁੰਚ ਕਰੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਕੋਈ ਆਈਟਮ ਕਾਪੀ ਕਰੋ।</translation>
 <translation id="3593646411856133110">ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਦੇਖਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="3990002060657467458">ਵਾਈ-ਫਾਈ, ਬਲੂਟੁੱਥ ਅਤੇ ਅਵਾਜ਼ ਵਰਗੇ ਅਕਸਰ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਕੰਟਰੋਲ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹਨ। ਤੁਸੀਂ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ ਇੱਥੇ ਵੀ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3995138139523574647">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਪਿਛਲਾ ਪੋਰਟ)</translation>
+<translation id="4002066346123236978">ਸਿਰਲੇਖ</translation>
 <translation id="40062176907008878">ਲਿਖਾਈ</translation>
 <translation id="4011112806063830608">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਮੋਡ ਚਾਲੂ ਹੈ।</translation>
 <translation id="4017989525502048489">ਲੇਜ਼ਰ ਪੁਆਇੰਟਰ</translation>
@@ -1036,6 +1037,7 @@
 <translation id="5163434717504750796">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ਸਾਈਕਲ ਗਿਣਤੀ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ਡੈਸਕ ਨੂੰ ਟੈਮਪਲੇਟ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5168181903108465623">ਕਾਸਟ ਡਿਵਾਈਸਾਂ ਉਪਲਬਧ</translation>
+<translation id="5168753792967365150">Google Tasks ਵਿੱਚ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5176318573511391780">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="5187627942836026988">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦੇਖੋ। ਹੌਟਸਪੌਟ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -1305,6 +1307,8 @@
 <translation id="6168622430237609329">ਤੁਹਾਡੀਆਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ</translation>
 <translation id="6173151025443907148">Lacros ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਦੇ ਲਈ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਇਸਦੀ ਬਜਾਏ Lacros ਵਿੱਚ ਦੂਜੇ ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ Lacros ਨੂੰ ਬੰਦ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6179832488876878285">ਇੱਥੇ ਤੁਸੀਂ ਆਪਣੀਆਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ Files ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
+<translation id="6180193585172850042">'ਪਿੱਛੇ' ਬਟਨ</translation>
+<translation id="6180651297859206670">'ਅੱਗੇ ਭੇਜੋ' ਬਟਨ</translation>
 <translation id="6182592640011875895">ਡੈਸਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6185696379715117369">ਸਫ਼ਾ ਉੱਪਰ</translation>
 <translation id="619335566042889110">ਹੁਣ ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਕਰੋ</translation>
@@ -1497,6 +1501,7 @@
 <translation id="6981291220124935078">ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
 <translation id="698231206551913481">ਇਸ ਵਰਤੋਂਕਾਰ ਦੇ ਹਟਾਏ ਜਾਣ ਤੋਂ ਬਾਅਦ ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਲ ਸਬੰਧਿਤ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6989752354829085073">ਆਪਣੀ Chromebook ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ। ਅੱਗੇ ਵਧੋ ਅਤੇ 6 ਪੜਾਵਾਂ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="7004910047186208204">ਮੋਬਾਈਲ ਡਾਟੇ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7005239792648594238">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
@@ -1694,7 +1699,6 @@
 <translation id="7850320739366109486">ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ</translation>
 <translation id="7851039877802112575">ਫੋਕਸ ਨੂੰ ਪੌਪ-ਅੱਪਾਂ ਅਤੇ ਵਿੰਡੋਆਂ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">ਰੂਪ-ਰੇਖਾ ਦੇ ਅੰਦਰ ਜਾਣ ਲਈ ਤਿੰਨ ਉਂਗਲਾਂ ਨਾਲ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="7862292329216937261">ਡੀਵਾਈਸ ਮਹਿਮਾਨ ਵਜੋਂ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ ਅਤੇ ਫਿਰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ 'ਮਹਿਮਾਨ ਵਜੋਂ ਬ੍ਰਾਊਜ਼ ਕਰੋ' ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="7866482334467279021">ਚਾਲੂ</translation>
 <translation id="7872786842639831132">ਬੰਦ ਹੈ</translation>
@@ -1805,7 +1809,6 @@
 <translation id="8262312463845990408">ਪਲੇਬੈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="8277261673056602147">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
-<translation id="8284362522226889623">ਪਿਛਲੇ ਡੈਸਕ 'ਤੇ ਜਾਣ ਲਈ ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="828708037801473432">ਬੰਦ</translation>
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8308637677604853869">ਪਿਛਲਾ ਮੀਨੂ</translation>

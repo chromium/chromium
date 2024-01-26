@@ -66,7 +66,6 @@ message AutofillProfileSpecifics {
   optional string profile_label = 62;
 
   // Contact info name fields.
-  repeated string name_honorific = 26;
   repeated string name_first = 2;
   repeated string name_middle = 3;
   repeated string name_last = 4;
@@ -80,12 +79,13 @@ message AutofillProfileSpecifics {
   repeated string name_last_conjunction = 28;
   repeated string name_last_second = 29;
   repeated string name_full = 21;
-  // This value contains the combination of the full name and the honorific
-  // prefix.
-  repeated string name_full_with_honorific = 60;
+
+  reserved 60;
+  reserved "name_full_with_honorific";
 
   // Validation status records for name fields.
-  repeated VerificationStatus name_honorific_status = 30;
+  reserved 30;
+  reserved "name_honorific_status";
   repeated VerificationStatus name_first_status = 31;
   repeated VerificationStatus name_middle_status = 32;
   repeated VerificationStatus name_last_status = 33;
@@ -93,7 +93,8 @@ message AutofillProfileSpecifics {
   repeated VerificationStatus name_last_conjunction_status = 35;
   repeated VerificationStatus name_last_second_status = 36;
   repeated VerificationStatus name_full_status = 37;
-  repeated VerificationStatus name_full_with_honorific_status = 61;
+  reserved 61;
+  reserved "name_full_with_honorific_status";
 
   // Contact info additional fields.
   repeated string email_address = 5;
@@ -212,6 +213,9 @@ message AutofillProfileSpecifics {
   reserved "address_home_dependent_thoroughfare_name_status";
   reserved 54;
   reserved "address_home_premise_name_status";
+  // Removed in M122.
+  reserved 26;
+  reserved "name_honorific";
 }
 
 message AutofillSpecifics {

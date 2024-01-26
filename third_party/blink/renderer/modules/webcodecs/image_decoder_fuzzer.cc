@@ -170,11 +170,9 @@ DEFINE_BINARY_PROTO_FUZZER(
         const size_t current_chunk_size =
             std::min(data_copy->ByteLength() - offset, chunk_size);
 
-        v8::Local<v8::Value> v8_data_array;
-        ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                        script_state, DOMUint8Array::Create(data_copy, offset,
-                                                            current_chunk_size))
-                        .ToLocal(&v8_data_array));
+        v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+            script_state,
+            DOMUint8Array::Create(data_copy, offset, current_chunk_size));
 
         underlying_source->Enqueue(
             ScriptValue(script_state->GetIsolate(), v8_data_array));

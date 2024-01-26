@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -52,7 +53,7 @@ class PriceNotificationsTabHelper
 
   // The service responsible for determining whether a given webpage can be
   // price tracked.
-  commerce::ShoppingService* shopping_service_ = nullptr;
+  raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
 
   // The presenter that displays the price tracking bubble IPH.
   __weak id<PriceNotificationsIPHPresenter> price_notifications_iph_presenter_ =

@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
@@ -40,6 +39,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -74,6 +74,10 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #endif
 
 namespace autofill {
@@ -141,6 +145,10 @@ class TestAutofillClientTemplate : public T {
   }
 
   IbanManager* GetIbanManager() override { return GetMockIbanManager(); }
+
+  IbanAccessManager* GetIbanAccessManager() override {
+    return GetMockIbanAccessManager();
+  }
 
   plus_addresses::PlusAddressService* GetPlusAddressService() override {
     return test_plus_address_service_;
@@ -325,29 +333,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ConfirmMigrateLocalCardToCloud(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& user_email,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::LocalCardMigrationCallback start_migrating_cards_callback)
-      override {
-    // If |migration_card_selection_| hasn't been preset by tests, default to
-    // selecting all migratable cards.
-    if (migration_card_selection_.empty()) {
-      for (MigratableCreditCard card : migratable_credit_cards) {
-        migration_card_selection_.push_back(card.credit_card().guid());
-      }
-    }
-    std::move(start_migrating_cards_callback).Run(migration_card_selection_);
-  }
-
-  void ShowLocalCardMigrationResults(
-      const bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::MigrationDeleteCardCallback delete_local_card_callback)
-      override {}
-
   void ConfirmSaveIbanLocally(
       const Iban& iban,
       bool should_show_prompt,
@@ -433,7 +418,7 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
 
-  bool HasCreditCardScanFeature() override { return false; }
+  bool HasCreditCardScanFeature() const override { return false; }
 
   void ScanCreditCard(
       AutofillClient::CreditCardScanCallback callback) override {}
@@ -707,14 +692,17 @@ class TestAutofillClientTemplate : public T {
     return mock_iban_manager_.get();
   }
 
+  ::testing::NiceMock<MockIbanAccessManager>* GetMockIbanAccessManager() {
+    if (!mock_iban_access_manager_) {
+      mock_iban_access_manager_ =
+          std::make_unique<testing::NiceMock<MockIbanAccessManager>>(this);
+    }
+    return mock_iban_access_manager_.get();
+  }
+
   ::testing::NiceMock<MockMerchantPromoCodeManager>*
   GetMockMerchantPromoCodeManager() {
     return &mock_merchant_promo_code_manager_;
-  }
-
-  void set_migration_card_selections(
-      const std::vector<std::string>& migration_card_selection) {
-    migration_card_selection_ = migration_card_selection;
   }
 
   void set_autofill_offer_manager(
@@ -777,6 +765,8 @@ class TestAutofillClientTemplate : public T {
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
+  std::unique_ptr<testing::NiceMock<MockIbanAccessManager>>
+      mock_iban_access_manager_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`

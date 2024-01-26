@@ -56,9 +56,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
                            const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
       const autofill::Suggestion&) override;
-  bool RemoveSuggestion(const std::u16string& value,
-                        autofill::PopupItemId popup_item_id,
-                        autofill::Suggestion::BackendId backend_id) override;
+  bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
   autofill::FillingProduct GetMainFillingProduct() const override;

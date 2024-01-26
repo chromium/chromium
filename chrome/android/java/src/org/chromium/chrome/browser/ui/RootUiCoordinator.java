@@ -285,6 +285,7 @@ public class RootUiCoordinator
     protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
+    protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
     @Nullable protected ManagedMessageDispatcher mMessageDispatcher;
     @Nullable private MessageContainerCoordinator mMessageContainerCoordinator;
     private MessageContainerObserver mMessageContainerObserver;
@@ -353,6 +354,7 @@ public class RootUiCoordinator
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
+     * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
@@ -396,6 +398,7 @@ public class RootUiCoordinator
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
+            @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
@@ -509,6 +512,7 @@ public class RootUiCoordinator
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
+        mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
 
         mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
@@ -888,14 +892,18 @@ public class RootUiCoordinator
                 mActivity, Profile.getLastUsedRegularProfile());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             ReadAloudController controller =
                     new ReadAloudController(
                             mActivity,
                             mProfileSupplier,
-                            mTabModelSelectorSupplier.get().getModel(false),
+                            tabModelSelector.getModel(/* incognito= */ false),
+                            tabModelSelector.getModel(/* incognito= */ true),
                             getBottomSheetController(),
                             mBrowserControlsManager,
-                            mLayoutManagerSupplier);
+                            mLayoutManagerSupplier,
+                            mWindowAndroid,
+                            mActivityLifecycleDispatcher);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
@@ -1437,7 +1445,7 @@ public class RootUiCoordinator
                             () -> {
                                 new QuickDeleteController(
                                         mActivity,
-                                        new QuickDeleteDelegateImpl(),
+                                        new QuickDeleteDelegateImpl(mTabSwitcherSupplier),
                                         mModalDialogManagerSupplier.get(),
                                         mSnackbarManagerSupplier.get(),
                                         mLayoutManager,
@@ -1466,7 +1474,7 @@ public class RootUiCoordinator
                             mCanAnimateBrowserControls,
                             mLayoutStateProviderOneShotSupplier,
                             mAppMenuSupplier,
-                            shouldShowMenuUpdateBadge(),
+                            canShowMenuUpdateBadge(),
                             mTabModelSelectorSupplier,
                             mStartSurfaceSupplier,
                             mOmniboxFocusStateSupplier,
@@ -1554,8 +1562,7 @@ public class RootUiCoordinator
                             hideAppMenu();
                             // Attempt to show the promo sheet for the restore tabs feature.
                             // Do not attempt to show the promo if in incognito mode.
-                            if (RestoreTabsFeatureHelper.RESTORE_TABS_PROMO.isEnabled()
-                                    && !mTabModelSelectorSupplier.get().isIncognitoSelected()) {
+                            if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
                                 // TODO(1458646): Add support for triggering in incognito mode.
                                 attemptToShowRestoreTabsPromo();
                             }
@@ -1697,10 +1704,10 @@ public class RootUiCoordinator
     protected void onFindToolbarHidden() {}
 
     /**
-     * @return Whether the "update available" badge should be displayed on menu button(s) in the
-     * context of this coordinator's UI.
-     **/
-    protected boolean shouldShowMenuUpdateBadge() {
+     * @return Whether the "update available" badge can be displayed on menu button(s) in the
+     *     context of this coordinator's UI.
+     */
+    protected boolean canShowMenuUpdateBadge() {
         return false;
     }
 

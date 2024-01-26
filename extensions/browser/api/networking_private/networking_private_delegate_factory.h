@@ -10,9 +10,9 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 
-namespace context {
+namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 

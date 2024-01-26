@@ -72,6 +72,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     case BubbleType::LOCAL_CVC_SAVE:
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::UPLOAD_CVC_SAVE:
+    case BubbleType::UPLOAD_IN_PROGRESS:
       bubble =
           new SaveCardOfferBubbleViews(anchor_view, web_contents, controller);
       break;
@@ -79,7 +80,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
       bubble = new SaveCardManageCardsBubbleViews(anchor_view, web_contents,
                                                   controller);
       break;
-    case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::INACTIVE:
       break;
@@ -326,13 +326,9 @@ void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   if (!driver)
     return;
 
-  autofill::AutofillClient* autofill_client = driver->client();
-  if (!autofill_client)
-    return;
-
   raw_ptr<autofill::VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager =
-          autofill_client->GetVirtualCardEnrollmentManager();
+          driver->client().GetVirtualCardEnrollmentManager();
 
   if (virtual_card_enrollment_manager)
     virtual_card_enrollment_manager->OnCardSavedAnimationComplete();

@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">Kan ikke koble til internett. Hvis du bruker en brannmur, må du legge til <ph name="PRODUCT_EXE_NAME" /> på godkjenningslisten.</translation>
 <translation id="2131230230468101642">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chrome skal vurdere.</translation>
 <translation id="2139300032719313227">Start ChromeOS på nytt</translation>
-<translation id="2146761408396054429">Denne filen kan være farlig<ph name="LINE_BREAK" />Chrome kan sjekke denne nedlastingen for deg hvis du oppgir passordet. Passordet blir værende på denne enheten.</translation>
 <translation id="2151406531797534936">Start Chrome på nytt nå</translation>
 <translation id="2174917724755363426">Installasjonen er ikke fullført. Er du sikker på at du vil avbryte?</translation>
 <translation id="2190166659037789668">Feil ved oppdateringssjekk: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -194,6 +193,7 @@
 <translation id="4053720452172726777">Tilpass og kontroller Google Chrome</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="4110895483821904099">Konfigurer den nye Chrome-profilen din</translation>
+<translation id="4128488089242627000">Chrome kjører raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet (anbefales)</translation>
 <translation id="4147555960264124640">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerer …</translation>
 <translation id="4149882025268051530">Installasjonsprogrammet fikk ikke dekomprimert arkivet. Last ned Google Chrome på nytt.</translation>
@@ -216,7 +216,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er lagt til i Chrome</translation>
 <translation id="4384570495110188418">Chrome kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="4389991535395284064">Når du surfer i inkognitomodus, advarer Chrome deg før nettsteder lastes inn via usikre tilkoblinger</translation>
-<translation id="4393248995085527349">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.15 eller nyere. Denne datamaskinen bruker macOS 10.13.</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4450664632294415862">Chrome – nettverkspålogging – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
@@ -241,6 +240,7 @@
 <translation id="4793679854893018356">Finn ut hvordan Chrome holder deg trygg</translation>
 <translation id="4828579605166583682">Google Chrome prøver å erstatte eksisterende passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="4842397268809523050">ChromeOS Flex kunne ikke synkronisere dataene dine. Dette skyldes at synkronisering ikke er tilgjengelig for domenet ditt.</translation>
+<translation id="4873692836499071887">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 11 eller nyere. Denne datamaskinen bruker macOS 10.15.</translation>
 <translation id="4873783916118289636">Gjennomgå viktige personvern- og sikkerhetskontroller i Chrome</translation>
 <translation id="4891791193823137474">La Google Chrome kjøre i bakgrunnen</translation>
 <translation id="4895437082222824641">Åpne linken i en ny &amp;fane i Chrome</translation>
@@ -300,7 +300,6 @@
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
-<translation id="6010556343189461180">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.15 eller nyere. Denne datamaskinen bruker macOS 10.14.</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktøy fra Chrome<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6025087594896450715">Google Chrome startes på nytt om <ph name="REMAINING_TIME" /></translation>
@@ -346,6 +345,7 @@
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
 <translation id="6794858689789885890">Slett alltid nettstedsdata fra enheten når du lukker Chrome</translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
+<translation id="6851981911629679515">Slå på ekstra beskyttelse i JavaScript- og WebAssembly-motoren i Chrome</translation>
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta-apper</translation>
 <translation id="6933858244219479645">ChromeOS-systemet</translation>
@@ -467,6 +467,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="873133009373065397">Google Chrome kan ikke fastslå eller angi standardnettleseren</translation>
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="878572486461146056">Installasjonsfeil: Nettverksadministratoren din har aktivert en grupperegel som forhindrer installasjonen: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 er JavaScript- og WebAssembly-motoren som Chrome bruker til å forbedre nettstedsytelsen</translation>
 <translation id="8821043148920470810">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er utdatert</translation>
 <translation id="8825634023950448068">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Og hvis Chrome tar feil, eller hvis det er visse annonser du ikke vil se, kan du fjerne en interesse.</translation>

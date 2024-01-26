@@ -7,10 +7,13 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -221,6 +224,56 @@ std::optional<gfx::Transform> OpenXrHandTracker::GetBaseFromPalmTransform()
 
   return XrPoseToGfxTransform(
       joint_locations_buffer_[XR_HAND_JOINT_PALM_EXT].pose);
+}
+
+OpenXrHandTrackerFactory::OpenXrHandTrackerFactory() = default;
+OpenXrHandTrackerFactory::~OpenXrHandTrackerFactory() = default;
+
+const base::flat_set<std::string_view>&
+OpenXrHandTrackerFactory::GetRequestedExtensions() const {
+  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
+      {XR_EXT_HAND_TRACKING_EXTENSION_NAME,
+       XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
+       XR_MSFT_HAND_INTERACTION_EXTENSION_NAME});
+  return *kExtensions;
+}
+
+std::set<device::mojom::XRSessionFeature>
+OpenXrHandTrackerFactory::GetSupportedFeatures(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  if (!IsEnabled(extension_enum)) {
+    return {};
+  }
+
+  return {device::mojom::XRSessionFeature::HAND_INPUT};
+}
+
+bool OpenXrHandTrackerFactory::IsEnabled(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  // We can support the hand tracker if the basic hand tracking extension is
+  // supported and at least one of our other required extensions is supported.
+  return extension_enum->ExtensionSupported(
+             XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
+         base::ranges::any_of(
+             GetRequestedExtensions(),
+             [&extension_enum](std::string_view extension) {
+               return strcmp(extension.data(),
+                             XR_EXT_HAND_TRACKING_EXTENSION_NAME) != 0 &&
+                      extension_enum->ExtensionSupported(extension.data());
+             });
+}
+
+std::unique_ptr<OpenXrHandTracker> OpenXrHandTrackerFactory::CreateHandTracker(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session,
+    OpenXrHandednessType type) const {
+  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  DVLOG(2) << __func__ << " is_supported=" << is_supported;
+  if (is_supported) {
+    return std::make_unique<OpenXrHandTracker>(extension_helper, session, type);
+  }
+
+  return nullptr;
 }
 
 }  // namespace device

@@ -9,6 +9,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
 # off the same ref every 24 hours. This poller is configured with a schedule
@@ -30,6 +31,7 @@ ci.defaults.set(
     cores = 32,
     ssd = True,
     execution_timeout = 20 * time.hour,
+    health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -312,6 +314,7 @@ coverage_builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -350,6 +353,7 @@ coverage_builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -455,6 +459,7 @@ coverage_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -495,6 +500,7 @@ coverage_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -533,6 +539,7 @@ coverage_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -573,6 +580,7 @@ coverage_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),

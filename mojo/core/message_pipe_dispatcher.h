@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <queue>
 
-#include <optional>
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"

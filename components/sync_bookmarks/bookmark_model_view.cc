@@ -110,11 +110,6 @@ void BookmarkModelView::SetURL(const bookmarks::BookmarkNode* node,
                           bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
-const bookmarks::BookmarkNode* BookmarkModelView::GetNodeByUuid(
-    const base::Uuid& uuid) const {
-  return bookmark_model_->GetNodeByUuid(uuid);
-}
-
 const bookmarks::BookmarkNode* BookmarkModelView::AddFolder(
     const bookmarks::BookmarkNode* parent,
     size_t index,
@@ -192,9 +187,12 @@ void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
   underlying_model()->RemoveAllUserBookmarks();
 }
 
-bool BookmarkModelViewUsingLocalOrSyncableNodes::
-    HasWellKnownPermanentNodeUuids() const {
-  return true;
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingLocalOrSyncableNodes::GetNodeByUuid(
+    const base::Uuid& uuid) const {
+  return underlying_model()->GetNodeByUuid(
+      uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 }
 
 BookmarkModelViewUsingAccountNodes::BookmarkModelViewUsingAccountNodes(
@@ -230,9 +228,11 @@ void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
   underlying_model()->RemoveAccountPermanentFolders();
 }
 
-bool BookmarkModelViewUsingAccountNodes::HasWellKnownPermanentNodeUuids()
-    const {
-  return false;
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingAccountNodes::GetNodeByUuid(
+    const base::Uuid& uuid) const {
+  return underlying_model()->GetNodeByUuid(
+      uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
 }
 
 }  // namespace sync_bookmarks

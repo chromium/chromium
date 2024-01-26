@@ -64,7 +64,7 @@ void WebApkInstallService::InstallAsync(
   // installation may take more than 10 seconds so there is a chance that the
   // WebContents has been destroyed before the install is finished.
   WebApkInstaller::InstallAsync(
-      browser_context_, web_contents, shortcut_info, primary_icon,
+      browser_context_, web_contents, shortcut_info, install_source,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
                      shortcut_info, primary_icon));
@@ -85,10 +85,10 @@ void WebApkInstallService::OnFinishedInstall(
     bool relax_updates,
     const std::string& webapk_package_name) {
   install_ids_.erase(shortcut_info.manifest_id);
-  HandleFinishInstallNotifications(
-      shortcut_info.manifest_id, shortcut_info.url, shortcut_info.short_name,
-      primary_icon, shortcut_info.is_primary_icon_maskable,
-      shortcut_info.source, result, webapk_package_name);
+  HandleFinishInstallNotifications(shortcut_info.manifest_id, shortcut_info.url,
+                                   shortcut_info.short_name, primary_icon,
+                                   shortcut_info.is_primary_icon_maskable,
+                                   result, webapk_package_name);
 
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebApkInstallFailureNotification)) {
@@ -111,33 +111,12 @@ void WebApkInstallService::OnFinishedInstall(
   }
 }
 
-void WebApkInstallService::OnFinishedInstallWithProto(
-    const GURL& manifest_id,
-    const GURL& url,
-    const std::u16string& short_name,
-    const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
-    webapps::ShortcutInfo::Source source,
-    ServiceInstallFinishCallback finish_callback,
-    webapps::WebApkInstallResult result,
-    bool relax_updates,
-    const std::string& webapk_package_name) {
-  install_ids_.erase(manifest_id);
-
-  HandleFinishInstallNotifications(manifest_id, url, short_name, primary_icon,
-                                   is_primary_icon_maskable, source, result,
-                                   webapk_package_name);
-
-  std::move(finish_callback).Run(result);
-}
-
 void WebApkInstallService::HandleFinishInstallNotifications(
     const GURL& notification_id,
     const GURL& url,
     const std::u16string& short_name,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
-    webapps::ShortcutInfo::Source source,
     webapps::WebApkInstallResult result,
     const std::string& webapk_package_name) {
   if (result == webapps::WebApkInstallResult::SUCCESS) {

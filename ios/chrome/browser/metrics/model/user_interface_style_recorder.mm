@@ -17,29 +17,7 @@ enum class InterfaceStyleForReporting {
   kMaxValue = kDark
 };
 
-// Converts a UIKit interface style to a interface style for reporting.
-InterfaceStyleForReporting InterfaceStyleForReportingForUIUserInterfaceStyle(
-    UIUserInterfaceStyle userInterfaceStyle) {
-  switch (userInterfaceStyle) {
-    case UIUserInterfaceStyleUnspecified:
-      return InterfaceStyleForReporting::kUnspecified;
-    case UIUserInterfaceStyleLight:
-      return InterfaceStyleForReporting::kLight;
-    case UIUserInterfaceStyleDark:
-      return InterfaceStyleForReporting::kDark;
-  }
-}
-
-// Reports the currently used interface style.
-void ReportUserInterfaceStyleUsed(UIUserInterfaceStyle userInterfaceStyle) {
-  InterfaceStyleForReporting userInterfaceStyleForReporting =
-      InterfaceStyleForReportingForUIUserInterfaceStyle(userInterfaceStyle);
-  base::UmaHistogramEnumeration("UserInterfaceStyle.CurrentlyUsed",
-                                userInterfaceStyleForReporting);
-}
-
 }  // namespace
-
 @interface UserInterfaceStyleRecorder ()
 @property(nonatomic, assign) BOOL applicationInBackground;
 @property(nonatomic, assign) UIUserInterfaceStyle initialUserInterfaceStyle;
@@ -75,18 +53,6 @@ void ReportUserInterfaceStyleUsed(UIUserInterfaceStyle userInterfaceStyle) {
   return self;
 }
 
-- (void)userInterfaceStyleDidChange:
-    (UIUserInterfaceStyle)newUserInterfaceStyle {
-  // When an app goes to the background iOS toggles the user interface 2 times.
-  // This is probably to take screenshots of the screen for multitask. After
-  // this if the interface style changes, the app is not notified until it comes
-  // to the foreground. We only care if changed was registered while in
-  // foreground.
-  if (!self.applicationInBackground) {
-    ReportUserInterfaceStyleUsed(newUserInterfaceStyle);
-  }
-}
-
 #pragma mark - Application state notifications handlers
 
 - (void)applicationDidBecomeActive:(NSNotification*)notification {
@@ -96,7 +62,6 @@ void ReportUserInterfaceStyleUsed(UIUserInterfaceStyle userInterfaceStyle) {
       removeObserver:self
                 name:UIApplicationDidBecomeActiveNotification
               object:nil];
-  ReportUserInterfaceStyleUsed(self.initialUserInterfaceStyle);
   // For good measure, set the initial interface to unspecified.
   self.initialUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
 }

@@ -122,8 +122,8 @@ export class EduCoexistenceApp extends EduCoexistenceAppBase {
           EduCoexistenceBrowserProxyImpl.getInstance().getDialogArguments());
       if (!!options && options.showArcAvailabilityPicker) {
         const arcAccountPicker =
-            this.shadowRoot!.querySelector('arc-account-picker-app') as
-            ArcAccountPickerAppElement;
+            this.shadowRoot!.querySelector<ArcAccountPickerAppElement>(
+                'arc-account-picker-app')!;
         arcAccountPicker.loadAccounts().then(
             (accountsFound: boolean) => {
               this.switchToScreen(

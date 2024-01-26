@@ -69,8 +69,16 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
+bool IsDeviceManaged(Profile* profile_) {
+  policy::ProfilePolicyConnector* profile_policy_connector =
+      profile_->GetProfilePolicyConnector();
+
+  return (profile_policy_connector != nullptr &&
+          profile_policy_connector->IsManaged());
+}
+
 bool IsGoogleInternalAccountEmailFromProfile(Profile* profile) {
-  absl::optional<std::string> user_email =
+  std::optional<std::string> user_email =
       GetSignedInUserEmailFromProfile(profile);
 
   return user_email.has_value() &&
@@ -130,6 +138,10 @@ bool IsAppAllowed(Profile* profile, std::string_view app_id) {
          !base::Contains(kWorkspaceAppIdDenylist, app_id);
 }
 
+bool IsTriggerableFromTextLength(int text_length) {
+  return text_length <= kTextLengthMaxLimit;
+}
+
 std::vector<std::string> GetAllowedInputMethodEngines() {
   // Default English IMEs.
   std::vector<std::string> allowed_imes = {
@@ -179,14 +191,11 @@ bool EditorSwitch::IsAllowedForUse() const {
     return false;
   }
 
-  auto* profile_policy_connector = profile_->GetProfilePolicyConnector();
-
   return (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
           base::FeatureList::IsEnabled(
               chromeos::features::kFeatureManagementOrca) &&
           IsCountryAllowed(country_code_)) &&
-         (profile_policy_connector == nullptr ||
-          !profile_policy_connector->IsManaged());
+         !IsDeviceManaged(profile_);
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -195,6 +204,64 @@ EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
                             : EditorOpportunityMode::kWrite;
   }
   return EditorOpportunityMode::kNone;
+}
+
+std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
+  std::vector<EditorBlockedReason> blocked_reasons;
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrca)) {
+    if (!IsCountryAllowed(country_code_)) {
+      blocked_reasons.push_back(
+          EditorBlockedReason::kBlockedByUnsupportedRegion);
+    }
+
+    if (IsDeviceManaged(profile_)) {
+      blocked_reasons.push_back(EditorBlockedReason::kBlockedByManagedStatus);
+    }
+  }
+
+  if (!IsTriggerableFromConsentStatus(GetConsentStatusFromInteger(
+          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus)))) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByConsent);
+  }
+
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedBySetting);
+  }
+
+  if (!IsTriggerableFromTextLength(text_length_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByTextLength);
+  }
+
+  if (!IsUrlAllowed(profile_, url_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByUrl);
+  }
+
+  if (!IsAppAllowed(profile_, app_id_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByApp);
+  }
+
+  if (!IsAppTypeAllowed(app_type_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByAppType);
+  }
+
+  if (!IsInputMethodEngineAllowed(ime_allowlist_, active_engine_id_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByInputMethod);
+  }
+
+  if (!IsInputTypeAllowed(input_type_)) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByInputType);
+  }
+
+  if (tablet_mode_enabled_) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByInvalidFormFactor);
+  }
+
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByNetworkStatus);
+  }
+
+  return blocked_reasons;
 }
 
 bool EditorSwitch::CanBeTriggered() const {

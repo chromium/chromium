@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="2024-05-19">
+    enum="NetErrorCodes" expires_after="2024-07-21">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.FeatureUsage" enum="CustomTabsFeatureUsed"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>donnd@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -351,6 +351,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Minimized.MinimizeSuccess" enum="Boolean"
+    expires_after="2024-06-01">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Emitted when the the user clicks the minimize button and we request to be
+    put in picture-in-picture from the framework. Records true if it was
+    successful; false if there was an exception thrown. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Minimized.ReceivedIntentReusingSession"
     enum="Boolean" expires_after="2024-06-01">
   <owner>sinansahin@google.com</owner>
@@ -382,6 +393,26 @@ chromium-metrics-reviews@google.com.
     #onFinishNativeInitialization() when the availability is first checked to
     initialize the feature. Android only.
   </summary>
+</histogram>
+
+<histogram name="CustomTabs.MinimizeSuccessAfterException.{Exception}"
+    units="count" expires_after="2024-06-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the number of times {Exception} was thrown by
+    `Activity#enterPictureInPictureMode` when the said method succeeds. The
+    count includes exceptions seen since the last successful minimize event or
+    since the `CustomTabMinimizationManager` was created. This is recorded at
+    most once per CCT. Android only.
+  </summary>
+  <token key="Exception">
+    <variant name="IAE"
+        summary="IllegalStateException for addRootTaskReferenceIfNeeded"/>
+    <variant name="ISE_ACTIVITY" summary="IllegalStateException for Activity"/>
+    <variant name="ISE_DEVICE" summary="IllegalStateException for device"/>
+    <variant name="NPE" summary="NullPointerException for TaskDisplayArea"/>
+  </token>
 </histogram>
 
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
@@ -567,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="M120">
+    expires_after="2024-07-24">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -657,7 +688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TabCounts.UniqueTabsSeen" units="count"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

@@ -374,16 +374,8 @@ bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
   }
 
   // Skip if RP and IDP are same-site.
-  GURL rp_url = render_frame_host_->GetLastCommittedURL();
-  std::string rp_etld_plus_one =
-      webid::FormatUrlWithDomain(rp_url, /*for_display=*/false);
-  std::string idp_etld_plus_one =
-      webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
-  if (idp_etld_plus_one.empty() || rp_etld_plus_one.empty()) {
-    return false;
-  }
-
-  return rp_etld_plus_one == idp_etld_plus_one;
+  return webid::IsSameSite(render_frame_host_->GetLastCommittedOrigin(),
+                           url::Origin::Create(idp_url));
 }
 
 }  // namespace content

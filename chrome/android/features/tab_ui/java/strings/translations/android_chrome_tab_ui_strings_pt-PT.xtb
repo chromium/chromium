@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
+<translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Ocultar grelha em ecrã inteiro</translation>
 <translation id="5076161749301278626">Ver críticas de lojas?</translation>
 <translation id="5082793167783849073">Compare páginas rapidamente através da criação de um grupo. Para começar, toque sem soltar num link.</translation>
+<translation id="5161254044473106830">Título obrigatório</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador que não usou recentemente}other{Tem <ph name="TABS_COUNT_MANY" /> separadores que não usou recentemente}}</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>

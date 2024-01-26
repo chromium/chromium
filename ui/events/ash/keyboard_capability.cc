@@ -11,6 +11,7 @@
 #include <cstring>
 #include <functional>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -118,7 +119,7 @@ constexpr auto kChromeOSKeyboardsWithCapsLock =
         {0x046d, 0xb370}  // Logitech Signature K650
     });
 
-absl::optional<KeyboardDevice> FindKeyboardWithId(int device_id) {
+std::optional<KeyboardDevice> FindKeyboardWithId(int device_id) {
   const auto& keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
   for (const auto& keyboard : keyboards) {
@@ -127,7 +128,7 @@ absl::optional<KeyboardDevice> FindKeyboardWithId(int device_id) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool GetDeviceProperty(const base::FilePath& device_path,
@@ -211,10 +212,10 @@ base::ScopedFD GetEventDeviceNameFd(const KeyboardDevice& keyboard) {
   return fd;
 }
 
-absl::optional<uint32_t> ConvertScanCodeToEvdevKey(const base::ScopedFD& fd,
-                                                   uint32_t scancode) {
+std::optional<uint32_t> ConvertScanCodeToEvdevKey(const base::ScopedFD& fd,
+                                                  uint32_t scancode) {
   if (fd.get() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   struct input_keymap_entry keymap_entry {
@@ -225,7 +226,7 @@ absl::optional<uint32_t> ConvertScanCodeToEvdevKey(const base::ScopedFD& fd,
   int ret = ioctl(fd.get(), EVIOCGKEYCODE_V2, &keymap_entry);
   if (ret < 0) {
     LOG(ERROR) << "Failed EVIOCGKEYCODE_V2 syscall";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return keymap_entry.keycode;
@@ -537,23 +538,23 @@ KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
 }
 
 // static
-absl::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
+std::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
     ui::KeyboardCode key_code) {
   const auto* action_key = kVKeyToTopRowActionKeyMap.find(key_code);
   return (action_key != kVKeyToTopRowActionKeyMap.end())
-             ? absl::make_optional<TopRowActionKey>(action_key->second)
-             : absl::nullopt;
+             ? std::make_optional<TopRowActionKey>(action_key->second)
+             : std::nullopt;
 }
 
 // static
-absl::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
+std::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
     TopRowActionKey action_key) {
   for (const auto& [key_code, mapped_action_key] : kVKeyToTopRowActionKeyMap) {
     if (mapped_action_key == action_key) {
       return key_code;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -561,7 +562,7 @@ bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
   return base::Contains(kSixPackKeyToSearchSystemKeyMap, key_code);
 }
 
-absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
+std::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
     const KeyboardCode& key_code,
     const KeyboardDevice& keyboard) const {
   // TODO(zhangwenyu): Cache the layout for currently connected keyboards and
@@ -586,46 +587,46 @@ absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
       // TODO(zhangwenyu): Handle custom vivaldi layout.
-      return absl::nullopt;
+      return std::nullopt;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
+std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     const KeyboardDevice& keyboard,
     TopRowActionKey action_key) const {
   auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto iter =
       base::ranges::find(keyboard_info->top_row_action_keys, action_key);
   if (iter == keyboard_info->top_row_action_keys.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return kFunctionKeys[std::distance(keyboard_info->top_row_action_keys.begin(),
                                      iter)];
 }
 
-absl::optional<TopRowActionKey>
+std::optional<TopRowActionKey>
 KeyboardCapability::GetCorrespondingActionKeyForFKey(
     const KeyboardDevice& keyboard,
     KeyboardCode key_code) const {
   auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (key_code > VKEY_F24 || key_code < VKEY_F1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const size_t index = key_code - VKEY_F1;
   if (keyboard_info->top_row_action_keys.size() <= index) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return keyboard_info->top_row_action_keys[index];
@@ -690,6 +691,12 @@ bool KeyboardCapability::HasSixPackOnAnyKeyboard() {
 bool KeyboardCapability::IsFunctionKey(ui::KeyboardCode code) {
   return ui::KeyboardCode::VKEY_F1 <= code &&
          code <= ui::KeyboardCode::VKEY_F24;
+}
+
+// static
+bool KeyboardCapability::IsF11OrF12(ui::KeyboardCode code) {
+  return code == ui::KeyboardCode::VKEY_F11 ||
+         code == ui::KeyboardCode::VKEY_F12;
 }
 
 std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
@@ -980,7 +987,7 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
                                      const KeyboardDevice& keyboard) const {
   // Handle top row keys.
-  absl::optional<TopRowActionKey> top_row_action_key =
+  std::optional<TopRowActionKey> top_row_action_key =
       ConvertToTopRowActionKey(key_code);
   if (top_row_action_key.has_value()) {
     return HasTopRowActionKey(keyboard, top_row_action_key.value());

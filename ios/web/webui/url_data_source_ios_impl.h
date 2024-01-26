@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "ios/web/webui/url_data_manager_ios.h"
@@ -98,7 +99,7 @@ class URLDataSourceIOSImpl
   // should only be accessed on the IO thread. This reference can't be via a
   // scoped_refptr else there would be a cycle between the backend and data
   // source.
-  URLDataManagerIOSBackend* backend_;
+  raw_ptr<URLDataManagerIOSBackend> backend_;
 
   std::unique_ptr<URLDataSourceIOS> source_;
 };

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
 
 class TemplateURLService;
@@ -20,6 +21,6 @@ class ExtensionSearchEngineDataUpdater : public TemplateURLServiceObserver {
   // TemplateURLServiceObserver
   void OnTemplateURLServiceChanged() override;
 
-  TemplateURLService* templateURLService_;  // weak
+  raw_ptr<TemplateURLService> templateURLService_;  // weak
 };
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_

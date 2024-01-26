@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #include "base/values.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager.h"
@@ -164,7 +165,7 @@ class TranslateControllerTest : public PlatformTest,
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebFrame> fake_main_frame_;
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   FakeJSTranslateWebFrameManagerFactory fake_translate_factory_;
   TranslateErrors error_type_;
   double ready_time_;

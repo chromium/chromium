@@ -21,23 +21,15 @@ use anyhow::{format_err, Context, Result};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
-pub fn vendor(
-    args: VendorCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || vendor_impl(args, tools, paths))?;
+    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
     println!("Vendor successful: run gnrt gen to generate GN rules.");
     Ok(())
 }
 
-fn vendor_impl(
-    args: VendorCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
     let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
@@ -59,7 +51,7 @@ fn vendor_impl(
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
     let metadata =
-        run_cargo_metadata(paths.third_party_cargo_root.into(), tools, Vec::new(), HashMap::new())
+        run_cargo_metadata(paths.third_party_cargo_root.into(), Vec::new(), HashMap::new())
             .context("run_cargo_metadata")?;
     let packages: HashMap<_, _> = metadata_packages(&metadata)?;
     let nodes: HashMap<_, _> = metadata_nodes(&metadata);
@@ -74,7 +66,7 @@ fn vendor_impl(
 
     {
         let package_names = packages.values().map(|p| &p.name).collect::<HashSet<_>>();
-        for (name, _) in &config.per_crate_config {
+        for name in config.per_crate_config.keys() {
             if !package_names.contains(name) {
                 return Err(format_err!(
                     "Config found for crate {name}, but it is not a dependency, in {file}",
@@ -99,7 +91,7 @@ fn vendor_impl(
             None
         })
         .collect();
-    for (_, p) in &packages {
+    for p in packages.values() {
         let crate_dir = format!("{}-{}", p.name, p.version);
         if config.resolve.remove_crates.contains(&p.name) {
             println!("Generating placeholder for removed crate {}-{}", p.name, p.version);
@@ -108,7 +100,7 @@ fn vendor_impl(
             println!("Downloading {}-{}", p.name, p.version);
             download_crate(&p.name, &p.version, paths)?;
             let skip_patches = match &args.no_patches {
-                Some(v) => v.len() == 0 || v.contains(&&p.name),
+                Some(v) => v.is_empty() || v.contains(&p.name),
                 None => false,
             };
             if skip_patches {
@@ -176,7 +168,7 @@ fn vendor_impl(
         create_vet_config(packages.values().copied(), &config, find_group, find_shipped)?;
 
     for dir in all_readme_files.keys() {
-        create_dirs_if_needed(&dir).context(format!("dir: {}", dir.display()))?;
+        create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
     }
 
     if args.dump_template_input {
@@ -203,7 +195,7 @@ fn vendor_impl(
     {
         let config_str = vet_handlebars.render("template", &vet_config_toml)?;
         let file_path = paths.vet_config_file;
-        let file = std::fs::File::create(&paths.vet_config_file).with_context(|| {
+        let file = std::fs::File::create(paths.vet_config_file).with_context(|| {
             format!("Could not create README.chromium output file {}", file_path.to_string_lossy())
         })?;
         use std::io::Write;
@@ -256,7 +248,7 @@ fn download_crate(
     if let Err(e) = archive.unpack(vendor_dir) {
         std::fs::remove_dir_all(crate_dir)
             .with_context(|| format!("Deleting failed unpack of crate {name}-{version}"))?;
-        return Err(e).with_context(|| format!("Failed to unpack crate {name}-{version}")).into();
+        return Err(e).with_context(|| format!("Failed to unpack crate {name}-{version}"));
     }
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
@@ -387,13 +379,10 @@ fn placeholder_crate(
         .deps
         .iter()
         .filter(|d| {
-            d.dep_kinds
-                .iter()
-                .find(|k| {
-                    k.kind == cargo_metadata::DependencyKind::Build
-                        || k.kind == cargo_metadata::DependencyKind::Normal
-                })
-                .is_some()
+            d.dep_kinds.iter().any(|k| {
+                k.kind == cargo_metadata::DependencyKind::Build
+                    || k.kind == cargo_metadata::DependencyKind::Normal
+            })
         })
         .map(|d| {
             let feature_dep_info = package

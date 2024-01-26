@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
@@ -91,8 +91,6 @@ bool HasAllowedScheme(const GURL& url) {
          base::FeatureList::IsEnabled(
              features::test::kAutofillAllowNonHttpActivation);
 }
-
-
 
 std::string ServerTypesToString(const AutofillField* field) {
   const std::vector<
@@ -201,26 +199,19 @@ void FormStructure::DetermineHeuristicTypes(
                          log_manager);
 
   // The active heuristic source might not be a pattern source.
+  std::optional<FieldCandidatesMap> active_predictions;
   if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
     context.pattern_source = *pattern_source;
-    ParseFieldTypesWithPatterns(context);
+    active_predictions = ParseFieldTypesWithPatterns(context);
+    AssignBestFieldTypes(*active_predictions, *pattern_source);
   }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDisableShadowHeuristics)) {
-    for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
-      if (auto shadow_source =
-              HeuristicSourceToPatternSource(heuristic_source)) {
-        context.pattern_source = *shadow_source;
-        ParseFieldTypesWithPatterns(context);
-      }
-    }
-  }
+  DetermineNonActiveHeuristicTypes(std::move(active_predictions), context);
 
   UpdateAutofillCount();
   IdentifySections(/*ignore_autocomplete=*/false);
 
   FormStructureRationalizer rationalizer(&fields_);
+  rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     rationalizer.RationalizeRepeatedFields(
@@ -248,6 +239,34 @@ void FormStructure::DetermineHeuristicTypes(
   LogDetermineHeuristicTypesMetrics();
 }
 
+void FormStructure::DetermineNonActiveHeuristicTypes(
+    std::optional<FieldCandidatesMap> active_predictions,
+    ParsingContext& context) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDisableShadowHeuristics)) {
+    return;
+  }
+  std::optional<PatternSource> active_pattern_source =
+      HeuristicSourceToPatternSource(GetActiveHeuristicSource());
+  for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
+    std::optional<PatternSource> pattern_source =
+        HeuristicSourceToPatternSource(heuristic_source);
+    if (!pattern_source) {
+      continue;
+    }
+    if (active_pattern_source &&
+        AreMatchingPatternsEqual(*active_pattern_source, *pattern_source,
+                                 context.page_language)) {
+      // No need to recompute the predictions - just copy the results.
+      AssignBestFieldTypes(*active_predictions, *pattern_source);
+    } else {
+      // Run heuristics.
+      context.pattern_source = *pattern_source;
+      ParseFieldTypesWithPatterns(context);
+    }
+  }
+}
+
 // static
 std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>&
@@ -273,7 +292,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
             FieldTypeToStringView(field->server_type());
       }
       annotated_field.html_type = FieldTypeToStringView(field->html_type());
-      annotated_field.overall_type = field->Type().ToString();
+      annotated_field.overall_type = std::string(field->Type().ToStringView());
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
       annotated_field.section = field->section.ToString();
@@ -524,6 +543,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     field->set_autofill_source_profile_guid(
         cached_field->autofill_source_profile_guid());
     field->set_autofilled_type(cached_field->autofilled_type());
+    field->set_may_use_prefilled_placeholder(
+        cached_field->may_use_prefilled_placeholder());
     field->set_previously_autofilled(cached_field->previously_autofilled());
     field->set_was_context_menu_shown(cached_field->was_context_menu_shown());
 
@@ -639,25 +660,34 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   return has_autocomplete;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context) {
+FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
+    ParsingContext& context) const {
   FieldCandidatesMap field_type_map;
 
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map);
-  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(context, fields_, is_form_tag_,
+    FormFieldParser::ParseFormFields(context, fields_, is_form_tag_,
                                      field_type_map);
-    FormField::ParseStandaloneCVCFields(context, fields_, field_type_map);
+  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
+    FormFieldParser::ParseSingleFieldForms(context, fields_, is_form_tag_,
+                                           field_type_map);
+    FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields inside a form tag, allow heuristics even
     // when the minimum number of fields is not met. See similar comments
-    // in `FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
+    // in `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
     if (is_form_tag_ &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-      FormField::ParseStandaloneEmailFields(context, fields_, field_type_map);
+      FormFieldParser::ParseStandaloneEmailFields(context, fields_,
+                                                  field_type_map);
     }
   }
+  return field_type_map;
+}
+
+void FormStructure::AssignBestFieldTypes(
+    const FieldCandidatesMap& field_type_map,
+    PatternSource pattern_source) {
   if (field_type_map.empty()) {
     return;
   }
@@ -671,18 +701,16 @@ void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context) {
       continue;
 
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(
-        PatternSourceToHeuristicSource(context.pattern_source),
-        candidates.BestHeuristicType());
+    field->set_heuristic_type(PatternSourceToHeuristicSource(pattern_source),
+                              candidates.BestHeuristicType());
 
     ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
         .field_type = field->heuristic_type(
-            PatternSourceToHeuristicSource(context.pattern_source)),
-        .pattern_source = context.pattern_source,
-        .is_active_pattern_source =
-            GetActivePatternSource() == context.pattern_source,
+            PatternSourceToHeuristicSource(pattern_source)),
+        .pattern_source = pattern_source,
+        .is_active_pattern_source = GetActivePatternSource() == pattern_source,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
     });
@@ -1107,6 +1135,7 @@ void FormStructure::RationalizeFormStructure(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   FormStructureRationalizer rationalizer(&fields_);
+  rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   rationalizer.RationalizeRepeatedFields(
       form_signature(), form_interactions_ukm_logger, log_manager);
@@ -1154,7 +1183,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                        HashFormSignature(field->host_form_signature))});
     buffer << "\n  Name: " << field->parseable_name();
 
-    auto type = field->Type().ToString();
+    auto type = field->Type().ToStringView();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
     std::string server_type = ServerTypesToString(field);
     const char* is_override =
@@ -1230,7 +1259,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Name:" << field->parseable_name();
     buffer << Tr{} << "Placeholder:" << field->placeholder;
 
-    auto type = field->Type().ToString();
+    auto type = field->Type().ToStringView();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
     std::string server_type = ServerTypesToString(field);
     if (field->server_type_prediction_is_override())

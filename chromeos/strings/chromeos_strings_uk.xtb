@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">уперед</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
+<translation id="1626590945318984973">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1643449475550628585">Змінювати фоновий малюнок щодня</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Вимкнути темний режим</translation>
 <translation id="1885577615937958993">перемотати медіаконтент уперед</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
-<translation id="1897672602657312171">Комбінація клавіш без клавіші пошуку може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб продовжити її використання, або створіть новий варіант із клавішею пошуку.</translation>
 <translation id="1904932688895783618">Нижче наведено інші корисні ресурси.</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2157660087437850958">панель смайлів</translation>
 <translation id="2157959690810728433">У ЧЕРЗІ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Ваш адміністратор налаштував автоматичний запуск додатка <ph name="APP_NAME_1" /> щоразу, коли ви входите в обліковий запис.}=2{Ваш адміністратор налаштував автоматичний запуск додатків <ph name="APP_NAME_1" /> і <ph name="APP_NAME_2" /> щоразу, коли ви входите в обліковий запис.}=3{Ваш адміністратор налаштував автоматичний запуск додатків <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> і <ph name="APP_NAME_3" /> щоразу, коли ви входите в обліковий запис.}one{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> і ще # додатка щоразу, коли ви входите в обліковий запис.}few{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> і ще # додатків щоразу, коли ви входите в обліковий запис.}many{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> і ще # додатків щоразу, коли ви входите в обліковий запис.}other{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> і ще # додатка щоразу, коли ви входите в обліковий запис.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторити</translation>
 <translation id="215916044711630446">Кнопку "Додати APN" вимкнено</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Змінити відомості про APN</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
 <translation id="2212733584906323460">Перетворення імені</translation>
+<translation id="2215920961700443347">Немає з’єднання з Інтернетом. Підключіться до Інтернету й повторіть спробу.</translation>
 <translation id="2217935453350629363">Поточна швидкість</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="222447520299472966">Потрібно вибрати принаймні один альбом із мистецької галереї</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2465272316171730950">Систему перевантажено. Спробуйте пізніше.</translation>
 <translation id="248546197012830854">Пристрій не підключено до Інтернету. Щоб переглянути довідковий контент, підключіться до мережі Wi-Fi.</translation>
 <translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2512979179176933762">показати вікна</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
-<translation id="2515109918609218604">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші пошуку.</translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2521835766824839541">попередня композиція</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Тепер ви маєте доступ до нових <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />фонових малюнків<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темний режим</translation>
 <translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
+<translation id="4130750466177569591">Прийняти</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Додаток <ph name="APP_NAME_1" /> запущено автоматично}one{# додаток запущено автоматично}few{# додатки запущено автоматично}many{# додатків запущено автоматично}other{# додатка запущено автоматично}}</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Екран</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">зменшити яскравість</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4176659219503619100">Панель керування</translation>
-<translation id="4185315616950253617">Комбінація з клавішами верхнього рядка має містити клавішу пошуку.</translation>
 <translation id="420283545744377356">Вимкнути заставку</translation>
 <translation id="4213104098953699324">Клавіатура USB</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> перезапускається</translation>
 <translation id="4395835743215824109">налаштування клавіатури</translation>
+<translation id="4403262788869804671">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб продовжити її використання, або створіть новий варіант із клавішею <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Поточний аватар</translation>
+<translation id="4417830657741848074">Ваш адміністратор налаштував автоматичний запуск певних додатків. Деякі з них не можна закрити.</translation>
 <translation id="4422041425070339732">стрілка вниз</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4428374560396076622">Мережу <ph name="NETWORK_NAME" /> вимкнено</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Заставка "Поверхня землі"</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4500722292849917410">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші-модифікатора (Ctrl, Alt, Shift або клавіша <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Колір інтерфейсу</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4507392511610824664">збільшити яскравість</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
 <translation id="4839698083503556542">Створюйте власний фільм</translation>
+<translation id="48409034532829769">Ваш адміністратор налаштував автоматичний запуск додатка <ph name="APP_NAME" />. Цей додаток не можна закрити.</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4847902821209177679">Вибрано тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />". Натисніть Enter, щоб вибрати альбоми для теми "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Розділити</translation>
 <translation id="4972592110715526173">змінити режим</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
+<translation id="4982627662315910959">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші Shift і ще однієї клавіші-модифікатора (Ctrl, Alt або клавіша <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
 <translation id="4988526792673242964">Сторінки</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Розклад для темної теми</translation>
 <translation id="5229344016299762883">Вийти з повноекранного режиму</translation>
 <translation id="5234764350956374838">Закрити</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Ваш адміністратор налаштував автоматичний запуск додатка <ph name="APP_NAME" /> щоразу, коли ви входите в обліковий запис.}=2{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME" /> і ще 1 додатка щоразу, коли ви входите в обліковий запис.}one{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME" /> і ще # додатка щоразу, коли ви входите в обліковий запис.}few{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME" /> і ще # додатків щоразу, коли ви входите в обліковий запис.}many{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME" /> і ще # додатків щоразу, коли ви входите в обліковий запис.}other{Ваш адміністратор налаштував автоматичний запуск <ph name="APP_NAME" /> і ще # додатка щоразу, коли ви входите в обліковий запис.}}</translation>
 <translation id="5252456968953390977">Роумінг</translation>
 <translation id="5257811368506016604">Увімкнути режим світлих кольорів</translation>
 <translation id="5264277876637023664">Виконати перевірку ЦП</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="725133483556299729">Вибрати електронну адресу</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
-<translation id="7273347807225967898">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші-модифікатора (Ctrl, Alt, Shift, клавіша пошуку або Панелі запуску).</translation>
+<translation id="7271932918253517778">Комбінація з клавішами верхнього рядка має містити клавішу <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Бриз</translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Загальні налаштування</translation>
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Додаток <ph name="APP_NAME_1" /> запущено автоматично}one{# додаток запущено автоматично}few{# додатки запущено автоматично}many{# додатків запущено автоматично}other{# додатка запущено автоматично}}</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8017679124341497925">Ярлик змінено</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8094062939584182041">Дозволити Google надсилати вам електронні листи щодо цієї проблеми</translation>
 <translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
-<translation id="8111706652656628199">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші Shift і ще однієї клавіші-модифікатора (Ctrl, Alt, клавіша пошуку або Панелі запуску).</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
@@ -1110,7 +1115,7 @@
 <translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
 <translation id="9133772297793293778">Натисніть від 1 до 4 модифікаторів і одну іншу клавішу на клавіатурі. Щоб вийти з режиму редагування, натисніть комбінацію клавіш Alt + Esc.</translation>
-<translation id="9137526406337347448">Служби Google</translation>
+<translation id="9137526406337347448">Сервіси Google</translation>
 <translation id="9138630967333032450">Ліва клавіша Shift</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9161276708550942948">пробіл</translation>

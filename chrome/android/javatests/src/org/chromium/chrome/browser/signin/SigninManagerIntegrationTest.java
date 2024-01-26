@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.signin;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -24,14 +22,14 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -50,6 +48,7 @@ import java.util.HashSet;
  * <p>These tests initialize the native part of the service.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Integration test suite that changes the list of accounts")
 public class SigninManagerIntegrationTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -196,7 +195,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1467211")
+    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
@@ -226,10 +225,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            message = "https://crbug.com/1470400",
-            sdk_is_greater_than = VERSION_CODES.M,
-            sdk_is_less_than = VERSION_CODES.P)
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
@@ -266,18 +261,15 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1467211")
+    @EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        SigninTestUtil.signin(mTestAccount1);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
-                        mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
-                    }
-
                     Assert.assertEquals(
                             "Signed in and two accounts available",
                             new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -286,16 +278,12 @@ public class SigninManagerIntegrationTest {
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
+        mSigninTestRule.signOut();
         mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT1);
         mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
-                        // Re-validate and run checks.
-                        mSigninManager.reloadAllAccountsFromSystem(null);
-                    }
-
                     Assert.assertArrayEquals(
                             "Not signed in and no accounts available",
                             new CoreAccountInfo[] {},

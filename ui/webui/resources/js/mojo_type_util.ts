@@ -16,7 +16,23 @@ export function stringToMojoString16(str: string): String16 {
 
 // Convert a Mojo String16 into a javascript string.
 export function mojoString16ToString(str16: String16): string {
-  return String.fromCharCode(...str16.data);
+  // Taken from chunk size used in goog.crypt.byteArrayToBinaryString in Closure
+  // Library. The value is equal to 2^13.
+  const CHUNK_SIZE = 8192;
+
+  if (str16.data.length < CHUNK_SIZE) {
+    return String.fromCharCode(...str16.data);
+  }
+
+  // Convert the array to a string in chunks, to avoid passing too many
+  // arguments to String.fromCharCode() at once, which can exceed the max call
+  // stack size (c.f. crbug.com/1509792).
+  let str = '';
+  for (let i = 0; i < str16.data.length; i += CHUNK_SIZE) {
+    const chunk = str16.data.slice(i, i + CHUNK_SIZE);
+    str += String.fromCharCode(...chunk);
+  }
+  return str;
 }
 
 // Note: This does not do any validation of the URL string.

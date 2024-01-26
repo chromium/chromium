@@ -80,6 +80,7 @@ class TestWallpaperController : public ash::WallpaperController {
   const std::optional<ash::WallpaperInfo>& wallpaper_info() const {
     return wallpaper_info_;
   }
+  const std::string& sea_pen_metadata() const { return sea_pen_metadata_; }
   int update_current_wallpaper_layout_count() const {
     return update_current_wallpaper_layout_count_;
   }
@@ -160,6 +161,9 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                   const base::FilePath& sea_pen_file_path,
                                   SetWallpaperCallback callback) override;
+  void GetSeaPenMetadata(const AccountId& account_id,
+                         const base::FilePath& sea_pen_file_path,
+                         GetSeaPenMetadataCallback callback) override;
   void DeleteRecentSeaPenImage(
       const AccountId& account_id,
       const base::FilePath& sea_pen_file_path,
@@ -217,6 +221,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int one_shot_wallpaper_count_ = 0;
   int sea_pen_wallpaper_count_ = 0;
   std::optional<ash::WallpaperInfo> wallpaper_info_;
+  std::string sea_pen_metadata_;
   int update_current_wallpaper_layout_count_ = 0;
   std::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;
   DailyGooglePhotosIdCache id_cache_;

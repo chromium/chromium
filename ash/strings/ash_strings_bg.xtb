@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="1885785240814121742">Отключване с отпечатък</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Хц). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Наскоро инсталирано</translation>
 <translation id="1915307458270490472">Затваряне</translation>
 <translation id="1918022425394817322">Картината от камерата е прилепена към горния десен ъгъл</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2075520525463668108">Превключване на „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ е <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Отваряне на инструмента за избор на емоджи</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Към предишния запис</translation>
 <translation id="2152895518047545149">Изглежда, че нищо не липсва. Чудесно!</translation>
 <translation id="2161132820593978283">Изпробвайте функцията за центриране на камерата, така че да сте в средата на екрана по време на видеообаждания. Включете функцията от бързите настройки.</translation>
-<translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
 <translation id="2185166372312820725">Към предишния раздел</translation>
 <translation id="2185444992308415167">Преминаване през раздели от 1 до 8</translation>
 <translation id="2198625180564913276">Профилът за мобилна мрежа се добавя. Това може да отнеме няколко минути.</translation>
@@ -392,7 +389,7 @@
 <translation id="2624588537172718173">Аудио от устройството и микрофона</translation>
 <translation id="263399434338050016">„Select all“</translation>
 <translation id="2644422758626431000">Фиксиране на прозореца отляво</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2658778018866295321">Кликване и преместване с плъзгане</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">За да предостави точка за достъп, телефонът ви трябва да има мобилни данни</translation>
 <translation id="2727175239389218057">Отговор</translation>
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
+<translation id="2744221223678373668">Споделени</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Delete“</translation>
 <translation id="2750941250130734256">Активният прозорец е отделен.</translation>
 <translation id="2761723519669354964">Отваряне на откроения елемент от лентата</translation>
+<translation id="2762000892062317888">току-що</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + клавиша „търсене“ + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3580650856351781466">Изтеглят се файловете за говор</translation>
 <translation id="3585296979871889131">Преглед на скорошните снимки, мултимедийни файлове, известия и приложения на телефона ви</translation>
+<translation id="3590441166907930941">Страничен бутон</translation>
 <translation id="3593039967545720377">Можете да видите историята на буферната памет, като натиснете <ph name="SHORTCUT_KEY_NAME" /> + V. За да започнете, копирайте даден елемент.</translation>
 <translation id="3593646411856133110">Прекарайте пръст нагоре и задръжте, за да видите отворените приложения</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Отговор</translation>
 <translation id="3990002060657467458">Често използваните контроли, като например тези за Wi-Fi, Bluetooth и силата на звука, се намират в бързите настройки. Оттам можете да правите и екранни снимки.</translation>
 <translation id="3995138139523574647">устройство с USB-C (задният десен порт)</translation>
+<translation id="4002066346123236978">Заглавие</translation>
 <translation id="40062176907008878">Писане на ръка</translation>
 <translation id="4011112806063830608">Режимът „Не безпокойте“ е включен.</translation>
 <translation id="4017989525502048489">Лазерна показалка</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Състояние на батерията: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Брой цикли: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Запазване на работния кът като шаблон</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
+<translation id="5168753792967365150">Редактиране в Google Tasks</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
 <translation id="5187627942836026988">Показване на подробностите за точката за достъп. Тя е блокирана от администратора ви.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Вашите инсталирани приложения</translation>
 <translation id="6173151025443907148">Не се поддържа вход в профил на втори потребител, ако браузърът Lacros е активиран. Използвайте втори потребителски профил в Lacros или деактивирайте браузъра и опитайте отново.</translation>
 <translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
+<translation id="6180193585172850042">Бутон за връщане назад</translation>
+<translation id="6180651297859206670">Бутон за преминаване напред</translation>
 <translation id="6182592640011875895">Отваряне на работния кът</translation>
 <translation id="6185696379715117369">Страница нагоре</translation>
 <translation id="619335566042889110">Пълно зареждане сега</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">Не безпокойте</translation>
 <translation id="7851039877802112575">Преместване на фокуса към изскачащите и диалоговите прозорци</translation>
 <translation id="7851768487828137624">Ранна версия</translation>
-<translation id="7860671499921112077">Прекарайте три пръста нагоре, за да влезете в общия преглед</translation>
 <translation id="7862292329216937261">За да използвате устройството като гост, трябва да излезете от профила си и след това да изберете „Сърфиране като гост“ в долната част на екрана.</translation>
 <translation id="7866482334467279021">включено</translation>
 <translation id="7872786842639831132">Изкл.</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">Превключване на възпроизвеждането</translation>
 <translation id="8270450402312105425">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
 <translation id="8277261673056602147">Открояване на текста на екрана</translation>
-<translation id="8284362522226889623">Прекарайте четири пръста наляво, за да превключите към предишния работен кът</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Предишно меню</translation>

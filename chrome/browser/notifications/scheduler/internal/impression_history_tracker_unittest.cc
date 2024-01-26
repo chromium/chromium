@@ -72,10 +72,10 @@ TestCase CreateDefaultTestCase() {
   test_case.input = {{SchedulerClientType::kTest1,
                       2 /* current_max_daily_show */,
                       {} /* impressions */,
-                      absl::nullopt /* suppression_info */,
+                      std::nullopt /* suppression_info */,
                       0 /* negative_events_count */,
-                      absl::nullopt /* last_negative_event_ts */,
-                      absl::nullopt /* last_shown_ts */}};
+                      std::nullopt /* last_negative_event_ts */,
+                      std::nullopt /* last_shown_ts */}};
   test_case.registered_clients = {SchedulerClientType::kTest1};
   test_case.expected = test_case.input;
   return test_case;
@@ -200,7 +200,7 @@ TEST_F(ImpressionHistoryTrackerTest, NewReigstedClient) {
   test_case.registered_clients.emplace_back(SchedulerClientType::kTest2);
   test_case.expected.emplace_back(test::ImpressionTestData(
       SchedulerClientType::kTest2, config().initial_daily_shown_per_type, {},
-      absl::nullopt, 0, absl::nullopt, absl::nullopt));
+      std::nullopt, 0, std::nullopt, std::nullopt));
 
   CreateTracker(test_case);
   EXPECT_CALL(*store(), Add(_, _, _));
@@ -249,7 +249,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   // No-op for unregistered client.
   tracker()->AddImpression(SchedulerClientType::kTest2, kGuid2,
                            Impression::ImpressionResultMap(),
-                           Impression::CustomData(), absl::nullopt);
+                           Impression::CustomData(), std::nullopt);
   VerifyClientStates(test_case);
 
   clock()->SetNow(kTimeStr);
@@ -259,7 +259,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   Impression::CustomData custom_data = {{"url", "https://www.example.com"}};
   EXPECT_CALL(*store(), Update(_, _, _));
   tracker()->AddImpression(SchedulerClientType::kTest1, kGuid1,
-                           impression_mapping, custom_data, absl::nullopt);
+                           impression_mapping, custom_data, std::nullopt);
   Impression expected_impression(SchedulerClientType::kTest1, kGuid1,
                                  clock()->Now());
   expected_impression.impression_mapping = impression_mapping;
@@ -387,7 +387,7 @@ struct UserActionTestParam {
   ImpressionResult impression_result = ImpressionResult::kInvalid;
   UserFeedback user_feedback = UserFeedback::kNoFeedback;
   int current_max_daily_show = 0;
-  absl::optional<ActionButtonType> button_type;
+  std::optional<ActionButtonType> button_type;
   bool integrated = false;
   bool has_suppression = false;
   std::map<UserFeedback, ImpressionResult> impression_mapping;
@@ -407,7 +407,7 @@ class ImpressionHistoryTrackerUserActionTest
 
 const UserActionTestParam kUserActionTestParams[] = {
     // Suite 0: Click.
-    {ImpressionResult::kPositive, UserFeedback::kClick, 3, absl::nullopt,
+    {ImpressionResult::kPositive, UserFeedback::kClick, 3, std::nullopt,
      true /*integrated*/, false /*has_suppression*/},
 
     // Suite 1: Helpful button.
@@ -421,14 +421,14 @@ const UserActionTestParam kUserActionTestParams[] = {
      true /*has_suppression*/},
 
     // Suite 3: One dismiss.
-    {ImpressionResult::kInvalid, UserFeedback::kDismiss, 2, absl::nullopt,
+    {ImpressionResult::kInvalid, UserFeedback::kDismiss, 2, std::nullopt,
      false /*integrated*/, false /*has_suppression*/},
 
     // Suite 4: Click with negative impression result from impression mapping.
     {ImpressionResult::kNegative,
      UserFeedback::kClick,
      0,
-     absl::nullopt,
+     std::nullopt,
      true /*integrated*/,
      true /*has_suppression*/,
      {{UserFeedback::kClick,
@@ -438,7 +438,7 @@ const UserActionTestParam kUserActionTestParams[] = {
     {ImpressionResult::kNegative,
      UserFeedback::kClick,
      0,
-     absl::nullopt,
+     std::nullopt,
      true /*integrated*/,
      true /*has_suppression*/,
      {{UserFeedback::kClick,
@@ -490,7 +490,7 @@ TEST_P(ImpressionHistoryTrackerUserActionTest, UserAction) {
     UserActionData action_data(SchedulerClientType::kTest1,
                                UserActionType::kButtonClick, kGuid1);
     action_data.button_click_info =
-        absl::make_optional(std::move(button_click_info));
+        std::make_optional(std::move(button_click_info));
     tracker()->OnUserAction(action_data);
   } else if (GetParam().user_feedback == UserFeedback::kDismiss) {
     UserActionData action_data(SchedulerClientType::kTest1,

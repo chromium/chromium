@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1066101356081285416">Chrome do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Numri i gjurmimit të pakos dhe emri i uebsajtit do të dërgohen te Google për të ofruar këtë veçori dhe për të përmirësuar veçoritë e blerjeve të Google për të gjithë. Mund ta përditësosh këtë në çdo kohë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Përdor Chrome si parazgjedhje</translation>
 <translation id="1105362920864247682">Pastro të dhënat e shfletimit në Chrome.</translation>
 <translation id="1113057722807951993">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
@@ -39,13 +40,13 @@ Gjëra për të pasur parasysh:
 <translation id="1682483655351012182">Sinkronizo të dhënat e tua të Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Shton URL-të e futura te faqeshënuesit në Chrome.</translation>
+<translation id="1799920918471566157">Këshilla për Chrome</translation>
 <translation id="1830634592642484976">Kjo adresë është ruajtur aktualisht në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Përdor automatikisht Chrome kur troket lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="1910975740091000991">Chrome për iOS</translation>
 <translation id="1917964099031477364">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chrome dhe nga aplikacionet e tjera në këtë pajisje.</translation>
 <translation id="1965935827552890526">Përfundo atë që po bën në dritaren tjetër të hapur të Chrome.</translation>
 <translation id="1987779152850321833">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome.</translation>
-<translation id="2008357574463816229">Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Bëj më shumë me një Google Chrome të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="2120238739383482109">Hap faqeshënuesit e Chrome.</translation>
 <translation id="2147651015520127414">Chrome verifikoi që <ph name="ISSUER" /> ka lëshuar certifikatën e këtij sajti të uebit.</translation>
@@ -74,6 +75,7 @@ Gjëra për të pasur parasysh:
 <translation id="2702250627063295552">Shto artikullin e listës së leximit në Chrome</translation>
 <translation id="2736805085127235148">Njoftimet e Chrome janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="2767464022270041271">Nuk ka asnjë fjalëkalim të ruajtur. "Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
+<translation id="2789947168960170215">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Pastro të dhënat e shfletimit në Chrome</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
@@ -97,7 +99,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3503014945441706099">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chrome</translation>
 <translation id="3522659714780527202">Për të parë skedat e tua nga çdo vend ku përdor Chrome, aktivizo sinkronizimin</translation>
 <translation id="3577555362230509265">Përdor Chrome në aplikacionet e tjera.</translation>
-<translation id="3594076341410558780">Fshihe "Përfito sa më shumë nga Chrome"</translation>
 <translation id="364480321352456989">Chrome është i papërditësuar.</translation>
 <translation id="3646736009628185125">Anëtari i familjes nuk mund t'i marrë fjalëkalimet në këtë moment. Kërkoji që të përditësojë Chrome dhe sinkronizo fjalëkalimet e atij anëtari. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Kjo do të thotë që Chrome do kërkojë sajtin në celular çdo herë.</translation>
@@ -203,7 +204,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="686691656039982452">Mund <ph name="BEGIN_LINK" />të menaxhosh se çfarë të dhënash të Chrome ruhen<ph name="END_LINK" /> në "Llogarinë tënde të Google".
 
 Për më shumë cilësime që përdorin të dhënat për të përmirësuar përvojën tënde me Chrome, shko te <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Të dhënat e tua do të ndahen me Google për të ofruar këtë veçori dhe për të përmirësuar "Blerjet" për të gjithë. Mund ta ndryshosh këtë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Kërko me zë në Chrome</translation>
 <translation id="6964931465519938134">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="6975725306479268850">Zgjidh Chrome për AutoFill</translation>

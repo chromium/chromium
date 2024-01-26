@@ -30,6 +30,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       SharedMemoryRegionWrapper wrapper,
       gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
@@ -52,7 +53,8 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

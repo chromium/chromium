@@ -24,6 +24,9 @@ class PermissionDialogCustomViewModelFactory {
         return new PropertyModel.Builder(PermissionDialogCustomViewProperties.ALL_KEYS)
                 .with(PermissionDialogCustomViewProperties.MESSAGE_TEXT, messageText)
                 .with(
+                        PermissionDialogCustomViewProperties.BOLDED_RANGES,
+                        delegate.getBoldedRanges())
+                .with(
                         PermissionDialogCustomViewProperties.ICON,
                         ResourcesCompat.getDrawable(
                                 context.getResources(),

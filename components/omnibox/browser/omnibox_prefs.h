@@ -49,19 +49,51 @@ enum SuggestionGroupVisibility {
 };
 
 // Histograms being recorded when visibility of suggestion group IDs change.
-extern const char kGroupIdToggledOffHistogram[];
-extern const char kGroupIdToggledOnHistogram[];
+inline constexpr char kGroupIdToggledOffHistogram[] =
+    "Omnibox.GroupId.ToggledOff";
+inline constexpr char kGroupIdToggledOnHistogram[] =
+    "Omnibox.GroupId.ToggledOn";
 
 // Alphabetical list of preference names specific to the omnibox component.
-// Keep alphabetized, and document each in the .cc file.
-extern const char kDocumentSuggestEnabled[];
-extern const char kIntranetRedirectBehavior[];
-extern const char kKeywordSpaceTriggeringEnabled[];
-extern const char kSuggestionGroupVisibility[];
-extern const char kPreventUrlElisionsInOmnibox[];
-extern const char kZeroSuggestCachedResults[];
-extern const char kZeroSuggestCachedResultsWithURL[];
-extern const char kOmniboxInstantKeywordUsed[];
+// Keep alphabetized, and document each.
+
+// A client-side toggle for document (Drive) suggestions.
+// Also gated by a feature and server-side Admin Panel controls.
+inline constexpr char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
+
+// Enum specifying the active behavior for the intranet redirect detector.
+// The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
+// Values are defined in omnibox::IntranetRedirectorBehavior.
+inline constexpr char kIntranetRedirectBehavior[] =
+    "browser.intranet_redirect_behavior";
+
+// Boolean that controls whether scoped search mode can be triggered by <space>.
+inline constexpr char kKeywordSpaceTriggeringEnabled[] =
+    "omnibox.keyword_space_triggering_enabled";
+
+// Boolean that specifies whether user has successfully used the instant
+// keyword mode feature.
+inline constexpr char kOmniboxInstantKeywordUsed[] =
+    "omnibox.instant_keyword_used";
+
+// A dictionary of visibility preferences for suggestion groups. The key is the
+// suggestion group ID serialized as a string, and the value is
+// SuggestionGroupVisibility serialized as an integer.
+inline constexpr char kSuggestionGroupVisibility[] =
+    "omnibox.suggestionGroupVisibility";
+
+// Boolean that specifies whether to always show full URLs in the omnibox.
+inline constexpr char kPreventUrlElisionsInOmnibox[] =
+    "omnibox.prevent_url_elisions";
+
+// A cache of NTP zero suggest results using a JSON dictionary serialized into a
+// string.
+inline constexpr char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
+
+// A cache of SRP/Web zero suggest results using a JSON dictionary serialized
+// into a string keyed off the page URL.
+inline constexpr char kZeroSuggestCachedResultsWithURL[] =
+    "zerosuggest.cachedresults_with_url";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

@@ -4,19 +4,51 @@
 
 package org.chromium.chrome.browser;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Static methods for use in tests to manipulate the PWA App list for restoring. */
 @JNINamespace("webapps")
 public class PwaRestoreBottomSheetTestUtils {
+    private static CallbackHelper sCallbackHelper = new CallbackHelper();
+
+    public static void waitForWebApkDatabaseInitialization() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                    PwaRestoreBottomSheetTestUtilsJni.get()
+                            .waitForWebApkDatabaseInitialization(
+                                    Profile.getLastUsedRegularProfile());
+                });
+        sCallbackHelper.waitForNext();
+    }
+
     /** Set the app list to use for testing. */
-    public static void setAppListForRestoring(String[][] appList) {
-        PwaRestoreBottomSheetTestUtilsJni.get().setAppListForRestoring(appList);
+    public static void setAppListForRestoring(String[][] appList, int[] lastUsedInDays)
+            throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PwaRestoreBottomSheetTestUtilsJni.get()
+                            .setAppListForRestoring(
+                                    appList, lastUsedInDays, Profile.getLastUsedRegularProfile());
+                });
+    }
+
+    @CalledByNative
+    private static void onWebApkDatabaseInitialized(boolean success) {
+        sCallbackHelper.notifyCalled();
     }
 
     @NativeMethods
     interface Natives {
-        void setAppListForRestoring(String[][] appList);
+        void waitForWebApkDatabaseInitialization(Profile profile);
+
+        void setAppListForRestoring(String[][] appList, int[] lastUsedInDays, Profile profile);
     }
 }

@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_set_permission
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'permissions.setPermission'.)
+[FAIL] test_set_permission_insecure_context
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'permissions.setPermission'.)
+[FAIL] test_set_permission_new_context
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'permissions.setPermission'.)
+[FAIL] test_set_permission_origin_unknown[UNKNOWN]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'permissions.setPermission'.)
+[FAIL] test_set_permission_origin_unknown[]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'permissions.setPermission'.)
+Harness: the test ran to completion.

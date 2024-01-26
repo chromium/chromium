@@ -25,9 +25,6 @@ struct AutofillProfileFieldDisplayInfo {
 
 // Stores info for the fields that are used in the edit profile screens.
 static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
-    {autofill::NAME_HONORIFIC_PREFIX, IDS_IOS_AUTOFILL_HONORIFIC_PREFIX,
-     UIReturnKeyNext, UIKeyboardTypeDefault,
-     UITextAutocapitalizationTypeSentences},
     {autofill::NAME_FULL, IDS_IOS_AUTOFILL_FULLNAME, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::COMPANY_NAME, IDS_IOS_AUTOFILL_COMPANY_NAME, UIReturnKeyNext,

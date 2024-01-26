@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -610,7 +611,7 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
   bool ok = db->Get(key_gen_key, &data, &found).ok();
   CHECK(found);
   CHECK(ok);
-  base::StringPiece slice(data);
+  std::string_view slice(data);
   int64_t number;
   CHECK(DecodeVarInt(&slice, &number));
   CHECK(DatabaseMetaDataKey::IsValidBlobNumber(number));

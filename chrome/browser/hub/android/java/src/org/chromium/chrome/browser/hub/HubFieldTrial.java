@@ -4,34 +4,34 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Common hub feature utils for public use. */
 public class HubFieldTrial {
     private static final String FLOATING_ACTION_BUTTON_PARAM = "floating_action_button";
     public static final BooleanCachedFieldTrialParameter FLOATING_ACTION_BUTTON =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB, FLOATING_ACTION_BUTTON_PARAM, false);
 
     private static final String PANE_SWITCHER_USES_TEXT_PARAM = "pane_switcher_uses_text";
     public static final BooleanCachedFieldTrialParameter PANE_SWITCHER_USES_TEXT =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB, PANE_SWITCHER_USES_TEXT_PARAM, false);
 
     private static final String SUPPORTS_OTHER_TABS_PARAM = "supports_other_tabs";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_OTHER_TABS =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB, SUPPORTS_OTHER_TABS_PARAM, false);
 
     private static final String SUPPORTS_BOOKMARKS_PARAM = "supports_bookmarks";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_BOOKMARKS =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB, SUPPORTS_BOOKMARKS_PARAM, false);
 
     private static final String SUPPORTS_SEARCH_PARAM = "supports_search";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_SEARCH =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB, SUPPORTS_SEARCH_PARAM, false);
 
     /** Returns whether the hub is enabled. */

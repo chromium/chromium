@@ -4,6 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -14,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -76,6 +79,29 @@ const net::SHA256HashValue kTestData2Hash = {
 
 const size_t kCacheMaxCount = 100;
 
+// Default cache control header for dictionary entries which expires in 30 days.
+const std::string kDefaultCacheControlHeader =
+    "cache-control: max-age=2592000\n";
+
+std::string ToString(TestManagerType type) {
+  switch (type) {
+    case TestManagerType::kInMemory:
+      return "InMemory";
+    case TestManagerType::kOnDisk:
+      return "OnDisk";
+  }
+}
+
+std::string ToString(
+    features::CompressionDictionaryTransportBackendVersion version) {
+  switch (version) {
+    case features::CompressionDictionaryTransportBackendVersion::kV1:
+      return "V1";
+    case features::CompressionDictionaryTransportBackendVersion::kV2:
+      return "V2";
+  }
+}
+
 void CheckDiskCacheEntryDataEquals(
     SharedDictionaryDiskCache& disk_cache,
     const base::UnguessableToken& disk_cache_key_token,
@@ -104,18 +130,22 @@ void CheckDiskCacheEntryDataEquals(
                         read_buffer->size()));
 }
 
-void WriteDictionary(SharedDictionaryStorage* storage,
-                     const GURL& dictionary_url,
-                     const std::string& match,
-                     const std::vector<std::string>& data_list,
-                     const std::string& additional_options = std::string()) {
+void WriteDictionary(
+    SharedDictionaryStorage* storage,
+    const GURL& dictionary_url,
+    const std::string& match,
+    const std::vector<std::string>& data_list,
+    const std::string& additional_options = std::string(),
+    const std::string& additional_header = kDefaultCacheControlHeader) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/", match, "\"", additional_options, "\n\n"}));
+           ": match=\"/", match, "\"", additional_options, "\n",
+           additional_header, "\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      dictionary_url, base::Time::Now(), *headers,
+      dictionary_url, /*request_time=*/base::Time::Now(),
+      /*response_time=*/base::Time::Now(), *headers,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
   ASSERT_TRUE(writer);
@@ -126,8 +156,11 @@ void WriteDictionary(SharedDictionaryStorage* storage,
 }
 
 base::TimeDelta GetDefaultExpiration() {
-  return base::FeatureList::IsEnabled(
-             network::features::kCompressionDictionaryTransport)
+  if (features::kCompressionDictionaryTransportBackendVersion.Get() ==
+      features::CompressionDictionaryTransportBackendVersion::kV2) {
+    return base::Seconds(2592000);  // See kDefaultCacheControlHeader
+  }
+  return base::FeatureList::IsEnabled(features::kCompressionDictionaryTransport)
              ? shared_dictionary::kDefaultExpiration
              : shared_dictionary::kMaxExpirationForOriginTrial;
 }
@@ -136,9 +169,19 @@ base::TimeDelta GetDefaultExpiration() {
 
 class SharedDictionaryManagerTest
     : public ::testing::Test,
-      public testing::WithParamInterface<TestManagerType> {
+      public ::testing::WithParamInterface<
+          std::tuple<TestManagerType,
+                     features::CompressionDictionaryTransportBackendVersion>> {
  public:
-  SharedDictionaryManagerTest() = default;
+  SharedDictionaryManagerTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    enabled_features.emplace_back(base::test::FeatureRefAndParams(
+        features::kCompressionDictionaryTransportBackend,
+        {{features::kCompressionDictionaryTransportBackendVersion.name,
+          features::kCompressionDictionaryTransportBackendVersion.GetName(
+              GetVersion())}}));
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
   ~SharedDictionaryManagerTest() override = default;
 
   SharedDictionaryManagerTest(const SharedDictionaryManagerTest&) = delete;
@@ -146,7 +189,7 @@ class SharedDictionaryManagerTest
       delete;
 
   void SetUp() override {
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       ASSERT_TRUE(tmp_directory_.CreateUniqueTempDir());
       database_path_ = tmp_directory_.GetPath().Append(FILE_PATH_LITERAL("db"));
       cache_directory_path_ =
@@ -154,14 +197,18 @@ class SharedDictionaryManagerTest
     }
   }
   void TearDown() override {
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
   }
 
  protected:
+  TestManagerType GetManagerType() const { return std::get<0>(GetParam()); }
+  features::CompressionDictionaryTransportBackendVersion GetVersion() const {
+    return std::get<1>(GetParam());
+  }
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager() {
-    switch (GetParam()) {
+    switch (GetManagerType()) {
       case TestManagerType::kInMemory:
         return SharedDictionaryManager::CreateInMemory(/*cache_max_size=*/0,
                                                        kCacheMaxCount);
@@ -217,19 +264,22 @@ class SharedDictionaryManagerTest
   base::ScopedTempDir tmp_directory_;
   base::FilePath database_path_;
   base::FilePath cache_directory_path_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedDictionaryManagerTest,
-    testing::ValuesIn({TestManagerType::kInMemory, TestManagerType::kOnDisk}),
-    [](const testing::TestParamInfo<TestManagerType>& info) {
-      switch (info.param) {
-        case TestManagerType::kInMemory:
-          return "InMemory";
-        case TestManagerType::kOnDisk:
-          return "OnDisk";
-      }
+    ::testing::Combine(
+        testing::Values(TestManagerType::kInMemory, TestManagerType::kOnDisk),
+        testing::Values(
+            features::CompressionDictionaryTransportBackendVersion::kV1,
+            features::CompressionDictionaryTransportBackendVersion::kV2)),
+    [](const testing::TestParamInfo<std::tuple<
+           TestManagerType,
+           features::CompressionDictionaryTransportBackendVersion>>& info) {
+      return ToString(std::get<0>(info.param)) + "_" +
+             ToString(std::get<1>(info.param));
     });
 
 TEST_P(SharedDictionaryManagerTest, SameStorageForSameIsolationKey) {
@@ -285,7 +335,7 @@ TEST_P(SharedDictionaryManagerTest, CachedStorage) {
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -311,7 +361,7 @@ TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -364,7 +414,7 @@ TEST_P(SharedDictionaryManagerTest,
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -395,7 +445,7 @@ TEST_P(SharedDictionaryManagerTest,
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -421,7 +471,7 @@ TEST_P(SharedDictionaryManagerTest,
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -452,7 +502,7 @@ TEST_P(SharedDictionaryManagerTest,
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
                   {"Hello"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -486,7 +536,9 @@ TEST_P(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
       net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n");
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      GURL("https://origin1.test/testfile.txt"),
+      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+      *headers,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
   EXPECT_FALSE(writer);
@@ -525,29 +577,6 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
       // Token `match` value is not supported.
       {"match=test", false},
 
-      // Valid `expires` value.
-      {"match=\"test\", expires=1000", true},
-      // List `expires` value is not supported.
-      {"match=\"test\", expires=(1000 2000)", false},
-      // String `expires` value is not supported.
-      {"match=\"test\", expires=PI", false},
-
-      // Valid `algorithms` value.
-      {"match=\"test\", algorithms=sha-256", true},
-      {"match=\"test\", algorithms=(sha-256)", true},
-      {"match=\"test\", algorithms=(sha-256 sha-512)", true},
-
-      // The sha-256 token must be lowercase.
-      // TODO(crbug.com/1413922): Investigate the spec and decide whether to
-      // support it or not.
-      {"match=\"test\", algorithms=SHA-256", false},
-
-      // Each item in `algorithms` value must be a token.
-      {"match=\"test\", algorithms=(\"sha-256\")", false},
-
-      // Unsupported `algorithms` value. We only support sha-256.
-      {"match=\"test\", algorithms=(sha-512)", false},
-
       // We support `raw` type.
       {"match=\"test\", type=raw", true},
       {"match=\"test\", type=(raw)", true},
@@ -564,15 +593,126 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
     scoped_refptr<net::HttpResponseHeaders> headers =
         net::HttpResponseHeaders::TryToCreate(base::StrCat(
             {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-             ": ", testcase.header_string, "\n\n"}));
+             ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
+             "\n"}));
     ASSERT_TRUE(headers);
     scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+        GURL("https://origin1.test/testfile.txt"),
+        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+        *headers,
         /*was_fetched_via_cache=*/false,
         /*access_allowed_check_callback=*/base::BindOnce([]() {
           return true;
         }));
     EXPECT_EQ(testcase.expect_success, !!writer);
+  }
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       WriterForUseAsDictionaryHeaderExpiresOption) {
+  // We don't support `expires` option in the V2 backend.
+  if (GetVersion() ==
+      features::CompressionDictionaryTransportBackendVersion::kV2) {
+    return;
+  }
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  struct {
+    std::string header_string;
+    bool expect_success;
+  } kTestCases[] = {
+      // Valid `expires` value.
+      {"match=\"test\", expires=1000", true},
+      // List `expires` value is not supported.
+      {"match=\"test\", expires=(1000 2000)", false},
+      // String `expires` value is not supported.
+      {"match=\"test\", expires=PI", false},
+  };
+  for (const auto& testcase : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("header_string: %s",
+                                    testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": ", testcase.header_string, "\n\n"}));
+    ASSERT_TRUE(headers);
+    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+        GURL("https://origin1.test/testfile.txt"),
+        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+        *headers,
+        /*was_fetched_via_cache=*/false,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
+    EXPECT_EQ(testcase.expect_success, !!writer);
+  }
+}
+
+TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
+  // We don't use the cache conterol header for the lifetime of the dictionary
+  // in the V1 backend.
+  if (GetVersion() ==
+      features::CompressionDictionaryTransportBackendVersion::kV1) {
+    return;
+  }
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  struct {
+    std::string header_string;
+    std::optional<base::TimeDelta> expected_expiration;
+  } kTestCases[] = {
+      // Empty
+      {"", std::nullopt},
+      {"cache-control:max-age=100", base::Seconds(100)},
+      {"cache-control:max-age=100, stale-while-revalidate=50",
+       base::Seconds(150)},
+      {"cache-control:max-age=100\nage:10", base::Seconds(90)},
+
+  };
+  for (const auto& testcase : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("header_string: %s",
+                                    testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": match=\"test\"\n", testcase.header_string, "\n"}));
+    ASSERT_TRUE(headers);
+    const base::Time request_time = base::Time::Now();
+    const base::Time response_time = request_time;
+    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+        GURL("https://origin1.test/testfile.txt"), request_time, response_time,
+        *headers,
+        /*was_fetched_via_cache=*/false,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
+    EXPECT_EQ(!!testcase.expected_expiration, !!writer);
+    if (!writer) {
+      continue;
+    }
+    writer->Append(kTestData1.c_str(), kTestData1.size());
+    writer->Finish();
+    if (GetManagerType() == TestManagerType::kOnDisk) {
+      FlushCacheTasks();
+    }
+    std::vector<network::mojom::SharedDictionaryInfoPtr> result =
+        GetSharedDictionaryInfo(manager.get(), isolation_key);
+    ASSERT_EQ(1u, result.size());
+    EXPECT_EQ(*testcase.expected_expiration, result[0]->expiration);
   }
 }
 
@@ -588,11 +728,13 @@ TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnTrue) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\n\n"}));
+           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
   bool callback_called = false;
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      GURL("https://origin1.test/testfile.txt"),
+      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+      *headers,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         callback_called = true;
@@ -614,11 +756,13 @@ TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnFalse) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\n\n"}));
+           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
   bool callback_called = false;
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      GURL("https://origin1.test/testfile.txt"),
+      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+      *headers,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         callback_called = true;
@@ -642,10 +786,11 @@ TEST_P(SharedDictionaryManagerTest, SameDictionaryFromDiskCache) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\n\n"}));
+           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer1 = storage->MaybeCreateWriter(
-      dictionary_url, response_time, *headers,
+      dictionary_url, /*request_time=*/response_time,
+      /*response_time=*/response_time, *headers,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         return true;
@@ -653,11 +798,12 @@ TEST_P(SharedDictionaryManagerTest, SameDictionaryFromDiskCache) {
   ASSERT_TRUE(writer1);
   writer1->Append(kTestData1.c_str(), kTestData1.size());
   writer1->Finish();
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   scoped_refptr<SharedDictionaryWriter> writer2 = storage->MaybeCreateWriter(
-      dictionary_url, response_time, *headers,
+      dictionary_url, /*request_time=*/response_time,
+      /*response_time=*/response_time, *headers,
       /*was_fetched_via_cache=*/true,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         return true;
@@ -681,10 +827,11 @@ TEST_P(SharedDictionaryManagerTest, DifferentDictionaryFromDiskCache) {
   scoped_refptr<net::HttpResponseHeaders> headers1 =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test1\"\n\n"}));
+           ": match=\"test1\"\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers1);
   scoped_refptr<SharedDictionaryWriter> writer1 = storage->MaybeCreateWriter(
-      dictionary_url, response_time, *headers1,
+      dictionary_url, /*request_time=*/response_time,
+      /*response_time=*/response_time, *headers1,
       /*was_fetched_via_cache=*/false,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         return true;
@@ -692,17 +839,18 @@ TEST_P(SharedDictionaryManagerTest, DifferentDictionaryFromDiskCache) {
   ASSERT_TRUE(writer1);
   writer1->Append(kTestData1.c_str(), kTestData1.size());
   writer1->Finish();
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
   scoped_refptr<net::HttpResponseHeaders> headers2 =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test2\"\n\n"}));
+           ": match=\"test2\"\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers1);
   scoped_refptr<SharedDictionaryWriter> writer2 = storage->MaybeCreateWriter(
-      dictionary_url, response_time, *headers2,
+      dictionary_url, /*request_time=*/response_time,
+      /*response_time=*/response_time, *headers2,
       /*was_fetched_via_cache=*/true,
       /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
         return true;
@@ -722,7 +870,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndGetDictionary) {
   ASSERT_TRUE(storage);
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "testfile*",
                   {"hello world"});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -759,7 +907,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   net::SHA256HashValue sha256;
   secure_hash->Finish(sha256.data, sizeof(sha256.data));
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -771,7 +919,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   EXPECT_EQ(sha256, dict->hash());
 
   // Read and check the dictionary binary.
-  switch (GetParam()) {
+  switch (GetManagerType()) {
     case TestManagerType::kInMemory: {
       EXPECT_EQ(net::OK,
                 dict->ReadAll(base::BindOnce([](int rv) { NOTREACHED(); })));
@@ -792,7 +940,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   ASSERT_TRUE(dict->data());
   EXPECT_EQ(data1 + data2, std::string(dict->data()->data(), dict->size()));
 
-  switch (GetParam()) {
+  switch (GetManagerType()) {
     case TestManagerType::kInMemory: {
       // Check the internal state of SharedDictionaryStorageInMemory.
       const auto& dictionary_map = GetInMemoryDictionaryMap(storage.get());
@@ -855,7 +1003,7 @@ TEST_P(SharedDictionaryManagerTest, OverrideDictionary) {
   // Write a test dictionary.
   WriteDictionary(storage.get(), url1, match, {data1});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -867,7 +1015,7 @@ TEST_P(SharedDictionaryManagerTest, OverrideDictionary) {
   // Write another dictionary with same `match`.
   WriteDictionary(storage.get(), url2, match, {data2});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -914,7 +1062,7 @@ TEST_P(SharedDictionaryManagerTest,
   WriteDictionary(storage.get(), GURL("https://origin3.test/d1"), "p3*",
                   {kTestData1});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -922,7 +1070,7 @@ TEST_P(SharedDictionaryManagerTest,
 
   manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -951,7 +1099,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
         storage.get(),
         GURL(base::StringPrintf("https://origin.test/d%03" PRIuS, i)),
         base::StringPrintf("p%03" PRIuS, i), {kTestData1});
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -978,7 +1126,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
                                             kCacheMaxCount)),
                     base::StringPrintf("p%03" PRIuS, kCacheMaxCount),
                     {kTestData1});
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1025,7 +1173,7 @@ TEST_P(SharedDictionaryManagerTest,
                   {kTestData1});
   WriteDictionary(storage2.get(), GURL("https://origin2.test/d2"), "p2*",
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
@@ -1034,7 +1182,7 @@ TEST_P(SharedDictionaryManagerTest,
   task_environment_.FastForwardBy(base::Seconds(1));
   WriteDictionary(storage3.get(), GURL("https://origin3.test/d1"), "p3*",
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
@@ -1073,7 +1221,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
   WriteDictionary(storage2.get(), GURL("https://origin2.test/d2"), "p2*",
                   {kTestData1});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1088,7 +1236,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
   // kTestData1.size() * 2.7 (3 * 0.9).
   manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 3);
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1124,7 +1272,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
                   {kTestData1});
   WriteDictionary(storage3.get(), GURL("https://origin3.test/d"), "p*",
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p?")));
@@ -1136,7 +1284,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
 
   WriteDictionary(storage1.get(), GURL("https://origin4.test/d"), "p*",
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p?")));
@@ -1161,7 +1309,7 @@ TEST_P(SharedDictionaryManagerTest,
         storage.get(),
         GURL(base::StringPrintf("https://origin.test/d%03" PRIuS, i)),
         base::StringPrintf("p%03" PRIuS, i), {kTestData1});
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1179,7 +1327,7 @@ TEST_P(SharedDictionaryManagerTest,
                                           cache_max_count_per_site)),
                   base::StringPrintf("p%03" PRIuS, cache_max_count_per_site),
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -1211,7 +1359,7 @@ TEST_P(SharedDictionaryManagerTest,
         storage.get(),
         GURL(base::StringPrintf("https://origin.test/d%03" PRIuS, i)),
         base::StringPrintf("p%03" PRIuS, i), {kTestData1});
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1229,7 +1377,7 @@ TEST_P(SharedDictionaryManagerTest,
                                           cache_max_count_per_site)),
                   base::StringPrintf("p%03" PRIuS, cache_max_count_per_site),
                   {kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -1261,7 +1409,7 @@ TEST_P(SharedDictionaryManagerTest,
         storage.get(),
         GURL(base::StringPrintf("https://origin.test/d%03" PRIuS, i)),
         base::StringPrintf("p%03" PRIuS, i), {kTestData1});
-    if (GetParam() == TestManagerType::kOnDisk) {
+    if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1279,7 +1427,7 @@ TEST_P(SharedDictionaryManagerTest,
                                           cache_max_count_per_site)),
                   base::StringPrintf("p%03" PRIuS, cache_max_count_per_site),
                   {kTestData1, kTestData1});
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -1454,7 +1602,7 @@ TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
   // Move the clock forward by 12 hours.
   task_environment_.FastForwardBy(base::Hours(12));
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1506,7 +1654,7 @@ TEST_P(SharedDictionaryManagerTest, ClearDataForIsolationKey) {
   WriteDictionary(storage2.get(), GURL("https://origin2.test/2"), "p2*",
                   {kTestData1});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1549,7 +1697,7 @@ TEST_P(SharedDictionaryManagerTest, GetUsageInfo) {
   WriteDictionary(storage2.get(), GURL("https://origin2.test/2"), "p2*",
                   {kTestData2});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1608,9 +1756,10 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
       manager->GetStorage(isolation_key2);
   task_environment_.FastForwardBy(base::Seconds(1));
   WriteDictionary(storage2.get(), GURL("https://origin2.test/d"), "p*",
-                  {kTestData2}, /*additional_options=*/",expires=123456");
+                  {kTestData2}, /*additional_options=*/",expires=123456",
+                  /*additional_header=*/"cache-control:max-age=123456\n");
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1688,7 +1837,7 @@ TEST_P(SharedDictionaryManagerTest, GetTotalSizeAndOrigins) {
   WriteDictionary(storage2.get(), GURL("https://origin2.test/d"), "p*",
                   {kTestData2});
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
@@ -1720,14 +1869,16 @@ TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p1*",
-                  {kTestData1}, /*additional_options=*/",expires=20");
+                  {kTestData1}, /*additional_options=*/",expires=20",
+                  /*additional_header=*/"cache-control:max-age=20\n");
 
   task_environment_.FastForwardBy(base::Seconds(10));
 
   WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p2*",
-                  {kTestData2}, /*additional_options=*/",expires=5");
+                  {kTestData2}, /*additional_options=*/",expires=5",
+                  /*additional_header=*/"cache-control:max-age=5\n");
 
-  if (GetParam() == TestManagerType::kOnDisk) {
+  if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 

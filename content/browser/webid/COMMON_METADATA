@@ -1,3 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>Identity>FedCM"
+}
+team_email: "web-identity-eng@google.com"
+buganizer_public: {
+  component_id: 1456331
 }

@@ -63,6 +63,19 @@ class TestTutorialService : public TutorialService {
   }
 };
 
+class ScopedTestTutorialState : public user_education::ScopedTutorialState {
+ public:
+  explicit ScopedTestTutorialState(ui::test::TestElement* element)
+      : user_education::ScopedTutorialState(element->context()),
+        element_(element) {
+    element_->Show();
+  }
+  ~ScopedTestTutorialState() override { element_->Hide(); }
+
+ private:
+  raw_ptr<ui::test::TestElement> element_;
+};
+
 std::unique_ptr<HelpBubbleFactoryRegistry>
 CreateTestTutorialBubbleFactoryRegistry() {
   auto bubble_factory_registry = std::make_unique<HelpBubbleFactoryRegistry>();
@@ -891,6 +904,90 @@ TEST_F(TutorialTest, RegisterTutorialWithCreateFromVector) {
       std::make_unique<HelpBubbleFactoryRegistry>();
 
   EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+}
+
+TEST_F(TutorialTest, SetupTemporaryStateCallback) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test element.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Create another test element which will be shown during the tutorial.
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ASSERT_FALSE(element_2.IsVisible());
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK));
+  description.temporary_state_callback = base::BindRepeating(
+      [](ui::test::TestElement* element, ui::ElementContext context)
+          -> std::unique_ptr<user_education::ScopedTutorialState> {
+        return base::WrapUnique(new ScopedTestTutorialState(element));
+      },
+      base::Unretained(&element_2));
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  auto* bubble = service.currently_displayed_bubble_for_testing();
+  // Verify that the element is shown when the tutorial is active.
+  ASSERT_TRUE(element_2.IsVisible());
+  // Close the bubble to complete the tutorial.
+  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+  // Verify that the element is hidden when the tutorial is completed.
+  ASSERT_FALSE(element_2.IsVisible());
+}
+
+TEST_F(TutorialTest, CleanupTemporaryStateOnAbort) {
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test element.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Create another test element which will be shown during the tutorial.
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ASSERT_FALSE(element_2.IsVisible());
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK));
+  description.temporary_state_callback = base::BindRepeating(
+      [](ui::test::TestElement* element, ui::ElementContext context)
+          -> std::unique_ptr<user_education::ScopedTutorialState> {
+        return base::WrapUnique(new ScopedTestTutorialState(element));
+      },
+      base::Unretained(&element_2));
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context());
+
+  // Verify that the bubble is shown to the user.
+  EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
+  // Verify that the element is shown when the tutorial is active.
+  ASSERT_TRUE(element_2.IsVisible());
+
+  // Verify the tutorial is aborted when the anchor visibility is lost.
+  element_1.Hide();
+  EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
+  EXPECT_FALSE(service.IsRunningTutorial());
+  // Verify that the state is reset when the tutorial is aborted.
+  ASSERT_FALSE(element_2.IsVisible());
 }
 
 // Test where the parameter is a bitfield describing choices the test will make

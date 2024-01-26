@@ -36,7 +36,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.addResult('Editing styles from elements panel:');
     var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'color';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 

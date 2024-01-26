@@ -47,18 +47,24 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
 // clang-format on
 
-import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
+
+
+import type {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="not chromeos_ash">
-import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
-import {PageVisibility} from '../page_visibility.js';
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
+import type {PageVisibility} from '../page_visibility.js';
+import type {PerformanceBrowserProxy} from '../performance_page/performance_browser_proxy.js';
+import {PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
 import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
-import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
+import type {PrivacyGuideBrowserProxy} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
+import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
-import {getSearchManager, SearchResult} from '../search_settings.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
+import type {SearchResult} from '../search_settings.js';
+import {getSearchManager} from '../search_settings.js';
 import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 
 import {getTemplate} from './basic_page.html.js';
@@ -249,9 +255,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private getIdleLoad_(): Promise<Element> {
-    return (this.shadowRoot!.querySelector('#advancedPageTemplate') as
-            SettingsIdleLoadElement)
-        .get();
+    const idleLoad = this.shadowRoot!.querySelector<SettingsIdleLoadElement>(
+        '#advancedPageTemplate');
+    assert(idleLoad);
+    return idleLoad.get();
   }
 
   private updatePrivacyGuidePromoVisibility_() {

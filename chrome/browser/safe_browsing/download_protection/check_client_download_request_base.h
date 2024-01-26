@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -129,8 +129,8 @@ class CheckClientDownloadRequestBase {
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file
-  // should be uploaded for deep scanning, or absl::nullopt if it should not.
-  virtual absl::optional<enterprise_connectors::AnalysisSettings>
+  // should be uploaded for deep scanning, or std::nullopt if it should not.
+  virtual std::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(DownloadCheckResultReason reason) = 0;
 
   // If ShouldUploadBinary returns settings, actually performs the upload to

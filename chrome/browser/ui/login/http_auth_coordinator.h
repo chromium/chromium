@@ -115,11 +115,11 @@ class HttpAuthCoordinator {
    private:
     // Called by the extension subsystem with a response from the extension.
     void OnExtensionResponse(
-        const absl::optional<net::AuthCredentials>& credentials,
+        const std::optional<net::AuthCredentials>& credentials,
         bool should_cancel);
 
     // Called by LoginHandler when credentials are obtained or cancelled.
-    void OnCredentials(const absl::optional<net::AuthCredentials>& credentials);
+    void OnCredentials(const std::optional<net::AuthCredentials>& credentials);
 
     // The previous implementation of HttpAuth that is being refactored.
     std::unique_ptr<content::LoginDelegate> login_handler_;

@@ -45,66 +45,63 @@ enum {
 };
 }  // namespace syncable_prefs_ids
 
-const auto& SyncablePreferences() {
-  // iOS specific list of syncable preferences.
-  // TODO(crbug.com/1512537): Convert to MakeFixedFlatMap().
-  static const auto kIOSChromeSyncablePrefsAllowlist =
-      base::MakeFixedFlatMapNonConsteval<
-          base::StringPiece, sync_preferences::SyncablePrefMetadata>({
-          {prefs::kArticlesForYouEnabled,
-           {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kContextualSearchEnabled,
-           {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kDefaultCharset,
-           {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kEnableDoNotTrack,
-           {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kIosHandoffToOtherDevices,
-           {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kNetworkPredictionSetting,
-           {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kNTPContentSuggestionsEnabled,
-           {syncable_prefs_ids::kNTPContentSuggestionsEnabled,
-            syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
-           {syncable_prefs_ids::kNTPContentSuggestionsForSupervisedUserEnabled,
-            syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kSearchSuggestEnabled,
-           {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kTrackPricesOnTabsEnabled,
-           {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-          {prefs::kVoiceSearchLocale,
-           {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES,
-            sync_preferences::PrefSensitivity::kNone,
-            sync_preferences::MergeBehavior::kNone}},
-      });
-  return kIOSChromeSyncablePrefsAllowlist;
-}
+// iOS specific list of syncable preferences.
+constexpr auto kIOSChromeSyncablePrefsAllowlist =
+    base::MakeFixedFlatMap<base::StringPiece,
+                           sync_preferences::SyncablePrefMetadata>({
+        {prefs::kArticlesForYouEnabled,
+         {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kContextualSearchEnabled,
+         {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kDefaultCharset,
+         {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kEnableDoNotTrackIos,
+         {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kIosHandoffToOtherDevices,
+         {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kNetworkPredictionSetting,
+         {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kNTPContentSuggestionsEnabled,
+         {syncable_prefs_ids::kNTPContentSuggestionsEnabled,
+          syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
+         {syncable_prefs_ids::kNTPContentSuggestionsForSupervisedUserEnabled,
+          syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kSearchSuggestEnabled,
+         {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kTrackPricesOnTabsEnabled,
+         {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kVoiceSearchLocale,
+         {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+    });
+
 }  // namespace
 
 std::optional<sync_preferences::SyncablePrefMetadata>
 IOSChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {
-  const auto* it = SyncablePreferences().find(pref_name);
-  if (it != SyncablePreferences().end()) {
+  const auto* it = kIOSChromeSyncablePrefsAllowlist.find(pref_name);
+  if (it != kIOSChromeSyncablePrefsAllowlist.end()) {
     DCHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name)
                 .has_value());
     return it->second;
@@ -117,7 +114,7 @@ std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
 IOSChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
-  base::ranges::copy(SyncablePreferences(),
+  base::ranges::copy(kIOSChromeSyncablePrefsAllowlist,
                      std::inserter(syncable_prefs, syncable_prefs.end()));
   base::ranges::move(
       common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST

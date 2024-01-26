@@ -14,7 +14,6 @@
 
 namespace blink {
 
-class FragmentItem;
 class LayoutObject;
 class LayoutSVGInlineText;
 struct AutoDarkMode;
@@ -69,12 +68,9 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
               const Font& font,
               const gfx::Rect& visual_rect,
               const LineRelativeOffset& text_origin,
-              InlinePaintContext* inline_context,
               bool horizontal)
-      : TextPainterBase(context, font, text_origin, inline_context, horizontal),
-        visual_rect_(visual_rect) {
-    DCHECK(inline_context_);
-  }
+      : TextPainterBase(context, font, text_origin, horizontal),
+        visual_rect_(visual_rect) {}
   ~TextPainter() = default;
 
   void Paint(const TextFragmentPaintInfo& fragment_paint_info,
@@ -94,16 +90,13 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
 
   void PaintDecorationsExceptLineThrough(
       const TextFragmentPaintInfo& fragment_paint_info,
-      const FragmentItem& text_item,
+      const TextDecorationOffset& decoration_offset,
       const PaintInfo& paint_info,
-      const ComputedStyle& style,
       const TextPaintStyle& text_style,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint);
 
-  void PaintDecorationsOnlyLineThrough(const FragmentItem& text_item,
-                                       const PaintInfo& paint_info,
-                                       const ComputedStyle& style,
+  void PaintDecorationsOnlyLineThrough(const PaintInfo& paint_info,
                                        const TextPaintStyle& text_style,
                                        TextDecorationInfo& decoration_info);
 
@@ -136,10 +129,8 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const PaintInfo& paint_info,
       const TextPaintStyle& text_style);
   void PaintSvgDecorationsOnlyLineThrough(TextDecorationInfo& decoration_info,
-                                          const PaintInfo& paint_info,
                                           const TextPaintStyle& text_style);
 
   const gfx::Rect visual_rect_;

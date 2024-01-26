@@ -19,8 +19,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './runtime_hosts_dialog.html.js';
-import {sitePermissionsPatternRegExp} from './site_permissions_edit_url_dialog.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {sitePermissionsPatternRegExp} from './site_permissions/site_permissions_edit_url_dialog.js';
+import {SiteSettingsMixin} from './site_permissions/site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:

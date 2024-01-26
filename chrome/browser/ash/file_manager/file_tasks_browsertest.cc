@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,6 +74,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
@@ -967,6 +970,14 @@ class NonManagedAccount : public TestAccountBrowserTest {
   void SetUpOnMainThread() override {
     TestAccountBrowserTest::SetUpOnMainThread();
     app_service_test_.SetUp(browser()->profile());
+
+    auto fake_provider =
+        ash::file_system_provider::FakeExtensionProvider::Create(
+            extension_misc::kODFSExtensionId);
+    const auto kProviderId = fake_provider->GetId();
+    auto* service =
+        ash::file_system_provider::Service::Get(browser()->profile());
+    service->RegisterProvider(std::move(fake_provider));
   }
 
   apps::AppServiceProxy* app_service_proxy() {
@@ -989,9 +1000,10 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount,
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
-class NonManagedAccountWithEnterpriseFlag : public TestAccountBrowserTest {
+class WithEnterpriseFlag : public TestAccountBrowserTest {
  public:
-  NonManagedAccountWithEnterpriseFlag() : TestAccountBrowserTest(kNonManaged) {
+  explicit WithEnterpriseFlag(bool is_managed)
+      : TestAccountBrowserTest(is_managed ? kEnterprise : kNonManaged) {
     feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
          chromeos::features::kUploadOfficeToCloudForEnterprise},
@@ -1000,6 +1012,12 @@ class NonManagedAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class NonManagedAccountWithEnterpriseFlag : public WithEnterpriseFlag {
+ public:
+  NonManagedAccountWithEnterpriseFlag()
+      : WithEnterpriseFlag(/*is_managed=*/false) {}
 };
 
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when a
@@ -1011,14 +1029,30 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
-class NonManagedAccountWithEnterpriseFlagAndPrefs
-    : public NonManagedAccountWithEnterpriseFlag,
+class WithEnterpriseFlagAndPrefs
+    : public WithEnterpriseFlag,
       public testing::WithParamInterface<
-          std::tuple<base::StringPiece, base::StringPiece>> {
+          std::tuple<base::StringPiece /* google_workspace_cloud_upload */,
+                     base::StringPiece /* microsoft_office_cloud_upload */,
+                     bool /* odfs_extension_installed */,
+                     bool /* is_managed */>> {
  public:
+  WithEnterpriseFlagAndPrefs()
+      : WithEnterpriseFlag(/*is_managed=*/std::get<3>(GetParam())) {}
+
   void SetUpOnMainThread() override {
     TestAccountBrowserTest::SetUpOnMainThread();
     app_service_test_.SetUp(browser()->profile());
+
+    if (std::get<2>(GetParam())) {
+      auto fake_provider =
+          ash::file_system_provider::FakeExtensionProvider::Create(
+              extension_misc::kODFSExtensionId);
+      const auto kProviderId = fake_provider->GetId();
+      auto* service =
+          ash::file_system_provider::Service::Get(browser()->profile());
+      service->RegisterProvider(std::move(fake_provider));
+    }
   }
 
  private:
@@ -1027,12 +1061,12 @@ class NonManagedAccountWithEnterpriseFlagAndPrefs
 
 // Tests that GoogleWorkspace and Microsoft365 tasks are only present in the
 // list of file tasks if the corresponding prefs allow it.
-IN_PROC_BROWSER_TEST_P(NonManagedAccountWithEnterpriseFlagAndPrefs,
+IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
                        GoogleWorkspaceAndMicrosoft365Tasks) {
   auto* profile = browser()->profile();
 
-  auto [google_workspace_cloud_upload, microsoft_office_cloud_upload] =
-      GetParam();
+  auto [google_workspace_cloud_upload, microsoft_office_cloud_upload,
+        odfs_extension_installed, is_managed] = GetParam();
   profile->GetPrefs()->SetString(prefs::kGoogleWorkspaceCloudUpload,
                                  google_workspace_cloud_upload);
   profile->GetPrefs()->SetString(prefs::kMicrosoftOfficeCloudUpload,
@@ -1058,25 +1092,28 @@ IN_PROC_BROWSER_TEST_P(NonManagedAccountWithEnterpriseFlagAndPrefs,
 
       const size_t microsoft_office_task_count = base::ranges::count_if(
           tasks, &IsOpenInOfficeTask, &FullTaskDescriptor::task_descriptor);
-      EXPECT_EQ(
-          microsoft_office_task_count,
-          chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile)
-              ? 1U
-              : 0U);
+      EXPECT_EQ(microsoft_office_task_count,
+                chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(
+                    profile) &&
+                        (!is_managed || odfs_extension_installed)
+                    ? 1U
+                    : 0U);
     }
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /**/,
-    NonManagedAccountWithEnterpriseFlagAndPrefs,
+    WithEnterpriseFlagAndPrefs,
     testing::Combine(
         testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
                         chromeos::cloud_upload::kCloudUploadPolicyAllowed,
                         chromeos::cloud_upload::kCloudUploadPolicyAutomated),
         testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
                         chromeos::cloud_upload::kCloudUploadPolicyAllowed,
-                        chromeos::cloud_upload::kCloudUploadPolicyAutomated)));
+                        chromeos::cloud_upload::kCloudUploadPolicyAutomated),
+        testing::Bool(),
+        testing::Bool()));
 
 // Test that the office PWA file handler is hidden from the available file
 // handlers when opening an office file and the |kUploadOfficeToCloud| flag is

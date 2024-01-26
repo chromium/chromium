@@ -13,11 +13,11 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
-import {LocalStorage} from '../../../common/local_storage.js';
-import {StringUtil} from '../../../common/string_util.js';
+import {LocalStorage} from '/common/local_storage.js';
+import {StringUtil} from '/common/string_util.js';
+
 import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 import {TtsInterface} from '../tts_interface.js';
 
 import {TypingEchoState} from './typing_echo.js';
@@ -335,34 +335,33 @@ export class ChromeVoxEditableTextBase {
       return;
     }
 
-    const value = prev.value;
-    const len = value.length;
-    const newLen = evt.value.length;
-    let autocompleteSuffix = '';
-    // Make a copy of evtValue and evtEnd to avoid changing anything in
-    // the event itself.
-    let evtValue = evt.value;
-    let evtEnd = evt.end;
-
     // First, see if there's a selection at the end that might have been
-    // added by autocomplete. If so, strip it off into a separate variable.
-    if (evt.start < evtEnd && evtEnd === newLen) {
-      autocompleteSuffix = evtValue.substr(evt.start);
-      evtValue = evtValue.substr(0, evt.start);
-      evtEnd = evt.start;
+    // added by autocomplete. If so, replace the event information with it.
+    const origEvt = evt;
+    let autocompleteSuffix = '';
+    if (evt.start < evt.end && evt.end === evt.value.length) {
+      autocompleteSuffix = evt.value.slice(evt.start);
+      evt = new TextChangeEvent(
+          evt.value.slice(0, evt.start), evt.start, evt.start,
+          evt.triggeredByUser);
     }
+
+    // Precompute the length of prefix and suffix of values.
+    const commonPrefixLen =
+        StringUtil.longestCommonPrefixLength(evt.value, prev.value);
+    const commonSuffixLen =
+        StringUtil.longestCommonSuffixLength(evt.value, prev.value);
 
     // Now see if the previous selection (if any) was deleted
     // and any new text was inserted at that character position.
     // This would handle pasting and entering text by typing, both from
     // a cursor and from a selection.
     let prefixLen = prev.start;
-    let suffixLen = len - prev.end;
-    if (newLen >= prefixLen + suffixLen + (evtEnd - evt.start) &&
-        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) === value.substr(prev.end)) {
+    let suffixLen = prev.value.length - prev.end;
+    if (evt.value.length >= prefixLen + suffixLen + (evt.end - evt.start) &&
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       this.describeTextChangedHelper(
-          prev, evt, prefixLen, suffixLen, autocompleteSuffix, personality);
+          prev, origEvt, prefixLen, suffixLen, autocompleteSuffix, personality);
       return;
     }
 
@@ -371,51 +370,59 @@ export class ChromeVoxEditableTextBase {
     // handles backspace, forward-delete, and similar shortcuts that delete
     // a word or line.
     prefixLen = evt.start;
-    suffixLen = newLen - evtEnd;
-    if (prev.start === prev.end && evt.start === evtEnd &&
-        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) === value.substr(len - suffixLen)) {
+    suffixLen = evt.value.length - evt.end;
+    if (prev.start === prev.end && evt.start === evt.end &&
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       // Forward deletions causes reading of the character immediately to the
-      // right of the caret or the deleted text depending on the iBeam cursor
-      // setting.
+      // right of the caret.
       if (prev.start === evt.start && prev.end === evt.end) {
         this.speak(evt.value[evt.start], evt.triggeredByUser);
       } else {
         this.describeTextChangedHelper(
-            prev, evt, prefixLen, suffixLen, autocompleteSuffix, personality);
+            prev, origEvt, prefixLen, suffixLen, autocompleteSuffix,
+            personality);
       }
       return;
     }
 
-    // If all else fails, we assume the change was not the result of a normal
+    // See if the change is related to IME's complex operation.
+    if (this.describeTextChangedByIME(
+            prev, evt, commonPrefixLen, commonSuffixLen)) {
+      return;
+    }
+
+    // If all above fails, we assume the change was not the result of a normal
     // user editing operation, so we'll have to speak feedback based only
     // on the changes to the text, not the cursor position / selection.
-    // First, restore the autocomplete text if any.
-    evtValue += autocompleteSuffix;
+    // First, restore the event.
+    evt = origEvt;
 
     // Try to do a diff between the new and the old text. If it is a one
     // character insertion/deletion at the start or at the end, just speak that
     // character.
-    if ((evtValue.length === (value.length + 1)) ||
-        ((evtValue.length + 1) === value.length)) {
+    if ((evt.value.length === (prev.value.length + 1)) ||
+        ((evt.value.length + 1) === prev.value.length)) {
       // The user added text either to the beginning or the end.
-      if (evtValue.length > value.length) {
-        if (evtValue.startsWith(value)) {
+      if (evt.value.length > prev.value.length) {
+        if (commonPrefixLen === prev.value.length) {
           this.speak(
-              evtValue[evtValue.length - 1], evt.triggeredByUser, personality);
+              evt.value[evt.value.length - 1], evt.triggeredByUser,
+              personality);
           return;
-        } else if (evtValue.indexOf(value) === 1) {
-          this.speak(evtValue[0], evt.triggeredByUser, personality);
+        } else if (commonSuffixLen === prev.value.length) {
+          this.speak(evt.value[0], evt.triggeredByUser, personality);
           return;
         }
       }
       // The user deleted text either from the beginning or the end.
-      if (evtValue.length < value.length) {
-        if (value.startsWith(evtValue)) {
-          this.speak(value[value.length - 1], evt.triggeredByUser, personality);
+      if (evt.value.length < prev.value.length) {
+        if (commonPrefixLen === evt.value.length) {
+          this.speak(
+              prev.value[prev.value.length - 1], evt.triggeredByUser,
+              personality);
           return;
-        } else if (value.indexOf(evtValue) === 1) {
-          this.speak(value[0], evt.triggeredByUser, personality);
+        } else if (commonSuffixLen === evt.value.length) {
+          this.speak(prev.value[0], evt.triggeredByUser, personality);
           return;
         }
       }
@@ -433,29 +440,35 @@ export class ChromeVoxEditableTextBase {
     }
 
     // If the text is short, just speak the whole thing.
-    if (newLen <= this.maxShortPhraseLen) {
+    if (evt.value.length <= this.maxShortPhraseLen) {
       this.describeTextChangedHelper(prev, evt, 0, 0, '', personality);
       return;
     }
 
     // Otherwise, look for the common prefix and suffix, but back up so
     // that we can speak complete words, to be minimally confusing.
-    prefixLen = 0;
-    while (prefixLen < len && prefixLen < newLen &&
-           value[prefixLen] === evtValue[prefixLen]) {
+    prefixLen = commonPrefixLen;
+    while (prefixLen < prev.value.length && prefixLen < evt.value.length &&
+           prev.value[prefixLen] === evt.value[prefixLen]) {
       prefixLen++;
     }
-    while (prefixLen > 0 && !StringUtil.isWordBreakChar(value[prefixLen - 1])) {
+    while (prefixLen > 0 &&
+           !StringUtil.isWordBreakChar(prev.value[prefixLen - 1])) {
       prefixLen--;
     }
 
+    // For suffix, commonSuffixLen is not used because suffix here won't overlap
+    // with prefix, and also we need to consider |autocompleteSuffix|.
     suffixLen = 0;
-    while (suffixLen < (len - prefixLen) && suffixLen < (newLen - prefixLen) &&
-           value[len - suffixLen - 1] === evtValue[newLen - suffixLen - 1]) {
+    while (suffixLen < (prev.value.length - prefixLen) &&
+           suffixLen < (evt.value.length - prefixLen) &&
+           prev.value[prev.value.length - suffixLen - 1] ===
+               evt.value[evt.value.length - suffixLen - 1]) {
       suffixLen++;
     }
     while (suffixLen > 0 &&
-           !StringUtil.isWordBreakChar(value[len - suffixLen])) {
+           !StringUtil.isWordBreakChar(
+               prev.value[prev.value.length - suffixLen])) {
       suffixLen--;
     }
 
@@ -464,7 +477,66 @@ export class ChromeVoxEditableTextBase {
   }
 
   /**
-   * The function called by describeTextChanged after it's figured out
+   * The function is called by describeTextChanged and process if there's
+   * some text changes likely made by IME.
+   * @param {TextChangeEvent} prev The previous text change event.
+   * @param {TextChangeEvent} evt The text change event.
+   * @param {number} commonPrefixLen The number of characters in the common
+   *     prefix of this.value and newValue.
+   * @param {number} commonSuffixLen The number of characters in the common
+   *     suffix of this.value and newValue.
+   * @return {boolean} True if the event was processed.
+   */
+  describeTextChangedByIME(prev, evt, commonPrefixLen, commonSuffixLen) {
+    // This supports typing Echo with IME.
+    // - no selection range before and after.
+    // - suffixes are common after both cursor end.
+    // - prefixes are common at least max(0, "before length - 3").
+    // Then, something changed in composition range. Announce the new
+    // characters.
+    const relaxedPrefixLen = Math.max(
+        prev.start - ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE,
+        0);
+    let suffixLen = evt.value.length - evt.end;
+    if (prev.start === prev.end && evt.start === evt.end &&
+        prev.value.length - prev.end === suffixLen &&
+        commonPrefixLen >= relaxedPrefixLen && commonPrefixLen < evt.start &&
+        commonSuffixLen >= suffixLen) {
+      if (LocalStorage.get('typingEcho') === TypingEchoState.CHARACTER ||
+          LocalStorage.get('typingEcho') ===
+              TypingEchoState.CHARACTER_AND_WORD) {
+        this.speak(
+            evt.value.substring(commonPrefixLen, evt.start),
+            evt.triggeredByUser);
+      }
+      return true;
+    }
+
+    // The followings happens when a user starts to select candidates.
+    // - no selection range before and after.
+    // - prefixes are common before "new cursor point".
+    // - suffixes are common after "old cursor point".
+    // Then, this suggests that pressing a space or a tab to start composition.
+    // Let's announce the first suggested content.
+    // Note that after announcing this, announcements will be made by candidate
+    // window's selection event instead of ChromeVox's editable.
+    const prefixLen = evt.start;
+    suffixLen = prev.value.length - prev.end;
+    if (prev.start === prev.end && evt.start === evt.end &&
+        evt.start < prev.start && evt.value.length > prefixLen + suffixLen &&
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
+      this.speak(
+          evt.value.substring(prefixLen, evt.value.length - suffixLen),
+          evt.triggeredByUser,
+          new TtsSpeechProperties({'phoneticCharacters': true}));
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * The function is called by describeTextChanged after it's figured out
    * what text was deleted, what text was inserted, and what additional
    * autocomplete text was added.
    * @param {TextChangeEvent} prev The previous text change event.
@@ -553,3 +625,12 @@ ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
  * @type {number}
  */
 ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
+
+/**
+ * The maximum number of characters that can be changed by typing a character.
+ * This is not 1, because some IME, especially Japanese, have a complex typing
+ * system.
+ * For example, typing 'u' after 'xts' will be converted into 'っ'
+ * @const {number}
+ */
+ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE = 3;

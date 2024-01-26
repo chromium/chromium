@@ -238,7 +238,7 @@ class Source {
   expiryTime: Date;
   triggerSpecs: string;
   aggregatableReportWindowTime: Date;
-  maxEventLevelReports: bigint;
+  maxEventLevelReports: number;
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
@@ -263,7 +263,7 @@ class Source {
     this.triggerSpecs = mojo.triggerSpecsJson;
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
-    this.maxEventLevelReports = BigInt(mojo.maxEventLevelReports);
+    this.maxEventLevelReports = mojo.maxEventLevelReports;
     this.sourceType = sourceTypeText[mojo.sourceType];
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
@@ -303,7 +303,7 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
-          new ValueColumn<Source, bigint>(
+          new ValueColumn<Source, number>(
               'Max Event Level Reports', (e) => e.maxEventLevelReports),
           new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
           new ValueColumn<Source, bigint>('Priority', (e) => e.priority),

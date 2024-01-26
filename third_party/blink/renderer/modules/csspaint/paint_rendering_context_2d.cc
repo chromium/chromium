@@ -17,13 +17,11 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PaintWorkletGlobalScope* global_scope)
     : BaseRenderingContext2D(std::move(task_runner)),
-      paint_recorder_(this),
+      paint_recorder_(container_size, this),
       container_size_(container_size),
       context_settings_(context_settings),
       effective_zoom_(zoom),
       global_scope_(global_scope) {
-  paint_recorder_.beginRecording(container_size_);
-
   scale(effective_zoom_, effective_zoom_);
 
   clip_antialiasing_ = kAntiAliased;
@@ -36,6 +34,10 @@ PaintRenderingContext2D::PaintRenderingContext2D(
 void PaintRenderingContext2D::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   RestoreMatrixClipStack(canvas);
+}
+
+void PaintRenderingContext2D::RecordingCleared() {
+  previous_frame_ = absl::nullopt;
 }
 
 int PaintRenderingContext2D::Width() const {
@@ -84,8 +86,7 @@ void PaintRenderingContext2D::setShadowOffsetY(double y) {
 }
 
 cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
-  DCHECK(paint_recorder_.getRecordingCanvas());
-  return paint_recorder_.getRecordingCanvas();
+  return &paint_recorder_.getRecordingCanvas();
 }
 
 void PaintRenderingContext2D::WillDraw(const SkIRect&,
@@ -102,19 +103,6 @@ PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
   return PredefinedColorSpace::kSRGB;
 }
 
-void PaintRenderingContext2D::SkipQueuedDrawCommands() {
-  previous_frame_ = absl::nullopt;
-  if (paint_recorder_.HasRecordedDrawOps()) {
-    // Discard previous draw commands
-    paint_recorder_.finishRecordingAsPicture();
-  }
-}
-
-void PaintRenderingContext2D::RestartRecording() {
-  previous_frame_ = absl::nullopt;
-  // Discard previous draw commands
-  paint_recorder_.finishRecordingAsPicture();
-}
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {
   const AffineTransform& t = GetState().GetTransform();
@@ -153,7 +141,6 @@ PaintRecord PaintRenderingContext2D::GetRecord() {
     return *previous_frame_;  // Reuse the previous frame
   }
 
-  DCHECK(paint_recorder_.getRecordingCanvas());
   return paint_recorder_.finishRecordingAsPicture();
 }
 

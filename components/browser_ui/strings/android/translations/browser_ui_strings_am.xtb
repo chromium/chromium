@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
 <translation id="1426410128494586442">አዎ</translation>
+<translation id="1434873037477293673">የዋጋ ቅናሽ ካርድ</translation>
 <translation id="1448064542941920355">ማጉላትን ቀንስ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ጣቢያ}one{<ph name="SITE_COUNT" /> ጣቢያዎች}other{<ph name="SITE_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="1510341833810331442">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፈቀድላቸውም</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ።</translation>
 <translation id="2790501146643349491">ሲበራ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክ እና መቀበልን ማጠናቀቅ ይችላሉ። ሲጠፋ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክን ወይም መቀበልን ማጠናቀቅ አይችሉም።</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዳይጠቀሙ ያግዷቸው</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
+<translation id="6452138246455930388">ክፍት በሆነ ትርዎ ላይ የዋጋ ቅናሽ ከ<ph name="OLD_PRICE" /> ወደ <ph name="NEW_PRICE" />፣ <ph name="PRODUCT_NAME" />፣ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">መስኮቱ ጠባብ ሲሆን የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="652937045869844725">የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ያነሰ ጥበቃ ነው ማለት ነው ነገር ግን የጣቢያ ባህሪያት የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6749077623962119521">ፈቃዶችን ዳግም ይጀመሩ?</translation>
 <translation id="6766622839693428701">ለመዝጋት ወደታች ያንሸራትቱ።</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ለ<ph name="SITE_NAME" /> አንድ አማራጭ ይምረጡ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
 <translation id="6864395892908308021">ይህ መሣሪያ NFCን ማንበብ አይችልም</translation>
+<translation id="6867014948848323204">ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">ጣቢያዎች ከቅንጥብ ሰሌዳ ጽሑፍን እና ምስሎችን እንዳያነብቡ አግድ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6950072572526089586">እርስዎ የሚጎበኙት ጣቢያ እንደሚጠበቀው ለመስራት እርስዎ ስለሚያደርጉት ነገር መረጃ ሊያስቀምጥ ይችላል — ለምሳሌ፣ ወደ አንድ ጣቢያ ገብተው እንዲቆዩ ለማድረግ ወይም በእርስዎ የሸመታ ተሳቢ ውስጥ ንጥሎችን ለማስቀመጥ። ብዙ ጊዜ ጣቢያዎች ይህን መረጃ በመሣሪያዎ ላይ በጊዜያዊነት ያስቀመጣሉ።</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">አስደናቂው የኦዝ ምትሃተኛ</translation>
 <translation id="7684642910516280563">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም አይፍቀዱ</translation>
 <translation id="7719367874908701697">ገፅ አጉላ</translation>
+<translation id="7770832849480336015">«<ph name="TITLE_OF_MODULE" />»ን ደብቅ</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>

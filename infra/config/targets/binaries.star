@@ -1336,6 +1336,11 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "optimization_guide_gpu_unittests",
+    label = "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
+)
+
+targets.binaries.console_test_launcher(
     name = "optimization_guide_unittests",
     label = "//components/optimization_guide/internal:optimization_guide_unittests",
 )

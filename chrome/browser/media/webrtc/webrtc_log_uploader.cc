@@ -342,9 +342,7 @@ void WebRtcLogUploader::LoggingStoppedDoStore(
     base::FilePath meta_path =
         log_paths.directory.AppendASCII(log_id).AddExtension(
             FILE_PATH_LITERAL(".meta"));
-    base::WriteFile(meta_path,
-                    base::make_span(static_cast<const uint8_t*>(pickle.data()),
-                                    pickle.size()));
+    base::WriteFile(meta_path, pickle);
   }
 
   main_task_runner_->PostTask(
@@ -371,7 +369,7 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(!shutdown_);
   network::SimpleURLLoader* loader = it->get();
-  absl::optional<int> response_code;
+  std::optional<int> response_code;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     response_code = loader->ResponseInfo()->headers->response_code();
   }
@@ -639,7 +637,7 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
 }
 
 void WebRtcLogUploader::NotifyUploadDoneAndLogStats(
-    absl::optional<int> response_code,
+    std::optional<int> response_code,
     int network_error_code,
     const std::string& report_id,
     WebRtcLogUploader::UploadDoneData upload_done_data) {

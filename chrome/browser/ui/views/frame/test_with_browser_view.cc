@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -28,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -45,7 +47,9 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
+      profile->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ChromeTemplateURLServiceClient>(
@@ -53,7 +57,8 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
       base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      , profile->IsMainProfile()
+          ,
+      profile->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 }
@@ -98,8 +103,10 @@ void TestWithBrowserView::TearDown() {
 #endif
 }
 
-TestingProfile* TestWithBrowserView::CreateProfile() {
-  TestingProfile* profile = BrowserWithTestWindowTest::CreateProfile();
+TestingProfile* TestWithBrowserView::CreateProfile(
+    const std::string& profile_name) {
+  TestingProfile* profile =
+      BrowserWithTestWindowTest::CreateProfile(profile_name);
   // TemplateURLService is normally null during testing. Instant extended
   // needs this service so set a custom factory function.
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(

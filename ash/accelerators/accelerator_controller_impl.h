@@ -41,6 +41,7 @@ namespace ash {
 
 struct AcceleratorData;
 class ExitWarningHandler;
+class DebugDelegate;
 
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
@@ -91,6 +92,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     void SetSideVolumeButtonFilePath(base::FilePath path);
     void SetSideVolumeButtonLocation(const std::string& region,
                                      const std::string& side);
+
+    void SetCanHandleLauncher(bool can_handle);
+    void SetCanHandleCapsLock(bool can_handle);
 
    private:
     raw_ptr<AcceleratorControllerImpl, DanglingUntriaged>
@@ -152,6 +156,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   AcceleratorHistoryImpl* GetAcceleratorHistory() override;
   bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                   AcceleratorAction action) override;
+  void ApplyAcceleratorForTesting(const ui::Accelerator& accelerator) override;
 
   // Returns true if the |accelerator| is preferred. A preferred accelerator
   // is handled before being passed to an window/web contents, unless
@@ -179,6 +184,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     return accelerator_configuration_;
   }
 
+  // Sets |DebugDelegate| which is implemented by lacros-chrome.
+  void SetDebugDelegate(DebugDelegate* delegate);
+
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -204,6 +212,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   // data the action needs.
   void PerformAction(AcceleratorAction action,
                      const ui::Accelerator& accelerator);
+
+  // Performs |action| on |DebugDelegate|s if registered and debug accelerators
+  // are enabled.
+  void PerformDebugActionOnDelegateIfEnabled(AcceleratorAction action);
 
   // Returns whether performing |action| should consume the key event.
   bool ShouldActionConsumeKeyEvent(AcceleratorAction action);
@@ -275,6 +287,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Timer used to prevent the input gain from recording each time the user
   // presses a volume key while setting the desired volume.
   base::DelayTimer output_volume_metric_delay_timer_;
+
+  // Please refer to the comment on |DebugInterfaceAsh| for the lifetime of this
+  // pointer.
+  raw_ptr<DebugDelegate> debug_delegate_ = nullptr;
 };
 
 }  // namespace ash

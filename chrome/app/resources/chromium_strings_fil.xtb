@@ -90,6 +90,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2583187216237139145">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chromium na nabuo sa panahon ng paggamit ng profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
 <translation id="259935314519650377">Hindi na-cache ang na-download na installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Mas mabilis na tatakbo ang Chromium at gagana ayon sa pagkakadisenyo sa mga ito ang mga feature na gumagamit ng JavaScript (inirerekomenda)</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="2661879430930417727">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chromium sa paraang gusto nila</translation>
 <translation id="268602741124540128">Maligayang Pagdating sa Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="3258596308407688501">Hindi makakapag-read at makakapag-write ang Chromium sa direktoryo ng data nito:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 ang JavaScript at WebAssembly engine ng Chromium na ginagamit para pahusayin ang performance ng site</translation>
 <translation id="3283186697780795848">Na-install na ang bersyong <ph name="PRODUCT_VERSION" /> ng Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="328888136576916638">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Chromium.</translation>
@@ -142,7 +144,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="3533435340678213462">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chromium.</translation>
 <translation id="3567254597502212821">Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chromium sa device na ito.</translation>
 <translation id="3593091352817399191">May naka-sign in nang isa pang account. Para panatilihing hiwalay ang iyong pag-browse, puwedeng gumawa ang Chromium ng sarili mong profile para sa iyo.</translation>
-<translation id="363078681319665186">Para makakuha ng mga update sa Chromium sa hinaharap, mangangailangan ka ng macOS 10.15 o mas bago. Gumagamit ang computer na ito ng macOS 10.13.</translation>
 <translation id="3639635944603682591">Made-delete sa device na ito ang data sa pag-browse ng taong ito. Para ma-recover ang data, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3651803019964686660">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chromium sa parehong device.</translation>
@@ -159,7 +160,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Humingi ng tulong sa ChromiumOS</translation>
 <translation id="3871664619793219264">Makuha ang sarili mong mga bagay sa Chromium browser mula sa <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Para makakuha ng mga update sa Chromium sa hinaharap, mangangailangan ka ng macOS 10.15 o mas bago. Gumagamit ang computer na ito ng macOS 10.14.</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="3889543394854987837">I-click ang iyong pangalan upang buksan ang Chromium at simulan ang pagba-browse.</translation>
 <translation id="390528597099634151">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chromium na ito. Para panatilihing hiwalay ang iyong pag-browse, puwedeng gumawa ang Chromium ng sarili mong profile para sa iyo.</translation>
@@ -220,6 +220,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="4814736265800133385">Gamitin ang Chromium nang walang account</translation>
 <translation id="4888717733111232871">Inbound na panuntunan para sa Chromium upang payagan ang trapiko ng mDNS.</translation>
 <translation id="4893347770495441059">Ilunsad Ulit para Ma-update ang Chromium</translation>
+<translation id="4942295735032723435">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng macOS 11 o mas bago. Gumagamit ng macOS 10.15 ang computer na ito.</translation>
 <translation id="4943838377383847465">Nasa background mode ang Chromium.</translation>
 <translation id="4987820182225656817">Makakagamit ng Chromium ang mga bisita nang hindi nag-iiwan ng anumang bakas.</translation>
 <translation id="4994636714258228724">Idagdag ang iyong sarili sa Chromium</translation>
@@ -248,7 +249,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5623402015214259806">{0,plural, =0{May available na update sa Chromium}=1{May available na update sa Chromium}one{# araw nang may available na update sa Chromium}other{# na araw nang may available na update sa Chromium}}</translation>
 <translation id="5643865575100044307">Palaging i-delete ang data ng site mula sa iyong device kapag isinasara mo ang Chromium</translation>
 <translation id="5653831366781983928">Paki-restart ang Chromium ngayon</translation>
-<translation id="5675598751761067447">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Masusuri ng Chromium ang download na ito para sa iyo kung ibibigay mo ang password — mananatili sa iyong device ang password mo</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Ipakita ang Chromium sa wikang ito</translation>
 <translation id="569897634095159764">Hindi makakonekta sa Internet. Nagre-require ng pag-authenticate ang proxy server.</translation>
@@ -409,6 +409,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8105840573057009683">Kailangan ng Chromium ng pahintulot sa lokasyon para sa site na ito</translation>
 <translation id="8133124826068723441">Hindi ma-sync ng ChromiumOS ang iyong data dahil hindi available ang Pag-sync para sa domain mo.</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
+<translation id="8166782796394721554">I-on ang karagdagang proteksyon sa JavaScript at WebAssembly engine ng Chromium</translation>
 <translation id="81770708095080097">Mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
 <translation id="8213374284266571500">Na-block ng Chromium ang file na ito dahil mapanganib ang ganitong uri ng file</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>

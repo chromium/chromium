@@ -333,31 +333,17 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
   CGFloat backgroundAlpha = CGColorGetAlpha(backgroundColor.CGColor);
   CGFloat shadowAlpha = CGColorGetAlpha(shadowColor.CGColor);
 
-  if (@available(iOS 15, *)) {
-    UINavigationBarAppearance* appearance =
-        [[UINavigationBarAppearance alloc] init];
-    [appearance configureWithOpaqueBackground];
-    appearance.backgroundColor =
-        [backgroundColor colorWithAlphaComponent:backgroundAlpha * opacity];
-    appearance.shadowColor =
-        [shadowColor colorWithAlphaComponent:shadowAlpha * opacity];
+  UINavigationBarAppearance* appearance =
+      [[UINavigationBarAppearance alloc] init];
+  [appearance configureWithOpaqueBackground];
+  appearance.backgroundColor =
+      [backgroundColor colorWithAlphaComponent:backgroundAlpha * opacity];
+  appearance.shadowColor =
+      [shadowColor colorWithAlphaComponent:shadowAlpha * opacity];
 
-    self.navigationBar.compactAppearance = appearance;
-    self.navigationBar.standardAppearance = appearance;
-    self.navigationBar.scrollEdgeAppearance = appearance;
-  } else {
-    UIImage* whiteImage = ImageWithColor(UIColor.whiteColor);
-    UIImage* navigationBarBackgroundImage = [whiteImage
-        imageWithTintColor:[backgroundColor
-                               colorWithAlphaComponent:backgroundAlpha *
-                                                       opacity]];
-    UIImage* navigationBarShadowImage = [whiteImage
-        imageWithTintColor:[shadowColor
-                               colorWithAlphaComponent:shadowAlpha * opacity]];
-    [self.navigationBar setBackgroundImage:navigationBarBackgroundImage
-                             forBarMetrics:UIBarMetricsDefault];
-    self.navigationBar.shadowImage = navigationBarShadowImage;
-  }
+  self.navigationBar.compactAppearance = appearance;
+  self.navigationBar.standardAppearance = appearance;
+  self.navigationBar.scrollEdgeAppearance = appearance;
 
   self.navigationBar.tintColor = [UIColor colorNamed:kBlueColor];
 }

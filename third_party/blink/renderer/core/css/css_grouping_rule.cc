@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -168,6 +169,7 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
     group_rule_->WrapperInsertRule(parentStyleSheet(), index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
+    UseCountForSignalAffected();
     return index;
   }
 }
@@ -193,6 +195,7 @@ void CSSGroupingRule::deleteRule(unsigned index,
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+  UseCountForSignalAffected();
 }
 
 // Returns true if this is a style rule whose selector is & {} and has no
@@ -334,6 +337,12 @@ void CSSGroupingRule::Reattach(StyleRuleBase* rule) {
       child_rule_cssom_wrappers_[i]->Reattach(
           group_rule_->ChildRules()[i].Get());
     }
+  }
+}
+
+void CSSGroupingRule::UseCountForSignalAffected() {
+  if (group_rule_->HasSignalingChildRule()) {
+    CountUse(WebFeature::kCSSRuleWithSignalingChildModified);
   }
 }
 

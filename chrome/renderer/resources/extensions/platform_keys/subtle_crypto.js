@@ -12,7 +12,7 @@ var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // This error is thrown by the internal and public API's token functions and
-// must be rethrown by this custom binding. Keep this in sync with the C++ part
+// must be re-thrown by this custom binding. Keep this in sync with the C++ part
 // of this API.
 var errorInvalidToken = 'The token is not valid.';
 
@@ -24,10 +24,6 @@ function CreateNotSupportedError() {
 
 function CreateInvalidAccessError() {
   return new Error('The requested operation is not valid for the provided key');
-}
-
-function CreateDataError() {
-  return new Error('Data provided to an operation does not meet requirements');
 }
 
 function CreateSyntaxError() {
@@ -42,7 +38,7 @@ function CreateOperationError() {
 // returns true.
 function catchInvalidTokenError(reject) {
   if (bindingUtil.hasLastError() &&
-      chrome.runtime.lastError.message === errorInvalidToken) {
+      bindingUtil.getLastErrorMessage() === errorInvalidToken) {
     var error = chrome.runtime.lastError;
     bindingUtil.clearLastError();
     reject(error);
@@ -83,8 +79,9 @@ $Object.setPrototypeOf(SubtleCryptoImpl.prototype, null);
 SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
   var subtleCrypto = this;
   return new Promise(function(resolve, reject) {
-    if (key.type !== 'private' || key.usages.indexOf(KeyUsage.sign) === -1)
+    if (key.type !== 'private' || key.usages.indexOf(KeyUsage.sign) === -1) {
       throw CreateInvalidAccessError();
+    }
 
     var normalizedAlgorithmParameters = normalizeAlgorithm(algorithm, 'Sign');
     if (!normalizedAlgorithmParameters) {
@@ -123,8 +120,9 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
     internalAPI.sign(
         subtleCrypto.tokenId, getSpki(key), normalizedAlgorithmParameters.name,
         hashAlgorithmName, data, function(signature) {
-          if (catchInvalidTokenError(reject))
+          if (catchInvalidTokenError(reject)) {
             return;
+          }
           if (bindingUtil.hasLastError()) {
             bindingUtil.clearLastError();
             reject(CreateOperationError());
@@ -138,8 +136,8 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
 SubtleCryptoImpl.prototype.exportKey = function(format, key) {
   return new Promise(function(resolve, reject) {
     if (format === 'pkcs8') {
-      // Either key.type is not 'private' or the key is not extractable. In both
-      // cases the error is the same.
+      // 'pkcs8' is intended for 'private' keys, which are always
+      // non-extractable in this API.
       throw CreateInvalidAccessError();
     } else if (format === 'spki') {
       if (key.type !== 'public')
@@ -162,6 +160,7 @@ utils.expose(SubtleCrypto, SubtleCryptoImpl, {
   ],
 });
 
-// Required for subclassing.
+// Required for sub-classing.
+exports.$set('catchInvalidTokenError', catchInvalidTokenError);
 exports.$set('SubtleCryptoImpl', SubtleCryptoImpl);
 exports.$set('SubtleCrypto', SubtleCrypto);

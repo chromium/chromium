@@ -12,10 +12,6 @@
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class OpenDownloadDialogBridgeDelegate;
 class Profile;
 
@@ -33,9 +29,7 @@ class OpenDownloadDialogBridge : public download::DownloadItem::Observer {
   ~OpenDownloadDialogBridge() override;
 
   // Called to create and show a dialog for a download.
-  void Show(content::WebContents* web_contents,
-            Profile* profile,
-            const std::string& download_guid);
+  void Show(Profile* profile, const std::string& download_guid);
 
   // Called from Java via JNI.
   void OnConfirmed(JNIEnv* env,

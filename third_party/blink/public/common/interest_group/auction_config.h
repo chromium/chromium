@@ -199,6 +199,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       double scale;
     };
 
+    // Povides whether debug mode is enabled and, if it is, any debug key.
+    struct BLINK_COMMON_EXPORT AuctionReportBuyerDebugModeConfig {
+      bool is_enabled = false;
+      absl::optional<uint64_t> debug_key;
+    };
+
     NonSharedParams();
     NonSharedParams(const NonSharedParams&);
     NonSharedParams(NonSharedParams&&);
@@ -276,6 +282,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     absl::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
         auction_report_buyers;
 
+    // Specifies the debug mode config for per-buyer extended Private
+    // Aggregation reporting to the seller.
+    absl::optional<blink::AuctionConfig::NonSharedParams::
+                       AuctionReportBuyerDebugModeConfig>
+        auction_report_buyer_debug_mode_config;
+
     // The set of seller capabilities that each interest group must declare in
     // order to participate in the auction. Interest groups that don't declare
     // all required seller capabilities will not participate in the auction.
@@ -336,6 +348,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Both URLS, if present, must be same-origin to `seller`.
   absl::optional<GURL> decision_logic_url;
   absl::optional<GURL> trusted_scoring_signals_url;
+
+  // The maximum length limit for the trusted scoring signal fetch URL. Can
+  // only be set as either 0 or a positive number. A value of 0 indicates that
+  // there is no limit.
+  int32_t max_trusted_scoring_signals_url_length = 0;
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   NonSharedParams non_shared_params;

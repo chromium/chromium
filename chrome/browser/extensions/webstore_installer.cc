@@ -329,7 +329,7 @@ void WebstoreInstaller::Start() {
 }
 
 void WebstoreInstaller::OnInstallerDone(
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   if (!error) {
     return;
   }

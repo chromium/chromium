@@ -22,7 +22,9 @@ declare_args() {
 
   # Set to true to enable settings for high end Android devices, typically
   # enhancing speed at the expense of resources such as binary sizes and memory.
-  is_high_end_android = false
+  # Non-official builds should ignore this argument so that arm64 builders
+  # remain fast and independent from PGO without having to set the value to false.
+  is_high_end_android = target_cpu == "arm64"
 
   if (is_android) {
     # By default, Trichrome channels are compiled using separate package names.
@@ -31,6 +33,15 @@ declare_args() {
     # "beta"`.
     use_stable_package_name_for_trichrome = false
   }
+}
+
+# Ensure !is_android implies !is_high_end_android.
+is_high_end_android = is_high_end_android && is_android
+
+declare_args() {
+  # Whether to apply size->speed trade-offs to the secondary toolchain.
+  # Relevant only for 64-bit target_cpu.
+  is_high_end_android_secondary_toolchain = is_high_end_android
 }
 
 assert(!is_chrome_for_testing || !is_chrome_branded,

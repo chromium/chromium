@@ -24,9 +24,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
-#include "components/sync/base/features.h"
 
 using password_manager::ImportEntry;
 namespace password_manager {
@@ -169,8 +167,7 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
     return base::unexpected(with_status(ImportEntry::Status::LONG_USERNAME));
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
-      csv_password.GetNote().length() > 1000) {
+  if (csv_password.GetNote().length() > 1000) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_NOTE));
   }
 
@@ -233,7 +230,6 @@ std::vector<PasswordForm> GetMatchingPasswordForms(
 std::u16string ComputeNotesConcatenation(const std::u16string& local_note,
                                          const std::u16string& imported_note,
                                          NotesImportMetrics& metrics) {
-  CHECK(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
   CHECK_LE(imported_note.size(), PasswordImporter::MAX_NOTE_LENGTH);
 
   if (imported_note.empty()) {
@@ -406,8 +402,7 @@ void ProcessParsedCredential(
   if (!forms.empty()) {
     duplicates_count++;
 
-    if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) ||
-        imported_credential.note.empty()) {
+    if (imported_credential.note.empty()) {
       // Duplicates are reported as successfully imported credentials.
       results.number_imported++;
       return;
@@ -417,14 +412,6 @@ void ProcessParsedCredential(
         /*local_forms=*/forms, /*imported_credential=*/imported_credential,
         /*results=*/results, /*edit_forms=*/incoming_passwords.edit_forms,
         /*metrics=*/notes_metrics);
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    CredentialUIEntry imported_credential_without_note = imported_credential;
-    imported_credential_without_note.note.clear();
-    incoming_passwords.add_credentials.emplace_back(
-        std::move(imported_credential_without_note));
     return;
   }
 

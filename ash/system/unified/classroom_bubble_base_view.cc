@@ -237,18 +237,14 @@ void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {
 
 void ClassroomBubbleBaseView::OnItemViewPressed(bool initial_list_selected,
                                                 const GURL& url) {
-  if (initial_list_selected) {
-    base::RecordAction(base::UserMetricsAction(
-        "Glanceables_Classroom_AssignmentPressed_DefaultList"));
-  }
-  base::RecordAction(
-      base::UserMetricsAction("Glanceables_Classroom_AssignmentPressed"));
+  RecordStudentAssignmentPressed(/*default_list=*/initial_list_selected);
+
   OpenUrl(url);
 }
 
 void ClassroomBubbleBaseView::OnHeaderIconPressed() {
-  base::RecordAction(
-      base::UserMetricsAction("Glanceables_Classroom_HeaderIconPressed"));
+  RecordClassroomHeaderIconPressed();
+
   OpenUrl(GURL(kClassroomHomePage));
 }
 

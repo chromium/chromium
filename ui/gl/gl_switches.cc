@@ -255,7 +255,7 @@ BASE_FEATURE(kDefaultANGLEOpenGL,
 // Default to using ANGLE's Metal backend.
 BASE_FEATURE(kDefaultANGLEMetal,
              "DefaultANGLEMetal",
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -349,7 +349,7 @@ BASE_FEATURE(kDXGISwapChainPresentInterval0,
 // SwapChainPresenter::Adjust* functions.
 BASE_FEATURE(kUseSwapChainPresenterFloatingPointAdjustments,
              "UseSwapChainPresenterFloatingPointAdjustments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SupportsEGLDualGPURendering() {
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))

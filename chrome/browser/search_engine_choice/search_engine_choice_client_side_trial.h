@@ -42,7 +42,7 @@ void RegisterSyntheticTrials();
 // Overrides the client channel value used when choosing in which group to
 // assign this client.
 using ScopedChannelOverride =
-    base::AutoReset<absl::optional<version_info::Channel>>;
+    base::AutoReset<std::optional<version_info::Channel>>;
 ScopedChannelOverride CreateScopedChannelOverrideForTesting(
     version_info::Channel channel);
 

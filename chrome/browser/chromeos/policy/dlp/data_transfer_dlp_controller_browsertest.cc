@@ -161,7 +161,7 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
-  absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
+  std::optional<ui::DataTransferEndpoint> blink_data_dst_;
   bool force_paste_on_warn_ = false;
 
  protected:

@@ -284,10 +284,10 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
   return observer;
 }
 
-absl::optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
+std::optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
   blink::WebDocument doc = render_frame->GetWebFrame()->GetDocument();
 
-  absl::optional<GURL> best;
+  std::optional<GURL> best;
   blink::WebVector<WebElement> elements =
       doc.QuerySelectorAll(WebString("a[href]"));
   for (WebElement element : elements) {
@@ -882,7 +882,7 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
       blink::mojom::PromiseResultOption::kAwait);
 }
 
-void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
+void CommerceHintAgent::OnProductsExtracted(std::optional<base::Value> results,
                                             base::TimeTicks start_time) {
   // Only record when the start time is correctly captured.
   if (!results || !results->is_dict())
@@ -899,7 +899,7 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
       render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   auto record_time = [&](const std::string& key,
                          const std::string& metric_name) {
-    absl::optional<double> optional_time = results_dict.FindDouble(key);
+    std::optional<double> optional_time = results_dict.FindDouble(key);
     if (!optional_time) {
       return;
     }
@@ -923,7 +923,7 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
   record_time("elapsed_ms", "ExtractionElapsedTime");
   record_time("execution_ms", "ExtractionExecutionTime");
 
-  absl::optional<bool> timedout = results_dict.FindBool("timedout");
+  std::optional<bool> timedout = results_dict.FindBool("timedout");
   if (timedout) {
     base::UmaHistogramBoolean("Commerce.Carts.ExtractionTimedOut",
                               timedout.value());
@@ -1038,7 +1038,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   should_use_dom_heuristics_.reset();

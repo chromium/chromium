@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -327,13 +326,17 @@ PageInfo::~PageInfo() {
 }
 
 void PageInfo::OnStatusChanged(CookieControlsStatus status,
+                               bool controls_visible,
+                               bool protections_on,
                                CookieControlsEnforcement enforcement,
                                CookieBlocking3pcdStatus blocking_status,
                                base::Time expiration) {
-  if (status != status_ || enforcement != enforcement_ ||
+  if (controls_visible_ != controls_visible ||
+      protections_on_ != protections_on || enforcement != enforcement_ ||
       blocking_status != blocking_status_ ||
       expiration != cookie_exception_expiration_) {
-    status_ = status;
+    controls_visible_ = controls_visible;
+    protections_on_ = protections_on;
     enforcement_ = enforcement;
     blocking_status_ = blocking_status;
     cookie_exception_expiration_ = expiration;
@@ -360,8 +363,7 @@ void PageInfo::OnBreakageConfidenceLevelChanged(
 }
 
 void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
-  DCHECK(status_ != CookieControlsStatus::kDisabled);
-  DCHECK(status_ != CookieControlsStatus::kUninitialized);
+  DCHECK(controls_visible_);
   RecordPageInfoAction(block_third_party_cookies
                            ? PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
                            : PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
@@ -1496,7 +1498,8 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   }
 #endif
 
-  cookies_info.status = status_;
+  cookies_info.controls_visible = controls_visible_;
+  cookies_info.protections_on = protections_on_;
   cookies_info.enforcement = enforcement_;
   cookies_info.blocking_status = blocking_status_;
   cookies_info.expiration = cookie_exception_expiration_;
@@ -1509,16 +1512,8 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
 void PageInfo::PresentSiteData(base::OnceClosure done) {
   auto* settings = GetPageSpecificContentSettings();
-  if (settings) {
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM) &&
-        weak_factory_.GetWeakPtr()) {
-      PresentSiteDataInternal(std::move(done));
-    } else {
-      settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
-          base::BindOnce(&PageInfo::PresentSiteDataInternal,
-                         weak_factory_.GetWeakPtr(), std::move(done)));
-    }
+  if (settings && weak_factory_.GetWeakPtr()) {
+    PresentSiteDataInternal(std::move(done));
   } else {
     std::move(done).Run();
   }

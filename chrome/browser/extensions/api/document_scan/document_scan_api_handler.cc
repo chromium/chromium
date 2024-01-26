@@ -139,7 +139,7 @@ void DocumentScanAPIHandler::SimpleScan(
   if (base::Contains(mime_types, kTestingMimeType)) {
     should_use_virtual_usb_printer = true;
   } else if (!base::Contains(mime_types, kScannerImageMimeTypePng)) {
-    std::move(callback).Run(absl::nullopt, kUnsupportedMimeTypesError);
+    std::move(callback).Run(std::nullopt, kUnsupportedMimeTypesError);
     return;
   }
 
@@ -154,7 +154,7 @@ void DocumentScanAPIHandler::OnSimpleScanNamesReceived(
     SimpleScanCallback callback,
     const std::vector<std::string>& scanner_names) {
   if (scanner_names.empty()) {
-    std::move(callback).Run(absl::nullopt, kNoScannersAvailableError);
+    std::move(callback).Run(std::nullopt, kNoScannersAvailableError);
     return;
   }
 
@@ -167,7 +167,7 @@ void DocumentScanAPIHandler::OnSimpleScanNamesReceived(
   std::string scanner_name;
   if (force_virtual_usb_printer) {
     if (!base::Contains(scanner_names, kVirtualUSBPrinter)) {
-      std::move(callback).Run(absl::nullopt, kVirtualPrinterUnavailableError);
+      std::move(callback).Run(std::nullopt, kVirtualPrinterUnavailableError);
       return;
     }
 
@@ -185,14 +185,14 @@ void DocumentScanAPIHandler::OnSimpleScanNamesReceived(
 void DocumentScanAPIHandler::OnSimpleScanCompleted(
     SimpleScanCallback callback,
     crosapi::mojom::ScanFailureMode failure_mode,
-    const absl::optional<std::string>& scan_data) {
+    const std::optional<std::string>& scan_data) {
   // TODO(pstew): Enlist a delegate to display received scan in the UI and
   // confirm that this scan should be sent to the caller. If this is a
   // multi-page scan, provide a means for adding additional scanned images up to
   // the requested limit.
   if (!scan_data.has_value() ||
       failure_mode != crosapi::mojom::ScanFailureMode::kNoFailure) {
-    std::move(callback).Run(absl::nullopt, kScanImageError);
+    std::move(callback).Run(std::nullopt, kScanImageError);
     return;
   }
 
@@ -202,7 +202,7 @@ void DocumentScanAPIHandler::OnSimpleScanCompleted(
                                    std::move(image_base64));
   scan_results.mime_type = kScannerImageMimeTypePng;
 
-  std::move(callback).Run(std::move(scan_results), absl::nullopt);
+  std::move(callback).Run(std::move(scan_results), std::nullopt);
 }
 
 void DocumentScanAPIHandler::GetScannerList(

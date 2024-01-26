@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">পূৰণ কৰক</translation>
 <translation id="1145018782460575098">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰ আপডে’ট কৰা ৱিণ্ড’খন খোলা আছে। <ph name="NUM_UPDATES" /> টা আপডে’ট উপলব্ধ।</translation>
 <translation id="1145516343487477149">Chromebook সম্পৰ্কীয় সহায়ক প্ৰবন্ধ আৰু সাধাৰণ প্ৰশ্নসমূহৰ উত্তৰ বিচাৰক</translation>
 <translation id="1154390310959620237">আপুনি মাত্ৰ ৫ টা শ্বৰ্টকাট কাষ্টমাইজ কৰিব পাৰে। নতুন এটা যোগ কৰিবলৈ এটা শ্বৰ্টকাট মচক।</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্কেনৰ ক্ষেত্ৰত খাপ খুৱাওক</translation>
 <translation id="1367951781824006909">কোনো ফাইল বাছনি কৰক</translation>
+<translation id="1371650399987522809">Google AIৰ দ্বাৰা চালিত ৱালপেপাৰৰ বাবে মতামত</translation>
 <translation id="1387854245479784695">এইটো হৈছে আটাইবোৰ ক’ৰৰ এটা সমষ্টি</translation>
 <translation id="1394661041439318933">ডিভাইচটোৰ কেছত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="1397738625398125236">গে’টৱে’ পিং কৰিব পৰা যায়</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1561927818299383735">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰৰ ৰং</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> আপডে’ট কৰিব নোৱাৰি</translation>
+<translation id="1566493343215789965">হৰণ কৰক</translation>
 <translation id="1567064801249837505">এলবাম</translation>
 <translation id="1572585716423026576">ৱালপেপাৰ হিচাপে ছেট কৰক</translation>
 <translation id="1578784163189013834">স্ক্ৰীন ছেভাৰৰ পটভূমি বাছনি কৰক</translation>
 <translation id="160633243685262989">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
+<translation id="1615576200479539465">প্ৰতিচ্ছবি সৃষ্টি কৰি থকা হৈছে...</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
+<translation id="1626590945318984973">শ্বৰ্টকাট উপলব্ধ নহয়। ফাংশ্বন আৰু <ph name="META_KEY" /> কী ব্যৱহাৰ নকৰাকৈ এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
 <translation id="1643449475550628585">দৈনিক ৱালপেপাৰৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">গাঢ় ম’ড অফ কৰক</translation>
 <translation id="1885577615937958993">মিডিয়া ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
-<translation id="1897672602657312171">ছাৰ্চ কীৰ অবিহনে থকা শ্বৰ্টকাটে কিছুমান এপৰ শ্বৰ্টকাটৰ সৈতে বিবাদৰ সৃষ্টি কৰিব পাৰে। এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰি থাকিবলৈ এইটোত পুনৰ টিপক অথবা ছাৰ্চ কীটো ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="1904932688895783618">এইবোৰ অন্য কিছুমান সহায়ক উৎস:</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="2157660087437850958">ইম’জি বাছনি কৰোঁতা</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=2{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> আৰু <ph name="APP_NAME_2" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=3{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু <ph name="APP_NAME_3" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}one{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}other{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: পুনৰ চেষ্টা কৰক</translation>
 <translation id="215916044711630446">এতিয়া APN যোগ কৰাৰ বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">এপিএনৰ সবিশেষ সম্পাদনা কৰক</translation>
 <translation id="2209788852729124853">ট্ৰেফিক কাউণ্টাৰ ৰিছেট কৰক</translation>
 <translation id="2212733584906323460">নামৰ ৰিজ’লিউশ্বন</translation>
+<translation id="2215920961700443347">ইণ্টাৰনেট সংযোগ নাই। ইণ্টাৰনেটৰ লগত সংযোগ কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2217935453350629363">বৰ্তমানৰ গতিবেগ</translation>
 <translation id="2224337661447660594">ইণ্টাৰনেট নাই</translation>
 <translation id="222447520299472966">কমেও এটা আৰ্ট গেলাৰীৰ এলবাম বাছনি কৰিব লাগিব</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /> খন প্ৰতিচ্ছবি</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
+<translation id="2465272316171730950">বৰ্তমান পাঠ সৃষ্টি কৰিব নোৱাৰি। অনুগ্ৰহ কৰি, অলপ সময়ৰ পাছত উভতি আহক।</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
 <translation id="2491955442992294626">আপুনি আন এখন ৱিণ্ড’ ব্যৱহাৰ কৰি থাকোঁতে কীসমূহ পৰীক্ষা কৰা নহয়</translation>
 <translation id="2493126929778606526">স্বয়ংক্ৰিয়ভাৱে বাছনি কৰা আপোনাৰ শ্ৰেষ্ঠ ফট’সমূহ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">বর্তমানৰ ৱালপেপাৰৰ প্ৰতিচ্ছবিখন ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="2512979179176933762">ৱিণ্ড’ দেখুৱাওক</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
-<translation id="2515109918609218604">শ্বৰ্টকাট উপলব্ধ নহয়। ফাংশ্বন কী আৰু ছাৰ্চ কী ব্যৱহাৰ নকৰাকৈ এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="2880569433548999039">ডাৱৰৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
+<translation id="2938573842839598578">এটা আনুমানিক ফলাফলৰ বাবে, <ph name="CATEGORY_TEXT" />ক <ph name="CONVERSION_RATE" />ৰে <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
 <translation id="2941112035454246133">কম</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOSৰ আপডে’ট</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
+<translation id="3547264467365135390">সূত্ৰ</translation>
 <translation id="3557205324756024651">স্থানীয় পৰিচয় (ঐচ্ছিক)</translation>
 <translation id="3565064564551103223">অনুমতিপ্ৰাপ্ত আইপি</translation>
 <translation id="3569407787324516067">স্ক্ৰীন ছেভাৰ</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">আপোনাৰ এতিয়া নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ৱালপেপাৰ<ph name="END_LINK_WALLPAPER_SUBPAGE" />ৰ এক্সেছ আছে</translation>
 <translation id="4117637339509843559">গাঢ় ম’ড</translation>
 <translation id="4130035430755296270">লে’আউটৰ অধিক বিকল্পৰ বাবে মাউছৰ কাৰ্ছৰডাল ঘূৰাই থাকক</translation>
+<translation id="4130750466177569591">মই সন্মত</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}one{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}other{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}}</translation>
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ডিছপ্লে’</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">উজ্জ্বলতা কমাওক</translation>
 <translation id="4176463684765177261">অক্ষম আছে</translation>
 <translation id="4176659219503619100">নিয়ন্ত্ৰণৰ পেনেল</translation>
-<translation id="4185315616950253617">ওপৰৰ শাৰীৰ কীসমূহৰ সৈতে শ্বৰ্টকাটে সন্ধানৰ বাবে ব্যৱহৃত কী অন্তৰ্ভুক্ত কৰিব লাগিব।</translation>
 <translation id="420283545744377356">স্ক্ৰীন ছেভাৰ অফ কৰক</translation>
 <translation id="4213104098953699324">ইউএছবি কীব’ৰ্ড</translation>
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">অক্ষম কৰক</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ৰিষ্টাৰ্ট কৰি থকা হৈছে</translation>
 <translation id="4395835743215824109">কীব’ৰ্ড কাষ্টমাইজ কৰা</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> কী নথকা শ্বৰ্টকাটে কিছুমান এপৰ শ্বৰ্টকাটৰ সৈতে সংঘাত সৃষ্টি কৰিব পাৰে। এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰি থাকিবলৈ এইটোত পুনৰ টিপক অথবা <ph name="KEY" /> কীটো ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4415951057168511744">বৰ্তমানৰ অৱতাৰ</translation>
+<translation id="4417830657741848074">আপোনাৰ প্ৰশাসকে কিছুমান এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হ’বলৈ ছেট আপ কৰিছে এইসমূহৰ কিছুমান এপ্‌ বন্ধ কৰা নহ’ব পাৰে।</translation>
 <translation id="4422041425070339732">তললৈ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> অফ কৰা আছে</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">পৃথিৱীৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4500722292849917410">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বঢ়াওক</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
 <translation id="4839698083503556542">নিজৰ চলচ্চিত্ৰ সৃষ্টি কৰক</translation>
+<translation id="48409034532829769">আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হ’বলৈ ছেট আপ কৰিছে। এই এপ্‌টো বন্ধ কৰা নহ’ব পাৰে।</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বাছনি কৰা হৈছে, <ph name="TOPIC_SOURCE" />ৰ এলবামসমূহ বাছনি কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="484790837831576105">(Android) DNS ৰিজ’লিউশ্বন</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">বিভক্ত কৰক</translation>
 <translation id="4972592110715526173">ম’ড সলনি কৰক</translation>
 <translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
+<translation id="4982627662315910959">শ্বৰ্টকাট উপলব্ধ নহয়। shift আৰু ১ টা সংশোধক চাবি (ctrl, alt, or <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="4987769320337599931">ফায়াৰৱাল</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">গাঢ় ৰঙৰ থীম সময়সূচী</translation>
 <translation id="5229344016299762883">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{আপুনি প্ৰতিবাৰে লগ ইন কৰোঁতে আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হোৱাকৈ ছেট আপ কৰিছে।}=2{আপুনি প্ৰতিবাৰে লগ ইন কৰোঁতে আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" আৰু অন্য ১ টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হোৱাকৈ ছেট আপ কৰিছে।}one{আপুনি প্ৰতিবাৰে লগ ইন কৰোঁতে আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" আৰু অন্য # টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হোৱাকৈ ছেট আপ কৰিছে।}other{আপুনি প্ৰতিবাৰে লগ ইন কৰোঁতে আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" আৰু অন্য # টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হোৱাকৈ ছেট আপ কৰিছে।}}</translation>
 <translation id="5252456968953390977">ৰ’মিং</translation>
 <translation id="5257811368506016604">পাতল ৰঙৰ ম'ডটো সক্ষম কৰক</translation>
 <translation id="5264277876637023664">চিপিইউ পৰীক্ষা চলাওক</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7180865173735832675">কাষ্ট’মাইজ কৰক</translation>
 <translation id="7184043045742675738">আপোনাৰ বুটামটো কাষ্টমাইজ কৰিবলৈ যিকোনো এটা কীত ক্লিক কৰক। মাউছ অথবা এৰ’ কীৰ জৰিয়তে কীৰ স্থান সলনি কৰক।</translation>
+<translation id="7206979415662233817">সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="7212547870105584639">নেটৱৰ্ক এপিএনৰ ছেটিং পৰিচালনা কৰক। এপিএনে চেলুলাৰ নেটৱৰ্ক আৰু ইণ্টাৰনেটৰ মাজত এটা সংযোগ স্থাপন কৰে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰৰ আপডে’ট</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
 <translation id="725133483556299729">ইমেইল বাছনি কৰক</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
-<translation id="7273347807225967898">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাট টিপক (ctrl, alt, shift, সন্ধান বা লঞ্চাৰ)।</translation>
+<translation id="7271932918253517778">একেবাৰে ওপৰৰ শাৰীৰ কীসমূহ থকা শ্বৰ্টকাটত <ph name="META_KEY" /> কী অন্তৰ্ভুক্ত হ’ব লাগিব।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">মলয়া বতাহৰ আমেজ</translation>
 <translation id="7287310195820267359">ৱালপেপাৰৰ সংগ্ৰহ</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">কীব’ৰ্ডৰ ৰং</translation>
 <translation id="7317831949569936035">বিদ্যালয়ৰ পঞ্জীয়ন</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">আপুনি অতি কমেও ১৮ বছৰ বয়সীয়া হ’বই লাগিব আপোনাৰ AI ৱালপেপাৰৰ ব্যৱহাৰ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> আৰু <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generative AIৰ অতিৰিক্ত সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />ৰ অধীন বুলি সন্মত হ’ব লাগিব।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপুনি কেৱল ব্যক্তিগত আৰু অ-বাণিজ্যিক ব্যৱহাৰৰ বাবে এআইৰ জৰিয়তে ৱালপেপাৰ সৃষ্টি কৰিব পাৰে। যেতিয়া আপুনি ৱালপেপাৰৰ সহায় পায়, তেতিয়া <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ৰ অধীনত ৱালপেপাৰৰ পৰামৰ্শ সৃষ্টি কৰিবলৈ Google AI ছাৰ্ভাৰলৈ পাঠ পঠিওৱা হয়। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchত ফলাফল চাবলৈ ছাৰ্চ আৰু স্পেচ টিপক।</translation>
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
 <translation id="7353413232959255829">সন্ধানৰ ফলাফল <ph name="LIST_SIZE" />ৰ ভিতৰত <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />। শ্বৰ্টকাট নেভিগে’ট কৰিবলৈ এণ্টাৰ টিপক।</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">সাধাৰণ নিয়ন্ত্ৰণ</translation>
 <translation id="7977800524392185497">এটা <ph name="NETWORK_NAME" /> নেটৱৰ্কত যোগদান কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}one{# টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}other{# টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}}</translation>
 <translation id="7994702968232966508">ই.এ.পি. পদ্ধতি</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="8017679124341497925">শ্বৰ্টকাটত সাল-সলনি কৰা হ’ল</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="8094062939584182041">Googleক এই সমস্যাটোৰ বিষয়ে আপোনালৈ ইমেইল কৰিবলৈ দিয়ক</translation>
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
-<translation id="8111706652656628199">শ্বৰ্টকাট উপলব্ধ নহয়। shift আৰু আন এটা সংশোধক চাবি ব্যৱহাৰ কৰি ১ টা নতুন শ্বৰ্টকাট টিপক (ctrl, alt, সন্ধান বা লঞ্চাৰ)।</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>

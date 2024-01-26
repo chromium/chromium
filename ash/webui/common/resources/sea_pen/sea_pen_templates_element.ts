@@ -7,7 +7,9 @@
  */
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -15,6 +17,7 @@ import {getSeaPenTemplates, SeaPenTemplate} from './constants.js';
 import {SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_templates_element.html.js';
+import {ChipToken, getDefaultOptions, getTemplateTokens, TemplateToken} from './sea_pen_utils.js';
 
 export class SeaPenTemplatesElement extends WithSeaPenStore {
   static get is() {
@@ -34,11 +37,14 @@ export class SeaPenTemplatesElement extends WithSeaPenStore {
       },
 
       selected_: Object,
+
+      hoveredTemplate_: Object,
     };
   }
 
   private seaPenTemplates_: SeaPenTemplate[];
   private selected_: SeaPenTemplate;
+  private hoveredTemplate_: SeaPenTemplate|null;
 
   private getAriaIndex_(i: number): number {
     return i + 1;
@@ -52,6 +58,30 @@ export class SeaPenTemplatesElement extends WithSeaPenStore {
     if (template) {
       SeaPenRouterElement.instance().selectSeaPenTemplate(template.id);
     }
+  }
+
+  private onMouseOver_(e: Event&{model: {template: SeaPenTemplate}}) {
+    this.hoveredTemplate_ = e.model.template;
+  }
+
+  private onMouseOut_() {
+    this.hoveredTemplate_ = null;
+  }
+
+  private shouldShowTemplateTitle_(
+      template: SeaPenTemplate|null, hoveredTemplate: SeaPenTemplate|null) {
+    return template === hoveredTemplate && template?.id !== 'Query';
+  }
+
+  private getTemplateTokens_(template: SeaPenTemplate|null): TemplateToken[] {
+    if (!template) {
+      return [];
+    }
+    return getTemplateTokens(template, getDefaultOptions(template));
+  }
+
+  private isChip_(token: any): token is ChipToken {
+    return typeof token?.translation === 'string';
   }
 }
 customElements.define(SeaPenTemplatesElement.is, SeaPenTemplatesElement);

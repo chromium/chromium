@@ -2,10 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("magic_stack") {
+source_set("public") {
   sources = [
     "magic_stack_module.h",
     "magic_stack_module.mm",
+  ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("magic_stack") {
+  sources = [
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
     "magic_stack_module_container_delegate.h",
@@ -19,6 +26,8 @@ source_set("magic_stack") {
     "shortcuts_config.mm",
   ]
   deps = [
+    ":public",
+    "resources:magic_stack_placeholder_module",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -28,6 +37,11 @@ source_set("magic_stack") {
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",

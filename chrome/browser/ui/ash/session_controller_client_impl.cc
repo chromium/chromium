@@ -21,6 +21,8 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
@@ -199,6 +201,17 @@ SessionControllerClientImpl* SessionControllerClientImpl::Get() {
 }
 
 void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
+  if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+    User* active_user = UserManager::Get()->GetActiveUser();
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+    if (profile) {
+      auto* floating_workspace_service =
+          ash::FloatingWorkspaceService::GetForProfile(profile);
+      if (floating_workspace_service) {
+        floating_workspace_service->CaptureAndUploadActiveDesk();
+      }
+    }
+  }
   session_controller_->PrepareForLock(std::move(callback));
 }
 

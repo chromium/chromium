@@ -69,6 +69,10 @@ constexpr const char kGaiaTransferResultName[] =
     "QuickStart.GaiaTransferResult";
 constexpr const char kGaiaTransferResultFailureReasonName[] =
     "QuickStart.GaiaTransferResult.FailureReason";
+constexpr const char kGaiaAuthenticationResultHistogramName[] =
+    "QuickStart.GaiaAuthentication.Result";
+constexpr const char kGaiaAuthenticationDurationHistogramName[] =
+    "QuickStart.GaiaAuthentication.Duration";
 constexpr const char kScreenOpened[] = "QuickStart.ScreenOpened";
 
 std::string MapMessageTypeToMetric(
@@ -177,6 +181,22 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
   base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
                           attestation_certificate_timer_->Elapsed());
   attestation_certificate_timer_.reset();
+}
+
+void QuickStartMetrics::RecordGaiaAuthenticationStarted() {
+  CHECK(!gaia_authentication_timer_)
+      << "Only 1 Gaia authentication request can be active at a time";
+  gaia_authentication_timer_ = std::make_unique<base::ElapsedTimer>();
+}
+
+void QuickStartMetrics::RecordGaiaAuthenticationRequestEnded(
+    const GaiaAuthenticationResult& result) {
+  CHECK(gaia_authentication_timer_) << "Gaia authentication request timer was "
+                                       "not active. Unexpected response.";
+  base::UmaHistogramEnumeration(kGaiaAuthenticationResultHistogramName, result);
+  base::UmaHistogramTimes(kGaiaAuthenticationDurationHistogramName,
+                          gaia_authentication_timer_->Elapsed());
+  gaia_authentication_timer_.reset();
 }
 
 // static

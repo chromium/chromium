@@ -12,9 +12,9 @@
 #include "ash/shell.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_controller.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_grouping_controller.h"
 #include "ash/system/notification_center/session_state_notification_blocker.h"
-#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
@@ -216,7 +216,7 @@ void FadeInView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   views::AnimationBuilder()
@@ -251,7 +251,7 @@ void FadeOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   view->SetVisible(true);
@@ -286,7 +286,7 @@ void SlideOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   gfx::Transform transform;

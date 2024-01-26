@@ -8,8 +8,8 @@
 
 #include "base/check_op.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/gesture_detection/bitset_32.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/bitset_32.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 using base::TimeTicks;
 

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -83,11 +83,11 @@ class PolicyProvider : public ObservableProvider {
 
   void ReadManagedContentSettingsTypes(ContentSettingsType content_type);
 
-  OriginIdentifierValueMap value_map_;
+  OriginValueMap value_map_;
 
   raw_ptr<PrefService> prefs_;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace content_settings

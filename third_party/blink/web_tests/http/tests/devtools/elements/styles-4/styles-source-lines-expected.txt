@@ -5,8 +5,7 @@ element.style { ()
 
 [expanded] 
 #main, .at_line_49 { (styles-sour…per.html:50 -> styles-source-lines-helper.html:50:2)
-    border: 1px solid
-    red;
+    border: 1px solid red;
 
 [expanded] 
 #main, .at_line_41 { (styles-sour…per.html:43 -> styles-source-lines-helper.html:43:2)
@@ -15,7 +14,7 @@ element.style { ()
 [expanded] 
 #main, .at_line_26 { (styles-sour…per.html:29 -> styles-source-lines-helper.html:29:2)
     font-family: /*  Comment in 
-                      value  */courier;
+                      value  */ courier;
 
 [expanded] 
 #main, .at_line_11::before { (styles-sour…per.html:15 -> styles-source-lines-helper.html:15:2)

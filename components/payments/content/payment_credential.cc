@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace payments {
@@ -23,8 +24,12 @@ namespace payments {
 bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
     content::RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() &&
-         rfh->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kPayment) &&
+         (rfh->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kPayment) ||
+          (base::FeatureList::IsEnabled(
+               blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
+           rfh->IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::
+                                     kPublicKeyCredentialsCreate))) &&
          base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation);
 }
 

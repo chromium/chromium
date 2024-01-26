@@ -81,7 +81,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3366305173356742781">Chromiumi andmed teie kontol</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Need võivad hõlmata ajalugu ja automaattäidet.}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Need võivad hõlmata ajalugu ja automaattäidet.}}</translation>
 <translation id="3472200483164753384">Ei toetata versioonis Chromium Canary</translation>
-<translation id="3478750326643748149">Valiku „Kasutage Chromiumi parimal moel” peitmine</translation>
 <translation id="347967311580159871">Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiumi kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Teie parooli ei jagatud. Kontrollige internetiühendust ja veenduge, et oleksite Chromiumi sisse logitud. Seejärel proovige uuesti.</translation>
 <translation id="3554027294407525061">Tühjendage Chromiumi sirvimisandmed.</translation>
@@ -101,9 +100,9 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Avage Chromium mis tahes rakendusest</translation>
-<translation id="4002314982058020967">Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
+<translation id="4076589763479456892">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4106512142782407609">Sisse logitud kasutajana <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Teie andmed on krüpteeritud teie parooliga. Chromiumi andmete kasutamiseks ja s
 <translation id="4408912345039114853">Chromiumi ohutuskontrolli käitamine</translation>
 <translation id="4432744876818348753">Chromiumi parimal moel kasutamiseks logige sisse.</translation>
 <translation id="4445228361214254027">Teie organisatsioon on Chromiumi andmete kasutamise ja Google’i kontole salvestamise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>
-<translation id="4485517920713468480">Chromium tuvastab teie külastatud saitidel jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks. Saate seda muuta jaotises <ph name="BEGIN_LINK" />Saadetise jälgimisseaded<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Lisab sisestatud URL-id Chromiumis teie lugemisloendisse.</translation>
 <translation id="452436063477828504">Veenduge, et saaksite alati kasutada oma Google'i kontol Chromiumi andmeid</translation>
 <translation id="4555020257205549924">Kui see funktsioon on sisse lülitatud, pakub Chromium võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Teie andmed on krüpteeritud teie parooliga. Chromiumi andmete kasutamiseks ja s
 <translation id="5534584691915394889">Seda kasutatakse Chromiumi ja Google Lensi kaudu teie Apple'i rakenduses Calendar sündmuste loomiseks.</translation>
 <translation id="5571094606370987472">Avab Chromiumi hiljutised vahelehed.</translation>
 <translation id="5623083843656850677">Lukustage Chromiumist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
+<translation id="5671188105328420281">Chromiumi nõuanded</translation>
 <translation id="5688047395118852662">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chromiumi parimal moel kasutada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>
@@ -286,6 +285,7 @@ Olulised aspektid
 <translation id="8776843108004031667">See konto ja kõik salvestamata andmed eemaldatakse Chromiumist.</translation>
 <translation id="88376265765385899">Avab Chromiumi järjehoidjad.</translation>
 <translation id="8860548555286245440">Ava URL-id Chromiumis inkognito režiimis</translation>
+<translation id="8866191443434488382">Chromium tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Chromiumile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium iOS-ile</translation>
 <translation id="8924617840944134898">Chromiumi inkognito vahelehe avamine</translation>
 <translation id="894437814105052438">Väljalogimisel ei sünkrooni Chromium teie Google'i kontoga uusi andmeid. Varem sünkroonitud andmed jäävad kontole.</translation>

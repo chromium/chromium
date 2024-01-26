@@ -9,14 +9,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/strings/string_split.h"
-#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,22 +30,6 @@
 
 namespace {
 
-// Returns true if the board is known to support Vulkan compositing.
-bool BoardSupportsVulkanComposite() {
-  // The full board name may have the form "glimmer-signed-mp-v4keys" and we
-  // just want "glimmer".
-  std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (board.empty()) {
-    LOG(ERROR) << "Unable to determine LSB release board";
-    return false;
-  }
-  // Vulkan compositing is only supported on a few boards, so use an allow
-  // list.
-  return board[0] == "brya" || board[0] == "volteer" || board[0] == "dedede";
-}
-
 class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
                                   public testing::WithParamInterface<bool> {
  public:
@@ -54,7 +37,7 @@ class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
     if (UseVulkan()) {
       // Check for board support because enabling the ScopedFeatureList,
       // otherwise GPU process initialization will crash before the test body.
-      if (BoardSupportsVulkanComposite()) {
+      if (crosier::HasRequirement(crosier::Requirement::kVulkan)) {
         feature_list_.InitAndEnableFeature(features::kVulkan);
       } else {
         skip_test_ = true;
@@ -82,7 +65,7 @@ INSTANTIATE_TEST_SUITE_P(Vulkan, ScreenshotIntegrationTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
   if (skip_test_) {
-    GTEST_SKIP();
+    GTEST_SKIP() << "Skipping test because target doesn't support Vulkan.";
   }
 
   // Ensure the display is powered on, otherwise the screenshot will fail.
@@ -122,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
 
     // Load the PNG screenshot.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    absl::optional<std::vector<uint8_t>> image_png =
+    std::optional<std::vector<uint8_t>> image_png =
         base::ReadFileToBytes(base::FilePath("/tmp/screen.png"));
     ASSERT_TRUE(image_png.has_value());
 

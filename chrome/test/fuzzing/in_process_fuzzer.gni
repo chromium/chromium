@@ -71,6 +71,13 @@ template("in_process_fuzzer") {
         # For testing. Those fuzzers are extremely slow on ClusterFuzz, and
         # using this option doesn't help.
         "fork_server=0",
+
+        "rss_limit_mb=8192",
+
+        # This value is the one used by CF for Centipede fuzzers.
+        # Default computed timeout per batch is ridiculously low (1127, which
+        # means ~1.1 sec per input average) for those fuzzers.
+        "timeout_per_batch=8400",
       ]
 
       if (defined(invoker.asan_options)) {

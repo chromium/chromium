@@ -128,6 +128,20 @@ class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
       ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND)
 };
 
+// API function that initiates a download of the FaceGaze assets DLC and
+// responds with the file bytes via a callback.
+class AccessibilityPrivateInstallFaceGazeAssetsFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateInstallFaceGazeAssetsFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.installFaceGazeAssets",
+                             ACCESSIBILITY_PRIVATE_INSTALLFACEGAZEASSETS)
+ private:
+  void OnInstallFinished(
+      std::optional<::extensions::api::accessibility_private::FaceGazeAssets>
+          assets);
+};
+
 // API function that initiates a Pumpkin download for Dictation and responds
 // with the file bytes via a callback.
 class AccessibilityPrivateInstallPumpkinForDictationFunction

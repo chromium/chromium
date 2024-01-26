@@ -21,8 +21,8 @@ namespace enterprise_connectors {
 
 namespace {
 
-absl::optional<KeyPersistenceDelegateFactory*>& GetTestInstanceStorage() {
-  static absl::optional<KeyPersistenceDelegateFactory*> storage;
+std::optional<KeyPersistenceDelegateFactory*>& GetTestInstanceStorage() {
+  static std::optional<KeyPersistenceDelegateFactory*> storage;
   return storage;
 }
 
@@ -30,7 +30,7 @@ absl::optional<KeyPersistenceDelegateFactory*>& GetTestInstanceStorage() {
 
 // static
 KeyPersistenceDelegateFactory* KeyPersistenceDelegateFactory::GetInstance() {
-  absl::optional<KeyPersistenceDelegateFactory*>& test_instance =
+  std::optional<KeyPersistenceDelegateFactory*>& test_instance =
       GetTestInstanceStorage();
   if (test_instance.has_value() && test_instance.value()) {
     return test_instance.value();

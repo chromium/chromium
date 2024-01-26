@@ -449,9 +449,9 @@ bool IsModelQualityLoggingEnabledForFeature(
       base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature_name));
   bool default_value = true;
 
-  // Disable compose feature by default.
+  // Disable logging for test feature.
   if (feature_name ==
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE) {
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
     default_value = false;
   }
   return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
@@ -1058,14 +1058,39 @@ bool GetOnDeviceModelRetractUnsafeContent() {
 }
 
 bool GetOnDeviceModelMustUseSafetyModel() {
-  static const base::FeatureParam<bool>
-      kOnDeviceModelShouldRetractUnsafeContent{
-          &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
-  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+  static const base::FeatureParam<bool> kOnDeviceModelMustUseSafetyModel{
+      &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
+  return kOnDeviceModelMustUseSafetyModel.Get();
 }
 
 bool ShouldDownloadTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
+}
+
+uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
+  static const base::FeatureParam<int32_t>
+      kOnDeviceModelTextSafetyTokenInterval{
+          &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
+  return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
+}
+
+int GetOnDeviceModelNumRepeats() {
+  static const base::FeatureParam<int> kOnDeviceModelNumRepeats{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_num_repeats", 2};
+  return kOnDeviceModelNumRepeats.Get();
+}
+
+int GetOnDeviceModelMinRepeatChars() {
+  static const base::FeatureParam<int> kOnDeviceModelMinRepeatChars{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_min_repeat_chars", 16};
+  return kOnDeviceModelMinRepeatChars.Get();
+}
+
+bool GetOnDeviceModelRetractRepeats() {
+  static const base::FeatureParam<bool> kOnDeviceModelRetractRepeats{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_retract_repeats",
+      true};
+  return kOnDeviceModelRetractRepeats.Get();
 }
 
 }  // namespace features

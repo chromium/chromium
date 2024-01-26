@@ -139,6 +139,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     kInCellMode,
     kInSelectMode,
     kInSelectInTableMode,
+    kInButtonInSelectMode,
+    kInDatalistInSelectMode,
     kAfterBodyMode,
     kInFramesetMode,
     kAfterFramesetMode,

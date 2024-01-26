@@ -353,8 +353,8 @@ class BaselineOptimizer:
             self._filesystem.maybe_make_directory(
                 self._filesystem.dirname(dest))
             self._filesystem.copyfile(source, dest)
-            _log.info('Promoted %s from %s', root,
-                      ', '.join(map(str, sorted(predecessors))))
+            _log.debug('Promoted %s from %s', root,
+                       ', '.join(map(str, sorted(predecessors))))
 
     def _remove(
         self,
@@ -368,7 +368,7 @@ class BaselineOptimizer:
             _log.info('Can remove %s (%s)', path, explanation)
         else:
             self._filesystem.remove(path)
-            _log.info('Removed %s (%s)', location, explanation)
+            _log.debug('Removed %s (%s)', location, explanation)
 
     @memoized
     def path(self, location: BaselineLocation, baseline_name: str) -> str:

@@ -114,6 +114,12 @@ FontCache::FontCache()
 
 FontCache::~FontCache() = default;
 
+void FontCache::Trace(Visitor* visitor) const {
+  visitor->Trace(font_cache_clients_);
+  visitor->Trace(font_fallback_map_);
+  visitor->Trace(fallback_list_shaper_cache_);
+}
+
 #if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
@@ -167,17 +173,11 @@ std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
 }
 
 ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
-  FallbackListShaperCache::iterator it = fallback_list_shaper_cache_.find(key);
-  ShapeCache* result = nullptr;
-  if (it == fallback_list_shaper_cache_.end()) {
-    result = new ShapeCache();
-    fallback_list_shaper_cache_.Set(key, base::WrapUnique(result));
-  } else {
-    result = it->value.get();
+  auto result = fallback_list_shaper_cache_.insert(key, nullptr);
+  if (result.is_new_entry) {
+    result.stored_value->value = MakeGarbageCollected<ShapeCache>();
   }
-
-  DCHECK(result);
-  return result;
+  return result.stored_value->value.Get();
 }
 
 void FontCache::SetFontManager(sk_sp<SkFontMgr> font_manager) {
@@ -288,7 +288,9 @@ void FontCache::PurgePlatformFontDataCache() {
 
 void FontCache::PurgeFallbackListShaperCache() {
   TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
-  fallback_list_shaper_cache_.clear();
+  for (auto& shape_cache : fallback_list_shaper_cache_.Values()) {
+    shape_cache->Clear();
+  }
 }
 
 void FontCache::InvalidateShapeCache() {
@@ -311,13 +313,8 @@ void FontCache::Purge(PurgeSeverity purge_severity) {
 
 void FontCache::AddClient(FontCacheClient* client) {
   CHECK(client);
-  if (!font_cache_clients_) {
-    font_cache_clients_ =
-        MakeGarbageCollected<HeapHashSet<WeakMember<FontCacheClient>>>();
-    LEAK_SANITIZER_IGNORE_OBJECT(&font_cache_clients_);
-  }
-  DCHECK(!font_cache_clients_->Contains(client));
-  font_cache_clients_->insert(client);
+  DCHECK(!font_cache_clients_.Contains(client));
+  font_cache_clients_.insert(client);
 }
 
 uint16_t FontCache::Generation() {
@@ -329,9 +326,8 @@ void FontCache::Invalidate() {
   font_platform_data_cache_->Clear();
   generation_++;
 
-  if (font_cache_clients_) {
-    for (const auto& client : *font_cache_clients_)
-      client->FontCacheInvalidated();
+  for (const auto& client : font_cache_clients_) {
+    client->FontCacheInvalidated();
   }
 
   Purge(kForcePurge);
@@ -383,10 +379,8 @@ void FontCache::DumpShapeResultCache(
   base::trace_event::MemoryAllocatorDump* dump =
       memory_dump->CreateAllocatorDump("font_caches/shape_caches");
   size_t shape_result_cache_size = 0;
-  FallbackListShaperCache::iterator iter;
-  for (iter = fallback_list_shaper_cache_.begin();
-       iter != fallback_list_shaper_cache_.end(); ++iter) {
-    shape_result_cache_size += iter->value->ByteSize();
+  for (const auto& shape_cache : fallback_list_shaper_cache_.Values()) {
+    shape_result_cache_size += shape_cache->ByteSize();
   }
   dump->AddScalar("size", "bytes", shape_result_cache_size);
   memory_dump->AddSuballocation(dump->guid(),

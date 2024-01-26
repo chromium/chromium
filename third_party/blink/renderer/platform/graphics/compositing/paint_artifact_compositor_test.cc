@@ -104,6 +104,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     // Make sure we remove all child layers to satisfy destructor
     // child layer element id DCHECK.
     WillBeRemovedFromFrame();
+    layer_tree_host_client_.SetLayerTreeHost(nullptr);
   }
 
   cc::PropertyTrees& GetPropertyTrees() {
@@ -448,8 +449,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     TransformPaintPropertyNode::State transform3_state{
         {MakeRotationMatrix(0, 45, 0)}};
-    transform3_state.flags.flattens_inherited_transform =
-        transform_is_flattened;
+    transform3_state.flattens_inherited_transform = transform_is_flattened;
     auto transform3 = TransformPaintPropertyNode::Create(
         *transform2, std::move(transform3_state));
 
@@ -502,8 +502,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     auto transform2 = TransformPaintPropertyNodeAlias::Create(*real_transform2);
     TransformPaintPropertyNode::State transform3_state{
         {MakeRotationMatrix(0, 45, 0)}};
-    transform3_state.flags.flattens_inherited_transform =
-        transform_is_flattened;
+    transform3_state.flattens_inherited_transform = transform_is_flattened;
     auto real_transform3 = TransformPaintPropertyNode::Create(
         *transform2, std::move(transform3_state));
     auto transform3 = TransformPaintPropertyNodeAlias::Create(*real_transform3);
@@ -4109,7 +4108,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
 TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
   auto matrix = MakeScaleMatrix(2);
   TransformPaintPropertyNode::State transform_state{{matrix}};
-  transform_state.flags.in_subtree_of_page_scale = false;
+  transform_state.in_subtree_of_page_scale = false;
   const CompositorElementId compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   transform_state.compositor_element_id = compositor_element_id;
@@ -4134,12 +4133,12 @@ TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
 // the page scale transform node or ancestors, and is set on descendants.
 TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
   TransformPaintPropertyNode::State ancestor_transform_state;
-  ancestor_transform_state.flags.in_subtree_of_page_scale = false;
+  ancestor_transform_state.in_subtree_of_page_scale = false;
   auto ancestor_transform = TransformPaintPropertyNode::Create(
       TransformPaintPropertyNode::Root(), std::move(ancestor_transform_state));
 
   TransformPaintPropertyNode::State page_scale_transform_state;
-  page_scale_transform_state.flags.in_subtree_of_page_scale = false;
+  page_scale_transform_state.in_subtree_of_page_scale = false;
   const CompositorElementId page_scale_compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   page_scale_transform_state.compositor_element_id =
@@ -4152,7 +4151,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
       CompositorElementIdFromUniqueObjectId(2);
   descendant_transform_state.compositor_element_id =
       descendant_compositor_element_id;
-  descendant_transform_state.flags.in_subtree_of_page_scale = true;
+  descendant_transform_state.in_subtree_of_page_scale = true;
   descendant_transform_state.direct_compositing_reasons =
       CompositingReason::kWillChangeTransform;
   auto descendant_transform = TransformPaintPropertyNode::Create(
@@ -4189,7 +4188,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
 TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // Create a page scale transform node with a page scale factor of 2.0.
   TransformPaintPropertyNode::State transform_state{{MakeScaleMatrix(2)}};
-  transform_state.flags.in_subtree_of_page_scale = false;
+  transform_state.in_subtree_of_page_scale = false;
   transform_state.compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   auto scale_transform_node = TransformPaintPropertyNode::Create(

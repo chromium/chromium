@@ -11,23 +11,25 @@ import javax.annotation.concurrent.NotThreadSafe;
 /**
  * Defines a feature flag for use in Java.
  *
- * Duplicate flag definitions are not permitted, so only a single
- * instance can be created with a given feature name.
+ * <p>Duplicate flag definitions are not permitted, so only a single instance can be created with a
+ * given feature name.
  *
- * To create a flag, instantiate a concrete subclass, i.e. CachedFlag, MutableFlagWithSafeDefault or
+ * <p>To instantiate a Flag, use a concrete subclass, i.e. CachedFlag, MutableFlagWithSafeDefault or
  * PostNativeFlag.
  *
- * This class and its subclasses are not thread safe.
+ * <p>This class and its subclasses are not thread safe.
  */
 @NotThreadSafe
 public abstract class Flag {
-    private static HashMap<String, Flag> sFlagsCreated = new HashMap<>();
-    protected final String mFeatureName;
-    protected Boolean mValue;
 
-    protected Flag(String featureName) {
+    private static HashMap<String, Flag> sFlagsCreated = new HashMap<>();
+    protected final FeatureMap mFeatureMap;
+    protected final String mFeatureName;
+
+    protected Flag(FeatureMap featureMap, String featureName) {
         assert !sFlagsCreated.containsKey(featureName)
                 : "Duplicate flag creation for feature: " + featureName;
+        mFeatureMap = featureMap;
         mFeatureName = featureName;
         sFlagsCreated.put(mFeatureName, this);
     }

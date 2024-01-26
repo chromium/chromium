@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">avança</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
+<translation id="1626590945318984973">La drecera no està disponible. Prem una drecera nova sense utilitzar les tecles de funció ni de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
 <translation id="1643449475550628585">Canvia la imatge del fons de pantalla diàriament</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Desactiva el mode fosc</translation>
 <translation id="1885577615937958993">avança ràpidament el contingut multimèdia</translation>
 <translation id="1887850431809612466">Revisió de maquinari</translation>
-<translation id="1897672602657312171">La drecera sense tecla de cerca pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de cerca.</translation>
 <translation id="1904932688895783618">A continuació trobaràs altres recursos útils:</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157660087437850958">selector d'emojis</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{L'administrador ha establert que <ph name="APP_NAME_1" /> s'iniciï automàticament cada vegada que iniciïs la sessió.}=2{L'administrador ha establert que <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> s'iniciïn automàticament cada vegada que iniciïs la sessió.}=3{L'administrador ha establert que <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> s'iniciïn automàticament cada vegada que iniciïs la sessió.}other{L'administrador ha establert que <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i # aplicacions més s'iniciïn automàticament cada vegada que iniciïs la sessió.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Torna-ho a provar</translation>
 <translation id="215916044711630446">El botó Afegeix de l'APN ara està desactivat</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Edita els detalls de l'APN</translation>
 <translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
+<translation id="2215920961700443347">No hi ha connexió a Internet. Connecta-t'hi i torna-ho a provar.</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
+<translation id="2465272316171730950">Estem al límit de la nostra capacitat. Torna d'aquí a una estona.</translation>
 <translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
 <translation id="2491955442992294626">Les tecles no es proven quan fas servir una altra finestra</translation>
 <translation id="2493126929778606526">Les teves millors fotos, seleccionades automàticament</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Actualitza la imatge actual del fons de pantalla</translation>
 <translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2513396635448525189">Imatge d'inici de sessió</translation>
-<translation id="2515109918609218604">La drecera no està disponible. Prem una drecera nova sense utilitzar les tecles de funció ni de cerca.</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escriptori</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode fosc</translation>
 <translation id="4130035430755296270">Mantén el cursor a sobre per veure més opcions de disseny</translation>
+<translation id="4130750466177569591">Accepto</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> s'ha iniciat automàticament}other{# aplicacions s'han iniciat automàticament}}</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Pantalla</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">disminueix la brillantor</translation>
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4176659219503619100">Tauler de control</translation>
-<translation id="4185315616950253617">La drecera amb tecles de la fila superior ha d'incloure la tecla de cerca.</translation>
 <translation id="420283545744377356">Desactiva l'estalvi de pantalla</translation>
 <translation id="4213104098953699324">Teclat USB</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Desactiva</translation>
 <translation id="439429847087949098">S'està reiniciant <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalització del teclat</translation>
+<translation id="4403262788869804671">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
+<translation id="4417830657741848074">El teu administrador ha configurat que algunes aplicacions s'iniciïn automàticament. Algunes d'aquestes aplicacions no es poden tancar.</translation>
 <translation id="4422041425070339732">fletxa avall</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4428374560396076622">La xarxa <ph name="NETWORK_NAME" /> està desactivada</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Estalvi de pantalla Moviment de la Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4500722292849917410">La drecera no està disponible. Prem una drecera nova amb una tecla modificadora (Ctrl, Alt, Maj o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfície</translation>
 <translation id="4503223151711056411">Fletxa esquerra</translation>
 <translation id="4507392511610824664">augmenta la brillantor</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4835901797422965222">No hi ha cap xarxa activa</translation>
 <translation id="4839698083503556542">Crea la teva pel·lícula</translation>
+<translation id="48409034532829769">El teu administrador ha configurat que <ph name="APP_NAME" /> s'iniciï automàticament. Aquesta aplicació no es pot tancar.</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4847902821209177679">S'ha seleccionat <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, prem Retorn per seleccionar els àlbums de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolució de DNS</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Dividit</translation>
 <translation id="4972592110715526173">canvi de mode</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
+<translation id="4982627662315910959">La drecera no està disponible. Prem una drecera nova amb Maj i una tecla modificadora més (Ctrl, Alt o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>
 <translation id="4988526792673242964">Pàgines</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Programació del tema fosc</translation>
 <translation id="5229344016299762883">Surt del mode complet</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{L'administrador ha configurat <ph name="APP_NAME" /> perquè s'iniciï automàticament cada vegada que iniciïs la sessió.}=2{L'administrador ha configurat <ph name="APP_NAME" /> i 1 aplicació més perquè s'iniciïn automàticament cada vegada que iniciïs la sessió.}other{L'administrador ha configurat <ph name="APP_NAME" /> i # aplicacions més perquè s'iniciïn automàticament cada vegada que iniciïs la sessió.}}</translation>
 <translation id="5252456968953390977">Itinerància</translation>
 <translation id="5257811368506016604">Activa el mode de color clar</translation>
 <translation id="5264277876637023664">Executa la prova de CPU</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
-<translation id="7273347807225967898">La drecera no està disponible. Prem una drecera nova amb una tecla modificadora (Ctrl, Alt, Maj, cerca o menú d'aplicacions).</translation>
+<translation id="7271932918253517778">La drecera amb tecles de la fila superior ha d'incloure la tecla de <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sent la brisa</translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Controls generals</translation>
 <translation id="7977800524392185497">Per unir-te a una xarxa <ph name="NETWORK_NAME" />, ves a Configuració</translation>
 <translation id="7978412674231730200">Clau privada</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{L'aplicació <ph name="APP_NAME_1" /> s'ha iniciat automàticament}other{# aplicacions s'han iniciat automàticament}}</translation>
 <translation id="7994702968232966508">Mètode EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8017679124341497925">S'ha editat la drecera</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8094062939584182041">Permet que Google t'enviï un correu electrònic sobre aquest problema</translation>
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
-<translation id="8111706652656628199">La drecera no està disponible. Prem una drecera nova amb Maj i una tecla modificadora més (Ctrl, Alt, cerca o menú d'aplicacions).</translation>
 <translation id="811820734797650957">(Android) Es pot fer ping a la passarel·la</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>

@@ -14,24 +14,32 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
  * Tests opening a file with missing filename extension from Files app.
  *
  * @param {string} path Directory path (Downloads or Drive).
- * @param {Object<TestEntryInfo>} entry FileSystem entry to use.
+ * @param {Record<string, TestEntryInfo>} entry FileSystem entry to use.
  */
 async function sniffedFileOpen(path, entry) {
   await sendTestMessage({
     name: 'expectFileTask',
+    // @ts-ignore: error TS4111: Property 'targetPath' comes from an index
+    // signature, so it must be accessed with ['targetPath'].
     fileNames: [entry.targetPath],
     openType: 'launch',
   });
   // Open Files.App on |path|, add imgpdf to Downloads and Drive.
+  // @ts-ignore: error TS2322: Type 'Record<string, TestEntryInfo>' is not
+  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(path, [entry], [entry]);
 
   // Open the file from Files app.
+  // @ts-ignore: error TS4111: Property 'mimeType' comes from an index
+  // signature, so it must be accessed with ['mimeType'].
   if (entry.mimeType === 'application/pdf') {
     // When SWA is enabled, Backlight is also enabled and becomes the default
     // handler for PDF files. So we have to use the "open with" option to open
     // in the browser.
 
     // Select the file.
+    // @ts-ignore: error TS4111: Property 'targetPath' comes from an index
+    // signature, so it must be accessed with ['targetPath'].
     await remoteCall.waitUntilSelected(appId, entry.targetPath);
 
     // Right-click the selected file.
@@ -53,6 +61,8 @@ async function sniffedFileOpen(path, entry) {
         '#tasks-menu:not([hidden]) [file-type-icon="pdf"]:not([hidden])');
   } else {
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        // @ts-ignore: error TS4111: Property 'targetPath' comes from an index
+        // signature, so it must be accessed with ['targetPath'].
         'openFile', appId, [entry.targetPath]));
   }
 
@@ -63,8 +73,14 @@ async function sniffedFileOpen(path, entry) {
 
   // Find the main (normal) browser window.
   let normalWindow = undefined;
+  // @ts-ignore: error TS2339: Property 'length' does not exist on type
+  // 'Object'.
   for (let i = 0; i < browserWindows.length; ++i) {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'number' can't be used to index type 'Object'.
     if (browserWindows[i].type === 'normal') {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'number' can't be used to index type 'Object'.
       normalWindow = browserWindows[i];
       break;
     }
@@ -78,21 +94,39 @@ async function sniffedFileOpen(path, entry) {
   const url = tabs[0].pendingUrl || tabs[0].url;
   // Check the end of the URL matches the file we tried to open.
   const tail = url.replace(/.*\//, '');
+  // @ts-ignore: error TS4111: Property 'targetPath' comes from an index
+  // signature, so it must be accessed with ['targetPath'].
   chrome.test.assertTrue(tail === entry.targetPath);
 }
 
+// @ts-ignore: error TS4111: Property 'pdfOpenDownloads' comes from an index
+// signature, so it must be accessed with ['pdfOpenDownloads'].
 testcase.pdfOpenDownloads = () => {
+  // @ts-ignore: error TS4111: Property 'imgPdf' comes from an index signature,
+  // so it must be accessed with ['imgPdf'].
   return sniffedFileOpen(RootPath.DOWNLOADS, ENTRIES.imgPdf);
 };
 
+// @ts-ignore: error TS4111: Property 'pdfOpenDrive' comes from an index
+// signature, so it must be accessed with ['pdfOpenDrive'].
 testcase.pdfOpenDrive = () => {
+  // @ts-ignore: error TS4111: Property 'imgPdf' comes from an index signature,
+  // so it must be accessed with ['imgPdf'].
   return sniffedFileOpen(RootPath.DRIVE, ENTRIES.imgPdf);
 };
 
+// @ts-ignore: error TS4111: Property 'textOpenDownloads' comes from an index
+// signature, so it must be accessed with ['textOpenDownloads'].
 testcase.textOpenDownloads = () => {
+  // @ts-ignore: error TS4111: Property 'plainText' comes from an index
+  // signature, so it must be accessed with ['plainText'].
   return sniffedFileOpen(RootPath.DOWNLOADS, ENTRIES.plainText);
 };
 
+// @ts-ignore: error TS4111: Property 'textOpenDrive' comes from an index
+// signature, so it must be accessed with ['textOpenDrive'].
 testcase.textOpenDrive = () => {
+  // @ts-ignore: error TS4111: Property 'plainText' comes from an index
+  // signature, so it must be accessed with ['plainText'].
   return sniffedFileOpen(RootPath.DRIVE, ENTRIES.plainText);
 };

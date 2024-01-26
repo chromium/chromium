@@ -43,6 +43,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -50,9 +53,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -89,9 +89,9 @@ public class SigninManagerImplTest {
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
     private static final AccountInfo ACCOUNT_INFO =
             new AccountInfo(
-                    new CoreAccountId("gaia-id-user"),
+                    new CoreAccountId(FakeAccountManagerFacade.toGaiaId("user@domain.com")),
                     "user@domain.com",
-                    "gaia-id-user",
+                    FakeAccountManagerFacade.toGaiaId("user@domain.com"),
                     "full name",
                     "given name",
                     null,
@@ -237,10 +237,7 @@ public class SigninManagerImplTest {
         assertFalse(mSigninManager.isSignOutAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signinAndEnableSync(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.START_PAGE,
-                callback);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
 
         verify(mNativeMock)
                 .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(ACCOUNT_INFO), any());
@@ -287,8 +284,7 @@ public class SigninManagerImplTest {
         assertFalse(mSigninManager.isSignOutAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signinAndEnableSync(
-                ACCOUNT_FROM_INFO, SigninAccessPoint.START_PAGE, callback);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
 
         List<CoreAccountInfo> coreAccountInfos =
                 mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
@@ -372,7 +368,7 @@ public class SigninManagerImplTest {
         assertTrue(mSigninManager.isSyncOptInAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signin(ACCOUNT_FROM_INFO, SigninAccessPoint.START_PAGE, callback);
+        mSigninManager.signin(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
@@ -894,10 +890,7 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.UNKNOWN),
                         any());
 
-        mSigninManager.signinAndEnableSync(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.UNKNOWN,
-                null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
 
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -927,7 +920,7 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.UNKNOWN),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_FROM_INFO, SigninAccessPoint.UNKNOWN, null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
 
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -943,10 +936,7 @@ public class SigninManagerImplTest {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
-        mSigninManager.signinAndEnableSync(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.UNKNOWN,
-                null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
     }
 
     @Test(expected = AssertionError.class)
@@ -955,10 +945,7 @@ public class SigninManagerImplTest {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
-        mSigninManager.signinAndEnableSync(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.UNKNOWN,
-                null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
     }
 
     @Test
@@ -980,10 +967,7 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
-        mSigninManager.signinAndEnableSync(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.START_PAGE,
-                null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignInAllowedChanged();
 
@@ -1018,7 +1002,7 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_FROM_INFO, SigninAccessPoint.START_PAGE, null);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignInAllowedChanged();
 

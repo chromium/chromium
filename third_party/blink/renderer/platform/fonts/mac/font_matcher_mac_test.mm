@@ -224,6 +224,18 @@ TEST(FontMatcherMacTest, FontFamilyMatchingUnavailableFont) {
   EXPECT_FALSE(font);
 }
 
+TEST(FontMatcherMacTest, FontFamilyMatchingLastResortFont) {
+  ScopedCFTypeRef<CTFontRef> last_resort_font =
+      MatchCTFontFamily(AtomicString("lastresort"), kNormalWeightValue,
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+  EXPECT_FALSE(last_resort_font);
+
+  ScopedCFTypeRef<CTFontRef> last_resort_font_bold =
+      MatchCTFontFamily(AtomicString("lastresort"), kBoldWeightValue,
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+  EXPECT_FALSE(last_resort_font_bold);
+}
+
 TEST(FontMatcherMacTest, MatchUniqueUnavailableFont) {
   ScopedCFTypeRef<CTFontRef> font = MatchUniqueFont(
       AtomicString(

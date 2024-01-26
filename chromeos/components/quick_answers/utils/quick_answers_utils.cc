@@ -104,11 +104,30 @@ std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(base::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
 
-std::optional<double> GetRatio(const double value1, const double value2) {
-  if (value1 == 0 || value2 == 0)
+std::optional<double> GetRatio(const std::optional<double>& value1,
+                               const std::optional<double>& value2) {
+  if (!value1.has_value() || !value2.has_value()) {
     return std::nullopt;
+  }
 
-  return std::max(value1, value2) / std::min(value1, value2);
+  if (value1.value() == 0 || value2.value() == 0) {
+    return std::nullopt;
+  }
+
+  return std::max(value1.value(), value2.value()) /
+         std::min(value1.value(), value2.value());
+}
+
+std::optional<double> GetUnitConversionRate(const base::Value::Dict& unit_a,
+                                            const base::Value::Dict& unit_b) {
+  const std::optional<double> unit_a_to_standard_conversion_rate =
+      unit_a.FindDoubleByDottedPath(kConversionToSiAPath);
+  const std::optional<double> unit_b_to_standard_conversion_rate =
+      unit_b.FindDoubleByDottedPath(kConversionToSiAPath);
+  const std::optional<double> conversion_rate = GetRatio(
+      unit_a_to_standard_conversion_rate, unit_b_to_standard_conversion_rate);
+
+  return conversion_rate;
 }
 
 }  // namespace quick_answers

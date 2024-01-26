@@ -38,7 +38,7 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
         PendingIntent pendingIntent =
                 NotificationIntentInterceptor.createInterceptPendingIntent(
                         NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
-                        /* intentId= */ 0,
+                        /* actionType= */ NotificationUmaTracker.ActionType.UNKNOWN,
                         getMetadata(),
                         contentIntent);
         return setContentIntent(pendingIntent);
@@ -80,7 +80,7 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
         return setDeleteIntent(
                 NotificationIntentInterceptor.createInterceptPendingIntent(
                         NotificationIntentInterceptor.IntentType.DELETE_INTENT,
-                        /* intentId= */ 0,
+                        /* actionType= */ NotificationUmaTracker.ActionType.UNKNOWN,
                         getMetadata(),
                         intent));
     }

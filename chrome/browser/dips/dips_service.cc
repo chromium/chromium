@@ -153,9 +153,14 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
                                 deletion_start));
 
     remover->AddObserver(state_clearer);
+    chrome_browsing_data_remover::DataType remove_mask =
+        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
+    if (base::FeatureList::IsEnabled(features::kDIPSPreservePSData)) {
+      remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    }
     remover->RemoveWithFilterAndReply(
         base::Time::Min(), base::Time::Max(),
-        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+        remove_mask |
             content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
             content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
@@ -184,7 +189,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
-  absl::optional<base::FilePath> path_to_use;
+  std::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
 
   if (browser_context_->IsOffTheRecord()) {
@@ -208,9 +213,13 @@ DIPSService::DIPSService(content::BrowserContext* context)
 
   storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
 
-  storage_.AsyncCall(&DIPSStorage::IsPrepopulated)
-      .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,
-                           weak_factory_.GetWeakPtr()));
+  if (browser_context_->IsOffTheRecord()) {
+    wait_for_prepopulating_.Quit();
+  } else {
+    storage_.AsyncCall(&DIPSStorage::IsPrepopulated)
+        .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,
+                             weak_factory_.GetWeakPtr()));
+  }
   if (repeating_timer_) {
     repeating_timer_->Start();
   }
@@ -478,7 +487,7 @@ void DIPSService::HandleRedirect(
 void DIPSService::OnTimerFired() {
   // Storage init should be finished by now, so no need to delay until then.
   storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
-      .WithArgs(absl::nullopt)
+      .WithArgs(std::nullopt)
       .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
                            weak_factory_.GetWeakPtr(), base::DoNothing()));
 }

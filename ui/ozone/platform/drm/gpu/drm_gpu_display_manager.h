@@ -24,10 +24,6 @@ struct ColorTemperatureAdjustment;
 struct GammaAdjustment;
 }  // namespace display
 
-namespace gfx {
-class ColorSpace;
-}  // namespace gfx
-
 namespace ui {
 
 class DrmDeviceManager;
@@ -85,8 +81,6 @@ class DrmGpuDisplayManager {
                           const display::GammaCurve& degamma,
                           const display::GammaCurve& gamma);
   bool SetPrivacyScreen(int64_t display_id, bool enabled);
-
-  void SetColorSpace(int64_t crtc_id, const gfx::ColorSpace& color_space);
 
  private:
   friend class DrmGpuDisplayManagerTest;

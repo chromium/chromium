@@ -51,6 +51,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -66,8 +68,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -189,7 +189,8 @@ public class StartSurfaceTabSwitcherTest {
 
         onViewWaiting(
                         allOf(
-                                withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
@@ -339,7 +340,11 @@ public class StartSurfaceTabSwitcherTest {
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(R.id.logo));
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            onViewWaiting(withId(R.id.search_provider_logo));
+        } else {
+            onViewWaiting(withId(R.id.logo));
+        }
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.
@@ -359,16 +364,18 @@ public class StartSurfaceTabSwitcherTest {
         }
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
-        int parentViewId =
+        int ancestorViewId =
                 TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
-                        ? R.id.compositor_view_holder
+                        ? TabUiTestHelper.getTabSwitcherAncestorId(cta)
                         : R.id.secondary_tasks_surface_view;
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
-                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_recycler_view)));
+                allOf(
+                        isDescendantOfA(withId(ancestorViewId)),
+                        withId(R.id.tab_list_recycler_view)));
 
         RecyclerView recyclerView =
-                cta.findViewById(parentViewId).findViewById(R.id.tab_list_recycler_view);
+                cta.findViewById(ancestorViewId).findViewById(R.id.tab_list_recycler_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the Tab switcher is the
         // last created Tab by tapping the MV tile; the second card is the Tab created or restored

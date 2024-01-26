@@ -133,13 +133,10 @@ class BookmarkFolderPickerMediator {
         updateButtonsForCurrentParent();
 
         List<BookmarkListEntry> children =
-                mQueryHandler.buildBookmarkListForParent(
-                        parentItem.getId(), /* powerFilter= */ null);
-        // Filter out any unwanted items coming from the query handler.
+                mQueryHandler.buildBookmarkListForFolderSelect(
+                        parentItem.getId(), mMovingAtLeastOneFolder);
         children =
-                children.stream()
-                        .filter(this::filterQueryHandlerResult)
-                        .collect(Collectors.toList());
+                children.stream().filter(this::filterMovingBookmarks).collect(Collectors.toList());
 
         mModelList.clear();
         for (int i = 0; i < children.size(); i++) {
@@ -151,6 +148,16 @@ class BookmarkFolderPickerMediator {
                 mModelList.add(createFolderPickerRow(child));
             }
         }
+    }
+
+    private boolean filterMovingBookmarks(BookmarkListEntry entry) {
+        BookmarkItem item = entry.getBookmarkItem();
+        // Allow non-bookmarks.
+        if (item == null) {
+            return true;
+        }
+
+        return !mBookmarkIds.contains(item.getId());
     }
 
     ListItem createSectionHeaderRow(BookmarkListEntry entry) {
@@ -166,6 +173,7 @@ class BookmarkFolderPickerMediator {
         PropertyModel propertyModel =
                 mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
 
+        propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, entry);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
         propertyModel.set(
@@ -244,49 +252,5 @@ class BookmarkFolderPickerMediator {
                 mBookmarkModel, mBookmarkIds, mCurrentParentItem.getId());
         BookmarkUtils.setLastUsedParent(mCurrentParentItem.getId());
         mFinishRunnable.run();
-    }
-
-    private boolean filterQueryHandlerResult(BookmarkListEntry entry) {
-        @ViewType int type = entry.getViewType();
-        // Only section headers for the root node should be used. Other folder, such as reading
-        // list, will be ignored.
-        if (type == ViewType.SECTION_HEADER) {
-            return BookmarkFeatures.isBookmarksAccountStorageEnabled()
-                    && Objects.equals(mBookmarkModel.getRootFolderId(), mCurrentParentItem.getId());
-        } else if (type != ViewType.IMPROVED_BOOKMARK_COMPACT
-                && type != ViewType.IMPROVED_BOOKMARK_VISUAL) {
-            // Discard other types which aren't supported in the folder
-            // picker.
-            return false;
-        }
-
-        BookmarkItem item = entry.getBookmarkItem();
-        // Null items are unexpected items in the list.
-        if (item == null) {
-            return false;
-        }
-
-        // Only show folders.
-        if (!item.isFolder()) {
-            return false;
-        }
-
-        // Don't show any folders that are currently being moved.
-        if (mBookmarkIds.contains(item.getId())) {
-            return false;
-        }
-
-        boolean excludeForFolder =
-                mMovingAtLeastOneFolder
-                        && !BookmarkUtils.canAddFolderToParent(mBookmarkModel, item.getId());
-        boolean excludeForBookmark =
-                mMovingAtLeastOneBookmark
-                        && !BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, item.getId());
-        // Remove any folders which can't have children added to them.
-        if (excludeForFolder || excludeForBookmark) {
-            return false;
-        }
-
-        return true;
     }
 }

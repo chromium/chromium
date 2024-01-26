@@ -7,8 +7,8 @@
 
 #include <iterator>
 
+#include <optional>
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -44,8 +44,8 @@ enum class HostResolverSource {
 
 base::Value ToValue(HostResolverSource source);
 
-// absl::nullopt if `value` is malformed for deserialization.
-absl::optional<HostResolverSource> HostResolverSourceFromValue(
+// std::nullopt if `value` is malformed for deserialization.
+std::optional<HostResolverSource> HostResolverSourceFromValue(
     const base::Value& value);
 
 const HostResolverSource kHostResolverSources[] = {

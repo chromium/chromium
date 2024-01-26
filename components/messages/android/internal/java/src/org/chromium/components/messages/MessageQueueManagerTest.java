@@ -43,8 +43,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.Map;
-
 /** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -92,6 +90,15 @@ public class MessageQueueManagerTest {
             };
 
     private class EmptyMessageStateHandler implements MessageStateHandler {
+
+        private int mId = MessageIdentifier.TEST_MESSAGE;
+
+        public EmptyMessageStateHandler(int id) {
+            mId = id;
+        }
+
+        public EmptyMessageStateHandler() {}
+
         @Override
         public Animator show(int fromIndex, int toIndex) {
             return new AnimatorSet();
@@ -107,7 +114,7 @@ public class MessageQueueManagerTest {
 
         @Override
         public int getMessageIdentifier() {
-            return MessageIdentifier.TEST_MESSAGE;
+            return mId;
         }
     }
 
@@ -151,6 +158,8 @@ public class MessageQueueManagerTest {
         var testValues = new TestValues();
         testValues.addFeatureFlagOverride(
                 MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
         FeatureList.setTestValues(testValues);
         MessageContainer container = Mockito.mock(MessageContainer.class);
         doAnswer(
@@ -175,17 +184,25 @@ public class MessageQueueManagerTest {
     public void testEnqueueMessage() {
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m1 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.POPUP_BLOCKED));
+        MessageStateHandler m2 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.SYNC_ERROR));
 
         var enqueued =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.Messages.Enqueued", m1.getMessageIdentifier())
+                        .expectIntRecord(
+                                "Android.Messages.Enqueued.Visible", m1.getMessageIdentifier())
+                        .expectNoRecords("Android.Messages.Enqueued.Hiding")
+                        .expectNoRecords("Android.Messages.Enqueued.Hidden")
+                        .build();
         var dismissed =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
+                        "Android.Messages.Dismissed.PopupBlocked", DismissReason.TIMER);
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         enqueued.assertExpected();
+
         verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
@@ -194,10 +211,10 @@ public class MessageQueueManagerTest {
 
         enqueued =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+                        "Android.Messages.Enqueued", m2.getMessageIdentifier());
         dismissed =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
+                        "Android.Messages.Dismissed.SyncError", DismissReason.TIMER);
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         enqueued.assertExpected();
         verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
@@ -214,9 +231,192 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testEnqueueMessage_withStacking() {
-        FeatureList.setTestFeatures(
-                Map.of(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        var testValues = new TestValues();
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true);
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
+        FeatureList.setTestValues(testValues);
         testEnqueueMessage();
+    }
+
+    /**
+     * Tests lifecycle of a single message: - enqueueMessage() calls show() - dismissMessage() calls
+     * hide() and dismiss() when a queue is enqueued with multiple messages
+     */
+    @Test
+    @SmallTest
+    public void testEnqueueMultipleMessages() {
+        testEnqueueMultipleMessagesInternal(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testEnqueueMultipleMessages_withStacking() {
+        testEnqueueMultipleMessagesInternal(true);
+    }
+
+    // TODO(crbug.com/1517771): replace with ParameterizedRunner or remove non-stacking animation
+    // test case
+    private void testEnqueueMultipleMessagesInternal(boolean isStackingEnabled) {
+        var testValues = new TestValues();
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, isStackingEnabled);
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
+        FeatureList.setTestValues(testValues);
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
+        MessageStateHandler m1 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.POPUP_BLOCKED));
+        MessageStateHandler m2 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.SYNC_ERROR));
+
+        var enqueued =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued",
+                                m1.getMessageIdentifier(),
+                                m2.getMessageIdentifier())
+                        .expectIntRecord(
+                                "Android.Messages.Enqueued.Visible", m1.getMessageIdentifier())
+                        .expectIntRecord(
+                                "Android.Messages.Enqueued.Hiding", m1.getMessageIdentifier())
+                        .expectIntRecord(
+                                "Android.Messages.Enqueued.Hidden", m2.getMessageIdentifier())
+                        .build();
+        var dismissed =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Dismissed.PopupBlocked", DismissReason.TIMER);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        enqueued.assertExpected();
+
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m1).dismiss(DismissReason.TIMER);
+        dismissed.assertExpected();
+
+        dismissed =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Dismissed.SyncError", DismissReason.TIMER);
+        enqueued.assertExpected();
+        if (isStackingEnabled) {
+            verify(m2).show(eq(Position.BACK), eq(Position.FRONT));
+        } else {
+            verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        }
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
+        dismissed.assertExpected();
+        verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m2).dismiss(DismissReason.TIMER);
+    }
+
+    /** Histograms are recorded with whether queue is suspended. */
+    @Test
+    @SmallTest
+    public void testEnqueueWithQueueSuspension() {
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
+        int token = queueManager.suspend();
+
+        MessageStateHandler m1 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.POPUP_BLOCKED));
+        MessageStateHandler m2 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.SYNC_ERROR));
+
+        var enqueued =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued",
+                                m1.getMessageIdentifier(),
+                                m2.getMessageIdentifier())
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued.Suspended",
+                                m1.getMessageIdentifier(),
+                                m2.getMessageIdentifier())
+                        .expectNoRecords("Android.Messages.Enqueued.Resumed")
+                        .build();
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        enqueued.assertExpected();
+
+        MessageStateHandler m3 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.ABOUT_THIS_SITE));
+        MessageStateHandler m4 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.DOWNLOAD_PROGRESS));
+        enqueued =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued",
+                                m3.getMessageIdentifier(),
+                                m4.getMessageIdentifier())
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued.Resumed",
+                                m3.getMessageIdentifier(),
+                                m4.getMessageIdentifier())
+                        .expectNoRecords("Android.Messages.Enqueued.Suspended")
+                        .build();
+        queueManager.resume(token);
+
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m4, m4, SCOPE_INSTANCE_ID, false);
+        enqueued.assertExpected();
+    }
+
+    /** Histograms are recorded with whether scope is active. */
+    @Test
+    @SmallTest
+    public void testEnqueueWithScopeActivation() {
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
+
+        MessageStateHandler m1 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.POPUP_BLOCKED));
+        MessageStateHandler m2 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.SYNC_ERROR));
+        MessageStateHandler m3 =
+                Mockito.spy(new EmptyMessageStateHandler(MessageIdentifier.DOWNLOAD_PROGRESS));
+
+        var enqueued =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued",
+                                m1.getMessageIdentifier(),
+                                m2.getMessageIdentifier(),
+                                m3.getMessageIdentifier())
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued.ScopeInactive",
+                                m2.getMessageIdentifier())
+                        .expectIntRecords(
+                                "Android.Messages.Enqueued.ScopeActive",
+                                m1.getMessageIdentifier(),
+                                m3.getMessageIdentifier())
+                        .build();
+
+        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
+        final ScopeKey windowScopeKey =
+                new ScopeKey(new MockWindowAndroidWebContents().getTopLevelNativeWindow());
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, inactiveScopeKey, true);
+        queueManager.enqueueMessage(m3, m3, windowScopeKey, false);
+        enqueued.assertExpected();
+
+        // Do not record again when there scopes are updated
+        enqueued =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Messages.Enqueued.ScopeInactive")
+                        .expectNoRecords("Android.Messages.Enqueued.ScopeActive")
+                        .build();
+        queueManager.onScopeChange(
+                new MessageScopeChange(
+                        MessageScopeType.NAVIGATION, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+        queueManager.onScopeChange(
+                new MessageScopeChange(
+                        MessageScopeType.NAVIGATION, inactiveScopeKey, ChangeType.ACTIVE));
+        enqueued.assertExpected();
     }
 
     /** Test method {@link MessageQueueManager#dismissAllMessages(int)}. */

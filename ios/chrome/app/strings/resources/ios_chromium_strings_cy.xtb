@@ -81,7 +81,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3366305173356742781">Data Chromium yn eich cyfrif</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Gallai hyn gynnwys hanes ac awtolenwi.}zero{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Gallai hyn gynnwys hanes ac awtolenwi.}two{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Gallai hyn gynnwys hanes ac awtolenwi.}few{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Gallai hyn gynnwys hanes ac awtolenwi.}many{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Gallai hyn gynnwys hanes ac awtolenwi.}other{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Gallai hyn gynnwys hanes ac awtolenwi.}}</translation>
 <translation id="3472200483164753384">Ni chefnogir ar Chromium Canary</translation>
-<translation id="3478750326643748149">Cuddio “Manteisio i'r eithaf ar Chromium”</translation>
 <translation id="347967311580159871">Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ni rannwyd eich cyfrinair. Gwiriwch eich cysylltiad rhyngrwyd a gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium. Ac yna rhowch gynnig arall arni.</translation>
 <translation id="3554027294407525061">Clirio Data Pori yn Chromium.</translation>
@@ -101,9 +100,9 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Agor Chromium o Unrhyw Ap</translation>
-<translation id="4002314982058020967">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Yn Agor a Rhedeg Gwiriad Diogelwch yn Chromium.</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
+<translation id="4076589763479456892">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
 <translation id="4106512142782407609">Wedi mewngofnodi fel <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="4408912345039114853">Rhedeg Gwiriad Diogelwch Chromium</translation>
 <translation id="4432744876818348753">Mewngofnodwch i gael y gorau o Chromium.</translation>
 <translation id="4445228361214254027">Diffoddodd eich sefydliad y gallu i ddefnyddio a chadw data Chromium yn eich Cyfrif Google. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
-<translation id="4485517920713468480">Bydd Chromium yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb. Gallwch newid hwn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecynnau<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Yn ychwanegu'r cyfeiriadau URL sydd wedi'u mewnbynnu at eich rhestr ddarllen yn Chromium.</translation>
 <translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="5534584691915394889">Bydd hwn yn cael ei ddefnyddio i greu digwyddiadau yn eich Apple Calendar o Chromium a Google Lens.</translation>
 <translation id="5571094606370987472">Yn Agor y Tabiau Diweddar Chromium.</translation>
 <translation id="5623083843656850677">Clowch eich tabiau anhysbys pan fyddwch yn gadael Chromium neu'n newid i ap gwahanol.</translation>
+<translation id="5671188105328420281">Awgrymiadau Chromium</translation>
 <translation id="5688047395118852662">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="5777187867430702742">Tudalen Chromium</translation>
@@ -286,6 +285,7 @@ Pethau i'w hystyried:
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
 <translation id="88376265765385899">Yn agor y nodau tudalen Chromium.</translation>
 <translation id="8860548555286245440">Agor cyfeiriadau URL yn Chromium yn y modd Anhysbys</translation>
+<translation id="8866191443434488382">Bydd Chromium yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd y rhif olrhain pecyn ac enw'r wefan yn cael eu hanfon i Chromium i ddarparu'r nodwedd hon ac i wella nodweddion siopa i bawb. Gallwch ddiweddaru hwn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecyn<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium ar gyfer iOS</translation>
 <translation id="8924617840944134898">Agor Tab Anhysbys Chromium</translation>
 <translation id="894437814105052438">Pan fyddwch yn allgofnodi, ni fydd Chromium yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>

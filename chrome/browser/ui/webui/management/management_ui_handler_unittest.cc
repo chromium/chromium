@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -31,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -402,6 +404,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     bool legacy_tech_reporting_enabled;
     base::Value::List report_app_inventory;
     base::Value::List report_app_usage;
+    base::Value::List report_website_telemetry;
+    base::Value::List report_website_activity_allowlist;
+    base::Value::List report_website_telemetry_allowlist;
   };
 
   void ResetTestConfig() { ResetTestConfig(true); }
@@ -429,6 +434,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.insights_extension_enabled = false;
     setup_config_.report_app_inventory = base::Value::List();
     setup_config_.report_app_usage = base::Value::List();
+    setup_config_.report_website_telemetry = base::Value::List();
+    setup_config_.report_website_activity_allowlist = base::Value::List();
+    setup_config_.report_website_telemetry_allowlist = base::Value::List();
     setup_config_.legacy_tech_reporting_enabled = false;
   }
 
@@ -525,6 +533,16 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         std::move(GetTestConfig().report_app_inventory));
     profile_->GetPrefs()->SetList(::ash::reporting::kReportAppUsage,
                                   std::move(GetTestConfig().report_app_usage));
+
+    profile_->GetPrefs()->SetList(
+        ::reporting::kReportWebsiteTelemetry,
+        std::move(GetTestConfig().report_website_telemetry));
+    profile_->GetPrefs()->SetList(
+        ::reporting::kReportWebsiteActivityAllowlist,
+        std::move(GetTestConfig().report_website_activity_allowlist));
+    profile_->GetPrefs()->SetList(
+        ::reporting::kReportWebsiteTelemetryAllowlist,
+        std::move(GetTestConfig().report_website_telemetry_allowlist));
 
     const policy::SystemLogUploader system_log_uploader(
         /*syslog_delegate=*/nullptr,
@@ -1244,6 +1262,126 @@ TEST_F(ManagementUIHandlerTests, ReportAppUsage) {
   const base::Value::List info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportAppInfoAndActivity, "app info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportAllWebsiteTelemetry_AllowlistedTelemetryType) {
+  ResetTestConfig(false);
+  base::Value::List allowed_telemetry_types;
+  allowed_telemetry_types.Append(::reporting::kWebsiteTelemetryUsageType);
+  GetTestConfig().report_website_telemetry = std::move(allowed_telemetry_types);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append(ContentSettingsPattern::Wildcard().ToString());
+  GetTestConfig().report_website_telemetry_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportAllWebsiteInfoAndActivity,
+       "website info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportAllWebsiteTelemetry_DisallowedTelemetryTypes) {
+  ResetTestConfig(false);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append(ContentSettingsPattern::Wildcard().ToString());
+  GetTestConfig().report_website_telemetry_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportWebsiteTelemetry_AllowlistedTelemetryType) {
+  ResetTestConfig(false);
+  base::Value::List allowed_telemetry_types;
+  allowed_telemetry_types.Append(::reporting::kWebsiteTelemetryUsageType);
+  GetTestConfig().report_website_telemetry = std::move(allowed_telemetry_types);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append("[*.]google.com");
+  GetTestConfig().report_website_telemetry_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportWebsiteInfoAndActivity, "website info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportWebsiteTelemetry_DisallowedTelemetryTypes) {
+  ResetTestConfig(false);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append("[*.]google.com");
+  GetTestConfig().report_website_telemetry_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportNoWebsiteTelemetry_AllowlistedTelemetryType) {
+  ResetTestConfig(false);
+  base::Value::List allowed_telemetry_types;
+  allowed_telemetry_types.Append(::reporting::kWebsiteTelemetryUsageType);
+  GetTestConfig().report_website_telemetry = std::move(allowed_telemetry_types);
+
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ReportNoWebsiteTelemetry_DisallowedTelemetryTypes) {
+  ResetTestConfig(false);
+
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportAllWebsiteActivity) {
+  ResetTestConfig(false);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append(ContentSettingsPattern::Wildcard().ToString());
+  GetTestConfig().report_website_activity_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportAllWebsiteInfoAndActivity,
+       "website info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportWebsiteActivity) {
+  ResetTestConfig(false);
+
+  base::Value::List allowed_urls;
+  allowed_urls.Append("[*.]google.com");
+  GetTestConfig().report_website_activity_allowlist = std::move(allowed_urls);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportWebsiteInfoAndActivity, "website info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportNoWebsiteActivity) {
+  ResetTestConfig(false);
+
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }

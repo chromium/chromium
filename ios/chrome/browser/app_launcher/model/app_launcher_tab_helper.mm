@@ -24,7 +24,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
@@ -101,7 +101,8 @@ void AppLauncherTabHelper::SetBrowserPresentationProvider(
 void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
                                               const GURL& source_page_url,
                                               bool link_transition,
-                                              bool is_user_initiated) {
+                                              bool is_user_initiated,
+                                              bool user_tapped_recently) {
   // Don't open external application if chrome is not active, or if the
   // web_state is not visible.
   if ([[UIApplication sharedApplication] applicationState] !=
@@ -122,7 +123,8 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
     return;
   }
 
-  if (!is_user_initiated) {
+  if (!(is_user_initiated ||
+        (url.SchemeIs(url::kTelScheme) && user_tapped_recently))) {
     ShowAppLaunchAlert(AppLauncherAlertCause::kNoUserInteraction, url);
     return;
   }
@@ -254,7 +256,8 @@ void AppLauncherTabHelper::ShouldAllowRequest(
     RequestToLaunchApp(app_launch_request.url,
                        app_launch_request.source_page_url,
                        app_launch_request.link_transition,
-                       app_launch_request.has_user_gesture);
+                       app_launch_request.is_user_initiated,
+                       app_launch_request.user_tapped_recently);
   }
 
   std::move(callback).Run(policy_decision);
@@ -309,7 +312,7 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   if (!request_info.target_frame_is_main) {
     request_status = ExternalURLRequestStatus::kSubFrameRequestAllowed;
     // Don't allow navigations from iframe to apps if there is no user gesture.
-    if (!request_info.has_user_gesture) {
+    if (!request_info.is_user_initiated) {
       request_status = ExternalURLRequestStatus::kSubFrameRequestBlocked;
     }
   }
@@ -350,9 +353,9 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
     // Launch the app if the URL is valid or if it is the first page of the
     // tab.
-    optional_app_launch_request =
-        AppLaunchRequest{request_url, last_committed_url, is_link_transition,
-                         request_info.has_user_gesture};
+    optional_app_launch_request = AppLaunchRequest{
+        request_url, last_committed_url, is_link_transition,
+        request_info.is_user_initiated, request_info.user_tapped_recently};
   }
   return {PolicyDecision::Cancel(), std::move(optional_app_launch_request)};
 }

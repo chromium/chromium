@@ -46,14 +46,8 @@ std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
 
 }  // namespace
 
-WindowInfo::ArcExtraInfo::ArcExtraInfo() = default;
-WindowInfo::ArcExtraInfo::ArcExtraInfo(const WindowInfo::ArcExtraInfo&) =
-    default;
-WindowInfo::ArcExtraInfo& WindowInfo::ArcExtraInfo::operator=(
-    const WindowInfo::ArcExtraInfo&) = default;
-WindowInfo::ArcExtraInfo::~ArcExtraInfo() = default;
-
 WindowInfo::WindowInfo() = default;
+
 WindowInfo::~WindowInfo() = default;
 
 WindowInfo* WindowInfo::Clone() {

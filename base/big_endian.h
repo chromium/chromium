@@ -84,10 +84,21 @@ class BASE_EXPORT BigEndianReader {
  public:
   static BigEndianReader FromStringPiece(base::StringPiece string_piece);
 
-  BigEndianReader(const uint8_t* buf, size_t len);
   explicit BigEndianReader(base::span<const uint8_t> buf);
 
+  // TODO(crbug.com/1490484): Remove this overload.
+  BigEndianReader(const uint8_t* buf, size_t len);
+
+  // Returns a span over all unread bytes.
+  span<const uint8_t> remaining_bytes() const {
+    // SAFETY: The cast value is non-negative because `ptr_` is never moved past
+    // `end_`.
+    return make_span(ptr_, static_cast<size_t>(end_ - ptr_));
+  }
+
+  // TODO(crbug.com/1490484): Remove this method.
   const uint8_t* ptr() const { return ptr_; }
+  // TODO(crbug.com/1490484): Remove this method.
   size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }
 
   bool Skip(size_t len);

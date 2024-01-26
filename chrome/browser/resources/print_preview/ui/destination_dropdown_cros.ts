@@ -13,8 +13,9 @@ import './print_preview_vars.css.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
+import type {Destination} from '../data/destination.js';
+import type {PrinterStatusReason} from '../data/printer_status_cros.js';
+import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon} from '../data/printer_status_cros.js';
 
 import {getTemplate} from './destination_dropdown_cros.html.js';
 

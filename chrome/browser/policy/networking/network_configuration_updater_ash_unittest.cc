@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -304,8 +305,9 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   NetworkConfigurationUpdaterAshTest() : certificate_importer_(nullptr) {}
 
   void SetUp() override {
-    fake_user_ =
-        user_manager_->AddUser(AccountId::FromUserEmail(kFakeUserEmail));
+    fake_user_ = static_cast<ash::FakeChromeUserManager*>(
+                     user_manager::UserManager::Get())
+                     ->AddUser(AccountId::FromUserEmail(kFakeUserEmail));
 
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
@@ -322,7 +324,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     providers.push_back(&provider_);
     policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
 
-    absl::optional<base::Value::Dict> fake_toplevel_onc =
+    std::optional<base::Value::Dict> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     ASSERT_TRUE(fake_toplevel_onc.has_value());
 
@@ -345,7 +347,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   }
 
   base::Value::List* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
-    absl::optional<base::Value::Dict> fake_toplevel_onc =
+    std::optional<base::Value::Dict> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     if (!fake_toplevel_onc.has_value()) {
       return nullptr;
@@ -431,13 +433,11 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   std::unique_ptr<ash::onc::CertificateImporter>
       client_certificate_importer_owned_;
 
+  TestingProfile profile_;
+
   StrictMock<MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      user_manager_{std::make_unique<user_manager::FakeUserManager>()};
   raw_ptr<const user_manager::User> fake_user_;
-
-  TestingProfile profile_;
 
   std::unique_ptr<NetworkConfigurationUpdater> network_configuration_updater_;
 

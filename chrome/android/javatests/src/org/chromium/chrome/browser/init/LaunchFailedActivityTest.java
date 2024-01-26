@@ -22,9 +22,9 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 
 /**
  * Integration test suite for the failure to raise appropriate exceptions and launch a dialog when

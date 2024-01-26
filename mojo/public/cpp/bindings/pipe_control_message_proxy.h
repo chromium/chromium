@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_PIPE_CONTROL_MESSAGE_PROXY_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"

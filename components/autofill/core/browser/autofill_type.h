@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/autofill/core/browser/field_types.h"
@@ -82,7 +82,7 @@ class AutofillType {
   // map to ADDRESS_HOME_COUNTRY.
   FieldType GetStorableType() const;
 
-  std::string ToString() const;
+  std::string_view ToStringView() const;
 
  private:
   // The server-native field type, or UNKNOWN_TYPE if unset.

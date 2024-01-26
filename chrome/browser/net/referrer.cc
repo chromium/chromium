@@ -8,12 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_net {
 
@@ -119,7 +119,7 @@ void Referrer::Deserialize(const base::Value& value) {
       return;
     }
 
-    absl::optional<double> rate = (it + 1)->GetIfDouble();
+    std::optional<double> rate = (it + 1)->GetIfDouble();
     if (!rate) {
       // Invalid rate, stop parsing.
       return;

@@ -5,11 +5,96 @@
 #include "components/commerce/core/internals/commerce_internals_handler.h"
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/webui_utils.h"
+#include "components/payments/core/currency_formatter.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
+
+namespace {
+
+shopping_list::mojom::BookmarkProductInfoPtr GetBookmarkProductInfo(
+    const bookmarks::BookmarkNode* bookmark,
+    power_bookmarks::PowerBookmarkMeta* meta,
+    const std::string& locale_on_startup) {
+  const power_bookmarks::ShoppingSpecifics& specifics =
+      meta->shopping_specifics();
+  auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
+  bookmark_info->bookmark_id = bookmark->id();
+  bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+  bookmark_info->info->title = specifics.title();
+  bookmark_info->info->product_url = bookmark->url();
+  bookmark_info->info->domain = base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL(bookmark->url())));
+  bookmark_info->info->image_url = GURL(meta->lead_image().url());
+  bookmark_info->info->cluster_id = specifics.product_cluster_id();
+  const power_bookmarks::ProductPrice price = specifics.current_price();
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(price.currency_code(),
+                                                    locale_on_startup);
+  formatter->SetMaxFractionalDigits(2);
+
+  bookmark_info->info->current_price = base::UTF16ToUTF8(formatter->Format(
+      base::NumberToString(static_cast<float>(price.amount_micros()) /
+                           commerce::kToMicroCurrency)));
+  if (specifics.has_previous_price() &&
+      specifics.previous_price().amount_micros() >
+          specifics.current_price().amount_micros()) {
+    const power_bookmarks::ProductPrice previous_price =
+        specifics.previous_price();
+    bookmark_info->info->previous_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(previous_price.amount_micros()) /
+            commerce::kToMicroCurrency)));
+  }
+  return bookmark_info;
+}
+
+std::vector<commerce::mojom::SubscriptionPtr> GetSubscriptionsMojom(
+    bookmarks::BookmarkModel* bookmark_model,
+    const std::string& locale_on_startup,
+    std::vector<commerce::CommerceSubscription> subscriptions) {
+  std::vector<commerce::mojom::SubscriptionPtr> subscription_list;
+  for (auto sub : subscriptions) {
+    uint64_t cluster_id;
+    if (base::StringToUint64(sub.id, &cluster_id)) {
+      std::vector<const bookmarks::BookmarkNode*> bookmarks =
+          commerce::GetBookmarksWithClusterId(bookmark_model, cluster_id);
+
+      std::vector<shopping_list::mojom::BookmarkProductInfoPtr> info_list;
+      for (auto* bookmark : bookmarks) {
+        std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+            power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model, bookmark);
+        if (!meta || !meta->has_shopping_specifics()) {
+          continue;
+        }
+        info_list.push_back(
+            GetBookmarkProductInfo(bookmark, meta.get(), locale_on_startup));
+      }
+      commerce::mojom::SubscriptionPtr subscription =
+          commerce::mojom::Subscription::New();
+      subscription->cluster_id = cluster_id;
+      subscription->product_infos = std::move(info_list);
+      subscription_list.push_back(std::move(subscription));
+    }
+  }
+  return subscription_list;
+}
+
+}  // namespace
 
 namespace commerce {
 
@@ -86,8 +171,9 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
   detail->is_anonymized_url_data_collection_enabled = mojom::EligibleEntry::New(
       account_checker->IsAnonymizedUrlDataCollectionEnabled(),
       /*expected_value=*/true);
-  detail->is_subject_to_parental_controls = mojom::EligibleEntry::New(
-      account_checker->IsSubjectToParentalControls(), /*expected_value=*/false);
+  detail->is_subject_to_parental_controls =
+      mojom::EligibleEntry::New(account_checker->IsSubjectToParentalControls(),
+                                /*expected_value=*/false);
 
   std::move(callback).Run(std::move(detail));
 }
@@ -122,6 +208,29 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
                 url, info, service->locale_on_startup_));
           },
           std::move(callback), shopping_service_->AsWeakPtr()));
+}
+
+void CommerceInternalsHandler::GetSubscriptionDetails(
+    GetSubscriptionDetailsCallback callback) {
+  if (!shopping_service_->IsShoppingListEligible()) {
+    std::vector<commerce::mojom::SubscriptionPtr> subscription_list;
+    std::move(callback).Run(std::move(subscription_list));
+    return;
+  }
+
+  shopping_service_->GetAllSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](GetSubscriptionDetailsCallback callback,
+             bookmarks::BookmarkModel* bookmark_model,
+             const std::string& locale_on_startup,
+             std::vector<CommerceSubscription> subscriptions) {
+            std::move(callback).Run(GetSubscriptionsMojom(
+                bookmark_model, locale_on_startup, subscriptions));
+          },
+          std::move(callback),
+          std::move(shopping_service_->GetBookmarkModelUsedForSync()),
+          shopping_service_->locale_on_startup_));
 }
 
 }  // namespace commerce

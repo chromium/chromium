@@ -67,8 +67,8 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(b/304625912): Native events should be enabled for Crosier.
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ui::DisableNativeUiEventDispatchForTest();
 #endif
 

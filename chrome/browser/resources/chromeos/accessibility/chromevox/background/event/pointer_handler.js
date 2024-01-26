@@ -6,9 +6,10 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
-import {AsyncUtil} from '../../../common/async_util.js';
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {EventGenerator} from '../../../common/event_generator.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {EventGenerator} from '/common/event_generator.js';
+
 import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {SettingsManager} from '../../common/settings_manager.js';

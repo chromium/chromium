@@ -48,6 +48,12 @@ std::vector<float> ConstructInputVector(
           HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS:
         input_vector.push_back(static_cast<float>(signals.num_abandoned_carts));
         break;
+      case new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_SEEN:
+        input_vector.push_back(signals.num_times_seen_last_24h);
+        break;
+      case new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_USED:
+        input_vector.push_back(signals.num_times_used_last_24h);
+        break;
       default:
         NOTREACHED();
     }
@@ -57,7 +63,7 @@ std::vector<float> ConstructInputVector(
 
 void OnSingleExecutionComplete(std::vector<float>* outputs,
                                base::OnceClosure closure,
-                               const absl::optional<float>& output) {
+                               const std::optional<float>& output) {
   outputs->push_back(output.value_or(0.0));
   std::move(closure).Run();
 }
@@ -72,10 +78,10 @@ HistoryClustersModuleRankingModelHandler::
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<HistoryClustersModuleRankingModelExecutor>(),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING,
-          /*model_metadata=*/absl::nullopt) {
+          /*model_metadata=*/std::nullopt) {
   // Unloading the model is done via custom logic in this class.
   SetShouldUnloadModelOnComplete(false);
 }

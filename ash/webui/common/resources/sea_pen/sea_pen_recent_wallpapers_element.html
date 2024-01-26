@@ -26,41 +26,72 @@
   }
 
   .menu-icon-container {
+    align-items: flex-end;
+    bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    height: 28px;
+    position: absolute;
+    right: 10px;
+    width: 28px;
+    z-index: 1;
+  }
+
+  .menu-icon-container-inner {
+    align-items: flex-end;
     background-color: var(--cros-bg-color);
+    border-bottom-right-radius: var(--personalization-app-grid-item-border-radius);
     border-top-left-radius: 50%;
     bottom: 0;
-    padding: 8px;
+    display: flex;
+    height: 26px;
+    justify-content: flex-end;
     position: absolute;
     right: 0;
-    z-index: 2;
+    width: 26px;
   }
 
-  .menu-icon-container::before {
-    border-bottom-right-radius: 50%;
-    bottom: 8px;
-    box-shadow: 0 8px 0 0 var(--cros-bg-color);
-    content: "";
-    height: 16px;
+  div[class^="menu-icon-container-shadow"] {
+    height: 12px;
+    overflow: hidden;
     position: absolute;
-    right: 36px;
-    width: 16px;
+    width: 12px;
   }
 
-  .menu-icon-container::after {
-    border-bottom-right-radius: 50%;
-    bottom: 36px;
-    box-shadow: 8px 0 0 0 var(--cros-bg-color);
-    content: "";
-    height: 16px;
+  div[class^="menu-icon-container-shadow"]::before {
+    border-bottom-right-radius: 100%;
+    bottom: 0;
+    box-shadow: 0px 12px 0px 12px var(--cros-bg-color);
+    content: '';
+    height: 100%;
     position: absolute;
-    right: 8px;
-    width: 16px;
+    right: 0;
+    width: 100%;
+  }
+
+  .menu-icon-container-shadow-left {
+    right: 26px;
+  }
+
+  .menu-icon-container-shadow-top {
+    bottom: 26px;
   }
 
   .menu-icon-button {
     --cr-icon-button-size: 20px;
     background-color: var(--cros-bg-color);
+    bottom: 1px;
     margin-inline: 0;
+    position: absolute;
+  }
+
+  .dropdown-item > iron-icon {
+    margin-inline-end: 8px;
+  }
+
+  .more-like-this-option,
+  .wallpaper-info-option {
+    display: none;
   }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
@@ -85,21 +116,28 @@
             tabindex$="[[tabIndex]]">
         </wallpaper-grid-item>
         <div class="menu-icon-container">
-          <cr-icon-button class="menu-icon-button" data-id$="[[index]]" iron-icon="cr:more-vert"
+          <div class="menu-icon-container-inner">
+            <cr-icon-button class="menu-icon-button" data-id$="[[index]]" iron-icon="cr:more-vert"
               role="button" on-click="onClickMenuIcon_">
-          </cr-icon-button>
+            </cr-icon-button>
+          </div>
+          <div class="menu-icon-container-shadow-left"></div>
+          <div class="menu-icon-container-shadow-top"></div>
         </div>
         <cr-action-menu class="action-menu-container">
           <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
               on-click="onClickMoreLikeThis_">
+            <iron-icon icon="cr:add"></iron-icon>
             [[i18n('seaPenCreateMore')]]
           </button>
           <button class="dropdown-item delete-wallpaper-option"
               on-click="onClickDeleteWallpaper_">
+            <iron-icon icon="sea-pen:delete"></iron-icon>
             [[i18n('seaPenDeleteWallpaper')]]
           </button>
           <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
               on-click="onClickWallpaperInfo_">
+            <iron-icon icon="cr:info-outline"></iron-icon>
             [[i18n('seaPenAbout')]]
           </button>
         </cr-action-menu>

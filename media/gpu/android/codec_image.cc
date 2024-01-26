@@ -95,26 +95,9 @@ void CodecImage::ReleaseResources() {
   ReleaseCodecBuffer();
 }
 
-bool CodecImage::IsUsingGpuMemory() const {
-  // Only the images which are bound to texture accounts for gpu memory. Images
-  // are bound to textures when:
-  //   (a) the image has been rendered to the front buffer via an explicitly
-  //       binding flow or
-  //   (b) the image has been rendered to the front buffer via what would
-  //       usually be a nonbinding flow (e.g., a prerender) but the TextureOwner
-  //       always binds on update (since rendering to the front buffer triggers
-  //       a call to TextureOwner to update the image).
-  AssertAcquiredDrDcLock();
-  return (was_rendered_to_front_buffer() &&
-          (rendered_via_binding_flow_ || TextureOwnerBindsOnUpdate()));
-}
-
 void CodecImage::UpdateAndBindTexImage() {
   AssertAcquiredDrDcLock();
   RenderToTextureOwnerFrontBuffer();
-  if (was_rendered_to_front_buffer()) {
-    rendered_via_binding_flow_ = true;
-  }
 }
 
 bool CodecImage::HasTextureOwner() const {

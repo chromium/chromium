@@ -383,28 +383,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   }
 
   {
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(
-            CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(), "[]",
-            browser()->profile());
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(), "[]",
+        browser()->profile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(kTabCount, result->GetList().size());
   }
   {
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(
-            CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
-            "[{\"maxResults\": 0}]", browser()->profile());
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
+        "[{\"maxResults\": 0}]", browser()->profile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(0u, result->GetList().size());
   }
   {
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(
-            CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
-            "[{\"maxResults\": 2}]", browser()->profile());
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
+        "[{\"maxResults\": 2}]", browser()->profile());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(2u, result->GetList().size());

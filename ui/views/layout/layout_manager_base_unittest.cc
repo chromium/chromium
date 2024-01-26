@@ -357,6 +357,28 @@ class LayoutManagerBaseManagerTest : public testing::Test {
 
 }  // namespace
 
+TEST_F(LayoutManagerBaseManagerTest, ProposedLayout_GetLayoutFor) {
+  AddChildView(gfx::Size());
+  AddChildView(gfx::Size());
+  AddChildView(gfx::Size());
+
+  ProposedLayout layout;
+  constexpr gfx::Rect kChild1Bounds(3, 4, 10, 15);
+  layout.child_layouts.push_back({child(0), true, kChild1Bounds});
+  layout.child_layouts.push_back({child(1), false});
+
+  const ProposedLayout& const_layout = layout;
+
+  EXPECT_EQ(&layout.child_layouts[0], layout.GetLayoutFor(child(0)));
+  EXPECT_EQ(&const_layout.child_layouts[0],
+            const_layout.GetLayoutFor(child(0)));
+  EXPECT_EQ(&layout.child_layouts[1], layout.GetLayoutFor(child(1)));
+  EXPECT_EQ(&const_layout.child_layouts[1],
+            const_layout.GetLayoutFor(child(1)));
+  EXPECT_EQ(nullptr, layout.GetLayoutFor(child(2)));
+  EXPECT_EQ(nullptr, const_layout.GetLayoutFor(child(2)));
+}
+
 TEST_F(LayoutManagerBaseManagerTest, ApplyLayout) {
   AddChildView(gfx::Size());
   AddChildView(gfx::Size());

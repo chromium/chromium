@@ -389,9 +389,34 @@ TEST_F(HighLevelChapsClientTest, FindObjects) {
   EXPECT_EQ(received_attrs.SerializeAsString(),
             kAttributes.SerializeAsString());
 
-  // Check that the result code was forwarded correctly.
+  // Check that the reply was forwarded correctly.
   EXPECT_EQ(waiter.Get<uint32_t>(), kResultCode);
   EXPECT_EQ(waiter.Get<std::vector<ObjectHandle>>(), kResultHandles);
+}
+
+// Test that Sign correctly translates its arguments and invokes
+// SessionChapsClient.
+TEST_F(HighLevelChapsClientTest, Sign) {
+  constexpr SlotId kSlotId(1);
+  constexpr uint64_t kMechanismType = 22;
+  const std::vector<uint8_t> kMechanismParameter{3, 3, 3, 3};
+  constexpr ObjectHandle kKeyHandle(33);
+  const std::vector<uint8_t> kData{4, 4, 4, 4};
+  const std::vector<uint8_t> kResultSignature{5, 5, 5, 5};
+  constexpr uint32_t kResultCode = 66;
+
+  EXPECT_CALL(mock_session_client_,
+              Sign(kSlotId, kMechanismType, kMechanismParameter, kKeyHandle,
+                   kData, _, _))
+      .WillOnce(RunOnceCallback<6>(kResultSignature, kResultCode));
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+  client_.Sign(kSlotId, kMechanismType, kMechanismParameter, kKeyHandle, kData,
+               waiter.GetCallback());
+
+  // Check that the reply was forwarded correctly.
+  EXPECT_EQ(waiter.Get<std::vector<uint8_t>>(), kResultSignature);
+  EXPECT_EQ(waiter.Get<uint32_t>(), kResultCode);
 }
 
 // Test that GenerateKeyPair correctly translates its arguments and invokes

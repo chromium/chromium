@@ -27,6 +27,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -95,14 +96,14 @@ GlanceableInfoView::GlanceableInfoView(
 
   if (!weather_model->weather_condition_icon().isNull()) {
     // already has weather info, show immediately.
-    Show();
+    ShowWeather();
   }
 }
 
 GlanceableInfoView::~GlanceableInfoView() = default;
 
 void GlanceableInfoView::OnWeatherInfoUpdated() {
-  Show();
+  ShowWeather();
 }
 
 void GlanceableInfoView::OnThemeChanged() {
@@ -120,8 +121,15 @@ void GlanceableInfoView::OnThemeChanged() {
   }
 }
 
-void GlanceableInfoView::Show() {
+void GlanceableInfoView::ShowWeather() {
   AmbientWeatherModel* weather_model = delegate_->GetAmbientWeatherModel();
+
+  // Hide the weather info when the model is incomplete.
+  if (weather_model->IsIncomplete()) {
+    temperature_->SetText(std::u16string());
+    weather_condition_icon_->SetImage(gfx::ImageSkia());
+    return;
+  }
 
   // When ImageView has an |image_| with different size than the |image_size_|,
   // it will resize and draw the |image_|. The quality is not as good as if we
@@ -146,6 +154,13 @@ std::u16string GlanceableInfoView::GetTemperatureText() const {
   return l10n_util::GetStringFUTF16Int(
       IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
       static_cast<int>(weather_model->temperature_fahrenheit()));
+}
+
+bool GlanceableInfoView::IsWeatherConditionIconSetForTesting() const {
+  return !weather_condition_icon_->GetImage().isNull();
+}
+bool GlanceableInfoView::IsTemperatureSetForTesting() const {
+  return !temperature_->GetText().empty();
 }
 
 void GlanceableInfoView::InitLayout() {

@@ -45,12 +45,14 @@
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -117,13 +119,15 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     // App pin syncing code makes an untitled Play Store icon appear in the
     // shelf. Sync isn't relevant to this test, so skip pinned app sync.
     // https://crbug.com/1085597
-    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
+    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(true);
   }
 
   AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
   AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
 
-  ~AutotestPrivateApiTest() override = default;
+  ~AutotestPrivateApiTest() override {
+    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -700,6 +704,18 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ClearAllowedPref) {
                 *browser()->profile()->GetPrefs())
                 .theme(),
             default_theme);
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, SetDeviceLanguage) {
+  std::string target_locale = "ja-JP";
+  base::Value::List args;
+  args.Append(base::Value(target_locale));
+  ASSERT_TRUE(
+      RunAutotestPrivateExtensionTest("setDeviceLanguage", std::move(args)))
+      << message_;
+  std::string cur_locale = browser()->profile()->GetPrefs()->GetString(
+      language::prefs::kApplicationLocale);
+  EXPECT_EQ(cur_locale, target_locale);
 }
 
 }  // namespace extensions

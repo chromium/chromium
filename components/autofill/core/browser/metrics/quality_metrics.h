@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
 namespace autofill::autofill_metrics {
 
@@ -37,6 +38,13 @@ void LogQualityMetrics(
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
+
+// Returns the `FormGroupFillingStats` corresponding to the fields in
+// `form_structure`. This method does not log to UMA but only returns the
+// statistics of a submitted form. `FormGroupFillingStats` is UMA logged in
+// `LogQualityMetrics()`.
+autofill_metrics::FormGroupFillingStats GetAddressFormFillingStats(
+    const FormStructure& form_structure);
 
 }  // namespace autofill::autofill_metrics
 

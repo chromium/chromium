@@ -125,7 +125,7 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   // changes for us, but in addition we "apply" these changes by treating
   // the FakeSyncChangeProcessor's SyncDataList as a map keyed by extension
   // id.
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override {
     syncer::FakeSyncChangeProcessor::ProcessSyncChanges(from_here, change_list);
@@ -154,7 +154,7 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
         ADD_FAILURE() << "Unexpected change type " << change.change_type();
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // This is a helper to vend a wrapped version of this object suitable for

@@ -24,9 +24,9 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace Variations {
+namespace variations {
 class VariationsClient;
-}  // namespace Variations
+}  // namespace variations
 
 // Delegate class that enables FetchDiscountWorker to use discount-related
 // functionalities from CartService.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/profile_management/profile_management_navigation_throttle.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -34,7 +35,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace profile_management {
@@ -77,7 +77,7 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
     return *profile_attributes;
   }
 
-  absl::optional<base::Value> switch_value = base::JSONReader::Read(
+  std::optional<base::Value> switch_value = base::JSONReader::Read(
       command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes));
   if (!switch_value || !switch_value->is_dict()) {
     VLOG(1) << "[Profile management] Failed to parse attributes JSON.";
@@ -114,21 +114,21 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
   return *profile_attributes;
 }
 
-absl::optional<std::string> GetDomainFromAttributeValue(
+std::optional<std::string> GetDomainFromAttributeValue(
     const std::string& domain_attribute_value) {
   // Exclude empty and and dotless domains as they are not supported by the
   // Google identity service.
   if (domain_attribute_value.empty() ||
       domain_attribute_value.find(".") == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If '@' is found in the domain value, treat it as an email address and
   // extract the domain from it.
   if (domain_attribute_value.find("@") != std::string::npos) {
     std::string email_domain = gaia::ExtractDomainName(domain_attribute_value);
-    return email_domain.empty() ? absl::nullopt
-                                : absl::make_optional(email_domain);
+    return email_domain.empty() ? std::nullopt
+                                : std::make_optional(email_domain);
   }
 
   return domain_attribute_value;
@@ -316,7 +316,7 @@ void ProfileManagementNavigationThrottle::NavigateTo(const GURL& url) {
 
 void ProfileManagementNavigationThrottle::RegisterWithDomain(
     const std::string& domain) {
-  absl::optional<std::string> management_domain =
+  std::optional<std::string> management_domain =
       GetDomainFromAttributeValue(domain);
   if (management_domain) {
     auto* prefs =

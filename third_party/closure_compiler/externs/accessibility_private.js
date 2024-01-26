@@ -415,6 +415,14 @@ chrome.accessibilityPrivate.TtsVariant = {
 chrome.accessibilityPrivate.PumpkinData;
 
 /**
+ * @typedef {{
+ *   model: ArrayBuffer,
+ *   wasm: ArrayBuffer
+ * }}
+ */
+chrome.accessibilityPrivate.FaceGazeAssets;
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -442,6 +450,14 @@ chrome.accessibilityPrivate.getBatteryDescription = function(callback) {};
  *     Runs when Pumpkin download finishes.
  */
 chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
+
+/**
+ * Called to request an install of the FaceGaze assets DLC, which contains files
+ * (e.g. the FaceLandmarker model) required for FaceGaze to work.
+ * @param {function(!chrome.accessibilityPrivate.FaceGazeAssets): void} callback
+ *     Runs when the DLC download finishes.
+ */
+chrome.accessibilityPrivate.installFaceGazeAssets = function(callback) {};
 
 /**
  * Enables or disables native accessibility support. Once disabled, it is up to

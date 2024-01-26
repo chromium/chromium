@@ -44,17 +44,46 @@ WorkerScriptContextSet::WorkerScriptContextSet() = default;
 WorkerScriptContextSet::~WorkerScriptContextSet() = default;
 
 void WorkerScriptContextSet::ForEach(
-    const std::string& extension_id,
+    const mojom::HostID& host_id,
     content::RenderFrame* render_frame,
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   DCHECK(!render_frame);
+
   for (const std::unique_ptr<ScriptContext>& context : *contexts) {
     DCHECK(!context->GetRenderFrame());
-    if (!extension_id.empty() && context->GetExtensionID() != extension_id)
-      continue;
 
-    callback.Run(context.get());
+    switch (host_id.type) {
+      case mojom::HostID::HostType::kExtensions:
+        // Note: If the type is kExtensions and host_id.id is empty, then the
+        // call should affect all extensions. See comment in dispatcher.cc
+        // UpdateAllBindings().
+        if (host_id.id.empty() || context->GetExtensionID() == host_id.id) {
+          ExecuteCallbackWithContext(context.get(), callback);
+        }
+        break;
+
+      case mojom::HostID::HostType::kWebUi:
+        DCHECK(host_id.id.empty());
+        ExecuteCallbackWithContext(context.get(), callback);
+        break;
+
+      case mojom::HostID::HostType::kControlledFrameEmbedder:
+        DCHECK(!host_id.id.empty());
+        // Verify that host_id matches context->host_id.
+        if (context->host_id().type == host_id.type ||
+            context->host_id().id == host_id.id) {
+          ExecuteCallbackWithContext(context.get(), callback);
+        }
+        break;
+    }
   }
+}
+
+void WorkerScriptContextSet::ExecuteCallbackWithContext(
+    ScriptContext* context,
+    const base::RepeatingCallback<void(ScriptContext*)>& callback) {
+  CHECK(context);
+  callback.Run(context);
 }
 
 void WorkerScriptContextSet::Insert(std::unique_ptr<ScriptContext> context) {

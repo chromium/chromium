@@ -179,9 +179,9 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
-    SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
@@ -201,6 +201,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
                               GrSurfaceOrigin surface_origin,
                               SkAlphaType alpha_type,
                               uint32_t usage,
+                              std::string debug_label,
                               base::android::ScopedHardwareBufferHandle handle,
                               size_t estimated_size,
                               bool is_thread_safe,
@@ -251,7 +252,8 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -333,6 +335,7 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::android::ScopedHardwareBufferHandle handle,
     size_t estimated_size,
     bool is_thread_safe,
@@ -346,6 +349,7 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
                           surface_origin,
                           alpha_type,
                           usage,
+                          std::move(debug_label),
                           estimated_size,
                           is_thread_safe,
                           std::move(initial_upload_fd)),
@@ -462,8 +466,8 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();
-  auto dawn_representation =
-      ProduceDawn(manager, tracker, device, backend_type, /*view_formats=*/{});
+  auto dawn_representation = ProduceDawn(manager, tracker, device, backend_type,
+                                         /*view_formats=*/{}, context_state);
   if (!dawn_representation) {
     LOG(ERROR) << "Could not create Dawn Representation";
     return nullptr;
@@ -542,7 +546,8 @@ AHardwareBufferImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(USE_DAWN)
   // Use same texture for all the texture representations generated from same
   // backing.
@@ -728,6 +733,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
@@ -822,8 +828,9 @@ AHardwareBufferImageBackingFactory::MakeBacking(
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle), estimated_size.value(), is_thread_safe,
-      std::move(initial_upload_fd), use_passthrough_, gl_format_caps_);
+      std::move(debug_label), std::move(handle), estimated_size.value(),
+      is_thread_safe, std::move(initial_upload_fd), use_passthrough_,
+      gl_format_caps_);
 
   // If we uploaded initial data, set the backing as cleared.
   if (!pixel_data.empty())
@@ -845,7 +852,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
-                     alpha_type, usage, is_thread_safe, base::span<uint8_t>());
+                     alpha_type, usage, std::move(debug_label), is_thread_safe,
+                     base::span<uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -860,7 +868,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
-                     alpha_type, usage, false, pixel_data);
+                     alpha_type, usage, std::move(debug_label), false,
+                     pixel_data);
 }
 
 bool AHardwareBufferImageBackingFactory::CanImportGpuMemoryBuffer(
@@ -890,10 +899,8 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 
   const FormatInfo& format_info = GetFormatInfo(format);
 
-  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
-  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
-  // want to read from skia representation.
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
@@ -942,8 +949,9 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
-      base::ScopedFD(), use_passthrough_, gl_format_caps_);
+      std::move(debug_label), std::move(handle.android_hardware_buffer),
+      estimated_size.value(), false, base::ScopedFD(), use_passthrough_,
+      gl_format_caps_);
 
   backing->SetCleared();
   return backing;
@@ -969,7 +977,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   return CreateSharedImage(mailbox,
                            viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
-                           debug_label, std::move(handle));
+                           std::move(debug_label), std::move(handle));
 }
 
 }  // namespace gpu

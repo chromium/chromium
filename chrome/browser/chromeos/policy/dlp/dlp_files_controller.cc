@@ -28,8 +28,8 @@
 namespace policy {
 namespace {
 // FileSystemContext instance set for testing.
-absl::optional<storage::FileSystemContext*> g_file_system_context_for_testing =
-    absl::nullopt;
+std::optional<storage::FileSystemContext*> g_file_system_context_for_testing =
+    std::nullopt;
 
 // This callback is used when we copy a file within the internal filesystem
 // (Downloads / MyFiles). It is called after the source URL of the source file
@@ -281,9 +281,9 @@ void DlpFilesController::RequestCopyAccess(
   }
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
-  absl::optional<data_controls::Component> dst_component =
+  std::optional<data_controls::Component> dst_component =
       MapFilePathToPolicyComponent(profile, destination.path());
-  absl::optional<data_controls::Component> src_component =
+  std::optional<data_controls::Component> src_component =
       MapFilePathToPolicyComponent(profile, source_file.path());
 
   // Copy from external is not limited by DLP.
@@ -449,7 +449,7 @@ void DlpFilesController::ReturnIfActionAllowed(
 
   std::vector<base::FilePath> blocked_files(response.files_paths().begin(),
                                             response.files_paths().end());
-  ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, std::move(blocked_files),
+  ShowDlpBlockedFiles(/*task_id=*/std::nullopt, std::move(blocked_files),
                       action);
   std::move(result_callback).Run(/*is_allowed=*/false);
 }

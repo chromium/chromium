@@ -28,8 +28,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
   bool HasCachedMinMaxSizes() const;
   const MinMaxSizes& CachedMinMaxSizes() const;
-  void SetCachedMinMaxSizes(MinMaxSizes&& min_max_sizes);
-  void InvalidateCachedMinMaxSizes();
+  void SetMinMaxSizesCache(MinMaxSizes&& min_max_sizes);
+  void InvalidateMinMaxSizesCache();
 
   wtf_size_t AutoRepeatCountForDirection(
       const GridTrackSizingDirection track_direction) const;

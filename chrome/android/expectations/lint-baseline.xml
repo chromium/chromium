@@ -920,7 +920,7 @@
         errorLine1="        return getBitmapFromIcon(notification.getLargeIcon());"
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/usage_stats/NotificationSuspender.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
             line="145"
             column="16"/>
     </issue>
@@ -931,7 +931,7 @@
         errorLine1="        return getBitmapFromIcon(notification.getSmallIcon());"
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/usage_stats/NotificationSuspender.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
             line="149"
             column="16"/>
     </issue>

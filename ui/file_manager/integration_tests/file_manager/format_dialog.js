@@ -81,6 +81,8 @@ async function openFormatDialogWithSinglePartitionFormat(
 /**
  * Tests the format dialog for a sample USB with files on it.
  */
+// @ts-ignore: error TS4111: Property 'formatDialog' comes from an index
+// signature, so it must be accessed with ['formatDialog'].
 testcase.formatDialog = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
@@ -108,6 +110,8 @@ testcase.formatDialog = async () => {
 /**
  * Tests the format dialog is a modal dialog.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogIsModal' comes from an index
+// signature, so it must be accessed with ['formatDialogIsModal'].
 testcase.formatDialogIsModal = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
@@ -132,6 +136,8 @@ testcase.formatDialogIsModal = async () => {
 /**
  * Tests the format dialog for an empty USB.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogEmpty' comes from an index
+// signature, so it must be accessed with ['formatDialogEmpty'].
 testcase.formatDialogEmpty = async () => {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
   const appId = await setupFormatDialogTest();
@@ -156,6 +162,8 @@ testcase.formatDialogEmpty = async () => {
 /**
  * Tests cancelling out of the format dialog.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogCancel' comes from an index
+// signature, so it must be accessed with ['formatDialogCancel'].
 testcase.formatDialogCancel = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
@@ -242,6 +250,8 @@ async function checkSuccess(appId, label, format) {
 /**
  * Tests validations for drive name length.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogNameLength' comes from an
+// index signature, so it must be accessed with ['formatDialogNameLength'].
 testcase.formatDialogNameLength = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
@@ -288,6 +298,8 @@ testcase.formatDialogNameLength = async () => {
 /**
  * Test validations for invalid characters.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogNameInvalid' comes from an
+// index signature, so it must be accessed with ['formatDialogNameInvalid'].
 testcase.formatDialogNameInvalid = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
@@ -305,6 +317,8 @@ testcase.formatDialogNameInvalid = async () => {
 /**
  * Tests opening the format dialog from the gear menu.
  */
+// @ts-ignore: error TS4111: Property 'formatDialogGearMenu' comes from an index
+// signature, so it must be accessed with ['formatDialogGearMenu'].
 testcase.formatDialogGearMenu = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();

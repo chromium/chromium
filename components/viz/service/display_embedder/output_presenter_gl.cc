@@ -151,6 +151,17 @@ void OutputPresenterGL::InitializeCapabilities(
 #if BUILDFLAG(IS_ANDROID)
   capabilities->supports_dynamic_frame_buffer_allocation = true;
 #endif
+  // MakeCurrent needs to be called if we:
+  //
+  // * allocate and bind buffers to GL in the SkiaOutputDevice instance - ie
+  // when `renderer_allocates_images` is false.
+  //
+  // * the platform can not rely on kernel (GPU fences) to sync.
+  // In configurations like this, the Presenter commonly waits on CPU for GPU
+  // to finish with a (EGL) fence + a worker thread.
+  capabilities->present_requires_make_current =
+      !capabilities->renderer_allocates_images ||
+      !presenter_->SupportsPlaneGpuFences();
 
   // TODO(https://crbug.com/1108406): only add supported formats base on
   // platform, driver, etc.

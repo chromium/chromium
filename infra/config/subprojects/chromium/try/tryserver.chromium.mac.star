@@ -167,6 +167,8 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -179,8 +181,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
-    # Allow both x64 and arm64 bots.
-    cpu = None,
+    cpu = cpu.ARM64,
     main_list_view = "try",
 )
 
@@ -260,6 +261,22 @@ try_.builder(
         "ci/mac11-wpt-content-shell-fyi-rel",
     ],
     gn_args = "ci/mac11-wpt-content-shell-fyi-rel",
+)
+
+try_.builder(
+    name = "mac-lsan-fyi-rel",
+    mirrors = [
+        "ci/mac-lsan-fyi-rel",
+    ],
+    gn_args = "ci/mac-lsan-fyi-rel",
+)
+
+try_.builder(
+    name = "mac-ubsan-fyi-rel",
+    mirrors = [
+        "ci/mac-ubsan-fyi-rel",
+    ],
+    gn_args = "ci/mac-ubsan-fyi-rel",
 )
 
 try_.builder(
@@ -503,6 +520,7 @@ try_.builder(
     name = "mac_upload_rust_arm",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
+    cpu = cpu.ARM64,
     execution_timeout = 6 * time.hour,
 )
 

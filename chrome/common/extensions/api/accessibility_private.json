@@ -407,6 +407,20 @@
             "description": "The contents of the file as a Uint8Array."
           }
         }
+      },
+      {
+        "id": "FaceGazeAssets",
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "binary",
+            "description": "The contents of the FaceLandmarker model as a Uint8Array."
+          },
+          "wasm": {
+            "type": "binary",
+            "description": "The contents of the vision_wasm_internal.wasm file as a Uint8Array."
+          }
+        }
       }
     ],
     "properties": {
@@ -465,6 +479,22 @@
             {
               "name": "data",
               "$ref": "PumpkinData"
+            }
+          ]
+        }
+      },
+      {
+        "name": "installFaceGazeAssets",
+        "type": "function",
+        "description": "Called to request an install of the FaceGaze assets DLC, which contains files (e.g. the FaceLandmarker model) required for FaceGaze to work.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Runs when the DLC download finishes.",
+          "parameters": [
+            {
+              "name": "assets",
+              "$ref": "FaceGazeAssets"
             }
           ]
         }

@@ -33,9 +33,11 @@ typedef std::map<std::string, std::string> SurveyStringData;
 // C++ equivalent of Java SurveyClient.
 class SurveyClientAndroid {
  public:
-  explicit SurveyClientAndroid(const std::string& trigger,
-                               SurveyUiDelegateAndroid* ui_delegate,
-                               Profile* profile);
+  explicit SurveyClientAndroid(
+      const std::string& trigger,
+      SurveyUiDelegateAndroid* ui_delegate,
+      Profile* profile,
+      const std::optional<std::string>& supplied_trigger_id);
 
   SurveyClientAndroid(const SurveyClientAndroid&) = delete;
   SurveyClientAndroid& operator=(const SurveyClientAndroid&) = delete;

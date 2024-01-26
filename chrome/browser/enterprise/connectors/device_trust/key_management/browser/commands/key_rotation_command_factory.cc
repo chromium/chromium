@@ -4,12 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
@@ -23,8 +24,8 @@ namespace enterprise_connectors {
 
 namespace {
 
-absl::optional<KeyRotationCommandFactory*>& GetTestInstanceStorage() {
-  static absl::optional<KeyRotationCommandFactory*> storage;
+std::optional<KeyRotationCommandFactory*>& GetTestInstanceStorage() {
+  static std::optional<KeyRotationCommandFactory*> storage;
   return storage;
 }
 

@@ -84,8 +84,6 @@ const char kQuicMigrateSessionsEarlyV2[] = "migrate_sessions_early_v2";
 const char kQuicRetryOnAlternateNetworkBeforeHandshake[] =
     "retry_on_alternate_network_before_handshake";
 const char kQuicHostWhitelist[] = "host_whitelist";
-const char kQuicEnableSocketRecvOptimization[] =
-    "enable_socket_recv_optimization";
 const char kQuicVersion[] = "quic_version";
 const char kQuicFlags[] = "set_quic_flags";
 const char kRetryWithoutAltSvcOnQuicErrors[] =
@@ -476,10 +474,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->allow_server_migration =
           quic_args.FindBool(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);
-
-      quic_params->enable_socket_recv_optimization =
-          quic_args.FindBool(kQuicEnableSocketRecvOptimization)
-              .value_or(quic_params->enable_socket_recv_optimization);
 
       absl::optional<bool> quic_migrate_sessions_on_network_change_v2_in =
           quic_args.FindBool(kQuicMigrateSessionsOnNetworkChangeV2);

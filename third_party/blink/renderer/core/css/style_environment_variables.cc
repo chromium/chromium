@@ -91,20 +91,12 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     case UADefinedVariable::kKeyboardInsetHeight:
       return AtomicString("keyboard-inset-height");
     case UADefinedVariable::kTitlebarAreaX:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          feature_context));
       return AtomicString("titlebar-area-x");
     case UADefinedVariable::kTitlebarAreaY:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          feature_context));
       return AtomicString("titlebar-area-y");
     case UADefinedVariable::kTitlebarAreaWidth:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          feature_context));
       return AtomicString("titlebar-area-width");
     case UADefinedVariable::kTitlebarAreaHeight:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          feature_context));
       return AtomicString("titlebar-area-height");
     default:
       break;

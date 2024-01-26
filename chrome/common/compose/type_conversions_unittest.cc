@@ -12,6 +12,15 @@ using Result = optimization_guide::OptimizationGuideModelExecutionResult;
 using Error = optimization_guide::OptimizationGuideModelExecutionError;
 using Status = compose::mojom::ComposeStatus;
 
+namespace {
+void TestErrorConversion(Error::ModelExecutionError modelError,
+                         Status expectedStatus) {
+  Status result = ComposeStatusFromOptimizationGuideResult(
+      base::unexpected(Error::FromModelExecutionError(modelError)));
+  EXPECT_EQ(expectedStatus, result);
+}
+}  // namespace
+
 TEST(ComposeTypeConversions, OptimizationGuideHasResult) {
   Status result = ComposeStatusFromOptimizationGuideResult(
       optimization_guide::StreamingResponse{
@@ -19,27 +28,25 @@ TEST(ComposeTypeConversions, OptimizationGuideHasResult) {
   ASSERT_EQ(Status::kOk, result);
 }
 
-TEST(ComposeTypeConversions, OptimizationGuideTransientError) {
-  std::vector<Error::ModelExecutionError> errors = {
-      Error::ModelExecutionError::kUnknown,
-      Error::ModelExecutionError::kRequestThrottled,
-      Error::ModelExecutionError::kGenericFailure,
-  };
-  for (auto error : errors) {
-    Status result = ComposeStatusFromOptimizationGuideResult(
-        base::unexpected(Error::FromModelExecutionError(error)));
-    EXPECT_EQ(Status::kTryAgainLater, result);
-  }
-}
-
-TEST(ComposeTypeConversions, OptimizationGuidePermanentError) {
-  Status result = ComposeStatusFromOptimizationGuideResult(
-      base::unexpected(Error::FromModelExecutionError(
-          Error::ModelExecutionError::kInvalidRequest)));
-  EXPECT_EQ(Status::kNotSuccessful, result);
-
-  result = ComposeStatusFromOptimizationGuideResult(
-      base::unexpected(Error::FromModelExecutionError(
-          Error::ModelExecutionError::kPermissionDenied)));
-  EXPECT_EQ(Status::kPermissionDenied, result);
+TEST(ComposeTypeConversions, OptimizationGuideErrors) {
+  TestErrorConversion(Error::ModelExecutionError::kUnknown,
+                      Status::kServerError);
+  TestErrorConversion(Error::ModelExecutionError::kGenericFailure,
+                      Status::kServerError);
+  TestErrorConversion(Error::ModelExecutionError::kRequestThrottled,
+                      Status::kRequestThrottled);
+  TestErrorConversion(Error::ModelExecutionError::kRetryableError,
+                      Status::kRetryableError);
+  TestErrorConversion(Error::ModelExecutionError::kInvalidRequest,
+                      Status::kInvalidRequest);
+  TestErrorConversion(Error::ModelExecutionError::kPermissionDenied,
+                      Status::kPermissionDenied);
+  TestErrorConversion(Error::ModelExecutionError::kNonRetryableError,
+                      Status::kNonRetryableError);
+  TestErrorConversion(Error::ModelExecutionError::kUnsupportedLanguage,
+                      Status::kUnsupportedLanguage);
+  TestErrorConversion(Error::ModelExecutionError::kFiltered, Status::kFiltered);
+  TestErrorConversion(Error::ModelExecutionError::kDisabled, Status::kDisabled);
+  TestErrorConversion(Error::ModelExecutionError::kCancelled,
+                      Status::kCancelled);
 }

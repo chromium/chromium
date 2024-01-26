@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
@@ -32,7 +34,6 @@
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -120,7 +121,7 @@ class RulesetManagerTest : public DNRTestBase {
   // Returns renderer-initiated request params for the given |url|.
   WebRequestInfoInitParams GetRequestParamsForURL(
       base::StringPiece url,
-      absl::optional<url::Origin> initiator = absl::nullopt) {
+      std::optional<url::Origin> initiator = std::nullopt) {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
     info.url = GURL(url);
@@ -375,7 +376,7 @@ TEST_P(RulesetManagerTest, Redirect) {
       RequestActionType::REDIRECT, *rule.id, *rule.priority,
       kMinValidStaticRulesetID, last_loaded_extension()->id());
   expected_redirect_action.redirect_url = GURL("http://google.com");
-  WebRequestInfo request_1(GetRequestParamsForURL(kExampleURL, absl::nullopt));
+  WebRequestInfo request_1(GetRequestParamsForURL(kExampleURL, std::nullopt));
   manager()->EvaluateRequest(request_1, is_incognito_context);
   ASSERT_EQ(1u, request_1.dnr_actions->size());
   EXPECT_EQ(expected_redirect_action, (*request_1.dnr_actions)[0]);
@@ -397,7 +398,7 @@ TEST_P(RulesetManagerTest, Redirect) {
 
   // Ensure web-socket requests are not redirected.
   WebRequestInfo request_4(
-      GetRequestParamsForURL("ws://example.com", absl::nullopt));
+      GetRequestParamsForURL("ws://example.com", std::nullopt));
   manager()->EvaluateRequest(request_4, is_incognito_context);
   EXPECT_TRUE(request_4.dnr_actions->empty());
 }
@@ -488,7 +489,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
     rule.condition->url_filter = std::string("*");
     rule.action->type = std::string("modifyHeaders");
     rule.action->request_headers = std::vector<TestHeaderInfo>(
-        {TestHeaderInfo("header1", "remove", absl::nullopt),
+        {TestHeaderInfo("header1", "remove", std::nullopt),
          TestHeaderInfo("header2", "set", "value2")});
 
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
@@ -504,7 +505,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
     rule.condition->url_filter = std::string("*");
     rule.action->type = std::string("modifyHeaders");
     rule.action->request_headers = std::vector<TestHeaderInfo>(
-        {TestHeaderInfo("header1", "remove", absl::nullopt)});
+        {TestHeaderInfo("header1", "remove", std::nullopt)});
     rule.action->response_headers = std::vector<TestHeaderInfo>(
         {TestHeaderInfo("header3", "append", "value3")});
 
@@ -526,7 +527,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
       RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
       kMinValidStaticRulesetID, extension_2->id());
   expected_action_1.request_headers_to_modify = {RequestAction::HeaderInfo(
-      "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
+      "header1", dnr_api::HeaderOperation::kRemove, std::nullopt)};
   expected_action_1.response_headers_to_modify = {RequestAction::HeaderInfo(
       "header3", dnr_api::HeaderOperation::kAppend, "value3")};
 
@@ -536,7 +537,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
       kMinValidStaticRulesetID, extension_1->id());
   expected_action_2.request_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
@@ -620,7 +621,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
   rule.condition->url_filter = std::string("*");
   rule.action->type = std::string("modifyHeaders");
   rule.action->request_headers = std::vector<TestHeaderInfo>(
-      {TestHeaderInfo("header1", "remove", absl::nullopt)});
+      {TestHeaderInfo("header1", "remove", std::nullopt)});
 
   ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
       {rule}, "test extension", &matcher, {"*://example.com/*"}));
@@ -638,7 +639,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
         RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
         kMinValidStaticRulesetID, extension->id());
     expected_action.request_headers_to_modify = {RequestAction::HeaderInfo(
-        "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
+        "header1", dnr_api::HeaderOperation::kRemove, std::nullopt)};
 
     EXPECT_THAT(actual_actions, ::testing::ElementsAre(::testing::Eq(
                                     ::testing::ByRef(expected_action))));
@@ -700,12 +701,12 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
 
   struct TestCase {
     std::string url;
-    absl::optional<url::Origin> initiator;
+    std::optional<url::Origin> initiator;
     bool expected_action_redirect_extension;
     bool expected_action_blocking_extension;
   } cases[] = {
       // Empty initiator. Has access.
-      {"https://example.com", absl::nullopt, true, true},
+      {"https://example.com", std::nullopt, true, true},
       // Opaque origin as initiator. Has access.
       {"https://example.com", url::Origin(), true, true},
       // yahoo.com as initiator. Has access.
@@ -721,7 +722,7 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
   };
 
   auto verify_test_case = [this](const std::string& url,
-                                 const absl::optional<url::Origin>& initiator,
+                                 const std::optional<url::Origin>& initiator,
                                  RequestAction* expected_action) {
     SCOPED_TRACE(base::StringPrintf(
         "Url-%s initiator-%s", url.c_str(),

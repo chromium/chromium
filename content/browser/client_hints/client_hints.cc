@@ -520,10 +520,6 @@ bool IsValidURLForClientHints(const url::Origin& origin) {
   return network::IsOriginPotentiallyTrustworthy(origin);
 }
 
-bool UserAgentClientHintEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint);
-}
-
 void AddUAHeader(net::HttpRequestHeaders* headers,
                  WebClientHintsType type,
                  const std::string& value) {
@@ -651,9 +647,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
     const blink::ParsedPermissionsPolicy& container_policy) {
-  if (container_policy.empty() ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kClientHintThirdPartyDelegation)) {
+  if (container_policy.empty()) {
     return;
   }
 
@@ -842,8 +836,7 @@ void UpdateNavigationRequestClientUaHeaders(
     net::HttpRequestHeaders* headers,
     const std::optional<GURL>& request_url) {
   DCHECK(frame_tree_node);
-  if (!UserAgentClientHintEnabled() ||
-      !ShouldAddClientHints(origin, frame_tree_node, delegate, request_url)) {
+  if (!ShouldAddClientHints(origin, frame_tree_node, delegate, request_url)) {
     return;
   }
 
@@ -907,12 +900,10 @@ void AddRequestClientHintsHeaders(
     AddEctHeader(headers, network_quality_tracker, url);
   }
 
-  if (UserAgentClientHintEnabled()) {
-    UpdateNavigationRequestClientUaHeadersImpl(
-        delegate, is_ua_override_on, frame_tree_node,
-        ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
-        request_url, data);
-  }
+  UpdateNavigationRequestClientUaHeadersImpl(
+      delegate, is_ua_override_on, frame_tree_node,
+      ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
+      request_url, data);
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
     AddPrefersColorSchemeHeader(headers, frame_tree_node);

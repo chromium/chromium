@@ -261,7 +261,7 @@ void MLModel::OnComputeResult(
 #undef WEBML_SET_TYPED_OUTPUTS_BLINK
   }
 
-  resolver->Resolve(std::move(outputs_blink));
+  resolver->Resolve<IDLRecord<IDLString, MLTensor>>(std::move(outputs_blink));
 }
 
 }  // namespace blink

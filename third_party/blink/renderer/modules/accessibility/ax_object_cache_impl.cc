@@ -813,7 +813,7 @@ void AXObjectCacheImpl::Dispose() {
   }
 
   // Destroy any pending task to serialize the tree.
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
+  weak_factory_for_serialization_pipeline_.Invalidate();
 }
 
 void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
@@ -2417,35 +2417,69 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
     PostNotification(root, ax::mojom::blink::Event::kDocumentTitleChanged);
 }
 
+bool AXObjectCacheImpl::IsReadyToProcessTreeUpdatesForNode(const Node* node) {
+  DCHECK(node);
+
+  // The maximum number of nodes after whitespace is parsed before a tree update
+  // should occur. The value was chosen based on what was needed to eliminate
+  // flakiness in existing tests and may need adjustment. Example: the
+  // `AccessibilityCSSPseudoElementsSeparatedByWhitespace` Yielding Parser test
+  // regularly fails if this value is set to 2, but passes if set to at least 3.
+  constexpr int kMaxAllowedTreeUpdatePauses = 3;
+
+  // If we have a node that must be fully parsed before updates can continue,
+  // we're ready to process tree updates only if that node has finished parsing
+  // its children. In this scenario, the maximum number of tree update pauses is
+  // irrelevant.
+  if (node_to_parse_before_more_tree_updates_) {
+    return node_to_parse_before_more_tree_updates_->IsFinishedParsingChildren();
+  }
+
+  // There should be no reason to pause for a script element. Plus if we pause
+  // for the script element, the slow-document-load.html web test fails.
+  if (IsA<HTMLScriptElement>(node)) {
+    return true;
+  }
+
+  if (auto* text = DynamicTo<Text>(node)) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
+
+    // Whitespace at the end of parsed content is a problem because we won't
+    // know if that whitespace node is relevant until we have some text or a
+    // block node. And we won't know the layout of a node at connection time.
+    // Therefore, if this is a whitespace node, reset the maximum number of
+    // allowed pauses and wait.
+    allowed_tree_update_pauses_remaining_ = kMaxAllowedTreeUpdatePauses;
+    return false;
+  }
+
+  // If the node following a whitespace node is a pseudo element, we won't have
+  // its contents at the time the node is connected. Those contents can impact
+  // the relevance of the whitespace node. So remain paused if node is a pseudo
+  // element, without resetting the maximum number of allowed pauses.
+  if (node->IsPseudoElement()) {
+    return false;
+  }
+
+  // No new reason to pause, and there are no prior requested pauses remaining.
+  if (!allowed_tree_update_pauses_remaining_) {
+    return true;
+  }
+
+  // No new reason to pause, but we're not ready to unpause yet. So decrement
+  // the number of pauses requested and wait for the next connected node.
+  CHECK_GT(allowed_tree_update_pauses_remaining_, 0u);
+  allowed_tree_update_pauses_remaining_--;
+  return false;
+}
+
 void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (IsParsingMainDocument()) {
-    // Pausing tree updates during page loads until ready to process more:
-    // 1. An unrendeered subtree, which will not receive NodeIsAttached()
-    // signals for incrementally loaded content, and therefore is unsafe to
-    // finish parsing until it has completely loaded.
-    // 2. Whitespace at the end of the document is a problem during page loads,
-    // because there is not yet enough context around the whitespace to
-    // determine whether it's relevant. This will pause processing of the
-    // a11y tree until the document is either completely loaded or it does
-    // not end in whitespace.
-    if (node_to_parse_before_more_tree_updates_) {
-      CHECK(pause_tree_updates_until_more_loaded_content_);
-      // For case #1, keep the pause  if the expected node isn't fully parsed.
-      if (node_to_parse_before_more_tree_updates_
-              ->IsFinishedParsingChildren()) {
-        node_to_parse_before_more_tree_updates_ = nullptr;
-        pause_tree_updates_until_more_loaded_content_ = false;
-      }
-    } else {
-      // For case #2, any new content means there's enough context around
-      // the whitespace to process updates.
-      pause_tree_updates_until_more_loaded_content_ = false;
-    }
-    // Start a new tree update pause if we are on a whitespace node.
-    if (Text* text = DynamicTo<Text>(node)) {
-      if (text->ContainsOnlyWhitespaceOrEmpty()) {
-        pause_tree_updates_until_more_loaded_content_ = true;
-      }
+    if (IsReadyToProcessTreeUpdatesForNode(node)) {
+      node_to_parse_before_more_tree_updates_ = nullptr;
+      allowed_tree_update_pauses_remaining_ = 0;
     }
   } else {
     // Handle case where neither NodeIsAttached() nor SubtreeIsAttached() will
@@ -2491,7 +2525,6 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
       // process until they are complete, because there are no NodeIsAttached()
       // signals for incrementally loaded content.
       node_to_parse_before_more_tree_updates_ = node;
-      pause_tree_updates_until_more_loaded_content_ = true;
     }
 
     // No AX subtree to invalidate: just add an AXObject for this node.
@@ -2517,9 +2550,23 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  // It's not necessary to process text nodes here,because we'll also get a call
-  // for the attachment of the parent element.
-  if (IsA<Text>(node)) {
+  // It normally is not necessary to process text nodes here, because we'll
+  // also get a call for the attachment of the parent element. However in the
+  // YieldingParser scenario, the `previousOnLineId` can be unexpectedly null
+  // for whitespace-only nodes whose inclusion had not yet been determined.
+  // Sample flake: AccessibilityContenteditableDocsLi. Therefore, find the
+  // highest `LayoutInline` ancestor and mark it dirty.
+  if (Text* text = DynamicTo<Text>(node)) {
+    if (text->ContainsOnlyWhitespaceOrEmpty()) {
+      if (auto* layout_object = node->GetLayoutObject()) {
+        auto* layout_parent = layout_object->Parent();
+        while (layout_parent && layout_parent->Parent() &&
+               layout_parent->Parent()->IsLayoutInline()) {
+          layout_parent = layout_parent->Parent();
+        }
+        MarkAXSubtreeDirty(Get(layout_parent));
+      }
+    }
     return;
   }
 
@@ -2550,7 +2597,6 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       // Tables must be fully parsed before building, because many of the
       // computed properties require the entire table.
       node_to_parse_before_more_tree_updates_ = node;
-      pause_tree_updates_until_more_loaded_content_ = true;
     }
   }
 
@@ -2885,6 +2931,21 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
   CHECK(!Root()->NeedsToUpdateCachedValues());
 
 #if DCHECK_IS_ON()
+
+  // Skip check if document load is not complete.
+  if (!GetDocument().IsLoadCompleted()) {
+    return;
+  }
+
+  // After the first 5 checks, only check the tree every 5000 ms.
+  tree_check_counter_++;
+  auto now = base::Time::Now();
+  if (tree_check_counter_ > 5 &&
+      last_tree_check_time_stamp_ - now < base::Milliseconds(5000)) {
+    return;
+  }
+  last_tree_check_time_stamp_ = now;
+
   // The following checks can make tests flaky if the tree being checked
   // is quite large. Therefore cap the number of objects we check.
   constexpr int kMaxObjectsToCheckAfterTreeUpdate = 5000;
@@ -2900,6 +2961,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
     if (count > kMaxObjectsToCheckAfterTreeUpdate) {
       break;
     }
+
     const AXObject* object = entry.value;
     DCHECK(!object->IsDetached());
     DCHECK(object->GetDocument());
@@ -3015,11 +3077,13 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   // Don't update the tree at an awkward time during page load.
   // Example: when the last node is whitespace, there is not yet enough context
   // to determine the relevance of the whitespace.
-  if (pause_tree_updates_until_more_loaded_content_ && !force) {
+  if ((allowed_tree_update_pauses_remaining_ ||
+       node_to_parse_before_more_tree_updates_) &&
+      !force) {
     if (IsParsingMainDocument()) {
       return;
     }
-    pause_tree_updates_until_more_loaded_content_ = false;
+    allowed_tree_update_pauses_remaining_ = 0;
     node_to_parse_before_more_tree_updates_ = nullptr;
   }
 
@@ -3103,27 +3167,36 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     return;
   }
 
-  const auto& now = base::Time::Now();
-  const auto& delay_between_serializations =
-      base::Milliseconds(GetDeferredEventsDelay());
-  const auto& elapsed_since_last_serialization =
-      now - last_serialization_timestamp_;
-  const auto& delay_until_next_serialization =
-      delay_between_serializations - elapsed_since_last_serialization;
-  if (delay_until_next_serialization.is_positive()) {
-    if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
-      document.GetTaskRunner(blink::TaskType::kInternalDefault)
-          ->PostDelayedTask(
-              FROM_HERE,
-              WTF::BindOnce(
-                  &AXObjectCacheImpl::ScheduleAXUpdate,
-                  weak_factory_for_serialization_pipeline_.GetWeakPtr()),
-              delay_until_next_serialization);
-    }
-    return;  // No serialization needed yet.
+  // Something occurred which requires an immediate serialization.
+  if (serialize_immediately_) {
+    force = true;
+    serialize_immediately_ = false;
   }
 
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
+  if (!force) {
+    const auto& now = base::Time::Now();
+    const auto& delay_between_serializations =
+        base::Milliseconds(GetDeferredEventsDelay());
+    const auto& elapsed_since_last_serialization =
+        now - last_serialization_timestamp_;
+    const auto& delay_until_next_serialization =
+        delay_between_serializations - elapsed_since_last_serialization;
+    if (delay_until_next_serialization.is_positive()) {
+      if (!weak_factory_for_serialization_pipeline_.HasWeakCells()) {
+        document.GetTaskRunner(blink::TaskType::kInternalDefault)
+            ->PostDelayedTask(
+                FROM_HERE,
+                WTF::BindOnce(
+                    &AXObjectCacheImpl::ScheduleAXUpdate,
+                    WrapPersistent(weak_factory_for_serialization_pipeline_
+                                       .GetWeakCell())),
+                delay_until_next_serialization);
+      }
+      return;  // No serialization needed yet.
+    }
+  }
+
+  weak_factory_for_serialization_pipeline_.Invalidate();
 
   // ------------------------ Freeze and serialize ---------------------------
   {
@@ -3992,6 +4065,17 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       DeferTreeUpdate(TreeUpdateReason::kAriaSelectedChanged, element);
     } else if (attr_name == html_names::kAriaExpandedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaExpandedChanged, element);
+    } else if (attr_name == html_names::kAriaHiddenAttr) {
+      // Removing the subtree will also notify its parent that children changed,
+      // causing the subtree to recursively be rebuilt with correct cached
+      // values. In addition, changes to aria-hidden can affect with aria-owns
+      // within the subtree are considered valid. Removing the subtree forces
+      // any stale assumptions regarding aria-owns to be tossed, and the
+      // resulting tree structure changes to occur as the subtree is rebuilt,
+      // including restoring the natural parent of previously owned children
+      // if the owner becomes aria-hidden.
+      RemoveSubtreeWhenSafe(element);
+      MarkElementDirty(element->parentNode());
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);
@@ -4005,6 +4089,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
           // kPopupButton.
           DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromAriaHasPopup,
                           element);
+        } else {
+          MarkElementDirty(element);
         }
       }
     } else if (attr_name == html_names::kAriaControlsAttr ||
@@ -4373,7 +4459,7 @@ WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
 
 bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     const ui::AXEvent& event) const {
-  if (last_serialization_timestamp_ == kSerializeAtNextOpportunity) {
+  if (serialize_immediately_) {
     return true;  // Already scheduled for immediate mode.
   }
 
@@ -4387,25 +4473,25 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kCheckedStateChanged:
     case ax::mojom::blink::Event::kClicked:
     case ax::mojom::blink::Event::kDocumentSelectionChanged:
+    case ax::mojom::blink::Event::kExpandedChanged:
     case ax::mojom::blink::Event::kFocus:
     case ax::mojom::blink::Event::kHover:
     case ax::mojom::blink::Event::kLoadComplete:
     case ax::mojom::blink::Event::kLoadStart:
+    case ax::mojom::blink::Event::kMenuListValueChanged:
+    case ax::mojom::blink::Event::kRowExpanded:
+    case ax::mojom::blink::Event::kScrolledToAnchor:
+    case ax::mojom::blink::Event::kSelectedChildrenChanged:
     case ax::mojom::blink::Event::kValueChanged:
       return true;
 
     case ax::mojom::blink::Event::kDocumentTitleChanged:
-    case ax::mojom::blink::Event::kExpandedChanged:
     case ax::mojom::blink::Event::kHide:
     case ax::mojom::blink::Event::kLayoutComplete:
     case ax::mojom::blink::Event::kLocationChanged:
-    case ax::mojom::blink::Event::kMenuListValueChanged:
     case ax::mojom::blink::Event::kRowCollapsed:
     case ax::mojom::blink::Event::kRowCountChanged:
-    case ax::mojom::blink::Event::kRowExpanded:
     case ax::mojom::blink::Event::kScrollPositionChanged:
-    case ax::mojom::blink::Event::kScrolledToAnchor:
-    case ax::mojom::blink::Event::kSelectedChildrenChanged:
     case ax::mojom::blink::Event::kShow:
     case ax::mojom::blink::Event::kTextChanged:
       return false;
@@ -4514,13 +4600,13 @@ void AXObjectCacheImpl::OnSerializationReceived() {
 }
 
 void AXObjectCacheImpl::ScheduleImmediateSerialization() {
-  // This makes sure that we'll serialize at the next available opportunity.
-  last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-
   if (IsSerializationInFlight()) {
+    // Wait until current serialization message has been received.
     serialize_immediately_after_current_serialization_ = true;
-    return;  // Wait until current serialization message has been received.
+    return;
   }
+
+  serialize_immediately_ = true;
 
   // Call ScheduleAXUpdate() to ensure lifecycle does not get stalled.
   // Will call AXReadyCallback() at the next available opportunity.
@@ -5588,6 +5674,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(dirty_objects_);
   visitor->Trace(aria_notifications_);
   visitor->Trace(node_to_parse_before_more_tree_updates_);
+  visitor->Trace(weak_factory_for_serialization_pipeline_);
 
   AXObjectCache::Trace(visitor);
 }

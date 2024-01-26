@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -164,7 +165,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     // Amount of time to wait before triggering the sheet automatically. Can be overridden
     // for testing.
-    private long mAutoTriggerDelayMs;
+    private int mAutoTriggerDelayMs;
 
     private int mOldState = SheetState.NONE;
 
@@ -237,6 +238,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             @Nullable BackPressManager backPressManager,
             @Nullable ObservableSupplier<Boolean> inMotionSupplier,
             ApplicationViewportInsetSupplier appViewportInsetSupplier,
+            PageInsightsIntentParams intentParams,
             BooleanSupplier isPageInsightsEnabledSupplier,
             Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
@@ -248,6 +250,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetContent =
                 new PageInsightsSheetContent(
                         mContext,
+                        intentParams,
                         layoutView,
                         view -> loadMyActivityUrl(tabObservable),
                         this::handleBackPress,
@@ -297,20 +300,24 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                 this::changeToChildPage,
                                 PageInsightsMediator::logPageInsightsEvent));
         mAutoTriggerDelayMs =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                        PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
-                        DEFAULT_TRIGGER_DELAY_MS);
+                intentParams.hasAutoTriggerDelayMs()
+                        ? intentParams.getAutoTriggerDelayMs()
+                        : ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                                DEFAULT_TRIGGER_DELAY_MS);
         mCanAutoTriggerWhileInMotion =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                         PAGE_INSIGHTS_CAN_AUTOTRIGGER_WHILE_IN_MOTION,
                         false);
         mCanReturnToPeekAfterExpansion =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                        PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
-                        false);
+                intentParams.hasCanReturnToPeekAfterExpansion()
+                        ? intentParams.getCanReturnToPeekAfterExpansion()
+                        : ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
+                                false);
         if (tabObservable.get() != null) {
             onTab(tabObservable.get());
         } else {

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
       <style> ::view-transition-new(shared) {animation-duration: 300s;} </style>
       <style> ::view-transition-old(*) {background: red;} </style>

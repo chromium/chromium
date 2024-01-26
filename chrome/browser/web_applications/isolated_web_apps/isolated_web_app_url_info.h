@@ -77,6 +77,8 @@ class IsolatedWebAppUrlInfo {
   explicit IsolatedWebAppUrlInfo(
       const web_package::SignedWebBundleId& web_bundle_id);
 
+  // Returns the storage partition domain, which is the SHA256 hash of the App
+  // ID in base64 encoding.
   std::string partition_domain() const;
 
   url::Origin origin_;

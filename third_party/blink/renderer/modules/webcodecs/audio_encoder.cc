@@ -625,8 +625,8 @@ ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
   support->setConfig(CopyConfig(*config));
 
   return ScriptPromise::Cast(
-      script_state, ToV8Traits<AudioEncoderSupport>::ToV8(script_state, support)
-                        .ToLocalChecked());
+      script_state,
+      ToV8Traits<AudioEncoderSupport>::ToV8(script_state, support));
 }
 
 const AtomicString& AudioEncoder::InterfaceName() const {

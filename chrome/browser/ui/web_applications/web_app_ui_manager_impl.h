@@ -119,9 +119,9 @@ class WebAppUiManagerImpl : public BrowserListObserver,
                             base::OnceClosure callback) override;
 
   void DisplayRunOnOsLoginNotification(
-      const std::vector<std::string>& app_names,
+      const base::flat_map<webapps::AppId, RoolNotificationBehavior>& apps,
       base::WeakPtr<Profile> profile) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
                               const webapps::AppId& final_app_id,

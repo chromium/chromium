@@ -114,7 +114,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(viz::FrameSinkId());
 
     // Unlocks the mouse if this RenderWidgetHostView holds the lock.
-    UnlockMouse();
+    UnlockPointer();
     DetachFromTouchSelectionClientManagerIfNecessary();
   }
   frame_connector_ = frame_connector;
@@ -655,31 +655,33 @@ void RenderWidgetHostViewChildFrame::DidStopFlinging() {
     selection_controller_client_->DidStopFlinging();
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewChildFrame::LockMouse(
+blink::mojom::PointerLockResult RenderWidgetHostViewChildFrame::LockPointer(
     bool request_unadjusted_movement) {
   if (frame_connector_)
-    return frame_connector_->LockMouse(request_unadjusted_movement);
+    return frame_connector_->LockPointer(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewChildFrame::ChangeMouseLock(
+blink::mojom::PointerLockResult
+RenderWidgetHostViewChildFrame::ChangePointerLock(
     bool request_unadjusted_movement) {
   if (frame_connector_)
-    return frame_connector_->ChangeMouseLock(request_unadjusted_movement);
+    return frame_connector_->ChangePointerLock(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-void RenderWidgetHostViewChildFrame::UnlockMouse() {
-  if (host()->delegate() && host()->delegate()->HasMouseLock(host()) &&
-      frame_connector_)
-    frame_connector_->UnlockMouse();
+void RenderWidgetHostViewChildFrame::UnlockPointer() {
+  if (host()->delegate() && host()->delegate()->HasPointerLock(host()) &&
+      frame_connector_) {
+    frame_connector_->UnlockPointer();
+  }
 }
 
-bool RenderWidgetHostViewChildFrame::IsMouseLocked() {
+bool RenderWidgetHostViewChildFrame::IsPointerLocked() {
   if (!host()->delegate())
     return false;
 
-  return host()->delegate()->HasMouseLock(host());
+  return host()->delegate()->HasPointerLock(host());
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewChildFrame::GetFrameSinkId() const {

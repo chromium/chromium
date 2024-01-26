@@ -46,7 +46,7 @@ HTMLTemplateElement::HTMLTemplateElement(Document& document)
 
 HTMLTemplateElement::~HTMLTemplateElement() = default;
 
-DocumentFragment* HTMLTemplateElement::ContentInternal() const {
+DocumentFragment* HTMLTemplateElement::content() const {
   CHECK(!declarative_shadow_root_);
   if (!content_ && GetExecutionContext())
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
@@ -54,18 +54,6 @@ DocumentFragment* HTMLTemplateElement::ContentInternal() const {
         const_cast<HTMLTemplateElement*>(this));
 
   return content_.Get();
-}
-
-DocumentFragment* HTMLTemplateElement::content() const {
-  CHECK(!declarative_shadow_root_);
-  return IsDeclarativeShadowRoot() ? nullptr : ContentInternal();
-}
-
-DocumentFragment* HTMLTemplateElement::DeclarativeShadowContent() const {
-  CHECK(RuntimeEnabledFeatures::
-            DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
-  CHECK(IsNonStreamingDeclarativeShadowRoot());
-  return IsDeclarativeShadowRoot() ? ContentInternal() : nullptr;
 }
 
 // https://html.spec.whatwg.org/C/#the-template-element:concept-node-clone-ext

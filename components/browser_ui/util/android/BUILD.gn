@@ -79,8 +79,12 @@ robolectric_library("junit") {
 
 android_library("unit_device_javatests") {
   testonly = true
-  sources = [ "java/src/org/chromium/components/browser_ui/util/FirstDrawDetectorTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/util/AvatarGeneratorTest.java",
+    "java/src/org/chromium/components/browser_ui/util/FirstDrawDetectorTest.java",
+  ]
   deps = [
+    "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/util/android:java",
     "//content/public/test/android:content_java_test_support",

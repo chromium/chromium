@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Xabardor qolish</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
 <translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
+<translation id="427987768447457592">Yangi varaqlar guruhi</translation>
 <translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ta sharh)}other{(<ph name="REVIEWS_COUNT_MANY" /> ta sharh)}}</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
+<translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_ONE" /> ta varaq bor}other{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_MANY" /> ta varaq bor}}</translation>
 <translation id="5339733443032484186">Oxirgi varaq</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>

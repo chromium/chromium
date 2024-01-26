@@ -168,7 +168,7 @@ interface WebTransportClient {
   // https://w3c.github.io/webtransport/#session-terminated
   // This is the last message and it is not allowed to call methods after
   // calling this.
-  OnClosed(WebTransportCloseInfo? close_info);
+  OnClosed(WebTransportCloseInfo? close_info, WebTransportStats final_stats);
 };
 
 // Used to create a WebTransport session. This is split from WebTransport
@@ -183,7 +183,8 @@ interface WebTransportHandshakeClient {
   // Called when the handshake succeeds.
   OnConnectionEstablished(pending_remote<WebTransport> transport,
                           pending_receiver<WebTransportClient> client,
-                          HttpResponseHeaders response_headers);
+                          HttpResponseHeaders response_headers,
+                          WebTransportStats initial_stats);
 
   // Called when the handshake fails.
   // |error| contains the error details. The actual error information issued

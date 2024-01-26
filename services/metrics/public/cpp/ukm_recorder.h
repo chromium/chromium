@@ -20,7 +20,6 @@
 class DIPSNavigationHandle;
 class DIPSService;
 class PermissionUmaUtil;
-class WebApkUkmRecorder;
 
 namespace apps {
 class WebsiteMetrics;
@@ -102,12 +101,6 @@ class METRICS_EXPORT UkmRecorder {
   // Get the new SourceId, which is unique for the duration of a browser
   // session.
   static SourceId GetNewSourceID();
-
-  // Gets new source Id for WEBAPK_ID type and updates the manifest URL. This
-  // method should only be called by WebApkUkmRecorder class.
-  static SourceId GetSourceIdForWebApkManifestUrl(
-      base::PassKey<WebApkUkmRecorder>,
-      const GURL& manifest_url);
 
   // Gets new source Id for PAYMENT_APP_ID type and updates the source URL to
   // the scope of the app. This method should only be called by

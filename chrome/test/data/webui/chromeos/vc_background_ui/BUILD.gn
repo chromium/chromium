@@ -8,7 +8,16 @@ import("//chrome/test/data/webui/build_webui_tests.gni")
 assert(is_chromeos_ash)
 
 build_webui_tests("build") {
+  ts_path_mappings =
+      [ "chrome://vc-background/*|" +
+        rebase_path("$root_gen_dir/ash/webui/vc_background_ui/resources/tsc/*",
+                    target_gen_dir) ]
+
   files = [ "vc_background_ui_test.ts" ]
 
-  ts_deps = [ "//ash/webui/vc_background_ui/resources:build_ts" ]
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/vc_background_ui/resources:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+  ]
 }

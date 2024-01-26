@@ -32,7 +32,7 @@ class LockScreenBaseTest : public LoginManagerTest {
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &user_input_methods_);
   }
 
@@ -204,7 +204,7 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {kDeviceLoginScreenInputMethods});
 
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &allowed_input_method);
   }
 

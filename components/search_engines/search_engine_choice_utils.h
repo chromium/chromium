@@ -12,13 +12,8 @@
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
 
-namespace policy {
-class PolicyService;
-}
-
 class PrefService;
 struct TemplateURLData;
-class TemplateURLService;
 
 namespace search_engines {
 
@@ -88,16 +83,6 @@ enum class SearchEngineChoiceScreenEvents {
   kMaxValue = kProfileCreationLearnMoreDisplayed,
 };
 
-// Profile properties that need to be passed to
-// `ShouldShowChoiceScreen`. This is due to the fact that
-// the 'Profile' class is different between platforms.
-// TODO(b/312115939): Rename `is_regular_profile` to something like
-// `is_eligible_profile`.
-struct ProfileProperties {
-  bool is_regular_profile = false;
-  raw_ptr<PrefService> pref_service;
-};
-
 enum class ChoicePromo {
   // Any path of getting the choice screen.
   kAny = 0,
@@ -148,57 +133,10 @@ enum class RepromptResult {
 // TODO(b/318824817): To be removed post-launch.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
-// Returns whether the version of the search engines settings screen showing
-// additional search engine info should be shown.
-// TODO(b/318824817): To be removed post-launch.
-bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
-
-#if BUILDFLAG(IS_IOS)
-// Returns whether the search engine choice screen can be displayed or not based
-// on device policies and profile properties.
-bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
-                            const ProfileProperties& profile_properties,
-                            TemplateURLService* template_url_service);
-#endif
-
-// Returns the choice screen eligibility condition most relevant for the profile
-// associated with `profile_prefs` and `template_url_service`.
-// Only checks dynamic conditions, that can change from one call to the other
-// during a profile's lifetime. Should be checked right before showing a choice
-// screen.
-SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
-    const PrefService& profile_prefs,
-    const TemplateURLService& template_url_service);
-
-// Returns the choice screen eligibility condition most relevant for the profile
-// described by `profile_properties`.
-// Only checks static conditions, such that if a non-eligible condition is
-// returned, it would take at least a restart for the state to change. So this
-// state can be checked and cached ahead of showing a choice screen.
-SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
-    const policy::PolicyService& policy_service,
-    const ProfileProperties& profile_properties,
-    const TemplateURLService& template_url_service);
-
-// Returns the country ID to use in the context of any search engine choice
-// logic. If `profile_prefs` are null, returns
-// `country_codes::GetCurrentCountryID()`. Can be overridden using
-// `switches::kSearchEngineChoiceCountry`. See `//components/country_codes` for
-// the Country ID format.
-int GetSearchEngineChoiceCountryId(PrefService* profile_prefs);
-
 // Returns whether the provided `country_id` is eligible for the EEA default
 // search engine choice prompt.
 // See `//components/country_codes` for the Country ID format.
 bool IsEeaChoiceCountry(int country_id);
-
-// Records that the choice was made by settings the timestamp if applicable.
-// Records the location from which the choice was made and the search engine
-// that was chosen.
-// The function should be called after the default search engine has been set.
-void RecordChoiceMade(PrefService* profile_prefs,
-                      ChoiceMadeLocation choice_location,
-                      TemplateURLService* template_url_service);
 
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(
@@ -236,11 +174,6 @@ std::u16string GetMarketingSnippetString(
 int GetIconResourceId(const std::u16string& engine_keyword);
 
 #endif
-
-// Checks if the search engine choice should be prompted again, based on
-// experiment parameters. If a reprompt is needed, some preferences related to
-// the choice are cleared, which triggers a reprompt on the next page load.
-void PreprocessPrefsForReprompt(PrefService& profile_prefs);
 
 }  // namespace search_engines
 

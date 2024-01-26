@@ -16,7 +16,7 @@ import java.io.Serializable;
  * to access.
  */
 public class ChosenObjectInfo implements Serializable {
-    private final @ContentSettingsType int mContentSettingsType;
+    private final @ContentSettingsType.EnumType int mContentSettingsType;
     private final String mOrigin;
     private final String mName;
     private final String mObject;
@@ -24,7 +24,7 @@ public class ChosenObjectInfo implements Serializable {
 
     @VisibleForTesting
     public ChosenObjectInfo(
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             String origin,
             String name,
             String object,
@@ -37,7 +37,7 @@ public class ChosenObjectInfo implements Serializable {
     }
 
     /** Returns the content settings type of the permission. */
-    public @ContentSettingsType int getContentSettingsType() {
+    public @ContentSettingsType.EnumType int getContentSettingsType() {
         return mContentSettingsType;
     }
 

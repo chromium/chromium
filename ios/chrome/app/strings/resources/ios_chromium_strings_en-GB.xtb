@@ -81,7 +81,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3366305173356742781">Chromium data in your account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
-<translation id="3478750326643748149">Hide 'Get the most out of Chromium'</translation>
 <translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
 <translation id="3554027294407525061">Clear browsing data in Chromium.</translation>
@@ -101,9 +100,9 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 
 To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Open Chromium from any app</translation>
-<translation id="4002314982058020967">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
+<translation id="4076589763479456892">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4106512142782407609">Signed in as <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="4408912345039114853">Run Chromium Safety Check</translation>
 <translation id="4432744876818348753">Sign in to get the most out of Chromium.</translation>
 <translation id="4445228361214254027">Your organisation turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>
-<translation id="4485517920713468480">Chromium will detect tracking numbers on sites that you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK" />Package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Adds the inputted URLs to your reading list in Chromium.</translation>
 <translation id="452436063477828504">Make sure that you can always use the Chromium data in your Google Account</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="5534584691915394889">This will be used to create events in your Apple Calendar from Chromium and Google Lens.</translation>
 <translation id="5571094606370987472">Opens the Chromium Recent Tabs.</translation>
 <translation id="5623083843656850677">Lock your Incognito tabs when you leave Chromium or switch to a different app.</translation>
+<translation id="5671188105328420281">Chromium tips</translation>
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5777187867430702742">Chromium page</translation>
@@ -286,6 +285,7 @@ Things to consider:
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
 <translation id="88376265765385899">Opens the Chromium bookmarks.</translation>
 <translation id="8860548555286245440">Open URLs in Chromium in Incognito</translation>
+<translation id="8866191443434488382">Chromium will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Chromium to provide this feature and to improve shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium for iOS</translation>
 <translation id="8924617840944134898">Open Chromium Incognito Tab</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>

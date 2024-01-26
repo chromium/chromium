@@ -1,0 +1,7 @@
+include_rules = [
+  "+crypto",
+  "+components/enterprise/client_certificates/proto",
+  "+components/keyed_service/core",
+  "+components/leveldb_proto",
+  "+net",
+]

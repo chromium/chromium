@@ -12,20 +12,6 @@
 
 namespace data_controls {
 
-namespace {
-
-// Constants used to parse sub-dictionaries of DLP policies that should map to
-// an AttributesCondition.
-constexpr char kKeyUrls[] = "urls";
-constexpr char kKeyIncognito[] = "incognito";
-constexpr char kKeyOsClipboard[] = "os_clipboard";
-
-#if BUILDFLAG(IS_CHROMEOS)
-constexpr char kKeyComponents[] = "components";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-}  // namespace
-
 AttributesCondition::~AttributesCondition() = default;
 
 AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
@@ -107,13 +93,12 @@ bool AttributesCondition::ComponentMatches(Component component) const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool AttributesCondition::IncognitoMatches(
-    const absl::optional<bool>& incognito) const {
+bool AttributesCondition::IncognitoMatches(bool incognito) const {
   if (!incognito_.has_value()) {
     return true;
   }
 
-  return incognito.has_value() && incognito_.value() == incognito.value();
+  return incognito_.value() == incognito;
 }
 
 bool AttributesCondition::OsClipboardMatches(bool os_clipboard) const {

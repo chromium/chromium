@@ -115,11 +115,6 @@ void Connection::Close(
     // NearbyConnection immediately after.
     SendMessageWithoutResponse(requests::BuildBootstrapStateCancelMessage(),
                                QuickStartResponseType::kBootstrapStateCancel);
-  } else if (authenticated_ && reason ==
-                                   TargetDeviceConnectionBroker::
-                                       ConnectionClosedReason::kComplete) {
-    SendMessageWithoutResponse(requests::BuildBootstrapStateCompleteMessage(),
-                               QuickStartResponseType::kBootstrapStateComplete);
   }
 
   connection_state_ = State::kClosing;
@@ -458,6 +453,11 @@ base::Value::Dict Connection::GetPrepareForUpdateInfo() {
   return session_context_.GetPrepareForUpdateInfo();
 }
 
+void Connection::NotifyPhoneSetupComplete() {
+  SendMessageWithoutResponse(requests::BuildBootstrapStateCompleteMessage(),
+                             QuickStartResponseType::kBootstrapStateComplete);
+}
+
 void Connection::DecodeQuickStartMessage(
     OnDecodingCompleteCallback on_decoding_complete,
     std::optional<std::vector<uint8_t>> data) {
@@ -532,7 +532,14 @@ void Connection::OnResponseReceived(
             response_type),
         /*succeeded=*/true, std::nullopt);
   }
-  std::move(callback).Run(std::move(response_bytes));
+
+  // NearbyConnection will invoke its read callback if there is one pending when
+  // it is destroyed. In these instances we didn't actually receive a response
+  // so we need to ensure the connection is still open before invoking
+  // |callback| here.
+  if (connection_state_ == Connection::State::kOpen) {
+    std::move(callback).Run(std::move(response_bytes));
+  }
 }
 
 }  // namespace ash::quick_start

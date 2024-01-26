@@ -44,6 +44,7 @@ static_library("camera_app_ui") {
     "//chromeos/utils",
     "//components/arc",
     "//components/media_device_salt",
+    "//components/onc",
     "//content/public/browser",
     "//content/public/common",
     "//media/capture:capture_lib",

@@ -13,6 +13,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -100,7 +101,7 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   }
 
  private:
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
   const GetDisplayReasonCallback get_display_reason_callback_;
   base::OnceClosure on_list_known_callback_;
 };

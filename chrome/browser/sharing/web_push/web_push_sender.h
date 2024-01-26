@@ -36,7 +36,7 @@ class WebPushSender {
   // |vapid_key|: Private key to sign VAPID header.
   // |message|: WebPushMessage to be sent.
   // |callback|: To be invoked with message_id if asynchronous operation
-  // succeeded, or absl::nullopt if operation failed.
+  // succeeded, or std::nullopt if operation failed.
   virtual void SendMessage(const std::string& fcm_token,
                            crypto::ECPrivateKey* vapid_key,
                            WebPushMessage message,

@@ -10,11 +10,11 @@ namespace blink {
 
 // static
 // Convert TextOffsetMap to a form we can split easily.
-Vector<uint8_t> TransformedString::CreateLengthMap(
+Vector<unsigned> TransformedString::CreateLengthMap(
     unsigned dom_length,
     unsigned transformed_length,
     const TextOffsetMap& offset_map) {
-  Vector<uint8_t> map;
+  Vector<wtf_size_t> map;
   if (offset_map.IsEmpty()) {
     return map;
   }
@@ -38,7 +38,6 @@ Vector<uint8_t> TransformedString::CreateLengthMap(
         map.push_back(1u);
       }
       unsigned length = 1u + (dom_chunk_length - transformed_chunk_length);
-      CHECK_LE(length, std::numeric_limits<uint8_t>::max());
       map.push_back(length);
     } else {
       for (unsigned i = 0; i < transformed_chunk_length; ++i) {

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/scoped_observation.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
@@ -60,6 +60,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreBrowserStart() override;
   void PostBrowserStart() override;
   void PreMainMessageLoopRun() override;
+  void PostDestroyThreads() override;
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -101,7 +102,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // A cached value for the number of displays.
   int display_count_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // The process monitor instance. Allows collecting metrics about every child

@@ -256,7 +256,9 @@ TEST_F(GameDashboardCaptureModeTest, NotificationView) {
 
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
+  EXPECT_FALSE(controller->can_start_new_recording());
   CaptureNotificationWaiter().Wait();
+  EXPECT_TRUE(controller->can_start_new_recording());
 
   const message_center::Notification* notification = GetPreviewNotification();
   EXPECT_TRUE(notification);
@@ -755,6 +757,9 @@ TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
 
   // The game window should be the top most active window.
   wm::ActivateWindow(game_window());
+  // TODO(b/316141148): Remove this call once the welcome dialog is disabled by
+  // default for tests.
+  WaitForSeconds(/*seconds=*/4);
   auto* controller = StartGameCaptureModeSession();
 
   // Hover over empty space where there is no window.

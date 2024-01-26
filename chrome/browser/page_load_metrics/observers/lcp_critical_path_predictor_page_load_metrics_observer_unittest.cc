@@ -103,7 +103,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
   void SetMockLcpElementLocator(
       GURL url,
       const std::string& mock_element_locator = "foo",
-      absl::optional<uint32_t> mock_predicted_index = absl::nullopt) {
+      std::optional<uint32_t> mock_predicted_index = std::nullopt) {
     lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator,
                                                mock_predicted_index);
   }
@@ -125,7 +125,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context()));
-    absl::optional<predictors::LcppData> lcpp_data =
+    std::optional<predictors::LcppData> lcpp_data =
         loading_predictor->resource_prefetch_predictor()->GetLcppData(url);
     EXPECT_EQ(learn_lcpp, lcpp_data.has_value()) << location.ToString();
 
@@ -209,7 +209,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     for (auto index : predicted_lcp_indexes) {
       SetMockLcpElementLocator(
           main_frame_url, "lcp_actual",
-          index == kNotFound ? absl::nullopt : absl::optional<uint32_t>(index));
+          index == kNotFound ? std::nullopt : std::optional<uint32_t>(index));
     }
     tester()->NavigateToUntrackedUrl();
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(

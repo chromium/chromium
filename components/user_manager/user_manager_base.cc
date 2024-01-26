@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -1135,6 +1136,53 @@ void UserManagerBase::RegularUserLoggedInAsEphemeral(
   active_user_ = user;
   KnownUser(local_state_.get())
       .SetIsEphemeralUser(active_user_->GetAccountId(), true);
+}
+
+bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
+                                           PrefService* prefs) {
+  // Find a User from `user_storage_`.
+  // FindUserAndModify may overlook some existing User instance, because
+  // the list may not contain ephemeral users that are getting stale.
+  auto it = base::ranges::find(user_storage_, account_id,
+                               [](auto& ptr) { return ptr->GetAccountId(); });
+  auto* user = it == user_storage_.end() ? nullptr : it->get();
+  CHECK(user);
+  if (user->is_profile_created()) {
+    // This happens sometimes in browser_tests.
+    // See also kIgnoreUserProfileMappingForTests and its uses.
+    // TODO(b/294452567): Consider how to remove this workaround for testing.
+    LOG(ERROR) << "user profile duplicated";
+    CHECK_IS_TEST();
+    return false;
+  }
+
+  CHECK(!user->GetProfilePrefs());
+  user->SetProfileIsCreated();
+  user->SetProfilePrefs(prefs);
+
+  // Managed Guest Sessions can be lockable if launched via the chrome.login
+  // extension API.
+  if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT && prefs &&
+      prefs->GetBoolean(
+          ash::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
+    user->set_can_lock(true);
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnUserProfileCreated(*user);
+  }
+  return true;
+}
+
+void UserManagerBase::OnUserProfileWillBeDestroyed(
+    const AccountId& account_id) {
+  // Find from user_stroage_. See OnUserProfileCreated for the reason why not
+  // using FindUserAndModify.
+  auto it = base::ranges::find(user_storage_, account_id,
+                               [](auto& ptr) { return ptr->GetAccountId(); });
+  auto* user = it == user_storage_.end() ? nullptr : it->get();
+  CHECK(user);
+  user->SetProfilePrefs(nullptr);
 }
 
 void UserManagerBase::NotifyActiveUserChanged(User* active_user) {

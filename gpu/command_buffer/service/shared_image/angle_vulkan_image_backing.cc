@@ -222,7 +222,8 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage)
+    uint32_t usage,
+    std::string debug_label)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -230,6 +231,7 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       context_state_(context_state) {}
@@ -280,7 +282,8 @@ bool AngleVulkanImageBacking::Initialize(
 
   constexpr auto kUsageNeedsColorAttachment =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_RASTER |
+      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU;
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |

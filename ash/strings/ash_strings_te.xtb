@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />కు మిర్రరింగ్ చేస్తోంది</translation>
 <translation id="1885785240814121742">వేలిముద్రతో అన్‌లాక్ చేయండి</translation>
-<translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="1908992311423394684">కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1918022425394817322">కెమెరా ఎగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">కెమెరా ప్రివ్యూ ఆన్‌లో ఉంది</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />ను టోగుల్ చేయండి. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />లో ఉంది</translation>
-<translation id="2078034614700056995">తర్వాతి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో కుడి వైపు స్వైప్ చేయండి</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ఎమోజి పికర్‌ను తెరవండి</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">మునుపటి ట్రాక్‌కు వెళ్లండి</translation>
 <translation id="2152895518047545149">ఒక్కటి కూడా మిస్ అయినట్లుగా అనిపించడం లేదు. చాలా చక్కగా పని చేశారు!</translation>
 <translation id="2161132820593978283">కెమెరా ఫ్రేమింగ్‌ను ట్రై చేయండి, తద్వారా మీరు వీడియో కాల్స్ సమయంలో స్క్రీన్ మధ్యలో ఉండగలరు. దాన్ని క్విక్ సెట్టింగ్‌లలో ఆన్ చేయండి.</translation>
-<translation id="2170530631236737939">ఓవర్‌వ్యూ నుండి నిష్క్రమించడానికి మూడు వేళ్లతో కిందకు స్వైప్ చేయండి</translation>
 <translation id="2185166372312820725">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="2185444992308415167">1 నుండి 8 ట్యాబ్‌ల వరకు చూడండి</translation>
 <translation id="2198625180564913276">ప్రొఫైల్‌ను జోడిస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">హాట్‌స్పాట్‌ను అందించడానికి మీ ఫోన్ తప్పనిసరిగా మొబైల్ డేటాను కలిగి ఉండాలి</translation>
 <translation id="2727175239389218057">రిప్లయి ఇవ్వండి</translation>
 <translation id="2727977024730340865">తక్కువ-పవర్ గల ఛార్జర్‌కు ప్లగిన్ చేయబడింది. బ్యాటరీ ఛార్జింగ్ విశ్వసనీయంగా ఉండకపోవచ్చు.</translation>
+<translation id="2744221223678373668">భాగస్వామ్యం చేయబడింది</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"తొలగించండి"</translation>
 <translation id="2750941250130734256">అన్‌డాక్ చేసిన విండోను యాక్టివేట్ చేయండి.</translation>
 <translation id="2761723519669354964">షెల్ఫ్‌లో హైలైట్ చేసిన ఐటెమ్‌ను తెరవండి</translation>
+<translation id="2762000892062317888">ఇప్పుడే</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> నుండి <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3580650856351781466">స్పీచ్ ఫైల్‌లను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="3585296979871889131">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, ఇంకా యాప్‌లను చూడండి</translation>
+<translation id="3590441166907930941">సైడ్ బటన్</translation>
 <translation id="3593039967545720377">మీ క్లిప్‌బోర్డ్‌ను చూడడానికి, <ph name="SHORTCUT_KEY_NAME" /> + V నొక్కడం ద్వారా మీ క్లిప్‌బోర్డ్ హిస్టరీని యాక్సెస్ చేయండి. ప్రారంభించడానికి, ఐటెమ్‌ను కాపీ చేయండి.</translation>
 <translation id="3593646411856133110">తెరిచి ఉన్న యాప్‌లను చూడటానికి పైకి స్వైప్ చేసి, పట్టుకోండి</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
@@ -733,6 +733,7 @@
 <translation id="3986082989454912832">సమాధానం ఇవ్వండి</translation>
 <translation id="3990002060657467458">Wi-Fi, బ్లూటూత్ అలాగే వాల్యూమ్ వంటి తరచుగా ఉపయోగించే కంట్రోల్స్ క్విక్ సెట్టింగ్‌లలో ఉన్నాయి. ఇక్కడకు వెళ్లి స్క్రీన్‌షాట్ కూడా తీసుకోవచ్చు.</translation>
 <translation id="3995138139523574647">USB-C పరికరం (కుడివైపు వెనుక పోర్ట్)</translation>
+<translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="40062176907008878">చేతిరాత</translation>
 <translation id="4011112806063830608">'అంతరాయం కలిగించవద్దు' ఫీచర్ ఆన్‌లో ఉంది.</translation>
 <translation id="4017989525502048489">లేజర్ పాయింటర్</translation>
@@ -1036,6 +1037,7 @@
 <translation id="5163434717504750796">బ్యాటరీ స్థితి <ph name="BATTERY_HEALTH_PERCENTAGE" />% | సైకిల్ కౌంట్ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">డెస్క్‌ను టెంప్లేట్‌గా సేవ్ చేయండి</translation>
 <translation id="5168181903108465623">Cast పరికరాలు అందుబాటులో ఉన్నాయి</translation>
+<translation id="5168753792967365150">Google Tasksలో ఎడిట్ చేయండి</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
@@ -1305,6 +1307,8 @@
 <translation id="6168622430237609329">మీరు ఇన్‌స్టాల్ చేసిన యాప్‌లు</translation>
 <translation id="6173151025443907148">Lacros ఎనేబుల్ చేసి ఉంటే రెండవ యూజర్ సైన్ ఇన్ చేయడానికి సపోర్ట్ లేదు. దయచేసి బదులుగా Lacrosలో రెండవ బ్రౌజర్ ప్రొఫైల్‌ను ఉపయోగించండి లేదా Lacrosను డిజేబుల్ చేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6179832488876878285">మీ ముఖ్యమైన ఫైళ్లను మీరు ఇక్కడ పిన్ చేయవచ్చు. ప్రారంభించడానికి Files యాప్‌ను తెరవండి.</translation>
+<translation id="6180193585172850042">వెనుకకు బటన్</translation>
+<translation id="6180651297859206670">ఫార్వర్డ్ బటన్</translation>
 <translation id="6182592640011875895">డెస్క్‌ను తెరవండి</translation>
 <translation id="6185696379715117369">ఎగువ పేజీకి వెళ్లుతుంది</translation>
 <translation id="619335566042889110">ఇప్పుడు పూర్తిగా ఛార్జ్ అయింది</translation>
@@ -1497,6 +1501,7 @@
 <translation id="6981291220124935078">యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="698231206551913481">ఈ వినియోగదారును తీసివేసిన తర్వాత ఈ వినియోగదారుతో అనుబంధించిన అన్ని ఫైళ్లు మరియు స్థానిక డేటా శాశ్వతంగా తొలగించబడతాయి.</translation>
+<translation id="6984028004251196682"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />Hz)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి ధృవీకరించండి ఆప్షన్‌ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="6989752354829085073">Chromebookను ఎలా ఉపయోగించాలో తెలుసుకోవడానికి ఒక క్విక్ టూర్ చేయండి. కేవలం 6 దశల్లో సెటప్ చేసి, రన్ చేయండి.</translation>
 <translation id="7004910047186208204">మొబైల్ డేటాకు కనెక్ట్ చేయండి</translation>
 <translation id="7005239792648594238">యాప్‌ను తెరిచి ప్రారంభించండి</translation>
@@ -1694,7 +1699,6 @@
 <translation id="7850320739366109486">అంతరాయం కలిగించవద్దు</translation>
 <translation id="7851039877802112575">ఫోకస్‌ను పాప్-అప్‌లు, డైలాగ్‌లకు మార్చండి</translation>
 <translation id="7851768487828137624">కెనరీ</translation>
-<translation id="7860671499921112077">ఓవర్‌వ్యూకు ఎంటర్ అవ్వడానికి మూడు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="7862292329216937261">పరికరాన్ని గెస్ట్ లాగా ఉపయోగించడానికి, మీరు సైన్ అవుట్ చేసి, ఆపై స్క్రీన్ దిగువున ఉన్న "గెస్ట్ లాగా బ్రౌజ్ చేయండి" ఆప్షన్‌ను ఎంచుకోవాలి.</translation>
 <translation id="7866482334467279021">ఆన్‌లో ఉంది</translation>
 <translation id="7872786842639831132">ఆఫ్</translation>
@@ -1805,7 +1809,6 @@
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
 <translation id="8270450402312105425">{0,plural, =1{ఒక గంటలోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}other{# గంటల్లోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
-<translation id="8284362522226889623">మునుపటి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో ఎడమ వైపు స్వైప్ చేయండి</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
@@ -67,8 +68,8 @@ class OverlayBrowserAgentBase {
                          bool initial_presentation) override;
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
-    Browser* browser_ = nullptr;
-    OverlayBrowserAgentBase* browser_agent_ = nullptr;
+    raw_ptr<Browser> browser_ = nullptr;
+    raw_ptr<OverlayBrowserAgentBase> browser_agent_ = nullptr;
     base::ScopedMultiSourceObservation<OverlayPresenter,
                                        OverlayPresenterObserver>
         scoped_observations_{this};

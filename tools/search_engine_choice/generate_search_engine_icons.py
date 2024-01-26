@@ -234,15 +234,15 @@ def generate_icon_resource_code():
     grdp_file.write('</grit-part>\n')
 
 
-def create_get_search_engine_generated_icon_path_function():
-  """Generates the `GetSearchEngineGeneratedIconPath` function.
+def generate_icon_path_map():
+  """Generates the `kSearchEngineIconPathMap` map.
 
-  The code is generated in `search_engine_choice/generated_icon_utils.cc`.
+  The code is generated in `search_engine_choice/generated_icon_utils-inc.cc`.
   """
-  print('Creating `GetSearchEngineGeneratedIconPath` function...')
+  print('Creating `kSearchEngineIconPathMap`...')
 
   with open(
-      '../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils.cc',
+      '../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc',
       'w',
       encoding='utf-8',
       newline='') as utils_file:
@@ -253,21 +253,10 @@ def create_get_search_engine_generated_icon_path_function():
                      ' license that can be\n')
     utils_file.write('// found in the LICENSE file.\n\n')
 
-    # Include the required header files.
-    utils_file.write(
-        '#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"\n\n'
-    )
-
-    utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
-    utils_file.write('#include "build/branding_buildflags.h"\n')
-
     utils_file.write(
         ("// This code is generated using"
          "`tools/search_engine_choice/generate_search_engine_icons.py`."
          " Don't modify it manually.\n\n"))
-
-    # Create the base::fixed_flat_map
-    utils_file.write('namespace {\n\n')
 
     utils_file.write('constexpr auto kSearchEngineIconPathMap =\n')
     utils_file.write(
@@ -286,33 +275,19 @@ def create_get_search_engine_generated_icon_path_function():
     utils_file.write('#else\n')
     utils_file.write('\t\t "chrome://theme/IDR_DEFAULT_FAVICON"\n')
     utils_file.write('#endif\n')
+    utils_file.write('\t}});\n')
 
-    utils_file.write('\t}});\n\n')
 
-    utils_file.write('}  // namespace\n\n')
-
-    # Create the function `GetSearchEngineGeneratedIconPath()`.
-    utils_file.write('std::string_view GetSearchEngineGeneratedIconPath(\n')
-    utils_file.write('\t\tconst std::u16string& engine_keyword) {\n')
-    utils_file.write(
-        '\tconst base::fixed_flat_map<std::u16string_view, std::string_view,\n')
-    utils_file.write(
-        '\t\tkSearchEngineIconPathMap.size()>::const_iterator iterator =\n')
-    utils_file.write('\t\t\tkSearchEngineIconPathMap.find(engine_keyword);\n')
-    utils_file.write('\treturn iterator == kSearchEngineIconPathMap.cend() ?\n')
-    utils_file.write('\t\tstd::string_view() : iterator->second;\n')
-    utils_file.write('}\n')
-
-def generate_get_icon_resource_id_function():
-  """Generates the `GetIconResourceId` function.
+def generate_icon_resource_id_map():
+  """Generates the `kSearchEngineResourceIdMap` map.
 
   The code is generated in
-  `components/search_engines/generated_search_engine_resource_ids.cc`.
+  `components/search_engines/generated_search_engine_resource_ids-inc.cc`.
   """
-  print('Creating `GetIconResourceId` function...')
+  print('Creating `kSearchEngineResourceIdMap`...')
 
   with open(
-      '../../components/search_engines/generated_search_engine_resource_ids.cc',
+      '../../components/search_engines/generated_search_engine_resource_ids-inc.cc',
       'w',
       encoding='utf-8',
       newline='') as utils_file:
@@ -322,25 +297,10 @@ def generate_get_icon_resource_id_function():
     utils_file.write('// Use of this source code is governed by a BSD-style'
                      ' license that can be\n')
     utils_file.write('// found in the LICENSE file.\n\n')
-
-    # Include the required header files.
-    utils_file.write(
-        '#include "components/search_engines/search_engine_choice_utils.h"\n')
-    utils_file.write('\n')
-    utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
-    utils_file.write('#include "build/branding_buildflags.h"\n')
-    utils_file.write(
-        '#include "components/grit/components_scaled_resources.h"\n')
-    utils_file.write('#include "ui/resources/grit/ui_resources.h"\n')
-    utils_file.write('\n\n')
-
     utils_file.write(
         ("// This code is generated using"
          "`tools/search_engine_choice/generate_search_engine_icons.py`."
          " Don't modify it manually.\n\n"))
-
-    # Create the base::fixed_flat_map
-    utils_file.write('namespace {\n\n')
 
     utils_file.write('constexpr auto kSearchEngineResourceIdMap =\n')
     utils_file.write('\tbase::MakeFixedFlatMap<std::u16string_view, int>({\n')
@@ -357,26 +317,7 @@ def generate_get_icon_resource_id_function():
     utils_file.write('#else\n')
     utils_file.write('\t\t IDR_DEFAULT_FAVICON\n')
     utils_file.write('#endif\n')
-
     utils_file.write('\t}});\n\n')
-
-    utils_file.write('}  // namespace\n\n')
-
-    utils_file.write('namespace search_engines {\n\n')
-
-    # Create the function `GetIconResourceId()`.
-    utils_file.write(
-        'int GetIconResourceId(const std::u16string& engine_keyword) {\n')
-    utils_file.write('\tconst base::fixed_flat_map<std::u16string_view, int,\n')
-    utils_file.write(
-        '\t\tkSearchEngineResourceIdMap.size()>::const_iterator iterator =\n')
-    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(engine_keyword);\n')
-    utils_file.write(
-        '\treturn iterator == kSearchEngineResourceIdMap.cend() ?\n')
-    utils_file.write('\t\t-1 : iterator->second;\n')
-    utils_file.write('}\n\n')
-
-    utils_file.write('}  // namespace search_engines\n')
 
 
 if sys.platform != 'linux':
@@ -407,8 +348,8 @@ engine_keyword_to_icon_name = {}
 populate_used_engines()
 download_icons_from_android_search()
 generate_icon_resource_code()
-generate_get_icon_resource_id_function()
-create_get_search_engine_generated_icon_path_function()
+generate_icon_path_map()
+generate_icon_resource_id_map()
 # Format the generated code
 os.system('git cl format')
 print('Icon and code generation completed.')

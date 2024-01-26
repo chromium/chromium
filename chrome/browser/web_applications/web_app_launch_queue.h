@@ -77,7 +77,7 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
 
   // A copy of the last sent launch params ready to resend should the user
   // reload the page.
-  absl::optional<WebAppLaunchParams> last_sent_queued_launch_params_;
+  std::optional<WebAppLaunchParams> last_sent_queued_launch_params_;
 };
 
 }  // namespace web_app

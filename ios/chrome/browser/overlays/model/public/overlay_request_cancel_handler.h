@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
+#import "base/memory/raw_ptr.h"
 
 class OverlayRequest;
 class OverlayRequestQueue;
@@ -27,8 +28,8 @@ class OverlayRequestCancelHandler {
   OverlayRequestQueue* queue() const { return queue_; }
 
  private:
-  OverlayRequest* request_ = nullptr;
-  OverlayRequestQueue* queue_ = nullptr;
+  raw_ptr<OverlayRequest> request_ = nullptr;
+  raw_ptr<OverlayRequestQueue> queue_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_REQUEST_CANCEL_HANDLER_H_

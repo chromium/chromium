@@ -29,10 +29,10 @@
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
@@ -137,6 +138,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::HistoryServiceFactory::GetInstance();
   ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   ios::InMemoryURLIndexFactory::GetInstance();
+  ios::SearchEngineChoiceServiceFactory::GetInstance();
   ios::ShortcutsBackendFactory::GetInstance();
   ios::SigninErrorControllerFactory::GetInstance();
   ios::TemplateURLServiceFactory::GetInstance();

@@ -745,8 +745,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     // Discard exceptions weren't stored with timestamps, so they all must be
     // cleared.
-    performance_manager::user_tuning::prefs::ClearTabDiscardExceptionsList(
-        prefs);
+    performance_manager::user_tuning::prefs::ClearTabDiscardExceptions(
+        prefs, delete_begin_, delete_end_);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 

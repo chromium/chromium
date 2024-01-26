@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 BROWSER_USER_DATA_KEY_IMPL(AppLauncherBrowserAgent)
@@ -251,8 +251,8 @@ AppLauncherBrowserAgent::TabHelperDelegate::GetQueueForAppLaunchDialog(
   if (!web_state->GetNavigationItemCount() && web_state->HasOpener()) {
     WebStateList* web_state_list = browser_->GetWebStateList();
     const int index = web_state_list->GetIndexOfWebState(web_state);
-    queue_web_state =
-        web_state_list->GetOpenerOfWebStateAt(index).opener ?: queue_web_state;
+    queue_web_state = web_state_list->GetOpenerOfWebStateAt(index).opener.get()
+                          ?: queue_web_state;
   }
   return OverlayRequestQueue::FromWebState(queue_web_state,
                                            OverlayModality::kWebContentArea);

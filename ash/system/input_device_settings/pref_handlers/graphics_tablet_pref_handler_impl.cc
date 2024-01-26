@@ -135,14 +135,16 @@ void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
           prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
           std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->tablet_button_remappings,
-              graphics_tablet.customization_restriction)));
+              graphics_tablet.customization_restriction,
+              /*redact_button_names=*/true)));
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
           std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->pen_button_remappings,
-              graphics_tablet.customization_restriction)));
+              graphics_tablet.customization_restriction,
+              /*redact_button_names=*/true)));
 }
 
 }  // namespace ash

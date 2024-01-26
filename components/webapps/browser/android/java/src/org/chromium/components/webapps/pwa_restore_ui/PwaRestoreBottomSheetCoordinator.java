@@ -23,18 +23,30 @@ public class PwaRestoreBottomSheetCoordinator {
     private final PwaRestoreBottomSheetContent mContent;
     private final PwaRestoreBottomSheetMediator mMediator;
 
+    // How long an app can go unused and still be considered 'recent' in terms
+    // of the restore UI.
+    private static final int CUTOFF_FOR_OLDER_APPS_IN_DAYS = 30;
+
     /** Constructs the PwaRestoreBottomSheetCoordinator. */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
             @NonNull String[][] appList,
+            @NonNull int[] lastUsedInDays,
             Activity activity,
             BottomSheetController bottomSheetController,
             int backArrowId) {
         mController = bottomSheetController;
 
-        ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList();
+        ArrayList<PwaRestoreProperties.AppInfo> recentApps = new ArrayList();
+        ArrayList<PwaRestoreProperties.AppInfo> olderApps = new ArrayList();
+        int i = 0;
         for (String[] app : appList) {
-            apps.add(new PwaRestoreProperties.AppInfo(app[0], app[1]));
+            if (lastUsedInDays[i] < CUTOFF_FOR_OLDER_APPS_IN_DAYS) {
+                recentApps.add(new PwaRestoreProperties.AppInfo(app[0], app[1], lastUsedInDays[i]));
+            } else {
+                olderApps.add(new PwaRestoreProperties.AppInfo(app[0], app[1], lastUsedInDays[i]));
+            }
+            i++;
         }
 
         mView = new PwaRestoreBottomSheetView(activity);
@@ -42,7 +54,11 @@ public class PwaRestoreBottomSheetCoordinator {
         mContent = new PwaRestoreBottomSheetContent(mView);
         mMediator =
                 new PwaRestoreBottomSheetMediator(
-                        apps, activity, this::onReviewButtonClicked, this::onBackButtonClicked);
+                        recentApps,
+                        olderApps,
+                        activity,
+                        this::onReviewButtonClicked,
+                        this::onBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);

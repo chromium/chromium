@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetIsLoading(bool is_loading) override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
-  bool RequestStartStylusWriting() override;
+  bool ShouldInitiateStylusWriting() override;
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,
@@ -184,11 +184,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
-  blink::mojom::PointerLockResult LockMouse(
+  blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) override;
-  void UnlockMouse() override;
+  void UnlockPointer() override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;

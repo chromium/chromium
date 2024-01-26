@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -69,7 +70,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
       web::WebTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<ChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;
   UnsafeResource resource_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;

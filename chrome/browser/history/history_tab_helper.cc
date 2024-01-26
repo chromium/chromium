@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history/history_tab_helper.h"
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
@@ -27,17 +28,19 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_string.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -83,10 +86,10 @@ bool ShouldConsiderForNtpMostVisited(
 }
 
 // Returns the page associated with `opener_web_contents`.
-absl::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
+std::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
     base::WeakPtr<content::WebContents> opener_web_contents) {
   if (!opener_web_contents)
-    return absl::nullopt;
+    return std::nullopt;
 
   // The last committed entry could hypothetically change from when the opener
   // was set on `HistoryTabHelper` to when this function gets called. It is
@@ -96,7 +99,7 @@ absl::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
   auto* last_committed_entry =
       opener_web_contents->GetController().GetLastCommittedEntry();
   if (!last_committed_entry)
-    return absl::nullopt;
+    return std::nullopt;
 
   return history::Opener(
       history::ContextIDForWebContents(opener_web_contents.get()),
@@ -269,9 +272,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       // a reload after clearing history.
       navigation_handle->IsSameDocument() ||
               navigation_handle->GetReloadType() != content::ReloadType::NONE
-          ? absl::optional<std::u16string>(
+          ? std::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
-          : absl::nullopt,
+          : std::nullopt,
       // Our top-level site is the previous primary main frame.
       navigation_handle->GetPreviousPrimaryMainFrameURL(),
       // Only compute the opener page if it's the first committed page for this
@@ -281,13 +284,13 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           // Or use the opener for same-document navigations to connect these
           // visits.
           : (navigation_handle->IsSameDocument()
-                 ? absl::make_optional(history::Opener(
+                 ? std::make_optional(history::Opener(
                        history::ContextIDForWebContents(web_contents()),
                        nav_entry_id,
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
-                 : absl::nullopt),
-      chrome_ui_data == nullptr ? absl::nullopt : chrome_ui_data->bookmark_id(),
-      std::move(context_annotations));
+                 : std::nullopt),
+      chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
+      app_id_, std::move(context_annotations));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
@@ -494,4 +497,14 @@ bool HistoryTabHelper::IsEligibleTab(
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+static void JNI_HistoryTabHelper_SetAppIdNative(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& japp_id,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
+  history_tab_helper->SetAppId(base::android::ConvertJavaStringToUTF8(japp_id));
+}
+#endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

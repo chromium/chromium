@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 
 #include <optional>
-#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,6 +23,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -288,7 +288,7 @@ bool AutoEnrollmentCheckScreen::IsBlockingError(
     const policy::AutoEnrollmentError& error) const {
   // Connection errors are always blocking. Server errors are blocking for FRE
   // devices.
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [](policy::AutoEnrollmentSafeguardTimeoutError) { return true; },
           [](policy::AutoEnrollmentSystemClockSyncError) { return true; },

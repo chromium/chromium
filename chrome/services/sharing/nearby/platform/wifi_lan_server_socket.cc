@@ -78,7 +78,7 @@ std::unique_ptr<api::WifiLanSocket> WifiLanServerSocket::Accept() {
   // still waiting; this would trigger a thread-restriction assert. Instead we
   // populate ConnectedSocketParameters in OnAccepted() and construct the
   // WifiLanSocket after the WaitableEvent is signaled.
-  absl::optional<WifiLanSocket::ConnectedSocketParameters>
+  std::optional<WifiLanSocket::ConnectedSocketParameters>
       connected_socket_parameters;
 
   task_runner_->PostTask(
@@ -94,7 +94,7 @@ std::unique_ptr<api::WifiLanSocket> WifiLanServerSocket::Accept() {
 }
 
 void WifiLanServerSocket::DoAccept(
-    absl::optional<WifiLanSocket::ConnectedSocketParameters>*
+    std::optional<WifiLanSocket::ConnectedSocketParameters>*
         connected_socket_parameters,
     base::WaitableEvent* accept_waitable_event) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -116,11 +116,11 @@ void WifiLanServerSocket::DoAccept(
 }
 
 void WifiLanServerSocket::OnAccepted(
-    absl::optional<WifiLanSocket::ConnectedSocketParameters>*
+    std::optional<WifiLanSocket::ConnectedSocketParameters>*
         connected_socket_parameters,
     base::WaitableEvent* accept_waitable_event,
     int32_t net_error,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {

@@ -21,7 +21,7 @@ export const TREEITEM_DOWNLOADS = 'Downloads';
  * Selects the first item in the file list.
  *
  * @param {string} appId The Files app windowId.
- * @return {Promise} Promise to be fulfilled on success.
+ * @return {Promise<void>} Promise to be fulfilled on success.
  */
 async function selectFirstFileListItem(appId) {
   // Ensure no file list items are selected.
@@ -51,6 +51,7 @@ async function selectFirstFileListItem(appId) {
  * @param {string} appId The Files app windowId.
  * @return {string} Current value of the name.
  */
+// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
 async function getFileRenamingValue(appId) {
   const renamingInput = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId,
@@ -65,7 +66,7 @@ async function getFileRenamingValue(appId) {
  * @param {string} appId The Files app windowId.
  * @param {!Array<!TestEntryInfo>} initialEntrySet Initial set of entries.
  * @param {string} label Downloads or Drive directory tree item label.
- * @return {Promise} Promise to be fulfilled on success.
+ * @return {Promise<void>} Promise to be fulfilled on success.
  */
 async function createNewFolder(appId, initialEntrySet, label) {
   const textInput = '#file-list .table-row[renaming] input.rename';
@@ -83,6 +84,10 @@ async function createNewFolder(appId, initialEntrySet, label) {
   // Check: a new folder should be shown in the file list.
   let files = [[newFolderName, '--', 'Folder', '']].concat(
       TestEntryInfo.getExpectedRows(initialEntrySet));
+  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime: true;
+  // }' is not assignable to parameter of type '{ orderCheck: boolean | null |
+  // undefined; ignoreFileSize: boolean | null | undefined;
+  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Check: the text input should be shown in the file list.
@@ -126,6 +131,10 @@ async function createNewFolder(appId, initialEntrySet, label) {
   // Check: the test folder should be shown in the file list.
   files = [[newFolderName, '--', 'Folder', '']].concat(
       TestEntryInfo.getExpectedRows(initialEntrySet));
+  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime: true;
+  // }' is not assignable to parameter of type '{ orderCheck: boolean | null |
+  // undefined; ignoreFileSize: boolean | null | undefined;
+  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Wait for the new folder to become selected in the file list.
@@ -138,6 +147,9 @@ async function createNewFolder(appId, initialEntrySet, label) {
   await directoryTree.waitForChildItemByLabel(label, newFolderName);
 }
 
+// @ts-ignore: error TS4111: Property 'selectCreateFolderDownloads' comes from
+// an index signature, so it must be accessed with
+// ['selectCreateFolderDownloads'].
 testcase.selectCreateFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -147,6 +159,8 @@ testcase.selectCreateFolderDownloads = async () => {
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
 
+// @ts-ignore: error TS4111: Property 'createFolderDownloads' comes from an
+// index signature, so it must be accessed with ['createFolderDownloads'].
 testcase.createFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -155,6 +169,9 @@ testcase.createFolderDownloads = async () => {
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
 
+// @ts-ignore: error TS4111: Property 'createFolderNestedDownloads' comes from
+// an index signature, so it must be accessed with
+// ['createFolderNestedDownloads'].
 testcase.createFolderNestedDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -164,6 +181,8 @@ testcase.createFolderNestedDownloads = async () => {
   await createNewFolder(appId, [], 'photos');
 };
 
+// @ts-ignore: error TS4111: Property 'createFolderDrive' comes from an index
+// signature, so it must be accessed with ['createFolderDrive'].
 testcase.createFolderDrive = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);

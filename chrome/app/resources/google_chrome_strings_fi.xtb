@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Kuka käyttää Chromea?</translation>
 <translation id="1142745911746664600">Chromen päivitys epäonnistui</translation>
 <translation id="1149651794389918149">Kirjaudu Chromeen. Jos haluat kirjautua tilille vain kerran, voit <ph name="GUEST_LINK_BEGIN" />käyttää laitetta vieraana<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Tietoa ChromeOS:stä</translation>
+<translation id="1152920704813762236">ChromeOS</translation>
 <translation id="1154147086299354128">Avaa Chr&amp;omessa</translation>
 <translation id="1194807384646768652">Chrome on estänyt tämän latauksen, koska tiedostotyyppiä ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Internetyhteyttä ei voi muodostaa. Jos käytät palomuuria, lisää <ph name="PRODUCT_EXE_NAME" /> sallittujen listalle.</translation>
 <translation id="2131230230468101642">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromen ottavan huomioon.</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
-<translation id="2146761408396054429">Tämä tiedosto voi olla vaarallinen<ph name="LINE_BREAK" />Chrome voi tarkistaa latauksen puolestasi, jos annat salasanan – salasana pysyy laitteellasi</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -85,7 +84,7 @@
 <translation id="234869673307233423">Chrome ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
 <translation id="235650106824528204">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chrome-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2401189691232800402">Chrome-käyttöjärjestelmä</translation>
+<translation id="2401189691232800402">ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chrome-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chrome-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chrome-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2424440923901031101">Tämä laajennus rikkoo Chrome Web Storen käytäntöä ja saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="2467438592969358367">Google Chrome yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -105,7 +104,7 @@
 <translation id="2597976513418770460">Käytä tililtä <ph name="ACCOUNT_EMAIL" /> löytyvää Chrome-selaimen sisältöä</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
-<translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
@@ -195,6 +194,7 @@
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
 <translation id="4106587138345390261">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmillä tiedoilla.</translation>
 <translation id="4110895483821904099">Luo uusi Chrome-profiili</translation>
+<translation id="4128488089242627000">Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti (suositus)</translation>
 <translation id="4147555960264124640">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="4149882025268051530">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Google Chrome uudelleen.</translation>
@@ -217,7 +217,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on lisätty Chromeen</translation>
 <translation id="4384570495110188418">Chrome ei voi tarkistaa salasanojasi, koska et ole kirjautuneena sisään</translation>
 <translation id="4389991535395284064">Kun selaat incognito-tilassa, Chrome varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
-<translation id="4393248995085527349">Sinulla on oltava macOS 10.15 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.13.</translation>
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="4450664632294415862">Chrome – Kirjautuminen verkkoon – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Toinen Google Chrome ‑prosessi on jo käynnissä. Yritä myöhemmin uudelleen.</translation>
@@ -242,6 +241,7 @@
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
+<translation id="4873692836499071887">Sinulla on oltava macOS 11 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.15.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
 <translation id="4895437082222824641">Avaa linkki uudella Chromen välilehdellä</translation>
@@ -301,7 +301,6 @@
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
-<translation id="6010556343189461180">Sinulla on oltava macOS 10.15 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.14.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6025087594896450715">Google Chrome käynnistyy uudelleen, kun <ph name="REMAINING_TIME" /> on kulunut</translation>
@@ -347,9 +346,10 @@
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
 <translation id="6794858689789885890">Poista laitteen sivustodata aina, kun suljet Chromen</translation>
 <translation id="683440813066116847">Google Chrome Canaryn saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
+<translation id="6851981911629679515">Laita lisäsuojaus päälle Chromen JavaScript- ja WebAssembly-moottorissa</translation>
 <translation id="6881299373831449287">Päivitetään Chromea</translation>
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
-<translation id="6933858244219479645">Chrome-käyttöjärjestelmä</translation>
+<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
@@ -468,6 +468,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="873133009373065397">Google Chrome ei voi tunnistaa tai asettaa oletusselainta.</translation>
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 on Chromen JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
 <translation id="8821043148920470810">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>
 <translation id="8825634023950448068">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Jos Chromen arvio menee pieleen tai jos et halua nähdä tiettyjä mainoksia, voit poistaa tietyn kiinnostuksen kohteen.</translation>

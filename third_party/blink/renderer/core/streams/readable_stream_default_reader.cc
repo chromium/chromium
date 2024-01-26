@@ -34,8 +34,7 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
     read_result->setValue(ScriptValue(script_state->GetIsolate(), chunk));
     read_result->setDone(false);
     resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
-                                         script_state, read_result)
-                                         .ToLocalChecked());
+                                         script_state, read_result));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -44,8 +43,7 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
         script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
     read_result->setDone(true);
     resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
-                                         script_state, read_result)
-                                         .ToLocalChecked());
+                                         script_state, read_result));
   }
 
   void ErrorSteps(ScriptState* script_state,

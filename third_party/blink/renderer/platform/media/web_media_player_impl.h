@@ -72,10 +72,6 @@ namespace gfx {
 class Size;
 }
 
-namespace learning {
-class LearningTaskController;
-}
-
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
@@ -84,6 +80,10 @@ class MediaLog;
 class MemoryDumpProviderProxy;
 class PipelineController;
 class SwitchableAudioRendererSink;
+
+namespace learning {
+class LearningTaskController;
+}
 }  // namespace media
 
 namespace viz {
@@ -340,7 +340,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Allow background video tracks with ~5 second keyframes (rounding down) to
   // be disabled to save resources.
-  enum { kMaxKeyframeDistanceToDisableBackgroundVideoMs = 5500 };
+  constexpr static base::TimeDelta
+      kMaxKeyframeDistanceToDisableBackgroundVideo = base::Milliseconds(5500);
 
  private:
   friend class WebMediaPlayerImplTest;

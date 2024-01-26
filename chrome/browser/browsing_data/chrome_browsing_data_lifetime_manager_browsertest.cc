@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -58,7 +59,6 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 

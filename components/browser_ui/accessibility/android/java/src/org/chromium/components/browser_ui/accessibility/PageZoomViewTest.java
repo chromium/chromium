@@ -111,7 +111,6 @@ public class PageZoomViewTest {
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapJniMock);
         mJniMocker.mock(PageZoomMetricsJni.TEST_HOOKS, mPageZoomMetricsJniMock);
         when(mHostZoomMapJniMock.getDefaultZoomLevel(any())).thenReturn(0.0);
-        when(mHostZoomMapJniMock.getDesktopSiteZoomScale(any())).thenReturn(1.0);
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);
 
         mDelegate =

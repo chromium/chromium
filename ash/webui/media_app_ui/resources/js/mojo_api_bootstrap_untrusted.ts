@@ -6,9 +6,7 @@ import {OcrUntrustedPageCallbackRouter, UntrustedPageHandlerFactory, OcrUntruste
 
 // Used to make calls on the remote OcrUntrustedPageHandler interface. Singleton
 // that client modules can use directly.
-// TODO(b/316239558): The client should use the result of connectToOcrHandler()
-// directly instead of us exporting this.
-export let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
+let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
 
 // Use this subscribe to events e.g.
 // `ocrCallbackRouter.onEventOccurred.addListener(handleEvent)`.

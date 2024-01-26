@@ -11,7 +11,8 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
-import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
+import type {NativeLayer} from '../native_layer.js';
+import {NativeLayerImpl} from '../native_layer.js';
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './printer_setup_info_cros.html.js';

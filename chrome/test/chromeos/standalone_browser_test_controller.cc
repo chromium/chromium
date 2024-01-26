@@ -95,7 +95,7 @@ void OnIsolatedWebAppUrlInfoCreated(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   provider->scheduler().InstallIsolatedWebApp(
-      iwa_url_info, iwa_location, /*expected_version=*/absl::nullopt,
+      iwa_url_info, iwa_location, /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
       base::BindOnce(&IsolatedWebAppInstallationDone, iwa_url_info.app_id(),
                      std::move(callback)));

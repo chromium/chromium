@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 /** Exception information for a given origin. */
 public class ContentSettingException implements Serializable {
-    private final @ContentSettingsType int mContentSettingType;
+    private final @ContentSettingsType.EnumType int mContentSettingType;
     private final String mPrimaryPattern;
     private final String mSecondaryPattern;
     // TODO(crbug.com/1344877): Convert {@link #mSource} to enum to enable merging {@link #mSource}
@@ -38,7 +38,7 @@ public class ContentSettingException implements Serializable {
      * @param isEmbargoed Whether the site is under embargo for {@link type}.
      */
     public ContentSettingException(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             String primaryPattern,
             String secondaryPattern,
             @ContentSettingValues @Nullable Integer setting,
@@ -54,9 +54,11 @@ public class ContentSettingException implements Serializable {
         mIsEmbargoed = isEmbargoed;
     }
 
-    /** Construct a ContentSettingException. Same as above but defaults secondaryPattern to wildcard. */
+    /**
+     * Construct a ContentSettingException. Same as above but defaults secondaryPattern to wildcard.
+     */
     public ContentSettingException(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             String primaryPattern,
             @ContentSettingValues @Nullable Integer setting,
             String source,
@@ -91,7 +93,7 @@ public class ContentSettingException implements Serializable {
         return mContentSetting;
     }
 
-    public @ContentSettingsType int getContentSettingType() {
+    public @ContentSettingsType.EnumType int getContentSettingType() {
         return mContentSettingType;
     }
 

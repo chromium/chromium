@@ -32,6 +32,7 @@ constexpr double kResultRelevanceThreshold = 0.79;
 // Threshold used by new shortcuts search.
 constexpr double kRelevanceScoreThreshold = 0.52;
 constexpr size_t kMaxResults = 3u;
+constexpr double kResultRelevanceManateeThreshold = 0.75;
 
 using ash::mojom::AcceleratorState;
 using ash::shortcut_customization::mojom::SearchResult;
@@ -247,12 +248,14 @@ class KeyboardShortcutProviderManateeTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{search_features::
                                     kLauncherManateeForKeyboardShortcuts},
-          /*disabled_features=*/{});
+          /*disabled_features=*/{
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
           /*disabled_features=*/{
-              search_features::kLauncherManateeForKeyboardShortcuts});
+              search_features::kLauncherManateeForKeyboardShortcuts,
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     }
   }
 
@@ -265,15 +268,21 @@ class KeyboardShortcutProviderManateeTest
 
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    std::unique_ptr<TestManateeCache> test_manatee_cache_ =
-        std::make_unique<TestManateeCache>();
+    auto test_manatee_cache = std::make_unique<TestManateeCache>();
+    test_manatee_cache_ = test_manatee_cache.get();
     // Values are arbitrary and used to avoid making a call to model.
     embeddings_ = {{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}};
     test_manatee_cache_->SetResponseForTest(embeddings_);
     auto provider = std::make_unique<KeyboardShortcutProvider>(
-        profile_.get(), std::move(test_manatee_cache_));
+        profile_.get(), std::move(test_manatee_cache));
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
+    test_shortcut_data_ = {
+        KeyboardShortcutData(u"Open the link in a new tab", 43234, 43235),
+        KeyboardShortcutData(u"Open the link in the tab", 43148, 43149),
+        KeyboardShortcutData(u"Highlight the next item on your shelf", 43150,
+                             43151)};
+    provider_->set_shortcut_data_for_test(test_shortcut_data_);
   }
 
   void Wait() { task_environment()->RunUntilIdle(); }
@@ -290,7 +299,9 @@ class KeyboardShortcutProviderManateeTest
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
   raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
+  raw_ptr<TestManateeCache> test_manatee_cache_;
   EmbeddingsList embeddings_;
+  std::vector<KeyboardShortcutData> test_shortcut_data_;
 };
 
 INSTANTIATE_TEST_SUITE_P(ManateeForProviders,
@@ -298,12 +309,6 @@ INSTANTIATE_TEST_SUITE_P(ManateeForProviders,
                          testing::Bool());
 
 TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
-  std::vector<KeyboardShortcutData> test_shortcut_data = {
-      KeyboardShortcutData(u"Description 1"),
-      KeyboardShortcutData(u"Description 2"),
-      KeyboardShortcutData(u"Description 3")};
-  provider_->set_shortcut_data_for_test(test_shortcut_data);
-
   Wait();
   StartSearch(u"example query");
   Wait();
@@ -324,6 +329,105 @@ TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
     for (const auto& data_item : provider_->shortcut_data()) {
       ASSERT_TRUE(data_item.embedding().empty());
     }
+  }
+}
+
+TEST_P(KeyboardShortcutProviderManateeTest, ManateeSearch) {
+  // Initial query to set the embeddings will use fuzzy match.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  test_manatee_cache_->SetResponseForTest({{0.1, 0.2, 0.3}});
+
+  // Second query to use Manatee search.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  if (GetParam()) {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Open the link in a new tab");
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceManateeThreshold);
+    EXPECT_EQ(results()[0]->relevance(), 1.0);
+  } else {
+    ASSERT_TRUE(results().empty());
+  }
+}
+
+// System will default back to fuzzy-match when response from the model is
+// an invalid length.
+TEST_P(KeyboardShortcutProviderManateeTest, InvalidResponseLength) {
+  // Initial query to set the embeddings will use fuzzy match.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  test_manatee_cache_->SetResponseForTest({});
+
+  // Second query to use Manatee search.
+  Wait();
+  StartSearch(u"Open the link in a new tab");
+  Wait();
+
+  if (GetParam()) {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Open the link in a new tab");
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceManateeThreshold);
+  } else {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Open the link in a new tab");
+  }
+}
+
+TEST_P(KeyboardShortcutProviderManateeTest, MultipleQueries) {
+  // Initial query to set the embeddings will use fuzzy match.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  test_manatee_cache_->SetResponseForTest({{0.1, 0.2, 0.3}});
+
+  // Following queries to use Manatee search.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  if (GetParam()) {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Open the link in a new tab");
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceManateeThreshold);
+  } else {
+    ASSERT_TRUE(results().empty());
+  }
+
+  test_manatee_cache_->SetResponseForTest({{0.4, 0.5, 0.6}});
+
+  // Following queries to use Manatee search.
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  if (GetParam()) {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Open the link in the tab");
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceManateeThreshold);
+  } else {
+    ASSERT_TRUE(results().empty());
+  }
+
+  test_manatee_cache_->SetResponseForTest({{0.7, 0.8, 0.9}});
+
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  if (GetParam()) {
+    ASSERT_FALSE(results().empty());
+    EXPECT_EQ(results()[0]->title(), u"Highlight the next item on your shelf");
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceManateeThreshold);
+  } else {
+    ASSERT_TRUE(results().empty());
   }
 }
 
@@ -419,8 +523,8 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
   raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
-// Test that when there are more than 3 results whose relevant score exceeds the
-// threshold, only return top three.
+// Test that when there are more than 3 results whose relevant score exceeds
+// the threshold, only return top three.
 TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
   auto search_results = CreateFakeSearchResultsWithSpecifiedScores(
       {0.9, 0.8, 0.7, 0.53, 0.5, 0.4});

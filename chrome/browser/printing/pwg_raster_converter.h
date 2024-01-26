@@ -49,7 +49,7 @@ class PwgRasterConverter {
       const cloud_devices::CloudDeviceDescription& printer_capabilities,
       const cloud_devices::CloudDeviceDescription& ticket);
 
-  virtual void Start(const absl::optional<bool>& use_skia,
+  virtual void Start(const std::optional<bool>& use_skia,
                      const base::RefCountedMemory* data,
                      const PdfRenderSettings& conversion_settings,
                      const PwgRasterSettings& bitmap_settings,

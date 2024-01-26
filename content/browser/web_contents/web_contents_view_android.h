@@ -21,6 +21,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace content {
+
+class BackForwardTransitionAnimationManagerAndroid;
 class ContentUiEventHandler;
 class RenderWidgetHostViewAndroid;
 class SelectPopup;
@@ -161,6 +163,12 @@ class WebContentsViewAndroid : public WebContentsView,
     return parent_for_web_page_widgets_.get();
   }
 
+  WebContentsImpl* web_contents() { return web_contents_; }
+
+  // Guaranteed non-null if `features::kBackForwardTransitions` is enabled.
+  BackForwardTransitionAnimationManagerAndroid*
+  back_forward_animation_manager();
+
  private:
   void OnDragEntered(const std::vector<DropData::Metadata>& metadata,
                      const gfx::PointF& location,
@@ -237,6 +245,10 @@ class WebContentsViewAndroid : public WebContentsView,
   // the document has registeted interest in the dropped data and the
   // renderer process should pass the data to the document on drop.
   bool document_is_handling_drag_ = false;
+
+  // Manages the animation during a session history navigation.
+  std::unique_ptr<BackForwardTransitionAnimationManagerAndroid>
+      back_forward_animation_manager_;
 };
 
 } // namespace content

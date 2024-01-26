@@ -20,8 +20,6 @@ namespace extensions {
 class PasswordsPrivateDelegate;
 }
 
-class HelpBubbleHandler;
-
 class PasswordManagerUI : public ui::MojoBubbleWebUIController,
                           public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:

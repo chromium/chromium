@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ሲባዛ</translation>
 <translation id="1145018782460575098">ለውጫዊ መሣሪያዎች መስኮት ፊርምዌርን ማዘመን ክፍት ነው። <ph name="NUM_UPDATES" /> ዝማኔዎች ይገኛሉ።</translation>
 <translation id="1145516343487477149">ለተለመዱ የChromebook ጥያቄዎች የእገዛ ጽሑፎችን እና መልሶችን ያግኙ</translation>
 <translation id="1154390310959620237">ማበጀት የሚችሉት 5 አቋራጮችን ብቻ ነው። አዲስ ለማከል አንድ አቋራጭ ይሰርዙ።</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
+<translation id="1371650399987522809">በGoogle AI የተጎላበተ ልጣፍ ግብረመልስ</translation>
 <translation id="1387854245479784695">ይህ የሁሉም ኮሮች ድምር ነው</translation>
 <translation id="1394661041439318933">መሣሪያው <ph name="BATTERY_PERCENTAGE" />% የመያዣ ባትሪ አለው።</translation>
 <translation id="1397738625398125236">አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />ን ማዘመን አልተቻለም</translation>
+<translation id="1566493343215789965">ሲካፈል</translation>
 <translation id="1567064801249837505">አልበሞች</translation>
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1578784163189013834">የማያ ገፅ ማቆያ ዳራን ይምረጡ</translation>
 <translation id="160633243685262989">የቅድመ ዕይታ ምስል</translation>
 <translation id="1611649489706141841">ወደ ፊት</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
+<translation id="1615576200479539465">ምስሎችን በማመንጨት ላይ...</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
+<translation id="1626590945318984973">አቋራጭ አይገኝም። ተግባርን እና <ph name="META_KEY" /> ቁልፎችን ሳይጠቀሙ አዲስ አቋራጭን ይጫኑ።</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1641857168437328880">ሰነድ መጋቢ (ባለአንድ ጎን)</translation>
 <translation id="1643449475550628585">የልጣፍ ምስልን በየቀኑ ቀይር</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">የጨለማ ሁነታን አጥፋ</translation>
 <translation id="1885577615937958993">ሚዲያን ወደፊት ማሳለፊያ</translation>
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
-<translation id="1897672602657312171">የፍለጋ ቁልፍ የሌለው አቋራጭ ከተወሰነ መተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀምን መቀጠል ከፈለጉ በድጋሚ ይጫኑት ወይም የፍለጋ ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="1904932688895783618">አንዳንድ ሌሎች አጋዥ ግብዓቶች እዚህ አሉ፦</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ፎቶዎች</translation>
 <translation id="2157660087437850958">ስሜት ገላጭ ምስል መራጭ</translation>
 <translation id="2157959690810728433">ተሰልፏል</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" /> በራስ-ሠር እንዲጀምር አስተዳዳሪዎ አቀናብረዋል።}=2{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" /> እና <ph name="APP_NAME_2" /> በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}=3{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና <ph name="APP_NAME_3" /> በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}one{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና # ሌላ መተግበሪያ በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}other{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና # ሌላ መተግበሪያ በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />፦ እንደገና ይሞክሩ</translation>
 <translation id="215916044711630446">ኤፒኤን አክል አዝራር አሁን ተሰናክሏል</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">የኤፒኤን ዝርዝሮችን ያርትዑ</translation>
 <translation id="2209788852729124853">የትራፊክ ቆጣሪዎችን ዳግም ያስጀምሩ</translation>
 <translation id="2212733584906323460">የስም ጥራት</translation>
+<translation id="2215920961700443347">ምንም በይነመረብ የለም። ከበይነመረቡ ጋር ይገናኙና እንደገና ይሞክሩ።</translation>
 <translation id="2217935453350629363">የአሁኑ ፍጥነት</translation>
 <translation id="2224337661447660594">ምንም በይነመረብ የለም</translation>
 <translation id="222447520299472966">ቢያንስ አንድ የስነ-ጥበብ ማዕከለ ሥዕላት አልበም መመረጥ አለበት</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" /> ምስል ከ<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">ዓይነት</translation>
+<translation id="2465272316171730950">ሙሉ አቅም ላይ ነን። እባክዎ ትንሽ ቆይተው ተመለሱ።</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="2491955442992294626">ሌላ መስኮት ሲጠቀሙ ቁልፎች አይሞከሩም</translation>
 <translation id="2493126929778606526">የእርስዎ ምርጥ ፎቶዎች፣ በራስ-ሰር የተመረጡ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">የአሁኑን የልጣፍ ምስል አድስ</translation>
 <translation id="2512979179176933762">መስኮቶችን ማሳያ</translation>
 <translation id="2513396635448525189">መግቢያ ምስል</translation>
-<translation id="2515109918609218604">አቋራጭ አይገኝም። ተግባርን እና የፍለጋ ቁልፎችን ሳይጠቀሙ አዲስ አቋራጭን ይጫኑ።</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2521835766824839541">ቀዳሚ ትራክ</translation>
 <translation id="2526590354069164005">ዴስክቶፕ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="2880569433548999039">የደመና ፍሰት የማያ ገፅ ቆጣቢ</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
+<translation id="2938573842839598578">ግምታዊ የሆነ ውጤት ለማግኘት የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ክዳኑን እንደገና ይክፈቱ።</translation>
 <translation id="2941112035454246133">ዝቅተኛ</translation>
 <translation id="3008341117444806826">አድስ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
+<translation id="3547264467365135390">ቀመር</translation>
 <translation id="3557205324756024651">የአካባቢ ማንነት (ከተፈለገ)</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
 <translation id="3569407787324516067">የማያ ገፅ ማቆያ</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">እርስዎ አሁን ለአዲስ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ልጣፎች<ph name="END_LINK_WALLPAPER_SUBPAGE" /> መዳረሻ አለዎት</translation>
 <translation id="4117637339509843559">የጨለማ ሁነታ</translation>
 <translation id="4130035430755296270">ለተጨማሪ የአቀማመጥ አማራጮች ማንዣበብዎን ይቀጥሉ</translation>
+<translation id="4130750466177569591">እስማማለሁ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> በራስ-ሠር ተጀምሯል}one{# መተግበሪያ በራስ-ሠር ተጀምሯል}other{# መተግበሪያዎች በራስ-ሠር ተጀምረዋል}}</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">ብሩህነት መቀነሻ</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
 <translation id="4176659219503619100">የቁጥጥር ፓነል</translation>
-<translation id="4185315616950253617">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የፍለጋ ቁልፍን ማካተት አለበት።</translation>
 <translation id="420283545744377356">የማያ ገፅ ማቆያን አጥፋ</translation>
 <translation id="4213104098953699324">የዩኤስቢ ቁልፍ ሰሌዳ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">አሰናክል</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />ን ዳግም በማስነሳት ላይ</translation>
 <translation id="4395835743215824109">የቁልፍ ሰሌዳ ማበጂያ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> ቁልፍ የሌለው አቋራጭ ከተወሰነ መተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀምን መቀጠል ከፈለጉ፣ በድጋሚ ይጫኑት ወይም <ph name="KEY" /> ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4415951057168511744">የአሁኑ አምሳያ</translation>
+<translation id="4417830657741848074">አስተዳዳሪዎ አንዳንድ መተግበሪያዎችን በራስ-ሰር እንዲጀምሩ አዘጋጅቷል። ከእነዚህ መተግበሪያዎች ውስጥ አንዳንዶቹ ያልተዘጉ ሊሆኑ ይችላሉ።</translation>
 <translation id="4422041425070339732">ታች ቀስት</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ጠፍቷል</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">የመሬት ፍሰት የማያ ገፅ ቆጣቢ</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
+<translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4500966230243561393">የበይነገጽ ቀለም</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>
 <translation id="4507392511610824664">ብሩህነት ይጨምራል</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
 <translation id="4839698083503556542">የራስዎን ፊልም ይፍጠሩ</translation>
+<translation id="48409034532829769">አስተዳዳሪዎ በራስ-ሰር ለመጀመር «<ph name="APP_NAME" />» አዘጋጅቷል። ይህ መተግበሪያ ያልተዘጋ ሊሆን ይችላል።</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ተመርጧል፣ የ<ph name="TOPIC_SOURCE" /> አልበሞችን ለመምረጥ አስገባን ይጫኑ</translation>
 <translation id="484790837831576105">(Android) የዲኤንኤስ መፍትሔ</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">ክፈል</translation>
 <translation id="4972592110715526173">ሁነታን የሚለውጥ</translation>
 <translation id="498186245079027698">መቃኛውን ይፈትሹ እና እንደገና ይሞክሩ። የተቃኙ ፋይሎችን ለማስቀመጥ በቂ አከባቢያዊ ቦታ መኖሩን ያረጋግጡ።</translation>
+<translation id="4982627662315910959">አቋራጭ አይገኝም። በshift እና 1 ተጨማሪ የአሻሻይ ቁልፍ (ctrl፣ alt፣ ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4985509611418653372">አሂድ</translation>
 <translation id="4987769320337599931">ኬላ</translation>
 <translation id="4988526792673242964">ገፆች</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">የጠቆር ያለ ገጽታ መርሐግብር</translation>
 <translation id="5229344016299762883">ከሙሉ ማያ ገጽ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{አስተዳዳሪዎ «<ph name="APP_NAME" />»ን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምር አዘጋጅቷል።}=2{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና 1 ሌላ መተግበሪያን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}one{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና # ሌላ መተግበሪያን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}other{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና # ሌሎች መተግበሪያዎችን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}}</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
 <translation id="5257811368506016604">የብርሃን ቀለም ሁነታን አንቃ</translation>
 <translation id="5264277876637023664">የሲፒዩ ሙከራን አሂድ</translation>
@@ -841,12 +852,13 @@
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7180865173735832675">አብጅ</translation>
 <translation id="7184043045742675738">የእርስዎን አዝራር ለማበጀት በማንኛውም ቁልፍ ላይ ጠቅ ያድርጉ። ቁልፉን በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
+<translation id="7206979415662233817">የአገልግሎት ውል</translation>
 <translation id="7212547870105584639">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤንኦች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ለውጫዊ መሳሪያዎች የፊርምዌር ዝማኔዎች</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
-<translation id="7273347807225967898">አቋራጭ አይገኝም። የአሻሻይ ቁልፍን (ctrl፣ alt፣ ቀያይር፣ ፍለጋ ወይም ማስጀምሪያ) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
+<translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
@@ -859,6 +871,10 @@
 <translation id="7311368985037279727">የቁልፍ ሰሌዳ ቀለም</translation>
 <translation id="7317831949569936035">የትምህርት ቤት ምዝገባ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ቢያንስ 18 ዓመት ሊሞላዎት እና የAI ልጣፎች አጠቃቀምዎ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ለGoogle አገልግሎት ውል<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> እና <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ለአመንጪ AI ተጨማሪ የአገልግሎት ውል<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ተገዢ እንደሆነ መስማማት አለብዎት።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ልጣፎችን በAI መፍጠር የሚችሉት ለግል እና ለንግድ ላልሆነ አገልግሎት ብቻ ነው። <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ለGoogle የግላዊነት መመሪያ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ተገዢ በሆነ መልኩ የልጣፍ እገዛ ሲያገኙ፣ የልጣፍ ጥቆማዎችን ለማመንጨት ጽሑፍ ወደ Google AI አገልጋዮች ይላካል። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7353413232959255829">የፍለጋ ውጤት <ph name="LIST_POSITION" /> ከ<ph name="LIST_SIZE" />፦ <ph name="SEARCH_RESULT_TEXT" />። ወደ አቋራጭ ለማሰስ አስገባን ይጫኑ።</translation>
@@ -945,6 +961,7 @@
 <translation id="7971535376154084247">አጠቃላይ መቆጣጠሪያዎች</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> አውታረ መረብን ለመቀላቀል ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="7978412674231730200">የግል ቁልፍ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» በራስ-ሰር ተጀምሯል}one{# መተግበሪያ በራስ-ሰር ተጀምሯል}other{# መተግበሪያዎች በራስ-ሰር ተጀምረዋል}}</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
 <translation id="8017679124341497925">አቋራጭ አርትዖት ተደርጎበታል</translation>
@@ -961,7 +978,6 @@
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8094062939584182041">Google ስለዚህ ችግር ኢሜይል እንዲልክልዎ ይፍቀዱለት</translation>
 <translation id="8104083085214006426">ክፍት እና ደህንነቱ ያልተጠበቀ አውታረ መረብ እየተጠቀሙ ነው</translation>
-<translation id="8111706652656628199">አቋራጭ አይገኝም። ቀያይርን እና 1 ተጨማሪ የአሻሻይ ቁልፍን (ctrl፣ alt፣ ፍለጋ ወይም ማስጀመሪያ) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="811820734797650957">(Android) አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8132480444149501833">የትራፊክ ቆጣሪዎችን ጠይቅ</translation>

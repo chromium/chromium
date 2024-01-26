@@ -36,7 +36,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -1669,6 +1669,7 @@ bool RenderProcessHostImpl::Init() {
 
   CreateMessageFilters();
   RegisterMojoInterfaces();
+  CreateMetricsAllocator();
 
   // Call this now and not in OnProcessLaunched in case any mojo calls get
   // dispatched before this.
@@ -1744,7 +1745,7 @@ bool RenderProcessHostImpl::Init() {
         std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
         std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
-        std::move(file_data));
+        std::move(file_data), metrics_memory_region_.Duplicate());
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the
@@ -3144,10 +3145,15 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
 }
 
 // static
-void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-    BrowserContext* browser_context) {
+void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+    SiteInstance* site_instance,
+    bool ignore_delay) {
   SpareRenderProcessHostManager::GetInstance().PrepareForFutureRequests(
-      browser_context);
+      site_instance->GetBrowserContext(),
+      ignore_delay
+          ? std::nullopt
+          : GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+                site_instance->GetSiteURL()));
 }
 
 // static
@@ -3428,7 +3434,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableSpeechAPI,
     switches::kDisableThreadedCompositing,
     switches::kDisableTouchDragDrop,
-    switches::kDisableUseSharedImagesForPepperVideo,
     switches::kDisableV8IdleTasks,
     switches::kDisableVideoCaptureUseGpuMemoryBuffer,
     switches::kDisableWebGLImageChromium,
@@ -3520,6 +3525,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     blink::switches::kDisablePreferCompositingToLCDText,
     blink::switches::kDisableRGBA4444Textures,
     blink::switches::kDisableThrottleNonVisibleCrossOriginIframes,
+    blink::switches::kEnableLeakDetectionHeapSnapshot,
     blink::switches::kEnableLowResTiling,
     blink::switches::kEnablePreferCompositingToLCDText,
     blink::switches::kEnableRGBA4444Textures,
@@ -3555,41 +3561,39 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kRunAllCompositorStagesBeforeDraw,
 
 #if BUILDFLAG(ENABLE_PPAPI)
-    switches::kEnablePepperTesting,
+      switches::kEnablePepperTesting,
 #endif
-    switches::kDisableWebRtcHWDecoding,
-    switches::kDisableWebRtcHWEncoding,
-    switches::kEnableWebRtcSrtpEncryptedHeaders,
-    switches::kEnforceWebRtcIPPermissionCheck,
-    switches::kWebRtcMaxCaptureFramerate,
-    switches::kEnableLowEndDeviceMode,
-    switches::kDisableLowEndDeviceMode,
-    switches::kDisallowNonExactResourceReuse,
+      switches::kDisableWebRtcHWDecoding,
+      switches::kDisableWebRtcHWEncoding,
+      switches::kEnableWebRtcSrtpEncryptedHeaders,
+      switches::kEnforceWebRtcIPPermissionCheck,
+      switches::kWebRtcMaxCaptureFramerate,
+      switches::kEnableLowEndDeviceMode,
+      switches::kDisableLowEndDeviceMode,
+      switches::kDisallowNonExactResourceReuse,
 #if BUILDFLAG(IS_ANDROID)
-    switches::kDisableMediaSessionAPI,
-    switches::kEnableReachedCodeProfiler,
-    switches::kReachedCodeSamplingIntervalUs,
-    switches::kRendererWaitForJavaDebugger,
+      switches::kDisableMediaSessionAPI,
+      switches::kRendererWaitForJavaDebugger,
 #endif
 #if BUILDFLAG(IS_WIN)
-    switches::kDisableHighResTimer,
-    switches::kTrySupportedChannelLayouts,
-    switches::kRaiseTimerFrequency,
+      switches::kDisableHighResTimer,
+      switches::kTrySupportedChannelLayouts,
+      switches::kRaiseTimerFrequency,
 #endif
 #if BUILDFLAG(IS_OZONE)
-    switches::kOzonePlatform,
+      switches::kOzonePlatform,
 #endif
 #if defined(ENABLE_IPC_FUZZER)
-    switches::kIpcDumpDirectory,
-    switches::kIpcFuzzerTestcase,
+      switches::kIpcDumpDirectory,
+      switches::kIpcFuzzerTestcase,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    switches::kSchedulerBoostUrgent,
+      switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kLacrosEnablePlatformHevc,
-    switches::kLacrosUseChromeosProtectedMedia,
-    switches::kLacrosUseChromeosProtectedAv1,
+      switches::kLacrosEnablePlatformHevc,
+      switches::kLacrosUseChromeosProtectedMedia,
+      switches::kLacrosUseChromeosProtectedAv1,
 #endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames);
@@ -3750,13 +3754,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
-  // Set this before ProcessDied() so observers can tell if the render process
-  // died due to fast shutdown versus another cause.
-  fast_shutdown_started_ = true;
-
-  ChildProcessTerminationInfo info =
-      GetChildTerminationInfo(false /* already_dead */);
-  ProcessDied(info);
+  FastShutdown();
   LogDelayReasonForFastShutdown(DelayShutdownReason::kNoDelay);
   return true;
 }
@@ -4087,21 +4085,7 @@ void RenderProcessHostImpl::Cleanup() {
                 "RenderProcessHostImpl::Cleanup : Exit without full cleanup.",
                 ChromeTrackEvent::kRenderProcessHost, *this);
 
-    // Notify all observers that the process has exited cleanly, even though it
-    // will be destroyed a bit later. Observers shouldn't rely on this process
-    // anymore.
-    // Populates Android-only fields and closes the underlying base::Process.
-    ChildProcessTerminationInfo info =
-        GetChildTerminationInfo(false /* already_dead */);
-    info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
-    info.exit_code = 0;
-
-    // Set this before ProcessDied() so observers treat this process exit as
-    // similar to the fast shutdown case.
-    fast_shutdown_started_ = true;
-
-    // Notify observers using the clean exit info.
-    ProcessDied(info);
+    FastShutdown();
     return;
   }
 
@@ -4853,7 +4837,10 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // PrepareForFutureRequests will be postponed until later (e.g. until the
   // navigation commits or a cross-site redirect happens).
   if (spare_was_taken) {
-    spare_process_manager.PrepareForFutureRequests(browser_context);
+    spare_process_manager.PrepareForFutureRequests(
+        browser_context,
+        GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+            site_instance->GetSiteURL()));
   }
 
   if (is_unmatched_service_worker) {
@@ -4879,21 +4866,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   return render_process_host;
 }
 
-void RenderProcessHostImpl::CreateSharedRendererHistogramAllocator() {
+void RenderProcessHostImpl::CreateMetricsAllocator() {
   // Create a persistent memory segment for renderer histograms only if
   // they're active in the browser.
   if (!base::GlobalHistogramAllocator::Get()) {
-    if (is_initialized_) {
-      HistogramController::GetInstance()->SetHistogramMemory<RenderProcessHost>(
-          this, base::WritableSharedMemoryRegion());
-    }
     return;
   }
-
-  // Get handle to the renderer process. Stop if there is none.
-  base::ProcessHandle destination = GetProcess().Handle();
-  if (destination == base::kNullProcessHandle)
-    return;
 
   // Get the renderer histogram shared memory configuration.
   auto shared_memory_config =
@@ -4903,15 +4881,15 @@ void RenderProcessHostImpl::CreateSharedRendererHistogramAllocator() {
   // Create the shared memory region and allocator.
   auto shared_memory = base::HistogramSharedMemory::Create(
       GetID(), shared_memory_config.value());
-  if (!shared_memory.has_value()) {
-    return;
+  if (shared_memory.has_value()) {
+    metrics_memory_region_ = std::move(shared_memory->region);
+    metrics_allocator_ = std::move(shared_memory->allocator);
   }
+}
 
-  // Move the region and allocator out of the |shared_memory| helper.
-  metrics_allocator_ = shared_memory->TakeAllocator();
-
+void RenderProcessHostImpl::ShareMetricsMemoryRegion() {
   HistogramController::GetInstance()->SetHistogramMemory<RenderProcessHost>(
-      this, shared_memory->TakeRegion());
+      this, std::move(metrics_memory_region_));
 }
 
 ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(
@@ -4995,6 +4973,21 @@ void RenderProcessHostImpl::ProcessDied(
   HistogramController::GetInstance()->NotifyChildDied<RenderProcessHost>(this);
   // This object is not deleted at this point and might be reused later.
   // TODO(darin): clean this up
+}
+
+void RenderProcessHostImpl::FastShutdown() {
+  // Set this before ProcessDied() so observers can know that process died due
+  // to fast shutdown.
+  fast_shutdown_started_ = true;
+
+  // Tell observers that the process exited cleanly, even though it will be
+  // destroyed a little bit later. Observers shouldn't rely on this process
+  // anymore.
+  auto termination_info = GetChildTerminationInfo(/* already_dead=*/false);
+  termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+  termination_info.exit_code = 0;
+
+  ProcessDied(termination_info);
 }
 
 void RenderProcessHostImpl::ResetIPC() {
@@ -5310,7 +5303,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       UpdateProcessPriority();
 
     // Share histograms between the renderer and this process.
-    CreateSharedRendererHistogramAllocator();
+    ShareMetricsMemoryRegion();
   }
 
   // Pass bits of global renderer state to the renderer.

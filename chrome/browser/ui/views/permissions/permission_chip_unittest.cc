@@ -146,7 +146,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
     web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
-  void ClickOnChip(OmniboxChipButton& chip) {
+  void ClickOnChip(PermissionChipView& chip) {
     views::test::ButtonTestApi(&chip).NotifyClick(
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));

@@ -41,6 +41,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
+  std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override;
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
@@ -86,6 +87,11 @@ bool ManagedPreferencePolicyManager::HasActiveDevicePolicies() const {
 
 std::string ManagedPreferencePolicyManager::source() const {
   return base::SysNSStringToUTF8(impl_.source);
+}
+
+std::optional<bool>
+ManagedPreferencePolicyManager::CloudPolicyOverridesPlatformPolicy() const {
+  return std::nullopt;
 }
 
 std::optional<base::TimeDelta>

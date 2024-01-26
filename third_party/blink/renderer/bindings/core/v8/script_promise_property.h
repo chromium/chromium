@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -25,10 +24,10 @@ class ExecutionContext;
 // Use ScriptPromise if the property is associated with only one world
 // (e.g., FetchEvent.preloadResponse). Use ScriptPromiseProperty if the property
 // can be accessed from multiple worlds (e.g., ServiceWorkerContainer.ready).
-template <typename ResolvedType, typename RejectedType>
+template <typename IDLResolvedType, typename IDLRejectedType>
 class ScriptPromiseProperty final
     : public GarbageCollected<
-          ScriptPromiseProperty<ResolvedType, RejectedType>>,
+          ScriptPromiseProperty<IDLResolvedType, IDLRejectedType>>,
       public ExecutionContextClient {
  public:
   enum State {
@@ -83,11 +82,11 @@ class ScriptPromiseProperty final
         if (resolved_with_undefined_) {
           resolver->Resolve();
         } else {
-          resolver->Resolve(resolved_);
+          resolver->Resolve<IDLResolvedType, MemberResolvedType>(resolved_);
         }
         break;
       case kRejected:
-        resolver->Reject(rejected_);
+        resolver->Reject<IDLRejectedType>(rejected_);
         break;
     }
     promises_.push_back(promise);
@@ -106,7 +105,7 @@ class ScriptPromiseProperty final
     HeapVector<Member<ScriptPromiseResolver>> resolvers;
     resolvers.swap(resolvers_);
     for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      resolver->Resolve(resolved_);
+      resolver->Resolve<IDLResolvedType>(value);
     }
   }
 
@@ -147,7 +146,7 @@ class ScriptPromiseProperty final
     HeapVector<Member<ScriptPromiseResolver>> resolvers;
     resolvers.swap(resolvers_);
     for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      resolver->Reject(rejected_);
+      resolver->Reject<IDLRejectedType>(rejected_);
     }
   }
 
@@ -156,8 +155,8 @@ class ScriptPromiseProperty final
   // resolved and the rejected values.
   void Reset() {
     state_ = kPending;
-    resolved_ = ResolvedType();
-    rejected_ = RejectedType();
+    resolved_ = DefaultPromiseResultValue<MemberResolvedType>();
+    rejected_ = DefaultPromiseResultValue<MemberRejectedType>();
     resolvers_.clear();
     promises_.clear();
     resolved_with_undefined_ = false;
@@ -172,8 +171,8 @@ class ScriptPromiseProperty final
   }
 
   void Trace(Visitor* visitor) const override {
-    TraceIfNeeded<ResolvedType>::Trace(visitor, resolved_);
-    TraceIfNeeded<RejectedType>::Trace(visitor, rejected_);
+    TraceIfNeeded<MemberResolvedType>::Trace(visitor, resolved_);
+    TraceIfNeeded<MemberRejectedType>::Trace(visitor, rejected_);
     visitor->Trace(resolvers_);
     visitor->Trace(promises_);
     ExecutionContextClient::Trace(visitor);
@@ -182,9 +181,25 @@ class ScriptPromiseProperty final
   State GetState() const { return state_; }
 
  private:
+  using MemberResolvedType =
+      AddMemberIfNeeded<typename IDLTypeToBlinkImplType<IDLResolvedType>::type>;
+  using MemberRejectedType =
+      AddMemberIfNeeded<typename IDLTypeToBlinkImplType<IDLRejectedType>::type>;
+
+  template <typename T>
+  static T DefaultPromiseResultValue() {
+    return {};
+  }
+
+  template <typename T>
+    requires std::derived_from<T, bindings::EnumerationBase>
+  static T DefaultPromiseResultValue() {
+    return T(static_cast<T::Enum>(0));
+  }
+
   State state_ = kPending;
-  ResolvedType resolved_;
-  RejectedType rejected_;
+  MemberResolvedType resolved_{DefaultPromiseResultValue<MemberResolvedType>()};
+  MemberRejectedType rejected_{DefaultPromiseResultValue<MemberRejectedType>()};
   HeapVector<Member<ScriptPromiseResolver>> resolvers_;
   HeapVector<ScriptPromise> promises_;
   bool resolved_with_undefined_ = false;

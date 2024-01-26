@@ -99,13 +99,15 @@ void OnCompositorThroughputReported(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
   float duration_sec = duration.InSecondsF();
-  VLOG(1) << "Compositor throughput report: frames_expected="
-          << data.frames_expected << " frames_produced=" << data.frames_produced
-          << " jank_count=" << data.jank_count
-          << " expected_fps=" << data.frames_expected / duration_sec
-          << " actual_fps=" << data.frames_produced / duration_sec
+  VLOG(1) << "Compositor throughput report: frames_expected_v3="
+          << data.frames_expected_v3
+          << " frames_dropped_v3=" << data.frames_dropped_v3
+          << " jank_count_v3=" << data.jank_count_v3
+          << " expected_fps=" << data.frames_expected_v3 / duration_sec
+          << " actual_fps="
+          << (data.frames_expected_v3 - data.frames_dropped_v3) / duration_sec
           << " duration=" << duration;
-  metrics_util::ForSmoothness(
+  metrics_util::ForSmoothnessV3(
       base::BindRepeating(&LogCompositorThroughput, ui_settings))
       .Run(data);
 }

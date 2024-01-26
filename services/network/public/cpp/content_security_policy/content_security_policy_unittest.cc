@@ -103,7 +103,7 @@ class CSPContextTest : public CSPContext {
     scheme_to_bypass_.push_back(scheme);
   }
 
-  bool SchemeShouldBypassCSP(const std::string_view& scheme) override {
+  bool SchemeShouldBypassCSP(std::string_view scheme) override {
     return base::Contains(scheme_to_bypass_, scheme);
   }
 
@@ -196,9 +196,12 @@ TEST(ContentSecurityPolicy, ParseFrameAncestors) {
       // Dot separation.
       {"a", {{{"", "a"}}}},
       {"a.b.c", {{{"", "a.b.c"}}}},
-      {"a.b."},
       {".b.c"},
       {"a..c"},
+
+      // Trailing dots
+      {"a.", {{{"", "a."}}}},
+      {"a.b.", {{{"", "a.b."}}}},
 
       // Valid/Invalid characters.
       {"az09-", {{{"", "az09-"}}}},

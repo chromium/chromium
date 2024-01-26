@@ -156,7 +156,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // devices. Register Widevine without any capabilities so that it will be
   // checked the first time some page attempts to play protected content.
   cdms->emplace_back(
-      kWidevineKeySystem, Robustness::kSoftwareSecure, absl::nullopt,
+      kWidevineKeySystem, Robustness::kSoftwareSecure, std::nullopt,
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
       kWidevineCdmType, base::Version(), base::FilePath());
 
@@ -218,7 +218,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // devices. Register Widevine without any capabilities so that it will be
   // checked the first time some page attempts to play protected content.
   cdms->emplace_back(
-      kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
+      kWidevineKeySystem, Robustness::kHardwareSecure, std::nullopt,
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
       kWidevineCdmType, base::Version(), base::FilePath());
 

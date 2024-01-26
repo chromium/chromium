@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
                        0);
-  CheckLastReceiver(*devices[0]);
+  CheckLastReceiver(devices[0]);
   CheckLastSharingMessageSent(GURL(kTelUrl).GetContent());
 }
 
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
                        0);
-  CheckLastReceiver(*devices[0]);
+  CheckLastReceiver(devices[0]);
   CheckLastSharingMessageSent(phone_number.GetContent());
 }
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
-    CheckLastReceiver(*device);
+    CheckLastReceiver(device);
     CheckLastSharingMessageSent(GURL(kTelUrl).GetContent());
     device_id++;
   }
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
-    CheckLastReceiver(*device);
+    CheckLastReceiver(device);
     std::optional<std::string> expected_number =
         ExtractPhoneNumberForClickToCall(GetProfile(0), kTextWithPhoneNumber);
     ASSERT_TRUE(expected_number.has_value());
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
 
-  CheckLastReceiver(*devices[0]);
+  CheckLastReceiver(devices[0]);
   // Defined in tel.html
   CheckLastSharingMessageSent("0123456789");
 }

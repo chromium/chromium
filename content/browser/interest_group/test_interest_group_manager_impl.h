@@ -69,10 +69,15 @@ class TestInterestGroupManagerImpl
   //
   // This is used instead of a virtual method for tracking bids, since it has
   // all the information that's needed.
-  void OnInterestGroupAccessed(const base::Time& access_time,
-                               AccessType type,
-                               const url::Origin& owner_origin,
-                               const std::string& name) override;
+  void OnInterestGroupAccessed(
+      base::optional_ref<const std::string> devtools_auction_id,
+      base::Time access_time,
+      AccessType type,
+      const url::Origin& owner_origin,
+      const std::string& name,
+      base::optional_ref<const url::Origin> component_seller_origin,
+      std::optional<double> bid,
+      base::optional_ref<const std::string> bid_currency) override;
 
   // KAnonymityServiceDelegate implementation:
   void JoinSet(std::string id,

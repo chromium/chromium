@@ -110,14 +110,7 @@ UIColor* BackgroundColor() {
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithDefaultBackground];
   appearance.backgroundColor = BackgroundColor();
-  if (@available(iOS 15, *)) {
-    self.navigationItem.scrollEdgeAppearance = appearance;
-  } else {
-    // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
-    // titles, so it can't be used. Instead, the navigation bar will always be
-    // the same style.
-    self.navigationItem.standardAppearance = appearance;
-  }
+  self.navigationItem.scrollEdgeAppearance = appearance;
   self.navigationController.navigationBar.tintColor =
       [UIColor colorNamed:kBlueColor];
 

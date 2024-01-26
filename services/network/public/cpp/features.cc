@@ -468,8 +468,13 @@ const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata{
     &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsMetadata",
     /*default_value=*/false};
 // Controls whether we ignore checks on the deprecation trial for 3PC.
-const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsSupport{
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTrial{
     &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsSupport",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the top-level deprecation trial for 3PC.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial{
+    &kSkipTpcdMitigationsForAds,
+    /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
     /*default_value=*/false};
 
 }  // namespace network::features

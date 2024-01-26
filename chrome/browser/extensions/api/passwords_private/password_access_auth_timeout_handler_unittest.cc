@@ -6,16 +6,15 @@
 
 #include <utility>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/sync/base/features.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::TestWithParam;
-using ::testing::Values;
+using password_manager::constants::kPasswordManagerAuthValidity;
+using testing::TestWithParam;
+using testing::Values;
 
 namespace extensions {
 
@@ -32,45 +31,32 @@ class PasswordAccessAuthTimeoutHandlerTest : public TestWithParam<bool> {
 
  protected:
   void SetUp() override {
-    if (GetParam()) {
-      feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-    }
     handler_.Init(timeout_callback_.Get());
   }
-
-  void TearDown() override { feature_list.Reset(); }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockTimeoutCallback timeout_callback_;
   PasswordAccessAuthTimeoutHandler handler_;
-  base::test::ScopedFeatureList feature_list;
 };
 
-TEST_P(PasswordAccessAuthTimeoutHandlerTest, RestartAuthTimer) {
+TEST_F(PasswordAccessAuthTimeoutHandlerTest, RestartAuthTimer) {
   // Timeout callback will not be run because the timer was not started.
   handler().RestartAuthTimer();
   EXPECT_CALL(timeout_callback(), Run).Times(0);
-  task_environment().FastForwardBy(
-      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() +
-      base::Seconds(1));
+  task_environment().FastForwardBy(kPasswordManagerAuthValidity +
+                                   base::Seconds(1));
 
   // Timeout callback will not be run because not enough time has passed.
   handler().start_auth_timer(timeout_callback().Get());
-  task_environment().FastForwardBy(
-      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() -
-      base::Seconds(1));
+  task_environment().FastForwardBy(kPasswordManagerAuthValidity -
+                                   base::Seconds(1));
 
   // Timeout callback will be run.
   handler().RestartAuthTimer();
   EXPECT_CALL(timeout_callback(), Run).Times(1);
-  task_environment().FastForwardBy(
-      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod());
+  task_environment().FastForwardBy(kPasswordManagerAuthValidity);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         PasswordAccessAuthTimeoutHandlerTest,
-                         testing::Bool());
 
 }  // namespace extensions

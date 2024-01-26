@@ -96,9 +96,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id2));
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   web_app_cleanup_handler_.Cleanup(future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id2));
@@ -124,9 +124,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id3));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id4));
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   web_app_cleanup_handler_.Cleanup(future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id2));
@@ -164,9 +164,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
   EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kSync));
   EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kPolicy));
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   web_app_cleanup_handler_.Cleanup(future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id2));

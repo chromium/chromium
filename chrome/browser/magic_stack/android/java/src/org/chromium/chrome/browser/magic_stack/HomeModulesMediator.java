@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import android.os.Handler;
+import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -21,8 +25,11 @@ import java.util.Map;
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
     private static final int INVALID_INDEX = -1;
+
+    /** Time to wait before rejecting any module response in milliseconds. */
+    public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
+
     private final ModelList mModel;
-    private final Callback<Boolean> mSetVisibilityCallback;
     private final ModuleRegistry mModuleRegistry;
 
     /** A map of <ModuleType, ModuleProvider>. */
@@ -30,6 +37,8 @@ public class HomeModulesMediator {
 
     /** A map of <ModuleType, the ranking of this module from segmentation service>. */
     private final Map<Integer, Integer> mModuleTypeToRankingIndexMap = new HashMap<>();
+
+    private final Handler mHandler = new Handler();
 
     /**
      * An array of cached responses (data) from modules. The size of the array is the number of
@@ -48,18 +57,20 @@ public class HomeModulesMediator {
     /** The ranking index of the module whose response that the magic stack is waiting for. */
     private int mModuleResultsWaitingIndex;
 
+    /** Whether a fetch of modules is in progress. */
+    private boolean mIsFetchingModules;
+
     private boolean mIsShown;
+    private Callback<Boolean> mSetVisibilityCallback;
+    private long[] mShowModuleStartTimeMs;
+    private List<Integer> mModuleListToShow;
+    private @HostSurface int mHostSurface;
 
     /**
      * @param model The instance of {@link ModelList} of the RecyclerView.
-     * @param setVisibilityCallback The callback to update the visibility of the magic stack.
      */
-    public HomeModulesMediator(
-            @NonNull ModelList model,
-            @NonNull Callback<Boolean> setVisibilityCallback,
-            @NonNull ModuleRegistry moduleRegistry) {
+    public HomeModulesMediator(@NonNull ModelList model, @NonNull ModuleRegistry moduleRegistry) {
         mModel = model;
-        mSetVisibilityCallback = setVisibilityCallback;
         mModuleRegistry = moduleRegistry;
     }
 
@@ -70,17 +81,28 @@ public class HomeModulesMediator {
      * @param moduleDelegate The instance of the magic stack {@link ModuleDelegate}.
      */
     void buildModulesAndShow(
-            @NonNull @ModuleType List<Integer> moduleList, @NonNull ModuleDelegate moduleDelegate) {
+            @NonNull @ModuleType List<Integer> moduleList,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Callback<Boolean> setVisibilityCallback) {
+        if (mIsShown) return;
+
+        mSetVisibilityCallback = setVisibilityCallback;
         assert mModel.size() == 0;
+        mIsFetchingModules = true;
         mIsShown = true;
-        cacheRanking(moduleList);
+        mHostSurface = moduleDelegate.getHostSurfaceType();
+        mModuleListToShow = moduleList;
+        cacheRanking(mModuleListToShow);
 
         mModuleResultsWaitingIndex = 0;
-        mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[moduleList.size()];
-        mModuleFetchResultsIndicator = new Boolean[moduleList.size()];
+        mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[mModuleListToShow.size()];
+        mModuleFetchResultsIndicator = new Boolean[mModuleListToShow.size()];
+        mShowModuleStartTimeMs = new long[mModuleListToShow.size()];
+        boolean hasModuleBuilt = false;
 
-        for (int i = 0; i < moduleList.size(); i++) {
-            int moduleType = moduleList.get(i);
+        for (int i = 0; i < mModuleListToShow.size(); i++) {
+            int moduleType = mModuleListToShow.get(i);
+            mShowModuleStartTimeMs[i] = SystemClock.elapsedRealtime();
             if (!mModuleRegistry.build(
                     moduleType,
                     moduleDelegate,
@@ -98,7 +120,15 @@ public class HomeModulesMediator {
                     mModuleResultsWaitingIndex++;
                     maybeMoveEarlyReceivedModulesToRecyclerView();
                 }
+            } else {
+                hasModuleBuilt = true;
             }
+        }
+        // Don't start the timer if the magic stack isn't waiting for any module to be load.
+        if (hasModuleBuilt) {
+            mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
+        } else {
+            mIsFetchingModules = false;
         }
     }
 
@@ -138,9 +168,14 @@ public class HomeModulesMediator {
     @VisibleForTesting
     void addToRecyclerViewOrCache(
             @ModuleType int moduleType, @Nullable PropertyModel propertyModel) {
-        if (!mIsShown) return;
-
         int index = mModuleTypeToRankingIndexMap.get(moduleType);
+        long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[index];
+        if (!mIsFetchingModules) {
+            HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(
+                    mHostSurface, moduleType, duration);
+            return;
+        }
+
         // If this module has responded before, update its data on the RecyclerView.
         if (index < mModuleResultsWaitingIndex) {
             if (propertyModel != null) {
@@ -148,10 +183,7 @@ public class HomeModulesMediator {
             } else {
                 remove(moduleType, index);
             }
-            return;
-        }
-
-        if (index == mModuleResultsWaitingIndex) {
+        } else if (index == mModuleResultsWaitingIndex) {
             if (propertyModel != null) {
                 // This module is the highest ranking one that we are waiting for, adds its data to
                 // the RecyclerView.
@@ -171,6 +203,13 @@ public class HomeModulesMediator {
                     propertyModel != null
                             ? new SimpleRecyclerViewAdapter.ListItem(moduleType, propertyModel)
                             : null;
+        }
+
+        if (propertyModel == null) {
+            HomeModulesMetricsUtils.recordFetchDataFailedDuration(
+                    mHostSurface, moduleType, duration);
+        } else {
+            HomeModulesMetricsUtils.recordFetchDataDuration(mHostSurface, moduleType, duration);
         }
     }
 
@@ -213,6 +252,28 @@ public class HomeModulesMediator {
         }
     }
 
+    /** Adds all of the cached responses to the RecyclerView after time out. */
+    @VisibleForTesting
+    void onModuleFetchTimeOut() {
+        // Will reject any late responses from modules.
+        mIsFetchingModules = false;
+
+        while (mModuleResultsWaitingIndex < mModuleFetchResultsIndicator.length) {
+            var hasResult = mModuleFetchResultsIndicator[mModuleResultsWaitingIndex];
+            if (hasResult == null) {
+                HomeModulesMetricsUtils.recordFetchDataTimeOutType(
+                        mHostSurface, mModuleListToShow.get(mModuleResultsWaitingIndex));
+            } else if (hasResult) {
+                var cachedResponse = mModuleFetchResultsCache[mModuleResultsWaitingIndex];
+                assert cachedResponse != null;
+                // append() will change the visibility of the recyclerview if there isn't any module
+                // added before time out.
+                append(cachedResponse);
+            }
+            mModuleResultsWaitingIndex++;
+        }
+    }
+
     /**
      * Appends the item to the end of the RecyclerView. If it is the first module of the
      * RecyclerView, change the RecyclerView to be visible.
@@ -224,6 +285,10 @@ public class HomeModulesMediator {
         mModel.add(item);
         if (mModel.size() == 1) {
             mSetVisibilityCallback.onResult(true);
+
+            // We use the build time of the first module as the starting time.
+            long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[0];
+            HomeModulesMetricsUtils.recordFirstModuleShownDuration(mHostSurface, duration);
         }
     }
 
@@ -233,10 +298,12 @@ public class HomeModulesMediator {
      *
      * @param moduleType The type of the module.
      */
-    void remove(@ModuleType int moduleType) {
-        if (!mModuleTypeToModuleProviderMap.containsKey(moduleType)) return;
+    boolean remove(@ModuleType int moduleType) {
+        if (!mIsShown || !mModuleTypeToModuleProviderMap.containsKey(moduleType)) {
+            return false;
+        }
 
-        remove(moduleType, mModuleTypeToRankingIndexMap.get(moduleType));
+        return remove(moduleType, mModuleTypeToRankingIndexMap.get(moduleType));
     }
 
     /**
@@ -246,9 +313,9 @@ public class HomeModulesMediator {
      * @param moduleType The type of the module.
      * @param index The original ranking index of the module.
      */
-    private void remove(@ModuleType int moduleType, int index) {
+    private boolean remove(@ModuleType int moduleType, int index) {
         int position = findModuleIndexInRecyclerView(moduleType, index);
-        if (position == INVALID_INDEX) return;
+        if (position == INVALID_INDEX) return false;
 
         mModel.removeAt(position);
         ModuleProvider moduleProvider = mModuleTypeToModuleProviderMap.get(moduleType);
@@ -260,6 +327,7 @@ public class HomeModulesMediator {
         if (mModel.size() == 0) {
             hide();
         }
+        return true;
     }
 
     /**
@@ -267,6 +335,7 @@ public class HomeModulesMediator {
      * stack.
      */
     void hide() {
+        mIsFetchingModules = false;
         mIsShown = false;
         for (int i = 0; i < mModel.size(); i++) {
             int moduleType = mModel.get(i).type;
@@ -277,9 +346,11 @@ public class HomeModulesMediator {
         mModuleResultsWaitingIndex = 0;
         mModuleFetchResultsIndicator = null;
         mModuleFetchResultsCache = null;
+        mShowModuleStartTimeMs = null;
 
         mModuleTypeToModuleProviderMap.clear();
         mModuleTypeToRankingIndexMap.clear();
+        mModuleListToShow = null;
 
         mModel.clear();
         mSetVisibilityCallback.onResult(false);
@@ -308,5 +379,9 @@ public class HomeModulesMediator {
 
     int getModuleResultsWaitingIndexForTesting() {
         return mModuleResultsWaitingIndex;
+    }
+
+    boolean getIsFetchingModulesForTesting() {
+        return mIsFetchingModules;
     }
 }

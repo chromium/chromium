@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,7 +20,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -82,7 +83,7 @@ void EligibilityService::Shutdown() {
 
 void EligibilityService::BroadcastProfileEligibility() {
   CHECK(profile_eligibility_.has_value());
-  absl::optional<bool> is_client_eligible =
+  std::optional<bool> is_client_eligible =
       experiment_manager_->IsClientEligible();
   if (is_client_eligible.has_value()) {
     MarkProfileEligibility(is_client_eligible.value());

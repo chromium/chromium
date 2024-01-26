@@ -250,7 +250,6 @@ static_library("test_support") {
       "android/url_utils.cc",
       "android/url_utils.h",
       "multiprocess_test_android.cc",
-      "reached_code_profiler_android.cc",
       "test_file_util_android.cc",
       "test_file_util_linux.cc",
       "test_support_android.cc",
@@ -302,6 +301,7 @@ static_library("test_support") {
     sources += [
       "../fuchsia/test_component_context_for_process.cc",
       "../fuchsia/test_component_context_for_process.h",
+      "fidl_matchers.h",
       "scoped_dev_zero_fuchsia.cc",
       "scoped_dev_zero_fuchsia.h",
     ]

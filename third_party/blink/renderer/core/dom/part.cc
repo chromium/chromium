@@ -15,6 +15,7 @@ namespace blink {
 
 void Part::Trace(Visitor* visitor) const {
   visitor->Trace(root_);
+  visitor->Trace(metadata_);
   ScriptWrappable::Trace(visitor);
 }
 

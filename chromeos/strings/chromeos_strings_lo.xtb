@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ຄູນ</translation>
 <translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
 <translation id="1145516343487477149">ຊອກຫາບົດຄວາມຊ່ວຍເຫຼືອ ແລະ ຄຳຕອບສຳລັບຄຳຖາມ Chromebook ທົ່ວໄປ</translation>
 <translation id="1154390310959620237">ທ່ານສາມາດປັບແຕ່ງທາງລັດໄດ້ 5 ອັນເທົ່ານັ້ນ. ລຶບທາງລັດໃດໜຶ່ງເພື່ອເພີ່ມອັນໃໝ່.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ພໍດີກັບພື້ນທີ່ສະແກນ</translation>
 <translation id="1367951781824006909">ເລືອກໄຟລ໌</translation>
+<translation id="1371650399987522809">ຄຳຕິຊົມສຳລັບຮູບພື້ນຫຼັງທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="1387854245479784695">ນີ້ແມ່ນການຮວບຮວມ core ທັງໝົດ</translation>
 <translation id="1394661041439318933">ອຸປະກອນມີແບັດເຕີຣີເຄສ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">ສາມາດທົດສອບການເຊື່ອມຕໍ່ເກດເວໄດ້</translation>
@@ -87,13 +89,16 @@
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1561927818299383735">ສີຂອງແສງຈາກສາກຫຼັງ</translation>
 <translation id="1565038567006703504">ບໍ່ສາມາດອັບເດດ <ph name="DEVICE_NAME" /> ໄດ້</translation>
+<translation id="1566493343215789965">ຫານ</translation>
 <translation id="1567064801249837505">ອະລະບ້ຳ</translation>
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1578784163189013834">ເລືອກພື້ນຫຼັງສະກຣີນເຊັບເວີ</translation>
 <translation id="160633243685262989">ຮູບຕົວຢ່າງ</translation>
 <translation id="1611649489706141841">ສົ່ງຕໍ່</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">ກຳລັງສ້າງຮູບ...</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
+<translation id="1626590945318984973">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ຟັງຊັນ ແລະ ປຸ່ມ <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641857168437328880">ຕົວປ້ອນເອກະສານ (ດ້ານດຽວ)</translation>
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
@@ -144,7 +149,6 @@
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
 <translation id="1885577615937958993">ເລື່ອນມີເດຍໄປໜ້າ</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
-<translation id="1897672602657312171">ທາງລັດທີ່ບໍ່ມີປຸ່ມຊອກຫາອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຊອກຫາ.</translation>
 <translation id="1904932688895783618">ນີ້ແມ່ນຊັບພະຍາກອນທີ່ມີປະໂຫຍດຈຳນວນໜຶ່ງ:</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
@@ -176,7 +180,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ຮູບ</translation>
 <translation id="2157660087437850958">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=2{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" /> ແລະ <ph name="APP_NAME_2" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=3{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ແລະ ອີກ # ແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="215916044711630446">ປິດການນຳໃຊ້ປຸ່ມເພີ່ມ APN ແລ້ວ</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
@@ -186,6 +189,7 @@
 <translation id="2189104374785738357">ແກ້ໄຂລາຍລະອຽດ APN</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
+<translation id="2215920961700443347">ບໍ່ມີອິນເຕີເນັດ. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="222447520299472966">ຈຳເປັນຕ້ອງເລືອກອະລະບໍ້າຄັງຮູບສິນລະປະຢ່າງໜ້ອຍໜຶ່ງອະລະບໍ້າ</translation>
@@ -219,6 +223,7 @@
 <translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
+<translation id="2465272316171730950">ລະບົບບໍ່ຫວ່າງດຳເນີນການ. ກະລຸນາກັບມາໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
 <translation id="2491955442992294626">ປຸ່ມຕ່າງໆຈະບໍ່ໄດ້ຮັບການທົດສອບເມື່ອໃຊ້ໜ້າຈໍອື່ນ</translation>
 <translation id="2493126929778606526">ຮູບພາບທີ່ດີສຸດຂອງທ່ານ, ເລືອກໂດຍອັດຕະໂນມັດ</translation>
@@ -226,7 +231,6 @@
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="2515109918609218604">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດແປ້ນພິມທາງລັດໃໝ່ໂດຍໃຊ້ຟັງຊັນ ແລະ ປຸ່ມຊອກຫາ.</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="2880569433548999039">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງເມກ</translation>
 <translation id="2926057806159140518">ລະບຸຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ສະແກນລະຫັດ QR ທ່ານ</translation>
+<translation id="2938573842839598578">ສຳລັບຜົນໄດ້ຮັບໂດຍປະມານ, ໃຫ້ເອົາຄ່າ <ph name="CATEGORY_TEXT" /> ມາ <ph name="OPERATOR_TEXT" /> ດ້ວຍ <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">ບໍ່ສາມາດທົດສອບອຸປະກອນໄດ້. ເປີດຝາໜ້າຈໍອີກຄັ້ງເພື່ອທົດສອບ.</translation>
 <translation id="2941112035454246133">ຕໍ່າ</translation>
 <translation id="3008341117444806826">ໂຫຼດຂໍ້ມູນໃໝ່</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ອັບເດດ ChromeOS</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
+<translation id="3547264467365135390">ສູດຄິດໄລ່</translation>
 <translation id="3557205324756024651">ຂໍ້ມູນປະຈຳຕົວໃນເຄື່ອງ (ບໍ່ບັງຄັບ)</translation>
 <translation id="3565064564551103223">IP ທີ່ອະນຸຍາດ</translation>
 <translation id="3569407787324516067">ພາບພັກໜ້າຈໍ</translation>
@@ -414,8 +420,8 @@
 <translation id="4113067922640381334">ຕອນນີ້ທ່ານມີສິດເຂົ້າເຖິງ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ຮູບພື້ນຫຼັງ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ໃໝ່ແລ້ວ</translation>
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
 <translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
+<translation id="4130750466177569591">ຂ້ອຍເຫັນ​ດີ</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດແລ້ວ}other{# ແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດແລ້ວ}}</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>
@@ -427,7 +433,6 @@
 <translation id="4171077696775491955">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4176659219503619100">ແຜງຄວບຄຸມ</translation>
-<translation id="4185315616950253617">ທາງລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຈະຕ້ອງມີປຸ່ມຊອກຫານຳ.</translation>
 <translation id="420283545744377356">ປິດສະກຣີນເຊັບເວີ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
@@ -455,7 +460,9 @@
 <translation id="4394049700291259645">ປິດ​ໃຊ້ງານ</translation>
 <translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">ປັບແຕ່ງແປ້ນພິມ</translation>
+<translation id="4403262788869804671">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">ຮູບແທນຕົວປັດຈຸບັນ</translation>
+<translation id="4417830657741848074">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ບາງແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດ. ບໍ່ສາມາດປິດບາງແອັບໄດ້.</translation>
 <translation id="4422041425070339732">ລູກສອນລົງ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ປິດຢູ່</translation>
@@ -468,6 +475,7 @@
 <translation id="4469288414739283461">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງໂລກ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
+<translation id="4500722292849917410">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ສີຂອງສ່ວນຕິດຕໍ່</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
 <translation id="4507392511610824664">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
@@ -515,6 +523,7 @@
 <translation id="4832079907277790330">ເລືອກໂຟນເດີໃນແອັບ Files...</translation>
 <translation id="4835901797422965222">ບໍ່ມີເຄືອຂ່າຍທີ່ເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="4839698083503556542">ສ້າງໜັງຂອງທ່ານເອງ</translation>
+<translation id="48409034532829769">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ "<ph name="APP_NAME" />" ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດ. ບໍ່ສາມາດປິດແອັບນີ້ໄດ້.</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="4847902821209177679">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ແລ້ວ, ກະລຸນາກົດ Enter ເພື່ອເລືອກອະລະບໍ້າ <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS resolution</translation>
@@ -541,6 +550,7 @@
 <translation id="4969079779290789265">ແຍກ</translation>
 <translation id="4972592110715526173">ປ່ຽນໂໝດ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
+<translation id="4982627662315910959">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ shift ແລະ ປຸ່ມຕົວດັດແປງອີກ 1 ປຸ່ມ (ctrl, alt ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
@@ -574,6 +584,7 @@
 <translation id="5227902338748591677">ກຳນົດການຮູບແບບສີສັນມືດ</translation>
 <translation id="5229344016299762883">ອອກຈາກໂໝດເຕັມໜ້າຈໍ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=2{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ແລະ ອີກ 1 ແອັບໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ແລະ ອີກ # ແອັບໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}}</translation>
 <translation id="5252456968953390977">ໂຣມມິງ</translation>
 <translation id="5257811368506016604">ເປີດການນຳໃຊ້ໂໝດສີແຈ້ງ</translation>
 <translation id="5264277876637023664">ດຳເນີນການທົດສອບ CPU</translation>
@@ -842,12 +853,13 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7184043045742675738">ຄລິກໃສ່ປຸ່ມໃດກໍໄດ້ເພື່ອປັບແຕ່ງປຸ່ມຂອງທ່ານ. ປ່ຽນຕຳແໜ່ງປຸ່ມດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
+<translation id="7206979415662233817">ຂໍ້ກຳນົດບໍລິການ</translation>
 <translation id="7212547870105584639">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍໃນ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
-<translation id="7273347807225967898">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
+<translation id="7271932918253517778">ຄີລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຕ້ອງມີປຸ່ມ <ph name="META_KEY" /> ນຳ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ສຳຜັດສາຍລົມເຢັນ</translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
@@ -860,6 +872,10 @@
 <translation id="7311368985037279727">ສີຂອງແປ້ນພິມ</translation>
 <translation id="7317831949569936035">ການລົງທະບຽນເຂົ້າໂຮງຮຽນ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ທ່ານຕ້ອງມີອາຍຸ 18 ປີຂຶ້ນໄປ ແລະ ຍອມຮັບວ່າການນຳໃຊ້ຮູບພື້ນຫຼັງ AI ຂອງທ່ານຢູ່ພາຍໃຕ້ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ຂໍ້ກຳນົດບໍລິການຂອງ Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ແລະ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມຂອງ AI ສ້າງເນື້ອຫາ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ທ່ານສາມາດສ້າງຮູບພື້ນຫຼັງດ້ວຍ AI ສຳລັບການໃຊ້ສ່ວນຕົວ ແລະ ບໍ່ເປັນໄປເພື່ອການຄ້າເທົ່ານັ້ນ. ເມື່ອທ່ານໄດ້ຮັບຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບຮູບພື້ນຫຼັງ, ຂໍ້ຄວາມຈະຖືກສົ່ງໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຄຳແນະນຳກ່ຽວກັບຮູບພື້ນຫຼັງ, ໂດຍຢູ່ພາຍໃຕ້ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7353413232959255829">ຜົນການຊອກຫາ <ph name="LIST_POSITION" /> ຈາກ <ph name="LIST_SIZE" /> ລາຍການ: <ph name="SEARCH_RESULT_TEXT" />. ກົດ Enter ເພື່ອໄປທາງລັດ.</translation>
@@ -946,6 +962,7 @@
 <translation id="7971535376154084247">ການຄວບຄຸມທົ່ວໄປ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{ເລີ່ມ "<ph name="APP_NAME_1" />" ອັດຕະໂນມັດແລ້ວ}other{ເລີ່ມ # ອັດຕະໂນມັດແລ້ວ}}</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="8017679124341497925">ແກ້ໄຂທາງລັດແລ້ວ</translation>
@@ -962,7 +979,6 @@
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
-<translation id="8111706652656628199">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ shift ແລະ ປຸ່ມຕົວດັດແປງ 1 ປຸ່ມ (ctrl, alt, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>

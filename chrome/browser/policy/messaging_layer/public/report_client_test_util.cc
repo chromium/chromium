@@ -35,7 +35,11 @@ ReportingClient::TestEnvironment::CreateWithLocalStorage(
         StorageSelector::CreateLocalStorageModule(
             reporting_path, verification_key,
             CompressionInformation::COMPRESSION_SNAPPY,
-            base::BindRepeating(&ReportingClient::AsyncStartUploader),
+            base::BindPostTask(
+                ReportQueueProvider::GetInstance()->sequenced_task_runner(),
+                base::BindRepeating(
+                    &ReportingClient::AsyncStartUploader,
+                    ReportQueueProvider::GetInstance()->GetWeakPtr())),
             std::move(storage_created_cb));
       },
       reporting_path, verification_key)));

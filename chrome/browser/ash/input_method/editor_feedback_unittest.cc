@@ -104,7 +104,7 @@ TEST(EditorFeedback, DoesNotSendFeedbackWhenFlagIsOff) {
   EXPECT_FALSE(on_report_sent_future.IsReady());
 }
 
-TEST(EditorFeedback, SendFeedbackDoesNotSendEmailForNonGoogleAccount) {
+TEST(EditorFeedback, SendFeedbackDoesNotSendEmail) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
@@ -154,8 +154,7 @@ TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   expected_feedback_data.set_product_id(5314436);
   expected_feedback_data.set_type_id(0);
   expected_feedback_data.mutable_common_data()->set_gaia_id(0);
-  expected_feedback_data.mutable_common_data()->set_user_email(
-      "test@google.com");
+  expected_feedback_data.mutable_common_data()->set_user_email("");
   expected_feedback_data.mutable_common_data()->set_description(
       "test description");
   expected_feedback_data.mutable_common_data()->set_source_description_language(

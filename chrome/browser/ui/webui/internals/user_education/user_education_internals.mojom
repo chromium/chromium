@@ -50,6 +50,9 @@ interface UserEducationInternalsPageHandler {
   // is an error message or empty string if no error occurred.
   StartTutorial(string tutorial_id) => (string error_message);
 
+  // Returns a set of data about the current session state.
+  GetSessionData() => (array<FeaturePromoDemoPageData> session_data);
+
   // Get the list of all available feature promos.
   GetFeaturePromos() => (array<FeaturePromoDemoPageInfo> feature_promos);
 
@@ -60,4 +63,7 @@ interface UserEducationInternalsPageHandler {
 
   // Clears the data (snooze, show count, etc.) associated with a promo.
   ClearFeaturePromoData(string feature_name) => (string error_message);
+
+  // Clears all session-related User Education data.
+  ClearSessionData() => (string error_message);
 };

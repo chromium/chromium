@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <cstdint>
 #include <memory>
 
 #include "base/check_op.h"
@@ -159,10 +160,28 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
   // maintain deterministic behavior.
   if (entropy_providers.benchmarking_enabled())
     return;
+
+  std::map<uint32_t, int> counts_by_id;
+  for (const Layer& layer_proto : seed.layers()) {
+    ++counts_by_id[layer_proto.id()];
+    // Avoid multiple logs if one ID is used multiple times.
+    if (counts_by_id[layer_proto.id()] == 2) {
+      LogInvalidLayerReason(InvalidLayerReason::LayerIDNotUnique);
+    };
+  }
+
   // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
-  for (const Layer& layer_proto : seed.layers())
-    ConstructLayer(entropy_providers, layer_proto);
+  for (const Layer& layer_proto : seed.layers()) {
+    // Only constructs a layer if its ID is unique. We want to discard all
+    // layers with the same ID because changing layer ID re-randomizes the field
+    // trials that reference it (if the layer doesn't have a salt. See
+    // ConstructLayer()).
+    const bool is_layer_id_unique = counts_by_id[layer_proto.id()] == 1;
+    if (is_layer_id_unique) {
+      ConstructLayer(entropy_providers, layer_proto);
+    }
+  }
 }
 
 VariationsLayers::VariationsLayers() : nil_entropy({0, 1}) {}
@@ -236,34 +255,44 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
                         });
 }
 
+const VariationsLayers::LayerInfo* VariationsLayers::FindActiveLayer(
+    uint32_t layer_id) const {
+  auto layer_iter = active_member_for_layer_.find(layer_id);
+  if (layer_iter == active_member_for_layer_.end()) {
+    return nullptr;
+  }
+  return &(layer_iter->second);
+}
+
 bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,
                                            uint32_t member_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end())
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
     return false;
-
-  return layer_iter->second.active_member_id &&
-         (member_id == layer_iter->second.active_member_id);
+  }
+  return layer_info->active_member_id &&
+         member_id == layer_info->active_member_id;
 }
 
 bool VariationsLayers::ActiveLayerMemberDependsOnHighEntropy(
     uint32_t layer_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end())
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
     return false;
-
-  return layer_iter->second.entropy_mode == Layer::DEFAULT;
+  }
+  return layer_info->entropy_mode == Layer::DEFAULT;
 }
 
 const base::FieldTrial::EntropyProvider& VariationsLayers::GetRemainderEntropy(
     uint32_t layer_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end()) {
-    // TODO(holte): Remove CreateTrialsForStudy fuzzer, then uncomment this.
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
+    // TODO(crbug.com/1519262): Remove CreateTrialsForStudy fuzzer, then
+    // uncomment this.
     // NOTREACHED();
     return nil_entropy;
   }
-  return layer_iter->second.remainder_entropy;
+  return layer_info->remainder_entropy;
 }
 
 }  // namespace variations

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OBSERVABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OBSERVABLE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -12,6 +13,7 @@
 namespace blink {
 
 class ExecutionContext;
+class ObservableInternalObserver;
 class ScriptState;
 class Subscriber;
 class SubscribeOptions;
@@ -49,9 +51,18 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                  V8UnionObserverOrObserverCallback*,
                  SubscribeOptions*);
 
+  // Promise-returning operators. See
+  // https://wicg.github.io/observable/#promise-returning-operators.
+  ScriptPromise toArray(ScriptState*, SubscribeOptions*);
+
   void Trace(Visitor*) const override;
 
  private:
+  void SubscribeInternal(ScriptState*,
+                         V8UnionObserverOrObserverCallback*,
+                         ObservableInternalObserver*,
+                         SubscribeOptions*);
+
   // Exactly one of `subscribe_callback_` and `subscribe_delegate_` must be
   // non-null. `subscribe_callback_` is non-null when `this` is created from
   // script, and the subscribe callback is a JS-provided callback function,

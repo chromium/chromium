@@ -29,6 +29,7 @@ namespace blink {
 class CanvasContextCreationAttributesCore;
 class CanvasResourceProvider;
 class ImageBitmap;
+class ImageEncodeOptions;
 class
     OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext;
 typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext
@@ -65,6 +66,8 @@ class CORE_EXPORT OffscreenCanvas final
   // API Methods
   ImageBitmap* transferToImageBitmap(ScriptState*, ExceptionState&);
 
+  // For deferred canvases this will have the side effect of drawing recorded
+  // commands in order to finalize the frame.
   ScriptPromise convertToBlob(ScriptState* script_state,
                               const ImageEncodeOptions* options,
                               ExceptionState& exception_state);

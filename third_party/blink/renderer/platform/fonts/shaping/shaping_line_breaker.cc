@@ -12,7 +12,7 @@
 namespace blink {
 
 ShapingLineBreaker::ShapingLineBreaker(
-    scoped_refptr<const ShapeResult> result,
+    const ShapeResult* result,
     const LazyLineBreakIterator* break_iterator,
     const Hyphenation* hyphenation)
     : result_(result),
@@ -97,9 +97,7 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
   }
   if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
       UNLIKELY(ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
-      // TODO(crbug.com/1463891): `MaybeOpen` is likely to hit the performance
-      // for non-CJK documents. We should try harder not to require reshaping.
-      UNLIKELY(HanKerning::MaybeOpen(GetText()[start]))) {
+      UNLIKELY(Character::MaybeHanKerningOpen(GetText()[start]))) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
     // `HanKerning` if applicable. Note, it may not actually apply, if the font
@@ -258,7 +256,7 @@ inline void ShapingLineBreaker::SetBreakOffset(
 //   If we further assume that the font kerns with space then even though it's a
 //   valid break opportunity reshaping is required as the combined width of the
 //   two segments "Line " and "breaking" may be different from "Line breaking".
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
+const ShapeResultView* ShapingLineBreaker::ShapeLine(
     unsigned start,
     LayoutUnit available_space,
     ShapingLineBreaker::Result* result_out) {
@@ -280,15 +278,16 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
 
   // If the start offset is not at a safe-to-break boundary, the content between
   // the start and the next safe-to-break boundary needs to be reshaped.
-  scoped_refptr<const ShapeResult> line_start_result;
+  const ShapeResult* line_start_result = nullptr;
   const TextDirection direction = result_->Direction();
   const EdgeOffset first_safe = FirstSafeOffset(start);
   DCHECK_GE(first_safe.offset, start);
   if (UNLIKELY(first_safe.offset != start)) {
     const float first_safe_position =
         result_->CachedPositionForOffset(first_safe.offset - range_start);
-    line_start_result = Shape(start, first_safe.offset,
-                              {.han_kerning_start = first_safe.han_kerning});
+    line_start_result = Shape(
+        start, first_safe.offset,
+        {.is_line_start = true, .han_kerning_start = first_safe.han_kerning});
     // Adjust the available space to take the reshaping into account.
     const LayoutUnit old_width = LayoutUnit::FromFloatCeil(
         FlipRtl(first_safe_position - start_position, direction));
@@ -314,12 +313,39 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     candidate_break =
         result_->AdjustOffsetForAutoSpacing(candidate_break, end_position);
   }
+
+  // Extend the `candidate_break` if the next character can fit by applying the
+  // `HanKerning` at the line end.
+  unsigned last_safe;
+  const ShapeResult* line_end_result = nullptr;
+  if (candidate_break < range_end &&
+      UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
+      ShouldTrimEnd(text_spacing_trim_) &&
+      UNLIKELY(Character::MaybeHanKerningClose(text[candidate_break]))) {
+    const unsigned adjusted_candidate_break = candidate_break + 1;
+    if (break_iterator_->IsBreakable(adjusted_candidate_break)) {
+      last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);
+      line_end_result =
+          Shape(last_safe, adjusted_candidate_break, {.han_kerning_end = true});
+      const float last_safe_position =
+          result_->CachedPositionForOffset(last_safe - range_start);
+      const float width_to_last_safe =
+          FlipRtl(last_safe_position - start_position, direction);
+      if (width_to_last_safe + line_end_result->Width() <= available_space) {
+        candidate_break = adjusted_candidate_break;
+      } else {
+        line_end_result = nullptr;
+      }
+    }
+  }
+
   if (candidate_break >= range_end) {
     // The |result_| does not have glyphs to fill the available space,
     // and thus unable to compute. Return the result up to range_end.
     DCHECK_EQ(candidate_break, range_end);
     SetBreakOffset(range_end, text, result_out);
-    return ShapeToEnd(start, first_safe, range_start, range_end);
+    return ShapeToEnd(start, line_start_result, first_safe.offset, range_start,
+                      range_end);
   }
 
   // candidate_break should be >= start, but rounding errors can chime in when
@@ -393,18 +419,19 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
       DCHECK(IsAllSpaces(text, start, result_out->break_offset));
 #endif
       result_out->is_hyphenated = false;
-      return ShapeResultView::Create(result_.get(), start,
-                                     result_out->break_offset);
+      return ShapeResultView::Create(result_, start, result_out->break_offset);
     }
   }
 
-  bool reshape_line_end = true;
+  bool reshape_line_end = !line_end_result;
   // |range_end| may not be a break opportunity, but this function cannot
   // measure beyond it.
   if (break_opportunity.offset >= range_end) {
     SetBreakOffset(range_end, text, result_out);
-    if (result_out->is_overflow)
-      return ShapeToEnd(start, first_safe, range_start, range_end);
+    if (result_out->is_overflow) {
+      return ShapeToEnd(start, line_start_result, first_safe.offset,
+                        range_start, range_end);
+    }
     break_opportunity.offset = range_end;
     // Avoid re-shape if at the end of the range.
     // eg. <span>abc</span>def ghi
@@ -424,10 +451,10 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // We may have options that imply avoiding re-shape.
   // Note: we must evaluate the need of re-shaping the end of the line, before
   // we consider the non-hangable-run-end.
-  if (dont_reshape_end_if_at_space_) {
+  if (dont_reshape_end_if_at_space_ && reshape_line_end) {
     // If the actual offset is in a breakable-space sequence, we may need to run
     // the re-shape logic and consider the non-hangable-run-end.
-    reshape_line_end &= !IsBreakableSpace(text[break_opportunity.offset - 1]);
+    reshape_line_end = !IsBreakableSpace(text[break_opportunity.offset - 1]);
   }
 
   // Use the non-hanable-run end as breaking offset (unless we break after eny
@@ -444,16 +471,13 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     DCHECK_NE(first_safe.offset, start);
     SetBreakOffset(break_opportunity, text, result_out);
     CheckBreakOffset(result_out->break_offset, start, range_end);
-    return ShapeResultView::Create(
-        Shape(start, break_opportunity.offset,
-              {.han_kerning_start = first_safe.han_kerning})
-            .get());
+    return ShapeResultView::Create(Shape(
+        start, break_opportunity.offset,
+        {.is_line_start = true, .han_kerning_start = first_safe.han_kerning}));
   }
   DCHECK_GE(first_safe.offset, start);
   DCHECK_LE(first_safe.offset, break_opportunity.offset);
 
-  scoped_refptr<const ShapeResult> line_end_result;
-  unsigned last_safe = break_opportunity.offset;
   if (reshape_line_end) {
     // If the previous valid break opportunity is not at a safe-to-break
     // boundary reshape between the safe-to-break offset and the valid break
@@ -521,7 +545,8 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
             std::max(candidate_break, start + 1), start, range_end);
         if (break_opportunity.offset >= range_end) {
           SetBreakOffset(range_end, text, result_out);
-          return ShapeToEnd(start, first_safe, range_start, range_end);
+          return ShapeToEnd(start, line_start_result, first_safe.offset,
+                            range_start, range_end);
         }
       }
       // Loop once more to compute last_safe for the new break opportunity.
@@ -529,7 +554,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   }
 
   if (!line_end_result) {
-    DCHECK_EQ(break_opportunity.offset, last_safe);
+    last_safe = break_opportunity.offset;
     DCHECK_GT(last_safe, start);
     if (UNLIKELY(result_->HasAutoSpacingBefore(last_safe))) {
       last_safe = result_->CachedPreviousSafeToBreakOffset(last_safe - 1);
@@ -552,38 +577,38 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // Create shape results for the line by copying from the re-shaped result (if
   // reshaping was needed) and the original shape results.
   return ConcatShapeResults(start, break_opportunity.offset, first_safe.offset,
-                            last_safe, std::move(line_start_result),
-                            std::move(line_end_result));
+                            last_safe, line_start_result, line_end_result);
 }
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ConcatShapeResults(
+const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
     unsigned start,
     unsigned end,
     unsigned first_safe,
     unsigned last_safe,
-    scoped_refptr<const ShapeResult> line_start_result,
-    scoped_refptr<const ShapeResult> line_end_result) {
+    const ShapeResult* line_start_result,
+    const ShapeResult* line_end_result) {
   ShapeResultView::Segment segments[3];
   constexpr unsigned max_length = std::numeric_limits<unsigned>::max();
   unsigned count = 0;
   if (line_start_result) {
-    segments[count++] = {line_start_result.get(), 0, max_length};
+    segments[count++] = {line_start_result, 0, max_length};
   }
   if (last_safe > first_safe) {
-    segments[count++] = {result_.get(), first_safe, last_safe};
+    segments[count++] = {result_, first_safe, last_safe};
   }
   if (line_end_result) {
-    segments[count++] = {line_end_result.get(), last_safe, max_length};
+    segments[count++] = {line_end_result, last_safe, max_length};
   }
-  auto line_result = ShapeResultView::Create({&segments[0], count});
+  auto* line_result = ShapeResultView::Create({&segments[0], count});
   DCHECK_EQ(end - start, line_result->NumCharacters());
   return line_result;
 }
 
 // Shape from the specified offset to the end of the ShapeResult.
 // If |start| is safe-to-break, this copies the subset of the result.
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
+const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
     unsigned start,
-    const EdgeOffset& first_safe,
+    const ShapeResult* line_start_result,
+    unsigned first_safe,
     unsigned range_start,
     unsigned range_end) {
   DCHECK(result_);
@@ -591,54 +616,51 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
   DCHECK_EQ(range_end, result_->EndIndex());
   DCHECK_GE(start, range_start);
   DCHECK_LT(start, range_end);
-  DCHECK_GE(first_safe.offset, start);
+  DCHECK_GE(first_safe, start);
 
   // If |start| is safe-to-break, no reshape is needed.
-  if (start == first_safe.offset) {
+  if (!line_start_result) {
+    DCHECK_EQ(first_safe, start);
     // If |start| is at the start of the range the entire result object may be
     // reused, which avoids the sub-range logic and bounds computation.
     if (start == range_start) {
-      return ShapeResultView::Create(result_.get());
+      return ShapeResultView::Create(result_);
     }
-    return ShapeResultView::Create(result_.get(), start, range_end);
+    return ShapeResultView::Create(result_, start, range_end);
   }
+  DCHECK_NE(first_safe, start);
 
   // If no safe-to-break offset is found in range, reshape the entire range.
-  const ShapeOptions options{.han_kerning_start = first_safe.han_kerning};
-  if (first_safe.offset >= range_end) {
-    scoped_refptr<ShapeResult> line_result = Shape(start, range_end, options);
-    return ShapeResultView::Create(line_result.get());
+  if (UNLIKELY(first_safe >= range_end)) {
+    return ShapeResultView::Create(line_start_result, start, range_end);
   }
 
   // Otherwise reshape to |first_safe|, then copy the rest.
-  scoped_refptr<ShapeResult> line_start =
-      Shape(start, first_safe.offset, options);
   ShapeResultView::Segment segments[2] = {
-      {line_start.get(), 0, std::numeric_limits<unsigned>::max()},
-      {result_.get(), first_safe.offset, range_end}};
+      {line_start_result, 0, std::numeric_limits<unsigned>::max()},
+      {result_, first_safe, range_end}};
   return ShapeResultView::Create(segments);
 }
 
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
-    unsigned start,
-    unsigned end) {
+const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
+                                                       unsigned end) {
   DCHECK_GT(end, start);
 
   const EdgeOffset first_safe = FirstSafeOffset(start);
   DCHECK_GE(first_safe.offset, start);
-  scoped_refptr<const ShapeResult> line_start_result;
+  const ShapeResult* line_start_result = nullptr;
   if (first_safe.offset != start) {
-    const ShapeOptions options{.han_kerning_start = first_safe.han_kerning};
+    const ShapeOptions options{.is_line_start = true,
+                               .han_kerning_start = first_safe.han_kerning};
     if (first_safe.offset >= end) {
       // There is no safe-to-break, reshape the whole range.
-      scoped_refptr<ShapeResult> line_result = Shape(start, end, options);
-      return ShapeResultView::Create(line_result.get());
+      return ShapeResultView::Create(Shape(start, end, options));
     }
     line_start_result = Shape(start, first_safe.offset, options);
   }
 
   unsigned last_safe;
-  scoped_refptr<const ShapeResult> line_end_result;
+  const ShapeResult* line_end_result = nullptr;
   if (dont_reshape_end_if_at_space_ && IsBreakableSpace(GetText()[end - 1])) {
     last_safe = end;
   } else {
@@ -650,8 +672,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
   }
 
   return ConcatShapeResults(start, end, first_safe.offset, last_safe,
-                            std::move(line_start_result),
-                            std::move(line_end_result));
+                            line_start_result, line_end_result);
 }
 
 }  // namespace blink

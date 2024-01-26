@@ -794,7 +794,8 @@ class TabSwitcherMediator
         }
 
         if (!mContainerViewModel.get(IS_VISIBLE)) {
-            assert !BackPressManager.isEnabled() : "Invisible container: Backpress must be handled";
+            assert !BackPressManager.isEnabled()
+                    : "Invisible container: Back press must be handled";
             return false;
         }
 
@@ -804,7 +805,7 @@ class TabSwitcherMediator
         }
 
         if (mTabModelSelector.getCurrentTab() == null) {
-            assert !BackPressManager.isEnabled() : "No tab: Backpress must be handled";
+            assert !BackPressManager.isEnabled() : "No tab: Back press must be handled";
             return false;
         }
 

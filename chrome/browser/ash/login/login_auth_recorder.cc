@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -11,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/session_manager/core/session_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 
 namespace ash {

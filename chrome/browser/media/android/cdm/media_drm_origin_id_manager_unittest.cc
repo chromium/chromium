@@ -5,6 +5,7 @@
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -219,7 +219,7 @@ TEST_F(MediaDrmOriginIdManagerTest, PreProvisionFailAtStartup) {
   // Initialize without disabling kMediaDrmPreprovisioningAtStartup. Have
   // provisioning fail at startup, if it is attempted.
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported()) {
-    EXPECT_CALL(*this, GetProvisioningResult()).WillOnce(Return(absl::nullopt));
+    EXPECT_CALL(*this, GetProvisioningResult()).WillOnce(Return(std::nullopt));
   } else {
     // If per-application provisioning is NOT supported, no attempt will be made
     // to pre-provision any origin IDs at startup.
@@ -300,7 +300,7 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
   // Provisioning fails, so GetOriginId() returns an empty origin ID.
-  EXPECT_CALL(*this, GetProvisioningResult()).WillOnce(Return(absl::nullopt));
+  EXPECT_CALL(*this, GetProvisioningResult()).WillOnce(Return(std::nullopt));
   Initialize();
 
   EXPECT_FALSE(GetOriginId());
@@ -325,7 +325,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningSuccessAfterFail) {
   // Provisioning fails, so GetOriginId() returns an empty origin ID.
   EXPECT_CALL(*this, GetProvisioningResult())
-      .WillOnce(Return(absl::nullopt))
+      .WillOnce(Return(std::nullopt))
       .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
   Initialize();
 
@@ -349,7 +349,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
   // Provisioning fails, so GetOriginId() returns an empty origin ID.
   DVLOG(1) << "Current time: " << base::Time::Now();
   EXPECT_CALL(*this, GetProvisioningResult())
-      .WillOnce(Return(absl::nullopt))
+      .WillOnce(Return(std::nullopt))
       .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
   Initialize();
 
@@ -418,7 +418,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // provisioning fails. Update this once it returns an empty origin ID when
   // pre-provisioning fails.
   EXPECT_CALL(*this, GetProvisioningResult())
-      .WillOnce(Return(absl::nullopt))
+      .WillOnce(Return(std::nullopt))
       .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
   Initialize();
 
@@ -469,7 +469,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // pre-provisioning fails.
   EXPECT_CALL(*this, GetProvisioningResult())
       .Times(kConnectionAttempts + 1)
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
   Initialize();
 
   EXPECT_FALSE(GetOriginId());

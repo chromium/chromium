@@ -24,11 +24,14 @@ namespace network {
 
 class NetworkContext;
 class ResourceSchedulerClient;
-class URLLoader;
 
 namespace cors {
 class CorsURLLoaderFactory;
 }  // namespace cors
+
+namespace mojom {
+class URLLoader;
+}  // namespace mojom
 
 // This class is an implementation of mojom::URLLoaderFactory that
 // creates a mojom::URLLoader.

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_WEB_CONTENTS_OBSERVER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -16,7 +18,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -104,7 +105,7 @@ class SafetyTipWebContentsObserver
   // The initiator origin and URL of the most recently committed navigation.
   // Presently, these are used in metrics to differentiate same-origin
   // navigations (i.e. when the user stays on a flagged page).
-  absl::optional<url::Origin> last_committed_initiator_origin_;
+  std::optional<url::Origin> last_committed_initiator_origin_;
   GURL last_committed_url_;
 
   base::OnceClosure safety_tip_check_callback_for_testing_;

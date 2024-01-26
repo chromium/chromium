@@ -62,6 +62,7 @@ class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
+class WaylandCursorShape;
 class WaylandWindowDragController;
 class GtkPrimarySelectionDeviceManager;
 class GtkShell1;
@@ -207,6 +208,10 @@ class WaylandConnection {
 
   WaylandZcrColorManager* zcr_color_manager() const {
     return zcr_color_manager_.get();
+  }
+
+  WaylandCursorShape* wayland_cursor_shape() const {
+    return cursor_shape_.get();
   }
 
   WaylandZcrCursorShapes* zcr_cursor_shapes() const {
@@ -383,6 +388,7 @@ class WaylandConnection {
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
   friend class WaylandZcrColorManager;
+  friend class WaylandCursorShape;
   friend class WaylandZcrCursorShapes;
   friend class XdgActivation;
   friend class XdgForeignWrapper;
@@ -483,6 +489,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandZAuraOutputManager> zaura_output_manager_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
+  std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
   std::unique_ptr<WaylandZcrTouchpadHaptics> zcr_touchpad_haptics_;
   std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;

@@ -20,13 +20,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -171,7 +171,9 @@ public class PermissionUpdateMessageTest {
      * @param value expected value for the above ContentSetting type.
      */
     public void setNativeContentSetting(
-            @ContentSettingsType int type, final String origin, @ContentSettingValues int value) {
+            @ContentSettingsType.EnumType int type,
+            final String origin,
+            @ContentSettingValues int value) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()

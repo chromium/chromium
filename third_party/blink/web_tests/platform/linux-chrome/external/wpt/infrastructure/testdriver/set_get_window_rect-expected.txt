@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Window Position
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_window_rect is not a function"
-[FAIL] Window Size
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_window_rect is not a function"
-Harness: the test ran to completion.

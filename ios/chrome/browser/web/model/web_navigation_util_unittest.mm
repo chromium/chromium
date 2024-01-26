@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/search_engines/template_url.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -24,7 +25,7 @@ class WebNavigationUtilsTest : public PlatformTest {
   }
 
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   base::UserActionTester user_action_tester_;
 };
 

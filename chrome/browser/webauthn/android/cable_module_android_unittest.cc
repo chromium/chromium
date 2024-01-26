@@ -41,7 +41,7 @@ constexpr uint8_t kCBOR[] = {
 
 TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
   // This CBOR was captured from Play Services.
-  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> result =
+  std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> result =
       webauthn::authenticator::internal::PaaskInfoFromCBOR(kCBOR);
   CHECK(result);
 
@@ -83,7 +83,7 @@ TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
 
   const std::vector<uint8_t> reserialized =
       webauthn::authenticator::internal::CBORFromPaaskInfo(*result);
-  const absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> result2 =
+  const std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> result2 =
       webauthn::authenticator::internal::PaaskInfoFromCBOR(reserialized);
   CHECK(result2);
   EXPECT_EQ(result->tunnel_server_domain, result2->tunnel_server_domain);
@@ -114,7 +114,7 @@ TEST(CableModuleAndroidTest, Cache) {
   result = CacheResult(NotReady(), &dummy_prefs);
   EXPECT_TRUE(absl::get_if<NoSupport>(&result));
 
-  absl::optional<PhoneAsASecurityKeyInfo> paask_info =
+  std::optional<PhoneAsASecurityKeyInfo> paask_info =
       webauthn::authenticator::internal::PaaskInfoFromCBOR(kCBOR);
   CHECK(paask_info);
   result = CacheResult(*paask_info, &dummy_prefs);

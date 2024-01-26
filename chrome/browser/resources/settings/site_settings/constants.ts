@@ -31,6 +31,7 @@ export enum ContentSettingsTypes {
   IDLE_DETECTION = 'idle-detection',
   IMAGES = 'images',
   JAVASCRIPT = 'javascript',
+  JAVASCRIPT_JIT = 'javascript-jit',
   LOCAL_FONTS = 'local-fonts',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI = 'midi',

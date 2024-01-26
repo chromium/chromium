@@ -147,10 +147,11 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
 
   UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
 
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-  base::EraseIf(icon_urls, [](const GURL& url) {
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
     for (const auto& allowed_host : kHostAllowlist) {
-      if (url.DomainIs(allowed_host)) {
+      const GURL& icon_url = url_with_size.url;
+      if (icon_url.DomainIs(allowed_host)) {
         // Found a match, don't erase this url!
         return false;
       }

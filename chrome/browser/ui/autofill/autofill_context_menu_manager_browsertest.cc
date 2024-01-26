@@ -322,13 +322,8 @@ class AutocompleteUnrecognizedFieldsTest
     : public BaseAutofillContextMenuManagerTest {
  public:
   AutocompleteUnrecognizedFieldsTest() {
-    feature_.InitWithFeaturesAndParameters(
-        {{features::kAutofillPredictionsForAutocompleteUnrecognized, {}},
-         {features::kAutofillFallbackForAutocompleteUnrecognized,
-          {{"show_on_all_address_fields", "true"}}}},
-        // Intentionally disable the Autofill feedback so that corresponding
-        // entry doesn't appear in the context menu model.
-        {features::kAutofillForUnclassifiedFieldsAvailable});
+    feature_.InitAndDisableFeature(
+        features::kAutofillForUnclassifiedFieldsAvailable);
   }
 
  private:
@@ -501,16 +496,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
- public:
-  UnclassifiedFieldsTest() {
-    feature_.InitWithFeatures(
-        {features::kAutofillForUnclassifiedFieldsAvailable},
-        {features::kAutofillPredictionsForAutocompleteUnrecognized,
-         features::kAutofillFallbackForAutocompleteUnrecognized});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_;
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillForUnclassifiedFieldsAvailable};
 };
 
 // Tests that when triggering the context menu on an unclassified form, the

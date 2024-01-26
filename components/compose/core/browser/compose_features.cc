@@ -6,15 +6,20 @@
 
 namespace compose::features {
 
-BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kEnableComposeInputMinWords{&kEnableCompose,
-                                                          "input_min_words", 3};
-const base::FeatureParam<int> kEnableComposeInputMaxWords{
-    &kEnableCompose, "input_max_words", 500};
-const base::FeatureParam<int> kEnableComposeInputMaxChars{
-    &kEnableCompose, "input_max_chars", 2500};
-const base::FeatureParam<int> kEnableComposeInnerTextMaxBytes{
-    &kEnableCompose, "inner_text_max_bytes", 1024 * 1024};
+// Note: Compose is enabled by default because it requires settings UI enabling.
+BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeInputParams,
+             "ComposeInputParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeInnerText,
+             "ComposeInnerText",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeAutoSubmit,
+             "ComposeAutoSubmit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeEligible,
              "ComposeEligible",
@@ -22,7 +27,7 @@ BASE_FEATURE(kComposeEligible,
 
 BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeLanguageBypass,
              "ComposeLanguageBypass",
@@ -36,4 +41,11 @@ BASE_FEATURE(kEnableComposeOnDeviceDogfoodFooter,
              "EnableComposeOnDeviceDogfoodFooter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableComposeSavedStateNotification,
+             "EnableComposeSavedStateNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeUiParams,
+             "ComposeUiParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace compose::features

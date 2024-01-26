@@ -187,6 +187,30 @@ public class HubLayoutAnimationRunnerImplUnitTest {
 
     @Test
     @SmallTest
+    public void testForceAnimationToFinishWithPostedOnAnimationReadyNoWaitForTask() {
+        mRunner.addListener(mListener);
+
+        mAnimatorSupplier.set(mAnimator);
+        mRunner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        assertEquals(AnimationState.WAITING_FOR_ANIMATOR, mRunner.getAnimationState());
+
+        mRunner.forceAnimationToFinish();
+
+        verify(mAnimatorListener).beforeStart();
+        verify(mListener).beforeStart();
+
+        verify(mAnimatorListener).onStart();
+        verify(mListener).onStart();
+
+        assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
+        verify(mAnimatorListener).onEnd(eq(true));
+        verify(mListener).onEnd(eq(true));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener).afterEnd();
+    }
+
+    @Test
+    @SmallTest
     public void testForceAnimationToFinishWithNoAnimationSupplied() {
         doRunnable(() -> mAnimatorSupplier.set(mAnimator))
                 .when(mAnimatorProvider)

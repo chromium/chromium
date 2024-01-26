@@ -52,6 +52,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
@@ -63,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
@@ -85,10 +88,11 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests for the Custom Tab App Menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
 public class CustomTabActivityAppMenuTest {
     private static final int MAX_MENU_CUSTOM_ITEMS = 7;
-    private static final int NUM_CHROME_MENU_ITEMS = 5;
-    private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 6;
+    private static final int NUM_CHROME_MENU_ITEMS = 6;
+    private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 7;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
 
@@ -249,6 +253,10 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
                         R.id.share_row_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
 
         // Assert the divider line is displayed in the correct position.
         int dividerLine =
@@ -434,6 +442,10 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
                         R.id.add_to_homescreen_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
 
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
@@ -616,5 +628,57 @@ public class CustomTabActivityAppMenuTest {
                 5000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         activity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenHistory() throws Exception {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.setData(Uri.parse(mTestPage));
+        intent.setComponent(
+                new ComponentName(
+                        ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
+
+        openAppMenuAndAssertMenuShown();
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Assert.assertNotNull(
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                    mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                                    R.id.open_history_menu_id));
+                    mCustomTabActivityTestRule
+                            .getActivity()
+                            .onMenuOrKeyboardAction(R.id.open_history_menu_id, false);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
+    public void testNoHistoryItem_FeatureDisabled() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 }

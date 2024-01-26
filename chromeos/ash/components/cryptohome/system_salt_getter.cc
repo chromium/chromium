@@ -121,8 +121,7 @@ SystemSaltGetter* SystemSaltGetter::Get() {
 // static
 std::string SystemSaltGetter::ConvertRawSaltToHexString(
     const std::vector<uint8_t>& salt) {
-  return base::ToLowerASCII(
-      base::HexEncode(reinterpret_cast<const void*>(salt.data()), salt.size()));
+  return base::ToLowerASCII(base::HexEncode(salt));
 }
 
 }  // namespace ash

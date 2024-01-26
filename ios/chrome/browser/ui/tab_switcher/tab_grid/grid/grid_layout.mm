@@ -180,11 +180,14 @@ NSCollectionLayoutSection* TabsSection(
     group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                   repeatingSubitem:item
                                                              count:count];
-  } else {
+  }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
     group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                            subitem:item
                                                              count:count];
   }
+#endif
   const CGFloat spacing = Spacing(layout_environment);
   group.interItemSpacing = [NSCollectionLayoutSpacing fixedSpacing:spacing];
 

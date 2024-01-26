@@ -61,7 +61,7 @@ ObservableArrayExoticObjectImpl::ObservableArrayExoticObjectImpl(
     bindings::ObservableArrayBase* observable_array_backing_list_object)
     : ObservableArrayExoticObject(observable_array_backing_list_object) {}
 
-v8::MaybeLocal<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
+v8::Local<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
     ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
@@ -80,30 +80,20 @@ v8::MaybeLocal<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
   //
   // The back reference from blink_backing_list to the JS Array object is not
   // supported just because there is no use case so far.
-  v8::Local<v8::Value> backing_list_wrapper;
-  if (!ToV8Traits<bindings::ObservableArrayBase>::ToV8(script_state,
-                                                       GetBackingListObject())
-           .ToLocal(&backing_list_wrapper)) {
-    return {};
-  }
+  v8::Local<v8::Value> backing_list_wrapper =
+      ToV8Traits<bindings::ObservableArrayBase>::ToV8(script_state,
+                                                      GetBackingListObject());
   CHECK(backing_list_wrapper->IsObject());
   v8::Local<v8::Array> target = v8::Array::New(isolate);
   auto private_property =
       V8PrivateProperty::GetSymbol(isolate, kV8ProxyTargetToV8WrapperKey);
   private_property.Set(target, backing_list_wrapper);
 
-  v8::Local<v8::Object> handler;
-  if (!GetBackingListObject()
-           ->GetProxyHandlerObject(script_state)
-           .ToLocal(&handler)) {
-    return {};
-  }
-  v8::Local<v8::Proxy> proxy;
-  if (!v8::Proxy::New(script_state->GetContext(), target.As<v8::Object>(),
-                      handler)
-           .ToLocal(&proxy)) {
-    return {};
-  }
+  v8::Local<v8::Object> handler =
+      GetBackingListObject()->GetProxyHandlerObject(script_state);
+  v8::Local<v8::Proxy> proxy = v8::Proxy::New(script_state->GetContext(),
+                                              target.As<v8::Object>(), handler)
+                                   .ToLocalChecked();
   v8::Local<v8::Object> wrapper = proxy.As<v8::Object>();
 
   // Register the proxy object as a (pseudo) wrapper object although the proxy

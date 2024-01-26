@@ -493,6 +493,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Time when the mismatch dialog is last shown for metrics purposes.
   std::optional<base::TimeTicks> mismatch_dialog_shown_time_;
+  // Whether a mismatch dialog has been shown for the current request.
+  bool has_shown_mismatch_{false};
 
   // Type of error URL for metrics and devtools issue purposes.
   std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;

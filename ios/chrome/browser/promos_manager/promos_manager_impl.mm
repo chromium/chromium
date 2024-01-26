@@ -57,12 +57,6 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
   update->Append(promo_name);
 }
 
-// Returns true if the first impression is more recent and false otherwise.
-bool CompareImpressions(promos_manager::Impression impression1,
-                        promos_manager::Impression impression2) {
-  return impression1.day > impression2.day;
-}
-
 }  // namespace
 
 #pragma mark - PromosManagerImpl
@@ -79,22 +73,9 @@ PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
       event_exporter_(event_exporter) {
   DCHECK(local_state_);
   DCHECK(clock_);
-  if (ShouldPromosManagerUseFET()) {
-    tracker_->AddOnInitializedCallback(base::BindOnce(
-        &PromosManagerImpl::OnFeatureEngagementTrackerInitialized,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 PromosManagerImpl::~PromosManagerImpl() = default;
-
-void PromosManagerImpl::RefreshImpressionHistoryFromPrefs() {
-  impression_history_ = ImpressionHistory(
-      local_state_->GetList(prefs::kIosPromosManagerImpressions));
-  // Sort impressions from most recent to least recent.
-  std::sort(impression_history_.begin(), impression_history_.end(),
-            CompareImpressions);
-}
 
 #pragma mark - Public
 
@@ -107,7 +88,6 @@ void PromosManagerImpl::Init() {
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
 
   InitializePendingPromos();
-  RefreshImpressionHistoryFromPrefs();
 }
 
 // Impression history should grow in sorted order. Given this happens on the
@@ -121,15 +101,12 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
                  promos_manager::NameForPromo(promo));
   impression.Set(promos_manager::kImpressionDayKey, TodaysDay());
   impression.Set(
-      promos_manager::kImpressionFeatureEngagementMigrationCompletedKey,
-      ShouldPromosManagerUseFET());
+      promos_manager::kImpressionFeatureEngagementMigrationCompletedKey, true);
 
   ScopedListPrefUpdate update(local_state_,
                               prefs::kIosPromosManagerImpressions);
 
   update->Append(std::move(impression));
-
-  RefreshImpressionHistoryFromPrefs();
 
   // Auto-deregister `promo`.
   // Edge case: Possible to remove two instances of promo in
@@ -138,15 +115,6 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
   if (base::Contains(single_display_active_promos_, promo) ||
       base::Contains(single_display_pending_promos_, promo)) {
     DeregisterPromo(promo);
-  }
-}
-
-void PromosManagerImpl::OnFeatureEngagementTrackerInitialized(bool success) {
-  CHECK(ShouldPromosManagerUseFET());
-  if (success) {
-    // Loading the tracker may cause event migration to take place, so re-load
-    // the impressions in case they have changed.
-    RefreshImpressionHistoryFromPrefs();
   }
 }
 
@@ -262,30 +230,12 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
   }
 
   for (promos_manager::Promo promo : sorted_promos) {
-    if (CanShowPromo(promo, impression_history_))
+    if (CanShowPromo(promo)) {
       return promo;
+    }
   }
 
   return std::nullopt;
-}
-
-std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
-    const base::Value::List& stored_impression_history) {
-  std::vector<promos_manager::Impression> impression_history;
-
-  for (size_t i = 0; i < stored_impression_history.size(); ++i) {
-    const base::Value::Dict& stored_impression =
-        stored_impression_history[i].GetDict();
-    std::optional<promos_manager::Impression> impression =
-        promos_manager::ImpressionFromDict(stored_impression);
-    if (!impression) {
-      continue;
-    }
-
-    impression_history.push_back(impression.value());
-  }
-
-  return impression_history;
 }
 
 std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
@@ -331,160 +281,8 @@ void PromosManagerImpl::InitializePendingPromos() {
   }
 }
 
-NSArray<ImpressionLimit*>* PromosManagerImpl::PromoImpressionLimits(
-    promos_manager::Promo promo) const {
-  auto it = promo_configs_.find(promo);
-
-  if (it == promo_configs_.end()) {
-    return @[];
-  }
-
-  return it->impression_limits;
-}
-
-NSArray<ImpressionLimit*>* PromosManagerImpl::GlobalImpressionLimits() const {
-  static NSArray<ImpressionLimit*>* limits;
-  static dispatch_once_t onceToken;
-
-  if (IsSkippingInternalImpressionLimitsEnabled()) {
-    return limits;
-  }
-
-  dispatch_once(&onceToken, ^{
-    ImpressionLimit* onceEveryTwoDays =
-        [[ImpressionLimit alloc] initWithLimit:1 forNumDays:2];
-    ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
-                                                                 forNumDays:7];
-    limits = @[ onceEveryTwoDays, thricePerWeek ];
-  });
-
-  return limits;
-}
-
-NSArray<ImpressionLimit*>* PromosManagerImpl::GlobalPerPromoImpressionLimits()
-    const {
-  static NSArray<ImpressionLimit*>* limits;
-  static dispatch_once_t onceToken;
-
-  if (IsSkippingInternalImpressionLimitsEnabled()) {
-    return limits;
-  }
-
-  dispatch_once(&onceToken, ^{
-    ImpressionLimit* oncePerMonth = [[ImpressionLimit alloc] initWithLimit:1
-                                                                forNumDays:30];
-    limits = @[ oncePerMonth ];
-  });
-
-  return limits;
-}
-
-bool PromosManagerImpl::AnyImpressionLimitTriggered(
-    int impression_count,
-    int window_days,
-    NSArray<ImpressionLimit*>* impression_limits) const {
-  for (ImpressionLimit* impression_limit in impression_limits) {
-    if (window_days < impression_limit.numDays &&
-        impression_count >= impression_limit.numImpressions)
-      return true;
-  }
-
-  return false;
-}
-
-bool PromosManagerImpl::CanShowPromo(
-    promos_manager::Promo promo,
-    const std::vector<promos_manager::Impression>& sorted_impressions) const {
-  if (ShouldPromosManagerUseFET()) {
-    return CanShowPromoUsingFeatureEngagementTracker(promo);
-  }
-  // Maintains a map ([promos_manager::Promo] : [current impression count]) for
-  // evaluating against GlobalImpressionLimits(),
-  // GlobalPerPromoImpressionLimits(), and, if defined, `promo`-specific
-  // impression limits
-  std::map<promos_manager::Promo, int> promo_impression_counts;
-
-  NSArray<ImpressionLimit*>* promo_impression_limits =
-      PromoImpressionLimits(promo);
-  NSArray<ImpressionLimit*>* global_per_promo_impression_limits =
-      GlobalPerPromoImpressionLimits();
-  NSArray<ImpressionLimit*>* global_impression_limits =
-      GlobalImpressionLimits();
-
-  int window_start = TodaysDay();
-  int window_end =
-      (window_start - promos_manager::kNumDaysImpressionHistoryStored) + 1;
-  size_t curr_impression_index = 0;
-
-  // Impression limits are defined by a certain number of impressions
-  // (int) within a certain window of days (int).
-  //
-  // This loop starts at TodaysDay() (today) and grows a window, day-by-day, to
-  // check against different impression limits.
-  //
-  // Depending on the size of the window, impression limits may become valid or
-  // invalid. For example, if the window covers 7 days, an impression limit of
-  // 2-day scope is no longer valid. However, if window covered 1-2 days, an
-  // impression limit of 2-day scope is valid.
-  for (int curr_day = window_start; curr_day >= window_end; --curr_day) {
-    if (curr_impression_index < sorted_impressions.size()) {
-      promos_manager::Impression curr_impression =
-          sorted_impressions[curr_impression_index];
-      // If the current impression matches the current day, add it to
-      // `promo_impression_counts`.
-      if (curr_impression.day == curr_day) {
-        promo_impression_counts[curr_impression.promo]++;
-        curr_impression_index++;
-      } else {
-        // Only check impression limits when counts are incremented: if an
-        // impression limit were to be triggered below - but counts weren't
-        // incremented above - it wouldve've already been triggered in a
-        // previous loop run.
-        continue;
-      }
-    }
-
-    int window_days = window_start - curr_day;
-    int promo_impression_count = promo_impression_counts[promo];
-    int total_impression_count = TotalImpressionCount(promo_impression_counts);
-
-    if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
-                                    promo_impression_limits)) {
-      base::UmaHistogramEnumeration(
-          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
-          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
-              kInvalidPromoSpecificImpressionLimitTriggered);
-
-      return false;
-    }
-
-    if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
-                                    global_per_promo_impression_limits)) {
-      base::UmaHistogramEnumeration(
-          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
-          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
-              kInvalidPromoAgnosticImpressionLimitTriggered);
-
-      return false;
-    }
-
-    if (AnyImpressionLimitTriggered(total_impression_count, window_days,
-                                    global_impression_limits)) {
-      base::UmaHistogramEnumeration(
-          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
-          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
-              kInvalidGlobalImpressionLimitTriggered);
-
-      return false;
-    }
-  }
-
-  base::UmaHistogramEnumeration(
-      "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
-      promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
-          kValid);
-
-  return true;
+bool PromosManagerImpl::CanShowPromo(promos_manager::Promo promo) const {
+  return CanShowPromoUsingFeatureEngagementTracker(promo);
 }
 
 bool PromosManagerImpl::CanShowPromoUsingFeatureEngagementTracker(
@@ -504,23 +302,6 @@ const base::Feature* PromosManagerImpl::FeatureForPromo(
   }
 
   return it->feature_engagement_feature;
-}
-
-std::vector<int> PromosManagerImpl::ImpressionCounts(
-    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
-  std::vector<int> counts;
-
-  for (const auto& [promo, count] : promo_impression_counts)
-    counts.push_back(count);
-
-  return counts;
-}
-
-int PromosManagerImpl::TotalImpressionCount(
-    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
-  std::vector<int> counts = ImpressionCounts(promo_impression_counts);
-
-  return std::accumulate(counts.begin(), counts.end(), 0);
 }
 
 // Sort the promos in the order that they will be displayed.

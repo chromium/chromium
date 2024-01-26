@@ -26,8 +26,7 @@ AndroidMetricsLogUploader::~AndroidMetricsLogUploader() = default;
 int32_t UploadLogWithUploader(const std::string& log_data,
                               const bool async_metric_logging_feature) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> java_data = ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(log_data.data()), log_data.size());
+  ScopedJavaLocalRef<jbyteArray> java_data = ToJavaByteArray(env, log_data);
 
   return Java_AndroidMetricsLogUploader_uploadLog(env, java_data,
                                                   async_metric_logging_feature);

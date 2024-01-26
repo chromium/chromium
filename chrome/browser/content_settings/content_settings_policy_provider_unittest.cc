@@ -32,8 +32,6 @@ using ::testing::_;
 
 namespace content_settings {
 
-typedef std::vector<Rule> Rules;
-
 class PolicyProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -285,12 +283,12 @@ TEST_F(PolicyProviderTest, CookiesAllowedForUrlsUsageHistogram) {
   const struct TestCase {
     std::string desc;
     base::Value::List managed_pref;
-    absl::optional<net::CookiesAllowedForUrlsUsage> expected_bucket;
+    std::optional<net::CookiesAllowedForUrlsUsage> expected_bucket;
   } test_cases[] = {
       {
           "NoRules",
           base::Value::List(),
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "WildcardPrimaryOnly",

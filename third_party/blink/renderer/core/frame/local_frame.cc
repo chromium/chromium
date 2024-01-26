@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -818,7 +819,8 @@ static String FrameDescription(const Frame& frame) {
   // origin instead.
   const LocalFrame* local_frame = DynamicTo<LocalFrame>(&frame);
   return local_frame
-             ? "with URL '" + local_frame->GetDocument()->Url().GetString() +
+             ? "with URL '" +
+                   local_frame->GetDocument()->Url().GetString().GetString() +
                    "'"
              : "with origin '" +
                    frame.GetSecurityContext()->GetSecurityOrigin()->ToString() +
@@ -3182,11 +3184,6 @@ void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
 #if !BUILDFLAG(IS_ANDROID)
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
-  if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          GetDocument()->GetExecutionContext())) {
-    return;
-  }
-
   // The rect passed to us from content is in DIP screen space, relative to the
   // main frame, and needs to move to CSS space. This doesn't take the page's
   // zoom factor into account so we must scale by the inverse of the page zoom
@@ -3820,21 +3817,6 @@ bool LocalFrame::IsSameOrigin() {
 const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings() {
   DCHECK(!IsDetached());
   return loader_.GetDocumentLoader()->GetContentSettings();
-}
-
-bool LocalFrame::SupportsAppRegion() {
-  return supports_app_region_;
-}
-
-void LocalFrame::SetSupportsAppRegion(bool supports_app_region) {
-  supports_app_region_ = supports_app_region;
-  if (supports_app_region) {
-    view_->UpdateDocumentAnnotatedRegions();
-  } else {
-    CHECK(GetDocument());
-    GetDocument()->SetAnnotatedRegions(Vector<AnnotatedRegionValue>());
-    Client()->AnnotatedRegionsChanged();
-  }
 }
 
 }  // namespace blink

@@ -22,13 +22,13 @@
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
-#include <errno.h>
 #include <mach/mach.h>
 #import <objc/runtime.h>
-#include <stddef.h>
 
 #include <algorithm>
 #include <bit>
+#include <cerrno>
+#include <cstddef>
 #include <new>
 
 #include "build/build_config.h"

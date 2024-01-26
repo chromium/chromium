@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_TAB_HELPER_H_
 #define CHROME_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -82,10 +83,10 @@ class OpenerHeuristicTabHelper
     const GURL opener_url_;
     // How long after the user last interacted with the site until the pop-up
     // opened.
-    absl::optional<base::TimeDelta> time_since_interaction_;
+    std::optional<base::TimeDelta> time_since_interaction_;
     // A source ID for `initial_url_`.
-    absl::optional<ukm::SourceId> initial_source_id_;
-    absl::optional<base::Time> commit_time_;
+    std::optional<ukm::SourceId> initial_source_id_;
+    std::optional<base::Time> commit_time_;
     size_t url_index_ = 0;
     bool interaction_reported_ = false;
     bool toplevel_reported_ = false;
@@ -124,7 +125,7 @@ class OpenerHeuristicTabHelper
                          const content::CookieAccessDetails& details);
   void EmitPostPopupCookieAccess(const ukm::SourceId& source_id,
                                  const content::CookieAccessDetails& details,
-                                 absl::optional<PopupsStateValue> value);
+                                 std::optional<PopupsStateValue> value);
   // Check whether `source_render_frame_host` is a valid popup initiator frame,
   // per the experiment flags.
   bool PassesIframeInitiatorCheck(

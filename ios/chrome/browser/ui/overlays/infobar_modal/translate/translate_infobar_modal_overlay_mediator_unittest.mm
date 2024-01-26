@@ -6,6 +6,7 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/translate/core/browser/translate_step.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -62,7 +63,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  FakeTranslateInfoBarDelegate* translate_delegate_;
+  raw_ptr<FakeTranslateInfoBarDelegate> translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;

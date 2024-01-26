@@ -124,11 +124,11 @@ apps::LaunchResult ConvertPluginVmResultToLaunchResult(
     plugin_vm::LaunchPluginVmAppResult plugin_vm_result) {
   switch (plugin_vm_result) {
     case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
-      return apps::LaunchResult(apps::State::SUCCESS);
+      return apps::LaunchResult(apps::State::kSuccess);
     case plugin_vm::LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED:
-      return apps::LaunchResult(apps::State::FAILED_DIRECTORY_NOT_SHARED);
+      return apps::LaunchResult(apps::State::kFailedDirectoryNotShared);
     case plugin_vm::LaunchPluginVmAppResult::FAILED:
-      return apps::LaunchResult(apps::State::FAILED);
+      return apps::LaunchResult(apps::State::kFailed);
   }
 }
 

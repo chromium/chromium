@@ -20,6 +20,7 @@ TEST(BankAccountTest, VerifyAllFields) {
   EXPECT_EQ(BankAccount::AccountType::kChecking, bank_account.account_type());
   EXPECT_EQ(PaymentInstrument::InstrumentType::kBankAccount,
             bank_account.GetInstrumentType());
+  EXPECT_TRUE(bank_account.IsSupported(PaymentInstrument::PaymentRail::kPix));
 }
 
 }  // namespace autofill

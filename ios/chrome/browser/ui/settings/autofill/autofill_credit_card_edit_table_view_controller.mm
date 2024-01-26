@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -58,7 +59,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @end
 
 @implementation AutofillCreditCardEditTableViewController {
-  autofill::PersonalDataManager* _personalDataManager;  // weak
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;  // weak
   autofill::CreditCard _creditCard;
 }
 

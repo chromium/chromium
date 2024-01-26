@@ -29,10 +29,10 @@ class DIPSDatabase {
   // storage accesses).
   static const base::TimeDelta kPopupTtl;
 
-  // Passing in an absl::nullopt `db_path` causes the db to be created in
+  // Passing in an std::nullopt `db_path` causes the db to be created in
   // memory. Init() must be called before using the DIPSDatabase to make sure it
   // is initialized.
-  explicit DIPSDatabase(const absl::optional<base::FilePath>& db_path);
+  explicit DIPSDatabase(const std::optional<base::FilePath>& db_path);
 
   // This object must be destroyed on the thread where all accesses are
   // happening to avoid thread-safety problems.
@@ -81,15 +81,15 @@ class DIPSDatabase {
                   bool is_current_interaction);
 
   // This is implicitly `inline`. Don't move its definition to the .cc file.
-  bool HasExpired(absl::optional<base::Time> time) {
+  bool HasExpired(std::optional<base::Time> time) {
     return time.has_value() &&
            (time.value() + features::kDIPSInteractionTtl.Get()) < clock_->Now();
   }
 
-  absl::optional<StateValue> Read(const std::string& site);
+  std::optional<StateValue> Read(const std::string& site);
 
-  absl::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
-                                             const std::string& popup_site);
+  std::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
+                                            const std::string& popup_site);
 
   // Returns all entries from the `popups` table with a current interaction,
   // where the last popup time was more recent than `lookback` ago.
@@ -287,6 +287,7 @@ class DIPSDatabase {
   size_t purge_entries_ = 300;
   const base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool db_init_ = false;
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   mutable base::Time last_health_metrics_time_

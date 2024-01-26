@@ -33,13 +33,13 @@
 #include "partition_alloc/partition_alloc_base/time/time.h"
 
 #include <windows.foundation.h>
-#include <windows.h>
-
+// clang-format off
+#include <windows.h> // Must be included before <mmsystem.h>
 #include <mmsystem.h>
-
-#include <stdint.h>
+// clang-format on
 
 #include <atomic>
+#include <cstdint>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/bit_cast.h"

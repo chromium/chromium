@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -53,10 +52,7 @@ FORWARD_DECLARE_TEST(
 namespace ash::cloud_upload {
 
 struct ODFSFileSystemAndPath {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #union
-  RAW_PTR_EXCLUSION file_system_provider::ProvidedFileSystemInterface*
-      file_system;
+  raw_ptr<file_system_provider::ProvidedFileSystemInterface> file_system;
   base::FilePath file_path_within_odfs;
 };
 

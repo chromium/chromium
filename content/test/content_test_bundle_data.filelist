@@ -1919,6 +1919,8 @@ data/accessibility/css/pseudo-elements-expected-auralinux.txt
 data/accessibility/css/pseudo-elements-expected-blink.txt
 data/accessibility/css/pseudo-elements-ignored-parent-expected-blink.txt
 data/accessibility/css/pseudo-elements-ignored-parent.html
+data/accessibility/css/pseudo-elements-separated-by-whitespace-expected-blink.txt
+data/accessibility/css/pseudo-elements-separated-by-whitespace.html
 data/accessibility/css/pseudo-elements.html
 data/accessibility/css/pseudo-with-code-expected-uia-win.txt
 data/accessibility/css/pseudo-with-code.html
@@ -4040,6 +4042,8 @@ data/accessibility/html/ins-expected-uia-win.txt
 data/accessibility/html/ins-expected-win.txt
 data/accessibility/html/ins.html
 data/accessibility/html/insert-before-expected-blink.txt
+data/accessibility/html/insert-before-with-whitespace-expected-blink.txt
+data/accessibility/html/insert-before-with-whitespace.html
 data/accessibility/html/insert-before.html
 data/accessibility/html/interactive-controls-with-labels-expected-android-assist-data.txt
 data/accessibility/html/interactive-controls-with-labels-expected-android-external.txt
@@ -4643,12 +4647,6 @@ data/accessibility/html/small-expected-mac.txt
 data/accessibility/html/small-expected-uia-win.txt
 data/accessibility/html/small-expected-win.txt
 data/accessibility/html/small.html
-data/accessibility/html/source-expected-android.txt
-data/accessibility/html/source-expected-auralinux.txt
-data/accessibility/html/source-expected-fuchsia.txt
-data/accessibility/html/source-expected-mac.txt
-data/accessibility/html/source-expected-win.txt
-data/accessibility/html/source.html
 data/accessibility/html/span-expected-android-assist-data.txt
 data/accessibility/html/span-expected-android-external.txt
 data/accessibility/html/span-expected-android.txt
@@ -5437,6 +5435,8 @@ data/accessibility/regression/aria-pressed-changes-button-role-expected-blink.tx
 data/accessibility/regression/aria-pressed-changes-button-role.html
 data/accessibility/regression/clear-children-while-computing-name-expected-blink.txt
 data/accessibility/regression/clear-children-while-computing-name.html
+data/accessibility/regression/combobox-aria-haspopup-changed-expected-blink.txt
+data/accessibility/regression/combobox-aria-haspopup-changed.html
 data/accessibility/regression/compute-name-while-freezing.html
 data/accessibility/regression/content-visibility-label-expected-blink.txt
 data/accessibility/regression/content-visibility-label.html
@@ -5467,6 +5467,8 @@ data/accessibility/regression/progress-with-background-exposes-values.html
 data/accessibility/regression/reentrant-add-children.html
 data/accessibility/regression/relation-points-to-invalid-nodes-crash-expected-blink.txt
 data/accessibility/regression/relation-points-to-invalid-nodes-crash.html
+data/accessibility/regression/reload-selection-crash-expected-blink.txt
+data/accessibility/regression/reload-selection-crash.html
 data/accessibility/regression/remove-aria-owner-expected-auralinux.txt
 data/accessibility/regression/remove-aria-owner-expected-blink.txt
 data/accessibility/regression/remove-aria-owner.html
@@ -5835,6 +5837,8 @@ data/cookies/set_cookie.html
 data/cookies/set_cookie.html.mock-http-headers
 data/cookies/set_cookie_from_subframe.html
 data/cookies/set_cookie_from_subresource.html
+data/cookies/set_persistent_cookie.html
+data/cookies/set_persistent_cookie.html.mock-http-headers
 data/coreferencingframe_1.html
 data/coreferencingframe_2.html
 data/corp-cross-origin.html
@@ -5963,6 +5967,7 @@ data/empty404.html.mock-http-headers
 data/event-latency-animation.html
 data/fedcm/accounts_endpoint.json
 data/fedcm/client_metadata_endpoint.json
+data/fedcm/eval_worker.js
 data/fedcm/id_assertion_endpoint.json
 data/fenced_frames/ad_that_leaves_interest_group.html
 data/fenced_frames/ad_that_leaves_interest_group.html.mock-http-headers
@@ -7189,6 +7194,7 @@ data/service_worker/skip_waiting_and_clients_claim_worker.js
 data/service_worker/skip_waiting_and_clients_claim_worker.js.mock-http-headers
 data/service_worker/static_import_worker.js
 data/service_worker/static_router.js
+data/service_worker/static_router_no_handler.js
 data/service_worker/sync.js.mock-http-headers
 data/service_worker/throttling_blocking_cache_addall_sw.js
 data/service_worker/throttling_blocking_sw.js

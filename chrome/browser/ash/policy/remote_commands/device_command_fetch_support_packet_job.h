@@ -9,9 +9,11 @@
 #include <set>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -72,14 +74,12 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
 
-  // Convenience functions for testing. `/var/spool/support` path shouldn't be
-  // used in unit tests so it should be replaced.
-  base::FilePath GetExportedFilepathForTesting() { return exported_path_; }
-  void SetTargetDirForTesting(base::FilePath target_dir) {
-    target_dir_ = target_dir;
-  }
-  void SetReportQueueForTesting(
-      std::unique_ptr<reporting::ReportQueue> report_queue);
+  // Convenience function for testing. `/var/spool/support` path can't be
+  // used in unit/browser tests so it should be replaced by a temporary
+  // directory. The caller test is responsible for cleaning this path up after
+  // testing is done and calling `SetTargetDirForTesting(nullptr)` to reset the
+  // target dir.
+  static void SetTargetDirForTesting(const base::FilePath* target_dir);
 
  protected:
   // RemoteCommandJob:
@@ -87,6 +87,10 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   bool ParseCommandPayload(const std::string& command_payload) override;
 
  private:
+  // Returns /var/spool/support. A temporary directory that's set by
+  // `SetTargetDirForTesting()` will be used for testing.
+  const base::FilePath GetTargetDir();
+
   // Checks if the command should be enabled. Returns true if the
   // SystemLogEnabled policy is enabled.
   bool IsCommandEnabled() const;
@@ -118,10 +122,9 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
 
   void OnEventEnqueued(reporting::Status status);
 
-  // The directory to export the generated support packet.
-  base::FilePath target_dir_;
+  SEQUENCE_CHECKER(sequence_checker_);
   // The filepath of the exported support packet. It will be a file within
-  // `target_dir_`.
+  // GetTargetDir().
   base::FilePath exported_path_;
   // The details of requested support packet. Contains details like data
   // collectors, PII types, case ID etc.

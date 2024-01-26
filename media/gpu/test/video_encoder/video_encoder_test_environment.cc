@@ -216,6 +216,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     const base::FilePath& output_folder,
     const std::string& codec,
     const std::string& svc_mode,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
     Bitrate::Mode bitrate_mode,
@@ -310,8 +311,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   return new VideoEncoderTestEnvironment(
       test_type, std::move(video), output_folder, video_path.BaseName(),
       profile, inter_layer_pred_mode, num_spatial_layers, num_temporal_layers,
-      bitrate_allocation, save_output_bitstream, reverse, frame_output_config,
-      combined_enabled_features, combined_disabled_features);
+      content_type, bitrate_allocation, save_output_bitstream, reverse,
+      frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -323,6 +325,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     SVCInterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
     size_t num_temporal_layers,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     const VideoBitrateAllocation& bitrate,
     bool save_output_bitstream,
     bool reverse,
@@ -342,6 +345,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
                                               video_->FrameRate(),
                                               num_spatial_layers,
                                               num_temporal_layers)),
+      content_type_(content_type),
       save_output_bitstream_(save_output_bitstream),
       reverse_(reverse),
       frame_output_config_(frame_output_config),
@@ -382,6 +386,11 @@ VideoEncoderTestEnvironment::SpatialLayers() const {
 
 SVCInterLayerPredMode VideoEncoderTestEnvironment::InterLayerPredMode() const {
   return inter_layer_pred_mode_;
+}
+
+VideoEncodeAccelerator::Config::ContentType
+VideoEncoderTestEnvironment::ContentType() const {
+  return content_type_;
 }
 
 const VideoBitrateAllocation& VideoEncoderTestEnvironment::BitrateAllocation()

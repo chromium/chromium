@@ -51,11 +51,11 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/1288963): Consider porting interactive tests to Fuchsia.
     LOG(FATAL) << "Interactive tests are not supported on Fuchsia.";
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
+#else
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+#endif  // BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_WIN)
     // Under Windows, dialogs (but not the browser window) created in the
     // spawned browser_test process are invisible for some unknown reason.

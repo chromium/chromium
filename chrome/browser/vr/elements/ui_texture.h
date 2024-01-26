@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 #define CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -73,8 +74,8 @@ class UiTexture {
  private:
   bool measured_ = false;
   bool dirty_ = true;
-  absl::optional<SkColor> foreground_color_;
-  absl::optional<SkColor> background_color_;
+  std::optional<SkColor> foreground_color_;
+  std::optional<SkColor> background_color_;
 };
 
 }  // namespace vr

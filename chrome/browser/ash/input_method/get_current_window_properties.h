@@ -7,8 +7,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_GET_CURRENT_WINDOW_PROPERTIES_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_GET_CURRENT_WINDOW_PROPERTIES_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -20,7 +21,7 @@ struct WindowProperties {
 };
 
 using GetFocusedTabUrlCallback =
-    base::OnceCallback<void(const absl::optional<GURL>&)>;
+    base::OnceCallback<void(const std::optional<GURL>&)>;
 
 void GetFocusedTabUrl(GetFocusedTabUrlCallback callback);
 

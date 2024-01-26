@@ -122,17 +122,17 @@ class ApplicationContext {
   virtual ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
-  // if necessary.
+  // if necessary. May return null.
   virtual metrics_services_manager::MetricsServicesManager*
   GetMetricsServicesManager() = 0;
 
-  // Gets the MetricsService used by this application.
+  // Gets the MetricsService used by this application. May return null.
   virtual metrics::MetricsService* GetMetricsService() = 0;
 
-  // Gets the UkmRecorder used by this application.
+  // Gets the UkmRecorder used by this application. May return null.
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 
-  // Gets the VariationsService used by this application.
+  // Gets the VariationsService used by this application. May return null.
   virtual variations::VariationsService* GetVariationsService() = 0;
 
   // Gets the NetLog.

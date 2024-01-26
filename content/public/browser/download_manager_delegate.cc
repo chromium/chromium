@@ -12,13 +12,25 @@
 
 namespace content {
 
+SavePackagePathPickedParams::SavePackagePathPickedParams() = default;
+SavePackagePathPickedParams::~SavePackagePathPickedParams() = default;
+
+SavePackagePathPickedParams::SavePackagePathPickedParams(
+    const SavePackagePathPickedParams& other) = default;
+SavePackagePathPickedParams& SavePackagePathPickedParams::operator=(
+    const SavePackagePathPickedParams& other) = default;
+SavePackagePathPickedParams::SavePackagePathPickedParams(
+    SavePackagePathPickedParams&& other) = default;
+SavePackagePathPickedParams& SavePackagePathPickedParams::operator=(
+    SavePackagePathPickedParams&& other) = default;
+
 void DownloadManagerDelegate::GetNextId(DownloadIdCallback callback) {
   std::move(callback).Run(download::DownloadItem::kInvalidId);
 }
 
 bool DownloadManagerDelegate::DetermineDownloadTarget(
     download::DownloadItem* item,
-    DownloadTargetCallback* callback) {
+    download::DownloadTargetCallback* callback) {
   return false;
 }
 

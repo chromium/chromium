@@ -206,6 +206,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
       return true;
 
     case AudioCodec::kFLAC:
+    case AudioCodec::kIAMF:
     case AudioCodec::kMP3:
     case AudioCodec::kOpus:
     case AudioCodec::kVorbis:
@@ -406,6 +407,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case AudioCodec::kGSM_MS:
     case AudioCodec::kALAC:
     case AudioCodec::kMpegHAudio:
+    case AudioCodec::kIAMF:
     case AudioCodec::kUnknown:
       return false;
     case AudioCodec::kDTS:

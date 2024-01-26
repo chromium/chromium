@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/reporting/usage_telemetry_periodic_collector_base.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -13,7 +14,6 @@
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -42,7 +42,7 @@ UsageTelemetryPeriodicCollectorBase::~UsageTelemetryPeriodicCollectorBase() =
 
 void UsageTelemetryPeriodicCollectorBase::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   if (!metric_data.has_value()) {
     // No data to report.
     return;

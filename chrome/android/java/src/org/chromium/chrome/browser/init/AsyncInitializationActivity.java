@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -59,6 +60,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         implements ChromeActivityNativeDelegate, BrowserParts {
     @VisibleForTesting
     public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
+
+    public static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     protected final Handler mHandler;
 
@@ -760,6 +763,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
         // TODO(https://crbug.com/1252526): Remove stack trace logging once root cause of bug is
         // identified & fixed.
+        // Piggybacking for multi-instance bug crbug.com/1484026.
+        Log.i(TAG_MULTI_INSTANCE, "Tracing recreate().");
         Thread.dumpStack();
     }
 

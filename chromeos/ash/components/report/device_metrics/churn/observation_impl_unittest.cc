@@ -318,4 +318,33 @@ TEST_F(ObservationImplDirectCheckInTest,
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
 }
 
+TEST_F(ObservationImplDirectCheckInTest, ValidateNewDeviceChurnMetadata) {
+  ASSERT_EQ(GetLastPingTimestamp(), base::Time::UnixEpoch());
+
+  // Observation import will only go through if cohort imported successfully.
+  // Setup initial value to be last active in Jan-2023.
+  // Value represents device was active each of the 18 months prior.
+  // Represents binary: 0100010100 001010010010010101
+  base::Time cur_ts = GetFakeTimeNow();
+  int cur_value = 72393877;
+  GetLocalState()->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                           cur_ts);
+  GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                              cur_value);
+
+  // Execute observation reporting logic.
+  GetObservationImpl()->Run(base::DoNothing());
+
+  // Return well formed response bodies for the pending network requests.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  EXPECT_EQ(GetLastPingTimestamp(), cur_ts);
+  EXPECT_TRUE(GetLocalState()->GetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+  EXPECT_TRUE(GetLocalState()->GetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+  EXPECT_TRUE(GetLocalState()->GetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+}
+
 }  // namespace ash::report::device_metrics

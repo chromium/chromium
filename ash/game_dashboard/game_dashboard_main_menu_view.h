@@ -48,10 +48,13 @@ class ASH_EXPORT GameDashboardMainMenuView
   // recording duration.
   void UpdateRecordingDuration(const std::u16string& duration);
 
+  // Updates the `game_controls_tile_` states, sub-label and tooltip text.
+  void UpdateGameControlsTile();
+
  private:
   friend class GameDashboardContextTestApi;
 
-  class FeatureDetailsRow;
+  class GameControlsDetailsRow;
 
   // Callbacks for the tiles and buttons in the main menu view.
   // Handles showing and hiding the toolbar.
@@ -63,18 +66,6 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Handles functions for Game Controls buttons.
   void OnGameControlsTilePressed();
-  void OnGameControlsDetailsPressed();
-  void OnGameControlsSetUpButtonPressed();
-  void OnGameControlsFeatureSwitchButtonPressed();
-
-  // Updates the `game_controls_tile_` states, sub-label and tooltip text.
-  void UpdateGameControlsTile();
-
-  // Updates the sub-title of `game_controls_details_`.
-  void UpdateGameControlsDetailsSubtitle(bool is_game_controls_enabled);
-
-  // Caches `app_name_`.
-  void CacheAppName();
 
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
@@ -108,9 +99,6 @@ class ASH_EXPORT GameDashboardMainMenuView
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
 
-  // Enables Game Controls edit mode.
-  void EnableGameControlsEditMode();
-
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
@@ -128,8 +116,15 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Shows education nudge for `game_controls_setup_button_`.
   void ShowNudgeForSetupButton();
 
+  // Gets UI elements from Game Controls details row.
+  PillButton* GetGameControlsSetupButton();
+  Switch* GetGameControlsFeatureSwith();
+
   // For test to access the nudge ID in the anonymous namespace.
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
+
+  // views::Views:
+  void OnThemeChanged() override;
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext> context_;
@@ -145,21 +140,11 @@ class ASH_EXPORT GameDashboardMainMenuView
   // screen capture tool, allowing the user to select recording options.
   raw_ptr<FeatureTile> record_game_tile_ = nullptr;
 
-  // Game Controls details:
-  // Feature row to configure Game Controls.
-  raw_ptr<FeatureDetailsRow> game_controls_details_ = nullptr;
-
-  // Setup button to configure Game Controls for the current game window.
-  raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
+  // Game Controls details row to configure Game Controls.
+  raw_ptr<GameControlsDetailsRow> game_controls_details_ = nullptr;
 
   // Layer for setup button pulse animation.
   std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
-
-  // Hint switch to toggle the Game Controls feature.
-  raw_ptr<Switch> game_controls_feature_switch_ = nullptr;
-
-  // App name from the app where this view is anchored.
-  std::string app_name_;
 };
 
 }  // namespace ash

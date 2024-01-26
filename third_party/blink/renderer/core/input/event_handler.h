@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace ui {
@@ -97,7 +98,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kReadOnly |
                                                     HitTestRequest::kActive,
       const LayoutObject* stop_node = nullptr,
-      bool no_lifecycle_update = false);
+      bool no_lifecycle_update = false,
+      std::optional<HitTestRequest::HitNodeCb> hit_node_cb = std::nullopt);
 
   bool MousePressed() const { return mouse_event_manager_->MousePressed(); }
   bool IsMousePositionUnknown() const {

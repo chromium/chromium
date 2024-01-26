@@ -18,6 +18,7 @@
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
+struct Data;
 
 // A query processor that takes a list of UMAFeatures, fetches samples from the
 // SignalDatabase and computes an input tensor to be used for ML model

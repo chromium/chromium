@@ -18,6 +18,7 @@ namespace cc {
 
 class ContentLayerClient;
 class DisplayItemList;
+class RasterSource;
 class RecordingSource;
 
 class CC_EXPORT PictureLayer : public Layer {
@@ -29,15 +30,8 @@ class CC_EXPORT PictureLayer : public Layer {
 
   void ClearClient();
 
-  void SetNearestNeighbor(bool nearest_neighbor);
-  bool nearest_neighbor() const {
-    return picture_layer_inputs_.nearest_neighbor;
-  }
-
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask);
-  bool is_backdrop_filter_mask() const {
-    return picture_layer_inputs_.is_backdrop_filter_mask;
-  }
+  bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
 
   // Layer interface.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -54,7 +48,7 @@ class CC_EXPORT PictureLayer : public Layer {
   void CaptureContent(const gfx::Rect& rect,
                       std::vector<NodeInfo>* content) const override;
 
-  ContentLayerClient* client() { return picture_layer_inputs_.client; }
+  ContentLayerClient* client() { return client_; }
 
   RecordingSource* GetRecordingSourceForTesting() {
     return recording_source_.Write(*this).get();
@@ -64,40 +58,27 @@ class CC_EXPORT PictureLayer : public Layer {
     return recording_source_.Read(*this);
   }
 
-  const DisplayItemList* GetDisplayItemList() const;
-
-  gfx::Vector2dF DirectlyCompositedImageDefaultRasterScaleForTesting() const {
-    return picture_layer_inputs_.directly_composited_image_default_raster_scale;
-  }
-
  protected:
-  // Encapsulates all data, callbacks or interfaces received from the embedder.
-  struct PictureLayerInputs {
-    PictureLayerInputs();
-    ~PictureLayerInputs();
-
-    raw_ptr<ContentLayerClient, DanglingUntriaged> client = nullptr;
-    bool nearest_neighbor = false;
-    bool is_backdrop_filter_mask = false;
-    scoped_refptr<DisplayItemList> display_list;
-    gfx::Vector2dF directly_composited_image_default_raster_scale;
-  };
-
   explicit PictureLayer(ContentLayerClient* client);
-  // Allow tests to inject a recording source.
-  PictureLayer(ContentLayerClient* client,
-               std::unique_ptr<RecordingSource> source);
   ~PictureLayer() override;
 
   bool HasDrawableContent() const override;
 
-  PictureLayerInputs picture_layer_inputs_;
+  // Can be overridden in tests to customize RasterSource.
+  virtual scoped_refptr<RasterSource> CreateRasterSource() const;
 
  private:
   friend class TestSerializationPictureLayer;
 
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
+
+  const DisplayItemList* GetDisplayItemList() const;
+
+  // These fields are not protected because they are only modified during
+  // LayerTreeHost::PaintContent().
+  raw_ptr<ContentLayerClient, DanglingUntriaged> client_ = nullptr;
+  bool is_backdrop_filter_mask_ = false;
 
   ProtectedSequenceWritable<std::unique_ptr<RecordingSource>> recording_source_;
   ProtectedSequenceForbidden<devtools_instrumentation::ScopedLayerObjectTracker>

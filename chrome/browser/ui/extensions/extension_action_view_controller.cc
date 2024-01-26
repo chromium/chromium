@@ -263,6 +263,49 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
 
 std::u16string ExtensionActionViewController::GetTooltip(
     content::WebContents* web_contents) const {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    std::string extension_title = extension_action()->GetTitle(
+        sessions::SessionTabHelper::IdForTab(web_contents).id());
+    std::u16string extension_tooltip_title = base::UTF8ToUTF16(
+        extension_title.empty() ? extension()->name() : extension_title);
+
+    url::Origin origin =
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    auto* permissions_manager =
+        extensions::PermissionsManager::Get(browser_->profile());
+    ToolbarActionViewController::HoverCardState::SiteAccess site_access =
+        GetHoverCardSiteAccessState(
+            permissions_manager->GetUserSiteSetting(origin),
+            GetSiteInteraction(web_contents));
+
+    int tooltip_site_access_id;
+    switch (site_access) {
+      case HoverCardState::SiteAccess::kAllExtensionsAllowed:
+      case HoverCardState::SiteAccess::kExtensionHasAccess:
+        tooltip_site_access_id =
+            IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_HAS_ACCESS_TOOLTIP;
+        break;
+      case HoverCardState::SiteAccess::kAllExtensionsBlocked:
+        tooltip_site_access_id =
+            IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_BLOCKED_ACCESS_TOOLTIP;
+        break;
+      case HoverCardState::SiteAccess::kExtensionRequestsAccess:
+        tooltip_site_access_id =
+            IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_REQUESTS_TOOLTIP;
+        break;
+      case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
+        tooltip_site_access_id = -1;
+    }
+
+    return tooltip_site_access_id == -1
+               ? extension_tooltip_title
+               : base::JoinString(
+                     {extension_tooltip_title,
+                      l10n_util::GetStringUTF16(tooltip_site_access_id)},
+                     u"\n");
+  }
+
   return GetAccessibleName(web_contents);
 }
 

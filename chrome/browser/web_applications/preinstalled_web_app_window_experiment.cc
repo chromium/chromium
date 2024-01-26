@@ -23,6 +23,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
+#include <optional>
+
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
@@ -37,7 +39,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -184,7 +185,7 @@ void PreinstalledWebAppWindowExperiment::CheckEligible() {
   }
 
   // Use eligible pref to know if we need to do first time setup.
-  absl::optional<bool> eligible_pref =
+  std::optional<bool> eligible_pref =
       utils::GetEligibilityPref(profile_->GetPrefs());
   if (!eligible_pref.has_value()) {
     FirstTimeSetup();
@@ -312,7 +313,7 @@ void PreinstalledWebAppWindowExperiment::OnWebAppUserDisplayModeChanged(
     return;
   }
 
-  absl::optional<apps::DefaultAppName> app_name =
+  std::optional<apps::DefaultAppName> app_name =
       apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown preinstalled app " << app->untranslated_name()
@@ -342,7 +343,7 @@ void PreinstalledWebAppWindowExperiment::OnPreferredAppChanged(
     return;
   }
 
-  absl::optional<apps::DefaultAppName> app_name =
+  std::optional<apps::DefaultAppName> app_name =
       apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown default app " << app->untranslated_name() << " ID "

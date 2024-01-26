@@ -192,15 +192,15 @@ class PrivacySandboxService : public KeyedService {
   GetSampleFirstPartySets() const = 0;
 
   // Returns the owner domain of the first party set that `site_url` is a member
-  // of, or absl::nullopt if `site_url` is not recognised as a member of an FPS.
+  // of, or std::nullopt if `site_url` is not recognised as a member of an FPS.
   // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, absl::nullopt is always returned.
+  // should not, std::nullopt is always returned.
   // Virtual for mocking in tests.
-  virtual absl::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  virtual std::optional<net::SchemefulSite> GetFirstPartySetOwner(
       const GURL& site_url) const = 0;
 
   // Same as GetFirstPartySetOwner but returns a formatted string.
-  virtual absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  virtual std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const = 0;
 
   // Returns true if `site`'s membership in an FPS is being managed by policy or
@@ -240,6 +240,17 @@ class PrivacySandboxService : public KeyedService {
   // Virtual for mocking in tests.
   virtual std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics()
       const = 0;
+
+  // Returns the first level topic: they are the root topics, meaning that they
+  // have no parent.
+  virtual std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
+      const = 0;
+
+  // Returns the list of assigned children topics (direct or indirect) of the
+  // passed-in topic.
+  virtual std::vector<privacy_sandbox::CanonicalTopic>
+  GetChildTopicsCurrentlyAssigned(
+      const privacy_sandbox::CanonicalTopic& topic) const = 0;
 
   // Sets a |topic_id|, as both a top topic and topic provided to the web, to be
   // allowed/blocked based on the value of |allowed|. This is stored to

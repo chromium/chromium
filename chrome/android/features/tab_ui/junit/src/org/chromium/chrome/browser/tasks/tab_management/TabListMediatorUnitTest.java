@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -89,6 +90,9 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -125,9 +129,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ThumbnailFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -3028,6 +3029,21 @@ public class TabListMediatorUnitTest {
         verify(mTabGroupModelFilter, times(2)).removeTabGroupObserver(any());
         verify(mIncognitoTabGroupModelFilter, times(2)).addObserver(any());
         verify(mIncognitoTabGroupModelFilter, times(2)).addTabGroupObserver(any());
+    }
+
+    @Test
+    public void testSpecialItemExist() {
+        mMediator.resetWithListOfTabs(null, false);
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(FOR_TESTING);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
+
+        assertTrue(mModel.size() > 0);
+        assertTrue(mMediator.specialItemExistsInModel(FOR_TESTING));
+        assertFalse(mMediator.specialItemExistsInModel(PRICE_MESSAGE));
+        assertTrue(mMediator.specialItemExistsInModel(MessageService.MessageType.ALL));
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

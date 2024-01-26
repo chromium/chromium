@@ -66,14 +66,6 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,
              "AutofillEnableCvcStorageAndFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, if the user encounters the yellow path (challenge path) in the
-// VCN retrieval flow and the server denotes that the card is eligible for email
-// OTP authentication, email OTP authentication will be offered as one of the
-// challenge options.
-BASE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath,
-             "AutofillEnableEmailOtpForVcnYellowPath",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, user's will see network card art images and network icons which
 // are larger, having a white border, and don't have the standard grey overlay
 // applied to them.
@@ -119,24 +111,17 @@ BASE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter,
              "AutofillEnableUserAvatarInSaveCardFooter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, client side URL filtering will be triggered for the merchant
-// opt-out use-case, so that virtual card suggestions are not shown on websites
-// that are opted-out of virtual cards.
-BASE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering,
-             "AutofillEnableMerchantOptOutClientSideUrlFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on desktop.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop,
              "AutofillEnableMovingGPayLogoToTheRightOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on clank.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank,
              "AutofillEnableMovingGPayLogoToTheRightOnClank",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the user will see a new banner logo and text in the bubble
 // offering to Upstream their cards onto Google Pay.
@@ -155,7 +140,13 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
 // displayed instead of the info bar on Android.
 BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
              "AutofillEnablePaymentsAndroidBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, the account email is included in the legal message provided
+// from the payments server. Only on Android.
+BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail,
+             "AutofillEnablePaymentsAndroidBottomSheetAccountEmail",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, in use-cases where we would not have triggered any user-visible
@@ -210,6 +201,13 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// When enabled, Chrome will trigger 3DS authentication during a virtual card
+// retrieval if a challenge is required, 3DS authentication is available for
+// the card, and FIDO is not.
+BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
+             "AutofillEnableVcn3dsAuthentication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the vcn enroll screen will present a loading spinner while
 // enrolling the card to the server and present a confirmation screen with the

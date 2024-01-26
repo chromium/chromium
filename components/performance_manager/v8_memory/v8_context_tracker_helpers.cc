@@ -159,8 +159,8 @@ V8ContextDescriptionStatus ValidateV8ContextDescription(
         return V8ContextDescriptionStatus::kUnexpectedWorkletToken;
     } break;
 
-    case mojom::V8ContextWorldType::kRegExp: {
-      // Regexp worlds have no additional data.
+    case mojom::V8ContextWorldType::kBlinkInternalNonJSExposed: {
+      // These worlds have no additional data.
       if (description.world_name)
         return V8ContextDescriptionStatus::kUnexpectedWorldName;
       if (description.execution_context_token)
@@ -193,7 +193,7 @@ absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
     case mojom::V8ContextWorldType::kExtension:
     case mojom::V8ContextWorldType::kIsolated:
     case mojom::V8ContextWorldType::kInspector:
-    case mojom::V8ContextWorldType::kRegExp:
+    case mojom::V8ContextWorldType::kBlinkInternalNonJSExposed:
       break;
   }
 

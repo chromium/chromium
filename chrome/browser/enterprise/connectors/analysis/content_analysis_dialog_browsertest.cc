@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
       browser()->profile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
-          /*dlp=*/true, /*malware=*/absl::nullopt));
+          /*dlp=*/true, /*malware=*/std::nullopt));
 
   // Set up delegate test values. An unresponsive delegate is set up to avoid
   // a race between the file responses and the "Cancel" button being clicked.
@@ -798,15 +798,15 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
    public:
     ~MockDelegate() override = default;
     void BypassWarnings(
-        absl::optional<std::u16string> user_justification) override {}
+        std::optional<std::u16string> user_justification) override {}
     void Cancel(bool warning) override {}
 
-    absl::optional<std::u16string> GetCustomMessage() const override {
-      return absl::nullopt;
+    std::optional<std::u16string> GetCustomMessage() const override {
+      return std::nullopt;
     }
 
-    absl::optional<GURL> GetCustomLearnMoreUrl() const override {
-      return absl::nullopt;
+    std::optional<GURL> GetCustomLearnMoreUrl() const override {
+      return std::nullopt;
     }
 
     bool BypassRequiresJustification() const override {
@@ -817,8 +817,8 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
       return u"MOCK_BYPASS_JUSTIFICATION_LABEL";
     }
 
-    absl::optional<std::u16string> OverrideCancelButtonText() const override {
-      return absl::nullopt;
+    std::optional<std::u16string> OverrideCancelButtonText() const override {
+      return std::nullopt;
     }
 
     void SetBypassRequiresJustification(bool value) {
@@ -837,14 +837,14 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
     ~MockCustomMessageDelegate() override = default;
 
     void BypassWarnings(
-        absl::optional<std::u16string> user_justification) override {}
+        std::optional<std::u16string> user_justification) override {}
     void Cancel(bool warning) override {}
 
-    absl::optional<std::u16string> GetCustomMessage() const override {
+    std::optional<std::u16string> GetCustomMessage() const override {
       return custom_message_;
     }
 
-    absl::optional<GURL> GetCustomLearnMoreUrl() const override {
+    std::optional<GURL> GetCustomLearnMoreUrl() const override {
       return learn_more_url_;
     }
 
@@ -853,8 +853,8 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
       return u"MOCK_BYPASS_JUSTIFICATION_LABEL";
     }
 
-    absl::optional<std::u16string> OverrideCancelButtonText() const override {
-      return absl::nullopt;
+    std::optional<std::u16string> OverrideCancelButtonText() const override {
+      return std::nullopt;
     }
 
    private:

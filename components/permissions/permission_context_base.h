@@ -204,6 +204,9 @@ class PermissionContextBase : public content_settings::Observer {
       PermissionRequest::PermissionDecidedCallback permission_decided_callback,
       base::OnceClosure delete_callback) const;
 
+  // Implementors can override this method to avoid using automatic embargo.
+  virtual bool UsesAutomaticEmbargo() const;
+
   base::ObserverList<permissions::Observer> permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding

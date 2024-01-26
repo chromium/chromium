@@ -221,7 +221,8 @@ public abstract class SuggestionsPopupWindow
     private void measureContent() {
         // Make the menu wide enough to fit its widest item.
         int width =
-                UiUtils.computeMaxWidthOfListAdapterItems(mSuggestionListView.getAdapter(), null);
+                UiUtils.computeListAdapterContentDimensions(mSuggestionListView.getAdapter(), null)[
+                        0];
         width += mContentView.getPaddingLeft() + mContentView.getPaddingRight();
 
         final int verticalMeasure =

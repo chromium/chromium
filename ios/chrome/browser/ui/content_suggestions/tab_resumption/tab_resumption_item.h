@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
+
+@protocol ContentSuggestionsCommands;
+
 namespace base {
 class Time;
 }  // namespace base
@@ -22,7 +26,7 @@ enum TabResumptionItemType {
 };
 
 // Item used to display the tab resumption tile.
-@interface TabResumptionItem : NSObject
+@interface TabResumptionItem : MagicStackModule
 
 // The type of the tab.
 @property(nonatomic, readonly) TabResumptionItemType itemType;
@@ -41,6 +45,9 @@ enum TabResumptionItemType {
 
 // The favicon image of the tab.
 @property(nonatomic, strong) UIImage* faviconImage;
+
+// Command handler for user actions.
+@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType

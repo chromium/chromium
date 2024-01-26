@@ -14,7 +14,34 @@ namespace {
 // global here and will have base set this variable when it sets its own.
 JavaVM* g_jvm = nullptr;
 
+jclass (*g_class_resolver)(JNIEnv*, const char*, const char*) = nullptr;
+
 void (*g_exception_handler_callback)(JNIEnv*) = nullptr;
+
+ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
+                                            const char* class_name,
+                                            const char* split_name) {
+  jclass clazz;
+  if (g_class_resolver != nullptr) {
+    clazz = g_class_resolver(env, class_name, split_name);
+  } else {
+    // Our generated code uses dots instead of slashes for ease of use with
+    // ClassLoader.loadCLass, so convert this.
+    size_t bufsize = strlen(class_name) + 1;
+    char slash_name[bufsize];
+    memmove(slash_name, class_name, bufsize);
+    for (size_t i = 0; i < bufsize; ++i) {
+      if (slash_name[i] == '.') {
+        slash_name[i] = '/';
+      }
+    }
+    clazz = env->FindClass(slash_name);
+  }
+  if (ClearException(env) || !clazz) {
+    JNI_ZERO_FLOG("Failed to find class %s", class_name);
+  }
+  return ScopedJavaLocalRef<jclass>(env, clazz);
+}
 }  // namespace
 
 JNIEnv* AttachCurrentThread() {
@@ -113,5 +140,126 @@ void CheckException(JNIEnv* env) {
   }
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
+
+void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*, const char*)) {
+  g_class_resolver = resolver;
+}
+
+ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
+                                    const char* class_name,
+                                    const char* split_name) {
+  return GetClassInternal(env, class_name, split_name);
+}
+
+ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
+  return GetClassInternal(env, class_name, "");
+}
+
+// This is duplicated with LazyGetClass below because these are performance
+// sensitive.
+jclass LazyGetClass(JNIEnv* env,
+                    const char* class_name,
+                    const char* split_name,
+                    std::atomic<jclass>* atomic_class_id) {
+  const jclass value = atomic_class_id->load(std::memory_order_acquire);
+  if (value) {
+    return value;
+  }
+  ScopedJavaGlobalRef<jclass> clazz;
+  clazz.Reset(GetClass(env, class_name, split_name));
+  jclass cas_result = nullptr;
+  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
+                                               std::memory_order_acq_rel)) {
+    // We intentionally leak the global ref since we are now storing it as a raw
+    // pointer in |atomic_class_id|.
+    return clazz.Release();
+  } else {
+    return cas_result;
+  }
+}
+
+// This is duplicated with LazyGetClass above because these are performance
+// sensitive.
+jclass LazyGetClass(JNIEnv* env,
+                    const char* class_name,
+                    std::atomic<jclass>* atomic_class_id) {
+  const jclass value = atomic_class_id->load(std::memory_order_acquire);
+  if (value) {
+    return value;
+  }
+  ScopedJavaGlobalRef<jclass> clazz;
+  clazz.Reset(GetClass(env, class_name));
+  jclass cas_result = nullptr;
+  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
+                                               std::memory_order_acq_rel)) {
+    // We intentionally leak the global ref since we are now storing it as a raw
+    // pointer in |atomic_class_id|.
+    return clazz.Release();
+  } else {
+    return cas_result;
+  }
+}
+
+template <MethodID::Type type>
+jmethodID MethodID::Get(JNIEnv* env,
+                        jclass clazz,
+                        const char* method_name,
+                        const char* jni_signature) {
+  auto get_method_ptr = type == MethodID::TYPE_STATIC
+                            ? &JNIEnv::GetStaticMethodID
+                            : &JNIEnv::GetMethodID;
+  jmethodID id = (env->*get_method_ptr)(clazz, method_name, jni_signature);
+  if (ClearException(env) || !id) {
+    JNI_ZERO_FLOG("Failed to find class %smethod %s %s",
+                  (type == TYPE_STATIC ? "static " : ""), method_name,
+                  jni_signature);
+  }
+  return id;
+}
+
+// If |atomic_method_id| set, it'll return immediately. Otherwise, it'll call
+// into ::Get() above. If there's a race, it's ok since the values are the same
+// (and the duplicated effort will happen only once).
+template <MethodID::Type type>
+jmethodID MethodID::LazyGet(JNIEnv* env,
+                            jclass clazz,
+                            const char* method_name,
+                            const char* jni_signature,
+                            std::atomic<jmethodID>* atomic_method_id) {
+  const jmethodID value = atomic_method_id->load(std::memory_order_acquire);
+  if (value) {
+    return value;
+  }
+  jmethodID id = MethodID::Get<type>(env, clazz, method_name, jni_signature);
+  atomic_method_id->store(id, std::memory_order_release);
+  return id;
+}
+
+// Various template instantiations.
+template jmethodID MethodID::Get<MethodID::TYPE_STATIC>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* method_name,
+    const char* jni_signature);
+
+template jmethodID MethodID::Get<MethodID::TYPE_INSTANCE>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* method_name,
+    const char* jni_signature);
+
+template jmethodID MethodID::LazyGet<MethodID::TYPE_STATIC>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* method_name,
+    const char* jni_signature,
+    std::atomic<jmethodID>* atomic_method_id);
+
+template jmethodID MethodID::LazyGet<MethodID::TYPE_INSTANCE>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* method_name,
+    const char* jni_signature,
+    std::atomic<jmethodID>* atomic_method_id);
 
 }  // namespace jni_zero

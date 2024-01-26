@@ -743,6 +743,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Number of bytes used by partitioned cookies whose partition key has a
   // nonce.
   size_t num_nonced_partitioned_cookie_bytes_ = 0u;
+  // Cookie jar sizes per partition.
+  std::map<CookiePartitionKey, size_t> bytes_per_cookie_partition_;
 
   CookieMonsterChangeDispatcher change_dispatcher_;
 

@@ -38,6 +38,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_version_info.h"
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -893,6 +894,20 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       workarounds_.r8_egl_images_broken;
   shared_image_caps.disable_webgpu_shared_images =
       workarounds_.disable_webgpu_shared_images;
+  if (!shared_context_state_) {
+    shared_image_caps.is_r16f_supported = false;
+  } else if (is_skia_graphite || gr_context_type_ == GrContextType::kVulkan) {
+    // R16F is always supported with Dawn and Vulkan contexts.
+    shared_image_caps.is_r16f_supported = true;
+  } else if (gr_context_type_ == GrContextType::kGL) {
+    CHECK(shared_context_state_->gr_context());
+    // With Skia GL, R16F is supported only with GLES 3.0 and above.
+    shared_image_caps.is_r16f_supported =
+        shared_context_state_->feature_info()->gl_version_info().IsAtLeastGLES(
+            3, 0) &&
+        shared_context_state_->gr_context()->colorTypeSupportedAsImage(
+            kA16_float_SkColorType);
+  }
 
 #if BUILDFLAG(IS_WIN)
   shared_image_caps.shared_image_d3d =
@@ -1059,9 +1074,10 @@ SharedImageRepresentationFactory::ProduceDawn(
     const Mailbox& mailbox,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type,
-                               std::move(view_formats));
+                               std::move(view_formats), context_state);
 }
 
 std::unique_ptr<OverlayImageRepresentation>

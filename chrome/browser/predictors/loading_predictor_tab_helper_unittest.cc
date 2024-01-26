@@ -55,7 +55,7 @@ class MockLoadingDataCollector : public LoadingDataCollector {
                void(NavigationId, const blink::mojom::ResourceLoadInfo&));
   MOCK_METHOD2(RecordMainFrameLoadComplete,
                void(NavigationId,
-                    const absl::optional<OptimizationGuidePrediction>&));
+                    const std::optional<OptimizationGuidePrediction>&));
   MOCK_METHOD2(RecordFirstContentfulPaint, void(NavigationId, base::TimeTicks));
 };
 
@@ -347,7 +347,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  const absl::optional<OptimizationGuidePrediction>
+  const std::optional<OptimizationGuidePrediction>
       null_optimization_guide_prediction;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
                                     _, null_optimization_guide_prediction));
@@ -384,7 +384,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -439,7 +439,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -507,7 +507,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   // Prediction decision should be unknown since what came in was for the wrong
   // navigation ID.
-  absl::optional<OptimizationGuidePrediction> optimization_guide_prediction =
+  std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -537,7 +537,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -581,7 +581,7 @@ TEST_F(
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -624,7 +624,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
@@ -665,7 +665,7 @@ TEST_F(
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
   // Decision should be unknown since we got invalid data.
-  absl::optional<OptimizationGuidePrediction> optimization_guide_prediction =
+  std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -728,7 +728,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -783,7 +783,7 @@ class TestLoadingDataCollector : public LoadingDataCollector {
 
   void RecordMainFrameLoadComplete(
       NavigationId navigation_id,
-      const absl::optional<OptimizationGuidePrediction>&
+      const std::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction) override {}
 
   void RecordFirstContentfulPaint(

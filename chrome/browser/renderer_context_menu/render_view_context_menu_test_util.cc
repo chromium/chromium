@@ -55,13 +55,13 @@ bool TestRenderViewContextMenu::IsItemPresent(int command_id) const {
 }
 
 bool TestRenderViewContextMenu::IsItemChecked(int command_id) const {
-  const absl::optional<size_t> index =
+  const std::optional<size_t> index =
       menu_model_.GetIndexOfCommandId(command_id);
   return index && menu_model_.IsItemCheckedAt(*index);
 }
 
 bool TestRenderViewContextMenu::IsItemEnabled(int command_id) const {
-  const absl::optional<size_t> index =
+  const std::optional<size_t> index =
       menu_model_.GetIndexOfCommandId(command_id);
   return index && menu_model_.IsEnabledAt(*index);
 }

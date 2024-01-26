@@ -4,13 +4,13 @@
 
 #include "chrome/browser/devtools/serialize_host_descriptions.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
@@ -25,13 +25,13 @@ HostDescriptionNode GetNodeWithLabel(const char* name, int label) {
 }
 
 // Returns the list of children of |arg|.
-absl::optional<base::Value::List> GetChildren(const base::Value& arg) {
+std::optional<base::Value::List> GetChildren(const base::Value& arg) {
   EXPECT_TRUE(arg.is_dict());
   const base::Value::Dict& dict = arg.GetDict();
 
   const base::Value* children = dict.Find("children");
   if (!children)
-    return absl::nullopt;
+    return std::nullopt;
   EXPECT_EQ(base::Value::Type::LIST, children->type());
   return children->GetList().Clone();
 }
@@ -40,7 +40,7 @@ absl::optional<base::Value::List> GetChildren(const base::Value& arg) {
 bool CheckLabel(const base::Value& arg, int l) {
   EXPECT_TRUE(arg.is_dict());
   const base::Value::Dict& dict = arg.GetDict();
-  absl::optional<int> result = dict.FindInt("label");
+  std::optional<int> result = dict.FindInt("label");
   if (!result)
     return false;
   return l == *result;
@@ -50,7 +50,7 @@ bool CheckLabel(const base::Value& arg, int l) {
 MATCHER_P(EmptyNode, label, "") {
   if (!CheckLabel(arg, label))
     return false;
-  EXPECT_EQ(GetChildren(arg), absl::nullopt);
+  EXPECT_EQ(GetChildren(arg), std::nullopt);
   return true;
 }
 

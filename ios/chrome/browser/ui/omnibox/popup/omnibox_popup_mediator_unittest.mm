@@ -115,7 +115,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
 
     // Setup for AutocompleteController.
     auto template_url_service = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, std::make_unique<SearchTermsData>(),
+        /*prefs=*/nullptr, /*search_engine_search_service=*/nullptr,
+        std::make_unique<SearchTermsData>(),
         /*web_data_service=*/nullptr,
         std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
     auto client = std::make_unique<MockAutocompleteProviderClient>();

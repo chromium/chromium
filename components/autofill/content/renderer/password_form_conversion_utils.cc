@@ -31,8 +31,6 @@ using blink::WebString;
 namespace autofill {
 
 using form_util::ExtractOption;
-using form_util::UnownedFormElementsToFormData;
-using form_util::WebFormElementToFormData;
 
 namespace {
 
@@ -130,9 +128,9 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
   if (web_form.IsNull()) {
     return nullptr;
   }
-  std::optional<FormData> form = WebFormElementToFormData(
-      web_form, WebFormControlElement(), field_data_manager,
-      {ExtractOption::kValue}, /*field=*/nullptr);
+  std::optional<FormData> form =
+      form_util::ExtractFormData(web_form.GetDocument(), web_form,
+                                 field_data_manager, {ExtractOption::kValue});
   if (!form) {
     return nullptr;
   }
@@ -161,20 +159,20 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache) {
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedFormFieldElements(frame.GetDocument());
+      form_util::GetFormControlElements(frame.GetDocument(), WebFormElement());
   if (control_elements.empty()) {
     return nullptr;
   }
-  std::optional<FormData> form = UnownedFormElementsToFormData(
-      control_elements, /*iframe_elements=*/{}, nullptr, frame.GetDocument(),
-      field_data_manager, {ExtractOption::kValue},
-      /*field=*/nullptr);
+  std::optional<FormData> form =
+      form_util::ExtractFormData(frame.GetDocument(), WebFormElement(),
+                                 field_data_manager, {ExtractOption::kValue});
   if (!form) {
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->username_predictions = GetUsernamePredictions(
-      control_elements, *form_data, username_detector_cache, WebFormElement());
+  form_data->username_predictions =
+      GetUsernamePredictions(std::move(control_elements), *form_data,
+                             username_detector_cache, WebFormElement());
   return form_data;
 }
 

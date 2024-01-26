@@ -131,10 +131,10 @@ TEST_F(NearbyShareSessionImplFuseBoxTest, FileIntent) {
   mojom::ShareIntentInfoPtr share_info = mojom::ShareIntentInfo::New();
 
   std::vector<mojom::FileInfoPtr> files;
-  files.emplace_back(absl::in_place,
+  files.emplace_back(std::in_place,
                      GURL("content://com.example/provider/file.jpg"),
                      "image/jpeg", "file.jpg", 100);
-  files.emplace_back(absl::in_place,
+  files.emplace_back(std::in_place,
                      GURL("content://com.example/provider/some_opaque_name"),
                      "text/plain", "test.txt", 100);
   share_info->files = std::move(files);

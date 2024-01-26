@@ -50,6 +50,7 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   void LoadWebStateStorage(Browser* browser,
                            web::WebState* web_state,
                            WebStateStorageCallback callback) final;
+  void AttachBackup(Browser* browser, Browser* backup) final;
   void Disconnect(Browser* browser) final;
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,

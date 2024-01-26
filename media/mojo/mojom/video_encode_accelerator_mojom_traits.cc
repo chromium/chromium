@@ -216,6 +216,7 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   if (!data.ReadTimestamp(&metadata->timestamp)) {
     return false;
   }
+  metadata->end_of_picture = data.end_of_picture();
   metadata->qp = data.qp();
   if (!data.ReadEncodedSize(&metadata->encoded_size)) {
     return false;
@@ -264,7 +265,6 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
       data.referenced_by_upper_spatial_layers();
   out_metadata->reference_lower_spatial_layers =
       data.reference_lower_spatial_layers();
-  out_metadata->end_of_picture = data.end_of_picture();
   out_metadata->temporal_idx = data.temporal_idx();
   out_metadata->spatial_idx = data.spatial_idx();
   out_metadata->begin_active_spatial_layer_index =

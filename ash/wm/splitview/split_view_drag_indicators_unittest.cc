@@ -551,15 +551,17 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
 
   // Start dragging from overview in the landscape display.
   auto* item = GetOverviewItemForWindow(window1.get());
-  gfx::PointF start_location(item->target_bounds().CenterPoint());
-  overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false,
-                                  /*event_source_item=*/item);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  event_generator->PressLeftButton();
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
-  overview_session_->Drag(item, gfx::PointF(400, 300));
+
+  event_generator->MoveMouseTo(gfx::Point(400, 300));
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             window_dragging_state());
+
   // The split view indicator should show up with left indicator on the left
   // and its height span over height of the display work area.
   EXPECT_TRUE(indicators->GetIndicatorTypeVisibilityForTesting(
@@ -571,15 +573,15 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
             landscape_display.work_area().height() -
                 2 * kHighlightScreenEdgePaddingDp);
 
-  // Reset the gesture so we stay in overview mode.
-  overview_session_->ResetDraggedWindowGesture();
+  // Stop dragging and verify we are still in overview.
+  event_generator->ReleaseLeftButton();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Drag a window to the portrait display.
-  overview_session_->InitiateDrag(item, /*event_source_item=*/start_location,
-                                  /*is_touch_dragging=*/false,
-                                  /*event_source_item=*/item);
-  Shell::Get()->cursor_manager()->SetDisplay(portrait_display);
-  overview_session_->Drag(item, gfx::PointF(1100, 400));
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(1100, 400));
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             window_dragging_state());
   indicators = overview_session_->GetGridWithRootWindow(root_windows[1])
@@ -589,10 +591,9 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   EXPECT_TRUE(indicators->GetIndicatorTypeVisibilityForTesting(
       IndicatorType::kRightText));
 
-  // If |chromeos::wm::features::kVerticalSnap| is enabled, the left indicator
-  // should be on the top of the display and its width span the work area width.
-  // Otherwise, the left indicator should be on the left and its height span
-  // the work area height.
+  // The left indicator should be on the top of the display and its width span
+  // the work area width. Otherwise, the left indicator should be on the left
+  // and its height span the work area height.
   left_indicator_bounds = indicators->GetLeftHighlightViewBounds();
   EXPECT_EQ(
       left_indicator_bounds.width(),
@@ -609,25 +610,20 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest, IndicatorSize) {
   std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(300, 300));
 
   ToggleOverview();
-
-  // Start dragging the overview item on the primary display.
   auto* item = GetOverviewItemForWindow(window.get());
-  gfx::PointF start_location(item->target_bounds().CenterPoint());
-  overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false,
-                                  /*event_source_item=*/item);
 
-  // Drag the overview item to the secondary display right edge, so the right
-  // side preview indicator shows up.
-  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-  // without having to call `CursorManager::SetDisplay()`.
-  aura::Window* secondary_root = Shell::GetAllRootWindows()[1];
-  Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(secondary_root));
-  overview_session_->Drag(item, gfx::PointF(1780.f, 500.f));
+  // Start dragging the overview item on the primary display. Drag the overview
+  // item to the secondary display right edge, so the right side preview
+  // indicator shows up.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(1780, 500));
 
   // Verify the size of the right side indicator. It should be roughly half of
   // the secondary display.
+  aura::Window* secondary_root = Shell::GetAllRootWindows()[1];
   auto* secondary_display_indicators =
       overview_session_->GetGridWithRootWindow(secondary_root)
           ->split_view_drag_indicators();

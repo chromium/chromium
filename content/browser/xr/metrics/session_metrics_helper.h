@@ -12,6 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "device/vr/public/mojom/xr_device.mojom-forward.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -53,6 +54,7 @@ class CONTENT_EXPORT SessionMetricsHelper
   // may not exist simultaneously.
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
   StartImmersiveSession(
+      const device::mojom::XRDeviceId& runtime_id,
       const device::mojom::XRSessionOptions& session_options,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           enabled_features);

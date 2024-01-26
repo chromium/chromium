@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Attachment} from '../constants.js';
+import type {Attachment} from '../constants.js';
 
 import {getTemplate} from './viewer-attachment.html.js';
 

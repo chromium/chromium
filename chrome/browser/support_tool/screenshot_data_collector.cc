@@ -267,7 +267,7 @@ void ScreenshotDataCollector::OnScreenshotTaken(
     screenshot_base64_ = base::StrCat(
         {kBase64Header,
          base::Base64Encode(base::make_span(data->data(), data->size()))});
-    std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+    std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
     return;
   }
   SupportToolError error = {
@@ -289,7 +289,7 @@ void ScreenshotDataCollector::OnTabCaptured(const SkBitmap& bitmap) {
   }
   screenshot_base64_ = base::StrCat(
       {kBase64Header, base::Base64Encode(std::move(jpeg_encoded_data))});
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -306,7 +306,7 @@ void ScreenshotDataCollector::OnCaptureResult(
   }
 
   ConvertDesktopFrameToBase64JPEG(std::move(frame), screenshot_base64_);
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }
 
 void ScreenshotDataCollector::ExportCollectedDataWithPII(
@@ -335,5 +335,5 @@ void ScreenshotDataCollector::OnScreenshotExported(bool success) {
     std::move(data_collector_done_callback_).Run(error);
     return;
   }
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }

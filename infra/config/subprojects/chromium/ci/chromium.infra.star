@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium.infra builder group."""
 
 load("//lib/branches.star", "branches")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -14,6 +15,7 @@ ci.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )

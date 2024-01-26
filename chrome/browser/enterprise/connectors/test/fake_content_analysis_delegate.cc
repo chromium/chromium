@@ -4,13 +4,14 @@
 
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors::test {
 
@@ -175,7 +176,7 @@ void FakeContentAnalysisDelegate::Response(
     std::string contents,
     base::FilePath path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-    absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+    std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
         file_request_callback,
     bool is_image_request) {
   auto response =
@@ -233,8 +234,7 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), data.contents,
-                     base::FilePath(), std::move(request), absl::nullopt,
-                     false),
+                     base::FilePath(), std::move(request), std::nullopt, false),
       response_delay);
 }
 
@@ -261,7 +261,7 @@ void FakeContentAnalysisDelegate::UploadImageForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), data.contents,
-                     base::FilePath(), std::move(request), absl::nullopt, true),
+                     base::FilePath(), std::move(request), std::nullopt, true),
       response_delay);
 }
 
@@ -303,8 +303,7 @@ void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), std::string(),
-                     base::FilePath(), std::move(request), absl::nullopt,
-                     false),
+                     base::FilePath(), std::move(request), std::nullopt, false),
       response_delay);
 }
 

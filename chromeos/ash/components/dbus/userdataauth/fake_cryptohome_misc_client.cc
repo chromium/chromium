@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 namespace ash {
@@ -59,9 +60,8 @@ void FakeCryptohomeMiscClient::LockToSingleUserMountUntilReboot(
     const ::user_data_auth::LockToSingleUserMountUntilRebootRequest& request,
     LockToSingleUserMountUntilRebootCallback callback) {
   ::user_data_auth::LockToSingleUserMountUntilRebootReply reply;
-  if (cryptohome_error_ ==
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply.set_error(cryptohome_error_);
+  if (cryptohome_error_ == ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
     is_device_locked_to_single_user_ = true;
   } else {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::

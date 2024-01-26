@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
-#include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
@@ -277,7 +276,7 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
             media::PIXEL_FORMAT_I420, frame->coded_size(),
             frame->visible_rect(), frame->natural_size(), frame->timestamp());
     media::EncoderStatus status =
-        media::ConvertAndScaleFrame(*frame, *new_frame, nv12_to_i420_tmp_buf_);
+        frame_converter_.ConvertAndScale(*frame, *new_frame);
     if (!status.is_ok()) {
       LOG(DFATAL) << "Unable to convert frame to I420.";
       OnStateChanged(media::mojom::VideoCaptureResult::NewErrorCode(

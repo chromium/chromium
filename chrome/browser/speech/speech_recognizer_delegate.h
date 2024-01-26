@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_DELEGATE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Requires cleanup. See crbug.com/800374.
 enum SpeechRecognizerStatus {
@@ -39,7 +40,7 @@ class SpeechRecognizerDelegate {
   virtual void OnSpeechResult(
       const std::u16string& text,
       bool is_final,
-      const absl::optional<media::SpeechRecognitionResult>& full_result) = 0;
+      const std::optional<media::SpeechRecognitionResult>& full_result) = 0;
 
   // Invoked regularly to indicate the average sound volume.
   virtual void OnSpeechSoundLevelChanged(int16_t level) = 0;

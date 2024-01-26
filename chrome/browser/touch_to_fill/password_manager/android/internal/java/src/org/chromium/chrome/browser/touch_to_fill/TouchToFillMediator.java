@@ -155,7 +155,9 @@ class TouchToFillMediator {
             new GenerateAvatarTask(avatarUrls)
                     .fetchInBackground(
                             (roundedAvatarImage) -> {
-                                headerModel.set(AVATAR, roundedAvatarImage);
+                                if (roundedAvatarImage != null) {
+                                    headerModel.set(AVATAR, roundedAvatarImage);
+                                }
                             });
         }
 
@@ -497,12 +499,14 @@ class TouchToFillMediator {
 
         private void onAllImagesFetched() {
             ThreadUtils.assertOnUiThread();
-            // TODO(http://crbug.com/1504098): support the case when multiple senders
-            // have shared passwords and hence all images in `mAvatarImages` should be combined.
+            if (mAvatarImages.isEmpty()) {
+                mDoneCallback.onResult(null);
+                return;
+            }
             mDoneCallback.onResult(
                     AvatarGenerator.makeRoundAvatar(
                             mContext.getResources(),
-                            mAvatarImages.get(0),
+                            mAvatarImages,
                             mContext.getResources()
                                     .getDimensionPixelSize(R.dimen.touch_to_fill_avatar)));
         }

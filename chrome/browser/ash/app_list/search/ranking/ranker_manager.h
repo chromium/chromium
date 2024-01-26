@@ -29,9 +29,7 @@ class RankerManager : public Ranker {
   RankerManager& operator=(const RankerManager&) = delete;
 
   // Ranker:
-  void Start(const std::u16string& query,
-             ResultsMap& results,
-             CategoriesList& categories) override;
+  void Start(const std::u16string& query, CategoriesList& categories) override;
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
   void UpdateCategoryRanks(const ResultsMap& results,
                            CategoriesList& categories,

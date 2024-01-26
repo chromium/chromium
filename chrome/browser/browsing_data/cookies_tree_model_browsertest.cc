@@ -145,57 +145,6 @@ class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, NoQuotaStorage) {
-  AccessStorage();
-
-  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
-      chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
-
-  bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
-      browsing_data::features::kMigrateStorageToBDM);
-
-  auto expected_size = is_migrate_storage_to_bdm_enabled ? 0 : 1;
-
-  // Quota storage has been accessed, but should not be present in the tree.
-  EXPECT_EQ(is_migrate_storage_to_bdm_enabled ? 5u : 17u,
-            tree_model->GetRoot()->GetTotalNodeCount());
-  auto node_counts = GetNodeTypeCounts(tree_model.get());
-  EXPECT_EQ(is_migrate_storage_to_bdm_enabled ? 4u : 16u, node_counts.size());
-  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
-
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
-  EXPECT_EQ(2, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_DATABASE]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_DATABASES]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEMS]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKERS]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGES]);
-}
-
 IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
   // Confirm that when all helpers fetch functions return synchronously, that
   // the model has received all expected batches.
@@ -276,16 +225,8 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-    EXPECT_EQ(0,
-              node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  } else {
-    EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-    EXPECT_LT(0,
-              node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  }
+  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
+  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
   EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
 
   // Check that the default StoragePartition is empty.
@@ -295,44 +236,4 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,
   EXPECT_EQ(1u, tree_model->GetRoot()->GetTotalNodeCount());
   node_counts = GetNodeTypeCounts(tree_model.get());
   EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-}
-
-class CookiesTreeModelBrowserTestQuotaOnly
-    : public CookiesTreeModelBrowserTest {
- public:
-  void InitFeatures() override {
-    feature_list()->InitAndEnableFeature(
-        net::features::kThirdPartyStoragePartitioning);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTestQuotaOnly, QuotaStorageOnly) {
-  AccessStorage();
-
-  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
-      chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
-
-  bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
-      browsing_data::features::kMigrateStorageToBDM);
-  // Quota storage has been accessed, only quota nodes should be present for
-  // quota managed storage types.
-  EXPECT_EQ(is_migrate_storage_to_bdm_enabled ? 5u : 8u,
-            tree_model->GetRoot()->GetTotalNodeCount());
-
-  auto node_counts = GetNodeTypeCounts(tree_model.get());
-  auto expected_size = is_migrate_storage_to_bdm_enabled ? 0 : 1;
-  EXPECT_EQ(is_migrate_storage_to_bdm_enabled ? 4u : 7u, node_counts.size());
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
-  EXPECT_EQ(2, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  EXPECT_EQ(expected_size,
-            node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
 }

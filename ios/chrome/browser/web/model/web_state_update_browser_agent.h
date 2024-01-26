@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_WEB_STATE_UPDATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_WEB_STATE_UPDATE_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -44,7 +45,7 @@ class WebStateUpdateBrowserAgent
 
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
-  WebStateList* web_state_list_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
   // Scoped observations of Browser, WebStateList and WebStates.
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};

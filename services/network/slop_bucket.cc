@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -285,8 +286,8 @@ class SlopBucket::Manager {
       return nullptr;
     }
 
-    std::unique_ptr<char[]> chunk = GetChunk();
-    if (!chunk) {
+    base::HeapArray<char> chunk = GetChunk();
+    if (!chunk.data()) {
       return nullptr;
     }
 
@@ -298,7 +299,7 @@ class SlopBucket::Manager {
   // Returns a chunk to the pool. This method may be called on background
   // threads. Despite the overhead of locking, it is still 10 times faster to
   // reuse the chunks than to delete and new them again.
-  void ReleaseChunk(std::unique_ptr<char[]> buffer) {
+  void ReleaseChunk(base::HeapArray<char> buffer) {
     if (disabled()) {
       return;  // `buffer` is freed.
     }
@@ -352,15 +353,15 @@ class SlopBucket::Manager {
   }
 
   // Encapsulates the locked section of RequestChunk().
-  std::unique_ptr<char[]> GetChunk() VALID_CONTEXT_REQUIRED(sequence_checker_) {
-    std::unique_ptr<char[]> chunk;
+  base::HeapArray<char> GetChunk() VALID_CONTEXT_REQUIRED(sequence_checker_) {
+    base::HeapArray<char> chunk;
     base::ReleasableAutoLock auto_lock(&lock_);
     if (total_chunks_ == configuration_.max_chunks_total()) {
       // Don't hold the lock while logging.
       auto_lock.Release();
       DVLOG(1)
           << "Not allocating chunk because the global max has been reached";
-      return nullptr;
+      return base::HeapArray<char>();
     }
 
     if (!free_pool_.empty()) {
@@ -369,9 +370,7 @@ class SlopBucket::Manager {
       chunk = std::move(free_pool_.back());
       free_pool_.pop_back();
     } else {
-      // Use new to avoid wastefully zero-initializing the block of memory.
-      // TODO(ricea): Use std::make_unique_for_overwrite once C++20 is allowed.
-      chunk.reset(new char[configuration_.chunk_size()]);
+      chunk = base::HeapArray<char>::Uninit(configuration_.chunk_size());
     }
 
     ++total_chunks_;
@@ -396,7 +395,7 @@ class SlopBucket::Manager {
     }
     // We swap the vector so we don't have to hold the lock while we free the
     // elements.
-    std::vector<std::unique_ptr<char[]>> old_free_pool;
+    std::vector<base::HeapArray<char>> old_free_pool;
     {
       base::AutoLock auto_lock(lock_);
       old_free_pool.swap(free_pool_);
@@ -421,7 +420,7 @@ class SlopBucket::Manager {
   size_t total_chunks_ GUARDED_BY(lock_) = 0;
 
   // Pool of free buffers.
-  std::vector<std::unique_ptr<char[]>> free_pool_ GUARDED_BY(lock_);
+  std::vector<base::HeapArray<char>> free_pool_ GUARDED_BY(lock_);
 
   // Reason why SlopBucket is disabled. Only accessed on the IO thread.
   DisabledReason disabled_reason_;
@@ -442,10 +441,8 @@ class SlopBucket::Manager {
 
 class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
  public:
-  explicit ChunkIOBuffer(std::unique_ptr<char[]> storage)
-      : base_(std::move(storage)) {
-    data_ = base_.get();
-  }
+  explicit ChunkIOBuffer(base::HeapArray<char> storage)
+      : IOBuffer(storage), base_(std::move(storage)) {}
 
   // Notes that `bytes` bytes have been read from a URLRequest into this chunk.
   void MarkFilled(size_t bytes) {
@@ -457,6 +454,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
     filled_up_to_ += bytes;
     CHECK_LE(filled_up_to_, chunk_size);
     data_ += bytes;
+    size_ -= bytes;
   }
 
   // Notes that `bytes` bytes have been written to the mojo data pipe and should
@@ -486,7 +484,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
   // Note that the data() method from the parent class provides the next byte
   // available for writing to by the URLRequest.
   const char* NextByteToConsume() const {
-    return base_.get() + consumed_up_to_;
+    return base_.subspan(consumed_up_to_).data();
   }
 
  private:
@@ -497,7 +495,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
     Manager::Get().ReleaseChunk(std::move(base_));
   }
 
-  std::unique_ptr<char[]> base_;
+  base::HeapArray<char> base_;
   size_t filled_up_to_ = 0;
   size_t consumed_up_to_ = 0;
 };

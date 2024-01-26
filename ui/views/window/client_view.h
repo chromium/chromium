@@ -52,13 +52,13 @@ class VIEWS_EXPORT ClientView : public View {
   // corner of resizable dialog boxes.
   virtual int NonClientHitTest(const gfx::Point& point);
 
-  // Updates the rounded corners of the ClientView's contents as part of
-  // rounding the window.
+  // Updates and applies the `corner_radius` to the ClientView's contents as
+  // part of rounding the window.
   // Some platforms, such as ChromeOS, do not have borders surrounding
   // ClientView part of the NonClientFrameView. Therefore, the
   // NonClientFrameView has to delegate part of the rounding logic to the
   // ClientView.
-  virtual void UpdateWindowRoundedCorners();
+  virtual void UpdateWindowRoundedCorners(int corner_radius);
 
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;

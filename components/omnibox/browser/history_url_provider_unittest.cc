@@ -257,6 +257,7 @@ class HistoryURLProviderTest : public testing::Test,
   scoped_refptr<HistoryURLProvider> provider_;
   // Should the matches be sorted and duplicates removed?
   bool sort_matches_;
+  base::OnceClosure quit_closure_;
 };
 
 class HistoryURLProviderTestNoDB : public HistoryURLProviderTest {
@@ -281,7 +282,7 @@ void HistoryURLProviderTest::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
   if (provider_->done()) {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 }
 
@@ -341,7 +342,9 @@ void HistoryURLProviderTest::RunTest(
   *identified_input_type = input.type();
   provider_->Start(input, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -378,7 +381,9 @@ void HistoryURLProviderTest::ExpectFormattedFullMatch(
                           TestSchemeClassifier());
   provider_->Start(input, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   // Test the variations of URL formatting on the first match.
@@ -675,7 +680,9 @@ TEST_F(HistoryURLProviderTest, Files) {
       metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
   provider_->Start(ios_input_1, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
   EXPECT_EQ(matches_.size(), 0u);
 #endif  // BUILDFLAG(IS_IOS)
@@ -706,7 +713,9 @@ TEST_F(HistoryURLProviderTest, Files) {
                                 TestSchemeClassifier());
   provider_->Start(ios_input_2, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
   EXPECT_EQ(matches_.size(), 0u);
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
@@ -776,8 +785,10 @@ TEST_F(HistoryURLProviderTest, EmptyVisits) {
   EXPECT_EQ(GURL("http://pandora.com/"), matches_[0].destination_url);
   int pandora_relevance = matches_[0].relevance;
 
-  // Run the message loop. When |provider_| finishes the loop is quit.
-  base::RunLoop().Run();
+  // Run the message loop. When |autocomplete_| finishes the loop is quit.
+  base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+  quit_closure_ = loop.QuitWhenIdleClosure();
+  loop.Run();
   EXPECT_TRUE(provider_->done());
   matches_ = provider_->matches();
   ASSERT_GT(matches_.size(), 0u);
@@ -824,7 +835,9 @@ TEST_F(HistoryURLProviderTest, AutocompleteOnTrailingWhitespace) {
             input_prevent_inline_autocomplete);
         provider_->Start(input, false);
         if (!provider_->done()) {
-          base::RunLoop().Run();
+          base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+          quit_closure_ = loop.QuitWhenIdleClosure();
+          loop.Run();
         }
 
         matches_ = provider_->matches();
@@ -1014,7 +1027,9 @@ TEST_F(HistoryURLProviderTest, CrashDueToFixup) {
                             TestSchemeClassifier());
     provider_->Start(input, false);
     if (!provider_->done()) {
-      base::RunLoop().Run();
+      base::RunLoop loop;
+      quit_closure_ = loop.QuitWhenIdleClosure();
+      loop.Run();
     }
   }
 }
@@ -1431,7 +1446,9 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
                           TestSchemeClassifier());
   provider_->Start(input, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -1445,7 +1462,9 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
                            TestSchemeClassifier());
   provider_->Start(input2, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -1457,7 +1476,9 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
                            TestSchemeClassifier());
   provider_->Start(input3, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -1470,7 +1491,9 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
   provider_->Start(input3, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -1491,7 +1514,9 @@ TEST_F(HistoryURLProviderTest, MaxMatches) {
                           TestSchemeClassifier());
   provider_->Start(input, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();
@@ -1503,7 +1528,9 @@ TEST_F(HistoryURLProviderTest, MaxMatches) {
   input.set_prefer_keyword(true);
   provider_->Start(input, false);
   if (!provider_->done()) {
-    base::RunLoop().Run();
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
   }
 
   matches_ = provider_->matches();

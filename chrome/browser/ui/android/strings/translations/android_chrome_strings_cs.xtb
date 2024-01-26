@@ -91,6 +91,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1416550906796893042">Verze aplikace</translation>
 <translation id="1428770807407000502">Vypnout synchronizaci?</translation>
 <translation id="1430915738399379752">Tisk</translation>
+<translation id="1435593198351412143">Soubory PDF automaticky otevřít</translation>
 <translation id="1436784010935106834">Odebráno</translation>
 <translation id="1437543266176261764">Spuštěno v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sledované produkty můžete třídit v záložkách</translation>
@@ -146,6 +147,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1792959175193046959">Výchozí umístění pro stažené soubory můžete kdykoliv změnit.</translation>
 <translation id="1796666869097395659">Minimalizovat kartu, abyste se k ní mohli vrátit později</translation>
 <translation id="1807246157184219062">Světlé</translation>
+<translation id="1807709131360304325">Otevřít nové okno</translation>
 <translation id="1810845389119482123">Počáteční nastavení synchronizace nebylo dokončeno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> již nemůže nadále používat <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Najít na stránce</translation>
@@ -189,6 +191,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2056878612599315956">Web je pozastaven</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo}few{Stažení # souborů se nezdařilo}many{Stažení # souboru se nezdařilo}other{Stažení # souborů se nezdařilo}}</translation>
 <translation id="2067805253194386918">text</translation>
+<translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Je zobrazeno kompaktní zobrazení</translation>
 <translation id="2093731487903423814">posledních 15 minut</translation>
@@ -218,7 +221,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="223356358902285214">Aktivita na webu a v aplikacích</translation>
 <translation id="2234827758954819389">Průvodce ochranou soukromí</translation>
 <translation id="2239812875700136898">Pomocí tlačítka Možnosti funkce Objevit můžete ovládat, jaké příběhy se vám budou zobrazovat</translation>
-<translation id="2241634353105152135">Pouze jednou</translation>
 <translation id="2247789808226901522">Platnost karty vypršela</translation>
 <translation id="2248941474044011069">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována</translation>
 <translation id="2249635629516220541">Přizpůsobení informací, které weby používají k zobrazování reklam</translation>
@@ -233,7 +235,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="2321086116217818302">Příprava hesel…</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
-<translation id="2327226657832576859">Automaticky otevírat soubory PDF?</translation>
 <translation id="2328985652426384049">Přihlášení se nezdařilo</translation>
 <translation id="2341410551640223969">Instalace balíčku <ph name="WEBAPK_NAME" /> se nezdařila.</translation>
 <translation id="2349710944427398404">Celkové množství dat využívané prohlížečem Chrome, včetně účtů, záložek a uložených nastavení</translation>
@@ -316,6 +317,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Zavře se karta <ph name="TAB_TITLE" /></translation>
 <translation id="281504910091592009">Zobrazit a spravovat uložená hesla v <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Napůl otevřená nabídka karty informačního kanálu</translation>
@@ -340,6 +342,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2894821468041866720">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
 <translation id="2900528713135656174">Vytvořit událost</translation>
 <translation id="2901411048554510387">Zobrazují se návrhy pro <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Stažené soubory PDF se automaticky otevřou v jednom z prohlížečů souborů PDF v zařízení</translation>
 <translation id="2904414404539560095">Seznam zařízení, se kterými se má karta sdílet, otevřený na plnou výšku.</translation>
 <translation id="2908243544703713905">Jsou připravené nepřečtené články</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -354,7 +357,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2946420957526726953">Chrome se aktualizuje, aby bylo možné připojovat se k jiným zařízením</translation>
 <translation id="2951071800649516099">Přidejte si stránky na seznam četby na později</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepřečtená stránka}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtené stránky}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtené stránky}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepřečtených stránek}}</translation>
-<translation id="2961210776189273067">Název</translation>
 <translation id="296370266220139811">Šetřete čas a méně pište</translation>
 <translation id="2977350910003566746">Řazení podle posledního otevření</translation>
 <translation id="297771753501244313">Seřadit podle posledního otevření</translation>
@@ -600,6 +602,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4303044213806199882">snimek_obrazovky_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Správce hesel</translation>
 <translation id="4307992518367153382">Základy</translation>
+<translation id="4311652497846705514">Otevřít PDF?</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="433213510553688132">Sledování…</translation>
 <translation id="4335835283689002019">Bezpečné prohlížení je vypnuté</translation>
@@ -639,7 +642,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4523326818319942067">poslední hodina</translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4532845899244822526">Výběr složky</translation>
-<translation id="4541505619120536051">Vždy otevřeno</translation>
 <translation id="4543131175509360848">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4554077758708533499">Připojeno kabelem USB</translation>
@@ -831,7 +833,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5486841595534124508">Logo upozornění ve věci ochrany soukromí pro centrum statistik o stránkách, které přesměrovává na mou stránku aktivity.</translation>
 <translation id="5487521232677179737">Vymazat data</translation>
 <translation id="5492637351392383067">Šifrování v zařízení</translation>
-<translation id="5509866835115085009">Když stáhnete soubor PDF, může ho Chrome automaticky otevřít.</translation>
 <translation id="5514904542973294328">Zakázáno administrátorem tohoto zařízení</translation>
 <translation id="5515439363601853141">Chcete-li zobrazit heslo, odemkněte zařízení</translation>
 <translation id="5517095782334947753">Máte záložky, historii, hesla a další nastavení z účtu <ph name="FROM_ACCOUNT" />.</translation>
@@ -897,9 +898,11 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="5814749351757353073">Sledujte své oblíbené weby</translation>
 <translation id="5822875253699806474">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte své karty a historii</translation>
+<translation id="5829586821381540080">Uloženo ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>
+<translation id="5848257610304005265">Otevřít PDF pomocí aplikace <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
 <translation id="5855546874025048181">Zpřesnit: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Došlo k chybě. Sledování ceny se nepodařilo aktualizovat.</translation>
@@ -925,6 +928,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5966233851250124270">Chrome si váš výběr zapamatuje</translation>
+<translation id="5977976211062815271">V tomto zařízení</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
 <translation id="5995726099713306770">Stáhnout stránku znovu?</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
@@ -1302,6 +1306,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Všechny soubory, 1 soubor v seznamu}few{Všechny soubory, # soubory v seznamu}many{Všechny soubory, # souboru v seznamu}other{Všechny soubory, # souborů v seznamu}}</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
+<translation id="7821130663268546430">Všechny otevřené karty najdete v přepínači karet</translation>
 <translation id="7822705602465980873">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
 <translation id="78270725016672455">Váš počítač chce toto zařízení zaregistrovat k přihlášení na web</translation>
 <translation id="7844171778363018843">Nebyla vybrána žádná data k synchronizaci</translation>
@@ -1329,6 +1334,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7947953824732555851">Přijmout a přihlásit</translation>
+<translation id="7951102827450076904">Stažené soubory PDF vždy otevřít</translation>
 <translation id="7957413488482743710">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Tlačítko Zpět ve statistikách stránky</translation>
 <translation id="7961926449547174351">Zakázali jste přístup k úložišti. Přejděte do Nastavení a povolte ho.</translation>
@@ -1379,6 +1385,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
+<translation id="8135406045838672858">Stažené soubory PDF se automaticky otevírají pomocí aplikace <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Zbývá: 1 d</translation>

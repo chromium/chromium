@@ -11,10 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
@@ -353,11 +355,11 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
     // In some cases the interstitial must be loaded here since there will be
     // no navigation to intercept in the throttle.
-    // TODO(crbug.com/1501194): With async Safe Browsing check, this code path
-    // may be triggered for top-document warning. Update the below function and
-    // consolidate it with SafeBrowsingNavigationThrottle::WillFailRequest.
-    std::unique_ptr<BaseBlockingPage> blocking_page = base::WrapUnique(
-        CreateBlockingPageForSubresource(web_contents, unsafe_url, resource));
+    std::unique_ptr<security_interstitials::SecurityInterstitialPage>
+        blocking_page = base::WrapUnique(CreateBlockingPage(
+            web_contents, unsafe_url, resource,
+            /*forward_extension_event=*/true,
+            AsyncCheckTracker::GetBlockedPageCommittedTimestamp(resource)));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
         web_contents->GetController().LoadPostCommitErrorPage(
             web_contents->GetPrimaryMainFrame(), unsafe_url,
@@ -380,10 +382,13 @@ void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
 void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {}
 
-BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
+security_interstitials::SecurityInterstitialPage*
+BaseUIManager::CreateBlockingPage(
     content::WebContents* contents,
     const GURL& blocked_url,
-    const UnsafeResource& unsafe_resource) {
+    const UnsafeResource& unsafe_resource,
+    bool forward_extension_event,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // TODO(carlosil): This can be removed once all implementations of SB use
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed
@@ -477,15 +482,27 @@ void BaseUIManager::AddUnsafeResource(
   unsafe_resources_.push_back(std::make_pair(url, resource));
 }
 
-bool BaseUIManager::PopUnsafeResourceForURL(
+bool BaseUIManager::PopUnsafeResourceForNavigation(
     GURL url,
+    int64_t navigation_id,
     security_interstitials::UnsafeResource* resource) {
   for (auto it = unsafe_resources_.begin(); it != unsafe_resources_.end();
        it++) {
     if (it->first == url) {
-      *resource = it->second;
-      unsafe_resources_.erase(it);
-      return true;
+      bool match_navigation_id =
+          it->second.navigation_id.has_value() &&
+          it->second.navigation_id.value() == navigation_id;
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.NavigationIdMatchedInUnsafeResource",
+          match_navigation_id);
+      // Add the flag check to ensure no behavioral change when the flag is
+      // disabled.
+      if (match_navigation_id ||
+          !base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+        *resource = it->second;
+        unsafe_resources_.erase(it);
+        return true;
+      }
     }
   }
   return false;
@@ -500,12 +517,25 @@ ThreatSeverity BaseUIManager::GetSeverestThreatForNavigation(
   if (!handle)
     return min_severity;
 
-  for (auto&& url : handle->GetRedirectChain()) {
+  return GetSeverestThreatForRedirectChain(
+      handle->GetRedirectChain(), handle->GetNavigationId(), severest_resource);
+}
+
+ThreatSeverity BaseUIManager::GetSeverestThreatForRedirectChain(
+    const std::vector<GURL>& redirect_chain,
+    int64_t navigation_id,
+    security_interstitials::UnsafeResource& severest_resource) {
+  // Default is safe
+  // Smaller numbers are more severe for ThreatSeverity
+  ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
+
+  for (auto&& url : redirect_chain) {
     security_interstitials::UnsafeResource resource;
-    if (PopUnsafeResourceForURL(url, &resource)) {
+    if (PopUnsafeResourceForNavigation(url, navigation_id, &resource)) {
       ThreatSeverity severity = GetThreatSeverity(resource.threat_type);
-      if (severity > min_severity)
+      if (severity > min_severity) {
         continue;
+      }
       min_severity = severity;
       severest_resource = std::move(resource);
     }

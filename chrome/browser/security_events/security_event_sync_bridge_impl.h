@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
                                     public syncer::ModelTypeSyncBridge {
@@ -36,10 +36,10 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -50,24 +50,24 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
                                    delete_metadata_change_list) override;
 
  private:
-  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
   void OnReadData(
       DataCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::ModelTypeStore::IdList> missing_id_list);
 
   void OnReadAllData(
       DataCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
 
-  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
+  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
-  void OnCommit(const absl::optional<syncer::ModelError>& error);
+  void OnCommit(const std::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
 

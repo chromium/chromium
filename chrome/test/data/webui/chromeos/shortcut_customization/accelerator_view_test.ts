@@ -17,7 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
@@ -52,6 +52,7 @@ suite('acceleratorViewTest', function() {
 
   setup(() => {
     provider = new FakeShortcutProvider();
+    provider.setFakeGetDefaultAcceleratorsForId(fakeDefaultAccelerators);
     setShortcutProviderForTesting(provider);
     setShortcutInputProviderForTesting(shortcutInputProvider);
 
@@ -328,16 +329,17 @@ suite('acceleratorViewTest', function() {
       }
       for (const scenario of scenarios) {
         // replicate getCategory() logic.
-        const category = manager!.getAcceleratorCategory(
+        const subcategory = manager!.getAcceleratorSubcategory(
             layoutInfo.source, layoutInfo.action);
-        const categoryIsLocked = manager!.isCategoryLocked(category);
+        const subcategoryIsLocked = manager!.isSubcategoryLocked(subcategory);
         // replicate shouldShowLockIcon() logic.
         const expectLockIconVisible = scenario.customizationEnabled &&
-            !categoryIsLocked && (scenario.locked || scenario.sourceIsLocked);
+            !subcategoryIsLocked &&
+            (scenario.locked || scenario.sourceIsLocked);
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
-          categoryIsLocked: categoryIsLocked,
+          subcategoryIsLocked: subcategoryIsLocked,
           expectLockIconVisible: expectLockIconVisible,
         });
       }
@@ -348,7 +350,7 @@ suite('acceleratorViewTest', function() {
           {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
-      viewElement.categoryIsLocked = testCase.categoryIsLocked;
+      viewElement.subcategoryIsLocked = testCase.subcategoryIsLocked;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,
           /*key=*/ 71,
@@ -411,19 +413,19 @@ suite('acceleratorViewTest', function() {
         continue;
       }
       for (const scenario of scenarios) {
-        // replicate getCategory() logic.
-        const category = manager!.getAcceleratorCategory(
+        // replicate getSubcategory() logic.
+        const subcategory = manager!.getAcceleratorSubcategory(
             layoutInfo.source, layoutInfo.action);
-        const categoryIsLocked = manager!.isCategoryLocked(category);
+        const subcategoryIsLocked = manager!.isSubcategoryLocked(subcategory);
         // replicate shouldShowLockIcon() logic.
         const expectEditIconVisible = scenario.customizationEnabled &&
-            scenario.isAcceleratorRow && !categoryIsLocked &&
+            scenario.isAcceleratorRow && !subcategoryIsLocked &&
             !scenario.locked && !scenario.sourceIsLocked &&
             scenario.isFirstAccelerator;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
-          categoryIsLocked: categoryIsLocked,
+          subcategoryIsLocked: subcategoryIsLocked,
           expectEditIconVisible: expectEditIconVisible,
         });
       }
@@ -433,7 +435,7 @@ suite('acceleratorViewTest', function() {
           {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
-      viewElement.categoryIsLocked = testCase.categoryIsLocked;
+      viewElement.subcategoryIsLocked = testCase.subcategoryIsLocked;
       viewElement.showEditIcon = testCase.isAcceleratorRow;
       viewElement.isFirstAccelerator = testCase.isFirstAccelerator;
       const acceleratorInfo = createStandardAcceleratorInfo(

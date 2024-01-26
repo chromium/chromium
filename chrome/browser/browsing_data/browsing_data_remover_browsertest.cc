@@ -268,25 +268,6 @@ class BrowsingDataRemoverBrowserTest
         << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
   }
 
-  // This method is used to decide which entry count to expect depending on
-  // whether `kThirdPartyStoragePartitioning` or `kMigrateStorageToBDM` are
-  // enabled or disabled.
-  inline void ExpectTotalModelCount(int expectedAllDisabled,
-                                    int expectedAnyEnabled) {
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
-    // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. Also, remove helper duplication between the
-    // incognito, and remover, browsing data browser tests.
-    if (!base::FeatureList::IsEnabled(
-            net::features::kThirdPartyStoragePartitioning) &&
-        !base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      ExpectTotalModelCount(expectedAllDisabled);
-    } else {
-      ExpectTotalModelCount(expectedAnyEnabled);
-    }
-  }
-
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
                              bool* out_is_smooth,
                              bool* out_is_power_efficient,
@@ -836,17 +817,13 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
 
   void ClearSiteDataAndWait(
       const url::Origin& origin,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const std::optional<blink::StorageKey>& storage_key,
       const std::set<std::string>& storage_buckets_to_remove) {
     base::RunLoop loop;
     content::ClearSiteData(
-        /*browser_context_getter=*/base::BindRepeating(
-            [](content::BrowserContext* browser_context) {
-              return browser_context;
-            },
-            base::Unretained(GetBrowser()->profile())),
-        /*storage_partition_config=*/absl::nullopt,
+        GetBrowser()->profile()->GetWeakPtr(),
+        /*storage_partition_config=*/std::nullopt,
         /*origin=*/origin, content::ClearSiteDataTypeSet::All(),
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
         /*avoid_closing_connections=*/true,
@@ -934,26 +911,26 @@ IN_PROC_BROWSER_TEST_F(
 
   const struct {
     const url::Origin origin;
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key;
-    const absl::optional<blink::StorageKey> storage_key;
+    const std::optional<net::CookiePartitionKey> cookie_partition_key;
+    const std::optional<blink::StorageKey> storage_key;
     bool expects_opted_in;
   } test_cases[] = {
       {
           url::Origin::Create(kFirstPartyURL),
-          absl::nullopt,
-          absl::nullopt,
+          std::nullopt,
+          std::nullopt,
           false,
       },
       {
           url::Origin::Create(kCrossSiteURL),
-          absl::nullopt,
-          absl::nullopt,
+          std::nullopt,
+          std::nullopt,
           true,
       },
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
-          absl::nullopt,
+          std::nullopt,
           false,
       },
       {
@@ -966,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
-          absl::nullopt,
+          std::nullopt,
           true,
       },
       {
@@ -1009,7 +986,7 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
 
   void ClearSiteDataAndWait(
       const url::Origin& origin,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const std::optional<blink::StorageKey>& storage_key,
       const std::set<std::string>& storage_buckets_to_remove) {
     base::RunLoop loop;
     content::ClearSiteDataTypeSet clear_site_data_types =
@@ -1017,16 +994,12 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
     // We're clearing some storage buckets and not all of them.
     clear_site_data_types.Remove(content::ClearSiteDataType::kStorage);
     content::ClearSiteData(
-        /*browser_context_getter=*/base::BindRepeating(
-            [](content::BrowserContext* browser_context) {
-              return browser_context;
-            },
-            base::Unretained(GetBrowser()->profile())),
-        /*storage_partition_config=*/absl::nullopt,
+        GetBrowser()->profile()->GetWeakPtr(),
+        /*storage_partition_config=*/std::nullopt,
         /*origin=*/origin, clear_site_data_types,
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
         /*avoid_closing_connections=*/true,
-        /*cookie_partition_key=*/absl::nullopt,
+        /*cookie_partition_key=*/std::nullopt,
         /*storage_key=*/storage_key,
         /*partitioned_state_allowed_only=*/false,
         /*callback=*/loop.QuitClosure());
@@ -1313,7 +1286,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
 
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a time frame up until an hour ago,
@@ -1321,7 +1294,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, delete_begin,
                 TimeEnum::kLastHour);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes the current time, which should
@@ -1351,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 }
 
@@ -1389,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // As Clear Browsing Data typically deletes recent data (e.g. last hour,
@@ -1398,10 +1371,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // media license, and leave the one created by the PRE_ test.
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                 TimeEnum::kStart);
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes all time, which should
@@ -1431,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   SetDataForType(kMediaLicenseType);
 
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a deletelist that doesn't include
@@ -1444,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
 
   // Now try with a preservelist that includes the current URL. Media License
   // should not be deleted.
@@ -1454,7 +1425,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
 
   // Now try with a deletelist that includes the current URL. Media License
   // should be deleted this time.
@@ -1464,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectTotalModelCount(0, 1);
+  ExpectTotalModelCount(1);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -1511,23 +1482,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
-  // Expect all datatypes from above except SessionStorage and possibly
-  // MediaLicense. SessionStorage is not supported by the CookieTreeModel yet.
-  // MediaLicense is integrated into the quota node, which is not yet fully
-  // hooked into CookieTreeModel. When 3PSP is enabled, only Cookies and
-  // LocalStorage are counted. TODO(crbug.com/1307796): Use a different approach
-  // to determine presence of data that does not depend on UI code and has a
-  // better resolution when 3PSP is fully enabled.
-  auto expected_model_size = 3;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    expected_model_size--;
-  }
+  auto expected_model_size = 2;
   if (base::FeatureList::IsEnabled(
           browsing_data::features::kDeprecateCookiesTreeModel)) {
     expected_model_size--;
   }
-  ExpectTotalModelCount(kStorageTypes.size() - 2, expected_model_size);
+  ExpectTotalModelCount(expected_model_size);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
@@ -1578,22 +1538,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
     SetDataForType(type);
     EXPECT_TRUE(HasDataForType(type));
   }
-  // Expect the datatypes from above except SessionStorage. SessionStorage is
-  // not supported by the CookieTreeModel yet. When 3PSP is enabled, only
-  // Cookies and LocalStorage are counted. TODO(crbug.com/1307796): Use a
-  // different approach to determine presence of data that does not depend on UI
-  // code and has a better resolution when 3PSP is fully enabled.
-  auto expected_model_size = 3;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    expected_model_size--;
-  }
+
+  auto expected_model_size = 2;
   if (base::FeatureList::IsEnabled(
           browsing_data::features::kDeprecateCookiesTreeModel)) {
     expected_model_size--;
   }
-  ExpectTotalModelCount(kSessionOnlyStorageTestTypes.size() - 1,
-                        expected_model_size);
+  ExpectTotalModelCount(expected_model_size);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);

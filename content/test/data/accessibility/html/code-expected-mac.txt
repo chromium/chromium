@@ -1,3 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXStaticText AXValue='A piece of computer code'
+++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++AXStaticText AXValue='A piece of computer code'

@@ -584,7 +584,7 @@ void CaptureModeController::SetSource(CaptureModeSource source) {
 }
 
 void CaptureModeController::SetType(CaptureModeType type) {
-  if (is_recording_in_progress() && type == CaptureModeType::kVideo) {
+  if (!can_start_new_recording() && type == CaptureModeType::kVideo) {
     // Overwrite video capture types to image, as we can't have more than one
     // recording at a time.
     type = CaptureModeType::kImage;
@@ -1819,6 +1819,7 @@ void CaptureModeController::BeginVideoRecording(
     const base::FilePath& video_file_path) {
   CHECK(!video_file_path.empty());
   CHECK(IsVideoFileExtensionSupported(video_file_path));
+  CHECK(can_start_new_recording());
 
   if (!IsActive()) {
     // This function gets called asynchronously, and until it gets called, the
@@ -2069,7 +2070,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image, as we can't have more than one recording at
   // a time. The video toggle button in the capture mode bar will be disabled.
-  if (is_recording_in_progress()) {
+  if (!can_start_new_recording()) {
     SetType(CaptureModeType::kImage);
   } else if (entry_type == CaptureModeEntryType::kProjector) {
     CHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
@@ -2122,12 +2123,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
     OnVideoFileSaved(video_file_path, video_thumbnail, success, behavior);
   }
 
+  low_disk_space_threshold_reached_ = false;
+  recording_start_time_ = base::TimeTicks();
+
   for (auto& observer : observers_) {
     observer.OnVideoFileFinalized(should_delete_file, video_thumbnail);
   }
-
-  low_disk_space_threshold_reached_ = false;
-  recording_start_time_ = base::TimeTicks();
 }
 
 void CaptureModeController::CaptureInstantScreenshot(

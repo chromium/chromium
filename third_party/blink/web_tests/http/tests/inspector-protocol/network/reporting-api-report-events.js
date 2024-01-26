@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, dp} = await testRunner.startBlank(
       `Tests ReportingApiReportAdded and ReportingApiReportUpdated events.\n`);
   await dp.Network.enable();

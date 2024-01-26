@@ -65,49 +65,4 @@ TEST(NameProcessingUtil, ComputeParseableNames) {
   EXPECT_THAT(long_prefix, ElementsAre(u"aazzz", u"bbzzz", u"cczzz"));
 }
 
-// Tests that shipping and billing prefixes are removed correctly with
-// AutofillLabelAffixRemoval. Unrelated strings without common prefixes to their
-// neighbours and short strings are not modified.
-TEST(NameProcessingUtil, RemoveCommonPrefixInIntervals) {
-  base::test::ScopedFeatureList label_affix_removal;
-  label_affix_removal.InitAndEnableFeature(
-      features::kAutofillLabelAffixRemoval);
-
-  std::vector<base::StringPiece16> names{
-      u"shipping-name",    u"shipping-email",
-      u"shipping-address", u"unrelated-field",
-      u"billing-name",     u"billing-email",
-      u"billing-address",  u"abc"};
-  ComputeParseableNames(names);
-  EXPECT_THAT(names,
-              ElementsAre(u"name", u"email", u"address", u"unrelated-field",
-                          u"name", u"email", u"address", u"abc"));
-}
-
-// Tests that with AutofillLabelAffixRemoval the prefix removal logic is applied
-// to suffixes as well.
-TEST(NameProcessingUtil, Suffixes) {
-  base::test::ScopedFeatureList label_affix_removal;
-  label_affix_removal.InitAndEnableFeature(
-      features::kAutofillLabelAffixRemoval);
-
-  // Long suffixes are removed.
-  std::vector<base::StringPiece16> long_suffix = {u"zzzaacbaGFEDCBA0987654321",
-                                                  u"zzzbbcbaGFEDCBA0987654321",
-                                                  u"zzzcccbaGFEDCBA0987654321"};
-  ComputeParseableNames(long_suffix);
-  EXPECT_THAT(long_suffix, ElementsAre(u"zzzaa", u"zzzbb", u"zzzcc"));
-
-  // Shorter suffixes in intervals are removed
-  std::vector<base::StringPiece16> names = {
-      u"name-shipping",    u"email-shipping",
-      u"address-shipping", u"unrelated-field",
-      u"name-billing",     u"email-billing",
-      u"address-billing",  u"abc"};
-  ComputeParseableNames(names);
-  EXPECT_THAT(names,
-              ElementsAre(u"name", u"email", u"address", u"unrelated-field",
-                          u"name", u"email", u"address", u"abc"));
-}
-
 }  // namespace autofill

@@ -1639,6 +1639,11 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
 
   // Asynchronously delete the prerender host.
   to_be_deleted_hosts_.push_back(std::move(prerender_host));
+
+  // A task has already been scheduled to delete the abandoned hosts.
+  if (to_be_deleted_hosts_.size() > 1) {
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PrerenderHostRegistry::DeleteAbandonedHosts,
                                 weak_factory_.GetWeakPtr()));

@@ -98,25 +98,12 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
                                      const std::string& ui_language_code,
                                      bool include_address_and_contacts);
 
-// Fields in order they should appear in differences for AutofillProfile update.
-static constexpr FieldType kVisibleTypesForProfileDifferences[] = {
-    NAME_FULL_WITH_HONORIFIC_PREFIX,
-    COMPANY_NAME,
-    ADDRESS_HOME_STREET_ADDRESS,
-    ADDRESS_HOME_DEPENDENT_LOCALITY,
-    ADDRESS_HOME_CITY,
-    ADDRESS_HOME_STATE,
-    ADDRESS_HOME_ZIP,
-    ADDRESS_HOME_COUNTRY,
-    EMAIL_ADDRESS,
-    PHONE_HOME_WHOLE_NUMBER};
-
 // Gets the difference of two profiles in name, address, email and phone number
 // in that order. Differences in name, email and phone number are computed and
-// keyed by NAME_FULL_WITH_HONORIFIC_PREFIX, EMAIL_ADDRESS and
-// PHONE_HOME_WHOLE_NUMBER respectively. Address differences are computed by
-// difference in the envelope style address of both profile, and keyed by
-// ADDRESS_HOME_ADDRESS. All computations are done against `app_locale`.
+// keyed by NAME_FULL, EMAIL_ADDRESS and  PHONE_HOME_WHOLE_NUMBER respectively.
+// Address differences are computed by difference in the envelope style address
+// of both profile, and keyed by ADDRESS_HOME_ADDRESS. All computations are done
+// against `app_locale`.
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,

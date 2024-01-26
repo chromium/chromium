@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/overlays/model/public/overlay_browser_agent_base.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
@@ -105,7 +106,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext presentation_context_;
 };

@@ -20,8 +20,7 @@ namespace {
 
 const CSSPrimitiveValue* ComputeResolution(
     const CSSPrimitiveValue& resolution) {
-  if (RuntimeEnabledFeatures::CSSImageSetEnabled() &&
-      resolution.IsResolution()) {
+  if (resolution.IsResolution()) {
     return CSSNumericLiteralValue::Create(
         resolution.ComputeDotsPerPixel(),
         CSSPrimitiveValue::UnitType::kDotsPerPixel);

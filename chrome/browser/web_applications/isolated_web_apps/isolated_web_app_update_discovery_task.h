@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -88,7 +88,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   void GetDownloadPath(UpdateManifest::VersionEntry version_entry);
 
   void OnGetDownloadPath(UpdateManifest::VersionEntry version_entry,
-                         absl::optional<base::FilePath> download_path);
+                         std::optional<base::FilePath> download_path);
 
   void OnWebBundleDownloaded(const base::FilePath& download_path,
                              const base::Version& expected_version,

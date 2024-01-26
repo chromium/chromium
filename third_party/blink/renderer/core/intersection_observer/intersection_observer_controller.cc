@@ -182,25 +182,17 @@ void IntersectionObserverController::RemoveTrackedObservation(
   tracked_implicit_root_observations_.erase(&observation);
 }
 
-bool IntersectionObserverController::InvalidateCachedRectsIfNeeded() {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return false;
-  }
-  bool invalidated_cached_rects = false;
+void IntersectionObserverController::
+    InvalidateCachedRectsIfPaintPropertiesChanged() {
+  DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
   for (auto& observer : tracked_explicit_root_observers_) {
-    if (observer->NeedsOcclusionTracking()) {
-      invalidated_cached_rects = true;
-    } else {
-      for (auto& observation : observer->Observations()) {
-        invalidated_cached_rects |=
-            observation->InvalidateCachedRectsIfNeeded();
-      }
+    for (auto& observation : observer->Observations()) {
+      observation->InvalidateCachedRectsIfPaintPropertiesChanged();
     }
   }
   for (auto& observation : tracked_implicit_root_observations_) {
-    invalidated_cached_rects |= observation->InvalidateCachedRectsIfNeeded();
+    observation->InvalidateCachedRectsIfPaintPropertiesChanged();
   }
-  return invalidated_cached_rects;
 }
 
 void IntersectionObserverController::Trace(Visitor* visitor) const {

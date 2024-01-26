@@ -373,7 +373,7 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
   void TearDownInProcessBrowserTestFixture() override {
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 
   class CRSWaiter {

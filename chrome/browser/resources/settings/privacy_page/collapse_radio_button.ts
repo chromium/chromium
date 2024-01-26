@@ -8,11 +8,11 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 
-import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './collapse_radio_button.html.js';
 
@@ -22,11 +22,7 @@ export interface SettingsCollapseRadioButtonElement {
   };
 }
 const SettingsCollapseRadioButtonElementBase =
-    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & CrRadioButtonMixinInterface &
-          PaperRippleBehavior,
-    };
+    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
 
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
@@ -119,7 +115,7 @@ export class SettingsCollapseRadioButtonElement extends
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleBehavior
+  // Overridden from PaperRippleMixin
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {
     this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');

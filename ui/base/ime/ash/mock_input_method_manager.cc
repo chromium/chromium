@@ -199,7 +199,7 @@ std::string MockInputMethodManager::GetMigratedInputMethodID(
   return "";
 }
 
-bool MockInputMethodManager::MigrateInputMethods(
+bool MockInputMethodManager::GetMigratedInputMethodIDs(
     std::vector<std::string>* input_method_ids) {
   return false;
 }

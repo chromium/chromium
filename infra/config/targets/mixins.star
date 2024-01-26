@@ -176,6 +176,7 @@ targets.mixin(
 
 targets.mixin(
     name = "14-x64-emulator",
+    description = "Run with android_34_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
     ],
@@ -219,6 +220,15 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "device_os": "TP1A.220624.021",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "android_u",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "UQ1A.240105.002",
         },
     ),
 )
@@ -1592,8 +1602,8 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1630,7 +1640,7 @@ targets.mixin(
         dimensions = {
             "cpu": "arm64",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64",
+            "pool": "chrome.tests",
             # Qualcomm Adreno 690.
             "gpu": "qcom:043a",
             # Currently used to limit testing to the homogenous fleet. Can be

@@ -50,6 +50,18 @@ FakeAutocompleteController::FakeAutocompleteController(
 
 FakeAutocompleteController::~FakeAutocompleteController() = default;
 
+// static
+AutocompleteInput FakeAutocompleteController::CreateInput(
+    std::u16string text,
+    bool omit_async,
+    bool prevent_inline_autocomplete) {
+  AutocompleteInput input(text, 0, metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_omit_asynchronous_matches(omit_async);
+  input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
+  return input;
+}
+
 std::vector<std::string> FakeAutocompleteController::SimulateAutocompletePass(
     bool sync,
     bool done,
@@ -89,15 +101,6 @@ std::vector<std::string> FakeAutocompleteController::SimulateExpirePass() {
   UpdateResult(AutocompleteController::UpdateType::kExpirePass);
   ExpectOnResultChanged(200, AutocompleteController::UpdateType::kExpirePass);
   return GetResultContents(true);
-}
-
-// static
-AutocompleteInput FakeAutocompleteController::CreateInput(std::u16string text,
-                                                          bool omit_async) {
-  AutocompleteInput input(text, 0, metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_omit_asynchronous_matches(omit_async);
-  return input;
 }
 
 std::vector<std::string> FakeAutocompleteController::GetResultContents(

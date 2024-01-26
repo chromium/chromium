@@ -46,6 +46,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -3136,9 +3137,11 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(frame_->IsOutermostMainFrame()
                  ? WebFeature::kSharedDictionaryUsedForMainFrameNavigation
                  : WebFeature::kSharedDictionaryUsedForSubFrameNavigation);
-    if (content_encoding.LowerASCII() == "sbr") {
+    if (content_encoding.LowerASCII() ==
+        network::GetSharedBrotliContentEncodingName()) {
       CountUse(WebFeature::kSharedDictionaryUsedWithSharedBrotli);
-    } else if (content_encoding.LowerASCII() == "zstd-d") {
+    } else if (content_encoding.LowerASCII() ==
+               network::GetSharedZstdContentEncodingName()) {
       CountUse(WebFeature::kSharedDictionaryUsedWithSharedZstd);
     }
   }

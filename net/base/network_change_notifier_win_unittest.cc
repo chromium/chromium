@@ -73,11 +73,6 @@ class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
   MOCK_METHOD0(OnIPAddressChanged, void());
 };
 
-bool ExitMessageLoopAndReturnFalse() {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  return false;
-}
-
 class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
  public:
   // Calls WatchForAddressChange, and simulates a WatchForAddressChangeInternal
@@ -195,6 +190,7 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
   // failure.  Simulates a failure on the resulting call to
   // WatchForAddressChangeInternal.
   void RetryAndFail() {
+    base::RunLoop loop;
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(0, network_change_notifier_.sequential_failures());
 
@@ -206,9 +202,12 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
         .Times(AtLeast(1))
-        .WillRepeatedly(Invoke(ExitMessageLoopAndReturnFalse));
+        .WillRepeatedly(Invoke([&loop]() {
+          loop.QuitWhenIdle();
+          return false;
+        }));
 
-    base::RunLoop().Run();
+    loop.Run();
 
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(initial_sequential_failures,

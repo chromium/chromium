@@ -43,6 +43,7 @@ class RoundedCornersF;
 }  // namespace gfx
 
 namespace ui {
+class MouseEvent;
 class OSExchangeData;
 struct OwnedWindowAnchor;
 }  // namespace ui
@@ -54,7 +55,6 @@ class MenuControllerTest;
 class MenuHostRootView;
 class MenuItemView;
 class MenuPreTargetHandler;
-class MouseEvent;
 class SubmenuView;
 class View;
 class ViewTracker;

@@ -1434,13 +1434,14 @@ export class FileManager {
     }
 
     // Check directory change.
-    tracker.stop();
     if (!tracker.hasChanged) {
       // Finish setup current directory.
       await this.finishSetupCurrentDirectory_(
           (nextCurrentDirEntry as DirectoryEntry), selectionEntry,
           this.launchParams_.targetName);
     }
+    // Only stop the tracker after finishing the directory change.
+    tracker.stop();
   }
 
   /**
@@ -1710,7 +1711,7 @@ export class FileManager {
     if (!isXfTree(this.ui_.directoryTree)) {
       this.ui_.directoryTree!.dataModel.fakeTrashItem = null;
     }
-    this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_);
+    this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_?.entry || null);
   }
 
   /**
@@ -1718,9 +1719,10 @@ export class FileManager {
    * updated.
    */
   private toggleDriveRootOnPreferencesUpdate_() {
+    let driveFakeRoot: EntryList|FakeEntry|null =
+        getEntry(this.store_.getState(), driveRootEntryListKey) as EntryList |
+        null;
     if (this.driveEnabled_) {
-      let driveFakeRoot =
-          getEntry(this.store_.getState(), driveRootEntryListKey) as EntryList;
       if (!driveFakeRoot) {
         driveFakeRoot = new EntryList(
             str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
@@ -1746,18 +1748,19 @@ export class FileManager {
     assert(this.ui.directoryTree);
     if (!isXfTree(this.ui.directoryTree)) {
       this.ui.directoryTree!.dataModel.fakeDriveItem = null;
+      this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_?.entry || null);
+    } else {
+      this.navigateAwayFromDisabledRoot_(driveFakeRoot);
     }
-    this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_);
   }
 
   /**
    * If the root item has been disabled but it is the current visible entry,
    * navigate away from it to the default display root.
-   * @param rootItem The item to navigate away from.
+   * @param entry The entry to navigate away from.
    */
-  private navigateAwayFromDisabledRoot_(rootItem: null|
-                                        NavigationModelFakeItem) {
-    if (!rootItem) {
+  private navigateAwayFromDisabledRoot_(entry: null|Entry|FilesAppEntry) {
+    if (!entry) {
       return;
     }
 
@@ -1765,9 +1768,9 @@ export class FileManager {
     assert(this.volumeManager_);
     // The fake root item is being hidden so navigate away if it's the
     // current directory.
-    if (this.directoryModel_.getCurrentDirEntry() === rootItem.entry) {
+    if (this.directoryModel_.getCurrentDirEntry() === entry) {
       this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
-        if (this.directoryModel_!.getCurrentDirEntry() === rootItem.entry &&
+        if (this.directoryModel_!.getCurrentDirEntry() === entry &&
             displayRoot) {
           this.directoryModel_!.changeDirectoryEntry(displayRoot);
         }

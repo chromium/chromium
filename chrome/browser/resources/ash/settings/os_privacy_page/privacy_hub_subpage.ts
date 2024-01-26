@@ -152,6 +152,29 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
+      cameraFallbackMechanismEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      cameraRowSubtext_: {
+        type: String,
+        computed: 'computeCameraRowSubtext_(cameraFallbackMechanismEnabled_, ' +
+            'prefs.ash.user.camera_allowed.*)',
+      },
+
+      microphoneRowSubtext_: {
+        type: String,
+        computed: 'computeMicrophoneRowSubtext_(' +
+            'prefs.ash.user.microphone_allowed.*)',
+      },
+
+      microphoneToggleTooltipText_: {
+        type: String,
+        computed: 'computeMicrophoneToggleTooltipText_(isMicListEmpty_, ' +
+            'microphoneHardwareToggleActive_)',
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -169,11 +192,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private browserProxy_: PrivacyHubBrowserProxy;
+  private cameraFallbackMechanismEnabled_: boolean;
+  private cameraRowSubtext_: string;
   private cameraSubLabel_: string;
   private camerasConnected_: string[];
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private isHatsSurveyEnabled_: boolean;
+  private microphoneRowSubtext_: string;
   private microphonesConnected_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
@@ -211,6 +237,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         });
 
     this.browserProxy_.getCameraLedFallbackState().then((enabled) => {
+      this.cameraFallbackMechanismEnabled_ = enabled;
       this.setCameraSubLabel_(enabled);
     });
 
@@ -333,6 +360,41 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         Object.keys(PrivacyHubSensorSubpageUserAction).length);
 
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
+  }
+
+  private computeCameraRowSubtext_(): string {
+    // Note: `this.getPref()` will assert the queried pref exists, but the prefs
+    // property may not be initialized yet when this element runs the first
+    // computation of this method. Ensure prefs is initialized first.
+    if (!this.prefs) {
+      return '';
+    }
+
+    const cameraAllowed = this.getPref<string>('ash.user.camera_allowed').value;
+    if (cameraAllowed) {
+      return this.cameraFallbackMechanismEnabled_ ?
+          this.i18n('privacyHubPageCameraRowFallbackSubtext') :
+          this.i18n('privacyHubPageCameraRowSubtext');
+    }
+    return this.i18n('privacyHubCameraAccessBlockedText');
+  }
+
+  private computeMicrophoneRowSubtext_(): string {
+    const microphoneAllowed =
+        this.getPref<string>('ash.user.microphone_allowed').value;
+    return microphoneAllowed ?
+        this.i18n('privacyHubPageMicrophoneRowSubtext') :
+        this.i18n('privacyHubMicrophoneAccessBlockedText');
+  }
+
+  private computeMicrophoneToggleTooltipText_(): string {
+    if (this.isMicListEmpty_) {
+      return this.i18n('privacyHubNoMicrophoneConnectedTooltipText');
+    } else if (this.microphoneHardwareToggleActive_) {
+      return this.i18n('microphoneHwToggleTooltip');
+    } else {
+      return '';
+    }
   }
 }
 

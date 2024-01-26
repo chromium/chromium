@@ -27,7 +27,8 @@ struct PasswordForm;
 namespace password_manager::metrics_util {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Needs to stay in sync with the
+// PasswordBubbleDisplayDisposition enum in enums.xml.
 // Metrics: "PasswordBubble.DisplayDisposition"
 enum UIDisplayDisposition {
   AUTOMATIC_WITH_PASSWORD_PENDING = 0,
@@ -574,7 +575,8 @@ enum class PasswordManagementBubbleInteractions {
   kNoteFullySelected = 14,
   kNotePartiallyCopied = 15,
   kNoteFullyCopied = 16,
-  kMaxValue = kNoteFullyCopied,
+  kMovePasswordLinkClicked = 17,
+  kMaxValue = kMovePasswordLinkClicked,
 };
 
 // Represents different causes for showing the password migration warning.
@@ -816,7 +818,8 @@ void LogNewlySavedPasswordMetrics(
     bool is_generated_password,
     bool is_username_empty,
     password_manager::features_util::PasswordAccountStorageUsageLevel
-        account_storage_usage_level);
+        account_storage_usage_level,
+    ukm::SourceId ukm_source_id);
 
 // Log whether the generated password was accepted or rejected for generation of
 // |type| (automatic or manual).

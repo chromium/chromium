@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_COMPONENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -24,6 +25,17 @@ inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
 class OnDeviceModelComponentState;
+
+// Wraps the specification needed to determine compatibility of the
+// on-device base model with any feature specific code.
+struct OnDeviceBaseModelSpec {
+  // The name of the base model currently available on-device.
+  std::string model_name;
+  // The version of the base model currently available on-device.
+  std::string model_version;
+  // Note that we may need to read the manifest and expose additional
+  // information for b/310740288 beyond the name and version in the future.
+};
 
 // Manages the state of the on-device component.
 // This object needs to have lifetime equal to the browser process. This is
@@ -85,6 +97,9 @@ class OnDeviceModelComponentStateManager
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
+  // Returns the last cached BaseModelSpec.
+  const std::optional<OnDeviceBaseModelSpec> GetCachedBaseModelSpec();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -140,6 +155,9 @@ class OnDeviceModelComponentStateManager
 
   void NotifyStateChanged();
 
+  // Should be called whenever the BaseModelSpec changes.
+  void UpdateOnDeviceBaseModelSpecCache();
+
   raw_ptr<PrefService> local_state_;
   std::unique_ptr<Delegate> delegate_;
   base::ObserverList<Observer> observers_;
@@ -159,18 +177,21 @@ class OnDeviceModelComponentState {
   ~OnDeviceModelComponentState();
 
   const base::FilePath& GetInstallDirectory() const { return install_dir_; }
-  const base::Version& GetVersion() const { return version_; }
+  const base::Version& GetComponentVersion() const {
+    return component_version_;
+  }
+  const std::optional<OnDeviceBaseModelSpec>& GetBaseModelSpec() const {
+    return model_spec_;
+  }
 
  private:
   OnDeviceModelComponentState();
   friend class OnDeviceModelComponentStateManager;
 
   base::FilePath install_dir_;
-  base::Version version_;
-  // Note that we'll need to read the manifest and expose additional
-  // information for b/310740288.
+  base::Version component_version_;
+  std::optional<OnDeviceBaseModelSpec> model_spec_;
 };
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_COMPONENT_H_

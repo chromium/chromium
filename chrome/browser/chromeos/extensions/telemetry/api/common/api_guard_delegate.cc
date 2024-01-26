@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -66,7 +66,7 @@ using CheckCallback = base::OnceCallback<void(bool)>;
 class AsyncConditionChecker {
  public:
   explicit AsyncConditionChecker(
-      base::OnceCallback<void(absl::optional<std::string>)> result_callback);
+      base::OnceCallback<void(std::optional<std::string>)> result_callback);
   AsyncConditionChecker(AsyncConditionChecker&) = delete;
   AsyncConditionChecker& operator=(AsyncConditionChecker&) = delete;
   ~AsyncConditionChecker();
@@ -88,7 +88,7 @@ class AsyncConditionChecker {
  private:
   void OnCheckFinished(const std::string& error_message, bool result);
 
-  base::OnceCallback<void(absl::optional<std::string>)> result_callback_;
+  base::OnceCallback<void(std::optional<std::string>)> result_callback_;
   base::queue<std::pair<base::OnceCallback<void(CheckCallback)>, std::string>>
       callback_queue_;
 
@@ -96,7 +96,7 @@ class AsyncConditionChecker {
 };
 
 AsyncConditionChecker::AsyncConditionChecker(
-    base::OnceCallback<void(absl::optional<std::string>)> result_callback)
+    base::OnceCallback<void(std::optional<std::string>)> result_callback)
     : result_callback_(std::move(result_callback)) {}
 
 AsyncConditionChecker::~AsyncConditionChecker() = default;
@@ -121,7 +121,7 @@ void AsyncConditionChecker::AppendChecker(
 
 void AsyncConditionChecker::Run() {
   if (callback_queue_.empty()) {
-    std::move(result_callback_).Run(absl::nullopt);
+    std::move(result_callback_).Run(std::nullopt);
     return;
   }
 

@@ -678,7 +678,7 @@ ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
                 "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
                 base::TimeTicks::Now() - start_time);
 
-            resolver->Resolve(bits);
+            resolver->Resolve<IDLDouble>(bits);
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 
@@ -706,7 +706,8 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
 
   base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
                             true);
-  return ScriptValue::From(script_state, embedder_context);
+  return ScriptValue(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), embedder_context));
 }
 
 // This C++ overload is called by JavaScript:

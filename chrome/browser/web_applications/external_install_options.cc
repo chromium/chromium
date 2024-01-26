@@ -20,7 +20,7 @@ namespace web_app {
 
 ExternalInstallOptions::ExternalInstallOptions(
     const GURL& install_url,
-    absl::optional<mojom::UserDisplayMode> user_display_mode,
+    std::optional<mojom::UserDisplayMode> user_display_mode,
     ExternalInstallSource install_source)
     : install_url(install_url),
       user_display_mode(user_display_mode),

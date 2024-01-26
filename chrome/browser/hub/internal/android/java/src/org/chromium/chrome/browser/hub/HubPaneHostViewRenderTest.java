@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.app.Activity;
@@ -42,6 +43,7 @@ public class HubPaneHostViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
+                    .setRevision(2)
                     .build();
 
     private Activity mActivity;
@@ -72,15 +74,32 @@ public class HubPaneHostViewRenderTest {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
-        FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, () -> {});
+        FullButtonData enabledButtonData = new DelegateButtonData(displayButtonData, () -> {});
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(mActivity);
                     View rootView = solidColorView(defaultBgColor);
+                    mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
                     mPropertyModel.set(PANE_ROOT_VIEW, rootView);
-                    mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
+                    mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
                 });
-        mRenderTestRule.render(mPaneHost, "greenAndButton");
+        mRenderTestRule.render(mPaneHost, "defaultButton");
+
+        FullButtonData disabledButtonData = new DelegateButtonData(displayButtonData, () -> {});
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPropertyModel.set(ACTION_BUTTON_DATA, disabledButtonData));
+        mRenderTestRule.render(mPaneHost, "disabledButton");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                    mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
+                });
+        mRenderTestRule.render(mPaneHost, "incognitoButton");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPropertyModel.set(ACTION_BUTTON_DATA, disabledButtonData));
+        mRenderTestRule.render(mPaneHost, "disabledIncognitoButton");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

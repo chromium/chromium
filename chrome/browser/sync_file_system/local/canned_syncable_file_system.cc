@@ -533,7 +533,7 @@ void CannedSyncableFileSystem::DoOpenFileSystem(
   EXPECT_FALSE(is_filesystem_opened_);
   file_system_context_->OpenFileSystem(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
-      /*bucket=*/absl::nullopt, type_,
+      /*bucket=*/std::nullopt, type_,
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, std::move(callback));
 }
 

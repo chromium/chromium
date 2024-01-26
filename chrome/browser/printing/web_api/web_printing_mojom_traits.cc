@@ -22,6 +22,9 @@ using printing::mojom::DuplexMode;
 using MultipleDocumentHandling =
     blink::mojom::WebPrintingMultipleDocumentHandling;
 
+// orientation-requested:
+using OrientationRequested = blink::mojom::WebPrintingOrientationRequested;
+
 // print-color-mode:
 using PrintColorMode = blink::mojom::WebPrintColorMode;
 using printing::mojom::ColorModel;
@@ -193,6 +196,16 @@ bool StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
     }
     if (duplex_mode) {
       settings->set_duplex_mode(*duplex_mode);
+    }
+  }
+  if (auto orientation = data.orientation_requested()) {
+    switch (*orientation) {
+      case OrientationRequested::kPortrait:
+        settings->SetOrientation(/*landscape=*/false);
+        break;
+      case OrientationRequested::kLandscape:
+        settings->SetOrientation(/*landscape=*/true);
+        break;
     }
   }
   if (auto mdh = data.multiple_document_handling()) {

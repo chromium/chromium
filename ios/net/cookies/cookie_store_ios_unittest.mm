@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -18,7 +19,7 @@
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_store_change_unittest.h"
 #include "net/cookies/cookie_store_unittest.h"
@@ -203,7 +204,7 @@ class CookieStoreIOSTest : public PlatformTest {
   // |system_store_| will point to the NSHTTPSystemCookieStore object owned by
   // |store_|. Once the store_ object is deleted the NSHTTPSystemCookieStore
   // object will be deleted.
-  net::SystemCookieStore* system_store_;
+  raw_ptr<net::SystemCookieStore> system_store_;
   std::unique_ptr<net::CookieStoreIOS> store_;
   std::unique_ptr<net::CookieChangeSubscription> cookie_change_subscription_;
   std::vector<net::CanonicalCookie> cookies_changed_;

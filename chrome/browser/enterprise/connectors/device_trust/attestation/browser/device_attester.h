@@ -41,13 +41,13 @@ class DeviceAttester : public Attester {
   // `done_closure` to indicate completion.
   void OnPublicKeyExported(KeyInfo& key_info,
                            base::OnceClosure done_closure,
-                           absl::optional<std::string> exported_key);
+                           std::optional<std::string> exported_key);
 
   // Adds the `signed_response` to the `signed_data` and invokes the
   // `done_closure` to indicate completion.
   void OnResponseSigned(SignedData& signed_data,
                         base::OnceClosure done_closure,
-                        absl::optional<std::vector<uint8_t>> signed_response);
+                        std::optional<std::vector<uint8_t>> signed_response);
 
   // Owned by the CBCMController, which is eventually owned by the browser
   // process. Since the current service is owned at the profile level, this

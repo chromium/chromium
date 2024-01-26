@@ -24,7 +24,7 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
 }
 
 void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
-                                    absl::optional<int> address_family,
+                                    std::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(STATE_CREATED, state_);

@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
@@ -63,7 +62,6 @@ namespace ash {
 
 class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
-class ArcKioskAppManager;
 class AudioSurveyHandler;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
@@ -78,6 +76,7 @@ class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class HatsBluetoothRevampTriggerImpl;
 class IdleActionWarningObserver;
+class KioskController;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
@@ -97,8 +96,6 @@ class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
-class WebKioskAppManager;
-class KioskChromeAppManager;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -218,9 +215,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
 
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
-  std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
-  std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
-  std::unique_ptr<KioskChromeAppManager> kiosk_chrome_app_manager_;
   std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 

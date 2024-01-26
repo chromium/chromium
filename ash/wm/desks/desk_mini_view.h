@@ -11,7 +11,6 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +27,6 @@ class DeskActionView;
 class DeskBarViewBase;
 class DeskNameView;
 class DeskPreviewView;
-class DeskProfilesTest;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -167,14 +165,13 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
  private:
   friend class DesksTestApi;
-  FRIEND_TEST_ALL_PREFIXES(DeskProfilesTest, DeskProfilesButtonClickMetrics);
-
-  // Function to force show desk profiles button for testing.
-  static base::AutoReset<bool> SetShouldShowDeskProfilesButtonForTesting();
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
   // visible.
   void OnContextMenuClosed();
+
+  // Callback for when a user selects a lacros profile from `context_menu_`.
+  void OnSetLacrosProfileId(uint64_t lacros_profile_id);
 
   void OnDeskPreviewPressed();
 

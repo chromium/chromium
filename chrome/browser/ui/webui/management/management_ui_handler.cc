@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -220,6 +223,10 @@ const char kManagementReportPrintJobs[] = "managementReportPrintJobs";
 const char kManagementReportLoginLogout[] = "managementReportLoginLogout";
 const char kManagementReportCRDSessions[] = "managementReportCRDSessions";
 const char kManagementReportDlpEvents[] = "managementReportDlpEvents";
+const char kManagementReportAllWebsiteInfoAndActivity[] =
+    "managementReportAllWebsiteInfoAndActivity";
+const char kManagementReportWebsiteInfoAndActivity[] =
+    "managementReportWebsiteInfoAndActivity";
 const char kManagementOnFileTransferEvent[] = "managementOnFileTransferEvent";
 const char kManagementOnFileTransferVisibleData[] =
     "managementOnFileTransferVisibleData";
@@ -261,6 +268,7 @@ enum class DeviceReportingType {
   kCRDSessions,
   kPeripherals,
   kLegacyTech,
+  kWebsiteInfoAndActivity,
 };
 
 #else
@@ -313,18 +321,34 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return "peripherals";
     case DeviceReportingType::kLegacyTech:
       return kReportingTypeLegacyTech;
+    case DeviceReportingType::kWebsiteInfoAndActivity:
+      return "website info and activity";
     default:
       NOTREACHED() << "Unknown device reporting type";
       return "device";
   }
 }
 
-void AddDeviceReportingElement(base::Value::List* report_sources,
-                               const std::string& message_id,
-                               const DeviceReportingType& type) {
+std::string GetWebsiteReportingAllowlistMessageParam(
+    const base::Value::List& url_allowlist) {
+  std::vector<std::string> url_patterns;
+  for (const base::Value& pattern_value : url_allowlist) {
+    url_patterns.push_back(pattern_value.GetString());
+  }
+
+  return base::JoinString(url_patterns, ", ");
+}
+
+void AddDeviceReportingElement(
+    base::Value::List* report_sources,
+    const std::string& message_id,
+    const DeviceReportingType& type,
+    base::Value::List message_params = base::Value::List()) {
   base::Value::Dict data;
   data.Set("messageId", message_id);
   data.Set("reportingType", ToJSDeviceReportingType(type));
+  data.Set("messageParams", std::move(message_params));
+
   report_sources->Append(std::move(data));
 }
 
@@ -485,6 +509,43 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   if (report_crd_sessions) {
     AddDeviceReportingElement(report_sources, kManagementReportCRDSessions,
                               DeviceReportingType::kCRDSessions);
+  }
+
+  const auto wildcard_pattern_string =
+      ContentSettingsPattern::Wildcard().ToString();
+  const auto& website_telemetry_types =
+      profile->GetPrefs()->GetList(::reporting::kReportWebsiteTelemetry);
+  const auto& website_telemetry_allowlist = profile->GetPrefs()->GetList(
+      ::reporting::kReportWebsiteTelemetryAllowlist);
+  const auto& website_activity_allowlist = profile->GetPrefs()->GetList(
+      ::reporting::kReportWebsiteActivityAllowlist);
+  if (base::Contains(website_activity_allowlist, wildcard_pattern_string) ||
+      (!website_telemetry_types.empty() &&
+       base::Contains(website_telemetry_allowlist, wildcard_pattern_string))) {
+    // One or more website metrics reporting policies allowlists all website
+    // URLs.
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportAllWebsiteInfoAndActivity,
+                              DeviceReportingType::kWebsiteInfoAndActivity);
+  } else if (!website_activity_allowlist.empty()) {
+    // Admin defined subset of URLs allowlisted for website activity reporting.
+    base::Value::List message_params;
+    message_params.Append(
+        GetWebsiteReportingAllowlistMessageParam(website_activity_allowlist));
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportWebsiteInfoAndActivity,
+                              DeviceReportingType::kWebsiteInfoAndActivity,
+                              std::move(message_params));
+  } else if (!website_telemetry_types.empty() &&
+             !website_telemetry_allowlist.empty()) {
+    // Admin defined subset of URLs allowlisted for website telemetry reporting.
+    base::Value::List message_params;
+    message_params.Append(
+        GetWebsiteReportingAllowlistMessageParam(website_telemetry_allowlist));
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportWebsiteInfoAndActivity,
+                              DeviceReportingType::kWebsiteInfoAndActivity,
+                              std::move(message_params));
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

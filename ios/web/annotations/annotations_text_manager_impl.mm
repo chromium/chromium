@@ -6,6 +6,7 @@
 
 #import "base/strings/string_util.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -17,7 +18,10 @@ namespace web {
 static const int kMaxAnnotationsTextLength = 65535;
 
 AnnotationsTextManagerImpl::AnnotationsTextManagerImpl(WebState* web_state)
-    : web_state_(web_state), seq_id_(1) {
+    : web_state_(web_state),
+      seq_id_(1),
+      is_viewport_extraction_(
+          base::FeatureList::IsEnabled(features::kEnableViewportIntents)) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 }
@@ -41,11 +45,11 @@ void AnnotationsTextManagerImpl::DecorateAnnotations(WebState* web_state,
                                                      int seq_id) {
   DCHECK_EQ(web_state_, web_state);
   // This can happen if `RemoveDecorations` is called before this is called.
-  if (seq_id != seq_id_) {
+  if (!is_viewport_extraction_ && seq_id != seq_id_) {
     return;
   }
-  AnnotationsJavaScriptFeature::GetInstance()->DecorateAnnotations(web_state_,
-                                                                   annotations);
+  AnnotationsJavaScriptFeature::GetInstance()->DecorateAnnotations(
+      web_state_, annotations, seq_id);
 }
 
 void AnnotationsTextManagerImpl::RemoveDecorations() {
@@ -103,7 +107,7 @@ void AnnotationsTextManagerImpl::OnTextExtracted(
     const std::string& text,
     int seq_id,
     const base::Value::Dict& metadata) {
-  if (!web_state_ || seq_id != seq_id_) {
+  if (!web_state_ || (!is_viewport_extraction_ && seq_id != seq_id_)) {
     return;
   }
   DCHECK(web_state_ == web_state);
@@ -112,15 +116,19 @@ void AnnotationsTextManagerImpl::OnTextExtracted(
   }
 }
 
-void AnnotationsTextManagerImpl::OnDecorated(WebState* web_state,
-                                             int successes,
-                                             int annotations) {
+void AnnotationsTextManagerImpl::OnDecorated(
+    WebState* web_state,
+    int annotations,
+    int successes,
+    int failures,
+    const base::Value::List& cancelled) {
   if (!web_state_) {
     return;
   }
   DCHECK(web_state_ == web_state);
   for (auto& observer : observers_) {
-    observer.OnDecorated(web_state, successes, annotations);
+    observer.OnDecorated(web_state, annotations, successes, failures,
+                         cancelled);
   }
 }
 

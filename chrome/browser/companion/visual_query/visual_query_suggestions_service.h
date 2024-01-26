@@ -21,7 +21,7 @@ class OptimizationGuideModelProvider;
 namespace companion::visual_query {
 
 using ModelMetadata =
-    absl::optional<optimization_guide::proto::VisualSearchModelMetadata>;
+    std::optional<optimization_guide::proto::VisualSearchModelMetadata>;
 
 class VisualQuerySuggestionsService
     : public KeyedService,
@@ -72,7 +72,7 @@ class VisualQuerySuggestionsService
   std::vector<ModelUpdateCallback> model_callbacks_;
 
   // Represents the model that we send to the classifier agent.
-  absl::optional<base::File> model_file_;
+  std::optional<base::File> model_file_;
 
   // Used to store the model metadata returned from model provider.
   ModelMetadata model_metadata_;

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">앞으로</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
+<translation id="1626590945318984973">단축키를 사용할 수 없습니다. 기능 키와 <ph name="META_KEY" /> 키를 사용하지 않고 새로운 단축키를 누르세요.</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1641857168437328880">서류 급지(단면)</translation>
 <translation id="1643449475550628585">매일 배경화면 이미지 변경</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">어두운 모드 사용 중지</translation>
 <translation id="1885577615937958993">미디어를 빨리 감습니다</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
-<translation id="1897672602657312171">검색 키가 없는 단축키가 일부 앱의 단축키와 충돌할 수 있습니다. 이 단축키를 계속 사용하려면 다시 누르거나 검색 키를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="1904932688895783618">다음은 몇 가지 유용한 리소스입니다.</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2157660087437850958">그림 이모티콘 선택 도구입니다</translation>
 <translation id="2157959690810728433">대기 중</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{관리자가 로그인할 때마다 <ph name="APP_NAME_1" /> 앱이 자동으로 시작되도록 설정했습니다.}=2{관리자가 로그인할 때마다 <ph name="APP_NAME_1" /> 및 <ph name="APP_NAME_2" /> 앱이 자동으로 시작되도록 설정했습니다.}=3{관리자가 로그인할 때마다 <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱이 자동으로 시작되도록 설정했습니다.}other{관리자가 로그인할 때마다 <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> 외 #개 앱이 자동으로 시작되도록 설정했습니다.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="215916044711630446">APN 추가 버튼이 사용 중지되었습니다</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN 세부정보 수정</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2212733584906323460">이름 결정</translation>
+<translation id="2215920961700443347">인터넷에 연결되어 있지 않습니다. 인터넷에 연결한 후 다시 시도해 주세요.</translation>
 <translation id="2217935453350629363">현재 속도</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />페이지 중 <ph name="CURRENT_PAGE" />에 있는 이미지</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
 <translation id="2448312741937722512">유형</translation>
+<translation id="2465272316171730950">리소스가 소진되었습니다. 잠시 후 다시 시도해 주세요.</translation>
 <translation id="248546197012830854">기기가 오프라인 상태입니다. 도움말 콘텐츠를 보려면 Wi-Fi 네트워크에 연결하세요.</translation>
 <translation id="2491955442992294626">다른 창을 사용 중일 때는 키가 테스트되지 않습니다.</translation>
 <translation id="2493126929778606526">가장 잘 나온 사진이 자동으로 선별됩니다.</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
 <translation id="2512979179176933762">창을 표시합니다</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
-<translation id="2515109918609218604">단축키를 사용할 수 없습니다. 기능 키와 검색 키를 사용하지 않고 새로운 단축키를 누릅니다.</translation>
 <translation id="2517472476991765520">스캔</translation>
 <translation id="2521835766824839541">이전 트랙입니다</translation>
 <translation id="2526590354069164005">데스크톱</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
+<translation id="4130750466177569591">동의함</translation>
 <translation id="4131410914670010031">흑백</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
 <translation id="4150201353443180367">디스플레이</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">밝기를 낮춥니다</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4176659219503619100">제어판</translation>
-<translation id="4185315616950253617">맨 위 행의 단축키에는 검색 키가 포함되어야 합니다.</translation>
 <translation id="420283545744377356">화면 보호기 사용 중지</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> 다시 시작 중</translation>
 <translation id="4395835743215824109">키보드 맞춤설정</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> 키가 없는 단축키가 일부 앱의 단축키와 충돌할 수 있습니다. 이 단축키를 계속 사용하려면 다시 누르거나 <ph name="KEY" /> 키를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4415951057168511744">현재 아바타</translation>
+<translation id="4417830657741848074">관리자가 일부 앱이 자동으로 시작되도록 설정했습니다. 일부 앱이 종료되지 않을 수도 있습니다.</translation>
 <translation id="4422041425070339732">아래쪽 화살표입니다</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 꺼짐</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">지구 흐름 화면 보호기</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
 <translation id="4507392511610824664">밝기를 높입니다</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">파일 앱에서 폴더 선택…</translation>
 <translation id="4835901797422965222">활성 네트워크 없음</translation>
 <translation id="4839698083503556542">나만의 동영상 만들기</translation>
+<translation id="48409034532829769">관리자가 "<ph name="APP_NAME" />" 앱이 자동으로 시작되도록 설정했습니다. 이 앱이 종료되지 않을 수도 있습니다.</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택됨, <ph name="TOPIC_SOURCE" /> 앨범을 선택하려면 Enter를 누르세요</translation>
 <translation id="484790837831576105">(Android) DNS 변환</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">분할</translation>
 <translation id="4972592110715526173">모드를 변경합니다</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
+<translation id="4982627662315910959">단축키를 사용할 수 없습니다. Shift 외 특수키 1개(Ctrl, Alt 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4985509611418653372">실행</translation>
 <translation id="4987769320337599931">방화벽</translation>
 <translation id="4988526792673242964">페이지</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">어두운 테마 일정</translation>
 <translation id="5229344016299762883">전체 종료</translation>
 <translation id="5234764350956374838">닫기</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 앱이 자동으로 시작되도록 설정했습니다.}=2{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 외 1개 앱이 자동으로 시작되도록 설정했습니다.}other{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 외 #개 앱이 자동으로 시작되도록 설정했습니다.}}</translation>
 <translation id="5252456968953390977">로밍</translation>
 <translation id="5257811368506016604">가벼운 색상 모드 사용</translation>
 <translation id="5264277876637023664">CPU 테스트 실행</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="725133483556299729">이메일 선택</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="7273347807225967898">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift, 검색 또는 런처)를 사용하여 새로운 단축키를 누르세요.</translation>
+<translation id="7271932918253517778">맨 위 행의 단축키에는 <ph name="META_KEY" /> 키가 포함되어야 합니다.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">살랑살랑 바람</translation>
 <translation id="7287310195820267359">배경화면 컬렉션</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">일반 컨트롤</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8017679124341497925">바로가기 수정됨</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
-<translation id="8111706652656628199">단축키를 사용할 수 없습니다. Shift 외 1개(ctrl, Alt, 검색 또는 런처)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>

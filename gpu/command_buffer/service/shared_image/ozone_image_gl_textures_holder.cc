@@ -137,7 +137,6 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
                               ->GetCurrentGLOzone();
   if (!gl_ozone) {
     LOG(FATAL) << "Failed to get GLOzone.";
-    return nullptr;
   }
 
   target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,

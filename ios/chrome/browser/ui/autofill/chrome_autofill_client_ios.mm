@@ -430,7 +430,7 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
+bool ChromeAutofillClientIOS::HasCreditCardScanFeature() const {
   return false;
 }
 

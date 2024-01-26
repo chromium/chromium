@@ -227,8 +227,9 @@ CONTENT_EXPORT IdlConvert::Status ConvertRecord(
 class CONTENT_EXPORT DictConverter {
  public:
   // This should be bigger than the biggest Sequence<> the users of this need to
-  // handle, which is currently blink::kMaxAdAuctionAdComponents.
-  static const size_t kSequenceLengthLimit = 21;
+  // handle, which is currently up to
+  // blink::kMaxAdAuctionAdComponentsConfigLimit.
+  static const size_t kSequenceLengthLimit = 101;
 
   // Prepares to convert `value` to a WebIDL dictionary.
   //

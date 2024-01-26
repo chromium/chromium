@@ -9,6 +9,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (expand) is not supported."
 [FAIL] expand float32 0D scalar to 5D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (expand) is not supported."
+[FAIL] expand float32 1D constant tensor to 1D / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (expand) is not supported."
 [FAIL] expand float32 1D tensor to 1D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (expand) is not supported."
 [FAIL] expand float32 1D tensor to 2D / async

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
@@ -28,12 +29,14 @@ namespace {
 void OnPrintSettingsApplied(scoped_refptr<PrintJob> print_job,
                             std::unique_ptr<MetafileSkia> pdf,
                             std::unique_ptr<PrinterQuery> query,
+                            uint32_t page_count,
                             PrintJob::Source source,
                             const std::string& source_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_GT(page_count, 0U);
 
   std::u16string title = query->settings().title();
-  print_job->Initialize(std::move(query), title, /*page_count=*/1);
+  print_job->Initialize(std::move(query), title, page_count);
   print_job->SetSource(source, source_id);
   print_job->document()->SetDocument(std::move(pdf));
   print_job->StartPrinting();
@@ -134,13 +137,14 @@ void PendingJob::OnDocDone(int job_id, PrintedDocument* document) {
 }
 
 void PendingJob::OnFailed() {
-  std::move(callback_).Run(absl::nullopt);
+  std::move(callback_).Run(std::nullopt);
 
   storage_->DeletePendingJobPlease(this);
 }
 
 void PrintJobController::CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
                                         std::unique_ptr<PrintSettings> settings,
+                                        uint32_t page_count,
                                         PrintJob::Source source,
                                         const std::string& source_id,
                                         PrintJobCreatedCallback callback) {
@@ -156,7 +160,7 @@ void PrintJobController::CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
   query_ptr->SetSettingsFromPOD(
       std::move(settings),
       base::BindOnce(&OnPrintSettingsApplied, print_job, std::move(pdf),
-                     std::move(query), source, source_id));
+                     std::move(query), page_count, source, source_id));
 }
 
 }  // namespace printing

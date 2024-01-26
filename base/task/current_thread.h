@@ -6,8 +6,10 @@
 #define BASE_TASK_CURRENT_THREAD_H_
 
 #include <ostream>
+#include <type_traits>
 
 #include "base/base_export.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -21,11 +23,26 @@
 #include "base/task/task_observer.h"
 #include "build/build_config.h"
 
+namespace autofill {
+class NextIdleTimeTicks;
+}
+
+namespace content {
+class BrowserMainLoop;
+}
+
 namespace web {
 class WebTaskEnvironment;
 }
 
 namespace base {
+
+namespace test {
+bool RunUntil(FunctionRef<bool(void)>);
+void TestPredicateOrRegisterOnNextIdleCallback(base::FunctionRef<bool(void)>,
+                                               CallbackListSubscription*,
+                                               OnceClosure);
+}  // namespace test
 
 namespace sequence_manager {
 namespace internal {
@@ -126,12 +143,25 @@ class BASE_EXPORT CurrentThread {
   // posted tasks.
   void SetAddQueueTimeToTasks(bool enable);
 
-  // Registers a OnceClosure to be called on this thread the next time it goes
+  // Registers a `OnceClosure` to be called on this thread the next time it goes
   // idle. This is meant for internal usage; callers should use BEST_EFFORT
   // tasks instead of this for generic work that needs to wait until quiescence
-  // to run. There can only be one OnNextIdleCallback at a time. Can be called
-  // with a null callback to clear any potentially pending callbacks.
-  void RegisterOnNextIdleCallback(OnceClosure on_next_idle_callback);
+  // to run.
+  class RegisterOnNextIdleCallbackPasskey {
+   private:
+    RegisterOnNextIdleCallbackPasskey() {}
+
+    friend autofill::NextIdleTimeTicks;
+    friend content::BrowserMainLoop;
+    friend bool test::RunUntil(FunctionRef<bool(void)>);
+    friend void test::TestPredicateOrRegisterOnNextIdleCallback(
+        base::FunctionRef<bool(void)>,
+        CallbackListSubscription*,
+        OnceClosure);
+  };
+  [[nodiscard]] CallbackListSubscription RegisterOnNextIdleCallback(
+      RegisterOnNextIdleCallbackPasskey,
+      OnceClosure on_next_idle_callback);
 
   // Enables nested task processing in scope of an upcoming native message loop.
   // Some unwanted message loops may occur when using common controls or printer

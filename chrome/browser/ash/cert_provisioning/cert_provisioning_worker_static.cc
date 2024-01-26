@@ -837,7 +837,12 @@ void CertProvisioningWorkerStatic::ScheduleNextStep(base::TimeDelta delay) {
 
 void CertProvisioningWorkerStatic::OnShouldContinue(ContinueReason reason) {
   switch (reason) {
-    case ContinueReason::kInvalidation:
+    case ContinueReason::kSubscribedToInvalidation:
+      RecordEvent(
+          cert_profile_.protocol_version, cert_scope_,
+          CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic);
+      break;
+    case ContinueReason::kInvalidationReceived:
       RecordEvent(cert_profile_.protocol_version, cert_scope_,
                   CertProvisioningEvent::kInvalidationReceived);
       break;
@@ -1023,9 +1028,8 @@ void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
   // |invalidator_| is destroyed.
   invalidator_->Register(
       invalidation_topic_,
-      base::BindRepeating(&CertProvisioningWorkerStatic::OnShouldContinue,
-                          base::Unretained(this),
-                          ContinueReason::kInvalidation));
+      base::BindRepeating(&CertProvisioningWorkerStatic::OnInvalidationEvent,
+                          base::Unretained(this)));
 
   RecordEvent(cert_profile_.protocol_version, cert_scope_,
               CertProvisioningEvent::kRegisteredToInvalidationTopic);
@@ -1037,6 +1041,22 @@ void CertProvisioningWorkerStatic::UnregisterFromInvalidationTopic() {
   DCHECK(invalidator_);
 
   invalidator_->Unregister();
+}
+
+void CertProvisioningWorkerStatic::OnInvalidationEvent(
+    InvalidationEvent invalidation_event) {
+  // This function logs as WARNING so the messages are visible in feedback logs
+  // to monitor for b/307340577 .
+  switch (invalidation_event) {
+    case InvalidationEvent::kSuccessfullySubscribed:
+      LOG(WARNING) << "Successfully subscribed to invalidations";
+      OnShouldContinue(ContinueReason::kSubscribedToInvalidation);
+      break;
+    case InvalidationEvent::kInvalidationReceived:
+      LOG(WARNING) << "Invalidation received";
+      OnShouldContinue(ContinueReason::kInvalidationReceived);
+      break;
+  }
 }
 
 }  // namespace ash::cert_provisioning

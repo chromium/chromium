@@ -85,7 +85,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   uint64_t GetAsMask(const base::Value::Dict* dict,
                      std::string path,
                      uint64_t mask_value) {
-    absl::optional<bool> value = dict->FindBool(path);
+    std::optional<bool> value = dict->FindBool(path);
     DCHECK(value.has_value());
     return *value ? mask_value : 0;
   }
@@ -142,7 +142,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()->profile());
     EXPECT_TRUE(result->is_dict());
     ASSERT_TRUE(result->GetDict().FindDoubleByDottedPath("options.since"));
@@ -219,7 +219,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()->profile());
 
     ASSERT_TRUE(result->is_dict());
@@ -460,7 +460,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
     scoped_refptr<BrowsingDataSettingsFunction> settings_function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings_json");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         settings_function.get(), std::string("[]"), browser()->profile());
 
     EXPECT_TRUE(result->is_dict());

@@ -28,6 +28,12 @@ using Base64UrlString =
 // A PEM encoded certificate chain.
 using PEMCertChain = base::StrongAlias<class PEMCertChainTag, std::string>;
 
+// A string containing the PIN to be shown on the QuickStart UI.
+using PinString = base::StrongAlias<class PinStringTag, std::string>;
+
+// A string containing the user's email being transferred from the phone.
+using EmailString = base::StrongAlias<class EmailStringTag, std::string>;
+
 // Encodes a byte array to a Base64Url encoded string. Omits padding characters
 // in the output.
 Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data);

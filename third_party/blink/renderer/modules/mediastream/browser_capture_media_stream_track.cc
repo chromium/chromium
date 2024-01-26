@@ -12,7 +12,6 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
@@ -163,7 +162,10 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 }
 
 void BrowserCaptureMediaStreamTrack::SendWheel(
-    CapturedWheelAction* action,
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
     base::OnceCallback<void(bool, const String&)> callback) {
   String error;
   MediaStreamVideoSource* const native_source =
@@ -172,7 +174,8 @@ void BrowserCaptureMediaStreamTrack::SendWheel(
     std::move(callback).Run(false, error);
     return;
   }
-  native_source->SendWheel(action, std::move(callback));
+  native_source->SendWheel(relative_x, relative_y, wheel_delta_x, wheel_delta_y,
+                           std::move(callback));
 }
 
 void BrowserCaptureMediaStreamTrack::GetZoomLevel(

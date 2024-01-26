@@ -91,6 +91,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1428770807407000502">Sinxronizatsiya qilinsinmi?</translation>
 <translation id="1430915738399379752">Chop etish</translation>
+<translation id="1435593198351412143">PDF fayllar avtomatik ochilsin</translation>
 <translation id="1436784010935106834">Olib tashlangan</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
@@ -146,6 +147,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1792959175193046959">Yuklanmalar standart jildini istalgan vaqtda o‘zgartirish mumkin</translation>
 <translation id="1796666869097395659">Keyinroq qaytish uchun varaqni yigʻish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
+<translation id="1807709131360304325">Yangi oynada ochish</translation>
 <translation id="1810845389119482123">Sinxronizatsiya oxirigacha sozlanmagan</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan ochilmaydi</translation>
 <translation id="1829244130665387512">Sahifa ichidan qidirish</translation>
@@ -189,6 +191,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2056878612599315956">Sayt pauzalangan</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi}other{# ta fayl yuklab olinmadi}}</translation>
 <translation id="2067805253194386918">matn</translation>
+<translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2082238445998314030">Natija: <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Ixcham rejimda ochilgan</translation>
 <translation id="2093731487903423814">Oxirgi 15 daqiqa</translation>
@@ -218,7 +221,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="223356358902285214">Veb va ilovalardagi faoliyat tarixi</translation>
 <translation id="2234827758954819389">Maxfiylik qoʻllanmasi</translation>
 <translation id="2239812875700136898">Parametrlar orqali Discover yangiliklarini boshqarish tugmasi</translation>
-<translation id="2241634353105152135">Bir marta</translation>
 <translation id="2247789808226901522">Karta muddati oʻtgan</translation>
 <translation id="2248941474044011069">Parollaringiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="2249635629516220541">Saytlar reklamalarni koʻrsatish uchun foydalanadigan maʼlumotlarni boshqaring</translation>
@@ -233,7 +235,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2318045970523081853">Chaqirish uchun bosing</translation>
 <translation id="2321086116217818302">Parollar tayyorlanmoqda…</translation>
 <translation id="2323763861024343754">Sayt xotirasi</translation>
-<translation id="2327226657832576859">PDF fayllar avtomatik ochilsinmi?</translation>
 <translation id="2328985652426384049">Kirish amalga oshmadi</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> oʻrnatilmadi.</translation>
 <translation id="2349710944427398404">Chrome foydalanadigan barcha ma’lumotlar: hisoblar, xatcho‘plar va saqlangan sozlamalar</translation>
@@ -316,6 +317,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2777555524387840389"><ph name="SECONDS" /> soniya qoldi</translation>
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> nomli varaq yopiladi</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
@@ -340,6 +342,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2894821468041866720">Brauzer yoki qurilmani sezilarli darajada sekinlashtirmaydi.</translation>
 <translation id="2900528713135656174">Tadbir yaratish</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> uchun tavsiyalar koʻrsatilmoqda</translation>
+<translation id="2904300462646366554">Yuklab olingan PDF fayllar avtomatik ravishda qurilmadagi PDF ilovalaridan birida ochiladi</translation>
 <translation id="2904414404539560095">Butun hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="2908243544703713905">Ochilmagan hikoyalar tayyor</translation>
 <translation id="2909615210195135082">Google bildirishnomalar platformasi</translation>
@@ -354,7 +357,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2946420957526726953">Boshqa qurilmalarga ulanish uchun Chrome yangilanmoqda</translation>
 <translation id="2951071800649516099">Sahifalarni roʻyxatga keyinroq kiritish</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ta sahifa oʻqilmagan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ta sahifa oʻqilmagan}}</translation>
-<translation id="2961210776189273067">Nomi</translation>
 <translation id="296370266220139811">Kamroq yozib, vaqtni tejang</translation>
 <translation id="2977350910003566746">Oxirgi ochilgani asosida</translation>
 <translation id="297771753501244313">Oxirgi ochilgani asosida</translation>
@@ -600,6 +602,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4307992518367153382">Asosiy</translation>
+<translation id="4311652497846705514">PDF faylni ochilsinmi?</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
 <translation id="433213510553688132">Obuna rasmiylashtirilmoqda…</translation>
 <translation id="4335835283689002019">Xavfsiz koʻrish faolsizlantirilgan</translation>
@@ -639,7 +642,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4523326818319942067">Oxirgi soat</translation>
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4532845899244822526">Jildni tanlang</translation>
-<translation id="4541505619120536051">Doim ochilsin</translation>
 <translation id="4543131175509360848">Kirish kaliti jadvali</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta varaq}other{<ph name="TAB_COUNT_MANY" /> ta varaq, <ph name="TAB_COUNT_INCOGNITO" /> tasi inkognito}}</translation>
 <translation id="4554077758708533499">USB kabel bilan ulangan</translation>
@@ -831,7 +833,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5486841595534124508">Sahifa statistikasi boʻlimi uchun Maxfiylik eslatmasi belgisi. Foydalanuvchini Harakatlarim sahifasiga yoʻnaltiradi.</translation>
 <translation id="5487521232677179737">Tarixni tozalash</translation>
 <translation id="5492637351392383067">Qurilmada shifrlash</translation>
-<translation id="5509866835115085009">PDF fayl yuklab olinganda Chrome uni avtomatik ochishi mumkin.</translation>
 <translation id="5514904542973294328">Qurilma administratori o‘chirib qo‘ygan</translation>
 <translation id="5515439363601853141">Paolni ko‘rish uchun qulfni oching</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> hisobiga tegishli xatcho‘p, tarix, parol va boshqa sozlamalar mavjud.</translation>
@@ -897,9 +898,11 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="5814749351757353073">Sevimli saytlardan xabar olib turing</translation>
 <translation id="5822875253699806474">Ochilgan sahifani davom ettirish uchun varaqlar va tarixni sinxronlang</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> jildiga saqlandi</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5833984609253377421">Havolani ulashish</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">PDF fayl <ph name="APP_NAME" /> ilovasida ochilsinmi?</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
 <translation id="5855546874025048181">Aniqlashtirish: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Xatolik yuz berdi. Kuzatiladigan narx yangilanmadi.</translation>
@@ -925,6 +928,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5966233851250124270">Chrome tanlovingizni eslab qoladi</translation>
+<translation id="5977976211062815271">Shu qurilmada</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="5995726099713306770">Sahifa qayta yuklab olinsinmi?</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
@@ -1302,6 +1306,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7810647596859435254">Quyidagi bilan ochish…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Barcha fayllar, roʻyxatdagi 1 ta fayl}other{Barcha fayllar, roʻyxatdagi # ta fayl}}</translation>
 <translation id="7815484226266492798">Uzun skrinshot</translation>
+<translation id="7821130663268546430">Varaq almashtirgich orqali ochilgan barcha varaqlarni topish mumkin</translation>
 <translation id="7822705602465980873">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
 <translation id="78270725016672455">Kompyuteringiz bu qurilmani saytga kirish uchun registratsiya qilmoqchi</translation>
 <translation id="7844171778363018843">Sinxronlash uchun hech narsa tanlanmagan</translation>
@@ -1329,6 +1334,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> eskirgan.</translation>
 <translation id="7944772052836377867">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="7947953824732555851">Qabul qilish va kirish</translation>
+<translation id="7951102827450076904">Yuklab olingan PDF fayllar doim ochilsin</translation>
 <translation id="7957413488482743710">Virtual karta haqiqiy kartani ehtimoliy firibgarlikdan himoya qilish maqsadida berkitadi. <ph name="BEGIN_LINK1" />Virtual kartalar haqida batafsil<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Sahifa statistikasi orqaga tugmasi</translation>
 <translation id="7961926449547174351">Xotiraga kirishga ruxsat berilmagan. Ruxsat berish uchun sozlamalarga kiring.</translation>
@@ -1379,6 +1385,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
+<translation id="8135406045838672858">Yuklab olingan PDF fayllar avtomatik <ph name="APP_NAME" /> ilovasida ochiladi</translation>
 <translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ta fayl qoldi</translation>
 <translation id="8190358571722158785">1 kun qoldi</translation>

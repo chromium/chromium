@@ -365,7 +365,7 @@ void DevToolsListener::DispatchProtocolMessage(
   if (VLOG_IS_ON(2))
     VLOG(2) << SpanToStringPiece(message);
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(SpanToStringPiece(message));
   CHECK(value.has_value()) << "Cannot parse as JSON: "
                            << SpanToStringPiece(message);
@@ -381,7 +381,7 @@ void DevToolsListener::DispatchProtocolMessage(
     return;
   }
 
-  absl::optional<int> id = dict_value.FindInt("id");
+  std::optional<int> id = dict_value.FindInt("id");
   if (id.has_value() && id.value() == value_id_) {
     value_ = std::move(dict_value);
     CHECK(value_closure_);

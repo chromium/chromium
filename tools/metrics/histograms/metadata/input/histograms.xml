@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.UnrecognizedToolType.Android" units="tool type"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>alexmitra@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -1083,9 +1083,31 @@ chromium-metrics-reviews@google.com.
     recorded at the time an insertion is performed.
   </summary>
   <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
     <variant name="Rewrite"
         summary="There is selected text and the user is rewriting it with the
                  editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
     <variant name="Write" summary="The editor is in freeform write mode"/>
   </token>
 </histogram>
@@ -1100,9 +1122,31 @@ chromium-metrics-reviews@google.com.
     recorded at the time an insertion is performed.
   </summary>
   <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
     <variant name="Rewrite"
         summary="There is selected text and the user is rewriting it with the
                  editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
     <variant name="Write" summary="The editor is in freeform write mode"/>
   </token>
 </histogram>
@@ -1124,6 +1168,44 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InputMethod.Manta.Orca.NumResponses.{Mode}" units="units"
+    expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Counts the number of responses for each request to the server. This metric
+    is recorded at the time a response is received from the server.
+  </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Manta.Orca.States.{Mode}" enum="IMEEditorStates"
     expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
@@ -1137,9 +1219,31 @@ chromium-metrics-reviews@google.com.
     thumbs up and down buttons.
   </summary>
   <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
     <variant name="Rewrite"
         summary="There is selected text and the user is rewriting it with the
                  editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
     <variant name="Write" summary="The editor is in freeform write mode"/>
   </token>
 </histogram>
@@ -1406,7 +1510,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.StylusHandwriting.GestureTime" units="ms"
+<histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
     expires_after="2024-05-26">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>

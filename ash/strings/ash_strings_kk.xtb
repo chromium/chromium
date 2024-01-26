@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
 <translation id="1885785240814121742">Құлыпты саусақ ізімен ашыңыз</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығын қолдамайды. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1908992311423394684">Жаңадан орнатылған</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Камераның алғы көрінісі қосылды</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> функциясын қосу немесе өшіру. <ph name="CAPTURE_MEDIUM" /> — <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Эмоджи таңдағышты ашу</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Алдыңғы саундтрекке өту</translation>
 <translation id="2152895518047545149">Ештеңе өткізілмеген сияқты. Тамаша!</translation>
 <translation id="2161132820593978283">Бейнеқоңыраулар кезінде экранның ортасында тұруыңыз үшін, камерамен кадрлап көріңіз. Оны жылдам параметрлерден қоса аласыз.</translation>
-<translation id="2170530631236737939">Үш саусақпен төмен сырғытып, "Шолу" бөлімінен шығыңыз.</translation>
 <translation id="2185166372312820725">Алдыңғы қойындыға өту</translation>
 <translation id="2185444992308415167">1-ден 8-ге дейінгі қойындылар арқылы өту</translation>
 <translation id="2198625180564913276">Профиль қосылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">Хотспотты ұсыну үшін телефоныңызда мобильдік интернет болуы керек.</translation>
 <translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
+<translation id="2744221223678373668">Ортақ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Жою"</translation>
 <translation id="2750941250130734256">Белсенді терезе бекітілмеген.</translation>
 <translation id="2761723519669354964">Сөреден ерекшеленген элементті ашу</translation>
+<translation id="2762000892062317888">жаңа ғана</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3580650856351781466">Сөз файлдары жүктеп алынуда</translation>
 <translation id="3585296979871889131">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру</translation>
+<translation id="3590441166907930941">Бүйірлік түйме</translation>
 <translation id="3593039967545720377">Буферді көру үшін <ph name="SHORTCUT_KEY_NAME" /> + V басу арқылы буфер тарихын пайдаланыңыз. Бастау үшін элементті көшіріңіз.</translation>
 <translation id="3593646411856133110">Ашық қолданбаларды көру үшін жоғары сипап, ұстап тұрыңыз.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Жауап беру</translation>
 <translation id="3990002060657467458">Wi-Fi, Bluetooth және дыбыс деңгейі сияқты жиі пайдаланылатын басқару элементтері Жылдам параметрлерде орналасқан. Сонымен қатар скриншоттар түсіру үшін осы жерге өтуге болады.</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
+<translation id="4002066346123236978">Тақырып</translation>
 <translation id="40062176907008878">Қолжазба</translation>
 <translation id="4011112806063830608">Мазаламау режимі қосулы.</translation>
 <translation id="4017989525502048489">Лазер меңзер</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Батарея күйі: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Цикл саны: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Жұмыс үстелін үлгі ретінде сақтау</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
+<translation id="5168753792967365150">Google Tasks-те өзгерту</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5176318573511391780">Экранның бір бөлігін жазу</translation>
 <translation id="5187627942836026988">Хотспот мәліметтерін көрсету. Хотспотқа әкімшіңіз блок қойды.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Орнатылған қолданбаларыңыз</translation>
 <translation id="6173151025443907148">Lacros қосулы болса, екінші пайдаланушының кіруіне қолдау көрсетілмейді. Lacros-та екінші браузер профилін пайдаланыңыз немесе Lacros браузерін өшіріп, әрекетті қайталап көріңіз.</translation>
 <translation id="6179832488876878285">Бұл жерде маңызды файлдарыңызды бекіте аласыз. Бастау үшін Files қолданбасын ашыңыз.</translation>
+<translation id="6180193585172850042">"Артқа" түймесі</translation>
+<translation id="6180651297859206670">"Алға" түймесі</translation>
 <translation id="6182592640011875895">Жұмыс үстелін ашу</translation>
 <translation id="6185696379715117369">Жоғарғы бетке өту</translation>
 <translation id="619335566042889110">Енді толық зарядтаңыз.</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">Мазаламау</translation>
 <translation id="7851039877802112575">Қалқымалы терезелер мен диалогтік терезелерге өту</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Үш саусақпен жоғары сырғытып, "Шолу" бөліміне кіріңіз.</translation>
 <translation id="7862292329216937261">Құрылғыны қонақ ретінде пайдалану үшін аккаунттан шығып, экранның төменгі жағындағы "Қонақ ретінде шолу" параметрін таңдаңыз.</translation>
 <translation id="7866482334467279021">Қосу</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">Ойнату/кідірту</translation>
 <translation id="8270450402312105425">{0,plural, =1{Құрылғыны бір сағатта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # сағатта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>
-<translation id="8284362522226889623">Алдыңғы жұмыс үстеліне ауысу үшін төрт саусақпен солға қарай сырғытыңыз.</translation>
 <translation id="828708037801473432">Өшірулі</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>

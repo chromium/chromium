@@ -159,11 +159,17 @@ if (is_android) {
     template = "//media/base/android/java_templates/MediaSwitches.java.tmpl"
   }
 
+  java_cpp_features("java_features") {
+    sources = [ "//media/base/media_switches.cc" ]
+    template = "//media/base/android/java_templates/MediaFeatures.java.tmpl"
+  }
+
   android_resources("media_java_resources") {
     sources = [ "java/res/raw/empty.wav" ]
   }
 
   android_library("media_java") {
+    visibility = [ "//*" ]
     deps = [
       ":display_java",
       ":media_java_resources",
@@ -175,6 +181,7 @@ if (is_android) {
 
     srcjar_deps = [
       ":java_enums",
+      ":java_features",
       ":java_switches",
       ":media_jni_headers",
       "//media/base:java_enums",

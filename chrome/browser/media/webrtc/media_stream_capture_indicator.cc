@@ -285,7 +285,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 
   void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) override {
+      const std::optional<gfx::Rect>& region_capture_rect) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (ui_) {
       ui_->OnRegionCaptureRectChanged(region_capture_rect);

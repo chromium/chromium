@@ -74,6 +74,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -112,6 +113,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 32,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan-v8-arm",
@@ -151,6 +153,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -191,6 +194,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan-v8-arm",
@@ -231,6 +235,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -298,6 +303,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan-v8-arm",
@@ -342,6 +348,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -384,6 +391,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "msan-chained-origins",
@@ -423,6 +431,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "msan-no-origins",
@@ -461,6 +470,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -508,6 +518,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -551,6 +562,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "tsan",
@@ -590,6 +602,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "tsan",
@@ -625,6 +638,7 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "ubsan",
@@ -659,6 +673,7 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "ubsan-vptr",
@@ -698,6 +713,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -740,6 +756,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -793,7 +810,7 @@ ci.builder(
         short_name = "chromeos-asan",
     ),
     contact_team_email = "chrome-deet-core@google.com",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -905,8 +922,6 @@ ci.builder(
         ],
     ),
     os = os.LINUX_FOCAL,
-    # TODO(crbug.com/1513729): Add back to a sheriff rotation when it's stable.
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "linux-msan",

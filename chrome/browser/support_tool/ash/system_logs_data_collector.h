@@ -54,7 +54,7 @@ class SystemLogsDataCollector : public DataCollector {
       const std::map<std::string, std::string>& logs);
 
   void OnPIIDetected(DataCollectorDoneCallback on_data_collected_callback,
-                     absl::optional<SupportToolError> error,
+                     std::optional<SupportToolError> error,
                      PIIMap detected_pii);
 
   void OnPIIRedacted(base::FilePath target_directory,

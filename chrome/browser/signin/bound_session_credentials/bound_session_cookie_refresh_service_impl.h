@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_IMPL_H_
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
-
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -15,13 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -58,7 +57,6 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieRefreshService:
   void Initialize() override;
-  // Can be called iff the kBoundSessionExplicitRegistration feature is enabled.
   void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) override;
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
@@ -80,7 +78,6 @@ class BoundSessionCookieRefreshServiceImpl
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
  private:
-  class BoundSessionStateTracker;
   friend class BoundSessionCookieRefreshServiceImplTest;
 
   // Used by tests to provide their own implementation of the
@@ -105,7 +102,7 @@ class BoundSessionCookieRefreshServiceImpl
   }
 
   void OnRegistrationRequestComplete(
-      absl::optional<bound_session_credentials::BoundSessionParams>
+      std::optional<bound_session_credentials::BoundSessionParams>
           bound_session_params);
 
   // BoundSessionCookieController::Delegate

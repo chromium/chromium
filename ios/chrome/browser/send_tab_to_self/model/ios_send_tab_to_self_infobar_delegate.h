@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -49,10 +50,10 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   void SendConclusionNotification();
 
   // The entry that was share to this device. Must outlive this instance.
-  const SendTabToSelfEntry* entry_ = nullptr;
+  raw_ptr<const SendTabToSelfEntry> entry_ = nullptr;
 
   // The SendTabToSelfModel that holds the `entry_`. Must outlive this instance.
-  SendTabToSelfModel* model_ = nullptr;
+  raw_ptr<SendTabToSelfModel> model_ = nullptr;
 
   // Registration with NSNotificationCenter for this window.
   __strong id<NSObject> registration_ = nil;

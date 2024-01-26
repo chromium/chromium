@@ -229,7 +229,7 @@ class CONTENT_EXPORT DownloadManagerImpl
   void SetNextId(uint32_t next_id);
 
   // Called when the next ID from history db is retrieved.
-  void OnHistoryNextIdRetrived(uint32_t next_id);
+  void OnHistoryNextIdRetrieved(uint32_t next_id);
 
   // Create a new active item based on the info.  Separate from
   // StartDownload() for testing.
@@ -242,8 +242,9 @@ class CONTENT_EXPORT DownloadManagerImpl
   void OnFileExistenceChecked(const std::string& guid, bool result);
 
   // Overridden from DownloadItemImplDelegate
-  void DetermineDownloadTarget(download::DownloadItemImpl* item,
-                               DownloadTargetCallback callback) override;
+  void DetermineDownloadTarget(
+      download::DownloadItemImpl* item,
+      download::DownloadTargetCallback callback) override;
   bool ShouldCompleteDownload(download::DownloadItemImpl* item,
                               base::OnceClosure complete_callback) override;
   bool ShouldAutomaticallyOpenFile(const GURL& url,

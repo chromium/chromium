@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<script>
+window.buttonInSelectId = 4771;
+window.datalistInSelectId = 4772;
+</script>
+
+<button>button</button>
+<datalist>
+  <option>option</option>
+</datalist>
+<select>
+  <option>option</option>
+</select>
+
+<script>
+test(() => {
+  assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+}, 'UseCounter is not counted in existing normal use case.');
+</script>
+
+<select>
+  <button>button</button>
+</select>
+
+<script>
+test(() => {
+  assert_true(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  internals.clearUseCounter(document, buttonInSelectId);
+}, 'UseCounter is counted when putting button in select.');
+</script>
+
+<select>
+  <datalist>datalist</datalist>
+</select>
+
+<script>
+test(() => {
+  assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_true(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+}, 'UseCounter is counted when putting datalist in select.');
+</script>

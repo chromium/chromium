@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -101,29 +102,35 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
     builder.Record(ukm_recorder);
   }
 
-  void ReportUMA() const {
-    std::string uma_prefix = "Media.VideoEncoder.";
+  base::StringPiece UseCaseStr() const {
     switch (encoder_use_case_) {
       case mojom::VideoEncoderUseCase::kCastMirroring:
-        uma_prefix += "CastMirroring.";
-        break;
+        return "CastMirroring";
       case mojom::VideoEncoderUseCase::kMediaRecorder:
-        uma_prefix += "MediaRecorder.";
-        break;
+        return "MediaRecorder";
       case mojom::VideoEncoderUseCase::kWebCodecs:
-        uma_prefix += "WebCodecs.";
-        break;
+        return "WebCodecs";
       case mojom::VideoEncoderUseCase::kWebRTC:
-        uma_prefix += "WebRTC.";
-        break;
+        return "WebRTC";
     }
+    return "";
+  }
+
+  void ReportUMA() const {
+    const base::StringPiece use_case_str = UseCaseStr();
+    if (use_case_str.empty()) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Unkown use case",
+           base::NumberToString(static_cast<int>(encoder_use_case_))}));
+    }
+    const std::string uma_prefix =
+        base::StrCat({"Media.VideoEncoder.", use_case_str, ".",
+                      (is_hardware_encoder_ ? "HW" : "SW"), "."});
 
     base::UmaHistogramEnumeration(
         base::StrCat({uma_prefix, "Profile"}), codec_profile_,
         static_cast<VideoCodecProfile>(VIDEO_CODEC_PROFILE_MAX + 1));
     base::UmaHistogramEnumeration(base::StrCat({uma_prefix, "SVC"}), svc_mode_);
-    base::UmaHistogramBoolean(base::StrCat({uma_prefix, "HW"}),
-                              is_hardware_encoder_);
     base::UmaHistogramCounts10000(base::StrCat({uma_prefix, "Width"}),
                                   encode_size_.width());
     base::UmaHistogramCounts10000(base::StrCat({uma_prefix, "Height"}),

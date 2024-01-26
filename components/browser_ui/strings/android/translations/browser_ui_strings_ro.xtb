@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1434873037477293673">card de scădere de preț</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
 <translation id="1510341833810331442">Site-urile nu au permisiunea de a salva date pe dispozitiv</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Site-urile pot afișa solicitări de conectare de la servicii de identitate.</translation>
 <translation id="2790501146643349491">Când opțiunea este activată, site-urile închise recent pot să finalizeze trimiterea și primirea datelor. Când opțiunea este dezactivată, site-urile închise recent nu pot finaliza trimiterea sau primirea datelor.</translation>
 <translation id="2822354292072154809">Sigur dorești să resetezi toate permisiunile la nivel de site pentru <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicită afișarea pe mobil</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
+<translation id="6452138246455930388">Scădere de preț în fila deschisă, de la <ph name="OLD_PRICE" /> la <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Când fereastra este îngustă, solicită afișarea pe mobil</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="652937045869844725">Permite cookie-urile terță parte, ceea ce înseamnă mai puțină protecție, dar mai multe șanse ca funcțiile site-ului să ruleze</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Mutați în jos</translation>
 <translation id="6749077623962119521">Resetezi permisiunile?</translation>
 <translation id="6766622839693428701">Glisează în jos pentru a închide.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> De pe <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selectează o opțiune pentru <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6818926723028410516">Selectează elementele</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
+<translation id="6867014948848323204">De pe <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950072572526089586">Un site pe care îl accesezi poate salva informații despre ce faci, astfel încât să funcționeze conform așteptărilor, de exemplu, pentru a te menține conectat(ă) la un site sau pentru a salva articole în coșul de cumpărături. Adesea, site-urile salvează temporar aceste informații pe dispozitiv.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Minunatul Vrăjitor din Oz</translation>
 <translation id="7684642910516280563">Nu permite ca un site să folosească cookie-uri terță parte</translation>
 <translation id="7719367874908701697">Zoom pe pagină</translation>
+<translation id="7770832849480336015">Ascunde <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>

@@ -90,12 +90,20 @@
   _accountPickerConfirmationScreenCoordinator = nil;
 }
 
+#pragma mark - AccountPickerConsumer
+
 - (void)startValidationSpinner {
   [_accountPickerConfirmationScreenCoordinator startValidationSpinner];
 }
 
 - (void)stopValidationSpinner {
   [_accountPickerConfirmationScreenCoordinator stopValidationSpinner];
+}
+
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  [_accountPickerConfirmationScreenCoordinator
+      setIdentityButtonHidden:hidden
+                     animated:animated];
 }
 
 #pragma mark - ChromeCoordinator
@@ -109,6 +117,8 @@
                        configuration:_configuration];
   _accountPickerConfirmationScreenCoordinator.delegate = self;
   _accountPickerConfirmationScreenCoordinator.layoutDelegate = self;
+  _accountPickerConfirmationScreenCoordinator.childViewController =
+      self.accountConfirmationChildViewController;
   [_accountPickerConfirmationScreenCoordinator start];
 
   // Create AccountPickerScreenNavigationController.

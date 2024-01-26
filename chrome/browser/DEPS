@@ -106,7 +106,6 @@ include_rules = [
   "+components/contextual_search/core/browser",
   "+components/cookie_config",
   "+components/country_codes",
-  "+components/crash/content/app",
   "+components/crash/content/browser",
   "+components/crash/core/app",
   "+components/crash/core/browser",
@@ -259,6 +258,7 @@ include_rules = [
   "+components/performance_manager/test_support",
   "+components/performance_manager/performance_manager_impl.h",
   "+components/permissions",
+  "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",
   "+components/plus_addresses",
@@ -579,6 +579,9 @@ specific_include_rules = {
   "input_method_engine.cc": [
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",
+  ],
+  "chrome_back_forward_cache_browsertest.cc": [
+    "+pdf/pdf_features.h",
   ],
   "chrome_browsing_data_remover_delegate_unittest.cc": [
     "+services/network/network_context.h",

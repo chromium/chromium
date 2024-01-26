@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -13,7 +14,6 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -24,7 +24,7 @@ constexpr char kFolderNameMyFiles[] = "MyFiles";
 
 bool DeleteFilesAndDirectoriesUnderPath(
     const base::FilePath& directory_path,
-    const absl::optional<base::FilePath>& ignore_path) {
+    const std::optional<base::FilePath>& ignore_path) {
   bool success = true;
 
   base::FileEnumerator e(
@@ -100,7 +100,7 @@ bool FilesCleanupHandler::CleanupTaskOnTaskRunner(Profile* profile) {
 
   // Delete all files and directories under Downloads.
   success &= DeleteFilesAndDirectoriesUnderPath(downloads_path,
-                                                /*ignore_path=*/absl::nullopt);
+                                                /*ignore_path=*/std::nullopt);
 
   if (!success) {
     return false;
@@ -119,7 +119,7 @@ void FilesCleanupHandler::CleanupTaskDone(CleanupHandlerCallback callback,
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace chromeos

@@ -31,6 +31,36 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+// BrowserFullscreenModeWaiter can be used to wait for entering or exiting
+// browser fullscreen mode.
+class BrowserFullscreenModeWaiter : public FullscreenObserver {
+ public:
+  BrowserFullscreenModeWaiter(Browser* browser,
+                              bool wait_until_exit_fullscreen_mode);
+
+  BrowserFullscreenModeWaiter(const BrowserFullscreenModeWaiter&) = delete;
+  BrowserFullscreenModeWaiter& operator=(const BrowserFullscreenModeWaiter&) =
+      delete;
+
+  ~BrowserFullscreenModeWaiter() override;
+
+  // Runs a loop until it enters or exits the expected fullscreen mode.
+  void Wait();
+
+  // FullscreenObserver:
+  void OnFullscreenStateChanged() override;
+
+ protected:
+  // If true, wait until browser fullscreen mode is off; otherwise wait until
+  // browser fullscreen mode is on.
+  const bool wait_until_exit_fullscreen_mode_;
+  bool observed_change_ = false;
+  raw_ptr<FullscreenController> controller_;  // not owned
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      observation_{this};
+  base::RunLoop run_loop_;
+};
+
 // Observer for fullscreen state change notifications.
 class FullscreenNotificationObserver : public FullscreenObserver {
  public:
@@ -58,7 +88,7 @@ class FullscreenNotificationObserver : public FullscreenObserver {
 };
 
 // Test fixture with convenience functions for fullscreen, keyboard lock, and
-// mouse lock.
+// pointer lock.
 class ExclusiveAccessTest : public InProcessBrowserTest {
  public:
   ExclusiveAccessTest(const ExclusiveAccessTest&) = delete;
@@ -74,10 +104,10 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override;
 
   bool RequestKeyboardLock(bool esc_key_locked);
-  void RequestToLockMouse(bool user_gesture, bool last_unlocked_by_target);
-  void SetWebContentsGrantedSilentMouseLockPermission();
+  void RequestToLockPointer(bool user_gesture, bool last_unlocked_by_target);
+  void SetWebContentsGrantedSilentPointerLockPermission();
   void CancelKeyboardLock();
-  void LostMouseLock();
+  void LostPointerLock();
   bool SendEscapeToExclusiveAccessManager();
   bool IsFullscreenForBrowser();
   bool IsWindowFullscreenForTabOrPending();
@@ -90,7 +120,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void EnterExtensionInitiatedFullscreen();
 
   static const char kFullscreenKeyboardLockHTML[];
-  static const char kFullscreenMouseLockHTML[];
+  static const char kFullscreenPointerLockHTML[];
   FullscreenController* GetFullscreenController();
   ExclusiveAccessManager* GetExclusiveAccessManager();
 
@@ -109,7 +139,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   int InitialBubbleDelayMs() const;
 
   std::vector<ExclusiveAccessBubbleHideReason>
-      mouse_lock_bubble_hide_reason_recorder_;
+      pointer_lock_bubble_hide_reason_recorder_;
 
   std::vector<ExclusiveAccessBubbleHideReason>
       keyboard_lock_bubble_hide_reason_recorder_;

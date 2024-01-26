@@ -264,6 +264,7 @@ class CORE_EXPORT CanvasRenderingContext
                               const ComputedStyle& new_style) {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual void ResetUsageTracking() {}
+  virtual int LayerCount() const { return 0; }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
 

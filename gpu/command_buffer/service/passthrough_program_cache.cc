@@ -207,6 +207,9 @@ EGLsizeiANDROID PassthroughProgramCache::BlobCacheGetImpl(
   const PassthroughProgramCache::ProgramCacheValue* cache_value =
       g_program_cache->Get(std::move(entry_key));
 
+  UMA_HISTOGRAM_BOOLEAN("Gpu.PassthroughProgramCacheLoadHitInCache",
+                        cache_value != nullptr);
+
   if (!cache_value) {
     return 0;
   }

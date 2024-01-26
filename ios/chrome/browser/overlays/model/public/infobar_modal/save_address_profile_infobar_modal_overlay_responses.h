@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_RESPONSES_H_
 
 #import <Foundation/Foundation.h>
+
+#import "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 
@@ -24,7 +26,7 @@ class EditedProfileSaveAction
   OVERLAY_USER_DATA_SETUP(EditedProfileSaveAction);
   EditedProfileSaveAction(autofill::AutofillProfile* profileData);
 
-  autofill::AutofillProfile* profile_data_;
+  raw_ptr<autofill::AutofillProfile> profile_data_;
 };
 
 // Response info used to create dispatched OverlayResponses once the user

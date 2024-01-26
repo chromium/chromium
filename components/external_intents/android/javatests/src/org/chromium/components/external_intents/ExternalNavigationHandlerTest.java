@@ -28,7 +28,6 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -193,7 +192,7 @@ public class ExternalNavigationHandlerTest {
     private final TestExternalNavigationDelegate mDelegate;
     private ExternalNavigationHandlerForTesting mUrlHandler;
 
-    private Context mApplicationContextToRestore;
+    private Context mRealApplicationContext;
 
     public ExternalNavigationHandlerTest() {
         mDelegate = new TestExternalNavigationDelegate();
@@ -201,7 +200,7 @@ public class ExternalNavigationHandlerTest {
 
     @Before
     public void setUp() {
-        mApplicationContextToRestore = ContextUtils.getApplicationContext();
+        mRealApplicationContext = ContextUtils.getApplicationContext();
         mContext = new TestContext(InstrumentationRegistry.getTargetContext(), mDelegate);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
 
@@ -212,11 +211,6 @@ public class ExternalNavigationHandlerTest {
         mDelegate.setWindowAndroid(mWindowAndroidMock);
         mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
-
-    @After
-    public void tearDown() {
-        ContextUtils.initApplicationContextForTests(mApplicationContextToRestore);
     }
 
     private RedirectHandler redirectHandlerForLinkClick() {
@@ -1147,7 +1141,7 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
+        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1217,7 +1211,7 @@ public class ExternalNavigationHandlerTest {
 
     private void doTestFallbackUrl_ChromeCanHandle_Incognito(final boolean clearRedirectHandler) {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
+        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1307,7 +1301,7 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
+        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1390,7 +1384,7 @@ public class ExternalNavigationHandlerTest {
     @MediumTest
     public void testFallbackUrl_ChromeCanHandle_Incognito_DelegateHandleDialogPresentation() {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
+        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);

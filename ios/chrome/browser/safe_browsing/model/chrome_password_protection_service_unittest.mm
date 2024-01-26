@@ -8,6 +8,7 @@
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/mock_callback.h"
@@ -251,7 +252,7 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<FakeChromePasswordProtectionService> service_;
   web::FakeWebState fake_web_state_;
-  web::FakeNavigationManager* fake_navigation_manager_;
+  raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
   base::MockCallback<
       ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
       mock_add_callback_;

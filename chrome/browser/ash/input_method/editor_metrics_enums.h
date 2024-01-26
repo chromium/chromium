@@ -7,6 +7,18 @@
 
 namespace ash::input_method {
 
+enum class EditorTone {
+  kUnset = 0,
+  kRephrase = 1,
+  kEmojify = 2,
+  kShorten = 3,
+  kElaborate = 4,
+  kFormalize = 5,
+  kFreeformRewrite = 6,
+  kUnknown = 7,
+  kMaxValue = kUnknown,
+};
+
 // Must match with IMEEditorStates in enums.xml
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -54,7 +66,67 @@ enum class EditorStates {
   kApproveConsent = 16,
   // Increase by 1 when a user clicks to decline the consent.
   kDeclineConsent = 17,
-  kMaxValue = kDeclineConsent,
+  // Increase by 1 when the feature is blocked.
+  kBlocked = 18,
+  // Increase by 1 when the feature is blocked because user is in an unsupported
+  // country.
+  kBlockedByUnsupportedRegion = 19,
+  // Increase by 1 when the feature is blocked because user is using a managed
+  // device.
+  kBlockedByManagedStatus = 20,
+  // Increase by 1 when the feature is blocked because the consent status does
+  // not satisfy.
+  kBlockedByConsent = 21,
+  // Increase by 1 when the feature is blocked because the setting toggle is
+  // switched off.
+  kBlockedBySetting = 22,
+  // Increase by 1 when the feature is blocked because the text is too long.
+  kBlockedByTextLength = 23,
+  // Increase by 1 when the feature is blocked because the focused text input
+  // residing in a url found in the url denylist.
+  kBlockedByUrl = 24,
+  // Increase by 1 when the feature is blocked because the focused text input
+  // residing in an app found in the app denylist.
+  kBlockedByApp = 25,
+  // Increase by 1 when the feature is blocked because the current active input
+  // method is not supported.
+  kBlockedByInputMethod = 26,
+  // Increase by 1 when the feature is blocked because the current active input
+  // type is not allowed.
+  kBlockedByInputType = 27,
+  // Increase by 1 when the feature is blocked because the current app type is
+  // not supported.
+  kBlockedByAppType = 28,
+  // Increase by 1 when the feature is blocked because the current form factor
+  // is not supported.
+  kBlockedByInvalidFormFactor = 29,
+  // Increase by 1 when the feature is blocked because user is not connected to
+  // internet.
+  kBlockedByNetworkStatus = 30,
+  // Increase by 1 when user receives unknown error from the server.
+  ErrorUnknown = 31,
+  // Increase by 1 when user receives invalid argument error from the server.
+  ErrorInvalidArgument = 32,
+  // Increase by 1 when user receives resource exhausted error from the server.
+  ErrorResourceExhausted = 33,
+  // Increase by 1 when user receives backend failure error from the server.
+  ErrorBackendFailure = 34,
+  // Increase by 1 when user receives internet connection error from the server.
+  ErrorNoInternetConnection = 35,
+  // Increase by 1 when user receives unsupported language error from the
+  // server.
+  ErrorUnsupportedLanguage = 36,
+  // Increase by 1 when user receives blocked output error from the server.
+  ErrorBlockedOutputs = 37,
+  // Increase by 1 when user receives restricted region error from the server.
+  ErrorRestrictedRegion = 38,
+  // Increase by 1 when the native promo card is shown.
+  kPromoCardImpression = 39,
+  // Increase by 1 when user clicks "Dismiss" on the promo card.
+  kPromoCardExplicitDismissal = 40,
+  // Increase by 1 when the webui consent screen is shown.
+  kConsentScreenImpression = 41,
+  kMaxValue = kConsentScreenImpression,
 };
 
 }  // namespace ash::input_method

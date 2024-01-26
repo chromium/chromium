@@ -146,8 +146,8 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   void OnConnectionEstablished(
       mojo::PendingRemote<mojom::WebTransport> transport,
       mojo::PendingReceiver<mojom::WebTransportClient> client_receiver,
-      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
-      override {
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      mojom::WebTransportStatsPtr initial_stats) override {
     transport_ = std::move(transport);
     client_receiver_ = std::move(client_receiver);
     has_seen_connection_establishment_ = true;
@@ -226,7 +226,8 @@ class TestClient final : public mojom::WebTransportClient {
   }
   void OnReceivedResetStream(uint32_t stream_id, uint32_t) override {}
   void OnReceivedStopSending(uint32_t stream_id, uint32_t) override {}
-  void OnClosed(mojom::WebTransportCloseInfoPtr close_info) override {}
+  void OnClosed(mojom::WebTransportCloseInfoPtr close_info,
+                mojom::WebTransportStatsPtr final_stats) override {}
 
   void WaitUntilMojoConnectionError() {
     base::RunLoop run_loop;

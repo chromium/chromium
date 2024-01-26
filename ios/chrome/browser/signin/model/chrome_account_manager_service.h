@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
@@ -126,7 +127,7 @@ class ChromeAccountManagerService : public KeyedService,
       IdentityAvatarSize avatar_size);
 
   // Used to retrieve restricted patterns.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   // Used to filter ChromeIdentities.
   PatternAccountRestriction restriction_;
   // Used to listen pref change.

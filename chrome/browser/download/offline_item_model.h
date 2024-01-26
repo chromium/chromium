@@ -95,7 +95,7 @@ class OfflineItemModel : public DownloadUIModel,
   // FilteredOfflineItemObserver::Observer overrides.
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const absl::optional<UpdateDelta>& update_delta) override;
+                     const std::optional<UpdateDelta>& update_delta) override;
 
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;

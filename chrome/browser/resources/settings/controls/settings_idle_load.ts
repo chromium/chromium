@@ -9,7 +9,8 @@
  * given that holds the elements to be loaded lazily.
  */
 import {assert} from '//resources/js/assert.js';
-import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 

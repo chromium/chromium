@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "content/public/test/browser_test.h"
 #include "pdf/pdf.h"
 #include "printing/print_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace printing {
@@ -78,7 +78,7 @@ std::vector<gfx::SizeF> GetPdfPageSizes(base::span<const uint8_t> pdf_data) {
 
   std::vector<gfx::SizeF> sizes;
   for (int i = 0; i < num_pages; ++i) {
-    absl::optional<gfx::SizeF> page_size =
+    std::optional<gfx::SizeF> page_size =
         chrome_pdf::GetPDFPageSizeByIndex(pdf_data, i);
     if (!page_size.has_value())
       return {};
@@ -132,7 +132,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
   PdfNupConverterClientBrowserTest() = default;
   ~PdfNupConverterClientBrowserTest() override = default;
 
-  absl::optional<ConvertResult> ConvertDocument(
+  std::optional<ConvertResult> ConvertDocument(
       base::ReadOnlySharedMemoryRegion pdf_region,
       int pages_per_sheet) {
     auto converter = std::make_unique<PdfNupConverterClient>(
@@ -149,14 +149,14 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
       // Give the caller a chance to fail gracefully. Whereas calling
       // `future.Take()` without handling the Wait() failure will result in a
       // CHECK() crash.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     auto result = future.Take();
     return ConvertResult{std::get<0>(result), std::move(std::get<1>(result))};
   }
 
-  absl::optional<ConvertResult> ConvertPages(
+  std::optional<ConvertResult> ConvertPages(
       std::vector<base::ReadOnlySharedMemoryRegion> pdf_regions,
       int pages_per_sheet) {
     auto converter = std::make_unique<PdfNupConverterClient>(
@@ -171,7 +171,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
 
     if (!future.Wait()) {
       // See comment in the `future.Wait()` call in ConvertDocument() above.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     auto result = future.Take();
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
   VerifyPdf(pdf_region.mapping.GetMemoryAsSpan<uint8_t>(),
             GetExpectedPdfSizes("pdf_converter_basic.pdf"));
 
-  absl::optional<ConvertResult> result =
+  std::optional<ConvertResult> result =
       ConvertDocument(std::move(pdf_region.region), /*pages_per_sheet=*/2);
 
   ASSERT_TRUE(result.has_value());
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
   VerifyPdf(pdf_region.mapping.GetMemoryAsSpan<uint8_t>(),
             GetExpectedPdfSizes("pdf_converter_basic.pdf"));
 
-  absl::optional<ConvertResult> result =
+  std::optional<ConvertResult> result =
       ConvertDocument(std::move(pdf_region.region), /*pages_per_sheet=*/4);
 
   ASSERT_TRUE(result.has_value());
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
   base::MappedReadOnlyRegion pdf_region = GetBadDataRegion();
   ASSERT_TRUE(pdf_region.IsValid());
 
-  absl::optional<ConvertResult> result =
+  std::optional<ConvertResult> result =
       ConvertDocument(std::move(pdf_region.region), /*pages_per_sheet=*/2);
 
   ASSERT_TRUE(result.has_value());
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
     pdf_regions.push_back(std::move(pdf_region.region));
   }
 
-  absl::optional<ConvertResult> result =
+  std::optional<ConvertResult> result =
       ConvertPages(std::move(pdf_regions), /*pages_per_sheet=*/2);
 
   ASSERT_TRUE(result.has_value());
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest, PagesConvertBadData) {
     pdf_regions.push_back(std::move(bad_pdf_region.region));
   }
 
-  absl::optional<ConvertResult> result =
+  std::optional<ConvertResult> result =
       ConvertPages(std::move(pdf_regions), /*pages_per_sheet=*/2);
 
   ASSERT_TRUE(result.has_value());

@@ -17,24 +17,27 @@ namespace autofill {
 
 class ContentAutofillDriverFactoryTestApi {
  public:
-  // Creates a factory of ContentAutofillDrivers whose managers are
-  // TestBrowserAutofillManager.
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
-      TestAutofillClient* client);
-
-  static std::unique_ptr<ContentAutofillDriverFactory> Create(
-      content::WebContents* web_contents,
-      AutofillClient* client,
-      ContentAutofillDriverFactory::DriverInitCallback driver_init_hook);
+      ContentAutofillClient* client);
 
   explicit ContentAutofillDriverFactoryTestApi(
       ContentAutofillDriverFactory* factory);
 
   size_t num_drivers() const { return factory_->driver_map_.size(); }
 
-  void SetDriver(content::RenderFrameHost* rfh,
-                 std::unique_ptr<ContentAutofillDriver> driver);
+  // Replaces the existing driver with `new_driver`. An existing driver must
+  // exist. This does not invalidate references. More precisely:
+  //
+  //   std::unique_ptr<ContentAutofillDriver>& old_driver = ...;
+  //   std::unique_ptr<ContentAutofillDriver> new_driver = ...;
+  //   ContentAutofillDriver* new_driver_raw = new_driver.get();
+  //   ExchangeDriver(rfh, std::move(new_driver));
+  //   CHECK_EQ(old_driver.get(), new_driver_raw);
+  std::unique_ptr<ContentAutofillDriver> ExchangeDriver(
+      content::RenderFrameHost* rfh,
+      std::unique_ptr<ContentAutofillDriver> new_driver);
+
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
   base::ObserverList<ContentAutofillDriverFactory::Observer>& observers() {
@@ -46,8 +49,6 @@ class ContentAutofillDriverFactoryTestApi {
   // observers.
   void AddObserverAtIndex(ContentAutofillDriverFactory::Observer* observer,
                           size_t index);
-
-  void set_client(AutofillClient* client) { factory_->client_ = client; }
 
  private:
   const raw_ref<ContentAutofillDriverFactory> factory_;

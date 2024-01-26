@@ -1,0 +1,273 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CacheStorageErrorStorageType">
+  <int value="0" label="kDidCreateNullCache"/>
+  <int value="1" label="kDeleteCacheFailed"/>
+  <int value="2" label="kMatchBackendClosed"/>
+  <int value="3" label="kMatchAllBackendClosed"/>
+  <int value="4" label="kWriteSideDataBackendClosed"/>
+  <int value="5" label="kBatchBackendClosed"/>
+  <int value="6" label="kBatchInvalidSpace"/>
+  <int value="7" label="kBatchDidGetUsageAndQuotaInvalidSpace"/>
+  <int value="8" label="kBatchDidGetUsageAndQuotaUndefinedOp"/>
+  <int value="9" label="kKeysBackendClosed"/>
+  <int value="10" label="kQueryCacheBackendClosed"/>
+  <int value="11" label="kQueryCacheFilterEntryFailed"/>
+  <int value="12" label="kQueryCacheDidReadMetadataNullBlobContext"/>
+  <int value="13" label="kStorageMatchAllBackendClosed"/>
+  <int value="14" label="kWriteSideDataImplBackendClosed"/>
+  <int value="15" label="kPutImplBackendClosed"/>
+  <int value="16" label="kPutDidDeleteEntryBackendClosed"/>
+  <int value="17" label="kMetadataSerializationFailed"/>
+  <int value="18" label="kPutDidWriteHeadersWrongBytes"/>
+  <int value="19" label="kPutDidWriteBlobToCacheFailed"/>
+  <int value="20" label="kDeleteImplBackendClosed"/>
+  <int value="21" label="kKeysImplBackendClosed"/>
+  <int value="22" label="kCreateBackendDidCreateFailed"/>
+  <int value="23" label="kStorageGetAllMatchedEntriesBackendClosed"/>
+  <int value="24" label="kStorageHandleNull"/>
+  <int value="25" label="kWriteSideDataDidWriteMetadataWrongBytes"/>
+  <int value="26" label="kDefaultBucketError"/>
+</enum>
+
+<enum name="CacheStorageErrorType">
+  <int value="0" label="OK"/>
+  <int value="1" label="Exists Error"/>
+  <int value="2" label="Storage Error"/>
+  <int value="3" label="Not Found Error"/>
+  <int value="4" label="Quota Exceeded Error"/>
+  <int value="5" label="Cache Name Not Found Error"/>
+  <int value="6" label="Query Too Large Error"/>
+  <int value="7" label="Not Implemented Error"/>
+  <int value="8" label="Duplicate Operation Error"/>
+  <int value="9" label="Cross Origin Resource Policy Error"/>
+</enum>
+
+<enum name="CacheStorageIndexResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Failed to Parse"/>
+  <int value="2" label="Missing Origin"/>
+  <int value="3" label="Empty Origin URL"/>
+  <int value="4" label="Path Mismatch"/>
+  <int value="5" label="Path FileInfo Failed"/>
+</enum>
+
+<enum name="CrossProcessTimeDelta">
+  <int value="0" label="Normal time delta measured"/>
+  <int value="1" label="Unexpectedly negative time delta measured"/>
+  <int value="2" label="The system clock is known to be inaccurate"/>
+</enum>
+
+<enum name="EmbeddedWorkerStartingPhase">
+  <int value="0" label="NOT_STARTING"/>
+  <int value="1" label="ALLOCATING_PROCESS"/>
+  <int value="2" label="REGISTERING_TO_DEVTOOLS (obsolete)"/>
+  <int value="3" label="SENT_START_WORKER"/>
+  <int value="4" label="SCRIPT_DOWNLOADING"/>
+  <int value="5" label="SCRIPT_LOADED"/>
+  <int value="6" label="SCRIPT_EVALUATED (obsolete)"/>
+  <int value="7" label="THREAD_STARTED"/>
+  <int value="8" label="SCRIPT_READ_STARTED (obsolete)"/>
+  <int value="9" label="SCRIPT_READ_FINISHED (obsolete)"/>
+  <int value="10" label="SCRIPT_STREAMING"/>
+  <int value="11" label="SCRIPT_EVALUATION"/>
+</enum>
+
+<enum name="EmbeddedWorkerStatus">
+  <int value="0" label="STOPPED"/>
+  <int value="1" label="STARTING"/>
+  <int value="2" label="RUNNING"/>
+  <int value="3" label="STOPPING"/>
+</enum>
+
+<enum name="InitialServiceWorkerStatus">
+  <int value="0" label="kRunning"/>
+  <int value="1" label="kStarting"/>
+  <int value="2" label="kStopping"/>
+  <int value="3" label="kStopped"/>
+  <int value="4" label="kWarmingUp"/>
+  <int value="5" label="kWarmedUp"/>
+</enum>
+
+<enum name="ServiceWorkerDatabaseStatus">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not Found Error"/>
+  <int value="2" label="IO Error"/>
+  <int value="3" label="Corruption Error"/>
+  <int value="4" label="Operation Error"/>
+  <int value="5" label="Not Supported Error"/>
+  <int value="6" label="Database Disabled Error"/>
+</enum>
+
+<enum name="ServiceWorkerDeleteAndStartOverResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Failed to delete ServiceWorkerDatabase"/>
+  <int value="2" label="Failed to delete ServiceWorkerDiskCache"/>
+</enum>
+
+<enum name="ServiceWorkerFetchEventResult">
+  <int value="0" label="Should Fallback"/>
+  <int value="1" label="Got Response"/>
+</enum>
+
+<enum name="ServiceWorkerFetchHandlerSkipReason">
+  <int value="0" label="No Fetch Handler"/>
+  <int value="1" label="Not Skipped"/>
+  <int value="2" label="Skipped for Empty Fetch Handler"/>
+  <int value="3" label="Main resource is skipped by origin trial"/>
+  <int value="4" label="Main resource is skipped by feature flag"/>
+  <int value="5" label="Main resource is skipped by allowed origin list"/>
+  <int value="6" label="Main resource is skipped by allowed script list"/>
+  <int value="7"
+      label="Skipped by
+             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop"/>
+  <int value="8"
+      label="Skipped by
+             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting"/>
+</enum>
+
+<enum name="ServiceWorkerFetchHandlerType">
+  <int value="0" label="No Fetch Handler"/>
+  <int value="1" label="Not Skippable"/>
+  <int value="2" label="Empty Fetch Handler"/>
+</enum>
+
+<enum name="ServiceWorkerFetchResponseFrom">
+  <int value="0" label="No response yet"/>
+  <int value="1" label="ServiceWorker"/>
+  <int value="2" label="Without ServiceWorker"/>
+  <int value="3" label="SubresourceLoader is handling redirect"/>
+  <int value="4" label="AutoPreload is handling fallback"/>
+</enum>
+
+<enum name="ServiceWorkerMetrics.EventType">
+  <int value="0" label="ACTIVATE"/>
+  <int value="1" label="INSTALL"/>
+  <int value="2" label="FETCH (unused)"/>
+  <int value="3" label="SYNC"/>
+  <int value="4" label="NOTIFICATION_CLICK"/>
+  <int value="5" label="PUSH"/>
+  <int value="6" label="GEOFENCING (unused)"/>
+  <int value="7" label="SERVICE_PORT_CONNECT (unused)"/>
+  <int value="8" label="MESSAGE"/>
+  <int value="9" label="NOTIFICATION_CLOSE"/>
+  <int value="10" label="FETCH_MAIN_FRAME"/>
+  <int value="11" label="FETCH_SUB_FRAME"/>
+  <int value="12" label="FETCH_SHARED_WORKER"/>
+  <int value="13" label="FETCH_SUB_RESOURCE"/>
+  <int value="14" label="UNKNOWN"/>
+  <int value="15" label="FOREIGN_FETCH"/>
+  <int value="16" label="FETCH_WAITUNTIL"/>
+  <int value="17" label="FOREIGN_FETCH_WAITUNTIL"/>
+  <int value="18" label="NAVIGATION_HINT_LINK_MOUSE_DOWN"/>
+  <int value="19" label="NAVIGATION_HINT_LINK_TAP_UNCONFIRMED"/>
+  <int value="20" label="NAVIGATION_HINT_LINK_TAP_DOWN"/>
+  <int value="21" label="EXTERNAL_REQUEST"/>
+  <int value="22" label="PAYMENT_REQUEST"/>
+  <int value="23" label="BACKGROUND_FETCH_ABORT"/>
+  <int value="24" label="BACKGROUND_FETCH_CLICK"/>
+  <int value="25" label="BACKGROUND_FETCH_FAIL"/>
+  <int value="26" label="BACKGROUND_FETCHED"/>
+  <int value="27" label="NAVIGATION_HINT"/>
+  <int value="28" label="CAN_MAKE_PAYMENT"/>
+  <int value="29" label="ABORT_PAYMENT"/>
+  <int value="30" label="COOKIE_CHANGE"/>
+  <int value="31" label="LONG_RUNNING_MESSAGE"/>
+  <int value="32" label="BACKGROUND_FETCH_SUCCESS"/>
+  <int value="33" label="PERIODIC_SYNC"/>
+  <int value="34" label="CONTENT_DELETE"/>
+  <int value="35" label="PUSH_SUBSCRIPTION_CHANGE"/>
+  <int value="36" label="FETCH_FENCED_FRAME"/>
+  <int value="37" label="BYPASS_MAIN_RESOURCE"/>
+  <int value="38" label="SKIP_EMPTY_FETCH_HANDLER"/>
+  <int value="39" label="BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED"/>
+  <int value="40" label="WARM_UP"/>
+</enum>
+
+<enum name="ServiceWorkerRaceNetworkRequestDataTransferMojoResult">
+  <int value="0" label="MOJO_RESULT_OK"/>
+  <int value="1" label="MOJO_RESULT_CANCELLED"/>
+  <int value="2" label="MOJO_RESULT_UNKNOWN"/>
+  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
+  <int value="4" label="MOJO_RESULT_DEADLINE_EXCEEDED"/>
+  <int value="5" label="MOJO_RESULT_NOT_FOUND"/>
+  <int value="6" label="MOJO_RESULT_ALREADY_EXISTS"/>
+  <int value="7" label="MOJO_RESULT_PERMISSION_DENIED"/>
+  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
+  <int value="9" label="MOJO_RESULT_FAILED_PRECONDITION"/>
+  <int value="10" label="MOJO_RESULT_ABORTED"/>
+  <int value="11" label="MOJO_RESULT_OUT_OF_RANGE"/>
+  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
+  <int value="13" label="MOJO_RESULT_INTERNAL"/>
+  <int value="14" label="MOJO_RESULT_UNAVAILABLE"/>
+  <int value="15" label="MOJO_RESULT_DATA_LOSS"/>
+  <int value="16" label="MOJO_RESULT_BUSY"/>
+  <int value="17" label="MOJO_RESULT_SHOULD_WAIT"/>
+</enum>
+
+<enum name="ServiceWorkerReadResponseResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Read headers error"/>
+  <int value="2" label="Read data error"/>
+</enum>
+
+<enum name="ServiceWorkerRendererStartWorker">
+  <int value="0" label="Received on installed service worker."/>
+  <int value="1" label="Received on uninstalled service worker."/>
+</enum>
+
+<enum name="ServiceWorkerRouterEvaluatorErrorEnums">
+  <int value="0" label="kNoError"/>
+  <int value="1" label="kInvalidType"/>
+  <int value="2" label="kParseError"/>
+  <int value="3" label="kCompileError"/>
+  <int value="4" label="kEmptyCondition"/>
+  <int value="5" label="kEmptySource"/>
+  <int value="6" label="kInvalidSource"/>
+  <int value="7" label="kInvalidCondition"/>
+  <int value="8" label="kExceedMaxConditionDepth"/>
+  <int value="9" label="kExceedMaxRouterSize"/>
+</enum>
+
+<enum name="ServiceWorkerRouterSourceType">
+  <int value="0" label="kNetwork"/>
+  <int value="1" label="kRace"/>
+  <int value="2" label="kFetchEvent"/>
+  <int value="3" label="kCache"/>
+</enum>
+
+<enum name="ServiceWorkerWriteResponseResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Write headers error"/>
+  <int value="2" label="Write data error"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

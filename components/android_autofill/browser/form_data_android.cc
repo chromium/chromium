@@ -147,6 +147,21 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
   }
 }
 
+void FormDataAndroid::UpdateFieldTypes(
+    const base::flat_map<FieldGlobalId, AutofillType>& types) {
+  for (const std::unique_ptr<FormFieldDataAndroid>& field : fields_) {
+    auto it = types.find(field->global_id());
+    if (it == types.end()) {
+      continue;
+    }
+
+    const AutofillType& new_type = it->second;
+    if (field->field_types() != new_type) {
+      field->UpdateAutofillTypes(FormFieldDataAndroid::FieldTypes(new_type));
+    }
+  }
+}
+
 std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
     const FormData& form) {
   CHECK_EQ(form_.fields.size(), form.fields.size());

@@ -8,6 +8,13 @@ source_set("row") {
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_row_cell_experimental.h",
     "omnibox_popup_row_cell_experimental.mm",
+    "omnibox_popup_row_content_configuration.h",
+    "omnibox_popup_row_content_configuration.mm",
+    "omnibox_popup_row_content_view.h",
+    "omnibox_popup_row_content_view.mm",
+    "omnibox_popup_row_delegate.h",
+    "omnibox_popup_row_util.h",
+    "omnibox_popup_row_util.mm",
   ]
   deps = [
     "//base",

@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toggle_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -51,6 +53,8 @@ class ReadAnythingToolbarView
     virtual void OnLetterSpacingChanged(int new_index) = 0;
     virtual ReadAnythingMenuModel* GetLetterSpacingModel() = 0;
     virtual void OnSystemThemeChanged() = 0;
+    virtual void OnLinksEnabledChanged(bool is_enabled) = 0;
+    virtual bool GetLinksEnabled() = 0;
   };
 
   ReadAnythingToolbarView(
@@ -69,6 +73,7 @@ class ReadAnythingToolbarView
   void OnReadAnythingThemeChanged(
       const std::string& font_name,
       double font_scale,
+      bool links_enabled,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
@@ -93,6 +98,7 @@ class ReadAnythingToolbarView
   void ChangeColorsCallback();
   void ChangeLineSpacingCallback();
   void ChangeLetterSpacingCallback();
+  void LinksToggledCallback();
   void CleanUp();
 
   // views::View:
@@ -106,6 +112,7 @@ class ReadAnythingToolbarView
   raw_ptr<ReadAnythingFontCombobox> font_combobox_;
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
+  raw_ptr<ReadAnythingToggleButtonView> toggle_links_button_;
   raw_ptr<ReadAnythingMenuButton> colors_button_;
   raw_ptr<ReadAnythingMenuButton> line_spacing_button_;
   raw_ptr<ReadAnythingMenuButton> letter_spacing_button_;

@@ -30,13 +30,12 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/url_util.h"
@@ -398,23 +397,11 @@ ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
     : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
   distiller_ = std::make_unique<AXTreeDistiller>(
-      render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() = default;
-ReadAnythingAppController::ReadAloudCurrentGranularity::
-    ReadAloudCurrentGranularity() {
-  segments = std::map<ui::AXNodeID, ReadAloudTextSegment>();
-}
-
-ReadAnythingAppController::ReadAloudCurrentGranularity::
-    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other) =
-        default;
-
-ReadAnythingAppController::ReadAloudCurrentGranularity::
-    ~ReadAloudCurrentGranularity() = default;
 
 void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
@@ -623,8 +610,16 @@ void ReadAnythingAppController::DrawSelection() {
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
+  bool needs_redraw_for_links =
+      model_.links_enabled() != new_theme->links_enabled;
   model_.OnThemeChanged(std::move(new_theme));
   ExecuteJavaScript("chrome.readingMode.updateTheme();");
+
+  // Only redraw if there is an active tree.
+  if (needs_redraw_for_links &&
+      model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
+    Draw();
+  }
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -632,19 +627,26 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LetterSpacing letter_spacing,
     const std::string& font,
     double font_size,
+    bool links_enabled,
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict voices,
     read_anything::mojom::HighlightGranularity granularity) {
+  bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, color, speech_rate, &voices,
-                                     granularity);
+                                     font_size, links_enabled, color,
+                                     speech_rate, &voices, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
+  // Only redraw if there is an active tree.
+  if (needs_redraw_for_links &&
+      model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
+    Draw();
+  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingAppController::ScreenAIServiceReady() {
-  distiller_->ScreenAIServiceReady();
+  distiller_->ScreenAIServiceReady(GetRenderFrame());
 }
 #endif
 
@@ -661,6 +663,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::BackgroundColor)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
+      .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
       .SetProperty("foregroundColor",
                    &ReadAnythingAppController::ForegroundColor)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
@@ -711,6 +714,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
+      .SetMethod("onLinksEnabledToggled",
+                 &ReadAnythingAppController::OnLinksEnabledToggled)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("onStandardLineSpacing",
@@ -762,8 +767,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getNextTextEndIndex",
                  &ReadAnythingAppController::GetNextTextEndIndex)
       .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
-      .SetMethod("getPreviousText",
-                 &ReadAnythingAppController::GetPreviousText);
+      .SetMethod("getPreviousText", &ReadAnythingAppController::GetPreviousText)
+      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -798,6 +803,10 @@ std::string ReadAnythingAppController::FontName() const {
 
 float ReadAnythingAppController::FontSize() const {
   return model_.font_size();
+}
+
+bool ReadAnythingAppController::LinksEnabled() const {
+  return model_.links_enabled();
 }
 
 SkColor ReadAnythingAppController::ForegroundColor() const {
@@ -910,110 +919,7 @@ std::string ReadAnythingAppController::GetDataFontCss(
 
 std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
-  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-
-  std::string html_tag =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-
-  if (model_.is_pdf()) {
-    return GetHtmlTagForPDF(ax_node, html_tag);
-  }
-
-  if (ui::IsTextField(ax_node->GetRole())) {
-    return "div";
-  }
-
-  // Some divs are marked with role=heading and aria-level=# to indicate
-  // the heading level, so use the <h#> tag directly.
-  if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
-    std::string aria_level = GetAriaLevel(ax_node);
-    if (!aria_level.empty()) {
-      return "h" + aria_level;
-    }
-  }
-
-  if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
-    // Replace mark element with bold element for readability.
-    html_tag = "b";
-  } else if (IsGoogleDocs()) {
-    // Change HTML tags for SVG elements to allow Reading Mode to render text
-    // for the Annotated Canvas elements in a Google Doc.
-    if (html_tag == "svg") {
-      html_tag = "div";
-    }
-    if (html_tag == "g" && ax_node->GetRole() == ax::mojom::Role::kParagraph) {
-      html_tag = "p";
-    }
-  }
-
-  return html_tag;
-}
-
-std::string ReadAnythingAppController::GetAriaLevel(ui::AXNode* ax_node) const {
-  std::string aria_level;
-  ax_node->GetHtmlAttribute("aria-level", &aria_level);
-  return aria_level;
-}
-
-std::string ReadAnythingAppController::GetHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    std::string html_tag) const {
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // Some nodes in PDFs don't have an HTML tag so use role instead.
-  switch (role) {
-    case ax::mojom::Role::kEmbeddedObject:
-    case ax::mojom::Role::kRegion:
-    case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRootWebArea:
-      return "span";
-    case ax::mojom::Role::kParagraph:
-      return "p";
-    case ax::mojom::Role::kLink:
-      return "a";
-    case ax::mojom::Role::kStaticText:
-      return "";
-    case ax::mojom::Role::kHeading:
-      return GetHeadingHtmlTagForPDF(ax_node, html_tag);
-    // Add a line break after each page of an inaccessible PDF for readability
-    // since there is no other formatting included in the OCR output.
-    case ax::mojom::Role::kContentInfo:
-      if (ax_node->GetTextContentUTF8() == string_constants::kPDFPageEnd) {
-        return "br";
-      }
-      ABSL_FALLTHROUGH_INTENDED;
-    default:
-      return html_tag;
-  }
-}
-
-std::string ReadAnythingAppController::GetHeadingHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    std::string html_tag) const {
-  // Sometimes whole paragraphs can be formatted as a heading. If the text is
-  // longer than 2 lines, assume it was meant to be a paragragh,
-  if (ax_node->GetTextContentUTF8().length() > (2 * kMaxLineWidth)) {
-    return "p";
-  }
-
-  // A single block of text could be incorrectly formatted with multiple heading
-  // nodes (one for each line of text) instead of a single paragraph node. This
-  // case should be detected to improve readability. If there are multiple
-  // consecutive nodes with the same heading level, assume that they are all a
-  // part of one paragraph.
-  ui::AXNode* next = ax_node->GetNextUnignoredSibling();
-  ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
-
-  if ((next && next->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag) ||
-      (prev && prev->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag)) {
-    return "span";
-  }
-
-  std::string aria_level = GetAriaLevel(ax_node);
-  return !aria_level.empty() ? "h" + aria_level : html_tag;
+  return model_.GetHtmlTag(ax_node_id);
 }
 
 std::string ReadAnythingAppController::GetLanguage(
@@ -1103,10 +1009,10 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  bool isBold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
-  bool isItalic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
-  bool isUnderline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
-  return isBold || isItalic || isUnderline;
+  bool is_bold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
+  bool is_italic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
+  bool is_underline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return is_bold || is_italic || is_underline;
 }
 
 bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
@@ -1179,6 +1085,11 @@ void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
 void ReadAnythingAppController::OnFontSizeReset() {
   model_.ResetTextSize();
   page_handler_->OnFontSizeChange(model_.font_size());
+}
+
+void ReadAnythingAppController::OnLinksEnabledToggled() {
+  model_.ToggleLinksEnabled();
+  page_handler_->OnLinksEnabledChanged(model_.links_enabled());
 }
 
 void ReadAnythingAppController::OnScroll(bool on_selection) const {
@@ -1367,12 +1278,12 @@ void ReadAnythingAppController::InitAXPositionWithNode(
 }
 
 bool ReadAnythingAppController::NodeBeenOrWillBeSpoken(
-    ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity,
+    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
     ui::AXNodeID id) {
   if (base::Contains(current_granularity.segments, id)) {
     return true;
   }
-  for (ReadAnythingAppController::ReadAloudCurrentGranularity granularity :
+  for (ReadAnythingAppModel::ReadAloudCurrentGranularity granularity :
        processed_granularities_on_current_page_) {
     if (base::Contains(granularity.segments, id)) {
       return true;
@@ -1391,7 +1302,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
   // If we've previously processed the triples at this location, return the
   // previously processed node information. Otherwise, get this information
   // GetNextNodes.
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
       (was_previously_processed) ? processed_granularities_on_current_page_
                                        [processed_granularity_index_ + 1]
                                  : GetNextNodes(max_text_length);
@@ -1413,10 +1324,10 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
 // TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
-ReadAnythingAppController::ReadAloudCurrentGranularity
+ReadAnythingAppModel::ReadAloudCurrentGranularity
 ReadAnythingAppController::GetNextNodes(int max_text_length) {
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      ReadAnythingAppController::ReadAloudCurrentGranularity();
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      ReadAnythingAppModel::ReadAloudCurrentGranularity();
 
   // Make sure we're adequately returning at the end of content.
   if (!ax_position_ || ax_position_->AtEndOfAXTree() ||
@@ -1447,7 +1358,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
     int prev_index = current_text_index_;
     // Gets the starting index for the next sentence in the current node.
     int next_sentence_index =
-        GetNextSentence(text_substr, max_text_length) + prev_index;
+        model_.GetNextSentence(text_substr, max_text_length) + prev_index;
     // If our current index within the current node is greater than that node's
     // text, look at the next node. If the starting index of the next sentence
     // in the node is the same the current index within the node, this means
@@ -1486,7 +1397,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
       // Get the index of the next sentence if we're looking at the combined
       // previous and current node text.
       int combined_sentence_index =
-          GetNextSentence(combined_text, max_text_length);
+          model_.GetNextSentence(combined_text, max_text_length);
       // If the combined_sentence_index is the same as the current_text length,
       // the new node should not be considered part of the current sentence.
       // If these values differ, add the current node's text to the list of
@@ -1511,7 +1422,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
         // Add the current node to the list of nodes to be returned, with a
         // text range from 0 to the start of the next sentence
         // (index_in_new_node);
-        ReadAnythingAppController::ReadAloudTextSegment segment;
+        ReadAnythingAppModel::ReadAloudTextSegment segment;
         segment.id = anchor_node->id();
         segment.text_start = 0;
         segment.text_end = index_in_new_node;
@@ -1544,7 +1455,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
     text_substr = text.substr(current_text_index_);
     // Find the next sentence within the current node.
     int new_current_text_index =
-        GetNextSentence(text_substr, max_text_length) + prev_index;
+        model_.GetNextSentence(text_substr, max_text_length) + prev_index;
     // If adding the next piece of the sentence from the current node doesn't
     // make the returned text too long, add it to the list of nodes.
     if ((current_text.length() + new_current_text_index - prev_index) <
@@ -1554,7 +1465,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
       // Add the current node to the list of nodes to be returned, with a
       // text range from the starting index (the end of the previous piece of
       // the sentence) to the start of the next sentence.
-      ReadAnythingAppController::ReadAloudTextSegment segment;
+      ReadAnythingAppModel::ReadAloudTextSegment segment;
       segment.id = anchor_node->id();
       segment.text_start = start_index;
       segment.text_end = new_current_text_index;
@@ -1582,8 +1493,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
 // TODO(crbug.com/1474951): Random access to processed nodes might not always
 // work (e.g. if we're switching granularities or jumping to a specific node),
 // so we should implement a method of retrieving previous text from AXPosition
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText(
-    int max_text_length) {
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText() {
   // If GetPreviousText is called before the tree is initialized or before
   // there are any processed granularities, return an empty vector.
   if (processed_granularities_on_current_page_.size() == 0) {
@@ -1617,8 +1527,7 @@ ui::AXNode* ReadAnythingAppController::GetNodeFromCurrentPosition() {
 // Some of the checks here right now are probably unneeded.
 ui::AXNodePosition::AXPositionInstance
 ReadAnythingAppController::GetNextValidPositionFromCurrentPosition(
-    ReadAnythingAppController::ReadAloudCurrentGranularity
-        current_granularity) {
+    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity) {
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
@@ -1684,12 +1593,12 @@ int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
     return -1;
   }
 
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
-  ReadAnythingAppController::ReadAloudTextSegment segment =
+  ReadAnythingAppModel::ReadAloudTextSegment segment =
       current_granularity.segments[node_id];
 
   return segment.text_start;
@@ -1700,54 +1609,22 @@ int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
     return -1;
   }
 
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
-  ReadAnythingAppController::ReadAloudTextSegment segment =
+  ReadAnythingAppModel::ReadAloudTextSegment segment =
       current_granularity.segments[node_id];
 
   return segment.text_end;
-}
-
-int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
-                                               int maxTextLength) {
-  // TODO(crbug.com/1474941): Investigate providing correct line breaks
-  // or alternatively making adjustments to ax_text_utils to return boundaries
-  // that minimize choppiness.
-  std::vector<int> offsets;
-  const std::u16string shorterString = text.substr(0, maxTextLength);
-  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
-      shorterString, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
-      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-
-  // Compare the index result for the sentence of maximum text length and of
-  // the longer text string. If the two values are the same, the index is
-  // correct. If they are different, the maximum text length may have
-  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
-  // "this is a" or "this is a sentence"), so if this is the case, we'll want
-  // to use the last word boundary instead.
-  if (sentence_ends_short == sentence_ends_long) {
-    return sentence_ends_short;
-  }
-
-  size_t word_ends = ui::FindAccessibleTextBoundary(
-      shorterString, offsets, ax::mojom::TextBoundary::kWordStart,
-      shorterString.length() - 1, ax::mojom::MoveDirection::kBackward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  return word_ends;
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from
 // int to their corresponding enums.
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
+                                                   bool links_enabled,
                                                    SkColor foreground_color,
                                                    SkColor background_color,
                                                    int line_spacing,
@@ -1756,9 +1633,9 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
       static_cast<read_anything::mojom::LineSpacing>(line_spacing);
   auto letter_spacing_enum =
       static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
-  OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
-                                        background_color, line_spacing_enum,
-                                        letter_spacing_enum));
+  OnThemeChanged(ReadAnythingTheme::New(
+      font_name, font_size, links_enabled, foreground_color, background_color,
+      line_spacing_enum, letter_spacing_enum));
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(
@@ -1785,9 +1662,9 @@ void ReadAnythingAppController::SetContentForTesting(
       render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
-  ui::AXEvent selectionEvent;
-  selectionEvent.event_type = ax::mojom::Event::kDocumentSelectionChanged;
-  selectionEvent.event_from = ax::mojom::EventFrom::kUser;
+  ui::AXEvent selection_event;
+  selection_event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
+  selection_event.event_from = ax::mojom::EventFrom::kUser;
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
                           GURL::EmptyGURL(), false);
@@ -1795,7 +1672,7 @@ void ReadAnythingAppController::SetContentForTesting(
 
   // Trigger a selection event (for testing selections).
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
-                             {selectionEvent});
+                             {selection_event});
 }
 
 content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
@@ -1804,4 +1681,8 @@ content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
     return nullptr;
   }
   return content::RenderFrame::FromWebFrame(web_frame);
+}
+
+void ReadAnythingAppController::ShouldShowUI() {
+  page_handler_factory_->ShouldShowUI();
 }

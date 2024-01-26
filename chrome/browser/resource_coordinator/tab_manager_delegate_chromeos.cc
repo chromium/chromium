@@ -346,7 +346,7 @@ void TabManagerDelegate::LowMemoryKill(
     }
   }
 
-  LowMemoryKillImpl(now, reason, std::move(tab_discard_done), absl::nullopt);
+  LowMemoryKillImpl(now, reason, std::move(tab_discard_done), std::nullopt);
 }
 
 int TabManagerDelegate::GetCachedOomScore(ProcessHandle process_handle) {
@@ -498,7 +498,7 @@ void TabManagerDelegate::AdjustOomPriorities() {
   }
 
   // Pass in nullopt if unable to get ARC container processes.
-  AdjustOomPrioritiesImpl(absl::nullopt);
+  AdjustOomPrioritiesImpl(std::nullopt);
 }
 
 // Get a list of candidates to kill, sorted by descending importance.
@@ -592,13 +592,13 @@ void TabManagerDelegate::LowMemoryKillImpl(
   // bring the system memory back to a normal level.
   // The list is sorted by descending importance, so we go through the list
   // backwards.
-  absl::optional<base::TimeTicks> first_kill_time = absl::nullopt;
+  std::optional<base::TimeTicks> first_kill_time = std::nullopt;
   const TimeTicks now = TimeTicks::Now();
 
   for (auto& candidate : base::Reversed(candidates)) {
     MEMORY_LOG(ERROR) << "Target memory to free: "
                       << target_memory_to_free.target_kb << " KB";
-    if (target_memory_to_free.target_kb <= 0) {
+    if (target_memory_to_free.target_kb == 0) {
       break;
     }
 
@@ -608,7 +608,10 @@ void TabManagerDelegate::LowMemoryKillImpl(
     unnecessary_discard_monitor_.OnDiscard(freed_memory_kb,
                                            base::TimeTicks::Now());
 
-    target_memory_to_free.target_kb -= freed_memory_kb;
+    // Prevent underflow by capping the memory freed.
+    target_memory_to_free.target_kb -=
+        std::min(static_cast<uint64_t>(freed_memory_kb),
+                 target_memory_to_free.target_kb);
 
     if (freed_memory_kb > 0 && !first_kill_time) {
       first_kill_time = base::TimeTicks::Now();

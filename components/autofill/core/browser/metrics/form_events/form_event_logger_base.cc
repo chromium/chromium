@@ -143,6 +143,13 @@ void FormEventLoggerBase::OnDidShowSuggestions(
   RecordShowSuggestions();
 }
 
+void FormEventLoggerBase::OnDidRefill(
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    const FormStructure& form) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
+  Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
+}
+
 void FormEventLoggerBase::SetAblationStatus(
     AblationGroup ablation_group,
     AblationGroup conditional_ablation_group) {

@@ -31,7 +31,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               Synchronize,
               (const webapps::AppId& app_id,
                base::OnceClosure callback,
-               absl::optional<SynchronizeOsOptions> options),
+               std::optional<SynchronizeOsOptions> options),
               (override));
 
   MOCK_METHOD(void,

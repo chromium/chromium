@@ -794,7 +794,7 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL) {
 TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_MultipleResults) {
   static const char kPacString[] =
       "PROXY foo1:80;DIRECT;SOCKS foo2:1234;"
-      "SOCKS5 foo3:1080;HTTPS foo4:443;QUIC foo6:8888";
+      "SOCKS5 foo3:1080;HTTPS foo4:443";
   mock_proxy_resolver_.AddGetProxyAction(GetProxyForUrlAction::ReturnServers(
       GURL(kExampleUrl), ProxyServersFromPacString(kPacString)));
   CreateProxyResolver();

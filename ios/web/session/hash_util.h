@@ -8,6 +8,7 @@
 #include <functional>
 #include <tuple>
 
+#include "base/strings/string_piece.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 

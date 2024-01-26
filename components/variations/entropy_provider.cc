@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/hash/sha1.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
 #include "components/variations/variations_murmur_hash.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 

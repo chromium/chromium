@@ -53,6 +53,8 @@ class CORE_EXPORT LoaderFactoryForFrame final
       mojom::blink::LocalFrameHost& local_frame_host,
       mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver);
   scoped_refptr<BackgroundCodeCacheHost> GetBackgroundCodeCacheHost();
+
+  URLLoaderThrottleProvider* GetURLLoaderThrottleProvider();
   Vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest&);
 

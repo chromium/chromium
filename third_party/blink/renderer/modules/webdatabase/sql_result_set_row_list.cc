@@ -29,9 +29,9 @@
 #include "third_party/blink/renderer/modules/webdatabase/sql_result_set_row_list.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -58,12 +58,17 @@ ScriptValue SQLResultSetRowList::item(ScriptState* script_state,
   unsigned num_columns = columns_.size();
   unsigned values_index = index * num_columns;
 
-  Vector<std::pair<String, SQLValue>> data_array;
-  for (unsigned i = 0; i < num_columns; ++i)
-    data_array.push_back(
-        std::make_pair(columns_[i], result_[values_index + i]));
+  HeapVector<std::pair<String, ScriptValue>> data_array;
+  for (unsigned i = 0; i < num_columns; ++i) {
+    data_array.push_back(std::make_pair(
+        columns_[i],
+        ScriptValue(script_state->GetIsolate(),
+                    result_[values_index + i].ToV8(script_state))));
+  }
 
-  return ScriptValue::From(script_state, data_array);
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLRecord<IDLString, IDLAny>>::ToV8(script_state, data_array));
 }
 
 }  // namespace blink

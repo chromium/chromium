@@ -16,12 +16,12 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -105,7 +105,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
     builder->AddExchange(
         "/256x256-green.png",
         {{":status", "200"}, {"content-type", "image/png"}},
-        test::BitmapAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
+        test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
     return builder;
   }
 
@@ -121,7 +121,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_, InstalledBundle{.path = bundle_path},
-        /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
+        /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
   }

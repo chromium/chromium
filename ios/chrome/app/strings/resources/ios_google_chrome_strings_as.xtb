@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1066101356081285416">Chromeএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে Googleৰ বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Googleলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="1085696779717592361">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="1105362920864247682">Chromeত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
 <translation id="1113057722807951993">পাছফ্ৰে’জ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
@@ -40,13 +41,13 @@
 <translation id="1682483655351012182">আপোনাৰ Chrome ডেটা ছিংক কৰক</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeত আপোনাৰ বুকমাৰ্কত ইনপুট কৰা URL যোগ দিয়ে।</translation>
+<translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1830634592642484976">এই ঠিকনাটো বৰ্তমান Chromeত ছেভ কৰা হয়। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
 <translation id="1843217788865538014">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক টিপিলে স্বয়ংক্ৰিয়ভাৱে Chrome ব্যৱহাৰ কৰক।</translation>
 <translation id="1910975740091000991">iOSৰ বাবে Chrome</translation>
 <translation id="1917964099031477364">এই ডিভাইচত থকা Chrome আৰু অন্য Google এপ্‌সমূহৰ পৰা এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা আঁতৰোৱা হ’ব।</translation>
 <translation id="1965935827552890526">Chromeৰ খোলা থকা অন্য ৱিণ্ড’ত আপুনি কি কৰি আছিল সেয়া সমাপ্ত কৰক।</translation>
 <translation id="1987779152850321833">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত পৰামৰ্শ দিয়া কাৰ্যসমূহ সম্পূৰ্ণ কৰক।</translation>
-<translation id="2008357574463816229">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="2056123005618757196">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Google Chromeৰ জৰিয়তে অধিক কাম কৰক।</translation>
 <translation id="2120238739383482109">Chromeৰ বুকমাৰ্কসমূহ খোলে।</translation>
 <translation id="2147651015520127414">Chromiumএ সত্যাপন কৰিছে যে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰিছে।</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chromeত পঢ়াৰ সূচীৰ বস্তু যোগ দিয়ক</translation>
 <translation id="2736805085127235148">আপোনাৰ ডিভাইচৰ ছেটিঙত বৰ্তমান Chromeৰ জাননী অফ কৰা আছে।</translation>
 <translation id="2767464022270041271">কোনো ছেভ কৰা পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Google Password Managerএ সেইসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
+<translation id="2789947168960170215">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="2868822340714096138">Chromeত ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chromeএ কেনেকৈ আপোনাৰ ডেটা ব্যক্তিগত কৰি ৰাখে<ph name="END_LINK" /> সেই বিষয়ে অধিক জানক</translation>
@@ -98,7 +100,6 @@
 <translation id="3503014945441706099">Chromeৰ এই প্ৰ’ফাইলটোৰ বাবেও বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধা লাভ কৰক</translation>
 <translation id="3522659714780527202">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
 <translation id="3577555362230509265">অন্য এপ্‌সমূহত Chrome ব্যৱহাৰ কৰক।</translation>
-<translation id="3594076341410558780">“Chromeৰ পৰা পাৰ্যমানে উপকৃত হওক” লুকুৱাওক</translation>
 <translation id="364480321352456989">আপোনাৰ Chrome পুৰণি হৈছে।</translation>
 <translation id="3646736009628185125">আপোনাৰ পৰিয়ালৰ সদস্যই এই মুহূৰ্তত পাছৱৰ্ড লাভ কৰিব নোৱাৰে। তেওঁলোকক Chrome আপডে’ট কৰিবলৈ আৰু তেওঁলোকৰ পাছৱৰ্ড ছিংক কৰিবলৈ কওক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ম’বাইল ছাইটৰ অনুৰোধ কৰিব।</translation>
@@ -204,7 +205,6 @@
 <translation id="686691656039982452">আপুনি আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK" />Chromeৰ কি ডেটা ছেভ কৰা হয় সেয়া পৰিচালনা কৰিব<ph name="END_LINK" /> পাৰে।
 
 আপোনাৰ Chromeৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
-<translation id="687586529977635009">Chromeএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে Shopping উন্নত কৰিবলৈ Googleৰ সৈতে আপোনাৰ ডেটাখিনি শ্বেয়াৰ কৰা হ’ব। আপুনি এইটো <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত সলনি কৰিব পাৰে।</translation>
 <translation id="6916015246697034114">Chromeত কণ্ঠধ্বনিৰে সন্ধান কৰক</translation>
 <translation id="6964931465519938134">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="6975725306479268850">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chrome বাছনি কৰক</translation>

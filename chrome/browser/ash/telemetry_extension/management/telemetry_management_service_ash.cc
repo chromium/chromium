@@ -22,6 +22,8 @@ namespace crosapi = crosapi::mojom;
 
 constexpr int32_t kMaxAudioGain = 100;
 constexpr int32_t kMinAudioGain = 0;
+constexpr int32_t kMaxAudioVolume = 100;
+constexpr int32_t kMinAudioVolume = 0;
 
 }  // namespace
 
@@ -64,9 +66,34 @@ void TelemetryManagementServiceAsh::SetAudioGain(
     uint64_t node_id,
     int32_t gain,
     SetAudioGainCallback callback) {
+  // Only input audio node is supported.
+  const AudioDevice* device = CrasAudioHandler::Get()->GetDeviceFromId(node_id);
+  if (!device || !device->is_input) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   gain = std::clamp(gain, kMinAudioGain, kMaxAudioGain);
   CrasAudioHandler::Get()->SetVolumeGainPercentForDevice(node_id, gain);
-  std::move(callback).Run();
+  std::move(callback).Run(true);
+}
+
+void TelemetryManagementServiceAsh::SetAudioVolume(
+    uint64_t node_id,
+    int32_t volume,
+    bool is_muted,
+    SetAudioVolumeCallback callback) {
+  // Only output audio node is supported.
+  const AudioDevice* device = CrasAudioHandler::Get()->GetDeviceFromId(node_id);
+  if (!device || device->is_input) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  volume = std::clamp(volume, kMinAudioVolume, kMaxAudioVolume);
+  CrasAudioHandler::Get()->SetVolumeGainPercentForDevice(node_id, volume);
+  CrasAudioHandler::Get()->SetMuteForDevice(node_id, is_muted);
+  std::move(callback).Run(true);
 }
 
 }  // namespace ash

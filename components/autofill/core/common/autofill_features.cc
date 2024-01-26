@@ -63,24 +63,11 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
-// If enabled, the country calling code for nationally formatted phone numbers
-// is inferred from the profile's country, if available.
-// TODO(crbug.com/1311937): Cleanup when launched.
-BASE_FEATURE(kAutofillInferCountryCallingCode,
-             "AutofillInferCountryCallingCode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
 // TODO(crbug.com/1311937): Cleanup when launched.
 BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, contenteditables are extracted and filled.
-// TODO(crbug.com/1490372): Cleanup when launched.
-BASE_FEATURE(kAutofillContentEditables,
-             "AutofillContentEditables",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
@@ -106,34 +93,6 @@ BASE_FEATURE(kAutofillDontPreserveAutofillState,
 BASE_FEATURE(kAutofillDeferSubmissionClassificationAfterAjax,
              "AutofillDeferSubmissionClassificationAfterAjax",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, server/heuristic predictions take precedence over an unrecognized
-// autocomplete attribute. Suggestions are suppressed for such fields and they
-// won't be considered for filling or importing. The fields do however affect
-// rationalization and sectioning, and non-(key and quality) metrics.
-// When `kAutofillFillAndImportFromMoreFields` is enabled, fields with
-// unrecognized autocomplete attribute are considered for import.
-// TODO(crbug.com/1446318): Remove the feature when the experiment is completed.
-BASE_FEATURE(kAutofillPredictionsForAutocompleteUnrecognized,
-             "AutofillPredictionsForAutocompleteUnrecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
-    &kAutofillPredictionsForAutocompleteUnrecognized,
-    "import_from_autocomplete_unrecognized", false};
-
-// When enabled, an entry is added to the context menu of ac=unrecognized fields
-// which allows triggering Autofill suggestions. Selecting such a suggestion
-// fills all address fields in the field's section, independently of the
-// autocomplete attribute.
-// TODO(crbug.com/1446318): Remove when launched.
-BASE_FEATURE(kAutofillFallbackForAutocompleteUnrecognized,
-             "AutofillFallbackForAutocompleteUnrecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// If true, the context menu entry is shown for all address fields.
-const base::FeatureParam<bool>
-    kAutofillFallForAutocompleteUnrecognizedOnAllAddressField{
-        &kAutofillFallbackForAutocompleteUnrecognized,
-        "show_on_all_address_fields", true};
 
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
@@ -311,13 +270,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether honorific prefix is shown and editable in Autofill Settings
-// on Android, iOS and Desktop.
-// TODO(crbug.com/1141460): Remove once launched.
-BASE_FEATURE(kAutofillEnableSupportForHonorificPrefixes,
-             "AutofillEnableSupportForHonorificPrefixes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Some countries like BR and MX have address forms with only a zip code.
 // If this feature is enabled, those fields may be classified as zip code fields
 // for users who are located in BR/MX, even though our typical policy is to
@@ -333,12 +285,10 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
              "AutofillEnableSupportForPhoneNumberTrunkTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not all datalist shall be extracted into FormFieldData.
-// This feature is enabled in both WebView and WebLayer where all datalists
-// instead of only the focused one shall be extracted and sent to Android
-// autofill service when the autofill session created.
-BASE_FEATURE(kAutofillExtractAllDatalists,
-             "AutofillExtractAllDatalists",
+// Changes the mechanisms of FormTracker and the requirements for firing
+// submission on formless elements.
+BASE_FEATURE(kAutofillImproveSubmissionDetection,
+             "AutofillImproveSubmissionDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
@@ -346,13 +296,6 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 // forms.
 BASE_FEATURE(kAutofillDetectRemovedFormControls,
              "AutofillDetectRemovedFormControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Indicates whether the platform requires support for the legacy dropdown for
-// datalists. This is enabled on WebView because the keyboard accessory is not
-// available.
-BASE_FEATURE(kAutofillLegacyDatalistDropdown,
-             "AutofillLegacyDatalistDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces cached web elements in AutofillAgent and FormTracker by their
@@ -370,9 +313,23 @@ BASE_FEATURE(kAutofillUseAddressRewriterInProfileSubsetComparison,
 
 // Enables using the newer i18n address model, overriding the legacy one.
 // This includes:
+// - Using newer i18n address hierarchies.
 // - Using newer i18n address format strings.
+// - Using newer i18n address parsing rules.
 BASE_FEATURE(kAutofillUseI18nAddressModel,
              "AutofillUseI18nAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables using the a custom address model for Germany, overriding the legacy
+// one.
+BASE_FEATURE(kAutofillUseDEAddressModel,
+             "AutofillUseDEAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables using the a custom address model for India, overriding the legacy
+// one.
+BASE_FEATURE(kAutofillUseINAddressModel,
+             "AutofillUseINAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Changes Autofill Clear Form into Undo Autofill.
@@ -382,7 +339,7 @@ BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 // merging.
 BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
              "AutofillConvergeToExtremeLengthStreetAddress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kAutofillConvergeToLonger{
     &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};
@@ -390,13 +347,6 @@ const base::FeatureParam<bool> kAutofillConvergeToLonger{
 BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, HTML autocomplete values that do not map to any known type, but
-// look reasonable (e.g. contain "address") are simply ignored. Without the
-// feature, Autofill is disabled on such fields.
-BASE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues,
-             "AutofillIgnoreUnmappableAutocompleteValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
@@ -409,12 +359,6 @@ BASE_FEATURE(kAutofillLocalHeuristicsOverrides,
 // TODO(crbug/1248585): Remove when launched.
 BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
              "AutofillHighlightOnlyChangedValuesInPreviewMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Autofill will use new logic to strip both prefixes
-// and suffixes when setting FormStructure::parseable_name_
-BASE_FEATURE(kAutofillLabelAffixRemoval,
-             "AutofillLabelAffixRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, all behaviours related to the on-device machine learning
@@ -475,13 +419,6 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, local heuristics fall back to interpreting the fields' name as an
-// autocomplete type.
-// TODO(crbug.com/1345879) Remove once launched.
-BASE_FEATURE(kAutofillParseNameAsAutocompleteType,
-             "AutofillParseNameAsAutocompleteType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the placeholder is not used as a fallback during label inference.
 // Instead, local heuristics treat it as a separate source in addition to the
 // label. The placeholder is matched against the same regex as the label.
@@ -504,19 +441,14 @@ BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the feature is enabled, then custom cursor exceeding the (24 dips)
-// dimension limit are disallowed in extension-hosted content. This feature is
-// dependent on `kAutofillPopupMultiWindowCursorSuppression` - if the latter is
-// disabled, so is this.
-BASE_FEATURE(kAutofillPopupExtensionCursorSuppression,
-             "AutofillPopupExtensionCursorSuppression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If the feature is enabled, custom cursors exceeding the (24 dips) dimension
-// limit are disallowed for all active tabs in all active windows.
-BASE_FEATURE(kAutofillPopupMultiWindowCursorSuppression,
-             "AutofillPopupMultiWindowCursorSuppression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// If the feature is enabled, then the time when the Autofill popup is
+// considered to have been shown is measured only once the UI thread has become
+// idle. The intent behind this is to avoid situations in which the OS message
+// queue has a backlog and input event timestamps become inaccurate (i.e. event
+// timestamps indicate that events are more recent than they should be).
+BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
+             "AutofillPopupImprovedTimingChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the threshold for accepting Autofill popup suggestions
 // should take into account latency information of the user event.
@@ -713,9 +645,10 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
              "AutofillAndroidDisableSuggestionsOnJSFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, FormField::MatchesRegexWithCache tries to avoid re-computing
-// whether a regex matches an input string by caching the result. The result
-// size is controlled by kAutofillEnableCacheForRegexMatchingCacheSizeParam.
+// When enabled, FormFieldParser::MatchesRegexWithCache tries to avoid
+// re-computing whether a regex matches an input string by caching the result.
+// The result size is controlled by
+// kAutofillEnableCacheForRegexMatchingCacheSizeParam.
 BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
              "AutofillEnableCacheForRegexMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -731,19 +664,6 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// When enabled, the keyboard accessory is shown for autocomplete=unrecognized
-// fields. Selecting a keyboard accessory suggestion will fill the triggering
-// field (independently of the autocomplete attribute) and all
-// autocomplete != unrecognized fields in the triggering field's section.
-// Note that this only affects address fields, since credit cards already ignore
-// autocomplete=unrecognized.
-// TODO(crbug.com/1446318): Remove when launched.
-BASE_FEATURE(kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile,
-             "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 namespace test {
 

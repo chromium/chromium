@@ -137,7 +137,7 @@ class BoundSessionCookieControllerImpl
 
   // Added for testing purposes.
   std::unique_ptr<base::RetainingOneShotTimer> artifical_cookie_rotation_delay_;
-  absl::optional<BoundSessionRefreshCookieFetcher::Result>
+  std::optional<BoundSessionRefreshCookieFetcher::Result>
       artificial_cookie_rotation_result_;
 
   base::WeakPtrFactory<BoundSessionCookieControllerImpl> weak_ptr_factory_{

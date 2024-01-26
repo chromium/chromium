@@ -26,8 +26,13 @@ extern const int kMaxMessagesPerRead;
 // deserialization was successful) or a nullptr scoped_ptr.
 std::unique_ptr<MetricSample> ParseSample(const std::string& sample);
 
-// Reads all samples from a file and truncate the file when done.
+// Reads all samples from a file and truncates the file when done.
 void ReadAndTruncateMetricsFromFile(
+    const std::string& filename,
+    std::vector<std::unique_ptr<MetricSample>>* metrics);
+
+// Reads all samples from a file and deletes the file when done.
+void ReadAndDeleteMetricsFromFile(
     const std::string& filename,
     std::vector<std::unique_ptr<MetricSample>>* metrics);
 

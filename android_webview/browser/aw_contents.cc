@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "android_webview/browser/aw_autofill_client.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
@@ -47,6 +46,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/atomicops.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -63,6 +63,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -303,7 +304,9 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   if (!autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
     return;
   }
-  AwAutofillClient::CreateForWebContents(web_contents_.get());
+  android_autofill::AndroidAutofillClient::CreateForWebContents(
+      web_contents_.get(),
+      [&](const JavaRef<jobject>& client) { SetAwAutofillClient(client); });
 
   // We need to initialize the keyboard suppressor before creating any
   // AutofillManagers and after the autofill client is available.
@@ -317,7 +320,7 @@ void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj)
     return;
-  Java_AwContents_setAwAutofillClient(env, obj, client);
+  Java_AwContents_setAndroidAutofillClient(env, obj, client);
 }
 
 AwContents::~AwContents() {
@@ -869,9 +872,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   // Convert the certificate and return it
   base::StringPiece der_string = net::x509_util::CryptoBufferAsStringPiece(
       entry->GetSSL().certificate->cert_buffer());
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(der_string.data()),
-      der_string.length());
+  return base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
 }
 
 void AwContents::RequestNewHitTestDataAt(JNIEnv* env,
@@ -1003,8 +1004,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
 
   base::Pickle pickle;
   WriteToPickle(*web_contents_, &pickle);
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(pickle.data()), pickle.size());
+  return base::android::ToJavaByteArray(env, pickle);
 }
 
 jboolean AwContents::RestoreFromOpaqueState(
@@ -1016,8 +1016,7 @@ jboolean AwContents::RestoreFromOpaqueState(
   std::vector<uint8_t> state_vector;
   base::android::JavaByteArrayToByteVector(env, state, &state_vector);
 
-  base::Pickle pickle(reinterpret_cast<const char*>(state_vector.data()),
-                      state_vector.size());
+  base::Pickle pickle(state_vector);
   base::PickleIterator iterator(pickle);
 
   return RestoreFromPickle(&iterator, web_contents_.get());

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
+
+#include <map>
 #include <set>
-#include "base/containers/cxx20_erase.h"
+
 #include "base/containers/flat_tree.h"
 #include "base/i18n/string_search.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -951,7 +953,7 @@ void AutomationTreeManagerOwner::DestroyAccessibilityTree(
     const AXTreeID& tree_id) {
   auto& child_tree_id_reverse_map =
       AutomationAXTreeWrapper::GetChildTreeIDReverseMap();
-  base::EraseIf(
+  std::erase_if(
       child_tree_id_reverse_map,
       [tree_id](const std::pair<AXTreeID, AutomationAXTreeWrapper*>& pair) {
         return pair.first == tree_id || pair.second->GetTreeID() == tree_id;
@@ -1030,7 +1032,7 @@ void AutomationTreeManagerOwner::ClearCachedAccessibilityTrees() {
 void AutomationTreeManagerOwner::Invalidate() {
   auto& child_tree_id_reverse_map =
       AutomationAXTreeWrapper::GetChildTreeIDReverseMap();
-  base::EraseIf(
+  std::erase_if(
       child_tree_id_reverse_map,
       [this](const std::pair<AXTreeID, AutomationAXTreeWrapper*>& pair) {
         return pair.second->owner() == this;

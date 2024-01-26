@@ -140,6 +140,8 @@ GetUrlRequestDestinationFromMojomRequestDestination(
       return CSBRR::IFRAME;
     case network::mojom::RequestDestination::kImage:
       return CSBRR::IMAGE;
+    case network::mojom::RequestDestination::kJson:
+      return CSBRR::JSON;
     case network::mojom::RequestDestination::kManifest:
       return CSBRR::MANIFEST;
     case network::mojom::RequestDestination::kObject:

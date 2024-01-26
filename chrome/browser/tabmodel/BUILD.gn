@@ -81,6 +81,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",

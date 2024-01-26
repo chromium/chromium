@@ -94,7 +94,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   virtual bool IsWordBreak() const;
 
+  // Returns a string in the corresponding Text node.
+  // Returns a null string for an element-based LayoutText such as LayoutBR
+  // and LayoutWordBreak.
   virtual String OriginalText() const;
+  // This should not be called for LayoutBR.
   unsigned OriginalTextLength() const;
 
   bool HasInlineFragments() const final;
@@ -424,6 +428,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
  private:
   ContentCaptureManager* GetOrResetContentCaptureManager();
   void DetachAbstractInlineTextBoxes();
+
+  virtual unsigned NonCollapsedCaretMaxOffset() const;
 
   // Used for LayoutNG with accessibility. True if inline fragments are
   // associated to |AbstractInlineTextBox|.

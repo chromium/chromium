@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
+<translation id="1626590945318984973">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto‑ ja <ph name="META_KEY" />-näppäimiä.</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Laita tumma tila pois päältä</translation>
 <translation id="1885577615937958993">kelaa mediaa eteenpäin</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
-<translation id="1897672602657312171">Pikakomento ilman hakuanäppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa hakuavaimella.</translation>
 <translation id="1904932688895783618">Hyödyllistä lisätietoa:</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> kuvaa</translation>
 <translation id="2157660087437850958">emojivalitsin</translation>
 <translation id="2157959690810728433">JONOSSA</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Järjestelmänvalvoja on määrittänyt, että <ph name="APP_NAME_1" /> käynnistyy automaattisesti aina, kun kirjaudut sisään.}=2{Järjestelmänvalvoja on määrittänyt, että <ph name="APP_NAME_1" /> ja <ph name="APP_NAME_2" /> käynnistyvät automaattisesti aina, kun kirjaudut sisään.}=3{Järjestelmänvalvoja on määrittänyt, että <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> käynnistyvät automaattisesti aina, kun kirjaudut sisään.}other{Järjestelmänvalvoja on määrittänyt, että <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ja # muuta sovellusta käynnistyy automaattisesti aina, kun kirjaudut sisään.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
 <translation id="215916044711630446">Lisää APN ‐painike on nyt poistettu käytöstä</translation>
 <translation id="2161394479394250669">Peru tulostustyö</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">Muokkaa APN-tietoja</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
+<translation id="2215920961700443347">Ei internetyhteyttä Muodosta internetyhteys ja yritä uudelleen.</translation>
 <translation id="2217935453350629363">Nykyinen nopeus</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="222447520299472966">Ainakin yksi Taidegalleria-albumi on valittava</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">Kuva <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
+<translation id="2465272316171730950">Täällä on ruuhkaa. Palaa takaisin hetken kuluttua.</translation>
 <translation id="248546197012830854">Laite on offline-tilassa. Muodosta yhteys Wi-Fi-verkkoon, niin näet ohjesisältöä.</translation>
 <translation id="2491955442992294626">Näppäimiä ei testata, kun käytät toista ikkunaa</translation>
 <translation id="2493126929778606526">Parhaat kuvasi, valittu automaattisesti</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">Päivitä taustakuva</translation>
 <translation id="2512979179176933762">näytä ikkunat</translation>
 <translation id="2513396635448525189">Kirjautumiskuva</translation>
-<translation id="2515109918609218604">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto- ja hakunäppäimiä.</translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2521835766824839541">edellinen kappale</translation>
 <translation id="2526590354069164005">Työpöytä</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tumma tila</translation>
 <translation id="4130035430755296270">Pidä osoitin paikallaan, niin näet lisää asetteluvaihtoehtoja</translation>
+<translation id="4130750466177569591">Hyväksyn</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> käynnistettiin automaattisesti}other{# sovellusta käynnistettiin automaattisesti}}</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4150201353443180367">Näyttö</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">vähennä kirkkautta.</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4176659219503619100">Ohjauspaneeli</translation>
-<translation id="4185315616950253617">Ylärivin pikanäppäimiin täytyy kuulua hakunäppäin.</translation>
 <translation id="420283545744377356">Laita näytönsäästäjä pois päältä</translation>
 <translation id="4213104098953699324">USB-näppäimistö</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Poista käytöstä</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> käynnistetään uudelleen</translation>
 <translation id="4395835743215824109">näppäimistön yksilöinti</translation>
+<translation id="4403262788869804671">Pikakomento ilman <ph name="META_KEY" />-näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />-näppäimellä.</translation>
 <translation id="4415951057168511744">Nykyinen avatar</translation>
+<translation id="4417830657741848074">Järjestelmänvalvoja on määrittänyt joitakin sovelluksia käynnistymään automaattisesti. Kaikkia sovelluksia ei välttämättä voi sulkea.</translation>
 <translation id="4422041425070339732">nuoli alas</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ei ole päällä</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">Maan kulku ‑näytönsäästäjä</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
+<translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4507392511610824664">lisää kirkkautta</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
 <translation id="4839698083503556542">Luo oma elokuva</translation>
+<translation id="48409034532829769">Järjestelmänvalvoja on määrittänyt, että "<ph name="APP_NAME" />" käynnistyy automaattisesti. Tätä sovellusta ei voi sulkea.</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valittu, valitse albumeita (<ph name="TOPIC_SOURCE" />) painamalla Enter</translation>
 <translation id="484790837831576105">(Android) DNS-selvitys</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Jaa</translation>
 <translation id="4972592110715526173">tilan muutos</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
+<translation id="4982627662315910959">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä vaihdon ja yhden muun muokkausnäppäimen avulla (ctrl, alt tai <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="4987769320337599931">Palomuuri</translation>
 <translation id="4988526792673242964">Sivut</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Tumman teeman aikataulu</translation>
 <translation id="5229344016299762883">Poistu koko näytön tilasta</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Järjestelmänvalvoja on määrittänyt, että "<ph name="APP_NAME" />" käynnistyy automaattisesti aina, kun kirjaudut sisään.}=2{Järjestelmänvalvoja on määrittänyt, että "<ph name="APP_NAME" />" ja yksi muu sovellus käynnistyy automaattisesti aina, kun kirjaudut sisään.}other{Järjestelmänvalvoja on määrittänyt, että "<ph name="APP_NAME" />" ja # muuta sovellusta käynnistyy automaattisesti aina, kun kirjaudut sisään.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Ota vaalea väritila käyttöön</translation>
 <translation id="5264277876637023664">Suorita CPU-testi</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="725133483556299729">Valitse sähköpostiosoite</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
-<translation id="7273347807225967898">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, haku tai käynnistysohjelma).</translation>
+<translation id="7271932918253517778">Ylärivin pikanäppäimiin täytyy kuulua <ph name="META_KEY" />-näppäin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Tunne tuulahdus</translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Yleiset asetukset</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" käynnistettiin automaattisesti}other{# sovellusta käynnistettiin automaattisesti}}</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8017679124341497925">Pikanäppäintä muokattu</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8094062939584182041">Salli Googlen lähettää sinulle sähköpostia tästä ongelmasta</translation>
 <translation id="8104083085214006426">Käytät avointa ja suojaamatonta verkkoa</translation>
-<translation id="8111706652656628199">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä vaihdon ja yhden muun muokkausnäppäimen avulla (ctrl, alt, haku tai käynnistysohjelma).</translation>
 <translation id="811820734797650957">(Android) Yhdyskäytävää voidaan pingata</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>

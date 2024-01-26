@@ -5,16 +5,14 @@
 #include "components/bookmarks/browser/bookmark_load_details.h"
 
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/bookmarks/browser/url_index.h"
 
 namespace bookmarks {
 
-BookmarkLoadDetails::BookmarkLoadDetails(BookmarkClient* client)
-    : load_managed_node_callback_(client->GetLoadManagedNodeCallback()),
-      titled_url_index_(std::make_unique<TitledUrlIndex>()),
+BookmarkLoadDetails::BookmarkLoadDetails()
+    : titled_url_index_(std::make_unique<TitledUrlIndex>()),
       load_start_(base::TimeTicks::Now()) {
   // WARNING: do NOT add |client| as a member. Much of this code runs on another
   // thread, and |client_| is not thread safe, and/or may be destroyed before
@@ -26,33 +24,14 @@ BookmarkLoadDetails::BookmarkLoadDetails(BookmarkClient* client)
   // constant (but can vary between embedders with the initial visibility
   // of permanent nodes).
   bb_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateBookmarkBar(
-          max_id_++, client->IsPermanentNodeVisibleWhenEmpty(
-                         BookmarkNode::BOOKMARK_BAR))));
+      root_node_->Add(BookmarkPermanentNode::CreateBookmarkBar(max_id_++)));
   other_folder_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateOtherBookmarks(
-          max_id_++,
-          client->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::OTHER_NODE))));
+      root_node_->Add(BookmarkPermanentNode::CreateOtherBookmarks(max_id_++)));
   mobile_folder_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateMobileBookmarks(
-          max_id_++,
-          client->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::MOBILE))));
+      root_node_->Add(BookmarkPermanentNode::CreateMobileBookmarks(max_id_++)));
 }
 
 BookmarkLoadDetails::~BookmarkLoadDetails() = default;
-
-void BookmarkLoadDetails::LoadManagedNode() {
-  if (!load_managed_node_callback_) {
-    return;
-  }
-
-  std::unique_ptr<BookmarkPermanentNode> managed_node =
-      std::move(load_managed_node_callback_).Run(&max_id_);
-  if (!managed_node) {
-    return;
-  }
-  root_node_->Add(std::move(managed_node));
-}
 
 void BookmarkLoadDetails::CreateIndices() {
   AddNodeToIndexRecursive(root_node_.get());

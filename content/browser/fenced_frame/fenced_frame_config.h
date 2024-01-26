@@ -377,6 +377,10 @@ class CONTENT_EXPORT FencedFrameProperties {
   // All fields are empty, except a randomly generated partition nonce.
   FencedFrameProperties();
 
+  // The GURL constructor is used when loading a default config
+  // FencedFrameConfig(url).
+  FencedFrameProperties(const GURL& mapped_url);
+
   // For opaque url navigations, the properties should be constructed from
   // a `FencedFrameConfig` that was previously created.
   explicit FencedFrameProperties(const FencedFrameConfig& map_info);
@@ -471,11 +475,14 @@ class CONTENT_EXPORT FencedFrameProperties {
   }
 
   // Used for urn iframes, which should not have a separate storage/network
-  // partition.
+  // partition or access to window.fence.disableUntrustedNetwork().
   // TODO(crbug.com/1417871): Refactor this to be part of the
   // FencedFrameProperties constructor rather than
   // OnFencedFrameURLMappingComplete.
-  void ClearPartitionNonce() { partition_nonce_ = std::nullopt; }
+  void AdjustPropertiesForUrnIframe() {
+    partition_nonce_ = absl::nullopt;
+    can_disable_untrusted_network_ = false;
+  }
 
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
@@ -499,11 +506,24 @@ class CONTENT_EXPORT FencedFrameProperties {
     mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   }
 
+  bool can_disable_untrusted_network() const {
+    return can_disable_untrusted_network_;
+  }
+
+  // Safe to call multiple times (will do nothing after the first time).
+  void DisableUntrustedNetwork() {
+    CHECK(can_disable_untrusted_network_);
+    // TODO(crbug.com/1294933): Actually disable network.
+    has_disabled_untrusted_network_ = true;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            ConfigMojomTraitsTest);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            PropertiesHasFencedFrameReportingTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           PropertiesCanDisableUntrustedNetworkTest);
 
   std::vector<std::pair<GURL, FencedFrameConfig>>
   GenerateURNConfigVectorForConfigs(
@@ -591,6 +611,20 @@ class CONTENT_EXPORT FencedFrameProperties {
   // inheritance. Right now, only developer-created fenced frames (non-Protected
   // Audience/Shared Storage) will have a flexible permissions policy.
   absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+
+  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
+  // (and then access to unpartitioned storage).
+  // Currently true in all fenced frame configs, but set to false if loaded in a
+  // urn iframe.
+  // TODO(crbug.com/1415475): Remove this when urn iframes are removed.
+  bool can_disable_untrusted_network_ = true;
+
+  // Whether this fenced frame has already called
+  // window.fence.disableUntrustedNetwork() (i.e., if this is true, untrusted
+  // network access should be disabled and access to unpartitioned storage
+  // should be enabled.)
+  // Set by `DisableUntrustedNetwork()`.
+  bool has_disabled_untrusted_network_ = false;
 };
 
 }  // namespace content

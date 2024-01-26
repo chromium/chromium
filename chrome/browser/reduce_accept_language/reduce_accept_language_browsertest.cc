@@ -43,12 +43,12 @@ using ::net::test_server::EmbeddedTestServer;
 enum class FeatureEnableType { FeatureFlagEnable, OriginTrialEnable };
 
 struct ReduceAcceptLanguageTestOptions {
-  absl::optional<std::string> content_language_in_parent = absl::nullopt;
-  absl::optional<std::string> variants_in_parent = absl::nullopt;
-  absl::optional<std::string> vary_in_parent = absl::nullopt;
-  absl::optional<std::string> content_language_in_child = absl::nullopt;
-  absl::optional<std::string> variants_in_child = absl::nullopt;
-  absl::optional<std::string> vary_in_child = absl::nullopt;
+  std::optional<std::string> content_language_in_parent = std::nullopt;
+  std::optional<std::string> variants_in_parent = std::nullopt;
+  std::optional<std::string> vary_in_parent = std::nullopt;
+  std::optional<std::string> content_language_in_child = std::nullopt;
+  std::optional<std::string> variants_in_child = std::nullopt;
+  std::optional<std::string> vary_in_child = std::nullopt;
   bool is_fenced_frame = false;
 };
 
@@ -179,9 +179,9 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   // request in `expected_request_urls_` is `expect_accept_language`.
   void NavigateAndVerifyAcceptLanguageOfLastRequest(
       const GURL& url,
-      const absl::optional<std::string>& expect_accept_language) {
+      const std::optional<std::string>& expect_accept_language) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    const absl::optional<std::string>& accept_language_header_value =
+    const std::optional<std::string>& accept_language_header_value =
         GetLastAcceptLanguageHeaderValue();
     if (!expect_accept_language) {
       EXPECT_FALSE(accept_language_header_value.has_value());
@@ -298,13 +298,13 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
  private:
   // Returns the value of the Accept-Language request header from the last sent
   // request, or nullopt if the header could not be read.
-  const absl::optional<std::string>& GetLastAcceptLanguageHeaderValue() {
+  const std::optional<std::string>& GetLastAcceptLanguageHeaderValue() {
     std::string accept_language_header_value;
     if (url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
             "accept-language", &accept_language_header_value)) {
       last_accept_language_value_ = accept_language_header_value;
     } else {
-      last_accept_language_value_ = absl::nullopt;
+      last_accept_language_value_ = std::nullopt;
     }
     return last_accept_language_value_;
   }
@@ -375,7 +375,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         static_cast<std::string>(params->url_request.url.path_piece()));
 
     URLLoaderInterceptor::WriteResponse(resource_path, params->client.get(),
-                                        &headers, absl::nullopt,
+                                        &headers, std::nullopt,
                                         /*url=*/params->url_request.url);
     return true;
   }
@@ -421,7 +421,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
   std::set<GURL> expected_request_urls_;
   ReduceAcceptLanguageTestOptions test_options_;
-  absl::optional<std::string> last_accept_language_value_;
+  std::optional<std::string> last_accept_language_value_;
 };
 
 // Browser tests that consider ReduceAcceptLanguage feature disabled.
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   // headers in navigation layer, browser_tests can't see headers added by
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
-                                               absl::nullopt);
+                                               std::nullopt);
   VerifyNavigatorLanguages({"zh", "en-us"});
 }
 
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   // headers in navigation layer, browser_tests can't see headers added by
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
-                                               absl::nullopt);
+                                               std::nullopt);
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   base::HistogramTester histograms;
 
   SetTestOptions({.content_language_in_parent = "es",
-                  .variants_in_parent = absl::nullopt,
+                  .variants_in_parent = std::nullopt,
                   .vary_in_parent = "accept-language"},
                  {SameOriginRequestUrl()});
 
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                        NoContentLanguageHeader) {
   base::HistogramTester histograms;
 
-  SetTestOptions({.content_language_in_parent = absl::nullopt,
+  SetTestOptions({.content_language_in_parent = std::nullopt,
                   .variants_in_parent = "accept-language=(es en-US)",
                   .vary_in_parent = "accept-language"},
                  {SameOriginRequestUrl()});
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetTestOptions({.content_language_in_parent = "es",
                   .variants_in_parent = "accept-language=(es en-US)",
                   .vary_in_parent = "accept-language",
-                  .content_language_in_child = absl::nullopt,
+                  .content_language_in_child = std::nullopt,
                   .variants_in_child = "accept-language=(es en-US)",
                   .vary_in_child = "accept-language"},
                  {SameOriginIframeUrl(), SimpleRequestUrl()});
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                   .variants_in_parent = "accept-language=(es en-US)",
                   .vary_in_parent = "accept-language",
                   .content_language_in_child = "es",
-                  .variants_in_child = absl::nullopt,
+                  .variants_in_child = std::nullopt,
                   .vary_in_child = "accept-language"},
                  {SameOriginIframeUrl(), SimpleRequestUrl()});
 
@@ -2343,13 +2343,13 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
     SetOriginTrialFirstPartyToken(kInvalidOriginToken);
     // No Accept-Language added in content navigation request, network layer
     // will add user's Accept-Language list.
-    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, std::nullopt);
     EXPECT_EQ(LastRequestUrl().path(), last_request_path);
     VerifyNavigatorLanguages({"zh", "en-US"});
   }
 
   void VerifySameOriginRequestNoRestart(
-      const absl::optional<std::string>& expect_accept_language,
+      const std::optional<std::string>& expect_accept_language,
       int expect_fetch_count) {
     base::HistogramTester histograms;
     // The first request won't add the Accept-Language in navigation request
@@ -2368,7 +2368,7 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
   }
 
   void VerifySameOriginRequestAfterTokenInvalid(
-      const absl::optional<std::string>& expect_accept_language) {
+      const std::optional<std::string>& expect_accept_language) {
     SetOriginTrialFirstPartyToken(kInvalidOriginToken);
     base::HistogramTester histograms;
     // First request after token invalid will continue send reduced header since
@@ -2381,7 +2381,7 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
 
     // Subsequent requests should not add reduced Accept-Language header.
     NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
-                                                 absl::nullopt);
+                                                 std::nullopt);
   }
 
  protected:
@@ -2409,7 +2409,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
   // One fetch for initially checking whether need to add reduce Accept-Language
   // header and one fetch for navigation request commits when visiting
   // same_origin_request.html.
-  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/absl::nullopt,
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/std::nullopt,
                                    /*expect_fetch_count=*/2);
   // The second request should send out with the persist language.
   VerifySameOriginRequestNoRestart(/*expect_accept_language=*/"es",
@@ -2469,7 +2469,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
 
   // The first request won't add the Accept-Language in navigation request
   // since it can't verify the origin trial.
-  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/absl::nullopt,
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/std::nullopt,
                                    /*expect_fetch_count=*/2);
   // The second request should send out with the persist language zh.
   VerifySameOriginRequestNoRestart(/*expect_accept_language=*/"zh",
@@ -2532,7 +2532,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
   // No Accept-Language added in content navigation request, network layer
   // will add user's Accept-Language list.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(),
-                                               absl::nullopt);
+                                               std::nullopt);
   EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
   VerifyNavigatorLanguages({"es", "ja"});
 }
@@ -2570,7 +2570,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
   // Third party iframe subrequest expect no Accept-Language added in navigation
   // requests.
   NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(),
-                                               absl::nullopt);
+                                               std::nullopt);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happen.
@@ -2593,7 +2593,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
   base::HistogramTester histograms2;
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleThirdPartyRequestUrl(),
-                                               absl::nullopt);
+                                               std::nullopt);
   histograms2.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
@@ -2617,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
   // Third party iframe subrequest expect no Accept-Language added in navigation
   // requests.
   NavigateAndVerifyAcceptLanguageOfLastRequest(
-      CrossOriginIframeWithSubresourceUrl(), absl::nullopt);
+      CrossOriginIframeWithSubresourceUrl(), std::nullopt);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happen.
@@ -2644,8 +2644,8 @@ class DisableReduceAcceptLanguageOTBrowserTest
   void VerifyOriginTrialFeatureDisableWithValidToken(const GURL& url) {
     SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
     // Expect no Accept-Language header added for incoming requests.
-    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
-    NavigateAndVerifyAcceptLanguageOfLastRequest(url, absl::nullopt);
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, std::nullopt);
+    NavigateAndVerifyAcceptLanguageOfLastRequest(url, std::nullopt);
     // Even though we disable the feature, blink will verify whether sites send
     // valid origin trial token in js getter. It will continue send the reduce
     // accept-language in navigator.languages if sites opt-in the origin trial.

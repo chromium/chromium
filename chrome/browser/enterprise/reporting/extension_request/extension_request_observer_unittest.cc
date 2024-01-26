@@ -101,7 +101,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
 
-  std::vector<absl::optional<message_center::Notification>>
+  std::vector<std::optional<message_center::Notification>>
   GetAllNotifications() {
     return {display_service_tester_->GetNotification(kApprovedNotificationId),
             display_service_tester_->GetNotification(kRejectedNotificationId),
@@ -117,7 +117,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
   //
   void SetExtensionSettings(const std::string& settings_string) {
-    absl::optional<base::Value> settings =
+    std::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(
@@ -137,7 +137,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         close_run_loop.QuitClosure());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        absl::optional<int>(), absl::optional<std::u16string>());
+        std::optional<int>(), std::optional<std::u16string>());
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.

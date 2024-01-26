@@ -20,6 +20,8 @@
 #include <shlobj.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -39,7 +41,6 @@
 #include "sandbox/policy/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -61,7 +62,7 @@ void UninstallAllMatchingDevices(base::win::ScopedDevInfo dev_info) {
   }
 }
 
-absl::optional<base::ScopedClosureRunner> InstallAdapter(
+std::optional<base::ScopedClosureRunner> InstallAdapter(
     const base::FilePath& inf,
     const std::wstring hwid) {
   GUID guid;
@@ -70,14 +71,14 @@ absl::optional<base::ScopedClosureRunner> InstallAdapter(
   if (!::SetupDiGetINFClass(inf.value().c_str(), &guid, className,
                             MAX_CLASS_NAME_LEN, 0)) {
     PLOG(ERROR) << "Unable to create SetupDiGetINFClass.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::win::ScopedDevInfo dev_info(
       ::SetupDiCreateDeviceInfoList(&guid, nullptr));
   if (!dev_info.is_valid()) {
     PLOG(ERROR) << "Unable to call SetupDiCreateDeviceInfoList.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SP_DEVINFO_DATA deviceInfoData = {};
@@ -86,7 +87,7 @@ absl::optional<base::ScopedClosureRunner> InstallAdapter(
   if (!::SetupDiCreateDeviceInfo(dev_info.get(), className, &guid, nullptr,
                                  nullptr, DICD_GENERATE_ID, &deviceInfoData)) {
     PLOG(ERROR) << "Unable to call SetupDiCreateDeviceInfo";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!::SetupDiSetDeviceRegistryProperty(
@@ -94,20 +95,20 @@ absl::optional<base::ScopedClosureRunner> InstallAdapter(
           reinterpret_cast<const BYTE*>(hwid.c_str()),
           (hwid.length() + 1) * sizeof(wchar_t))) {
     PLOG(ERROR) << "Unable to call SetupDiSetDeviceRegistryProperty.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!::SetupDiCallClassInstaller(DIF_REGISTERDEVICE, dev_info.get(),
                                    &deviceInfoData)) {
     PLOG(ERROR) << "Unable to call SetupDiCallClassInstaller.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BOOL reboot_required = FALSE;
   if (!::UpdateDriverForPlugAndPlayDevices(
           nullptr, hwid.c_str(), inf.value().c_str(), 0, &reboot_required)) {
     PLOG(ERROR) << "Unable to call UpdateDriverForPlugAndPlayDevices.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::ScopedClosureRunner(

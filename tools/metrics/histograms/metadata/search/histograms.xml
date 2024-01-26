@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.NetError" enum="NetErrorCodes"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>donnd@chromium.org</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2024-05-19">
+    enum="ContextualSearchGestureIsTap" expires_after="2024-07-21">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.Lens.ViewportDimensionsSent.Success" units="Boolean"
+<histogram name="Search.Lens.ViewportDimensionsSent.Success" enum="Boolean"
     expires_after="2024-06-02">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome-eng@google.com</owner>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -1056,6 +1056,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchEngineDuplicateCounts" units="keyword duplicates"
+    expires_after="2024-07-21">
+  <owner>dgn@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    The number of keyword duplicates resulting from conflict resolution. This is
+    sampled once per browser session immediately after the client syncs Search
+    Engines.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchEngineListedInPromoDialog"
     enum="OmniboxSearchEngineType" expires_after="M81">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
@@ -1077,6 +1088,19 @@ chromium-metrics-reviews@google.com.
     an Android specific dialog prompting the user to pick a default search
     engine. The dialog was shown on a device that had Chrome before it was first
     introduced.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchProviderOverrideStatus"
+    enum="SearchProviderOverrideStatus" expires_after="2024-06-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    The status of the preference where the search engine overrides provided by
+    the Chrome distribution channel are loaded. It is recorded every time we put
+    together a list of built-in search engines providers, which can happen
+    multiple times per run, when initially loading search engines for the
+    omnibox, showing a search engine choice screen or settings screen, etc.
   </summary>
 </histogram>
 

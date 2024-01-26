@@ -7,12 +7,13 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './power_bookmarks_labels.html.js';
-import {Label} from './power_bookmarks_service.js';
+import type {Label} from './power_bookmarks_service.js';
 
 export class PowerBookmarksLabelsElement extends PolymerElement {
   static get is() {

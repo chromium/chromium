@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
@@ -71,7 +72,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  MockSyncErrorInfoBarDelegate* delegate_ = nil;
+  raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<InfoBarIOS> infobar_;

@@ -297,7 +297,7 @@ public class CustomTabActivityNavigationController
     /** Handles close button navigation. */
     public void navigateOnClose() {
         mIsHandlingUserNavigation = true;
-        mCloseButtonNavigator.navigateOnClose();
+        mCloseButtonNavigator.navigateOnClose(this::finish);
         mIsHandlingUserNavigation = false;
     }
 

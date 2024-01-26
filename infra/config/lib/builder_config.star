@@ -12,7 +12,7 @@ load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
-load("./targets.star", "TARGET_BUNDLE", targets_lib = "targets")
+load("./targets.star", "get_targets_spec_generator", "register_targets")
 load("//project.star", "settings")
 
 def _enum(**kwargs):
@@ -88,11 +88,11 @@ _target_platform = _enum(
 def _chromium_config(
         *,
         config,
+        target_platform,
         apply_configs = None,
         build_config = None,
         target_arch = None,
         target_bits = None,
-        target_platform = None,
         target_cros_boards = None,
         cros_boards_with_qemu_images = None):
     """The details for configuring chromium recipe module.
@@ -101,11 +101,11 @@ def _chromium_config(
 
     Args:
         config: (str) The name of the recipe module config item to use.
+        target_platform: (target_platform) The target platform to build for.
         apply_configs: (list[str]|str) Additional configs to apply.
         build_config: (build_config) The build config value to use.
         target_arch: (target_arch) The target architecture to build for.
         target_bits: (int) The target bit count to build for.
-        target_platform: (target_platform) The target platform to build for.
         target_cros_boards: (list[str]|str) The CROS boards to target, SDKs will
             be downloaded for each board. Can only be specified if
             `target_platform` is `target_platform.CHROMEOS`.
@@ -126,7 +126,7 @@ def _chromium_config(
         fail("unknown target_arch: {}".format(target_arch))
     if target_bits != None and target_bits not in (32, 64):
         fail("unknown target_bits: {}".format(target_bits))
-    if target_platform != None and target_platform not in _target_platform._values:
+    if target_platform not in _target_platform._values:
         fail("unknown target_platform: {}".format(target_platform))
     if ((target_cros_boards or cros_boards_with_qemu_images) and
         target_platform != _target_platform.CHROMEOS):
@@ -494,13 +494,11 @@ def register_builder_config(
         # Register the bundle under the qualified builder name, this allows for
         # explicitly setting a builder's targets to be another builder's with
         # some modifications
-        targets_key = targets_lib.bundle(
+        register_targets(
             name = "{}/{}".format(bucket, name),
             targets = targets,
-        ).get(TARGET_BUNDLE.kind)
-
-        # Link the builder config to the bundle
-        graph.add_edge(builder_config_key, targets_key)
+            parent_key = builder_config_key,
+        )
 
     graph.add_edge(builder_config_key, keys.builder(bucket, name))
 
@@ -688,6 +686,7 @@ def _set_builder_config_property(ctx):
             builder_ids = []
             builder_ids_in_scope_for_testing = []
             targets_spec_nodes = []
+            mirrors = []
 
             builder_spec = bc_state.builder_spec(node)
             if builder_spec:
@@ -787,6 +786,7 @@ def _set_builder_config_property(ctx):
 
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
+            # Enforce that most gardened CI bots have a matching trybot.
             rotations = get_sheriff_rotations(bucket_name, builder.name)
             excluded_rotations = [
                 # Most/all the clang bots build using clang built from HEAD.
@@ -812,20 +812,44 @@ def _set_builder_config_property(ctx):
             ]
             is_excluded = (
                 builder.name in excluded_builders or
-                any([s.key.id in excluded_rotations for s in rotations]) or
-                json.decode(builder.properties)["recipe"] != "chromium"
+                any([s.key.id in excluded_rotations for s in rotations])
             )
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
-            if rotations and not is_excluded:
-                for m in mirroring_builders:
-                    mirror_id = _builder_id(m)
-                    cq_identifier = "{}/{}/{}".format(
-                        mirror_id["project"],
-                        mirror_id["bucket"],
-                        mirror_id["builder"],
-                    )
-                    needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
+
+            # Put most gardened CI bots' trybots onto the mega CQ. We skip a
+            # trybot if any of the following are true:
+            # - It doesn't run a normal Chromium trybot recipe
+            # - Any of its CI mirrors isn't gardened
+            # - All of its CI mirrors are on an excluded rotation
+            # The last two prevent trybots of un-gardened child testers
+            # triggered by gardened parent builders from getting added to the
+            # mega CQ.
+            if not mirrors:
+                continue
+            is_excluded = False
+            all_mirror_rotations = []
+            for m in mirrors:
+                mirror_id = _builder_id(m)
+                mirror_rotations = get_sheriff_rotations(mirror_id["bucket"], mirror_id["builder"])
+                all_mirror_rotations += mirror_rotations
+                if not mirror_rotations:
+                    is_excluded = True
+                if json.decode(builder.properties)["recipe"] not in ["chromium_trybot", "chromium/orchestrator"]:
+                    is_excluded = True
+                if mirror_id["builder"] in excluded_builders:
+                    is_excluded = True
+                if is_excluded:
+                    break
+            if all([r.key.id in excluded_rotations for r in all_mirror_rotations]):
+                is_excluded = True
+            if not is_excluded:
+                cq_identifier = "{}/{}/{}".format(
+                    settings.project,
+                    bucket_name,
+                    builder.name,
+                )
+                needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
 
     cq_config_groups = []
     for f in ctx.output:
@@ -866,58 +890,6 @@ def _node_cached(f):
         return cache[node]
 
     return execute
-
-def _get_bundle_resolver():
-    resolved_bundle_by_bundle_node = {}
-
-    def resolved_bundle(*, additional_compile_targets, test_spec_and_source_by_name):
-        return struct(
-            additional_compile_targets = additional_compile_targets,
-            test_spec_and_source_by_name = test_spec_and_source_by_name,
-        )
-
-    def visitor(_, children):
-        return [c for c in children if c.key.kind == TARGET_BUNDLE.kind]
-
-    def resolve(bundle_node):
-        for n in graph.descendants(bundle_node.key, visitor = visitor, topology = graph.DEPTH_FIRST):
-            if n in resolved_bundle_by_bundle_node:
-                continue
-
-            # TODO: crbug.com/1420012 - Update the handling of conflicting defs
-            # so that more context is provided about where the error is
-            # resulting from
-            additional_compile_targets = set(n.props.additional_compile_targets)
-            test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
-            for child in graph.children(n.key, kind = TARGET_BUNDLE.kind):
-                child_resolved_bundle = resolved_bundle_by_bundle_node[child]
-                additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
-                for name, (spec, source) in child_resolved_bundle.test_spec_and_source_by_name.items():
-                    if name in test_spec_and_source_by_name:
-                        existing_spec, existing_source = test_spec_and_source_by_name[name]
-                        if existing_spec != spec:
-                            fail("target {} has conflicting definitions in deps of {}\n  {}: {}\n  {}: {}".format(
-                                name,
-                                n.key,
-                                existing_source,
-                                existing_spec,
-                                source,
-                                spec,
-                            ))
-                    test_spec_and_source_by_name[name] = (spec, source)
-
-            resolved_bundle_by_bundle_node[n] = resolved_bundle(
-                additional_compile_targets = additional_compile_targets,
-                test_spec_and_source_by_name = test_spec_and_source_by_name,
-            )
-
-        resolved = resolved_bundle_by_bundle_node[bundle_node]
-        return (
-            resolved.additional_compile_targets,
-            {name: spec for name, (spec, _) in resolved.test_spec_and_source_by_name.items()},
-        )
-
-    return resolve
 
 def _bc_state():
     def get_parent(node):
@@ -1136,35 +1108,12 @@ def _bc_state():
 
         return get
 
-    bundle_resolver = _get_bundle_resolver()
-
-    def get_targets_spec(node):
-        bundle_nodes = graph.children(node.key, TARGET_BUNDLE.kind)
-        if not bundle_nodes:
-            return None
-        if len(bundle_nodes) > 1:
-            fail("internal error: there should be at most 1 targets_spec")
-
-        additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_nodes[0])
-        sort_key_and_specs_by_type_key = {}
-        for name, spec in test_spec_by_name.items():
-            type_key, sort_key, spec = spec.spec_type.finalize(name, spec.spec_value)
-            sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, spec))
-
-        specs_by_type_key = {}
-        if additional_compile_targets:
-            specs_by_type_key["additional_compile_targets"] = sorted(additional_compile_targets)
-        for type_key, sort_key_and_specs in sorted(sort_key_and_specs_by_type_key.items()):
-            specs_by_type_key[type_key] = [spec for _, spec in sorted(sort_key_and_specs)]
-
-        return specs_by_type_key
-
     bc_state = struct(
         parent = _node_cached(get_parent),
         children = _node_cached(get_children),
         builder_spec = builder_spec_getter(),
         mirrors = mirrors_getter(),
-        targets_spec = _node_cached(get_targets_spec),
+        targets_spec = _node_cached(get_targets_spec_generator()),
     )
 
     return bc_state

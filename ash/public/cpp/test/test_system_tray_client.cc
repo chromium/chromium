@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
 
+#include <string_view>
+
 namespace ash {
 
 TestSystemTrayClient::TestSystemTrayClient() = default;
@@ -26,7 +28,7 @@ void TestSystemTrayClient::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    std::optional<base::StringPiece> device_address) {
+    std::optional<std::string_view> device_address) {
   show_bluetooth_pairing_dialog_count_++;
 }
 

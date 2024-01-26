@@ -39,9 +39,6 @@ using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
 using partition_alloc::internal::PartitionPageMetadata;
 using partition_alloc::internal::PartitionPageSize;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-using partition_alloc::internal::PartitionRefCountPointer;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 using partition_alloc::internal::PartitionSuperPageExtentEntry;
 using partition_alloc::internal::SystemPageSize;
 
@@ -345,9 +342,10 @@ class HeapDumper {
                              metadata.num_unprovisioned_slots)) {
             continue;
           }
-          uintptr_t slot_address =
+          uintptr_t slot_start =
               slot_span_start + slot_index * metadata.bucket->slot_size;
-          auto* ref_count = PartitionRefCountPointer(slot_address);
+          auto* ref_count = PartitionRoot::RefCountPointerFromSlotStartAndSize(
+              slot_start, metadata.bucket->slot_size);
           uint32_t requested_size = ref_count->requested_size();
 
           // Address space dumping is not synchronized with allocation, meaning

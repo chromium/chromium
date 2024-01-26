@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">következő</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
+<translation id="1626590945318984973">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot a funkció- és <ph name="META_KEY" /> billentyűk használata nélkül.</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641857168437328880">Dokumentumadagoló (egyoldalas)</translation>
 <translation id="1643449475550628585">Háttérkép módosítása naponta</translation>
@@ -144,7 +145,6 @@
 <translation id="188114911237521550">Sötét mód kikapcsolása</translation>
 <translation id="1885577615937958993">médiatartalom előretekerése</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
-<translation id="1897672602657312171">A keresőgomb nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a keresőgombbal.</translation>
 <translation id="1904932688895783618">Íme néhány további hasznos forrás:</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
 <translation id="2157660087437850958">emojiválasztó</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" /> alkalmazást, hogy automatikusan elinduljon minden alkalommal, amikor Ön bejelentkezik.}=2{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" /> és a(z) <ph name="APP_NAME_2" /> alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}=3{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" />, a(z) <ph name="APP_NAME_2" /> és a(z) <ph name="APP_NAME_3" /> alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}other{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" />, a(z) <ph name="APP_NAME_2" /> és további # alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="215916044711630446">Az APN hozzáadása gomb mostantól le van tiltva</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
+<translation id="2215920961700443347">Nincs internetkapcsolat. Csatlakozzon az internethez, és próbálja újra.</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="222447520299472966">Legalább egy Művészeti albumot ki kell választani</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" />. oldalon lévő kép</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
+<translation id="2465272316171730950">Most nincs szabad kapacitásunk. Jöjjön vissza később.</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
 <translation id="2491955442992294626">A rendszer nem teszteli a billentyűket, amikor másik ablakot használ</translation>
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
@@ -226,7 +227,6 @@
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
 <translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2513396635448525189">Bejelentkezési kép</translation>
-<translation id="2515109918609218604">A parancsikon nem áll rendelkezésre. Nyomja le az új billentyűparancsot a funkció- és keresőbillentyűk használata nélkül.</translation>
 <translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2521835766824839541">előző szám</translation>
 <translation id="2526590354069164005">Asztal</translation>
@@ -414,8 +414,8 @@
 <translation id="4113067922640381334">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> férhet hozzá</translation>
 <translation id="4117637339509843559">Sötét mód</translation>
 <translation id="4130035430755296270">További elrendezési lehetőségekért mozgassa tovább az egérmutatót</translation>
+<translation id="4130750466177569591">Elfogadom</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{A(z) <ph name="APP_NAME_1" /> automatikusan elindult}other{# alkalmazás automatikusan elindult}}</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
@@ -427,7 +427,6 @@
 <translation id="4171077696775491955">fényerő csökkentése</translation>
 <translation id="4176463684765177261">Letiltva</translation>
 <translation id="4176659219503619100">Vezérlőpult</translation>
-<translation id="4185315616950253617">A felső sor billentyűit tartalmazó billentyűparancsban benne kell lennie a keresőgombnak.</translation>
 <translation id="420283545744377356">Képernyővédő kikapcsolása</translation>
 <translation id="4213104098953699324">USB-billentyűzet</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
@@ -455,7 +454,9 @@
 <translation id="4394049700291259645">Kikapcsolás</translation>
 <translation id="439429847087949098">A(z) <ph name="DEVICE_NAME" /> újraindítása</translation>
 <translation id="4395835743215824109">billentyűzet személyre szabása</translation>
+<translation id="4403262788869804671">A(z) <ph name="META_KEY" /> gomb nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a(z) <ph name="KEY" /> gombbal.</translation>
 <translation id="4415951057168511744">Jelenlegi avatar</translation>
+<translation id="4417830657741848074">A rendszergazda beállított néhány alkalmazást automatikus indításra. Ezek közül bizonyos alkalmazásokat nem lehet bezárni.</translation>
 <translation id="4422041425070339732">lefelé nyíl</translation>
 <translation id="4425149324548788773">Saját meghajtó</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> kikapcsolva</translation>
@@ -468,6 +469,7 @@
 <translation id="4469288414739283461">A Föld mozgása képernyőkímélő</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nem sikerült a nem alapértelmezett hálózati átjáró pingelése</translation>
+<translation id="4500722292849917410">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot egy módosító billentyű (Ctrl, Alt, Shift vagy <ph name="META_KEY" />) használatával.</translation>
 <translation id="4500966230243561393">Kezelőfelület színe</translation>
 <translation id="4503223151711056411">Balra nyíl</translation>
 <translation id="4507392511610824664">fényerő növelése</translation>
@@ -515,6 +517,7 @@
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
 <translation id="4835901797422965222">Nincs aktív hálózat</translation>
 <translation id="4839698083503556542">Készítsen saját filmet</translation>
+<translation id="48409034532829769">A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” alkalmazást, hogy automatikusan elinduljon. Ezt az alkalmazást nem lehet bezárni.</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztva, nyomja le az Enter billentyűt a következő albumok kiválasztásához: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-felbontás</translation>
@@ -541,6 +544,7 @@
 <translation id="4969079779290789265">Felosztás</translation>
 <translation id="4972592110715526173">mód váltása</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
+<translation id="4982627662315910959">A billentyűparancs nem áll rendelkezésre. Nyomjon meg egy új billentyűparancsot a Shift és egy további módosító billentyű (Ctrl, Alt vagy <ph name="META_KEY" />) használatával.</translation>
 <translation id="4985509611418653372">Futtatás</translation>
 <translation id="4987769320337599931">Tűzfal</translation>
 <translation id="4988526792673242964">Oldal</translation>
@@ -574,6 +578,7 @@
 <translation id="5227902338748591677">Sötét téma ütemezése</translation>
 <translation id="5229344016299762883">Kilépés a teljes képernyős nézetből</translation>
 <translation id="5234764350956374838">Elvetés</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” alkalmazást, hogy automatikusan elinduljon minden alkalommal, amikor Ön bejelentkezik.}=2{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” appot és további 1 alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}other{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” appot és további # alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Világos szín mód engedélyezése</translation>
 <translation id="5264277876637023664">CPU-teszt futtatása</translation>
@@ -846,7 +851,7 @@
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="725133483556299729">Válassza ki a kívánt e-mail-címet</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
-<translation id="7273347807225967898">A parancsikon nem áll rendelkezésre. Új billentyűparancs megnyomása egy módosító billentyű (Ctrl, Alt, Shift, keresés vagy indító) használatával.</translation>
+<translation id="7271932918253517778">A felső sor billentyűit tartalmazó billentyűparancsban benne kell lennie a(z) <ph name="META_KEY" /> gombnak.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Érezze a szellő simogatását</translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
@@ -945,6 +950,7 @@
 <translation id="7971535376154084247">Általános vezérlők</translation>
 <translation id="7977800524392185497">A(z) <ph name="NETWORK_NAME" />-hálózathoz való csatlakozáshoz nyissa meg a Beállításokat</translation>
 <translation id="7978412674231730200">Privát kulcs</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{A(z) „<ph name="APP_NAME_1" />” automatikusan elindult}other{# alkalmazás automatikusan elindult}}</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8017679124341497925">Billentyűparancs szerkesztve</translation>
@@ -961,7 +967,6 @@
 <translation id="808894953321890993">Jelszó módosítása</translation>
 <translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
-<translation id="8111706652656628199">A parancsikon nem áll rendelkezésre. Nyomja meg az új billentyűparancsot a Shift és egy további módosító billentyű (Ctrl, Alt, keresés vagy indító) használatával.</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>

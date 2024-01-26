@@ -311,7 +311,7 @@ void WebAuthenticationProxyService::CompleteCreateRequest(
              blink::mojom::WebAuthnDOMExceptionDetails::New(
                  details.error->name, details.error->message),
              nullptr);
-    std::move(respond_callback).Run(absl::nullopt);
+    std::move(respond_callback).Run(std::nullopt);
     return;
   }
   if (!details.response_json) {
@@ -345,7 +345,7 @@ void WebAuthenticationProxyService::CompleteGetRequest(
                             blink::mojom::WebAuthnDOMExceptionDetails::New(
                                 details.error->name, details.error->message),
                             nullptr);
-    std::move(respond_callback).Run(absl::nullopt);
+    std::move(respond_callback).Run(std::nullopt);
     return;
   }
   if (!details.response_json) {
@@ -477,7 +477,7 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
       absl::get<CreateCallback>(std::move(callback_it->second));
   pending_callbacks_.erase(callback_it);
   std::move(create_callback).Run(request_id, nullptr, std::move(response));
-  std::move(respond_callback).Run(absl::nullopt);
+  std::move(respond_callback).Run(std::nullopt);
 }
 
 void WebAuthenticationProxyService::OnParseGetResponse(
@@ -510,7 +510,7 @@ void WebAuthenticationProxyService::OnParseGetResponse(
       absl::get<GetCallback>(std::move(callback_it->second));
   pending_callbacks_.erase(callback_it);
   std::move(get_callback).Run(request_id, nullptr, std::move(response));
-  std::move(respond_callback).Run(absl::nullopt);
+  std::move(respond_callback).Run(std::nullopt);
 }
 
 bool WebAuthenticationProxyService::IsActive(const url::Origin& caller_origin) {

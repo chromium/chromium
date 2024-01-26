@@ -1,7 +1,7 @@
 file://components/omnibox/OWNERS
 
-per-file search_engine_choice*=file://chrome/browser/search_engine_choice/OWNERS
-per-file generated_marketing_snippets*=file://chrome/browser/search_engine_choice/OWNERS
+per-file search_engine_choice*=file://components/search_engines/search_engine_choice/OWNERS
+per-file generated_marketing_snippets*=file://components/search_engines/search_engine_choice/OWNERS
 
 # TODO: noparent it.
-per-file choice_made_location.h=file://chrome/browser/search_engine_choice/OWNERS
+per-file choice_made_location.h=file://components/search_engines/search_engine_choice/OWNERS

@@ -52,7 +52,7 @@ void SharingFCMSender::DoSendMessageToDevice(
       device_info_tracker_->GetDeviceInfo(device.guid());
   if (!device_info) {
     std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kUnknown);
     return;
   }
@@ -60,14 +60,14 @@ void SharingFCMSender::DoSendMessageToDevice(
   auto fcm_configuration = GetFCMChannel(*device_info);
   if (!fcm_configuration) {
     std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kUnknown);
     return;
   }
 
   if (!SetMessageSenderInfo(&message)) {
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kUnknown);
     return;
   }
@@ -107,12 +107,12 @@ void SharingFCMSender::SendMessageToFcmTarget(
 
   // TODO(crbug.com/1408456): This can probably go away.
   if (canSendViaVapid) {
-    absl::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
+    std::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
         sync_preference_->GetFCMRegistration();
     if (!fcm_registration || !fcm_registration->authorized_entity) {
       LOG(ERROR) << "Unable to retrieve FCM registration";
       std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                              /*message_id=*/absl::nullopt,
+                              /*message_id=*/std::nullopt,
                               SharingChannelType::kUnknown);
       return;
     }
@@ -128,7 +128,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
   }
 
   std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                          /*message_id=*/absl::nullopt,
+                          /*message_id=*/std::nullopt,
                           SharingChannelType::kUnknown);
 }
 
@@ -140,7 +140,7 @@ void SharingFCMSender::SendMessageToServerTarget(
 
   if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kServer);
     return;
   }
@@ -178,7 +178,7 @@ void SharingFCMSender::OnMessageEncrypted(SharingChannelType channel_type,
   if (result != gcm::GCMEncryptionResult::ENCRYPTED_DRAFT_08) {
     LOG(ERROR) << "Unable to encrypt message";
     std::move(callback).Run(SharingSendMessageResult::kEncryptionError,
-                            /*message_id=*/absl::nullopt, channel_type);
+                            /*message_id=*/std::nullopt, channel_type);
     return;
   }
 
@@ -196,7 +196,7 @@ void SharingFCMSender::DoSendMessageToVapidTarget(
   if (!vapid_key) {
     LOG(ERROR) << "Unable to retrieve VAPID key";
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kFcmVapid);
     return;
   }
@@ -215,7 +215,7 @@ void SharingFCMSender::DoSendMessageToVapidTarget(
 void SharingFCMSender::OnMessageSentToVapidTarget(
     SendMessageCallback callback,
     SendWebPushMessageResult result,
-    absl::optional<std::string> message_id) {
+    std::optional<std::string> message_id) {
   TRACE_EVENT1("sharing", "SharingFCMSender::OnMessageSentToVapidTarget",
                "result", result);
 
@@ -257,7 +257,7 @@ void SharingFCMSender::DoSendMessageToSenderIdTarget(
   // Double check that SHARING_MESSAGE is syncing.
   if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kFcmSenderId);
     return;
   }
@@ -287,7 +287,7 @@ void SharingFCMSender::DoSendMessageToServerTarget(
   // Double check that SHARING_MESSAGE is syncing.
   if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
+                            /*message_id=*/std::nullopt,
                             SharingChannelType::kServer);
     return;
   }
@@ -346,7 +346,7 @@ void SharingFCMSender::OnMessageSentViaSync(
 }
 
 bool SharingFCMSender::SetMessageSenderInfo(SharingMessage* message) {
-  absl::optional<syncer::DeviceInfo::SharingInfo> sharing_info =
+  std::optional<syncer::DeviceInfo::SharingInfo> sharing_info =
       local_device_info_provider_->GetLocalDeviceInfo()->sharing_info();
   if (!sharing_info)
     return false;

@@ -79,7 +79,7 @@ TEST_F(ThumbnailCacheTest, PruneCache) {
   thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId1, kTabId2}),
                                      -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
-      kTabId1, GURL("https://www.foo.com/")));
+      kTabId1, GURL("https://www.foo.com/"), /*force_update=*/false));
   std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker1(
       new ThumbnailCaptureTracker(base::DoNothing()),
       base::OnTaskRunnerDeleter(
@@ -88,7 +88,7 @@ TEST_F(ThumbnailCacheTest, PruneCache) {
                         /*thumbnail_scale=*/1.0f);
 
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
-      kTabId2, GURL("https://www.bar.com/")));
+      kTabId2, GURL("https://www.bar.com/"), /*force_update=*/false));
   std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker2(
       new ThumbnailCaptureTracker(base::DoNothing()),
       base::OnTaskRunnerDeleter(
@@ -129,7 +129,7 @@ TEST_F(ThumbnailCacheTest, MetricsEmission) {
   bitmap.setImmutable();
   thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId}), -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
-      kTabId, GURL("https://www.foo.com/")));
+      kTabId, GURL("https://www.foo.com/"), /*force_update=*/false));
   std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker(
       new ThumbnailCaptureTracker(base::DoNothing()),
       base::OnTaskRunnerDeleter(
@@ -144,6 +144,37 @@ TEST_F(ThumbnailCacheTest, MetricsEmission) {
                                 1, 1);
   histograms.ExpectUniqueSample("Android.ThumbnailCache.InMemoryCacheSize",
                                 kDimension * kDimension * kN32PixelSize, 1);
+}
+
+TEST_F(ThumbnailCacheTest, InvalidateIfChanged) {
+  constexpr int kTabId1 = 1;
+  constexpr int kDimension = 16;
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocN32Pixels(kDimension * kKiB, kDimension));
+  bitmap.setImmutable();
+
+  thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId1}), -1);
+  GURL url("https://www.foo.com/");
+  EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
+      kTabId1, url, /*force_update=*/false));
+  std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker1(
+      new ThumbnailCaptureTracker(base::DoNothing()),
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
+  thumbnail_cache().Put(kTabId1, std::move(tracker1), bitmap,
+                        /*thumbnail_scale=*/1.0f);
+
+  EXPECT_TRUE(thumbnail_cache().Get(kTabId1, false));
+
+  thumbnail_cache().InvalidateThumbnailIfChanged(kTabId1, url);
+  EXPECT_TRUE(thumbnail_cache().Get(kTabId1, false));
+
+  thumbnail_cache().InvalidateThumbnailIfChanged(kTabId1, GURL());
+  EXPECT_TRUE(thumbnail_cache().Get(kTabId1, false));
+
+  thumbnail_cache().InvalidateThumbnailIfChanged(kTabId1,
+                                                 GURL("https://www.bar.com/"));
+  EXPECT_FALSE(thumbnail_cache().Get(kTabId1, false));
 }
 
 }  // namespace thumbnail

@@ -100,6 +100,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     extra_headers.emplace_back(
         network::shared_dictionary::kUseAsDictionaryHeaderName,
         "match=\"/path*\"");
+    extra_headers.emplace_back("cache-control", "max-age=2592000");
     NotifyLoaderClientOnReceiveResponse(extra_headers,
                                         std::move(consumer_handle_));
   }

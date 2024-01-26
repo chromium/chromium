@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBSHARE_CHROMEOS_SHARESHEET_CLIENT_H_
 #define CHROME_BROWSER_WEBSHARE_CHROMEOS_SHARESHEET_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
 
@@ -95,7 +95,7 @@ class SharesheetClient : public content::WebContentsObserver {
     std::unique_ptr<PrepareSubDirectoryTask> prepare_subdirectory_task;
   };
 
-  absl::optional<CurrentShare> current_share_;
+  std::optional<CurrentShare> current_share_;
 
   base::WeakPtrFactory<SharesheetClient> weak_ptr_factory_{this};
 };

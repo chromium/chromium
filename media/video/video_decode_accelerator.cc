@@ -7,7 +7,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_util.h"
 
@@ -88,8 +88,8 @@ bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
     const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   // Implementations in the process that VDA runs in must override this.
-  LOG(FATAL) << "This may only be called in the same process as VDA impl.";
-  return false;
+  NOTREACHED_NORETURN()
+      << "This may only be called in the same process as VDA impl.";
 }
 
 void VideoDecodeAccelerator::ImportBufferForPicture(

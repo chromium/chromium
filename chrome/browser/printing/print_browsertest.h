@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/ref_counted.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/print_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -53,6 +53,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   void AddPrinter(const std::string& printer_name);
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+  void SetNewDocumentJobId(int job_id);
 
   void PrintAndWaitUntilPreviewIsReady();
   // Returns the Print Preview dialog.
@@ -103,7 +104,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   int new_document_called_count() const { return new_document_called_count_; }
 
-  const absl::optional<PrintSettings>& document_print_settings() const {
+  const std::optional<PrintSettings>& document_print_settings() const {
     return document_print_settings_;
   }
 
@@ -140,7 +141,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
   void ShowPrintErrorDialog();
 
   int new_document_called_count_ = 0;
-  absl::optional<PrintSettings> document_print_settings_;
+  std::optional<PrintSettings> document_print_settings_;
 #if BUILDFLAG(IS_MAC)
   bool destination_is_preview_ = false;
 #endif

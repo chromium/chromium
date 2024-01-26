@@ -67,7 +67,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
 
 using PinnedState = WebStateSearchCriteria::PinnedState;
@@ -475,7 +475,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   int sourceIndex = GetWebStateIndex(
       self.webStateList, WebStateSearchCriteria{
                              .identifier = itemID,
-                             .pinned_state = PinnedState::kNonPinned,
                          });
   if (sourceIndex != WebStateList::kInvalidIndex) {
     int destinationWebStateListIndex =
@@ -485,7 +484,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   }
 }
 
-- (void)selectItemWithID:(web::WebStateID)itemID {
+- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
   // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
   // when `itemID` match a group.
   if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
@@ -494,11 +493,17 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     return;
   }
 
-  int index = GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
-                                                      .identifier = itemID,
-                                                  });
+  WebStateSearchCriteria searchCriteria{
+      .identifier = itemID,
+      .pinned_state = pinned ? PinnedState::kPinned : PinnedState::kNonPinned,
+  };
+
+  int index = GetWebStateIndex(self.webStateList, searchCriteria);
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
+    if (pinned) {
+      return;
+    }
     // If this is a search result, it may contain items from other windows or
     // from the inactive browser - check inactive browser and other windows
     // before giving up.
@@ -568,7 +573,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   }
 
   // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although
-  // ignoring the slection at this point may do weird things.
+  // ignoring the selection at this point may do weird things.
   if (itemWebStateList->IsMutating()) {
     return;
   }
@@ -594,7 +599,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   int index = GetWebStateIndex(self.webStateList,
                                WebStateSearchCriteria{
                                    .identifier = itemID,
-                                   .pinned_state = PinnedState::kNonPinned,
                                });
   if (index != WebStateList::kInvalidIndex) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);

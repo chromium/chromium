@@ -1,0 +1,41 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ui.touch_virtual_keyboard_enabled": {
+            "location": "signin_profile",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenTouchVirtualKeyboardEnabled": true
+        },
+        "prefs": {
+          "ui.touch_virtual_keyboard_enabled": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenTouchVirtualKeyboardEnabled": false
+        },
+        "prefs": {
+          "ui.touch_virtual_keyboard_enabled": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

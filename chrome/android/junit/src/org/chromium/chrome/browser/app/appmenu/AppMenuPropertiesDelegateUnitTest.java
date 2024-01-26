@@ -56,6 +56,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -91,7 +92,6 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -249,6 +249,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void setupFeatureDefaults() {
         setShoppingListEligible(false);
         setShoppingListEligible(false);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI, false);
         FeatureList.setTestValues(mTestValues);
     }
 

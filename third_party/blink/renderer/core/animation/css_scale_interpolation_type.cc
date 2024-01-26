@@ -257,11 +257,16 @@ void CSSScaleInterpolationType::Composite(
   for (wtf_size_t i = 0; i < 3; i++) {
     auto& underlying = To<InterpolableNumber>(*underlying_list.GetMutable(i));
 
-    double start = metadata.Start().array[i] *
-                   (metadata.IsStartAdditive() ? underlying.Value() : 1);
-    double end = metadata.end().array[i] *
-                 (metadata.IsEndAdditive() ? underlying.Value() : 1);
-    underlying.Set(Blend(start, end, interpolation_fraction));
+    InterpolableNumber& start_number =
+        metadata.IsStartAdditive()
+            ? *underlying.Clone()
+            : *MakeGarbageCollected<InterpolableNumber>(1);
+    start_number.Scale(metadata.Start().array[i]);
+    InterpolableNumber& end_number =
+        metadata.IsEndAdditive() ? *underlying.Clone()
+                                 : *MakeGarbageCollected<InterpolableNumber>(1);
+    end_number.Scale(metadata.end().array[i]);
+    start_number.Interpolate(end_number, interpolation_fraction, underlying);
   }
 }
 

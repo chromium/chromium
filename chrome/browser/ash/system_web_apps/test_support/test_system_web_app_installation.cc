@@ -850,7 +850,7 @@ TestSystemWebAppInstallation::CreateWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
   provider->SetWebAppUiManager(
       std::make_unique<web_app::WebAppUiManagerImpl>(profile));
-  provider->Start();
+  provider->StartWithSubsystems();
 
   return provider;
 }

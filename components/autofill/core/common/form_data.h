@@ -132,6 +132,7 @@ struct FrameTokenWithPredecessor {
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
 struct FormData {
+  struct FillData;
   // Returns true if many members of forms |a| and |b| are identical.
   //
   // "Many" is intended to be "all", but currently the following members are not
@@ -268,6 +269,22 @@ struct FormData {
 #if BUILDFLAG(IS_IOS)
   std::string frame_id;
 #endif
+};
+
+// Structure containing necessary information to be sent from the browser to the
+// renderer in order to fill a form.
+// See documentation of FormData for more info.
+struct FormData::FillData {
+  FillData();
+  explicit FillData(const FormData& form);
+
+  ~FillData();
+
+  // An identifier of the form that is unique among forms from the same frame.
+  FormRendererId unique_renderer_id;
+
+  // A vector of all the fields in the form that we want the renderer to fill.
+  std::vector<FormFieldData::FillData> fields;
 };
 
 // Whether any of the fields in |form| is a non-empty password field.

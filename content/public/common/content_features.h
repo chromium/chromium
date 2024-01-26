@@ -48,6 +48,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kBrokerFileOperationsOnDiskCacheInNetworkService);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserVerifiedUserActivationMouse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCacheControlNoStoreEnterBackForwardCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCapturedSurfaceControlKillswitch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCdmStorageDatabase);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCdmStorageDatabaseMigration);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
@@ -79,6 +80,7 @@ CONTENT_EXPORT extern const base::FeatureParam<content::DIPSTriggeringAction>
     kDIPSTriggeringAction;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDIPSClientBounceDetectionTimeout;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPSPreservePSData);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kDisconnectExtensionMessagePortWhenPageEntersBFCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDrawCutoutEdgeToEdge);
@@ -106,6 +108,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdpSigninStatusEnabled);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMetricsEndpoint);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMultipleIdentityProviders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmDisconnect);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSameSiteLoginStatus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSkipWellKnownForSameSite);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
@@ -308,12 +311,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoom);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAccessibilityPageZoomOSLevelAdjustment;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoomEnhancements);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibilityV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGinJavaBridgeMojo);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMouseAndTrackpadDropdownMenu);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteWindowSetting);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteZoom);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSelectionMenuItemModification);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSmartZoom);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSynchronousCompositorBackgroundSignal);

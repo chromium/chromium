@@ -2512,6 +2512,36 @@ are declared in tools/grit/grit_rule.gni.
         Unverified download blocked
       </message>
 
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_DANGEROUS"
+               desc="On the downloads page, the message announced to screenreader users when a dangerous download is saved.">
+        Downloaded dangerous file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_SUSPICIOUS"
+               desc="On the downloads page, the message announced to screenreader users when a suspicious download is saved.">
+        Downloaded suspicious file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_INSECURE"
+               desc="On the downloads page, the message announced to screenreader users when an insecure download is saved.">
+        Downloaded insecure file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_UNVERIFIED"
+               desc="On the downloads page, the message announced to screenreader users when an unverified download is saved.">
+        Downloaded unverified file
+      </message>
+
+      <message name="IDS_DOWNLOAD_SCREENREADER_PAUSED"
+               desc="On the downloads page, the message announced to screenreader users when an ongoing download is paused.">
+        Download paused
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_RESUMED"
+               desc="On the downloads page, the message announced to screenreader users when a paused download is resumed.">
+        Download resumed
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_CANCELED"
+               desc="On the downloads page, the message announced to screenreader users when a download is canceled.">
+        Download canceled
+      </message>
+
       <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE"
                desc="On the downloads page, the title of the dialog to bypass a dangerous download warning.">
         This file could harm your device
@@ -3926,9 +3956,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- User Bypass Bubble -->
-      <message name="IDS_COOKIE_CONTROLS_TOOLTIP" desc="Tooltip shown on a page action icon that is shown when cookie blocking is enabled.">
-        Third-party cookie blocking
-      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
@@ -6468,11 +6495,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE" desc="Text of the site permissions button when extension doesn't have site access to the site">
         No access needed
       </message>
-      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME" desc="Accessibility string for the button that opens the chrome webstore.">
-        Open webstore
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_TOOLTIP" desc="Tooltip text for the button that opens the chrome webstore.">
+        Chrome Web Store
       </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP" desc="Tooltip text of an extension's site permissions button.">
         Change site permissions
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_HAS_ACCESS_TOOLTIP" desc="Tooltip text of an extension's menu button when the extension has access to the current site.">
+        Allowed to read &amp; change this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_BLOCKED_ACCESS_TOOLTIP" desc="Tooltip text of an extension's menu button when the extension does not have access to the current site.">
+        Not allowed to read &amp; change this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_REQUESTS_TOOLTIP" desc="Tooltip text of an extension's menu button when the extension is requesting access to the current site.">
+        Requesting to read &amp; change this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME" desc="Accessibility string of an extension's site permissions button.">
         <ph name="SITE_ACCESS">$1<ex>Always on this site</ex></ph>. Select to change site permissions
@@ -6929,14 +6965,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
       </message>
-      <message name="IDS_SIGN_IN_TO_SAVE_PASSWORDS" desc="The title of the password manager error message when the user needs to sign in to save a password.">
-        Sign in to save passwords
+      <message name="IDS_VERIFY_IT_IS_YOU" desc="The title of the password manager error message when the user needs to sign in to save a password.">
+        Verify it's you
       </message>
-      <message name="IDS_SIGN_IN_TO_USE_PASSWORDS" desc="The title of the password manager error message when the user needs to sign in to use a password.">
-        Sign in to use passwords
+      <message name="IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_IN" desc="The description of the password manager error message during sign in flow.">
+        Keep using the passwords in your Google Account
       </message>
-      <message name="IDS_PASSWORD_ERROR_DESCRIPTION" desc="The description of the password manager error message.">
-        Sign back in to Google Password Manager
+      <message name="IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_UP" desc="The description of the password manager error message during sign up flow.">
+        Keep saving passwords in your Google Account
+      </message>
+      <message name="IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE" desc="The title of the verify button in the password manager error message.">
+        Verify
       </message>
       <if expr="is_android">
         <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message." formatter_data="android_java">
@@ -7888,6 +7927,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY" desc="The description of the generic error displayed when wallpaper search fails and there are previous results.">
         Try again or select from one of the previously generated themes below.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_INSPIRATION" desc="The description of the generic error displayed when wallpaper search fails and there are inspiration examples.">
+        Try again or select from one of the inspirations below.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION" desc="The description of the generic error displayed when wallpaper search fails and there are previous results and inspiration examples.">
+        Try again or select from one of the available themes below.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>
@@ -7928,10 +7973,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Black
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
-        Please try again tomorrow.
+        Please try again in a few minutes.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
-        You've reached your limit for today.
+        Can't create a theme right now.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results." >
         Create
@@ -8005,8 +8050,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_DISCLAIMER" desc="Disclaimer text used for the Create theme with AI feature.">
         This is an experimental AI feature and won't always get it right.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_MEADOW_INSPIRATION_TITLE"  desc="Title for the wallpaper search's Meadow inspiration.">
-        Meadow, Oil Painting, Intellectual, Yellow
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE"  desc="Accessibility title for the toggle used to hide/show wallpaper search's inspiration.">
+        Toggle Inspiration
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE" desc="Accessibility announcement message for when descriptors are updated by clicking on an inspiration.">
+        Form values updated
       </message>
 
       <!-- NTP Modules -->
@@ -8837,6 +8885,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the increase font size button of the reading mode feature.">
         Increase font size
       </message>
+      <message name="IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL" desc="Accessibility label for the button that disables all links in reading mode content.">
+        Disable links
+      </message>
+      <message name="IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL" desc="Accessibility label for the button that enables all links in reading mode content.">
+        Enable links
+      </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
         Color theme
       </message>
@@ -9612,6 +9666,52 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try using tab groups to organize tasks, for online shopping, and more
       </message>
 
+      <!-- Saved Tab Group Tutorial Strings -->
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
+          Right-click a tab and select "Add Tab to New Group"
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
+          Right-click a tab and select "Add tab to new group"
+        </message>
+      </if>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR" desc="The description of the 'open editor' step">
+        Right-click on the group name
+      </message>
+
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
+          Turn on "Save Group"
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
+          Turn on "Save group"
+        </message>
+      </if>
+
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
+          Select "Hide Group" to remove the group from your tab strip
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
+          Select "Hide group" to remove the group from your tab strip
+        </message>
+      </if>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP" desc="The description of the 'name, save and exit' step">
+        To reopen the group, click on the group name
+      </message>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step">
+        You can now use saved tab groups across your signed in desktop devices
+      </message>
+
       <!-- Side Panel Tutorial Strings -->
       <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in side panel reading list tutorial">
         Click the side panel icon to open it
@@ -9968,6 +10068,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK" desc="The text of the link in the password sheet that opens the password management section.">
           Manage passwords
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_AND_PASSKEYS_LINK" desc="The text of the link in the password sheet that opens the password management section, when there are passkeys in the list.">
+          Manage passwords and passkeys
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD" desc="The text of the link in the password sheet that opens a bottom sheet which shows all saved credentials from any origin if the user is about to fill a password or username field. Allows user to pick one of the saved passwords to be filled in.">
           Select password
@@ -16692,6 +16795,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
       You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
     </message>
+    <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is already installed.">
+      This app is already installed
+    </message>
+    <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is already installed.">
+      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
+    </message>
+    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
+      A newer version of this app is already installed
+    </message>
+    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
+      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
+    </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_SUBTITLE" desc="Subtitle of the installing screen of the IWA installer.">
       Please wait while installation is in progress
     </message>
@@ -16699,10 +16814,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Installing...
     </message>
     <message name="IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE" desc="Subtitle of the pre-installation app info summary screen of the Isolated Web App installer">
-      This application will be installed on your currently used Chrome profile. <ph name="MANAGE_PROFILES">$1<ex>Manage your Chrome profiles</ex></ph>
-    </message>
-    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES" desc="Link to a settings page that lets the user manage their active profiles">
-      Manage your Chrome profiles
+      This application will be installed on your currently used Chrome profile
     </message>
     <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL" desc="Label before the Isolated Web App name in the pre-install app info summary screen">
       Application: <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>

@@ -90,24 +90,39 @@ const char kAccessibilityCommonExtensionId[] =
 const char kAccessibilityCommonExtensionPath[] = "chromeos/accessibility";
 const char kAccessibilityCommonManifestFilename[] =
     "accessibility_common_manifest.json";
+const char kAccessibilityCommonManifestV3Filename[] =
+    "accessibility_common_manifest_v3.json";
 const char kAccessibilityCommonGuestManifestFilename[] =
     "accessibility_common_manifest_guest.json";
+const char kAccessibilityCommonGuestManifestV3Filename[] =
+    "accessibility_common_manifest_guest_v3.json";
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
+const char kChromeVoxManifestV3Filename[] = "chromevox_manifest_v3.json";
 const char kChromeVoxGuestManifestFilename[] = "chromevox_manifest_guest.json";
+const char kChromeVoxGuestManifestV3Filename[] =
+    "chromevox_manifest_guest_v3.json";
 const char kChromeVoxOptionsPath[] = "/chromevox/options/options.html";
 const char kEnhancedNetworkTtsExtensionId[] =
     "jacnkoglebceckolkoapelihnglgaicd";
 const char kEnhancedNetworkTtsExtensionPath[] = "chromeos/accessibility";
 const char kEnhancedNetworkTtsManifestFilename[] =
     "enhanced_network_tts_manifest.json";
+const char kEnhancedNetworkTtsManifestV3Filename[] =
+    "enhanced_network_tts_manifest_v3.json";
 const char kEnhancedNetworkTtsGuestManifestFilename[] =
     "enhanced_network_tts_manifest_guest.json";
+const char kEnhancedNetworkTtsGuestManifestV3Filename[] =
+    "enhanced_network_tts_manifest_guest_v3.json";
 const char kSelectToSpeakExtensionId[] = "klbcgckkldhdhonijdbnhhaiedfkllef";
 const char kSelectToSpeakExtensionPath[] = "chromeos/accessibility";
 const char kSelectToSpeakManifestFilename[] = "select_to_speak_manifest.json";
+const char kSelectToSpeakManifestV3Filename[] =
+    "select_to_speak_manifest_v3.json";
 const char kSelectToSpeakGuestManifestFilename[] =
     "select_to_speak_manifest_guest.json";
+const char kSelectToSpeakGuestManifestV3Filename[] =
+    "select_to_speak_manifest_v3_guest.json";
 const char kSwitchAccessExtensionId[] = "pmehocpgjmkenlokgjfkaichfjdhpeol";
 const char kSwitchAccessExtensionPath[] = "chromeos/accessibility";
 const char kSwitchAccessManifestFilename[] = "switch_access_manifest.json";

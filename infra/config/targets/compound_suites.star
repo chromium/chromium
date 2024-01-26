@@ -930,7 +930,7 @@ targets.legacy_compound_suite(
         # "gpu_angle_unit_gtests",
         # TODO(crbug.com/1087567, crbug.com/1087590): Enable once there are tests
         # that actually pass.
-        "gpu_common_gtests_validating",
+        "gpu_common_gtests_passthrough",
         # TODO(crbug.com/1087563): Enable once tab_capture_end2end_tests passes
         # on CrOS.
         # "gpu_desktop_specific_gtests",

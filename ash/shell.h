@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/modifier_key_combo_recorder.h"
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
@@ -263,6 +264,7 @@ class VideoDetector;
 class WallpaperControllerImpl;
 class WindowBoundsTracker;
 class WindowCycleController;
+class WindowTilingController;
 class WindowTreeHostManager;
 class WmModeController;
 class ArcInputMethodBoundsTracker;
@@ -729,6 +731,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ShortcutInputHandler* shortcut_input_handler() {
     return shortcut_input_handler_.get();
   }
+  ModifierKeyComboRecorder* modifier_key_combo_recorder() {
+    return modifier_key_combo_recorder_.get();
+  }
   ShutdownControllerImpl* shutdown_controller() {
     return shutdown_controller_.get();
   }
@@ -783,6 +788,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   WindowRestoreController* window_restore_controller() {
     return window_restore_controller_.get();
+  }
+  WindowTilingController* window_tiling_controller() {
+    return window_tiling_controller_.get();
   }
   OverviewController* overview_controller() {
     return overview_controller_.get();
@@ -958,6 +966,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<EventRewriterControllerImpl> event_rewriter_controller_;
   std::unique_ptr<InputDeviceSettingsControllerImpl>
       input_device_settings_controller_;
+  std::unique_ptr<ModifierKeyComboRecorder> modifier_key_combo_recorder_;
   std::unique_ptr<InputDeviceSettingsDispatcher>
       input_device_settings_dispatcher_;
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;
@@ -1095,6 +1104,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;
+  std::unique_ptr<WindowTilingController> window_tiling_controller_;
   std::unique_ptr<OverviewController> overview_controller_;
   std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   // Owned by |focus_controller_|.

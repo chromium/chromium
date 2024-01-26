@@ -146,6 +146,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1792959175193046959">Az alapértelmezett letöltési helyet bármikor módosíthatja</translation>
 <translation id="1796666869097395659">Lap kis méretűre állítása a későbbi visszatéréshez</translation>
 <translation id="1807246157184219062">Világos</translation>
+<translation id="1807709131360304325">Új ablak nyitása</translation>
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
 <translation id="1812027881030482584">A(z) <ph name="SITE_ETLD_PLUS_ONE" /> nem folytathatja a bejelentkezést a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> használatával</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
@@ -189,6 +190,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2056878612599315956">A webhely szüneteltetve van</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 letöltés nem sikerült}other{# letöltés nem sikerült}}</translation>
 <translation id="2067805253194386918">szöveg</translation>
+<translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2082238445998314030">Eredmény: <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">A kompakt nézet megjelenítése folyamatban van</translation>
 <translation id="2093731487903423814">az elmúlt 15 perc</translation>
@@ -218,7 +220,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="223356358902285214">Internetes és alkalmazástevékenységek</translation>
 <translation id="2234827758954819389">Adatvédelmi útmutató</translation>
 <translation id="2239812875700136898">Hírek kezelése „A Discover beállításai” gombbal</translation>
-<translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2247789808226901522">A kártya lejárt</translation>
 <translation id="2248941474044011069">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe</translation>
 <translation id="2249635629516220541">Megszabhatja, hogy a webhelyek milyen adatokat használhassanak, amikor hirdetéseket jelenítnek meg Önnek</translation>
@@ -233,7 +234,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2318045970523081853">Koppintson a hívás indításához</translation>
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
-<translation id="2327226657832576859">Automatikusan megnyitja a PDF-fájlokat?</translation>
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
 <translation id="2341410551640223969">A(z) <ph name="WEBAPK_NAME" /> telepítése nem sikerült.</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
@@ -316,6 +316,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">A lap (<ph name="TAB_TITLE" />) be lesz zárva</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">A hírcsatornakártya menüje félmagasságban van megnyitva</translation>
@@ -354,7 +355,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2946420957526726953">A Chrome frissítése az egyéb eszközökhöz való csatlakozás érdekében</translation>
 <translation id="2951071800649516099">Oldalak felvétele az olvasólistára, hogy később elolvashassa őket</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> olvasatlan oldal}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olvasatlan oldal}}</translation>
-<translation id="2961210776189273067">Cím</translation>
 <translation id="296370266220139811">Időmegtakarítás és kevesebb gépelés</translation>
 <translation id="2977350910003566746">Rendezés folyamatban: legutóbb megnyitottak szerint</translation>
 <translation id="297771753501244313">Legutóbbiak szerint</translation>
@@ -600,6 +600,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4307992518367153382">Alapok</translation>
+<translation id="4311652497846705514">Megnyitja a PDF-et?</translation>
 <translation id="4320177379694898372">Nincs internetkapcsolat</translation>
 <translation id="433213510553688132">Követés…</translation>
 <translation id="4335835283689002019">A Biztonságos Böngészés ki van kapcsolva</translation>
@@ -639,7 +640,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4523326818319942067">az elmúlt óra</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4532845899244822526">Mappa kiválasztása</translation>
-<translation id="4541505619120536051">Mindig nyitva</translation>
 <translation id="4543131175509360848">„Nincs azonosítókulcs” munkalap</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_COUNT_MANY" /> lap, <ph name="TAB_COUNT_INCOGNITO" /> inkognitó módban}}</translation>
 <translation id="4554077758708533499">Csatlakoztatva USB-kábellel</translation>
@@ -831,7 +831,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5486841595534124508">Az oldal statisztikai központjával kapcsolatos adatvédelmi közlemény logója, amely a Saját tevékenységek oldalra irányít át.</translation>
 <translation id="5487521232677179737">Adatok törlése</translation>
 <translation id="5492637351392383067">Eszközalapú titkosítás</translation>
-<translation id="5509866835115085009">A Chrome automatikusan meg tudja nyitni a PDF-fájlokat a letöltésükkor.</translation>
 <translation id="5514904542973294328">Letiltotta az eszköz rendszergazdája</translation>
 <translation id="5515439363601853141">Oldja fel a képernyőzárat a jelszó megtekintéséhez</translation>
 <translation id="5517095782334947753">Vannak könyvjelzői, előzményei, jelszavai és más beállításai a(z) <ph name="FROM_ACCOUNT" /> fiókból.</translation>
@@ -925,6 +924,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5962718611393537961">Koppintson az összecsukáshoz</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5966233851250124270">A Chrome megjegyzi a választását</translation>
+<translation id="5977976211062815271">Ezen az eszközön</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
 <translation id="5995726099713306770">Ismét letölti az oldalt?</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
@@ -1302,6 +1302,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7810647596859435254">Megnyitás ezzel:</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Összes fájl, 1 fájl a listában}other{Összes fájl, # fájl a listában}}</translation>
 <translation id="7815484226266492798">Hosszú képernyőkép</translation>
+<translation id="7821130663268546430">Az összes megnyitott lapot megtalálja a Lapváltóban</translation>
 <translation id="7822705602465980873">Amikor be van jelentkezve, ezek az adatok a Google-fiókjához kapcsolódnak, hogy segítsék az Ön védelmét az összes Google-szolgáltatásban, például egy biztonsági incidens után fokozva a védelmet a Gmailben.</translation>
 <translation id="78270725016672455">Számítógépe ezt az eszközt szeretné regisztrálni az adott webhelyre való bejelentkezéshez</translation>
 <translation id="7844171778363018843">Nincs szinkronizálásra kiválasztott adat</translation>
@@ -1329,6 +1330,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
+<translation id="7951102827450076904">Mindig nyissa meg a letöltött PDF-fájlokat</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="7960972236129063347">Oldalstatisztikák vissza gombja</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>

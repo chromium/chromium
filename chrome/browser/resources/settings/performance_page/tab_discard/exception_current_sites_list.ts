@@ -7,15 +7,21 @@ import '../../controls/settings_checkbox_list_entry.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 
-import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrScrollableMixin, CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import type {PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
-import {MemorySaverModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {convertDateToWindowsEpoch} from '../../time.js';
+import type {PerformanceBrowserProxy} from '../performance_browser_proxy.js';
+import {PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
+import type {PerformanceMetricsProxy} from '../performance_metrics_proxy.js';
+import {MemorySaverModeExceptionListAction, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 
 import {getTemplate} from './exception_current_sites_list.html.js';
 import {TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
@@ -144,7 +150,7 @@ export class ExceptionCurrentSitesListElement extends
 
   private async updateCurrentSites_() {
     const existingSites =
-        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
+        new Set(Object.keys(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value));
     const currentSites = (await this.browserProxy_.getCurrentOpenSites())
                              .filter(rule => !existingSites.has(rule));
 
@@ -186,7 +192,8 @@ export class ExceptionCurrentSitesListElement extends
   submit() {
     assert(!this.submitDisabled);
     this.selectedSites_.forEach(rule => {
-      this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
+      this.setPrefDictEntry(
+          TAB_DISCARD_EXCEPTIONS_PREF, rule, convertDateToWindowsEpoch());
     });
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.ADD_FROM_CURRENT);

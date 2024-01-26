@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/fidl_matchers.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,13 +64,15 @@ Matcher<FakeGraph> IsSurfaceGraph(
 
   return AllOf(
       Field("root_transform", &FakeGraph::root_transform,
-            Pointee(AllOf(Field("translation", &FakeTransform::translation,
-                                FakeTransform::kDefaultTranslation),
-                          Field("scale", &FakeTransform::scale, scale),
-                          Field("opacity", &FakeTransform::opacity,
-                                FakeTransform::kDefaultOpacity),
-                          Field("children", &FakeTransform::children,
-                                ElementsAreArray(child_transform_matchers))))),
+            Pointee(AllOf(
+                Field("translation", &FakeTransform::translation,
+                      ::base::test::FidlEq(FakeTransform::kDefaultTranslation)),
+                Field("scale", &FakeTransform::scale,
+                      ::base::test::FidlEq(scale)),
+                Field("opacity", &FakeTransform::opacity,
+                      FakeTransform::kDefaultOpacity),
+                Field("children", &FakeTransform::children,
+                      ElementsAreArray(child_transform_matchers))))),
       Field("view", &FakeGraph::view,
             Optional(AllOf(
                 Field("view_token", &FakeView::view_token, view_token_koid),
@@ -82,7 +85,8 @@ Matcher<fuchsia::ui::composition::ImageProperties> IsImageProperties(
   return AllOf(
       Property("has_size", &fuchsia::ui::composition::ImageProperties::has_size,
                true),
-      Property("size", &fuchsia::ui::composition::ImageProperties::size, size));
+      Property("size", &fuchsia::ui::composition::ImageProperties::size,
+               ::base::test::FidlEq(size)));
 }
 
 Matcher<FakeTransformPtr> IsImageTransform(
@@ -96,22 +100,24 @@ Matcher<FakeTransformPtr> IsImageTransform(
     float image_opacity = FakeImage::kDefaultOpacity,
     ImageFlip image_flip = FakeImage::kDefaultFlip) {
   return Pointee(AllOf(
-      Field("translation", &FakeTransform::translation, translation),
+      Field("translation", &FakeTransform::translation,
+            ::base::test::FidlEq(translation)),
       Field("orientation", &FakeTransform::orientation, orientation),
-      Field("scale", &FakeTransform::scale, FakeTransform::kDefaultScale),
+      Field("scale", &FakeTransform::scale,
+            ::base::test::FidlEq(FakeTransform::kDefaultScale)),
       Field("opacity", &FakeTransform::opacity, FakeTransform::kDefaultOpacity),
       Field("children", &FakeTransform::children, IsEmpty()),
-      Field(
-          "content", &FakeTransform::content,
-          Pointee(VariantWith<FakeImage>(AllOf(
-              Field("image_properties", &FakeImage::image_properties,
-                    IsImageProperties(size)),
-              Field("sample_region", &FakeImage::sample_region, sample_region),
-              Field("destination_size", &FakeImage::destination_size,
-                    destination_size),
-              Field("blend_mode", &FakeImage::blend_mode, blend_mode),
-              Field("opacity", &FakeImage::opacity, image_opacity),
-              Field("flip", &FakeImage::flip, image_flip)))))));
+      Field("content", &FakeTransform::content,
+            Pointee(VariantWith<FakeImage>(
+                AllOf(Field("image_properties", &FakeImage::image_properties,
+                            IsImageProperties(size)),
+                      Field("sample_region", &FakeImage::sample_region,
+                            ::base::test::FidlEq(sample_region)),
+                      Field("destination_size", &FakeImage::destination_size,
+                            ::base::test::FidlEq(destination_size)),
+                      Field("blend_mode", &FakeImage::blend_mode, blend_mode),
+                      Field("opacity", &FakeImage::opacity, image_opacity),
+                      Field("flip", &FakeImage::flip, image_flip)))))));
 }
 
 scoped_refptr<FlatlandSysmemNativePixmap> CreateFlatlandSysmemNativePixmap(

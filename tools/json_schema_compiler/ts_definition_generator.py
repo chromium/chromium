@@ -132,7 +132,7 @@ class _Generator(object):
       c.Eblock("}")
 
   def _AppendFunction(self, c: Code, func):
-    params = self._ExtractFunctionParams(func.params)
+    params = self._ExtractFunctionParams(func)
     ret_type = self._ExtractFunctionReturnType(func)
     c.Append(f"export function {func.name}({params}): {ret_type};")
     c.Append()
@@ -222,7 +222,8 @@ class _Generator(object):
     ret_type = "void"
     if func.returns is not None:
       ret_type = self._ExtractType(func.returns)
-    elif func.returns_async is not None:
+    elif (func.returns_async is not None and
+          func.returns_async.can_return_promise):
       ret_type = f"Promise<{self._ExtractPromiseType(func.returns_async)}>"
     return ret_type
 
@@ -246,7 +247,16 @@ class _Generator(object):
       return type_list
     elif type.property_type is PropertyType.ARRAY:
       if type.item_type.property_type is PropertyType.OBJECT:
-        return f"Array<{self._ExtractType(type.item_type)}>"
+        element_type = self._ExtractType(type.item_type)
+        # Trying to idenfity non-simple elements to use the syntax:
+        # Array<string | number>
+        # Array<{prop: string}>
+        # Array<() => void>
+        if '|' in element_type or '(' in element_type or '{' in element_type:
+          return f"Array<{element_type}>"
+
+        # For simple type use like the syntax: string[]
+        return f"{element_type}[]"
       elif type.item_type.property_type is PropertyType.CHOICES:
         return f"({self._ExtractType(type.item_type)})[]"
       else:
@@ -272,16 +282,20 @@ class _Generator(object):
   # The delimiter can be changed so this can be used for interface / object
   # members.
   def _ExtractFunctionType(self, func: Function, return_delim=" =>"):
-    params = self._ExtractFunctionParams(func.params)
+    params = self._ExtractFunctionParams(func)
     ret_type = self._ExtractFunctionReturnType(func)
     return f"({params}){return_delim} {ret_type}"
 
   # Extracts an object definition.
   def _ExtractObjectDefinition(self, obj: Type):
+    if obj.instance_of:
+      return obj.instance_of
+
     # If there are no specific properties on the object then we should expect
     # and object of random keys with specific values.
     if len(obj.properties) == 0:
-      return "{[key:string]: %s}" % self._ExtractType(obj.additional_properties)
+      value_type = self._ExtractType(obj.additional_properties)
+      return "{[key:string]: %s,}" % value_type
 
     ## Otherwise we will build a definition similar to an interface
     obj_code = Code()
@@ -300,7 +314,27 @@ class _Generator(object):
 
   # Extracts parameters from a function as a string representation.
   # Example = "p1: string, p2: number, p3: any".
-  def _ExtractFunctionParams(self, params: list):
+  def _ExtractFunctionParams(self, func: Function):
+    param_str = self._ExtractParams(func.params)
+
+    # When the return async isn't a promise, we append it as a return callback
+    # at the end of the parameters.
+    use_callback = (
+        func.returns_async and not func.returns_async.can_return_promise
+    )
+    if use_callback:
+      callback_params = self._ExtractParams(func.returns_async.params)
+      if param_str:
+        param_str += ", "
+
+      param_str += f"{func.returns_async.name} "
+      if func.returns_async.optional:
+        param_str += "?"
+      param_str += f": ({callback_params}) => void"
+
+    return param_str
+
+  def _ExtractParams(self, params: list):
     param_str = ""
     required_index = -1
     for i, param in reversed(list(enumerate(params))):
@@ -328,6 +362,8 @@ class _Generator(object):
     assert len(async_return.params) <= 1
     for ret in async_return.params:
       retval = self._ExtractType(ret.type_)
+      if ret.optional:
+        retval += "|undefined"
     return retval
 
   def _ClangFormat(self, c: Code, level=0):

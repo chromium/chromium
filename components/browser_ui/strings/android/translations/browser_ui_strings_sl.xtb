@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Prenos je zaustavljen</translation>
 <translation id="1415402041810619267">URL je skrajšan</translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1434873037477293673">kartica z znižano ceno</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Spletna mesta lahko prikazujejo pozive za prijavo zunanjih ponudnikov.</translation>
 <translation id="2790501146643349491">Če je ta možnost vklopljena, nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov. Če je ta možnost izklopljena, nedavno zaprta spletna mesta ne smejo dokončati pošiljanja ali prejemanja podatkov.</translation>
 <translation id="2822354292072154809">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za spletna mesta za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" />, <ph name="SEPARATOR" />, <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtevanje pogleda za mobilno napravo</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
+<translation id="6452138246455930388">Znižanje cene na odprtem zavihku s cene <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Če je okno omejeno, zahtevajte pogled za mobilno napravo</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Premakni dol</translation>
 <translation id="6749077623962119521">Želite ponastaviti dovoljenja?</translation>
 <translation id="6766622839693428701">Povlecite navzdol, da zaprete.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> iz naprave »<ph name="FROM_DEVICE" />«</translation>
 <translation id="6787751205395685251">Izberite možnost za spletno mesto <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
+<translation id="6867014948848323204">Iz naprave »<ph name="FROM_DEVICE" />«</translation>
 <translation id="6912998170423641340">Spletnim mestom prepreči branje besedila in slik v odložišču</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6950072572526089586">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Čudoviti čarovnik iz Oza</translation>
 <translation id="7684642910516280563">Spletnemu mestu ne dovoli uporabe piškotkov tretje osebe</translation>
 <translation id="7719367874908701697">Povečava/pomanjšava strani</translation>
+<translation id="7770832849480336015">Skrij »<ph name="TITLE_OF_MODULE" />«</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

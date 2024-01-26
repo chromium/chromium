@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Зададзена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />: уключыць/выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Адкрыць акно выбару эмодзі</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Перайсці да папярэдняга трэка</translation>
 <translation id="2152895518047545149">Здаецца, нічога не прапушчана. Выдатна!</translation>
 <translation id="2161132820593978283">Апрабуйце функцыю кадравання – яна дазволіць вам заставацца ў цэнтры экрана падчас відэавыклікаў. Яе можна ўключыць у хуткіх наладах.</translation>
-<translation id="2170530631236737939">Каб выйсці з рэжыму Агляду, правядзіце трыма пальцамі ўніз</translation>
 <translation id="2185166372312820725">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="2185444992308415167">Перайсці па ўкладках 1-8</translation>
 <translation id="2198625180564913276">Ідзе дадаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
@@ -392,7 +389,7 @@
 <translation id="2624588537172718173">Аўдыя з прылады і мікрафон</translation>
 <translation id="263399434338050016">"Выбраць усё"</translation>
 <translation id="2644422758626431000">Замацаваць акно злева</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Здыманне акна</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2658778018866295321">Націснуць і перацягнуць</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">Каб тэлефон мог дзейнічаць як хот-спот, ён павінен выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
+<translation id="2744221223678373668">Абагулена</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Выдаліць"</translation>
 <translation id="2750941250130734256">Актыўнае акно адмацавана.</translation>
 <translation id="2761723519669354964">Адкрыць на панэлі доступу вылучаны элемент</translation>
+<translation id="2762000892062317888">толькі што</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />…<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Пошук + S</translation>
 <translation id="2778650143428714839">Прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3580650856351781466">Ідзе спампоўванне файлаў для ператварэння маўлення ў тэкст</translation>
 <translation id="3585296979871889131">Прагляд нядаўніх фота, медыяфайлаў, апавяшчэнняў і праграм з тэлефона</translation>
+<translation id="3590441166907930941">Бакавая кнопка</translation>
 <translation id="3593039967545720377">Каб праглядзець гісторыю буфера абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V Каб пачаць, скапіруйце элемент.</translation>
 <translation id="3593646411856133110">Каб убачыць адкрытыя праграмы, правядзіце пальцам уверх і ўтрымлівайце</translation>
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Адказаць</translation>
 <translation id="3990002060657467458">Параметры, якія часта выкарыстоўваюцца (напрыклад, звязаныя з Wi-Fi, Bluetooth і кіраваннем гукам), знаходзяцца ў меню хуткіх налад. З яго таксама можна рабіць здымкі экрана.</translation>
 <translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
+<translation id="4002066346123236978">Назва</translation>
 <translation id="40062176907008878">Рукапісны ўвод</translation>
 <translation id="4011112806063830608">Рэжым "Не турбаваць" уключаны.</translation>
 <translation id="4017989525502048489">Лазерная ўказка</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Стан акумулятара: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Колькасць цыклаў: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Захаваць працоўны стол як шаблон</translation>
 <translation id="5168181903108465623">Ёсць даступныя прылады для трансляцыі</translation>
+<translation id="5168753792967365150">Змяніць у Google Задачах</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
 <translation id="5187627942836026988">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот заблакіраваны адміністратарам.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Усталяваныя праграмы</translation>
 <translation id="6173151025443907148">Пры выкарыстанні Lacros уваход у некалькі ўліковых запісаў не падтрымліваецца. Выкарыстайце другі профіль браўзера або адключыце Lacros і паўтарыце спробу.</translation>
 <translation id="6179832488876878285">Тут можна замацаваць важныя файлы. Каб пачаць, адкрыйце праграму "Файлы".</translation>
+<translation id="6180193585172850042">Кнопка "Назад"</translation>
+<translation id="6180651297859206670">Кнопка "Наперад"</translation>
 <translation id="6182592640011875895">Адкрыць працоўны стол</translation>
 <translation id="6185696379715117369">На старонку ўверх</translation>
 <translation id="619335566042889110">Зарадзіць акумулятар поўнасцю</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6981291220124935078">Даць доступ</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Раздзяляльнасць зменена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Удзяліце час на кароткі агляд і даведайцеся, як працаваць з Chromebook. Прайдзіце навучанне ўсяго за 6 крокаў.</translation>
 <translation id="7004910047186208204">Падключыцца да мабільнага інтэрнэту</translation>
 <translation id="7005239792648594238">Каб пачаць, адкрыйце праграму</translation>
@@ -1693,7 +1698,6 @@
 <translation id="7850320739366109486">Не турбаваць</translation>
 <translation id="7851039877802112575">Перайсці да ўсплывальных і дыялогавых вокнаў</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Правядзіце трыма пальцамі ўверх, каб увайсці ў рэжым Агляду</translation>
 <translation id="7862292329216937261">Каб карыстацца прыладай у гасцявым рэжыме, вам неабходна выйсці з уліковага запісу, а затым у ніжняй частцы экрана выбраць "Праглядаць як госць".</translation>
 <translation id="7866482334467279021">ўключаны</translation>
 <translation id="7872786842639831132">Выключана</translation>
@@ -1804,7 +1808,6 @@
 <translation id="8262312463845990408">Уключыць/выключыць прайграванне</translation>
 <translation id="8270450402312105425">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу гадзіны}one{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}few{Вярніцеся да ранейшай версіі АС на працягу # гадзін}many{Вярніцеся да ранейшай версіі АС на працягу # гадзін}other{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}}</translation>
 <translation id="8277261673056602147">Вылучыць тэкст на экране</translation>
-<translation id="8284362522226889623">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўлева, каб перайсці на папярэдні працоўны стол</translation>
 <translation id="828708037801473432">Выключана</translation>
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>

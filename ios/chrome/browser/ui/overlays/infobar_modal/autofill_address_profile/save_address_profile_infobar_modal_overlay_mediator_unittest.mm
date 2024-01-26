@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
@@ -70,7 +71,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate_;
+  raw_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS> delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;
   FakeOverlayRequestCallbackInstaller callback_installer_;

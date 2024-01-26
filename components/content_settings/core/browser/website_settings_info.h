@@ -118,6 +118,9 @@ class WebsiteSettingsInfo {
   const std::string& name() const { return name_; }
 
   const std::string& pref_name() const { return pref_name_; }
+  const std::string& partitioned_pref_name() const {
+    return partitioned_pref_name_;
+  }
   const std::string& default_value_pref_name() const {
     return default_value_pref_name_;
   }
@@ -137,6 +140,7 @@ class WebsiteSettingsInfo {
   const std::string name_;
 
   const std::string pref_name_;
+  const std::string partitioned_pref_name_;
   const std::string default_value_pref_name_;
   const base::Value initial_default_value_;
   const SyncStatus sync_status_;

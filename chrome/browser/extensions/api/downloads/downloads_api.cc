@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -74,7 +75,6 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -1023,7 +1023,7 @@ bool OnDeterminingFilenameWillDispatchCallback(
     mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    absl::optional<base::Value::List>& event_args_out,
+    std::optional<base::Value::List>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   *any_determiners = true;
   base::Time installed =
@@ -1076,7 +1076,7 @@ DownloadsDownloadFunction::DownloadsDownloadFunction() {}
 DownloadsDownloadFunction::~DownloadsDownloadFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
-  absl::optional<downloads::Download::Params> params =
+  std::optional<downloads::Download::Params> params =
       downloads::Download::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const downloads::DownloadOptions& options = params->options;
@@ -1207,7 +1207,7 @@ DownloadsSearchFunction::DownloadsSearchFunction() {}
 DownloadsSearchFunction::~DownloadsSearchFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
-  absl::optional<downloads::Search::Params> params =
+  std::optional<downloads::Search::Params> params =
       downloads::Search::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadManager* manager = nullptr;
@@ -1256,7 +1256,7 @@ DownloadsPauseFunction::DownloadsPauseFunction() {}
 DownloadsPauseFunction::~DownloadsPauseFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsPauseFunction::Run() {
-  absl::optional<downloads::Pause::Params> params =
+  std::optional<downloads::Pause::Params> params =
       downloads::Pause::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1279,7 +1279,7 @@ DownloadsResumeFunction::DownloadsResumeFunction() {}
 DownloadsResumeFunction::~DownloadsResumeFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsResumeFunction::Run() {
-  absl::optional<downloads::Resume::Params> params =
+  std::optional<downloads::Resume::Params> params =
       downloads::Resume::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1302,7 +1302,7 @@ DownloadsCancelFunction::DownloadsCancelFunction() {}
 DownloadsCancelFunction::~DownloadsCancelFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsCancelFunction::Run() {
-  absl::optional<downloads::Resume::Params> params =
+  std::optional<downloads::Resume::Params> params =
       downloads::Resume::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1320,7 +1320,7 @@ DownloadsEraseFunction::DownloadsEraseFunction() {}
 DownloadsEraseFunction::~DownloadsEraseFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
-  absl::optional<downloads::Erase::Params> params =
+  std::optional<downloads::Erase::Params> params =
       downloads::Erase::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadManager* manager = nullptr;
@@ -1346,7 +1346,7 @@ DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() {}
 DownloadsRemoveFileFunction::~DownloadsRemoveFileFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsRemoveFileFunction::Run() {
-  absl::optional<downloads::RemoveFile::Params> params =
+  std::optional<downloads::RemoveFile::Params> params =
       downloads::RemoveFile::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1381,7 +1381,7 @@ DownloadsAcceptDangerFunction::OnPromptCreatedCallback*
     DownloadsAcceptDangerFunction::on_prompt_created_ = nullptr;
 
 ExtensionFunction::ResponseAction DownloadsAcceptDangerFunction::Run() {
-  absl::optional<downloads::AcceptDanger::Params> params =
+  std::optional<downloads::AcceptDanger::Params> params =
       downloads::AcceptDanger::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PromptOrWait(params->download_id, 10);
@@ -1460,7 +1460,7 @@ DownloadsShowFunction::DownloadsShowFunction() {}
 DownloadsShowFunction::~DownloadsShowFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsShowFunction::Run() {
-  absl::optional<downloads::Show::Params> params =
+  std::optional<downloads::Show::Params> params =
       downloads::Show::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1498,7 +1498,7 @@ DownloadsOpenFunction::DownloadsOpenFunction() {}
 DownloadsOpenFunction::~DownloadsOpenFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
-  absl::optional<downloads::Open::Params> params =
+  std::optional<downloads::Open::Params> params =
       downloads::Open::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
@@ -1570,7 +1570,7 @@ DownloadsSetShelfEnabledFunction::DownloadsSetShelfEnabledFunction() {}
 DownloadsSetShelfEnabledFunction::~DownloadsSetShelfEnabledFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
-  absl::optional<downloads::SetShelfEnabled::Params> params =
+  std::optional<downloads::SetShelfEnabled::Params> params =
       downloads::SetShelfEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(devlin): Solve this with the feature system.
@@ -1626,7 +1626,7 @@ DownloadsSetUiOptionsFunction::DownloadsSetUiOptionsFunction() = default;
 DownloadsSetUiOptionsFunction::~DownloadsSetUiOptionsFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
-  absl::optional<downloads::SetUiOptions::Params> params =
+  std::optional<downloads::SetUiOptions::Params> params =
       downloads::SetUiOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const downloads::UiOptions& options = params->options;
@@ -1685,11 +1685,10 @@ void DownloadsGetFileIconFunction::SetIconExtractorForTesting(
 }
 
 ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
-  absl::optional<downloads::GetFileIcon::Params> params =
+  std::optional<downloads::GetFileIcon::Params> params =
       downloads::GetFileIcon::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  const absl::optional<downloads::GetFileIconOptions>& options =
-      params->options;
+  const std::optional<downloads::GetFileIconOptions>& options = params->options;
   int icon_size = kDefaultIconSize;
   if (options && options->size)
     icon_size = *options->size;

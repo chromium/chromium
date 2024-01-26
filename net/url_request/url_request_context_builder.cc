@@ -43,7 +43,7 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/network_binding_client_socket_factory.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/url_request/static_http_user_agent_settings.h"
@@ -282,8 +282,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
                                                       user_agent_));
   }
 
-  if (!network_delegate_)
+  if (!network_delegate_) {
     network_delegate_ = std::make_unique<NetworkDelegateImpl>();
+  }
   context->set_network_delegate(std::move(network_delegate_));
 
   if (net_log_) {
@@ -312,8 +313,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     host_resolver_ = HostResolver::CreateStandaloneNetworkBoundResolver(
         context->net_log(), bound_network_, manager_options_);
 
-    if (!quic_context_)
+    if (!quic_context_) {
       set_quic_context(std::make_unique<QuicContext>());
+    }
     auto* quic_params = quic_context_->params();
     // QUIC sessions for this context should not be closed (or go away) after a
     // network change.

@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startURL(
     '../resources/dom-get-container-for-node.html',
     'Test CSS.getContainerForNode method for node with container queries');

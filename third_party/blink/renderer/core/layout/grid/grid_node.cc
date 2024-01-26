@@ -14,8 +14,8 @@ GridItems GridNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
     HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
-  return ConstructGridItems(line_resolver, /* root_grid_style */ Style(),
-                            /* parent_grid_style */ Style(),
+  return ConstructGridItems(line_resolver, /*root_grid_style=*/Style(),
+                            /*parent_grid_style=*/Style(),
                             line_resolver.HasStandaloneAxis(kForColumns),
                             line_resolver.HasStandaloneAxis(kForRows),
                             oof_children, has_nested_subgrid);
@@ -164,19 +164,48 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
 MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
     const GridSizingSubtree& sizing_subtree,
     const ConstraintSpace& space) const {
+  DCHECK(sizing_subtree.HasValidRootFor(*this));
+  DCHECK(sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(kForColumns));
+
   auto* layout_grid = To<LayoutGrid>(box_.Get());
 
   if (!layout_grid->HasCachedMinMaxSizes()) {
     const auto fragment_geometry = CalculateInitialFragmentGeometry(
-        space, *this, /* break_token */ nullptr, /* is_intrinsic */ true);
+        space, *this, /*break_token=*/nullptr, /*is_intrinsic=*/true);
 
-    layout_grid->SetCachedMinMaxSizes(
+    layout_grid->SetMinMaxSizesCache(
         GridLayoutAlgorithm({*this, fragment_geometry, space})
             .ComputeSubgridMinMaxSizes(sizing_subtree));
   }
 
   return {layout_grid->CachedMinMaxSizes(),
-          /* depends_on_block_constraints */ false};
+          /*depends_on_block_constraints=*/false};
+}
+
+LayoutUnit GridNode::ComputeSubgridIntrinsicBlockSize(
+    const GridSizingSubtree& sizing_subtree,
+    const ConstraintSpace& space) const {
+  DCHECK(sizing_subtree.HasValidRootFor(*this));
+  DCHECK(sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(kForRows));
+
+  auto* layout_grid = To<LayoutGrid>(box_.Get());
+
+  if (!layout_grid->HasCachedMinMaxSizes()) {
+    const auto fragment_geometry = CalculateInitialFragmentGeometry(
+        space, *this, /*break_token=*/nullptr, /*is_intrinsic=*/true);
+
+    const auto intrinsic_block_size =
+        GridLayoutAlgorithm({*this, fragment_geometry, space})
+            .ComputeSubgridIntrinsicBlockSize(sizing_subtree);
+
+    // The min and max-content block size are both the box's "ideal" size after
+    // layout (see https://drafts.csswg.org/css-sizing-3/#max-content).
+    layout_grid->SetMinMaxSizesCache(
+        {intrinsic_block_size, intrinsic_block_size});
+  }
+
+  // Both intrinsic sizes are the same, so we can return either.
+  return layout_grid->CachedMinMaxSizes().max_size;
 }
 
 }  // namespace blink

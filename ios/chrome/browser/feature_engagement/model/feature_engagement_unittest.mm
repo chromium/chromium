@@ -157,7 +157,7 @@ class FeatureEngagementTest : public PlatformTest {
     params["availability"] = "any";
     params["session_rate"] = "any";
     params["event_trigger"] = "name:password_manager_widget_promo_trigger;"
-                              "comparator:<3;window:360;storage:360";
+                              "comparator:<2;window:360;storage:360";
     params["event_used"] = "name:password_manager_widget_promo_used;comparator:"
                            "==0;window:360;storage:360";
     params["event_1"] = "name:password_manager_widget_promo_closed;comparator:="

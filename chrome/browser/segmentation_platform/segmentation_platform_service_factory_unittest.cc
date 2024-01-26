@@ -107,7 +107,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kContextualPageActionShareModel, {}},
          {features::kSegmentationPlatformTimeDelaySampling,
           {{"SamplingRate", "1"}}},
-         {features::kSegmentationPlatformTabResumptionRanker, {}}},
+         {features::kSegmentationPlatformTabResumptionRanker, {}},
+         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -123,7 +124,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
       PredictionStatus expected_status,
-      absl::optional<std::vector<std::string>> expected_labels) {
+      std::optional<std::vector<std::string>> expected_labels) {
     base::RunLoop loop;
     profile_->service->GetClassificationResult(
         segmentation_key, prediction_options, input_context,
@@ -137,7 +138,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   void OnGetClassificationResult(
       base::RepeatingClosure closure,
       PredictionStatus expected_status,
-      absl::optional<std::vector<std::string>> expected_labels,
+      std::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
     EXPECT_EQ(actual_result.status, expected_status);
     if (expected_labels.has_value()) {
@@ -449,7 +450,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceTierSegment) {
   ExpectGetClassificationResult(
       kDeviceTierKey, prediction_options, nullptr,
       /*expected_status=*/PredictionStatus::kSucceeded,
-      /*expected_labels=*/absl::nullopt);
+      /*expected_labels=*/std::nullopt);
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest,
@@ -555,6 +556,19 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, kLegacyNegativeLabel));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
+  InitServiceAndCacheResults(
+      segmentation_platform::kAndroidHomeModuleRankerKey);
+  PredictionOptions prediction_options;
+
+  std::vector<std::string> result = {kPriceChange, kSingleTab};
+  ExpectGetClassificationResult(
+      segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
+      nullptr,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

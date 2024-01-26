@@ -39,7 +39,7 @@ class ManagementApiFunctionBase
   // to the `Params` type. If the `Params` can't be created, this resolves the
   // corresponding JavaScript call with an error and returns `nullptr`.
   template <class Params>
-  absl::optional<Params> GetParams();
+  std::optional<Params> GetParams();
 
  private:
   std::unique_ptr<RemoteTelemetryManagementServiceStrategy>
@@ -56,7 +56,20 @@ class OsManagementSetAudioGainFunction : public ManagementApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult();
+  void OnResult(bool is_success);
+};
+
+class OsManagementSetAudioVolumeFunction : public ManagementApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.management.setAudioVolume",
+                             OS_MANAGEMENT_SETAUDIOVOLUME)
+
+ private:
+  ~OsManagementSetAudioVolumeFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(bool is_success);
 };
 
 }  // namespace chromeos

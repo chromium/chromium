@@ -44,10 +44,11 @@ OfflineSigninLimiterFactory::OfflineSigninLimiterFactory()
 
 OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() = default;
 
-KeyedService* OfflineSigninLimiterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OfflineSigninLimiterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OfflineSigninLimiter(static_cast<Profile*>(context),
-                                  clock_for_testing_);
+  return std::make_unique<OfflineSigninLimiter>(static_cast<Profile*>(context),
+                                                clock_for_testing_);
 }
 
 }  // namespace ash

@@ -10,44 +10,10 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-_IGNORE_FREEZE_FOOTER = 'Ignore-Freeze'
-
-# The time module's handling of timezones is abysmal, so the boundaries are
-# precomputed in UNIX time
-_FREEZE_START = 1702627200  # 2023/12/15 00:00 -0800
-_FREEZE_END = 1704182400  # 2024/01/02 00:00 -0800
-
 
 def CheckFreeze(input_api, output_api):
-  if _FREEZE_START <= input_api.time.time() < _FREEZE_END:
-    footers = input_api.change.GitFootersFromDescription()
-
-    # We don't want the files in the ../filters/ subdirectory to be
-    # subject to the freeze. Check to see if any files outside
-    # that directory are being changed.
-    has_non_filter_files = not all('filters' in f
-                                   for f in input_api.LocalPaths())
-
-    if has_non_filter_files and _IGNORE_FREEZE_FOOTER not in footers:
-      def convert(t):
-        ts = input_api.time.localtime(t)
-        return input_api.time.strftime('%Y/%m/%d %H:%M %z', ts)
-
-      # Don't report errors when on the presubmit --all bot or when testing
-      # with presubmit --files.
-      if input_api.no_diffs:
-        report_type = output_api.PresubmitPromptWarning
-      else:
-        report_type = output_api.PresubmitError
-      return [
-          report_type('There is a prod freeze in effect from {} until {},'
-                      ' files in //testing/buildbot cannot be modified'
-                      ' (though files in //testing/buildbot/filters'
-                      ' can be).'.format(convert(_FREEZE_START),
-                                         convert(_FREEZE_END)))
-      ]
-
-  return []
+  return input_api.canned_checks.CheckInfraFreeze(
+      input_api, output_api, files_to_exclude=['.+/filters/.+'])
 
 
 def CheckSourceSideSpecs(input_api, output_api):

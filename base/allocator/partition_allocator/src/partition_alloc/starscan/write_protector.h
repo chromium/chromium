@@ -10,7 +10,7 @@
 #include <mutex>
 
 #include "build/build_config.h"
-#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/starscan/pcscan.h"
 #include "partition_alloc/starscan/raceful_worklist.h"
 
@@ -19,7 +19,7 @@ namespace partition_alloc::internal {
 // Interface for page protection/unprotection. This is used in DCScan to catch
 // concurrent mutator writes. Protection is done when the scanner starts
 // scanning a range. Unprotection happens at the end of the scanning phase.
-class WriteProtector : public AllocatedOnPCScanMetadataPartition {
+class WriteProtector : public internal::InternalPartitionAllocated {
  public:
   virtual ~WriteProtector() = default;
 

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_FEED_ACTIVITY_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_FEED_ACTIVITY_METRICS_PROVIDER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 class PrefService;
@@ -24,7 +25,7 @@ class IOSFeedActivityMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_FEED_ACTIVITY_METRICS_PROVIDER_H_

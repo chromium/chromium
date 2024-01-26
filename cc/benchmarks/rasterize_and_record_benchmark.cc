@@ -117,8 +117,9 @@ void RasterizeAndRecordBenchmark::RunOnLayer(PictureLayer* layer) {
       painter->PaintContentsToDisplayList();
   record_results_.paint_op_memory_usage += display_list->BytesUsed();
   record_results_.paint_op_count += display_list->TotalOpCount();
-  record_results_.pixels_recorded +=
-      painter->PaintableRegion().width() * painter->PaintableRegion().height();
+  gfx::Rect bounds =
+      display_list->bounds().value_or(gfx::Rect(layer->bounds()));
+  record_results_.pixels_recorded += bounds.size().Area64();
 }
 
 }  // namespace cc

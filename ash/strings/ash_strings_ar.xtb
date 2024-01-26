@@ -229,7 +229,6 @@
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
 <translation id="1882897271359938046">نسخ إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">فتح القفل باستخدام بصمة الإصبع</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز). وتم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">مثبَّت حديثًا</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1918022425394817322">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى.</translation>
@@ -268,7 +267,6 @@
 <translation id="2064048859448024834">يتم عرض معاينة الكاميرا</translation>
 <translation id="2067602449040652523">سطوع لوحة المفاتيح</translation>
 <translation id="2075520525463668108">انقر لتفعيل/إيقاف "<ph name="CAPTURE_MEDIUM" />". "<ph name="CAPTURE_MEDIUM" />" - <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">يمكنك التمرير سريعًا لليسار بأربعة أصابع للتبديل إلى سطح المكتب التالي.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2083190527011054446">ليلة سعيدة <ph name="GIVEN_NAME" />،</translation>
 <translation id="2086334242442703436">فتح "أداة اختيار الرموز التعبيرية"</translation>
@@ -284,7 +282,6 @@
 <translation id="2149229036084364364">الانتقال إلى المقطع الصوتي السابق</translation>
 <translation id="2152895518047545149">يبدو أنّ كل المهام مكتملة. أحسنت.</translation>
 <translation id="2161132820593978283">جرِّب استخدام ميزة "تكبير تلقائي" حتى تظهر صورة وجهك في وسط الشاشة أثناء مكالمات الفيديو. يمكنك تفعيل هذه الميزة من خلال قائمة "الإعدادات السريعة".</translation>
-<translation id="2170530631236737939">يمكنك التمرير سريعًا لأسفل الشاشة بثلاثة أصابع للخروج من وضع "النظرة العامة".</translation>
 <translation id="2185166372312820725">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="2185444992308415167">التنقّل بين علامات التبويب من الأولى حتى الثامنة</translation>
 <translation id="2198625180564913276">جارٍ إضافة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
@@ -393,7 +390,7 @@
 <translation id="2624588537172718173">صوت الجهاز والميكروفون</translation>
 <translation id="263399434338050016">"اختيار الكل"</translation>
 <translation id="2644422758626431000">تثبيت النافذة على اليمين</translation>
-<translation id="2645435784669275700">‏نظام التشغيل Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">لقطة نافذة</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2658778018866295321">انقر واسحب</translation>
@@ -413,10 +410,12 @@
 <translation id="2726420622004325180">يجب أن يتوفّر في هاتفك اتصال بيانات الجوّال لتتمكّن من تفعيل ميزة "نقطة الاتصال".</translation>
 <translation id="2727175239389218057">الرّد</translation>
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
+<translation id="2744221223678373668">مشتركة</translation>
 <translation id="2749082172777216925">التطبيق <ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف"</translation>
 <translation id="2750941250130734256">تم إلغاء إرساء النافذة النشطة.</translation>
 <translation id="2761723519669354964">فتح العنصر المميّز من الرف</translation>
+<translation id="2762000892062317888">الآن</translation>
 <translation id="2774348302533424868">‏‫‎<ph name="MODIFIER" /><ph name="DELIMITER" /> من <ph name="KEY_ONE" /> إلى <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+Search+s</translation>
 <translation id="2778650143428714839">تتم إدارة <ph name="DEVICE_TYPE" /> من خلال <ph name="MANAGER" /></translation>
@@ -625,6 +624,7 @@
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3580650856351781466">جارٍ تنزيل ملفات التعرّف على الكلام</translation>
 <translation id="3585296979871889131">عرض الصور والوسائط والإشعارات والتطبيقات الحديثة في هاتفك</translation>
+<translation id="3590441166907930941">الزر الجانبي</translation>
 <translation id="3593039967545720377">‏يمكنك الوصول إلى سجلّ الحافظة عن طريق الضغط على المفتاح <ph name="SHORTCUT_KEY_NAME" /> + V لعرض الحافظة. ابدأ الآن بنسخ أحد العناصر للبدء.</translation>
 <translation id="3593646411856133110">يُرجى التمرير السريع إلى الأعلى للاطّلاع على التطبيقات المفتوحة.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
@@ -734,6 +734,7 @@
 <translation id="3986082989454912832">ردّ</translation>
 <translation id="3990002060657467458">‏في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة.</translation>
 <translation id="3995138139523574647">‏جهاز USB-C (المنفذ الخلفي الأيمن)</translation>
+<translation id="4002066346123236978">العنوان</translation>
 <translation id="40062176907008878">الكتابة بخط اليد</translation>
 <translation id="4011112806063830608">ميزة "عدم الإزعاج" مفعَّلة.</translation>
 <translation id="4017989525502048489">مؤشر الليزر</translation>
@@ -1037,6 +1038,7 @@
 <translation id="5163434717504750796">حالة البطارية: %<ph name="BATTERY_HEALTH_PERCENTAGE" /> | عدد الدورات: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">حفظ سطح المكتب كنموذج</translation>
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
+<translation id="5168753792967365150">‏التعديل في "مهام Google"</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
 <translation id="5187627942836026988">يمكنك عرض تفاصيل نقطة الاتصال. حظَر مشرفك ميزة نقطة الاتصال.</translation>
@@ -1306,6 +1308,8 @@
 <translation id="6168622430237609329">تطبيقاتك المثبَّتة</translation>
 <translation id="6173151025443907148">‏لا يمكن تسجيل الدخول باستخدام حساب مستخدِم آخر في حال تفعيل Lacros. يُرجى استخدام ملف شخصي آخر على متصفِّح Lacros بدلاً من ذلك أو إيقاف المتصفِّح ثم إعادة المحاولة.</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
+<translation id="6180193585172850042">زر الرجوع</translation>
+<translation id="6180651297859206670">زر الانتقال للأمام</translation>
 <translation id="6182592640011875895">فتح سطح المكتب</translation>
 <translation id="6185696379715117369">صفحة لأعلى</translation>
 <translation id="619335566042889110">الشحن بالكامل الآن</translation>
@@ -1696,7 +1700,6 @@
 <translation id="7850320739366109486">عدم الإزعاج</translation>
 <translation id="7851039877802112575">نقل التركيز إلى النوافذ المنبثقة ومربعات الحوار</translation>
 <translation id="7851768487828137624">الكاناري</translation>
-<translation id="7860671499921112077">يمكنك التمرير سريعًا لأعلى الشاشة بثلاثة أصابع للدخول إلى وضع "النظرة العامة".</translation>
 <translation id="7862292329216937261">لاستخدام الجهاز في "وضع الضيف"، عليك تسجيل الخروج واختيار "التصفُّح كضيف" في أسفل الشاشة.</translation>
 <translation id="7866482334467279021">مفعّل</translation>
 <translation id="7872786842639831132">غير مُفعَّل</translation>
@@ -1807,7 +1810,6 @@
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
 <translation id="8270450402312105425">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون ساعة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}two{إعادة الجهاز إلى الإصدار السابق في غضون ساعتين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ساعات}many{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}other{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}}</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
-<translation id="8284362522226889623">يمكنك التمرير سريعًا لليمين بأربعة أصابع للتبديل إلى سطح المكتب السابق.</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
 <translation id="8308637677604853869">القائمة السابقة</translation>

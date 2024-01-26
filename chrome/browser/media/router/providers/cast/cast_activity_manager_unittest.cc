@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -43,7 +44,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 using base::test::IsJson;
@@ -117,9 +117,9 @@ class MockLaunchSessionCallback {
  public:
   MOCK_METHOD(void,
               Run,
-              (const absl::optional<MediaRoute>& route,
+              (const std::optional<MediaRoute>& route,
                mojom::RoutePresentationConnectionPtr presentation_connections,
-               const absl::optional<std::string>& error_message,
+               const std::optional<std::string>& error_message,
                media_router::mojom::RouteRequestResultCode result_code));
 };
 
@@ -208,9 +208,9 @@ class CastActivityManagerTest : public testing::Test,
   }
 
   void ExpectLaunchSessionSuccess(
-      const absl::optional<MediaRoute>& route,
+      const std::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
-      const absl::optional<std::string>&,
+      const std::optional<std::string>&,
       media_router::mojom::RouteRequestResultCode) {
     ASSERT_TRUE(route);
     route_ = std::make_unique<MediaRoute>(*route);
@@ -218,9 +218,9 @@ class CastActivityManagerTest : public testing::Test,
   }
 
   void ExpectLaunchSessionFailure(
-      const absl::optional<MediaRoute>& route,
+      const std::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
-      const absl::optional<std::string>& error_message,
+      const std::optional<std::string>& error_message,
       media_router::mojom::RouteRequestResultCode result_code) {
     ASSERT_FALSE(route);
     LaunchSessionFailed();
@@ -235,7 +235,7 @@ class CastActivityManagerTest : public testing::Test,
       mojom::MediaRouteProvider::CreateRouteCallback callback) {
     ExpectSingleRouteUpdate();
     // A launch session request is sent to the sink.
-    const absl::optional<base::Value> json = base::JSONReader::Read(app_params);
+    const std::optional<base::Value> json = base::JSONReader::Read(app_params);
     EXPECT_CALL(message_handler_,
                 LaunchSession(kChannelId, app_id, kDefaultLaunchTimeout,
                               testing::ElementsAre("WEB"),
@@ -413,7 +413,7 @@ class CastActivityManagerTest : public testing::Test,
   mojom::MediaRouteProvider::TerminateRouteCallback MakeTerminateRouteCallback(
       bool expect_success) {
     return base::BindLambdaForTesting(
-        [expect_success](const absl::optional<std::string>& error_text,
+        [expect_success](const std::optional<std::string>& error_text,
                          mojom::RouteRequestResultCode result_code) {
           if (expect_success) {
             EXPECT_FALSE(error_text.has_value());
@@ -428,7 +428,7 @@ class CastActivityManagerTest : public testing::Test,
   // Expect a call to OnRoutesUpdated() with a single route, which will be saved
   // in |updated_route_|.
   void ExpectSingleRouteUpdate() {
-    updated_route_ = absl::nullopt;
+    updated_route_ = std::nullopt;
     EXPECT_CALL(mock_router_, OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
                                               ElementsAre(_)))
         .WillOnce(WithArg<1>(
@@ -437,7 +437,7 @@ class CastActivityManagerTest : public testing::Test,
 
   // Expect a call to OnRoutesUpdated() with no routes.
   void ExpectEmptyRouteUpdate() {
-    updated_route_ = absl::nullopt;
+    updated_route_ = std::nullopt;
     EXPECT_CALL(mock_router_,
                 OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty()))
         .Times(1);
@@ -445,7 +445,7 @@ class CastActivityManagerTest : public testing::Test,
 
   // Expect that OnRoutesUpdated() will not be called.
   void ExpectNoRouteUpdate() {
-    updated_route_ = absl::nullopt;
+    updated_route_ = std::nullopt;
     EXPECT_CALL(mock_router_, OnRoutesUpdated).Times(0);
   }
 
@@ -535,7 +535,7 @@ class CastActivityManagerTest : public testing::Test,
       base::DoNothing();
   const url::Origin origin_ = url::Origin::Create(GURL(kOrigin));
   const MediaSource::Id route_query_ = "theRouteQuery";
-  absl::optional<MediaRoute> updated_route_;
+  std::optional<MediaRoute> updated_route_;
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
   NiceMock<MockLogger> logger_;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
@@ -844,7 +844,7 @@ TEST_F(CastActivityManagerTest, OnMediaStatusUpdated) {
   LaunchAppSession();
 
   const char status[] = R"({"foo": "bar"})";
-  absl::optional<int> request_id(345);
+  std::optional<int> request_id(345);
 
   EXPECT_CALL(*app_activity_,
               SendMediaStatusToClients(IsJson(status), request_id));

@@ -38,12 +38,12 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical">
     <webview id="guestTosGoogleEulaWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onGoogleEulaContentLoad_">
+        on-contentload="onGoogleEulaContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="googleEulaOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="guestTosOk"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -59,12 +59,12 @@ aria-label$="[[i18nDynamic(locale, 'guestTosCrosEulaTitle')]]">
   <div slot="content" class="flex layout vertical">
     <webview id="guestTosCrosEulaWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onCrosEulaContentLoad_">
+        on-contentload="onCrosEulaContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="crosEulaOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="guestTosOk"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -81,7 +81,7 @@ aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
       [[i18nDynamic(locale, 'guestTosTermsTitle')]]
     </div>
     <div id="terms">
-      <div inner-h-t-m-l="[[getTerms_(locale)]]">
+      <div inner-h-t-m-l="[[getTerms(locale)]]">
       </div>
     </div>
 
@@ -92,7 +92,7 @@ aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
           [[i18nDynamic(locale, 'guestTosUsageOptinTitle')]]
         </span>
         [[i18nDynamic(locale, 'guestTosUsageOptin')]]
-        <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
+        <a id="usageLearnMore" on-click="onUsageLearnMoreClick"
             class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale, 'guestTosLearnMore')]]
         </a>
@@ -103,10 +103,10 @@ aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
     </div>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button on-click="onBackClick_"></oobe-back-button>
+    <oobe-back-button on-click="onBackClick"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick_"
+    <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick"
         text-key="guestTosAccept" class="focus-on-show">
     </oobe-next-button>
   </div>
@@ -114,6 +114,6 @@ aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
 
 <oobe-modal-dialog id="usageLearnMorePopUp">
   <div slot="content">
-    <span inner-h-t-m-l="[[getUsageLearnMoreText_(locale)]]"></span>
+    <span inner-h-t-m-l="[[getUsageLearnMoreText(locale)]]"></span>
   </div>
 </oobe-modal-dialog>

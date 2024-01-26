@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -70,7 +71,7 @@ class GaiaAuthFetcherIOSBridge {
   GaiaAuthFetcherIOSBridgeDelegate* delegate() { return delegate_; }
 
  private:
-  GaiaAuthFetcherIOSBridgeDelegate* delegate_;
+  raw_ptr<GaiaAuthFetcherIOSBridgeDelegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_GAIA_AUTH_FETCHER_IOS_BRIDGE_H_

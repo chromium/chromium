@@ -8,12 +8,10 @@ import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** ViewBinder for the price change module. */
-class PriceChangeModuleViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
-    @Override
-    public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+class PriceChangeModuleViewBinder {
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         PriceChangeModuleView moduleView = (PriceChangeModuleView) view;
         if (PriceChangeModuleProperties.MODULE_TITLE == propertyKey) {
             moduleView.setModuleTitle(model.get(PriceChangeModuleProperties.MODULE_TITLE));
@@ -35,6 +33,12 @@ class PriceChangeModuleViewBinder implements ViewBinder<PropertyModel, View, Pro
         } else if (PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP == propertyKey) {
             moduleView.setProductImage(
                     model.get(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP));
+        } else if (PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER == propertyKey) {
+            moduleView.setOnClickListener(
+                    model.get(PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER));
+        } else if (PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL == propertyKey) {
+            moduleView.setContentDescription(
+                    model.get(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL));
         } else {
             assert false : "Unhandled property detected in PriceChangeModuleViewBinder!";
         }

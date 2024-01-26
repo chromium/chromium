@@ -7,13 +7,11 @@
 
 #include <compare>
 #include <map>
-#include <vector>
+#include <optional>
 
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/performance_manager/public/resource_attribution/type_helpers.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/performance_manager/public/resource_attribution/resource_types.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -43,6 +41,16 @@ struct ResultMetadata {
 
   // Method used to assign measurement results to the resource context.
   MeasurementAlgorithm algorithm;
+
+  // Constructor ensures both `measurement_time` and `algorithm` are set.
+  //
+  // Since there's no default constructor, any ResultType class containing
+  // metadata also can't be default-constructed. This ensures none of them have
+  // an invalid or uninitialized state. Use std::optional<ResultType> when
+  // default-construction is needed.
+  ResultMetadata(base::TimeTicks measurement_time,
+                 MeasurementAlgorithm algorithm)
+      : measurement_time(measurement_time), algorithm(algorithm) {}
 
   friend constexpr auto operator<=>(const ResultMetadata&,
                                     const ResultMetadata&) = default;
@@ -85,43 +93,20 @@ struct MemorySummaryResult {
                                    const MemorySummaryResult&) = default;
 };
 
-using QueryResult = absl::variant<CPUTimeResult, MemorySummaryResult>;
-using QueryResults = std::vector<QueryResult>;
+// A container for at most one of each query result type. This is not a variant
+// because it can contain more than one result.
+struct QueryResults {
+  std::optional<CPUTimeResult> cpu_time_result;
+  std::optional<MemorySummaryResult> memory_summary_result;
+
+  friend constexpr auto operator<=>(const QueryResults&,
+                                    const QueryResults&) = default;
+  friend constexpr bool operator==(const QueryResults&,
+                                   const QueryResults&) = default;
+};
+
+// A map from a ResourceContext to all query results received for that context.
 using QueryResultMap = std::map<ResourceContext, QueryResults>;
-
-// Returns true iff `results` contains any result of type T.
-template <typename T>
-constexpr bool ContainsResult(const QueryResults& results) {
-  return internal::VariantVectorContains<T>(results);
-}
-
-// If `results` contains any result of type T, returns a reference to that
-// result. Otherwise, returns nullopt.
-//
-// Note that a non-const ref can't be returned from a const QueryResults. The
-// following uses are valid:
-//
-//   base::optional_ref<CPUTimeResult> result =
-//       AsResult<CPUTimeResult>(mutable_query_results);
-//
-//   base::optional_ref<const CPUTimeResult> result =
-//       AsResult<CPUTimeResult>(const_query_results);
-//
-//   base::optional_ref<const CPUTimeResult> result =
-//       AsResult<const CPUTimeResult>(const_or_mutable_query_results);
-//
-// To make a copy of the result, use one of:
-//
-//    absl::optional<T> result = AsResult<T>(query_results).CopyAsOptional();
-//    T result = AsResult<T>(query_results).value();  // Crashes on nullopt.
-template <typename T>
-constexpr base::optional_ref<T> AsResult(QueryResults& results) {
-  return internal::GetFromVariantVector<T>(results);
-}
-template <typename T>
-constexpr base::optional_ref<const T> AsResult(const QueryResults& results) {
-  return internal::GetFromVariantVector<T>(results);
-}
 
 }  // namespace performance_manager::resource_attribution
 

@@ -138,9 +138,15 @@ def main():
 
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
-                'updater_idl_idl',
-                'updater_internal_idl_idl',
-                'updater_legacy_idl_idl',
+                'updater_idl',
+                'updater_idl_user',
+                'updater_idl_system',
+                'updater_internal_idl',
+                'updater_internal_idl_user',
+                'updater_internal_idl_system',
+                'updater_legacy_idl',
+                'updater_legacy_idl_user',
+                'updater_legacy_idl_system',
                 'google_update',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',

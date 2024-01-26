@@ -46,8 +46,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api_ash.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
@@ -122,6 +120,7 @@ namespace ash {
 namespace {
 
 using ::extensions::api::accessibility_private::DlcType;
+using ::extensions::api::accessibility_private::FaceGazeAssets;
 using ::extensions::api::accessibility_private::PumpkinData;
 using ::extensions::api::accessibility_private::TtsVariant;
 using ::extensions::api::braille_display_private::BrailleController;
@@ -289,6 +288,30 @@ ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
 void OnReadDlcFile(GetTtsDlcContentsCallback callback,
                    ReadDlcFileResponse response) {
   std::move(callback).Run(response.contents, response.error);
+}
+
+std::optional<FaceGazeAssets> CreateFaceGazeAssets(base::FilePath base_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  FaceGazeAssets assets;
+  base::flat_map<std::string, std::vector<uint8_t>*> files_to_data({
+      {"face_landmarker.task", &assets.model},
+      {"vision_wasm_internal.wasm", &assets.wasm},
+  });
+
+  for (const auto& iter : files_to_data) {
+    std::string file_name = iter.first;
+    std::vector<uint8_t>* file_data = iter.second;
+    ReadDlcFileResponse response = ReadDlcFile(base_path.Append(file_name));
+    if (response.error.has_value()) {
+      return std::nullopt;
+    }
+
+    *file_data = response.contents;
+  }
+
+  return assets;
 }
 
 std::optional<PumpkinData> CreatePumpkinData(base::FilePath base_pumpkin_path) {
@@ -471,45 +494,69 @@ AccessibilityManager::AccessibilityManager() {
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
     NOTREACHED();
+  const bool enable_v3_manifest =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableExperimentalAccessibilityManifestV3);
+  const base::FilePath::CharType* accessibility_common_manifest_filename =
+      enable_v3_manifest
+          ? extension_misc::kAccessibilityCommonManifestV3Filename
+          : extension_misc::kAccessibilityCommonManifestFilename;
+  const base::FilePath::CharType* accessibility_common_guest_manifest_filename =
+      enable_v3_manifest
+          ? extension_misc::kAccessibilityCommonGuestManifestV3Filename
+          : extension_misc::kAccessibilityCommonGuestManifestFilename;
+
   accessibility_common_extension_loader_ =
       base::WrapUnique(new AccessibilityExtensionLoader(
           extension_misc::kAccessibilityCommonExtensionId,
           resources_path.Append(
               extension_misc::kAccessibilityCommonExtensionPath),
-          extension_misc::kAccessibilityCommonManifestFilename,
-          extension_misc::kAccessibilityCommonGuestManifestFilename,
+          accessibility_common_manifest_filename,
+          accessibility_common_guest_manifest_filename,
           base::BindRepeating(
               &AccessibilityManager::PostUnloadAccessibilityCommon,
               weak_ptr_factory_.GetWeakPtr())));
+
+  const base::FilePath::CharType* chromevox_manifest_filename =
+      enable_v3_manifest ? extension_misc::kChromeVoxManifestV3Filename
+                         : extension_misc::kChromeVoxManifestFilename;
+  const base::FilePath::CharType* chromevox_guest_manifest_filename =
+      enable_v3_manifest ? extension_misc::kChromeVoxGuestManifestV3Filename
+                         : extension_misc::kChromeVoxGuestManifestFilename;
+
   chromevox_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kChromeVoxExtensionId,
       resources_path.Append(extension_misc::kChromeVoxExtensionPath),
-      extension_misc::kChromeVoxManifestFilename,
-      extension_misc::kChromeVoxGuestManifestFilename,
+      chromevox_manifest_filename, chromevox_guest_manifest_filename,
       base::BindRepeating(&AccessibilityManager::PostUnloadChromeVox,
                           weak_ptr_factory_.GetWeakPtr())));
+
+  const base::FilePath::CharType* select_to_speak_manifest_filename =
+      enable_v3_manifest ? extension_misc::kSelectToSpeakManifestV3Filename
+                         : extension_misc::kSelectToSpeakManifestFilename;
+  const base::FilePath::CharType* select_to_speak_guest_manifest_filename =
+      enable_v3_manifest ? extension_misc::kSelectToSpeakGuestManifestV3Filename
+                         : extension_misc::kSelectToSpeakGuestManifestFilename;
+
   select_to_speak_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSelectToSpeakExtensionId,
       resources_path.Append(extension_misc::kSelectToSpeakExtensionPath),
-      extension_misc::kSelectToSpeakManifestFilename,
-      extension_misc::kSelectToSpeakGuestManifestFilename,
+      select_to_speak_manifest_filename,
+      select_to_speak_guest_manifest_filename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
 
-  const bool enable_v3_manifest =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableExperimentalAccessibilityManifestV3);
-  const base::FilePath::CharType* switchAccessManifestFilename =
+  const base::FilePath::CharType* switch_access_manifest_filename =
       enable_v3_manifest ? extension_misc::kSwitchAccessManifestV3Filename
                          : extension_misc::kSwitchAccessManifestFilename;
-  const base::FilePath::CharType* switchAccessGuestManifestFilename =
+  const base::FilePath::CharType* switch_access_guest_manifest_filename =
       enable_v3_manifest ? extension_misc::kSwitchAccessGuestManifestV3Filename
                          : extension_misc::kSwitchAccessGuestManifestFilename;
 
   switch_access_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSwitchAccessExtensionId,
       resources_path.Append(extension_misc::kSwitchAccessExtensionPath),
-      switchAccessManifestFilename, switchAccessGuestManifestFilename,
+      switch_access_manifest_filename, switch_access_guest_manifest_filename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSwitchAccess,
                           weak_ptr_factory_.GetWeakPtr())));
 
@@ -679,12 +726,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
         profile_,
         base::BindOnce(&AccessibilityManager::PostSwitchChromeVoxProfile,
                        weak_ptr_factory_.GetWeakPtr()));
-
-    if (::features::IsPdfOcrEnabled()) {
-      // Create PdfOcrController when both the PDF OCR feature flag and
-      // Chromevox are enabled.
-      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
-    }
   }
 
   if (spoken_feedback_enabled_ == enabled)
@@ -862,6 +903,11 @@ void AccessibilityManager::EnableFaceGaze(bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, enabled);
   pref_service->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsFaceGazeEnabled() const {
+  return profile_ &&
+         profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
 }
 
 void AccessibilityManager::OnAccessibilityCommonChanged(
@@ -1279,13 +1325,6 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled) {
     select_to_speak_loader_->SetBrowserContext(profile_, base::OnceClosure());
-
-    if (::features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-        ::features::IsPdfOcrEnabled()) {
-      // Create PdfOcrController when both the PDF OCR feature flag and STS are
-      // enabled.
-      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
-    }
   }
 
   if (select_to_speak_enabled_ == enabled)
@@ -2022,11 +2061,22 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
     NOTREACHED();
+
+  const bool enable_v3_manifest =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableExperimentalAccessibilityManifestV3);
+  const base::FilePath::CharType* manifest_filename =
+      enable_v3_manifest ? extension_misc::kEnhancedNetworkTtsManifestV3Filename
+                         : extension_misc::kEnhancedNetworkTtsManifestFilename;
+  const base::FilePath::CharType* guest_manifest_filename =
+      enable_v3_manifest
+          ? extension_misc::kEnhancedNetworkTtsGuestManifestV3Filename
+          : extension_misc::kEnhancedNetworkTtsGuestManifestFilename;
+
   component_loader->AddComponentFromDirWithManifestFilename(
       resources_path.Append(extension_misc::kEnhancedNetworkTtsExtensionPath),
-      extension_misc::kEnhancedNetworkTtsExtensionId,
-      extension_misc::kEnhancedNetworkTtsManifestFilename,
-      extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
+      extension_misc::kEnhancedNetworkTtsExtensionId, manifest_filename,
+      guest_manifest_filename,
       base::BindOnce(&AccessibilityManager::PostLoadEnhancedNetworkTts,
                      base::Unretained(this)));
 }
@@ -2678,6 +2728,55 @@ speech::LanguageCode AccessibilityManager::GetDictationLanguageCode() {
   DCHECK(profile_);
   return speech::GetLanguageCode(
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale));
+}
+
+void AccessibilityManager::InstallFaceGazeAssets(
+    InstallFaceGazeAssetsCallback callback) {
+  DCHECK(!callback.is_null());
+  if (!::features::IsAccessibilityFaceGazeEnabled() || !IsFaceGazeEnabled()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  install_facegaze_assets_callback_ = std::move(callback);
+  dlc_installer_->MaybeInstall(
+      AccessibilityDlcInstaller::DlcType::kFaceGazeAssets,
+      base::BindOnce(&AccessibilityManager::OnFaceGazeAssetsInstalled,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating([](double progress) {}),
+      base::BindOnce([](const std::string& error) {}));
+}
+
+void AccessibilityManager::OnFaceGazeAssetsInstalled(
+    bool success,
+    const std::string& root_path) {
+  if (install_facegaze_assets_callback_.is_null()) {
+    return;
+  }
+
+  if (!success) {
+    std::move(install_facegaze_assets_callback_).Run(std::nullopt);
+    return;
+  }
+
+  base::FilePath base_path = dlc_path_for_test_.empty()
+                                 ? base::FilePath(root_path)
+                                 : dlc_path_for_test_;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateFaceGazeAssets, base::FilePath(base_path)),
+      base::BindOnce(&AccessibilityManager::OnFaceGazeAssetsCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccessibilityManager::OnFaceGazeAssetsCreated(
+    std::optional<FaceGazeAssets> assets) {
+  if (install_facegaze_assets_callback_.is_null()) {
+    return;
+  }
+
+  std::move(install_facegaze_assets_callback_).Run(std::move(assets));
 }
 
 void AccessibilityManager::InstallPumpkinForDictation(

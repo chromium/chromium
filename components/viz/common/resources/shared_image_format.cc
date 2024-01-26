@@ -71,6 +71,8 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "NV12A_LEGACY";
   } else if (format == LegacyMultiPlaneFormat::kP010) {
     return "P010_LEGACY";
+  } else if (format == SinglePlaneFormat::kR_F16) {
+    return "R_F16";
   }
   NOTREACHED_NORETURN();
 }
@@ -90,6 +92,7 @@ int BitsPerPixelForTrueSinglePlaneFormat(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kRGBA_4444 ||
              format == SinglePlaneFormat::kRGB_565 ||
              format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16 ||
              format == SinglePlaneFormat::kR_16 ||
              format == SinglePlaneFormat::kBGR_565 ||
              format == SinglePlaneFormat::kRG_88) {
@@ -456,6 +459,7 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::RGB_565:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
+    case mojom::SingleplanarFormat::R_F16:
     case mojom::SingleplanarFormat::R16_EXT:
     case mojom::SingleplanarFormat::BGR_565:
     case mojom::SingleplanarFormat::RG_88:

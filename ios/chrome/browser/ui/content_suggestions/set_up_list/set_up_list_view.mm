@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -296,7 +297,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   stack.layoutMargins =
       UIEdgeInsetsMake(kPadding, kPadding, kPadding, kPadding);
 
-  stack.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+  stack.accessibilityLabel = content_suggestions::SetUpListTitleString();
   stack.accessibilityContainerType = UIAccessibilityContainerTypeList;
   stack.accessibilityElements = [self initialItems];
   return stack;
@@ -305,7 +306,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 // Creates the title label at the top of the Set Up List.
 - (UILabel*)createListTitle {
   UILabel* label = [[UILabel alloc] init];
-  label.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+  label.text = content_suggestions::SetUpListTitleString();
   label.font = [self listTitleFont];
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.accessibilityTraits = UIAccessibilityTraitHeader;

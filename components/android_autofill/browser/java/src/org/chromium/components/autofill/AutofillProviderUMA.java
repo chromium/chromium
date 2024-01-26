@@ -83,8 +83,9 @@ public class AutofillProviderUMA {
     public static final String UMA_AUTOFILL_VALID_SERVER_PREDICTION =
             "Autofill.WebView.ServerPredicton.HasValidServerPrediction";
 
-    // Records whether user changed autofilled field if user ever changed the form. The action isn't
-    // recorded if user didn't change form at all.
+    // Records whether manual edits to a form (e.g., typing, pasting) affected previously autofilled
+    // fields.
+    // The metric is not recorded if user did not perform any manual changes to the form.
     public static final String UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD =
             "Autofill.WebView.UserChangedAutofilledField";
 
@@ -158,12 +159,15 @@ public class AutofillProviderUMA {
             // Do not record any event until we get EVENT_VIRTUAL_STRUCTURE_PROVIDED, which makes
             // the following events meaningful.
             if (event != EVENT_VIRTUAL_STRUCTURE_PROVIDED && mState == 0) return;
+
+            // mUserChangedAutofilledField has three possible states:
+            // - null (no field was manually edited)
+            // - Boolean.false (fields were manually edited and no manually edited field was an
+            //   autofilled field)
+            // - Boolean.true (at least one manually edited field was an autofilled field)
             if (EVENT_USER_CHANGED_FIELD_VALUE == event && mUserChangedAutofilledField == null) {
-                mUserChangedAutofilledField = Boolean.valueOf(false);
+                mUserChangedAutofilledField = false;
             } else if (EVENT_USER_CHANGED_AUTOFILLED_FIELD == event) {
-                if (mUserChangedAutofilledField == null) {
-                    mUserChangedAutofilledField = Boolean.valueOf(true);
-                }
                 mUserChangedAutofilledField = true;
                 event |= EVENT_USER_CHANGED_FIELD_VALUE;
             }
@@ -173,7 +177,7 @@ public class AutofillProviderUMA {
         public void setSuggestionTimeMillis(long suggestionTimeMillis) {
             // Only record first suggestion.
             if (mSuggestionTimeMillis == null) {
-                mSuggestionTimeMillis = Long.valueOf(suggestionTimeMillis);
+                mSuggestionTimeMillis = suggestionTimeMillis;
             }
         }
 
@@ -189,7 +193,7 @@ public class AutofillProviderUMA {
                         AUTOFILL_SESSION_HISTOGRAM_COUNT);
             }
             RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_EVENTS, mState, EVENT_MAX);
-            // Only record if user ever changed form.
+            // Only record if the user ever changed the form.
             if (mUserChangedAutofilledField != null) {
                 RecordHistogram.recordBooleanHistogram(
                         UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD, mUserChangedAutofilledField);
@@ -395,7 +399,7 @@ public class AutofillProviderUMA {
         if (mAutofillDisabledOnSessionStart == null
                 || mAutofillDisabledOnSessionStart.booleanValue() != autofillDisabled) {
             RecordHistogram.recordBooleanHistogram(UMA_AUTOFILL_ENABLED, !autofillDisabled);
-            mAutofillDisabledOnSessionStart = Boolean.valueOf(autofillDisabled);
+            mAutofillDisabledOnSessionStart = autofillDisabled;
         }
 
         if (mRecorder != null) recordSession(autofillDisabled);

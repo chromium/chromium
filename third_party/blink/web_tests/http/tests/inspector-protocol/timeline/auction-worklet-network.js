@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const base = 'https://a.test:8443/inspector-protocol/resources/'
   const bp = testRunner.browserP();
   const {page, session, dp} = await testRunner.startBlank(

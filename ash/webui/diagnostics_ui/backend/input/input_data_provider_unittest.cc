@@ -54,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/fake_event_rewriter_ash_delegate.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -601,73 +602,6 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
   }
 };
 
-// Test implementation of ui::EventRewriterAsh::Delegate used to check that
-// modifier key rewrites are suppressed appropriately in InputDataProvider.
-class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
- public:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override {
-    return !suppress_modifier_key_rewrites_;
-  }
-  void SuppressModifierKeyRewrites(bool should_supress) override {
-    suppress_modifier_key_rewrites_ = should_supress;
-  }
-
-  // Not used, only to satisfy interface.
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    return std::nullopt;
-  }
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  std::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return std::nullopt;
-  }
-
-  std::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
- protected:
-  bool suppress_modifier_key_rewrites_ = false;
-};
-
 // Our modifications to InputDataProvider that carries around its own
 // widget (representing the window that needs to be visible for key events
 // to be observed), the needed factories for our fake utilities, and a
@@ -721,8 +655,6 @@ class InputDataProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    event_rewriter_delegate_ = std::make_unique<TestEventRewriterAshDelegate>();
-
     // Note: some init for creating widgets is performed in base SetUp
     // instead of the constructor, so our init must also be delayed until
     // SetUp, so we can safely invoke CreateTestWidget().
@@ -734,7 +666,7 @@ class InputDataProviderTest : public AshTestBase {
     fake_udev_ = std::make_unique<testing::FakeUdevLoader>();
     widget_ = CreateTestWidget();
     provider_ = std::make_unique<TestInputDataProvider>(
-        widget_.get(), watchers_, event_rewriter_delegate_.get());
+        widget_.get(), watchers_, &event_rewriter_delegate_);
     DiagnosticsLogController::Initialize(
         std::make_unique<FakeDiagnosticsBrowserDelegate>());
 
@@ -772,7 +704,7 @@ class InputDataProviderTest : public AshTestBase {
   }
 
   bool ModifierRewritesAreSuppressed() {
-    return !event_rewriter_delegate_->RewriteModifierKeys();
+    return !event_rewriter_delegate_.RewriteModifierKeys();
   }
 
  protected:
@@ -851,8 +783,8 @@ class InputDataProviderTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   // All evdev watchers in use by provider_.
   watchers_t watchers_;
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
   std::unique_ptr<TestInputDataProvider> provider_;
-  std::unique_ptr<TestEventRewriterAshDelegate> event_rewriter_delegate_;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -2010,7 +1942,7 @@ TEST_F(InputDataProviderTest, KeyObservationMultipleProviders) {
   std::unique_ptr<TestInputDataProvider> provider2_ =
       std::make_unique<TestInputDataProvider>(provider2_widget.get(),
                                               provider2_watchers,
-                                              event_rewriter_delegate_.get());
+                                              &event_rewriter_delegate_);
   auto& provider1_ = provider_;
 
   std::unique_ptr<FakeKeyboardObserver> fake_observer1 =

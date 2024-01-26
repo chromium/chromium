@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -55,6 +56,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using SecurityType = chromeos::network_config::mojom::SecurityType;
 
 std::string DeviceTypeToString(chromeos::DeviceType device_type) {
   switch (device_type) {
@@ -137,13 +140,13 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
     base::OnceCallback<void(FileMonitorResult)> callback) {
   // Cancel the previous monitor callback if it hasn't been notified.
   if (!callback_.is_null()) {
-    std::move(callback_).Run(FileMonitorResult::CANCELED);
+    std::move(callback_).Run(FileMonitorResult::kCanceled);
   }
 
   // There is chance that the file is deleted during the task is scheduled and
   // executed. Therefore, check here before watching it.
   if (!base::PathExists(file_path)) {
-    std::move(callback).Run(FileMonitorResult::DELETED);
+    std::move(callback).Run(FileMonitorResult::kDeleted);
     return;
   }
 
@@ -154,7 +157,7 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
           base::BindRepeating(
               &ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion,
               base::Unretained(this)))) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
   }
 }
 
@@ -166,10 +169,10 @@ void ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion(
   }
 
   if (error) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
     return;
   }
-  std::move(callback_).Run(FileMonitorResult::DELETED);
+  std::move(callback_).Run(FileMonitorResult::kDeleted);
 }
 
 ChromeCameraAppUIDelegate::StorageMonitor::StorageMonitor(
@@ -215,14 +218,14 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetWeakPtr() {
 ChromeCameraAppUIDelegate::StorageMonitorStatus
 ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
   auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
-  auto status = StorageMonitorStatus::NORMAL;
+  auto status = StorageMonitorStatus::kNormal;
   if (current_storage < 0) {
     LOG(ERROR) << "Failed to get the amount of free disk space.";
-    status = StorageMonitorStatus::ERROR;
+    status = StorageMonitorStatus::kError;
   } else if (current_storage < kStorageCriticallyLowThreshold) {
-    status = StorageMonitorStatus::CRITICALLY_LOW;
+    status = StorageMonitorStatus::kCriticallyLow;
   } else if (current_storage < kStorageLowThreshold) {
-    status = StorageMonitorStatus::LOW;
+    status = StorageMonitorStatus::kLow;
   }
   return status;
 }
@@ -411,11 +414,11 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
   auto file_path = GetFilePathByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Unexpected file name: " << name;
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
   if (!file_monitor_) {
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
 
@@ -444,7 +447,7 @@ void ChromeCameraAppUIDelegate::StartStorageMonitor(
   if (!storage_monitor_) {
     LOG(ERROR) << "Failed to start monitoring storage due to missing monitor "
                   "instance.";
-    monitor_callback.Run(StorageMonitorStatus::ERROR);
+    monitor_callback.Run(StorageMonitorStatus::kError);
     return;
   }
 
@@ -529,3 +532,44 @@ ChromeCameraAppUIDelegate::GetMediaDeviceSaltService(
   return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
       context);
 }
+
+void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
+  auto config = chromeos::network_config::mojom::WiFiConfigProperties::New();
+  config->ssid = wifi_config.ssid;
+  if (wifi_config.security.empty()) {
+    config->security = SecurityType::kNone;
+  } else if (wifi_config.security == onc::wifi::kWPA_PSK) {
+    config->security = SecurityType::kWpaPsk;
+  } else if (wifi_config.security == onc::wifi::kWEP_PSK) {
+    config->security = SecurityType::kWepPsk;
+  } else if (wifi_config.security == onc::wifi::kWPA_EAP) {
+    config->security = SecurityType::kWpaEap;
+  } else {
+    NOTREACHED() << "Unexpected network security type: "
+                 << wifi_config.security;
+  }
+  config->passphrase = wifi_config.password;
+  if (config->security == SecurityType::kWpaEap) {
+    auto eap_config =
+        chromeos::network_config::mojom::EAPConfigProperties::New();
+    eap_config->outer = wifi_config.eap_method;
+    eap_config->inner = wifi_config.eap_phase2_method;
+    eap_config->identity = wifi_config.eap_identity;
+    eap_config->anonymous_identity = wifi_config.eap_anonymous_identity;
+    eap_config->password = wifi_config.password;
+    config->eap = std::move(eap_config);
+  }
+  ash::InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
+      std::move(config));
+}
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig&
+ash::CameraAppUIDelegate::WifiConfig::operator=(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig::~WifiConfig() = default;

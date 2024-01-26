@@ -127,6 +127,7 @@ ScriptContext::ScopedFrameDocumentLoader::~ScopedFrameDocumentLoader() {
 
 ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              blink::WebLocalFrame* web_frame,
+                             const mojom::HostID& host_id,
                              const Extension* extension,
                              mojom::ContextType context_type,
                              const Extension* effective_extension,
@@ -134,6 +135,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
     : is_valid_(true),
       v8_context_(v8_context->GetIsolate(), v8_context),
       web_frame_(web_frame),
+      host_id_(host_id),
       extension_(extension),
       context_type_(context_type),
       effective_extension_(effective_extension),
@@ -146,6 +148,12 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
   v8_context_.AnnotateStrongRetainer("extensions::ScriptContext::v8_context_");
   if (web_frame_)
     url_ = GetAccessCheckedFrameURL(web_frame_);
+  // Enforce the invariant that an extension should have a HostID that's set to
+  // the extension id.
+  if (extension_) {
+    CHECK_EQ(host_id_.type, mojom::HostID::HostType::kExtensions);
+    CHECK_EQ(host_id_.id, extension_->id());
+  }
 }
 
 ScriptContext::~ScriptContext() {

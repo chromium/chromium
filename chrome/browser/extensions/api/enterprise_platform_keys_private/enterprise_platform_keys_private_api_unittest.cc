@@ -56,10 +56,15 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   // This will be called by BrowserWithTestWindowTest::SetUp();
-  TestingProfile* CreateProfile() override {
-    fake_user_manager_->AddUserWithAffiliation(
-        AccountId::FromUserEmail(kUserEmail), true);
-    return profile_manager()->CreateTestingProfile(kUserEmail);
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    fake_user_manager_->AddUserWithAffiliation(account_id,
+                                               /*is_affiliated=*/true);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
   // Derived classes can override this method to set the required authenticated
@@ -72,6 +77,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   scoped_refptr<const Extension> extension_;
+  // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
   // fake_user_manager_ is owned by user_manager_enabler_.
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
       nullptr;
@@ -112,7 +118,7 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser()->profile(),
       extensions::api_test_utils::FunctionMode::kNone);
 
@@ -154,7 +160,7 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser()->profile(),
       extensions::api_test_utils::FunctionMode::kNone);
 

@@ -602,9 +602,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       MAX_CHOICE_VALUE);
 }
 
-// TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be
-// implemented by //ios/web. Once this is available remove this and use the
-// new API.
 void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(
     base::Time delete_begin,
     BrowsingDataRemoveMask mask) {

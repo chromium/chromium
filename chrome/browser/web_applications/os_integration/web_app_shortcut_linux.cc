@@ -698,7 +698,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
 bool UpdateDesktopShortcuts(
     base::Environment* env,
     const ShortcutInfo& shortcut_info,
-    absl::optional<ShortcutLocations> user_specified_locations) {
+    std::optional<ShortcutLocations> user_specified_locations) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -803,7 +803,7 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
 Result UpdatePlatformShortcuts(
     const base::FilePath& /*web_app_path*/,
     const std::u16string& /*old_app_title*/,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return (

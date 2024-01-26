@@ -80,9 +80,8 @@ std::string GetApplicationLocale() {
 class PageLoadMetricsEmbedder
     : public page_load_metrics::PageLoadMetricsEmbedderBase {
  public:
-  PageLoadMetricsEmbedder(
-      content::WebContents* web_contents,
-      absl::optional<std::string> webui_name = absl::nullopt);
+  PageLoadMetricsEmbedder(content::WebContents* web_contents,
+                          std::optional<std::string> webui_name = std::nullopt);
 
   PageLoadMetricsEmbedder(const PageLoadMetricsEmbedder&) = delete;
   PageLoadMetricsEmbedder& operator=(const PageLoadMetricsEmbedder&) = delete;
@@ -105,12 +104,12 @@ class PageLoadMetricsEmbedder
       page_load_metrics::PageLoadTracker* tracker) override;
 
  private:
-  absl::optional<std::string> webui_name_;
+  std::optional<std::string> webui_name_;
 };
 
 PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
     content::WebContents* web_contents,
-    absl::optional<std::string> webui_name)
+    std::optional<std::string> webui_name)
     : PageLoadMetricsEmbedderBase(web_contents), webui_name_(webui_name) {}
 
 PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;

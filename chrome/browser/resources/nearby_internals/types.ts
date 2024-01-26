@@ -11,7 +11,6 @@ export enum FeatureValues {
   NEARBY_CONNECTIONS = 1,
   NEARBY_PRESENCE = 2,
   FAST_PAIR = 3,
-  PUSH_NOTIFICATION = 4,
 }
 
 /**
@@ -26,6 +25,7 @@ export enum ActionValues {
   RESET_NEARBY_SHARE = 4,
   ADD_PUSH_NOTIFICATION_CLIENT = 5,
   SHOW_RECEIVED_NOTIFICATION = 6,
+  SEND_UPDATE_CREDENTIALS_MESSAGE = 7,
 }
 
 /**

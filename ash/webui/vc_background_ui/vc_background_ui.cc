@@ -8,6 +8,10 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/sea_pen_provider.h"
+#include "ash/webui/common/sea_pen_resources.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_vc_background_resources.h"
 #include "ash/webui/grit/ash_vc_background_resources_map.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -19,6 +23,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::vc_background_ui {
@@ -30,6 +35,20 @@ using std::literals::string_view_literals::operator""sv;
 void AddStrings(content::WebUIDataSource* source) {
   // TODO(b/311416410) real translated title.
   source->AddString("vcBackgroundTitle", u"VC Background");
+  ::ash::common::AddSeaPenStrings(source);
+
+  source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
+}
+
+void AddBooleans(content::WebUIDataSource* source) {
+  source->AddBoolean("isSeaPenEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         manta::features::IsMantaServiceEnabled());
+  source->AddBoolean("isSeaPenTextInputEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         ::ash::features::IsSeaPenTextInputEnabled() &&
+                         manta::features::IsMantaServiceEnabled());
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -48,35 +67,52 @@ void AddResources(content::WebUIDataSource* source) {
 
 }  // namespace
 
-VcBackgroundUIConfig::VcBackgroundUIConfig()
+VcBackgroundUIConfig::VcBackgroundUIConfig(
+    SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
     : SystemWebAppUIConfig(kChromeUIVcBackgroundHost,
-                           SystemWebAppType::VC_BACKGROUND) {}
+                           SystemWebAppType::VC_BACKGROUND,
+                           create_controller_func) {}
 
 bool VcBackgroundUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) &&
-         ash::features::IsSeaPenEnabled() &&
+         ::ash::features::IsVcBackgroundReplaceEnabled() &&
          manta::features::IsMantaServiceEnabled();
 }
 
-VcBackgroundUI::VcBackgroundUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+VcBackgroundUI::VcBackgroundUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider)
+    : ui::MojoWebUIController(web_ui),
+      sea_pen_provider_(std::move(sea_pen_provider)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, std::string(kChromeUIVcBackgroundHost));
+
+  ash::EnableTrustedTypesCSP(source);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
-
-  AddStrings(source);
   AddResources(source);
+  AddStrings(source);
+  AddBooleans(source);
 }
 
 VcBackgroundUI::~VcBackgroundUI() = default;
+
+void VcBackgroundUI::BindInterface(
+    mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
+        receiver) {
+  sea_pen_provider_->BindInterface(std::move(receiver));
+}
+
+void VcBackgroundUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)
 

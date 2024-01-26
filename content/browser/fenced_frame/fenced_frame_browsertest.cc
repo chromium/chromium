@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/fenced_frame/fenced_frame.h"
+
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -24,7 +27,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
-#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -2098,6 +2100,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kParakeet, {}},
          {blink::features::kFledge, {}},
          {blink::features::kAllowURNsInIframes, {}},
+         {blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames,
+          {}},
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {features::kBackForwardCache, {}},
          // This feature allows `runAdAuction()`'s promise to resolve to a
@@ -2332,7 +2336,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
         };
     console_observer.SetFilter(base::BindRepeating(filter));
     console_observer.SetPattern(
-        "FLEDGE will deprecate supporting iframes to render the winning ad*");
+        "Protected Audience/selectURL will deprecate supporting iframes to "
+        "render the winning ad*");
     EXPECT_TRUE(ExecJs(root, navigate_urn_script));
     navigation_observer.WaitForCommit();
     // No console warning is emitted for urn::uuid navigation in fenced frames.
@@ -3486,10 +3491,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Navigate the fenced frame from the initial empty document toward a URL
   // with a client side redirect.
   //
-  // With MPArch, since this was a navigation toward an opaque URL, in the
-  // 'opaque-ads' mode, initiated from the embedder, the navigation must use
-  // and commit a document with
-  // `is_fenced_frame_root_originating_from_opaque_url` to true.
+  // Since this was a navigation toward an opaque URL initiated from the
+  // embedder, the navigation must use and commit FencedFrameProperties with
+  // an opaque URL.
   GURL fenced_frame_url(
       https_server()->GetURL("a.test", "/fenced_frames/redirect.html"));
   FencedFrameURLMapping& url_mapping =
@@ -3502,20 +3506,28 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, navigate_script);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  // The mapped url of the fenced frame properties should be opaque to the
+  // embedder.
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 
   // Navigate the fenced frame again, but toward a non-opaque URL. Since this
   // is initiated from the embedder, the new document must commit with
-  // `is_fenced_frame_root_originating_from_opaque_url` to false.
+  // FencedFrameProperties with a transparent URL.
   GURL second_url(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
   std::string second_navigate_script =
       JsReplace("f.config = new FencedFrameConfig($1);", second_url.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, second_navigate_script);
-  EXPECT_FALSE(fenced_frame_root_node->current_frame_host()
-                   ->is_fenced_frame_root_originating_from_opaque_url());
+  // The mapped url of the fenced frame properties should be visible to the
+  // embedder.
+  EXPECT_TRUE(fenced_frame_root_node->GetFencedFrameProperties()
+                  ->mapped_url()
+                  ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                  .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -3538,9 +3550,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       GetFencedFrameRootNode(root->child_at(0));
 
   // Navigate the fenced frame from the initial empty document toward an opaque
-  // URL. With MPArch, since this was in the 'opaque-ads' mode, initiated from
-  // the embedder, the navigation must use and commit a document with
-  // `is_fenced_frame_root_originating_from_opaque_url` to true.
+  // URL. The navigation must use and commit FencedFrameProperties with an
+  // opaque URL.
   GURL fenced_frame_url(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
@@ -3553,13 +3564,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, navigate_script);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 
   // Navigate the fenced frame again, but toward a non-opaque URL and the
   // navigation is cancelled. The navigation is not committed and therefore
-  // `is_fenced_frame_root_originating_from_opaque_url` of the document doesn't
-  // change.
+  // the FencedFrameProperties do not change.
   GURL second_url(https_server()->GetURL("a.test", "/nocontent"));
   std::string second_navigate_script =
       JsReplace("f.config = new FencedFrameConfig($1);", second_url.spec());
@@ -3571,8 +3583,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // The fenced frame's document initiates a navigation. The previous cancelled
   // navigation from the embedder shouldn't have made any side effects. The next
-  // committed document must continue to have
-  // `is_fenced_frame_root_originating_from_opaque_url` true.
+  // committed document must continue to have the same FencedFrameProperties.
   GURL redirect_url(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
   EXPECT_TRUE(ExecJs(fenced_frame_root_node->current_frame_host(),
@@ -3582,8 +3593,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
             redirect_url);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 }
 
 namespace {
@@ -6750,17 +6763,15 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Parameterized on whether the feature is enabled or not.
-class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
-                                 public ::testing::WithParamInterface<bool> {
+class UUIDFrameTreeBrowserTest
+    : public FencedFrameBrowserTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   UUIDFrameTreeBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kAllowURNsInIframes);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kAllowURNsInIframes);
-    }
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kAllowURNsInIframes, IsAllowURNsInIframesEnabled()},
+         {blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames,
+          DisplayWarningDeprecateURNIframesUseFencedFrames()}});
   }
 
   bool NavigateIframeAndCheckURL(WebContents* web_contents,
@@ -6777,7 +6788,19 @@ class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
 
   static std::string DescribeParams(
       const ::testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "AllowURNsInIframes" : "DoNotAllowURNsInIframes";
+    return base::StringPrintf(
+        "%s_%s",
+        std::get<0>(info.param) ? "AllowURNsInIframes"
+                                : "DoNotAllowURNsInIframes",
+        std::get<1>(info.param)
+            ? "DisplayWarningDeprecateURNIframesUseFencedFrames"
+            : "DoNotDisplayWarningDeprecateURNIframesUseFencedFrames");
+  }
+
+  bool IsAllowURNsInIframesEnabled() { return std::get<0>(GetParam()); }
+
+  bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
+    return std::get<1>(GetParam());
   }
 
  private:
@@ -6822,25 +6845,32 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
       };
   console_observer.SetFilter(base::BindRepeating(filter));
   console_observer.SetPattern(
-      "FLEDGE will deprecate supporting iframes to render the winning ad*");
+      "Protected Audience/selectURL will deprecate supporting iframes to "
+      "render the winning ad*");
 
-  if (GetParam()) {
+  if (IsAllowURNsInIframesEnabled()) {
     // If the feature is enabled, we should navigate to the mapped page.
     EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                           urn_uuid, frame_url));
     histogram_tester.ExpectBucketCount(
         "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 1, 1);
-    // A console warning is emitted during navigation. This will be removed
-    // once navigation support for urn::uuid in iframes is deprecated.
+    // A console warning is emitted during navigation if feature
+    // `kDisplayWarningDeprecateURNIframesUseFencedFrames` is enabled. This will
+    // be removed once navigation support for urn::uuid in iframes is
+    // deprecated.
     // TODO(crbug.com/1355857)
-    ASSERT_TRUE(console_observer.Wait());
-    EXPECT_FALSE(console_observer.messages().empty());
-    EXPECT_EQ(
-        console_observer.GetMessageAt(0),
-        "FLEDGE will deprecate supporting iframes to render the winning ad. "
-        "Please use fenced frames instead. See "
-        "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
-        "#examples");
+
+    if (DisplayWarningDeprecateURNIframesUseFencedFrames()) {
+      ASSERT_TRUE(console_observer.Wait());
+      ASSERT_FALSE(console_observer.messages().empty());
+      EXPECT_EQ(
+          console_observer.GetMessageAt(0),
+          "Protected Audience/selectURL will deprecate supporting iframes to "
+          "render the winning ad/selected URL. "
+          "Please use fenced frames instead. See "
+          "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
+          "#examples");
+    }
   } else {
     // If the feature is disabled, navigation should fail.
     EXPECT_FALSE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
@@ -7478,7 +7508,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UUIDFrameTreeBrowserTest,
-                         ::testing::Values(true, false),
+                         ::testing::Combine(testing::Bool(), testing::Bool()),
                          &UUIDFrameTreeBrowserTest::DescribeParams);
 
 }  // namespace content

@@ -96,7 +96,8 @@ void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
   }
   for (ContentSettingsType type : to_notify) {
     NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(), type);
+                    ContentSettingsPattern::Wildcard(), type,
+                    /*partition_key=*/nullptr);
   }
 }
 

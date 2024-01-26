@@ -6,20 +6,26 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <memory>
+#include <type_traits>
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_webgpu_access_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -30,6 +36,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -41,9 +49,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -51,6 +63,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -437,7 +450,9 @@ void BaseRenderingContext2D::ResetInternal() {
   layer_count_ = 0;
   SetIsTransformInvertible(true);
   CanvasPath::Clear();
-  RestartRecording();
+  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
+    recorder->RestartRecording();
+  }
 
   // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
@@ -578,8 +593,8 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
-  const ColorParseResult parse_result =
-      ParseCanvasColorString(color_string, color_scheme_, color);
+  const ColorParseResult parse_result = ParseCanvasColorString(
+      color_string, color_scheme_, color, GetColorProvider());
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }
@@ -601,6 +616,14 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     return ColorParseResult::kColor;
   }
   return parse_result;
+}
+
+const ui::ColorProvider* BaseRenderingContext2D::GetColorProvider() const {
+  if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
+    return canvas->GetDocument().GetColorProviderForPainting(color_scheme_);
+  }
+
+  return nullptr;
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(
@@ -1800,6 +1823,13 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
           DOMExceptionCode::kInvalidStateError,
           "The HTMLImageElement provided is in the 'broken' state.");
     }
+    if (source_image_status == kLayersOpenInCanvasSource) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`drawImage()` with a canvas as a source cannot be called while "
+          "layers are open in the the source canvas.");
+      return;
+    }
     if (!image || !image->width() || !image->height())
       return;
   } else {
@@ -2020,6 +2050,12 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
       break;
     case kIncompleteSourceImageStatus:
       return nullptr;
+    case kLayersOpenInCanvasSource:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`createPattern()` with a canvas as a source cannot be called while "
+          "layers are open in the source canvas.");
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;
@@ -2035,6 +2071,85 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   pattern->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return pattern;
+}
+
+namespace {
+
+scoped_refptr<cc::RefCountedBuffer<SkPoint>> MakeSkPointBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state,
+    const char* msg) {
+  if ((array->length() == 0) || (array->length() % 2)) {
+    exception_state.ThrowRangeError(msg);
+    return nullptr;
+  }
+
+  static_assert(std::is_trivially_copyable<SkPoint>::value);
+  static_assert(sizeof(SkPoint) == sizeof(float) * 2);
+
+  const size_t size = array->length() / 2;
+  std::vector<SkPoint> skpoints(size);
+  std::memcpy(skpoints.data(), array->Data(), size * sizeof(SkPoint));
+
+  return base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+      std::move(skpoints));
+}
+
+}  // namespace
+
+Mesh2DVertexBuffer* BaseRenderingContext2D::createMesh2DVertexBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> buffer = MakeSkPointBuffer(
+      array, exception_state,
+      "The vertex buffer must contain a non-zero, even number of floats.");
+
+  return buffer ? MakeGarbageCollected<Mesh2DVertexBuffer>(std::move(buffer))
+                : nullptr;
+}
+
+Mesh2DUVBuffer* BaseRenderingContext2D::createMesh2DUVBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> buffer = MakeSkPointBuffer(
+      array, exception_state,
+      "The UV buffer must contain a non-zero, even number of floats.");
+
+  return buffer ? MakeGarbageCollected<Mesh2DUVBuffer>(std::move(buffer))
+                : nullptr;
+}
+
+Mesh2DIndexBuffer* BaseRenderingContext2D::createMesh2DIndexBuffer(
+    NotShared<DOMUint16Array> array,
+    ExceptionState& exception_state) {
+  if ((array->length() == 0) || (array->length() % 3)) {
+    exception_state.ThrowRangeError(
+        "The index buffer must contain a non-zero, multiple of three number of "
+        "uints.");
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<Mesh2DIndexBuffer>(
+      base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
+          std::vector<uint16_t>(array->Data(),
+                                array->Data() + array->length())));
+}
+
+void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
+                                      const Mesh2DUVBuffer* uv_buffer,
+                                      const Mesh2DIndexBuffer* index_buffer,
+                                      const V8CanvasImageSource* image,
+                                      ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> vertex_data =
+      vertex_buffer->GetBuffer();
+  CHECK_NE(vertex_data, nullptr);
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> uv_data = uv_buffer->GetBuffer();
+  CHECK_NE(uv_data, nullptr);
+  scoped_refptr<cc::RefCountedBuffer<uint16_t>> index_data =
+      index_buffer->GetBuffer();
+  CHECK_NE(index_data, nullptr);
+
+  // TODO(fmalita): impl
 }
 
 bool BaseRenderingContext2D::ComputeDirtyRect(const gfx::RectF& local_rect,
@@ -2111,6 +2226,13 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     ExceptionState& exception_state) {
   if (!base::CheckMul(sw, sh).IsValid<int>()) {
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
+    return nullptr;
+  }
+
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`getImageData()` cannot be called with open layers.");
     return nullptr;
   }
 
@@ -2294,7 +2416,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (layer_count_ != 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "`putImageData()` cannot be called while layers are opened.");
+        "`putImageData()` cannot be called with open layers.");
     return;
   }
 
@@ -2591,7 +2713,9 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
     }
   }
 
-  SkipQueuedDrawCommands();
+  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
+    recorder->SkipQueuedDrawCommands();
+  }
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {
@@ -2770,40 +2894,6 @@ const Font& BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
   return state.GetFont();
 }
 
-namespace {
-
-// Drawing methods need to use this instead of SkAutoCanvasRestore in case
-// overdraw detection substitutes the recording canvas (to discard overdrawn
-// draw calls).
-class BaseRenderingContext2DAutoRestoreSkCanvas {
-  STACK_ALLOCATED();
-
- public:
-  explicit BaseRenderingContext2DAutoRestoreSkCanvas(
-      BaseRenderingContext2D* context)
-      : context_(context) {
-    DCHECK(context_);
-    cc::PaintCanvas* c = context_->GetOrCreatePaintCanvas();
-    if (c) {
-      save_count_ = c->getSaveCount();
-    }
-  }
-
-  ~BaseRenderingContext2DAutoRestoreSkCanvas() {
-    cc::PaintCanvas* c = context_->GetOrCreatePaintCanvas();
-    if (c) {
-      c->restoreToCount(save_count_);
-    }
-    context_->ValidateStateStack();
-  }
-
- private:
-  BaseRenderingContext2D* context_;
-  int save_count_ = 0;
-};
-
-}  // namespace
-
 void BaseRenderingContext2D::DrawTextInternal(
     const String& text,
     double x,
@@ -2824,8 +2914,10 @@ void BaseRenderingContext2D::DrawTextInternal(
     canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c) {
+
+  // Abort if we don't have a paint canvas (e.g. the context was lost).
+  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
+  if (!paint_canvas) {
     return;
   }
 
@@ -2897,14 +2989,13 @@ void BaseRenderingContext2D::DrawTextInternal(
     InflateStrokeRect(bounds);
   }
 
-  BaseRenderingContext2DAutoRestoreSkCanvas state_restorer(this);
   if (use_max_width) {
-    c->save();
+    paint_canvas->save();
     // We draw when fontWidth is 0 so compositing operations (eg, a "copy" op)
     // still work. As the width of canvas is scaled, so text can be scaled to
     // match the given maxwidth, update text location so it appears on desired
     // place.
-    c->scale(ClampTo<float>(width / font_width), 1);
+    paint_canvas->scale(ClampTo<float>(width / font_width), 1);
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
 
@@ -2935,6 +3026,18 @@ void BaseRenderingContext2D::DrawTextInternal(
       { return false; },
       bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
+
+  if (use_max_width) {
+    // Make sure that `paint_canvas` is still valid and active. Calling `Draw`
+    // might reset `paint_canvas`. If that happens, `GetOrCreatePaintCanvas`
+    // will create a new `paint_canvas` and return a new address. This new
+    // canvas won't have the `save()` added above, so it would be invalid to
+    // call `restore()` here.
+    if (paint_canvas == GetOrCreatePaintCanvas()) {
+      paint_canvas->restore();
+    }
+  }
+  ValidateStateStack();
 }
 
 TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
@@ -3116,6 +3219,35 @@ bool BaseRenderingContext2D::IsAccelerated() const {
     return host->GetRasterMode() == RasterMode::kGPU;
   }
   return false;
+}
+
+V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
+  // TODO(crbug.com/1517367): implement (this is a placeholder)
+  return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kRgba8Unorm);
+}
+
+GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
+    const CanvasWebGPUAccessOption* accessOptions,
+    ExceptionState& exception_state) {
+  if (!OriginClean()) {
+    exception_state.ThrowSecurityError(
+        "The canvas has been tainted by cross-origin data.");
+    return nullptr;
+  }
+  GPUDevice* device = accessOptions->getDeviceOr(nullptr);
+  if (!device) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Called `beginWebGPUAccess` without a device");
+    return nullptr;
+  }
+
+  // TODO(crbug.com/1517367): implement
+  return nullptr;
+}
+
+void BaseRenderingContext2D::endWebGPUAccess(ExceptionState&) {
+  // TODO(crbug.com/1517367): implement
 }
 
 }  // namespace blink

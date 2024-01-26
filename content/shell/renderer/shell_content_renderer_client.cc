@@ -12,7 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
@@ -150,25 +152,48 @@ class TestRendererServiceImpl : public mojom::TestService {
 class ShellContentRendererUrlLoaderThrottleProvider
     : public blink::URLLoaderThrottleProvider {
  public:
+  ShellContentRendererUrlLoaderThrottleProvider()
+      : main_thread_task_runner_(
+            content::RenderThread::IsMainThread()
+                ? base::SequencedTaskRunner::GetCurrentDefault()
+                : nullptr) {}
+
+  // This constructor works in conjunction with Clone().
+  ShellContentRendererUrlLoaderThrottleProvider(
+      const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
+      base::PassKey<ShellContentRendererUrlLoaderThrottleProvider>)
+      : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+
   std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
-    return std::make_unique<ShellContentRendererUrlLoaderThrottleProvider>();
+    return std::make_unique<ShellContentRendererUrlLoaderThrottleProvider>(
+        main_thread_task_runner_,
+        base::PassKey<ShellContentRendererUrlLoaderThrottleProvider>());
   }
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const network::ResourceRequest& request) override {
     blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-    // Workers can call us on a background thread. We don't care about such
-    // requests because we purposefully only look at resources from frames
-    // that the user can interact with.`
-    blink::WebLocalFrame* frame = nullptr;
-    if (content::RenderThread::IsMainThread() &&
-        local_frame_token.has_value()) {
-      frame = blink::WebLocalFrame::FromFrameToken(local_frame_token.value());
-    }
-    if (frame) {
-      auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-          base::BindRepeating(blink::SetIdpSigninStatus, frame));
+    if (local_frame_token.has_value()) {
+      auto throttle =
+          content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+              [](const blink::LocalFrameToken& local_frame_token,
+                 const scoped_refptr<base::SequencedTaskRunner>
+                     main_thread_task_runner,
+                 const url::Origin& origin,
+                 blink::mojom::IdpSigninStatus status) {
+                if (content::RenderThread::IsMainThread()) {
+                  blink::SetIdpSigninStatus(local_frame_token, origin, status);
+                  return;
+                }
+                if (main_thread_task_runner) {
+                  main_thread_task_runner->PostTask(
+                      FROM_HERE,
+                      base::BindOnce(&blink::SetIdpSigninStatus,
+                                     local_frame_token, origin, status));
+                }
+              },
+              local_frame_token.value(), main_thread_task_runner_));
       if (throttle)
         throttles.push_back(std::move(throttle));
     }
@@ -177,6 +202,11 @@ class ShellContentRendererUrlLoaderThrottleProvider
   }
 
   void SetOnline(bool is_online) override {}
+
+ private:
+  // Set only when `this` was created on the main thread, or cloned from a
+  // provider which was created on the main thread.
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 };
 
 void CreateRendererTestService(

@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
+<translation id="1434873037477293673">การ์ดราคาต่ำลง</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
 <translation id="2790501146643349491">เมื่อเปิด เว็บไซต์ที่เพิ่งปิดจะส่งและรับข้อมูลจนเสร็จสิ้นได้ เมื่อปิด เว็บไซต์ที่เพิ่งปิดจะส่งหรือรับข้อมูลจนเสร็จสิ้นไม่ได้</translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">บล็อกเว็บไซต์ไม่ให้ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
+<translation id="6452138246455930388">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="OLD_PRICE" /> เป็น <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">เมื่อใช้หน้าต่างที่แคบ ให้ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="652937045869844725">ลองอนุญาตคุกกี้ของบุคคลที่สาม ซึ่งหมายความว่าการปกป้องจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทำงานได้มากกว่า</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">เลื่อนลง</translation>
 <translation id="6749077623962119521">รีเซ็ตสิทธิ์ใช่ไหม</translation>
 <translation id="6766622839693428701">เลื่อนลงเพื่อปิด</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> จาก <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">เลือกตัวเลือกสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
 <translation id="6864395892908308021">อุปกรณ์นี้อ่าน NFC ไม่ได้</translation>
+<translation id="6867014948848323204">จาก <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">บล็อกเว็บไซต์ไม่ให้อ่านข้อความและดูรูปภาพจากคลิปบอร์ด</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6950072572526089586">เว็บไซต์ที่คุณเข้าชมสามารถบันทึกข้อมูลเกี่ยวกับสิ่งที่คุณทำอยู่เพื่อให้ใช้งานได้ตามที่ต้องการ เช่น ให้คุณลงชื่อเข้าใช้เว็บไซต์ค้างไว้หรือบันทึกสินค้าไว้ในรถเข็นช็อปปิ้ง เว็บไซต์ต่างๆ มักจะบันทึกข้อมูลนี้ไว้ชั่วคราวบนอุปกรณ์</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">พ่อมดมหัศจรรย์แห่งออซ</translation>
 <translation id="7684642910516280563">ไม่อนุญาตให้เว็บไซต์ใช้คุกกี้ของบุคคลที่สาม</translation>
 <translation id="7719367874908701697">การซูมหน้า</translation>
+<translation id="7770832849480336015">ซ่อน "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/cart/cart_service.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -43,7 +44,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -77,7 +77,7 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
 }
 
 base::Value::Dict JSONToDictionary(int resource_id) {
-  absl::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id));
   CHECK(value);
@@ -213,7 +213,7 @@ void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
 }
 
 void CartService::AddCart(const GURL& navigation_url,
-                          const absl::optional<GURL>& cart_url,
+                          const std::optional<GURL>& cart_url,
                           const cart_db::ChromeCartContentProto& proto) {
   cart_db_->LoadCart(
       eTLDPlusOne(navigation_url),
@@ -957,7 +957,7 @@ void CartService::SetCartRemovedStatus(
 }
 
 void CartService::OnAddCart(const GURL& navigation_url,
-                            const absl::optional<GURL>& cart_url,
+                            const std::optional<GURL>& cart_url,
                             cart_db::ChromeCartContentProto proto,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs) {
@@ -982,7 +982,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
     return;
   }
 
-  absl::optional<std::string> merchant_name_from_component =
+  std::optional<std::string> merchant_name_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetMerchantName(domain);
   std::string* merchant_name_from_resource =
@@ -1002,7 +1002,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
   if (cart_url) {
     proto.set_merchant_cart_url(cart_url->spec());
   } else {
-    absl::optional<std::string> fallback_url_from_component =
+    std::optional<std::string> fallback_url_from_component =
         commerce_heuristics::CommerceHeuristicsData::GetInstance()
             .GetMerchantCartURL(domain);
     std::string* fallback_url_from_resource =
@@ -1025,13 +1025,13 @@ void CartService::OnAddCart(const GURL& navigation_url,
   }
 
   bool has_product_image = proto.product_image_urls().size();
-  absl::optional<GURL> cached_image_url;
+  std::optional<GURL> cached_image_url;
   // When this cart addition is caused by AddToCart detection and there
   // is no product image detected on the renderer side, try to get cached
   // product image from ShoppingService using navigation_url which could be PDP
   // URL.
   if (!has_product_image && commerce::kAddToCartProductImage.Get()) {
-    absl::optional<commerce::ProductInfo> info =
+    std::optional<commerce::ProductInfo> info =
         shopping_service_->GetAvailableProductInfoForUrl(navigation_url);
     if (info.has_value() && info.value().image_url.is_valid()) {
       cached_image_url = info.value().image_url;
@@ -1182,7 +1182,7 @@ void CartService::StartGettingDiscount() {
 bool CartService::IsDiscountUsed(const std::string& rule_id) {
   return profile_->GetPrefs()
              ->GetDict(prefs::kCartUsedDiscounts)
-             .FindBool(rule_id) != absl::nullopt;
+             .FindBool(rule_id) != std::nullopt;
 }
 
 void CartService::RecordFetchTimestamp() {

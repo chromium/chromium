@@ -121,6 +121,8 @@ enum ModelType {
   WIFI_CONFIGURATIONS,
   // A web app object.
   WEB_APPS,
+  // A WebAPK object.
+  WEB_APKS,
   // OS-specific preferences (a.k.a. "OS settings"). Chrome OS only.
   OS_PREFERENCES,
   // Synced before other user types. Never encrypted. Chrome OS only.
@@ -241,7 +243,8 @@ enum class ModelTypeForHistograms {
   kIncomingPasswordSharingInvitations = 59,
   kOutgoingPasswordSharingInvitations = 60,
   kAutofillWalletCredential = 61,
-  kMaxValue = kAutofillWalletCredential,
+  kWebApks = 62,
+  kMaxValue = kWebApks,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.

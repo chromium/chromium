@@ -588,7 +588,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  absl::optional<ContentAnalysisResponse> dlp_response_ = absl::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
 };
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {

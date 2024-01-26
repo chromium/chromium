@@ -149,6 +149,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
@@ -189,7 +190,7 @@
 #include "chrome/browser/ui/media_router/cast_notification_controller_lacros_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
@@ -215,7 +216,7 @@
 #include "components/media_effects/media_effects_service_factory.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
@@ -308,6 +309,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -382,6 +384,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory_lacros.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
@@ -849,6 +852,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   JumpListFactory::GetInstance();
 #endif
   KAnonymityServiceFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  kcer::KcerFactoryLacros::EnsureFactoryBuilt();
+#endif
   LanguageModelManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
@@ -957,7 +963,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   OpenerHeuristicServiceFactory::GetInstance();
-  if (optimization_guide::switches::ShouldValidateModel()) {
+  if (optimization_guide::ShouldStartModelValidator()) {
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
   }
   OptimizationGuideKeyedServiceFactory::GetInstance();
@@ -1112,6 +1118,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   SCTReportingServiceFactory::GetInstance();
+  search_engines::SearchEngineChoiceServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   search_resumption_module::StartSuggestServiceFactory::GetInstance();
 #endif
@@ -1163,6 +1170,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementServiceFactory::GetInstance();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  SmartCardPermissionContextFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   SpeechRecognitionClientBrowserInterfaceFactory::EnsureFactoryBuilt();
 #endif
@@ -1206,7 +1216,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   TopSitesFactory::GetInstance();
   tpcd::experiment::EligibilityServiceFactory::GetInstance();
   tpcd::metadata::UpdaterServiceFactory::GetInstance();
-  tpcd::support::TpcdSupportServiceFactory::GetInstance();
+  tpcd::trial::TpcdTrialServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TrackingProtectionNoticeFactory::GetInstance();
 #endif

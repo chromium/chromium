@@ -45,7 +45,9 @@ class PLATFORM_EXPORT HanKerning {
  public:
   struct Options {
     bool is_horizontal = true;
+    bool is_line_start = false;
     bool apply_start = false;
+    bool apply_end = false;
   };
 
   HanKerning(const String& text,
@@ -67,6 +69,10 @@ class PLATFORM_EXPORT HanKerning {
     if (UNLIKELY(features_)) {
       ResetFeatures();
     }
+  }
+
+  const Vector<unsigned, 32>& UnsafeToBreakBefore() const {
+    return unsafe_to_break_before_;
   }
 
   using CharType = HanKerningCharType;
@@ -100,11 +106,6 @@ class PLATFORM_EXPORT HanKerning {
     CharType type_for_semicolon = CharType::kOther;
   };
 
-  // Check if the `CharType` of a character may be `kOpen` without knowing the
-  // font. `CharType` depends on fonts, so it may not be `kOpen` even when this
-  // function returns `true`.
-  static bool MaybeOpen(UChar ch);
-
  private:
   static CharType GetCharType(UChar ch, const FontData& font_data);
 
@@ -123,6 +124,7 @@ class PLATFORM_EXPORT HanKerning {
 
   FontFeatures* features_ = nullptr;
   wtf_size_t num_features_before_;
+  Vector<unsigned, 32> unsafe_to_break_before_;
 };
 
 }  // namespace blink

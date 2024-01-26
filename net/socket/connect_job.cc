@@ -34,7 +34,7 @@ CommonConnectJobParams::CommonConnectJobParams(
     HttpAuthHandlerFactory* http_auth_handler_factory,
     SpdySessionPool* spdy_session_pool,
     const quic::ParsedQuicVersionVector* quic_supported_versions,
-    QuicStreamFactory* quic_stream_factory,
+    QuicSessionPool* quic_session_pool,
     ProxyDelegate* proxy_delegate,
     const HttpUserAgentSettings* http_user_agent_settings,
     SSLClientContext* ssl_client_context,
@@ -45,14 +45,15 @@ CommonConnectJobParams::CommonConnectJobParams(
     HttpServerProperties* http_server_properties,
     const NextProtoVector* alpn_protos,
     const SSLConfig::ApplicationSettings* application_settings,
-    const bool* ignore_certificate_errors)
+    const bool* ignore_certificate_errors,
+    const bool* enable_early_data)
     : client_socket_factory(client_socket_factory),
       host_resolver(host_resolver),
       http_auth_cache(http_auth_cache),
       http_auth_handler_factory(http_auth_handler_factory),
       spdy_session_pool(spdy_session_pool),
       quic_supported_versions(quic_supported_versions),
-      quic_stream_factory(quic_stream_factory),
+      quic_session_pool(quic_session_pool),
       proxy_delegate(proxy_delegate),
       http_user_agent_settings(http_user_agent_settings),
       ssl_client_context(ssl_client_context),
@@ -63,7 +64,8 @@ CommonConnectJobParams::CommonConnectJobParams(
       http_server_properties(http_server_properties),
       alpn_protos(alpn_protos),
       application_settings(application_settings),
-      ignore_certificate_errors(ignore_certificate_errors) {}
+      ignore_certificate_errors(ignore_certificate_errors),
+      enable_early_data(enable_early_data) {}
 
 CommonConnectJobParams::CommonConnectJobParams(
     const CommonConnectJobParams& other) = default;
@@ -93,17 +95,20 @@ ConnectJob::ConnectJob(RequestPriority priority,
                                             net_log_source_type)),
       net_log_connect_event_type_(net_log_connect_event_type) {
   DCHECK(delegate);
-  if (top_level_job_)
+  if (top_level_job_) {
     net_log_.BeginEvent(NetLogEventType::CONNECT_JOB);
+  }
 }
 
 ConnectJob::~ConnectJob() {
   // Log end of Connect event if ConnectJob was still in-progress when
   // destroyed.
-  if (delegate_)
+  if (delegate_) {
     LogConnectCompletion(ERR_ABORTED);
-  if (top_level_job_)
+  }
+  if (top_level_job_) {
     net_log().EndEvent(NetLogEventType::CONNECT_JOB);
+  }
 }
 
 std::unique_ptr<StreamSocket> ConnectJob::PassSocket() {
@@ -116,8 +121,9 @@ void ConnectJob::ChangePriority(RequestPriority priority) {
 }
 
 int ConnectJob::Connect() {
-  if (!timeout_duration_.is_zero())
+  if (!timeout_duration_.is_zero()) {
     timer_.Start(FROM_HERE, timeout_duration_, this, &ConnectJob::OnTimeout);
+  }
 
   LogConnectStart();
 
@@ -158,8 +164,9 @@ void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
   if (socket) {
     net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
                                         socket->NetLog().source());
-    if (dns_aliases)
+    if (dns_aliases) {
       socket->SetDnsAliases(std::move(dns_aliases.value()));
+    }
   }
   socket_ = std::move(socket);
 }
@@ -184,8 +191,9 @@ void ConnectJob::NotifyDelegateOfProxyAuth(
 
 void ConnectJob::ResetTimer(base::TimeDelta remaining_time) {
   timer_.Stop();
-  if (!remaining_time.is_zero())
+  if (!remaining_time.is_zero()) {
     timer_.Start(FROM_HERE, remaining_time, this, &ConnectJob::OnTimeout);
+  }
 }
 
 bool ConnectJob::TimerIsRunning() const {

@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -42,6 +43,7 @@ namespace {
 using ::autofill::mojom::SubmissionSource;
 using ::base::android::JavaRef;
 using ::content::BrowserThread;
+using ::password_manager::PasswordForm;
 using FieldInfo = ::autofill::AutofillProviderAndroidBridge::FieldInfo;
 
 constexpr int kMinimumSdkVersionForPrefillRequests =
@@ -49,9 +51,8 @@ constexpr int kMinimumSdkVersionForPrefillRequests =
 
 constexpr base::TimeDelta kKeyboardSuppressionTimeout = base::Seconds(1);
 
-// Returns whether we should attempt to cache provider responses for this form.
-// Currently, that is the case iff we diagnose it to be a login form.
-bool ShouldCacheForm(const FormStructure& form_structure) {
+std::unique_ptr<PasswordForm> ParseToPasswordForm(
+    const FormStructure& form_structure) {
   // Transform the predictions data to a format the `FormDataParser` can handle
   // and parse the form.
   FormData form_data = form_structure.ToFormData();
@@ -71,10 +72,15 @@ bool ShouldCacheForm(const FormStructure& form_structure) {
   // On Chrome, the parser can use stored usernames to identify a filled
   // username field by the value it contains. Since we do not have access to
   // credentials, we leave it empty.
-  std::unique_ptr<password_manager::PasswordForm> pw_form =
-      parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
-                   /*stored_usernames=*/{});
-  return pw_form && pw_form->IsLikelyLoginForm();
+  return parser.Parse(form_data,
+                      password_manager::FormDataParser::Mode::kFilling,
+                      /*stored_usernames=*/{});
+}
+
+// Returns whether we should attempt to cache provider responses for this form.
+// Currently, that is the case iff we diagnose it to be a login form.
+bool ShouldCachePasswordForm(const PasswordForm& pw_form) {
+  return pw_form.IsLikelyLoginForm();
 }
 
 // Extracts the underlying value of `check_result` and eliminates all other bits
@@ -179,8 +185,11 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (!IsLinkedForm(form)) {
+  if (!IsLinkedForm(
+          form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
     StartNewSession(manager, form, field, bounding_box);
+  } else {
+    last_focused_field_id_ = field.global_id();
   }
 
   if (field.datalist_options.empty()) {
@@ -190,44 +199,71 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
 }
 
+bool AutofillProviderAndroid::IsFormSimilarToCachedForm(
+    const FormData& form,
+    const FormStructure* form_structure) const {
+  if (!cached_data_ || !cached_data_->cached_form) {
+    return false;
+  }
+  if (form_structure &&
+      base::FeatureList::IsEnabled(
+          features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
+    CHECK_EQ(form.global_id(), form_structure->global_id());
+    std::unique_ptr<PasswordForm> pw_form =
+        ParseToPasswordForm(*form_structure);
+    if (!pw_form || !ShouldCachePasswordForm(*pw_form)) {
+      return false;
+    }
+    PasswordParserOverrides overrides =
+        PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)
+            .value_or(PasswordParserOverrides());
+    return cached_data_->password_parser_overrides == overrides;
+  }
+  return cached_data_->cached_form->SimilarFormAs(form);
+}
+
 void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
+  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
+  FormDataAndroid* cached_form =
+      cached_data_ ? cached_data_->cached_form.get() : nullptr;
+  const bool is_similar_to_cached_form =
+      IsFormSimilarToCachedForm(form, form_structure);
+
   // The form is assigned the same session id form sent to the Android framework
   // in the prefill request iff all of the following conditions are met:
   // - There is a cached form.
   // - This is the first time we try to show the bottom sheet for the cached
   //   form (on their second interaction, the user should see the keyboard).
-  // - The cached form is similar to the current form - i.e. it consists of the
-  //   same DOM elements as the cached form and their attributes have not
-  //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
-  FormDataAndroid::SimilarityCheckResult similarity_result =
-      cached_form_ ? cached_form_->SimilarFormAsWithDiagnosis(form)
-                   : FormDataAndroid::kFormsAreSimilar;
-  const bool is_similar_to_cached_form =
-      cached_form_ && similarity_result == FormDataAndroid::kFormsAreSimilar;
-  const bool use_id_of_cached_form =
+  // - The cached form is similar to the current form.
+  const bool use_cached_form =
       is_similar_to_cached_form && !has_used_cached_form_;
   form_ = std::make_unique<FormDataAndroid>(
-      form,
-      use_id_of_cached_form ? cached_form_->session_id() : CreateSessionId());
+      form, use_cached_form ? cached_form->session_id() : CreateSessionId());
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
     Reset();
     return;
   }
 
-  field_id_ = field.global_id();
+  last_focused_field_id_ = field.global_id();
   field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
   triggered_origin_ = field.origin;
   check_submission_ = false;
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
-  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
   if (form_structure) {
     form_->UpdateFieldTypes(*form_structure);
+    // If there a non-trivial overrides from `FormDataParse` in the cached form,
+    // apply them to the new form as well.
+    if (use_cached_form &&
+        cached_data_->password_parser_overrides != PasswordParserOverrides()) {
+      form_->UpdateFieldTypes(
+          cached_data_->password_parser_overrides.ToFieldTypeMap());
+    }
   }
   field_info.bounds = ToClientAreaBound(bounding_box);
 
@@ -240,23 +276,32 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
 
     // We sent a cache request for this form element, but the form (or its
     // members) have changed since then.
-    if (cached_form_ && cached_form_->form().global_id() == form.global_id()) {
+    if (cached_form && cached_form->form().global_id() == form.global_id()) {
       base::UmaHistogramEnumeration(
           kPrefillRequestStateUma,
           PrefillRequestState::kRequestSentFormChanged);
-      base::UmaHistogramExactLinear(
-          kSimilarityCheckCacheRequestUma,
-          ProjectSimilarityCheckResultToMetricsValue(similarity_result),
-          FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+      if (!base::FeatureList::IsEnabled(
+              features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
+        base::UmaHistogramExactLinear(
+            kSimilarityCheckCacheRequestUma,
+            ProjectSimilarityCheckResultToMetricsValue(
+                cached_form->SimilarFormAsWithDiagnosis(form)),
+            FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+      }
       return;
     }
 
     // Prefill request state metrics are for forms that we would have cached.
-    if (!form_structure || !ShouldCacheForm(*form_structure)) {
+    if (!form_structure) {
+      return;
+    }
+    std::unique_ptr<PasswordForm> pw_form =
+        ParseToPasswordForm(*form_structure);
+    if (!pw_form || !ShouldCachePasswordForm(*pw_form)) {
       return;
     }
 
-    if (cached_form_) {
+    if (cached_form) {
       // We would have cached the form, but another cache request had already
       // been sent.
       base::UmaHistogramEnumeration(
@@ -290,8 +335,9 @@ void AutofillProviderAndroid::OnAutofillAvailable() {
 void AutofillProviderAndroid::OnAcceptDatalistSuggestion(
     const std::u16string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto* manager = manager_.get()) {
-    RendererShouldAcceptDataListSuggestion(manager, field_id_, value);
+  if (manager_) {
+    RendererShouldAcceptDataListSuggestion(manager_.get(),
+                                           last_focused_field_id_, value);
   }
 }
 
@@ -329,6 +375,11 @@ void AutofillProviderAndroid::OnShowBottomSheetResult(
           ? PrefillRequestState::
                 kRequestSentStructureProvidedBottomSheetNotShown
           : PrefillRequestState::kRequestSentStructureNotProvided);
+  if (!provided_autofill_structure && cached_data_.has_value()) {
+    base::UmaHistogramTimes(
+        kPrefillRequestBottomsheetNoViewStructureDelayUma,
+        base::TimeTicks::Now() - cached_data_->prefill_request_creation_time);
+  }
 }
 
 void AutofillProviderAndroid::OnTextFieldDidChange(
@@ -383,9 +434,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(b/297228856): Remove `!form_` check when
-  // `kAndroidAutofillFormSubmissionCheckById` launches.
-  if (!IsLinkedManager(manager) || !form_) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -394,10 +443,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
   // Even if the page modifies the form between the user interaction and the
   // form submission, we want to inform `AutofillManager` about the submission.
   // Otherwise no saving prompt can be offered.
-  if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillFormSubmissionCheckById)
-          ? !IsIdOfLinkedForm(form.global_id())
-          : !form_->SimilarFormAs(form)) {
+  if (!IsIdOfLinkedForm(form.global_id())) {
     return;
   }
 
@@ -429,7 +475,8 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsLinkedForm(form) ||
+  if (!IsLinkedForm(form,
+                    /*similarity_metri=*/kSimilarityCheckFocusOnFormFieldUma) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -586,8 +633,23 @@ bool AutofillProviderAndroid::IsIdOfLinkedForm(FormGlobalId form_id) const {
   return form_ && form_->form().global_id() == form_id;
 }
 
-bool AutofillProviderAndroid::IsLinkedForm(const FormData& form) const {
-  return form_ && form_->SimilarFormAs(form);
+bool AutofillProviderAndroid::IsLinkedForm(const FormData& form,
+                                           const char* similarity_metric) {
+  if (!form_) {
+    return false;
+  }
+
+  if (!similarity_metric) {
+    return form_->SimilarFormAs(form);
+  }
+
+  FormDataAndroid::SimilarityCheckResult similarity_result =
+      form_->SimilarFormAsWithDiagnosis(form);
+  base::UmaHistogramExactLinear(
+      similarity_metric,
+      ProjectSimilarityCheckResultToMetricsValue(similarity_result),
+      FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+  return similarity_result == FormDataAndroid::kFormsAreSimilar;
 }
 
 gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
@@ -599,7 +661,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 void AutofillProviderAndroid::Reset() {
   manager_ = nullptr;
   form_.reset();
-  field_id_ = {};
+  last_focused_field_id_ = {};
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;
@@ -635,20 +697,84 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
 
   // Return if there has already been a cache request or if there is already an
   // ongoing Autofill session.
-  if (cached_form_ || form_) {
+  if (cached_data_ || form_) {
     return;
   }
 
   const FormStructure* const form_structure =
       manager.FindCachedFormById(form_id);
-  if (!form_structure || !ShouldCacheForm(*form_structure)) {
+  if (!form_structure) {
+    return;
+  }
+  std::unique_ptr<PasswordForm> pw_form = ParseToPasswordForm(*form_structure);
+  if (!pw_form || !ShouldCachePasswordForm(*pw_form)) {
     return;
   }
 
-  cached_form_ = std::make_unique<FormDataAndroid>(form_structure->ToFormData(),
-                                                   CreateSessionId());
-  cached_form_->UpdateFieldTypes(*form_structure);
-  bridge_->SendPrefillRequest(*cached_form_);
+  cached_data_.emplace();
+  cached_data_->prefill_request_creation_time = base::TimeTicks::Now();
+  cached_data_->cached_form = std::make_unique<FormDataAndroid>(
+      form_structure->ToFormData(), CreateSessionId());
+  cached_data_->cached_form->UpdateFieldTypes(*form_structure);
+  if (std::optional<PasswordParserOverrides> overrides =
+          PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure);
+      overrides &&
+      base::FeatureList::IsEnabled(
+          features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
+    // If we manage to match the fields that the password form parser identified
+    // as username and password fields, override their types.
+    cached_data_->password_parser_overrides = *std::move(overrides);
+    cached_data_->cached_form->UpdateFieldTypes(
+        cached_data_->password_parser_overrides.ToFieldTypeMap());
+  }
+  bridge_->SendPrefillRequest(*cached_data_->cached_form);
 }
+
+base::flat_map<FieldGlobalId, AutofillType>
+AutofillProviderAndroid::PasswordParserOverrides::ToFieldTypeMap() const {
+  base::flat_map<FieldGlobalId, AutofillType> result;
+  if (username_field_id) {
+    result.emplace(*username_field_id, FieldType::USERNAME);
+  }
+  if (password_field_id) {
+    result.emplace(*password_field_id, FieldType::PASSWORD);
+  }
+  return result;
+}
+
+// static
+std::optional<AutofillProviderAndroid::PasswordParserOverrides>
+AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
+    const PasswordForm& pw_form,
+    const FormStructure& form_structure) {
+  PasswordParserOverrides result;
+  for (const std::unique_ptr<AutofillField>& field : form_structure) {
+    if (field->unique_renderer_id == pw_form.username_element_renderer_id) {
+      if (result.username_field_id) {
+        return std::nullopt;
+      }
+      result.username_field_id = field->global_id();
+    } else if (field->unique_renderer_id ==
+               pw_form.password_element_renderer_id) {
+      if (result.password_field_id) {
+        return std::nullopt;
+      }
+      result.password_field_id = field->global_id();
+    }
+  }
+  // A login form must always have a username field and a password field.
+  CHECK(result.username_field_id);
+  CHECK(result.password_field_id);
+  return result;
+}
+
+AutofillProviderAndroid::CachedData::CachedData() = default;
+
+AutofillProviderAndroid::CachedData::CachedData(CachedData&&) = default;
+
+AutofillProviderAndroid::CachedData&
+AutofillProviderAndroid::CachedData::operator=(CachedData&&) = default;
+
+AutofillProviderAndroid::CachedData::~CachedData() = default;
 
 }  // namespace autofill

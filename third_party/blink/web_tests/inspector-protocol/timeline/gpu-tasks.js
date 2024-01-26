@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {session} = await testRunner.startHTML(`<head></head><body><canvas></canvas></body>`, 'Tests generation of GPU tasks');
 
   var TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');

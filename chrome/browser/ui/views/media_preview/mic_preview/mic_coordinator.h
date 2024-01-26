@@ -11,8 +11,8 @@
 
 #include "chrome/browser/ui/views/media_preview/mic_preview/audio_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_mediator.h"
-#include "chrome/browser/ui/views/media_preview/mic_preview/mic_selector_combobox_model.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_view_controller.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/view_tracker.h"
 
 namespace media {
@@ -26,7 +26,8 @@ class MicCoordinator {
  public:
   MicCoordinator(views::View& parent_view,
                  bool needs_borders,
-                 const std::vector<std::string>& eligible_mic_ids);
+                 const std::vector<std::string>& eligible_mic_ids,
+                 PrefService& prefs);
   MicCoordinator(const MicCoordinator&) = delete;
   MicCoordinator& operator=(const MicCoordinator&) = delete;
   ~MicCoordinator();
@@ -34,7 +35,9 @@ class MicCoordinator {
   // Invoked from the ViewController when a combobox selection has been made.
   void OnAudioSourceChanged(std::optional<size_t> selected_index);
 
-  const MicSelectorComboboxModel& GetComboboxModelForTest() const {
+  void UpdateDevicePreferenceRanking();
+
+  const ui::SimpleComboboxModel& GetComboboxModelForTest() const {
     return combobox_model_;
   }
 
@@ -53,9 +56,13 @@ class MicCoordinator {
 
   MicMediator mic_mediator_;
   views::ViewTracker mic_view_tracker_;
-  MicSelectorComboboxModel combobox_model_;
+  ui::SimpleComboboxModel combobox_model_;
   std::string active_device_id_;
   base::flat_set<std::string> eligible_mic_ids_;
+  // This list must be kept in sync with the `combobox_model_` so that indices
+  // align.
+  std::vector<media::AudioDeviceDescription> eligible_device_infos_;
+  raw_ptr<PrefService> prefs_;
   std::optional<MicViewController> mic_view_controller_;
   std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
 };

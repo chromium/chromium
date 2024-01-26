@@ -261,8 +261,6 @@ TEST_F(CSSPrimitiveValueTest, HasContainerRelativeUnits) {
 }
 
 TEST_F(CSSPrimitiveValueTest, HasStaticViewportUnits) {
-  ScopedCSSViewportUnits4ForTest scoped_feature(true);
-
   // v*
   EXPECT_TRUE(HasStaticViewportUnits("1vw"));
   EXPECT_TRUE(HasStaticViewportUnits("1vh"));
@@ -313,7 +311,6 @@ TEST_F(CSSPrimitiveValueTest, HasStaticViewportUnits) {
 }
 
 TEST_F(CSSPrimitiveValueTest, HasDynamicViewportUnits) {
-  ScopedCSSViewportUnits4ForTest scoped_feature(true);
   // dv*
   EXPECT_TRUE(HasDynamicViewportUnits("1dvw"));
   EXPECT_TRUE(HasDynamicViewportUnits("1dvh"));

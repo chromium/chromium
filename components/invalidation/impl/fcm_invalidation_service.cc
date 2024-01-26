@@ -162,6 +162,10 @@ void FCMInvalidationService::OnInvalidatorStateChange(InvalidatorState state) {
   invalidator_registrar_.UpdateInvalidatorState(state);
 }
 
+void FCMInvalidationService::OnSuccessfullySubscribed(const Topic& topic) {
+  invalidator_registrar_.DispatchSuccessfullySubscribedToHandlers(topic);
+}
+
 bool FCMInvalidationService::IsStarted() const {
   return invalidation_listener_ != nullptr;
 }

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 
@@ -140,7 +140,7 @@ class ProfileAttributesEntry {
   ProfileThemeColors GetProfileThemeColors() const;
   // Returns the colors specified by the profile theme, or empty if no theme is
   // set for the profile.
-  absl::optional<ProfileThemeColors> GetProfileThemeColorsIfSet() const;
+  std::optional<ProfileThemeColors> GetProfileThemeColorsIfSet() const;
   // Returns the metrics bucket this profile should be recorded in.
   // Note: The bucket index is assigned once and remains the same all time. 0 is
   // reserved for the guest profile.
@@ -191,8 +191,8 @@ class ProfileAttributesEntry {
   bool UserAcceptedAccountManagement() const;
   void SetIsUsingDefaultAvatar(bool value);
   void SetAvatarIconIndex(size_t icon_index);
-  // absl::nullopt resets colors to default.
-  void SetProfileThemeColors(const absl::optional<ProfileThemeColors>& colors);
+  // std::nullopt resets colors to default.
+  void SetProfileThemeColors(const std::optional<ProfileThemeColors>& colors);
 
   // Unlike for other string setters, the argument is expected to be UTF8
   // encoded.
@@ -299,8 +299,8 @@ class ProfileAttributesEntry {
   int GetInteger(const char* key) const;
 
   // Internal getter that returns one of the profile theme colors or
-  // absl::nullopt if the key is not present.
-  absl::optional<SkColor> GetProfileThemeColor(const char* key) const;
+  // std::nullopt if the key is not present.
+  std::optional<SkColor> GetProfileThemeColor(const char* key) const;
 
   // Type checking. Only IsDouble is implemented because others do not have
   // callsites.

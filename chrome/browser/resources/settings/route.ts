@@ -6,7 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router, SettingsRoutes} from './router.js';
+import type {SettingsRoutes} from './router.js';
+import {Route, Router} from './router.js';
 
 /**
  * Add all of the child routes that originate from the privacy route,
@@ -94,6 +95,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
+  r.SITE_SETTINGS_JAVASCRIPT_JIT = r.SITE_SETTINGS.createChild('v8');
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
   r.SITE_SETTINGS_LOCATION = r.SITE_SETTINGS.createChild('location');
@@ -178,7 +180,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.ai !== false &&
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
-        '/ai', 'ai', loadTimeData.getString('experimentalAdvancedPageTitle'));
+        '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
   }
 
   // <if expr="not chromeos_ash">

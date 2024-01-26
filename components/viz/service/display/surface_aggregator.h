@@ -316,7 +316,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   const DrawQuad* FindQuadWithOverlayDamage(
       const CompositorRenderPass& source_pass,
       AggregatedRenderPass* dest_pass,
-      const gfx::Transform& parent_target_transform,
+      const gfx::Transform& pass_to_root_target_transform,
       const Surface* surface,
       size_t* overlay_damage_index);
 

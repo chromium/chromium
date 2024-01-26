@@ -1379,7 +1379,10 @@ void HostProcess::ApplyUsernamePolicy() {
 
     // Shutdown the host if the username does not match.
     if (shutdown) {
-      LOG(ERROR) << "The host username does not match.";
+      LOG(ERROR) << "\n Policy error: username and host owner(ignoring domain) "
+                 << "don't match:\n"
+                 << "   username:   `" << username << "`\n"
+                 << "   host owner: `" << host_owner_ << "`";
       ShutdownHost(kUsernameMismatchExitCode);
     }
   } else {

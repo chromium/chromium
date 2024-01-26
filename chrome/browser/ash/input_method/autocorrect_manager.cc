@@ -455,13 +455,21 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
+
+  if (base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
+    // Report `original_text` to the Federated Service.
+    federated_manager_.ReportSingleString(
+        /*client_name*/ "input_autocorrect_phh",
+        /*example_feature_name*/ "original_text",
+        /*example_str*/ base::UTF16ToUTF8(original_text));
+  }
 }
 
 void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {
   if (pending_user_pref_metric_ && IsVkAutocorrect()) {
     // We only want to record a pending user pref metric if the user is
     // currently using the physical keyboard.
-    pending_user_pref_metric_ = absl::nullopt;
+    pending_user_pref_metric_ = std::nullopt;
   }
 
   if (pending_user_pref_metric_) {
@@ -469,7 +477,7 @@ void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {
     RecordPhysicalKeyboardAutocorrectPref(
         engine_id,
         GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
-    pending_user_pref_metric_ = absl::nullopt;
+    pending_user_pref_metric_ = std::nullopt;
   }
 
   if (pending_suggestion_provider_metric_ && IsVkAutocorrect()) {
@@ -477,13 +485,13 @@ void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {
     // the callback used to inform Chromium of the AutocorrectSuggestionProvider
     // used in the IME service. Once it does then we can record this same metric
     // for the virtual keyboard.
-    pending_suggestion_provider_metric_ = absl::nullopt;
+    pending_suggestion_provider_metric_ = std::nullopt;
   }
 
   if (pending_suggestion_provider_metric_) {
     RecordSuggestionProviderMetric(
         /*provider=*/pending_suggestion_provider_metric_->provider);
-    pending_suggestion_provider_metric_ = absl::nullopt;
+    pending_suggestion_provider_metric_ = std::nullopt;
   }
 }
 
@@ -725,7 +733,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
   // Reset the previously stored suggestion_provider, we should expect a new
   // provider to be returned on the next OnConnectedToSuggestionProvider call.
-  suggestion_provider_ = absl::nullopt;
+  suggestion_provider_ = std::nullopt;
 
   PrefService* pref_service = profile_->GetPrefs();
   auto autocorrect_pref =

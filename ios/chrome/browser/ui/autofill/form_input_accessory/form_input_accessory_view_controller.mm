@@ -11,10 +11,13 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -44,8 +47,8 @@
 
 // Delegate to handle interactions with the manual fill buttons.
 @property(nonatomic, readonly, weak)
-    id<ManualFillAccessoryViewControllerDelegate>
-        manualFillAccessoryViewControllerDelegate;
+    id<FormInputAccessoryViewControllerDelegate>
+        formInputAccessoryViewControllerDelegate;
 
 // The ID of the field that was last announced by VoiceOver.
 @property(nonatomic, assign) autofill::FieldRendererId lastAnnouncedFieldId;
@@ -68,13 +71,13 @@
 
 #pragma mark - Life Cycle
 
-- (instancetype)initWithManualFillAccessoryViewControllerDelegate:
-    (id<ManualFillAccessoryViewControllerDelegate>)
-        manualFillAccessoryViewControllerDelegate {
+- (instancetype)initWithFormInputAccessoryViewControllerDelegate:
+    (id<FormInputAccessoryViewControllerDelegate>)
+        formInputAccessoryViewControllerDelegate {
   self = [super init];
   if (self) {
-    _manualFillAccessoryViewControllerDelegate =
-        manualFillAccessoryViewControllerDelegate;
+    _formInputAccessoryViewControllerDelegate =
+        formInputAccessoryViewControllerDelegate;
     _manualFillAccessoryViewController =
         [[ManualFillAccessoryViewController alloc] initWithDelegate:self];
     [self addChildViewController:_manualFillAccessoryViewController];
@@ -108,13 +111,25 @@
     formInputAccessoryView.accessibilityViewIsModal = YES;
     self.formSuggestionView.trailingView =
         self.manualFillAccessoryViewController.view;
-    [formInputAccessoryView setUpWithLeadingView:self.leadingView
-                              navigationDelegate:self.navigationDelegate];
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      [formInputAccessoryView
+          setUpWithLeadingView:self.leadingView
+            navigationDelegate:self.navigationDelegate
+              manualFillSymbol:DefaultSymbolWithPointSize(
+                                   kExpandSymbol, kSymbolActionPointSize)
+             closeButtonSymbol:DefaultSymbolWithPointSize(
+                                   kKeyboardDownSymbol,
+                                   kSymbolActionPointSize)];
+    } else {
+      [formInputAccessoryView setUpWithLeadingView:self.leadingView
+                                navigationDelegate:self.navigationDelegate];
+    }
     formInputAccessoryView.nextButton.enabled = self.formInputNextButtonEnabled;
     formInputAccessoryView.previousButton.enabled =
         self.formInputPreviousButtonEnabled;
   }
   self.view = formInputAccessoryView;
+  [self showManualFillView:NO];
 }
 
 // The custom view that should be shown in the input accessory view.
@@ -126,6 +141,26 @@
   [super traitCollectionDidChange:previousTraitCollection];
   if (IsBottomOmniboxSteadyStateEnabled()) {
     [self updateOmniboxTypingShieldVisibility];
+  }
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+
+  // Exit the manual fill view, so that the next time the keyboard opens, it is
+  // showing the keyboard and not the manual fill view.
+  if ([self isManualFillViewVisible]) {
+    // Hide the manual fill view.
+    [self showManualFillView:NO];
+
+    // Reset the delegate.
+    [self.formInputAccessoryViewControllerDelegate
+        formInputAccessoryViewControllerReset:self];
+
+    // Reset the manual fill view controller.
+    [self.manualFillAccessoryViewController resetAnimated:NO];
   }
 }
 
@@ -147,6 +182,27 @@
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
+}
+
+- (void)manualFillButtonPressed:(UIButton*)button {
+  DCHECK(IsKeyboardAccessoryUpgradeEnabled());
+
+  switch (_suggestionType) {
+    case autofill::PopupType::kAddresses:
+      [self.manualFillAccessoryViewController accountButtonPressed:button];
+      break;
+    case autofill::PopupType::kCreditCards:
+    case autofill::PopupType::kIbans:
+      [self.manualFillAccessoryViewController cardButtonPressed:button];
+      break;
+    case autofill::PopupType::kPasswords:
+    case autofill::PopupType::kAutocomplete:
+    case autofill::PopupType::kUnspecified:
+      [self.manualFillAccessoryViewController passwordButtonPressed:button];
+      break;
+  }
+
+  [self showManualFillView:YES];
 }
 
 - (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
@@ -287,28 +343,57 @@
       setOmniboxTypingShieldHeight:typingShieldHeight];
 }
 
+- (BOOL)isManualFillViewVisible {
+  return IsKeyboardAccessoryUpgradeEnabled() &&
+         !self.manualFillAccessoryViewController.view.hidden;
+}
+
+- (void)showManualFillView:(BOOL)visible {
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    [self.manualFillAccessoryViewController setViewHidden:!visible];
+    self.formInputAccessoryView.manualFillButton.hidden = visible;
+  }
+}
+
 #pragma mark - ManualFillAccessoryViewControllerDelegate
 
-- (void)keyboardButtonPressed {
-  [self.manualFillAccessoryViewControllerDelegate keyboardButtonPressed];
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressKeyboardButton:(UIButton*)keyboardButton {
+  [self showManualFillView:NO];
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+                didPressKeyboardButton:keyboardButton];
 }
 
-- (void)accountButtonPressed:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                    didPressAccountButton:(UIButton*)accountButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenProfiles",
                            self.formSuggestionView.suggestions.count);
-  [self.manualFillAccessoryViewControllerDelegate accountButtonPressed:sender];
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+                 didPressAccountButton:accountButton];
 }
 
-- (void)cardButtonPressed:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                 didPressCreditCardButton:(UIButton*)creditCardButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenCreditCards",
                            self.formSuggestionView.suggestions.count);
-  [self.manualFillAccessoryViewControllerDelegate cardButtonPressed:sender];
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+              didPressCreditCardButton:creditCardButton];
 }
 
-- (void)passwordButtonPressed:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressPasswordButton:(UIButton*)passwordButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenPasswords",
                            self.formSuggestionView.suggestions.count);
-  [self.manualFillAccessoryViewControllerDelegate passwordButtonPressed:sender];
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+                didPressPasswordButton:passwordButton];
 }
 
 #pragma mark - FormSuggestionViewDelegate
@@ -320,10 +405,13 @@
 
 - (void)formSuggestionViewShouldResetFromPull:
     (FormSuggestionView*)formSuggestionView {
+  DCHECK(!IsKeyboardAccessoryUpgradeEnabled());
+
   base::RecordAction(base::UserMetricsAction("ManualFallback_ClosePull"));
   // The pull gesture has the same effect as when the keyboard button is
   // pressed.
-  [self.manualFillAccessoryViewControllerDelegate keyboardButtonPressed];
+  [self manualFillAccessoryViewController:self.manualFillAccessoryViewController
+                   didPressKeyboardButton:nil];
   [self.manualFillAccessoryViewController resetAnimated:YES];
 }
 

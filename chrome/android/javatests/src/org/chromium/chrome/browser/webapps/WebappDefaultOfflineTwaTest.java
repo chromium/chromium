@@ -20,7 +20,6 @@ import android.util.Base64;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +62,6 @@ public class WebappDefaultOfflineTwaTest {
 
     private EmbeddedTestServer mTestServer;
     private TestContext mTestContext;
-    private Context mContextToRestore;
 
     private static BitmapDrawable getTestIconDrawable(Resources resources, String imageAsString) {
         byte[] bytes = Base64.decode(imageAsString.getBytes(), Base64.DEFAULT);
@@ -108,16 +106,8 @@ public class WebappDefaultOfflineTwaTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         // Setup the context for our custom PackageManager.
-        mContextToRestore = ContextUtils.getApplicationContext();
-        mTestContext = new TestContext(mContextToRestore);
+        mTestContext = new TestContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mTestContext);
-    }
-
-    @After
-    public void tearDown() {
-        if (mContextToRestore != null) {
-            ContextUtils.initApplicationContextForTests(mContextToRestore);
-        }
     }
 
     @Rule

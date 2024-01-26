@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/post_restore_app_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -37,7 +38,7 @@
 @end
 
 @implementation PostRestoreAppAgent {
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
 }

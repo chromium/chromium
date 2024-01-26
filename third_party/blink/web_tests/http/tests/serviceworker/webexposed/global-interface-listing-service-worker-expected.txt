@@ -794,6 +794,15 @@ interface MediaCapabilities
     method constructor
     method decodingInfo
     method encodingInfo
+interface Mesh2DIndexBuffer
+    attribute @@toStringTag
+    method constructor
+interface Mesh2DUVBuffer
+    attribute @@toStringTag
+    method constructor
+interface Mesh2DVertexBuffer
+    attribute @@toStringTag
+    method constructor
 interface MessageChannel
     attribute @@toStringTag
     getter port1
@@ -941,6 +950,7 @@ interface Observable
     attribute @@toStringTag
     method constructor
     method subscribe
+    method toArray
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
@@ -997,9 +1007,13 @@ interface OffscreenCanvasRenderingContext2D
     method createConicGradient
     method createImageData
     method createLinearGradient
+    method createMesh2DIndexBuffer
+    method createMesh2DUVBuffer
+    method createMesh2DVertexBuffer
     method createPattern
     method createRadialGradient
     method drawImage
+    method drawMesh
     method ellipse
     method endLayer
     method fill

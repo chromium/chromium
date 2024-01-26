@@ -45,8 +45,8 @@ class BackgroundFetchDelegateImpl
   // BackgroundFetchDelegate implementation:
   void MarkJobComplete(const std::string& job_id) override;
   void UpdateUI(const std::string& job_unique_id,
-                const absl::optional<std::string>& title,
-                const absl::optional<SkBitmap>& icon) override;
+                const std::optional<std::string>& title,
+                const std::optional<SkBitmap>& icon) override;
 
   // OfflineContentProvider implementation:
   void OpenItem(const offline_items_collection::OpenParams& open_params,
@@ -54,8 +54,7 @@ class BackgroundFetchDelegateImpl
   void RemoveItem(const offline_items_collection::ContentId& id) override;
   void CancelDownload(const offline_items_collection::ContentId& id) override;
   void PauseDownload(const offline_items_collection::ContentId& id) override;
-  void ResumeDownload(const offline_items_collection::ContentId& id,
-                      bool has_user_gesture) override;
+  void ResumeDownload(const offline_items_collection::ContentId& id) override;
   void GetItemById(const offline_items_collection::ContentId& id,
                    SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
@@ -91,7 +90,7 @@ class BackgroundFetchDelegateImpl
     ~UiState();
 
     offline_items_collection::OfflineItem offline_item;
-    absl::optional<offline_items_collection::UpdateDelta> update_delta;
+    std::optional<offline_items_collection::UpdateDelta> update_delta;
   };
 
   // Updates the entry in |ui_state_map_| based on the corresponding JobDetails
@@ -105,7 +104,7 @@ class BackgroundFetchDelegateImpl
       const url::Origin& origin,
       bool user_initiated_abort);
   void DidGetBackgroundSourceId(bool user_initiated_abort,
-                                absl::optional<ukm::SourceId> source_id);
+                                std::optional<ukm::SourceId> source_id);
 
   // The profile this service is being created for.
   raw_ptr<Profile> profile_;

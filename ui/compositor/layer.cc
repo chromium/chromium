@@ -1488,10 +1488,6 @@ void Layer::RequestCopyOfOutput(
   cc_layer_->RequestCopyOfOutput(std::move(request));
 }
 
-gfx::Rect Layer::PaintableRegion() const {
-  return gfx::Rect(size());
-}
-
 scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList() {
   TRACE_EVENT1("ui", "Layer::PaintContentsToDisplayList", "name", name_);
   gfx::Rect local_bounds(bounds().size());

@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
@@ -46,6 +47,7 @@ class ServiceWorkerError {
 
  public:
   // For CallbackPromiseAdapter
+  using IDLType = DOMException;
   using WebType = const WebServiceWorkerError&;
   static DOMException* Take(ScriptPromiseResolver*,
                             const WebServiceWorkerError& web_error);
@@ -62,6 +64,7 @@ class ServiceWorkerErrorForUpdate : public ServiceWorkerError {
 
  public:
   // For CallbackPromiseAdapter
+  using IDLType = IDLAny;
   static v8::Local<v8::Value> Take(ScriptPromiseResolver* resolver,
                                    const WebServiceWorkerError& web_error);
 };

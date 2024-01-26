@@ -16,6 +16,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/sys_string_conversions.h"
@@ -114,11 +115,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 @end
 
 @implementation SharedPasswordController {
-  PasswordManagerInterface* _passwordManager;
+  raw_ptr<PasswordManagerInterface> _passwordManager;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 
   PasswordControllerDriverHelper* _driverHelper;
 

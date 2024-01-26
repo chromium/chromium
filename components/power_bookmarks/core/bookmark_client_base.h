@@ -16,6 +16,7 @@
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 
 namespace base {
+class Time;
 class Uuid;
 }  // namespace base
 
@@ -46,6 +47,10 @@ enum class SuggestedSaveLocationState {
   // This enum must be last and is only used for histograms.
   kMaxValue = kSuperseded
 };
+
+// The amount of time between a save to a suggested folder and a move out of
+// that folder that the suggested folder will be considered rejected.
+extern const base::TimeDelta kRejectionCoolOffTime;
 
 class BookmarkClientBase : public bookmarks::BookmarkClient {
  public:
@@ -101,6 +106,9 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
 
   // The UUID of the last folder that was suggested.
   base::Uuid last_suggested_folder_uuid_;
+
+  // The time that the last save to a suggested folder occurred.
+  base::Time last_suggested_save_time_;
 
   // The last provider that was used to pass a suggestion to a feature.
   raw_ptr<SuggestedSaveLocationProvider> last_used_provider_{nullptr};

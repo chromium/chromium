@@ -58,7 +58,6 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information];
-    app_state_.mainBrowserState = browser_state_.get();
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:browser_state_.get()];

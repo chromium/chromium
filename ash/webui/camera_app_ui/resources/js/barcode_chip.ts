@@ -10,6 +10,12 @@ import {I18nString} from './i18n_string.js';
 import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import {
+  WifiConfig,
+  WifiEapMethod,
+  WifiEapPhase2Method,
+  WifiSecurityType,
+} from './mojo/type.js';
 import * as snackbar from './snackbar.js';
 import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
@@ -17,16 +23,6 @@ import {
   ErrorLevel,
   ErrorType,
 } from './type.js';
-
-interface WifiConfig {
-  securityType: string;
-  ssid: string|null;
-  password: string|null;
-  eapMethod: string|null;     // EAP only
-  anonIdentity: string|null;  // EAP only
-  identity: string|null;      // EAP only
-  phase2method: string|null;  // EAP only
-}
 
 const QR_CODE_ESCAPE_CHARS = ['\\', ';', ',', ':'];
 
@@ -100,18 +96,17 @@ function isSafeUrl(s: string): boolean {
  * return `WifiConfig` and if not, return null.
  */
 function parseWifi(s: string): WifiConfig|null {
+  let securityType = 'nopass';
+  let ssid = null;
+  let password = null;
+  let eapMethod = null;
+  let anonIdentity = null;
+  let identity = null;
+  let phase2method = null;
+
   // Example string `WIFI:S:<SSID>;P:<PASSWORD>;T:<WPA|WEP|WPA2-EAP|nopass>;H;;`
   // Reference:
   // https://github.com/zxing/zxing/wiki/Barcode-Contents#wi-fi-network-config-android-ios-11
-  const wifiConfig: WifiConfig = {
-    securityType: 'nopass',
-    ssid: null,
-    password: null,
-    eapMethod: null,
-    anonIdentity: null,
-    identity: null,
-    phase2method: null,
-  };
   if (s.startsWith('WIFI:') && s.endsWith(';;')) {
     s = s.substring(5, s.length - 1);
     let i = 0;
@@ -131,30 +126,30 @@ function parseWifi(s: string): WifiConfig|null {
         const val = component.substring(splitIdx + 1);
         switch (key) {
           case 'A':
-            wifiConfig.anonIdentity = val;
+            anonIdentity = val;
             break;
           case 'E':
-            wifiConfig.eapMethod = val;
+            eapMethod = val;
             break;
           case 'H':
             if (val !== 'true' && val !== 'false') {
-              wifiConfig.phase2method = val;
+              phase2method = val;
             }
             break;
           case 'I':
-            wifiConfig.identity = val;
+            identity = val;
             break;
           case 'P':
-            wifiConfig.password = val;
+            password = val;
             break;
           case 'PH2':
-            wifiConfig.phase2method = val;
+            phase2method = val;
             break;
           case 'S':
-            wifiConfig.ssid = val;
+            ssid = val;
             break;
           case 'T':
-            wifiConfig.securityType = val;
+            securityType = val;
             break;
           default:
             return null;
@@ -168,10 +163,92 @@ function parseWifi(s: string): WifiConfig|null {
     }
   }
 
-  if (wifiConfig.ssid === null) {
+  if (ssid === null) {
     return null;
   }
-  return wifiConfig;
+  sendBarcodeDetectedEvent(
+      {contentType: BarcodeContentType.WIFI}, securityType);
+  if (!['WEP', 'WPA', 'WPA2-EAP', 'nopass'].includes(securityType)) {
+    return null;
+  } else if (securityType === 'nopass') {
+    return {
+      ssid: ssid,
+      security: WifiSecurityType.kNone,
+    };
+  } else if (password === null) {
+    return null;
+  } else if (securityType === 'WEP') {
+    return {
+      ssid: ssid,
+      security: WifiSecurityType.kWep,
+      password: password,
+    };
+  } else if (securityType === 'WPA') {
+    return {
+      ssid: ssid,
+      security: WifiSecurityType.kWpa,
+      password: password,
+    };
+  } else if (
+      eapMethod !== null && anonIdentity !== null && identity !== null &&
+      phase2method !== null) {
+    const wifiEapMethod = strToWifiEapMethod(eapMethod);
+    const wifiEapPhase2method = strToWifiEapPhase2Method(phase2method);
+
+    if (wifiEapMethod !== null && wifiEapPhase2method !== null) {
+      return {
+        ssid: ssid,
+        security: WifiSecurityType.kEap,
+        password: password,
+        eapMethod: wifiEapMethod,
+        eapPhase2Method: wifiEapPhase2method,
+        eapIdentity: identity,
+        eapAnonymousIdentity: anonIdentity,
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * Converts `eapMethod` to supporting WifiEapMethod. If the type is not
+ * supported, return null.
+ */
+function strToWifiEapMethod(eapMethod: string): WifiEapMethod|null {
+  if (eapMethod === 'TLS') {
+    return WifiEapMethod.kEapTls;
+  } else if (eapMethod === 'TTLS') {
+    return WifiEapMethod.kEapTtls;
+  } else if (eapMethod === 'LEAP') {
+    return WifiEapMethod.kLeap;
+  } else if (eapMethod === 'PEAP') {
+    return WifiEapMethod.kPeap;
+  }
+  return null;
+}
+
+/**
+ * Converts `phase2method` to supporting WifiEapPhase2Method. If the type is not
+ * supported, return null.
+ */
+function strToWifiEapPhase2Method(phase2method: string): WifiEapPhase2Method|
+    null {
+  if (phase2method === 'CHAP') {
+    return WifiEapPhase2Method.kChap;
+  } else if (phase2method === 'GTC') {
+    return WifiEapPhase2Method.kGtc;
+  } else if (phase2method === 'MD5') {
+    return WifiEapPhase2Method.kMd5;
+  } else if (phase2method === 'MSCHAP') {
+    return WifiEapPhase2Method.kMschap;
+  } else if (phase2method === 'MSCHAPv2') {
+    return WifiEapPhase2Method.kMschapv2;
+  } else if (phase2method === 'PAP') {
+    return WifiEapPhase2Method.kPap;
+  } else if (phase2method === 'Automatic') {
+    return WifiEapPhase2Method.kAutomatic;
+  }
+  return null;
 }
 
 /**
@@ -245,11 +322,7 @@ function showText(text: string) {
 
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.
-  if (expandable) {
-    expandEl.focus();
-  } else {
-    copyButton.focus();
-  }
+  copyButton.focus();
 }
 
 /**
@@ -271,8 +344,7 @@ function showWifi(wifiConfig: WifiConfig) {
       I18nString.LABEL_BARCODE_WIFI_CHIP, ssidString);
   chip.setAttribute('aria-label', label);
   chip.onclick = () => {
-    // TODO(dorahkim): After is crrev/c/4964660 is landed, connect to the Wi-fi
-    // here.
+    ChromeHelper.getInstance().openWifiDialog(wifiConfig);
   };
 
   chip.focus();
@@ -299,16 +371,7 @@ export function show(code: string): void {
   currentCode = code;
   const wifiConfig = parseWifi(code);
   if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
-    sendBarcodeDetectedEvent(
-        {contentType: BarcodeContentType.WIFI}, wifiConfig.securityType);
-    if (['WEP', 'WPA', 'WPA2-EAP', 'nopass'].includes(
-            wifiConfig.securityType)) {
-      showWifi(wifiConfig);
-    } else {
-      // For unsupported security types, we show a raw string.
-      // We can support more if metrics proves the needs.
-      showText(code);
-    }
+    showWifi(wifiConfig);
   } else if (isSafeUrl(code)) {
     sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
     showUrl(code);

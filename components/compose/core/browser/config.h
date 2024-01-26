@@ -7,6 +7,29 @@
 
 namespace compose {
 
+// How Compose should position its dialog if there isn't enough space above or
+// below the underlying form field (the `anchor`) on the screen.
+enum class DialogFallbackPositioningStrategy : int {
+  // This adjusts the position so that the dialog's top border will never have
+  // to move to keep the bottom border onscreen, regardless of the actual size
+  // of the dialog. This may result in the dialog being rendered higher on
+  // screen that expected, obscuring the underlying element more than absolutely
+  // necessary. It has the advantage that the dialog is not repositioned when it
+  // grows, resulting in less jarring resizes.
+  kShiftUpUntilMaxSizeIsOnscreen = 0,
+
+  // This adjusts the dialog to be centered over its underlying form element,
+  // which has the advantage of always being close to the relevant page content,
+  // but will obscure more of the form field than other strategies.
+  kCenterOnAnchorRect = 1,
+
+  // This adjusts the dialog to be onscreen, but no further. This has the
+  // advantage of not obscuring the underlying element more than necesasary, but
+  // the downside that the dialog will move in position as it resizes. In
+  // practice this is more visually jarring than just making the dialog bigger.
+  kShiftUpUntilOnscreen = 2
+};
+
 // The Compose configuration. Default values appear below. Always use
 // |GetComposeConfig()| to get the current configuration.
 struct Config {
@@ -27,6 +50,15 @@ struct Config {
   // If nudging is enabled, show the popup when focus appears on a field with
   // saved state.
   bool popup_with_saved_state = true;
+
+  // The duration that the saved state notification is shown before
+  // auto-dismissal.
+  unsigned int saved_state_timeout_milliseconds = 2000;
+
+  // The dialog positioning strategy to use if there isn't enough space above or
+  // below the anchor element.
+  DialogFallbackPositioningStrategy positioning_strategy =
+      DialogFallbackPositioningStrategy::kShiftUpUntilMaxSizeIsOnscreen;
 
   Config();
   Config(const Config& other);

@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -26,7 +27,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;

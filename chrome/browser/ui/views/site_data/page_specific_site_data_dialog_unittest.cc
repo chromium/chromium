@@ -11,7 +11,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browsing_data/content/fake_browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -77,26 +76,6 @@ class PageSpecificSiteDataDialogUnitTest
   content_settings::PageSpecificContentSettings* GetContentSettings() {
     return content_settings::PageSpecificContentSettings::GetForFrame(
         main_rfh());
-  }
-
-  // To prevent tests from being flaky, all |DeleteStoredObjects| calls need to
-  // be used with a RunLoop if kMigrateStorageToBDM is off.
-  void RunDeleteStoredObjects(test::PageSpecificSiteDataDialogTestApi* delegate,
-                              const url::Origin& origin) {
-    base::RunLoop loop;
-    if (!base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      profile()->GetBrowsingDataRemover()->SetWouldCompleteCallbackForTesting(
-          base::BindLambdaForTesting([&](base::OnceClosure callback) {
-            std::move(callback).Run();
-            loop.Quit();
-          }));
-    }
-    delegate->DeleteStoredObjects(origin);
-    if (!base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      loop.Run();
-    }
   }
 
   void SetUp() override {
@@ -546,7 +525,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyBrowsingData) {
   }
 
   // Remove origins from the dialog.
-  RunDeleteStoredObjects(delegate.get(), thirdPartyUrlOrigin);
+  delegate->DeleteStoredObjects(thirdPartyUrlOrigin);
 
   // Validate that sites are removed from the browsing data model.
 
@@ -604,7 +583,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyCookieTreeData) {
   }
 
   // Remove origins from the dialog.
-  RunDeleteStoredObjects(delegate.get(), currentUrlOrigin);
+  delegate->DeleteStoredObjects(currentUrlOrigin);
 
   // Validate that sites are removed from the cookie tree model.
   {
@@ -682,7 +661,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveMixedModelData) {
   }
 
   // Remove origins from the dialog.
-  RunDeleteStoredObjects(delegate.get(), exampleUrlOrigin);
+  delegate->DeleteStoredObjects(exampleUrlOrigin);
 
   // Validate that sites are removed from both models.
   {
@@ -702,7 +681,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemovePartitionedStorage) {
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
   // Remove origins from the dialog.
-  RunDeleteStoredObjects(delegate.get(), exampleUrlOrigin);
+  delegate->DeleteStoredObjects(exampleUrlOrigin);
   // Verify that the data was removed.
   ValidateAllowedUnpartitionedSites(delegate.get(), {});
 }

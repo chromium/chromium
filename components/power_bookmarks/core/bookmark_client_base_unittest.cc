@@ -34,8 +34,6 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
   TestBookmarkClientImpl& operator=(const TestBookmarkClientImpl&) = delete;
   ~TestBookmarkClientImpl() override = default;
 
-  bool AreFoldersForAccountStorageAllowed() override { return false; }
-
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override {
     return bookmarks::LoadManagedNodeCallback();
   }
@@ -187,6 +185,52 @@ TEST_F(BookmarkClientBaseTest, SuggestedFolder_Rejected) {
   // allowed again.
   model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
 
+  bookmarks::AddIfNotBookmarked(model(), url_for_suggestion2, u"bookmark 2");
+  node = model()->GetMostRecentlyAddedUserNodeForURL(url_for_suggestion2);
+  ASSERT_EQ(node->parent(), suggested_folder);
+
+  client()->RemoveSuggestedSaveLocationProvider(&provider);
+}
+
+// Make sure the rejection logic expires after a certain amount of time. E.g.
+// moving a bookmark out of the suggested folder shouldn't be considered a
+// rejection after some time passes, even if no other bookmarks are added.
+TEST_F(BookmarkClientBaseTest, SuggestedFolder_RejectionCoolOff) {
+  const GURL url_for_suggestion("http://example.com");
+  const GURL url_for_suggestion2("http://example.com/other");
+  std::set<const GURL> url_set = {url_for_suggestion, url_for_suggestion2};
+  const bookmarks::BookmarkNode* suggested_folder =
+      model()->AddFolder(model()->other_node(), 0, u"suggested folder");
+
+  MockSuggestionProvider provider;
+  ON_CALL(provider, GetSuggestion)
+      .WillByDefault([suggested_folder, url_set](const GURL& url) {
+        // Suggest for multiple URLs.
+        return base::Contains(url_set, url) ? suggested_folder : nullptr;
+      });
+  ON_CALL(provider, GetBackoffTime)
+      .WillByDefault(testing::Return(base::Hours(2)));
+  ON_CALL(provider, GetFeatureNameForMetrics)
+      .WillByDefault(testing::Return("feature_name"));
+
+  client()->AddSuggestedSaveLocationProvider(&provider);
+
+  bookmarks::AddIfNotBookmarked(model(), url_for_suggestion, u"bookmark");
+
+  // The bookmark should have been added to the suggested location.
+  const bookmarks::BookmarkNode* node =
+      model()->GetMostRecentlyAddedUserNodeForURL(url_for_suggestion);
+  ASSERT_EQ(node->parent(), suggested_folder);
+
+  task_environment_.FastForwardBy(kRejectionCoolOffTime + base::Seconds(1));
+
+  // Move the new bookmark. This indicates the user did not like the suggested
+  // location and changed its location in the hierarchy.
+  model()->Move(node, model()->other_node(),
+                model()->other_node()->children().size());
+
+  // Save another bookmark to ensure the suggested location is allowed to be
+  // used for the next save.
   bookmarks::AddIfNotBookmarked(model(), url_for_suggestion2, u"bookmark 2");
   node = model()->GetMostRecentlyAddedUserNodeForURL(url_for_suggestion2);
   ASSERT_EQ(node->parent(), suggested_folder);

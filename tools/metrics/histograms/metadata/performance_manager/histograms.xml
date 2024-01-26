@@ -57,7 +57,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU.{Timing}"
-    units="%" expires_after="2024-05-12">
+    units="%" expires_after="2024-07-14">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -123,7 +123,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.SystemCPUError.{Timing}"
-    units="BooleanError" expires_after="2024-04-28">
+    enum="BooleanError" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -321,7 +321,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2024-05-19">
+    enum="EfficiencyMode" expires_after="2024-07-21">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

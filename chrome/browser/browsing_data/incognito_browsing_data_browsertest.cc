@@ -28,7 +28,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -176,23 +175,6 @@ class IncognitoBrowsingDataBrowserTest
         browsing_data_model->size();
     EXPECT_EQ(expected, total_model_size)
         << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
-  }
-
-  inline void ExpectTotalModelCount(Browser* browser,
-                                    int expectedAllDisabled,
-                                    int expectedAnyEnabled) {
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
-    // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. Also, remove helper duplication between the
-    // incognito, and remover, browsing data browser tests.
-    if (!base::FeatureList::IsEnabled(
-            net::features::kThirdPartyStoragePartitioning) &&
-        !base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      ExpectTotalModelCount(browser, expectedAllDisabled);
-    } else {
-      ExpectTotalModelCount(browser, expectedAnyEnabled);
-    }
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
@@ -547,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   // quota system.
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectTotalModelCount(GetBrowser(), 0, 1);
+  ExpectTotalModelCount(GetBrowser(), 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // No residue in regular mode.

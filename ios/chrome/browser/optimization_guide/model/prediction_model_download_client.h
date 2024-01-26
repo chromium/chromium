@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 
 class ChromeBrowserState;

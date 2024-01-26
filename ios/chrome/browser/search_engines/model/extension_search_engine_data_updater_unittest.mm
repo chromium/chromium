@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 
+#import <memory>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
@@ -24,10 +26,11 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    template_url_service_.reset(new TemplateURLService(nullptr, 0));
+    template_url_service_ = std::make_unique<TemplateURLService>(
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
     template_url_service_->Load();
-    observer_.reset(
-        new ExtensionSearchEngineDataUpdater(template_url_service_.get()));
+    observer_ = std::make_unique<ExtensionSearchEngineDataUpdater>(
+        template_url_service_.get());
 
     NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
     [shared_defaults setBool:NO forKey:search_by_image_key_];

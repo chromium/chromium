@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -41,46 +41,56 @@ suite('<settings-display>', () => {
       rotation: 0,
       modes: [
         {
+          isNative: true,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 1920,
           heightInNativePixels: 1080,
           width: 1920,
           height: 1080,
           refreshRate: 60,
+          isSelected: true,
         },
         {
+          isNative: true,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 1920,
           heightInNativePixels: 1080,
           width: 1920,
           height: 1080,
           refreshRate: 30,
+          isSelected: true,
         },
         {
+          isNative: true,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 3000,
           heightInNativePixels: 2000,
           width: 3000,
           height: 2000,
           refreshRate: 45,
+          isSelected: true,
         },
         {
+          isNative: true,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 3000,
           heightInNativePixels: 2000,
           width: 3000,
           height: 2000,
           refreshRate: 75,
+          isSelected: true,
         },
         // Include 3 copies of 3000x2000 mode to emulate duplicated modes
         // reported by some monitors.  Only one is marked 'isNative'.
         {
+          isNative: false,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 3000,
           heightInNativePixels: 2000,
           width: 3000,
           height: 2000,
           refreshRate: 100,
+          isSelected: true,
         },
         {
           isNative: true,
@@ -90,14 +100,17 @@ suite('<settings-display>', () => {
           width: 3000,
           height: 2000,
           refreshRate: 100,
+          isSelected: true,
         },
         {
+          isNative: false,
           deviceScaleFactor: 1.0,
           widthInNativePixels: 3000,
           heightInNativePixels: 2000,
           width: 3000,
           height: 2000,
           refreshRate: 100,
+          isSelected: true,
         },
       ],
       bounds: {
@@ -107,6 +120,31 @@ suite('<settings-display>', () => {
         height: 1080,
       },
       availableDisplayZoomFactors: [1, 1.25, 1.5, 2],
+
+      // The properties below were added solely for compilation purposes. Values
+      // may not reflect valid or real states.
+      mirroringSourceId: '',
+      mirroringDestinationIds: [],
+      activeState: chrome.system.display.ActiveState.ACTIVE,
+      isEnabled: true,
+      isUnified: false,
+      dpiX: 0,
+      dpiY: 0,
+      overscan: {
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+      },
+      workArea: {
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+      },
+      hasTouchSupport: false,
+      hasAccelerometerSupport: false,
+      displayZoomFactor: 1,
     };
     fakeSystemDisplay.addDisplayForTest(display);
   }
@@ -122,7 +160,7 @@ suite('<settings-display>', () => {
     Router.getInstance().navigateTo(routes.DISPLAY);
 
     fakeSystemDisplay = new FakeSystemDisplay();
-    setDisplayApiForTesting(fakeSystemDisplay as any);
+    setDisplayApiForTesting(fakeSystemDisplay);
 
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
@@ -298,6 +336,15 @@ suite('<settings-display>', () => {
           1,
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kOrientation));
+
+      const externalDisplayOrientationHistogram =
+          displaySettingsProvider.getDisplayOrientationHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayOrientationHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsOrientationOption
+                  .k90Degree));
     });
 
     test('overscan', () => {
@@ -701,12 +748,14 @@ suite('<settings-display>', () => {
         })
         .then(() => {
           const displayLayout =
-              displayPage.shadowRoot!.querySelector('#displayLayout') as any;
+              displayPage.shadowRoot!.querySelector<DisplayLayoutElement>(
+                  '#displayLayout');
           assert(!!displayLayout);
           const display = strictQuery(
               `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
-          const layout =
-              displayLayout.displayLayoutMap_.get(`${kDisplayIdPrefix}2`);
+          const layout = displayLayout.getDisplayLayoutMapForTesting().get(
+              `${kDisplayIdPrefix}2`);
+          assert(layout);
 
           assertEquals(layout.parentId, `${kDisplayIdPrefix}1`);
           assertEquals(layout.position, 'right');

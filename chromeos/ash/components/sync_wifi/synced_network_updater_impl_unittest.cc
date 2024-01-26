@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/sync_wifi/fake_pending_network_configuration_tracker.h"
-#include "chromeos/ash/components/sync_wifi/fake_timer_factory.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
@@ -28,6 +27,7 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/cross_device/timer_factory/fake_timer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -87,7 +87,7 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
     auto tracker_unique_ptr =
         std::make_unique<FakePendingNetworkConfigurationTracker>();
     tracker_ = tracker_unique_ptr.get();
-    timer_factory_ = std::make_unique<FakeTimerFactory>();
+    timer_factory_ = std::make_unique<cross_device::FakeTimerFactory>();
     metrics_logger_ = std::make_unique<SyncedNetworkMetricsLogger>(
         /*network_state_handler=*/nullptr,
         /*network_connection_handler=*/nullptr);
@@ -114,7 +114,9 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
   }
 
   FakePendingNetworkConfigurationTracker* tracker() { return tracker_; }
-  FakeTimerFactory* timer_factory() { return timer_factory_.get(); }
+  cross_device::FakeTimerFactory* timer_factory() {
+    return timer_factory_.get();
+  }
   SyncedNetworkUpdaterImpl* updater() { return updater_.get(); }
   NetworkStateTestHelper* network_state_helper() {
     return local_test_helper_->network_state_test_helper();
@@ -126,7 +128,7 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkTestHelper> local_test_helper_;
-  std::unique_ptr<FakeTimerFactory> timer_factory_;
+  std::unique_ptr<cross_device::FakeTimerFactory> timer_factory_;
   raw_ptr<FakePendingNetworkConfigurationTracker, DanglingUntriaged> tracker_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<SyncedNetworkUpdaterImpl> updater_;

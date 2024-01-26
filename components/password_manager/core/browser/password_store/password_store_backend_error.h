@@ -24,21 +24,19 @@ enum class PasswordStoreBackendErrorType {
   // A Keychain error that prevents the password store from decrypting the
   // passwords. Used on Mac.
   kKeychainError = 3,
-  kMaxValue = kKeychainError,
+  // Error related only to on-device encryption users when the encryption
+  // key is missing. Used on Android.
+  kKeyRetrievalRequired = 4,
+  kMaxValue = kKeyRetrievalRequired,
 };
 
 enum class PasswordStoreBackendErrorRecoveryType {
-  // Error which isn't specified properly, should be treated as kUnrecoverable.
-  kUnspecified,
   // Recoverable which can be fixed by either automated or user-driven
   // resolution specific for this error.
   kRecoverable,
   // Unrecoverable errors which can't be fixed easily. It may indicate broken
   // database or other persistent errors.
   kUnrecoverable,
-  // Transitory error which requires no user input and could be resolved by
-  // retrying the operation.
-  kRetriable,
 };
 
 struct PasswordStoreBackendError {

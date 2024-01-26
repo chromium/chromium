@@ -23,6 +23,10 @@ class NodeUuidEquality {
   bool operator()(const BookmarkNode* n1, const base::Uuid& uuid2) const {
     return n1->uuid() == uuid2;
   }
+
+  bool operator()(const base::Uuid& uuid1, const BookmarkNode* n2) const {
+    return uuid1 == n2->uuid();
+  }
 };
 
 // Used to hash BookmarkNode instances by UUID.

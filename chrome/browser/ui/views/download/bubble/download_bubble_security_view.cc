@@ -609,6 +609,15 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
   return true;
 }
 
+void DownloadBubbleSecurityView::MaybeLogDismiss() {
+  if (did_log_action_ || !IsInitialized()) {
+    return;
+  }
+  delegate_->AddSecuritySubpageWarningActionEvent(
+      content_id_, DownloadItemWarningData::WarningAction::DISMISS);
+  did_log_action_ = true;
+}
+
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
     bool is_secondary_button) {
@@ -783,6 +792,7 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
       return;
     }
     UpdateViews();
+    UpdateAccessibilityTextAndFocus();
   }
 }
 
@@ -851,12 +861,7 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
   AddProgressBar();
 }
 
-DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
-  if (!did_log_action_ && IsInitialized()) {
-    delegate_->AddSecuritySubpageWarningActionEvent(
-        content_id_, DownloadItemWarningData::WarningAction::DISMISS);
-  }
-}
+DownloadBubbleSecurityView::~DownloadBubbleSecurityView() = default;
 
 int DownloadBubbleSecurityView::GetMinimumBubbleWidth() const {
   return ChromeLayoutProvider::Get()->GetSnappedDialogWidth(

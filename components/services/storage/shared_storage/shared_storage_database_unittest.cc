@@ -475,6 +475,39 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooOld) {
   EXPECT_TRUE(db_->Destroy());
 }
 
+TEST_F(SharedStorageDatabaseTest, LoadFromFile_FileOrigin) {
+  db_ = LoadFromFile("shared_storage.v4.filescheme.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  // Override the clock and set to the last time in the file that is used to
+  // make a budget withdrawal.
+  db_->OverrideClockForTesting(&clock_);
+  clock_.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13269546476192362)));
+
+  url::Origin file_origin = url::Origin::Create(GURL("file://"));
+  EXPECT_EQ(db_->Get(file_origin, u"a").data, u"");
+
+  TestSharedStorageEntriesListener listener(
+      task_environment_.GetMainThreadTaskRunner());
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(file_origin, listener.BindNewPipeAndPassRemote()));
+  listener.Flush();
+  EXPECT_THAT(listener.TakeKeys(), ElementsAre(u"a", u"b", u"c"));
+  EXPECT_EQ("", listener.error_message());
+  EXPECT_EQ(1U, listener.BatchCount());
+  listener.VerifyNoError();
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(file_origin, u"key1", u"value2"));
+  EXPECT_EQ(db_->Get(file_origin, u"key1").data, u"value2");
+  EXPECT_EQ(OperationResult::kSet,
+            db_->Append(file_origin, u"key1", u"value2"));
+  EXPECT_EQ(db_->Get(file_origin, u"key1").data, u"value2value2");
+  EXPECT_EQ(OperationResult::kSuccess, db_->Delete(file_origin, u"key1"));
+  EXPECT_EQ(OperationResult::kNotFound, db_->Get(file_origin, u"key1").result);
+}
+
 class SharedStorageDatabaseParamTest
     : public SharedStorageDatabaseTest,
       public testing::WithParamInterface<SharedStorageWrappedBool> {
@@ -1817,14 +1850,6 @@ TEST_P(SharedStorageDatabaseParamTest, MaxStringLength) {
 
 class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
  public:
-  void SetUp() override {
-    SharedStorageDatabaseTest::SetUp();
-
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
-    db_ = std::make_unique<SharedStorageDatabase>(
-        file_name_, special_storage_policy_, std::move(options));
-  }
-
   void InitSharedStorageFeature() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},

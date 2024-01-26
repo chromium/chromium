@@ -5,8 +5,9 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement} from 'chrome://compose/app.js';
-import {ComposeStatus, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

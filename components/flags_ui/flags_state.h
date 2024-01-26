@@ -30,7 +30,6 @@ extern const char kTrialGroupAboutFlags[];
 
 struct FeatureEntry;
 class FlagsStorage;
-struct SwitchEntry;
 
 // Enumeration of flag filters. These values don't persist and can be
 // renumbered.

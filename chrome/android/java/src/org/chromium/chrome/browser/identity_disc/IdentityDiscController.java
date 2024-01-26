@@ -369,7 +369,7 @@ public class IdentityDiscController
 
         SigninManager signinManager =
                 IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                        .getSigninManager(mProfileSupplier.get().getOriginalProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
             SyncConsentActivityLauncherImpl.get()
                     .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);

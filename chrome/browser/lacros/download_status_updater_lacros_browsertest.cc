@@ -2,14 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_status_updater.h"
 
 #include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -50,12 +58,18 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
 // Aliases.
+using ::crosapi::mojom::DownloadProgress;
 using ::crosapi::mojom::DownloadState;
 using ::crosapi::mojom::DownloadStatus;
 using ::crosapi::mojom::DownloadStatusPtr;
@@ -67,10 +81,14 @@ using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::IsTrue;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Pointee;
 using ::testing::Pointer;
+using ::testing::Property;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 
 // Actions ---------------------------------------------------------------------
@@ -84,6 +102,27 @@ ACTION_P2(ReturnAllOf, a, b) {
   Action<bool()> action_b = b;
   return action_a.Perform(std::forward_as_tuple()) &&
          action_b.Perform(std::forward_as_tuple());
+}
+
+// Helpers ---------------------------------------------------------------------
+
+// Creates a JPEG file from `bitmap`. Returns whether creation succeeds.
+bool CreateJPEGFile(const base::FilePath& file_path, const SkBitmap& bitmap) {
+  if (file_path.Extension() != ".jpg") {
+    return false;
+  }
+
+  std::vector<unsigned char> data;
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return base::WriteFile(file_path, data);
+}
+
+// Matchers --------------------------------------------------------------------
+
+MATCHER_P(BitmapEq, bitmap, "") {
+  return gfx::test::AreBitmapsEqual(arg, bitmap);
 }
 
 // MockDownloadManager ---------------------------------------------------------
@@ -149,9 +188,15 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   // ChromeDownloadManagerDelegate:
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override {
-    content::DownloadTargetCallback dangerous_callback = base::BindOnce(
-        &TestDownloadManagerDelegate::SetDangerous, std::move(*callback));
+      download::DownloadTargetCallback* callback) override {
+    auto set_dangerous = [](download::DownloadTargetCallback callback,
+                            download::DownloadTargetInfo target_info) {
+      target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
+      std::move(callback).Run(std::move(target_info));
+    };
+
+    download::DownloadTargetCallback dangerous_callback =
+        base::BindOnce(set_dangerous, std::move(*callback));
     bool run = ChromeDownloadManagerDelegate::DetermineDownloadTarget(
         item, &dangerous_callback);
     // ChromeDownloadManagerDelegate::DetermineDownloadTarget() needs to run the
@@ -159,20 +204,6 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     CHECK(run);
     CHECK(!dangerous_callback);
     return true;
-  }
-
-  static void SetDangerous(content::DownloadTargetCallback callback,
-                           const base::FilePath& target_path,
-                           download::DownloadItem::TargetDisposition disp,
-                           download::DownloadDangerType danger_type,
-                           download::DownloadItem::InsecureDownloadStatus ids,
-                           const base::FilePath& intermediate_path,
-                           const base::FilePath& display_name,
-                           const std::string& mime_type,
-                           download::DownloadInterruptReason reason) {
-    std::move(callback).Run(target_path, disp,
-                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, ids,
-                            intermediate_path, display_name, mime_type, reason);
   }
 };
 
@@ -824,13 +855,35 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
             DownloadBubbleContentsView::Page::kSecurity);
 }
 
-// Verifies that `DownloadStatusUpdater::Update()` events work as intended.
-IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
-  // Create a mock in-progress download `item`.
-  NiceMock<download::MockDownloadItem> item;
-  ON_CALL(item, GetGuid())
-      .WillByDefault(
-          ReturnRefOfCopy(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+// The test suite verifying that `DownloadStatusUpdater::Update()` events work
+// as intended.
+class DownloadStatusUpdaterUpdateBrowserTest
+    : public DownloadStatusUpdaterBrowserTest {
+ public:
+  download::MockDownloadItem& mock_download_item() { return item_; }
+
+ private:
+  // DownloadStatusUpdaterBrowserTest:
+  void SetUpOnMainThread() override {
+    DownloadStatusUpdaterBrowserTest::SetUpOnMainThread();
+
+    ON_CALL(item_, GetGuid())
+        .WillByDefault(ReturnRefOfCopy(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
+
+    // Associate the download `item_` with the browser `profile()`.
+    content::DownloadItemUtils::AttachInfoForTesting(&item_,
+                                                     browser()->profile(),
+                                                     /*web_contents=*/nullptr);
+  }
+
+  // A mock download item with a valid guid.
+  NiceMock<download::MockDownloadItem> item_;
+};
+
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
+  // Configure `item` to indicate an in-progress download.
+  download::MockDownloadItem& item = mock_download_item();
   ON_CALL(item, GetState())
       .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
   ON_CALL(item, GetReceivedBytes()).WillByDefault(Return(10));
@@ -852,30 +905,37 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
       .WillByDefault(InvokeEq(&item, &download::DownloadItem::GetState,
                               download::DownloadItem::COMPLETE));
 
-  // Associate the download `item` with the browser `profile()`.
-  content::DownloadItemUtils::AttachInfoForTesting(&item, browser()->profile(),
-                                                   /*web_contents=*/nullptr);
-
   DownloadItemModel download_item_model(
       &item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` creation.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(true)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(true))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(true)),
-          Field(&DownloadStatus::pausable, Eq(true)),
-          Field(&DownloadStatus::resumable, Eq(false)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
@@ -888,21 +948,32 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` updates.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(true))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(true)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(true)),
-          Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(true)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
@@ -918,27 +989,99 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` updates.
+  // Since the download completes, the progress bar is invisible.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(false)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(false))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kComplete)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(false)),
-          Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(false)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
   item.NotifyObserversDownloadUpdated();
   FlushInterfaceForTesting();
   Mock::VerifyAndClearExpectations(&download_status_updater());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, DownloadImage) {
+  base::ScopedTempDir temp_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  }
+
+  const base::FilePath image_path = temp_dir.GetPath().AppendASCII("image.jpg");
+  const SkBitmap bitmap = gfx::test::CreateBitmap(/*size=*/100, SK_ColorCYAN);
+  ASSERT_TRUE(CreateJPEGFile(image_path, bitmap));
+
+  // Configure `item` to indicate an in-progress image download.
+  download::MockDownloadItem& item = mock_download_item();
+  ON_CALL(item, GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  ON_CALL(item, GetReceivedBytes()).WillByDefault(Return(100));
+  ON_CALL(item, GetTotalBytes()).WillByDefault(Return(100));
+  ON_CALL(item, GetTargetFilePath()).WillByDefault(ReturnRef(image_path));
+  ON_CALL(item, GetFullPath())
+      .WillByDefault(ReturnRef(item.GetTargetFilePath()));
+
+  // The download file should be of an image MIME type.
+  DownloadItemModel download_item_model(
+      &item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  EXPECT_TRUE(download_item_model.HasSupportedImageMimeType());
+
+  // Create a download associated with `item`.
+  download_manager().NotifyDownloadCreated(&item);
+  FlushInterfaceForTesting();
+
+  // The image is created asynchronously. Therefore, right after download
+  // completion, the image cached by the download status should be null.
+  EXPECT_CALL(
+      download_status_updater(),
+      Update(Pointer(Field(&DownloadStatus::image,
+                           Property(&gfx::ImageSkia::isNull, IsTrue)))));
+
+  // Complete the download.
+  ON_CALL(item, GetState())
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  item.NotifyObserversDownloadUpdated();
+  FlushInterfaceForTesting();
+  Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  // Wait until the image is created. Check the image's contents.
+  base::RunLoop run_loop;
+  EXPECT_CALL(download_status_updater(),
+              Update(Pointer(Field(&DownloadStatus::image,
+                                   Property(&gfx::ImageSkia::bitmap,
+                                            Pointee(BitmapEq(bitmap)))))))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir.Delete());
+  }
 }
 
 }  // namespace

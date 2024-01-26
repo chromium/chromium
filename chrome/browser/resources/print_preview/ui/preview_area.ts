@@ -20,18 +20,23 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
-import {Destination} from '../data/destination.js';
-import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
-import {MeasurementSystem} from '../data/measurement_system.js';
-import {DuplexMode, MediaSizeValue, Ticket} from '../data/model.js';
+import type {Destination} from '../data/destination.js';
+import type {Margins, MarginsSetting} from '../data/margins.js';
+import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
+import type {MeasurementSystem} from '../data/measurement_system.js';
+import type {MediaSizeValue, Ticket} from '../data/model.js';
+import {DuplexMode} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
-import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
+import type {NativeLayer} from '../native_layer.js';
+import {NativeLayerImpl} from '../native_layer.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
-import {MARGIN_KEY_MAP, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
-import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
+import type {PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
+import {MARGIN_KEY_MAP} from './margin_control_container.js';
+import type {PluginProxy} from './plugin_proxy.js';
+import {PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
 // <if expr="is_chromeos">
 import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';

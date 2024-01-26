@@ -120,15 +120,12 @@ function detectLanguage(): void {
   // Note: This should stay in sync with the constant in
   // ios_language_detection_tab_helper.mm .
   const kMaxIndexChars = 65535;
-  const captureBeginTime = new Date();
+
   activeRequests += 1;
   bufferedTextContent = getTextContent(document.body, kMaxIndexChars);
-  const captureTextTime =
-      (new Date()).getMilliseconds() - captureBeginTime.getMilliseconds();
   const httpContentLanguage = getMetaContentByHttpEquiv('content-language');
   const textCapturedCommand = {
     'hasNoTranslate': false,
-    'captureTextTime': captureTextTime,
     'htmlLang': document.documentElement.lang,
     'httpContentLanguage': httpContentLanguage,
     'frameId': gCrWeb.message.getFrameId(),

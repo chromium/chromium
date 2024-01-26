@@ -19,18 +19,18 @@ WaitForStoreInitializeTask::WaitForStoreInitializeTask(
 WaitForStoreInitializeTask::~WaitForStoreInitializeTask() = default;
 
 void WaitForStoreInitializeTask::Run() {
-  // |this| stays alive as long as the |store_|, so Unretained is safe.
-  store_->Initialize(base::BindOnce(
-      &WaitForStoreInitializeTask::OnStoreInitialized, base::Unretained(this)));
+  store_->Initialize(
+      base::BindOnce(&WaitForStoreInitializeTask::OnStoreInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WaitForStoreInitializeTask::OnStoreInitialized() {
   store_->ReadStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::ReadStartupDataDone,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   store_->ReadWebFeedStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::WebFeedStartupDataDone,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WaitForStoreInitializeTask::ReadStartupDataDone(
@@ -38,7 +38,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
   if (startup_data.metadata &&
       startup_data.metadata->gaia() != stream_->GetAccountInfo().gaia) {
     store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
-                                    base::Unretained(this)));
+                                    weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   // Single Web Feed Data is actively pruned and does not need to persist across
@@ -55,7 +55,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
     store_->ClearAllStreamData(
         StreamKind::kSingleWebFeed,
         base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
-                       base::Unretained(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     MaybeUpgradeStreamSchema();
   }
@@ -80,7 +80,7 @@ void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema() {
     store_->UpgradeFromStreamSchemaV0(
         std::move(metadata),
         base::BindOnce(&WaitForStoreInitializeTask::UpgradeDone,
-                       base::Unretained(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   Done();

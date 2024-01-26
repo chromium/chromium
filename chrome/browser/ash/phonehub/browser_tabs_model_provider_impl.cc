@@ -62,12 +62,12 @@ BrowserTabsModelProviderImpl::~BrowserTabsModelProviderImpl() {
   }
 }
 
-absl::optional<std::string> BrowserTabsModelProviderImpl::GetHostDeviceName()
+std::optional<std::string> BrowserTabsModelProviderImpl::GetHostDeviceName()
     const {
   const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
       host_device_with_status = multidevice_setup_client_->GetHostStatus();
   if (!host_device_with_status.second) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // The pii_free_name field of the device matches the session name for
   // sync.
@@ -107,7 +107,7 @@ bool BrowserTabsModelProviderImpl::IsBrowserTabSyncEnabled() {
 }
 
 void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
-  absl::optional<std::string> host_device_name = GetHostDeviceName();
+  std::optional<std::string> host_device_name = GetHostDeviceName();
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service_->GetOpenTabsUIDelegate();
   // Tab sync is disabled or no valid |pii_free_name_|.
@@ -163,8 +163,7 @@ void BrowserTabsModelProviderImpl::InvalidateWeakPtrsAndClearTabMetadata(
 }
 
 void BrowserTabsModelProviderImpl::OnMetadataFetched(
-    absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
-        metadata) {
+    std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>> metadata) {
   // The operation to fetch metadata was cancelled.
   if (!metadata) {
     return;
@@ -185,7 +184,7 @@ void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
     return;
   }
 
-  absl::optional<std::string> host_device_name = GetHostDeviceName();
+  std::optional<std::string> host_device_name = GetHostDeviceName();
 
   // Tab sync is disabled or no valid |pii_free_name_|.
   if (!host_device_name) {
@@ -199,7 +198,7 @@ void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
     return;
   }
 
-  absl::optional<ForeignSyncedSessionAsh> host_phone_session;
+  std::optional<ForeignSyncedSessionAsh> host_phone_session;
   for (const ForeignSyncedSessionAsh& session : phone_sessions) {
     if (session.session_name != *host_device_name) {
       continue;

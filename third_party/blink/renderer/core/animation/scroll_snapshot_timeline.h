@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -55,8 +56,20 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   // exists). This can differ from |source| when defaulting to the
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
+  //
+  // NOTE: Do not use the layout box for the resolved source directly since the
+  // scroll container may be in a layout box that is a descendant of the
+  // resolved source's layout box.
   Node* ResolvedSource() const {
     return timeline_state_snapshotted_.resolved_source.Get();
+  }
+
+  // Returns the layout box for the resolved source's scrollable area. In most
+  // cases, the layout box for the resolved source is a scroll container.  A
+  // fieldset has a legend and scrollable content.  The scrollable content is
+  // in an anonymous block.
+  LayoutBox* ScrollContainer() const {
+    return ComputeScrollContainer(ResolvedSource());
   }
 
   // Return the latest resolved scroll/view offsets. This will be empty when
@@ -101,7 +114,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
       const absl::optional<TimelineOffset>& range_end,
       const Timing&) override;
 
-  static bool ComputeIsResolved(Node* resolved_source);
+  static LayoutBox* ComputeScrollContainer(Node* resolved_source);
 
   struct TimelineState {
     DISALLOW_NEW();
@@ -120,7 +133,11 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     // precision (1/64th of a pixel) aligns with the time precision requirement
     // of 1 microsecond.
     absl::optional<AnimationTimeDelta> duration;
-    // The scroller driving the timeline.
+
+    // The scroller driving the timeline. The layout box is stored in addition
+    // to the resolved source since for fieldset, the scroller container is
+    // a child of the resolved source's layout box due to the fieldset
+    // containing a non-scrollable legend and scrollable content.
     Member<Node> resolved_source;
 
     bool HasConsistentLayout(const TimelineState& other) const {

@@ -83,6 +83,7 @@ def _normalize_builder(builder):
         includable_only = builder.includable_only,
         location_filters = location_filters,
         mode_allowlist = builder.mode_allowlist,
+        equivalent_to = proto.clone(builder).equivalent_to,
     )
 
 def _group_builders_by_section(builders):
@@ -216,6 +217,26 @@ def _generate_cq_builders_md(ctx):
                         title = details.title,
                         url = details.url,
                     ))
+            if getattr(b, "equivalent_to") and b.equivalent_to.name:
+                eq_project, eq_bucket, eq_name = b.equivalent_to.name.split("/")
+                eq_builder_url = _TRY_BUILDER_VIEW_URL.format(
+                    project = eq_project,
+                    bucket = eq_bucket,
+                    builder = eq_name,
+                )
+                lines.append("")
+                s = ("    * Replaced with builder: [{name}]({builder}) \
+when CL owner is in group \
+[{group}](https://chrome-infra-auth.appspot.com/auth/lookup?p={group})".format(
+                    name = eq_name,
+                    builder = eq_builder_url,
+                    group = b.equivalent_to.owner_whitelist_group,
+                ))
+                if b.equivalent_to.percentage != 100:
+                    s = s + (" with percentage {p}".format(
+                        p = b.equivalent_to.percentage,
+                    ))
+                lines.append(s)
 
             lines.append("")
 

@@ -23,8 +23,9 @@ HoverButtonController::~HoverButtonController() = default;
 bool HoverButtonController::OnKeyPressed(const ui::KeyEvent& event) {
   const bool pressed = callback() && ((event.key_code() == ui::VKEY_SPACE) ||
                                       (event.key_code() == ui::VKEY_RETURN));
-  if (pressed)
-    callback().Run(event);
+  if (pressed) {
+    delegate()->NotifyClick(event);
+  }
   return pressed;
 }
 
@@ -51,7 +52,7 @@ void HoverButtonController::OnMouseReleased(const ui::MouseEvent& event) {
       delegate()->IsTriggerableEvent(event) &&
       button()->HitTestPoint(event.location()) && !delegate()->InDrag()) {
     if (callback()) {
-      callback().Run(event);
+      delegate()->NotifyClick(event);
     }
   } else {
     ButtonController::OnMouseReleased(event);
@@ -62,7 +63,7 @@ void HoverButtonController::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP) {
     button()->SetState(views::Button::STATE_NORMAL);
     if (callback()) {
-      callback().Run(*event);
+      delegate()->NotifyClick(*event);
     }
   } else {
     ButtonController::OnGestureEvent(event);

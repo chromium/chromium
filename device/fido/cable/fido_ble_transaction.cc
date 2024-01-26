@@ -50,8 +50,7 @@ void FidoBleTransaction::WriteRequestFragment(
   fragment.Serialize(&buffer_);
   DCHECK(!has_pending_request_fragment_write_);
   has_pending_request_fragment_write_ = true;
-  FIDO_LOG(DEBUG) << "Writing request fragment: " +
-                         base::HexEncode(buffer_.data(), buffer_.size());
+  FIDO_LOG(DEBUG) << "Writing request fragment: " << base::HexEncode(buffer_);
   // A weak pointer is required, since this call might time out. If that
   // happens, the current FidoBleTransaction could be destroyed.
   connection_->WriteControlPoint(

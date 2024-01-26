@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <map>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -38,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -50,7 +52,6 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -229,7 +230,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
   }
 }
 
-absl::optional<DisplayMode> TryResolveUserDisplayMode(
+std::optional<DisplayMode> TryResolveUserDisplayMode(
     mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
     case mojom::UserDisplayMode::kBrowser:
@@ -245,10 +246,10 @@ absl::optional<DisplayMode> TryResolveUserDisplayMode(
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<DisplayMode> TryResolveOverridesDisplayMode(
+std::optional<DisplayMode> TryResolveOverridesDisplayMode(
     const std::vector<DisplayMode>& display_mode_overrides) {
   for (DisplayMode override_display_mode : display_mode_overrides) {
     DisplayMode resolved_display_mode =
@@ -259,25 +260,46 @@ absl::optional<DisplayMode> TryResolveOverridesDisplayMode(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+bool ShouldResolveShortstandDisplayMode(bool ignore_shortstand) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return !ignore_shortstand && chromeos::features::IsCrosShortstandEnabled();
+#else
+  return false;
+#endif
+}
+
+std::optional<DisplayMode> TryResolveShortstandUserDisplayMode(
+    bool is_shortcut_app) {
+  if (is_shortcut_app) {
+    return DisplayMode::kBrowser;
+  } else {
+    return std::nullopt;
+  }
 }
 
 DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& display_mode_overrides,
-    mojom::UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode,
+    bool is_shortcut_app,
+    bool ignore_shortstand) {
   const absl::optional<DisplayMode> resolved_display_mode =
-      TryResolveUserDisplayMode(user_display_mode);
+      ShouldResolveShortstandDisplayMode(ignore_shortstand)
+          ? TryResolveShortstandUserDisplayMode(is_shortcut_app)
+          : TryResolveUserDisplayMode(user_display_mode);
+
   if (resolved_display_mode.has_value()) {
     return *resolved_display_mode;
   }
 
-  const absl::optional<DisplayMode> resolved_override_display_mode =
+  const std::optional<DisplayMode> resolved_override_display_mode =
       TryResolveOverridesDisplayMode(display_mode_overrides);
   if (resolved_override_display_mode.has_value()) {
     return *resolved_override_display_mode;
   }
-
   return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
 }
 
@@ -579,10 +601,13 @@ DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     mojom::UserDisplayMode user_display_mode,
-    bool is_isolated) {
+    bool is_isolated,
+    bool is_shortcut_app,
+    bool ignore_shortstand) {
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(
-          app_display_mode, app_display_mode_overrides, user_display_mode);
+          app_display_mode, app_display_mode_overrides, user_display_mode,
+          is_shortcut_app, ignore_shortstand);
   if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
     return DisplayMode::kStandalone;
   }
@@ -642,7 +667,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   }
 
   WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
-  const absl::optional<webapps::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       web_app_registrar.FindAppWithUrlInScope(url);
   if (!app_id.has_value()) {
     return nullptr;

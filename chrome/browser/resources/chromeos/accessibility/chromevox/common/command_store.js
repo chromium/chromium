@@ -22,7 +22,7 @@
  * 3. Add a key binding to KeySequence.
  */
 
-import {KeyCode} from '../../common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 
 import {Command, CommandCategory} from './command.js';
 import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';

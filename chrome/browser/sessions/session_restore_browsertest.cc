@@ -989,7 +989,7 @@ namespace {
 
 // Groups the tabs in |model| according to |specified_groups|.
 void CreateTabGroups(TabStripModel* model,
-                     base::span<const absl::optional<int>> specified_groups) {
+                     base::span<const std::optional<int>> specified_groups) {
   ASSERT_TRUE(model->SupportsTabGroups());
   ASSERT_EQ(model->count(), static_cast<int>(specified_groups.size()));
 
@@ -997,8 +997,9 @@ void CreateTabGroups(TabStripModel* model,
   base::flat_map<int, tab_groups::TabGroupId> group_map;
 
   for (int i = 0; i < model->count(); ++i) {
-    if (specified_groups[i] == absl::nullopt)
+    if (specified_groups[i] == std::nullopt) {
       continue;
+    }
 
     const int specified_group = specified_groups[i].value();
     auto match = group_map.find(specified_group);
@@ -1020,7 +1021,7 @@ void CreateTabGroups(TabStripModel* model,
 // Checks that the grouping of tabs in |model| is equivalent to that specified
 // in |specified_groups| up to relabeling of the group IDs.
 void CheckTabGrouping(TabStripModel* model,
-                      base::span<const absl::optional<int>> specified_groups) {
+                      base::span<const std::optional<int>> specified_groups) {
   ASSERT_EQ(model->count(), static_cast<int>(specified_groups.size()));
 
   // Maps |specified_groups| IDs to actual group IDs in |model|.
@@ -1029,8 +1030,8 @@ void CheckTabGrouping(TabStripModel* model,
   for (int i = 0; i < model->count(); ++i) {
     SCOPED_TRACE(i);
 
-    const absl::optional<int> specified_group = specified_groups[i];
-    const absl::optional<tab_groups::TabGroupId> actual_group =
+    const std::optional<int> specified_group = specified_groups[i];
+    const std::optional<tab_groups::TabGroupId> actual_group =
         model->GetTabGroupForTab(i);
 
     // The tab should be grouped iff it's grouped in |specified_groups|.
@@ -1049,9 +1050,9 @@ void CheckTabGrouping(TabStripModel* model,
 }
 
 // Returns the optional group ID for each tab in a vector.
-std::vector<absl::optional<tab_groups::TabGroupId>> GetTabGroups(
+std::vector<std::optional<tab_groups::TabGroupId>> GetTabGroups(
     const TabStripModel* model) {
-  std::vector<absl::optional<tab_groups::TabGroupId>> result(model->count());
+  std::vector<std::optional<tab_groups::TabGroupId>> result(model->count());
   for (int i = 0; i < model->count(); ++i)
     result[i] = model->GetTabGroupForTab(i);
   return result;
@@ -1090,8 +1091,8 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, TabsWithGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 6;
-  const std::array<absl::optional<int>, kNumTabs> group_spec = {
-      0, 0, absl::nullopt, absl::nullopt, 1, 1};
+  const std::array<std::optional<int>, kNumTabs> group_spec = {
+      0, 0, std::nullopt, std::nullopt, 1, 1};
 
   // Open |kNumTabs| tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
@@ -1143,9 +1144,9 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   TabStripModel* const new_tsm = new_browser->tab_strip_model();
   ASSERT_EQ(5, new_tsm->count());
 
-  const absl::optional<tab_groups::TabGroupId> new_group1 =
+  const std::optional<tab_groups::TabGroupId> new_group1 =
       new_tsm->GetTabGroupForTab(0);
-  const absl::optional<tab_groups::TabGroupId> new_group2 =
+  const std::optional<tab_groups::TabGroupId> new_group2 =
       new_tsm->GetTabGroupForTab(2);
 
   ASSERT_TRUE(new_group1);
@@ -1170,7 +1171,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 3;
-  const std::array<absl::optional<int>, kNumTabs> group_spec = {0, 0, 1};
+  const std::array<std::optional<int>, kNumTabs> group_spec = {0, 0, 1};
 
   // Open |kNumTabs| tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
@@ -1208,7 +1209,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 2;
-  const std::array<absl::optional<int>, kNumTabs> group_spec = {0, 0};
+  const std::array<std::optional<int>, kNumTabs> group_spec = {0, 0};
 
   // Open |kNumTabs| tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));

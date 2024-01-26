@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/sync/sync_user_settings_client_ash.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
@@ -14,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,7 +40,7 @@ class TestSyncUserSettingsClientObserver
     client->AddObserver(std::move(remote));
   }
 
-  absl::optional<bool> GetLastAppsSyncEnabled() const {
+  std::optional<bool> GetLastAppsSyncEnabled() const {
     return last_apps_sync_enabled_;
   }
 
@@ -49,7 +50,7 @@ class TestSyncUserSettingsClientObserver
   }
 
  private:
-  absl::optional<bool> last_apps_sync_enabled_;
+  std::optional<bool> last_apps_sync_enabled_;
 
   mojo::Receiver<crosapi::mojom::SyncUserSettingsClientObserver> receiver_{
       this};
@@ -139,7 +140,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldNotifyObserver) {
   // No state changes, observer shouldn't be notified.
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
-  EXPECT_THAT(observer.GetLastAppsSyncEnabled(), Eq(absl::nullopt));
+  EXPECT_THAT(observer.GetLastAppsSyncEnabled(), Eq(std::nullopt));
 
   // Mimic apps sync being enabled.
   ON_CALL(*sync_user_settings(), GetSelectedOsTypes())
@@ -147,7 +148,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldNotifyObserver) {
           {syncer::UserSelectableOsType::kOsApps})));
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
-  ASSERT_THAT(observer.GetLastAppsSyncEnabled(), Ne(absl::nullopt));
+  ASSERT_THAT(observer.GetLastAppsSyncEnabled(), Ne(std::nullopt));
   EXPECT_TRUE(*observer.GetLastAppsSyncEnabled());
 
   // Mimic apps sync being disabled again.
@@ -155,7 +156,7 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldNotifyObserver) {
       .WillByDefault(Return(syncer::UserSelectableOsTypeSet()));
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
-  ASSERT_THAT(observer.GetLastAppsSyncEnabled(), Ne(absl::nullopt));
+  ASSERT_THAT(observer.GetLastAppsSyncEnabled(), Ne(std::nullopt));
   EXPECT_FALSE(*observer.GetLastAppsSyncEnabled());
 }
 
@@ -177,10 +178,10 @@ TEST_F(SyncUserSettingsClientAshTest, ShouldSupportMultipleObservers) {
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
 
-  ASSERT_THAT(observer1.GetLastAppsSyncEnabled(), Ne(absl::nullopt));
+  ASSERT_THAT(observer1.GetLastAppsSyncEnabled(), Ne(std::nullopt));
   EXPECT_TRUE(*observer1.GetLastAppsSyncEnabled());
 
-  ASSERT_THAT(observer2.GetLastAppsSyncEnabled(), Ne(absl::nullopt));
+  ASSERT_THAT(observer2.GetLastAppsSyncEnabled(), Ne(std::nullopt));
   EXPECT_TRUE(*observer2.GetLastAppsSyncEnabled());
 }
 

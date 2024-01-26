@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/css/media_query_set_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
-#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -53,6 +52,7 @@ class ExceptionState;
 class MediaQuerySet;
 class ScriptPromise;
 class ScriptState;
+class StyleSheetContents;
 class TreeScope;
 
 enum class CSSImportRules {

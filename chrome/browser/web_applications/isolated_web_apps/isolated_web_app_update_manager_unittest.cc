@@ -29,13 +29,13 @@
 #include "base/version.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -293,7 +293,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
                               VariantWith<DevModeBundle>(Eq(location)),
                               Eq(base::Version("2.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 
   // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
@@ -487,8 +487,8 @@ class IsolatedWebAppUpdateManagerUpdateTest
               test::IsInIwaRandomDir(profile->GetPath())));
   }
 
-  absl::optional<IwaInfo> iwa_info1_;
-  absl::optional<IwaInfo> iwa_info2_;
+  std::optional<IwaInfo> iwa_info1_;
+  std::optional<IwaInfo> iwa_info2_;
 };
 
 class IsolatedWebAppUpdateManagerUpdateMockTimeTest
@@ -582,7 +582,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
 
   // After one hour, the update should not yet have run, but still be scheduled
-  // (i.e. containing a value in the `absl::optional`).
+  // (i.e. containing a value in the `std::optional`).
   task_environment()->FastForwardBy(base::Hours(1));
   auto old_update_discovery_time =
       update_manager().GetNextUpdateDiscoveryTimeForTesting();
@@ -664,7 +664,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -729,7 +729,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
                   iwa_info2_->url_info.app_id()),
               test::IwaIs(iwa_info2_->update_app_name,
@@ -737,7 +737,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info2_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -953,6 +953,7 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     web_app->AddSource(WebAppManagement::Type::kCommandLine);
     web_app->SetIsLocallyInstalled(true);
     web_app->SetIsolationData(isolation_data);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     return web_app;
   }
 
@@ -974,7 +975,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest,
                                   Eq(InstalledBundle{.path = update_path_})),
                               Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest

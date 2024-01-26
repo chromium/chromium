@@ -106,15 +106,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #if BUILDFLAG(IS_ANDROID)
-  static constexpr char kReachedCodeProfilerTrial[] =
-      "ReachedCodeProfilerSynthetic2";
-  std::string reached_code_profiler_group =
-      chrome::android::GetReachedCodeProfilerTrialGroup();
-  if (!reached_code_profiler_group.empty()) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kReachedCodeProfilerTrial, reached_code_profiler_group);
-  }
-
   {
     // BackgroundThreadPoolSynthetic field trial.
     const char* group_name;

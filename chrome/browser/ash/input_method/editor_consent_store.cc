@@ -12,8 +12,8 @@
 namespace ash::input_method {
 
 EditorConsentStore::EditorConsentStore(PrefService* pref_service,
-                                       Delegate* delegate)
-    : pref_service_(pref_service), delegate_(delegate) {
+                                       EditorMetricsRecorder* metrics_recorder)
+    : pref_service_(pref_service), metrics_recorder_(metrics_recorder) {
   InitializePrefChangeRegistrar(pref_service);
 }
 
@@ -41,14 +41,14 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
       current_consent_status == ConsentStatus::kUnset) {
     if (consent_action == ConsentAction::kApproved) {
       SetConsentStatus(ConsentStatus::kApproved);
-      LogEditorState(EditorStates::kApproveConsent, delegate_->GetEditorMode());
+      metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
       return;
     }
 
     if (consent_action == ConsentAction::kDeclined) {
       SetConsentStatus(ConsentStatus::kDeclined);
       OverrideUserPref(/*new_pref_value=*/false);
-      LogEditorState(EditorStates::kDeclineConsent, delegate_->GetEditorMode());
+      metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
     }
   }
 }

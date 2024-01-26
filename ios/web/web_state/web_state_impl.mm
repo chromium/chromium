@@ -25,7 +25,7 @@
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace web {
@@ -813,12 +813,9 @@ void WebStateImpl::DownloadCurrentPage(
     id<CRWWebViewDownloadDelegate> delegate,
     void (^handler)(id<CRWWebViewDownload>)) {
   CRWWebController* web_controller = GetWebController();
-  NSURLRequest* request =
-      [NSURLRequest requestWithURL:net::NSURLWithGURL(GetLastCommittedURL())];
-  [web_controller downloadCurrentPageWithRequest:request
-                                 destinationPath:destination_file
-                                        delegate:delegate
-                                         handler:handler];
+  [web_controller downloadCurrentPageToDestinationPath:destination_file
+                                              delegate:delegate
+                                               handler:handler];
 }
 
 bool WebStateImpl::IsFindInteractionSupported() {

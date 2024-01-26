@@ -38,10 +38,6 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
   return bookmark_model;
 }
 
-void TestBookmarkClient::AllowFoldersForAccountStorage() {
-  are_folders_for_account_storage_allowed_ = true;
-}
-
 BookmarkPermanentNode* TestBookmarkClient::EnableManagedNode() {
   managed_node_ = BookmarkPermanentNode::CreateManagedBookmarks(/*id=*/100);
   // Keep a copy of the node in |unowned_managed_node_| for the accessor
@@ -92,10 +88,6 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
 void TestBookmarkClient::SetStorageStateForUma(
     metrics::StorageStateForUma storage_state) {
   storage_state_for_uma_ = storage_state;
-}
-
-bool TestBookmarkClient::AreFoldersForAccountStorageAllowed() {
-  return are_folders_for_account_storage_allowed_;
 }
 
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {

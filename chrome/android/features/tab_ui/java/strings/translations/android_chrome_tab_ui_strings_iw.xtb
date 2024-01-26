@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">לקבלת התראות</translation>
 <translation id="4133493477912226187">יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="4212246570487010370">המשך הגלישה</translation>
+<translation id="427987768447457592">קבוצת כרטיסיות חדשה</translation>
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}one{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
+<translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{יש כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שלא השתמשת בה לאחרונה}one{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}two{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}other{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}}</translation>
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>

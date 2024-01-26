@@ -47,9 +47,9 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     return installed_printers_.at(printer.id());
   }
 
-  absl::optional<Printer> GetPrinter(const std::string& id) override {
+  std::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(installed_printers_, id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return Printer(id);

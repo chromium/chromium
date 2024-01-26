@@ -24,6 +24,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,6 +146,9 @@ class SecureChannelClientImplTest : public testing::Test {
     ConnectionAttemptImpl::Factory::SetFactoryForTesting(
         fake_connection_attempt_factory_.get());
 
+    fake_secure_channel_structured_metrics_logger_ =
+        std::make_unique<FakeSecureChannelStructuredMetricsLogger>();
+
     fake_client_channel_impl_factory_ =
         std::make_unique<FakeClientChannelImplFactory>();
     ClientChannelImpl::Factory::SetFactoryForTesting(
@@ -191,10 +196,12 @@ class SecureChannelClientImplTest : public testing::Test {
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
-      ConnectionPriority connection_priority) {
+      ConnectionPriority connection_priority,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger) {
     auto connection_attempt = client_->InitiateConnectionToDevice(
         device_to_connect, local_device, feature, connection_medium,
-        connection_priority);
+        connection_priority, secure_channel_structured_metrics_logger);
     auto fake_connection_attempt = base::WrapUnique(
         static_cast<FakeConnectionAttempt*>(connection_attempt.release()));
     fake_connection_attempt->SetDelegate(
@@ -216,6 +223,8 @@ class SecureChannelClientImplTest : public testing::Test {
   raw_ptr<FakeSecureChannel, DanglingUntriaged> fake_secure_channel_;
   std::unique_ptr<FakeSecureChannelInitializerFactory>
       fake_secure_channel_initializer_factory_;
+  std::unique_ptr<FakeSecureChannelStructuredMetricsLogger>
+      fake_secure_channel_structured_metrics_logger_;
   std::unique_ptr<FakeConnectionAttemptFactory>
       fake_connection_attempt_factory_;
   std::unique_ptr<FakeClientChannelImplFactory>
@@ -235,7 +244,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
       "feature", ConnectionMedium::kBluetoothLowEnergy,
-      ConnectionPriority::kLow);
+      ConnectionPriority::kLow,
+      fake_secure_channel_structured_metrics_logger_.get());
 
   base::RunLoop run_loop;
 
@@ -258,7 +268,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice_Failure) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
       "feature", ConnectionMedium::kBluetoothLowEnergy,
-      ConnectionPriority::kLow);
+      ConnectionPriority::kLow,
+      fake_secure_channel_structured_metrics_logger_.get());
 
   base::RunLoop run_loop;
 
@@ -325,7 +336,8 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
   auto fake_connection_attempt_1 = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
       "feature", ConnectionMedium::kBluetoothLowEnergy,
-      ConnectionPriority::kLow);
+      ConnectionPriority::kLow,
+      fake_secure_channel_structured_metrics_logger_.get());
   base::RunLoop run_loop_1;
   fake_connection_attempt_1->set_on_connection_callback(
       run_loop_1.QuitClosure());

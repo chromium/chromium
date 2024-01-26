@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandler, PageHandlerRemote} from '../../history_clusters.mojom-webui.js';
+import type {PageHandlerRemote} from '../../history_clusters.mojom-webui.js';
+import {PageHandler} from '../../history_clusters.mojom-webui.js';
 
 export interface HistoryClustersProxy {
   handler: PageHandlerRemote;

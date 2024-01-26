@@ -6,7 +6,25 @@
  * @fileoverview DOM related utilities.
  */
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+// Semantically extends `HTMLElement` to allow using `Symbol` as property index.
+class HTMLElementWithSymbolIndex extends HTMLElement {
+  [key: symbol|string]: any
+}
+
+// Semantically extends `Element` to allow using `Symbol` as property index.
+class ElementWithSymbolIndex extends HTMLElement {
+  [key: symbol|string]: any
+}
+
+// Semantically extends `Node` to allow using `Symbol` as property index.
+class NodeWithSymbolIndex extends Node {
+  [key: symbol|string]: any
+}
+
+// Semantically extends `Text` to allow using `Symbol` as property index.
+class TextWithSymbolIndex extends Text {
+  [key: symbol|string]: any
+}
 
 // Interface for exportable part of a `DOMRect` (`x`, `y`, `width` and
 // `height`).
@@ -26,12 +44,6 @@ const IGNORE_NODE_NAMES = new Set([
   'MAP',      'OPTGROUP', 'OPTION',   'PROGRESS', 'SELECT',
   'VIDEO',    'A',        'APP',
 ]);
-
-// Sends `data` as a string to native code, for debugging only.
-function log(data: any): void {
-  sendWebKitMessage(
-      'annotations', {command: 'annotations.log', text: '' + data});
-}
 
 // Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
 // case insensitive.
@@ -136,8 +148,11 @@ function nextLeaf(node: Node|null, breakAtInvalid = false): Node|null {
 }
 
 export {
+  HTMLElementWithSymbolIndex,
+  ElementWithSymbolIndex,
+  NodeWithSymbolIndex,
+  TextWithSymbolIndex,
   Rect,
-  log,
   getMetaContentByHttpEquiv,
   hasNoIntentDetection,
   rectFromElement,

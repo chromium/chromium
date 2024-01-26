@@ -7,11 +7,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_BITS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_BITS_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <bit>
 #include <concepts>
+#include <cstddef>
+#include <cstdint>
 
 #include "partition_alloc/partition_alloc_base/check.h"
 

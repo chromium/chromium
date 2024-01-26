@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Muat turun dijeda</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1426410128494586442">Ya</translation>
+<translation id="1434873037477293673">kad penurunan harga</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> laman}other{<ph name="SITE_COUNT" /> laman}}</translation>
 <translation id="1510341833810331442">Laman tidak dibenarkan menyimpan data pada peranti anda</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Minta paparan mudah alih</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Sekat tapak daripada menggunakan peranti dan data realiti maya anda</translation>
 <translation id="6447842834002726250">Kuki</translation>
+<translation id="6452138246455930388">Penurunan harga pada tab terbuka anda, daripada <ph name="OLD_PRICE" /> kepada <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Apabila tetingkap sempit, minta paparan mudah alih</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="652937045869844725">Cuba berikan kebenaran untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
 <translation id="6766622839693428701">Leret ke bawah untuk tutup.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Daripada <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Pilih pilihan untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
+<translation id="6867014948848323204">Daripada <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Sekat tapak daripada membaca teks dan imej daripada papan keratan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Laman yang anda lawati boleh menyimpan maklumat tentang perkara yang anda lakukan agar laman tersebut berfungsi seperti yang dijangkakan — contohnya, untuk memastikan anda terus dilog masuk ke laman atau untuk menyimpan item dalam troli beli-belah anda. Selalunya laman menyimpan maklumat ini pada peranti anda buat sementara waktu.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Ahli Sihir Oz yang Menakjubkan</translation>
 <translation id="7684642910516280563">Jangan benarkan laman menggunakan kuki pihak ketiga</translation>
 <translation id="7719367874908701697">Zum halaman</translation>
+<translation id="7770832849480336015">Sembunyikan "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>

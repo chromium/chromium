@@ -455,7 +455,7 @@ class TetherServiceTest : public testing::Test {
   void SetTetherUserPrefState(bool enabled) {
     fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
         multidevice_setup::mojom::Feature::kInstantTethering,
-        enabled /* expected_enabled */, absl::nullopt /* expected_auth_token */,
+        enabled /* expected_enabled */, std::nullopt /* expected_auth_token */,
         !enabled /* success */);
     profile_->GetPrefs()->SetBoolean(
         multidevice_setup::kInstantTetheringEnabledPrefName, enabled);

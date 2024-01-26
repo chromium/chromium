@@ -320,11 +320,8 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "Unknown error occurred while getting expires."));
-  } else if (expires.has_value()) {
-    resolver->Resolve(base::Time::kMillisecondsPerSecond *
-                      expires.value().InSecondsFSinceUnixEpoch());
   } else {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolver->Resolve<IDLNullable<IDLDOMHighResTimeStamp>>(expires);
   }
 }
 

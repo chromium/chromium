@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_
 #define CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -28,8 +28,8 @@ class Origin;
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const std::vector<url::Origin>& origin_list,
-    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
-                            absl::optional<std::string>,
-                            absl::optional<content::SmsFetchFailureType>)>);
+    base::OnceCallback<void(std::optional<std::vector<url::Origin>>,
+                            std::optional<std::string>,
+                            std::optional<content::SmsFetchFailureType>)>);
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_

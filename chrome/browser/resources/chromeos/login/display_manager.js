@@ -415,6 +415,7 @@ export function invokePolymerMethod(element, name, ...args) {
 
     /**
      * Trigger of play down animation for current screen step.
+     * @suppress {missingProperties} defaultControl may be not defined.
      */
     triggerDown() {
       const innerContainer = $('inner-container');
@@ -427,7 +428,7 @@ export function invokePolymerMethod(element, name, ...args) {
         // Refresh defaultControl. It could have changed.
         const stepId = this.screens_[this.currentStep_];
         const step = $(stepId);
-        const defaultControl = step.defaultControl;
+        const defaultControl = step?.defaultControl;
         innerContainer.classList.add('down-finished');
         if (defaultControl) {
           defaultControl.focus();

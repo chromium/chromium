@@ -22,6 +22,10 @@
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
+// TODO(crbug.com/1520878): This class was used to display a permission request
+// chip. As part of LHS activity indicators, the permission request chip is
+// using PermissionChipView instead of OmniboxChipButton. All permission-related
+// code should be removed.
 class OmniboxChipButton : public views::MdTextButton {
   METADATA_HEADER(OmniboxChipButton, views::MdTextButton)
 

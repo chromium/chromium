@@ -4,13 +4,14 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/lookalikes/core/safety_tip_test_utils.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/platform_test.h"
 
 class LookalikeUrlTabHelperTest : public PlatformTest {
@@ -54,7 +55,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
 
  private:
-  LookalikeUrlTabAllowList* allow_list_;
+  raw_ptr<LookalikeUrlTabAllowList> allow_list_;
 };
 
 // Tests that ShouldAllowResponse properly blocks lookalike navigations and

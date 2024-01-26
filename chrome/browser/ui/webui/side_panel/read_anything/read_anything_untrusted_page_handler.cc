@@ -111,6 +111,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing)),
         prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
+        prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
         speechRate,
@@ -122,15 +123,13 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-        screen_ai::ScreenAIInstallState::State::kReady) {
-      // Notify that the screen ai service is already ready so we can bind to
-      // the content extractor.
-      page_->ScreenAIServiceReady();
-    } else if (!component_ready_observer_.IsObserving()) {
-      component_ready_observer_.Observe(
-          screen_ai::ScreenAIInstallState::GetInstance());
-    }
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+        browser_->profile())
+        ->GetServiceStateAsync(
+            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+            base::BindOnce(
+                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
+                weak_factory_.GetWeakPtr()));
   }
 #endif
   OnActiveWebContentsChanged();
@@ -212,6 +211,12 @@ void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
   if (browser_) {
     browser_->profile()->GetPrefs()->SetDouble(
         prefs::kAccessibilityReadAnythingFontScale, saved_font_size);
+  }
+}
+void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetBoolean(
+        prefs::kAccessibilityReadAnythingLinksEnabled, enabled);
   }
 }
 void ReadAnythingUntrustedPageHandler::OnColorChange(
@@ -297,6 +302,7 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
 void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
+    bool links_enabled,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
@@ -314,9 +320,9 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
   SkColor background_skcolor =
       web_contents->GetColorProvider().GetColor(background_color_id);
 
-  page_->OnThemeChanged(
-      ReadAnythingTheme::New(font_name, font_scale, foreground_skcolor,
-                             background_skcolor, line_spacing, letter_spacing));
+  page_->OnThemeChanged(ReadAnythingTheme::New(
+      font_name, font_scale, links_enabled, foreground_skcolor,
+      background_skcolor, line_spacing, letter_spacing));
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
@@ -346,19 +352,10 @@ void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
 ///////////////////////////////////////////////////////////////////////////////
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void ReadAnythingUntrustedPageHandler::StateChanged(
-    screen_ai::ScreenAIInstallState::State state) {
+void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
+    bool successful) {
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
-  // If Screen AI library is downloaded but not initialized yet, ensure it is
-  // loadable and initializes without any problems.
-  if (state == screen_ai::ScreenAIInstallState::State::kDownloaded &&
-      browser_) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-        browser_->profile())
-        ->InitializeMainContentExtractionIfNeeded();
-    return;
-  }
-  if (state == screen_ai::ScreenAIInstallState::State::kReady) {
+  if (successful) {
     page_->ScreenAIServiceReady();
   }
 }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, dp} = await testRunner.startBlank(
       `Check that PrivateTokenParams are included when an iframe requests a private token'`);
 

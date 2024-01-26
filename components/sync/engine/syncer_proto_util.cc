@@ -198,13 +198,6 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
     }
   }
 
-  if (command.has_sessions_commit_delay_seconds()) {
-    std::map<ModelType, base::TimeDelta> delay_map;
-    delay_map[SESSIONS] =
-        base::Seconds(command.sessions_commit_delay_seconds());
-    cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
-  }
-
   if (command.has_gu_retry_delay_seconds() &&
       !base::FeatureList::IsEnabled(syncer::kSyncIgnoreGetUpdatesRetryDelay)) {
     cycle->delegate()->OnReceivedGuRetryDelay(
@@ -212,9 +205,6 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
   }
 
   if (command.custom_nudge_delays_size() > 0) {
-    // Note that because this happens after the sessions_commit_delay_seconds
-    // handling, any SESSIONS value in this map will override the one in
-    // sessions_commit_delay_seconds.
     std::map<ModelType, base::TimeDelta> delay_map;
     for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
       ModelType type = GetModelTypeFromSpecificsFieldNumber(

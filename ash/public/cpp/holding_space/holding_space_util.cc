@@ -91,6 +91,57 @@ std::vector<base::FilePath> ExtractFilePaths(const ui::OSExchangeData& data,
              : paths;
 }
 
+base::flat_set<HoldingSpaceFile::FileSystemType> GetAllFileSystemTypes() {
+  return base::flat_set<HoldingSpaceFile::FileSystemType>({
+      HoldingSpaceFile::FileSystemType::kArcContent,
+      HoldingSpaceFile::FileSystemType::kArcDocumentsProvider,
+      HoldingSpaceFile::FileSystemType::kDeviceMedia,
+      HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage,
+      HoldingSpaceFile::FileSystemType::kDragged,
+      HoldingSpaceFile::FileSystemType::kDriveFs,
+      HoldingSpaceFile::FileSystemType::kExternal,
+      HoldingSpaceFile::FileSystemType::kForTransientFile,
+      HoldingSpaceFile::FileSystemType::kFuseBox,
+      HoldingSpaceFile::FileSystemType::kIsolated,
+      HoldingSpaceFile::FileSystemType::kLocal,
+      HoldingSpaceFile::FileSystemType::kLocalForPlatformApp,
+      HoldingSpaceFile::FileSystemType::kLocalMedia,
+      HoldingSpaceFile::FileSystemType::kPersistent,
+      HoldingSpaceFile::FileSystemType::kProvided,
+      HoldingSpaceFile::FileSystemType::kSmbFs,
+      HoldingSpaceFile::FileSystemType::kSyncable,
+      HoldingSpaceFile::FileSystemType::kSyncableForInternalSync,
+      HoldingSpaceFile::FileSystemType::kTemporary,
+      HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile::FileSystemType::kUnknown,
+  });
+}
+
+base::flat_set<HoldingSpaceItem::Type> GetAllItemTypes() {
+  return base::flat_set<HoldingSpaceItem::Type>({
+      HoldingSpaceItem::Type::kArcDownload,
+      HoldingSpaceItem::Type::kCameraAppPhoto,
+      HoldingSpaceItem::Type::kCameraAppScanJpg,
+      HoldingSpaceItem::Type::kCameraAppScanPdf,
+      HoldingSpaceItem::Type::kCameraAppVideoGif,
+      HoldingSpaceItem::Type::kCameraAppVideoMp4,
+      HoldingSpaceItem::Type::kDiagnosticsLog,
+      HoldingSpaceItem::Type::kDownload,
+      HoldingSpaceItem::Type::kDriveSuggestion,
+      HoldingSpaceItem::Type::kLacrosDownload,
+      HoldingSpaceItem::Type::kLocalSuggestion,
+      HoldingSpaceItem::Type::kNearbyShare,
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      HoldingSpaceItem::Type::kPhotoshopWeb,
+      HoldingSpaceItem::Type::kPinnedFile,
+      HoldingSpaceItem::Type::kPrintedPdf,
+      HoldingSpaceItem::Type::kScan,
+      HoldingSpaceItem::Type::kScreenRecording,
+      HoldingSpaceItem::Type::kScreenRecordingGif,
+      HoldingSpaceItem::Type::kScreenshot,
+  });
+}
+
 gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
   gfx::Size max_size;
   switch (type) {
@@ -157,6 +208,54 @@ bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
     }
   }
   return false;
+}
+
+// NOTE: These values are persisted to histograms and must remain unchanged.
+std::string ToString(HoldingSpaceFile::FileSystemType type) {
+  switch (type) {
+    case HoldingSpaceFile::FileSystemType::kArcContent:
+      return "ArcContent";
+    case HoldingSpaceFile::FileSystemType::kArcDocumentsProvider:
+      return "ArcDocumentsProvider";
+    case HoldingSpaceFile::FileSystemType::kDeviceMedia:
+      return "DeviceMedia";
+    case HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage:
+      return "DeviceMediaAsFileStorage";
+    case HoldingSpaceFile::FileSystemType::kDragged:
+      return "Dragged";
+    case HoldingSpaceFile::FileSystemType::kDriveFs:
+      return "DriveFs";
+    case HoldingSpaceFile::FileSystemType::kExternal:
+      return "External";
+    case HoldingSpaceFile::FileSystemType::kForTransientFile:
+      return "ForTransientFile";
+    case HoldingSpaceFile::FileSystemType::kFuseBox:
+      return "FuseBox";
+    case HoldingSpaceFile::FileSystemType::kIsolated:
+      return "Isolated";
+    case HoldingSpaceFile::FileSystemType::kLocal:
+      return "Local";
+    case HoldingSpaceFile::FileSystemType::kLocalForPlatformApp:
+      return "LocalForPlatformApp";
+    case HoldingSpaceFile::FileSystemType::kLocalMedia:
+      return "LocalMedia";
+    case HoldingSpaceFile::FileSystemType::kPersistent:
+      return "Persistent";
+    case HoldingSpaceFile::FileSystemType::kProvided:
+      return "Provided";
+    case HoldingSpaceFile::FileSystemType::kSmbFs:
+      return "SmbFs";
+    case HoldingSpaceFile::FileSystemType::kSyncable:
+      return "Syncable";
+    case HoldingSpaceFile::FileSystemType::kSyncableForInternalSync:
+      return "SyncableForInternalSync";
+    case HoldingSpaceFile::FileSystemType::kTemporary:
+      return "Temporary";
+    case HoldingSpaceFile::FileSystemType::kTest:
+      return "Test";
+    case HoldingSpaceFile::FileSystemType::kUnknown:
+      return "Unknown";
+  }
 }
 
 // NOTE: These values are persisted to histograms and must remain unchanged.

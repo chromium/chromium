@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1434873037477293673">kort med avslag</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> nettsted}other{<ph name="SITE_COUNT" /> nettsteder}}</translation>
 <translation id="1510341833810331442">Nettsteder har ikke lov til å lagre data på enheten din</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="2790501146643349491">Når dette er på, kan nylig lukkede nettsteder fullføre sending og mottak av data. Når dette er av, kan ikke nylig lukkede nettsteder fullføre sending eller mottak av data.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokkér nettsteder fra å bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
+<translation id="6452138246455930388">Avslag på den åpne fanen din, fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du be om mobilvisning</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="652937045869844725">Prøv å tillate informasjonskapsler fra tredjeparter. Det innebærer mindre beskyttelse, men øker sannsynligheten for at nettstedsfunksjoner virker som de skal</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
 <translation id="6766622839693428701">Sveip ned for å lukke.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> fra <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Velg et alternativ for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6818926723028410516">Velg elementer</translation>
 <translation id="6864395892908308021">Denne enheten kan ikke lese NFC</translation>
+<translation id="6867014948848323204">Fra <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokkér nettsteder fra å få tilgang til tekst og bilder fra utklippstavlen</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6950072572526089586">Nettsteder du besøker, kan lagre informasjon om hva du gjør, slik at nettstedene fungerer som forventet – for eksempel for å holde deg pålogget eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Trollmannen fra Oz</translation>
 <translation id="7684642910516280563">Ikke la et nettsted bruke informasjonskapsler fra tredjeparter</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
+<translation id="7770832849480336015">Skjul «<ph name="TITLE_OF_MODULE" />»</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="780301667611848630">Nei takk</translation>

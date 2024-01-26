@@ -205,6 +205,12 @@ void CronetContextAdapter::StopNetLog(JNIEnv* env,
   context_->StopNetLog();
 }
 
+void CronetContextAdapter::FlushWritePropertiesForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  context_->FlushWritePropertiesForTesting();  // IN-TEST
+}
+
 int CronetContextAdapter::default_load_flags() const {
   return context_->default_load_flags();
 }
@@ -318,7 +324,7 @@ JNI_CronetUrlRequestContext_GetHistogramDeltas(JNIEnv* env) {
   std::vector<uint8_t> data;
   if (!metrics::HistogramManager::GetInstance()->GetDeltas(&data))
     return ScopedJavaLocalRef<jbyteArray>();
-  return base::android::ToJavaByteArray(env, data.data(), data.size());
+  return base::android::ToJavaByteArray(env, data);
 }
 
 }  // namespace cronet

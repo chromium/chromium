@@ -34,9 +34,12 @@ public class RunOnNextLayoutDelegate implements RunOnNextLayout {
         mThreadChecker.assertOnValidThread();
 
         mRunnables.add(runnable);
-        if (!mView.isAttachedToWindow() || !mView.isLayoutRequested()) {
+        boolean isLayoutNotRequested = !mView.isLayoutRequested();
+        if (isLayoutNotRequested && isLaidOut()) {
+            // Already laid out, run immediately.
             runOnNextLayoutRunnables();
-        } else {
+        } else if (isLayoutNotRequested) {
+            // Post the runnable to delay in case a layout happens.
             mView.post(this::runOnNextLayoutRunnables);
         }
     }
@@ -52,5 +55,9 @@ public class RunOnNextLayoutDelegate implements RunOnNextLayout {
         for (Runnable runnable : runnables) {
             runnable.run();
         }
+    }
+
+    private boolean isLaidOut() {
+        return mView.getHeight() > 0 && mView.getWidth() > 0 && mView.isLaidOut();
     }
 }

@@ -27,6 +27,7 @@ bool FeatureHasExpiryGracePeriod(blink::mojom::OriginTrialFeature feature) {
       blink::mojom::OriginTrialFeature::kWebViewXRequestedWithDeprecation,
       blink::mojom::OriginTrialFeature::kRTCEncodedFrameSetMetadata,
       blink::mojom::OriginTrialFeature::kElementCapture,
+      blink::mojom::OriginTrialFeature::kCapturedSurfaceControl,
   };
   return base::Contains(kHasExpiryGracePeriod, feature);
 }

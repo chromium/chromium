@@ -20,5 +20,6 @@ CREDIT_CARD_VERIFICATION_CODE | cvv | CVV |  | cardName_1
 CREDIT_CARD_NAME_FULL | id_skAltPUName | Name |  | cardName_1
 PHONE_HOME_CITY_AND_NUMBER | id_skAltPUPhoneno | Phone |  | id_skCOShipAddress_4
 EMAIL_ADDRESS | id_skAltPUEmail | Email |  | id_skCOShipAddress_4
+
 UNKNOWN_TYPE | userName | Username or Email address |  | userName_1
 UNKNOWN_TYPE | password | Password |  | userName_1

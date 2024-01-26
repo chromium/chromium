@@ -275,7 +275,7 @@ the field serializable. To do that:
 };
 
 template <>
-struct FencedFrameConfig::AttributeUnion<String> {
+struct FencedFrameConfig::AttributeUnion<AtomicString> {
   using Type = V8UnionOpaquePropertyOrUSVString;
 };
 template <>

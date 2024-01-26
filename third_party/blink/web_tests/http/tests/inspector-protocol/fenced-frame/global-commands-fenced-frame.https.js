@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startURL(
       'resources/page-with-fenced-frame.php',
       'Tests that global commands such as captureSnapshot, captureScreenshot, getAppManifest, startScreencast, or setDownloadBehavior ' +

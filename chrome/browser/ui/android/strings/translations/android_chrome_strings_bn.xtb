@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="1796666869097395659">পরে আবার এখানে ফিরে আসতে ট্যাব মিনিমাইজ করে রাখুন</translation>
 <translation id="1807246157184219062">আলো</translation>
+<translation id="1807709131360304325">একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />-এ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
@@ -189,6 +190,7 @@
 <translation id="2056878612599315956">সাইট পজ করা আছে</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{১টি ডাউনলোড করা যায়নি}one{#টি ডাউনলোড করা যায়নি}other{#টি ডাউনলোড করা যায়নি}}</translation>
 <translation id="2067805253194386918">টেক্সট</translation>
+<translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
 <translation id="2091863218454846791">কম্প্যাক্ট ভিউ দেখানো হচ্ছে</translation>
 <translation id="2093731487903423814">গত ১৫ মিনিটে</translation>
@@ -218,7 +220,6 @@
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="2239812875700136898">'Discover-এর বিকল্প' বোতামে ক্লিক করে আপনার ফিডের কন্টেন্ট নিয়ন্ত্রণ করুন</translation>
-<translation id="2241634353105152135">শুধুমাত্র একবার</translation>
 <translation id="2247789808226901522">কার্ডের মেয়াদ শেষ হয়ে গেছে</translation>
 <translation id="2248941474044011069">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="2249635629516220541">আপনাকে বিজ্ঞাপন দেখানোর জন্য সাইট দ্বারা ব্যবহার করা তথ্য কাস্টমাইজ করুন</translation>
@@ -233,7 +234,6 @@
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
 <translation id="2323763861024343754">সাইটের স্টোরেজ</translation>
-<translation id="2327226657832576859">পিডিএফ অটোমেটিক খুলতে চান?</translation>
 <translation id="2328985652426384049">সাইন ইন করতে পারছেন না</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ইনস্টল করা যায়নি।</translation>
 <translation id="2349710944427398404">অ্যাকাউন্ট, ​​বুকমার্ক এবং স্টোর করা সেটিংসসহ Chrome-এর ব্যবহার করা মোট ডেটা</translation>
@@ -316,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
+<translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> নামের ট্যাবটি বন্ধ করা হবে</translation>
 <translation id="281504910091592009">আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং পরিচালনা করুন</translation>
 <translation id="2827278682606527653">স্ক্রিনের অর্ধেক উচ্চতা পর্যন্ত ফিড কার্ড মেনু খোলা আছে</translation>
@@ -354,7 +355,6 @@
 <translation id="2946420957526726953">অন্য ডিভাইসে কানেক্ট করার জন্য Chrome আপডেট করা হচ্ছে</translation>
 <translation id="2951071800649516099">পরে পড়ার জন্য পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
-<translation id="2961210776189273067">সম্বোধন</translation>
 <translation id="296370266220139811">সময় সাশ্রয় ও কম টাইপ করা</translation>
 <translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="297771753501244313">আগেরবার খোলার সময় অনুযায়ী সাজান</translation>
@@ -600,6 +600,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
+<translation id="4311652497846705514">পিডিএফ খুলতে চান?</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
 <translation id="433213510553688132">অনুসরণ করা হচ্ছে...</translation>
 <translation id="4335835283689002019">'নিরাপদ ব্রাউজিং' বন্ধ আছে</translation>
@@ -639,7 +640,6 @@
 <translation id="4523326818319942067">গত ঘণ্টায়</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4532845899244822526">ফোল্ডার বেছে নিন</translation>
-<translation id="4541505619120536051">সব সময় খুলবে</translation>
 <translation id="4543131175509360848">কোনও পাসকী শিট নেই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4554077758708533499">ইউএসবি কেবেলের সাথে কানেক্ট করা হয়েছে</translation>
@@ -831,7 +831,6 @@
 <translation id="5486841595534124508">পৃষ্ঠার ইনসাইট হাবের জন্য গোপনীয়তা বিজ্ঞপ্তির লোগো 'মাই অ্যাক্টিভিটি' পৃষ্ঠায় রিডাইরেক্ট করে।</translation>
 <translation id="5487521232677179737">ডেটা সাফ করুন</translation>
 <translation id="5492637351392383067">অন-ডিভাইস এনক্রিপশন</translation>
-<translation id="5509866835115085009">আপনি কোনও পিডিএফ ফাইল ডাউনলোড করলে, Chrome সেটি অটোমেটিক খুলতে পারে।</translation>
 <translation id="5514904542973294328">এই ডিভাইসের প্রশাসক অক্ষম করেছে</translation>
 <translation id="5515439363601853141">আপনার পাসওয়ার্ড দেখতে আনলক করুন</translation>
 <translation id="5517095782334947753">আপনার জন্য <ph name="FROM_ACCOUNT" /> থেকে বুকমার্কস, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস আছে।</translation>
@@ -925,6 +924,7 @@
 <translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5966233851250124270">Chrome আপনার পছন্দ মনে রাখবে</translation>
+<translation id="5977976211062815271">এই ডিভাইসে</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5995726099713306770">পৃষ্ঠাটি আবার ডাউনলোড করবেন?</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
@@ -1302,6 +1302,7 @@
 <translation id="7810647596859435254">এর মাধ্যমে খুলুন...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{সব ফাইল, তালিকাতে ১টি ফাইল আছে}one{সব ফাইল, তালিকাতে #টি ফাইল আছে}other{সব ফাইল, তালিকাতে #টি ফাইল আছে}}</translation>
 <translation id="7815484226266492798">বড় স্ক্রিনশট নেওয়ার বোতাম</translation>
+<translation id="7821130663268546430">আপনি ট্যাব পাল্টানোর ফিচারে সব খোলা ট্যাব খুঁজতে পারবেন</translation>
 <translation id="7822705602465980873">আপনি সাইন-ইন করলে, আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে এই ডেটা Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="78270725016672455">কোনও সাইটে সাইন-ইন করার জন্য আপনার কম্পিউটার এই ডিভাইসটি রেজিস্টার করতে চায়</translation>
 <translation id="7844171778363018843">সিঙ্ক করার জন্য কোনও ডেটা বেছে নেওয়া হয়নি</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> পুরনো হয়ে গেছে।</translation>
 <translation id="7944772052836377867">সিঙ্ক করার আগে যাচাই করিয়ে নিতে হবে যে এটি আপনি করছেন</translation>
 <translation id="7947953824732555851">সম্মত হয়ে সাইন-ইন করুন</translation>
+<translation id="7951102827450076904">সবসময় ডাউনলোড করা পিডিএফ খুলুন</translation>
 <translation id="7957413488482743710">আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে, ভার্চুয়াল কার্ড আসল কার্ডের ছদ্মবেশ ধারন করে। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">পেজের ইনসাইট শিটের ফিরে যাওয়ার বোতাম</translation>
 <translation id="7961926449547174351">আপনি স্টোরেজ অ্যাক্সেস বন্ধ করে রেখেছেন, 'সেটিংস' থেকে এটি চালু করতে পারবেন।</translation>

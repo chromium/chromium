@@ -52,6 +52,7 @@ void BrowsingHistoryBridge::QueryHistory(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     jstring j_query,
+    const JavaParamRef<jstring>& j_app_id,
     jboolean j_host_only) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
@@ -60,7 +61,9 @@ void BrowsingHistoryBridge::QueryHistory(
   options.max_count = kMaxQueryCount;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   options.host_only = j_host_only;
-
+  if (j_app_id) {
+    options.app_id = base::android::ConvertJavaStringToUTF8(j_app_id);
+  }
   browsing_history_service_->QueryHistory(
       base::android::ConvertJavaStringToUTF16(env, j_query), options);
 }

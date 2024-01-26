@@ -430,6 +430,34 @@ std::optional<FresnelImportData> ObservationImpl::GenerateObservationImportData(
     return std::nullopt;
   }
 
+  // Finch flag is disabled by default.
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceActiveClientChurnObservationNewDeviceMetadata)) {
+    std::optional<base::Time> first_active_week_ts =
+        utils::GetFirstActiveWeek();
+
+    if (first_active_week_ts->is_null() ||
+        first_active_week_ts.value() == base::Time::UnixEpoch()) {
+      LOG(ERROR) << "Failed to retrieve first active week from VPD. Leaving "
+                    "first active and last powerwash week unset.";
+    } else {
+      bool within_date_range = utils::IsFirstActiveUnderFourMonthsAgo(
+          active_ts, first_active_week_ts.value());
+
+      // Privacy approved 4 months of first active week history.
+      // Reference b/316402479.
+      if (within_date_range) {
+        observation_metadata->set_first_active_week(
+            utils::ConvertTimeToISO8601String(first_active_week_ts.value()));
+
+        // Last powerwash week is read from preserved file and stored in
+        // |ReportControllerInitializer|.
+        observation_metadata->set_last_powerwash_week(
+            GetParams()->GetChromeDeviceParams().last_powerwash_week);
+      }
+    }
+  }
+
   import_data.set_plaintext_id(psm_id.value().sensitive_id());
   import_data.set_window_identifier(window_id);
   import_data.set_is_pt_window_identifier(true);

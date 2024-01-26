@@ -27,6 +27,11 @@ struct ASH_EXPORT MouseMetadata {
   bool operator==(const MouseMetadata& other) const;
 };
 
+struct ASH_EXPORT GraphicsTabletMetadata {
+  mojom::CustomizationRestriction customization_restriction;
+  bool operator==(const GraphicsTabletMetadata& other) const;
+};
+
 struct ASH_EXPORT KeyboardMetadata {};
 
 struct ASH_EXPORT KeyboardMouseComboMetadata {
@@ -37,6 +42,11 @@ struct ASH_EXPORT KeyboardMouseComboMetadata {
 // This function returns mouse metadata. Returns nullptr if there is no metadata
 // on the mouse.
 ASH_EXPORT const MouseMetadata* GetMouseMetadata(const ui::InputDevice& device);
+
+// This function returns graphics tablet metadata. Returns nullptr if there is
+// no metadata on the graphics tablet.
+ASH_EXPORT const GraphicsTabletMetadata* GetGraphicsTabletMetadata(
+    const ui::InputDevice& device);
 
 // This function returns keyboard metadata. Returns nullptr if there is no
 // metadata on the keyboard.
@@ -55,6 +65,10 @@ ASH_EXPORT DeviceType GetDeviceType(const ui::InputDevice& device);
 ASH_EXPORT const base::flat_map<VendorProductId, MouseMetadata>&
 GetMouseMetadataList();
 
+// This function returns the graphics tablet metadata list.
+ASH_EXPORT const base::flat_map<VendorProductId, GraphicsTabletMetadata>&
+GetGraphicsTabletMetadataList();
+
 // This function returns the keyboard mouse combo metadata list.
 ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMouseComboMetadata>&
 GetKeyboardMouseComboMetadataList();
@@ -66,6 +80,10 @@ GetKeyboardMetadataList();
 // This function returns the button remapping list from the peripherals.
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
+
+// This function returns the vid pid alias list.
+ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&
+GetVidPidAliasList();
 
 }  // namespace ash
 

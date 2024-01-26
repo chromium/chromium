@@ -156,6 +156,8 @@ void EnrollmentRequisitionManager::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterBooleanPref(prefs::kDeviceEnrollmentAutoStart, false);
   registry->RegisterBooleanPref(prefs::kDeviceEnrollmentCanExit, true);
+  registry->RegisterStringPref(prefs::kEnrollmentVersionOS, std::string());
+  registry->RegisterStringPref(prefs::kEnrollmentVersionBrowser, std::string());
 }
 
 }  // namespace policy

@@ -437,7 +437,7 @@ double EligibilityModule::GetImageFeatureValue(
     FeatureLibrary::ImageLevelFeatureName feature_name,
     const SingleImageGeometryFeatures& image) {
   // See if we have cached it.
-  absl::optional<double> feature_opt =
+  std::optional<double> feature_opt =
       RetrieveImageFeatureIfPresent(feature_name, image.image_identifier);
   if (feature_opt.has_value()) {
     return feature_opt.value();
@@ -520,7 +520,7 @@ double EligibilityModule::GetImageFeatureValue(
   return feature_value;
 }
 
-absl::optional<double> EligibilityModule::RetrieveImageFeatureIfPresent(
+std::optional<double> EligibilityModule::RetrieveImageFeatureIfPresent(
     FeatureLibrary::ImageLevelFeatureName feature_name,
     const std::string& image_id) {
   if (const auto& feature_to_value_it = image_level_features_.find(image_id);
@@ -536,7 +536,7 @@ absl::optional<double> EligibilityModule::RetrieveImageFeatureIfPresent(
 double EligibilityModule::RetrieveImageFeatureOrDie(
     FeatureLibrary::ImageLevelFeatureName feature_name,
     const std::string& image_id) {
-  absl::optional<double> feature_opt =
+  std::optional<double> feature_opt =
       RetrieveImageFeatureIfPresent(feature_name, image_id);
   CHECK(feature_opt.has_value()) << "Did not find image feature.";
   return feature_opt.value();

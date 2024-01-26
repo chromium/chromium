@@ -46,7 +46,6 @@ class EditorMenuTextfieldView : public views::View,
   // views::View:
   void Layout() override;
   void AddedToWidget() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

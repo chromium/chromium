@@ -320,7 +320,7 @@ void HttpAuthDialog::Cancel() {
       [](base::WeakPtr<HttpAuthDialog> dialog,
          LoginAuthRequiredCallback callback) {
         if (dialog) {
-          std::move(callback).Run(absl::nullopt);
+          std::move(callback).Run(std::nullopt);
         }
       },
       weak_factory_.GetWeakPtr(), std::move(callback_));

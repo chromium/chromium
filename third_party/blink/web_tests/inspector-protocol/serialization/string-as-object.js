@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that passing a string intestead of a protocol object does not crash crash backend (crbug.com/1154370)`);
 

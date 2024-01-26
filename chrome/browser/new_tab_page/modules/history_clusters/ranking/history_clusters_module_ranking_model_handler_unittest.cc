@@ -23,7 +23,7 @@ class FakeModelProvider
  public:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     CHECK_EQ(
         optimization_target,
@@ -67,17 +67,17 @@ class HistoryClustersModuleRankingModelHandlerTest : public testing::Test {
   }
 
   void PushModelFileToModelExecutor(
-      absl::optional<
+      std::optional<
           new_tab_page::proto::HistoryClustersModuleRankingModelMetadata>
           metadata) {
-    absl::optional<optimization_guide::proto::Any> any;
+    std::optional<optimization_guide::proto::Any> any;
 
     // Craft a correct Any proto in the case we passed in metadata.
     if (metadata.has_value()) {
       std::string serialized_metadata;
       (*metadata).SerializeToString(&serialized_metadata);
       optimization_guide::proto::Any any_proto;
-      any = absl::make_optional(any_proto);
+      any = std::make_optional(any_proto);
       any->set_value(serialized_metadata);
       any->set_type_url(
           "type.googleapis.com/"
@@ -130,7 +130,7 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest, ModelNotAvailable) {
 }
 
 TEST_F(HistoryClustersModuleRankingModelHandlerTest, ModelUpdatedBadMetadata) {
-  PushModelFileToModelExecutor(/*metadata=*/absl::nullopt);
+  PushModelFileToModelExecutor(/*metadata=*/std::nullopt);
 
   EXPECT_FALSE(model_handler()->CanExecuteAvailableModel());
 
@@ -173,6 +173,8 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
   inputs1.num_total_visits = 4;
   inputs1.num_unique_hosts = 2;
   inputs1.num_abandoned_carts = 1;
+  inputs1.num_times_seen_last_24h = 2;
+  inputs1.num_times_used_last_24h = 1;
 
   HistoryClustersModuleRankingSignals inputs2;
   inputs2.duration_since_most_recent_visit = base::Minutes(5);
@@ -181,6 +183,8 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
   inputs2.num_total_visits = 10;
   inputs2.num_unique_hosts = 3;
   inputs2.num_abandoned_carts = 0;
+  inputs2.num_times_seen_last_24h = 1;
+  inputs2.num_times_used_last_24h = 0;
 
   {
     new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
@@ -226,6 +230,20 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
     EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
 
     EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 1, 3 + 0));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_SEEN);
+    metadata.add_signals(
+        new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_USED);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 1, 1 + 0));
   }
 }
 

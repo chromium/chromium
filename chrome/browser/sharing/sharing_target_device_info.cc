@@ -18,4 +18,10 @@ SharingTargetDeviceInfo::SharingTargetDeviceInfo(
       form_factor_(form_factor),
       last_updated_timestamp_(last_updated_timestamp) {}
 
+SharingTargetDeviceInfo::SharingTargetDeviceInfo(SharingTargetDeviceInfo&&) =
+    default;
+
 SharingTargetDeviceInfo::~SharingTargetDeviceInfo() = default;
+
+SharingTargetDeviceInfo& SharingTargetDeviceInfo::operator=(
+    SharingTargetDeviceInfo&&) = default;

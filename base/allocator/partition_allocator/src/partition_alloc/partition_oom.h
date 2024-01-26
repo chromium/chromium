@@ -8,7 +8,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_OOM_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_OOM_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"

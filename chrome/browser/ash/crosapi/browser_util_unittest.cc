@@ -968,4 +968,15 @@ TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreGoogleDisableToUserChoice) {
   }
 }
 
+// Lacros Only flag is hidden in guest sessions
+TEST_F(BrowserUtilTest, HidingLacrosFlagsForAllGuestUsers) {
+  const User* user = fake_user_manager_->AddGuestUser();
+  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                                   /*browser_restart=*/false,
+                                   /*is_child=*/false);
+  ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+      policy::PolicyMap());
+  EXPECT_FALSE(browser_util::IsLacrosOnlyFlagAllowed());
+}
+
 }  // namespace crosapi

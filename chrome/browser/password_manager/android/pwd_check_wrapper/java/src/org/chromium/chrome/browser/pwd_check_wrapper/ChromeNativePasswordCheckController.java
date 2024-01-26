@@ -23,7 +23,7 @@ class ChromeNativePasswordCheckController
 
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(
-            @PasswordStoreType int passwordStoreType) {
+            @PasswordStorageType int passwordStorageType) {
         mPasswordCheckResult = new CompletableFuture<>();
         mPasswordsTotalCount = new CompletableFuture<>();
         // Start observing the password check events (including data loads).
@@ -40,7 +40,7 @@ class ChromeNativePasswordCheckController
 
     @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            int passwordStoreType) {
+            int passwordStorageType) {
         mPasswordCheckResult = new CompletableFuture<>();
         mPasswordsTotalCount = new CompletableFuture<>();
         mPasswordCheck.addObserver(this, true);

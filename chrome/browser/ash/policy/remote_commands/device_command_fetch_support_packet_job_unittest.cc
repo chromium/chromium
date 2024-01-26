@@ -12,20 +12,24 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -35,12 +39,16 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
+#include "record.pb.h"
+#include "record_constants.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::IsJson;
+using ::testing::_;
 using ::testing::WithArg;
 
 namespace policy {
@@ -51,57 +59,9 @@ namespace em = enterprise_management;
 
 namespace {
 
-// SessionInfo is the parameter type for
-// ParametrizedFetchSupportPacketTest tests. It includes the different session
-// types that can exist on ChromeOS devices and if the PII is allowed to be kept
-// in the collected logs. If PII is not allowed, FETCH_SUPPORT_PACKET command
-// job will attach a note to the command result payload.
-struct SessionInfo {
-  // Print for easier debugging:
-  // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
-  friend void PrintTo(const SessionInfo& session_info, std::ostream* os) {
-    *os << "{session_type="
-        << test::SessionTypeToString(session_info.session_type)
-        << ", pii_allowed=" << session_info.pii_allowed << "}";
-  }
-
-  TestSessionType session_type;
-  bool pii_allowed;
-};
-
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456;
 // The age of command in milliseconds.
 constexpr int64 kCommandAge = 60000;
-
-constexpr char kExpectedUploadParametersFormatter[] =
-    R"({"Command-ID":"%ld","File-Type":"support_file","Filename":"%s"}
-application/json)";
-
-// Return a valid command payload with at least one data collector requested.
-// The returned payload doesn't contain any PII request. The returned payload
-// will be as following.
-// {"supportPacketDetails":{
-//     "issueCaseId": "issue_case_id",
-//     "issueDescription": "issue description",
-//     "requestedDataCollectors":
-//     [support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS(17)],
-//     "requestedPiiTypes": [],
-//     "requesterMetadata": "obfuscated123"
-//   }
-// }
-base::Value::Dict GetCommandPayloadDict() {
-  base::Value::Dict support_packet_details;
-  support_packet_details.Set("issueCaseId", "issue_case_id");
-  support_packet_details.Set("issueDescription", "issue description");
-  support_packet_details.Set("requesterMetadata", "obfuscated123");
-  support_packet_details.Set(
-      "requestedDataCollectors",
-      base::Value::List().Append(
-          support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS));
-  support_packet_details.Set("requestedPiiTypes", base::Value::List());
-  return base::Value::Dict().Set("supportPacketDetails",
-                                 std::move(support_packet_details));
-}
 
 em::RemoteCommand GenerateCommandProto(std::string payload) {
   em::RemoteCommand command_proto;
@@ -111,8 +71,6 @@ em::RemoteCommand GenerateCommandProto(std::string payload) {
   command_proto.set_payload(payload);
   return command_proto;
 }
-
-}  // namespace
 
 class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
  public:
@@ -128,7 +86,13 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
     ASSERT_TRUE(profile_manager_.SetUp());
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    reporting_test_storage_ =
+        base::MakeRefCounted<reporting::test::TestStorageModule>();
+    reporting_test_enviroment_ =
+        reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            reporting_test_storage_);
+
     ash::DebugDaemonClient::InitializeFake();
     // Set serial number for testing.
     statistics_provider_.SetMachineStatistic("serial_number", "000000");
@@ -138,18 +102,24 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+      target_dir_ = temp_dir_.GetPath();
+    }
+
+    DeviceCommandFetchSupportPacketJob::SetTargetDirForTesting(&target_dir_);
   }
 
   void TearDown() override {
+    DeviceCommandFetchSupportPacketJob::SetTargetDirForTesting(nullptr);
+
     kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
     arc_kiosk_app_manager_.reset();
 
     ash::DebugDaemonClient::Shutdown();
-    if (!temp_dir_.IsValid()) {
-      return;
-    }
-    EXPECT_TRUE(temp_dir_.Delete());
     DeviceSettingsTestBase::TearDown();
   }
 
@@ -174,51 +144,48 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
   }
 
-  // TODO(b/313897897): We can directly use FakeReportQueue instead.
-  void CaptureUpcomingEventOnReportQueue(
-      DeviceCommandFetchSupportPacketJob& in_job,
-      ash::reporting::LogUploadEvent& upcoming_event) {
-    std::unique_ptr<reporting::MockReportQueueStrict> mock_report_queue =
-        std::make_unique<reporting::MockReportQueueStrict>();
-    EXPECT_CALL(*mock_report_queue.get(), AddRecord)
-        .WillOnce(testing::WithArgs<0, 2>(
-            [&upcoming_event](
-                std::string serialized_record,
-                reporting::ReportQueue::EnqueueCallback callback) {
-              // Parse the enqueued event from serialized record proto.
-              ASSERT_TRUE(upcoming_event.ParseFromString(serialized_record));
-              std::move(callback).Run(reporting::Status::StatusOK());
-            }));
-    in_job.SetReportQueueForTesting(std::move(mock_report_queue));
-  }
-
  protected:
   // App manager instances for testing kiosk sessions.
   std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
+  scoped_refptr<reporting::test::TestStorageModule> reporting_test_storage_;
+  std::unique_ptr<reporting::ReportingClient::TestEnvironment>
+      reporting_test_enviroment_;
+
   ash::system::FakeStatisticsProvider statistics_provider_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
-  base::ScopedTempDir temp_dir_;
   base::HistogramTester histogram_tester_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  base::FilePath target_dir_;
+  base::ScopedTempDir temp_dir_;
 };
+
+// Fixture for tests parameterized over the possible user session
+// types(`TestSessionType`) and PII policies.
+class DeviceCommandFetchSupportPacketTestParameterized
+    : public DeviceCommandFetchSupportPacketTest,
+      public ::testing::WithParamInterface<test::SessionInfo> {};
+
+}  // namespace
 
 TEST_F(DeviceCommandFetchSupportPacketTest,
        FailIfPayloadContainsEmptyDataCollectors) {
   DeviceCommandFetchSupportPacketJob job;
   // Wrong payload with empty data collectors list.
-  base::Value::Dict command_payload = GetCommandPayloadDict();
+  base::Value::Dict command_payload =
+      test::GetFetchSupportPacketCommandPayloadDict(
+          {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS});
   command_payload.SetByDottedPath(
       "supportPacketDetails.requestedDataCollectors", base::Value::List());
-  std::string wrong_payload;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(std::move(command_payload), &wrong_payload));
+  auto wrong_payload = base::WriteJson(std::move(command_payload));
+  ASSERT_TRUE(wrong_payload.has_value());
 
   // Shouldn't be able to initialize with wrong payload.
   EXPECT_FALSE(job.Init(base::TimeTicks::Now(),
-                        GenerateCommandProto(wrong_payload), em::SignedData()));
+                        GenerateCommandProto(wrong_payload.value()),
+                        em::SignedData()));
   histogram_tester_.ExpectUniqueSample(
       kFetchSupportPacketFailureHistogramName,
       EnterpriseFetchSupportPacketFailureType::kFailedOnWrongCommandPayload, 1);
@@ -230,13 +197,11 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWhenLogUploadDisabled) {
 
   DeviceCommandFetchSupportPacketJob job;
 
-  job.SetTargetDirForTesting(temp_dir_.GetPath());
+  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
+      {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS}));
+  ASSERT_TRUE(payload.has_value());
 
-  std::string payload;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(std::move(GetCommandPayloadDict()), &payload));
-
-  InitAndRunCommandJob(job, GenerateCommandProto(payload));
+  InitAndRunCommandJob(job, GenerateCommandProto(payload.value()));
 
   EXPECT_EQ(job.status(), RemoteCommandJob::FAILED);
   // Expect result payload when the command fails because of not being
@@ -253,45 +218,41 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWhenLogUploadDisabled) {
                                        1);
 }
 
-// Fixture for tests parameterized over the possible user session
-// types(`TestSessionType`) and PII policies.
-class DeviceCommandFetchSupportPacketTestParameterized
-    : public DeviceCommandFetchSupportPacketTest,
-      public ::testing::WithParamInterface<SessionInfo> {};
-
 TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
        SuccessfulCommandRequestWithoutPii) {
-  const SessionInfo& session_info = GetParam();
+  const test::SessionInfo& session_info = GetParam();
   StartSessionOfType(session_info.session_type);
   SetLogUploadEnabledPolicy(/*enabled=*/true);
 
   DeviceCommandFetchSupportPacketJob job;
 
-  job.SetTargetDirForTesting(temp_dir_.GetPath());
+  base::test::TestFuture<ash::reporting::LogUploadEvent>
+      log_upload_event_future;
+  test::CaptureUpcomingLogUploadEventOnReportingStorage(
+      reporting_test_storage_, log_upload_event_future.GetRepeatingCallback());
 
-  ash::reporting::LogUploadEvent enqueued_event;
-  CaptureUpcomingEventOnReportQueue(job, enqueued_event);
-
-  std::string payload;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(std::move(GetCommandPayloadDict()), &payload));
-  InitAndRunCommandJob(job, GenerateCommandProto(payload));
+  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
+      {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS}));
+  ASSERT_TRUE(payload.has_value());
+  InitAndRunCommandJob(job, GenerateCommandProto(payload.value()));
 
   EXPECT_EQ(job.status(), RemoteCommandJob::ACKED);
 
-  base::FilePath exported_file = job.GetExportedFilepathForTesting();
-
+  ash::reporting::LogUploadEvent enqueued_event =
+      log_upload_event_future.Take();
+  EXPECT_TRUE(enqueued_event.mutable_upload_settings()->has_origin_path());
+  base::FilePath exported_file(
+      enqueued_event.mutable_upload_settings()->origin_path());
+  // Ensure that the resulting `exported_file` exist under target directory.
+  EXPECT_EQ(exported_file.DirName(), target_dir_);
+  EXPECT_TRUE(enqueued_event.has_command_id());
+  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
   // Check the contents of LogUploadEvent that the job enqueued.
-  std::string expected_upload_parameters =
-      base::StringPrintf(kExpectedUploadParametersFormatter, kUniqueID,
-                         exported_file.BaseName().value().c_str());
+  std::string expected_upload_parameters = test::GetExpectedUploadParameters(
+      kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
-  EXPECT_EQ(exported_file.value(),
-            *enqueued_event.mutable_upload_settings()->mutable_origin_path());
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
   // The result payload should contain the success result code.
   EXPECT_THAT(
       enqueued_event.command_result_payload(),
@@ -299,9 +260,12 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
 
-  int64_t file_size;
-  ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-  EXPECT_GT(file_size, 0);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking_for_test;
+    int64_t file_size;
+    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
+    EXPECT_GT(file_size, 0);
+  }
 
   histogram_tester_.ExpectUniqueSample(
       kFetchSupportPacketFailureHistogramName,
@@ -310,42 +274,42 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
 
 TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
        SuccessfulCommandRequestWithPii) {
-  const SessionInfo& session_info = GetParam();
+  const test::SessionInfo& session_info = GetParam();
   StartSessionOfType(session_info.session_type);
   SetLogUploadEnabledPolicy(/*enabled=*/true);
 
   DeviceCommandFetchSupportPacketJob job;
 
-  job.SetTargetDirForTesting(temp_dir_.GetPath());
-
-  ash::reporting::LogUploadEvent enqueued_event;
-  CaptureUpcomingEventOnReportQueue(job, enqueued_event);
+  base::test::TestFuture<ash::reporting::LogUploadEvent>
+      log_upload_event_future;
+  test::CaptureUpcomingLogUploadEventOnReportingStorage(
+      reporting_test_storage_, log_upload_event_future.GetRepeatingCallback());
 
   // Add a requested PII type to the command payload.
-  base::Value::Dict command_payload_dict = GetCommandPayloadDict();
-  command_payload_dict.SetByDottedPath(
-      "supportPacketDetails.requestedPiiTypes",
-      base::Value::List().Append(support_tool::PiiType::EMAIL));
-  std::string payload;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(std::move(command_payload_dict), &payload));
-  InitAndRunCommandJob(job, GenerateCommandProto(payload));
+  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
+      {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS},
+      {support_tool::PiiType::EMAIL}));
+  ASSERT_TRUE(payload.has_value());
+  InitAndRunCommandJob(job, GenerateCommandProto(payload.value()));
 
   EXPECT_EQ(job.status(), RemoteCommandJob::ACKED);
 
-  base::FilePath exported_file = job.GetExportedFilepathForTesting();
-
+  ash::reporting::LogUploadEvent enqueued_event =
+      log_upload_event_future.Take();
+  EXPECT_TRUE(enqueued_event.mutable_upload_settings()->has_origin_path());
+  base::FilePath exported_file(
+      enqueued_event.mutable_upload_settings()->origin_path());
+  // Ensure that the resulting `exported_file` exist under target directory.
+  EXPECT_EQ(exported_file.DirName(), target_dir_);
+  EXPECT_TRUE(enqueued_event.has_command_id());
+  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
   // Check the contents of LogUploadEvent that the job enqueued.
-  std::string expected_upload_parameters =
-      base::StringPrintf(kExpectedUploadParametersFormatter, kUniqueID,
-                         exported_file.BaseName().value().c_str());
+  std::string expected_upload_parameters = test::GetExpectedUploadParameters(
+      kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
-  EXPECT_EQ(exported_file.value(),
-            *enqueued_event.mutable_upload_settings()->mutable_origin_path());
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
+
   // The result payload should contain the success result code.
   base::Value::Dict expected_payload;
   expected_payload.Set("result",
@@ -362,9 +326,12 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
   EXPECT_THAT(enqueued_event.command_result_payload(),
               IsJson(std::move(expected_payload)));
 
-  int64_t file_size;
-  ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-  EXPECT_GT(file_size, 0);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking_for_test;
+    int64_t file_size;
+    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
+    EXPECT_GT(file_size, 0);
+  }
 
   histogram_tester_.ExpectUniqueSample(
       kFetchSupportPacketFailureHistogramName,
@@ -375,27 +342,27 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandFetchSupportPacketTestParameterized,
     ::testing::Values(
-        SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAffiliatedUserSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManagedGuestSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kGuestSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kUnaffiliatedUserSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kNoSession,
-                    /*pii_allowed=*/false}));
+        test::SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAffiliatedUserSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManagedGuestSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kGuestSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kUnaffiliatedUserSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kNoSession,
+                          /*pii_allowed=*/false}));
 
 }  // namespace policy

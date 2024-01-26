@@ -104,6 +104,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   AudioCallbackMetric GetCallbackMetric() const;
 
+  // Returns the audio buffer size set for the underlying audio callback in the
+  // AudioDestination under blink/renderer/platform.
+  uint32_t PlatformBufferSize() const;
+
   // mojom::blink::PermissionObserver
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
 

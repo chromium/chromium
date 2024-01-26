@@ -77,7 +77,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               device_sync_client,
               secure_channel_client,
               kSecureChannelFeatureName,
-              std::make_unique<PhoneHubMetricsRecorder>())),
+              std::make_unique<PhoneHubMetricsRecorder>(),
+              phone_hub_structured_metrics_logger_.get())),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,

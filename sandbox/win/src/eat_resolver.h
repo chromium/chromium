@@ -43,7 +43,7 @@ class EatResolverThunk : public ResolverThunk {
 
  private:
   // The entry to patch.
-  // The field is accessed too early during the process startup to support
+  // RAW_PTR_EXCLUSION: Accessed too early during the process startup to support
   // raw_ptr<T>.
   RAW_PTR_EXCLUSION DWORD* eat_entry_;
 };

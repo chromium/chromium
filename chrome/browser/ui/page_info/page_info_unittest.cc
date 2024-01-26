@@ -33,7 +33,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -206,15 +205,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 
   void ExpectInitialSetCookieInfoCall(MockPageInfoUI* mock_ui) {
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1430440): SetCookiesInfo is called twice on creation, once
-    // when the observation of web_contents starts and once when PageInfoUI is
-    // initialized. Clean this up after it is fixed.
-    int set_cookie_info_calls =
-        base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)
-            ? 1
-            : 2;
-    EXPECT_CALL(*mock_ui, SetCookieInfo(_)).Times(set_cookie_info_calls);
+    EXPECT_CALL(*mock_ui, SetCookieInfo(_)).Times(1);
 #else
     EXPECT_CALL(*mock_ui, SetCookieInfo(_));
 #endif
@@ -1562,23 +1553,20 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   SetDefaultUIExpectations(mock_ui());
   NavigateAndCommit(url());
 
-  // When `kMigrateStorageToBDM` is enabled calls to `PresentSiteDataInternal`
-  // from `PresentSiteData` are synchronous vs. async when it's disabled due to
-  // the UpdateIgnoredEmptyStorageKeys binding the call. This makes calls to
-  // `SetCookieInfo` appear as they're called.
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    // This call is needed to satisfy the default expectations after navigation.
-    page_info();
-    Mock::VerifyAndClearExpectations(mock_ui());
-    // `SetCookieInfo` is called once through `OnStatusChanged` and another time
-    // through `OnThirdPartyToggleClicked` which calls `OnStatusChanged` down
-    // its call chain.
-    EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
-  }
+  // Calls to `PresentSiteDataInternal` from `PresentSiteData` are synchronous
+  // which makes calls to `SetCookieInfo` appear as they're called.
+  // This call is needed to satisfy the default expectations after navigation.
+  page_info();
+  Mock::VerifyAndClearExpectations(mock_ui());
+  // `SetCookieInfo` is called once through `OnStatusChanged` and another time
+  // through `OnThirdPartyToggleClicked` which calls `OnStatusChanged` down
+  // its call chain.
+  EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
   page_info()->OnStatusChanged(
-      CookieControlsStatus::kEnabled, CookieControlsEnforcement::kNoEnforcement,
+      CookieControlsStatus::kEnabled,
+      /*controls_visible=*/true, /*protections_on=*/true,
+      CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -1593,18 +1581,17 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
   SetDefaultUIExpectations(mock_ui());
   NavigateAndCommit(url());
 
-  // As above, expectations need to be cleared.
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kMigrateStorageToBDM)) {
-    page_info();
-    Mock::VerifyAndClearExpectations(mock_ui());
-    EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
-  }
+  // As in `ShowInfoBarWhenAllowingThirdPartyCookies` above, expectations need
+  // to be cleared.
+  page_info();
+  Mock::VerifyAndClearExpectations(mock_ui());
+  EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  page_info()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
-                               base::Time());
+  page_info()->OnStatusChanged(
+      CookieControlsStatus::kDisabledForSite,
+      /*controls_visible=*/true, /*protections_on=*/false,
+      CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/true);

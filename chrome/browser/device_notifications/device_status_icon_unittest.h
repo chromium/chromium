@@ -31,7 +31,7 @@ class DeviceStatusIconTestBase : public DeviceSystemTrayIconTestBase {
   // NumCommandIdOverLimitExtensionOrigin, where the input parameter
   // profile_connection_counts may not capture all of the origins because the
   // limit is exceeded.
-  absl::optional<int> override_title_total_connection_count_;
+  std::optional<int> override_title_total_connection_count_;
 
  private:
   void CheckSeparatorMenuItem(StatusIconMenuModel* menu_item, size_t menu_idx);

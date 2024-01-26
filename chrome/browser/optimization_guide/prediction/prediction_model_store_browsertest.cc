@@ -132,7 +132,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
     OptimizationGuideKeyedServiceFactory::GetForProfile(profile)
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt, model_file_observer);
+            /*model_metadata=*/std::nullopt, model_file_observer);
   }
 
   // Registers |model_file_observer| for model updates from the optimization
@@ -168,7 +168,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   void set_server_model_cache_key(
-      absl::optional<proto::ModelCacheKey> server_model_cache_key) {
+      std::optional<proto::ModelCacheKey> server_model_cache_key) {
     server_model_cache_key_ = server_model_cache_key;
   }
 
@@ -240,7 +240,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
   // Server returned ModelCacheKey in the GetModels response.
-  absl::optional<proto::ModelCacheKey> server_model_cache_key_;
+  std::optional<proto::ModelCacheKey> server_model_cache_key_;
 };
 
 class PredictionModelStoreBrowserTest
@@ -627,83 +627,6 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_TRUE(
       model_file_observer_foo.model_info()->GetModelFilePath().IsAbsolute());
-}
-
-class PredictionModelStoreMigrationBrowserTest
-    : public PredictionModelStoreBrowserTestBase {
- public:
-  PredictionModelStoreMigrationBrowserTest() = default;
-  ~PredictionModelStoreMigrationBrowserTest() override = default;
-
-  PredictionModelStoreMigrationBrowserTest(
-      const PredictionModelStoreMigrationBrowserTest&) = delete;
-  PredictionModelStoreMigrationBrowserTest& operator=(
-      const PredictionModelStoreMigrationBrowserTest&) = delete;
-
-  void InitializeFeatureList() override {
-    base::StringPiece test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-
-    if (base::StartsWith(test_name, "PRE_PRE_")) {
-      // First stage of migration. Old model store is active.
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kOptimizationGuideInstallWideModelStore);
-    } else if (base::StartsWith(test_name, "PRE_")) {
-      // Second stage of migration. New model store is active.
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kOptimizationGuideInstallWideModelStore);
-    } else {
-      // Last stage of migration. Old model store is active.
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kOptimizationGuideInstallWideModelStore);
-    }
-  }
-
-  void CheckOldModelStoreDirectory(bool should_exist) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_EQ(should_exist,
-              base::DirectoryExists(browser()->profile()->GetPath().Append(
-                  kOldOptimizationGuidePredictionModelDownloads)));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
-                       PRE_PRE_MigrationOldToNewToOldStore) {
-  EXPECT_FALSE(features::IsInstallWideModelStoreEnabled());
-  ModelFileObserver model_file_observer;
-  RegisterAndWaitForModelUpdate(&model_file_observer);
-
-  // The model will be downloaded by the old model store.
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-      PredictionModelDownloadStatus::kSuccess, 1);
-  CheckOldModelStoreDirectory(true);
-}
-
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
-                       PRE_MigrationOldToNewToOldStore) {
-  EXPECT_TRUE(features::IsInstallWideModelStoreEnabled());
-  ModelFileObserver model_file_observer;
-  RegisterAndWaitForModelUpdate(&model_file_observer);
-
-  // The model will be downloaded by the new model store.
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-      PredictionModelDownloadStatus::kSuccess, 1);
-  CheckOldModelStoreDirectory(false);
-}
-
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
-                       MigrationOldToNewToOldStore) {
-  EXPECT_FALSE(features::IsInstallWideModelStoreEnabled());
-  ModelFileObserver model_file_observer;
-  RegisterAndWaitForModelUpdate(&model_file_observer);
-
-  // The model will be downloaded again.
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-      PredictionModelDownloadStatus::kSuccess, 1);
-  CheckOldModelStoreDirectory(true);
 }
 
 }  // namespace optimization_guide

@@ -16,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 public class BookmarkModelListTestUtil {
     /** Verifies that the given expectedViewTypes are present in the given ModelList. */
-    public static void verifyModelListHaViewTypes(
+    public static void verifyModelListHasViewTypes(
             ModelList modelList, @ViewType int... expectedViewTypes) {
         assertEquals(expectedViewTypes.length, modelList.size());
         for (int i = 0; i < expectedViewTypes.length; ++i) {

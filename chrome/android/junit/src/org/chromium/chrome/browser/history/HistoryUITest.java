@@ -53,6 +53,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -72,9 +75,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
@@ -96,6 +96,7 @@ import java.util.Date;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
 @DisableFeatures({ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.RENAME_JOURNEYS})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;

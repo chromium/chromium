@@ -208,8 +208,6 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse>
   HandleGetModelExecutionRequest(const net::test_server::HttpRequest& request) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    // If the request is a GET, it corresponds to a navigation so return a
-    // normal response.
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
@@ -271,7 +269,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       ModelExecutionRemoteResponseType::kSuccessful;
 
   // The last model execution response received.
-  absl::optional<OptimizationGuideModelExecutionResult> model_execution_result_;
+  std::optional<OptimizationGuideModelExecutionResult> model_execution_result_;
 
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

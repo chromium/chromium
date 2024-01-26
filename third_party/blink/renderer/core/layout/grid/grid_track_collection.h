@@ -319,7 +319,7 @@ struct CORE_EXPORT GridSet {
           const GridTrackSize& track_definition,
           bool is_available_size_indefinite);
 
-  double FlexFactor() const;
+  float FlexFactor() const;
   LayoutUnit BaseSize() const;
   LayoutUnit GrowthLimit() const;
 

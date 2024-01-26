@@ -13,7 +13,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -133,7 +135,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param suggestion Suggestion associated with the action button.
      * @param position The position of the button in the list.
      */
-    protected void setTabSwitchOrRefineAction(
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void setTabSwitchOrRefineAction(
             PropertyModel model, AutocompleteMatch suggestion, int position) {
         @DrawableRes int icon;
         String iconString;
@@ -151,7 +154,15 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                             R.string.accessibility_omnibox_btn_refine,
                             suggestion.getFillIntoEdit());
             icon = R.drawable.btn_suggestion_refine;
-            action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
+            action =
+                    () -> {
+                        if (suggestion.isSearchSuggestion()) {
+                            RecordUserAction.record("MobileOmniboxRefineSuggestion.Search");
+                        } else {
+                            RecordUserAction.record("MobileOmniboxRefineSuggestion.Url");
+                        }
+                        mSuggestionHost.onRefineSuggestion(suggestion);
+                    };
         }
         setActionButtons(
                 model,

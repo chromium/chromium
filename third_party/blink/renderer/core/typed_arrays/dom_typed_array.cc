@@ -10,17 +10,14 @@
 namespace blink {
 
 template <typename T, typename V8TypedArray, bool clamped>
-v8::MaybeLocal<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
+v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
     ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   DOMArrayBufferBase* buffer = BufferBase();
-  v8::Local<v8::Value> v8_buffer;
-  if (!ToV8Traits<DOMArrayBufferBase>::ToV8(script_state, buffer)
-           .ToLocal(&v8_buffer)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
+  v8::Local<v8::Value> v8_buffer =
+      ToV8Traits<DOMArrayBufferBase>::ToV8(script_state, buffer);
   DCHECK_EQ(IsShared(), v8_buffer->IsSharedArrayBuffer());
 
   v8::Local<v8::Object> wrapper;

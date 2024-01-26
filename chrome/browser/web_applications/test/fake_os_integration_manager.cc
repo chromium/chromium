@@ -129,7 +129,7 @@ void FakeOsIntegrationManager::UpdateOsHooks(
 void FakeOsIntegrationManager::Synchronize(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
-    absl::optional<SynchronizeOsOptions> options) {
+    std::optional<SynchronizeOsOptions> options) {
   // Holding a scoped_supress ensures that execution is skipped during the
   // entire Synchronization flow. See
   // OsIntegrationManager::StartSubManagerExecutionIfRequired() for more

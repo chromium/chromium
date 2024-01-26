@@ -67,6 +67,16 @@ const UNTYPED_CSS = window ? `
 ` : '';
 
 const TYPOGRAPHY_CSS = window ? `
+  /* font faces */
+  @font-face {
+    font-family: "GSR";
+    src: local("Google Sans Regular");
+  }
+  @font-face {
+    font-family: "GSTM";
+    src: local("Google Sans Text Medium");
+  }
+
   /* font families */
   --cros-font-family-test: 'Google Sans', 'Noto Sans', sans-serif;
   --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;

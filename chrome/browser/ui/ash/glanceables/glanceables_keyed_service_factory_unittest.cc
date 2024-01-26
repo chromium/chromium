@@ -25,17 +25,20 @@ class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
   GlanceablesKeyedServiceFactoryTest()
       : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
-  TestingProfile* CreateProfile() override {
-    const std::string profile_name = "primary_profile@example.com";
-    const auto account_id = AccountId::FromUserEmail(profile_name);
+  void LogIn(const std::string& email) override {
+    const auto account_id = AccountId::FromUserEmail(email);
     fake_chrome_user_manager()->AddUser(account_id);
     fake_chrome_user_manager()->LoginUser(account_id);
-    session_controller_client()->AddUserSession(profile_name);
+    session_controller_client()->AddUserSession(email);
     session_controller_client()->SwitchActiveUser(account_id);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     return profile_manager()->CreateTestingProfile(profile_name,
                                                    /*is_main_profile=*/true);
   }
 
+  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
   FakeChromeUserManager* fake_chrome_user_manager() {
     return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());

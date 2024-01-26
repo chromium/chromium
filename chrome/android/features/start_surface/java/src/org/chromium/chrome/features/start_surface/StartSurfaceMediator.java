@@ -23,6 +23,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFA
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
@@ -33,9 +34,9 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SE
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.text.Editable;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -68,6 +70,9 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -93,8 +98,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -102,6 +109,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -111,7 +119,8 @@ class StartSurfaceMediator
                 StartSurface.OnTabSelectingListener,
                 BackPressHandler,
                 LogoCoordinator.VisibilityObserver,
-                PauseResumeWithNativeObserver {
+                PauseResumeWithNativeObserver,
+                ModuleDelegateHost {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -128,6 +137,16 @@ class StartSurfaceMediator
          * @return Whether the associated activity is finishing or destroyed.
          */
         boolean isFinishingOrDestroyed();
+    }
+
+    /** Interface to create the magic stack. */
+    interface ModuleDelegateCreator {
+        /**
+         * Creates the magic stack {@link ModuleDelegate} object.
+         *
+         * @param moduleDelegateHost The home surface which owns the magic stack.
+         */
+        ModuleDelegate create(ModuleDelegateHost moduleDelegateHost);
     }
 
     private final ObserverList<TabSwitcherViewObserver> mObservers = new ObserverList<>();
@@ -147,9 +166,9 @@ class StartSurfaceMediator
     private final boolean mMoveDownLogo;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
-    private final boolean mUseMagicSpace;
+    private final boolean mUseMagicStack;
     private final boolean mIsSurfacePolishEnabled;
-
+    @Nullable private final ModuleDelegateCreator mModuleDelegateCreator;
     private boolean mShouldIgnoreTabSelecting;
 
     // Boolean histogram used to record whether cached
@@ -175,6 +194,8 @@ class StartSurfaceMediator
     @NewTabPageLaunchOrigin private int mLaunchOrigin;
     @Nullable private TabModel mNormalTabModel;
     @Nullable private TabModelObserver mNormalTabModelObserver;
+    @Nullable private UiConfig mUiConfig;
+    private final int mStartMargin;
 
     @Nullable
     // Observes both regular and incognito TabModel. This observer is responsible to initiate the
@@ -223,8 +244,10 @@ class StartSurfaceMediator
     // The timestamp at which the Start Surface was last shown to the user.
     private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
     private boolean mIsStartSurfaceRefactorEnabled;
-    private OnClickListener mTabSwitcherClickHandler;
     private ObservableSupplier<Profile> mProfileSupplier;
+
+    private HomeModulesCoordinator mHomeModulesCoordinator;
+    private Point mContextMenuStartPosotion;
 
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
@@ -243,22 +266,22 @@ class StartSurfaceMediator
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart,
             Runnable initializeMVTilesRunnable,
+            @Nullable ModuleDelegateCreator moduleDelegateCreator,
             Supplier<Tab> parentTabSupplier,
             View logoContainerView,
             @Nullable BackPressManager backPressManager,
             ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OnClickListener tabSwitcherClickHandler,
             ObservableSupplier<Profile> profileSupplier) {
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabSwitcherModule = tabSwitcherModule;
         mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : controller;
         mIsSurfacePolishEnabled =
                 isStartSurfaceEnabled && ChromeFeatureList.sSurfacePolish.isEnabled();
-        mUseMagicSpace = isStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
-        // When a magic space is enabled on Start surface, it doesn't need a controller to handle
+        mUseMagicStack = isStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
+        // When a magic stack is enabled on Start surface, it doesn't need a controller to handle
         // its showing and hiding.
-        assert mController != null || mUseMagicSpace;
+        assert mController != null || mUseMagicStack;
 
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -272,15 +295,19 @@ class StartSurfaceMediator
         mHadWarmStart = hadWarmStart;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
         mInitializeMVTilesRunnable = initializeMVTilesRunnable;
+        mModuleDelegateCreator = moduleDelegateCreator;
         mParentTabSupplier = parentTabSupplier;
         mLogoContainerView = logoContainerView;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mMoveDownLogo = ReturnToChromeUtil.moveDownLogo();
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
-        mTabSwitcherClickHandler = tabSwitcherClickHandler;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(this::onProfileAvailable);
+
+        mStartMargin =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -289,7 +316,7 @@ class StartSurfaceMediator
                 mPropertyModel.set(IS_TAB_CARD_VISIBLE, false);
             }
 
-            if (mTabSwitcherModule != null || mUseMagicSpace) {
+            if (mTabSwitcherModule != null || mUseMagicStack) {
                 // Set the initial state.
                 mPropertyModel.set(IS_SURFACE_BODY_VISIBLE, true);
                 mPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
@@ -319,7 +346,7 @@ class StartSurfaceMediator
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
             updateBackgroundColor(mPropertyModel);
 
-            if (!mUseMagicSpace) {
+            if (!mUseMagicStack) {
                 // Hide tab carousel, which does not exist in incognito mode, when closing all
                 // normal tabs.
                 // This TabModelObserver observes the regular TabModel only.
@@ -379,7 +406,7 @@ class StartSurfaceMediator
 
                             @Override
                             public void didSelectTab(Tab tab, int type, int lastId) {
-                                if (mUseMagicSpace) return;
+                                if (mUseMagicStack) return;
 
                                 if (type == TabSelectionType.FROM_CLOSE
                                         && UrlUtilities.isNtpUrl(tab.getUrl())) {
@@ -398,7 +425,7 @@ class StartSurfaceMediator
                                     return;
                                 }
 
-                                assert mUseMagicSpace;
+                                assert mUseMagicStack;
                                 if (type == TabSelectionType.FROM_CLOSE
                                         || type == TabSelectionType.FROM_UNDO) {
                                     return;
@@ -406,6 +433,9 @@ class StartSurfaceMediator
                                 onTabSelecting(mTabModelSelector.getCurrentTabId());
                             }
                         };
+                mContextMenuStartPosotion =
+                        ReturnToChromeUtil.calculateContextMenuStartPosition(
+                                mContext.getResources());
             }
             if (mTabModelSelector.getModels().isEmpty()) {
                 TabModelSelectorObserver selectorObserver =
@@ -425,7 +455,7 @@ class StartSurfaceMediator
                                 mNormalTabModel = mTabModelSelector.getModel(false);
                                 if (mPendingObserver) {
                                     mPendingObserver = false;
-                                    if (!mUseMagicSpace) {
+                                    if (!mUseMagicStack) {
                                         mNormalTabModel.addObserver(mNormalTabModelObserver);
                                     } else {
                                         mTabModelSelector
@@ -538,6 +568,26 @@ class StartSurfaceMediator
         }
     }
 
+    private void initContextMenuStartPosition() {
+        Resources resources = mContext.getResources();
+        int contextMenuStartX =
+                resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_lateral_margin)
+                        + resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_padding_bottom)
+                        + resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_tab_thumbnail_size);
+        int contextMenuStartY =
+                resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_padding_top)
+                        * 3;
+        mContextMenuStartPosotion = new Point(contextMenuStartX, contextMenuStartY);
+    }
+
     void initWithNative(
             @Nullable OmniboxStub omniboxStub,
             @Nullable ExploreSurfaceCoordinatorFactory exploreSurfaceCoordinatorFactory,
@@ -568,7 +618,7 @@ class StartSurfaceMediator
                 if (mLogoCoordinator != null) mLogoCoordinator.initWithNative();
             }
 
-            if (mTabSwitcherModule != null || mUseMagicSpace) {
+            if (mTabSwitcherModule != null || mUseMagicStack) {
                 mPropertyModel.set(
                         FAKE_SEARCH_BOX_CLICK_LISTENER,
                         v -> {
@@ -647,6 +697,9 @@ class StartSurfaceMediator
             mLogoCoordinator.destroy();
             mLogoCoordinator = null;
         }
+        if (mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.destroy();
+        }
         if (mCallbackController != null) {
             mCallbackController.destroy();
         }
@@ -707,6 +760,7 @@ class StartSurfaceMediator
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
         updateBackgroundColor(mPropertyModel);
         setMVTilesVisibility(!mIsIncognito);
+        setMagicStackVisibility(!mIsIncognito);
         setLogoVisibility(!mIsIncognito);
         setTabCardVisibility(getNormalTabCount() > 0 && !mIsIncognito);
         setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
@@ -735,7 +789,7 @@ class StartSurfaceMediator
         mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
 
         if (mNormalTabModel != null) {
-            if (!mUseMagicSpace) {
+            if (!mUseMagicStack) {
                 mNormalTabModel.addObserver(mNormalTabModelObserver);
             } else {
                 mTabModelSelector
@@ -1201,6 +1255,9 @@ class StartSurfaceMediator
             mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
 
             destroyExploreSurfaceCoordinator();
+            if (mHomeModulesCoordinator != null) {
+                mHomeModulesCoordinator.hide();
+            }
             if (mNormalTabModel != null) {
                 if (mNormalTabModelObserver != null) {
                     mNormalTabModel.removeObserver(mNormalTabModelObserver);
@@ -1319,6 +1376,7 @@ class StartSurfaceMediator
                 mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR);
         if (exploreSurfaceCoordinator != null) {
             exploreSurfaceCoordinator.enableSwipeRefresh(isVisible);
+            mUiConfig = exploreSurfaceCoordinator.getUiConfig();
         }
     }
 
@@ -1444,7 +1502,7 @@ class StartSurfaceMediator
     }
 
     private void setTabCardVisibility(boolean isVisible) {
-        if (mUseMagicSpace) return;
+        if (mUseMagicStack) return;
 
         // If the single tab switcher is shown and the current selected tab is a new tab page, we
         // shouldn't show the tab switcher layout on Start.
@@ -1460,6 +1518,24 @@ class StartSurfaceMediator
         if (mInitializeMVTilesRunnable == null) return;
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
         if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
+    }
+
+    @VisibleForTesting
+    void setMagicStackVisibility(boolean isVisible) {
+        if (!StartSurfaceConfiguration.useMagicStack()) return;
+
+        assert mModuleDelegateCreator != null;
+        if (isVisible) {
+            if (mHomeModulesCoordinator == null) {
+                mHomeModulesCoordinator =
+                        (HomeModulesCoordinator) mModuleDelegateCreator.create(this);
+            }
+            mHomeModulesCoordinator.show(this::onMagicStackShown);
+        }
+    }
+
+    private void onMagicStackShown(boolean isVisible) {
+        mPropertyModel.set(MAGIC_STACK_VISIBLE, isVisible);
     }
 
     private void setLogoVisibility(boolean isVisible) {
@@ -1764,6 +1840,47 @@ class StartSurfaceMediator
                 : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
+    @Override
+    public int getHostSurfaceType() {
+        return HostSurface.START_SURFACE;
+    }
+
+    @Override
+    public Point getContextMenuStartPoint() {
+        return mContextMenuStartPosotion;
+    }
+
+    @Nullable
+    @Override
+    public UiConfig getUiConfig() {
+        return mUiConfig;
+    }
+
+    @Override
+    public void onUrlClicked(GURL gurl) {
+        ReturnToChromeUtil.handleLoadUrlFromStartSurface(new LoadUrlParams(gurl), false, null);
+    }
+
+    @Override
+    public void onTabSelected(int tabId) {
+        mOnTabSelectingListener.onTabSelecting(tabId);
+    }
+
+    @Override
+    public void customizeSettings() {
+        HomepageManager.getInstance().onMenuClick(mContext);
+    }
+
+    @Override
+    public boolean showScrollableMvt() {
+        return true;
+    }
+
+    @Override
+    public int getStartMargin() {
+        return mStartMargin;
+    }
+
     public FeedActionDelegate getFeedActionDelegateForTesting() {
         assert mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) != null;
         return mPropertyModel
@@ -1781,6 +1898,10 @@ class StartSurfaceMediator
 
     Runnable getInitializeMVTilesRunnableForTesting() {
         return mInitializeMVTilesRunnable;
+    }
+
+    HomeModulesCoordinator getHomeModulesCoordinatorForTesting() {
+        return mHomeModulesCoordinator;
     }
 
     /**

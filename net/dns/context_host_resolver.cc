@@ -4,6 +4,7 @@
 
 #include "net/dns/context_host_resolver.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -71,11 +71,14 @@ ContextHostResolver::CreateRequest(
     url::SchemeHostPort host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource source_net_log,
-    absl::optional<ResolveHostParameters> optional_parameters) {
+    std::optional<ResolveHostParameters> optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (shutting_down_)
+  // TODO(crbug.com/1520189): `resolve_context_` should never be nullptr when
+  // `shutting_down_` is true.
+  if (shutting_down_ || !resolve_context_) {
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
+  }
 
   return manager_->CreateRequest(
       Host(std::move(host)), std::move(network_anonymization_key),
@@ -88,11 +91,14 @@ ContextHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& source_net_log,
-    const absl::optional<ResolveHostParameters>& optional_parameters) {
+    const std::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (shutting_down_)
+  // TODO(crbug.com/1520189): `resolve_context_` should never be nullptr when
+  // `shutting_down_` is true.
+  if (shutting_down_ || !resolve_context_) {
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
+  }
 
   return manager_->CreateRequest(host, network_anonymization_key,
                                  source_net_log, optional_parameters,

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Dapatkan notifikasi</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="4212246570487010370">Lanjutkan menjelajah</translation>
+<translation id="427987768447457592">Grup tab baru</translation>
 <translation id="4648718555153979859">Tab Anda dikelompokkan menjadi satu di sini</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Sembunyikan petak layar penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan toko?</translation>
 <translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
+<translation id="5161254044473106830">Perlu judul</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Anda memiliki <ph name="TABS_COUNT_ONE" /> tab yang belum digunakan baru-baru ini}other{Anda memiliki <ph name="TABS_COUNT_MANY" /> tab yang belum digunakan baru-baru ini}}</translation>
 <translation id="5339733443032484186">Tab terakhir Anda</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>

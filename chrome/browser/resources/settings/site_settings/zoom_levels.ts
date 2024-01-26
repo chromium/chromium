@@ -17,11 +17,12 @@ import '../site_favicon.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
+import type {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './zoom_levels.html.js';
 
 export interface ZoomLevelsElement {

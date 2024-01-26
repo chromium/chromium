@@ -27,7 +27,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -284,7 +284,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   class PdfConversionState;
   std::unique_ptr<PdfConversionState> pdf_conversion_state_;
   std::vector<uint32_t> pdf_page_mapping_;
-  absl::optional<bool> use_skia_;
+  std::optional<bool> use_skia_;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

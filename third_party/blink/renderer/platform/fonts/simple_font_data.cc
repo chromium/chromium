@@ -126,10 +126,8 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   float descent;
 
   FontMetrics::AscentDescentWithHacks(
-      ascent, descent, visual_overflow_inflation_for_ascent_,
-      visual_overflow_inflation_for_descent_, platform_data_, font_,
-      subpixel_ascent_descent, metrics_override.ascent_override,
-      metrics_override.descent_override);
+      ascent, descent, platform_data_, font_, subpixel_ascent_descent,
+      metrics_override.ascent_override, metrics_override.descent_override);
 
   font_metrics_.SetAscent(ascent);
   font_metrics_.SetDescent(descent);
@@ -211,11 +209,6 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 #if !BUILDFLAG(IS_APPLE)
   }
 #endif
-
-  SkTypeface* face = font_.getTypeface();
-  DCHECK(face);
-  if (int units_per_em = face->getUnitsPerEm())
-    font_metrics_.SetUnitsPerEm(units_per_em);
 
   // Read baselines value from OpenType Table.
   OpenTypeBaselineMetrics m(PlatformData().GetHarfBuzzFace(),
@@ -495,7 +488,7 @@ void SimpleFontData::BoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
   SkFontGetBoundsForGlyphs(font_, glyphs, bounds->data());
 }
 
-float SimpleFontData::PlatformWidthForGlyph(Glyph glyph) const {
+float SimpleFontData::WidthForGlyph(Glyph glyph) const {
   if (!platform_data_.size())
     return 0;
 

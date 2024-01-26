@@ -9,8 +9,8 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsSectionElement} from './settings_page/settings_section.js';
-import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
+import type {SettingsSectionElement} from './settings_page/settings_section.js';
+import type {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
 // clang-format on
 

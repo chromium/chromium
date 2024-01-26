@@ -41,15 +41,22 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
         for (Action action : mActions) {
             addActionToBuilder(builder, action);
         }
-        if (mSettingsAction != null) {
-            addActionToBuilder(builder, mSettingsAction);
+        for (Action settingsAction : mSettingsActions) {
+            addActionToBuilder(builder, settingsAction);
         }
         builder.setPriorityBeforeO(mPriority);
         builder.setDefaults(mDefaults);
         if (mVibratePattern != null) builder.setVibrate(mVibratePattern);
         builder.setSilent(mSilent);
-        builder.setWhen(mTimestamp);
-        builder.setShowWhen(true);
+        if (mTimestamp >= 0) {
+            builder.setWhen(mTimestamp);
+            builder.setShowWhen(true);
+        } else {
+            builder.setShowWhen(false);
+        }
+        if (mTimeoutAfterMs > 0) {
+            builder.setTimeoutAfter(mTimeoutAfterMs);
+        }
         builder.setOnlyAlertOnce(!mRenotify);
         setGroupOnBuilder(builder, mOrigin);
         builder.setPublicVersion(createPublicNotification(mContext));

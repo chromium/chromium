@@ -63,7 +63,7 @@ class RegistrationState {
 
     // Fetch prelinking information from Play Services, if any.
     virtual void GetPrelinkFromPlayServices(
-        base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+        base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
             callback) = 0;
 
     // Process an FCM message. The `serialized` argument contains a
@@ -94,7 +94,7 @@ class RegistrationState {
   const EC_KEY* identity_key() const { return identity_key_.get(); }
   bool device_supports_cable() const { return *device_supports_cable_; }
   bool am_in_work_profile() const { return *am_in_work_profile_; }
-  const absl::optional<std::vector<uint8_t>>& link_data_from_play_services()
+  const std::optional<std::vector<uint8_t>>& link_data_from_play_services()
       const {
     DCHECK(have_link_data_from_play_services_);
     return link_data_from_play_services_;
@@ -112,7 +112,7 @@ class RegistrationState {
   bool have_play_services_data() const;
   void QueryPlayServices();
   void OnHavePlayServicesLinkingInformation(
-      absl::optional<std::vector<uint8_t>> cbor);
+      std::optional<std::vector<uint8_t>> cbor);
 
   void OnLinkingRegistrationReady();
   void OnSyncRegistrationReady();
@@ -157,15 +157,15 @@ class RegistrationState {
   // Clank won't notice in this context until the process restarts. Users can
   // always use a QR code if pre-linking hasn't worked by the time they need
   // it.
-  absl::optional<bool> device_supports_cable_;
+  std::optional<bool> device_supports_cable_;
   // am_in_work_profile_ stores whether the current process is in an Android
   // work profile.
-  absl::optional<bool> am_in_work_profile_;
+  std::optional<bool> am_in_work_profile_;
   // link_data_from_play_services_ contains the response from Play Services, as
   // CBOR-encoded linking information, or `nullopt` if the call was
   // unsuccessful. This field is only meaningful if
   // `have_link_data_from_play_services_` is true.
-  absl::optional<std::vector<uint8_t>> link_data_from_play_services_;
+  std::optional<std::vector<uint8_t>> link_data_from_play_services_;
   // have_link_data_from_play_services_ is true if any call to Play Services has
   // ever completed, successful or not.
   bool have_link_data_from_play_services_ = false;

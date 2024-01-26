@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/video_decoder_config.h"
+#include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"

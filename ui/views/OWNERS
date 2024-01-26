@@ -18,6 +18,9 @@ robliao@chromium.org
 sky@chromium.org
 tluk@chromium.org
 
+# For accessibility-related changes.
+dpranke@google.com
+
 # Prefer avi@, ellyjones@, or lgrey@ for mac specific changes.
 per-file *_mac.*=avi@chromium.org
 per-file *_cocoa.*=avi@chromium.org

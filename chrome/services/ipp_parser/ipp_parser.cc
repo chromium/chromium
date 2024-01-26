@@ -5,7 +5,9 @@
 #include "chrome/services/ipp_parser/ipp_parser.h"
 
 #include <cups/ipp.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +16,6 @@
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 #include "net/http/http_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ipp_parser {
 namespace {
@@ -86,11 +87,11 @@ bool SplitRequestMetadata(base::span<const uint8_t> request,
   return true;
 }
 
-absl::optional<std::vector<std::string>> ExtractHttpRequestLine(
+std::optional<std::vector<std::string>> ExtractHttpRequestLine(
     base::StringPiece request) {
   size_t end_of_request_line = LocateEndOfRequestLine(request);
   if (end_of_request_line < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::StringPiece request_line_slice =
@@ -98,16 +99,16 @@ absl::optional<std::vector<std::string>> ExtractHttpRequestLine(
   return ipp_converter::ParseRequestLine(request_line_slice);
 }
 
-absl::optional<std::vector<HttpHeader>> ExtractHttpHeaders(
+std::optional<std::vector<HttpHeader>> ExtractHttpHeaders(
     base::StringPiece request) {
   size_t start_of_headers = LocateStartOfHeaders(request);
   if (start_of_headers < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t end_of_headers = LocateEndOfHeaders(request);
   if (end_of_headers < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::StringPiece headers_slice =

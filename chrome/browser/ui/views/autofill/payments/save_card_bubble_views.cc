@@ -33,6 +33,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -174,20 +175,22 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
       controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
       controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE;
 
-  // If `AutofillMoveLegalTermsAndIconForNewCardEnrollment` is enabled,
-  // display the card expiration date in a separate line for credit card saves.
-  // Else, the card name, last 4 digit and expiration date or CVC icon will be
-  // shown in the same line
-  auto card_identifier_view = std::make_unique<views::BoxLayoutView>();
+  // Display the card expiration date in a separate line for credit card saves.
+  // For CVC only save, the card name, last 4 digit and CVC icon will be shown
+  // in the same line.
+  auto card_identifier_view = std::make_unique<views::View>();
+  auto* layout = card_identifier_view->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
   if (is_cvc_only_save) {
-    card_identifier_view->SetBetweenChildSpacing(
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+    layout->SetCollapseMargins(true);
+    layout->SetDefault(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0,
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   } else {
-    card_identifier_view->SetOrientation(
-        views::BoxLayout::Orientation::kVertical);
-    card_identifier_view->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   }
 
   const CreditCard& card = controller_->GetCard();
@@ -203,23 +206,34 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   card_identifier_label->SetMultiLine(!is_cvc_only_save);
   card_identifier_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
-  // Flex |card_identifier_label| to fill up remaining space and tail align
-  // the expiry date or CVC icon if the card info will be shown in the same
-  // line.
   if (is_cvc_only_save) {
-    card_identifier_view->SetFlexForView(card_identifier_label, /*flex=*/1);
-  }
-
-  // Show CVC icon for CVC only save cases and card expiration in other cases
-  if (is_cvc_only_save) {
+    // Add card last four, the spacing, and the CVC icon.
     card_identifier_view->AddChildView(std::make_unique<views::Label>(
         card.ObfuscatedNumberWithVisibleLastFourDigits(),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+    auto* gap_view =
+        card_identifier_view->AddChildView(std::make_unique<views::View>());
     card_identifier_view->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
             ui::ResourceBundle::GetSharedInstance().GetImageNamed(
                 IDR_CREDIT_CARD_CVC_HINT_BACK))));
+
+    // Shrink the `card_identifier_view` to fit the view, when there is not
+    // enough space to accommodate all child views.
+    card_identifier_label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(1));
+    // Extend the `gap_view` to fill the view, when there is more space to
+    // accommodate all child views.
+    gap_view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded)
+            .WithOrder(2));
   } else if (!card.IsExpired(base::Time::Now())) {
+    // Add card expiration date for card saves.
     auto* expiration_date_label =
         card_identifier_view->AddChildView(std::make_unique<views::Label>(
             card.AbbreviatedExpirationDateForDisplay(false),

@@ -73,8 +73,7 @@ constexpr const char TestRulesets::kTestRulesetSuffix2[];
 constexpr int TestRulesets::kNumberOfRulesInBigRuleset;
 
 std::vector<uint8_t> ReadRulesetContents(const MemoryMappedRuleset* ruleset) {
-  return std::vector<uint8_t>(ruleset->data(),
-                              ruleset->data() + ruleset->length());
+  return std::vector<uint8_t>(ruleset->data().begin(), ruleset->data().end());
 }
 
 std::vector<uint8_t> ReadFileContent(base::File* file) {

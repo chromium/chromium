@@ -107,7 +107,6 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_ADDRESS", ADDRESS_HOME_ADDRESS},
          {"ADDRESS_HOME_ADDRESS_WITH_NAME", ADDRESS_HOME_ADDRESS_WITH_NAME},
          {"ADDRESS_HOME_FLOOR", ADDRESS_HOME_FLOOR},
-         {"NAME_FULL_WITH_HONORIFIC_PREFIX", NAME_FULL_WITH_HONORIFIC_PREFIX},
          {"BIRTHDATE_DAY", BIRTHDATE_DAY},
          {"BIRTHDATE_MONTH", BIRTHDATE_MONTH},
          {"BIRTHDATE_4_DIGIT_YEAR", BIRTHDATE_4_DIGIT_YEAR},
@@ -136,7 +135,13 @@ static constexpr auto kTypeNameToFieldType =
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK},
          {"SINGLE_USERNAME_FORGOT_PASSWORD", SINGLE_USERNAME_FORGOT_PASSWORD},
          {"SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES",
-          SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES}});
+          SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES},
+         {"ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY",
+          ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY},
+         {"ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK",
+          ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
+         {"ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK",
+          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -149,7 +154,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case NAME_LAST_SECOND:
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
     case NAME_SUFFIX:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
@@ -192,6 +196,9 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return true;
 
@@ -326,8 +333,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Price";
     case NAME_HONORIFIC_PREFIX:
       return "Honorific prefix";
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
-      return "Full name with honorific prefix";
     case NAME_FIRST:
       return "First name";
     case NAME_MIDDLE:
@@ -416,6 +421,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Address overflow and landmark";
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
       return "Address between-streets and landmark";
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+      return "Address street location and locality";
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+      return "Address street location and landmark";
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+      return "Address locality and landmark";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
     case BIRTHDATE_DAY:
@@ -478,7 +489,6 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return FieldTypeGroup::kName;
 
     case EMAIL_ADDRESS:
@@ -526,6 +536,9 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return FieldTypeGroup::kAddress;
 

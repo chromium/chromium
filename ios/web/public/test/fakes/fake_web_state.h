@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/web/public/favicon/favicon_status.h"
@@ -24,6 +25,7 @@
 #include "url/gurl.h"
 
 class SessionCertificatePolicyCache;
+@protocol CRWWebViewDownload;
 
 namespace web {
 
@@ -150,6 +152,7 @@ class FakeWebState : public WebState {
   void SetCanTakeSnapshot(bool can_take_snapshot);
   void SetFindInteraction(id<CRWFindInteraction> find_interaction)
       API_AVAILABLE(ios(16));
+  void SetWebViewDownload(id<CRWWebViewDownload> web_view_download);
 
   // Getters for test data.
   // Uses `policy_deciders` to determine whether the navigation corresponding to
@@ -177,9 +180,10 @@ class FakeWebState : public WebState {
   void OnRenderProcessGone();
   void OnBackForwardStateChanged();
   void OnVisibleSecurityStateChanged();
+  void OnDownloadFinished(NSError* error);
 
  private:
-  BrowserState* browser_state_ = nullptr;
+  raw_ptr<BrowserState> browser_state_ = nullptr;
   NSString* stable_identifier_ = nil;
   const WebStateID unique_identifier_;
   bool web_usage_enabled_ = true;
@@ -209,6 +213,8 @@ class FakeWebState : public WebState {
   PermissionState camera_permission_state_ = PermissionStateNotAccessible;
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
   id<CRWFindInteraction> find_interaction_ API_AVAILABLE(ios(16));
+  id<CRWWebViewDownload> web_view_download_;
+  id<CRWWebViewDownloadDelegate> download_delegate_;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true> observers_;

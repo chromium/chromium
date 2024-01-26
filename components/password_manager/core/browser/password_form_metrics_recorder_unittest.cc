@@ -1125,6 +1125,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
 // interaction).
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_AutomaticFilling) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1145,10 +1146,15 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance =
+      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kAutomatic;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kAutomatic,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1156,6 +1162,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
 // the suggestions).
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_ManualFilling) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1176,15 +1183,22 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance =
+      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kManual;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kManual, 1);
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
+      1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when the username is automatically and manually filled.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_AutomaticAndManualFilling) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1206,15 +1220,22 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance =
+      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kManual;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kManual, 1);
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
+      1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when a known username is typed without using filling.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_UserTypedKnownUsername) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1234,17 +1255,22 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance = PasswordFormMetricsRecorder::
+      SingleUsernameFillingAssistance::kKnownUsernameTyped;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kKnownUsernameTyped,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when a known username is filled and edited.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_UserEditedFilledKnownUsername) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1267,11 +1293,15 @@ TEST_F(PasswordFormMetricsRecorderTest,
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
   // Verify that editing has precedence over filling.
+  auto expected_assistance = PasswordFormMetricsRecorder::
+      SingleUsernameFillingAssistance::kKnownUsernameTyped;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kKnownUsernameTyped,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
@@ -1279,6 +1309,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
 TEST_F(
     PasswordFormMetricsRecorderTest,
     FillingAssistance_OnSingleUsername_UserTypedNewUsername_WhileCredentials) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1298,17 +1329,22 @@ TEST_F(
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance = PasswordFormMetricsRecorder::
+      SingleUsernameFillingAssistance::kNewUsernameTypedWhileCredentialsExisted;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kNewUsernameTypedWhileCredentialsExisted,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when a new username is typed while there are no credentials.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_NewUsername_WhileNoCredentials) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   const std::vector<TestCaseFieldInfo> fields = {
       {.value = "new-username", .user_typed = true}};
   PasswordForm password_form_data = ConvertToPasswordForm(fields);
@@ -1326,17 +1362,22 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance = PasswordFormMetricsRecorder::
+      SingleUsernameFillingAssistance::kNoSavedCredentials;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kNoSavedCredentials,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when a new username is typed when the domain is blocklisted.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_BlocklistedDomain) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   const std::vector<TestCaseFieldInfo> fields = {{.value = "new-username"}};
   PasswordForm password_form_data = ConvertToPasswordForm(fields);
 
@@ -1353,17 +1394,22 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance = PasswordFormMetricsRecorder::
+      SingleUsernameFillingAssistance::kNoSavedCredentialsAndBlocklisted;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kNoSavedCredentialsAndBlocklisted,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests the calculation of the filling assistance metric for a single username
 // form when an existing username is filled while the domain is blocklisted.
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_BlocklistedDomain_WithCredentials) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto [saved_usernames, _] = BasicUsernameAndPasswordStoreSets();
 
   const std::vector<TestCaseFieldInfo> fields = {
@@ -1385,14 +1431,20 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
+  auto expected_assistance =
+      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kAutomatic;
   histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
-      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kAutomatic,
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 TEST_F(PasswordFormMetricsRecorderTest,
        FillingAssistance_OnSingleUsername_BlocklistedBySmartBubble) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   const std::string username = "user1";
 
   const std::vector<TestCaseFieldInfo> fields = {{.value = username}};
@@ -1415,11 +1467,16 @@ TEST_F(PasswordFormMetricsRecorderTest,
   // recorded for single username forms.
   histogram_tester_.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
 
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.FillingAssistanceForSingleUsername",
+  auto expected_assistance =
       PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
-          kNoSavedCredentialsAndBlocklistedBySmartBubble,
+          kNoSavedCredentialsAndBlocklistedBySmartBubble;
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.FillingAssistanceForSingleUsername", expected_assistance,
       1);
+  ExpectUkmValueCount(&test_ukm_recorder,
+                      UkmEntry::kManagerFill_AssistanceForSingleUsernameName,
+                      static_cast<int64_t>(expected_assistance),
+                      /*expected_count=*/1);
 }
 
 // Tests that if filling assistance is recorded for both a password form and

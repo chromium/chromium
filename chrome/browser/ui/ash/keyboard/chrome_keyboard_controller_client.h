@@ -181,14 +181,17 @@ class ChromeKeyboardControllerClient
   void OnSessionStateChanged() override;
 
   // Sets whether the virtual keyboard is enabled from prefs.
-  void SetVirtualKeyboardBehaviorFromPrefs();
+  void SetTouchKeyboardEnabledFromPrefs();
+
+  // Sets whether smart visibility is enabled from prefs.
+  void SetSmartVisibilityFromPrefs();
 
   // Returns either the test profile or the active user profile.
   Profile* GetProfile();
 
   gfx::Rect BoundsFromScreen(const gfx::Rect& screen_bounds);
 
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<ash::KeyboardController> keyboard_controller_ = nullptr;
 

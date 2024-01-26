@@ -63,10 +63,6 @@ class PrefMapping {
   PrefTransformerInterface* FindTransformerForBrowserPref(
       const std::string& browser_pref) const;
 
-  bool HasPrefTransformer(const std::string& browser_pref) const {
-    return transformers_.count(browser_pref) == 1;
-  }
-
   void RegisterPrefTransformer(
       const std::string& browser_pref,
       std::unique_ptr<PrefTransformerInterface> transformer);

@@ -216,7 +216,7 @@ void BrowserServiceLacros::REMOVED_16(
 void BrowserServiceLacros::NewWindow(bool incognito,
                                      bool should_trigger_session_restore,
                                      int64_t target_display_id,
-                                     absl::optional<uint64_t> profile_id,
+                                     std::optional<uint64_t> profile_id,
                                      NewWindowCallback callback) {
   if (g_browser_process->IsShuttingDown()) {
     std::move(callback).Run(crosapi::mojom::CreationResult::kBrowserShutdown);
@@ -326,7 +326,7 @@ void BrowserServiceLacros::NewTab(NewTabCallback callback) {
 }
 
 void BrowserServiceLacros::Launch(int64_t target_display_id,
-                                  absl::optional<uint64_t> profile_id,
+                                  std::optional<uint64_t> profile_id,
                                   LaunchCallback callback) {
   if (g_browser_process->IsShuttingDown()) {
     std::move(callback).Run(crosapi::mojom::CreationResult::kBrowserShutdown);

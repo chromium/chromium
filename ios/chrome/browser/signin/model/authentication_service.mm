@@ -106,7 +106,7 @@ void AuthenticationService::Initialize(
   signin::Tribool device_restore_session = IsFirstSessionAfterDeviceRestore();
   initialized_ = true;
 
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
                           device_restore_session == signin::Tribool::kTrue);
 
@@ -117,7 +117,7 @@ void AuthenticationService::Initialize(
   crash_keys::SetCurrentlySignedIn(
       HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
-  account_manager_service_observation_.Observe(account_manager_service_);
+  account_manager_service_observation_.Observe(account_manager_service_.get());
 
   // Register for prefs::kSigninAllowed.
   pref_change_registrar_.Init(pref_service_);

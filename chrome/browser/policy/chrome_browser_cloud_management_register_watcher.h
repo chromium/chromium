@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_REGISTER_WATCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -14,11 +15,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class ChromeBrowserCloudManagementRegisterWatcherTest;
 
 namespace policy {
+
+class ChromeBrowserCloudManagementRegisterWatcherTest;
 
 // Watches the status of chrome browser cloud management enrollment.
 // Shows the blocking dialog for ongoing enrollment and failed enrollment.
@@ -116,7 +116,7 @@ class ChromeBrowserCloudManagementRegisterWatcher
   std::unique_ptr<EnterpriseStartupDialog> dialog_;
 
   bool is_restart_needed_ = false;
-  absl::optional<bool> register_result_;
+  std::optional<bool> register_result_;
 
   DialogCreationCallback test_create_dialog_callback_;
 

@@ -93,7 +93,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   for (size_t i = 0; i < num_planes; i++) {
     const ColorPlaneLayout& plane = video_frame->layout().planes()[i];
     // The original and duplicated FDs should be different.
-    EXPECT_NE(native_pixmap->GetDmaBufFd(i), video_frame->GetDmabufFd(i).get());
+    EXPECT_NE(native_pixmap->GetDmaBufFd(i), video_frame->GetDmabufFd(i));
     EXPECT_EQ(native_pixmap->GetDmaBufPitch(i),
               base::checked_cast<uint32_t>(plane.stride));
     EXPECT_EQ(native_pixmap->GetDmaBufOffset(i), plane.offset);

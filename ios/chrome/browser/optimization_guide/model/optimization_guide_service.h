@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -69,8 +70,6 @@ class OptimizationGuideService
       bool off_the_record,
       const std::string& application_locale,
       base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
-      base::WeakPtr<optimization_guide::OptimizationGuideStore>
-          prediction_model_and_features_store,
       PrefService* pref_service,
       BrowserList* browser_list,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -149,7 +148,9 @@ class OptimizationGuideService
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-          callback) override;
+          callback,
+      optimization_guide::proto::RequestContextMetadata*
+          request_context_metadata) override;
 
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
@@ -168,16 +169,12 @@ class OptimizationGuideService
 
   std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  // The store of optimization target prediction models and features.
-  std::unique_ptr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store_;
-
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // The PrefService of the browser state this service is linked to.
-  PrefService* const pref_service_ = nullptr;
+  const raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Whether the service is linked to an incognito browser state.
   const bool off_the_record_ = false;

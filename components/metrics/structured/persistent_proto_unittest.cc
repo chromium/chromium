@@ -153,7 +153,7 @@ TEST_F(PersistentProtoTest, Read) {
   EXPECT_EQ(write_count_, 1);
 
   PopulateTestProto(pproto.get());
-  pproto.StartWrite();
+  pproto.StartWriteForTesting();
   Wait();
   EXPECT_EQ(write_count_, 2);
 
@@ -201,7 +201,7 @@ TEST_F(PersistentProtoTest, MultipleWrites) {
 
   for (int i = 1; i <= 10; ++i) {
     pproto.get()->set_last_rotation(i * i);
-    pproto.StartWrite();
+    pproto.StartWriteForTesting();
     Wait();
     EXPECT_EQ(write_count_, i + 1);
 
@@ -221,7 +221,7 @@ TEST_F(PersistentProtoTest, QueueWrites) {
   // Three successive StartWrite calls result in three writes.
   write_count_ = 0;
   for (int i = 0; i < 3; ++i) {
-    pproto.StartWrite();
+    pproto.StartWriteForTesting();
   }
   Wait();
   EXPECT_EQ(write_count_, 3);

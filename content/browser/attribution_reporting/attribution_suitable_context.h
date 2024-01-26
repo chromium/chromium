@@ -7,15 +7,18 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 class AttributionDataHostManager;
+class RenderFrameHostImpl;
 
 // The `AttributionSuitableContext` encapsulates the context necessary from a
 // `RenderFrameHost` for a `KeepAliveAttributionRequestHelper` to be created.
@@ -25,8 +28,9 @@ class CONTENT_EXPORT AttributionSuitableContext {
  public:
   // Returns `AttributionSuitableContext` if the rfh is suitable to register
   // attribution.
-  static absl::optional<AttributionSuitableContext> Create(
+  static std::optional<AttributionSuitableContext> Create(
       GlobalRenderFrameHostId initiator_frame_id);
+  static std::optional<AttributionSuitableContext> Create(RenderFrameHostImpl*);
 
   AttributionSuitableContext(const AttributionSuitableContext&);
   AttributionSuitableContext& operator=(const AttributionSuitableContext&);
@@ -44,6 +48,10 @@ class CONTENT_EXPORT AttributionSuitableContext {
     return root_render_frame_id_;
   }
   int64_t last_navigation_id() const { return last_navigation_id_; }
+  const AttributionInputEvent& last_input_event() const {
+    return last_input_event_;
+  }
+
   AttributionDataHostManager* data_host_manager() const {
     return attribution_data_host_manager_.get();
   }
@@ -54,12 +62,14 @@ class CONTENT_EXPORT AttributionSuitableContext {
       bool is_nested_within_fenced_frame,
       GlobalRenderFrameHostId root_render_frame_id,
       int64_t last_navigation_id,
+      AttributionInputEvent last_input_event,
       AttributionDataHostManager*);
 
   attribution_reporting::SuitableOrigin context_origin_;
   bool is_nested_within_fenced_frame_;
   GlobalRenderFrameHostId root_render_frame_id_;
   int64_t last_navigation_id_;
+  AttributionInputEvent last_input_event_;
 
   base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager_;
 };

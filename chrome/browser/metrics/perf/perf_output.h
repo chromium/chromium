@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_PERF_PERF_OUTPUT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/common/pipe_reader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class DebugDaemonClient;
@@ -54,8 +54,8 @@ class PerfOutputCall {
 
  private:
   // Internal callbacks.
-  void OnIOComplete(absl::optional<std::string> data);
-  void OnGetPerfOutput(absl::optional<uint64_t> result);
+  void OnIOComplete(std::optional<std::string> data);
+  void OnGetPerfOutput(std::optional<uint64_t> result);
 
   void StopImpl();
 
@@ -75,7 +75,7 @@ class PerfOutputCall {
   // output), the stop request will be sent out after we have the session ID to
   // stop the perf session.
   bool pending_stop_;
-  absl::optional<uint64_t> perf_session_id_;
+  std::optional<uint64_t> perf_session_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

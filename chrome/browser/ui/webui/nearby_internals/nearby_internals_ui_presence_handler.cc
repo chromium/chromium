@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
+
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_notification/push_notification_service.h"
 
 namespace {
 
@@ -29,6 +32,11 @@ const char kFinderAction[] = "Finder";
 const char kFastPairSassAction[] = "Fast Pair Sass";
 const char kTapToTransferAction[] = "Tap To Transfer";
 const char kLastAction[] = "Invalid Action";
+
+// `PushNotificationMessage` key value pairs
+const char kNotificationTypeIdKey[] = "type_id";
+const char kNotificationClientIdKey[] = "client_id";
+const char kNotificationClientIdValue[] = "nearby";
 
 std::string PresenceActionToString(
     ash::nearby::presence::NearbyPresenceService::Action action_enum) {
@@ -123,6 +131,11 @@ void NearbyInternalsPresenceHandler::RegisterMessages() {
       "ConnectToPresenceDevice",
       base::BindRepeating(
           &NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SendUpdateCredentialsMessage",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleSendUpdateCredentialsMessage,
           base::Unretained(this)));
 }
 
@@ -245,4 +258,21 @@ void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
   CD_LOG(VERBOSE, Feature::NP)
       << __func__ << ": Connection attempt for device with endpoint id: "
       << args[0].GetString();
+}
+
+void NearbyInternalsPresenceHandler::HandleSendUpdateCredentialsMessage(
+    const base::Value::List& args) {
+  push_notification::PushNotificationService* service =
+      push_notification::PushNotificationServiceFactory::GetForBrowserContext(
+          context_);
+  CHECK(service);
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(kNotificationTypeIdKey,
+                                push_notification::kNearbyPresenceClientId);
+  message.data.insert_or_assign(kNotificationClientIdKey,
+                                kNotificationClientIdValue);
+
+  service->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
 }

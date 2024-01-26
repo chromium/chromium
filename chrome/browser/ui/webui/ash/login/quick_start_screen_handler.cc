@@ -37,6 +37,10 @@ void QuickStartScreenHandler::ShowInitialUiStep() {
   CallExternalAPI("showInitialUiStep");
 }
 
+void QuickStartScreenHandler::ShowBluetoothDialog() {
+  CallExternalAPI("showBluetoothDialog");
+}
+
 void QuickStartScreenHandler::ShowConnectingToPhoneStep() {
   CallExternalAPI("showConnectingToPhoneStep");
 }

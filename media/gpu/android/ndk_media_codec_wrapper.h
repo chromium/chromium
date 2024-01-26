@@ -10,10 +10,17 @@
 #include <memory>
 #include <string_view>
 
+#include "base/android/requires_api.h"
 #include "base/containers/circular_deque.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/gpu/media_gpu_export.h"
+
+// For use with REQUIRES_ANDROID_API() and __builtin_available().
+// We need at least Android P for AMediaCodec_getInputFormat(), but in
+// Android P we have issues with CFI and dynamic linker on arm64. However
+// GetSupportedProfiles() needs Q+, so just limit to Q.
+#define NDK_MEDIA_CODEC_MIN_API 29
 
 namespace media {
 
@@ -27,7 +34,8 @@ struct AMediaCodecDeleter {
 
 // A wrapper class which manages async callbacks from an AMediaCodec, as
 // well as queues of available input/output buffers.
-class MEDIA_GPU_EXPORT NdkMediaCodecWrapper {
+class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
+    MEDIA_GPU_EXPORT NdkMediaCodecWrapper {
  public:
   class Client {
    public:
@@ -62,7 +70,6 @@ class MEDIA_GPU_EXPORT NdkMediaCodecWrapper {
       std::string_view mime_type,
       Client* client,
       scoped_refptr<base::SequencedTaskRunner> runner);
-  static bool IsSupported();
 
   NdkMediaCodecWrapper(const NdkMediaCodecWrapper&) = delete;
   NdkMediaCodecWrapper& operator=(const NdkMediaCodecWrapper&) = delete;

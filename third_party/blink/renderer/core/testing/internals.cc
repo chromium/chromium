@@ -336,7 +336,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
       Controller()->Close();
       return ScriptPromise::CastUndefined(script_state);
     }
-    Controller()->Enqueue(*result);
+    Controller()->Enqueue(
+        v8::Integer::New(script_state->GetIsolate(), *result));
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -3010,7 +3011,8 @@ DOMRectList* Internals::nonDraggableRegions(Document* document,
 }
 
 void Internals::SetSupportsAppRegion(bool supports_app_region) {
-  GetFrame()->SetSupportsAppRegion(supports_app_region);
+  document_->GetPage()->GetChromeClient().GetWebView()->SetSupportsAppRegion(
+      supports_app_region);
 }
 
 DOMRectList* Internals::AnnotatedRegions(Document* document,
@@ -3988,14 +3990,12 @@ ScriptValue Internals::createWritableStreamAndSink(
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "stream"),
-            ToV8Traits<WritableStream>::ToV8(script_state, stream)
-                .ToLocalChecked())
+            ToV8Traits<WritableStream>::ToV8(script_state, stream))
       .Check();
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "sink"),
-            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise())
-                .ToLocalChecked())
+            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise()))
       .Check();
   return ScriptValue(script_state->GetIsolate(), object);
 }

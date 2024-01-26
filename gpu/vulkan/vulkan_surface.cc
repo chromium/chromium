@@ -257,7 +257,6 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
   if (VK_SUCCESS != result) {
     LOG(FATAL) << "vkGetPhysicalDeviceSurfaceCapabilitiesKHR() failed: "
                << result;
-    return false;
   }
 
   auto vk_transform = transform != gfx::OVERLAY_TRANSFORM_INVALID

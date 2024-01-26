@@ -130,7 +130,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   raw_ptr<FaviconLoader> _faviconLoader;
 
   // Preference service from the application context.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
 
   // Module containing the reauthentication mechanism.
   __weak id<ReauthenticationProtocol> _reauthenticationModule;

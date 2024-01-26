@@ -27,7 +27,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "url/gurl.h"
 
 using ResponseStartedCallback =

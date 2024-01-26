@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -38,7 +38,7 @@ struct NET_EXPORT DnsConfigOverrides {
 
   // Creates a new DnsConfig where any field with an overriding value in |this|
   // is replaced with that overriding value. Any field without an overriding
-  // value (|absl::nullopt|) will be copied as-is from |config|.
+  // value (|std::nullopt|) will be copied as-is from |config|.
   DnsConfig ApplyOverrides(const DnsConfig& config) const;
 
   // Returns |true| if the overriding configuration is comprehensive and would
@@ -47,20 +47,20 @@ struct NET_EXPORT DnsConfigOverrides {
   bool OverridesEverything() const;
 
   // Overriding values. See same-named fields in DnsConfig for explanations.
-  absl::optional<std::vector<IPEndPoint>> nameservers;
-  absl::optional<bool> dns_over_tls_active;
-  absl::optional<std::string> dns_over_tls_hostname;
-  absl::optional<std::vector<std::string>> search;
-  absl::optional<bool> append_to_multi_label_name;
-  absl::optional<int> ndots;
-  absl::optional<base::TimeDelta> fallback_period;
-  absl::optional<int> attempts;
-  absl::optional<int> doh_attempts;
-  absl::optional<bool> rotate;
-  absl::optional<bool> use_local_ipv6;
-  absl::optional<DnsOverHttpsConfig> dns_over_https_config;
-  absl::optional<SecureDnsMode> secure_dns_mode;
-  absl::optional<bool> allow_dns_over_https_upgrade;
+  std::optional<std::vector<IPEndPoint>> nameservers;
+  std::optional<bool> dns_over_tls_active;
+  std::optional<std::string> dns_over_tls_hostname;
+  std::optional<std::vector<std::string>> search;
+  std::optional<bool> append_to_multi_label_name;
+  std::optional<int> ndots;
+  std::optional<base::TimeDelta> fallback_period;
+  std::optional<int> attempts;
+  std::optional<int> doh_attempts;
+  std::optional<bool> rotate;
+  std::optional<bool> use_local_ipv6;
+  std::optional<DnsOverHttpsConfig> dns_over_https_config;
+  std::optional<SecureDnsMode> secure_dns_mode;
+  std::optional<bool> allow_dns_over_https_upgrade;
 
   // |hosts| is not supported for overriding except to clear it.
   bool clear_hosts = false;

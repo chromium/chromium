@@ -852,28 +852,27 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   base::FilePath full_file_name = download_dir.AppendASCII("test_page");
   download_prefs->SetSaveFileType(content::SAVE_PAGE_TYPE_AS_MHTML);
 
-  base::FilePath received_path;
-  content::SavePageType received_type;
+  content::SavePackagePathPickedParams received_params;
   content::SavePackagePathPickedCallback callback = base::BindOnce(
-      [](base::FilePath* received_path, content::SavePageType* received_type,
-         const base::FilePath& path, content::SavePageType type,
+      [](content::SavePackagePathPickedParams* received_params,
+         content::SavePackagePathPickedParams params,
          content::SavePackageDownloadCreatedCallback cb) {
-        *received_path = path;
-        *received_type = type;
+        *received_params = params;
       },
-      &received_path, &received_type);
+      &received_params);
 
   // Deletes itself.
   new SavePackageFilePicker(
-      /* web_contents */ GetCurrentTab(browser()),
-      /* suggested_path */ full_file_name,
-      /* default_extension */ FILE_PATH_LITERAL(".html"),
-      /* can_save_as_complete */ true,
-      /* download_prefs */ download_prefs,
-      /* callback */ std::move(callback));
+      /*web_contents=*/GetCurrentTab(browser()),
+      /*suggested_path=*/full_file_name,
+      /*default_extension=*/FILE_PATH_LITERAL(".html"),
+      /*can_save_as_complete=*/true,
+      /*download_prefs=*/download_prefs,
+      /*callback=*/std::move(callback));
 
-  EXPECT_TRUE(received_path.MatchesExtension(FILE_PATH_LITERAL(".mhtml")));
-  EXPECT_EQ(received_type, content::SAVE_PAGE_TYPE_AS_MHTML);
+  EXPECT_TRUE(
+      received_params.file_path.MatchesExtension(FILE_PATH_LITERAL(".mhtml")));
+  EXPECT_EQ(received_params.save_type, content::SAVE_PAGE_TYPE_AS_MHTML);
 }
 
 // Flaky on Windows: https://crbug.com/1247404.

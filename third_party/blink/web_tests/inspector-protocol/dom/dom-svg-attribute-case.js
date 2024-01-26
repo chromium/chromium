@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
     <svg id='main' xmlns='http://www.w3.org/2000/svg' width='600' height='500' viewBox='0 0 100 120' />
   `, 'Test that DOM attribute case is preserved when modifying SVG elements.');

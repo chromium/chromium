@@ -8,12 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -65,7 +66,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   NSLayoutConstraint* _heightConstraint;
 
   // List of credit cards and icon for the bottom sheet.
-  NSArray<id<PaymentsSuggestionBottomSheetData>>* _creditCardData;
+  NSArray<CreditCardData*>* _creditCardData;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
@@ -193,8 +194,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
 
-- (void)setCreditCardData:
-            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+- (void)setCreditCardData:(NSArray<CreditCardData*>*)creditCardData
         showGooglePayLogo:(BOOL)showGooglePayLogo {
   BOOL requiresUpdate = (_creditCardData != nil);
   _creditCardData = creditCardData;
@@ -552,7 +552,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.accessibilityIdentifier = cell.textLabel.text;
+
+  // If we have the potential presence of a virtual card, the textLabel on its
+  // own is no longer a unique identifier, so we include the description.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    cell.accessibilityIdentifier = [self accessibleCardNameAtRow:indexPath.row];
+  } else {
+    cell.accessibilityIdentifier = cell.textLabel.text;
+  }
+
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
   [cell setIconImage:[self iconAtRow:indexPath.row]
             tintColor:nil

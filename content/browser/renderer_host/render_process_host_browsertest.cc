@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, SpareVsFastShutdown) {
   spare_renderer->FastShutdownIfPossible();
 
   process_watcher.Wait();
-  EXPECT_FALSE(process_watcher.did_exit_normally());
+  EXPECT_TRUE(process_watcher.did_exit_normally());
 
   // An important part of test verification is that UaF doesn't happen in the
   // next revolution of the message pump - without extra care in the

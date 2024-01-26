@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -211,6 +212,8 @@ bool HoldingSpaceItemView::IsInstance(const views::View* view) {
 }
 
 void HoldingSpaceItemView::Reset() {
+  set_context_menu_controller(nullptr);
+  set_drag_controller(nullptr);
   delegate_ = nullptr;
 }
 
@@ -284,12 +287,12 @@ void HoldingSpaceItemView::OnThemeChanged() {
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
-    uint32_t updated_fields) {
+    const HoldingSpaceItemUpdatedFields& updated_fields) {
   if (item_ != item)
     return;
 
   // Accessibility.
-  if (updated_fields & UpdatedField::kAccessibleName) {
+  if (updated_fields.previous_accessible_name) {
     GetViewAccessibility().OverrideName(item_->GetAccessibleName());
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }

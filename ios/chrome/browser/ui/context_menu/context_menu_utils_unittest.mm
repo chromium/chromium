@@ -11,7 +11,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/common/referrer_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

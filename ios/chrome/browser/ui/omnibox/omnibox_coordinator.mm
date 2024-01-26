@@ -17,7 +17,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -168,9 +168,11 @@
   _keyboardMediator.omniboxTextField = self.textField;
   _keyboardMediator.delegate = self;
 
-  self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-      self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-      self.bubblePresenter);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
+        self.bubblePresenter);
+  }
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
@@ -215,6 +217,17 @@
 }
 
 - (void)focusOmnibox {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    if (!self.keyboardAccessoryView) {
+      TemplateURLService* templateURLService =
+          ios::TemplateURLServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+          self.textField, kDotComTLD, _keyboardMediator, templateURLService,
+          self.bubblePresenter);
+    }
+  }
+
   if (![self.textField isFirstResponder]) {
     base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
 

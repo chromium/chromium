@@ -9,6 +9,8 @@
     --scrollbar-height: 116px;
     --action-button-margins: 40px;
     --omnibox-width: 252px;
+    --choice-list-bottom-padding: 50px;
+    --choice-title-line-height: 20px;
     color: var(--cr-primary-text-color);
   }
 
@@ -82,10 +84,10 @@
     --omnibox-height: 52px;
     --search-engine-omnibox-bottom-value: calc(var(--dummy-omnibox-height) / 2);
     align-items: center;
-    background-color: var(--background-color);
+    background-color: white;
     border-radius: calc(var(--omnibox-height) / 2);
     bottom: var(--search-engine-omnibox-bottom-value);
-    box-shadow: 0px 4px 16px 0px var(--search-engine-omnibox-shadow-color);
+    box-shadow: 0 4px 16px 0 var(--search-engine-omnibox-shadow-color);
     display: flex;
     flex-direction: row;
     gap: 8px;
@@ -113,11 +115,10 @@
   #choiceList {
     display: flex;
     flex-direction: column;
-    gap: 1px;
     overflow: auto;
     /* We add horizontal padding to put the scollbar on the right and keep
     the content centered. */
-    padding: 0 8px 50px;
+    padding: 0 8px var(--choice-list-bottom-padding);
     text-align: start;
     width: 100%;
   }
@@ -135,12 +136,11 @@
   }
 
   .choice-icon {
-    --choice-icon-height: 24px;
-    background-size: var(--choice-icon-height);
+    background-size: var(--iron-icon-height);
     border-radius: 4px;
     flex: none;
-    height: var(--choice-icon-height);
-    width: var(--choice-icon-height);
+    height: var(--iron-icon-height);
+    width: var(--iron-icon-height);
   }
 
   .omnibox-text,
@@ -148,8 +148,12 @@
     font-family: Roboto, Arial;
     font-size: 0.8125rem;
     font-weight: 400;
-    line-height: 20px;
+    line-height: var(--choice-title-line-height);
     text-align: start;
+  }
+
+  .omnibox-text {
+    color: var(--google-grey-900);
   }
 
   .choice-title {
@@ -159,10 +163,16 @@
   }
 
   cr-radio-button {
+    /* To center the radio button disc inside the content excluding the
+    marketing snippet text. */
+    --cr-radio-button-disc-margin-block-start:
+        calc((max(var(--choice-title-line-height), var(--iron-icon-height)) -
+        var(--cr-radio-button-size))/2);
     --cr-radio-button-label-spacing: 12px;
     --cr-radio-button-size: 20px;
     align-items: start;
     background-color: var(--google-grey-100);
+    border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
     padding: 16px 24px;
   }
@@ -173,6 +183,7 @@
   }
 
   cr-radio-button:last-of-type {
+    border-bottom: unset;
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
   }
@@ -243,6 +254,7 @@
   /* Track */
   .custom-scrollbar::-webkit-scrollbar-track {
     border-radius: calc(var(--scrollbar-height) /2);
+    margin-bottom: var(--choice-list-bottom-padding);
   }
 
   /* Handle */
@@ -251,9 +263,10 @@
     border-radius: calc(var(--scrollbar-height) /2);
   }
 
-  cr-expand-button {
+  .chevron {
     --cr-expand-button-size: 24px;
-    --cr-section-vertical-padding: 0px;
+    --cr-icon-button-margin-start: 0;
+    --cr-section-vertical-padding: 0;
     margin-inline-start: auto;
   }
 
@@ -269,6 +282,10 @@
     border-left: 0.5px solid var(--google-grey-300);
     height: 24px;
     margin-inline-start: 12px;
+  }
+
+  iron-collapse {
+    color: var(--cr-secondary-text-color);
   }
 
   @keyframes fade-in-animation {
@@ -302,7 +319,7 @@
   @media (prefers-color-scheme: dark) {
     :host {
       --background-color: var(--md-background-color);
-      --search-engine-omnibox-shadow-color: var(--google-grey-800);
+      --search-engine-omnibox-shadow-color: unset;
     }
 
     .hint-placeholder {
@@ -319,6 +336,14 @@
 
     #infoLink {
       color: var(--google-blue-300);
+    }
+
+    .vertical-separator {
+      border-color: var(--google-grey-700);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--google-grey-800);
     }
 
     cr-radio-button {
@@ -416,11 +441,11 @@
 <img class="tangible-sync-style-right-banner" alt="">
 <div class="content-container tangible-sync-style">
   <img class="product-logo" src="images/product-logo.svg"
-      alt="$i18n{productLogoAltText}">
+      alt="$i18n{productLogoAltText}" aria-hidden="true">
   <h1 class="title">$i18n{title}</h1>
   <div class="omniboxes">
     <div id="dummyOmnibox">
-      <iron-icon icon="cr:search"></iron-icon>
+      <iron-icon icon="cr:search" aria-hidden="true"></iron-icon>
       <div class="hint-placeholder"></div>
     </div>
     <div id="searchEngineOmnibox">
@@ -437,18 +462,21 @@
     </a>
   </p>
   <cr-radio-group id="choiceList" class="custom-scrollbar"
-      selected="{{selectedChoice_}}" role="list" tabindex="0">
+      selected="{{selectedChoice_}}" role="list">
     <template is="dom-repeat" items="[[choiceList_]]">
-        <cr-radio-button role="listitem" class="label-first"
+        <cr-radio-button aria-label$="[[item.name]]" role="listitem"
+            class="label-first"
             name="[[item.prepopulateId]]">
           <div class="choice">
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
             <div class="choice-text">
               <div class="choice-title">
-                [[item.name]]
-                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
-                    no-hover>
+                <span aria-hidden="true">[[item.name]]</span>
+                <cr-expand-button class="chevron" no-hover role="button"
+                    expanded="{{item.showMarketingSnippet}}"
+                    aria-label="$i18n{chevronA11yLabel}"
+                    on-click="[[onChevronClicked_(item.showMarketingSnippet)]]">
                 </cr-expand-button>
                 <div class="vertical-separator"></div>
               </div>

@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/net/timeout.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -31,7 +31,7 @@ struct InspectorEvent {
   InspectorEvent();
   ~InspectorEvent();
   std::string method;
-  absl::optional<base::Value::Dict> params;
+  std::optional<base::Value::Dict> params;
 };
 
 struct InspectorCommandResponse {
@@ -39,7 +39,7 @@ struct InspectorCommandResponse {
   ~InspectorCommandResponse();
   int id;
   std::string error;
-  absl::optional<base::Value::Dict> result;
+  std::optional<base::Value::Dict> result;
 };
 
 }  // namespace internal

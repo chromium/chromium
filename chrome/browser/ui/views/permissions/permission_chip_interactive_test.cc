@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -107,9 +107,9 @@ class TestQuietNotificationPermissionUiSelector
   Decision canned_decision_;
 };
 
-class ChipExpansionObserver : OmniboxChipButton::Observer {
+class ChipExpansionObserver : PermissionChipView::Observer {
  public:
-  explicit ChipExpansionObserver(OmniboxChipButton* chip) {
+  explicit ChipExpansionObserver(PermissionChipView* chip) {
     observation_.Observe(chip);
   }
 
@@ -117,7 +117,7 @@ class ChipExpansionObserver : OmniboxChipButton::Observer {
 
   void OnExpandAnimationEnded() override { loop_.Quit(); }
 
-  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};
   base::RunLoop loop_;
 };
@@ -157,7 +157,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     return browser_view->toolbar()->location_bar();
   }
 
-  OmniboxChipButton* GetChip() {
+  PermissionChipView* GetChip() {
     return GetLocationBarView()->GetChipController()->chip();
   }
 
@@ -174,7 +174,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
         test_api_->manager()->view_for_testing());
   }
 
-  void ClickOnChip(OmniboxChipButton* chip) {
+  void ClickOnChip(PermissionChipView* chip) {
     ASSERT_TRUE(chip != nullptr);
     ASSERT_TRUE(chip->GetVisible());
     ASSERT_FALSE(GetChipController()->GetBubbleWidget());
@@ -198,14 +198,15 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
 
     // The quiet chip will be shown even if the chip experiment is disabled.
-    OmniboxChipButton* chip_ = GetChip();
+    PermissionChipView* chip_ = GetChip();
     ASSERT_TRUE(chip_);
 
     EXPECT_FALSE(GetPermissionPromptChip()
                      ->get_chip_controller_for_testing()
                      ->should_expand_for_testing());
     EXPECT_FALSE(chip_->is_animating());
-    EXPECT_EQ(OmniboxChipTheme::kLowVisibility, chip_->get_theme_for_testing());
+    EXPECT_EQ(PermissionChipTheme::kLowVisibility,
+              chip_->get_theme_for_testing());
   }
 
   void ExpectQuietChip() {
@@ -213,29 +214,30 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
 
     // The quiet chip will be shown even if the chip experiment is disabled.
-    OmniboxChipButton* chip_ = GetChip();
+    PermissionChipView* chip_ = GetChip();
     ASSERT_TRUE(chip_);
 
     EXPECT_TRUE(GetPermissionPromptChip()
                     ->get_chip_controller_for_testing()
                     ->should_expand_for_testing());
     EXPECT_TRUE(chip_->is_animating());
-    EXPECT_EQ(OmniboxChipTheme::kLowVisibility, chip_->get_theme_for_testing());
+    EXPECT_EQ(PermissionChipTheme::kLowVisibility,
+              chip_->get_theme_for_testing());
   }
 
   void ExpectNormalChip() {
     // PermissionChip lifetime is bound to a permission prompt view.
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
-    OmniboxChipButton* chip_ = GetChip();
+    PermissionChipView* chip_ = GetChip();
     ASSERT_TRUE(chip_);
 
     EXPECT_TRUE(GetPermissionPromptChip()
                     ->get_chip_controller_for_testing()
                     ->should_expand_for_testing());
     EXPECT_TRUE(chip_->is_animating());
-    // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
+    // TODO(crbug.com/1232460): Verify that PermissionChipView::is_animating is
     // true. Right now the value is flaky.
-    EXPECT_EQ(OmniboxChipTheme::kNormalVisibility,
+    EXPECT_EQ(PermissionChipTheme::kNormalVisibility,
               chip_->get_theme_for_testing());
   }
 
@@ -372,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
   EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            OmniboxChipTheme::kNormalVisibility);
+            PermissionChipTheme::kNormalVisibility);
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -400,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
             l10n_util::GetStringUTF16(
                 IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
   EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            OmniboxChipTheme::kLowVisibility);
+            PermissionChipTheme::kLowVisibility);
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,

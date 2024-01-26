@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -255,14 +254,8 @@ bool PopupBaseView::DoShow() {
   }
 
   if (content::WebContents* web_contents = GetWebContents()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillPopupMultiWindowCursorSuppression)) {
-      custom_cursor_suppressor_.Start(
-          /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
-    } else {
-      custom_cursor_blocker_ = web_contents->CreateDisallowCustomCursorScope(
-          /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
-    }
+    custom_cursor_suppressor_.Start(
+        /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
   } else {
     // `delegate_` is already gone and `WebContents` is destroying itself.
     return false;
@@ -336,8 +329,8 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
-       "PasswordGenerationPopupViewViews::GeneratedPasswordBox",
-       "PopupRowContentView", "EditPasswordRow"});
+       "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
+       "PopupRowContentView", "EditPasswordRow", "MdTextButton"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "

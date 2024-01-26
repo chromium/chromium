@@ -50,7 +50,7 @@ int FakeWilcoDtcSupportdClient::
 }
 
 void FakeWilcoDtcSupportdClient::SetWaitForServiceToBeAvailableResult(
-    absl::optional<bool> wait_for_service_to_be_available_result) {
+    std::optional<bool> wait_for_service_to_be_available_result) {
   wait_for_service_to_be_available_result_ =
       wait_for_service_to_be_available_result;
   if (!wait_for_service_to_be_available_result_)
@@ -67,7 +67,7 @@ int FakeWilcoDtcSupportdClient::bootstrap_mojo_connection_in_flight_call_count()
 }
 
 void FakeWilcoDtcSupportdClient::SetBootstrapMojoConnectionResult(
-    absl::optional<bool> bootstrap_mojo_connection_result) {
+    std::optional<bool> bootstrap_mojo_connection_result) {
   bootstrap_mojo_connection_result_ = bootstrap_mojo_connection_result;
   if (!bootstrap_mojo_connection_result_)
     return;

@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -27,7 +28,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -80,7 +80,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   class UpdateInfo {
    public:
     UpdateInfo(IsolatedWebAppLocation location,
-               absl::optional<base::Version> expected_version);
+               std::optional<base::Version> expected_version);
     ~UpdateInfo();
 
     UpdateInfo(const UpdateInfo&);
@@ -89,7 +89,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
     base::Value AsDebugValue() const;
 
     const IsolatedWebAppLocation& location() const { return location_; }
-    const absl::optional<base::Version>& expected_version() const {
+    const std::optional<base::Version>& expected_version() const {
       return expected_version_;
     }
 
@@ -99,7 +99,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
    private:
     IsolatedWebAppLocation location_;
-    absl::optional<base::Version> expected_version_;
+    std::optional<base::Version> expected_version_;
   };
 
   // `update_info` specifies the location of the update for the IWA referred to
@@ -201,7 +201,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   UpdateInfo source_update_info_;
   IsolatedWebAppUrlInfo url_info_;
   base::Version installed_version_;
-  absl::optional<UpdateInfo> lazy_destination_update_info_;
+  std::optional<UpdateInfo> lazy_destination_update_info_;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;

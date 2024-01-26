@@ -6,6 +6,7 @@
 #include "chrome/browser/web_applications/os_integration/run_on_os_login_sub_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -29,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -103,7 +103,7 @@ void RunOnOsLoginSubManager::Configure(
 
 void RunOnOsLoginSubManager::Execute(
     const webapps::AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure execute_done) {

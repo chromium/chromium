@@ -12,19 +12,20 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FieldTrialList;
+import org.chromium.base.cached_flags.CachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.cached_flags.CachedFlagsSafeMode;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFlag;
-import org.chromium.chrome.browser.flags.CachedFlagUtils;
-import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -34,9 +35,10 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -47,8 +49,6 @@ public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
 
     private boolean mIsFinishedCachingNativeFlags;
-
-    private static String sReachedCodeProfilerTrialGroup;
 
     /**
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
@@ -82,6 +82,7 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter> fieldTrialsToCache =
                 List.of(
                         ChimeFeatures.ALWAYS_REGISTER,
+                        JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS,
                         FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                         HubFieldTrial.FLOATING_ACTION_BUTTON,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,
@@ -100,7 +101,8 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         DseNewTabUrlManager.EEA_COUNTRY_ONLY,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
-                        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
+                        ShoppingPersistedTabDataService
+                                .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
@@ -124,8 +126,11 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
                         TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
+                        ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
+                        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
+                        MinimizedFeatureUtils.ICON_VARIANT,
                         BackPressManager.TAB_HISTORY_RECOVER);
 
         tryToCatchMissingParameters(fieldTrialsToCache);
@@ -172,49 +177,13 @@ public class ChromeCachedFlags {
      * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        cacheReachedCodeProfilerTrialGroup();
-
-        // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
-        // LibraryLoader itself because it lives in //base and can't depend on ChromeFeatureList.
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
-
-        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
+        // Propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
         LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
 
         // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
         ApplicationStatus.setCachingEnabled(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
-    }
-
-    /** Caches the trial group of the reached code profiler feature to be using on next startup. */
-    private static void cacheReachedCodeProfilerTrialGroup() {
-        // Make sure that the existing value is saved in a static variable before overwriting it.
-        if (sReachedCodeProfilerTrialGroup == null) {
-            getReachedCodeProfilerTrialGroup();
-        }
-
-        ChromeSharedPreferences.getInstance()
-                .writeString(
-                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
-                        FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
-    }
-
-    /**
-     * @return The trial group of the reached code profiler.
-     */
-    @CalledByNative
-    public static String getReachedCodeProfilerTrialGroup() {
-        if (sReachedCodeProfilerTrialGroup == null) {
-            sReachedCodeProfilerTrialGroup =
-                    ChromeSharedPreferences.getInstance()
-                            .readString(ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
-        }
-
-        return sReachedCodeProfilerTrialGroup;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

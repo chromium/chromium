@@ -45,30 +45,10 @@ class PromosManagerImpl : public PromosManager {
                     PromosManagerEventExporter* event_exporter);
   ~PromosManagerImpl() override;
 
-  // Loads and sorts impression history from prefs.
-  void RefreshImpressionHistoryFromPrefs();
-
-  // `promo`-specific impression limits, if defined. May return an empty
-  // NSArray, indicating no promo-specific impression limits were defined for
-  // `promo`.
-  NSArray<ImpressionLimit*>* PromoImpressionLimits(
-      promos_manager::Promo promo) const;
-
   // Sorts the active promos in the order that they will be displayed.
   std::vector<promos_manager::Promo> SortPromos(
       const std::map<promos_manager::Promo, PromoContext>&
           promos_to_sort_with_context) const;
-
-  // Impression limits that count against all promos.
-  NSArray<ImpressionLimit*>* GlobalImpressionLimits() const;
-
-  // Impression limits that count against any given promo.
-  NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits() const;
-
-  // Loops over the stored impression history (base::Value::List) and returns
-  // corresponding a std::vector<promos_manager::Impression>.
-  std::vector<promos_manager::Impression> ImpressionHistory(
-      const base::Value::List& stored_impression_history);
 
   // Loops over the stored active promos list (base::Value::List) and returns
   // a corresponding std::set<promos_manager::Promo>.
@@ -78,41 +58,9 @@ class PromosManagerImpl : public PromosManager {
   // Initializes the `single_display_pending_promos_`, constructs it from Pref.
   void InitializePendingPromos();
 
-  void OnFeatureEngagementTrackerInitialized(bool success);
-
-  // Returns true if any impression limit from `impression_limits` is triggered,
-  // and false otherwise.
-  //
-  // At each limit, evaluates the following:
-  //
-  // (1) Is the current limit valid for evaluation? This is determined by
-  // whether or not `window_days` is < the current limit's window.
-  //
-  // (2) If the limit is valid for evaluation, compare `impression_count` with
-  // the current limit's impression count. If `impression_count` >= the current
-  // limit's impression count, the limit has been triggered.
-
-  // (3) If the limit is triggered, exits early and returns true. Otherwise,
-  // keep going.
-  bool AnyImpressionLimitTriggered(
-      int impression_count,
-      int window_days,
-      NSArray<ImpressionLimit*>* impression_limits) const;
-
-  // Algorithm loops over pre-sorted impressions history list. The algorithm
-  // assumes `valid_impressions` is sorted by impression day (most recent ->
-  // least recent).
-  //
-  // At each impression, the algorithm asks if either a time-based or
-  // time-agnostic impression limit has been met. If so, the algorithm exits
-  // early and returns false.
-  //
-  // If the algorithm reaches its end, no impression limits were hit for
-  // `promo`. If so, the algorithm returns true, as it's safe to display
-  // `promo`.
-  bool CanShowPromo(
-      promos_manager::Promo promo,
-      const std::vector<promos_manager::Impression>& sorted_impressions) const;
+  // Checks whether the given promo can be shown given any extant impression
+  // limits.
+  bool CanShowPromo(promos_manager::Promo promo) const;
 
   // Checks whether a promo can currently be shown using the feature engagement
   // system to check any impression limits.
@@ -121,16 +69,6 @@ class PromosManagerImpl : public PromosManager {
 
   // Returns the corresponding base::Feature for the given Promo.
   const base::Feature* FeatureForPromo(promos_manager::Promo promo) const;
-
-  // Returns a list of impression counts (std::vector<int>) from a promo
-  // impression counts map.
-  std::vector<int> ImpressionCounts(
-      std::map<promos_manager::Promo, int>& promo_impression_counts) const;
-
-  // Returns the total number of impressions (int) from a promo impression
-  // counts map.
-  int TotalImpressionCount(
-      std::map<promos_manager::Promo, int>& promo_impression_counts) const;
 
   // PromosManager implementation.
   void Init() override;
@@ -162,9 +100,6 @@ class PromosManagerImpl : public PromosManager {
   // The map from registered single-display pending promos to the time that they
   // can become active.
   std::map<promos_manager::Promo, base::Time> single_display_pending_promos_;
-
-  // The impression history sorted by `day` (most recent -> least recent).
-  std::vector<promos_manager::Impression> impression_history_;
 
   // Promo-specific configuration.
   PromoConfigsSet promo_configs_;

@@ -256,6 +256,16 @@ class POLICY_EXPORT CloudPolicyClient {
                                  const ClientDataDelegate& client_data_delegate,
                                  bool is_mandatory);
 
+  // Attempts to register the profile with the device management service using a
+  // OIDC response from a third party IdP's authentication. Results in a
+  // registration change or error notification.
+  virtual void RegisterWithOidcResponse(
+      const RegistrationParameters& parameters,
+      const std::string& oauth_token,
+      const std::string& oidc_id_token,
+      const std::string& profile_id,
+      const std::string& client_id);
+
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version
   // to determine which version of policy was fetched.
@@ -783,9 +793,18 @@ class POLICY_EXPORT CloudPolicyClient {
   void CreateUniqueRequestJob(
       std::unique_ptr<RegistrationJobConfiguration> config);
 
+#if BUILDFLAG(IS_WIN)
+  // Callback to get browser device identifier.
+  void SetBrowserDeviceIdentifier(
+      enterprise_management::PolicyFetchRequest* request,
+      std::unique_ptr<DMServerJobConfiguration> config,
+      std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
+          identifier);
+#endif
+
   // Used to store a copy of the previously used `dm_token_`. This is used
-  // during re-registration, which gets triggered by a failed policy fetch with
-  // errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
+  // during re-registration, which gets triggered by a failed policy fetch
+  // with errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
   // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET`.
   std::string reregistration_dm_token_;
 

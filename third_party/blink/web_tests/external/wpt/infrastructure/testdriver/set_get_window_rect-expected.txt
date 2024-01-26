@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Window Position
-  promise_test: Unhandled rejection with value: object "Error: get_window_rect() is not implemented by testdriver-vendor.js"
-[FAIL] Window Size
-  promise_test: Unhandled rejection with value: object "Error: get_window_rect() is not implemented by testdriver-vendor.js"
-Harness: the test ran to completion.
-

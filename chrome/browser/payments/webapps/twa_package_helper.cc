@@ -10,6 +10,8 @@
 #include "base/task/single_thread_task_runner.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,16 +35,16 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns `nullopt` if `rfh` is null, or is not a web app window, or if the
 // current url is not within the scope of the web app.
-absl::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
+std::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(rfh);
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   webapps::AppId app_id = browser->app_controller()->app_id();
@@ -52,7 +53,7 @@ absl::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   if (!web_app_provider ||
       !web_app_provider->registrar_unsafe().IsUrlInAppScope(
           web_contents->GetLastCommittedURL(), app_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return app_id;
@@ -63,7 +64,7 @@ absl::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
 // Obtains the Android package name of the Trusted Web Activity that invoked
 // this browser, if any.
 std::string FetchTwaPackageName(content::RenderFrameHost* rfh) {
-  absl::optional<webapps::AppId> app_id = GetWebAppId(rfh);
+  std::optional<webapps::AppId> app_id = GetWebAppId(rfh);
   if (!app_id.has_value()) {
     return "";
   }
@@ -74,7 +75,7 @@ std::string FetchTwaPackageName(content::RenderFrameHost* rfh) {
     return "";
   }
 
-  absl::optional<std::string> twa_package_name =
+  std::optional<std::string> twa_package_name =
       apk_web_app_service->GetPackageNameForWebApp(*app_id);
 
   return twa_package_name.has_value() ? twa_package_name.value() : "";
@@ -93,7 +94,7 @@ TwaPackageHelper::TwaPackageHelper(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  absl::optional<webapps::AppId> app_id = GetWebAppId(render_frame_host);
+  std::optional<webapps::AppId> app_id = GetWebAppId(render_frame_host);
   if (!lacros_service || !app_id.has_value()) {
     on_twa_package_name_ready_.Signal();
     return;

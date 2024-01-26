@@ -1,0 +1,23 @@
+<style>
+span.bracketed::before {
+    content: " [";
+}
+
+span.bracketed::after {
+    content: "] ";
+}</style>
+<div title="whitespace no spans">
+    <span class="bracketed">1</span> <span class="bracketed">2</span> <span class="bracketed">3</span> <span class="bracketed">4</span>
+</div>
+<div title="whitespace with spans">
+    <span class="bracketed">1</span> <span> </span> <span> </span> <span> </span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">2</span> <span> </span> <span> </span> <span> </span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">3</span> <span> </span> <span> </span> <span> </span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">4</span> <span> </span> <span> </span> <span> </span> <span><span> </span> <span> </span> <span> </span></span>
+</div>
+<div title="whitespace with spans and text">
+    <span class="bracketed">1</span> <span> </span><span></span><span> </span><span>abc</span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">2</span> <span> </span><span></span><span> </span><span>def</span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">3</span> <span> </span><span></span><span> </span><span>ghi</span> <span><span> </span> <span> </span> <span> </span></span>
+    <span class="bracketed">4</span> <span> </span><span></span><span> </span><span>jkl</span> <span><span> </span> <span> </span> <span> </span></span>
+</div>

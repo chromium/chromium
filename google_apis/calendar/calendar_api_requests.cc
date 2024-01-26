@@ -7,10 +7,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
@@ -19,6 +21,18 @@
 namespace google_apis {
 
 namespace calendar {
+
+namespace {
+
+// For events without an event color, fill the colorId field with the color ID
+// provided.
+void FillEmptyColorFields(EventList* events, const std::string& color) {
+  for (auto& event : events->items()) {
+    if (event->color_id().empty()) {
+      event->set_color_id(color);
+    }
+  }
+}
 
 constexpr char kFieldsParameterName[] = "fields";
 
@@ -53,6 +67,8 @@ constexpr char kCalendarEventListFields[] =
 // Requested fields to be returned in the CalendarList result.
 constexpr char kCalendarListFields[] =
     "etag,kind,items(id,colorId,selected,primary)";
+
+}  // namespace
 
 CalendarApiGetRequest::CalendarApiGetRequest(RequestSender* sender,
                                              const std::string& fields)
@@ -153,19 +169,39 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
     const CalendarApiUrlGenerator& url_generator,
     CalendarEventListCallback callback,
     const base::Time& start_time,
+    const base::Time& end_time,
+    const std::string& calendar_id,
+    const std::string& calendar_color_id)
+    : CalendarApiGetRequest(sender, kCalendarEventListFields),
+      callback_(std::move(callback)),
+      url_generator_(url_generator),
+      start_time_(start_time),
+      end_time_(end_time),
+      calendar_id_(calendar_id),
+      calendar_color_id_(calendar_color_id) {
+  CHECK(!callback_.is_null());
+}
+
+CalendarApiEventsRequest::CalendarApiEventsRequest(
+    RequestSender* sender,
+    const CalendarApiUrlGenerator& url_generator,
+    CalendarEventListCallback callback,
+    const base::Time& start_time,
     const base::Time& end_time)
     : CalendarApiGetRequest(sender, kCalendarEventListFields),
       callback_(std::move(callback)),
       url_generator_(url_generator),
       start_time_(start_time),
-      end_time_(end_time) {
+      end_time_(end_time),
+      calendar_id_(kPrimaryCalendarID) {
   CHECK(!callback_.is_null());
 }
 
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_,
+  return url_generator_.GetCalendarEventListUrl(calendar_id_, start_time_,
+                                                end_time_,
                                                 /*single_events=*/true,
                                                 /*max_attendees=*/kMaxAttendees,
                                                 /*max_results=*/kMaxResults);
@@ -208,6 +244,9 @@ void CalendarApiEventsRequest::OnDataParsed(ApiErrorCode error,
                                             std::unique_ptr<EventList> events) {
   if (!events) {
     error = PARSE_ERROR;
+  }
+  if (!calendar_color_id_.empty()) {
+    FillEmptyColorFields(events.get(), calendar_color_id_);
   }
   std::move(callback_).Run(error, std::move(events));
   OnProcessURLFetchResultsComplete();

@@ -324,9 +324,9 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
     return IndexedRulesetVersion();
   }
 
-  IndexAndWriteRulesetResult result = WriteRuleset(
-      indexed_ruleset_version_dir, unindexed_ruleset_info.license_path,
-      indexer.data(), indexer.size());
+  IndexAndWriteRulesetResult result =
+      WriteRuleset(indexed_ruleset_version_dir,
+                   unindexed_ruleset_info.license_path, indexer.data());
   RecordIndexAndWriteRulesetResult(result);
   if (result != IndexAndWriteRulesetResult::SUCCESS)
     return IndexedRulesetVersion();
@@ -371,8 +371,7 @@ bool RulesetService::IndexRuleset(
 RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
     const base::FilePath& indexed_ruleset_version_dir,
     const base::FilePath& license_source_path,
-    const uint8_t* indexed_ruleset_data,
-    size_t indexed_ruleset_size) {
+    base::span<const uint8_t> indexed_ruleset_data) {
   base::ScopedTempDir scratch_dir;
   if (!scratch_dir.CreateUniqueTempDirUnderPath(
           indexed_ruleset_version_dir.DirName())) {
@@ -382,7 +381,7 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
   if (!base::WriteFile(
           IndexedRulesetLocator::GetRulesetDataFilePath(scratch_dir.GetPath()),
-          base::make_span(indexed_ruleset_data, indexed_ruleset_size))) {
+          indexed_ruleset_data)) {
     return IndexAndWriteRulesetResult::FAILED_WRITING_RULESET_DATA;
   }
 

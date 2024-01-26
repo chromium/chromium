@@ -8,6 +8,14 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {EligibleEntry} from './commerce_internals.mojom-webui.js';
 import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 
+const SUBSCRIPTION_ROWS =
+    ['Cluster ID', 'Domain', 'Price', 'Previous Price', 'Product'];
+const CLUSTER_ID_COLUMN_IDX = 0;
+const DOMAIN_COLUMN_IDX = 1;
+const CURRENT_PRICE_COLUMN_IDX = 2;
+const PREVIOUS_PRICE_COLUMN_IDX = 3;
+const PRODUCT_COLUMN_IDX = 4;
+
 function getProxy(): CommerceInternalsApiProxy {
   return CommerceInternalsApiProxy.getInstance();
 }
@@ -75,7 +83,102 @@ function initialize() {
 
   getProxy().getIsShoppingListEligible().then(({eligible}) => {
     updateShoppingListEligibleStatus(eligible);
+    if (eligible) {
+      renderSubscriptions();
+    }
   });
+}
+
+function renderSubscriptions() {
+  getProxy().getSubscriptionDetails().then(({subscriptions}) => {
+    if (!subscriptions || subscriptions.length == 0) {
+      return;
+    }
+
+    const subscriptionsElement = document.getElementById('subscriptions');
+    if (!subscriptionsElement) {
+      return;
+    }
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+
+    for (const colName of SUBSCRIPTION_ROWS) {
+      const th = document.createElement('th');
+      th.innerText = colName;
+      th.setAttribute('align', 'left');
+      tr.appendChild(th);
+    }
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    for (let i = 0; i < subscriptions.length; i++) {
+      const productInfos = subscriptions[i]!.productInfos;
+
+      // Highlight red if there are no bookmarks for the subscription.
+      const row = createRow();
+      if (productInfos.length == 0) {
+        row.classList.add('error-row');
+        row.setAttribute('bgcolor', 'FF7F7F');
+        const columns = row.getElementsByTagName('td');
+        columns[CLUSTER_ID_COLUMN_IDX]!.textContent =
+            BigInt(subscriptions[i]!.clusterId).toString();
+        table.appendChild(row);
+        continue;
+      }
+
+      for (let j = 0; j < productInfos.length; j++) {
+        const columns = row.getElementsByTagName('td');
+        columns[CLUSTER_ID_COLUMN_IDX]!.textContent =
+            BigInt(productInfos[j]!.info!.clusterId!).toString();
+        columns[DOMAIN_COLUMN_IDX]!.textContent = productInfos[j]!.info.domain!;
+        columns[CURRENT_PRICE_COLUMN_IDX]!.textContent =
+            productInfos[j]!.info.currentPrice!;
+        columns[PREVIOUS_PRICE_COLUMN_IDX]!.textContent =
+            productInfos[j]!.info.previousPrice!;
+
+        const url = productInfos[j]!.info.productUrl.url;
+        const productCell = columns[PRODUCT_COLUMN_IDX]!;
+        if (url == undefined) {
+          productCell.textContent = productInfos[j]!.info.title!;
+        } else {
+          const a = document.createElement('a');
+          a.textContent = productInfos[j]!.info.title!;
+          a.setAttribute('href', url);
+          productCell.appendChild(a);
+        }
+        const imageUrl = productInfos[j]?.info.imageUrl;
+        if (imageUrl != undefined) {
+          const space = document.createElement('span');
+          space.textContent = ' ';
+          productCell.appendChild(space);
+          const imgLink = document.createElement('a');
+          imgLink.textContent = '(image)';
+          imgLink.setAttribute('href', imageUrl.url);
+          productCell.appendChild(imgLink);
+        }
+
+        row.appendChild(productCell);
+        table.appendChild(row);
+        subscriptionsElement.appendChild(table);
+      }
+    }
+  });
+}
+
+function createRow() {
+  const clusterIdCell = document.createElement('td');
+  const domainCell = document.createElement('td');
+  const currentPriceCell = document.createElement('td');
+  const previousPriceCell = document.createElement('td');
+  const productCell = document.createElement('td');
+  const row = document.createElement('tr');
+  for (const cell
+           of [clusterIdCell, domainCell, currentPriceCell, previousPriceCell,
+               productCell]) {
+    row.appendChild(cell);
+  }
+  return row;
 }
 
 function updateShoppingListEligibleStatus(eligible: boolean) {

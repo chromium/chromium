@@ -130,7 +130,7 @@ TEST_F(ShortcutPublisherTest, PublishExistingShortcuts) {
 
   ShortcutPtr shortcut_2 = std::make_unique<Shortcut>("app_id_1", "local_id_2");
   shortcut_2->name = "name2";
-  shortcut_2->shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_2->shortcut_source = ShortcutSource::kUser;
 
   Shortcuts initial_chrome_shortcuts;
   initial_chrome_shortcuts.push_back(std::move(shortcut_1));
@@ -226,7 +226,7 @@ TEST_F(ShortcutPublisherTest, ShortcutRemoved) {
 
   ShortcutPtr shortcut_2 = std::make_unique<Shortcut>("app_id_1", "local_id_2");
   shortcut_2->name = "name2";
-  shortcut_2->shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_2->shortcut_source = ShortcutSource::kUser;
 
   Shortcuts initial_chrome_shortcuts;
   initial_chrome_shortcuts.push_back(std::move(shortcut_1));

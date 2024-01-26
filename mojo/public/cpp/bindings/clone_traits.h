@@ -5,11 +5,11 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 

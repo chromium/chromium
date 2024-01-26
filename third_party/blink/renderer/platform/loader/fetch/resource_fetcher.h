@@ -582,12 +582,10 @@ class PLATFORM_EXPORT ResourceFetcher
   HeapHashSet<Member<Resource>> document_resource_strong_refs_;
   size_t document_resource_strong_refs_total_size_ = 0;
 
-  // |image_resources_| is the subset of all image resources for the document.
-  HeapHashSet<WeakMember<Resource>> image_resources_;
-
-  // |not_loaded_image_resources_| is a subset of |image_resources_| where
-  // |Resource::IsLoaded| might be false. The is used for performance
-  // optimizations and might still contain images which are actually loaded.
+  // |not_loaded_image_resources_| is a subset of all image resources for the
+  // document where |Resource::IsLoaded| might be false. The is used for
+  // performance optimizations and might still contain images which are actually
+  // loaded.
   HeapHashSet<WeakMember<Resource>> not_loaded_image_resources_;
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;

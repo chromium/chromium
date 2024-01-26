@@ -348,9 +348,11 @@ void PrintSessionImpl::OnPreviewDocumentRead(
 
 void PrintSessionImpl::OnPdfFlattened(
     int request_id,
-    base::ReadOnlySharedMemoryRegion flattened_document_region) {
+    printing::mojom::FlattenPdfResultPtr result) {
   auto it = callbacks_.find(request_id);
-  std::move(it->second).Run(std::move(flattened_document_region));
+  std::move(it->second)
+      .Run(result ? std::move(result->flattened_pdf_region)
+                  : base::ReadOnlySharedMemoryRegion());
   callbacks_.erase(it);
 }
 

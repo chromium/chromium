@@ -53,7 +53,7 @@ std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<FakeWebAppProvider>(profile);
   provider->SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
       profile, nullptr, nullptr, nullptr, nullptr));
-  provider->Start();
+  provider->StartWithSubsystems();
   DCHECK(provider);
   return provider;
 }
@@ -88,10 +88,8 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
 #endif
 
     for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = WebAppProvider::GetForTest(profile);
-      base::RunLoop loop;
-      web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
-      loop.Run();
+      web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
+          WebAppProvider::GetForTest(profile));
     }
     return true;
   }
@@ -677,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   EXPECT_EQ(
       1u, GetOsIntegrationManager(GetProfile(0)).num_create_shortcuts_calls());
 #if BUILDFLAG(IS_CHROMEOS)
-  absl::optional<InstallOsHooksOptions> last_options =
+  std::optional<InstallOsHooksOptions> last_options =
       GetOsIntegrationManager(GetProfile(1)).get_last_install_options();
   EXPECT_TRUE(last_options.has_value());
   OsHooksOptions expected_os_hook_requests;

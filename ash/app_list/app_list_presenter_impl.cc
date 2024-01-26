@@ -475,7 +475,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
   if (settings.has_value() && transition.has_value()) {
     view_->OnTabletModeAnimationTransitionNotified(*transition);
     reporter.emplace(settings->GetAnimator(),
-                     metrics_util::ForSmoothness(
+                     metrics_util::ForSmoothnessV3(
                          view_->GetStateTransitionMetricsReportCallback()));
   }
 

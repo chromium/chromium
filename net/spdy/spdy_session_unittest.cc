@@ -33,6 +33,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_data_stream.h"
 #include "net/cert/ct_policy_status.h"
@@ -179,7 +180,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
         key_(HostPortPair::FromURL(test_url_),
              ProxyChain::Direct(),
              PRIVACY_MODE_DISABLED,
-             SpdySessionKey::IsProxySession::kFalse,
+             SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow),
@@ -3346,17 +3347,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   auto connection2 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection2->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3394,9 +3396,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 
   // Create an idle SPDY session.
   SpdySessionKey key1(HostPortPair("www.example.org", 80), ProxyChain::Direct(),
-                      PRIVACY_MODE_DISABLED,
-                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                      PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                      SocketTag(), NetworkAnonymizationKey(),
+                      SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> session1 =
       ::net::CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   EXPECT_FALSE(pool->IsStalled());
@@ -3404,7 +3406,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   SpdySessionKey key2(HostPortPair("mail.example.org", 80),
                       ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      SessionUsage::kDestination, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
   bool is_blocking_request_for_session = false;
@@ -3437,17 +3439,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback3;
   auto connection3 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection3->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "3.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection3->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "3.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback3.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3517,17 +3520,18 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   auto connection2 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection2->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // Running the message loop should cause the socket pool to ask the SPDY
@@ -3554,12 +3558,12 @@ TEST_F(SpdySessionTest, SpdySessionKeyPrivacyMode) {
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key_privacy_enabled(
       host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_ENABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow);
   SpdySessionKey key_privacy_disabled(
       host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow);
 
   EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_privacy_enabled));
   EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_privacy_disabled));
@@ -5878,9 +5882,9 @@ TEST_F(AltSvcFrameTest,
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
   key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyChain::Direct(),
-                        PRIVACY_MODE_DISABLED,
-                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                        kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow);
+                        PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                        SocketTag(), kNetworkAnonymizationKey1,
+                        SecureDnsPolicy::kAllow);
 
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 1);
   altsvc_ir.add_altsvc(alternative_service_);

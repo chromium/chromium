@@ -7,11 +7,9 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/strings/strcat.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
-#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
@@ -57,12 +55,6 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   }
 }
 
-// Get identifier for temporary Browser from Browser.
-std::string GetTemporaryIdentifier(Browser* original_browser) {
-  using session_util::GetSessionIdentifier;
-  return base::StrCat({GetSessionIdentifier(original_browser), "/{Undo}"});
-}
-
 }  // namespace
 
 class TabsCloser::UndoStorage {
@@ -99,16 +91,14 @@ class TabsCloser::UndoStorage {
   raw_ptr<Browser> original_browser_{nullptr};
   std::unique_ptr<Browser> temporary_browser_;
   std::vector<std::optional<Opener>> openers_;
-  const std::string identifier_;
 };
 
 TabsCloser::UndoStorage::UndoStorage(Browser* browser)
     : original_browser_(browser),
-      temporary_browser_(Browser::CreateTemporary(browser->GetBrowserState())),
-      identifier_(GetTemporaryIdentifier(browser)) {
+      temporary_browser_(Browser::CreateTemporary(browser->GetBrowserState())) {
   SessionRestorationServiceFactory::GetForBrowserState(
       temporary_browser_->GetBrowserState())
-      ->SetSessionID(temporary_browser_.get(), identifier_);
+      ->AttachBackup(original_browser_.get(), temporary_browser_.get());
 }
 
 TabsCloser::UndoStorage::~UndoStorage() {
@@ -124,7 +114,6 @@ TabsCloser::UndoStorage::~UndoStorage() {
           temporary_browser_->GetBrowserState());
 
   service->Disconnect(temporary_browser_.get());
-  service->DeleteDataForDiscardedSessions({identifier_}, base::DoNothing());
 }
 
 void TabsCloser::UndoStorage::CloseTabs(int start, int count) {
@@ -182,6 +171,18 @@ void TabsCloser::UndoStorage::Undo() {
 }
 
 void TabsCloser::UndoStorage::Drop() {
+  // Pretend that the original Browser's WebStateList is going through a
+  // batched operation. This is a fix for https://crbug.com/1521867 where
+  // RecentTabsMediator observe the TabRestoreService for modification
+  // and updates its state each time it is notified by the service.
+  //
+  // Using a ScopedBatchOperation causes RecentTabsMediator to consider
+  // that a batch operation is in progress for one of the WebStateList
+  // it is observing and to avoid updating its state for each closed
+  // WebState.
+  WebStateList::ScopedBatchOperation original_browser_lock =
+      original_browser_->GetWebStateList()->StartBatchOperation();
+
   temporary_browser_->GetWebStateList()->CloseAllWebStates(
       WebStateList::CLOSE_USER_ACTION);
 }
@@ -214,6 +215,14 @@ int TabsCloser::CloseTabs() {
 
   state_ = std::make_unique<UndoStorage>(browser_);
   state_->CloseTabs(start, count);
+
+  // Force a session save to avoid having to wait for the timeout.
+  // This is mostly useful when user has a large number of tabs (see
+  // bug https://crbug.com/1510953 for details).
+  SessionRestorationServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState())
+      ->SaveSessions();
+
   return state_->count();
 }
 

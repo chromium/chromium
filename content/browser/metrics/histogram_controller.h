@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/timer/timer.h"
 #include "content/common/histogram_fetcher.mojom-shared.h"
 #include "content/common/histogram_fetcher.mojom.h"
@@ -61,7 +61,7 @@ class HistogramController {
       const std::vector<std::string>& pickled_histograms);
 
   template <class T>
-  void SetHistogramMemory(T*, base::WritableSharedMemoryRegion);
+  void SetHistogramMemory(T*, base::UnsafeSharedMemoryRegion);
 
   // Some hosts can be re-used before Mojo recognizes that their connections
   // are invalid because the previous child process died.

@@ -171,18 +171,16 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   }
 
   gfx::Rect bounds = web_contents_->GetViewBounds();
-#if BUILDFLAG(IS_MAC)
-  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
-  gfx::Image img;
-  bool rval = ui::GrabViewSnapshot(native_view, region, &img);
-  // If |img| is empty, clients should treat it as a canceled action, but
-  // we have a DCHECK for development as we expected this call to succeed.
-  DCHECK(rval);
-  RunScreenshotCompleteCallback(result_code, bounds, img);
-#else
   ui::GrabSnapshotImageCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
                      result_code, bounds);
+#if BUILDFLAG(IS_MAC)
+  // TODO: Why is the view captured on the Mac but the window captured on all
+  // other platforms?
+  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
+  ui::GrabViewSnapshotAsync(native_view, region,
+                            std::move(screenshot_callback));
+#else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   ui::GrabWindowSnapshotAsync(native_window, region,
                               std::move(screenshot_callback));

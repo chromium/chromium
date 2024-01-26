@@ -54,7 +54,7 @@ class NearbyConnectionsManagerImpl
   void StopDiscovery() override;
   void Connect(std::vector<uint8_t> endpoint_info,
                const std::string& endpoint_id,
-               absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+               std::optional<std::vector<uint8_t>> bluetooth_mac_address,
                DataUsage data_usage,
                NearbyConnectionCallback callback) override;
   void Disconnect(const std::string& endpoint_id) override;
@@ -70,9 +70,9 @@ class NearbyConnectionsManagerImpl
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
-  absl::optional<std::string> GetAuthenticationToken(
+  std::optional<std::string> GetAuthenticationToken(
       const std::string& endpoint_id) override;
-  absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  std::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void RegisterBandwidthUpgradeListener(
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
@@ -159,8 +159,7 @@ class NearbyConnectionsManagerImpl
                      NearbyFileHandler::CreateFileResult result);
 
   // For metrics.
-  absl::optional<Medium> GetUpgradedMedium(
-      const std::string& endpoint_id) const;
+  std::optional<Medium> GetUpgradedMedium(const std::string& endpoint_id) const;
 
   raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>

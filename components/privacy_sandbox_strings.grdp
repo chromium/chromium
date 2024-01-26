@@ -245,9 +245,21 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
        As you browse, whether an ad you see is personalized depends on this setting, Site-suggested ads, your cookie settings, and if the site you’re viewing personalizes ads
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FIRST_LEVEL_TOPIC_DESCRIPTOR" desc="Description of a couple of popular topics. Used in the Manage Topics page." translateable="false">
+    <ph name="TOPIC_1">$1<ex>American football</ex></ph>, <ph name="TOPIC_2">$2<ex>Tennis</ex></ph> and more
+  </message>
 
   <!-- Proactive Topics Blocking -->
   <!-- TODO(crbug.com/1515108) - Finalize and mark translateable. -->
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_TITLE" desc="Title of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." translateable="false">
+    Block <ph name="TOPIC">$1<ex>Movies</ex></ph> and any related topics?
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BODY" desc="Body of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." translateable="false">
+    Blocking <ph name="TOPIC">$1<ex>Movies</ex></ph> will also block any related topics, even if the topic is active
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BLOCK_BUTTON_TEXT" desc="A dialog pops up on the manage topics page when a topic is being blocked and that topic has child topics that are currently assigned. This string is for the block button on that dialog" translateable="false">
+    Block
+  </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION" desc="Explanatory text for the Manage Topics settings page" translateable="false">
     Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics.<ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph> Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>

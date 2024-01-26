@@ -65,13 +65,13 @@ bool ShouldAutoPopupForDiscounts(bool is_merchant_wide, bool shown_before) {
 
 OfferNotificationHandler::OfferNotificationHandler(
     AutofillOfferManager* offer_manager)
-    : offer_manager_(offer_manager) {}
+    : offer_manager_(*offer_manager) {}
 
 OfferNotificationHandler::~OfferNotificationHandler() = default;
 
 void OfferNotificationHandler::UpdateOfferNotificationVisibility(
-    AutofillClient* client) {
-  const GURL url = client->GetLastCommittedPrimaryMainFrameURL();
+    AutofillClient& client) {
+  const GURL url = client.GetLastCommittedPrimaryMainFrameURL();
 
   AutofillOfferManager::AsyncOfferCallback shopping_service_callback;
 
@@ -79,7 +79,7 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
   // are stored on the device that do not contain a discount UTM tag. These
   // offers are prioritized because they can instantly be shown, since the other
   // types of offers that would be shown must be retrieved from the server using
-  // the `offer_manager_- >GetShoppingServiceOfferForUrl()` call below, which
+  // the `offer_manager_->GetShoppingServiceOfferForUrl()` call below, which
   // can have a delay.
   if (ValidOfferExistsForUrl(url) &&
       !commerce::UrlContainsDiscountUtmTag(url)) {
@@ -93,17 +93,19 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     CHECK(IsOfferValid(offer));
     int64_t offer_id = offer->GetOfferId();
     bool offer_id_has_shown_before = shown_notification_ids_.contains(offer_id);
-    client->UpdateOfferNotification(
+    client.UpdateOfferNotification(
         offer, {.notification_has_been_shown = offer_id_has_shown_before,
                 .show_notification_automatically = !offer_id_has_shown_before});
     shown_notification_ids_.insert(offer_id);
     shopping_service_callback = base::DoNothing();
   } else {
-    client->DismissOfferNotification();
+    client.DismissOfferNotification();
     shopping_service_callback =
         base::BindOnce(&OfferNotificationHandler::
                            UpdateOfferNotificationForShoppingServiceOffer,
-                       weak_ptr_factory_.GetWeakPtr(), client);
+                       weak_ptr_factory_.GetWeakPtr(),
+                       // TODO(crbug.com/1521706): Align lifecycles.
+                       std::ref(client));
   }
 
   // We always need to call GetShoppingServiceOfferForUrl to get the offer from
@@ -129,10 +131,10 @@ bool OfferNotificationHandler::ValidOfferExistsForUrl(const GURL& url) {
 }
 
 void OfferNotificationHandler::UpdateOfferNotificationForShoppingServiceOffer(
-    AutofillClient* client,
+    AutofillClient& client,
     const GURL& url,
     const AutofillOfferData& offer) {
-  if (!client || url != client->GetLastCommittedPrimaryMainFrameURL()) {
+  if (url != client.GetLastCommittedPrimaryMainFrameURL()) {
     return;
   }
   int64_t offer_id = offer.GetOfferId();
@@ -142,7 +144,7 @@ void OfferNotificationHandler::UpdateOfferNotificationForShoppingServiceOffer(
       .show_notification_automatically =
           ShowShoppingServiceOfferNotificationAutomatically(url, offer)};
 
-  client->UpdateOfferNotification(&offer, offer_notification_options);
+  client.UpdateOfferNotification(&offer, offer_notification_options);
   shown_notification_ids_.insert(offer_id);
 }
 

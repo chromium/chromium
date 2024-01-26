@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/browser_sync/browser_sync_client.h"
@@ -72,7 +73,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
 
  private:
-  ChromeBrowserState* const browser_state_;
+  const raw_ptr<ChromeBrowserState> browser_state_;
 
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;

@@ -61,6 +61,7 @@ const char kClientID[] = "device-id";
 const char kRobotAuthCode[] = "robot-oauth-auth-code";
 const char kEnrollmentToken[] = "enrollment_token";
 const char kProfileID[] = "profile-id";
+const char kIdToken[] = "id-token";
 #if BUILDFLAG(IS_IOS)
 const char kOAuthAuthorizationHeaderPrefix[] = "OAuth ";
 #endif
@@ -206,6 +207,21 @@ class DeviceManagementServiceTestBase : public testing::Test {
         DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
         /*critical=*/false, DMAuth::FromEnrollmentToken(kEnrollmentToken),
         std::string(), payload, method, timeout);
+  }
+
+  std::unique_ptr<DeviceManagementService::Job> StartOidcEnrollmentJob(
+      const std::string& payload = std::string(),
+      DeviceManagementService::Job::RetryMethod method =
+          DeviceManagementService::Job::NO_RETRY,
+      base::TimeDelta timeout = base::Seconds(0)) {
+    auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+        DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
+        service_.get(), kClientID, shared_url_loader_factory_);
+    params.critical = false;
+    params.oauth_token = kOAuthToken;
+    params.auth_data = DMAuth::FromOidcResponse(kIdToken);
+    params.profile_id = kProfileID;
+    return StartJob(std::move(params), payload, method, timeout);
   }
 
   std::unique_ptr<DeviceManagementService::Job> StartApiAuthCodeFetchJob(
@@ -408,6 +424,20 @@ TEST_P(DeviceManagementServiceFailedRequestTest, TokenEnrollmentRequest) {
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartTokenEnrollmentJob());
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  SendResponse(GetParam().error_, GetParam().http_status_,
+               GetParam().response_);
+}
+
+TEST_P(DeviceManagementServiceFailedRequestTest, OidcEnrollmentRequest) {
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+  EXPECT_CALL(*this,
+              OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartOidcEnrollmentJob());
   auto* request = GetPendingRequest();
   ASSERT_TRUE(request);
 
@@ -710,6 +740,36 @@ TEST_F(DeviceManagementServiceTest, TokenEnrollmentRequest) {
   SendResponse(net::OK, 200, expected_data);
 }
 
+TEST_F(DeviceManagementServiceTest, OidcEnrollmentRequest) {
+  em::DeviceManagementResponse expected_response;
+  expected_response.mutable_register_response()->set_device_management_token(
+      kDMToken);
+  std::string expected_data;
+  ASSERT_TRUE(expected_response.SerializeToString(&expected_data));
+
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, expected_data));
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+  EXPECT_CALL(*this, OnShouldJobRetry(200, expected_data));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartOidcEnrollmentJob(expected_data));
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  CheckURLAndQueryParams(request, dm_protocol::kValueRequestOidcRegister,
+                         kClientID, "");
+
+  // Make sure request is properly authorized.
+  std::string header;
+  ASSERT_TRUE(request->request.headers.GetHeader("Authorization", &header));
+  EXPECT_EQ("GoogleDM3PAuth oauth_token=oauth-token, id_token=id-token",
+            header);
+
+  EXPECT_EQ(expected_data, network::GetUploadData(request->request));
+
+  // Generate the response.
+  SendResponse(net::OK, 200, expected_data);
+}
+
 TEST_F(DeviceManagementServiceTest, ApiAuthCodeFetchRequest) {
   em::DeviceManagementResponse expected_response;
   expected_response.mutable_service_api_access_response()->set_auth_code(
@@ -787,6 +847,19 @@ TEST_F(DeviceManagementServiceTest, CancelTokenEnrollmentRequest) {
   EXPECT_CALL(*this, OnShouldJobRetry(_, _)).Times(0);
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartTokenEnrollmentJob());
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  // There shouldn't be any callbacks.
+  request_job.reset();
+}
+
+TEST_F(DeviceManagementServiceTest, CancelOidcEnrollmentRequest) {
+  EXPECT_CALL(*this, OnJobDone(_, _, _, _)).Times(0);
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+  EXPECT_CALL(*this, OnShouldJobRetry(_, _)).Times(0);
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartOidcEnrollmentJob());
   auto* request = GetPendingRequest();
   ASSERT_TRUE(request);
 
@@ -1231,6 +1304,26 @@ TEST_F(DeviceManagementRequestAuthTest, OAuthAndEnrollmentToken) {
   SendResponse(net::OK, 200, std::string());
 }
 
+TEST_F(DeviceManagementRequestAuthTest, OidcAuthAndIdToken) {
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartJobWithAuthData(DMAuth::FromOidcResponse(kIdToken), kOAuthToken));
+  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
+
+  const network::TestURLLoaderFactory::PendingRequest* request =
+      GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  std::vector<std::string> params = GetOAuthParams(*request);
+  ASSERT_EQ(0u, params.size());
+  EXPECT_EQ(
+      base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
+                    dm_protocol::kOidcAuthTokenHeaderPrefix, kOAuthToken, ",",
+                    dm_protocol::kOidcIdTokenHeaderPrefix, kIdToken}),
+      GetAuthHeader(*request));
+  QueryParams query_params(request->request.url.query());
+
+  SendResponse(net::OK, 200, std::string());
+}
 #endif
 
 #if defined(GTEST_HAS_DEATH_TEST)
@@ -1261,6 +1354,22 @@ TEST_F(DeviceManagementServiceTestWithTimeManipulation,
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartTokenEnrollmentJob("", DeviceManagementService::Job::NO_RETRY,
                               GetTimeoutDuration()));
+  ASSERT_TRUE(GetPendingRequest());
+
+  // fast forward 30+ seconds
+  task_environment_.FastForwardBy(GetTimeoutDuration() + base::Seconds(1));
+}
+
+TEST_F(DeviceManagementServiceTestWithTimeManipulation,
+       OidcEnrollmentRequestWithTimeout) {
+  // In enrollment timeout cases, expected status is DM_STATUS_REQUEST_FAILED,
+  // and expected net error is NET_ERROR(TIMED_OUT, -7)
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_REQUEST_FAILED, _, ""));
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartOidcEnrollmentJob("", DeviceManagementService::Job::NO_RETRY,
+                             GetTimeoutDuration()));
   ASSERT_TRUE(GetPendingRequest());
 
   // fast forward 30+ seconds

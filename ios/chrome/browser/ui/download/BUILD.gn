@@ -149,6 +149,7 @@ source_set("eg2_tests") {
   ]
 
   deps = [
+    ":constants",
     ":features",
     "//components/strings",
     "//ios/chrome/app/strings",

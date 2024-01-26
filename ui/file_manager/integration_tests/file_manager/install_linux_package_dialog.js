@@ -8,6 +8,8 @@ import {testcase} from '../testcase.js';
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
+// @ts-ignore: error TS4111: Property 'installLinuxPackageDialog' comes from an
+// index signature, so it must be accessed with ['installLinuxPackageDialog'].
 testcase.installLinuxPackageDialog = async () => {
   // The dialog has an INSTALL and OK button, both as .cr-dialog-ok, but only
   // one is visible at a time.

@@ -40,6 +40,7 @@ message LicenseType {
 // is currently logged in.
 // This enum is used in the response payload of the
 // `FETCH_CRD_AVAILABILITY_INFO` remote command.
+// NOTE: Please DO NOT rename enum entries as they are used by external APIs.
 enum UserSessionType {
   USER_SESSION_TYPE_UNKNOWN = 0;
   AUTO_LAUNCHED_KIOSK_SESSION = 1;
@@ -66,6 +67,7 @@ enum CrdSessionType {
 // Enum indicating why a CRD session is or is not available.
 // This enum is used in the response payload of the
 // `FETCH_CRD_AVAILABILITY_INFO` remote command.
+// NOTE: Please DO NOT rename enum entries as they are used by external APIs.
 enum CrdSessionAvailability {
   CRD_SESSION_AVAILABILITY_UNKNOWN = 0;
   // The CRD session is available and the admin can start a CRD session.
@@ -4329,6 +4331,9 @@ message CertProvBackendError {
     // is referencing a non-existent PubSub topic, or the system does not have
     // permission to publish to that PubSub topic.
     PUBSUB_TOPIC_NOT_FOUND = 13;
+    // The Adapter uploaded a certificate that cannot be parsed or was issued
+    // for a wrong public key.
+    BAD_ADAPTER_CERTIFICATE_RECEIVED = 14;
   }
 
   // The specific error type.

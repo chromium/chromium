@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// NetworkAnnotationMonitor monitors network calls reported via the `Report`
+// method and records any possible violations. Network calls are identified by
+// their Network Annotation hash_code.
+interface NetworkAnnotationMonitor {
+  // Report a network call with annotation hash_code.
+  Report(int32 hash_code);
+};

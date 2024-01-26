@@ -67,7 +67,7 @@ public final class Website implements WebsiteEntry {
 
     // Returns whether exceptions for this type are retrieved through
     // getEmbeddedPermissions().
-    public static boolean isEmbeddedPermission(@ContentSettingsType int type) {
+    public static boolean isEmbeddedPermission(@ContentSettingsType.EnumType int type) {
         return type == ContentSettingsType.STORAGE_ACCESS;
     }
 
@@ -149,10 +149,9 @@ public final class Website implements WebsiteEntry {
     }
 
     /**
-     * @return PermissionInfo with permission details of specified type
-     *         (Camera, Clipboard, etc.).
+     * @return PermissionInfo with permission details of specified type (Camera, Clipboard, etc.).
      */
-    public PermissionInfo getPermissionInfo(@ContentSettingsType int type) {
+    public PermissionInfo getPermissionInfo(@ContentSettingsType.EnumType int type) {
         return mPermissionInfos.get(type);
     }
 
@@ -193,13 +192,14 @@ public final class Website implements WebsiteEntry {
     }
 
     /** Returns the exception info for this Website for specified type. */
-    public ContentSettingException getContentSettingException(@ContentSettingsType int type) {
+    public ContentSettingException getContentSettingException(
+            @ContentSettingsType.EnumType int type) {
         return mContentSettingExceptions.get(type);
     }
 
     /** Sets the exception info for this Website for specified type. */
     public void setContentSettingException(
-            @ContentSettingsType int type, ContentSettingException exception) {
+            @ContentSettingsType.EnumType int type, ContentSettingException exception) {
         mContentSettingExceptions.put(type, exception);
     }
 
@@ -226,17 +226,17 @@ public final class Website implements WebsiteEntry {
         return contentSetting;
     }
 
-    public List<ContentSettingException> getEmbeddedContentSettings(@ContentSettingsType int type) {
+    public List<ContentSettingException> getEmbeddedContentSettings(
+            @ContentSettingsType.EnumType int type) {
         assert isEmbeddedPermission(type);
         return getEmbeddedPermissions().get(type);
     }
 
     /**
-     * @return ContentSettingValue for specified ContentSettingsType.
-     *         (Camera, Clipboard, etc.).
+     * @return ContentSettingValue for specified ContentSettingsType. (Camera, Clipboard, etc.).
      */
     public @ContentSettingValues @Nullable Integer getContentSetting(
-            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
+            BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
         if (isEmbeddedPermission(type)) {
             var exceptions = getEmbeddedContentSettings(type);
             if (exceptions == null || exceptions.isEmpty()) return null;
@@ -257,7 +257,7 @@ public final class Website implements WebsiteEntry {
     /** Sets the ContentSettingValue on the appropriate PermissionInfo or ContentSettingException */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             @ContentSettingValues int value) {
         if (getPermissionInfo(type) != null) {
             getPermissionInfo(type).setContentSetting(browserContextHandle, value);
@@ -336,7 +336,7 @@ public final class Website implements WebsiteEntry {
 
     private void setAllEmbeddedContentSettings(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             @ContentSettingValues int value) {
         List<ContentSettingException> exceptions = getEmbeddedPermissions().get(type);
         if (exceptions == null) {
@@ -352,7 +352,7 @@ public final class Website implements WebsiteEntry {
      * Returns whether either the permission or the content setting for the associated {@link type}
      * is embargoed.
      */
-    public boolean isEmbargoed(@ContentSettingsType int type) {
+    public boolean isEmbargoed(@ContentSettingsType.EnumType int type) {
         if (isEmbeddedPermission(type)) {
             List<ContentSettingException> exceptions = getEmbeddedContentSettings(type);
             assert exceptions.size() == 1;

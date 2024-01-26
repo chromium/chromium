@@ -30,10 +30,6 @@ OptimizationGuideInternalsUI*
 OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
     content::WebUI* web_ui,
     SetupWebUIDataSourceCallback set_up_data_source_callback) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service)
-    return nullptr;
   return new OptimizationGuideInternalsUI(
       web_ui, std::move(set_up_data_source_callback));
 }
@@ -63,7 +59,9 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
     mojo::PendingRemote<optimization_guide_internals::mojom::Page> page) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  if (!service) {
+    return;
+  }
   OptimizationGuideLogger* optimization_guide_logger =
       service->GetOptimizationGuideLogger();
   optimization_guide_internals_page_handler_ =
@@ -75,7 +73,9 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  if (!service) {
+    return;
+  }
   optimization_guide::PredictionManager* prediction_manager =
       service->GetPredictionManager();
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>

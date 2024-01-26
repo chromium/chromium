@@ -67,82 +67,6 @@ GURL GetSimplifiedURL(const GURL& url) {
 
 }  // namespace
 
-namespace prefs {
-const char kSafeBrowsingCsdPingTimestamps[] =
-    "safebrowsing.csd_ping_timestamps";
-const char kSafeBrowsingDeepScanningEnabled[] =
-    "safebrowsing.deep_scanning_enabled";
-const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
-const char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
-const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
-    "safebrowsing.enterprise_real_time_url_check_mode";
-const char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[] =
-    "safebrowsing.enterprise_real_time_url_check_scope";
-const char kSafeBrowsingEsbProtegoPingWithTokenLastLogTime[] =
-    "safebrowsing.esb_protego_ping_with_token_last_log_time";
-const char kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime[] =
-    "safebrowsing.esb_protego_ping_without_token_last_log_time";
-const char kSafeBrowsingExtendedReportingOptInAllowed[] =
-    "safebrowsing.extended_reporting_opt_in_allowed";
-const char kSafeBrowsingIncidentsSent[] = "safebrowsing.incidents_sent";
-const char kSafeBrowsingProceedAnywayDisabled[] =
-    "safebrowsing.proceed_anyway_disabled";
-const char kSafeBrowsingSawInterstitialScoutReporting[] =
-    "safebrowsing.saw_interstitial_sber2";
-const char kSafeBrowsingScoutReportingEnabled[] =
-    "safebrowsing.scout_reporting_enabled";
-const char kSafeBrowsingSurveysEnabled[] = "safebrowsing.surveys_enabled";
-const char kSafeBrowsingTriggerEventTimestamps[] =
-    "safebrowsing.trigger_event_timestamps";
-const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
-    "safebrowsing.unhandled_sync_password_reuses";
-const char kSafeBrowsingNextPasswordCaptureEventLogTime[] =
-    "safebrowsing.next_password_capture_event_log_time";
-const char kSafeBrowsingAllowlistDomains[] =
-    "safebrowsing.safe_browsing_whitelist_domains";
-const char kPasswordProtectionChangePasswordURL[] =
-    "safebrowsing.password_protection_change_password_url";
-const char kPasswordProtectionLoginURLs[] =
-    "safebrowsing.password_protection_login_urls";
-const char kPasswordProtectionWarningTrigger[] =
-    "safebrowsing.password_protection_warning_trigger";
-const char kAdvancedProtectionLastRefreshInUs[] =
-    "safebrowsing.advanced_protection_last_refresh";
-const char kAdvancedProtectionAllowed[] =
-    "safebrowsing.advanced_protection_allowed";
-const char kSafeBrowsingMetricsLastLogTime[] =
-    "safebrowsing.metrics_last_log_time";
-const char kSafeBrowsingEventTimestamps[] = "safebrowsing.event_timestamps";
-const char kSafeBrowsingHashRealTimeOhttpExpirationTime[] =
-    "safebrowsing.hash_real_time_ohttp_expiration_time";
-const char kSafeBrowsingHashRealTimeOhttpKey[] =
-    "safebrowsing.hash_real_time_ohttp_key";
-const char kAccountTailoredSecurityUpdateTimestamp[] =
-    "safebrowsing.aesb_update_time_windows_epoch_micros";
-const char kTailoredSecurityNextSyncFlowTimestamp[] =
-    "safebrowsing.aesb_next_sync_flow_timestamp";
-const char kAccountTailoredSecurityShownNotification[] =
-    "safebrowsing.aesb_shown_notification";
-const char kTailoredSecuritySyncFlowLastRunTime[] =
-    "safebrowsing.aesb_sync_flow_start_timestamp";
-const char kTailoredSecuritySyncFlowLastUserInteractionState[] =
-    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
-const char kTailoredSecuritySyncFlowRetryState[] =
-    "safebrowsing.aesb_sync_flow_retry_state";
-const char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
-    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
-const char kEnhancedProtectionEnabledViaTailoredSecurity[] =
-    "safebrowsing.esb_enabled_via_tailored_security";
-const char kExtensionTelemetryLastUploadTime[] =
-    "safebrowsing.extension_telemetry_last_upload_time";
-const char kExtensionTelemetryConfig[] =
-    "safebrowsing.extension_telemetry_configuration";
-const char kExtensionTelemetryFileData[] =
-    "safebrowsing.extension_telemetry_file_data";
-const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
-    "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
-}  // namespace prefs
-
 namespace safe_browsing {
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
@@ -311,6 +235,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanPromptSeen, false);
+  registry->RegisterTimePref(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                             base::Time());
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {

@@ -81,7 +81,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë. Kjo mund të përfshijë historikun dhe plotësimin automatik.}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta. Kjo mund të përfshijë historikun dhe plotësimin automatik.}}</translation>
 <translation id="3472200483164753384">Nuk mbështetet në Chromium Canary</translation>
-<translation id="3478750326643748149">Fshihe “Përfito sa më shumë nga Chromium”</translation>
 <translation id="347967311580159871">Për më shumë cilësime që përdorin të dhënat për të përmirësuar përvojën tënde me Chromium, shko te <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh identifikuar në Chromium. Më pas provo përsëri.</translation>
 <translation id="3554027294407525061">Pastro të dhënat e shfletimit në Chromium.</translation>
@@ -101,9 +100,9 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 
 Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Hap Chromium nga çdo aplikacion</translation>
-<translation id="4002314982058020967">Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Hap dhe ekzekuton kontrollin e sigurisë në Chromium.</translation>
 <translation id="4043291146360695975">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve" vetëm në këtë pajisje.</translation>
+<translation id="4076589763479456892">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>
 <translation id="4106512142782407609">Identifikuar si <ph name="EMAIL" />.
 
@@ -114,7 +113,6 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="4408912345039114853">Ekzekuto kontrollin e sigurisë në Chromium</translation>
 <translation id="4432744876818348753">Identifikohu për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="4445228361214254027">Organizata jote e ka çaktivizuar aftësinë për të përdorur dhe ruajtur të dhënat e Chromium në "Llogarinë tënde të Google". Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
-<translation id="4485517920713468480">Chromium do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Të dhënat e tua do të ndahen me Google për të ofruar këtë veçori dhe për të përmirësuar "Blerjet" për të gjithë. Mund ta ndryshosh këtë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Shton URL-të e futura te lista e leximit në Chromium.</translation>
 <translation id="452436063477828504">Sigurohu që mund t'i përdorësh gjithmonë të dhënat e Chromium në "Llogarinë tënde të Google"</translation>
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -156,6 +154,7 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="5534584691915394889">Kjo do të përdoret për të krijuar ngjarje në Apple Calendar nga Chromium dhe nga "Lentja e Google".</translation>
 <translation id="5571094606370987472">Hap skedat e fundit të Chromium.</translation>
 <translation id="5623083843656850677">Kyçi skedat "e fshehta" kur largohesh nga Chromium ose kur kalon te një aplikacion tjetër.</translation>
+<translation id="5671188105328420281">Këshilla për Chromium</translation>
 <translation id="5688047395118852662">Kjo kartë të shfaq sugjerime se si të përfitosh sa më shumë nga Chromium.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
 <translation id="5777187867430702742">Faqe e Chromium</translation>
@@ -284,6 +283,7 @@ Gjëra për të pasur parasysh:
 <translation id="8776843108004031667">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chromium.</translation>
 <translation id="88376265765385899">Hap faqeshënuesit e Chromium.</translation>
 <translation id="8860548555286245440">Hap URL-të në Chromium në modalitetin "I fshehtë"</translation>
+<translation id="8866191443434488382">Chromium do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Numri i gjurmimit të pakos dhe emri i uebsajtit do të dërgohen te Chromium për të ofruar këtë veçori dhe për të përmirësuar veçoritë e blerjeve për të gjithë. Mund ta përditësosh këtë në çdo kohë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium për iOS</translation>
 <translation id="8924617840944134898">Hap skedën "e fshehtë" në Chromium</translation>
 <translation id="894437814105052438">Kur të dalësh, Chromium nuk do të sinkronizojë asnjë nga të dhënat e tua të reja me "Llogarinë tënde të Google". Të dhënat e sinkronizuara më herët qëndrojnë në llogari.</translation>

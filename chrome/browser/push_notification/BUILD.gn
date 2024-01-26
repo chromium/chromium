@@ -8,6 +8,10 @@ source_set("push_notification") {
     "prefs/push_notification_prefs.h",
     "push_notification_service_desktop_impl.cc",
     "push_notification_service_desktop_impl.h",
+    "server_client/push_notification_desktop_api_call_flow.cc",
+    "server_client/push_notification_desktop_api_call_flow.h",
+    "server_client/push_notification_desktop_api_call_flow_impl.cc",
+    "server_client/push_notification_desktop_api_call_flow_impl.h",
   ]
 
   deps = [
@@ -20,11 +24,15 @@ source_set("push_notification") {
     "//components/push_notification",
     "//components/user_manager:user_manager",
     "//content/public/browser:browser",
+    "//google_apis:google_apis",
   ]
 }
 source_set("unit_tests") {
   testonly = true
-  sources = [ "push_notification_service_desktop_impl_unittest.cc" ]
+  sources = [
+    "push_notification_service_desktop_impl_unittest.cc",
+    "server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",

@@ -1060,7 +1060,7 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
     void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                    RequestId),
     base::Value::List event_arguments,
-    absl::optional<base::TimeDelta> timeout) {
+    std::optional<base::TimeDelta> timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RequestId request_id = request_id_generator_.GenerateNextId();
@@ -1074,7 +1074,7 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
 
   const std::string provider_extension_id = GetListenerExtensionId(*event);
   if (provider_extension_id.empty()) {
-    ResultPtr error(absl::in_place);
+    ResultPtr error(std::in_place);
     error->set_error(SmartCardError::kNoService);
     std::move(callback).Run(std::move(error));
     return;
@@ -1515,7 +1515,7 @@ ON_TIMEOUT_IMPL(EndTransaction,
           default;                                                          \
   ExtensionFunction::ResponseAction                                         \
       SmartCardProviderPrivateReport##FunctionName##ResultFunction::Run() { \
-    absl::optional<scard_api::Report##FunctionName##Result::Params> params( \
+    std::optional<scard_api::Report##FunctionName##Result::Params> params(  \
         scard_api::Report##FunctionName##Result::Params::Create(args()));   \
     EXTENSION_FUNCTION_VALIDATE(params);                                    \
     if (!params) {                                                          \

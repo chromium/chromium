@@ -54,3 +54,13 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
+
+# This test is skipped because it currently times out. This is due to the fact
+# that inline-block elements are now included in the accessibility tree and
+# this test creates 10K of those.
+# The limit imposed on tests is at most 5k accessible objects, so this fails
+# and leads to a time out.
+# This test was not designed for accessibility, and this case is not a
+# realistic scenario in the wild so we deem it safe to simply skip this test
+# when accessibility is enabled.
+fast/events/touch/gesture/gesture-tap-frame-move.html [ Skip ]

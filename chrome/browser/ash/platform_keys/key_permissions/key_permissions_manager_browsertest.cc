@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_util.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
@@ -34,7 +34,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -51,9 +50,9 @@ using AllowKeyForUsageExecutionWaiter = test_util::StatusWaiter;
 
 // Supports waiting for the result of KeyPermissionsService::AllowKeyForUsage.
 class IsKeyAllowedForUsageExecutionWaiter
-    : public base::test::TestFuture<absl::optional<bool>, Status> {
+    : public base::test::TestFuture<std::optional<bool>, Status> {
  public:
-  absl::optional<bool> allowed() { return Get<0>(); }
+  std::optional<bool> allowed() { return Get<0>(); }
   Status status() { return Get<1>(); }
 };
 
@@ -154,14 +153,14 @@ class KeyPermissionsManagerBrowserTestBase
   // fake chaps.
   bool IsKeyAllowedForUsageInChaps(KeyUsage usage,
                                    const std::vector<uint8_t>& public_key) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>, Status>
         get_attr_waiter;
     GetPlatformKeysService()->GetAttributeForKey(
         GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         get_attr_waiter.GetCallback());
     EXPECT_TRUE(get_attr_waiter.Wait());
 
-    absl::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
+    std::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
     if (!attr.has_value()) {
       return false;
     }

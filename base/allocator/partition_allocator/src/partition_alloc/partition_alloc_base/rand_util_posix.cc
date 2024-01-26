@@ -4,12 +4,13 @@
 
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 
-#include <errno.h>
 #include <fcntl.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#include <cerrno>
+#include <cstddef>
+#include <cstdint>
 #include <sstream>
 
 #include "build/build_config.h"

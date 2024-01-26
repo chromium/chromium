@@ -118,6 +118,8 @@ component("cpp") {
     "self_deleting_url_loader_factory.cc",
     "self_deleting_url_loader_factory.h",
     "session_cookie_delete_predicate.h",
+    "shared_dictionary_encoding_names.cc",
+    "shared_dictionary_encoding_names.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
     "simple_host_resolver.cc",
@@ -278,6 +280,7 @@ component("proxy_config_mojom_support") {
     "proxy_config_with_annotation_mojom_traits.h",
   ]
   deps = [
+    ":network_param_mojom_support",
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",

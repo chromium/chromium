@@ -16,6 +16,14 @@ Verifies that we can successfully retrieve permissions policy state in frame tre
             frameId : <string>
         }
     }
+    [2] : {
+        allowed : false
+        feature : unload
+        locator : {
+            blockReason : Header
+            frameId : <string>
+        }
+    }
 ]
 {
     error : {

@@ -132,7 +132,7 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
   void InstallIsolatedWebApp(
       const web_app::IsolatedWebAppUrlInfo& url_info,
       const web_app::IsolatedWebAppLocation& location,
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,

@@ -32,7 +32,7 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SiteDataCacheFacadeFactory::GetInstance()->OnBeforeFacadeCreated(PassKey());
 
-  absl::optional<std::string> parent_context_id;
+  std::optional<std::string> parent_context_id;
   if (browser_context->IsOffTheRecord()) {
     content::BrowserContext* parent_context =
         chrome::GetBrowserContextRedirectedInIncognito(browser_context);

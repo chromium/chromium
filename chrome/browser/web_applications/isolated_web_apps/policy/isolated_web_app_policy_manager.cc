@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -30,7 +31,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -171,19 +171,6 @@ void BulkIwaInstaller::DownloadUpdateManifest() {
       trigger:
         "Installation/update of a IWA from the enterprise policy requires "
         "fetching of a IWA Update Manifest"
-      # TODO(cmfcmf): `internal` and `user_data` is duplicated in
-      # `UpdateManifestFetcher::DownloadUpdateManifest`, but the
-      # traffic annotator script complains that it is missing if it is not also
-      # present here.
-      internal {
-        contacts {
-          email: "peletskyi@google.com"
-        }
-      }
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-05-25"
     }
     policy {
       setting: "This feature cannot be disabled in settings."
@@ -299,19 +286,6 @@ void BulkIwaInstaller::DownloadWebBundle() {
         "other resources of the IWA."
       trigger:
         "An Isolated Web App is installed from an enterprise policy."
-      # TODO(cmfcmf): `internal` and `user_data` is duplicated in
-      # `IsolatedWebAppDownloader::DownloadSignedWebBundle`, but the
-      # traffic annotator script complains that it is missing if it is not also
-      # present here.
-      internal {
-        contacts {
-          email: "cmfcmf@google.com"
-        }
-      }
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-06-01"
     }
     policy {
       setting: "This feature cannot be disabled in settings."

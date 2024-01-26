@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../../common/event_generator.js';
-import {KeyCodeData} from '../../../common/key_code.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {KeyCodeData} from '/common/key_code.js';
+
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 import {LocaleInfo} from '../locale_info.js';

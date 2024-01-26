@@ -19,3 +19,12 @@ mojom("mojo_bindings") {
   ]
   webui_module_path = "/"
 }
+
+mojom("seal_mojom") {
+  sources = [ "seal.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}

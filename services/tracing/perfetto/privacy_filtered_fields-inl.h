@@ -357,7 +357,7 @@ constexpr MessageInfo kRendererMainThreadTaskExecution = {
     kRendererMainThreadTaskExecutionIndices, nullptr};
 
 // Proto Message: EventLatency
-constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, -1};
+constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, 6, -1};
 constexpr MessageInfo kEventLatency = {kEventLatencyIndices, nullptr};
 
 // Proto Message: ProcessSingleton
@@ -662,10 +662,14 @@ constexpr MessageInfo kBackgroundTracingMetadata = {
     kBackgroundTracingMetadataIndices,
     kBackgroundTracingMetadataComplexMessages};
 
+// Proto Message: FinchHash
+constexpr int kFinchHashIndices[] = {1, 2, -1};
+constexpr MessageInfo kFinchHash = {kFinchHashIndices, nullptr};
+
 // Proto Message: ChromeMetadataPacket
-constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, -1};
+constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo const* kChromeMetadataPacketComplexMessages[] = {
-    &kBackgroundTracingMetadata, nullptr, nullptr};
+    &kBackgroundTracingMetadata, nullptr, nullptr, &kFinchHash};
 constexpr MessageInfo kChromeMetadataPacket = {
     kChromeMetadataPacketIndices, kChromeMetadataPacketComplexMessages};
 

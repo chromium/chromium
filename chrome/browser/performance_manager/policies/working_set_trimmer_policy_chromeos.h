@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 class ArcProcess;
@@ -161,16 +161,16 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // Keeps track of the last time we walked the graph looking for processes
   // to trim.
-  absl::optional<base::TimeTicks> last_graph_walk_;
+  std::optional<base::TimeTicks> last_graph_walk_;
 
   // We keep track of the last time we fetched the ARC process list.
-  absl::optional<base::TimeTicks> last_arc_process_fetch_;
+  std::optional<base::TimeTicks> last_arc_process_fetch_;
 
   // We also keep track of the last time we reclaimed memory from ARCVM.
-  absl::optional<base::TimeTicks> last_arcvm_trim_;
-  absl::optional<base::TimeTicks> last_arcvm_trim_success_;
+  std::optional<base::TimeTicks> last_arcvm_trim_;
+  std::optional<base::TimeTicks> last_arcvm_trim_success_;
 
-  absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
   raw_ptr<Graph> graph_ = nullptr;

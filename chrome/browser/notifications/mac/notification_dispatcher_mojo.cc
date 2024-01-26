@@ -103,7 +103,7 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
   no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
-      /*origin=*/absl::nullopt,
+      /*origin=*/std::nullopt,
       base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
                      base::Unretained(this), std::move(callback)));
 }
@@ -136,7 +136,7 @@ void NotificationDispatcherMojo::GetAllDisplayedNotifications(
 
   no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
-      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      /*profile=*/nullptr, /*origin=*/std::nullopt,
       base::BindOnce(
           &NotificationDispatcherMojo::DispatchGetAllNotificationsReply,
           base::Unretained(this), std::move(callback)));

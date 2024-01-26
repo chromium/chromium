@@ -353,7 +353,7 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
 
   bool VerifyUi() override {
     LocationBarView* const location_bar = GetLocationBarView(browser());
-    OmniboxChipButton* const chip = location_bar->GetChipController()->chip();
+    PermissionChipView* const chip = location_bar->GetChipController()->chip();
     if (!chip || !chip->GetVisible() || chip->is_fully_collapsed()) {
       return false;
     }

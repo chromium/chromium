@@ -137,7 +137,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
                 possible_types.size());
       for (auto it : expected_submitted_field_types_[i]) {
         EXPECT_TRUE(possible_types.count(it))
-            << "Expected type: " << AutofillType(it).ToString();
+            << "Expected type: " << AutofillType(it).ToStringView();
       }
     }
   }
@@ -162,6 +162,7 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 
 void TestBrowserAutofillManager::ScheduleRefill(
     const FormData& form,
+    const FormStructure& form_structure,
     const AutofillTriggerDetails& trigger_details) {
   test_api(*this).TriggerRefill(form, trigger_details);
 }

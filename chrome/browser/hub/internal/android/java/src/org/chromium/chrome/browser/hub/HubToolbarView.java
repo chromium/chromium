@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
@@ -62,6 +65,7 @@ public class HubToolbarView extends LinearLayout {
                 // TODO(https://crbug.com/1496708): Conditionally use text instead.
                 Drawable drawable = buttonData.resolveIcon(context);
                 tab.setIcon(drawable);
+                tab.setContentDescription(buttonData.resolveContentDescription(context));
                 mPaneSwitcher.addTab(tab);
             }
             mPaneSwitcher.setVisibility(View.VISIBLE);
@@ -80,6 +84,20 @@ public class HubToolbarView extends LinearLayout {
         mBlockTabSelectionCallback = true;
         tab.select();
         mBlockTabSelectionCallback = false;
+    }
+
+    void setColorScheme(@HubColorScheme int colorScheme) {
+        Context context = getContext();
+        setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
+        ColorStateList iconColor = HubColors.getIconColor(context, colorScheme);
+        @ColorInt int selectedIconColor = HubColors.getSelectedIconColor(context, colorScheme);
+        TextViewCompat.setCompoundDrawableTintList(mActionButton, iconColor);
+        mPaneSwitcher.setTabIconTint(
+                HubColors.getSelectableIconList(selectedIconColor, iconColor.getDefaultColor()));
+        mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
+
+        // TODO(https://crbug.com/1507839): Updating the app menu color here is more correct and
+        // should be done for code health.
     }
 
     private OnTabSelectedListener makeTabSelectedListener(

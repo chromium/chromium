@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_shortcut_image.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -50,17 +51,13 @@ void ShortcutRemovalDialog::CreateDialog(gfx::ImageSkia icon,
       base::BindRepeating(
           [](gfx::ImageSkia icon, gfx::ImageSkia badge_icon,
              const ui::ColorProvider* color_provider) {
-            return gfx::ImageSkiaOperations::CreateIconWithBadge(
-                gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-                    kShortcutIconBackgroundRadius,
-                    color_provider->GetColor(
-                        cros_tokens::kCrosSysSystemOnBaseOpaque),
-                    icon),
-                gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+            return apps::AppShortcutImage::
+                CreateImageWithBadgeAndTeardropBackground(
+                    kShortcutIconBackgroundRadius, kBadgeBackgroundRadius,
                     kBadgeBackgroundRadius,
                     color_provider->GetColor(
                         cros_tokens::kCrosSysSystemOnBaseOpaque),
-                    badge_icon));
+                    icon, badge_icon);
           },
           icon, badge_icon),
       gfx::Size(icon_background_size, icon_background_size));

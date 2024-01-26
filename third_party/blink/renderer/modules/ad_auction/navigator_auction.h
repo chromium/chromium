@@ -36,6 +36,7 @@ class AuctionAdInterestGroup;
 class AuctionAdInterestGroupKey;
 class AuctionAdConfig;
 class ScriptPromiseResolver;
+class ProtectedAudience;
 class V8UnionFencedFrameConfigOrUSVString;
 
 class MODULES_EXPORT NavigatorAuction final
@@ -199,8 +200,12 @@ class MODULES_EXPORT NavigatorAuction final
   static bool deprecatedRunAdAuctionEnforcesKAnonymity(ScriptState*,
                                                        Navigator&);
 
+  static ProtectedAudience* protectedAudience(ScriptState*,
+                                              Navigator& navigator);
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
+    visitor->Trace(protected_audience_);
     Supplement<Navigator>::Trace(visitor);
   }
 
@@ -281,6 +286,7 @@ class MODULES_EXPORT NavigatorAuction final
   JoinLeaveQueue<PendingClear> queued_cross_site_clears_;
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
+  Member<ProtectedAudience> protected_audience_;
 };
 
 }  // namespace blink

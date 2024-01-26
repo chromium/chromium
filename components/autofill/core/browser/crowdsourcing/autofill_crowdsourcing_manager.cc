@@ -74,6 +74,8 @@ constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
 constexpr size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
 constexpr size_t kMaxFieldsPerQueryRequest = 100;
 
+constexpr base::TimeDelta kFetchTimeout(base::Seconds(10));
+
 constexpr net::BackoffEntry::Policy kAutofillBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying
     // exponential back-off rules.
@@ -883,6 +885,7 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   // variable.
   auto* raw_simple_loader = simple_loader.get();
   url_loaders_.push_back(std::move(simple_loader));
+  raw_simple_loader->SetTimeoutDuration(kFetchTimeout);
   raw_simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client_->GetURLLoaderFactory().get(),
       base::BindOnce(&AutofillCrowdsourcingManager::OnSimpleLoaderComplete,

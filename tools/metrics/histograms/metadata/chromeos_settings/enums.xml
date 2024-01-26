@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplaySettingsOrientationOption">
+  <int value="0" label="Auto"/>
+  <int value="1" label="0 degree"/>
+  <int value="2" label="90 degree"/>
+  <int value="3" label="180 degree"/>
+  <int value="4" label="270 degree"/>
+</enum>
+
 <enum name="DisplaySettingsType">
   <int value="0" label="Resolution"/>
   <int value="1" label="RefreshRate"/>
@@ -43,6 +51,598 @@ chromium-metrics-reviews@google.com.
 <enum name="DisplayType">
   <int value="0" label="ExternalDisplay"/>
   <int value="1" label="InternalDisplay"/>
+</enum>
+
+<enum name="MagnifierMouseFollowingMode">
+  <int value="0" label="Continuous"/>
+  <int value="1" label="Centered"/>
+  <int value="2" label="Edge"/>
+</enum>
+
+<enum name="NetworkDiscoveryState">
+  <int value="0"
+      label="A scanned network that is in range and in the discovered list."/>
+  <int value="1"
+      label="A network that has not been discovered and was manually
+             configured."/>
+</enum>
+
+<enum name="OsSetting">
+  <int value="0" label="Configure Ethernet"/>
+  <int value="1" label="Ethernet: Automatically Configure IP Address"/>
+  <int value="2" label="Ethernet: DNS"/>
+  <int value="3" label="Ethernet: Proxy"/>
+  <int value="4" label="Wi-Fi: On/Off"/>
+  <int value="5" label="Disconnect Wi-Fi Network"/>
+  <int value="6" label="Prefer Wi-Fi Network"/>
+  <int value="7" label="Forget Wi-Fi Network"/>
+  <int value="8" label="Wi-Fi: Add Network"/>
+  <int value="9" label="Wi-Fi: Automatically Configure IP Address"/>
+  <int value="10" label="Wi-Fi: DNS"/>
+  <int value="11" label="Wi-Fi: Proxy"/>
+  <int value="12" label="Wi-Fi: Auto Connect To Network"/>
+  <int value="13" label="Mobile: On/Off"/>
+  <int value="14" label="Cellular: Sim Lock"/>
+  <int value="15" label="Cellular: Roaming"/>
+  <int value="16" label="Cellular: Apn"/>
+  <int value="17" label="Disconnect Cellular Network"/>
+  <int value="18" label="Cellular: Automatically Configure IP Address"/>
+  <int value="19" label="Cellular: DNS"/>
+  <int value="20" label="Cellular: Proxy"/>
+  <int value="21" label="Cellular: Automatically Connect To Network"/>
+  <int value="22" label="Instant Tethering: On/Off"/>
+  <int value="23" label="Disconnect Tether Network"/>
+  <int value="24" label="Wi-Fi: Metered Network"/>
+  <int value="25" label="Cellular: Metered Network"/>
+  <int value="26" label="Cellular: Add eSIM Network"/>
+  <int value="27" label="Cellular: Remove Network eSIM Profile"/>
+  <int value="28" label="Cellular: Rename Network eSIM Profile"/>
+  <int value="29" label="Wi-Fi: Hidden Network"/>
+  <int value="30" label="Hotspot: On/Off"/>
+  <int value="31" label="Hotspot: Automatically Turn Off Hotspot"/>
+  <int value="32" label="Cellular APN: Add APN"/>
+  <int value="100" label="Bluetooth: On/Off"/>
+  <int value="101" label="Bluetooth: Connect To Device"/>
+  <int value="102" label="Bluetooth: Disconnect From Device"/>
+  <int value="103" label="Bluetooth: Pair Device"/>
+  <int value="104" label="Bluetooth: Unpair Device"/>
+  <int value="105" label="Bluetooth: Fast Pair On/Off"/>
+  <int value="106" label="Bluetooth: Fast Pair Saved Devices"/>
+  <int value="200" label="Set Up MultiDevice"/>
+  <int value="201" label="Verify MultiDevice Setup"/>
+  <int value="202" label="MultiDevice On/Off"/>
+  <int value="203" label="Smart Lock: On/Off"/>
+  <int value="204" label="Smart Lock: Unlock Or Sign In"/>
+  <int value="205" label="Messages: Set Up"/>
+  <int value="206" label="Messages: On/Off"/>
+  <int value="207" label="Forget Phone"/>
+  <int value="208" label="Nearby Share: On/Off"/>
+  <int value="209" label="Phone Hub: On/Off"/>
+  <int value="210" label="Phone Hub Notifications: On/Off"/>
+  <int value="211" label="Phone Hub Notification Badge: On/Off (Deprecated)"/>
+  <int value="212" label="Phone Hub Task Continuation: On/Off"/>
+  <int value="213" label="Wifi Sync: On/Off"/>
+  <int value="214" label="Nearby Share: Device Name"/>
+  <int value="215" label="Nearby Share: Device Visibility"/>
+  <int value="216" label="Nearby Share: Contacts"/>
+  <int value="217" label="Nearby Share: Data Usage"/>
+  <int value="218" label="Phone Hub Apps: On/Off"/>
+  <int value="219" label="Phone Hub Camera Roll: On/Off"/>
+  <int value="220"
+      label="Nearby Share: Devices nearby are sharing notification: On/Off"/>
+  <int value="300" label="Add Account"/>
+  <int value="301" label="Remove Account"/>
+  <int value="302" label="Split Sync On/Off"/>
+  <int value="303" label="Lock Screen"/>
+  <int value="304" label="Change Auth Pin"/>
+  <int value="305" label="Guest Browsing"/>
+  <int value="306" label="Show Usernames And Photos At Sign In"/>
+  <int value="307" label="Restrict Sign In"/>
+  <int value="308" label="Add To User Allowlist"/>
+  <int value="309" label="Remove From User Allowlist"/>
+  <int value="310" label="Add Kerberos Ticket (Deprecated)"/>
+  <int value="311" label="Remove Kerberos Ticket (Deprecated)"/>
+  <int value="312" label="Set Active Kerberos Ticket (Deprecated)"/>
+  <int value="313" label="Add Fingerprint"/>
+  <int value="314" label="Remove Fingerprint"/>
+  <int value="315" label="Set Up Parental Controls"/>
+  <int value="316" label="Non-Split Sync Encryption Options"/>
+  <int value="317" label="Autocomplete Searches and URLs"/>
+  <int value="318" label="Make Searches and Browsing Better"/>
+  <int value="319" label="Google Drive Search Suggestions"/>
+  <int value="400" label="Touchpad: Tap-To-Click"/>
+  <int value="401" label="Touchpad: Tap Dragging"/>
+  <int value="402" label="Touchpad: Reverse Scrolling"/>
+  <int value="403" label="Touchpad: Acceleration"/>
+  <int value="404" label="Touchpad: Scroll Acceleration"/>
+  <int value="405" label="Touchpad: Speed"/>
+  <int value="406" label="Mouse: Swap Primary Buttons"/>
+  <int value="407" label="Mouse: Reverse Scrolling"/>
+  <int value="408" label="Mouse: Acceleration"/>
+  <int value="409" label="Mouse: Scroll Acceleration"/>
+  <int value="410" label="Mouse: Speed"/>
+  <int value="411" label="Keyboard: Function Keys"/>
+  <int value="412" label="Keyboard: Auto Repeat"/>
+  <int value="413" label="Keyboard: Shortcuts"/>
+  <int value="414" label="Display: Size"/>
+  <int value="415" label="Night Light"/>
+  <int value="416" label="Stylus: Tools In Shelf"/>
+  <int value="417" label="Stylus: Note Taking App"/>
+  <int value="418" label="Stylus: Note Taking From Lock Screen"/>
+  <int value="419" label="Stylus: Latest Note On Lock Screen"/>
+  <int value="420" label="Display: Orientation"/>
+  <int value="421" label="Display: Arrangement"/>
+  <int value="422" label="Power: Idle Behavior While Charging"/>
+  <int value="423" label="Power: Source"/>
+  <int value="424" label="Sleep When Laptop Lid is Closed"/>
+  <int value="425" label="Display: Resolution"/>
+  <int value="426" label="Display: Refresh Rate"/>
+  <int value="427" label="Remove DLC (Deprecated)"/>
+  <int value="428" label="Display: Mirroring"/>
+  <int value="429" label="Allow Windows To Span Displays"/>
+  <int value="430" label="Ambient Colors"/>
+  <int value="431" label="Touchscreen Calibration"/>
+  <int value="432" label="Night Light Color Temperature"/>
+  <int value="433" label="Power Idle Behavior While On Battery"/>
+  <int value="434" label="Display: Overscan"/>
+  <int value="435" label="Pointing Stick: Speed"/>
+  <int value="436" label="Pointing Stick: Acceleration"/>
+  <int value="437" label="Pointing Stick: Swap Primary Buttons"/>
+  <int value="438" label="Touchpad: Haptic Feedback"/>
+  <int value="439" label="Touchpad: Haptic Click Sensitivity"/>
+  <int value="440" label="Power: Adaptive Charging"/>
+  <int value="441"
+      label="Keyboard: Switch Top Row Keys Between Function Keys And Chrome
+             Actions"/>
+  <int value="442" label="Keyboard: Remap Keys"/>
+  <int value="443" label="Charging sounds: On/Off"/>
+  <int value="444" label="Low battery sound: On/Off"/>
+  <int value="445" label="Battery Saver: On/Off"/>
+  <int value="500" label="Open Wallpaper"/>
+  <int value="501" label="Ambient Mode On/Off"/>
+  <int value="502" label="Ambient Mode Source"/>
+  <int value="503" label="Change Device Account Image"/>
+  <int value="504" label="Ambient Mode Update Photos Containers (Deprecated)"/>
+  <int value="505" label="Dark Mode: On/Off (Deprecated)"/>
+  <int value="506" label="Dark Mode: Accent Color (Deprecated)"/>
+  <int value="600" label="Preferred Search Engine"/>
+  <int value="601" label="Assistant: On/Off"/>
+  <int value="602" label="Assistant: Related Info"/>
+  <int value="603" label="Assistant: Quick Answers (Deprecated)"/>
+  <int value="604" label="Assistant: Ok Google"/>
+  <int value="605" label="Assistant: Notifications"/>
+  <int value="606" label="Assistant: Voice Input"/>
+  <int value="607" label="Assistant: Train voice model"/>
+  <int value="608" label="Search: Quick Answers On/Off"/>
+  <int value="609" label="Search: Quick Answers Definition"/>
+  <int value="610" label="Search: Quick Answers Translation"/>
+  <int value="611" label="Search: Quick Answers Unit Conversion"/>
+  <int value="700" label="Manage Android Preferences"/>
+  <int value="701" label="Remove Play Store"/>
+  <int value="702" label="Turn On Play Store"/>
+  <int value="703" label="Restore Apps And Pages On Startup"/>
+  <int value="704" label="Do Not Disturb: On/Off"/>
+  <int value="705" label="App Badging: On/Off"/>
+  <int value="706" label="Enable Isolated Web Apps: On/Off"/>
+  <int value="800" label="Set Up Crostini"/>
+  <int value="801" label="Uninstall Crostini"/>
+  <int value="802" label="Backup Linux Apps And Files"/>
+  <int value="803" label="Restore Linux Apps And Files"/>
+  <int value="804" label="Crostini: Adb Debugging"/>
+  <int value="805" label="Crostini: Disk Resize"/>
+  <int value="806" label="Crostini: Mic Access"/>
+  <int value="807" label="Crostini: Container Upgrade"/>
+  <int value="1000" label="24Hour Clock"/>
+  <int value="1001" label="Change Time Zone"/>
+  <int value="1101" label="Verified Access"/>
+  <int value="1102" label="Keep Wi-Fi On During Sleep (Deprecated)"/>
+  <int value="1103" label="Usage Stats And Crash Reports"/>
+  <int value="1104" label="Privacy: Guest Browsing V2"/>
+  <int value="1105" label="Privacy: Show Usernames And Photos At Sign In V2"/>
+  <int value="1106" label="Privacy: Restrict Sign In V2"/>
+  <int value="1107" label="Privacy: Add To User Allowlist V2"/>
+  <int value="1108" label="Privacy: Remove From User Allowlist V2"/>
+  <int value="1109" label="Privacy: Lock Screen V2"/>
+  <int value="1110" label="Privacy: Change Auth Pin V2"/>
+  <int value="1111" label="Privacy: Add Fingerprint V2"/>
+  <int value="1112" label="Privacy: Remove Fingerprint V2"/>
+  <int value="1113"
+      label="Privacy: Enable/Disable peripheral data access protection"/>
+  <int value="1114" label="Privacy: Snooping Protection"/>
+  <int value="1115" label="Privacy: Lock On Leave"/>
+  <int value="1116" label="Privacy: Camera Software Switch"/>
+  <int value="1117" label="Privacy: Microphone Software Switch"/>
+  <int value="1118" label="Privacy: Geolocation Software Switch"/>
+  <int value="1119" label="Privacy: Lock Screen Notification Switch"/>
+  <int value="1120" label="Privacy: Speak-on-mute Detection Software Switch"/>
+  <int value="1121" label="Privacy: Local Data Recovery Switch"/>
+  <int value="1122" label="Privacy: Enable/Disable reven hardware data access"/>
+  <int value="1200" label="Add Language"/>
+  <int value="1201" label="Show Input Options In Shelf"/>
+  <int value="1202" label="Show Personal Information Suggestions (Deprecated)"/>
+  <int value="1203" label="Show Emoji Suggestions"/>
+  <int value="1204" label="Change Device Language"/>
+  <int value="1205" label="Offer Translation"/>
+  <int value="1206" label="Add Input Method"/>
+  <int value="1207" label="Spell Check"/>
+  <int value="1208" label="Show Predictive Writing"/>
+  <int value="1209" label="Show PK Auto-correction"/>
+  <int value="1210" label="Show VK Auto-correction"/>
+  <int value="1211" label="Show Diacritics"/>
+  <int value="1212" label="Show Orca"/>
+  <int value="1300" label="Google Drive Connection"/>
+  <int value="1301" label="Remove Google Drive access"/>
+  <int value="1302" label="Google Drive File Sync"/>
+  <int value="1400" label="Add Printer"/>
+  <int value="1401" label="Saved Printers"/>
+  <int value="1402" label="Print Jobs"/>
+  <int value="1403" label="Scanning App"/>
+  <int value="1500" label="A11y Quick Settings"/>
+  <int value="1501" label="Chrome Vox"/>
+  <int value="1502" label="Select To Speak"/>
+  <int value="1503" label="Text-To-Speech: Rate"/>
+  <int value="1504" label="Text-To-Speech: Pitch"/>
+  <int value="1505" label="Text-To-Speech: Volume"/>
+  <int value="1506" label="Text-To-Speech: Voice"/>
+  <int value="1507" label="Text-To-Speech: Engines"/>
+  <int value="1508" label="High Contrast Mode"/>
+  <int value="1509" label="Fullscreen Magnifier"/>
+  <int value="1510" label="Docked Magnifier"/>
+  <int value="1511" label="Sticky Keys"/>
+  <int value="1512" label="On Screen Keyboard"/>
+  <int value="1513" label="Dictation"/>
+  <int value="1514" label="Highlight Keyboard Focus"/>
+  <int value="1515" label="Highlight Text Caret"/>
+  <int value="1516" label="Auto-Click When Cursor Stops"/>
+  <int value="1517" label="Large Cursor"/>
+  <int value="1518" label="Highlight Cursor While Moving"/>
+  <int value="1519" label="Tablet Navigation Buttons"/>
+  <int value="1520" label="Mono Audio"/>
+  <int value="1521" label="Startup Sound"/>
+  <int value="1522" label="Enable Switch Access"/>
+  <int value="1523" label="Switch Action: Assignment"/>
+  <int value="1524" label="Switch Action: Auto Scan"/>
+  <int value="1525" label="Switch Action: Auto Scan Keyboard"/>
+  <int value="1526" label="Get Image Descriptions From Google"/>
+  <int value="1527" label="Live Captions"/>
+  <int value="1528" label="Cursor Colors: On/Off"/>
+  <int value="1529" label="Fullscreen Magnifier Focus Following"/>
+  <int value="1530" label="Fullscreen Magnifier Mouse Following Mode"/>
+  <int value="1531" label="Select-to-Speak: Word Highlight"/>
+  <int value="1532" label="Select-to-Speak: Background Shading"/>
+  <int value="1533" label="Select-to-Speak: Navigation Controls"/>
+  <int value="1534" label="Color correction"/>
+  <int value="1535" label="Color correction: Filter type"/>
+  <int value="1536" label="Color correction: Filter amount"/>
+  <int value="1600" label="Powerwash"/>
+  <int value="1700" label="Change Chrome Channel"/>
+  <int value="1701" label="Copy Detailed Build Info"/>
+  <int value="1702" label="Check for OS Update"/>
+  <int value="1703" label="See What's New"/>
+  <int value="1704" label="Get Help with Chrome OS"/>
+  <int value="1705" label="Report an Issue"/>
+  <int value="1706" label="View Terms of Service"/>
+  <int value="1707" label="Open Diagnostics App"/>
+  <int value="1708" label="Change Device Name"/>
+  <int value="1709" label="Open Firmware Updates App"/>
+  <int value="1800" label="Add Kerberos Ticket V2"/>
+  <int value="1801" label="Remove Kerberos Ticket V2"/>
+  <int value="1802" label="Set Active Kerberos Ticket V2"/>
+</enum>
+
+<enum name="OsSettingSearchBoxUserAction">
+  <int value="0" label="User clicked on a search result"/>
+  <int value="1"
+      label="User clicked out of the search box, but still on area within the
+             OS Settings window"/>
+</enum>
+
+<enum name="OsSettingSearchRequestTypes">
+  <int value="0"
+      label="Any search request made to the Settings Search Mojo API, which
+             may succeed or fail in recieving a response."/>
+  <int value="1"
+      label="A succeeding search request returning results that will be
+             discarded since the query used to fetch results no longer
+             matches the current query."/>
+  <int value="2"
+      label="A succeeding search request returning results that will be shown
+             to the user since the query used to fetch results still matches
+             the current query."/>
+</enum>
+
+<enum name="OsSettingsSearchResultType">
+  <int value="0" label="kSection"/>
+  <int value="1" label="kSubpage"/>
+  <int value="2" label="kSetting"/>
+</enum>
+
+<enum name="OsSettingsSection">
+  <int value="0" label="Network"/>
+  <int value="1" label="Bluetooth"/>
+  <int value="2" label="Multi Device"/>
+  <int value="3" label="People"/>
+  <int value="4" label="Device"/>
+  <int value="5" label="Personalization"/>
+  <int value="6" label="Search And Assistant"/>
+  <int value="7" label="Apps"/>
+  <int value="8" label="Crostini"/>
+  <int value="10" label="Date And Time"/>
+  <int value="11" label="Privacy And Security"/>
+  <int value="12" label="Languages And Input"/>
+  <int value="13" label="Files"/>
+  <int value="14" label="Printing"/>
+  <int value="15" label="Accessibility"/>
+  <int value="16" label="Reset"/>
+  <int value="17" label="About Chrome OS"/>
+  <int value="18" label="Kerberos"/>
+</enum>
+
+<enum name="OsSettingsSubpage">
+  <int value="0" label="Ethernet Details"/>
+  <int value="1" label="Wifi Networks"/>
+  <int value="2" label="Wifi Details"/>
+  <int value="3" label="Known Networks"/>
+  <int value="4" label="Mobile Data Networks"/>
+  <int value="5" label="Cellular Details"/>
+  <int value="6" label="Tether Details"/>
+  <int value="7" label="Vpn Details"/>
+  <int value="8" label="APN"/>
+  <int value="9" label="Hotspot Details"/>
+  <int value="10" label="Passpoint Details"/>
+  <int value="100" label="Bluetooth Devices"/>
+  <int value="101" label="Bluetooth Device Details"/>
+  <int value="102" label="Bluetooth Saved Devices"/>
+  <int value="200" label="Multi Device Features"/>
+  <int value="201" label="Smart Lock"/>
+  <int value="202" label="Nearby Share"/>
+  <int value="300" label="My Accounts"/>
+  <int value="301" label="Sync"/>
+  <int value="302" label="Sync (Deprecated)"/>
+  <int value="303" label="Sync Advanced (Deprecated)"/>
+  <int value="304" label="Security And Sign In"/>
+  <int value="305" label="Fingerprint"/>
+  <int value="306" label="Manage Other People"/>
+  <int value="307" label="Kerberos Accounts (Deprecated)"/>
+  <int value="400" label="Pointers"/>
+  <int value="401" label="Keyboard"/>
+  <int value="402" label="Stylus"/>
+  <int value="403" label="Display"/>
+  <int value="404" label="Storage"/>
+  <int value="405" label="External Storage"/>
+  <int value="406" label="DLC (Deprecated)"/>
+  <int value="407" label="Power"/>
+  <int value="408" label="Audio"/>
+  <int value="409" label="Per-device Keyboard"/>
+  <int value="410" label="Per-device Mouse"/>
+  <int value="411" label="Per-device Touchpad"/>
+  <int value="412" label="Per-device Pointing Stick"/>
+  <int value="413" label="Per-device Keyboard Remap Keys"/>
+  <int value="414" label="Graphics Tablet"/>
+  <int value="415" label="Customize Mouse Buttons"/>
+  <int value="416" label="Customize Tablet Buttons"/>
+  <int value="417" label="Customize Pen Buttons"/>
+  <int value="500" label="Change Picture"/>
+  <int value="501" label="Ambient Mode"/>
+  <int value="502" label="Ambient Mode Photos (Deprecated)"/>
+  <int value="503" label="Ambient Mode Google Photos Album"/>
+  <int value="504" label="Ambient Mode Art Gallery Album"/>
+  <int value="505" label="Wallpaper (Deprecated)"/>
+  <int value="506" label="Wallpaper Images (Deprecated)"/>
+  <int value="507" label="Dark Mode"/>
+  <int value="600" label="Assistant"/>
+  <int value="601" label="Search"/>
+  <int value="700" label="App Management"/>
+  <int value="701" label="App Details"/>
+  <int value="702" label="Google Play Store"/>
+  <int value="703" label="Plugin Vm Shared Paths"/>
+  <int value="704" label="Plugin Vm USB Preferences"/>
+  <int value="705" label="On Startup (Deprecated)"/>
+  <int value="706" label="App Notifications"/>
+  <int value="707" label="Arc Vm USB Preferences"/>
+  <int value="708" label="Manage Isolated Web Apps"/>
+  <int value="709" label="App Notifications Manager"/>
+  <int value="800" label="Crostini Details"/>
+  <int value="801" label="Crostini Manage Shared Folders"/>
+  <int value="802" label="Crostini Usb Preferences"/>
+  <int value="803" label="Crostini Backup And Restore"/>
+  <int value="804" label="Crostini Develop Android Apps"/>
+  <int value="805" label="Crostini Port Forwarding"/>
+  <int value="806" label="Crostini Extra Containers"/>
+  <int value="850" label="Bruschetta Details"/>
+  <int value="851" label="Bruschetta USB Preferences"/>
+  <int value="852" label="Bruschetta Manage Shared Folders"/>
+  <int value="1000" label="Time Zone"/>
+  <int value="1100" label="Manage Other People V2"/>
+  <int value="1101" label="Security And Sign In V2"/>
+  <int value="1102" label="Fingerprint V2"/>
+  <int value="1103" label="Smart Privacy Protections"/>
+  <int value="1104" label="Privacy Hub"/>
+  <int value="1105" label="Privacy Hub Microphone"/>
+  <int value="1106" label="Privacy Hub Camera"/>
+  <int value="1107" label="Privacy Hub Geolocation"/>
+  <int value="1200" label="Languages And Input Details"/>
+  <int value="1201" label="Manage Input Methods"/>
+  <int value="1202" label="Smart Inputs"/>
+  <int value="1203" label="Input Method Options"/>
+  <int value="1204" label="Languages"/>
+  <int value="1205" label="Input"/>
+  <int value="1206" label="Customize spell check"/>
+  <int value="1207" label="Manage user dictionary"/>
+  <int value="1208" label="App languages"/>
+  <int value="1300" label="Network File Shares"/>
+  <int value="1301" label="Office Files"/>
+  <int value="1302" label="Google Drive"/>
+  <int value="1303" label="OneDrive"/>
+  <int value="1400" label="Printing Details"/>
+  <int value="1500" label="Manage Accessibility"/>
+  <int value="1502" label="Text-To-Speech"/>
+  <int value="1503" label="Switch Access Options"/>
+  <int value="1504" label="Captions"/>
+  <int value="1505" label="Text-To-Speech Page"/>
+  <int value="1506" label="Display And Magnification Page"/>
+  <int value="1507" label="Keyboard And Text Input Page"/>
+  <int value="1508" label="Cursor And Touchpad Page"/>
+  <int value="1509" label="Audio And Captions Page"/>
+  <int value="1510" label="Select-to-speak Subpage"/>
+  <int value="1511" label="ChromeVox Subpage"/>
+  <int value="1512" label="FaceGaze Cursor Subpage"/>
+  <int value="1513" label="FaceGaze Facial Expressions Subpage"/>
+  <int value="1700" label="About Chrome OS Details"/>
+  <int value="1701" label="Detailed Build Info"/>
+  <int value="1800" label="Kerberos Accounts V2"/>
+</enum>
+
+<enum name="PersonalizationSearchConceptId">
+  <int value="0" label="kPersonalization"/>
+  <int value="100" label="kChangeWallpaper"/>
+  <int value="101" label="kTimeOfDayWallpaper"/>
+  <int value="200" label="kChangeDeviceAccountImage"/>
+  <int value="300" label="kAmbientMode"/>
+  <int value="301" label="kAmbientModeChooseSource"/>
+  <int value="302" label="kAmbientModeTurnOff"/>
+  <int value="303" label="kAmbientModeGooglePhotos"/>
+  <int value="304" label="kAmbientModeArtGallery"/>
+  <int value="305" label="kAmbientModeTurnOn"/>
+  <int value="306" label="kAmbientModeTimeOfDay"/>
+  <int value="400" label="kDarkMode"/>
+  <int value="401" label="kDarkModeSchedule"/>
+  <int value="402" label="kDarkModeTurnOff"/>
+  <int value="403" label="kDarkModeTurnOn"/>
+  <int value="404" label="kDynamicColor"/>
+</enum>
+
+<enum name="SettingsInputsShortcutReminderState">
+  <int value="0" label="No shortcuts"/>
+  <int value="1" label="Last used IME shortcut"/>
+  <int value="2" label="Next IME shortcut"/>
+  <int value="3" label="Last used IME shortcut and next IME shortcut"/>
+</enum>
+
+<enum name="SettingsLanguagesPageInteraction">
+  <int value="0" label="Switch system language"/>
+  <int value="1" label="Restart"/>
+  <int value="2" label="Switch input method"/>
+  <int value="3" label="Restart later"/>
+  <int value="4" label="Open custom spell check"/>
+  <int value="5" label="Open 'Manage Google Account language'"/>
+  <int value="6" label="Open 'Learn more' link about web languages"/>
+  <int value="7" label="Open 'Learn more' link about language packs"/>
+</enum>
+
+<enum name="TouchpadSensitivity">
+  <int value="0" label="NONE"/>
+  <int value="1" label="Slowest"/>
+  <int value="2" label="Slow"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="Fast"/>
+  <int value="5" label="Fastest"/>
+</enum>
+
+<enum name="WebUIOSSettingsPathHashes">
+  <int value="-2019732586" label="/printing"/>
+  <int value="-1950073287" label="/crostini/details"/>
+  <int value="-1924511305" label="/help"/>
+  <int value="-1820397898" label="/manageAccessibility"/>
+  <int value="-1795544471" label="/languages/inputMethods"/>
+  <int value="-1589300908" label="/app-management/pluginVm/sharedPaths"/>
+  <int value="-1569772500" label="/manageAccessibility/tts"/>
+  <int value="-1484929503" label="/manageAccessibility/switchAccess"/>
+  <int value="-1312744606" label="/knownNetworks"/>
+  <int value="-1279337432" label="/power"/>
+  <int value="-1206523744" label="/app-management/detail"/>
+  <int value="-1204780990" label="/dateTime/timeZone"/>
+  <int value="-1119639824" label="/display"/>
+  <int value="-1068416040" label="/multidevice/features/smartLock"/>
+  <int value="-1058065329" label="/languages"/>
+  <int value="-1048015830" label="/"/>
+  <int value="-988053194" label="/lockScreen"/>
+  <int value="-972517930" label="/googleAssistant"/>
+  <int value="-916174295" label="/internet"/>
+  <int value="-898481268" label="/multidevice/features"/>
+  <int value="-842548379" label="/apps"/>
+  <int value="-710357049" label="/bluetooth"/>
+  <int value="-575518203" label="/manageAccessibility/faceGazeCursor"/>
+  <int value="-570956986" label="/personalization"/>
+  <int value="-512116630" label="/search"/>
+  <int value="-442978022" label="/networks"/>
+  <int value="-378866134" label="/networkDetail"/>
+  <int value="-358922358" label="/textToSpeech/chromeVox"/>
+  <int value="-319293467" label="/multidevice"/>
+  <int value="-295702530" label="/smbShares"/>
+  <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>
+  <int value="-230959653" label="/syncSetup"/>
+  <int value="-189314307" label="/crostini/exportImport"/>
+  <int value="-59332819" label="/accountManager"/>
+  <int value="-50556349" label="/textToSpeech/selectToSpeak"/>
+  <int value="-44267040" label="/bluetoothDevices"/>
+  <int value="-14666765" label="/accounts"/>
+  <int value="8030578" label="/crostini/sharedUsbDevices"/>
+  <int value="8530592" label="/syncSetup/advanced"/>
+  <int value="16287984" label="/languages/details"/>
+  <int value="48634426" label="/osReset"/>
+  <int value="149495749" label="/osLanguages"/>
+  <int value="223791833" label="/help/about"/>
+  <int value="282161661" label="/osPeople"/>
+  <int value="297583680" label="/device"/>
+  <int value="309061570" label="/osPrivacy/accounts"/>
+  <int value="334469894" label="/people"/>
+  <int value="383306038" label="/ambientMode"/>
+  <int value="473528525" label="/audio"/>
+  <int value="527386438" label="/osLanguages/languages"/>
+  <int value="683177973" label="/cupsPrinters"/>
+  <int value="754547746" label="/help/details"/>
+  <int value="863669423" label="/textToSpeech"/>
+  <int value="868952532" label="/pointer-overlay"/>
+  <int value="996514470" label="/osSyncSetup"/>
+  <int value="1064178954" label="/manageAccessibility/faceGazeExpressions"/>
+  <int value="1071171447" label="/osPrinting"/>
+  <int value="1114615837" label="/accessibility"/>
+  <int value="1163194731" label="/osAccessibility"/>
+  <int value="1189329372" label="/kerberos/kerberosAccounts"/>
+  <int value="1258785570" label="/crostini/sharedPaths"/>
+  <int value="1289925226" label="/osPrivacy/privacyHub"/>
+  <int value="1300569861" label="/keyboard-overlay"/>
+  <int value="1384165448" label="/stylus"/>
+  <int value="1429807312" label="/displayAndMagnification"/>
+  <int value="1433770724" label="/osSearch"/>
+  <int value="1462185522" label="/dateTime"/>
+  <int value="1466297319" label="/bluetoothSavedDevices"/>
+  <int value="1602314362" label="/storage"/>
+  <int value="1611548266" label="/crostini/extraContainers"/>
+  <int value="1661964813" label="/reset"/>
+  <int value="1693191706" label="/osPrivacy/lockScreen/fingerprint"/>
+  <int value="1810385625" label="/crostini"/>
+  <int value="1831829553" label="/multidevice/nearbyshare"/>
+  <int value="1847987129" label="/bruschetta/sharedUsbDevices"/>
+  <int value="1853516270" label="/lockScreen/fingerprint"/>
+  <int value="1880662603" label="/osLanguages/input"/>
+  <int value="1952830804" label="/osLanguages/inputMethodOptions"/>
+  <int value="1956464558" label="/changePicture"/>
+  <int value="2014923527" label="/storage/externalStoragePreferences"/>
+  <int value="2030415176" label="/files"/>
+  <int value="2121014241" label="/audioAndCaptions"/>
+  <int value="2136345292" label="/privacy"/>
+  <int value="2236117233" label="/cursorAndTouchpad"/>
+  <int value="2292642563" label="/androidAppsDetails"/>
+  <int value="2583527907" label="/manageAccessibility/captions"/>
+  <int value="2584045321" label="/app-notifications"/>
+  <int value="2827754479" label="/osPrivacy/lockScreen"/>
+  <int value="2831082225" label="/bluetoothDeviceDetail"/>
+  <int value="3174617532" label="/osLanguages/smartInputs"/>
+  <int value="3447116306" label="/osSearch/search"/>
+  <int value="3452400691" label="/kerberos"/>
+  <int value="3453079661" label="/osSync"/>
+  <int value="3514732098" label="/keyboardAndTextInput"/>
+  <int value="3531919210" label="/osLanguages/editDictionary"/>
+  <int value="3561556862" label="/app-management/pluginVm/sharedUsbDevices"/>
+  <int value="3585870839" label="/crostini/androidAdb"/>
+  <int value="3869947881" label="/crostini/portForwarding"/>
+  <int value="3958116773" label="/osPrivacy/smartPrivacy"/>
+  <int value="4060403967" label="/osPrivacy"/>
+  <int value="4083684424" label="/bruschetta/details"/>
+  <int value="4171209718" label="/app-management"/>
+  <int value="4174275430" label="/androidAppsDetails/sharedUsbDevices"/>
 </enum>
 
 </enums>

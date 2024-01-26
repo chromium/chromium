@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/admin_template_service.h"
+
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -11,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
@@ -26,7 +28,7 @@
 namespace desks_storage {
 
 namespace {
-base::Value ParsePolicyFromString(base::StringPiece policy) {
+base::Value ParsePolicyFromString(std::string_view policy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(policy);
 
   CHECK(parsed_json.has_value());

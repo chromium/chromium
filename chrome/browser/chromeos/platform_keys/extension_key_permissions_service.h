@@ -174,7 +174,7 @@ class ExtensionKeyPermissionsService {
     bool sign_unlimited = false;
   };
 
-  void OnGotExtensionValue(absl::optional<base::Value> value);
+  void OnGotExtensionValue(std::optional<base::Value> value);
 
   // Writes the current |state_store_entries_| to the state store of
   // |extension_id_|.
@@ -196,7 +196,7 @@ class ExtensionKeyPermissionsService {
   KeyEntry* GetStateStoreEntry(const std::string& public_key_spki_der_b64);
 
   // Writes |value| to the state store of the extension.
-  void SetPlatformKeysInStateStore(absl::optional<base::Value> value);
+  void SetPlatformKeysInStateStore(std::optional<base::Value> value);
 
   bool PolicyAllowsCorporateKeyUsage() const;
 

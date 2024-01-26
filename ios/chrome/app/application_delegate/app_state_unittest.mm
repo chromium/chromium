@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
@@ -336,16 +337,6 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
-// Used to have a thread handling the closing of the IO threads.
-class AppStateWithThreadTest : public PlatformTest {
- protected:
-  AppStateWithThreadTest()
-      : task_environment_(web::WebTaskEnvironment::REAL_IO_THREAD) {}
-
- private:
-  web::WebTaskEnvironment task_environment_;
-};
-
 #pragma mark - Tests.
 
 using AppStateNoFixtureTest = PlatformTest;
@@ -381,29 +372,31 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
 }
 
 // Test that -applicationWillTerminate clears everything.
-TEST_F(AppStateWithThreadTest, willTerminate) {
+TEST_F(AppStateTest, willTerminate) {
   // Setup.
   ios::provider::test::ResetAppDistributionNotificationsState();
   ASSERT_FALSE(ios::provider::test::AreAppDistributionNotificationsCanceled());
 
-  id startupInformation =
-      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  [[startupInformation expect] stopChromeMain];
+  [[GetStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
-  AppState* appState =
-      [[AppState alloc] initWithStartupInformation:startupInformation];
+  [[GetStartupInformationMock() expect] stopChromeMain];
 
-  id appStateMock = OCMPartialMock(appState);
+  AppState* appState = GetAppStateWithMock();
+
+  id appStateMock = OCMPartialMock(GetAppStateWithMock());
   [[appStateMock expect] completeUIInitialization];
-
-  [appState addAgent:[[SafeModeAppAgent alloc] init]];
-  AppStateObserverToMockMainController* observer =
-      [AppStateObserverToMockMainController alloc];
-  [appState addObserver:observer];
 
   // Start init stages.
   [appState startInitialization];
   [appState queueTransitionToNextInitStage];
+
+  // Initialize the WebUsageEnablerBrowserAgent for all scenes.
+  for (SceneState* connectedScene in appState.connectedScenes) {
+    Browser* test_browser =
+        connectedScene.browserProviderInterface.currentBrowserProvider.browser;
+    WebUsageEnablerBrowserAgent::CreateForBrowser(test_browser);
+  }
 
   id application = [OCMockObject mockForClass:[UIApplication class]];
 
@@ -411,12 +404,16 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   [appState applicationWillTerminate:application];
 
   // Test.
-  EXPECT_OCMOCK_VERIFY(startupInformation);
+  EXPECT_OCMOCK_VERIFY(GetStartupInformationMock());
   EXPECT_OCMOCK_VERIFY(application);
+
   for (SceneState* connectedScene in appState.connectedScenes) {
-    EXPECT_FALSE(connectedScene.browserProviderInterface.mainBrowserProvider
-                     .userInteractionEnabled);
+    Browser* browser =
+        connectedScene.browserProviderInterface.currentBrowserProvider.browser;
+    EXPECT_FALSE(
+        WebUsageEnablerBrowserAgent::FromBrowser(browser)->IsWebUsageEnabled());
   }
+
   EXPECT_TRUE(ios::provider::test::AreAppDistributionNotificationsCanceled());
 }
 

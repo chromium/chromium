@@ -35,12 +35,12 @@ class WebPackageRequestMatcher;
 }  // namespace blink
 
 namespace net {
+class CertVerifyResult;
 class DrainableIOBuffer;
 class SourceStream;
 }  // namespace net
 
 namespace bssl {
-class CertVerifyResult;
 struct OCSPVerifyResult;
 }  // namespace bssl
 

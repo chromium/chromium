@@ -14,7 +14,7 @@
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/test/block_cleanup_test.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"

@@ -445,6 +445,7 @@ cc_test(
 cc_test(
     name = "parse_test",
     size = "small",
+    timeout = "moderate",
     srcs = [
         "parse_test.cc",
     ],

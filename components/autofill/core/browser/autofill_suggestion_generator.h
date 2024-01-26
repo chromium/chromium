@@ -97,22 +97,26 @@ class AutofillSuggestionGenerator {
       const std::set<std::string>& previously_hidden_profiles_guid = {});
 
   // Generates suggestions for all available credit cards based on the
-  // `trigger_field_type` and the value of `field`. `should_display_gpay_logo`
-  // will be set to true if there are no credit card suggestions, or all
-  // suggestions come from Payments server. `with_offer` is set to true if ANY
-  // card has card-linked offers. `metadata_logging_context` contains card
-  // metadata related information used for metrics logging.
+  // `trigger_field_type` and the value of `trigger_field`.
+  // `with_offer` is set to true if ANY card has card-linked offers.
+  // `with_cvc` is set to true if ANY card has cvc saved.
+  // `metadata_logging_context` contains card metadata related information used
+  // for metrics logging.
+  // TODO(crbug.com/1519179): Merging out-parameters into a struct.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
-      const FormFieldData& field,
+      const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      bool& should_display_gpay_logo,
+      bool should_show_scan_credit_card,
+      bool should_show_cards_from_account,
       bool& with_offer,
+      bool& with_cvc,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
   // Generates suggestions for standalone CVC fields. These only apply to
   // virtual cards that are saved on file to a merchant. In these cases,
   // we only display the virtual card option and do not show FPAN option.
   std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+      const FormFieldData& trigger_field,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
           virtual_card_guid_to_last_four_map);
@@ -120,9 +124,17 @@ class AutofillSuggestionGenerator {
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
 
+  // Generates a footer suggestion "Manage addresses..." menu item which will
+  // redirect to Chrome address settings page.
+  static Suggestion CreateManageAddressesEntry();
+
   // Generates a footer suggestion "Manage payment methods..." menu item which
-  // will redirect to Chrome payment settings page.
-  static Suggestion CreateManagePaymentMethodsEntry();
+  // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
+  // conditionally add GPay logo icon to the manage payment methods suggestion.
+  static Suggestion CreateManagePaymentMethodsEntry(bool with_gpay_logo);
+
+  // Generate "Clear form" suggestion.
+  static Suggestion CreateClearFormSuggestion();
 
   // Returns the local and server cards ordered by the Autofill ranking. The
   // cards which are expired and disused aren't included if
@@ -239,6 +251,24 @@ class AutofillSuggestionGenerator {
   void SetCardArtURL(Suggestion& suggestion,
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
+
+  // Returns non address suggestions which are displayed below address
+  // suggestions in the Autofill popup. `is_autofilled` is used to conditionally
+  // add suggestion for clearing all autofilled fields.
+  std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) const;
+
+  // Returns non credit card suggestions which are displayed below credit card
+  // suggestions in the Autofill popup. `should_show_scan_credit_card` is used
+  // to conditionally add scan credit card suggestion,
+  // `should_show_cards_from_account` - conditionally add suggestions for
+  // showing cards from account. `is_autofilled` is used to conditionally add
+  // suggestion for clearing all autofilled fields. `with_gpay_logo` is used to
+  // conditionally add GPay logo icon to the manage payment methods suggestion.
+  std::vector<Suggestion> GetCreditCardFooterSuggestions(
+      bool should_show_scan_credit_card,
+      bool should_show_cards_from_account,
+      bool is_autofilled,
+      bool with_gpay_logo) const;
 
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.

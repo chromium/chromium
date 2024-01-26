@@ -134,11 +134,11 @@ WebApkInstaller::~WebApkInstaller() {
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
-                                   const SkBitmap& primary_icon,
+                                   webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+  installer->InstallAsync(web_contents, shortcut_info, install_source,
                           std::move(finish_callback));
 }
 
@@ -156,9 +156,9 @@ void WebApkInstaller::InstallAsyncForTesting(
     WebApkInstaller* installer,
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    webapps::WebappInstallSource install_source,
     FinishCallback callback) {
-  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+  installer->InstallAsync(web_contents, shortcut_info, install_source,
                           std::move(callback));
 }
 
@@ -219,11 +219,9 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
   if (task_type_ == WebApkInstaller::INSTALL) {
     webapk::TrackRequestTokenDuration(install_duration_timer_->Elapsed(),
                                       package_name);
-    base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-        gfx::ConvertToJavaBitmap(install_primary_icon_);
     Java_WebApkInstaller_installWebApkAsync(
         env, java_ref_, java_webapk_package, webapk_version_, java_title,
-        java_token, source_, java_primary_icon);
+        java_token, webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
   } else {
     Java_WebApkInstaller_updateAsync(env, java_ref_, java_webapk_package,
                                      webapk_version_, java_title, java_token);
@@ -239,7 +237,8 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
     if (result == webapps::WebApkInstallResult::SUCCESS) {
       webapk::TrackInstallDuration(install_duration_timer_->Elapsed());
       webapk::TrackInstallEvent(webapk::INSTALL_COMPLETED);
-      WebApkUkmRecorder::RecordInstall(manifest_url_, webapk_version_);
+      webapk::WebApkUkmRecorder::RecordInstall(manifest_id_, install_source_,
+                                               install_shortcut_info_->display);
     } else {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
@@ -247,7 +246,7 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
         web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             base::StringPrintf(kWebApkFailureMessageTemplate,
-                               manifest_url_.spec().c_str()));
+                               manifest_id_.spec().c_str()));
       }
     }
     webapk::TrackInstallResult(result);
@@ -274,18 +273,17 @@ void WebApkInstaller::CreateJavaRef() {
 
 void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
-                                   const SkBitmap& primary_icon,
+                                   webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
   web_contents_ = web_contents->GetWeakPtr();
   install_shortcut_info_ =
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
-  install_primary_icon_ = primary_icon;
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
-  source_ = install_shortcut_info_->source;
-  manifest_url_ = install_shortcut_info_->manifest_url;
+  manifest_id_ = install_shortcut_info_->manifest_id;
+  install_source_ = install_source;
   task_type_ = INSTALL;
 
   if (!server_url_.is_valid()) {

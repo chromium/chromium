@@ -305,36 +305,36 @@ ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
   return spc_no_creds_dialog_.get();
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 ChromePaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   if (!FrameSupportsPayments(rfh)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   if (!profile) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* app_instance_tracker =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppInstanceTracker();
   if (!app_instance_tracker) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const apps::BrowserAppInstance* app_instance =
       app_instance_tracker->GetAppInstance(web_contents);
   if (!app_instance) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return app_instance->id;
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

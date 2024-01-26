@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct SnapshotRequestInfo;
 
@@ -455,7 +455,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void FillFileCache(const base::FilePath& uncached_path);
 
   // Given a full path, if it exists in the cache, return the id.
-  absl::optional<uint32_t> CachedPathToId(const base::FilePath& path) const;
+  std::optional<uint32_t> CachedPathToId(const base::FilePath& path) const;
 
   // Evict the cache of |id|.
   void EvictCachedPathToId(uint32_t id);

@@ -41,7 +41,7 @@ class ComboboxTestApi {
   ui::MenuModel* menu_model();
 
  private:
-  raw_ptr<Combobox, AcrossTasksDanglingUntriaged> combobox_;
+  const raw_ptr<Combobox> combobox_;
 };
 
 }  // namespace test

@@ -115,6 +115,33 @@ void UpdateDeviceList() {
   DeviceDataManagerX11::GetInstance()->UpdateDeviceList(connection);
 }
 
+absl::optional<gfx::Point> GetRootCursorLocationFromEvent(
+    const x11::Event& event) {
+  auto* device = event.As<x11::Input::DeviceEvent>();
+  auto* crossing = event.As<x11::Input::CrossingEvent>();
+  auto* touch_factory = ui::TouchFactory::GetInstance();
+
+  bool is_valid_event = false;
+  if (event.As<x11::ButtonEvent>() || event.As<x11::MotionNotifyEvent>() ||
+      event.As<x11::CrossingEvent>()) {
+    is_valid_event = true;
+  } else if (device &&
+             (device->opcode == x11::Input::DeviceEvent::ButtonPress ||
+              device->opcode == x11::Input::DeviceEvent::ButtonRelease ||
+              device->opcode == x11::Input::DeviceEvent::Motion)) {
+    is_valid_event = touch_factory->ShouldProcessDeviceEvent(*device);
+  } else if (crossing &&
+             (crossing->opcode == x11::Input::CrossingEvent::Enter ||
+              crossing->opcode == x11::Input::CrossingEvent::Leave)) {
+    is_valid_event = touch_factory->ShouldProcessCrossingEvent(*crossing);
+  }
+
+  if (is_valid_event) {
+    return ui::EventSystemLocationFromXEvent(event);
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 #if defined(USE_GLIB)
@@ -219,42 +246,15 @@ x11::Time X11EventSource::GetTimestamp() {
   return GetCurrentServerTime();
 }
 
-absl::optional<gfx::Point>
-X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
-  auto* event = connection_->dispatching_event();
-  if (!event) {
-    return absl::nullopt;
-  }
-
-  auto* device = event->As<x11::Input::DeviceEvent>();
-  auto* crossing = event->As<x11::Input::CrossingEvent>();
-  auto* touch_factory = ui::TouchFactory::GetInstance();
-
-  bool is_valid_event = false;
-  if (event->As<x11::ButtonEvent>() || event->As<x11::MotionNotifyEvent>() ||
-      event->As<x11::CrossingEvent>()) {
-    is_valid_event = true;
-  } else if (device &&
-             (device->opcode == x11::Input::DeviceEvent::ButtonPress ||
-              device->opcode == x11::Input::DeviceEvent::ButtonRelease ||
-              device->opcode == x11::Input::DeviceEvent::Motion)) {
-    is_valid_event = touch_factory->ShouldProcessDeviceEvent(*device);
-  } else if (crossing &&
-             (crossing->opcode == x11::Input::CrossingEvent::Enter ||
-              crossing->opcode == x11::Input::CrossingEvent::Leave)) {
-    is_valid_event = touch_factory->ShouldProcessCrossingEvent(*crossing);
-  }
-
-  if (is_valid_event) {
-    return ui::EventSystemLocationFromXEvent(*event);
-  }
-  return absl::nullopt;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // X11EventSource, protected
 
 void X11EventSource::OnEvent(const x11::Event& x11_event) {
+  auto cursor_location = GetRootCursorLocationFromEvent(x11_event);
+  if (cursor_location.has_value()) {
+    last_cursor_location_ = cursor_location;
+  }
+
   bool should_update_device_list = false;
 
   if (x11_event.As<x11::Input::HierarchyEvent>()) {

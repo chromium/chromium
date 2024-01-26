@@ -80,7 +80,7 @@ for std in ${STD}; do
           --copt="-march=haswell" \
           --copt=-Werror \
           --define="absl=1" \
-          --enable_bzlmod=false \
+          --enable_bzlmod=true \
           --features=external_include_paths \
           --keep_going \
           --linkopt="--gcc-toolchain=/usr/local" \

@@ -109,19 +109,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     scoped_refptr<const TransformPaintPropertyNode>
         scroll_translation_for_fixed;
 
-    // Use bitfield packing instead of separate bools to save space.
-    struct Flags {
-      DISALLOW_NEW();
-
-     public:
-      bool flattens_inherited_transform : 1;
-      bool in_subtree_of_page_scale : 1;
-      bool animation_is_axis_aligned : 1;
-      bool delegates_to_parent_for_backface : 1;
-      // Set if a frame is rooted at this node.
-      bool is_frame_paint_offset_translation : 1;
-      bool is_for_svg_child : 1;
-    } flags = {false, true, false, false, false, false};
+    bool flattens_inherited_transform : 1 = false;
+    bool in_subtree_of_page_scale : 1 = true;
+    bool animation_is_axis_aligned : 1 = false;
+    // Set if a frame is rooted at this node.
+    bool is_frame_paint_offset_translation : 1 = false;
+    bool is_for_svg_child : 1 = false;
 
     BackfaceVisibility backface_visibility = BackfaceVisibility::kInherited;
     unsigned rendering_context_id = 0;
@@ -227,7 +220,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // If true, this node is a descendant of the page scale transform. This is
   // important for avoiding raster during pinch-zoom (see: crbug.com/951861).
   bool IsInSubtreeOfPageScale() const {
-    return state_.flags.in_subtree_of_page_scale;
+    return state_.in_subtree_of_page_scale;
   }
 
   const CompositorStickyConstraint* GetStickyConstraint() const {
@@ -265,7 +258,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // the plane of its parent. This is implemented by flattening the total
   // accumulated transform from its ancestors.
   bool FlattensInheritedTransform() const {
-    return state_.flags.flattens_inherited_transform;
+    return state_.flattens_inherited_transform;
   }
 
   // Returns the local BackfaceVisibility value set on this node. To be used
@@ -297,8 +290,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   bool FlattensInheritedTransformSameAsParent() const {
     if (IsRoot())
       return true;
-    return state_.flags.flattens_inherited_transform ==
-           Parent()->Unalias().state_.flags.flattens_inherited_transform;
+    return state_.flattens_inherited_transform ==
+           Parent()->Unalias().state_.flattens_inherited_transform;
   }
 
   bool HasDirectCompositingReasons() const {
@@ -341,7 +334,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool TransformAnimationIsAxisAligned() const {
-    return state_.flags.animation_is_axis_aligned;
+    return state_.animation_is_axis_aligned;
   }
 
   bool RequiresCompositingForRootScroller() const {
@@ -371,14 +364,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool IsFramePaintOffsetTranslation() const {
-    return state_.flags.is_frame_paint_offset_translation;
+    return state_.is_frame_paint_offset_translation;
   }
 
   bool DelegatesToParentForBackface() const {
-    if (RuntimeEnabledFeatures::BackfaceVisibilityNewInheritanceEnabled()) {
-      return state_.backface_visibility == BackfaceVisibility::kInherited;
-    }
-    return state_.flags.delegates_to_parent_for_backface;
+    return state_.backface_visibility == BackfaceVisibility::kInherited;
   }
 
   // Content whose transform nodes have a common rendering context ID are 3D
@@ -386,7 +376,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   unsigned RenderingContextId() const { return state_.rendering_context_id; }
   bool HasRenderingContext() const { return state_.rendering_context_id; }
 
-  bool IsForSVGChild() const { return state_.flags.is_for_svg_child; }
+  bool IsForSVGChild() const { return state_.is_for_svg_child; }
 
   std::unique_ptr<JSONObject> ToJSON() const;
 

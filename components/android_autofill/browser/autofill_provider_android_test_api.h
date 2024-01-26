@@ -15,6 +15,9 @@ class AutofillProviderAndroidTestApi {
       : provider_(*provider) {}
 
   const FormDataAndroid* form() && { return provider_->form_.get(); }
+  const FieldGlobalId last_focused_field_id() && {
+    return provider_->last_focused_field_id_;
+  }
 
  private:
   const raw_ref<AutofillProviderAndroid> provider_;

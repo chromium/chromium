@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/idle/idle_service.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -18,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
+#include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,6 +35,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/idle/idle_pref_names.h"
+#include "components/enterprise/idle/metrics.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -245,6 +246,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   // to 1 minute (the minimum).
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   Profile* profile = browser()->profile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/0);
 
@@ -279,6 +282,21 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Check that the idle dialog events are recorded in the histogram.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamples(
+          "Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"),
+      ElementsAre(
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogShown, 1),
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogExpired, 1)));
+  // Check that the success of idle timeout actions is recorded.
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ShowProfilePicker", true, 1);
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.CloseBrowsers", true, 1);
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.AllActions", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
@@ -509,6 +527,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   Profile* profile = browser()->profile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
@@ -533,6 +553,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
+
   DialogManager::GetInstance()->DismissDialogForTesting();
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -542,6 +563,14 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
+  // Check that the idle dialog events are recorded in the histogram.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamples(
+          "Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"),
+      ElementsAre(
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogShown, 1),
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogDismissedByUser,
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {

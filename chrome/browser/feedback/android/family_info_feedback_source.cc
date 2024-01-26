@@ -100,9 +100,8 @@ void FamilyInfoFeedbackSource::OnSuccess(
       // If a child is signed-in, report the parental control web filter.
       ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
       if (member.role() == kids_chrome_management::CHILD) {
-        supervised_user::SupervisedUserURLFilter::WebFilterType
-            web_filter_type =
-                supervised_user_service_->GetURLFilter()->GetWebFilterType();
+        supervised_user::WebFilterType web_filter_type =
+            supervised_user_service_->GetURLFilter()->GetWebFilterType();
         child_web_filter_type = ConvertUTF8ToJavaString(
             env, supervised_user::SupervisedUserURLFilter::
                      WebFilterTypeToDisplayString(web_filter_type));

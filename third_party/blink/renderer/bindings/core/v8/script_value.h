@@ -41,7 +41,10 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
+namespace bindings {
+class DictionaryBase;
+class UnionBase;
+}  // namespace bindings
 class ScriptState;
 
 // ScriptValue is used when an idl specifies the type as 'any'. ScriptValue
@@ -50,9 +53,16 @@ class CORE_EXPORT ScriptValue final {
   DISALLOW_NEW();
 
  public:
-  // Defined in ToV8.h due to circular dependency
+  // Defined in to_v8_traits.h due to circular dependency
+  // ScriptValue::From() is restricted to certain types that are unambiguous in
+  // how they are exposed to V8. Objects that need to know what the expected IDL
+  // type is in order to be correctly converted must explicitly use ToV8Traits<>
+  // to get a v8::Value, then pass it directly to the constructor.
   template <typename T>
-  static ScriptValue From(ScriptState*, T&& value);
+    requires std::derived_from<T, bindings::DictionaryBase> ||
+             std::derived_from<T, ScriptWrappable> ||
+             std::derived_from<T, bindings::UnionBase>
+  static ScriptValue From(ScriptState*, T* value);
 
   template <typename T, typename... Arguments>
   static inline T To(v8::Isolate* isolate,

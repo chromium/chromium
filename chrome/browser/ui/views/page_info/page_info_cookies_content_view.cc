@@ -155,7 +155,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
 
   std::u16string title_text;
   int description;
-  if (cookie_info.status == CookieControlsStatus::kEnabled) {
+  if (cookie_info.protections_on) {
     title_text =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
     // Check if site exception would be permanent (no expiration).
@@ -207,11 +207,9 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
     const CookiesNewInfo& cookie_info) {
-  bool are_third_party_cookies_blocked =
-      cookie_info.status == CookieControlsStatus::kEnabled;
 
   std::u16string subtitle, a11y_name;
-  if (are_third_party_cookies_blocked) {
+  if (cookie_info.protections_on) {
     if (cookie_info.blocking_status == CookieBlocking3pcdStatus::kAll) {
       subtitle = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED);
@@ -239,7 +237,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
         IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_ALLOWED_TOGGLE_A11Y,
         cookie_info.allowed_third_party_sites_count);
   }
-  third_party_cookies_toggle_->SetIsOn(!are_third_party_cookies_blocked);
+  third_party_cookies_toggle_->SetIsOn(!cookie_info.protections_on);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->SetAccessibleName(a11y_name);
@@ -291,14 +289,8 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     const CookiesNewInfo& cookie_info) {
-  bool show_control =
-      cookie_info.confidence !=
-          CookieControlsBreakageConfidenceLevel::kUninitialized &&
-      cookie_info.enforcement !=
-          CookieControlsEnforcement::kEnforcedByTpcdGrant;
-
-  third_party_cookies_container_->SetVisible(show_control);
-  if (!show_control) {
+  third_party_cookies_container_->SetVisible(cookie_info.controls_visible);
+  if (!cookie_info.controls_visible) {
     return;
   }
 
@@ -306,7 +298,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   SetThirdPartyCookiesToggle(cookie_info);
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetThirdPartyCookiesIcon(
-          cookie_info.status != CookieControlsStatus::kEnabled));
+          !cookie_info.protections_on));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 

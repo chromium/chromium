@@ -31,8 +31,6 @@ namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
-// This protocol groups commands that are part of ApplicationCommands, but
-// may also be forwarded directly to a settings navigation controller.
 @protocol ApplicationSettingsCommands
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
@@ -120,13 +118,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 @end
 
 // Protocol for commands that will generally be handled by the application,
-// rather than a specific tab; in practice this means the MainController
+// rather than a specific tab; in practice this means the SceneController
 // instance.
-// This protocol includes all of the methods in ApplicationSettingsCommands; an
-// object that implements the methods in this protocol should be able to forward
-// ApplicationSettingsCommands to the settings view controller if necessary.
-
-@protocol ApplicationCommands <NSObject, ApplicationSettingsCommands>
+@protocol ApplicationCommands
 
 // Dismisses all modal dialogs with a completion block that is called when
 // modals are dismissed (animations done).

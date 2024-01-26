@@ -65,7 +65,7 @@ URLRequestContext and “main_isolated_media” URLRequestContext.
 
       This object owns HTTP/2 sessions.
 
-  - QuicStreamFactory (“quic_stream_factory”)
+  - QuicSessionPool (“quic_session_pool”)
 
       This object owns QUIC sessions and streams.
 

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DIAL_DEVICE_DESCRIPTION_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -52,7 +52,7 @@ class DeviceDescriptionFetcher {
 
   // Runs |error_cb_| with |message| and clears it.
   void ReportError(const std::string& message,
-                   absl::optional<int> response_code = absl::nullopt);
+                   std::optional<int> response_code = std::nullopt);
 
   const DialDeviceData device_data_;
 

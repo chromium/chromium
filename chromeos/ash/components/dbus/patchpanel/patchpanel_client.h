@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   virtual void NotifySocketConnectionEvent(
       const patchpanel::SocketConnectionEvent& msg) = 0;
 
+  // Called when notified of a new socket connection event by an ARC VPN.
+  virtual void NotifyARCVPNSocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) = 0;
+
   // Called when sending feature enabled flag to patchpanel.
   virtual void SetFeatureFlag(
       patchpanel::SetFeatureFlagRequest::FeatureFlag flag,

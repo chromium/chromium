@@ -41,6 +41,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
@@ -725,17 +726,22 @@ void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
 
-void WaylandWindow::OnDragEnter(const gfx::PointF& point,
-                                std::unique_ptr<OSExchangeData> data,
-                                int operation) {
+void WaylandWindow::OnDragEnter(const gfx::PointF& point, int operation) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler) {
     return;
   }
-
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(point, std::move(data), operation,
-                            /*modifiers=*/0);
+  drop_handler->OnDragEnter(point, operation, /*modifiers=*/0);
+}
+
+void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler) {
+    return;
+  }
+  // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
+  drop_handler->OnDragDataAvailable(std::move(data));
 }
 
 int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
@@ -743,7 +749,6 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
   if (!drop_handler) {
     return 0;
   }
-
   // TODO(crbug.com/1102857): get the real event modifier here.
   return drop_handler->OnDragMotion(point, operation,
                                     /*modifiers=*/0);
@@ -755,7 +760,7 @@ void WaylandWindow::OnDragDrop() {
     return;
   }
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop({}, /*modifiers=*/0);
+  drop_handler->OnDragDrop(/*modifiers=*/0);
 }
 
 void WaylandWindow::OnDragLeave() {
@@ -1106,7 +1111,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));
 
-  absl::optional<int32_t> shape =
+  absl::optional<uint32_t> shape =
+      WaylandCursorShape::ShapeFromType(cursor->type());
+  absl::optional<int32_t> zcr_shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
@@ -1114,20 +1121,25 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   if (cursor->type() == CursorType::kNone) {  // Hide the cursor.
     connection_->SetCursorBitmap(
         {}, gfx::Point(), std::ceil(cursor->cursor_image_scale_factor()));
+  } else if (connection_->wayland_cursor_shape() && shape.has_value()) {
+    // Prefer Wayland server-side cursor support, as the compositor knows better
+    // how to draw the cursor.
+    connection_->wayland_cursor_shape()->SetCursorShape(shape.value());
   } else if (cursor->platform_data()) {  // Check for theme-provided cursor.
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
   } else if (connection_->zcr_cursor_shapes() &&
-             shape.has_value()) {  // Check for Wayland server-side cursor
-                                   // support (e.g. exo for lacros).
+             zcr_shape.has_value()) {  // Check for Exo server-side cursor
+                                       // support.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Lacros should not load image assets for default cursors. See
     // `BitmapCursorFactory::GetDefaultCursor()`.
     DCHECK(cursor->bitmaps().empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
-  } else {  // Use client-side bitmap cursors as fallback.
+    connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
+  } else if (!cursor->bitmaps()
+                  .empty()) {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.
     gfx::Point hotspot_in_dips = gfx::ScaleToRoundedPoint(
         cursor->hotspot(), 1.0f / cursor->cursor_image_scale_factor());
@@ -1338,7 +1350,15 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   auto old_state = latched_state_;
   latched_state_ = req.state;
 
-  if (req.state.bounds_dip.size() != old_state.bounds_dip.size()) {
+  // Update the geometry if the bounds are different or the window scale has
+  // been changed. If geometry is not updated on window scale update, the insets
+  // are set in a wrong way. That is, aura provides insets in pixels, which are
+  // converted by the device scale factor known from the display. It can be
+  // different from the one that the |latch_state_.window_scale| has. As a
+  // result, the geometry is set with wrong values as Wayland requires them to
+  // be in DIP.
+  if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
+      req.state.window_scale != old_state.window_scale) {
     SetWindowGeometry(req.state.bounds_dip.size());
   }
   UpdateWindowMask();

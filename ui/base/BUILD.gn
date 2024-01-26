@@ -1156,7 +1156,6 @@ test("ui_base_unittests") {
     ]
     if (is_win) {
       sources += [
-        "ime/win/imm32_manager_unittest.cc",
         "ime/win/on_screen_keyboard_display_manager_unittest.cc",
         "ime/win/tsf_input_scope_unittest.cc",
         "ime/win/tsf_text_store_unittest.cc",

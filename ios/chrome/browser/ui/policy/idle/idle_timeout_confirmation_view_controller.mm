@@ -8,6 +8,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/policy/idle/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -68,8 +69,11 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier = kIdleTimeoutDialogAccessibilityIdentifier;
   self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
+  self.imageViewAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_DIALOG_ACCESSIBILITY_LABEL);
 
   self.showDismissBarButton = NO;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
@@ -80,8 +84,13 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
       kCustomSpacingBeforeImageIfNoNavigationBar;
   self.customSpacingAfterImage = kCustomSpacingAfterImage;
   self.topAlignedLayout = YES;
-
   [super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.imageViewAccessibilityLabel);
 }
 
 @end

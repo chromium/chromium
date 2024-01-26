@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "url/gurl.h"
 
 @implementation TabResumptionItem
@@ -14,6 +15,12 @@
     _itemType = itemType;
   }
   return self;
+}
+
+#pragma mark - MagicStackModule
+
+- (ContentSuggestionsModuleType)type {
+  return ContentSuggestionsModuleType::kTabResumption;
 }
 
 @end

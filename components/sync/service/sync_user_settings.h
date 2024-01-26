@@ -68,13 +68,13 @@ class SyncUserSettings {
   // Sync-the-feature is enabled. Note that even if this is true, some types may
   // be disabled e.g. due to enterprise policy.
   virtual bool IsSyncEverythingEnabled() const = 0;
-  // Sets user's selected types. Should only be called if Sync-the-feature is
-  // active, or in the process of being configured; otherwise use the singular
-  // SetSelectedType().
+  // Sets user's selected types to all types if `sync_everything` is true (in
+  // this case `types` is ignored). Otherwise, sets user's selected types to the
+  // `types` set only.
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
 
-  // Sets an individual type selection. For non-transport-mode cases, invoking
+  // Sets an individual type selection. For Sync-the-feature mode, invoking
   // this function is only allowed while IsSyncEverythingEnabled() returns
   // false.
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;

@@ -121,7 +121,10 @@ export class PromoCardElement extends PolymerElement {
         recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
         break;
       case PromoCardId.MOVE_PASSWORDS:
-        break;
+        this.dispatchEvent(new CustomEvent(
+            'move-passwords-clicked', {bubbles: true, composed: true}));
+        recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
+        return;
       default:
         assertNotReached();
     }

@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/strings/string_util.h"
-#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
@@ -189,7 +188,7 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-absl::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
+std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
   if (absl::get_if<InvokedInBrowserProcess>(&invoked_in)) {
@@ -260,8 +259,6 @@ int LaunchChromeTests(size_t parallel_jobs,
                       content::TestLauncherDelegate* delegate,
                       int argc,
                       char** argv) {
-  base::test::AllowCheckIsTestForTesting();
-
 #if BUILDFLAG(IS_MAC)
   // Set up the path to the framework so resources can be loaded. This is also
   // performed in ChromeTestSuite, but in browser tests that only affects the

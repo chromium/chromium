@@ -95,8 +95,8 @@ class ReadingListUpdateEntryFunction : public ExtensionFunction,
       reading_list_observation_{this};
   raw_ptr<ReadingListModel> reading_list_model_;
   GURL url_;
-  absl::optional<std::string> title_;
-  absl::optional<bool> has_been_read_;
+  std::optional<std::string> title_;
+  std::optional<bool> has_been_read_;
 };
 
 class ReadingListQueryFunction : public ExtensionFunction,
@@ -123,9 +123,9 @@ class ReadingListQueryFunction : public ExtensionFunction,
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_observation_{this};
   raw_ptr<ReadingListModel> reading_list_model_;
-  absl::optional<GURL> url_;
-  absl::optional<std::string> title_;
-  absl::optional<bool> has_been_read_;
+  std::optional<GURL> url_;
+  std::optional<std::string> title_;
+  std::optional<bool> has_been_read_;
 };
 
 }  // namespace extensions

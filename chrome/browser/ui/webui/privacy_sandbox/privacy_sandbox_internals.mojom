@@ -28,9 +28,14 @@ interface PageHandler {
   GetTpcdHeuristicsGrants() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
-  // Return a list of TPCD_SUPPORT ContentSettings for the current
+  // Return a list of TPCD_TRIAL ContentSettings for the current
   // profile.
-  GetTpcdSupport() => (
+  GetTpcdTrial() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a list of TOP_LEVEL_TPCD_TRIAL ContentSettings for the current
+  // profile.
+  GetTopLevelTpcdTrial() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
   // Convert ContentSettingsPattern into a string representation.

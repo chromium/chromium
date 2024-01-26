@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
@@ -105,7 +106,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 
   // The fullscreen controller to offset sourceRect depending on fullscreen
   // status.
-  FullscreenController* _fullscreenController;
+  raw_ptr<FullscreenController> _fullscreenController;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList

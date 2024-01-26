@@ -116,6 +116,13 @@ class PasswordsGrouper {
   base::WeakPtrFactory<PasswordsGrouper> weak_ptr_factory_{this};
 };
 
+// Converts signon_realm (url for federated forms) into GURL and strips path. If
+// form is valid Android credential or conversion fails signon_realm is returned
+// as it is.
+std::string GetFacetRepresentation(const PasswordForm& form);
+
+std::string GetFacetRepresentation(const PasskeyCredential& passkey);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_

@@ -13,5 +13,5 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++++View CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[AX_FOCUS] bundle:[chromeRole="listItem"]
 ++++++View text:"• " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listMarker"]
 ++++++TextView text:"Some " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++TextView text:"more" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++++View text:"more" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="strong"]
 ++++++TextView text:" text." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

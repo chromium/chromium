@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/ios/distiller_page_ios.h"
 #include "url/gurl.h"
@@ -111,8 +112,8 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   GURL original_url_;
   bool distilling_main_page_;
 
-  FaviconWebStateDispatcher* web_state_dispatcher_;
-  ReadingListDistillerPageDelegate* delegate_;
+  raw_ptr<FaviconWebStateDispatcher> web_state_dispatcher_;
+  raw_ptr<ReadingListDistillerPageDelegate> delegate_;
   int delayed_task_id_;
   base::WeakPtrFactory<ReadingListDistillerPage> weak_ptr_factory_;
 };

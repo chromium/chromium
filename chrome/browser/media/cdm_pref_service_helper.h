@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,7 +31,7 @@ class CdmPrefData {
 
   const base::UnguessableToken& origin_id() const;
   base::Time origin_id_creation_time() const;
-  const absl::optional<std::vector<uint8_t>> client_token() const;
+  const std::optional<std::vector<uint8_t>> client_token() const;
   base::Time client_token_creation_time() const;
   std::vector<base::Time> hw_secure_decryption_disable_times() const;
 
@@ -43,7 +43,7 @@ class CdmPrefData {
   base::Time origin_id_creation_time_;
   std::vector<base::Time> hw_secure_decryption_disable_times_;
 
-  absl::optional<std::vector<uint8_t>> client_token_;
+  std::optional<std::vector<uint8_t>> client_token_;
   base::Time client_token_creation_time_;
 };
 

@@ -4,7 +4,7 @@ Googlers can view additional information about internal perf infrastructure at,h
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_ad_frames.iframe,lbrady@google.com,Blink>FencedFrames,https://tinyurl.com/fenced-frame-benchmark,
 UNSCHEDULED_blink_perf.base64,csharrison@chromium.org,Blink>Internals>WTF,https://bit.ly/blink-perf-benchmarks,all
-UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
+UNSCHEDULED_blink_perf.performance_apis,sullivan@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"yyanagisawa@chromium.org, chrome-worker@google.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@google.com,Test>Telemetry,,

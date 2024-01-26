@@ -25,25 +25,18 @@ struct AnchorElementMetrics {
   // OOPIFs, this is not a concern at this point.
   uint32 anchor_id;
 
-  // The ratio between the absolute/visible clickable region area of an anchor
-  // element, and the viewport area. The values are capped at 1.
+  // The ratio between the absolute clickable region area of an anchor
+  // element, and the viewport area. The value is capped at 1.
   float ratio_area;
-  float ratio_visible_area;
 
-  // The distance between the top/center of the clickable region of an anchor
+  // The distance between the top of the clickable region of an anchor
   // element and the top edge of the visible region, divided by the viewport
   // height.
   float ratio_distance_top_to_visible_top;
-  float ratio_distance_center_to_visible_top;
 
   // The distance between the top of the clickable region of an anchor element
   // and the top edge of the root frame, divided by the viewport height.
   float ratio_distance_root_top;
-
-  // The distance between the bottom of the clickable region of an anchor
-  // element and the bottom edge of the root frame, divided by the viewport
-  // height.
-  float ratio_distance_root_bottom;
 
   // Whether the anchor element is within an iframe.
   bool is_in_iframe;
@@ -68,10 +61,9 @@ struct AnchorElementMetrics {
   // The font weight of the anchor element according to its computed style.
   uint32 font_weight;
 
-  // The source URL of the root document and the target URL (href) specified by
-  // the anchor element. URLs sent from a renderer process are not trusted,
-  // however it is intended here since it is only used for metrics calculation.
-  url.mojom.Url source_url;
+  // The target URL (href) specified by the anchor element. URLs sent from a
+  // renderer process are not trusted, however it is intended here since it
+  // is only used for metrics calculation.
   url.mojom.Url target_url;
 
   // The size of the viewport at the time the anchor element was created.

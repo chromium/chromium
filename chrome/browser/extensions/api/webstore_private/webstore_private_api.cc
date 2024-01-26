@@ -346,7 +346,7 @@ enum class WebStoreInstallAllowlistParameter {
 
 // Track the value of the allowlist parameter received from Chrome Web Store.
 void ReportWebStoreInstallEsbAllowlistParameter(
-    const absl::optional<bool>& allowlist_parameter) {
+    const std::optional<bool>& allowlist_parameter) {
   WebStoreInstallAllowlistParameter value;
 
   if (!allowlist_parameter)
@@ -966,7 +966,7 @@ WebstorePrivateCompleteInstallFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateCompleteInstallFunction::Run() {
-  absl::optional<CompleteInstall::Params> params =
+  std::optional<CompleteInstall::Params> params =
       CompleteInstall::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -1112,7 +1112,7 @@ WebstorePrivateSetStoreLoginFunction::WebstorePrivateSetStoreLoginFunction() =
 WebstorePrivateSetStoreLoginFunction::~WebstorePrivateSetStoreLoginFunction() {}
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
-  absl::optional<SetStoreLogin::Params> params =
+  std::optional<SetStoreLogin::Params> params =
       SetStoreLogin::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   SetWebstoreLogin(Profile::FromBrowserContext(browser_context()),
@@ -1174,7 +1174,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
-  absl::optional<IsPendingCustodianApproval::Params> params =
+  std::optional<IsPendingCustodianApproval::Params> params =
       IsPendingCustodianApproval::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1276,7 +1276,7 @@ WebstorePrivateGetExtensionStatusFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetExtensionStatusFunction::Run() {
-  absl::optional<GetExtensionStatus::Params> params =
+  std::optional<GetExtensionStatus::Params> params =
       GetExtensionStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

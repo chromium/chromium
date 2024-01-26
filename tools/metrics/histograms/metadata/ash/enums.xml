@@ -1054,6 +1054,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Hit maximum number of template status"/>
 </enum>
 
+<enum name="FocusModeEndSessionSource">
+  <int value="0" label="Focus panel"/>
+  <int value="1" label="Contextual panel"/>
+  <int value="2" label="Feature pod"/>
+</enum>
+
 <enum name="GlanceableStudentAssignmentList">
   <int value="0" label="Assigned"/>
   <int value="1" label="NoDueDate"/>
@@ -1130,6 +1136,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="System tray"/>
   <int value="5" label="Virtual keyboard tray"/>
   <int value="6" label="IME tray"/>
+</enum>
+
+<enum name="ModifyGlanceablesTaskResult">
+  <int value="0" label="Change committed"/>
+  <int value="1" label="No change"/>
 </enum>
 
 <enum name="MoveMigratorResumeStep">
@@ -1611,7 +1622,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Waiting For Startup Delay"/>
   <int value="2" label="Waiting For Oobe Completed"/>
   <int value="3" label="Waiting For Device Settings Trusted"/>
-  <int value="4" label="ReportController Initialized"/>
+  <int value="4" label="Waiting For Last Powerwash Time File to be read."/>
+  <int value="5" label="ReportController Initialized"/>
 </enum>
 
 <enum name="ReportTrustedStatus">
@@ -1638,6 +1650,27 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>
   <int value="2" label="AlreadyAcceptedDialog"/>
+</enum>
+
+<enum name="SeaPenTemplateId">
+<!-- Defined in ash/webui/common/mojom/sea_pen.mojom -->
+
+  <int value="0" label="kFlower"/>
+  <int value="1" label="kMineral"/>
+  <int value="2" label="kArt"/>
+  <int value="3" label="kCharacters"/>
+  <int value="4" label="kTerrain"/>
+  <int value="5" label="kCurious"/>
+  <int value="6" label="kDreamscapes"/>
+  <int value="7" label="kTranslucent"/>
+  <int value="8" label="kScifi"/>
+  <int value="100" label="kVcBackgroundSimple"/>
+  <int value="101" label="kVcBackgroundOffice"/>
+  <int value="102" label="kVcBackgroundTerrainVc"/>
+  <int value="103" label="kVcBackgroundCafe"/>
+  <int value="104" label="kVcBackgroundArt"/>
+  <int value="105" label="kVcBackgroundDreamscapesVc"/>
+  <int value="106" label="kVcBackgroundCharacters"/>
 </enum>
 
 <enum name="SetWallpaperResult">
@@ -1770,6 +1803,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Remained on the home screen"/>
   <int value="1" label="Transitioned to overview"/>
   <int value="2" label="Went back on the home screen"/>
+</enum>
+
+<enum name="TimeManagementGlanceablesFeatureStatus">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled - trusted tester"/>
+  <int value="2" label="Enabled - GlanceablesV2 flag"/>
+  <int value="3" label="Enabled with pref bypass switch"/>
+  <int value="4" label="Enabled - full launch"/>
 </enum>
 
 <enum name="ToastCatalogName">

@@ -58,7 +58,7 @@ TEST_F(MakoRewriteViewTest, ResizesToWebViewSize) {
   EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().size(), kWebViewSize);
 }
 
-TEST_F(MakoRewriteViewTest, DefaultBoundsLeftAlignedWithCaret) {
+TEST_F(MakoRewriteViewTest, DefaultBoundsAtBottomLeftOfCaret) {
   TestingProfile profile;
   TestBubbleContentsWrapper contents_wrapper(&profile);
 
@@ -71,26 +71,13 @@ TEST_F(MakoRewriteViewTest, DefaultBoundsLeftAlignedWithCaret) {
   mako_rewrite_view_ptr->ResizeDueToAutoResize(/*source=*/nullptr,
                                                gfx::Size(100, 200));
 
+  // Should be left aligned and below the caret.
   EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(), kCaretBounds.x());
+  EXPECT_GE(mako_rewrite_view_ptr->GetBoundsInScreen().y(),
+            kCaretBounds.bottom());
 }
 
-TEST_F(MakoRewriteViewTest, DefaultBoundsBelowCaret) {
-  TestingProfile profile;
-  TestBubbleContentsWrapper contents_wrapper(&profile);
-
-  constexpr gfx::Rect kCaretBounds(30, 40, 0, 10);
-  auto mako_rewrite_view =
-      std::make_unique<MakoRewriteView>(&contents_wrapper, kCaretBounds);
-  auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
-  views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
-
-  mako_rewrite_view_ptr->ResizeDueToAutoResize(/*source=*/nullptr,
-                                               gfx::Size(100, 200));
-
-  EXPECT_GE(mako_rewrite_view_ptr->GetBoundsInScreen().y(), kCaretBounds.y());
-}
-
-TEST_F(MakoRewriteViewTest, AboveCaretAtScreenBottom) {
+TEST_F(MakoRewriteViewTest, AtTopLeftOfCaretForCaretAtScreenBottom) {
   TestingProfile profile;
   TestBubbleContentsWrapper contents_wrapper(&profile);
 
@@ -104,8 +91,49 @@ TEST_F(MakoRewriteViewTest, AboveCaretAtScreenBottom) {
 
   mako_rewrite_view_ptr->ResizeDueToAutoResize(/*source=*/nullptr,
                                                gfx::Size(100, 200));
+  // Should be left aligned and above the caret.
+  EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(), caret_bounds.x());
+  EXPECT_LE(mako_rewrite_view_ptr->GetBoundsInScreen().bottom(),
+            caret_bounds.y());
+}
 
-  EXPECT_LE(mako_rewrite_view_ptr->GetBoundsInScreen().y(), caret_bounds.y());
+TEST_F(MakoRewriteViewTest, OnScreenWithoutOverlapForSmallSelection) {
+  TestingProfile profile;
+  TestBubbleContentsWrapper contents_wrapper(&profile);
+
+  constexpr gfx::Rect kSelectionBounds(100, 40, 200, 100);
+  auto mako_rewrite_view =
+      std::make_unique<MakoRewriteView>(&contents_wrapper, kSelectionBounds);
+  auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
+
+  mako_rewrite_view_ptr->ResizeDueToAutoResize(/*source=*/nullptr,
+                                               gfx::Size(100, 200));
+
+  EXPECT_TRUE(
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
+          mako_rewrite_view_ptr->GetBoundsInScreen()));
+  EXPECT_FALSE(
+      mako_rewrite_view_ptr->GetBoundsInScreen().Intersects(kSelectionBounds));
+}
+
+TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
+  TestingProfile profile;
+  TestBubbleContentsWrapper contents_wrapper(&profile);
+
+  const gfx::Rect selection_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  auto mako_rewrite_view =
+      std::make_unique<MakoRewriteView>(&contents_wrapper, selection_bounds);
+  auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
+
+  mako_rewrite_view_ptr->ResizeDueToAutoResize(/*source=*/nullptr,
+                                               gfx::Size(100, 200));
+
+  EXPECT_TRUE(
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
+          mako_rewrite_view_ptr->GetBoundsInScreen()));
 }
 
 }  // namespace

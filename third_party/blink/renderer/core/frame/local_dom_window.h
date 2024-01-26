@@ -367,7 +367,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void releaseEvents() {}
   External* external();
 
-  bool isSecureContext() const;
+  bool isSecureContext() const;  // NOLINT(bugprone-virtual-near-miss)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
 

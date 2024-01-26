@@ -35,7 +35,7 @@ int ClientView::NonClientHitTest(const gfx::Point& point) {
   return bounds().Contains(point) ? HTCLIENT : HTNOWHERE;
 }
 
-void ClientView::UpdateWindowRoundedCorners() {}
+void ClientView::UpdateWindowRoundedCorners(int corner_radius) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // ClientView, View overrides:

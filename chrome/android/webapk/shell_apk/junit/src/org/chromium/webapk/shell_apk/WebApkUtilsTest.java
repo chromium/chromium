@@ -5,6 +5,7 @@
 package org.chromium.webapk.shell_apk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -138,8 +139,8 @@ public class WebApkUtilsTest {
                 "Status bar should always be black in automotive devices.",
                 Color.BLACK,
                 testActivity.getWindow().getStatusBarColor());
-        assertEquals(
-                "Status bar should use dark theme icons in automotive devices.",
+        assertNotEquals(
+                "Status bar should NOT use dark icons in automotive devices.",
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR,
                 rootView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 

@@ -57,7 +57,7 @@ TEST(DataControlsAndConditionTest, BasicTests) {
       {{true, true, false}, false},
   };
   for (auto [and_conditions, expected] : kTestValues) {
-    std::vector<std::unique_ptr<Condition>> conditions;
+    std::vector<std::unique_ptr<const Condition>> conditions;
     for (bool value : and_conditions) {
       if (value) {
         conditions.push_back(std::make_unique<TrueCondition>());

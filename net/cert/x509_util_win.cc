@@ -4,6 +4,8 @@
 
 #include "net/cert/x509_util_win.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
@@ -98,8 +100,8 @@ SHA256HashValue CalculateFingerprint256(PCCERT_CONTEXT cert) {
   // * < Windows Vista does not have universal SHA-256 support.
   // * More efficient on Windows > Vista (less overhead since non-default CSP
   // is not needed).
-  base::StringPiece der_cert(reinterpret_cast<const char*>(cert->pbCertEncoded),
-                             cert->cbCertEncoded);
+  std::string_view der_cert(reinterpret_cast<const char*>(cert->pbCertEncoded),
+                            cert->cbCertEncoded);
   crypto::SHA256HashString(der_cert, sha256.data, sizeof(sha256.data));
   return sha256;
 }

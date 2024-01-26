@@ -370,7 +370,6 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
   EXPECT_FALSE(info_->validators()->equation.IsValid(GL_MIN_EXT));
   EXPECT_FALSE(info_->validators()->equation.IsValid(GL_MAX_EXT));
   EXPECT_FALSE(info_->feature_flags().chromium_sync_query);
-  EXPECT_FALSE(info_->feature_flags().chromium_image_ycbcr_422);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLE) {

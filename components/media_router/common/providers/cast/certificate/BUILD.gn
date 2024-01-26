@@ -34,10 +34,14 @@ source_set("certificate_roots") {
 
 static_library("certificate") {
   sources = [
+    "cast_cert_printer.cc",
+    "cast_cert_printer.h",
     "cast_cert_validator.cc",
     "cast_cert_validator.h",
     "cast_crl.cc",
     "cast_crl.h",
+    "switches.cc",
+    "switches.h",
   ]
   configs += [
     ":developer_certificate_config",
@@ -55,12 +59,6 @@ static_library("certificate") {
     # anyway since it doesn't check preprocesser macros.
     ":certificate_reader",
   ]
-  if (cast_allow_developer_certificate) {
-    sources += [
-      "switches.cc",
-      "switches.h",
-    ]
-  }
 }
 
 source_set("openscreen_certificate_verifier") {

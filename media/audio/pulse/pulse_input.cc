@@ -165,7 +165,7 @@ void PulseAudioInputStream::Close() {
         pa_stream_disconnect(handle_);
 
       // Release PulseAudio structures.
-      pa_stream_unref(handle_);
+      pa_stream_unref(handle_.ExtractAsDangling());
       handle_ = nullptr;
     }
   }

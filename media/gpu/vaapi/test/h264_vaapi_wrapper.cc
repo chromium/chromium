@@ -50,8 +50,7 @@ VAProfile GetProfile(const H264SPS* sps) {
     case H264SPS::kProfileIDStereoHigh:
       return VAProfileH264StereoHigh;
     default:
-      LOG_ASSERT(false) << "Invalid IDC profile " << sps->profile_idc;
-      return VAProfileNone;
+      LOG(FATAL) << "Invalid IDC profile " << sps->profile_idc;
   }
 }
 

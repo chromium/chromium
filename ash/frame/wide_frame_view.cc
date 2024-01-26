@@ -141,6 +141,7 @@ WideFrameView::WideFrameView(views::Widget* target)
 }
 
 WideFrameView::~WideFrameView() {
+  header_view_->set_context_menu_controller(nullptr);
   if (widget_)
     widget_->CloseNow();
   if (target_) {

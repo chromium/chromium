@@ -696,7 +696,8 @@ class FileTransferConnectorFilesAppBrowserTestBase {
           expected_results,
           /*username*/ kUserName,
           /*profile_identifier*/ profile->GetPath().AsUTF8Unsafe(),
-          /*scan_ids*/ expected_scan_ids);
+          /*scan_ids*/ expected_scan_ids,
+          /*content_transfer_method*/ absl::nullopt);
 
       return true;
     }
@@ -1234,6 +1235,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat")
             .FileTransferConnectorReportOnlyMode()
             .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlatDesti"
+                                "nationNoSpaceForReportOnly")
+            .FileTransferConnectorReportOnlyMode()
+            .NewDirectoryTree(),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveDeep")
             .NewDirectoryTree(),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveDeep")
@@ -1292,6 +1297,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat")
+            .FileTransferConnectorReportOnlyMode(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlatDesti"
+                                "nationNoSpaceForReportOnly")
             .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE(
             "transferConnectorFromDriveToDownloadsMoveDeep"),

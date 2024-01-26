@@ -118,8 +118,14 @@ bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
 }
 
 std::string SkColorToHexString(SkColor color) {
-  return base::StringPrintf("#%02X%02X%02X", SkColorGetR(color),
-                            SkColorGetG(color), SkColorGetB(color));
+  if (SkColorGetA(color) == 0xFF) {
+    return base::StringPrintf("#%02X%02X%02X", SkColorGetR(color),
+                              SkColorGetG(color), SkColorGetB(color));
+  } else {
+    return base::StringPrintf("#%02X%02X%02X%02X", SkColorGetR(color),
+                              SkColorGetG(color), SkColorGetB(color),
+                              SkColorGetA(color));
+  }
 }
 
 std::string SkColorSpaceToString(const SkColorSpace* cs) {

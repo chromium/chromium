@@ -181,15 +181,23 @@ extern const char kAccessibilityCommonExtensionId[];
 extern const char kAccessibilityCommonExtensionPath[];
 // The manifest filename of the Accessibility Common extension.
 extern const char kAccessibilityCommonManifestFilename[];
+// The manifest v3 filename of the Accessibility Common extension.
+extern const char kAccessibilityCommonManifestV3Filename[];
 // The guest manifest filename of the Accessibility Common extension.
 extern const char kAccessibilityCommonGuestManifestFilename[];
+// The guest manifest v3 filename of the Accessibility Common extension.
+extern const char kAccessibilityCommonGuestManifestV3Filename[];
 // Path to preinstalled ChromeVox screen reader extension (relative to
 // |chrome::DIR_RESOURCES|).
 extern const char kChromeVoxExtensionPath[];
 // The manifest filename of the ChromeVox extension.
 extern const char kChromeVoxManifestFilename[];
+// The manifest v3 filename of the ChromeVox extension.
+extern const char kChromeVoxManifestV3Filename[];
 // The guest manifest filename of the ChromeVox extension.
 extern const char kChromeVoxGuestManifestFilename[];
+// The guest manifest v3 filename of the ChromeVox etension.
+extern const char kChromeVoxGuestManifestV3Filename[];
 // The path to the ChromeVox extension's options page.
 extern const char kChromeVoxOptionsPath[];
 // The extension id of the Enhanced network TTS engine extension.
@@ -199,8 +207,12 @@ extern const char kEnhancedNetworkTtsExtensionId[];
 extern const char kEnhancedNetworkTtsExtensionPath[];
 // The manifest filename of the Enhanced network TTS engine extension.
 extern const char kEnhancedNetworkTtsManifestFilename[];
+// The manifest v3 filename of the Enhanced network TTS engine extension.
+extern const char kEnhancedNetworkTtsManifestV3Filename[];
 // The guest manifest filename of the Enhanced network TTS engine extension.
 extern const char kEnhancedNetworkTtsGuestManifestFilename[];
+// The guest manifest v3 filename of the Enhanced network TTS engine extension.
+extern const char kEnhancedNetworkTtsGuestManifestV3Filename[];
 // The extension id of the Select-to-speak extension.
 extern const char kSelectToSpeakExtensionId[];
 // Path to preinstalled Select-to-speak extension (relative to
@@ -208,8 +220,12 @@ extern const char kSelectToSpeakExtensionId[];
 extern const char kSelectToSpeakExtensionPath[];
 // The manifest filename of the Select to Speak extension.
 extern const char kSelectToSpeakManifestFilename[];
+// The manifest v3 filename of the Select to Speak extension.
+extern const char kSelectToSpeakManifestV3Filename[];
 // The guest manifest filename of the Select to Speak extension.
 extern const char kSelectToSpeakGuestManifestFilename[];
+// The guest manifest v3 filename of the Select to Speak extension.
+extern const char kSelectToSpeakGuestManifestV3Filename[];
 // The extension id of the Switch Access extension.
 extern const char kSwitchAccessExtensionId[];
 // Path to preinstalled Switch Access extension (relative to

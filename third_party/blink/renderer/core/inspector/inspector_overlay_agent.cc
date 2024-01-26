@@ -337,9 +337,6 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
  private:
   // cc::ContentLayerClient implementation
-  gfx::Rect PaintableRegion() const override {
-    return gfx::Rect(layer_->bounds());
-  }
   bool FillsBoundsCompletely() const override { return false; }
 
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override {
@@ -347,7 +344,7 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     display_list->StartPaint();
     display_list->push<cc::DrawRecordOp>(
         overlay_->OverlayMainFrame()->View()->GetPaintRecord());
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(layer_->bounds()));
     display_list->Finalize();
     return display_list;
   }
@@ -1398,8 +1395,7 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Value> overlay_host_obj =
-      ToV8Traits<InspectorOverlayHost>::ToV8(script_state, overlay_host_.Get())
-          .ToLocalChecked();
+      ToV8Traits<InspectorOverlayHost>::ToV8(script_state, overlay_host_.Get());
   DCHECK(!overlay_host_obj.IsEmpty());
   script_state->GetContext()
       ->Global()

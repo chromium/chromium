@@ -9,6 +9,7 @@
  */
 
 import './privacy_hub_app_permission_row.js';
+import './privacy_hub_system_service_row.js';
 
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
@@ -52,8 +53,15 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     return {
       /**
        * Apps with microphone permission.
+       * Only contains apps that are displayed in the App Management page.
+       * Does not contain system apps.
        */
       appList_: {
+        type: Array,
+        value: [],
+      },
+
+      systemApps_: {
         type: Array,
         value: [],
       },
@@ -101,6 +109,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   private microphoneHardwareToggleActive_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private shouldDisableMicrophoneToggle_: boolean;
+  private systemApps_: App[];
 
   constructor() {
     super();
@@ -129,7 +138,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
         'devicechange', () => this.updateMicrophoneList_());
   }
 
-  override async connectedCallback(): Promise<void> {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.appPermissionsObserverReceiver_ =
@@ -137,7 +146,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     this.mojoInterfaceProvider_.addObserver(
         this.appPermissionsObserverReceiver_.$.bindNewPipeAndPassRemote());
 
-    await this.updateAppList_();
+    this.updateAppLists_();
   }
 
   override disconnectedCallback(): void {
@@ -149,9 +158,28 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     this.microphoneHardwareToggleActive_ = enabled;
   }
 
-  private async updateAppList_(): Promise<void> {
+  private async updateAppLists_(): Promise<void> {
     const apps = (await this.mojoInterfaceProvider_.getApps()).apps;
     this.appList_ = apps.filter(hasMicrophonePermission);
+
+    this.systemApps_ =
+        (await this.mojoInterfaceProvider_.getSystemAppsThatUseMicrophone())
+            .apps;
+  }
+
+  private getSystemServicesPermissionText_(): string {
+    const microphoneAllowed =
+        this.getPref<string>('ash.user.microphone_allowed').value;
+    return microphoneAllowed ?
+        this.i18n('privacyHubSystemServicesAllowedText') :
+        this.i18n('privacyHubSystemServicesBlockedText');
+  }
+
+  /**
+   * The function is used for sorting app names alphabetically.
+   */
+  private alphabeticalSort_(first: App, second: App): number {
+    return first.name!.localeCompare(second.name!);
   }
 
   private async updateMicrophoneList_(): Promise<void> {
@@ -181,8 +209,9 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   private computeOnOffSubtext_(): string {
     const microphoneAllowed =
         this.getPref<string>('ash.user.microphone_allowed').value;
-    return microphoneAllowed ? this.i18n('microphoneToggleSubtext') :
-                               this.i18n('blockedForAllText');
+    return microphoneAllowed ?
+        this.i18n('microphoneToggleSubtext') :
+        this.i18n('privacyHubMicrophoneAccessBlockedText');
   }
 
   private computeShouldDisableMicrophoneToggle_(): boolean {

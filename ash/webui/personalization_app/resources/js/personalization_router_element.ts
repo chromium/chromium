@@ -75,7 +75,7 @@ export function isSeaPenPathNotAllowed(path: string|null): boolean {
 
 export class PersonalizationRouterElement extends PolymerElement {
   static get is() {
-    return 'personalization-router';
+    return 'personalization-router' as const;
   }
 
   static get template() {
@@ -111,8 +111,7 @@ export class PersonalizationRouterElement extends PolymerElement {
   private seaPenBasePath_: string;
 
   static instance(): PersonalizationRouterElement {
-    return document.querySelector(PersonalizationRouterElement.is) as
-        PersonalizationRouterElement;
+    return document.querySelector(PersonalizationRouterElement.is)!;
   }
 
   static reloadAtRoot() {
@@ -254,6 +253,16 @@ export class PersonalizationRouterElement extends PolymerElement {
         document.title = loadTimeData.getString('avatarLabel');
         break;
     }
+  }
+
+  private onRefuseSeaPenTermsOfService_() {
+    this.goToRoute(Paths.COLLECTIONS);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [PersonalizationRouterElement.is]: PersonalizationRouterElement;
   }
 }
 

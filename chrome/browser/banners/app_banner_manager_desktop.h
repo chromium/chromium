@@ -58,18 +58,8 @@ class AppBannerManagerDesktop
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
-  bool IsWebAppConsideredInstalled() const override;
-  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
-  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
-  bool IsInAppBrowsingContext() const override;
-  void SaveInstallationDismissedForMl(const GURL& manifest_id) override;
-  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
-  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;
-  bool IsMlPromotionBlockedByHistoryGuardrail(const GURL& manifest_id) override;
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override;
-  segmentation_platform::SegmentationPlatformService*
-  GetSegmentationPlatformService() override;
 
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const webapps::AppId& app_id,
@@ -100,8 +90,6 @@ class AppBannerManagerDesktop
   void DidCreateWebAppFromMLDialog(const webapps::AppId& app_id,
                                    webapps::InstallResultCode code);
 
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
-      segmentation_platform_service_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   webapps::AppId uninstalling_app_id_;
 

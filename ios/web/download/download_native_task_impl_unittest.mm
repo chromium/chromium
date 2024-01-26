@@ -34,17 +34,15 @@ class DownloadNativeTaskImplTest : public PlatformTest {
   DownloadNativeTaskImplTest() {
     // TODO(crbug.com/1227419): When removing this if condition, these variables
     // can be generated through the constructor's initializer list.
-    if (@available(iOS 15, *)) {
-      fake_task_bridge_ =
-          [[FakeNativeTaskBridge alloc] initWithDownload:fake_download_
-                                                delegate:fake_delegate_];
-      task_ = std::make_unique<DownloadNativeTaskImpl>(
-          &web_state_, GURL(kUrl), kHttpMethod, kContentDisposition,
-          /*total_bytes=*/-1, kMimeType, @(kIdentifier),
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
-          fake_task_bridge_);
-    }
+    fake_task_bridge_ =
+        [[FakeNativeTaskBridge alloc] initWithDownload:fake_download_
+                                              delegate:fake_delegate_];
+    task_ = std::make_unique<DownloadNativeTaskImpl>(
+        &web_state_, GURL(kUrl), kHttpMethod, kContentDisposition,
+        /*total_bytes=*/-1, kMimeType, @(kIdentifier),
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
+        fake_task_bridge_);
   }
 
   base::test::TaskEnvironment task_environment_;

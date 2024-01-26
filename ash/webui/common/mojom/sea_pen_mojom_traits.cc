@@ -36,6 +36,8 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
       return MojomMantaStatusCode::kRestrictedCountry;
     case manta::MantaStatusCode::kNoIdentityManager:
       return MojomMantaStatusCode::kNoIdentityManager;
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      return MojomMantaStatusCode::kPerUserQuotaExceeded;
     default:
       NOTREACHED();
       return MojomMantaStatusCode::kGenericError;
@@ -78,6 +80,9 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
       return true;
     case MojomMantaStatusCode::kNoIdentityManager:
       *output = manta::MantaStatusCode::kNoIdentityManager;
+      return true;
+    case MojomMantaStatusCode::kPerUserQuotaExceeded:
+      *output = manta::MantaStatusCode::kPerUserQuotaExceeded;
       return true;
   }
   NOTREACHED();

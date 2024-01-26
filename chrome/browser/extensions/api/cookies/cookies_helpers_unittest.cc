@@ -32,7 +32,7 @@ TEST(CookiesHelperUnittest, CookieConversionWithInfiniteExpirationDate) {
   api::cookies::Cookie serialized_cookie =
       cookies_helpers::CreateCookie(*cookie, "1");
   base::Value::Dict value_cookie = serialized_cookie.ToValue();
-  absl::optional<double> expiration_time =
+  std::optional<double> expiration_time =
       value_cookie.FindDouble("expirationDate");
   ASSERT_TRUE(expiration_time);
   EXPECT_EQ(std::numeric_limits<double>::max(), *expiration_time);

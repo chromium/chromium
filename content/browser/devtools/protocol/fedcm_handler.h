@@ -56,6 +56,10 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   DispatchResponse Disable() override;
   DispatchResponse SelectAccount(const String& in_dialogId,
                                  int in_accountIndex) override;
+  DispatchResponse OpenUrl(
+      const String& in_dialogId,
+      int in_accountIndex,
+      const FedCm::AccountUrlType& in_accountUrlType) override;
   DispatchResponse ClickDialogButton(
       const String& in_dialogId,
       const FedCm::DialogButton& in_dialogButton) override;

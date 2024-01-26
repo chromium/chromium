@@ -39,7 +39,9 @@ class RenderProcessHost;
 
 namespace IPC {
 class Listener;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 class MessageFilter;
+#endif
 class SyncChannel;
 class SyncMessageFilter;
 }  // namespace IPC

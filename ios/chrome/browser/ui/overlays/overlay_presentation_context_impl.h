@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -56,7 +57,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
     OVERLAY_USER_DATA_SETUP(Container);
     explicit Container(Browser* browser);
 
-    Browser* browser_ = nullptr;
+    raw_ptr<Browser> browser_ = nullptr;
     std::map<OverlayModality, std::unique_ptr<OverlayPresentationContextImpl>>
         ui_delegates_;
   };
@@ -161,9 +162,9 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
 
    private:
     // The presenter whose delegate needs to be reset.
-    OverlayPresenter* presenter_ = nullptr;
+    raw_ptr<OverlayPresenter> presenter_ = nullptr;
     // OverlayPresentationContextImpl reference.
-    OverlayPresentationContextImpl* presentation_context_ = nullptr;
+    raw_ptr<OverlayPresentationContextImpl> presentation_context_ = nullptr;
     // Scoped observation.
     base::ScopedObservation<Browser, BrowserObserver> browser_observation_{
         this};
@@ -182,11 +183,11 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
     void OverlayUIDidFinishDismissal(OverlayRequest* request) override;
 
    private:
-    OverlayPresentationContextImpl* presentation_context_ = nullptr;
+    raw_ptr<OverlayPresentationContextImpl> presentation_context_ = nullptr;
   };
 
   // The presenter whose UI is being handled by this delegate.
-  OverlayPresenter* presenter_ = nullptr;
+  raw_ptr<OverlayPresenter> presenter_ = nullptr;
   // The cleanup helper.
   BrowserShutdownHelper shutdown_helper_;
   // The delegate used to intercept presentation/dismissal events from
@@ -215,7 +216,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // The request that is currently presented by `presenter_`.  When a new
   // request is presented, the UI state for the request will be added to
   // `states_`.
-  OverlayRequest* request_ = nullptr;
+  raw_ptr<OverlayRequest> request_ = nullptr;
   // Map storing the UI state for each OverlayRequest.
   std::map<OverlayRequest*, std::unique_ptr<OverlayRequestUIState>> states_;
   base::ObserverList<OverlayPresentationContextObserver,

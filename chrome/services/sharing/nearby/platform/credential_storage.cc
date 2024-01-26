@@ -105,7 +105,7 @@ void CredentialStorage::OnPublicCredentialsRetrieved(
     nearby::presence::GetPublicCredentialsResultCallback
         on_public_credentials_retrieved_callback,
     mojo_base::mojom::AbslStatusCode retrieved_status,
-    absl::optional<
+    std::optional<
         std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>>
         shared_credentials_mojom) {
   if (retrieved_status != mojo_base::mojom::AbslStatusCode::kOk) {
@@ -133,8 +133,7 @@ void CredentialStorage::OnLocalCredentialsRetrieved(
     nearby::presence::GetLocalCredentialsResultCallback
         on_local_credentials_retrieved_callback,
     mojo_base::mojom::AbslStatusCode retrieved_status,
-    absl::optional<
-        std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>>
+    std::optional<std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>>
         local_credentials_mojom) {
   if (retrieved_status != mojo_base::mojom::AbslStatusCode::kOk) {
     std::move(on_local_credentials_retrieved_callback)

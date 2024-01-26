@@ -15,9 +15,13 @@
 
 namespace auction_worklet {
 
+class AuctionV8Logger;
+
 class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
  public:
-  explicit InterestGroupLazyFiller(AuctionV8Helper* v8_helper);
+  // `v8_helper` and `v8_logger` must outlive `this`.
+  InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
+                          AuctionV8Logger* v8_logger);
 
   void ReInitialize(const mojom::BidderWorkletNonSharedParams*
                         bidder_worklet_non_shared_params);
@@ -35,9 +39,16 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
   static void HandlePriorityVector(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
+  // TODO(https://crbug.com/1517121): This field is deprecated in favor of
+  // "enableBiddingSignalsPrioritization". Remove this function when it's
+  // safe to remove the field.
+  static void HandleUseBiddingSignalsPrioritization(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
 
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 };
 
 // TODO(crbug.com/1451034): Clean up support for deprecated seconds-based

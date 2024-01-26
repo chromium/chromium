@@ -68,6 +68,10 @@
 #include "services/network/public/cpp/request_mode.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -335,8 +339,9 @@ bool SavePackage::Init(
   download_manager_->CreateSavePackageDownloadItem(
       saved_main_file_path_, page_url_, GetMimeTypeForSaveType(save_type_),
       frame_host.GetProcess()->GetID(), frame_host.GetRoutingID(),
-      base::BindOnce(&CancelSavePackage, AsWeakPtr()),
-      base::BindOnce(&SavePackage::InitWithDownloadItem, AsWeakPtr(),
+      base::BindOnce(&CancelSavePackage, weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&SavePackage::InitWithDownloadItem,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(download_created_callback)));
   return true;
 }
@@ -733,7 +738,7 @@ void SavePackage::CheckFinish() {
         base::BindOnce(&SaveFileManager::GetSaveFilePaths, file_manager_,
                        std::move(ids_and_final_paths),
                        base::BindOnce(&SavePackage::CheckRenameAllowedForPaths,
-                                      AsWeakPtr())));
+                                      weak_ptr_factory_.GetWeakPtr())));
   } else {
     RenameIfAllowed(true);
   }
@@ -747,7 +752,8 @@ void SavePackage::CheckRenameAllowedForPaths(
   if (delegate) {
     delegate->CheckSavePackageAllowed(
         download_, std::move(tmp_paths_to_final_paths),
-        base::BindOnce(&SavePackage::RenameIfAllowed, AsWeakPtr()));
+        base::BindOnce(&SavePackage::RenameIfAllowed,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     RenameIfAllowed(true);
   }
@@ -784,6 +790,15 @@ void SavePackage::Finish() {
 
   wait_state_ = SUCCESSFUL;
   finished_ = true;
+
+#if BUILDFLAG(IS_MAC)
+  // Always set tags on the main HTML file, and if there is an associated
+  // "_files" directory, set the tags on it, too.
+  base::mac::SetFileTags(saved_main_file_path_, file_tags_);
+  if (save_type_ == SAVE_PAGE_TYPE_AS_COMPLETE_HTML) {
+    base::mac::SetFileTags(saved_main_directory_path_, file_tags_);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   if (download_) {
     std::vector<download::DownloadSaveItemData::ItemInfo> files;
@@ -1120,9 +1135,10 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SavePackageSerializationHandler>(
           base::BindRepeating(&SavePackage::OnDidReceiveSerializedHtmlData,
-                              AsWeakPtr(), target->GetWeakPtr()),
+                              weak_ptr_factory_.GetWeakPtr(),
+                              target->GetWeakPtr()),
           base::BindOnce(&SavePackage::OnDidFinishedSerializingHtmlData,
-                         AsWeakPtr(), target->GetWeakPtr())),
+                         weak_ptr_factory_.GetWeakPtr(), target->GetWeakPtr())),
       serializer_handler.InitWithNewPipeAndPassReceiver());
 
   // Ask target frame to serialize itself.
@@ -1473,22 +1489,22 @@ void SavePackage::ContinueGetSaveInfo(bool can_save_as_complete,
   download_manager_->GetDelegate()->ChooseSavePath(
       GetWebContents(page_.get()), suggested_path, default_extension,
       can_save_as_complete,
-      base::BindOnce(&SavePackage::OnPathPicked, AsWeakPtr()));
+      base::BindOnce(&SavePackage::OnPathPicked,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SavePackage::OnPathPicked(
-    const base::FilePath& final_name,
-    SavePageType type,
+    SavePackagePathPickedParams params,
     SavePackageDownloadCreatedCallback download_created_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK((type == SAVE_PAGE_TYPE_AS_ONLY_HTML) ||
-         (type == SAVE_PAGE_TYPE_AS_MHTML) ||
-         (type == SAVE_PAGE_TYPE_AS_COMPLETE_HTML))
-      << type;
+  DCHECK((params.save_type == SAVE_PAGE_TYPE_AS_ONLY_HTML) ||
+         (params.save_type == SAVE_PAGE_TYPE_AS_MHTML) ||
+         (params.save_type == SAVE_PAGE_TYPE_AS_COMPLETE_HTML))
+      << params.save_type;
   if (!page_)
     return;
   // Ensure the filename is safe.
-  saved_main_file_path_ = final_name;
+  saved_main_file_path_ = params.file_path;
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
   std::string mime_type =
@@ -1496,13 +1512,17 @@ void SavePackage::OnPathPicked(
   net::GenerateSafeFileName(mime_type, false, &saved_main_file_path_);
 
   saved_main_directory_path_ = saved_main_file_path_.DirName();
-  save_type_ = type;
+  save_type_ = params.save_type;
   if (save_type_ == SAVE_PAGE_TYPE_AS_COMPLETE_HTML) {
     // Make new directory for saving complete file.
     saved_main_directory_path_ = saved_main_directory_path_.Append(
         saved_main_file_path_.RemoveExtension().BaseName().value() +
         FILE_PATH_LITERAL("_files"));
   }
+
+#if BUILDFLAG(IS_MAC)
+  file_tags_ = params.file_tags;
+#endif
 
   Init(std::move(download_created_callback));
 }

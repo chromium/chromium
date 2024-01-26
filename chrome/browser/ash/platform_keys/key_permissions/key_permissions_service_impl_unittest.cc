@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace platform_keys {
@@ -35,7 +35,7 @@ using ::testing::_;
 
 // Supports waiting for the result of KeyPermissionsService::IsCorporateKey.
 class IsCorporateKeyExecutionWaiter
-    : public base::test::TestFuture<absl::optional<bool>, Status> {
+    : public base::test::TestFuture<std::optional<bool>, Status> {
  public:
   bool corporate() { return Get<0>().value(); }
   Status status() { return Get<1>(); }

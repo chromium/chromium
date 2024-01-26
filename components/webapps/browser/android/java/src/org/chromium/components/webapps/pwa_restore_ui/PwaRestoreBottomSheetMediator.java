@@ -6,6 +6,7 @@ package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 
 import org.chromium.components.webapps.R;
@@ -24,7 +25,8 @@ class PwaRestoreBottomSheetMediator {
     private final PropertyModel mModel;
 
     PwaRestoreBottomSheetMediator(
-            ArrayList apps,
+            ArrayList recentApps,
+            ArrayList olderApps,
             Activity activity,
             Runnable onReviewButtonClicked,
             Runnable onBackButtonClicked) {
@@ -37,11 +39,11 @@ class PwaRestoreBottomSheetMediator {
                         this::onRestoreButtonClicked,
                         this::onSelectionToggled);
 
-        initializeState(apps);
+        initializeState(recentApps, olderApps);
         setPeekingState();
     }
 
-    private void initializeState(ArrayList apps) {
+    private void initializeState(ArrayList recentApps, ArrayList olderApps) {
         mModel.set(
                 PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
@@ -71,7 +73,7 @@ class PwaRestoreBottomSheetMediator {
                 PwaRestoreProperties.DESELECT_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_deselect));
 
-        mModel.set(PwaRestoreProperties.APPS, apps);
+        mModel.set(PwaRestoreProperties.APPS, Pair.create(recentApps, olderApps));
     }
 
     protected void setPeekingState() {
@@ -83,11 +85,17 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void onDeselectButtonClicked() {
-        List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
-        for (PwaRestoreProperties.AppInfo app : appList) {
+        Pair<List<PwaRestoreProperties.AppInfo>, List<PwaRestoreProperties.AppInfo>> appLists =
+                mModel.get(PwaRestoreProperties.APPS);
+        // Deselect all recent apps.
+        for (PwaRestoreProperties.AppInfo app : appLists.first) {
             if (app.isSelected()) app.toggleSelection();
         }
-        mModel.set(PwaRestoreProperties.APPS, appList);
+        // Deselect all older apps.
+        for (PwaRestoreProperties.AppInfo app : appLists.second) {
+            if (app.isSelected()) app.toggleSelection();
+        }
+        mModel.set(PwaRestoreProperties.APPS, appLists);
     }
 
     private void onRestoreButtonClicked() {
@@ -97,10 +105,20 @@ class PwaRestoreBottomSheetMediator {
     private void onSelectionToggled(View view) {
         String appId = (String) view.getTag();
 
-        for (PwaRestoreProperties.AppInfo app : mModel.get(PwaRestoreProperties.APPS)) {
+        Pair<List<PwaRestoreProperties.AppInfo>, List<PwaRestoreProperties.AppInfo>> appLists =
+                mModel.get(PwaRestoreProperties.APPS);
+
+        for (PwaRestoreProperties.AppInfo app : appLists.first) {
             if (TextUtils.equals(app.getId(), appId)) {
                 app.toggleSelection();
-                break;
+                return;
+            }
+        }
+
+        for (PwaRestoreProperties.AppInfo app : appLists.second) {
+            if (TextUtils.equals(app.getId(), appId)) {
+                app.toggleSelection();
+                return;
             }
         }
     }

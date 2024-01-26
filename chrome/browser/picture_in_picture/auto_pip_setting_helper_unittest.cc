@@ -65,7 +65,7 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
         false /* restore_session */, true /* should_record_metrics */);
 
     setting_helper_ = std::make_unique<AutoPipSettingHelper>(
-        origin_, settings_map_.get(), &auto_blocker(), close_cb_.Get());
+        origin_, settings_map_.get(), &auto_blocker());
   }
 
   void TearDown() override {
@@ -79,23 +79,36 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
   }
 
   AutoPipSettingHelper* setting_helper() { return setting_helper_.get(); }
-  const AutoPipSettingOverlayView* setting_overlay() const {
+  AutoPipSettingOverlayView* setting_overlay() const {
     return setting_overlay_;
+  }
+
+  AutoPipSettingView* setting_view() const {
+    return setting_overlay()->get_view_for_testing();
   }
 
   void clear_setting_helper() { setting_helper_.reset(); }
 
+  views::Widget* widget() const { return widget_.get(); }
+
   base::MockOnceCallback<void()>& close_cb() { return close_cb_; }
 
-  void AttachOverlayView() {
+  // Ask the helper for the overlay view, and return whatever it gives us.  This
+  // may be null if it decides that one shouldn't be shown.
+  AutoPipSettingOverlayView* AttachOverlayView() {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
-        gfx::Rect(), anchor_view, views::BubbleBorder::TOP_CENTER);
+        close_cb_.Get(), gfx::Rect(), anchor_view,
+        views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
           widget_->SetContentsView(std::move(setting_overlay)));
+    } else {
+      setting_overlay_ = nullptr;
     }
+
+    return setting_overlay_;
   }
 
   void set_content_setting(ContentSetting new_setting) {
@@ -185,38 +198,45 @@ TEST_F(AutoPipSettingHelperTest,
 
 TEST_F(AutoPipSettingHelperTest, AllowOnceDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
-  // Do not set any embargo expectations, because we aren't asking for the UI,
-  // and are instead just short-circuiting the callback for simplicity.
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
 
   // Run result callback with "allow once" UiResult.  Nothing should happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
-  std::move(setting_helper()->take_result_cb_for_testing())
-      .Run(AutoPipSettingView::UiResult::kAllowOnce);
+  setting_view()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+
+  // Also verify that asking again does not create the view again, since 'allow
+  // once' persists for the lifetime of the setting helper.
+  ASSERT_FALSE(AttachOverlayView());
 }
 
 TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
-  // Do not set any embargo expectations, because we aren't asking for the UI,
-  // and are instead just short-circuiting the callback for simplicity.
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
 
   // Run result callback with "allow on every visit" UiResult.  Nothing should
   // happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
-  std::move(setting_helper()->take_result_cb_for_testing())
-      .Run(AutoPipSettingView::UiResult::kAllowOnEveryVisit);
+  setting_view()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnEveryVisit);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
-  // Do not set any embargo expectations, because we aren't asking for the UI,
-  // and are instead just short-circuiting the callback for simplicity.
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
 
   // Run result callback with "block" UiResult.  The close cb should be called.
   EXPECT_CALL(close_cb(), Run()).Times(1);
-  std::move(setting_helper()->take_result_cb_for_testing())
-      .Run(AutoPipSettingView::UiResult::kBlock);
+  setting_view()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kBlock);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }
 

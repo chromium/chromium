@@ -187,9 +187,6 @@ if (use_centipede) {
         "//testing/libfuzzer:fuzzing_engine",
         "//third_party/boringssl",
       ]
-    } else {
-      # Other projects sharing fuzztest might not have boringssl.
-      ldflags = [ "-lcrypto" ]
     }
   }
 
@@ -211,6 +208,10 @@ if (use_centipede) {
       "src/centipede/environment_flags.cc",
       "src/centipede/environment_flags.h",
     ]
+    if (!build_with_chromium) {
+      # Other projects sharing fuzztest might not have boringssl.
+      ldflags = [ "-lcrypto" ]
+    }
   }
 }
 
@@ -224,7 +225,6 @@ source_set("fuzztest_internal") {
   sources = [
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
-    "src/fuzztest/fuzztest.cc",
     "src/fuzztest/fuzztest.h",
     "src/fuzztest/googletest_fixture_adapter.h",
     "src/fuzztest/internal/any.h",

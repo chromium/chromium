@@ -219,8 +219,8 @@ bool PopulateGalleryPrefInfoFromDictionary(
   std::u16string volume_label;
   std::u16string vendor_name;
   std::u16string model_name;
-  absl::optional<double> total_size_in_bytes;
-  absl::optional<double> last_attach_time;
+  std::optional<double> total_size_in_bytes;
+  std::optional<double> last_attach_time;
   bool volume_metadata_valid = false;
 
   if (!device_id || !path || !GetPrefId(dict, &pref_id) ||
@@ -241,11 +241,11 @@ bool PopulateGalleryPrefInfoFromDictionary(
     volume_metadata_valid = true;
   }
 
-  absl::optional<int> audio_count =
+  std::optional<int> audio_count =
       dict.FindInt(kMediaGalleriesScanAudioCountKey);
-  absl::optional<int> image_count =
+  std::optional<int> image_count =
       dict.FindInt(kMediaGalleriesScanImageCountKey);
-  absl::optional<int> video_count =
+  std::optional<int> video_count =
       dict.FindInt(kMediaGalleriesScanVideoCountKey);
 
   if (audio_count && image_count && video_count) {
@@ -331,7 +331,7 @@ bool GetMediaGalleryPermissionFromDictionary(
     const base::Value::Dict& dict,
     MediaGalleryPermission* out_permission) {
   const std::string* string_id = dict.FindString(kMediaGalleryIdKey);
-  absl::optional<bool> has_permission =
+  std::optional<bool> has_permission =
       dict.FindBool(kMediaGalleryHasPermissionKey);
   if (string_id && base::StringToUint64(*string_id, &out_permission->pref_id) &&
       has_permission) {

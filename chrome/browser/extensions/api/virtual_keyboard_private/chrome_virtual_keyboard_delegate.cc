@@ -568,7 +568,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
 }
 
 void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
-    absl::optional<base::Value::Dict> settings) {
+    std::optional<base::Value::Dict> settings) {
   DCHECK(settings);
 
   EventRouter* router = GetRouterForEventName(

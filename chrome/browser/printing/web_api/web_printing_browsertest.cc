@@ -298,6 +298,8 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
       "separate-documents-uncollated-copies",
       "separate-documents-collated-copies"
     ],
+    "orientationRequestedDefault": "portrait",
+    "orientationRequestedSupported": [ "portrait", "landscape" ],
     "printerResolutionDefault": {
       "crossFeedDirectionResolution": 300,
       "feedDirectionResolution": 400,
@@ -358,10 +360,14 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(DoAll(
           WithArg<0>([&](const auto& job) {
-            observer_remote()->OnPrintJobUpdate(
-                kId, job->job_id, crosapi::mojom::PrintJobStatus::kStarted);
-            observer_remote()->OnPrintJobUpdate(
-                kId, job->job_id, crosapi::mojom::PrintJobStatus::kDone);
+            auto started_update = crosapi::mojom::PrintJobUpdate::New();
+            started_update->status = crosapi::mojom::PrintJobStatus::kStarted;
+            observer_remote()->OnPrintJobUpdate(kId, job->job_id,
+                                                std::move(started_update));
+            auto done_update = crosapi::mojom::PrintJobUpdate::New();
+            done_update->status = crosapi::mojom::PrintJobStatus::kDone;
+            observer_remote()->OnPrintJobUpdate(kId, job->job_id,
+                                                std::move(done_update));
           }),
           base::test::RunOnceCallback<1>()));
 
@@ -403,6 +409,88 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, PrintFailure) {
   const auto script = content::JsReplace(kPrintScriptWithJobStatePlaceholder,
                                          /*job_state=*/"aborted");
   ASSERT_THAT(EvalJs(app_frame(), script), content::EvalJsResult::IsOk());
+}
+
+// Validate that call to `navigator.printing.getPrinters()` fails when content
+// setting is set to BLOCK.
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
+                       GetPrintersUserPermissionDenied) {
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::WEB_PRINTING,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kGetPrintersScript = R"(
+    (async () => {
+      const printers = await navigator.printing.getPrinters();
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame(), kGetPrintersScript).error,
+              testing::HasSubstr("User denied access"));
+}
+
+// Validate that further calls to printer's methods fail when content setting
+// gets switched to BLOCK after a successful call to
+// `navigator.printing.getPrinters()`.
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
+                       FetchAndPrintUserPermissionDenied) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
+#endif
+
+  // Call `navigator.printing.getPrinters()` while the permission is active.
+  constexpr std::string_view kGetPrintersScript = R"(
+    (async () => {
+      const printers = await navigator.printing.getPrinters();
+      printer = printers[0];
+    })();
+  )";
+  ASSERT_THAT(EvalJs(app_frame(), kGetPrintersScript),
+              content::EvalJsResult::IsOk());
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::WEB_PRINTING,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+
+  // Ensure that `printer.fetchAttributes()` reports access denied.
+  constexpr std::string_view kFetchAttributesScript = R"(
+    (async () => {
+      await printer.fetchAttributes();
+    })();
+  )";
+  ASSERT_THAT(EvalJs(app_frame(), kFetchAttributesScript).error,
+              testing::HasSubstr("User denied access"));
+
+  // Ensure that `printer.printJob()` reports access denied.
+  constexpr std::string_view kPrintJobScript = R"(
+    (async () => {
+      const pdf = `%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
+`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
+`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+xref
+0 4
+0000000000 65535 f
+0000000010 00000 n
+0000000053 00000 n
+0000000102 00000 n
+trailer<</Size 4/Root 1 0 R>>
+startxref
+149
+%EOF`;
+      const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
+      const printJob = await printer.printJob("Fail", { data: pdfBlob }, {});
+    })();
+  )";
+  ASSERT_THAT(EvalJs(app_frame(), kPrintJobScript).error,
+              testing::HasSubstr("User denied access"));
 }
 
 }  // namespace printing

@@ -7,9 +7,7 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/web/common/crw_input_view_provider.h"
-#import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -92,11 +90,8 @@ TEST_F(CWVWebViewTest, InputAccessoryView) {
 // Tests CWVWebView's session serialization logic by saving and then
 // restoring the WebView state (using only legacy code).
 TEST_F(CWVWebViewTest, EncodeDecodeLegacy) {
-  // Force disable the feature kEnableSessionSerializationOptimizations for
-  // the whole test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
+  // Force the use of legacy storage.
+  CWVWebView.useOptimizedSessionStorage = NO;
 
   NSData* serialized_state = nil;
   {
@@ -145,11 +140,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeLegacy) {
 // Tests CWVWebView's session serialization logic by saving and then
 // restoring the WebView state (using only optimized code).
 TEST_F(CWVWebViewTest, EncodeDecodeOptimized) {
-  // Force enable the feature kEnableSessionSerializationOptimizations for
-  // the whole test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
+  // Force the use of optimized storage.
+  CWVWebView.useOptimizedSessionStorage = YES;
 
   NSData* serialized_state = nil;
   {
@@ -200,13 +192,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeOptimized) {
 TEST_F(CWVWebViewTest, EncodeDecodeMigrateLegacyToOptimized) {
   NSData* serialized_state = nil;
   {
-    // Force disable the feature kEnableSessionSerializationOptimizations for
-    // the serialization, to force creating a serialized state in the legacy
-    // format.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
+    // Force the use of legacy storage.
+    CWVWebView.useOptimizedSessionStorage = NO;
     CWVWebView* web_view = CreateWebView();
 
     ASSERT_TRUE(test::LoadUrl(web_view, [NSURL URLWithString:@"about:newtab"]));
@@ -223,11 +210,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeMigrateLegacyToOptimized) {
   }
 
   {
-    // Force enable the feature kEnableSessionSerializationOptimizations for
-    // the serialization, to force migration from the legacy format.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
+    // Force the use of optimized storage.
+    CWVWebView.useOptimizedSessionStorage = YES;
 
     // Create a new CWVWebView to restore the state into. Check that there is
     // no navigation history in it and then restore the state.
@@ -260,13 +244,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeMigrateLegacyToOptimized) {
 TEST_F(CWVWebViewTest, EncodeDecodeMigrateOptimizedToLegacy) {
   NSData* serialized_state = nil;
   {
-    // Force disable the feature kEnableSessionSerializationOptimizations for
-    // the serialization, to force creating a serialized state in the optimized
-    // format.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
+    // Force the use of optimized storage.
+    CWVWebView.useOptimizedSessionStorage = YES;
     CWVWebView* web_view = CreateWebView();
 
     ASSERT_TRUE(test::LoadUrl(web_view, [NSURL URLWithString:@"about:newtab"]));
@@ -283,11 +262,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeMigrateOptimizedToLegacy) {
   }
 
   {
-    // Force enable the feature kEnableSessionSerializationOptimizations for
-    // the serialization, to force migration from the optimized format.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
+    // Force the use of legacy storage.
+    CWVWebView.useOptimizedSessionStorage = NO;
 
     // Create a new CWVWebView to restore the state into. Check that there is
     // no navigation history in it and then restore the state.
@@ -318,11 +294,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeMigrateOptimizedToLegacy) {
 // Tests CWVWebView's session serialization logic by saving and then
 // restoring the WebView state (using only legacy code, after shutdown).
 TEST_F(CWVWebViewTest, EncodeDecodeLegacyAfterShutdown) {
-  // Force disable the feature kEnableSessionSerializationOptimizations for
-  // the whole test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
+  // Force the use of legacy storage.
+  CWVWebView.useOptimizedSessionStorage = NO;
 
   NSData* serialized_state = nil;
   {
@@ -372,11 +345,8 @@ TEST_F(CWVWebViewTest, EncodeDecodeLegacyAfterShutdown) {
 // Tests CWVWebView's session serialization logic by saving and then
 // restoring the WebView state (using only optimized code, after shutdown).
 TEST_F(CWVWebViewTest, EncodeDecodeOptimizedAfterShutdown) {
-  // Force enable the feature kEnableSessionSerializationOptimizations for
-  // the whole test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
+  // Force the use of optimized storage.
+  CWVWebView.useOptimizedSessionStorage = YES;
 
   NSData* serialized_state = nil;
   {

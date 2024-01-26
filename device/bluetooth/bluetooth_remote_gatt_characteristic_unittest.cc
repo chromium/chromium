@@ -1627,7 +1627,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadError) {
       characteristic1_, BluetoothGattService::GattErrorCode::kInvalidLength);
   SimulateGattCharacteristicReadError(
       characteristic1_, BluetoothGattService::GattErrorCode::kFailed);
+
   base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(BluetoothGattService::GattErrorCode::kInvalidLength,
             last_gatt_error_code_);
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
@@ -2206,18 +2208,18 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  base::RunLoop loop;
+  base::RunLoop run_loop;
   std::vector<uint8_t> write_value = {111};
   characteristic1_->WriteRemoteCharacteristic(
       write_value, WriteType::kWithResponse, base::BindLambdaForTesting([&] {
         EXPECT_EQ(write_value, last_write_value_);
-        loop.Quit();
+        run_loop.Quit();
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
             ADD_FAILURE() << "unexpected error: "
                           << static_cast<int>(error_code);
-            loop.Quit();
+            run_loop.Quit();
           }));
 
   std::vector<uint8_t> notification_value = {222};
@@ -2229,7 +2231,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   observer.Reset();
   SimulateGattCharacteristicWrite(characteristic1_);
-  loop.Run();
+  run_loop.Run();
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
@@ -3564,6 +3566,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   SimulateGattCharacteristicChanged(characteristic1_, test_vector2);
 
   base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(2, observer.gatt_characteristic_value_changed_count());
   EXPECT_EQ(test_vector2, characteristic1_->GetValue());
   EXPECT_EQ(std::vector<std::vector<uint8_t>>({test_vector1, test_vector2}),

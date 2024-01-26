@@ -70,6 +70,10 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:utils" ]
+  }
+
   if (safe_browsing_mode != 0) {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
@@ -416,7 +420,10 @@ static_library("safe_browsing") {
         deps += [ "//chromeos/lacros:lacros" ]
       }
       if (is_chromeos) {
-        deps += [ "//chromeos/crosapi/cpp:cpp" ]
+        deps += [
+          "//chromeos/components/mgs:mgs",
+          "//chromeos/crosapi/cpp:cpp",
+        ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

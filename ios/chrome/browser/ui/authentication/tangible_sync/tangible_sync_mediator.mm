@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -25,25 +26,25 @@
 @end
 
 @implementation TangibleSyncMediator {
-  AuthenticationService* _authenticationService;
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   // Auditor for user consent.
-  consent_auditor::ConsentAuditor* _consentAuditor;
+  raw_ptr<consent_auditor::ConsentAuditor> _consentAuditor;
   // Manager for user's Google identities.
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // Manager for the authentication flow.
   AuthenticationFlow* _authenticationFlow;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Service that allows for configuring sync.
-  SyncSetupService* _syncSetupService;
+  raw_ptr<SyncSetupService> _syncSetupService;
   // Manager for user consent.
-  unified_consent::UnifiedConsentService* _unifiedConsentService;
+  raw_ptr<unified_consent::UnifiedConsentService> _unifiedConsentService;
   // Sync opt-in access point.
   signin_metrics::AccessPoint _accessPoint;
   // Records the latency of capabilities fetch for this view.

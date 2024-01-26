@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_FAKE_SNAPSHOT_GENERATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_FAKE_SNAPSHOT_GENERATOR_DELEGATE_H_
 
-#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 
 // Fake SnapshotGeneratorDelegate that does nothing. Can be used as a
 // base for unit tests that only implement a subset of the protocol.

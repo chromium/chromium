@@ -496,7 +496,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // expected to arrive. This set is verified to match with the set of hosts and
   // URLs present in the hints request. If null, then the verification is not
   // done.
-  absl::optional<base::flat_set<std::string>>
+  std::optional<base::flat_set<std::string>>
       expect_hints_request_for_hosts_and_urls_;
 
   // The expected authorization header holding the bearer access token.

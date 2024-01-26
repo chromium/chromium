@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -28,78 +28,94 @@ namespace {
 
 constexpr std::string_view kDefaultTypeRaw = "raw";
 
-class UseAsDictionaryHeaderInfo {
+class DictionaryHeaderInfo {
  public:
-  UseAsDictionaryHeaderInfo(std::string match,
-                            absl::optional<base::TimeDelta> expiration,
-                            absl::optional<std::vector<std::string>> algorithms,
-                            std::string type)
+  DictionaryHeaderInfo(std::string match,
+                       std::optional<base::TimeDelta> expiration,
+                       std::string type)
       : match(std::move(match)),
         expiration(expiration),
-        algorithms(std::move(algorithms)),
         type(std::move(type)) {}
-  ~UseAsDictionaryHeaderInfo() = default;
+  ~DictionaryHeaderInfo() = default;
 
   std::string match;
-  absl::optional<base::TimeDelta> expiration;
-  absl::optional<std::vector<std::string>> algorithms;
+  // TODO(crbug.com/1413922): Stop using std::optional when we remove V1 backend
+  // support.
+  std::optional<base::TimeDelta> expiration;
   std::string type;
 };
 
-absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
-    const net::HttpResponseHeaders& headers) {
+std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
+    const net::HttpResponseHeaders& headers,
+    const base::Time request_time,
+    const base::Time response_time) {
   std::string use_as_dictionary_header;
   if (!headers.GetNormalizedHeader(
           shared_dictionary::kUseAsDictionaryHeaderName,
           &use_as_dictionary_header)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<net::structured_headers::Dictionary> dictionary =
+  std::optional<net::structured_headers::Dictionary> dictionary =
       net::structured_headers::ParseDictionary(use_as_dictionary_header);
   if (!dictionary) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> match_value;
-  absl::optional<base::TimeDelta> expires_value;
-  absl::optional<std::vector<std::string>> algorithms_value;
+  // Don't use the value of `expires` in the `Use-As-Dictionary` response header
+  // when V2 backend is enabled.
+  const bool check_expires_dictionary_value =
+      features::kCompressionDictionaryTransportBackendVersion.Get() ==
+      features::CompressionDictionaryTransportBackendVersion::kV1;
+
+  std::optional<std::string> match_value;
+  std::optional<base::TimeDelta> expires_value;
   std::string type_value = std::string(kDefaultTypeRaw);
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_string()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       match_value = entry.second.member.front().item.GetString();
-    } else if (entry.first == shared_dictionary::kOptionNameExpires) {
+    } else if (check_expires_dictionary_value &&
+               entry.first == shared_dictionary::kOptionNameExpires) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_integer()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       expires_value =
           base::Seconds(entry.second.member.front().item.GetInteger());
-    } else if (entry.first == shared_dictionary::kOptionNameAlgorithms) {
-      std::vector<std::string> tmp_vec;
-      for (const auto& algorithms_item : entry.second.member) {
-        if (!algorithms_item.item.is_token()) {
-          return absl::nullopt;
-        }
-        tmp_vec.push_back(algorithms_item.item.GetString());
-      }
-      algorithms_value = std::move(tmp_vec);
     } else if (entry.first == shared_dictionary::kOptionNameType) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_token()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       type_value = entry.second.member.front().item.GetString();
     }
   }
-  if (!match_value) {
-    return absl::nullopt;
+
+  if (!check_expires_dictionary_value) {
+    // Use the fressness lifetime caliculated from the response header.
+    net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
+        headers.GetFreshnessLifetimes(response_time);
+    // We calculate `expires_value` which is a delta from the response time to
+    // the expiration time. So we get the age of the response on the response
+    // time by setting `current_time` argument to `response_time`.
+    base::TimeDelta age_on_response_time =
+        headers.GetCurrentAge(request_time, response_time,
+                              /*current_time=*/response_time);
+    // We can use `freshness + staleness - current_age` as the expiration time.
+    expires_value =
+        lifetimes.freshness + lifetimes.staleness - age_on_response_time;
+    if (*expires_value <= base::TimeDelta()) {
+      return std::nullopt;
+    }
   }
-  return UseAsDictionaryHeaderInfo(*match_value, std::move(expires_value),
-                                   std::move(algorithms_value), type_value);
+  if (!match_value) {
+    return std::nullopt;
+  }
+  return DictionaryHeaderInfo(std::move(*match_value), std::move(expires_value),
+                              std::move(type_value));
 }
 
 }  // namespace
@@ -111,15 +127,18 @@ SharedDictionaryStorage::~SharedDictionaryStorage() = default;
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorage::MaybeCreateWriter(
     const GURL& url,
-    base::Time response_time,
+    const base::Time request_time,
+    const base::Time response_time,
     const net::HttpResponseHeaders& headers,
     bool was_fetched_via_cache,
     base::OnceCallback<bool()> access_allowed_check_callback) {
-  absl::optional<UseAsDictionaryHeaderInfo> info =
-      ParseUseAsDictionaryHeaderInfo(headers);
+  std::optional<DictionaryHeaderInfo> info =
+      ParseDictionaryHeaderInfo(headers, request_time, response_time);
   if (!info) {
     return nullptr;
   }
+  // TODO(crubg.com/1413922) Stop using kDefaultExpiration when we remove V1
+  // backend support.
   base::TimeDelta expiration = shared_dictionary::kDefaultExpiration;
   if (info->expiration) {
     expiration = *info->expiration;
@@ -131,14 +150,6 @@ SharedDictionaryStorage::MaybeCreateWriter(
     // expiration time on the dictionary entry to keep the duration constrained.
     expiration =
         std::min(expiration, shared_dictionary::kMaxExpirationForOriginTrial);
-  }
-  if (info->algorithms) {
-    // Currently we only support support sha-256.
-    // TODO(crbug.com/1413922): Investigate the spec and decide whether to
-    // support non lowercase token or not.
-    if (!base::Contains(*info->algorithms, "sha-256")) {
-      return nullptr;
-    }
   }
   if (info->type != kDefaultTypeRaw) {
     // Currently we only support `raw` type.

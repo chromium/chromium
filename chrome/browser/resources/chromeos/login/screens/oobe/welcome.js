@@ -237,7 +237,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       'showRemoraRequisitionDialog',
       'maybeGiveChromeVoxHint',
       'setQuickStartEnabled',
-      'showQuickStartBluetoothDialog',
     ];
   }
 
@@ -884,21 +883,13 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     this.$.welcomeScreen.isQuickStartEnabled = true;
   }
 
-  showQuickStartBluetoothDialog() {
-    this.$.welcomeScreen.onShowQuickStartBluetoothDialog_();
-  }
-
   /**
    * Handle "Quick Start" button for "Welcome" screen.
    *
    * @private
    */
   onActivateQuickStart_(e) {
-    if (e.detail.enableBluetooth) {
-      this.userActed('quickStartEnableBluetooth');
-    } else {
-      this.userActed('quickStartClicked');
-    }
+    this.userActed('quickStartClicked');
   }
 }
 

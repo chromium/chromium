@@ -37,12 +37,6 @@ export class AppManagementAppDetailsItem extends
         type: Object,
       },
 
-      hidden: {
-        type: Boolean,
-        computed: 'isHidden_()',
-        reflectToAttribute: true,
-      },
-
       appId_: {
         type: String,
         observer: 'appIdChanged_',
@@ -57,12 +51,6 @@ export class AppManagementAppDetailsItem extends
     super.connectedCallback();
     this.watch('appId_', state => state.selectedAppId);
     this.updateFromStore();
-  }
-
-  override hidden: boolean;
-
-  private isHidden_(): boolean {
-    return !loadTimeData.getBoolean('appManagementAppDetailsEnabled');
   }
 
   private appIdChanged_(appId: string): void {

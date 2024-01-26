@@ -1,0 +1,214 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BlocklistSetup">
+  <int value="0" label="Blocklist enabled"/>
+  <int value="1" label="Blocklist ran successfully."/>
+  <int value="2" label="Blocklist failed."/>
+  <int value="3" label="Blocklist thunk setup failed."/>
+  <int value="4" label="Blocklist interception failed."/>
+  <int value="5" label="Blocklist disabled."/>
+</enum>
+
+<enum name="BuildStateUpdateType">
+  <int value="0" label="No new version"/>
+  <int value="1" label="Update available"/>
+  <int value="2" label="Enterprise rollback required"/>
+  <int value="3" label="Channel rollback required"/>
+</enum>
+
+<enum name="ChromeColorsInfo">
+  <int value="-1" label="Default"/>
+  <int value="0" label="Other"/>
+  <int value="1" label="Warm grey"/>
+  <int value="2" label="Cool grey"/>
+  <int value="3" label="Midnight blue"/>
+  <int value="4" label="Black"/>
+  <int value="5" label="Beige and white"/>
+  <int value="6" label="Yellow and white"/>
+  <int value="7" label="Green and white"/>
+  <int value="8" label="Light teal and white"/>
+  <int value="9" label="Light purple and white"/>
+  <int value="10" label="Pink and white"/>
+  <int value="11" label="Beige"/>
+  <int value="12" label="Orange"/>
+  <int value="13" label="Light green"/>
+  <int value="14" label="Light teal"/>
+  <int value="15" label="Light blue"/>
+  <int value="16" label="Pink"/>
+  <int value="17" label="Dark pink and red"/>
+  <int value="18" label="Dark red and orange"/>
+  <int value="19" label="Dark green"/>
+  <int value="20" label="Dark teal"/>
+  <int value="21" label="Dark blue"/>
+  <int value="22" label="Dark purple"/>
+</enum>
+
+<enum name="ChromeColorType">
+  <int value="0" label="Chrome Color (GM2)"/>
+  <int value="1" label="Dynamic Chrome Color (GM3)"/>
+</enum>
+
+<enum name="DynamicChromeColorsInfo">
+  <int value="0" label="Other"/>
+  <int value="1" label="Grayscale"/>
+  <int value="2" label="Blue"/>
+  <int value="3" label="Cool grey"/>
+  <int value="4" label="Grey"/>
+  <int value="5" label="Aqua"/>
+  <int value="6" label="Green"/>
+  <int value="7" label="Viridian"/>
+  <int value="8" label="Citron"/>
+  <int value="9" label="Orange"/>
+  <int value="10" label="Apricot"/>
+  <int value="11" label="Rose"/>
+  <int value="12" label="Pink"/>
+  <int value="13" label="Fuchsia"/>
+  <int value="14" label="Violet"/>
+</enum>
+
+<enum name="ExtensionPointEnableState">
+  <int value="0" label="EXTENSIONPOINT_DISABLED_IME"/>
+  <int value="1" label="EXTENSIONPOINT_ENABLED"/>
+</enum>
+
+<enum name="HeadlessChromeAction">
+  <int value="0" label="None"/>
+  <int value="1" label="RemoteDebuggingPipe"/>
+  <int value="2" label="RemoteDebuggingPort"/>
+  <int value="3" label="DumpDom"/>
+  <int value="4" label="Screenshot"/>
+  <int value="5" label="PrintToPDF"/>
+</enum>
+
+<enum name="KAnonymityServiceJoinSetAction">
+  <int value="0" label="JoinSet"/>
+  <int value="1" label="JoinSetSuccess"/>
+  <int value="2" label="FetchJoinSetOHTTPKey"/>
+  <int value="3" label="FetchJoinSetOHTTPKeyFailed"/>
+  <int value="4" label="SendJoinSetRequest"/>
+  <int value="5" label="JoinSetRequestFailed"/>
+  <int value="6" label="JoinSetQueueFull"/>
+</enum>
+
+<enum name="KAnonymityServiceQuerySetAction">
+  <int value="0" label="QuerySet"/>
+  <int value="1" label="QuerySetsSuccess"/>
+  <int value="2" label="FetchQuerySetOHTTPKey"/>
+  <int value="3" label="FetchQuerySetOHTTPKeyFailed"/>
+  <int value="4" label="SendQuerySetRequest"/>
+  <int value="5" label="QuerySetRequestFailed"/>
+  <int value="6" label="QuerySetQueueFull"/>
+  <int value="7" label="QuerySetRequestParseError"/>
+</enum>
+
+<enum name="KAnonymityTrustTokenGetterAction">
+  <int value="0" label="TryGetTrustTokenAndKey"/>
+  <int value="1" label="GetTrustTokenSuccess"/>
+  <int value="2" label="RequestAccessToken"/>
+  <int value="3" label="AccessTokenRequestFailed"/>
+  <int value="4" label="FetchNonUniqueClientID"/>
+  <int value="5" label="FetchNonUniqueClientIDFailed"/>
+  <int value="6" label="FetchNonUniqueClientIDParseError"/>
+  <int value="7" label="FetchTrustTokenKey"/>
+  <int value="8" label="FetchTrustTokenKeyFailed"/>
+  <int value="9" label="FetchTrustTokenKeyParseError"/>
+  <int value="10" label="FetchTrustToken"/>
+  <int value="11" label="FetchTrustTokenFailed"/>
+</enum>
+
+<enum name="NetworkSandboxState">
+  <summary>
+    The possible states for the network service sandbox. See
+    chrome/browser/net/system_network_context_manager.cc.
+  </summary>
+  <int value="0" label="kDisabledByPlatform"/>
+  <int value="1" label="kEnabledByPlatform"/>
+  <int value="2" label="kDisabledByPolicy"/>
+  <int value="3" label="kEnabledByPolicy"/>
+  <int value="4" label="kDisabledBecauseOfFailedLaunch"/>
+  <int value="5" label="kDisabledBecauseOfKerberos"/>
+</enum>
+
+<enum name="NotifyResult">
+  <int value="0" label="PROCESS_NONE"/>
+  <int value="1" label="PROCESS_NOTIFIED"/>
+  <int value="2" label="PROFILE_IN_USE"/>
+  <int value="3" label="LOCK_ERROR"/>
+</enum>
+
+<enum name="NTSTATUS">
+  <int value="-1073741818" label="0xC0000006 - STATUS_IN_PAGE_ERROR"/>
+  <int value="-1073741810" label="0xC000000E - STATUS_NO_SUCH_DEVICE"/>
+  <int value="-1073741808" label="0xC0000010 - STATUS_INVALID_DEVICE_REQUEST"/>
+  <int value="-1073741803" label="0xC0000015 - STATUS_NONEXISTENT_SECTOR"/>
+  <int value="-1073741790" label="0xC0000022 - STATUS_ACCESS_DENIED"/>
+  <int value="-1073741764" label="0xC000003C - STATUS_DATA_OVERRUN"/>
+  <int value="-1073741697" label="0xC000007F - STATUS_DISK_FULL"/>
+  <int value="-1073741668" label="0xC000009C - STATUS_DEVICE_DATA_ERROR"/>
+  <int value="-1073741667" label="0xC000009D - STATUS_DEVICE_NOT_CONNECTED"/>
+  <int value="-1073741643" label="0xC00000B5 - STATUS_IO_TIMEOUT"/>
+  <int value="-1073741630" label="0xC00000C2 - STATUS_ADAPTER_HARDWARE_ERROR"/>
+  <int value="-1073741591" label="0xC00000E9 - STATUS_UNEXPECTED_IO_ERROR"/>
+  <int value="-1073741435" label="0xC0000185 - STATUS_IO_DEVICE_ERROR"/>
+  <int value="-1073740669" label="0xC0000483 - STATUS_DEVICE_HARDWARE_ERROR"/>
+  <int value="-1073740023" label="0xC0000709 - STATUS_HARDWARE_MEMORY_ERROR"/>
+  <int value="0" label="0x00000000 - STATUS_SUCCESS"/>
+</enum>
+
+<enum name="RemoteHungProcessTerminateReason">
+  <int value="1" label="Terminate accepted by user"/>
+  <int value="2" label="No visible windows found"/>
+  <int value="3" label="Retry attempts to notify remote process exceeded"/>
+  <int value="4" label="Failed to write message to socket"/>
+  <int value="5" label="Failed to read ACK message from socket"/>
+</enum>
+
+<enum name="RemoteProcessInteractionResult">
+  <int value="0" label="Terminate succeeded"/>
+  <int value="1" label="Terminate failed"/>
+  <int value="2" label="Remote process not found"/>
+  <int value="3" label="Terminate wait timeout"/>
+  <int value="4" label="Error occured during remote process notification"/>
+  <int value="5" label="Not enough permissions to terminate"/>
+  <int value="6" label="Remote process is shutting down"/>
+  <int value="7" label="User accepted profile unlock"/>
+  <int value="8"
+      label="User accepted profile unlock prior to remote process kill"/>
+  <int value="9" label="Remote process is the same browser instance"/>
+  <int value="10"
+      label="Found the same browser instance prior to remote process kill"/>
+  <int value="11" label="Failed to extract pid from lock file path"/>
+  <int value="12" label="Invalid lock file"/>
+  <int value="13" label="Orphaned lock file"/>
+  <int value="14" label="User refused to terminate process"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

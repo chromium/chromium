@@ -60,6 +60,9 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -80,9 +83,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -2623,7 +2623,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab theClickedTab = tabs[5];
 
         // Clean active tab environment and ensure.
-        mStripLayoutHelper.clearActiveClickedTab();
+        mStripLayoutHelper.clearTabDragState();
         assertTrue(
                 "Dragged Tab should be empty before drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
@@ -2638,10 +2638,30 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Dragged Tab should match selected tab during drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == theClickedTab);
-        mStripLayoutHelper.clearActiveClickedTab();
+        mStripLayoutHelper.clearTabDragState();
         assertTrue(
                 "Dragged Tab should be cleared at the end of drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testDrag_clearState() {
+        // Initialize with 10 tabs.
+        int selectedIndex = 5;
+        initializeTest(false, false, false, selectedIndex, 10);
+        StripLayoutTab draggedTab =
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex];
+        draggedTab.setIsDraggedOffStrip(true);
+
+        // Clear any animators.
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        assertNull("Should not be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Act and verify.
+        mStripLayoutHelper.clearTabDragState();
+        assertNotNull("Should be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
     }
 
     @Test
@@ -2668,7 +2688,7 @@ public class StripLayoutHelperTest {
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
 
         // Verify we continue reorder mode with the correct x-offset.
         assertFalse(
@@ -2693,10 +2713,10 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true);
+        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
 
         // Finish animations.
         assertNotNull(
@@ -2761,7 +2781,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false, false);
         // Start gap will be tabWidth(265) / 2 = 132.5
         mStripLayoutHelper.setScrollOffsetForTesting(-132);
 
@@ -2802,7 +2822,7 @@ public class StripLayoutHelperTest {
         groupTabs(1, 3);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false, false);
 
         // Verify.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2824,7 +2844,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false, false);
 
         // Hover between 2nd and 3rd tab:
         // 2 * (tabWidth(265) - overlapWidth(28)) = 474
@@ -2860,7 +2880,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Prepare for tab drop.
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false, false);
         // Start gap will be tabWidth(265) / 2 = 132.5
         mStripLayoutHelper.setScrollOffsetForTesting(-132);
 
@@ -2884,6 +2904,35 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
         assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+    }
+
+    @Test
+    public void testDestinationStripForTabDrop_DifferentIncognitoState() {
+        // Setup with 3 tabs.
+        boolean isIncognito = false;
+        initializeTest(false, isIncognito, true, 1, 3);
+
+        // Prepare and verify no interaction.
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false, !isIncognito);
+        assertFalse(
+                "Shouldn't start reorder when dragged tab Incognito state is different.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+
+        // Drag and verify no interaction.
+        float expectedOffset = mStripLayoutHelper.getScrollOffset();
+        mStripLayoutHelper.dragForTabDrop(TIMESTAMP, 0.f, 0.f, 50.f, !isIncognito);
+        assertEquals(
+                "Shouldn't have scrolled when dragged tab Incognito is different.",
+                expectedOffset,
+                mStripLayoutHelper.getScrollOffset(),
+                EPSILON);
+
+        // Set reorder mode for testing, then clear for tab drop and verify no interaction.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, false, !isIncognito);
+        assertTrue(
+                "Shouldn't stop reorder when dragged tab Incognito state is different.",
+                mStripLayoutHelper.getInReorderModeForTesting());
     }
 
     @Test

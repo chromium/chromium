@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -120,6 +121,7 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -296,9 +298,8 @@ ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
                        v8::Undefined(script_state->GetIsolate()));
   }
 
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<Event>::ToV8(script_state, CurrentEvent()).ToLocalChecked());
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<Event>::ToV8(script_state, CurrentEvent()));
 }
 
 Event* LocalDOMWindow::CurrentEvent() const {
@@ -590,9 +591,6 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
         feature, UseCounterImpl::PermissionsPolicyUsageType::kViolation);
   }
 
-  if (!RuntimeEnabledFeatures::PermissionsPolicyReportingEnabled(this)) {
-    return;
-  }
   if (!GetFrame()) {
     return;
   }
@@ -843,8 +841,9 @@ void LocalDOMWindow::DocumentWasClosed() {
   //
   // 4.5. ..., invoke the reset algorithm of each of those elements.
   // 4.6.3. Run any session history document visibility change steps ...
-  if (document_)
+  if (document_) {
     document_->GetFormController().RestoreImmediately();
+  }
 
   // 4.6.4. Fire an event named pageshow at the Document object's relevant
   // global object, ...
@@ -880,6 +879,10 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
 
 void LocalDOMWindow::DispatchPagehideEvent(
     PageTransitionEventPersistence persistence) {
+  if (document_->IsPrerendering()) {
+    // Do not dispatch the event while prerendering.
+    return;
+  }
   if (document_->UnloadStarted()) {
     // We've already dispatched pagehide (since it's the first thing we do when
     // starting unload) and shouldn't dispatch it again. We might get here on
@@ -1988,6 +1991,7 @@ External* LocalDOMWindow::external() {
   return external_.Get();
 }
 
+// NOLINTNEXTLINE(bugprone-virtual-near-miss)
 bool LocalDOMWindow::isSecureContext() const {
   return IsSecureContext();
 }

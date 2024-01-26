@@ -157,6 +157,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsExtendedAdvertisementsAvailable() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,

@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_LACROS_CLEANUP_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_LACROS_CLEANUP_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
-
+#include <optional>
 #include <set>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -36,7 +35,7 @@ class LacrosCleanupHandler : public CleanupHandler {
   void OnDisconnect(mojo::RemoteSetElementId id);
 
   void OnObserverDone(mojo::RemoteSetElementId id,
-                      const absl::optional<std::string>& error);
+                      const std::optional<std::string>& error);
 
   void OnAllObserversDone();
 

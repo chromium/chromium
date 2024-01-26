@@ -54,6 +54,8 @@ const blockedFileEntry2 = new TestEntryInfo({
 
 // Tests that proceeding two warnings, the first is triggered by DLP and the
 // second is triggered by Enterprise Connectors, will move all the copied files.
+// @ts-ignore: error TS4111: Property 'twoWarningsProceeded' comes from an index
+// signature, so it must be accessed with ['twoWarningsProceeded'].
 testcase.twoWarningsProceeded = async () => {
   // Add entry to Downloads.
   await addEntries(['local'], [allowedFileEntry, warnedFileEntry]);
@@ -110,6 +112,8 @@ testcase.twoWarningsProceeded = async () => {
 
   // Select all files.
   const ctrlA = ['#file-list', 'a', true, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
@@ -169,6 +173,8 @@ testcase.twoWarningsProceeded = async () => {
 // Tests that blocking different files by DLP and Enterprise Connectors will
 // copy all the file except the blocked ones. A block panel will be shown in the
 // end  with the blocked files count.
+// @ts-ignore: error TS4111: Property 'differentBlockPolicies' comes from an
+// index signature, so it must be accessed with ['differentBlockPolicies'].
 testcase.differentBlockPolicies = async () => {
   // Add entry to Downloads.
   await addEntries(
@@ -219,6 +225,8 @@ testcase.differentBlockPolicies = async () => {
 
   // Select all files.
   const ctrlA = ['#file-list', 'a', true, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');

@@ -14,6 +14,14 @@ measurements.
 
 The public interface is documented at bit.ly/resource-attribution-api.
 
+* Public headers are in
+  components/performance_manager/public/resource_attribution/.
+* Public symbols are in the `performance_manager::resource_attribution`
+  namespace.
+* Private symbols that must be referenced from
+  components/performance_manager/public/ (eg. in templates) are in the
+  `performance_manager::resource_attribution::internal` namespace.
+
 # Implementation
 
 Here’s an overview picture of the architecture:

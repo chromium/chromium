@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -25,9 +26,9 @@ class ExperimentManager {
       EligibilityDecisionCallback on_eligibility_decision_callback) = 0;
 
   // Returns the final decision for client eligibility, if completed.
-  // `absl::nullopt` will be returned if the final decision has not been made
+  // `std::nullopt` will be returned if the final decision has not been made
   // yet.
-  virtual absl::optional<bool> IsClientEligible() const = 0;
+  virtual std::optional<bool> IsClientEligible() const = 0;
 
   // Returns whether the experiment version has changed.
   virtual bool DidVersionChange() const = 0;

@@ -297,14 +297,14 @@ TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
 }
 
 TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
+  DisplaySnapshot::ColorInfo color_info;
   FakeDisplaySnapshot display_snapshot(
       /*display_id=*/123, /*port_display_id=*/123, /*edid_display_id=*/456,
       /*connector_index=*/0x0001, gfx::Point(), gfx::Size(),
       DISPLAY_CONNECTION_TYPE_UNKNOWN,
       /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
-      PrivacyScreenState::kNotSupported, false, false, std::string(),
-      base::FilePath(), {}, nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
-      /*bits_per_channel=*/8u, /*hdr_static_metadata=*/{}, kVrrNotCapable,
+      PrivacyScreenState::kNotSupported, false, std::string(), base::FilePath(),
+      {}, nullptr, nullptr, 0, gfx::Size(), color_info, kVrrNotCapable,
       absl::nullopt, DrmFormatsAndModifiers());
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
@@ -542,7 +542,8 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   // TODO(crbug.com/1012846): Remove this flag and provision when HDR is fully
   // supported on ChromeOS.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kUseHDRTransferFunction);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableExternalDisplayHDR10Mode);
 
   const auto display_color_space = gfx::ColorSpace::CreateHDR10();
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
@@ -553,7 +554,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
           .SetColorSpace(display_color_space)
           .SetBitsPerChannel(10u)
           .SetHDRStaticMetadata(
-              {600.0, 500.0, 0.01,
+              {609.0, 500.0, 0.01,
                gfx::HDRStaticMetadata::EotfMask({
                    gfx::HDRStaticMetadata::Eotf::kGammaSdrRange,
                    gfx::HDRStaticMetadata::Eotf::kPq,
@@ -572,31 +573,24 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_TRUE(display_color_spaces.SupportsHDR());
 
-  // |display_color_spaces| still supports SDR rendering.
+  // Ensure that all spaces be HDR10, and have headroom of 3x (609/203).
   EXPECT_EQ(
-      DisplaySnapshot::PrimaryFormat(),
+      gfx::BufferFormat::RGBA_1010102,
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
-
-  const auto sdr_color_space =
-      display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
-                                               /*needs_alpha=*/true);
-  EXPECT_TRUE(sdr_color_space.IsValid());
-  EXPECT_EQ(sdr_color_space.GetPrimaryID(), display_color_space.GetPrimaryID());
-  EXPECT_EQ(sdr_color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
-
   EXPECT_EQ(
+      gfx::ColorSpace::CreateHDR10(),
+      display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                               /*needs_alpha=*/true));
+  EXPECT_EQ(
+      gfx::BufferFormat::RGBA_1010102,
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kHDR,
-                                                 /*needs_alpha=*/true),
-      gfx::BufferFormat::RGBA_1010102);
-
-  const auto hdr_color_space =
+                                                 /*needs_alpha=*/true));
+  EXPECT_EQ(
+      gfx::ColorSpace::CreateHDR10(),
       display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
-                                               /*needs_alpha=*/true);
-  EXPECT_TRUE(hdr_color_space.IsValid());
-  EXPECT_EQ(hdr_color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::BT2020);
-  EXPECT_EQ(hdr_color_space.GetTransferID(),
-            gfx::ColorSpace::TransferID::PIECEWISE_HDR);
+                                               /*needs_alpha=*/true));
+  EXPECT_EQ(3.f, display_color_spaces.GetHDRMaxLuminanceRelative());
 }
 #endif
 

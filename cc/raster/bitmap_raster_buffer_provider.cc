@@ -6,16 +6,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-#include <algorithm>
-#include <limits>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/process/memory.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -26,9 +20,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 namespace {
@@ -51,8 +43,8 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-    pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, mapping.guid(),
-                                         importance);
+      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, mapping.guid(),
+                                           importance);
   }
 
   raw_ptr<LayerTreeFrameSink> frame_sink;
@@ -149,26 +141,13 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     backing->frame_sink = frame_sink_;
 
     if (frame_sink_->shared_image_interface()) {
-      const size_t buffer_size =
-          gfx::BufferSizeForBufferFormat(size, gfx::BufferFormat::BGRA_8888);
-      auto shared_memory_region =
-          base::UnsafeSharedMemoryRegion::Create(buffer_size);
-      backing->mapping = shared_memory_region.Map();
-      CHECK(shared_memory_region.IsValid() && backing->mapping.IsValid());
-
-      gfx::GpuMemoryBufferHandle handle;
-      handle.type = gfx::SHARED_MEMORY_BUFFER;
-      handle.offset = 0;
-      handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
-          size.width(), gfx::BufferFormat::BGRA_8888, 0));
-      handle.region = std::move(shared_memory_region);
-
-      backing->shared_image =
+      auto shared_image_mapping =
           frame_sink_->shared_image_interface()->CreateSharedImage(
               viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider",
-              std::move(handle));
+              gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider");
+      backing->shared_image = std::move(shared_image_mapping.shared_image);
+      backing->mapping = std::move(shared_image_mapping.mapping);
       CHECK(backing->shared_image);
     } else {
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();

@@ -64,6 +64,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -74,6 +77,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.page_insights.PageInsightsMediator.PageInsightsEvent;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
@@ -89,9 +93,6 @@ import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsLoggingPara
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -216,18 +217,21 @@ public class PageInsightsMediatorTest {
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 String.valueOf(triggerDelayMs));
-        createMediator(testValues);
+        createMediator(testValues, PageInsightsIntentParams.getDefaultInstance());
     }
 
-    private void createMediator(int triggerDelayMs, TestValues furtherTestValues) {
+    private void createMediator(
+            int triggerDelayMs,
+            TestValues furtherTestValues,
+            PageInsightsIntentParams intentParams) {
         furtherTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 String.valueOf(triggerDelayMs));
-        createMediator(furtherTestValues);
+        createMediator(furtherTestValues, intentParams);
     }
 
-    private void createMediator(TestValues testValues) {
+    private void createMediator(TestValues testValues, PageInsightsIntentParams intentParams) {
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
         Context context = ContextUtils.getApplicationContext();
         context.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
@@ -246,6 +250,7 @@ public class PageInsightsMediatorTest {
                         mBackPressManager,
                         mInMotionSupplier,
                         mAppInsetSupplier,
+                        intentParams,
                         () -> true,
                         mPageInsightsConfigProvider);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
@@ -534,13 +539,40 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void
-            testExpandAfterAutoTrigger_canReturnToPeekAfterExpansion_peekEnabledSwipeDisabled() {
+            testExpandAfterAutoTrigger_canReturnToPeekAfterExpansionFromFlag_peekEnabledSwipeDisabled() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
                 "true");
-        createMediator(SHORT_TRIGGER_DELAY_MS, testValues);
+        createMediator(
+                SHORT_TRIGGER_DELAY_MS, testValues, PageInsightsIntentParams.getDefaultInstance());
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        assertNotEquals(
+                PageInsightsSheetContent.HeightMode.DISABLED,
+                mMediator.getSheetContent().getPeekHeight());
+        assertFalse(mMediator.getSheetContent().swipeToDismissEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void
+            testExpandAfterAutoTrigger_canReturnToPeekAfterExpansionFromIntentParam_peekEnabledSwipeDisabled() {
+        createMediator(
+                SHORT_TRIGGER_DELAY_MS,
+                new TestValues(),
+                PageInsightsIntentParams.newBuilder()
+                        .setCanReturnToPeekAfterExpansion(true)
+                        .build());
         View feedView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
@@ -581,6 +613,7 @@ public class PageInsightsMediatorTest {
                                 CommonTypesProto.RequestContext
                                         .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB
                                         .getNumber()),
+                        any(),
                         any());
     }
 
@@ -603,6 +636,7 @@ public class PageInsightsMediatorTest {
                         any(),
                         any(),
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        any(),
                         any());
     }
 
@@ -1296,7 +1330,8 @@ public class PageInsightsMediatorTest {
                                             .getNumber()
                                 }),
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
+                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
+                        any());
     }
 
     private void setBackgroundDrawable() {

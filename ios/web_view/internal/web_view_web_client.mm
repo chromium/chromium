@@ -44,7 +44,7 @@
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_web_view.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cert/cert_status_flags.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"

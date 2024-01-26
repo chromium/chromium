@@ -23,6 +23,9 @@ import update_histogram_enum
 import histogram_paths
 
 
+DEV_ENUMS_XML_PATH = 'tools/metrics/histograms/metadata/dev/enums.xml'
+
+
 def GetCommandUMAId(cdp_command):
   """Generate a hash consistent with GetCommandUMAId() in ChromeDevToolsSession.
 
@@ -76,8 +79,7 @@ def ParseProtocolCommandsFromXML():
    Returns:
     A dictionary with the hashes as keys and the CDP commands as values.
   """
-  document = minidom.parse(
-      path_util.GetInputFile(histogram_paths.ENUMS_XML_RELATIVE))
+  document = minidom.parse(path_util.GetInputFile(DEV_ENUMS_XML_PATH))
   result = {}
 
   # Get DOM of the <enum name="CDPCommands"> node.
@@ -85,7 +87,7 @@ def ParseProtocolCommandsFromXML():
     if enum_node.attributes['name'].value == 'CDPCommands':
       break
   else:
-    raise UserError('CDPCommands enum node not found in enums.xml')
+    raise Exception('CDPCommands enum node not found in enums.xml')
 
   for child in enum_node.childNodes:
     if child.nodeName == 'int':
@@ -125,9 +127,10 @@ def MaybeUpdateEnumFromFile(file_path):
   xml_dict = ParseProtocolCommandsFromXML()
   CheckDictsForCollisions(pdl_dict, xml_dict)
   files_for_enum_comment = '*.pdl files'
-  update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml', 'CDPCommands', pdl_dict,
-      files_for_enum_comment, os.path.basename(__file__))
+  update_histogram_enum.UpdateHistogramFromDict(DEV_ENUMS_XML_PATH,
+                                                'CDPCommands', pdl_dict,
+                                                files_for_enum_comment,
+                                                os.path.basename(__file__))
 
 
 def main():

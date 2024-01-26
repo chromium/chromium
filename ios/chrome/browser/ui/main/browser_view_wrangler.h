@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 @protocol BrowsingDataCommands;
 class Browser;
 class ChromeBrowserState;
@@ -29,15 +30,15 @@ class ChromeBrowserState;
 //
 // `sceneState` is the scene state that will be associated with any Browsers
 // created.
-// `applicationCommandEndpoint` and `browsingDataCommandEndpoint` are the
-// objects that methods in the ApplicationCommands and BrowsingDataCommands
-// protocol should be dispatched to.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                          sceneState:(SceneState*)sceneState
-          applicationCommandEndpoint:
-              (id<ApplicationCommands>)applicationCommandEndpoint
-         browsingDataCommandEndpoint:
-             (id<BrowsingDataCommands>)browsingDataCommandEndpoint
+// `applicationEndpoint`, `settingsEndpoint, and `browsingDataEndpoint` are the
+// objects that methods in the respective command protocols should be
+// dispatched to.
+- (instancetype)
+    initWithBrowserState:(ChromeBrowserState*)browserState
+              sceneState:(SceneState*)sceneState
+     applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+        settingsEndpoint:(id<ApplicationSettingsCommands>)settingsEndpoint
+    browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

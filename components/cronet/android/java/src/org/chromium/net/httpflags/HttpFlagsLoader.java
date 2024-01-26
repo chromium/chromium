@@ -90,7 +90,7 @@ public final class HttpFlagsLoader {
 
             return flags;
         } catch (RuntimeException exception) {
-            Log.e(TAG, "Unable to load HTTP flags file", exception);
+            Log.i(TAG, "Unable to load HTTP flags file", exception);
             return null;
         }
     }
@@ -107,7 +107,7 @@ public final class HttpFlagsLoader {
                                 // a security risk.
                                 PackageManager.MATCH_SYSTEM_ONLY);
         if (resolveInfo == null) {
-            Log.w(
+            Log.i(
                     TAG,
                     "Unable to resolve the HTTP flags file provider package. This is expected if "
                             + "the host system is not set up to provide HTTP flags.");
@@ -134,7 +134,7 @@ public final class HttpFlagsLoader {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             return Flags.parseDelimitedFrom(fileInputStream);
         } catch (FileNotFoundException exception) {
-            Log.w(
+            Log.i(
                     TAG,
                     "HTTP flags file `%s` is missing. This is expected if HTTP flags functionality "
                             + "is currently disabled in the host system.",

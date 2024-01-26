@@ -7,11 +7,11 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ipcz {
 
@@ -68,9 +68,9 @@ class SequencedQueue {
   // if a final length has not yet been set. If the final length is N, then the
   // last ordered element that can be pushed to or popped from the queue has a
   // SequenceNumber of N-1.
-  absl::optional<SequenceNumber> final_sequence_length() const {
+  std::optional<SequenceNumber> final_sequence_length() const {
     if (!is_final_length_known_) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return SequenceNumber{base_sequence_number_.value() +
                           (entries_.size() - front_index_)};
@@ -181,7 +181,7 @@ class SequencedQueue {
   // elements between the initial sequence number (inclusive) and the final
   // sequence length (exclusive) have been pushed into the queue.
   bool ExpectsMoreElements() const {
-    const absl::optional<SequenceNumber> length = final_sequence_length();
+    const std::optional<SequenceNumber> length = final_sequence_length();
     return !length || GetCurrentSequenceLength() < *length;
   }
 
@@ -221,7 +221,7 @@ class SequencedQueue {
       return false;
     }
 
-    absl::optional<SequenceNumber> final_length = final_sequence_length();
+    std::optional<SequenceNumber> final_length = final_sequence_length();
     if (final_length && n >= *final_length) {
       return false;
     }
@@ -249,7 +249,7 @@ class SequencedQueue {
       return false;
     }
 
-    absl::optional<SequenceNumber> final_length = final_sequence_length();
+    std::optional<SequenceNumber> final_length = final_sequence_length();
     if (final_length && n >= *final_length) {
       return false;
     }
@@ -497,7 +497,7 @@ class SequencedQueue {
   // In general, this vector grows to accomodate new entries and is shrunk
   // only once all present entries have been consumed. This avoids the need to
   // remove elements from the front of the vector.
-  std::vector<absl::optional<Entry>> entries_;
+  std::vector<std::optional<Entry>> entries_;
 
   // The index into `entries_` which corresponds to the front of the queue. When
   // `entries_` is empty this is zero; otherwise it is always kept in bounds of

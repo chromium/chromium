@@ -340,8 +340,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
 
   JNIEnv* env = AttachCurrentThread();
   auto j_mime = ConvertUTF8ToJavaString(env, mime);
-  auto j_csd0 = ToJavaByteArray(env, config.csd0.data(), config.csd0.size());
-  auto j_csd1 = ToJavaByteArray(env, config.csd1.data(), config.csd1.size());
+  auto j_csd0 = ToJavaByteArray(env, config.csd0);
+  auto j_csd1 = ToJavaByteArray(env, config.csd1);
 
   std::unique_ptr<JniHdrMetadata> jni_hdr_metadata;
   if (config.hdr_metadata.has_value()) {
@@ -620,10 +620,8 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_key_id = ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(key_id.data()), key_id.size());
-  ScopedJavaLocalRef<jbyteArray> j_iv = ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(iv.data()), iv.size());
+  ScopedJavaLocalRef<jbyteArray> j_key_id = ToJavaByteArray(env, key_id);
+  ScopedJavaLocalRef<jbyteArray> j_iv = ToJavaByteArray(env, iv);
 
   // The MediaCodec.CryptoInfo documentation says to pass NULL for |clear_array|
   // to indicate that all data is encrypted. But it doesn't specify what

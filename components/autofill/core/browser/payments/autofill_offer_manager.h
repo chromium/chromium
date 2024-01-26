@@ -83,7 +83,7 @@ class AutofillOfferManager : public KeyedService,
   void OnPersonalDataChanged() override;
 
   // Invoked when the navigation happens.
-  void OnDidNavigateFrame(AutofillClient* client);
+  void OnDidNavigateFrame(AutofillClient& client);
 
   // Gets a mapping between credit card's guid id and eligible card-linked
   // offers on the |last_committed_primary_main_frame_url|.

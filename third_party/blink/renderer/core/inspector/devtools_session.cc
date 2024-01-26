@@ -10,6 +10,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -240,6 +241,7 @@ void DevToolsSession::DispatchProtocolCommandImpl(
   TRACE_EVENT_WITH_FLOW1(
       "devtools", "DevToolsSession::DispatchProtocolCommandImpl", call_id,
       TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT1("devtools", "api_call", "method_name", method);
 
   // IOSession does not provide ordering guarantees relative to
   // Session, so a command may come to IOSession after Session is detached,

@@ -6,22 +6,26 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/webapps/browser/uninstall_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace base {
 class Time;
@@ -32,26 +36,60 @@ class MetadataBatch;
 class MetadataChangeList;
 class ModelError;
 class ModelTypeChangeProcessor;
+class StringOrdinal;
+struct EntityData;
 }  // namespace syncer
 
 namespace sync_pb {
 class WebAppSpecifics;
 }  // namespace sync_pb
 
-namespace syncer {
-struct EntityData;
-}
+namespace webapps {
+enum class UninstallResultCode;
+enum class InstallResultCode;
+}  // namespace webapps
 
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class AppLock;
 class ScopedRegistryUpdate;
+class WebApp;
 class WebAppCommandManager;
 class WebAppDatabase;
-class WebAppRegistryUpdate;
 class WebAppInstallManager;
+class WebAppRegistryUpdate;
+enum class ApiApprovalState;
 struct RegistryUpdateData;
+
+// These errors cause the sync entity to no longer be parsable, and results in
+// `IsEntityDataValid` returning false below.
+//
+// Used in metrics, do not re-number or remove entities.
+enum class StorageKeyParseResult {
+  // This is needed for normalization
+  kSuccess = 0,
+  kNoStartUrl = 1,
+  kInvalidStartUrl = 2,
+  kInvalidManifestId = 3,
+  kMaxValue = kInvalidManifestId
+};
+
+// After parsing the storage key, other problems with parsing the manifest id
+// can occur. In the future, these errors could result in deletion of sync
+// and/or local data to clean things up.
+//
+// Used in metrics, do not re-number or remove entities.
+enum class ManifestIdParseResult {
+  // This is needed for normalization.
+  kSuccess = 0,
+  // The origin of the start_url and resolved manifest_id do not match.
+  kManifestIdResolutionFailure = 1,
+  // The manifest_id resolved from sync doesn't match the local app's
+  // manifest_id.
+  kManifestIdDoesNotMatchLocalData = 2,
+  kMaxValue = kManifestIdDoesNotMatchLocalData
+};
 
 // A unified sync and storage controller.
 //
@@ -107,43 +145,55 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void Init(base::OnceClosure callback);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppUserDisplayMode(const webapps::AppId& app_id,
                              mojom::UserDisplayMode user_display_mode,
                              bool is_user_action);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppIsDisabled(AppLock& lock,
                         const webapps::AppId& app_id,
                         bool is_disabled);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void UpdateAppsDisableMode();
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppLastBadgingTime(const webapps::AppId& app_id,
                              const base::Time& time);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppLastLaunchTime(const webapps::AppId& app_id,
                             const base::Time& time);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppFirstInstallTime(const webapps::AppId& app_id,
                               const base::Time& time);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppManifestUpdateTime(const webapps::AppId& app_id,
                                 const base::Time& time);
 
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppWindowControlsOverlayEnabled(const webapps::AppId& app_id,
                                           bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetUserPageOrdinal(const webapps::AppId& app_id,
                           syncer::StringOrdinal user_page_ordinal);
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetUserLaunchOrdinal(const webapps::AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
   // Stores the user's preference for the app's use of the File Handling API.
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppFileHandlerApprovalState(const webapps::AppId& app_id,
                                       ApiApprovalState state);
 
 #if BUILDFLAG(IS_MAC)
+  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAlwaysShowToolbarInFullscreen(const webapps::AppId& app_id,
                                         bool show);
 #endif
@@ -154,16 +204,17 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // Signals that the sync system has received data from the server at some
   // point, potentially on a previous startup. Apps may still be installing or
@@ -192,8 +243,12 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetUninstallFromSyncCallbackForTesting(
       UninstallFromSyncCallback callback);
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
-  void SetAppIsLocallyInstalledForTesting(const webapps::AppId& app_id,
-                                          bool is_locally_installed);
+
+  // TODO(https://crbug.com/1517947): Remove this and make it so tests can
+  // install via sync instead to reach this state.
+  // Note: This doesn't synchronize the OS integration manager, so the os
+  // integration state is not cleared.
+  void SetAppNotLocallyInstalledForTesting(const webapps::AppId& app_id);
 
  private:
   void CommitUpdate(CommitCallback callback,
@@ -211,6 +266,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  // Update apps that don't have a UserDisplayMode set for the current platform.
+  void EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   void OnDataWritten(CommitCallback callback, bool success);
   void OnWebAppUninstallComplete(const webapps::AppId& app,
                                  webapps::UninstallResultCode code);
@@ -221,7 +278,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MergeLocalAppsToSync(const syncer::EntityChangeList& entity_data,
                             syncer::MetadataChangeList* metadata_change_list);
 
-  void PrepareLocalUpdateFromSyncChange(
+  // Returns if the data was parsed.
+  ManifestIdParseResult PrepareLocalUpdateFromSyncChange(
       const syncer::EntityChange& change,
       RegistryUpdateData* update_local_data,
       std::vector<webapps::AppId>& apps_display_mode_changed);

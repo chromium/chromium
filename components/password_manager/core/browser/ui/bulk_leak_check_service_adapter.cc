@@ -37,6 +37,7 @@ BulkLeakCheckServiceAdapter::~BulkLeakCheckServiceAdapter() {
 }
 
 bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
+    LeakDetectionInitiator initiator,
     const void* key,
     LeakCheckCredential::Data* data) {
   if (service_->GetState() == BulkLeakCheckServiceInterface::State::kRunning)
@@ -62,9 +63,7 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
     }
   }
 
-  service_->CheckUsernamePasswordPairs(
-      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
-      std::move(credentials));
+  service_->CheckUsernamePasswordPairs(initiator, std::move(credentials));
   return true;
 }
 

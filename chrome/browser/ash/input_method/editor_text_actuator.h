@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_text_inserter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
@@ -26,7 +27,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
-    virtual EditorMode GetEditorMode() const = 0;
+    virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual size_t GetSelectedTextLength() = 0;
   };
 

@@ -32,6 +32,7 @@
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/input_delegate.h"
@@ -204,7 +205,12 @@ ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
 }
 
 DatabaseClient* SegmentationPlatformServiceImpl::GetDatabaseClient() {
-  return database_client_.get();
+  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUkmEngine)) {
+    return database_client_.get();
+  } else {
+    // The database is not created when the feature is disabled.
+    return nullptr;
+  }
 }
 
 bool SegmentationPlatformServiceImpl::IsPlatformInitialized() {

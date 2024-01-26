@@ -37,6 +37,12 @@ class FakeAutocompleteController : public AutocompleteController {
     return *static_cast<T*>(providers_[index].get());
   }
 
+  // Helper to create `AutocompleteInput`.
+  static AutocompleteInput CreateInput(
+      std::u16string text,
+      bool omit_async = false,
+      bool prevent_inline_autocomplete = false);
+
   // Simulates an autocomplete pass.
   // - Also verifies exactly 1 notification occurs after the pass, at the
   //   correct time (which depends on the type of pass simulated), and no
@@ -51,7 +57,7 @@ class FakeAutocompleteController : public AutocompleteController {
       bool sync,
       bool done,
       std::vector<AutocompleteMatch> matches,
-      AutocompleteInput input = CreateInput(u"test", false));
+      AutocompleteInput input = CreateInput(u"test"));
 
   // Simulates a `kSyncPassOnly` (the simplest pass) with a clean
   // `internal_result_`. See `SimulateAutocompletePass()`'s comment.
@@ -65,9 +71,6 @@ class FakeAutocompleteController : public AutocompleteController {
   //   it can't use `SimulateExpirePass()`.
   // - Returns the match contents.
   std::vector<std::string> SimulateExpirePass();
-
-  // Helper to create `AutocompleteInput`.
-  static AutocompleteInput CreateInput(std::u16string text, bool omit_async);
 
   // Helper to get minimal representation of the controller results: a vector of
   // each match's contents.

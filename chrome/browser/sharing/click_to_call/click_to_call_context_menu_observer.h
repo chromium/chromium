@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_CONTEXT_MENU_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class RenderViewContextMenuProxy;
@@ -73,13 +73,13 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
   raw_ptr<ClickToCallUiController> controller_ = nullptr;
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices_;
+  std::vector<SharingTargetDeviceInfo> devices_;
 
   SubMenuDelegate sub_menu_delegate_{this};
 
   std::string phone_number_;
   std::string selection_text_;
-  absl::optional<SharingClickToCallEntryPoint> entry_point_;
+  std::optional<SharingClickToCallEntryPoint> entry_point_;
 
   std::unique_ptr<ui::SimpleMenuModel> sub_menu_model_;
 };

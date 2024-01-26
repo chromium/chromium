@@ -80,7 +80,7 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
               OnMediaStatusUpdated,
               (const MediaSinkInternal& sink,
                const base::Value::Dict& media_status,
-               absl::optional<int> request_id));
+               std::optional<int> request_id));
 };
 
 class CastSessionTrackerTest : public testing::Test {
@@ -197,7 +197,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
         "sessionId": "theSessionId"
       }
       ]})"),
-                                              absl::optional<int>()));
+                                              std::optional<int>()));
 
   // This should call session_tracker_.HandleMediaStatusMessage(...).
   session_tracker_.OnInternalMessage(
@@ -259,7 +259,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageFancy) {
       }],
     "xyzzy": "xyzzyValue2",
   })"),
-                                              absl::make_optional(12345)));
+                                              std::make_optional(12345)));
 
   // This should call session_tracker_.HandleMediaStatusMessage(...).
   session_tracker_.OnInternalMessage(

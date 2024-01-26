@@ -28,7 +28,7 @@ class SpeedMenuSheetContent extends MenuSheetContent {
             BottomSheetContent parent,
             BottomSheetController bottomSheetController,
             PropertyModel model) {
-        super(context, parent, bottomSheetController, R.string.readaloud_options_menu_title);
+        super(context, parent, bottomSheetController, R.string.readaloud_speed_menu_title);
         mContext = context;
         mModel = model;
         setUp();
@@ -70,5 +70,13 @@ class SpeedMenuSheetContent extends MenuSheetContent {
 
     public static String speedFormatter(float speed) {
         return String.format(((speed % 1 < 0.01) ? "%.0f" : "%.1f"), speed);
+    }
+
+    // BottomSheetContent
+    @Override
+    public int getSheetContentDescriptionStringId() {
+        // "Speed menu"
+        // Automatically appended: "Swipe down to close."
+        return R.string.readaloud_speed_menu_description;
     }
 }

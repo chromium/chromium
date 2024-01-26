@@ -32,6 +32,16 @@ namespace data_controls {
 // DataLeakPreventionRulesList policy (see sub-classes below).
 class AttributesCondition {
  public:
+  // Constants used to parse sub-dictionaries of Data Controls policies that
+  // should map to an AttributesCondition. If an attribute is not used outside
+  // of this class, declare it in the anonymous namespace instead.
+  static constexpr char kKeyUrls[] = "urls";
+  static constexpr char kKeyIncognito[] = "incognito";
+  static constexpr char kKeyOsClipboard[] = "os_clipboard";
+#if BUILDFLAG(IS_CHROMEOS)
+  static constexpr char kKeyComponents[] = "components";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   explicit AttributesCondition(const base::Value::Dict& value);
   AttributesCondition(AttributesCondition&& other);
   ~AttributesCondition();
@@ -53,7 +63,7 @@ class AttributesCondition {
 
   // Helpers that compare a given value from a destination/source context to its
   // corresponding conditions.
-  bool IncognitoMatches(const absl::optional<bool>& incognito) const;
+  bool IncognitoMatches(bool incognito) const;
   bool OsClipboardMatches(bool os_clipboard) const;
 
   // Helpers to help check which attributes are meaningful to the condition.

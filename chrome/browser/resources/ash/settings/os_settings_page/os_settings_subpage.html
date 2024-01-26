@@ -1,29 +1,14 @@
 <style include="cr-shared-style settings-shared">
   :host {
-    --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height));
-
-    background-color: var(--cros-sys-app_base);
-    box-shadow: var(--cr-card-shadow);
     box-sizing: border-box;
     display: block;
-    min-height: var(--settings-subpage-min-height);
-    padding-bottom: 60px;
   }
 
-  :host-context(body.revamp-wayfinding-enabled):host {
-    --settings-subpage-margin-bottom: 16px;
-    --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height)
-        - var(--settings-container-padding-top)
-        - var(--settings-subpage-margin-bottom));
-
-    background-color: var(--settings-content-backdrop-bg-color);
-    border-radius: 16px;
-    box-shadow: none;
-    margin-bottom: var(--settings-subpage-margin-bottom);
-    min-height: var(--settings-subpage-min-height);
-    padding-bottom: 16px;
-    padding-inline-end: 16px;
-    padding-inline-start: 16px;
+  :host-context(body:not(.revamp-wayfinding-enabled)):host {
+    background-color: var(--cros-sys-app_base);
+    box-shadow: var(--cr-card-shadow);
+    min-height: calc(100vh - var(--settings-toolbar-height));
+    padding-bottom: 60px;
   }
 
   #subpageHeader {

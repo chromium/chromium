@@ -137,8 +137,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   KeyframeEffect* animation =
       CreateAnimationFromTiming(script_state, element.Get(), js_keyframes, 0);
@@ -215,8 +214,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);

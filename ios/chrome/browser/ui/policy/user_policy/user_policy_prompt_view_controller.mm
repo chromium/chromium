@@ -14,8 +14,7 @@
 
 namespace {
 constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 24;
-constexpr CGFloat kCustomSpacingAfterImage = 30;
-constexpr CGFloat kCustomSpacingAfterImageIOS15 = 1;
+constexpr CGFloat kCustomSpacingAfterImage = 1;
 }  // namespace
 
 @implementation UserPolicyPromptViewController
@@ -40,20 +39,15 @@ constexpr CGFloat kCustomSpacingAfterImageIOS15 = 1;
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
-
   self.showDismissBarButton = NO;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
-  if (@available(iOS 15, *)) {
-    self.titleTextStyle = UIFontTextStyleTitle2;
-    // Icon already contains some spacing for the shadow.
-    self.customSpacingBeforeImageIfNoNavigationBar =
-        kCustomSpacingBeforeImageIfNoNavigationBar;
-    self.customSpacingAfterImage = kCustomSpacingAfterImageIOS15;
-    self.topAlignedLayout = YES;
-  } else {
-    self.customSpacingAfterImage = kCustomSpacingAfterImage;
-  }
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  // Icon already contains some spacing for the shadow.
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      kCustomSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingAfterImage = kCustomSpacingAfterImage;
+  self.topAlignedLayout = YES;
 
   [super viewDidLoad];
 }

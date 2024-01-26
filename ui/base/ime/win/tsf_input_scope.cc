@@ -108,9 +108,6 @@ typedef HRESULT (WINAPI *SetInputScopesFunc)(HWND window_handle,
                                              WCHAR*, /* unused */
                                              WCHAR* /* unused */);
 
-SetInputScopesFunc g_set_input_scopes = NULL;
-bool g_get_proc_done = false;
-
 InputScope ConvertTextInputTypeToInputScope(TextInputType text_input_type) {
   // Following mapping is based in IE10 on Windows 8.
   switch (text_input_type) {
@@ -152,21 +149,6 @@ InputScope ConvertTextInputModeToInputScope(TextInputMode text_input_mode) {
 
 }  // namespace
 
-void InitializeTsfForInputScopes() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  // Thread safety is not required because this function is under UI thread.
-  if (!g_get_proc_done) {
-    g_get_proc_done = true;
-
-    HMODULE module = NULL;
-    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, L"msctf.dll",
-        &module)) {
-      g_set_input_scopes = reinterpret_cast<SetInputScopesFunc>(
-          GetProcAddress(module, "SetInputScopes"));
-    }
-  }
-}
-
 std::vector<InputScope> GetInputScopes(TextInputType text_input_type,
                                        TextInputMode text_input_mode) {
   std::vector<InputScope> input_scopes;
@@ -194,18 +176,6 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
     input_scopes = GetInputScopes(text_input_type, text_input_mode);
   }
   return new TSFInputScope(input_scopes);
-}
-
-void SetInputScopeForTsfUnawareWindow(HWND window_handle,
-                                      TextInputType text_input_type,
-                                      TextInputMode text_input_mode) {
-  if (!g_set_input_scopes)
-    return;
-
-  std::vector<InputScope> input_scopes = GetInputScopes(text_input_type,
-                                                        text_input_mode);
-  g_set_input_scopes(window_handle, &input_scopes[0], input_scopes.size(),
-                     NULL, 0, NULL, NULL);
 }
 
 }  // namespace ui::tsf_inputscope

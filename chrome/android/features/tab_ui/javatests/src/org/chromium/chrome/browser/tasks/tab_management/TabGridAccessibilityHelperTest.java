@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
 import androidx.annotation.IntDef;
@@ -44,6 +45,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,7 +56,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.annotation.Retention;
@@ -130,7 +131,9 @@ public class TabGridAccessibilityHelperTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
 
-        View view = cta.findViewById(R.id.tab_list_recycler_view);
+        ViewGroup outerView =
+                (ViewGroup) cta.findViewById(TabUiTestHelper.getTabSwitcherAncestorId(cta));
+        View view = outerView.findViewById(R.id.tab_list_recycler_view);
         assertTrue(view instanceof TabListMediator.TabGridAccessibilityHelper);
         TabListMediator.TabGridAccessibilityHelper helper =
                 (TabListMediator.TabGridAccessibilityHelper) view;
@@ -138,7 +141,8 @@ public class TabGridAccessibilityHelperTest {
         // Verify action list in portrait mode with span count = 2.
         onView(
                         allOf(
-                                withParent(withId(R.id.compositor_view_holder)),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(
                         (v, noMatchingViewException) -> {
@@ -206,7 +210,8 @@ public class TabGridAccessibilityHelperTest {
         // Verify action list in landscape mode with span count = 3.
         onView(
                         allOf(
-                                withParent(withId(R.id.compositor_view_holder)),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(
                         (v, noMatchingViewException) -> {
@@ -279,7 +284,9 @@ public class TabGridAccessibilityHelperTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
 
-        View view = cta.findViewById(R.id.tab_list_recycler_view);
+        ViewGroup outerView =
+                (ViewGroup) cta.findViewById(TabUiTestHelper.getTabSwitcherAncestorId(cta));
+        View view = outerView.findViewById(R.id.tab_list_recycler_view);
         assertTrue(view instanceof TabListMediator.TabGridAccessibilityHelper);
         TabListMediator.TabGridAccessibilityHelper helper =
                 (TabListMediator.TabGridAccessibilityHelper) view;
@@ -287,7 +294,8 @@ public class TabGridAccessibilityHelperTest {
         // Span count 2.
         onView(
                         allOf(
-                                withParent(withId(R.id.compositor_view_holder)),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(
                         (v, noMatchingViewException) -> {
@@ -337,7 +345,8 @@ public class TabGridAccessibilityHelperTest {
         // Span count 3.
         onView(
                         allOf(
-                                withParent(withId(R.id.compositor_view_holder)),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(
                         (v, noMatchingViewException) -> {

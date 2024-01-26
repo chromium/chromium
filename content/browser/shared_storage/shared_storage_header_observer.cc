@@ -37,7 +37,7 @@ namespace content {
 namespace {
 
 using OperationPtr = network::mojom::SharedStorageOperationPtr;
-using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+using ContextType = StoragePartitionImpl::ContextType;
 
 bool IsSharedStorageAllowedByPermissionsPolicy(
     SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus
@@ -201,9 +201,15 @@ void SharedStorageHeaderObserver::HeaderReceived(
   CHECK(IsSharedStorageAllowedByPermissionsPolicy(permissions_policy_status));
 
   if (!IsSharedStorageAllowedBySiteSettings(navigation_or_document_handle,
-                                            request_origin)) {
-    // TODO(crbug.com/1434529): Log the following error message to console:
+                                            request_origin,
+                                            /*out_debug_message=*/nullptr)) {
+    // TODO(crbug.com/1434529):
+    // 1. Log the following error message to console:
     // "'Shared-Storage-Write: shared storage is disabled."
+    // 2. Send a non-null `out_debug_message` param and append it to the above
+    // error message if the value of
+    // `blink::features::kSharedStorageExposeDebugMessageForSettingsStatus`
+    // is true.
     std::move(callback).Run();
     return;
   }
@@ -459,7 +465,8 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
 
 bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
     NavigationOrDocumentHandle* navigation_or_document_handle,
-    const url::Origin& request_origin) {
+    const url::Origin& request_origin,
+    std::string* out_debug_message) {
   DCHECK(storage_partition_);
   DCHECK(storage_partition_->browser_context());
 
@@ -479,7 +486,7 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
                   : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       storage_partition_->browser_context(), rfh, top_frame_origin,
-      request_origin);
+      request_origin, out_debug_message);
 }
 
 }  // namespace content

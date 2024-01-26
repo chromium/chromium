@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -59,14 +60,10 @@ class Subscriber::CloseSubscriptionAlgorithm final
 
 Subscriber::Subscriber(base::PassKey<Observable>,
                        ScriptState* script_state,
-                       V8ObserverCallback* next,
-                       V8ObserverCompleteCallback* complete,
-                       V8ObserverCallback* error,
+                       ObservableInternalObserver* internal_observer,
                        SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
-      next_(next),
-      complete_(complete),
-      error_(error),
+      internal_observer_(internal_observer),
       complete_or_error_controller_(AbortController::Create(script_state)) {
   // Initialize `signal_` as a dependent signal on based on two input signals:
   //   1. [Possibly null]: The input `Observer#signal` member, if it exists.
@@ -117,21 +114,21 @@ Subscriber::Subscriber(base::PassKey<Observable>,
 }
 
 void Subscriber::next(ScriptValue value) {
-  if (next_) {
-    next_->InvokeAndReportException(nullptr, value);
+  if (internal_observer_) {
+    internal_observer_->Next(value);
   }
 }
 
 void Subscriber::complete(ScriptState* script_state) {
-  V8ObserverCompleteCallback* complete = complete_;
+  ObservableInternalObserver* internal_observer = internal_observer_;
   CloseSubscription();
 
-  if (complete) {
+  if (internal_observer) {
     // Once `signal_` is aborted, the first thing that runs is
     // `CloseSubscription()`, which makes it impossible to invoke user-provided
     // callbacks anymore.
     CHECK(!signal_->aborted());
-    complete->InvokeAndReportException(nullptr);
+    internal_observer->Complete();
   }
 
   // This will trigger the abort of `signal_`, which will run all of the
@@ -140,24 +137,22 @@ void Subscriber::complete(ScriptState* script_state) {
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
-  V8ObserverCallback* error = error_;
+  ObservableInternalObserver* internal_observer = internal_observer_;
   CloseSubscription();
 
-  if (error) {
+  if (internal_observer) {
     // Once `signal_` is aborted, the first thing that runs is
     // `CloseSubscription()`, which makes it impossible to invoke user-provided
     // callbacks anymore.
     CHECK(!signal_->aborted());
-    error->InvokeAndReportException(nullptr, error_value);
+    internal_observer->Error(script_state, error_value);
   } else {
-    // The given observer's `error()` handler can be null here for one of two
-    // reasons:
-    //   1. The given observer simply doesn't have an `error()` handler (since
-    //      it is optional)
-    //   2. The subscription is already closed (in which case
-    //      `CloseSubscription()` manually clears `error_`)
-    // In both of these cases, if the observable is still producing errors, we
-    // must surface them to the global via "report the exception":
+    // The given `internal_observer` can be null here if the subscription is
+    // already closed (`CloseSubscription() manually clears
+    // `internal_observer_`).
+    //
+    // In this case, if the observable is still producing errors, we must
+    // surface them to the global via "report the exception":
     // https://html.spec.whatwg.org/C#report-the-exception.
     //
     // Reporting the exception requires a valid `ScriptState`, which we don't
@@ -193,19 +188,15 @@ void Subscriber::CloseSubscription() {
 
   // Reset all handlers, making it impossible to signal any more values to the
   // subscriber.
-  next_ = nullptr;
-  complete_ = nullptr;
-  error_ = nullptr;
+  internal_observer_ = nullptr;
 }
 
 void Subscriber::Trace(Visitor* visitor) const {
-  visitor->Trace(next_);
-  visitor->Trace(complete_);
-  visitor->Trace(error_);
   visitor->Trace(complete_or_error_controller_);
   visitor->Trace(signal_);
   visitor->Trace(close_subscription_algorithm_handle_);
   visitor->Trace(teardown_callbacks_);
+  visitor->Trace(internal_observer_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

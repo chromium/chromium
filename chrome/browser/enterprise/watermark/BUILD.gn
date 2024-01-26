@@ -1,0 +1,24 @@
+executable("watermark_app") {
+  testonly = true
+
+  sources = [
+    "example_app.cc",
+    "watermark_example.cc",
+    "watermark_example.h",
+    "watermark_view.cc",
+    "watermark_view.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//build/win:default_exe_manifest",
+    "//ui/color:mixers",
+    "//ui/resources:ui_test_pak",
+    "//ui/views",
+    "//ui/views/examples:views_examples_lib",
+    "//ui/views/examples:views_examples_proc",
+  ]
+
+  defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
+}

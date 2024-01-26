@@ -23,7 +23,7 @@ KeyboardDeviceIdEventRewriter::~KeyboardDeviceIdEventRewriter() = default;
 EventDispatchDetails KeyboardDeviceIdEventRewriter::RewriteEvent(
     const Event& event,
     const Continuation continuation) {
-  absl::optional<int> device_id = GetKeyboardDeviceIdInternal(event);
+  std::optional<int> device_id = GetKeyboardDeviceIdInternal(event);
   if (!device_id.has_value()) {
     // No rewriting is needed.
     return continuation->SendEvent(&event);
@@ -65,7 +65,7 @@ int KeyboardDeviceIdEventRewriter::GetKeyboardDeviceId(
   return keyboard_device_id;
 }
 
-absl::optional<int> KeyboardDeviceIdEventRewriter::GetKeyboardDeviceIdInternal(
+std::optional<int> KeyboardDeviceIdEventRewriter::GetKeyboardDeviceIdInternal(
     const Event& event) const {
   switch (event.type()) {
     case ET_KEY_PRESSED:
@@ -83,7 +83,7 @@ absl::optional<int> KeyboardDeviceIdEventRewriter::GetKeyboardDeviceIdInternal(
       return last_keyboard_device_id_;
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

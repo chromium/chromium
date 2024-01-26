@@ -10,7 +10,7 @@
 #include <ostream>
 #include <string>
 
-#include "volume_control.h"
+#include "chromecast/public/volume_control.h"
 
 namespace service_manager {
 class Connector;

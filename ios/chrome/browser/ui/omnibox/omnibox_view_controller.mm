@@ -6,6 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -41,7 +42,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
                                      OmniboxKeyboardDelegate,
                                      UIScribbleInteractionDelegate> {
   // Weak, acts as a delegate
-  OmniboxTextChangeDelegate* _textChangeDelegate;
+  raw_ptr<OmniboxTextChangeDelegate> _textChangeDelegate;
 }
 
 // Override of UIViewController's view with a different type.

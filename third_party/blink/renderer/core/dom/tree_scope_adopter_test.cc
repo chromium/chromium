@@ -69,7 +69,7 @@ TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
   html->AppendChild(outer_div);
 
   ShadowRoot& outer_shadow =
-      outer_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      outer_div->AttachShadowRootForTesting(ShadowRootType::kOpen);
   Element* middle_div = source_doc->CreateRawElement(html_names::kDivTag);
   outer_shadow.AppendChild(middle_div);
 
@@ -81,7 +81,7 @@ TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
                                               listener, false));
 
   ShadowRoot& middle_shadow =
-      middle_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      middle_div->AttachShadowRootForTesting(ShadowRootType::kOpen);
   Element* inner_div = source_doc->CreateRawElement(html_names::kDivTag);
   middle_shadow.AppendChild(inner_div);
   // This event listener may force a consistency check in EventHandlerRegistry,

@@ -16,7 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/events/test/cocoa_test_event_utils.h"

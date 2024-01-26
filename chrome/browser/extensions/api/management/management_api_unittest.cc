@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/management/management_api.h"
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -24,7 +27,6 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
@@ -45,7 +47,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(b/265970428): Fix and include extensions tests on LaCrOS.
 // TODO(b/266051970): Fix and include extensions tests on Windows/Mac/Linux.
@@ -146,8 +147,8 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
   ScopedTestDialogAutoConfirm auto_confirm(
       accept_dialog ? ScopedTestDialogAutoConfirm::ACCEPT
                     : ScopedTestDialogAutoConfirm::CANCEL);
-  absl::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
-      absl::nullopt;
+  std::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
+      std::nullopt;
   if (use_user_gesture)
     gesture.emplace();
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
@@ -642,11 +643,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
@@ -665,11 +666,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -688,11 +689,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -714,11 +715,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_TRUE(info->may_disable);
@@ -736,11 +737,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_FALSE(info->may_disable);

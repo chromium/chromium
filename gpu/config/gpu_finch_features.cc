@@ -150,17 +150,19 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 #endif
 );
 
+#if !BUILDFLAG(IS_ANDROID)
 // Enables the use of out of process rasterization for canvas.
 BASE_FEATURE(kCanvasOopRasterization,
              "CanvasOopRasterization",
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN) ||         \
     (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+#endif
 
 // Enables the use of out of process rasterization for canvas even when GPU tile
 // rasterization is disabled. CanvasOopRasterization is still required to be
@@ -643,27 +645,8 @@ bool IsANGLEValidationEnabled() {
          UsePassthroughCommandDecoder();
 }
 
-bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
-  // Force disabling graphite if --disable-skia-graphite flag is specified.
-  if (command_line->HasSwitch(switches::kDisableSkiaGraphite)) {
-    return false;
-  }
-
-  // Force Graphite on if --enable-skia-graphite flag is specified.
-  if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
-    return true;
-  }
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
-  // Disallow Graphite from being enabled via the base::Feature on
-  // not-yet-supported platforms to avoid users experiencing undefined behavior,
-  // including behavior that might prevent them from being able to return to
-  // chrome://flags to disable the feature.
-  if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
-    LOG(ERROR) << "Enabling Graphite on a not-yet-supported platform is "
-                  "disallowed for safety";
-  }
-  return false;
-#else
+namespace {
+bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
 #if BUILDFLAG(IS_APPLE)
   // Graphite only works well with ANGLE Metal on Mac or iOS.
   // TODO(crbug.com/1423574): Remove this after ANGLE Metal launches fully.
@@ -716,9 +699,45 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
     }
   }
 #endif  // BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(IS_APPLE)
+  return true;
+#elif BUILDFLAG(IS_ANDROID)
+  // Graphite on Android uses the Dawn Vulkan backend. Only enable Graphite if
+  // device would already be using Ganesh/Vulkan.
+  return IsUsingVulkan();
+#elif BUILDFLAG(IS_WIN)
+  return true;
+#else
+  // Disallow Graphite from being enabled via the base::Feature on
+  // not-yet-supported platforms to avoid users experiencing undefined behavior,
+  // including behavior that might prevent them from being able to return to
+  // chrome://flags to disable the feature.
+  if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
+    LOG(ERROR) << "Enabling Graphite on a not-yet-supported platform is "
+                  "disallowed for safety";
+  }
+  return false;
+#endif
+}
+}  // namespace
+
+bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
+  // Force disabling graphite if --disable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kDisableSkiaGraphite)) {
+    return false;
+  }
+
+  // Force Graphite on if --enable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
+    return true;
+  }
+
+  if (!IsSkiaGraphiteSupportedByDevice(command_line)) {
+    // Return early before checking "SkiaGraphite" feature so that devices
+    // which don't support graphite are not included in the finch study.
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(features::kSkiaGraphite);
-#endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
 }
 
 // Set up such that service side purge depends on the client side purge feature
@@ -733,7 +752,11 @@ bool EnablePruneOldTransferCacheEntries() {
 }
 
 bool IsCanvasOopRasterizationEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   return base::FeatureList::IsEnabled(kCanvasOopRasterization);
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -208,7 +208,7 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
     }
 
     URLLoaderInterceptor::WriteResponse(path, params->client.get(), &headers,
-                                        absl::nullopt,
+                                        std::nullopt,
                                         /*url=*/params->url_request.url);
     return true;
   }

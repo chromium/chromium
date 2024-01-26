@@ -65,14 +65,15 @@ class ManageMigrationUiController
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::LocalCardMigrationCallback
+      payments::PaymentsAutofillClient::LocalCardMigrationCallback
           start_migrating_cards_callback);
 
   void UpdateCreditCardIcon(
       const bool has_server_error,
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::MigrationDeleteCardCallback delete_local_card_callback);
+      payments::PaymentsAutofillClient::MigrationDeleteCardCallback
+          delete_local_card_callback);
 
   void OnUserClickedCreditCardIcon();
 

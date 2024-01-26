@@ -24,16 +24,6 @@ class Size;
 
 namespace ui {
 
-// DEPRECATED! Use the async calls below. https://crbug.com/1517390
-SNAPSHOT_EXPORT bool GrabWindowSnapshot(gfx::NativeWindow window,
-                                        const gfx::Rect& snapshot_bounds,
-                                        gfx::Image* image);
-
-// DEPRECATED! Use the async calls below. https://crbug.com/1517390
-SNAPSHOT_EXPORT bool GrabViewSnapshot(gfx::NativeView view,
-                                      const gfx::Rect& snapshot_bounds,
-                                      gfx::Image* image);
-
 using GrabSnapshotImageCallback = base::OnceCallback<void(gfx::Image snapshot)>;
 using GrabSnapshotDataCallback =
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> data)>;

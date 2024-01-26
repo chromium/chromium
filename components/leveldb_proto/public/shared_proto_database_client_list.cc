@@ -122,6 +122,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "DiscountsDatabase";
     case ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE:
       return "CommerceParcelTrackingDatabase";
+    case ProtoDbType::CLIENT_CERTIFICATES_DATABASE:
+      return "ClientCertificatesDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

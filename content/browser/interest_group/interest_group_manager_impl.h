@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 
+#include <cstddef>
 #include <list>
 #include <memory>
 #include <optional>
@@ -21,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -106,11 +108,19 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       kWin,
       kAdditionalBidWin,
       kClear,
+      kTopLevelBid,
+      kTopLevelAdditionalBid
     };
-    virtual void OnInterestGroupAccessed(const base::Time& access_time,
-                                         AccessType type,
-                                         const url::Origin& owner_origin,
-                                         const std::string& name) = 0;
+
+    virtual void OnInterestGroupAccessed(
+        base::optional_ref<const std::string> devtools_auction_id,
+        base::Time access_time,
+        AccessType type,
+        const url::Origin& owner_origin,
+        const std::string& name,
+        base::optional_ref<const url::Origin> component_seller_origin,
+        std::optional<double> bid,
+        base::optional_ref<const std::string> bid_currency) = 0;
   };
 
   // InterestGroupManager overrides:
@@ -135,7 +145,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   //
   // `url_loader_factory` is the factory for renderer frame where
   // navigator.joinAdInterestGroup() was invoked, and will be used for the
-  // .well-known fetch if one is needed.
+  // .well-known fetch if one is needed. It will also be used to pre-fetch
+  // B&A server keys if the B&A server is enabled and if this is the first
+  // joinAdInterestGroup call since browser start.
   //
   // `report_result_only`, if true, results in calling `callback` with the
   // result of the permissions check, but not actually joining the interest
@@ -271,6 +283,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
+      const std::optional<std::string>& devtools_auction_id,
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
 
@@ -421,9 +434,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // database (can't log them all before the database update, since for, e.g.,
   // calls to retrieve all interest groups for an owner, the name may not be
   // known until after the database has been accessed).
-  void NotifyInterestGroupAccessed(InterestGroupObserver::AccessType type,
-                                   const url::Origin& owner_origin,
-                                   const std::string& name);
+  void NotifyInterestGroupAccessed(
+      base::optional_ref<const std::string> devtools_auction_id,
+      InterestGroupObserver::AccessType type,
+      const url::Origin& owner_origin,
+      const std::string& name,
+      base::optional_ref<const url::Origin> component_seller_origin,
+      std::optional<double> bid,
+      base::optional_ref<const std::string> bid_currency);
 
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
@@ -525,6 +543,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   void OnGetInterestGroupsComplete(
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
+      const std::optional<std::string>& devtools_auction_id,
       scoped_refptr<StorageInterestGroups> groups);
 
   // Dequeues and sends the first report request in `report_requests_` queue,

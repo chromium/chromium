@@ -178,7 +178,7 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
           [](base::OnceCallback<void()> callback,
              base::WeakPtr<content::WebContents> web_contents,
              apps::LaunchResult&& result) {
-            if (result.state == apps::State::SUCCESS && web_contents) {
+            if (result.state == apps::State::kSuccess && web_contents) {
               web_contents->Close();
             }
             std::move(callback).Run();

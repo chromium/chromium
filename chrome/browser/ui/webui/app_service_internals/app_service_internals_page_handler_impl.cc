@@ -44,7 +44,7 @@ std::vector<mojom::app_service_internals::AppInfoPtr> GetApps(
     std::stringstream debug_info;
     debug_info << update;
 
-    apps.emplace_back(absl::in_place, update.AppId(), update.Name(),
+    apps.emplace_back(std::in_place, update.AppId(), update.Name(),
                       debug_info.str());
   });
 
@@ -98,7 +98,7 @@ std::vector<mojom::app_service_internals::PromiseAppInfoPtr> GetPromiseApps(
        proxy->PromiseAppRegistryCache()->GetAllPromiseApps()) {
     std::stringstream debug_info;
     debug_info << *promise_app;
-    promise_apps.emplace_back(absl::in_place,
+    promise_apps.emplace_back(std::in_place,
                               promise_app.get()->package_id.ToString(),
                               debug_info.str());
   }
@@ -128,7 +128,7 @@ GetAppCapabilities(apps::AppServiceProxy* proxy) {
               name = app_update.Name();
             });
 
-        app_capabilities.emplace_back(absl::in_place, name, debug_info.str());
+        app_capabilities.emplace_back(std::in_place, name, debug_info.str());
       });
 
   return app_capabilities;
@@ -149,7 +149,7 @@ std::vector<mojom::app_service_internals::ShortcutInfoPtr> GetShortcuts(
     std::stringstream debug_info;
     debug_info << shortcut->ToString();
     shortcuts.emplace_back(
-        absl::in_place, shortcut->shortcut_id.value(),
+        std::in_place, shortcut->shortcut_id.value(),
         shortcut->name.has_value() ? shortcut->name.value() : "",
         debug_info.str());
   }

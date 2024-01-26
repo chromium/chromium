@@ -596,12 +596,6 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     mojom::blink::DisplayMode display_enum =
         DisplayModeFromString(display_enum_string.Utf8());
 
-    if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-            execution_context_) &&
-        display_enum == mojom::blink::DisplayMode::kWindowControlsOverlay) {
-      display_enum = mojom::blink::DisplayMode::kUndefined;
-    }
-
     if (!RuntimeEnabledFeatures::WebAppTabStripEnabled(execution_context_) &&
         display_enum == mojom::blink::DisplayMode::kTabbed) {
       display_enum = mojom::blink::DisplayMode::kUndefined;

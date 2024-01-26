@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Добивајте известувања</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="4212246570487010370">Продолжете да прелистувате</translation>
+<translation id="427987768447457592">Нова група картички</translation>
 <translation id="4648718555153979859">Картичките тука се групирани заедно</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Скриј ја табелата на цел екран</translation>
 <translation id="5076161749301278626">Сакате да видите рецензии за продавницата?</translation>
 <translation id="5082793167783849073">Набрзина споредете ги страниците со правење група. За да започнете, допрете и задржете го линкот.</translation>
+<translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> картичка што не сте ја користеле неодамна}one{Имате <ph name="TABS_COUNT_MANY" /> картичка што не сте ги користеле неодамна}other{Имате <ph name="TABS_COUNT_MANY" /> картички што не сте ги користеле неодамна}}</translation>
 <translation id="5339733443032484186">Вашата последна картичка</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>

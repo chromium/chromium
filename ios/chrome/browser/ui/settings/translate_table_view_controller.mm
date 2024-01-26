@@ -11,6 +11,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/google/core/common/google_util.h"
@@ -57,7 +58,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
 
 @interface TranslateTableViewController ()<BooleanObserver> {
   // Profile preferences.
-  PrefService* _prefs;  // weak
+  raw_ptr<PrefService> _prefs;  // weak
   PrefBackedBoolean* _translationEnabled;
   // The item related to the switch for the translation setting.
   TableViewSwitchItem* _translationItem;

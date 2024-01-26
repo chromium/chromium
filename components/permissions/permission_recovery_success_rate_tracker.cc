@@ -4,7 +4,6 @@
 
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 

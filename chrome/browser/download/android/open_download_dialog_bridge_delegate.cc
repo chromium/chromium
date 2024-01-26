@@ -17,7 +17,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -34,9 +33,7 @@ OpenDownloadDialogBridgeDelegate::~OpenDownloadDialogBridgeDelegate() {
 }
 
 void OpenDownloadDialogBridgeDelegate::CreateDialog(
-    download::DownloadItem* download_item,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
+    download::DownloadItem* download_item) {
   // Don't shown duplicate dialog again if it is already showing.
   if (base::Contains(download_items_, download_item)) {
     return;
@@ -48,8 +45,7 @@ void OpenDownloadDialogBridgeDelegate::CreateDialog(
       content::DownloadItemUtils::GetBrowserContext(download_item);
 
   open_download_dialog_bridge_->Show(
-      web_contents, Profile::FromBrowserContext(browser_context),
-      download_item->GetGuid());
+      Profile::FromBrowserContext(browser_context), download_item->GetGuid());
 }
 
 void OpenDownloadDialogBridgeDelegate::OnConfirmed(

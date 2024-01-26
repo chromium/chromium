@@ -41,6 +41,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -165,6 +166,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
     RegisterGlobalObjectFactory(WaylandZcrColorManager::kInterfaceName,
                                 &WaylandZcrColorManager::Instantiate);
   }
+  RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
+                              &WaylandCursorShape::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
                               &WaylandZcrCursorShapes::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrTouchpadHaptics::kInterfaceName,

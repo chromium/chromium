@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Хабарландыру алу</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="4212246570487010370">Үздіксіз көру</translation>
+<translation id="427987768447457592">Жаңа қойындылар тобы</translation>
 <translation id="4648718555153979859">Қойындылар осы жерге топтастырылады.</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>
 <translation id="5076161749301278626">Дүкен туралы пікірлерді көресіз бе?</translation>
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
+<translation id="5161254044473106830">Тақырып қою қажет</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_ONE" /> қойынды бар.}other{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_MANY" /> қойынды бар.}}</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>

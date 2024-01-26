@@ -545,6 +545,7 @@ experimental domain Audits
       Frame
       Image
       Import
+      JSON
       Manifest
       Ping
       PluginData
@@ -1299,7 +1300,7 @@ domain Browser
       optional BrowserContextID browserContextId
 
   # Reset all permission management for all origins.
-  experimental command resetPermissions
+  command resetPermissions
     parameters
       # BrowserContext to reset permissions. When omitted, default browser context is used.
       optional BrowserContextID browserContextId
@@ -2737,7 +2738,7 @@ domain DOM
   # Scrolls the specified rect of the given node into view if not already visible.
   # Note: exactly one between nodeId, backendNodeId and objectId should be passed
   # to identify the node.
-  experimental command scrollIntoViewIfNeeded
+  command scrollIntoViewIfNeeded
     parameters
       # Identifier of the node.
       optional NodeId nodeId
@@ -4045,7 +4046,7 @@ domain Emulation
       optional boolean enabled
 
   # Enables CPU throttling to emulate slow CPUs.
-  experimental command setCPUThrottlingRate
+  command setCPUThrottlingRate
     parameters
       # Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
       number rate
@@ -4124,7 +4125,7 @@ domain Emulation
       optional array of MediaFeature features
 
   # Emulates the given vision deficiency.
-  experimental command setEmulatedVisionDeficiency
+  command setEmulatedVisionDeficiency
     parameters
       # Vision deficiency to emulate. Order: best-effort emulations come first, followed by any
       # physiologically accurate emulations for medically recognized color vision deficiencies.
@@ -4173,7 +4174,7 @@ domain Emulation
       SensorReading reading
 
   # Overrides the Idle state.
-  experimental command setIdleOverride
+  command setIdleOverride
     parameters
       # Mock isUserActive
       boolean isUserActive
@@ -4181,7 +4182,7 @@ domain Emulation
       boolean isScreenUnlocked
 
   # Clears Idle state overrides.
-  experimental command clearIdleOverride
+  command clearIdleOverride
 
   # Overrides value returned by the javascript navigator object.
   experimental deprecated command setNavigatorOverrides
@@ -4234,7 +4235,7 @@ domain Emulation
       optional string locale
 
   # Overrides default host system timezone with the specified one.
-  experimental command setTimezoneOverride
+  command setTimezoneOverride
     parameters
       # The timezone identifier. If empty, disables the override and
       # restores default host system timezone.
@@ -5720,6 +5721,8 @@ domain Network
       deprecated optional string headersText
       # Resource mimeType as determined by the browser.
       string mimeType
+      # Resource charset as determined by the browser (if applicable).
+      string charset
       # Refined HTTP request headers that were actually transmitted over the network.
       optional Headers requestHeaders
       # HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
@@ -6374,7 +6377,7 @@ domain Network
       array of string urls
 
   # Toggles ignoring of service worker for each request.
-  experimental command setBypassServiceWorker
+  command setBypassServiceWorker
     parameters
       # Bypass service worker and load from network.
       boolean bypass
@@ -8398,7 +8401,7 @@ domain Page
       boolean enabled
 
   # Enable page Content Security Policy by-passing.
-  experimental command setBypassCSP
+  command setBypassCSP
     parameters
       # Whether to bypass page CSP.
       boolean enabled
@@ -8510,7 +8513,7 @@ domain Page
       optional number accuracy
 
   # Controls whether page will emit lifecycle events.
-  experimental command setLifecycleEventsEnabled
+  command setLifecycleEventsEnabled
     parameters
       # If true, starts emitting lifecycle events.
       boolean enabled
@@ -8550,7 +8553,7 @@ domain Page
   experimental command crash
 
   # Tries to close page, running its beforeunload hooks, if any.
-  experimental command close
+  command close
 
   # Tries to update the web lifecycle state of the page.
   # It will transition the page to the given state according to:
@@ -8620,7 +8623,7 @@ domain Page
   # Intercept file chooser requests and transfer control to protocol clients.
   # When file chooser interception is enabled, native file chooser dialog is not shown.
   # Instead, a protocol event `Page.fileChooserOpened` is emitted.
-  experimental command setInterceptFileChooserDialog
+  command setInterceptFileChooserDialog
     parameters
       boolean enabled
 
@@ -9306,7 +9309,7 @@ domain Security
   command enable
 
   # Enable/disable whether all certificate errors should be ignored.
-  experimental command setIgnoreCertificateErrors
+  command setIgnoreCertificateErrors
     parameters
       # If true, all certificate errors will be ignored.
       boolean ignore
@@ -9519,6 +9522,9 @@ experimental domain Storage
       string issuerOrigin
       number count
 
+  # Protected audience interest group auction identifier.
+  type InterestGroupAuctionId extends string
+
   # Enum of interest group access types.
   type InterestGroupAccessType extends string
     enum
@@ -9530,7 +9536,24 @@ experimental domain Storage
       win
       additionalBid
       additionalBidWin
+      topLevelBid
+      topLevelAdditionalBid
       clear
+
+  # Enum of auction events.
+  type InterestGroupAuctionEventType extends string
+    enum
+      started
+      configResolved
+
+  # Enum of network fetches auctions can do.
+  type InterestGroupAuctionFetchType extends string
+    enum
+      bidderJs
+      bidderWasm
+      sellerJs
+      bidderTrustedSignals
+      sellerTrustedSignals
 
   # Ad advertising element inside an interest group.
   type InterestGroupAd extends object
@@ -9811,6 +9834,12 @@ experimental domain Storage
     parameters
       boolean enable
 
+  # Enables/Disables issuing of interestGroupAuctionEventOccurred and
+  # interestGroupAuctionNetworkRequestCreated.
+  experimental command setInterestGroupAuctionTracking
+    parameters
+      boolean enable
+
   # Gets metadata for an origin's shared storage.
   experimental command getSharedStorageMetadata
     parameters
@@ -9918,13 +9947,47 @@ experimental domain Storage
       # Storage bucket to update.
       string bucketId
 
-  # One of the interest groups was accessed by the associated page.
+  # One of the interest groups was accessed. Note that these events are global
+  # to all targets sharing an interest group store.
   event interestGroupAccessed
     parameters
       Network.TimeSinceEpoch accessTime
       InterestGroupAccessType type
       string ownerOrigin
       string name
+      # For topLevelBid/topLevelAdditionalBid, and when appropriate,
+      # win and additionalBidWin
+      optional string componentSellerOrigin
+      # For bid or somethingBid event, if done locally and not on a server.
+      optional number bid
+      optional string bidCurrency
+      # For non-global events --- links to interestGroupAuctionEvent
+      optional InterestGroupAuctionId uniqueAuctionId
+
+  # An auction involving interest groups is taking place. These events are
+  # target-specific.
+  event interestGroupAuctionEventOccurred
+    parameters
+      Network.TimeSinceEpoch eventTime
+      InterestGroupAuctionEventType type
+      InterestGroupAuctionId uniqueAuctionId
+      # Set for child auctions.
+      optional InterestGroupAuctionId parentAuctionId
+      # Set for started and configResolved
+      optional object auctionConfig
+
+  # Specifies which auctions a particular network fetch may be related to, and
+  # in what role. Note that it is not ordered with respect to
+  # Network.requestWillBeSent (but will happen before loadingFinished
+  # loadingFailed).
+  event interestGroupAuctionNetworkRequestCreated
+    parameters
+      InterestGroupAuctionFetchType type
+      Network.RequestId requestId
+      # This is the set of the auctions using the worklet that issued this
+      # request.  In the case of trusted signals, it's possible that only some of
+      # them actually care about the keys being queried.
+      array of InterestGroupAuctionId auctions
 
   # Shared storage was accessed by the associated page.
   # The following parameters are included in all events.
@@ -10372,23 +10435,23 @@ domain Target
 
   # Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
   # one.
-  experimental command createBrowserContext
+  command createBrowserContext
     parameters
       # If specified, disposes this context when debugging session disconnects.
-      optional boolean disposeOnDetach
+      experimental optional boolean disposeOnDetach
       # Proxy server, similar to the one passed to --proxy-server
-      optional string proxyServer
+      experimental optional string proxyServer
       # Proxy bypass list, similar to the one passed to --proxy-bypass-list
-      optional string proxyBypassList
+      experimental optional string proxyBypassList
       # An optional list of origins to grant unlimited cross-origin access to.
       # Parts of the URL other than those constituting origin are ignored.
-      optional array of string originsWithUniversalNetworkAccess
+      experimental optional array of string originsWithUniversalNetworkAccess
     returns
       # The id of the context created.
       Browser.BrowserContextID browserContextId
 
   # Returns all browser contexts created with `Target.createBrowserContext` method.
-  experimental command getBrowserContexts
+  command getBrowserContexts
     returns
       # An array of browser context ids.
       array of Browser.BrowserContextID browserContextIds
@@ -10428,7 +10491,7 @@ domain Target
 
   # Deletes a BrowserContext. All the belonging pages will be closed without calling their
   # beforeunload hooks.
-  experimental command disposeBrowserContext
+  command disposeBrowserContext
     parameters
       Browser.BrowserContextID browserContextId
 
@@ -10466,7 +10529,7 @@ domain Target
   # automatically detaches from all currently attached targets.
   # This also clears all targets added by `autoAttachRelated` from the list of targets to watch
   # for creation of related targets.
-  experimental command setAutoAttach
+  command setAutoAttach
     parameters
       # Whether to auto-attach to related targets.
       boolean autoAttach
@@ -10476,7 +10539,7 @@ domain Target
       # Enables "flat" access to the session via specifying sessionId attribute in the commands.
       # We plan to make this the default, deprecate non-flattened mode,
       # and eventually retire it. See crbug.com/991325.
-      optional boolean flatten
+      experimental optional boolean flatten
       # Only targets matching filter will be attached.
       experimental optional TargetFilter filter
 
@@ -10586,47 +10649,47 @@ experimental domain Tethering
       # Connection id to be used.
       string connectionId
 
-experimental domain Tracing
+domain Tracing
   depends on IO
 
   # Configuration for memory dump. Used only when "memory-infra" category is enabled.
-  type MemoryDumpConfig extends object
+  experimental type MemoryDumpConfig extends object
 
   type TraceConfig extends object
     properties
       # Controls how the trace buffer stores data.
-      optional enum recordMode
+      experimental optional enum recordMode
         recordUntilFull
         recordContinuously
         recordAsMuchAsPossible
         echoToConsole
       # Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value
       # of 200 MB would be used.
-      optional number traceBufferSizeInKb
+      experimental optional number traceBufferSizeInKb
       # Turns on JavaScript stack sampling.
-      optional boolean enableSampling
+      experimental optional boolean enableSampling
       # Turns on system tracing.
-      optional boolean enableSystrace
+      experimental optional boolean enableSystrace
       # Turns on argument filter.
-      optional boolean enableArgumentFilter
+      experimental optional boolean enableArgumentFilter
       # Included category filters.
       optional array of string includedCategories
       # Excluded category filters.
       optional array of string excludedCategories
       # Configuration to synthesize the delays in tracing.
-      optional array of string syntheticDelays
+      experimental optional array of string syntheticDelays
       # Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
-      optional MemoryDumpConfig memoryDumpConfig
+      experimental optional MemoryDumpConfig memoryDumpConfig
 
   # Data format of a trace. Can be either the legacy JSON format or the
   # protocol buffer format. Note that the JSON format will be deprecated soon.
-  type StreamFormat extends string
+  experimental type StreamFormat extends string
     enum
       json
       proto
 
   # Compression type to use for traces returned via streams.
-  type StreamCompression extends string
+  experimental type StreamCompression extends string
     enum
       none
       gzip
@@ -10634,7 +10697,7 @@ experimental domain Tracing
   # Details exposed when memory request explicitly declared.
   # Keep consistent with memory_dump_request_args.h and
   # memory_instrumentation.mojom
-  type MemoryDumpLevelOfDetail extends string
+  experimental type MemoryDumpLevelOfDetail extends string
     enum
       background
       light
@@ -10645,7 +10708,7 @@ experimental domain Tracing
   # supported on Chrome OS and uses the Perfetto system tracing service.
   # `auto` chooses `system` when the perfettoConfig provided to Tracing.start
   # specifies at least one non-Chrome data source; otherwise uses `chrome`.
-  type TracingBackend extends string
+  experimental type TracingBackend extends string
     enum
       auto
       chrome
@@ -10655,19 +10718,19 @@ experimental domain Tracing
   command end
 
   # Gets supported tracing categories.
-  command getCategories
+  experimental command getCategories
     returns
       # A list of supported tracing categories.
       array of string categories
 
   # Record a clock sync marker in the trace.
-  command recordClockSyncMarker
+  experimental command recordClockSyncMarker
     parameters
       # The ID of this clock sync marker
       string syncId
 
   # Request a global memory dump.
-  command requestMemoryDump
+  experimental command requestMemoryDump
     parameters
       # Enables more deterministic results by forcing garbage collection
       optional boolean deterministic
@@ -10683,11 +10746,11 @@ experimental domain Tracing
   command start
     parameters
       # Category/tag filter
-      deprecated optional string categories
+      experimental deprecated optional string categories
       # Tracing options
-      deprecated optional string options
+      experimental deprecated optional string options
       # If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
-      optional number bufferUsageReportingInterval
+      experimental optional number bufferUsageReportingInterval
       # Whether to report trace events as series of dataCollected events or to save trace to a
       # stream (defaults to `ReportEvents`).
       optional enum transferMode
@@ -10698,16 +10761,16 @@ experimental domain Tracing
       optional StreamFormat streamFormat
       # Compression format to use. This only applies when using `ReturnAsStream`
       # transfer mode (defaults to `none`)
-      optional StreamCompression streamCompression
+      experimental optional StreamCompression streamCompression
       optional TraceConfig traceConfig
       # Base64-encoded serialized perfetto.protos.TraceConfig protobuf message
       # When specified, the parameters `categories`, `options`, `traceConfig`
       # are ignored.
-      optional binary perfettoConfig
+      experimental optional binary perfettoConfig
       # Backend type (defaults to `auto`)
-      optional TracingBackend tracingBackend
+      experimental optional TracingBackend tracingBackend
 
-  event bufferUsage
+  experimental event bufferUsage
     parameters
       # A number in range [0..1] that indicates the used size of event buffer as a fraction of its
       # total size.
@@ -10720,7 +10783,7 @@ experimental domain Tracing
 
   # Contains a bucket of collected trace events. When tracing is stopped collected events will be
   # sent as a sequence of dataCollected events followed by tracingComplete event.
-  event dataCollected
+  experimental event dataCollected
     parameters
       array of object value
 
@@ -11792,6 +11855,12 @@ experimental domain FedCm
       ErrorGotIt
       ErrorMoreDetails
 
+  # The URLs that each account has
+  type AccountUrlType extends string
+    enum
+      TermsOfService
+      PrivacyPolicy
+
   # Corresponds to IdentityRequestAccount
   type Account extends object
     properties
@@ -11841,6 +11910,12 @@ experimental domain FedCm
     parameters
       string dialogId
       DialogButton dialogButton
+
+  command openUrl
+    parameters
+      string dialogId
+      integer accountIndex
+      AccountUrlType accountUrlType
 
   command dismissDialog
     parameters

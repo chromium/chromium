@@ -77,12 +77,10 @@ class WebAppInstallerBrowserTest : public InProcessBrowserTest {
                                            nullptr);
   }
 
-  WebAppInstaller::InstallRequest CreateInstallRequest(
-      std::string_view name,
-      std::string_view package_id,
-      std::string_view original_manifest_url,
-      std::string_view test_manifest_url,
-      AppInstallSurface surface = AppInstallSurface::kAppPreloadServiceOem) {
+  AppInstallData CreateInstallData(std::string_view name,
+                                   std::string_view package_id,
+                                   std::string_view original_manifest_url,
+                                   std::string_view test_manifest_url) {
     AppInstallData data(PackageId::FromString(package_id).value());
     data.name = name;
     WebAppInstallData& web_app_data =
@@ -92,7 +90,7 @@ class WebAppInstallerBrowserTest : public InProcessBrowserTest {
         https_server()->GetURL(test_manifest_url);
     web_app_data.document_url =
         web_app_data.original_manifest_url.GetWithEmptyPath();
-    return {.surface = surface, .data = std::move(data)};
+    return data;
   }
 
   void VerifyAppInstalled(webapps::AppId app_id,
@@ -137,10 +135,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneOemApp) {
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
-          "Example App", "web:https://www.example.com/index.html",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData("Example App", "web:https://www.example.com/index.html",
+                        "https://www.example.com/manifest.json",
+                        "/manifest.json"),
       result.GetCallback());
   ASSERT_TRUE(result.Get());
 
@@ -178,11 +177,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
-          "Example App", "web:https://www.example.com/index.html",
-          "https://www.example.com/manifest.json", "/manifest.json",
-          AppInstallSurface::kAppPreloadServiceDefault)},
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceDefault,
+      CreateInstallData("Example App", "web:https://www.example.com/index.html",
+                        "https://www.example.com/manifest.json",
+                        "/manifest.json"),
       result.GetCallback());
   ASSERT_TRUE(result.Get());
 
@@ -227,15 +226,21 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
-           "Example App", "web:https://www.example.com/index.html",
-           "https://www.example.com/manifest.json", "/manifest.json"),
-       CreateInstallRequest(
-           "Example App2", "web:https://www.example2.com/index.html",
-           "https://www.example2.com/manifest2.json", "/manifest2.json")},
+  base::test::TestFuture<bool> result2;
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData("Example App", "web:https://www.example.com/index.html",
+                        "https://www.example.com/manifest.json",
+                        "/manifest.json"),
       result.GetCallback());
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
+          "Example App2", "web:https://www.example2.com/index.html",
+          "https://www.example2.com/manifest2.json", "/manifest2.json"),
+      result2.GetCallback());
   ASSERT_TRUE(result.Get());
+  ASSERT_TRUE(result2.Get());
 
   auto app_id = web_app::GenerateAppId(
       std::nullopt, GURL("https://www.example.com/index.html"));
@@ -274,10 +279,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   })"));
 
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
           "Example App", "web:https://www.example.com/manifest_id",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+          "https://www.example.com/manifest.json", "/manifest.json"),
       result.GetCallback());
   ASSERT_TRUE(result.Get());
 
@@ -308,10 +314,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOverUserApp) {
   })"));
 
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest("OEM Installed app",
-                            base::StrCat({"web:", kStartUrl}),
-                            kOriginalManifestUrl, "/manifest.json")},
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData("OEM Installed app", base::StrCat({"web:", kStartUrl}),
+                        kOriginalManifestUrl, "/manifest.json"),
       result.GetCallback());
   ASSERT_TRUE(result.Get());
 
@@ -332,10 +338,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
           "Example App", "web:https://www.example.com/manifest_id",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+          "https://www.example.com/manifest.json", "/manifest.json"),
       result.GetCallback());
   ASSERT_FALSE(result.Get());
 
@@ -368,10 +375,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   SetManifestResponse("INVALID");
 
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
           "Example App", "web:https://www.example.com/manifest_id",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+          "https://www.example.com/manifest.json", "/manifest.json"),
       result.GetCallback());
   ASSERT_FALSE(result.Get());
 
@@ -392,10 +400,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
           "Example App", "web:https://www.example.com/manifest_id",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+          "https://www.example.com/manifest.json", "/manifest.json"),
       result.GetCallback());
   ASSERT_FALSE(result.Get());
 
@@ -438,10 +447,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallAllApps(
-      {CreateInstallRequest(
+  installer.InstallApp(
+      AppInstallSurface::kAppPreloadServiceOem,
+      CreateInstallData(
           "Example App", "web:https://www.example.com/manifest_id",
-          "https://www.example.com/manifest.json", "/manifest.json")},
+          "https://www.example.com/manifest.json", "/manifest.json"),
       result.GetCallback());
   ASSERT_FALSE(result.Get());
 
@@ -452,13 +462,6 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
       "AppPreloadServiceOem",
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallNoApps) {
-  WebAppInstaller installer(profile());
-  base::test::TestFuture<bool> result;
-  installer.InstallAllApps({}, result.GetCallback());
-  ASSERT_TRUE(result.Get());
 }
 
 }  // namespace apps

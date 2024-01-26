@@ -77,7 +77,7 @@ void FakeNearbyConnectionsManager::StopDiscovery() {
 void FakeNearbyConnectionsManager::Connect(
     std::vector<uint8_t> endpoint_info,
     const std::string& endpoint_id,
-    absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+    std::optional<std::vector<uint8_t>> bluetooth_mac_address,
     DataUsage data_usage,
     NearbyConnectionCallback callback) {
   DCHECK(!is_shutdown());
@@ -148,7 +148,7 @@ void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
             payload_id, nearby::connections::mojom::PayloadStatus::kCanceled,
             /*total_bytes=*/0,
             /*bytes_transferred=*/0),
-        /*upgraded_medium=*/absl::nullopt);
+        /*upgraded_medium=*/std::nullopt);
     payload_status_listeners_.erase(payload_id);
   }
 
@@ -162,15 +162,14 @@ void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
   payload_status_listeners_.clear();
 }
 
-absl::optional<std::string>
-FakeNearbyConnectionsManager::GetAuthenticationToken(
+std::optional<std::string> FakeNearbyConnectionsManager::GetAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
   return base::OptionalFromPtr(
       base::FindOrNull(endpoint_auth_tokens_, endpoint_id));
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 FakeNearbyConnectionsManager::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
@@ -277,7 +276,7 @@ bool FakeNearbyConnectionsManager::WasPayloadCanceled(
   return base::Contains(canceled_payload_ids_, payload_id);
 }
 
-absl::optional<base::FilePath>
+std::optional<base::FilePath>
 FakeNearbyConnectionsManager::GetRegisteredPayloadPath(int64_t payload_id) {
   return base::OptionalFromPtr(
       base::FindOrNull(registered_payload_paths_, payload_id));

@@ -80,16 +80,21 @@ BASE_DECLARE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kTangibleSync);
 
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchEngineChoiceFre);
+#endif
 
 // Used to experiment and validate the UNO model on Desktop. Not meant to be
 // launched to stable for the moment, while it's still in a prototype state.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUnoDesktop);
+
+// Controls the view mode for (history) sync screen.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn);
+#endif
 
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

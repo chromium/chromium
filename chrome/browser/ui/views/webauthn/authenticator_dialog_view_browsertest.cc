@@ -21,6 +21,11 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/label.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/win/authenticator.h"
+#include "device/fido/win/fake_webauthn_api.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 class TestSheetModel : public AuthenticatorRequestSheetModel {
@@ -99,6 +104,21 @@ class TestSheetView : public AuthenticatorRequestSheetView {
 
 class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Make this test work with webauth versions
+  // that support hybrid mode.
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+
+    // Set up the fake Windows platform authenticator.
+    fake_webauthn_api_ = std::make_unique<device::FakeWinWebAuthnApi>();
+    fake_webauthn_api_->set_version(WEBAUTHN_API_VERSION_4);
+    win_webauthn_api_override_ =
+        std::make_unique<device::WinWebAuthnApi::ScopedOverride>(
+            fake_webauthn_api_.get());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
@@ -163,6 +183,13 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
   }
 
   std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+
+ protected:
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<device::FakeWinWebAuthnApi> fake_webauthn_api_;
+  std::unique_ptr<device::WinWebAuthnApi::ScopedOverride>
+      win_webauthn_api_override_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // Test the dialog with a custom delegate.

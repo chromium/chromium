@@ -433,8 +433,7 @@ class CORE_EXPORT Animation : public EventTarget,
   void NotifyAnimationAborted(base::TimeDelta monotonic_time,
                               int group) override {}
 
-  using AnimationPromise = ScriptPromiseProperty<Member<Animation>,
-                                                 Member<DOMException>>;
+  using AnimationPromise = ScriptPromiseProperty<Animation, DOMException>;
   void ResolvePromiseMaybeAsync(AnimationPromise*);
   void RejectAndResetPromise(AnimationPromise*);
   void RejectAndResetPromiseMaybeAsync(AnimationPromise*);

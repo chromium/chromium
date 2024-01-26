@@ -121,6 +121,17 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
+constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+    "QuickStart.AttestationCertificate.FailureReason";
+constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchResult";
+constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchDuration";
+constexpr const char kGaiaAuthenticationDurationHistogramName[] =
+    "QuickStart.GaiaAuthentication.Duration";
+constexpr char kGaiaAuthenticationResultHistogramName[] =
+    "QuickStart.GaiaAuthentication.Result";
+
 // Compares the `std::string` `content_binding` proto field to the
 // `Base64String` `expected` value.
 MATCHER_P(ProtoBufContentBindingEq, expected, "") {
@@ -155,7 +166,9 @@ MATCHER_P(AuthCodeSuccessResponseEq, expected, "") {
   return ExplainMatchResult(
       AllOf(Field("email", &AuthCodeSuccessResponse::email, Eq(expected.email)),
             Field("auth_code", &AuthCodeSuccessResponse::auth_code,
-                  Eq(expected.auth_code))),
+                  Eq(expected.auth_code)),
+            Field("gaia_id", &AuthCodeSuccessResponse::gaia_id,
+                  Eq(expected.gaia_id))),
       arg, result_listener);
 }
 
@@ -269,6 +282,11 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   void SimulateAuthError(const std::string& url) {
     test_factory_.AddResponse(url, /*content=*/std::string(),
                               net::HTTP_UNAUTHORIZED);
+  }
+
+  void SimulateHttpGatewayTimeout(const std::string& url) {
+    test_factory_.AddResponse(url, /*content=*/std::string(),
+                              net::HTTP_GATEWAY_TIMEOUT);
   }
 
   void SimulateOAuthTokenFetchFailure() {
@@ -602,15 +620,15 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::
           kAttestationNotSupportedOnDevice,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -621,14 +639,14 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kBadRequest,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -639,14 +657,14 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -657,10 +675,10 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/true, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -684,6 +702,64 @@ TEST_F(SecondDeviceAuthBrokerTest,
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());
   EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
+}
+
+// If Gaia doesn't fully trust the Chromebook's Remote Attestation certificate,
+// they will consider it to be a "less_secure_device" and reject the request.
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsRejectionResponseForLessSecureDevices) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED",
+        "email": "fake-user@example.com",
+        "rejectionReason": "LESS_SECURE_DEVICE"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.reason =
+      AuthCodeRejectionResponse::Reason::kLessSecureDevice;
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
+TEST_F(
+    SecondDeviceAuthBrokerTest,
+    FetchAuthCodeReturnsRejectionResponseWithUnknownReasonForMissingRejectionReason) {
+  // Do not provide a "rejectionReason".
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response{
+      .reason = AuthCodeRejectionResponse::Reason::kUnknownReason};
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
+TEST_F(
+    SecondDeviceAuthBrokerTest,
+    FetchAuthCodeReturnsRejectionResponseWithUnknownReasonForMalformedRejectionReason) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED",
+        "rejectionReason": "Malformed rejection reason"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response{
+      .reason = AuthCodeRejectionResponse::Reason::kUnknownReason};
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
 }
 
 TEST_F(
@@ -734,7 +810,10 @@ TEST_F(
           AuthCodeAdditionalChallengesOnTargetResponseEq(expected_response)));
 }
 
-TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
+// `SecondDeviceAuthBroker::FetchAuthCode()` should return a success response
+// even if the server does not return a Gaia id.
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsAnAuthCodeEvenWhenGaiaIdIsNotReturned) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "AUTHENTICATED",
@@ -748,6 +827,29 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
   AuthCodeSuccessResponse expected_response;
   expected_response.email = "fake-user@example.com";
   expected_response.auth_code = "fake-auth-code";
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(
+                            AuthCodeSuccessResponseEq(expected_response)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
+        },
+        "email": "fake-user@example.com",
+        "obfuscatedGaiaId": "fake-gaia-id"
+      }
+    )"));
+
+  AuthCodeSuccessResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.auth_code = "fake-auth-code";
+  expected_response.gaia_id = "fake-gaia-id";
   SecondDeviceAuthBroker::AuthCodeResponse response =
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());
@@ -826,6 +928,164 @@ TEST_F(SecondDeviceAuthBrokerTest,
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());
   EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForUnknownErrors) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "UNKNOWN_SESSION_STATUS"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeUnknownErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kUnknownError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
+        },
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
+  base::HistogramTester histogram_tester;
+
+  // Add an invalid response.
+  AddFakeResponse(kStartSessionUrl, std::string());
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
+  base::HistogramTester histogram_tester;
+
+  SimulateAuthError(kStartSessionUrl);
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kRejection, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeLogsMetricsForAdditionalChallengesOnSourceResponse) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "PENDING",
+        "targetSessionIdentifier": "fake-target-session",
+        "sourceDeviceFallbackUrl": "https://example.com",
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response,
+              VariantWith<AuthCodeAdditionalChallengesOnSourceResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnSource,
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeLogsMetricsForAdditionalChallengesOnTargetResponse) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "CONTINUE_ON_TARGET",
+        "targetFallbackUrl": "https://example.com",
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response,
+              VariantWith<AuthCodeAdditionalChallengesOnTargetResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      kGaiaAuthenticationResultHistogramName,
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnTarget,
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kGaiaAuthenticationDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForNetworkTimeouts) {
+  base::HistogramTester histogram_tester;
+
+  SimulateHttpGatewayTimeout(kStartSessionUrl);
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 }  //  namespace ash::quick_start

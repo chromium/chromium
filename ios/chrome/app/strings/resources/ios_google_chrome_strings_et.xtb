@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1105362920864247682">Tühjendage Chrome'i sirvimisandmed.</translation>
 <translation id="1113057722807951993">Parooliga krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
@@ -40,13 +41,13 @@ Tasub teada
 <translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Lisab sisestatud URL-id Chrome'is teie järjehoidjatesse.</translation>
+<translation id="1799920918471566157">Chrome’i nõuanded</translation>
 <translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Kasutage automaatselt Chrome'i, kui avate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="1910975740091000991">Chrome iOS-ile</translation>
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
 <translation id="1965935827552890526">Lõpetage teises avatud Chrome'i aknas pooleliolev toiming.</translation>
 <translation id="1987779152850321833">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
-<translation id="2008357574463816229">Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Google Chrome on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="2120238739383482109">Avab Chrome'i järjehoidjad.</translation>
 <translation id="2147651015520127414">Chrome kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
@@ -75,6 +76,7 @@ Tasub teada
 <translation id="2702250627063295552">Lisa Chrome'i lugemisloendi üksus</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
+<translation id="2789947168960170215">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Tühjenda Chrome'i sirvimisandmed</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2876628302275096482">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chrome teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3503014945441706099">Hankige ka sellele Chrome'i profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="3577555362230509265">Kasutage Chrome'i muudes rakendustes.</translation>
-<translation id="3594076341410558780">Valiku „Kasutage Chrome'i parimal moel” peitmine</translation>
 <translation id="364480321352456989">Teie Chrome on aegunud.</translation>
 <translation id="3646736009628185125">Teie pereliige ei saa praegu paroole vastu võtta. Paluge tal Chrome’i värskendada ja oma paroolid sünkroonida. <ph name="BEGIN_LINK" />Lugege lisateavet.<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
@@ -204,7 +205,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="686691656039982452">Teil on võimalik <ph name="BEGIN_LINK" />hallata, milliseid Chrome'i andmeid salvestatakse<ph name="END_LINK" /> teie Google'i kontole.
 
 Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome tuvastab teie külastatud saitidel jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks. Saate seda muuta jaotises <ph name="BEGIN_LINK" />Saadetise jälgimisseaded<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Chrome'is hääle abil otsimine</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>

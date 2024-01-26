@@ -46,6 +46,7 @@ class MonitorConfig {
   // List of configs with supported monitor modes.
   static const MonitorConfig k1024x768;
   static const MonitorConfig k1920x1080;
+  static const MonitorConfig k1440x900;
 
   MonitorConfig() = default;
   // Get width (horizontal resolution).

@@ -1424,6 +1424,10 @@ void WebViewImpl::SetScreenOrientationOverrideForTesting(
 
 void WebViewImpl::SetWindowRectSynchronouslyForTesting(
     const gfx::Rect& new_window_rect) {
+  // We need to call UpdateScreenRects to ensure the 'move' event is enqueued.
+  // TODO(jfernandez): Ideally updating the window rect should do that
+  // automatically.
+  web_widget_->UpdateScreenRects(new_window_rect, new_window_rect);
   web_widget_->SetWindowRectSynchronouslyForTesting(new_window_rect);
 }
 
@@ -1557,9 +1561,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.webgl_errors_to_console_enabled);
 
   settings->SetHideScrollbars(prefs.hide_scrollbars);
-
-  RuntimeEnabledFeatures::SetWebKitScrollbarStylingEnabled(
-      prefs.enable_webkit_scrollbar_styling);
 
   // Enable gpu-accelerated 2d canvas if requested on the command line.
   RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(
@@ -3997,7 +3998,24 @@ bool WebViewImpl::IsFencedFrameRoot() const {
 }
 
 void WebViewImpl::SetSupportsAppRegion(bool supports_app_region) {
-  MainFrameImpl()->GetFrame()->SetSupportsAppRegion(supports_app_region);
+  supports_app_region_ = supports_app_region;
+  if (!MainFrameImpl() || !MainFrameImpl()->GetFrame()) {
+    return;
+  }
+
+  LocalFrame* local_frame = MainFrameImpl()->GetFrame();
+
+  if (supports_app_region_) {
+    local_frame->View()->UpdateDocumentAnnotatedRegions();
+  } else {
+    local_frame->GetDocument()->SetAnnotatedRegions(
+        Vector<AnnotatedRegionValue>());
+    local_frame->Client()->AnnotatedRegionsChanged();
+  }
+}
+
+bool WebViewImpl::SupportsAppRegion() {
+  return supports_app_region_;
 }
 
 void WebViewImpl::MojoDisconnected() {

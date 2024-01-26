@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_MEMORY_SAVER_MODE_DELEGATE_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_MEMORY_SAVER_MODE_DELEGATE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::user_tuning {
 
@@ -22,13 +23,13 @@ class FakeMemorySaverModeDelegate
 
   void ClearLastState();
 
-  absl::optional<prefs::MemorySaverModeState> GetLastState() const;
+  std::optional<prefs::MemorySaverModeState> GetLastState() const;
 
-  absl::optional<base::TimeDelta> GetLastTimeBeforeDiscard() const;
+  std::optional<base::TimeDelta> GetLastTimeBeforeDiscard() const;
 
  private:
-  absl::optional<base::TimeDelta> last_time_before_discard_;
-  absl::optional<prefs::MemorySaverModeState> last_state_;
+  std::optional<base::TimeDelta> last_time_before_discard_;
+  std::optional<prefs::MemorySaverModeState> last_state_;
 };
 
 }  // namespace performance_manager::user_tuning

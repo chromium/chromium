@@ -406,6 +406,12 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL scheme is not HTTPS.">
     HTTPS scheme recommended for search URL: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
   </message>
+  <message name="IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEYS" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains incoherent values">
+    Keys "<ph name="DATA_CONTROLS_KEYS">$1<ex>"and", "or"</ex></ph>" cannot be set in the same dictionary
+  </message>
+  <message name="IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEY_SETS" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains incoherent values">
+    Keys "<ph name="DATA_CONTROLS_FIRST_KEY_SET">$1<ex>"destinations", "sources"</ex></ph>" cannot be set in the same dictionary as the "<ph name="DATA_CONTROLS_SECOND_KEY_SET">$2<ex>"and", "or"</ex></ph>" keys
+  </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">
@@ -417,25 +423,25 @@ Additional details:
   <message name="IDS_POLICY_RELOAD_POLICIES" desc="Label for the button that reloads policies.">
     Reload policies
   </message>
-  <message name="IDS_POLICY_RELOADING_POLICIES" desc="Screen reader message indicating policies are being loaded.">
+  <message name="IDS_POLICY_RELOADING_POLICIES" desc="Toast notification message indicating policies are being loaded.">
     Reloading policies
   </message>
-  <message name="IDS_POLICY_RELOAD_POLICIES_DONE" desc="Screen reader message indicating policies have been reloaded.">
+  <message name="IDS_POLICY_RELOAD_POLICIES_DONE" desc="Toast notification message indicating policies have been reloaded.">
     Policies reloaded
   </message>
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
   </message>
-  <message name="IDS_EXPORT_POLICIES_JSON_DONE" desc="Screen reader message indicating policies are exported.">
+  <message name="IDS_EXPORT_POLICIES_JSON_DONE" desc="Toast notification message indicating policies are exported.">
     Exported
   </message>
   <message name="IDS_UPLOAD_REPORT" desc="Label for the button that uplaod Chrome usage report">
     Upload Report
   </message>
-  <message name="IDS_REPORT_UPLOADING" desc="Screen reader message indicating data is being sent to admin console.">
+  <message name="IDS_REPORT_UPLOADING" desc="Toast notification message indicating data is being sent to admin console.">
     Sending data to admin console
   </message>
-  <message name="IDS_REPORT_UPLOADED" desc="Screen reader message indicating data has been sent to admin console.">
+  <message name="IDS_REPORT_UPLOADED" desc="Toast notification message indicating data has been sent to admin console.">
     Data sent to admin console
   </message>
   <message name="IDS_POLICY_STATUS" desc="Title of the status section.">
@@ -767,7 +773,7 @@ Additional details:
   <message name="IDS_COPY_POLICIES_JSON" desc="Label for the button that copies policies in JSON format.">
     Copy as JSON
   </message>
-  <message name="IDS_COPY_POLICIES_DONE" desc="Screen reader message indicating policies are copied to clipboard.">
+  <message name="IDS_COPY_POLICIES_DONE" desc="Toast notification message indicating policies are copied to clipboard.">
     Copied to clipboard
   </message>
   <message name="IDS_VIEW_POLICY_LOGS" desc="Label for the button that redirects from chrome://policy to chrome://policy/logs.">

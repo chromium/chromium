@@ -15,12 +15,26 @@ class PrefService;
 
 namespace ash {
 
+enum class TimeBucket;
+
 namespace welcome_tour_metrics {
 enum class Interaction;
 enum class PreventedReason;
 }  // namespace welcome_tour_metrics
 
 namespace welcome_tour_prefs {
+
+// Retrieves the time that the given `interaction` first occurred after the tour
+// in terms of `TimeBucket`. If it has not been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<TimeBucket> GetTimeBucketOfFirstInteraction(
+    PrefService* prefs,
+    welcome_tour_metrics::Interaction interaction);
+
+// Retrieves the time that the given `interaction` first occurred after the
+// tour. If the time has not been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetTimeOfFirstInteraction(
+    PrefService* prefs,
+    welcome_tour_metrics::Interaction interaction);
 
 // Retrieves the time that the tour was first completed. If the time has not
 // been set, returns `std::nullopt`.
@@ -55,6 +69,13 @@ ASH_EXPORT bool MarkTimeOfFirstTourCompletion(PrefService* prefs);
 
 // Registers the Welcome Tour prefs to the given `registry`.
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Syncs the interaction prefs, filling in any `TimeBucket` prefs that are not
+// set if the corresponding `base::Time` pref is set, or if the interaction has
+// not happened after the max `TimeBucket` has been reached. Returns a
+// `std:vector` containing all interactions whose prefs were updated.
+ASH_EXPORT std::vector<welcome_tour_metrics::Interaction> SyncInteractionPrefs(
+    PrefService* prefs);
 
 }  // namespace welcome_tour_prefs
 }  // namespace ash

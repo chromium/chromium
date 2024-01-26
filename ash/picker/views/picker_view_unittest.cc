@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -21,11 +22,14 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/view_utils.h"
 
@@ -40,7 +44,11 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Truly;
 
-using PickerViewTest = AshTestBase;
+class PickerViewTest : public AshTestBase {
+ public:
+  PickerViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
@@ -62,8 +70,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return ash_web_view_factory_.Create(params);
   }
 
-  void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override {}
-
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
     callback.Run(PickerSearchResults());
@@ -81,6 +87,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   bool ShouldPaint() override { return true; }
 
+  PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
+
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }
@@ -88,6 +96,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
  private:
   TestAshWebViewFactory ash_web_view_factory_;
   FakeSearchFunction search_function_;
+  MockPickerAssetFetcher asset_fetcher_;
   std::optional<PickerSearchResult> last_inserted_result_;
 };
 
@@ -135,9 +144,9 @@ TEST_F(PickerViewTest, BackgroundIsCorrect) {
 
   ASSERT_TRUE(view);
   ASSERT_TRUE(view->background());
-  EXPECT_EQ(
-      view->background()->get_color(),
-      view->GetColorProvider()->GetColor(cros_tokens::kCrosSysBaseElevated));
+  EXPECT_EQ(view->background()->get_color(),
+            view->GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemBaseElevated));
 }
 
 TEST_F(PickerViewTest, SizeIsCorrect) {
@@ -146,7 +155,7 @@ TEST_F(PickerViewTest, SizeIsCorrect) {
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
-  EXPECT_EQ(view->size(), gfx::Size(420, 480));
+  EXPECT_EQ(view->size(), gfx::Size(320, 340));
 }
 
 TEST_F(PickerViewTest, ShowsZeroStateView) {
@@ -197,8 +206,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
       [&](std::u16string_view query, std::optional<PickerCategory> category) {
         future.SetValue();
         return PickerSearchResults({{
-            PickerSearchResults::Section(u"section",
-                                         {{PickerSearchResult(u"result")}}),
+            PickerSearchResults::Section(
+                u"section", {{PickerSearchResult::Text(u"result")}}),
         }});
       }));
   auto widget = PickerView::CreateWidget(&delegate);
@@ -221,7 +230,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   LeftClickOn(result_view);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
+              Optional(PickerSearchResult::Text(u"result")));
 }
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {
@@ -275,6 +284,46 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, PressingEscClosesPickerWidget) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  EXPECT_TRUE(widget->IsClosed());
+}
+
+TEST_F(PickerViewTest, ClickingOutsideClosesPickerWidget) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  gfx::Point point_outside_widget = widget->GetWindowBoundsInScreen().origin();
+  point_outside_widget.Offset(-10, -10);
+  GetEventGenerator()->MoveMouseTo(point_outside_widget);
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(widget->IsClosed());
+}
+
+TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
+  base::HistogramTester histogram;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&, this](std::u16string_view query,
+                std::optional<PickerCategory> category) {
+        task_environment()->FastForwardBy(base::Seconds(1));
+        return PickerSearchResults();
+      }));
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
+                                   base::Seconds(1), 1);
 }
 
 }  // namespace

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -13,7 +15,6 @@
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history {
 struct HistoryAddPageArgs;
@@ -29,11 +30,6 @@ class HistoryTabHelper
   HistoryTabHelper& operator=(const HistoryTabHelper&) = delete;
 
   ~HistoryTabHelper() override;
-
-  // Updates history with the specified navigation. This is called by
-  // DidFinishNavigation to update history state.
-  void UpdateHistoryForNavigation(
-      const history::HistoryAddPageArgs& add_page_args);
 
   // Returns the history::HistoryAddPageArgs to use for adding a page to
   // history.
@@ -53,6 +49,11 @@ class HistoryTabHelper
     force_eligible_tab_for_testing_ = force;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Sets App ID that that goes into visit database.
+  void SetAppId(const std::string& app_id) { app_id_ = app_id; }
+#endif
+
  private:
   explicit HistoryTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryTabHelper>;
@@ -62,6 +63,11 @@ class HistoryTabHelper
                            CreateAddPageArgsHasOpenerWebContentseNotFirstPage);
   FRIEND_TEST_ALL_PREFIXES(HistoryFencedFrameBrowserTest,
                            FencedFrameDoesNotAffectLoadingState);
+
+  // Updates history with the specified navigation. This is called by
+  // DidFinishNavigation to update history state.
+  void UpdateHistoryForNavigation(
+      const history::HistoryAddPageArgs& add_page_args);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
@@ -113,7 +119,10 @@ class HistoryTabHelper
     int nav_entry_id;
     GURL url;
   };
-  absl::optional<NavigationState> cached_navigation_state_;
+  std::optional<NavigationState> cached_navigation_state_;
+
+  // The package name of an app that opens a Custom Tab and visits a URL.
+  absl::optional<std::string> app_id_ = absl::nullopt;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligible_tab_for_testing_ = false;

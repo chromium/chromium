@@ -25,6 +25,7 @@ enum class AndroidBackendAPIErrorCode {
   kInvalidData = 11011,
   kUnmappedErrorCode = 11012,
   kUnexpectedError = 11013,
+  kKeyRetrievalRequired = 11014,
   kChromeSyncAPICallError = 43502,
   kErrorWhileDoingLeakServiceGRPC = 43504,
   kRequiredSyncingAccountMissing = 43507,

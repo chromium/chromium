@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1426410128494586442">Sí</translation>
+<translation id="1434873037477293673">targeta de baixada de preu</translation>
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> lloc web}other{<ph name="SITE_COUNT" /> llocs web}}</translation>
 <translation id="1510341833810331442">Els llocs web no tenen permís per desar dades al dispositiu</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="2790501146643349491">Quan aquesta opció està activada, els llocs web tancats recentment poden acabar d'enviar i de rebre dades. Quan aquesta opció està desactivada, els llocs web tancats recentment no poden acabar d'enviar ni de rebre dades.</translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Sol·licita la visualització per a mòbils</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>
 <translation id="6447842834002726250">Galetes</translation>
+<translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Si la finestra és estreta, sol·licita la visualització per a mòbils</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="652937045869844725">Prova de permetre les galetes de tercers; la protecció serà menor, però és més probable que les funcions del lloc web estiguin disponibles</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6766622839693428701">Llisca cap avall per tancar el full.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecciona una opció per a <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
 <translation id="6864395892908308021">Aquest dispositiu no pot llegir NFC</translation>
+<translation id="6867014948848323204">De <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Impedeix que els llocs web llegeixin el text i les imatges del porta-retalls</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6950072572526089586">A fi de funcionar de la manera prevista, un lloc web que visites pot desar informació sobre el que estàs fent: per exemple, per mantenir la teva sessió iniciada en un lloc web o desar articles al carretó. Sovint, els llocs web desen temporalment aquesta informació al teu dispositiu.</translation>
@@ -361,7 +366,7 @@
 <translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionat}other{# seleccionats}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 de seleccionat}other{# de seleccionats}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>
 <translation id="7137403271056944713">Control i reprogramació disp. MIDI</translation>
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">El meravellós mag d'Oz</translation>
 <translation id="7684642910516280563">No permetis que un lloc web utilitzi galetes de tercers</translation>
 <translation id="7719367874908701697">Zoom de la pàgina</translation>
+<translation id="7770832849480336015">Amaga "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="780301667611848630">No, gràcies</translation>

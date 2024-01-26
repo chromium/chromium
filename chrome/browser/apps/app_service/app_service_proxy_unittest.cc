@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -15,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -117,7 +118,7 @@ class FakePublisherForProxyTest : public AppPublisher {
     params->window_info_ = std::move(window_info);
     launch_requests_[app_id].push_back(std::move(params));
     if (!callback.is_null()) {
-      std::move(callback).Run(LaunchResult(State::SUCCESS));
+      std::move(callback).Run(LaunchResult(State::kSuccess));
     }
   }
 
@@ -129,7 +130,7 @@ class FakePublisherForProxyTest : public AppPublisher {
     launch_params->params_ = std::move(params);
     launch_requests_[app_id].push_back(std::move(launch_params));
     if (!callback.is_null()) {
-      std::move(callback).Run(LaunchResult(State::SUCCESS));
+      std::move(callback).Run(LaunchResult(State::kSuccess));
     }
   }
 
@@ -247,8 +248,12 @@ class FakeSubscriberForProxyTest : public SubscriberCrosapi {
 
 class AppServiceProxyTest : public testing::Test {
  public:
+  AppServiceProxyTest() : scoped_feature_list_(kAppServiceStorage) {}
+
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kAppServiceStorage);
+    profile_ = std::make_unique<TestingProfile>();
+    app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
+    WaitForAppServiceProxyReady(proxy());
   }
 
  protected:
@@ -313,12 +318,18 @@ class AppServiceProxyTest : public testing::Test {
 #endif
   }
 
+  Profile* profile() { return profile_.get(); }
+
+  AppServiceProxy* proxy() { return app_service_proxy_; }
+
   int NumOuterFinishedCallbacks() { return num_outer_finished_callbacks_; }
 
   int num_outer_finished_callbacks_ = 0;
 
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<AppServiceProxy> app_service_proxy_;
 };
 
 class AppServiceProxyIconTest : public AppServiceProxyTest {
@@ -340,13 +351,11 @@ TEST_F(AppServiceProxyIconTest, IconCache) {
   //
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCache but also other IconLoader filters, such as an IconCoalescer.
-
-  AppServiceProxy proxy(nullptr);
   FakeIconLoader fake;
-  OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
+  OverrideAppServiceProxyInnerIconLoader(proxy(), &fake);
 
   // The next LoadIcon call should be a cache miss.
-  UniqueReleaser c0 = LoadIcon(&proxy, "cromulent");
+  UniqueReleaser c0 = LoadIcon(proxy(), "cromulent");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(0, NumOuterFinishedCallbacks());
@@ -358,7 +367,7 @@ TEST_F(AppServiceProxyIconTest, IconCache) {
   EXPECT_EQ(1, NumOuterFinishedCallbacks());
 
   // The next LoadIcon call should be a cache hit.
-  UniqueReleaser c1 = LoadIcon(&proxy, "cromulent");
+  UniqueReleaser c1 = LoadIcon(proxy(), "cromulent");
   EXPECT_EQ(0, fake.NumPendingCallbacks());
   EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(2, NumOuterFinishedCallbacks());
@@ -368,7 +377,7 @@ TEST_F(AppServiceProxyIconTest, IconCache) {
   c1.reset();
 
   // The next LoadIcon call should be a cache miss.
-  UniqueReleaser c2 = LoadIcon(&proxy, "cromulent");
+  UniqueReleaser c2 = LoadIcon(proxy(), "cromulent");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(2, NumOuterFinishedCallbacks());
@@ -386,17 +395,14 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
   //
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCoalescer but also other IconLoader filters, such as an IconCache.
-
-  AppServiceProxy proxy(nullptr);
-
   FakeIconLoader fake;
-  OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
+  OverrideAppServiceProxyInnerIconLoader(proxy(), &fake);
 
   // Issue 4 LoadIcon requests, 2 after de-duplication.
-  UniqueReleaser a0 = LoadIcon(&proxy, "avocet");
-  UniqueReleaser a1 = LoadIcon(&proxy, "avocet");
-  UniqueReleaser b2 = LoadIcon(&proxy, "brolga");
-  UniqueReleaser a3 = LoadIcon(&proxy, "avocet");
+  UniqueReleaser a0 = LoadIcon(proxy(), "avocet");
+  UniqueReleaser a1 = LoadIcon(proxy(), "avocet");
+  UniqueReleaser b2 = LoadIcon(proxy(), "brolga");
+  UniqueReleaser a3 = LoadIcon(proxy(), "avocet");
   EXPECT_EQ(2, fake.NumPendingCallbacks());
   EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(0, NumOuterFinishedCallbacks());
@@ -408,7 +414,7 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
 
   // Issue another request, that triggers neither IconCache nor IconCoalescer.
-  UniqueReleaser c4 = LoadIcon(&proxy, "curlew");
+  UniqueReleaser c4 = LoadIcon(proxy(), "curlew");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
@@ -421,7 +427,7 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
 
   // Issuing another "curlew" request should coalesce with the in-flight one.
-  UniqueReleaser c5 = LoadIcon(&proxy, "curlew");
+  UniqueReleaser c5 = LoadIcon(proxy(), "curlew");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
@@ -436,11 +442,9 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kAppServiceStorage, chromeos::features::kCrosWebAppShortcutUiUpdate},
-        {});
-  }
+ public:
+  AppServiceProxyShortcutIconTest()
+      : features_{chromeos::features::kCrosWebAppShortcutUiUpdate} {}
 
  protected:
   UniqueReleaser LoadShortcutIcon(AppServiceProxy* proxy,
@@ -470,6 +474,9 @@ class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
       apps::IconLoader* icon_loader) {
     proxy->OverrideShortcutInnerIconLoaderForTesting(icon_loader);
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(AppServiceProxyShortcutIconTest, IconCache) {
@@ -478,13 +485,11 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCache) {
   //
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCache but also other IconLoader filters, such as an IconCoalescer.
-
-  AppServiceProxy proxy(nullptr);
   FakeIconLoader fake;
-  OverrideAppServiceProxyShortcutInnerIconLoader(&proxy, &fake);
+  OverrideAppServiceProxyShortcutInnerIconLoader(proxy(), &fake);
 
   // The next LoadShortcutIcon call should be a cache miss.
-  UniqueReleaser c0 = LoadShortcutIcon(&proxy, "cromulent");
+  UniqueReleaser c0 = LoadShortcutIcon(proxy(), "cromulent");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(0, NumOuterFinishedCallbacks());
@@ -496,7 +501,7 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCache) {
   EXPECT_EQ(1, NumOuterFinishedCallbacks());
 
   // The next LoadShortcutIcon call should be a cache hit.
-  UniqueReleaser c1 = LoadShortcutIcon(&proxy, "cromulent");
+  UniqueReleaser c1 = LoadShortcutIcon(proxy(), "cromulent");
   EXPECT_EQ(0, fake.NumPendingCallbacks());
   EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(2, NumOuterFinishedCallbacks());
@@ -506,7 +511,7 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCache) {
   c1.reset();
 
   // The next LoadShortcutIcon call should be a cache miss.
-  UniqueReleaser c2 = LoadShortcutIcon(&proxy, "cromulent");
+  UniqueReleaser c2 = LoadShortcutIcon(proxy(), "cromulent");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(1, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(2, NumOuterFinishedCallbacks());
@@ -524,17 +529,14 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
   //
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCoalescer but also other IconLoader filters, such as an IconCache.
-
-  AppServiceProxy proxy(nullptr);
-
   FakeIconLoader fake;
-  OverrideAppServiceProxyShortcutInnerIconLoader(&proxy, &fake);
+  OverrideAppServiceProxyShortcutInnerIconLoader(proxy(), &fake);
 
   // Issue 4 LoadShortcutIcon requests, 2 after de-duplication.
-  UniqueReleaser a0 = LoadShortcutIcon(&proxy, "avocet");
-  UniqueReleaser a1 = LoadShortcutIcon(&proxy, "avocet");
-  UniqueReleaser b2 = LoadShortcutIcon(&proxy, "brolga");
-  UniqueReleaser a3 = LoadShortcutIcon(&proxy, "avocet");
+  UniqueReleaser a0 = LoadShortcutIcon(proxy(), "avocet");
+  UniqueReleaser a1 = LoadShortcutIcon(proxy(), "avocet");
+  UniqueReleaser b2 = LoadShortcutIcon(proxy(), "brolga");
+  UniqueReleaser a3 = LoadShortcutIcon(proxy(), "avocet");
   EXPECT_EQ(2, fake.NumPendingCallbacks());
   EXPECT_EQ(0, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(0, NumOuterFinishedCallbacks());
@@ -546,7 +548,7 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
 
   // Issue another request, that triggers neither IconCache nor IconCoalescer.
-  UniqueReleaser c4 = LoadShortcutIcon(&proxy, "curlew");
+  UniqueReleaser c4 = LoadShortcutIcon(proxy(), "curlew");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
@@ -559,7 +561,7 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
 
   // Issuing another "curlew" request should coalesce with the in-flight one.
-  UniqueReleaser c5 = LoadShortcutIcon(&proxy, "curlew");
+  UniqueReleaser c5 = LoadShortcutIcon(proxy(), "curlew");
   EXPECT_EQ(1, fake.NumPendingCallbacks());
   EXPECT_EQ(2, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(4, NumOuterFinishedCallbacks());
@@ -573,20 +575,17 @@ TEST_F(AppServiceProxyShortcutIconTest, IconCoalescer) {
 }
 
 TEST_F(AppServiceProxyShortcutIconTest, LoadShortcutIconWithBadge) {
-  TestingProfile profile;
-  AppServiceProxy* const proxy =
-      AppServiceProxyFactory::GetForProfile(&profile);
-
   FakeIconLoader fake_shortcut_loader;
   FakeIconLoader fake_app_loader;
-  OverrideAppServiceProxyShortcutInnerIconLoader(proxy, &fake_shortcut_loader);
-  OverrideAppServiceProxyInnerIconLoader(proxy, &fake_app_loader);
+  OverrideAppServiceProxyShortcutInnerIconLoader(proxy(),
+                                                 &fake_shortcut_loader);
+  OverrideAppServiceProxyInnerIconLoader(proxy(), &fake_app_loader);
 
   auto shortcut = std::make_unique<Shortcut>("host_app_id", "local_id");
   ShortcutId shortcut_id = shortcut->shortcut_id;
-  proxy->ShortcutRegistryCache()->UpdateShortcut(std::move(shortcut));
+  proxy()->ShortcutRegistryCache()->UpdateShortcut(std::move(shortcut));
 
-  UniqueReleaser c0 = LoadShortcutIconWithBadge(proxy, shortcut_id);
+  UniqueReleaser c0 = LoadShortcutIconWithBadge(proxy(), shortcut_id);
   EXPECT_EQ(1, fake_shortcut_loader.NumPendingCallbacks());
   EXPECT_EQ(0, fake_shortcut_loader.NumInnerFinishedCallbacks());
   EXPECT_EQ(0, NumOuterFinishedCallbacks());
@@ -665,25 +664,20 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
 
 TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
   constexpr char kTestAppId[] = "pwa";
-  TestingProfile profile;
-  AppServiceProxy* const proxy =
-      AppServiceProxyFactory::GetForProfile(&profile);
-  WaitForAppServiceProxyReady(proxy);
-
   {
     std::vector<AppPtr> apps;
     AppPtr app = std::make_unique<App>(AppType::kWeb, kTestAppId);
     apps.push_back(std::move(app));
-    proxy->OnApps(std::move(apps), AppType::kWeb,
-                  /*should_notify_initialized=*/true);
+    proxy()->OnApps(std::move(apps), AppType::kWeb,
+                    /*should_notify_initialized=*/true);
   }
 
-  EXPECT_EQ(proxy->AppRegistryCache().GetAppType(kTestAppId), AppType::kWeb);
+  EXPECT_EQ(proxy()->AppRegistryCache().GetAppType(kTestAppId), AppType::kWeb);
 
-  proxy->ReinitializeForTesting(proxy->profile());
-  WaitForAppServiceProxyReady(proxy);
+  proxy()->ReinitializeForTesting(proxy()->profile());
+  WaitForAppServiceProxyReady(proxy());
 
-  EXPECT_EQ(proxy->AppRegistryCache().GetAppType(kTestAppId),
+  EXPECT_EQ(proxy()->AppRegistryCache().GetAppType(kTestAppId),
             AppType::kUnknown);
 }
 
@@ -691,24 +685,23 @@ TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
 class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
  public:
   void SetUp() override {
-    proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
+    AppServiceProxyTest::SetUp();
 
     // Wait for the PreferredAppsList to be initialized from disk before tests
     // start modifying it.
     base::RunLoop file_read_run_loop;
-    proxy_->ReinitializeForTesting(&profile_, file_read_run_loop.QuitClosure());
+    proxy()->ReinitializeForTesting(profile(),
+                                    file_read_run_loop.QuitClosure());
     file_read_run_loop.Run();
 
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
-
-  AppServiceProxy* proxy() { return proxy_; }
 
   // Shortcut for adding apps to App Service without going through a real
   // Publisher.
   void OnApps(std::vector<AppPtr> apps, AppType type) {
-    proxy_->OnApps(std::move(apps), type,
-                   /*should_notify_initialized=*/false);
+    proxy()->OnApps(std::move(apps), type,
+                    /*should_notify_initialized=*/false);
   }
 
   PreferredAppsList& GetPreferredAppsList() {
@@ -718,10 +711,6 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   PreferredAppsImpl* PreferredAppsImpl() {
     return proxy()->preferred_apps_impl_.get();
   }
-
- private:
-  TestingProfile profile_;
-  raw_ptr<AppServiceProxy> proxy_;
 };
 
 TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
@@ -1183,7 +1172,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
 }
 
 TEST_F(AppServiceProxyTest, LaunchCallback) {
-  AppServiceProxy proxy(nullptr);
   bool called_1 = false;
   bool called_2 = false;
   auto instance_id_1 = base::UnguessableToken::Create();
@@ -1193,36 +1181,38 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
   {
     LaunchResult result_1;
     result_1.instance_ids.push_back(instance_id_1);
-    proxy.OnLaunched(base::BindOnce(
-                         [](bool* called, apps::LaunchResult&& launch_result) {
-                           *called = true;
-                         },
-                         &called_1),
-                     std::move(result_1));
+    proxy()->OnLaunched(
+        base::BindOnce(
+            [](bool* called, apps::LaunchResult&& launch_result) {
+              *called = true;
+            },
+            &called_1),
+        std::move(result_1));
   }
-  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 1U);
   EXPECT_FALSE(called_1);
 
   {
     LaunchResult result_2;
     result_2.instance_ids.push_back(instance_id_2);
-    proxy.OnLaunched(base::BindOnce(
-                         [](bool* called, apps::LaunchResult&& launch_result) {
-                           *called = true;
-                         },
-                         &called_2),
-                     std::move(result_2));
+    proxy()->OnLaunched(
+        base::BindOnce(
+            [](bool* called, apps::LaunchResult&& launch_result) {
+              *called = true;
+            },
+            &called_2),
+        std::move(result_2));
   }
-  EXPECT_EQ(proxy.callback_list_.size(), 2U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 2U);
   EXPECT_FALSE(called_2);
 
   // Once the instance is created, the callback will be called.
   {
     auto delta =
         std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
-    proxy.InstanceRegistry().OnInstance(std::move(delta));
+    proxy()->InstanceRegistry().OnInstance(std::move(delta));
   }
-  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
@@ -1230,14 +1220,15 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
   called_1 = false;
   {
     LaunchResult result_3;
-    proxy.OnLaunched(base::BindOnce(
-                         [](bool* called, apps::LaunchResult&& launch_result) {
-                           *called = true;
-                         },
-                         &called_1),
-                     std::move(result_3));
+    proxy()->OnLaunched(
+        base::BindOnce(
+            [](bool* called, apps::LaunchResult&& launch_result) {
+              *called = true;
+            },
+            &called_1),
+        std::move(result_3));
   }
-  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
@@ -1249,28 +1240,26 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
     LaunchResult result_multi;
     result_multi.instance_ids.push_back(instance_id_3);
     result_multi.instance_ids.push_back(instance_id_4);
-    proxy.OnLaunched(base::BindOnce(
-                         [](bool* called, apps::LaunchResult&& launch_result) {
-                           *called = true;
-                         },
-                         &called_multi),
-                     std::move(result_multi));
+    proxy()->OnLaunched(
+        base::BindOnce(
+            [](bool* called, apps::LaunchResult&& launch_result) {
+              *called = true;
+            },
+            &called_multi),
+        std::move(result_multi));
   }
-  EXPECT_EQ(proxy.callback_list_.size(), 2U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 2U);
   EXPECT_FALSE(called_multi);
-  proxy.InstanceRegistry().OnInstance(
+  proxy()->InstanceRegistry().OnInstance(
       std::make_unique<apps::Instance>("foo", instance_id_3, nullptr));
-  proxy.InstanceRegistry().OnInstance(
+  proxy()->InstanceRegistry().OnInstance(
       std::make_unique<apps::Instance>("bar", instance_id_4, nullptr));
-  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_EQ(proxy()->callback_list_.size(), 1U);
 
   EXPECT_TRUE(called_multi);
 }
 
 TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
-  AppServiceProxy proxy(nullptr);
-  SetOnReadyForTesting(&proxy);
-
   const char kAppId1[] = "abcdefg";
   const GURL kTestUrl = GURL("https://www.example.com/");
 
@@ -1301,7 +1290,7 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
   app->intent_filters.push_back(std::move(intent_filter2));
 
   apps.push_back(std::move(app));
-  proxy.OnApps(std::move(apps), AppType::kWeb, false);
+  proxy()->OnApps(std::move(apps), AppType::kWeb, false);
 
   std::vector<apps::IntentFilePtr> files;
   auto file = std::make_unique<apps::IntentFile>(GURL("abc.txt"));
@@ -1312,7 +1301,7 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
       apps_util::kIntentActionView, std::move(files));
 
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
-      proxy.GetAppsForIntent(intent, /*exclude_browsers=*/true);
+      proxy()->GetAppsForIntent(intent, /*exclude_browsers=*/true);
 
   // Check that we actually get back the 2nd filter, and not the excluded
   // scheme-only filter which should have been discarded.
@@ -1321,41 +1310,37 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
 }
 
 TEST_F(AppServiceProxyTest, CreatePublisherAfterReadAppStorage) {
-  TestingProfile profile;
   constexpr char kTestAppId[] = "arc";
+  // Reinitialize App Service to re-read the App Storage file.
+  proxy()->ReinitializeForTesting(profile());
 
-  AppServiceProxy* const proxy =
-      AppServiceProxyFactory::GetForProfile(&profile);
-
-  FakeAppRegistryCacheObserver observer(&proxy->AppRegistryCache());
+  FakeAppRegistryCacheObserver observer(&proxy()->AppRegistryCache());
 
   // Add the OnApps task to the OnReady post task list.
-  proxy->OnReady()->Post(
+  proxy()->OnReady()->Post(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         std::vector<AppPtr> apps;
         apps.push_back(std::make_unique<App>(AppType::kArc, kTestAppId));
-        proxy->OnApps(std::move(apps), AppType::kArc,
-                      /*should_notify_initialized=*/false);
+        proxy()->OnApps(std::move(apps), AppType::kArc,
+                        /*should_notify_initialized=*/false);
       }));
 
   // Verify no apps added to AppRegistryCache.
-  EXPECT_TRUE(proxy->AppRegistryCache().GetAllApps().empty());
+  EXPECT_TRUE(proxy()->AppRegistryCache().GetAllApps().empty());
 
   // Wait for reading AppStorage, then create publishers, and verify apps are
   // added to AppRegistryCache.
   std::set<std::string> app_ids;
   app_ids.insert(kTestAppId);
   observer.WaitForOnAppUpdate(app_ids);
-  EXPECT_FALSE(proxy->AppRegistryCache().GetAllApps().empty());
-  EXPECT_EQ(AppType::kArc, proxy->AppRegistryCache().GetAppType(kTestAppId));
+  EXPECT_FALSE(proxy()->AppRegistryCache().GetAllApps().empty());
+  EXPECT_EQ(AppType::kArc, proxy()->AppRegistryCache().GetAppType(kTestAppId));
 }
 
 class AppServiceProxyLaunchTest : public AppServiceProxyTest {
  public:
   void SetUp() override {
     AppServiceProxyTest::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
-    proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
     CreateAndInitShelfController();
   }
 
@@ -1365,8 +1350,8 @@ class AppServiceProxyLaunchTest : public AppServiceProxyTest {
   void CreateAndInitShelfController() {
     model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ =
-        std::make_unique<ChromeShelfController>(profile_.get(), model_.get());
-    shelf_controller_->SetProfileForTest(profile_.get());
+        std::make_unique<ChromeShelfController>(profile(), model_.get());
+    shelf_controller_->SetProfileForTest(profile());
     shelf_controller_->Init();
   }
 
@@ -1383,13 +1368,10 @@ class AppServiceProxyLaunchTest : public AppServiceProxyTest {
   }
 
   ChromeShelfController* shelf_controller() { return shelf_controller_.get(); }
-  AppServiceProxy* proxy() { return proxy_; }
 
  public:
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ash::ShelfModel> model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
-  raw_ptr<AppServiceProxy> proxy_;
 };
 
 // Verify the spinner can be closed when the app is uninstalled.

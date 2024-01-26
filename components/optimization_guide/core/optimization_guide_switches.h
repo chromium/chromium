@@ -56,6 +56,8 @@ extern const char kDebugLoggingEnabled[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelValidate[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelExecutionValidate[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPageContentAnnotationsLoggingEnabled[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPageContentAnnotationsValidationStartupDelaySeconds[];
@@ -135,6 +137,10 @@ bool IsModelOverridePresent();
 // Returns whether the model validation should happen.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldValidateModel();
+
+// Returns whether the server-side AI model execution validation should happen.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldValidateModelExecution();
 
 // Returns the model override command line switch.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -13,14 +14,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -55,7 +54,7 @@ class PinDialogManager final {
   void AddSignRequestId(
       const std::string& extension_id,
       int sign_request_id,
-      const absl::optional<AccountId>& authenticating_user_account_id);
+      const std::optional<AccountId>& authenticating_user_account_id);
 
   // Removes the specified sign request, aborting both the current and the
   // future PIN dialogs related to it.
@@ -129,13 +128,13 @@ class PinDialogManager final {
   struct SignRequestState {
     SignRequestState(
         base::Time begin_time,
-        const absl::optional<AccountId>& authenticating_user_account_id);
+        const std::optional<AccountId>& authenticating_user_account_id);
     SignRequestState(const SignRequestState&);
     SignRequestState& operator=(const SignRequestState&);
     ~SignRequestState();
 
     base::Time begin_time;
-    absl::optional<AccountId> authenticating_user_account_id;
+    std::optional<AccountId> authenticating_user_account_id;
   };
 
   // Holds information related to the currently opened PIN dialog.
@@ -150,9 +149,7 @@ class PinDialogManager final {
     // Remember the host that was used to open the active dialog, as new hosts
     // could have been added since the dialog was opened, but we want to
     // continue calling the same host when dealing with the same active dialog.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION SecurityTokenPinDialogHost* const host;
+    const raw_ptr<SecurityTokenPinDialogHost> host;
 
     const std::string extension_id;
     const std::string extension_name;
@@ -200,7 +197,7 @@ class PinDialogManager final {
 
   // There can be only one active dialog to request the PIN at any point of
   // time.
-  absl::optional<ActiveDialogState> active_dialog_state_;
+  std::optional<ActiveDialogState> active_dialog_state_;
 
   base::WeakPtrFactory<PinDialogManager> weak_factory_{this};
 };

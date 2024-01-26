@@ -36,7 +36,6 @@ namespace cc {
 class DisplayItemList;
 class DrawImage;
 class ImageProvider;
-class PictureLayerTilingClient;
 
 class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
  public:
@@ -111,8 +110,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Return true iff this raster source can raster the given rect in layer
   // space.
-  bool IntersectsRect(const gfx::Rect& layer_rect,
-                      const PictureLayerTilingClient& client) const;
+  bool IntersectsRect(const gfx::Rect& layer_rect) const;
 
   // Returns true if this raster source has anything to rasterize.
   bool HasRecordings() const;
@@ -138,6 +136,11 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   TakeDecodingModeMap();
 
   size_t* max_op_size_hint() { return &max_op_size_hint_; }
+
+  const std::optional<DirectlyCompositedImageInfo>&
+  directly_composited_image_info() const {
+    return directly_composited_image_info_;
+  }
 
   void set_debug_name(const std::string& name) { debug_name_ = name; }
   const std::string& debug_name() const { return debug_name_; }
@@ -180,6 +183,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   const gfx::Size size_;
   const int slow_down_raster_scale_factor_for_debug_;
   const float recording_scale_factor_;
+  std::optional<DirectlyCompositedImageInfo> directly_composited_image_info_;
   // Used for debugging and tracing.
   std::string debug_name_;
 };

@@ -84,7 +84,8 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::blink::WebTransport>,
       mojo::PendingReceiver<network::mojom::blink::WebTransportClient>,
-      network::mojom::blink::HttpResponseHeadersPtr response_headers) override;
+      network::mojom::blink::HttpResponseHeadersPtr response_headers,
+      network::mojom::blink::WebTransportStatsPtr initial_stats) override;
   void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;
 
   // WebTransportClient implementation
@@ -96,7 +97,8 @@ class MODULES_EXPORT WebTransport final
   void OnReceivedStopSending(uint32_t stream_id,
                              uint32_t stream_error_code) override;
   void OnClosed(
-      network::mojom::blink::WebTransportCloseInfoPtr close_info) override;
+      network::mojom::blink::WebTransportCloseInfoPtr close_info,
+      network::mojom::blink::WebTransportStatsPtr final_stats) override;
 
   // Implementation of ExecutionContextLifecycleObserver
   void ContextDestroyed() final;

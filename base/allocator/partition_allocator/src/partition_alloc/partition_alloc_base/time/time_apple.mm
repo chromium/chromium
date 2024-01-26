@@ -7,15 +7,16 @@
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <sys/sysctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <time.h>
+
+#include <cstddef>
+#include <cstdint>
+#include <ctime>
 
 #if BUILDFLAG(IS_IOS)
-#include <errno.h>
+#include <cerrno>
 #endif
 
 #include "build/build_config.h"

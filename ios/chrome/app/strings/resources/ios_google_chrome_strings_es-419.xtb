@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1066101356081285416">Chrome detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chrome para proporcionar esta función y mejorar las funciones de Google Shopping para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borrar los datos de navegación en Chrome.</translation>
 <translation id="1113057722807951993">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
@@ -40,13 +41,13 @@ Aspectos que debes tener en cuenta:
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Agrega las URL ingresadas a tus favoritos en Chrome.</translation>
+<translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Usa Chrome automáticamente cuando presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="1965935827552890526">Completa las tareas que tenías en curso en otra ventana abierta de Chrome.</translation>
 <translation id="1987779152850321833">Completa estas acciones sugeridas para aprovechar Chrome al máximo.</translation>
-<translation id="2008357574463816229">Si olvidas tu frase de contraseña o quieres cambiar este parámetro, <ph name="BEGIN_LINK" />borra los datos de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Realiza más tareas con una versión de Google Chrome más simple, segura y rápida que nunca.</translation>
 <translation id="2120238739383482109">Abre los favoritos de Chrome.</translation>
 <translation id="2147651015520127414">Chrome verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
@@ -75,6 +76,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2702250627063295552">Agregar el elemento de la Lista de lectura a Chrome</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
+<translation id="2789947168960170215">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Borrar los datos de navegación en Chrome</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>
 <translation id="3522659714780527202">Para ver tus pestañas donde sea que uses Chrome, activa la sincronización</translation>
 <translation id="3577555362230509265">Usa Chrome en otras apps.</translation>
-<translation id="3594076341410558780">Ocultar "Aprovecha Chrome al máximo"</translation>
 <translation id="364480321352456989">Tu navegador Chrome está desactualizado.</translation>
 <translation id="3646736009628185125">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chrome y sincronice sus contraseñas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Esto significa que Chrome solicitará el sitio móvil cada vez.</translation>
@@ -204,7 +205,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="686691656039982452">Puedes <ph name="BEGIN_LINK" />administrar qué datos de Chrome se guardan<ph name="END_LINK" /> en tu Cuenta de Google.
 
 Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chrome, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todos los usuarios. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />Configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Realizar búsquedas con la voz en Chrome</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="6975725306479268850">Elige Chrome para autocompletar</translation>

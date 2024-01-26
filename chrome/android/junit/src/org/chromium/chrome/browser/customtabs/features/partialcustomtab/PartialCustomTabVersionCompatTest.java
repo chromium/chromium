@@ -27,7 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 
 /** Tests for {@link PartialCustomTabVersionCompat}. */
 @RunWith(BaseRobolectricTestRunner.class)

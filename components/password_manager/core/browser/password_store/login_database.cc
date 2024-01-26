@@ -42,7 +42,6 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -221,8 +220,7 @@ struct SQLTableBuilders {
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(pickle.data()),
-                         pickle.size());
+  return base::make_span(pickle);
 }
 
 base::Pickle PickleFromSpan(base::span<const uint8_t> data) {
@@ -2455,19 +2453,12 @@ InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(
 
 std::vector<PasswordNote> LoginDatabase::GetPasswordNotes(
     FormPrimaryKey primary_key) const {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return {};
-  }
   return password_notes_table_.GetPasswordNotes(primary_key);
 }
 
 void LoginDatabase::UpdatePasswordNotes(
     FormPrimaryKey primary_key,
     const std::vector<PasswordNote>& notes) {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return;
-  }
-
   password_notes_table_.RemovePasswordNotes(primary_key);
   for (const PasswordNote& note : notes) {
     password_notes_table_.InsertOrReplace(primary_key, note);

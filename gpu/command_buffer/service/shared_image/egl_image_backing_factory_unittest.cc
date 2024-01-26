@@ -4,13 +4,14 @@
 
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 
+#include <optional>
 #include <thread>
 
-#include <optional>
 #include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -248,10 +249,13 @@ class EGLImageBackingFactoryThreadSafeTest
     buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size, map_callback,
                     &map_status);
     // Tick device until async map operation completes.
-    while (map_status == WGPUBufferMapAsyncStatus_Unknown) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      if (map_status != WGPUBufferMapAsyncStatus_Unknown) {
+        return true;
+      }
       device.Tick();
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-    }
+      return false;
+    }));
 
     const uint8_t* dst_pixels =
         reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
@@ -453,7 +457,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
     // Create a DawnImageRepresentation using WGPUBackendType_OpenGLES backend.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::OpenGLES, {});
+            mailbox, device, wgpu::BackendType::OpenGLES, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -539,7 +543,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     // Create a DawnImageRepresentation using the OpenGLES backend.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::OpenGLES, {});
+            mailbox, device, wgpu::BackendType::OpenGLES, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -667,10 +671,13 @@ CreateAndValidateSharedImageRepresentations::
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
-  // for skia write. Tests that use this class also write to the created
-  // SharedImage via GL.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER;
+  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and
+  // SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE for skia
+  // write. Tests that use this class also write to the created SharedImage via
+  // GL.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE |
+                   SHARED_IMAGE_USAGE_RASTER_READ |
+                   SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (upload_initial_data) {

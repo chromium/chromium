@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ namespace ash {
 
 namespace {
 
-void WriteStringToFile(const base::FilePath& path, base::StringPiece data) {
+void WriteStringToFile(const base::FilePath& path, std::string_view data) {
   ASSERT_TRUE(base::CreateDirectory(path.DirName()))
       << "Failed to create directory " << path.DirName().value();
   ASSERT_TRUE(base::WriteFile(path, data))

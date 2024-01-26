@@ -9,10 +9,12 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -57,6 +59,8 @@ class BookmarkUndoServiceTest : public testing::Test {
   BookmarkUndoService* GetUndoService();
 
  private:
+  base::test::ScopedFeatureList features_{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
@@ -198,6 +202,68 @@ TEST_F(BookmarkUndoServiceTest, UndoBookmarkMoveWithinFolder) {
   EXPECT_EQ(model->other_node()->children()[0].get(), n2);
   EXPECT_EQ(model->other_node()->children()[1].get(), n3);
   EXPECT_EQ(model->other_node()->children()[2].get(), n1);
+}
+
+// Test moving bookmarks across NodeTypeForUuidLookup boundaries.
+TEST_F(BookmarkUndoServiceTest, UndoBookmarkMoveAcrossNodeTypeForUuidLookup) {
+  BookmarkModel* model = GetModel();
+  BookmarkUndoService* undo_service = GetUndoService();
+
+  model->CreateAccountPermanentFolders();
+  ASSERT_NE(nullptr, model->account_other_node());
+  ASSERT_NE(model->other_node(), model->account_other_node());
+
+  const BookmarkNode* n1 =
+      model->AddURL(model->other_node(), 0, u"foo", GURL("http://www.foo.com"));
+
+  ASSERT_EQ(1u, model->other_node()->children().size());
+  ASSERT_EQ(0u, model->account_other_node()->children().size());
+  ASSERT_EQ(n1,
+            model->GetNodeByUuid(
+                n1->uuid(),
+                BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  ASSERT_EQ(nullptr, model->GetNodeByUuid(
+                         n1->uuid(),
+                         BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
+
+  // Move from kLocalOrSyncableNodes to kAccountNodes.
+  model->Move(n1, model->account_other_node(), 0);
+
+  ASSERT_EQ(0u, model->other_node()->children().size());
+  ASSERT_EQ(1u, model->account_other_node()->children().size());
+  ASSERT_EQ(nullptr,
+            model->GetNodeByUuid(
+                n1->uuid(),
+                BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  ASSERT_EQ(
+      n1, model->GetNodeByUuid(
+              n1->uuid(), BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
+
+  // Undo the move and check that it was moved back to kLocalOrSyncableNodes.
+  undo_service->undo_manager()->Undo();
+
+  EXPECT_EQ(1u, model->other_node()->children().size());
+  EXPECT_EQ(0u, model->account_other_node()->children().size());
+  EXPECT_EQ(n1,
+            model->GetNodeByUuid(
+                n1->uuid(),
+                BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(nullptr, model->GetNodeByUuid(
+                         n1->uuid(),
+                         BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
+
+  // Redo the move and check that it moves again to kAccountNodes.
+  undo_service->undo_manager()->Redo();
+
+  EXPECT_EQ(0u, model->other_node()->children().size());
+  EXPECT_EQ(1u, model->account_other_node()->children().size());
+  EXPECT_EQ(nullptr,
+            model->GetNodeByUuid(
+                n1->uuid(),
+                BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(
+      n1, model->GetNodeByUuid(
+              n1->uuid(), BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
 }
 
 // Test undo of a bookmark moved to a different folder.

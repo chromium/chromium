@@ -412,7 +412,7 @@ class OptimizationGuideKeyedServiceBrowserTest
   GURL url_that_redirects_;
   GURL url_that_redirects_to_no_hints_;
 
-  absl::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
+  std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;

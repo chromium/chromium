@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +19,6 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -33,7 +34,7 @@ ExtensionPrefs* GetExtensionPrefs(Profile* profile) {
 }
 
 // Get dictionary of extension prefs.
-absl::optional<bool> GetExtensionPrefsAsBoolean(
+std::optional<bool> GetExtensionPrefsAsBoolean(
     ExtensionPrefs* extension_prefs,
     const ExtensionId& extension_id) {
   bool out_value = false;
@@ -41,12 +42,12 @@ absl::optional<bool> GetExtensionPrefsAsBoolean(
                                          &out_value)) {
     return out_value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Get extension pref result.
-absl::optional<bool> GetExtensionPrefsAsBoolean(const Extension& extension,
-                                                Profile* profile) {
+std::optional<bool> GetExtensionPrefsAsBoolean(const Extension& extension,
+                                               Profile* profile) {
   return GetExtensionPrefsAsBoolean(GetExtensionPrefs(profile), extension.id());
 }
 

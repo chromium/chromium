@@ -103,6 +103,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   UrlCheckerOnSB* GetSyncSBCheckerForTesting();
   UrlCheckerOnSB* GetAsyncSBCheckerForTesting();
+  void SetOnSyncSBCheckerCreatedCallbackForTesting(base::OnceClosure callback);
+  void SetOnAsyncSBCheckerCreatedCallbackForTesting(base::OnceClosure callback);
 
  private:
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
@@ -174,13 +176,13 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
 
-  // Checkers used to perform Safe Browsing checks. |sync_sb_checker_| may defer
-  // the URL loader. |async_sb_checker_| doesn't defer the URL loader and may
-  // be transferred to |skip_check_checker_| if it is not completed.
-  // |async_sb_checker_| may be null when this loader is not eligible for async
-  // check.
-  std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
-  std::unique_ptr<UrlCheckerOnSB> async_sb_checker_;
+  // When async checks are eligible, this is set either to true or false when
+  // one of |pending_sync_checks_| or |pending_async_checks_| is decremented to
+  // 0, unless they are both set to 0 at once, in which case it is considered a
+  // tie and the value remains |std::nullopt|. It is reset to |std::nullopt| any
+  // time the pending check counters are incremented. This value is used for
+  // logging purposes only.
+  std::optional<bool> was_async_faster_than_sync_;
 
   // Used to decide whether the check can be skipped on the SB thread.
   std::unique_ptr<SkipCheckCheckerOnSB> skip_check_checker_;
@@ -196,6 +198,33 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // In progress async SB checker will be transferred to this object.
   base::WeakPtr<AsyncCheckTracker> async_check_tracker_;
+
+  // This object is used to perform real time url check. Can only be accessed in
+  // UI thread.
+  base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
+
+  // This object is used to perform the hash-prefix real-time lookup. It can
+  // only be accessed on the UI thread.
+  base::WeakPtr<HashRealTimeService> hash_realtime_service_;
+
+  // What kind of hash-prefix real-time lookup is enabled for this request.
+  hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_;
+
+  int frame_tree_node_id_;
+  absl::optional<int64_t> navigation_id_;
+  UrlCheckerOnSB::GetDelegateCallback delegate_getter_;
+  base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
+
+  // Checkers used to perform Safe Browsing checks. |sync_sb_checker_| may defer
+  // the URL loader. |async_sb_checker_| doesn't defer the URL loader and may
+  // be transferred to |skip_check_checker_| if it is not completed.
+  // |async_sb_checker_| may be null when this loader is not eligible for async
+  // check. These checkers are null until |WillStartRequest| is called.
+  std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
+  std::unique_ptr<UrlCheckerOnSB> async_sb_checker_;
+
+  base::OnceClosure on_sync_sb_checker_created_callback_for_testing_;
+  base::OnceClosure on_async_sb_checker_created_callback_for_testing_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

@@ -11,6 +11,12 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION";
     static final String ACTION_CLOSE_NOTIFICATION =
             "org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION";
+    static final String ACTION_PRE_UNSUBSCRIBE =
+            "org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE";
+    static final String ACTION_UNDO_UNSUBSCRIBE =
+            "org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE";
+    static final String ACTION_COMMIT_UNSUBSCRIBE =
+            "org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE";
 
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been

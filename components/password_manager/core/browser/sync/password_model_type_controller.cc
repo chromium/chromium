@@ -21,7 +21,6 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
@@ -89,17 +88,6 @@ PasswordModelTypeController::GetPreconditionState() const {
 #else
   return PreconditionState::kPreconditionsMet;
 #endif
-}
-
-bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
-#if !BUILDFLAG(IS_IOS)
-  // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
-  // make sense to enable this datatype.
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    return false;
-  }
-#endif  // !BUILDFLAG(IS_IOS)
-  return true;
 }
 
 void PasswordModelTypeController::OnAccountsInCookieUpdated(

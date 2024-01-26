@@ -95,7 +95,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   bool HasPendingActivity() const override { return false; }
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override {
+      int context_sample_rate,
+      uint32_t context_buffer_size) override {
     return nullptr;
   }
 
@@ -123,8 +124,11 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MOCK_CONST_METHOD1(TransferAllowed, bool(String&));
 
 #if !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD2(SendWheel,
-               void(CapturedWheelAction*,
+  MOCK_METHOD5(SendWheel,
+               void(double,
+                    double,
+                    int,
+                    int,
                     base::OnceCallback<void(bool, const String&)>));
   MOCK_METHOD1(
       GetZoomLevel,

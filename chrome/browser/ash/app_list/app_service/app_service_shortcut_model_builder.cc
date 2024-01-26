@@ -16,7 +16,7 @@
 
 namespace {
 bool ShouldShowInLauncher(const apps::ShortcutSource& shortcut_source) {
-  return shortcut_source == apps::ShortcutSource::kUser;
+  return shortcut_source != apps::ShortcutSource::kUnknown;
 }
 }  // namespace
 

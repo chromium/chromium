@@ -4,41 +4,19 @@
 
 use crate::config;
 use crate::group::Group;
-use anyhow::{Context, Result};
 use cargo_metadata::{Node, Package, PackageId};
 use std::collections::HashMap;
-use std::fmt::Write;
-
-/// Implements Write, passing through its inputs to log::info, but only
-/// if the package being logged about matches the condition.
-struct DebugLogger {
-    should_log: bool,
-}
-impl DebugLogger {
-    fn new(should_log: bool) -> DebugLogger {
-        DebugLogger { should_log }
-    }
-}
-impl Write for DebugLogger {
-    fn write_str(&mut self, s: &str) -> std::fmt::Result {
-        if self.should_log {
-            log::info!("{}", s)
-        }
-        Ok(())
-    }
-}
 
 fn is_ancestor(
     ancestor_id: &PackageId,
     id: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
 ) -> bool {
     if id == ancestor_id {
         return true;
     }
     for dep in &nodes[ancestor_id].dependencies {
-        if dep == id || is_ancestor(dep, id, packages, nodes) {
+        if dep == id || is_ancestor(dep, id, nodes) {
             return true;
         }
     }
@@ -49,19 +27,8 @@ fn get_group(
     id: &PackageId,
     packages: &HashMap<&PackageId, &Package>,
     config: &config::BuildConfig,
-) -> Result<Option<Group>> {
-    let each_group =
-        config.per_crate_config.get(&packages[id].name).and_then(|config| config.group.as_ref());
-    match each_group {
-        Some(x) => Some(Group::new_from_str(x).with_context(|| {
-            format!(
-                "Invalid config: group {} for crate {} should be one of safe|sandbox|text",
-                x, packages[id].name,
-            )
-        }))
-        .transpose(),
-        None => Ok(None),
-    }
+) -> Option<Group> {
+    config.per_crate_config.get(&packages[id].name)?.group
 }
 
 pub fn find_inherited_privilege_group(
@@ -70,10 +37,7 @@ pub fn find_inherited_privilege_group(
     packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
     config: &config::BuildConfig,
-) -> Result<Group> {
-    // For debugging, choose a name or condition.
-    let mut log = DebugLogger::new(packages[id].name == "");
-
+) -> Group {
     // A group is inherited from its ancestors and its dependencies, including
     // from itself.
     // - It inherits the highest privilege of any ancestor. If everything only uses
@@ -85,7 +49,7 @@ pub fn find_inherited_privilege_group(
     let mut dependency_groups = Vec::<Group>::new();
 
     for each_id in packages.keys() {
-        let found_group = get_group(each_id, packages, config)?.or_else(|| {
+        let found_group = get_group(each_id, packages, config).or_else(|| {
             if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
                 // If the dependency is a top-level dep of Chromium, then it defaults to this
                 // privilege level.
@@ -97,32 +61,30 @@ pub fn find_inherited_privilege_group(
         });
 
         if let Some(group) = found_group {
-            if id == *each_id || is_ancestor(each_id, id, packages, nodes) {
+            if id == *each_id || is_ancestor(each_id, id, nodes) {
                 // `each_id` is an ancestor of `id`, or is the same crate.
-                write!(log, "{} ance {} ({:?})", packages[id].name, packages[each_id].name, group)?;
+                log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, group);
                 ancestor_groups.push(group);
-            } else if is_ancestor(id, each_id, packages, nodes) {
+            } else if is_ancestor(id, each_id, nodes) {
                 // `each_id` is an descendent of `id`, or is the same crate.
-                write!(log, "{} depe {} ({:?})", packages[id].name, packages[each_id].name, group)?;
+                log::debug!("{} depe {} ({:?})", packages[id].name, packages[each_id].name, group);
                 dependency_groups.push(group);
             }
         };
     }
 
-    if let Some(self_group) = get_group(id, packages, config)? {
+    if let Some(self_group) = get_group(id, packages, config) {
         ancestor_groups.clear();
         ancestor_groups.push(self_group);
     }
 
     // Combine the privileges together. Ancestors work to increase privilege,
     // and dependencies work to decrease it.
-    let ancestor_privilege =
-        ancestor_groups.into_iter().fold(Group::Test, |old, g| std::cmp::max(old, g));
-    let depedency_privilege =
-        dependency_groups.into_iter().fold(Group::Safe, |old, g| std::cmp::min(old, g));
+    let ancestor_privilege = ancestor_groups.into_iter().fold(Group::Test, std::cmp::max);
+    let depedency_privilege = dependency_groups.into_iter().fold(Group::Safe, std::cmp::min);
     let privilege = std::cmp::min(ancestor_privilege, depedency_privilege);
-    write!(log, "privilege = {:?}", privilege)?;
-    Ok(privilege)
+    log::debug!("privilege = {:?}", privilege);
+    privilege
 }
 
 /// Finds the value of a config flag for a crate that is inherited from
@@ -142,29 +104,28 @@ fn find_inherited_bool_flag(
     packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
     config: &config::BuildConfig,
-    log: &mut DebugLogger,
     mut get_flag: impl FnMut(&PackageId) -> Option<bool>,
     mut get_flag_for_top_level: impl FnMut(Option<Group>) -> Option<bool>,
-) -> Result<Option<bool>> {
+) -> Option<bool> {
     let mut inherited_flag = None;
 
     for each_id in packages.keys() {
-        let group = get_group(each_id, packages, config)?;
+        let group = get_group(each_id, packages, config);
 
         if let Some(flag) = get_flag(each_id).or_else(|| {
-            if nodes[root].deps.iter().find(|d| d.pkg == **each_id).is_some() {
+            if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
                 get_flag_for_top_level(group)
             } else {
                 None
             }
         }) {
-            if id == *each_id || is_ancestor(each_id, id, packages, nodes) {
-                write!(log, "{} ance {} ({:?})", packages[id].name, packages[each_id].name, flag)?;
+            if id == *each_id || is_ancestor(each_id, id, nodes) {
+                log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, flag);
                 inherited_flag = Some(inherited_flag.unwrap_or_default() || flag);
             }
         };
     }
-    Ok(inherited_flag)
+    inherited_flag
 }
 
 /// Finds the security_critical flag to be used for a package `id`.
@@ -178,10 +139,7 @@ pub fn find_inherited_security_critical_flag(
     packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
     config: &config::BuildConfig,
-) -> Result<Option<bool>> {
-    // For debugging, choose a name or condition.
-    let mut log = DebugLogger::new(packages[id].name == "");
-
+) -> Option<bool> {
     let get_security_critical = |id: &PackageId| {
         config.per_crate_config.get(&packages[id].name).and_then(|config| config.security_critical)
     };
@@ -200,11 +158,10 @@ pub fn find_inherited_security_critical_flag(
         packages,
         nodes,
         config,
-        &mut log,
         get_security_critical,
         get_top_level_security_critical,
     );
-    write!(log, "{} security_critical {:?}", packages[id].name, inherited_flag)?;
+    log::debug!("{} security_critical {:?}", packages[id].name, inherited_flag);
     inherited_flag
 }
 
@@ -219,10 +176,7 @@ pub fn find_inherited_shipped_flag(
     packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
     config: &config::BuildConfig,
-) -> Result<Option<bool>> {
-    // For debugging, choose a name or condition.
-    let mut log = DebugLogger::new(packages[id].name == "");
-
+) -> Option<bool> {
     let get_shipped = |id: &PackageId| {
         config.per_crate_config.get(&packages[id].name).and_then(|config| config.shipped)
     };
@@ -241,10 +195,9 @@ pub fn find_inherited_shipped_flag(
         packages,
         nodes,
         config,
-        &mut log,
         get_shipped,
         get_top_level_shipped,
     );
-    write!(log, "{} shipped {:?}", packages[id].name, inherited_flag)?;
+    log::debug!("{} shipped {:?}", packages[id].name, inherited_flag);
     inherited_flag
 }

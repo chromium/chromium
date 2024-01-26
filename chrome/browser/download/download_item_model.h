@@ -74,8 +74,8 @@ class DownloadItemModel : public DownloadUIModel,
   void SetActionedOn(bool actioned_on) override;
   bool WasUIWarningShown() const override;
   void SetWasUIWarningShown(bool was_ui_warning_shown) override;
-  absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
-  void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time) override;
+  std::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
+  void SetEphemeralWarningUiShownTime(std::optional<base::Time> time) override;
   bool ShouldPreferOpeningInBrowser() override;
   void SetShouldPreferOpeningInBrowser(bool preference) override;
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel() const override;

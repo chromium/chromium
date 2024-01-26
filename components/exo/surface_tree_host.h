@@ -196,6 +196,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // It also updates `root_surface_origin_` accordingly to the origin.
   void UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
 
+  // Updates the host layer's opacity. This has to be called after root
+  // surface's resource is updated.
+  void UpdateHostLayerOpacity();
+
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;
   }

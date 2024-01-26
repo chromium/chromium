@@ -20,7 +20,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
 #import "ios/components/webui/web_ui_url_constants.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 

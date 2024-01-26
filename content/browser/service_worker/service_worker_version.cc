@@ -1493,6 +1493,11 @@ void ServiceWorkerVersion::OnStopping() {
       "Script", script_url_.spec(), "Version Status",
       VersionStatusToString(status_));
 
+  // If the service worker is warming up or warmed up, Such workers
+  // don't need to be restarted in `OnStoppedInternal()`.
+  is_stopping_warmed_up_worker_ =
+      embedded_worker_->pause_initializing_global_scope();
+
   // Endpoint isn't available after calling EmbeddedWorkerInstance::Stop().
   // This needs to be set here without waiting until the worker is actually
   // stopped because subsequent StartWorker() may read the flag to decide
@@ -2740,6 +2745,10 @@ void ServiceWorkerVersion::OnStoppedInternal(
     // restart on start failure could cause an endless loop of start attempts,
     // so don't try to restart now.
     should_restart = false;
+  } else if (is_stopping_warmed_up_worker_) {
+    // This worker is stopped while warmed-up or warming-up. Such workers don't
+    // need to restart.
+    should_restart = false;
   }
 
   if (!stop_time_.is_null()) {
@@ -3054,6 +3063,12 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
     router_evaluator_.reset();
     return false;
   }
+  CHECK_NE(fetch_handler_existence(), FetchHandlerExistence::UNKNOWN);
+  if (router_evaluator_->has_fetch_event_source() &&
+      fetch_handler_existence() == FetchHandlerExistence::DOES_NOT_EXIST) {
+    router_evaluator_.reset();
+    return false;
+  }
   return true;
 }
 
@@ -3066,6 +3081,13 @@ bool ServiceWorkerVersion::IsStaticRouterEnabled() {
     return true;
   }
   return false;
+}
+
+bool ServiceWorkerVersion::HasRouterWithNonFetchEventSource() const {
+  if (!router_evaluator_) {
+    return false;
+  }
+  return router_evaluator_->has_non_fetch_event_source();
 }
 
 void ServiceWorkerVersion::GetAssociatedInterface(

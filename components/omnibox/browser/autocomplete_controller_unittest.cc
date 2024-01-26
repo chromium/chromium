@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -80,9 +82,12 @@ class AutocompleteControllerTest : public testing::Test {
   AutocompleteMatch CreateSearchMatch(std::string name,
                                       bool allowed_to_be_default_match,
                                       int traditional_relevance) {
-    return CreateAutocompleteMatch(name, AutocompleteMatchType::SEARCH_SUGGEST,
-                                   allowed_to_be_default_match, false,
-                                   traditional_relevance, absl::nullopt);
+    auto match =
+        CreateAutocompleteMatch(name, AutocompleteMatchType::SEARCH_SUGGEST,
+                                allowed_to_be_default_match, false,
+                                traditional_relevance, absl::nullopt);
+    match.keyword = u"keyword";
+    return match;
   }
 
   AutocompleteMatch CreateHistoryUrlMlScoredMatch(
@@ -103,6 +108,24 @@ class AutocompleteControllerTest : public testing::Test {
                                    ml_output);
   }
 
+  AutocompleteMatch CreateKeywordHintMatch(std::string name,
+                                           int traditional_relevance) {
+    auto match = CreateAutocompleteMatch(
+        name, AutocompleteMatchType::SEARCH_SUGGEST, false, false,
+        traditional_relevance, absl::nullopt);
+    match.keyword = u"keyword";
+    match.associated_keyword = std::make_unique<AutocompleteMatch>(
+        nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+    return match;
+  }
+
+  AutocompleteMatch CreateHistoryClusterMatch(std::string name,
+                                              int traditional_relevance) {
+    return CreateAutocompleteMatch(name, AutocompleteMatchType::HISTORY_CLUSTER,
+                                   false, false, traditional_relevance,
+                                   absl::nullopt);
+  }
+
   AutocompleteMatch CreateAutocompleteMatch(std::string name,
                                             AutocompleteMatchType::Type type,
                                             bool allowed_to_be_default_match,
@@ -116,7 +139,6 @@ class AutocompleteControllerTest : public testing::Test {
     match.stripped_destination_url = GURL{"https://google.com/" + name};
     match.contents = base::UTF8ToUTF16(name);
     match.contents_class = {{0, 1}};
-    match.keyword = u"keyword";
     if (ml_output.has_value()) {
       match.scoring_signals = {{}};
       match.scoring_signals->set_site_engagement(ml_output.value());
@@ -436,7 +458,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_PreservingDefault) {
     SCOPED_TRACE("Don't preserve default on sync pass with short inputs.");
     EXPECT_THAT(controller_.SimulateAutocompletePass(
                     true, false, {match1, match2},
-                    controller_.CreateInput(u"x", false)),
+                    FakeAutocompleteController::CreateInput(u"x")),
                 testing::ElementsAreArray({
                     "match2",
                     "match1",
@@ -593,7 +615,7 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
-  scoped_ml_config.GetMLConfig().stable_search_ranking = false;
+  scoped_ml_config.GetMLConfig().stable_search_blending = false;
 
   EXPECT_THAT(controller_.SimulateCleanAutocompletePass({}),
               testing::ElementsAre());
@@ -813,7 +835,7 @@ TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
-  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+  scoped_ml_config.GetMLConfig().stable_search_blending = true;
 
   EXPECT_THAT(controller_.SimulateCleanAutocompletePass({}),
               testing::ElementsAre());
@@ -1017,7 +1039,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_PreserveDefault) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
-  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+  scoped_ml_config.GetMLConfig().stable_search_blending = true;
 
   // ML ranking should preserve search defaults.
   EXPECT_THAT(controller_.SimulateAutocompletePass(
@@ -1069,7 +1091,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_AllMatches) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
-  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+  scoped_ml_config.GetMLConfig().stable_search_blending = true;
 
   EXPECT_THAT(
       controller_.SimulateAutocompletePass(
@@ -1130,7 +1152,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
   {
     SCOPED_TRACE("Expect immediate notification after sync pass.");
     controller_.GetFakeProvider().done_ = false;
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPass);
   }
@@ -1174,7 +1196,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
         "Expect immediate notification after the last async pass, even if a "
         "debounced notification is pending.");
     controller_.GetFakeProvider().done_ = false;
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPass);
 
@@ -1193,7 +1215,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
   {
     SCOPED_TRACE("Expect no stop update after a sync only pass.");
     controller_.GetFakeProvider().done_ = true;
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPassOnly);
     controller_.ExpectNoNotificationOrStop();
@@ -1203,7 +1225,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
         "Expect a stop update if the async passes takes too long. Expect no "
         "notification.");
     controller_.GetFakeProvider().done_ = false;
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPass);
     controller_.ExpectStopAfter(1500);
@@ -1213,7 +1235,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
         "Expect a stop update to flush any pending notification for completed "
         "non-final async passes.");
     controller_.GetFakeProvider().done_ = false;
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPass);
     for (size_t i = 0; i < 9; ++i) {
@@ -1230,7 +1252,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
         nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED};
     transferred_match.from_previous = true;
     controller_.GetFakeProvider().matches_ = {transferred_match};
-    controller_.Start(controller_.CreateInput(u"test", false));
+    controller_.Start(FakeAutocompleteController::CreateInput(u"test"));
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kSyncPass);
     // Expire timer is 500ms. Debounce delay is 200ms.
@@ -1298,5 +1320,91 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
         0, AutocompleteController::UpdateType::kStop);
     EXPECT_FALSE(controller_.observer_->last_default_match_changed);
     controller_.ExpectNoNotificationOrStop();
+  }
+}
+
+TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
+  auto set_feature = [](bool enabled) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        omnibox_feature_configs::ForceAllowedToBeDefault::
+            kForceAllowedToBeDefault,
+        enabled);
+    return omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::ForceAllowedToBeDefault>();
+  };
+
+  {
+    // When disabled, a not-defaultable history match should not be default.
+    SCOPED_TRACE("Disabled");
+    auto disabled_config = set_feature(false);
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateSearchMatch("search", true, 200),
+                    CreateHistoryUrlMlScoredMatch("history", false, 1400, .5),
+                }),
+                testing::ElementsAreArray({
+                    "search",
+                    "history",
+                }));
+  }
+  {
+    // An initially not-defaultable history match can be made defaultable.
+    SCOPED_TRACE("Enabled");
+    auto enabled_config = set_feature(true);
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateSearchMatch("search", true, 200),
+                    CreateHistoryUrlMlScoredMatch("history", false, 1400, .5),
+                }),
+                testing::ElementsAreArray({
+                    "history",
+                    "search",
+                }));
+  }
+  {
+    // Initially defaultable matches should not be made non-defaultable even if
+    // they don't qualify for forcing defaultable.
+    SCOPED_TRACE("Enabled defaultable");
+    auto enabled_config = set_feature(true);
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateSearchMatch("search", true, 200),
+                    CreateHistoryUrlMlScoredMatch("history", true, 300, .5),
+                }),
+                testing::ElementsAreArray({
+                    "history",
+                    "search",
+                }));
+  }
+  {
+    // Keyword matches shouldn't be made defaultable.
+    SCOPED_TRACE("Enabled keyword");
+    auto enabled_config = set_feature(true);
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateSearchMatch("search", true, 200),
+                    CreateKeywordHintMatch("keyword", 1000),
+                }),
+                testing::ElementsAreArray({
+                    "search",
+                    "keyword",
+                }));
+  }
+  {
+    // Should not force default when `prevent_inline_autocomplete_` is true.
+    SCOPED_TRACE("Enabled prevent inline autocomplete");
+    auto enabled_config = set_feature(true);
+    controller_.internal_result_.Reset();
+    EXPECT_THAT(
+        controller_.SimulateAutocompletePass(
+            true, true,
+            {
+                CreateSearchMatch("search", true, 200),
+                CreateAutocompleteMatch("history",
+                                        AutocompleteMatchType::HISTORY_CLUSTER,
+                                        false, false, 1000, 1),
+            },
+            FakeAutocompleteController::CreateInput(u"test", false, true)),
+        testing::ElementsAreArray({
+            "search",
+            "history",
+        }));
   }
 }

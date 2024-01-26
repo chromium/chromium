@@ -30,6 +30,14 @@ source_set("sessions") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("restoration_observer") {
   sources = [ "session_restoration_observer.h" ]
   public_deps = [ "//base" ]
@@ -228,6 +236,7 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.mm",
   ]
   deps = [
+    ":features",
     ":legacy_session_restoration_service",
     ":session_constants",
     ":session_migration",
@@ -241,7 +250,6 @@ source_set("session_restoration_service_factory") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/web/model/session_state",
-    "//ios/web/common:features",
   ]
 }
 

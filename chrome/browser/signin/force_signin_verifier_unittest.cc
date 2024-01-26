@@ -41,7 +41,7 @@ class ForceSigninVerifierWithAccessToInternalsForTesting
   // - token_is_valid_.has_value() == false, meaning the token is not set yet.
   // - token_is_valid_.value() == true, meanig the token is set and valid.
   // - token_is_valid_.value() == false, meanig the token is set and invalid.
-  absl::optional<bool> GetTokenIsValid() { return token_is_valid_; }
+  std::optional<bool> GetTokenIsValid() { return token_is_valid_; }
 
   void OnTokenFetchComplete(bool token_is_valid) {
     token_is_valid_ = token_is_valid;
@@ -52,7 +52,7 @@ class ForceSigninVerifierWithAccessToInternalsForTesting
   }
 
  public:
-  absl::optional<bool> token_is_valid_;
+  std::optional<bool> token_is_valid_;
 };
 
 // A NetworkConnectionObserver that invokes a base::RepeatingClosure when
@@ -187,7 +187,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
       account_info.account_id, /*token=*/"", base::Time());
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
-  absl::optional<bool> token = verifier.GetTokenIsValid().has_value();
+  std::optional<bool> token = verifier.GetTokenIsValid().has_value();
   ASSERT_TRUE(token.has_value());
   ASSERT_TRUE(token.value());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());
@@ -221,7 +221,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenWaitForRefreshTokenThenSuccess) {
       account_info.account_id, /*token=*/"", base::Time());
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
-  absl::optional<bool> token = verifier.GetTokenIsValid().has_value();
+  std::optional<bool> token = verifier.GetTokenIsValid().has_value();
   ASSERT_TRUE(token.has_value());
   ASSERT_TRUE(token.value());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());
@@ -247,7 +247,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
-  absl::optional<bool> token = verifier.GetTokenIsValid();
+  std::optional<bool> token = verifier.GetTokenIsValid();
   ASSERT_TRUE(token.has_value());
   ASSERT_FALSE(token.value());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());

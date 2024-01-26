@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/metrics/histogram_shared_memory_config.h"
+
+#include <string_view>
+
 #include "content/public/common/process_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -10,11 +13,17 @@ namespace content {
 
 namespace {
 
-using Config = base::HistogramSharedMemoryConfig;
+using Config = base::HistogramSharedMemory::Config;
 
 struct ProcessTypeToOptionalConfig {
   int process_type;
-  std::optional<base::HistogramSharedMemoryConfig> expected;
+  std::optional<Config> expected;
+
+  ProcessTypeToOptionalConfig(int type, absl::nullopt_t)
+      : process_type(type), expected(absl::nullopt) {}
+
+  ProcessTypeToOptionalConfig(int type, std::string_view name, size_t size)
+      : process_type(type), expected(Config{type, name, size}) {}
 };
 
 using HistogramSharedMemoryConfigTest =
@@ -29,6 +38,7 @@ TEST_P(HistogramSharedMemoryConfigTest, GetHistogramSharedMemoryConfig) {
   const auto config = GetHistogramSharedMemoryConfig(process_type);
   ASSERT_EQ(config.has_value(), expected.has_value());
   if (config.has_value()) {
+    EXPECT_EQ(config->process_type, process_type);
     EXPECT_EQ(config->allocator_name, expected->allocator_name);
     EXPECT_EQ(config->memory_size_bytes, expected->memory_size_bytes);
   }
@@ -40,15 +50,15 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(std::vector<ProcessTypeToOptionalConfig>({
         {PROCESS_TYPE_UNKNOWN, std::nullopt},
         {PROCESS_TYPE_BROWSER, std::nullopt},
-        {PROCESS_TYPE_RENDERER, Config{"RendererMetrics", 2 << 20}},
+        {PROCESS_TYPE_RENDERER, "RendererMetrics", 2 << 20},
         {PROCESS_TYPE_PLUGIN_DEPRECATED, std::nullopt},
         {PROCESS_TYPE_WORKER_DEPRECATED, std::nullopt},
-        {PROCESS_TYPE_UTILITY, Config{"UtilityMetrics", 512 << 10}},
-        {PROCESS_TYPE_ZYGOTE, Config{"ZygoteMetrics", 64 << 10}},
-        {PROCESS_TYPE_SANDBOX_HELPER, Config{"SandboxHelperMetrics", 64 << 10}},
-        {PROCESS_TYPE_GPU, Config{"GpuMetrics", 256 << 10}},
-        {PROCESS_TYPE_PPAPI_PLUGIN, Config{"PpapiPluginMetrics", 64 << 10}},
-        {PROCESS_TYPE_PPAPI_BROKER, Config{"PpapiBrokerMetrics", 64 << 10}},
+        {PROCESS_TYPE_UTILITY, "UtilityMetrics", 512 << 10},
+        {PROCESS_TYPE_ZYGOTE, "ZygoteMetrics", 64 << 10},
+        {PROCESS_TYPE_SANDBOX_HELPER, "SandboxHelperMetrics", 64 << 10},
+        {PROCESS_TYPE_GPU, "GpuMetrics", 256 << 10},
+        {PROCESS_TYPE_PPAPI_PLUGIN, "PpapiPluginMetrics", 64 << 10},
+        {PROCESS_TYPE_PPAPI_BROKER, "PpapiBrokerMetrics", 64 << 10},
     })));
 
 }  // namespace content

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -33,19 +31,6 @@ public interface ModuleDelegate {
         int NUM_ENTRIES = 2;
     }
 
-    /** Returns a string name of a module. */
-    static String getModuleName(@ModuleType int moduleType) {
-        switch (moduleType) {
-            case SINGLE_TAB:
-                return "SingleTabModule";
-            case (PRICE_CHANGE):
-                return "PriceChange";
-            default:
-                assert false : "Module type not supported!";
-                return null;
-        }
-    }
-
     /**
      * Called when a module has a PropertyModel ready. This could be called multiple times from the
      * same module.
@@ -55,8 +40,8 @@ public interface ModuleDelegate {
     /** Called when a module has no data to show. */
     void onDataFetchFailed(@ModuleType int moduleType);
 
-    /** Called when the user wants to hide a module from the magic stack. */
-    void onHideModuleFromContextMenu(@ModuleType int moduleType);
+    /** Removes a module from the magic stack. */
+    void removeModule(@ModuleType int moduleType);
 
     /** Called when the user wants to open the settings to customize modules. */
     void customizeSettings();

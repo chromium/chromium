@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/prefs_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
@@ -12,7 +13,6 @@
 #include "printing/backend/print_backend_utils.h"
 #include "printing/backend/printing_restrictions.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -39,15 +39,15 @@ bool CheckOopPolicy() {
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
+std::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict& paper_size_dict =
       prefs.GetDict(prefs::kPrintingPaperSizeDefault);
 
   if (paper_size_dict.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict* custom_size_dict =
       paper_size_dict.FindDict(kPaperSizeCustomSize);

@@ -16,13 +16,11 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './address_edit_dialog.html.js';
 import * as uiComponents from './address_edit_dialog_components.js';
@@ -91,16 +89,6 @@ export class SettingsAddressEditDialogElement extends
         type: String,
         computed: 'getAccountAddressSourceNotice_(address, accountInfo)',
       },
-
-      /**
-       * True if honorifics are enabled.
-       */
-      showHonorific_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showHonorific');
-        },
-      },
     };
   }
 
@@ -123,7 +111,6 @@ export class SettingsAddressEditDialogElement extends
   private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
   private isAccountAddress_: boolean;
-  private showHonorific_: boolean;
   private countryInfo_: CountryDetailManager =
       CountryDetailManagerImpl.getInstance();
 
@@ -192,14 +179,6 @@ export class SettingsAddressEditDialogElement extends
 
       this.components_ = [];
       for (const row of format.components) {
-        // If this is the name field, add a honorific title row before it.
-        if (row.row[0].field === FieldType.NAME_FULL && this.showHonorific_) {
-          this.components_.push([new uiComponents.AddressComponentUi(
-              this.addressFields_, this.originalAddressFields_,
-              FieldType.NAME_HONORIFIC_PREFIX, this.i18n('honorificLabel'),
-              'long')]);
-        }
-
         this.components_.push(row.row.map(
             component => new uiComponents.AddressComponentUi(
                 this.addressFields_, this.originalAddressFields_,

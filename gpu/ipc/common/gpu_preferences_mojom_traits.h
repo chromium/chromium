@@ -289,6 +289,8 @@ struct GPU_EXPORT
     out->enable_unsafe_webgpu = prefs.enable_unsafe_webgpu();
     out->enable_webgpu_developer_features =
         prefs.enable_webgpu_developer_features();
+    out->enable_webgpu_experimental_features =
+        prefs.enable_webgpu_experimental_features();
     if (!prefs.ReadUseWebgpuAdapter(&out->use_webgpu_adapter))
       return false;
     if (!prefs.ReadUseWebgpuPowerPreference(
@@ -475,6 +477,10 @@ struct GPU_EXPORT
   static bool enable_webgpu_developer_features(
       const gpu::GpuPreferences& prefs) {
     return prefs.enable_webgpu_developer_features;
+  }
+  static bool enable_webgpu_experimental_features(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.enable_webgpu_experimental_features;
   }
   static gpu::WebGPUAdapterName use_webgpu_adapter(
       const gpu::GpuPreferences& prefs) {

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -32,7 +33,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
@@ -99,15 +99,15 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Used to load URLs.
-  UrlLoadingBrowserAgent* _URLLoader;
-  PrefService* _prefService;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
+  raw_ptr<PrefService> _prefService;
   BOOL _isSafeMode;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // The current default search engine.
-  const TemplateURL* _defaultSearchEngine;
+  raw_ptr<const TemplateURL> _defaultSearchEngine;
 }
 
 // Synthesized from NewTabPageMutator.

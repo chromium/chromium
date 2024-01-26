@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
 
-@class SetUpListItemViewData;
+enum class ContentSuggestionsModuleType;
+enum class SafetyCheckItemType;
+@class SetUpListItemView;
 
 // Audience for the ContentSuggestions, getting information from it.
 @protocol ContentSuggestionsViewControllerAudience
@@ -31,11 +33,21 @@
 // anymore.
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
 
+// Indicates that the user has tapped the context menu item to enable
+// notifications for a module.
+- (void)enableNotifications:(ContentSuggestionsModuleType)type;
+
 // Notifies the audience that the Magic Stack edit button was tapped.
 - (void)didTapMagicStackEditButton;
 
 // Notifies the audience to show the list of parcels.
 - (void)showMagicStackParcelList;
+
+// Called when a Safety Check item is selected by the user.
+- (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type;
+
+// Indicates that the user has tapped the given `view`.
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view;
 
 @end
 

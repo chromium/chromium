@@ -35,9 +35,9 @@ bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
 }
 
-absl::optional<std::vector<const char* const>>&
+std::optional<std::vector<const char* const>>&
 GetScopeExtensionsOverrideForTesting() {
-  static base::NoDestructor<absl::optional<std::vector<const char* const>>>
+  static base::NoDestructor<std::optional<std::vector<const char* const>>>
       scope_extensions;
   return *scope_extensions;
 }

@@ -119,20 +119,6 @@ typedef struct UpdaterInternalSystemClass UpdaterInternalSystemClass;
 #endif 	/* __UpdaterInternalSystemClass_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterInternalUser_FWD_DEFINED__
-#define __IUpdaterInternalUser_FWD_DEFINED__
-typedef interface IUpdaterInternalUser IUpdaterInternalUser;
-
-#endif 	/* __IUpdaterInternalUser_FWD_DEFINED__ */
-
-
-#ifndef __IUpdaterInternalSystem_FWD_DEFINED__
-#define __IUpdaterInternalSystem_FWD_DEFINED__
-typedef interface IUpdaterInternalSystem IUpdaterInternalSystem;
-
-#endif 	/* __IUpdaterInternalSystem_FWD_DEFINED__ */
-
-
 #ifndef __IUpdaterInternalCallbackUser_FWD_DEFINED__
 #define __IUpdaterInternalCallbackUser_FWD_DEFINED__
 typedef interface IUpdaterInternalCallbackUser IUpdaterInternalCallbackUser;
@@ -145,6 +131,20 @@ typedef interface IUpdaterInternalCallbackUser IUpdaterInternalCallbackUser;
 typedef interface IUpdaterInternalCallbackSystem IUpdaterInternalCallbackSystem;
 
 #endif 	/* __IUpdaterInternalCallbackSystem_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalUser_FWD_DEFINED__
+#define __IUpdaterInternalUser_FWD_DEFINED__
+typedef interface IUpdaterInternalUser IUpdaterInternalUser;
+
+#endif 	/* __IUpdaterInternalUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalSystem_FWD_DEFINED__
+#define __IUpdaterInternalSystem_FWD_DEFINED__
+typedef interface IUpdaterInternalSystem IUpdaterInternalSystem;
+
+#endif 	/* __IUpdaterInternalSystem_FWD_DEFINED__ */
 
 
 /* header files for imported files */

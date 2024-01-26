@@ -125,7 +125,6 @@
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -135,6 +134,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 // TODO(crbug.com/1125897): Enable gn check once it handles conditional includes
+#include "chromeos/constants/chromeos_features.h"
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
@@ -2570,6 +2570,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Cannot launch web apps in a tab when Shortstand is enabled.";
+  }
+#endif
+
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 

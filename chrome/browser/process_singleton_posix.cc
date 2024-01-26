@@ -592,6 +592,11 @@ class ProcessSingleton::LinuxWatcher
                      const std::vector<std::string>& argv,
                      SocketReader* reader);
 
+  // Called when the ProcessSingleton that owns this class is about to be
+  // destroyed to remove the raw_ptr reference to it and prevent a leaked
+  // dangling pointer.
+  void OnEminentProcessSingletonDestruction() { parent_ = nullptr; }
+
  private:
   friend struct BrowserThread::DeleteOnThread<BrowserThread::IO>;
   friend class base::DeleteHelper<ProcessSingleton::LinuxWatcher>;
@@ -612,7 +617,7 @@ class ProcessSingleton::LinuxWatcher
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   // The ProcessSingleton that owns us.
-  const raw_ptr<ProcessSingleton, LeakedDanglingUntriaged> parent_;
+  raw_ptr<ProcessSingleton> parent_;
 
   std::set<std::unique_ptr<SocketReader>, base::UniquePtrComparator> readers_;
 };
@@ -649,8 +654,8 @@ void ProcessSingleton::LinuxWatcher::HandleMessage(
   DCHECK(ui_task_runner_->BelongsToCurrentThread());
   DCHECK(reader);
 
-  if (parent_->notification_callback_.Run(base::CommandLine(argv),
-                                          base::FilePath(current_dir))) {
+  if (parent_ && parent_->notification_callback_.Run(
+                     base::CommandLine(argv), base::FilePath(current_dir))) {
     // Send back "ACK" message to prevent the client process from starting up.
     reader->FinishWithACK(kACKToken, std::size(kACKToken) - 1);
   } else {
@@ -773,6 +778,9 @@ ProcessSingleton::ProcessSingleton(
 
 ProcessSingleton::~ProcessSingleton() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (watcher_) {
+    watcher_->OnEminentProcessSingletonDestruction();
+  }
 }
 
 ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
@@ -1091,7 +1099,7 @@ bool ProcessSingleton::Create() {
 void ProcessSingleton::StartWatching() {
   DCHECK_GE(sock_, 0);
   DCHECK(!watcher_);
-  watcher_ = new LinuxWatcher(this);
+  watcher_ = base::MakeRefCounted<LinuxWatcher>(this);
   DCHECK(BrowserThread::IsThreadInitialized(BrowserThread::IO));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ProcessSingleton::LinuxWatcher::StartListening,

@@ -54,7 +54,7 @@ TEST_F(SocketsTcpServerUnitTest, Create) {
       new SocketsTcpServerCreateFunction();
 
   // Run tests
-  absl::optional<base::Value::Dict> result(RunFunctionAndReturnDictionary(
+  std::optional<base::Value::Dict> result(RunFunctionAndReturnDictionary(
       function, "[{\"persistent\": true, \"name\": \"foo\"}]"));
   ASSERT_TRUE(result);
 }

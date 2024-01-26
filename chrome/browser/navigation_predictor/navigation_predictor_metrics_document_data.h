@@ -30,7 +30,7 @@ class NavigationPredictorMetricsDocumentData
   };
   struct PageLinkClickData {
     int anchor_element_index_;
-    absl::optional<bool> href_unchanged_;
+    std::optional<bool> href_unchanged_;
     base::TimeDelta navigation_start_to_link_clicked_;
   };
   struct AnchorElementMetricsData {
@@ -81,29 +81,29 @@ class NavigationPredictorMetricsDocumentData
     // If the anchor element is still in viewport, it is the TimeDelta between
     // the navigation start of the anchor element's root document and the last
     // time the anchor element entered the viewport, otherwise empty.
-    absl::optional<base::TimeDelta> last_navigation_start_to_entered_viewport;
+    std::optional<base::TimeDelta> last_navigation_start_to_entered_viewport;
     // The maximum duration that the anchor element was in the viewport.
-    absl::optional<base::TimeDelta> max_time_in_viewport;
+    std::optional<base::TimeDelta> max_time_in_viewport;
     // TimeDelta between the navigation start of the anchor element's root
     // document and the last time the pointer started to hover over the anchor
     // element, otherwise empty.
-    absl::optional<base::TimeDelta> last_navigation_start_to_pointer_over;
+    std::optional<base::TimeDelta> last_navigation_start_to_pointer_over;
     // TimeDelta between the navigation start of the anchor element's root
     // document and the last time the pointer down event happened over the
     // anchor element, otherwise empty.
-    absl::optional<base::TimeDelta> last_navigation_start_to_last_pointer_down;
+    std::optional<base::TimeDelta> last_navigation_start_to_last_pointer_down;
     // The maximum the pointer hover dwell time over the anchor element.
-    absl::optional<base::TimeDelta> max_hover_dwell_time;
+    std::optional<base::TimeDelta> max_hover_dwell_time;
     // Mouse velocity when the on-hover event was triggered.
-    absl::optional<double> mouse_velocity;
+    std::optional<double> mouse_velocity;
     // Mouse acceleration when the on-hover event was triggered.
-    absl::optional<double> mouse_acceleration;
+    std::optional<double> mouse_acceleration;
   };
 
   struct PreloadOnHoverData {
     bool taken = false;
-    absl::optional<base::TimeDelta> hover_dwell_time;
-    absl::optional<base::TimeDelta> pointer_down_duration;
+    std::optional<base::TimeDelta> hover_dwell_time;
+    std::optional<base::TimeDelta> pointer_down_duration;
   };
 
   NavigationPredictorMetricsDocumentData(
@@ -161,7 +161,7 @@ class NavigationPredictorMetricsDocumentData
   // to make sure that `NavigationPredictorMetricsDocumentData` and
   // 'PageAnchorMetricsObserver` are not getting out of sync. In future, we
   // should remove the `ukm_source_id` from the methods' arguments.
-  absl::optional<ukm::SourceId> ukm_source_id_;
+  std::optional<ukm::SourceId> ukm_source_id_;
   AnchorsData anchor_data_;
   std::vector<PageLinkClickData> page_link_clicks_;
   std::map<int, AnchorElementMetricsData> anchor_element_metrics_;
@@ -169,7 +169,7 @@ class NavigationPredictorMetricsDocumentData
   std::vector<PreloadOnHoverData> preload_on_hover_;
   // The time between navigation start and the last time user clicked on a
   // link.
-  absl::optional<base::TimeDelta> navigation_start_to_click_;
+  std::optional<base::TimeDelta> navigation_start_to_click_;
   base::TimeTicks navigation_start_time_;
   DOCUMENT_USER_DATA_KEY_DECL();
 };

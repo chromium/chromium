@@ -52,6 +52,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& output_folder,
       const std::string& codec,
       const std::string& svc_mode,
+      VideoEncodeAccelerator::Config::ContentType content_type,
       bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
       Bitrate::Mode bitrate_mode,
@@ -76,6 +77,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
   SpatialLayers() const;
   SVCInterLayerPredMode InterLayerPredMode() const;
+  VideoEncodeAccelerator::Config::ContentType ContentType() const;
   // Get the target bitrate (bits/second).
   const VideoBitrateAllocation& BitrateAllocation() const;
   // Whether the encoded bitstream is saved to disk.
@@ -110,6 +112,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       SVCInterLayerPredMode inter_layer_pred_mode,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
+      VideoEncodeAccelerator::Config::ContentType content_type,
       const media::VideoBitrateAllocation& bitrate,
       bool save_output_bitstream,
       bool reverse,
@@ -135,6 +138,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // The spatial layers of the stream which aligned with |num_spatial_layers_|
   // and |num_temporal_layers_|. This is only for vp9 stream.
   std::vector<VideoEncodeAccelerator::Config::SpatialLayer> spatial_layers_;
+  // A type of content to be encoded.
+  VideoEncodeAccelerator::Config::ContentType content_type_;
   // Whether the bitstream produced by VideoEncoder is saved to disk.
   const bool save_output_bitstream_;
   // True if the video should play backwards at reaching the end of video.

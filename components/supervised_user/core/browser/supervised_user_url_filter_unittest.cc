@@ -14,8 +14,10 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -25,6 +27,8 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterTest() {
+    PrefRegistrySimple* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
     filter_.AddObserver(this);
   }
@@ -69,9 +73,11 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
+  TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      base::BindRepeating([](const GURL& url) { return false; }),
-      std::make_unique<FakeURLFilterDelegate>());
+      pref_service_,
+      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+      base::BindRepeating([](const GURL& url) { return false; }));
   supervised_user::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
 
@@ -454,8 +460,6 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
 
   filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
 
-  ExpectURLInDefaultAllowlist("https://m.youtube.com/feed/trending");
-  ExpectURLInDefaultAllowlist("https://com.google");
   ExpectURLInManualAllowlist("https://youtube.com/feed/trending");
   ExpectURLInManualAllowlist("https://google.com/humans.txt");
   ExpectURLInManualDenylist("https://youtube.com/robots.txt");
@@ -485,16 +489,25 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
+  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
+  EXPECT_TRUE(
+      IsURLAllowlisted("https://play.google/intl/pt-BR_pt/play-terms/"));
   EXPECT_TRUE(IsURLAllowlisted(
       "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/index.html"));
   EXPECT_TRUE(
       IsURLAllowlisted("https://play.google.com/about/play-terms/index.html"));
+  EXPECT_FALSE(IsURLAllowlisted("http://play.google/play-terms/"));
   EXPECT_FALSE(IsURLAllowlisted("http://play.google.com/about/play-terms/"));
+  EXPECT_FALSE(IsURLAllowlisted("https://subdomain.play.google/play-terms/"));
   EXPECT_FALSE(
       IsURLAllowlisted("https://subdomain.play.google.com/about/play-terms/"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google/"));
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google/about"));
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
 }
 
@@ -505,6 +518,8 @@ class SupervisedUserURLFilteringWithConflictsTest
               SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
  public:
   SupervisedUserURLFilteringWithConflictsTest() {
+    PrefRegistrySimple* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   }
 
@@ -517,9 +532,11 @@ class SupervisedUserURLFilteringWithConflictsTest
   }
 
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      base::BindRepeating([](const GURL& url) { return false; }),
-      std::make_unique<FakeURLFilterDelegate>());
+      pref_service_,
+      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+      base::BindRepeating([](const GURL& url) { return false; }));
 };
 
 // Tests that the new histogram that records www-subdomain conflicts

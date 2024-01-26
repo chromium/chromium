@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
@@ -22,7 +23,7 @@
 @end
 
 @implementation ParcelTrackingOptInCoordinator {
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
   NSArray<CustomTextCheckingResult*>* _parcels;
   ParcelTrackingOptInMediator* _mediator;
   ParcelTrackingOptInViewController* _viewController;

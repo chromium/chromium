@@ -24,8 +24,12 @@ var KeyUsage = {
   verify: 'verify'
 };
 
+function CreateInvalidKeyObjectError() {
+  return new Error('Invalid key object.');
+}
+
 /**
- * Implementation of WebCrypto.Key used in enterprise.platformKeys.
+ * Implementation of WebCrypto.CryptoKey used in enterprise.platformKeys.
  * @param {KeyType} type The type of the new key.
  * @param {ArrayBuffer} publicKeySpki The Subject Public Key Info in DER
  *   encoding.
@@ -68,16 +72,16 @@ utils.expose(Key, KeyImpl, {
 
 /**
  * Returns |key|'s Subject Public Key Info. Throws an exception if |key| is not
- * a valid Key object.
+ * a valid Key object representing an asymmetric key.
  * @param {Key} key
  * @return {ArrayBuffer} The Subject Public Key Info in DER encoding of |key|.
  */
 function getSpki(key) {
   if (!privates(key))
-    throw new Error('Invalid key object.');
+    throw CreateInvalidKeyObjectError();
   var keyImpl = privates(key).impl;
   if (!keyImpl || !keyImpl.spki)
-    throw new Error('Invalid key object.');
+    throw CreateInvalidKeyObjectError();
   return keyImpl.spki;
 }
 

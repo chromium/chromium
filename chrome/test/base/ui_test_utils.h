@@ -23,6 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/view_observer.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -45,6 +46,10 @@ class WebContents;
 
 namespace gfx {
 class Rect;
+}
+
+namespace views {
+class View;
 }
 
 // A collections of functions designed for use with InProcessBrowserTest.
@@ -470,6 +475,25 @@ class CheckWaiter {
   const base::TimeTicks timeout_;
   // The waiter's RunLoop quit closure.
   base::RepeatingClosure quit_;
+};
+
+// Used to wait for the view to contain non-empty bounds.
+class ViewBoundsWaiter : public views::ViewObserver {
+ public:
+  explicit ViewBoundsWaiter(views::View* observed_view);
+  ViewBoundsWaiter(const ViewBoundsWaiter&) = delete;
+  ViewBoundsWaiter& operator=(const ViewBoundsWaiter&) = delete;
+  ~ViewBoundsWaiter() override;
+
+  // Blocks until the view has non-empty bounds.
+  void WaitForNonEmptyBounds();
+
+ private:
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
+  const raw_ptr<views::View> observed_view_;
+  base::RunLoop run_loop_;
 };
 
 }  // namespace ui_test_utils

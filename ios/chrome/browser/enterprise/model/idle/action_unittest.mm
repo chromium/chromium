@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
@@ -54,6 +56,7 @@ class IdleActionTest : public PlatformTest {
     incognito_browsing_data_remover_ =
         std::make_unique<FakeBrowsingDataRemover>();
     action_factory_ = std::make_unique<ActionFactory>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -138,7 +141,7 @@ class IdleActionTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ActionFactory> action_factory_;
@@ -148,6 +151,7 @@ class IdleActionTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(IdleActionTest, ClearBrowsingHistory) {
@@ -159,6 +163,8 @@ TEST_F(IdleActionTest, ClearBrowsingHistory) {
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_HISTORY,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, ClearCookies) {
@@ -170,6 +176,8 @@ TEST_F(IdleActionTest, ClearCookies) {
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_SITE_DATA,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, ClearCache) {
@@ -181,6 +189,8 @@ TEST_F(IdleActionTest, ClearCache) {
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_CACHE,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, ClearPasswordSignin) {
@@ -192,6 +202,8 @@ TEST_F(IdleActionTest, ClearPasswordSignin) {
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_PASSWORDS,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, ClearAutofill) {
@@ -204,6 +216,8 @@ TEST_F(IdleActionTest, ClearAutofill) {
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_FORM_DATA,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, MultipleTypesAndSuccess) {
@@ -218,6 +232,8 @@ TEST_F(IdleActionTest, MultipleTypesAndSuccess) {
                 BrowsingDataRemoveMask::REMOVE_FORM_DATA,
             incognito_remover()->GetLastUsedRemovalMask());
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
 }
 
 TEST_F(IdleActionTest, MultipleTypesAndFailure) {
@@ -236,6 +252,8 @@ TEST_F(IdleActionTest, MultipleTypesAndFailure) {
   actions.top()->Run(browser_state(), continuation.Get());
   run_loop.Run();
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", false, 1);
 }
 
 TEST_F(IdleActionTest, SignOut) {
@@ -256,6 +274,8 @@ TEST_F(IdleActionTest, SignOut) {
   ASSERT_FALSE(authentication_service_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.SignOut", true, 1);
 }
 
 TEST_F(IdleActionTest, CloseTabs) {
@@ -275,6 +295,8 @@ TEST_F(IdleActionTest, CloseTabs) {
   EXPECT_EQ(GetTabsCount(browser_.get()), 0);
   EXPECT_EQ(GetTabsCount(incognito_browser_.get()), 0);
   actions.pop();
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.CloseTabs", true, 1);
 }
 
 }  // namespace enterprise_idle

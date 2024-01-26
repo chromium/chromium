@@ -120,11 +120,6 @@ StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
 
 String CSSImageSetValue::CustomCSSText() const {
   StringBuilder result;
-
-  if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-    result.Append("-webkit-");
-  }
-
   result.Append("image-set(");
 
   for (wtf_size_t i = 0, length = this->length(); i < length; ++i) {

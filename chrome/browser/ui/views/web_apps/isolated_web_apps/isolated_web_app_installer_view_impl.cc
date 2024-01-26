@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
@@ -24,6 +26,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
@@ -35,6 +39,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -42,11 +47,13 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 
 namespace web_app {
 namespace {
 
 constexpr int kIconSize = 32;
+constexpr int kNestedDialogIconSize = 24;
 constexpr int kInfoPaneCornerRadius = 10;
 constexpr int kProgressViewHorizontalPadding = 45;
 
@@ -176,9 +183,9 @@ class InstallerDialogView : public views::BoxLayoutView {
   InstallerDialogView(const ui::ImageModel& icon_model,
                       const ToU16String& title,
                       int subtitle_id,
-                      std::optional<ToU16String> subtitle_param = absl::nullopt,
+                      std::optional<ToU16String> subtitle_param = std::nullopt,
                       std::optional<base::RepeatingClosure>
-                          subtitle_link_callback = absl::nullopt) {
+                          subtitle_link_callback = std::nullopt) {
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetInsideBorderInsets(views::LayoutProvider::Get()->GetInsetsMetric(
         views::InsetsMetric::INSETS_DIALOG));
@@ -210,9 +217,9 @@ class InstallerDialogView : public views::BoxLayoutView {
   }
 
   void SetSubtitle(int subtitle_id,
-                   std::optional<ToU16String> subtitle_param = absl::nullopt,
+                   std::optional<ToU16String> subtitle_param = std::nullopt,
                    std::optional<base::RepeatingClosure>
-                       subtitle_link_callback = absl::nullopt) {
+                       subtitle_link_callback = std::nullopt) {
     if (subtitle_param.has_value()) {
       size_t offset;
       subtitle_label_->SetText(l10n_util::GetStringFUTF16(
@@ -310,11 +317,7 @@ class ShowMetadataView : public InstallerDialogView {
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
-            IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE,
-            IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES,
-            base::BindRepeating(&IsolatedWebAppInstallerView::Delegate::
-                                    OnManageProfilesLinkClicked,
-                                base::Unretained(delegate))) {
+            IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE) {
     // Initialize the View with dummy data so the initial height calculation
     // will be roughly accurate.
     std::vector<std::pair<int, std::u16string>> info = {
@@ -412,7 +415,8 @@ IsolatedWebAppInstallerViewImpl::IsolatedWebAppInstallerViewImpl(
       get_metadata_view_(MakeAndAddChildView<GetMetadataView>()),
       show_metadata_view_(MakeAndAddChildView<ShowMetadataView>(delegate)),
       install_view_(MakeAndAddChildView<InstallView>()),
-      install_success_view_(MakeAndAddChildView<InstallSuccessView>()) {
+      install_success_view_(MakeAndAddChildView<InstallSuccessView>()),
+      dialog_visible_(false) {
   SetUseDefaultFillLayout(true);
   ShowChildView(nullptr);
 }
@@ -469,41 +473,77 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowDialog(
-    const IsolatedWebAppInstallerModel::DialogContent& dialog_content) {
-  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      GetWidget()->GetContentsView(), views::BubbleBorder::FLOAT);
-  bubble_delegate->set_internal_name(
-      IsolatedWebAppInstallerView::kNestedDialogWidgetName);
-  bubble_delegate->SetModalType(ui::MODAL_TYPE_CHILD);
-  bubble_delegate->set_fixed_width(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  bubble_delegate->set_close_on_deactivate(false);
-
-  ui::ImageModel image =
-      dialog_content.is_error
-          ? CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
-                                       ui::kColorAlertMediumSeverityIcon)
-          : CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent);
-  if (dialog_content.details_link.has_value()) {
-    bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
-        image, dialog_content.message, dialog_content.details,
-        dialog_content.details_link->first,
-        dialog_content.details_link->second));
-  } else {
-    bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
-        image, dialog_content.message, dialog_content.details));
-  }
-
-  SetDialogButtons(bubble_delegate.get(), IDS_APP_CLOSE,
-                   dialog_content.accept_message);
-
-  bubble_delegate->SetCancelCallback(base::BindOnce(
-      &Delegate::OnChildDialogCanceled, base::Unretained(delegate_)));
-  bubble_delegate->SetAcceptCallback(base::BindOnce(
-      &Delegate::OnChildDialogAccepted, base::Unretained(delegate_)));
-
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
+    const IsolatedWebAppInstallerModel::Dialog& dialog) {
+  absl::visit(
+      base::Overloaded{
+          [this](const IsolatedWebAppInstallerModel::BundleInvalidDialog&) {
+            ShowChildDialog(
+                IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
+                ui::DialogModelLabel(
+                    IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE),
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                /*ok_label=*/std::nullopt);
+          },
+          [this](
+              const IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog&
+                  already_installed_dialog) {
+            std::string installed_version =
+                already_installed_dialog.installed_version.GetString();
+            auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
+                IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE,
+                {
+                    ui::DialogModelLabel::CreatePlainText(
+                        already_installed_dialog.bundle_name),
+                    ui::DialogModelLabel::CreatePlainText(
+                        base::UTF8ToUTF16(installed_version)),
+                });
+            ShowChildDialog(
+                IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE, subtitle,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                /*ok_label=*/std::nullopt);
+          },
+          [this](const IsolatedWebAppInstallerModel::BundleOutdatedDialog&
+                     bundle_outdated_dialog) {
+            std::string installed_version =
+                bundle_outdated_dialog.installed_version.GetString();
+            auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
+                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE,
+                {
+                    ui::DialogModelLabel::CreatePlainText(
+                        bundle_outdated_dialog.bundle_name),
+                    ui::DialogModelLabel::CreatePlainText(
+                        base::UTF8ToUTF16(installed_version)),
+                });
+            ShowChildDialog(
+                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE, subtitle,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                /*ok_label=*/std::nullopt);
+          },
+          [this](const IsolatedWebAppInstallerModel::ConfirmInstallationDialog&
+                     confirm_installation_dialog) {
+            auto subtitle = ui::DialogModelLabel::CreateWithReplacement(
+                IDS_IWA_INSTALLER_CONFIRM_SUBTITLE,
+                ui::DialogModelLabel::CreateLink(
+                    IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
+                    confirm_installation_dialog.learn_more_callback));
+            ShowChildDialog(
+                IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
+                CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
+                IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
+          },
+          [this](
+              const IsolatedWebAppInstallerModel::InstallationFailedDialog&) {
+            ShowChildDialog(
+                IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+                ui::DialogModelLabel(IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE),
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY);
+          }},
+      dialog);
 }
 
 gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
@@ -511,8 +551,74 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   // non-resizable if their min and max height are the same. To achieve this,
   // we set the max size to the View's preferred size.
   int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(width, GetHeightForWidth(width));
+}
+
+void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
+    int title,
+    const ui::DialogModelLabel& subtitle,
+    const ui::ImageModel& icon_model,
+    std::optional<int> ok_label) {
+  CHECK(!dialog_visible_);
+  dialog_visible_ = true;
+
+  ui::DialogModel::Builder dialog_model_builder;
+  dialog_model_builder
+      .SetInternalName(IsolatedWebAppInstallerView::kNestedDialogWidgetName)
+      .SetTitle(l10n_util::GetStringUTF16(title))
+      .AddParagraph(ui::DialogModelLabel(subtitle).set_is_secondary())
+      .DisableCloseOnDeactivate()
+      .AddCancelButton(base::BindOnce(
+          &IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled,
+          base::Unretained(this)));
+  if (ok_label.has_value()) {
+    dialog_model_builder.AddOkButton(
+        base::BindOnce(&IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted,
+                       base::Unretained(this)),
+        ui::DialogModel::Button::Params().SetLabel(
+            l10n_util::GetStringUTF16(ok_label.value())));
+  }
+
+  // None of DialogModel's banner image, icon, or main image display the icon
+  // the way we want, so we have to manually create a header View that
+  // positions the icon correctly.
+  auto header = std::make_unique<views::BoxLayoutView>();
+  int inset = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
+  header->SetInsideBorderInsets(gfx::Insets::TLBR(inset, inset, 0, inset));
+  auto* icon = header->AddChildView(std::make_unique<NonAccessibleImageView>());
+  icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  icon->SetImageSize(gfx::Size(kNestedDialogIconSize, kNestedDialogIconSize));
+  icon->SetImage(icon_model);
+
+  std::unique_ptr<views::BubbleDialogModelHost> bubble =
+      views::BubbleDialogModelHost::CreateModal(dialog_model_builder.Build(),
+                                                ui::MODAL_TYPE_CHILD);
+  bubble->SetAnchorView(GetWidget()->GetContentsView());
+  bubble->SetArrow(views::BubbleBorder::FLOAT);
+  bubble->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  bubble->RegisterWidgetInitializedCallback(base::BindOnce(
+      [](views::BubbleDialogModelHost* bubble,
+         std::unique_ptr<views::View> header) {
+        bubble->GetBubbleFrameView()->SetHeaderView(std::move(header));
+      },
+      // base::Unretained is safe here because the callback is invoked when
+      // `bubble` is initialized, at which point it must still be alive.
+      base::Unretained(bubble.get()), std::move(header)));
+
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted() {
+  dialog_visible_ = false;
+  delegate_->OnChildDialogAccepted();
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled() {
+  dialog_visible_ = false;
+  delegate_->OnChildDialogCanceled();
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {

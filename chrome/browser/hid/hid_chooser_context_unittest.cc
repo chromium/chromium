@@ -4,6 +4,8 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -33,7 +35,6 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -218,7 +219,7 @@ class HidChooserContextTestBase {
     base::RunLoop loop;
     EXPECT_CALL(permission_observer_,
                 OnObjectPermissionChanged(
-                    absl::make_optional(ContentSettingsType::HID_GUARD),
+                    std::make_optional(ContentSettingsType::HID_GUARD),
                     ContentSettingsType::HID_CHOOSER_DATA))
         .WillOnce(RunClosure(loop.QuitClosure()));
     context()->GrantDevicePermission(origin, device);
@@ -230,7 +231,7 @@ class HidChooserContextTestBase {
     base::RunLoop loop;
     EXPECT_CALL(permission_observer_,
                 OnObjectPermissionChanged(
-                    absl::make_optional(ContentSettingsType::HID_GUARD),
+                    std::make_optional(ContentSettingsType::HID_GUARD),
                     ContentSettingsType::HID_CHOOSER_DATA))
         .WillOnce(RunClosure(loop.QuitClosure()));
     context()->RevokeObjectPermission(origin, object);
@@ -387,7 +388,7 @@ TEST_F(HidChooserContextTest, GrantAndForgetEphemeralDevice) {
       .WillOnce(RunClosure(permissions_revoked_loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   context()->RevokeDevicePermission(kOrigin, *device1);
   permissions_revoked_loop.Run();
@@ -425,7 +426,7 @@ TEST_F(HidChooserContextTest, GrantTwoEphemeralDevicesForgetOne) {
       .WillOnce(RunClosure(permissions_revoked_loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   context()->RevokeDevicePermission(kOrigin, *device1);
   permissions_revoked_loop.Run();
@@ -465,7 +466,7 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   DisconnectDeviceBlocking(device->guid);
   EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
@@ -586,7 +587,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
       .WillOnce(RunClosure(loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   EXPECT_CALL(device_observer(), OnHidManagerConnectionError());
   SimulateHidManagerConnectionError();
@@ -619,7 +620,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
       .WillOnce(RunClosure(loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   SimulateHidManagerConnectionError();
   loop.Run();

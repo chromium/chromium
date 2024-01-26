@@ -19,9 +19,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -53,6 +51,11 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kLocation,
                PopupItemId::kAddressEntry),
+    Suggestion("Fill_Full_Email_entry",
+               "Minor text",
+               "label",
+               Suggestion::Icon::kNoIcon,
+               PopupItemId::kFillFullEmail),
     CreatePasswordSuggestion(u"Password_entry"),
     Suggestion("Autofill_options",
                "Minor text",
@@ -116,15 +119,6 @@ class CreatePopupRowViewTest
   }
 
   void TearDownOnMainThread() override {
-    // TODO(crbug.com/1512898): Remove `EndPopupFocusOverride()` call. Select
-    // the control cell by the selection delegate, so that `PopupRowView`
-    // doesn't leave the override not ended. In the popup the override is ended
-    // in `PopupBaseView::DoHide`, but here in tests the popup is not used and
-    // the tests are crashed.
-    if (views::View* contents_view = widget_->GetContentsView()) {
-      contents_view->GetViewAccessibility().EndPopupFocusOverride();
-    }
-
     widget_.reset();
 
     UiBrowserTest::TearDownOnMainThread();

@@ -22,6 +22,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
@@ -49,14 +50,14 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -104,13 +105,7 @@ public class TasksViewBinderUnitTest {
         when(mProfile.getPrimaryOTRProfile(true)).thenReturn(mProfile);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        mTasksView =
-                (TasksView) mActivity.getLayoutInflater().inflate(R.layout.tasks_view_layout, null);
-        mActivity.setContentView(mTasksView);
-
-        mTasksViewPropertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                mTasksViewPropertyModel, mTasksView, TasksViewBinder::bind);
+        createTasksView(R.layout.tasks_view_layout);
     }
 
     private boolean isViewVisible(int viewId) {
@@ -345,5 +340,25 @@ public class TasksViewBinderUnitTest {
         int newBackgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, false);
         mTasksViewPropertyModel.set(BACKGROUND_COLOR, newBackgroundColor);
         assertEquals(newBackgroundColor, ((ColorDrawable) mTasksView.getBackground()).getColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMagicStackVisibility() {
+        createTasksView(R.layout.tasks_view_layout_polish);
+
+        mTasksViewPropertyModel.set(MAGIC_STACK_VISIBLE, true);
+        assertTrue(isViewVisible(R.id.home_modules_recycler_view));
+
+        mTasksViewPropertyModel.set(MAGIC_STACK_VISIBLE, false);
+        assertFalse(isViewVisible(R.id.home_modules_recycler_view));
+    }
+
+    private void createTasksView(int layoutId) {
+        mTasksView = (TasksView) mActivity.getLayoutInflater().inflate(layoutId, null);
+        mActivity.setContentView(mTasksView);
+        mTasksViewPropertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mTasksViewPropertyModel, mTasksView, TasksViewBinder::bind);
     }
 }

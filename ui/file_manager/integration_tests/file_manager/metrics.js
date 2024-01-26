@@ -11,6 +11,8 @@ import {testcase} from '../testcase.js';
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {FakeTask} from './tasks.js';
 
+// @ts-ignore: error TS4111: Property 'metricsRecordEnum' comes from an index
+// signature, so it must be accessed with ['metricsRecordEnum'].
 testcase.metricsRecordEnum = async () => {
   const appId = null;
   const histogramName = 'Foo';
@@ -34,6 +36,8 @@ testcase.metricsRecordEnum = async () => {
   }
 };
 
+// @ts-ignore: error TS4111: Property 'metricsOpenSwa' comes from an index
+// signature, so it must be accessed with ['metricsOpenSwa'].
 testcase.metricsOpenSwa = async () => {
   // Open Files SWA:
   await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -52,7 +56,12 @@ testcase.metricsOpenSwa = async () => {
 
 // Test that the DirectoryListLoad UMA is appropriately recorded and the
 // variance is taken into consideration (+/-20%).
+// @ts-ignore: error TS4111: Property 'metricsRecordDirectoryListLoad' comes
+// from an index signature, so it must be accessed with
+// ['metricsRecordDirectoryListLoad'].
 testcase.metricsRecordDirectoryListLoad = async () => {
+  // @ts-ignore: error TS7006: Parameter 'numEntries' implicitly has an 'any'
+  // type.
   const createEntries = numEntries => {
     const entries = [];
     for (let i = 0; i < numEntries; i++) {
@@ -66,6 +75,7 @@ testcase.metricsRecordDirectoryListLoad = async () => {
 
   // Open Files app on Downloads with 10 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
+  // @ts-ignore: error TS6133: 'appId' is declared but its value is never read.
   let appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, entries.slice(0, 10), []);
   const tenFilesSum =
@@ -95,6 +105,9 @@ testcase.metricsRecordDirectoryListLoad = async () => {
 };
 
 // Test that the UpdateAvailableApps UMA is appropriately recorded.
+// @ts-ignore: error TS4111: Property 'metricsRecordUpdateAvailableApps' comes
+// from an index signature, so it must be accessed with
+// ['metricsRecordUpdateAvailableApps'].
 testcase.metricsRecordUpdateAvailableApps = async () => {
   const entry = createTestFile('file-1.txt');
 

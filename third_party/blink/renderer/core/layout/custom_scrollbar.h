@@ -80,6 +80,19 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
     return it != parts_.end() ? it->value.Get() : nullptr;
   }
 
+  // Although this method returns an entire ComputedStyle, it is only used when
+  // computing a cursor to use.
+  // This method implements a cursor-specific, inheritance-like fallback for
+  // ScrollbarParts that aren't used.
+  // For example: without this fallback, hovering over a scrollbar-track on a
+  // scrollbar styled only with `::-webkit-scrollbar` and
+  // `::webkit-scroll-thumb` will surprisingly use the cursor style from the
+  // originating element (the scroller) since the scrollbar-track will not have
+  // a corresponding LayoutCustomScrollbarPart. In this case, it'd be
+  // preferable to use the cursor style set in the `::webkit-scrollbar`
+  const ComputedStyle* GetScrollbarPartStyleForCursor(
+      ScrollbarPart part_type) const;
+
   void InvalidateDisplayItemClientsOfScrollbarParts();
   void ClearPaintFlags();
 

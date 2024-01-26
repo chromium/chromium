@@ -48,17 +48,28 @@ via and stored on the `OpenXrExtensionHelper` and corresponding
 `OpenXrExtensionMethods` struct. This helps to avoid multiple instances of a
 class that wants to use the method needing to load the method. These methods
 should either be checked for their own validity or that the extension which
-guards them is enabled before their use. The base class [OpenXrPlatformHelper](openxr_platform_helper.h)
+guards them is enabled before their use. The base class [`OpenXrPlatformHelper`](openxr_platform_helper.h)
 is ultimately responsible for building the list of extensions that we wish to
 enable on a session based on whether the functionality is required or optional.
 
 Code that leverages extensions wholly or in part to supply the necessary data to
-WebXR should typically be wrapped in their own classes, with the
-`OpenXrExtensionHelper` serving as the factory/arbiter of which class is created
-based upon the prioritization of classes due to enabled extensions. This enables
-us to support WebXR features with a variety of extensions when multiple ones
-exist that surface similar functionality in ways that are (usually) device
-specific.
+WebXR should typically be wrapped in their own classes, with the ordering in [`GetExtensionHandlerFactories`](openxr_extension_handler_factories.cc)
+serving as the factory/arbiter of which class is created based upon the
+prioritization of classes due to enabled extensions. This enables us to support
+WebXR features with a variety of extensions when multiple ones exist that
+surface similar functionality in ways that are (usually) device specific.
+Support for these classes and a declaration of their requirements (in the form
+of needed extensions), is provided by implementing an [`OpenXrExtensionHandlerFactory`](openxr_extension_handler_factory.h)
+and adding it to the [`GetExtensionHandlerFactories`](openxr_extension_handler_factories.cc)
+list. Entries in the list should generally be grouped by the type of data that
+they can handle and then ordered by priority in that group (the creation code
+will create the first handler that provides the data that it wants), with
+platform-specific extensions usually coming first.
+
+Extension handlers for XR_EXT_ and XR_KHR_ extensions should be placed in
+//device/vr/openxr, whereas code to handle other extensions should be placed in
+a subfolder matching the extension vendor (e.g. fb/ for XR_FB_ or msft/ for
+XR_MSFT_).
 
 ## Input
 
@@ -78,7 +89,9 @@ Any required extension for the profile will automatically be enabled on the
 session if the runtime supports it by the setup code. New button types can be
 added and extended as needed. The base path of the interaction profile must be
 defined as a constant in [openxr_interaction_profile_paths.h](openxr_interaction_profile_paths.h),
-for compatibility with tests.
+for compatibility with tests. If the interaction profile should have hand input
+enabled for it, the required extension should also be added to the list in the
+[OpenXrHandTrackerHandlerFactory](openxr_hand_tracker.h).
 
 ### Hand Gesture Extensions
 
@@ -88,7 +101,7 @@ map has been added, simply extend [OpenXrHandTracker](openxr_hand_tracker.h),
 which has some more detailed instructions. [OpenXrHandTrackerAndroid](android/openxr_hand_tracker_android.h)
 is an example of a class that extends `OpenXrHandTracker` to provide such
 support. Note that you are still responsible for ensuring that your extension is
-enabled when available and creating yourself via
-`OpenXrExtensionHelper::CreateHandTracker`.
+enabled when available and providing a means to create your new class as
+described in [OpenXR Extensions](#openxr-extensions).
 
 [xr_device_service]: https://source.chromium.org/chromium/chromium/src/+/main:content/services/isolated_xr_device/README.md

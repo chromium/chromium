@@ -22,7 +22,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -176,15 +176,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
           configurationWithPointSize:kIncognitoSymbolImagePointSize
                               weight:UIImageSymbolWeightLight
                                scale:UIImageSymbolScaleMedium];
-      if (@available(iOS 15, *)) {
-        incognitoImage =
-            SymbolWithPalette(CustomSymbolWithConfiguration(
-                                  kIncognitoCircleFillSymbol, configuration),
-                              LargeIncognitoPalette());
-      } else {
-        incognitoImage = CustomSymbolWithConfiguration(
-            kIncognitoCircleFilliOS14Symbol, configuration);
-      }
+      incognitoImage =
+          SymbolWithPalette(CustomSymbolWithConfiguration(
+                                kIncognitoCircleFillSymbol, configuration),
+                            LargeIncognitoPalette());
 
       UIImageView* incognitoImageView =
           [[UIImageView alloc] initWithImage:incognitoImage];

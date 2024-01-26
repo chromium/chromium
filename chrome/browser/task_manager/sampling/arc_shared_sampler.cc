@@ -88,7 +88,7 @@ void ArcSharedSampler::OnReceiveMemoryDump(
     if (it == callbacks_.end())
       continue;
     const MemoryFootprintBytes result = proc->private_footprint_kb * 1024;
-    it->second.Run(absl::make_optional<MemoryFootprintBytes>(result));
+    it->second.Run(std::make_optional<MemoryFootprintBytes>(result));
   }
 }
 

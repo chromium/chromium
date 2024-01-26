@@ -228,7 +228,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås upp med fingeravtryck</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplösningen har ändrats till <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Nyligen installerad</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1918022425394817322">Kameran har fästs i det övre högra hörnet</translation>
@@ -267,7 +266,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2075520525463668108">Aktivera och inaktivera <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> är <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Öppna emojiväljaren</translation>
@@ -283,7 +281,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2149229036084364364">Tillbaka till föregående spår</translation>
 <translation id="2152895518047545149">Inget verkar saknas. Bra gjort!</translation>
 <translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
-<translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="2185166372312820725">Öppna föregående flik</translation>
 <translation id="2185444992308415167">Gå igenom flikarna 1 till 8</translation>
 <translation id="2198625180564913276">Lägger till profil. Det kan ta några minuter.</translation>
@@ -412,10 +409,12 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
+<translation id="2744221223678373668">Delade</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">”Radera”</translation>
 <translation id="2750941250130734256">Det aktiva fönstret är inte längre dockat.</translation>
 <translation id="2761723519669354964">Öppna det markerade objektet från hyllan</translation>
+<translation id="2762000892062317888">nyss</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> via <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + sök + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3580650856351781466">Röstfilerna laddas ned</translation>
 <translation id="3585296979871889131">Visa de senaste bilderna, mediefilerna, aviseringarna och apparna på telefonen</translation>
+<translation id="3590441166907930941">Sidoknapp</translation>
 <translation id="3593039967545720377">Få åtkomst till historiken för urklipp genom att trycka på <ph name="SHORTCUT_KEY_NAME" /> + V för att visa urklipp. Kopiera ett objekt för att komma igång.</translation>
 <translation id="3593646411856133110">Svep uppåt och tryck länge för att visa öppna appar</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
@@ -732,6 +732,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3986082989454912832">Svara</translation>
 <translation id="3990002060657467458">I Snabbinställningar hittar ofta använda inställningar som wifi, Bluetooth och volym. Här kan du även ta en skärmbild.</translation>
 <translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="40062176907008878">Handskrift</translation>
 <translation id="4011112806063830608">Stör ej är aktiverat.</translation>
 <translation id="4017989525502048489">Laserpekare</translation>
@@ -1035,6 +1036,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5163434717504750796">Batterihälsa: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Antal cykler: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Spara skrivbordet som mall</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
+<translation id="5168753792967365150">Redigera i Google Tasks</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5187627942836026988">Visa information om surfzon. Surfzonen blockeras av administratören.</translation>
@@ -1304,6 +1306,8 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6168622430237609329">Dina installerade appar</translation>
 <translation id="6173151025443907148">Det finns inte stöd för inloggning av en andra användare om Lacros är aktiverad. Använd i stället en annan webbläsarprofil i Lacros eller inaktivera Lacros och försök igen.</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
+<translation id="6180193585172850042">Bakåtknapp</translation>
+<translation id="6180651297859206670">Framåtknapp</translation>
 <translation id="6182592640011875895">Öppna skrivbordet</translation>
 <translation id="6185696379715117369">Uppåt en sida</translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>
@@ -1693,7 +1697,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7850320739366109486">Stör inte</translation>
 <translation id="7851039877802112575">Flytta fokus till popupfönster och dialogrutor</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
 <translation id="7862292329216937261">Om du vill använda enheten som gäst måste du logga ut och sedan välja Använd som gäst längst ned på skärmen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7872786842639831132">Av</translation>
@@ -1804,7 +1807,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
 <translation id="8270450402312105425">{0,plural, =1{Byt till en tidigare version av enheten inom en timme}other{Byt till en tidigare version av enheten inom # timmar}}</translation>
 <translation id="8277261673056602147">Markera text på skärmen</translation>
-<translation id="8284362522226889623">Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Föregående meny</translation>

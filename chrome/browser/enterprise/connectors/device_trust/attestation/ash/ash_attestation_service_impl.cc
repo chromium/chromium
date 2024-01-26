@@ -116,7 +116,7 @@ void AshAttestationServiceImpl::TryPrepareKey() {
       base::BindOnce(&AshAttestationServiceImpl::KeyPrepareCallback,
                      weak_factory_.GetWeakPtr(),
                      std::move(tpm_key_challenge_subtle)),
-      absl::nullopt);
+      std::nullopt);
 }
 
 void AshAttestationServiceImpl::KeyPrepareCallback(

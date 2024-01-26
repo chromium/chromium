@@ -1,4 +1,26 @@
 <style include="cr-hidden-style settings-shared">
+  :host-context(body.revamp-wayfinding-enabled):host {
+    --page-backdrop-bg-color: var(--cros-sys-surface1);
+
+    background-color: var(--page-backdrop-bg-color);
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host-context(body.revamp-wayfinding-enabled):host {
+      --page-backdrop-bg-color: var(--cros-sys-app_base);
+    }
+  }
+
+  /* L1 page-specific style */
+  :host-context(body.revamp-wayfinding-enabled):host(:not(.showing-subpage)) {
+    padding-top: 8px;
+  }
+
   :host([is-subpage-animating]) {
     /* Prevent an unwanted horizontal scrollbar when transitioning back from
       * a sub-page. */

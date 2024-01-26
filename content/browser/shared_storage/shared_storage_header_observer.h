@@ -34,7 +34,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   using OperationResult = storage::SharedStorageManager::OperationResult;
   using OperationType = network::mojom::SharedStorageOperationType;
   using OperationPtr = network::mojom::SharedStorageOperationPtr;
-  using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+  using ContextType = StoragePartitionImpl::ContextType;
 
   // Enum for tracking how often the `PermissionsPolicy` double check runs along
   // with its results. Recorded to UMA; always add new values to the end and do
@@ -127,7 +127,8 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
 
   bool IsSharedStorageAllowedBySiteSettings(
       NavigationOrDocumentHandle* navigation_or_document_handle,
-      const url::Origin& request_origin);
+      const url::Origin& request_origin,
+      std::string* out_debug_message = nullptr);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
   raw_ptr<StoragePartitionImpl> storage_partition_;

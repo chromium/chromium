@@ -32,9 +32,9 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
 
   // SharingDeviceSource:
   bool IsReady() override;
-  std::unique_ptr<SharingTargetDeviceInfo> GetDeviceByGuid(
+  std::optional<SharingTargetDeviceInfo> GetDeviceByGuid(
       const std::string& guid) override;
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> GetDeviceCandidates(
+  std::vector<SharingTargetDeviceInfo> GetDeviceCandidates(
       sync_pb::SharingSpecificFields::EnabledFeatures required_feature)
       override;
 
@@ -56,8 +56,7 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   // are renamed to either their short name if that one is unique, or their full
   // name otherwise. The returned list is sorted in (not strictly) descending
   // order by last_updated_timestamp.
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-  ConvertAndDeduplicateDevices(
+  std::vector<SharingTargetDeviceInfo> ConvertAndDeduplicateDevices(
       std::vector<const syncer::DeviceInfo*> devices) const;
 
   std::vector<const syncer::DeviceInfo*> FilterDeviceCandidates(
@@ -71,7 +70,7 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
 
   // The personalized name is stored for deduplicating devices running older
   // clients.
-  absl::optional<std::string> personalizable_local_device_name_;
+  std::optional<std::string> personalizable_local_device_name_;
 
   base::WeakPtrFactory<SharingDeviceSourceSync> weak_ptr_factory_{this};
 };

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEBAUTHN_CHROME_AUTHENTICATOR_REQUEST_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -24,7 +25,6 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -70,7 +70,7 @@ class ChromeWebAuthenticationDelegate
   bool OriginMayUseRemoteDesktopClientOverride(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
-  absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
+  std::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;
   bool ShouldPermitIndividualAttestation(
@@ -81,7 +81,7 @@ class ChromeWebAuthenticationDelegate
       content::RenderFrameHost* render_frame_host) override;
   bool SupportsPasskeyMetadataSyncing() override;
   bool IsFocused(content::WebContents* web_contents) override;
-  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+  std::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host) override;
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
@@ -90,7 +90,7 @@ class ChromeWebAuthenticationDelegate
       content::BrowserContext* browser_context) override;
 
 #if BUILDFLAG(IS_MAC)
-  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+  std::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       content::BrowserContext* browser_context) override;
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS)
@@ -175,7 +175,7 @@ class ChromeAuthenticatorRequestDelegate
       const std::string& rp_id,
       RequestSource request_source,
       device::FidoRequestType request_type,
-      absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* discovery_factory) override;
@@ -242,7 +242,7 @@ class ChromeAuthenticatorRequestDelegate
 
   content::BrowserContext* GetBrowserContext() const;
 
-  absl::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
+  std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
@@ -273,13 +273,13 @@ class ChromeAuthenticatorRequestDelegate
   //
   // It does not parse `formatted_date` strictly and is intended for trusted
   // inputs.
-  static absl::optional<int> DaysSinceDate(const std::string& formatted_date,
-                                           base::Time now);
+  static std::optional<int> DaysSinceDate(const std::string& formatted_date,
+                                          base::Time now);
 
   // GetICloudKeychainPref returns the value of the iCloud Keychain preference
   // as a tristate. If no value for the preference has been set then it
-  // returns `absl::nullopt`.
-  static absl::optional<bool> GetICloudKeychainPref(const PrefService* prefs);
+  // returns `std::nullopt`.
+  static std::optional<bool> GetICloudKeychainPref(const PrefService* prefs);
 
   // IsActiveProfileAuthenticatorUser returns true if the profile authenticator
   // has been used in the past 31 days.
@@ -292,7 +292,7 @@ class ChromeAuthenticatorRequestDelegate
       bool is_active_profile_authenticator_user,
       bool has_icloud_drive_enabled,
       bool request_is_for_google_com,
-      absl::optional<bool> preference);
+      std::optional<bool> preference);
 
   // ConfigureICloudKeychain is called by `ConfigureDiscoveries` to configure
   // the `AuthenticatorRequestDialogModel` with iCloud Keychain-related values.

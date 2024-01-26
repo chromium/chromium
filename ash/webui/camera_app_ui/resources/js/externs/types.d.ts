@@ -128,30 +128,6 @@ interface HTMLVideoElement {
   cancelVideoFrameCallback(handle: number): undefined;
 }
 
-// Barcode Detection API, this is currently only supported in Chrome on
-// ChromeOS, Android or macOS.
-// https://wicg.github.io/shape-detection-api/
-declare class BarcodeDetector {
-  static getSupportedFormats(): Promise<BarcodeFormat[]>;
-  constructor(barcodeDetectorOptions?: BarcodeDetectorOptions);
-  detect(image: ImageBitmapSource): Promise<DetectedBarcode[]>;
-}
-
-interface BarcodeDetectorOptions {
-  formats?: BarcodeFormat[];
-}
-
-interface DetectedBarcode {
-  boundingBox: DOMRectReadOnly;
-  rawValue: string;
-  format: BarcodeFormat;
-  cornerPoints: readonly Point2D[];
-}
-
-type BarcodeFormat =
-    'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
-    'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
-
 // Web Workers API interface. This is included in lib.webworker.d.ts and
 // available if we enable lib: ["webworker"] in tsconfig.json, but it conflicts
 // with the "dom" lib that we also need. For simplicity we're providing a

@@ -209,7 +209,7 @@ void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
     DCHECK(stats);
 
     // Get the HWID.
-    absl::optional<base::StringPiece> hwid =
+    std::optional<base::StringPiece> hwid =
         stats->GetMachineStatistic(ash::system::kHardwareClassKey);
     if (hwid) {
       response->emplace(kHWIDKey, std::string(hwid.value()));
@@ -234,11 +234,10 @@ void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
                                 SysLogsSourceCallback callback) {
   auto on_get_free_disk_space = [](std::unique_ptr<SystemLogsResponse> response,
                                    SysLogsSourceCallback callback,
-                                   absl::optional<int64_t> free_space) {
+                                   std::optional<int64_t> free_space) {
     auto on_get_total_disk_space =
         [](std::unique_ptr<SystemLogsResponse> response,
-           SysLogsSourceCallback callback,
-           absl::optional<int64_t> total_space) {
+           SysLogsSourceCallback callback, std::optional<int64_t> total_space) {
           if (total_space.has_value()) {
             response->emplace(kTotalDiskSpace,
                               base::NumberToString(total_space.value()));
@@ -637,7 +636,7 @@ void ChromeInternalLogSource::PopulateInstallerBrandCode(
 void ChromeInternalLogSource::PopulateLastUpdateState(
     SystemLogsResponse* response) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const absl::optional<UpdateState> update_state = GetLastUpdateState();
+  const std::optional<UpdateState> update_state = GetLastUpdateState();
   if (!update_state)
     return;  // There is nothing to include if no update check has completed.
 

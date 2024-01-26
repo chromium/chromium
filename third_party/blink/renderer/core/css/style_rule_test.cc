@@ -14,6 +14,9 @@
 
 namespace blink {
 
+using css_test_helpers::MakeSignalingRule;
+using css_test_helpers::ParseRule;
+
 class StyleRuleTest : public PageTestBase {};
 
 namespace {
@@ -257,6 +260,52 @@ TEST_F(StyleRuleTest, SetPreludeTextBecomesNonImplicitScope) {
   EXPECT_TRUE(scope_rule->GetStyleRuleScope().GetStyleScope().IsImplicit());
   scope_rule->SetPreludeText(GetDocument().GetExecutionContext(), "(.a)");
   EXPECT_FALSE(scope_rule->GetStyleRuleScope().GetStyleScope().IsImplicit());
+}
+
+TEST_F(StyleRuleTest, HasSignalingChildRule_StyleRule) {
+  StyleRule* parent_rule =
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 1px; }"));
+  StyleRule* signaling_rule = MakeSignalingRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }")),
+      CSSSelector::Signal::kBareDeclarationShift);
+
+  EXPECT_FALSE(parent_rule->IsSignaling());
+  EXPECT_TRUE(signaling_rule->IsSignaling());
+
+  EXPECT_FALSE(parent_rule->HasSignalingChildRule());
+  EXPECT_FALSE(signaling_rule->HasSignalingChildRule());
+
+  parent_rule->AddChildRule(signaling_rule);
+
+  EXPECT_TRUE(parent_rule->HasSignalingChildRule());
+  EXPECT_TRUE(parent_rule->Copy()->HasSignalingChildRule());
+
+  EXPECT_FALSE(signaling_rule->HasSignalingChildRule());
+  EXPECT_FALSE(signaling_rule->Copy()->HasSignalingChildRule());
+}
+
+TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule_NoSignal) {
+  // Any subclass of StyleRuleGroup will do here, @supports is chosen
+  // since it's relatively easy to instantiate.
+  auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
+      "width:100px", /* condition_is_supported */ true,
+      /* rules */ HeapVector<Member<StyleRuleBase>>());
+  EXPECT_FALSE(supports_rule->IsSignaling());
+  EXPECT_FALSE(supports_rule->HasSignalingChildRule());
+  EXPECT_FALSE(supports_rule->Copy()->HasSignalingChildRule());
+}
+
+TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule) {
+  HeapVector<Member<StyleRuleBase>> child_rules;
+  child_rules.push_back(ParseRule(GetDocument(), "div { color: green; }"));
+  child_rules.push_back(MakeSignalingRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }")),
+      CSSSelector::Signal::kBareDeclarationShift));
+  auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
+      "width:100px", /* condition_is_supported */ true, std::move(child_rules));
+  EXPECT_FALSE(supports_rule->IsSignaling());
+  EXPECT_TRUE(supports_rule->HasSignalingChildRule());
+  EXPECT_TRUE(supports_rule->Copy()->HasSignalingChildRule());
 }
 
 }  // namespace blink

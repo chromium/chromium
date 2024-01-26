@@ -62,8 +62,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
         resolution_(resolution) {}
 
   base::span<const uint8_t> Data() const override {
-    return base::make_span(reinterpret_cast<const uint8_t*>(data_.data()),
-                           data_.size());
+    return base::as_byte_span(data_);
   }
   media::VideoCodec Codec() const override { return codec_; }
   bool IsKeyFrame() const override { return is_key_frame_; }

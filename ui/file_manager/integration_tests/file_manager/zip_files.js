@@ -39,6 +39,8 @@ function getUnzippedFileListRowEntries() {
 /**
  * Tests ZIP mounting from Downloads.
  */
+// @ts-ignore: error TS4111: Property 'zipFileOpenDownloads' comes from an index
+// signature, so it must be accessed with ['zipFileOpenDownloads'].
 testcase.zipFileOpenDownloads = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
@@ -67,6 +69,8 @@ testcase.zipFileOpenDownloads = async () => {
 /**
  * Tests that Files app's ZIP mounting notifies FileTasks when mounted.
  */
+// @ts-ignore: error TS4111: Property 'zipNotifyFileTasks' comes from an index
+// signature, so it must be accessed with ['zipNotifyFileTasks'].
 testcase.zipNotifyFileTasks = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
@@ -90,6 +94,8 @@ testcase.zipNotifyFileTasks = async () => {
 /**
  * Tests ZIP mounting from Google Drive.
  */
+// @ts-ignore: error TS4111: Property 'zipFileOpenDrive' comes from an index
+// signature, so it must be accessed with ['zipFileOpenDrive'].
 testcase.zipFileOpenDrive = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
@@ -118,6 +124,8 @@ testcase.zipFileOpenDrive = async () => {
 /**
  * Tests ZIP mounting from a removable USB volume.
  */
+// @ts-ignore: error TS4111: Property 'zipFileOpenUsb' comes from an index
+// signature, so it must be accessed with ['zipFileOpenUsb'].
 testcase.zipFileOpenUsb = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
@@ -171,6 +179,8 @@ function getZipSelectionFileListRowEntries() {
 /**
  * Tests creating a ZIP file on Downloads.
  */
+// @ts-ignore: error TS4111: Property 'zipCreateFileDownloads' comes from an
+// index signature, so it must be accessed with ['zipCreateFileDownloads'].
 testcase.zipCreateFileDownloads = async () => {
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
@@ -205,6 +215,8 @@ testcase.zipCreateFileDownloads = async () => {
 /**
  * Tests creating a ZIP file on Drive.
  */
+// @ts-ignore: error TS4111: Property 'zipCreateFileDrive' comes from an index
+// signature, so it must be accessed with ['zipCreateFileDrive'].
 testcase.zipCreateFileDrive = async () => {
   // Open Files app on Drive containing ENTRIES.photos.
   const appId =
@@ -239,6 +251,8 @@ testcase.zipCreateFileDrive = async () => {
 /**
  * Tests creating a ZIP file containing an Office file on Drive.
  */
+// @ts-ignore: error TS4111: Property 'zipCreateFileDriveOffice' comes from an
+// index signature, so it must be accessed with ['zipCreateFileDriveOffice'].
 testcase.zipCreateFileDriveOffice = async () => {
   // Open Files app on Drive containing ENTRIES.photos and ENTRIES.docxFile.
   const appId = await setupAndWaitUntilReady(
@@ -277,6 +291,9 @@ testcase.zipCreateFileDriveOffice = async () => {
 /**
  * Tests that creating a ZIP file containing an encrypted file is disabled.
  */
+// @ts-ignore: error TS4111: Property 'zipDoesntCreateFileEncrypted' comes from
+// an index signature, so it must be accessed with
+// ['zipDoesntCreateFileEncrypted'].
 testcase.zipDoesntCreateFileEncrypted = async () => {
   // Open Files app on Drive containing a test CSE file.
   const appId =
@@ -299,12 +316,16 @@ testcase.zipDoesntCreateFileEncrypted = async () => {
   const element =
       await remoteCall.waitForElement(appId, '[command="#zip-selection"]');
 
+  // @ts-ignore: error TS4111: Property 'disabled' comes from an index
+  // signature, so it must be accessed with ['disabled'].
   chrome.test.assertEq('disabled', element.attributes.disabled);
 };
 
 /**
  * Tests creating a ZIP file on a removable USB volume.
  */
+// @ts-ignore: error TS4111: Property 'zipCreateFileUsb' comes from an index
+// signature, so it must be accessed with ['zipCreateFileUsb'].
 testcase.zipCreateFileUsb = async () => {
   // Open Files app on Drive.
   const appId =
@@ -353,6 +374,8 @@ testcase.zipCreateFileUsb = async () => {
 /**
  * Tests that extraction of a ZIP archive produces a feedback panel.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractShowPanel' comes from an index
+// signature, so it must be accessed with ['zipExtractShowPanel'].
 testcase.zipExtractShowPanel = async () => {
   const entry = ENTRIES.zipArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
@@ -368,6 +391,7 @@ testcase.zipExtractShowPanel = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Right-click the selected file.
@@ -396,6 +420,8 @@ testcase.zipExtractShowPanel = async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
     const expectedMsg = `Extracting ${entry.nameText} to Downloads`;
+    // @ts-ignore: error TS2339: Property 'attributes' does not exist on type
+    // '{}'.
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
@@ -415,11 +441,14 @@ testcase.zipExtractShowPanel = async () => {
  * Tests that extraction of a multiple ZIP archives produces the correct
  * feedback panel string.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractShowMultiPanel' comes from an
+// index signature, so it must be accessed with ['zipExtractShowMultiPanel'].
 testcase.zipExtractShowMultiPanel = async () => {
   const entries = COMPLEX_ZIP_ENTRY_SET;
 
   // Make sure the test extension handles the new window creation(s) properly.
   let entry = entries[2];  // ENTRIES.zipArchive.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   let targetDirectoryName = entry.nameText.split('.')[0];
   await sendTestMessage({
     name: 'expectFileTask',
@@ -427,6 +456,7 @@ testcase.zipExtractShowMultiPanel = async () => {
     openType: 'launch',
   });
   entry = entries[3];  // ENTRIES.zipSJISArchive.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   targetDirectoryName = entry.nameText.split('.')[0];
   await sendTestMessage({
     name: 'expectFileTask',
@@ -469,6 +499,8 @@ testcase.zipExtractShowMultiPanel = async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
     const expectedMsg = `Extracting 2 items…`;
+    // @ts-ignore: error TS2339: Property 'attributes' does not exist on type
+    // '{}'.
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
@@ -487,6 +519,8 @@ testcase.zipExtractShowMultiPanel = async () => {
 /**
  * Tests that various selections enable/hide the correct menu items.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractSelectionMenus' comes from an
+// index signature, so it must be accessed with ['zipExtractSelectionMenus'].
 testcase.zipExtractSelectionMenus = async () => {
   const entries = BASIC_ZIP_ENTRY_SET;
 
@@ -494,6 +528,7 @@ testcase.zipExtractSelectionMenus = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Select the first file (ENTRIES.hello).
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entries[0].nameText);
 
   // Right-click the selected file.
@@ -519,6 +554,7 @@ testcase.zipExtractSelectionMenus = async () => {
       'fakeMouseClick failed');
 
   // Select the third file (ENTRIES.zipArchive).
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entries[2].nameText);
 
   // Right-click the selected file.
@@ -598,6 +634,8 @@ testcase.zipExtractSelectionMenus = async () => {
 /**
  * Tests that extraction of a ZIP archive generates correct output files.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractCheckContent' comes from an
+// index signature, so it must be accessed with ['zipExtractCheckContent'].
 testcase.zipExtractCheckContent = async () => {
   const entry = ENTRIES.zipArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
@@ -652,6 +690,8 @@ testcase.zipExtractCheckContent = async () => {
 /**
  * Tests that repeated extraction of a ZIP archive generates extra directories.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractCheckDuplicates' comes from an
+// index signature, so it must be accessed with ['zipExtractCheckDuplicates'].
 testcase.zipExtractCheckDuplicates = async () => {
   const entry = ENTRIES.zipArchive;
   const directory = entry.nameText.split('.')[0];
@@ -725,6 +765,8 @@ testcase.zipExtractCheckDuplicates = async () => {
 /**
  * Tests extraction of a ZIP archive can detect and unpack filename encodings.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractCheckEncodings' comes from an
+// index signature, so it must be accessed with ['zipExtractCheckEncodings'].
 testcase.zipExtractCheckEncodings = async () => {
   const entry = ENTRIES.zipSJISArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
@@ -778,6 +820,8 @@ testcase.zipExtractCheckEncodings = async () => {
 /**
  * Tests extract option menu item has proper a11y labels.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractA11y' comes from an index
+// signature, so it must be accessed with ['zipExtractA11y'].
 testcase.zipExtractA11y = async () => {
   const entry = ENTRIES.zipArchive;
 
@@ -805,6 +849,8 @@ testcase.zipExtractA11y = async () => {
 /**
  * Tests extraction of a ZIP archive fails if there's not enough disk space.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractNotEnoughSpace' comes from an
+// index signature, so it must be accessed with ['zipExtractNotEnoughSpace'].
 testcase.zipExtractNotEnoughSpace = async () => {
   const entry = ENTRIES.zipExtArchive;  // 120TB fake archive.
 
@@ -836,6 +882,8 @@ testcase.zipExtractNotEnoughSpace = async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
     const expectedMsg = 'Extract operation failed. There is not enough space.';
+    // @ts-ignore: error TS2339: Property 'attributes' does not exist on type
+    // '{}'.
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
@@ -854,6 +902,8 @@ testcase.zipExtractNotEnoughSpace = async () => {
 /**
  * Tests that extraction of a ZIP archive from a read only volume succeeds.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractFromReadOnly' comes from an
+// index signature, so it must be accessed with ['zipExtractFromReadOnly'].
 testcase.zipExtractFromReadOnly = async () => {
   const entry = ENTRIES.readOnlyZipFile;
   const targetDirectoryName = entry.nameText.split('.')[0];

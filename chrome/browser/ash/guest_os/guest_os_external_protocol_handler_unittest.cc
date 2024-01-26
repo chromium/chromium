@@ -96,7 +96,7 @@ TEST_F(GuestOsExternalProtocolHandlerTest, TransientUrlHandlerIsInvoked) {
           [](const GURL& url) { return url.SchemeIs("test"); }));
 
   GURL url{"test://test"};
-  absl::optional<GuestOsUrlHandler> handler = service.GetHandler(url);
+  std::optional<GuestOsUrlHandler> handler = service.GetHandler(url);
   ASSERT_TRUE(handler);
   handler->Handle(profile(), url);
 
@@ -112,7 +112,7 @@ TEST_F(GuestOsExternalProtocolHandlerTest,
       /*canHandleCallback=*/base::BindRepeating(
           [](const GURL& url) { return url.SchemeIs("test"); }));
 
-  absl::optional<GuestOsUrlHandler> handler =
+  std::optional<GuestOsUrlHandler> handler =
       service.GetHandler(GURL("otherscheme://test"));
   EXPECT_FALSE(handler);
 }

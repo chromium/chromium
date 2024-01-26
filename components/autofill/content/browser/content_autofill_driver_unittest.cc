@@ -70,6 +70,7 @@ using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Optional;
+using ::testing::Pointwise;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -79,6 +80,16 @@ using ::testing::WithArg;
 namespace {
 
 const char kAppLocale[] = "en-US";
+
+MATCHER(EqualsFillData, "") {
+  FormFieldData::FillData lhs_field = std::get<0>(arg);
+  FormFieldData::FillData rhs_field = std::get<1>(arg);
+  return lhs_field.value == rhs_field.value &&
+         lhs_field.unique_renderer_id == rhs_field.unique_renderer_id &&
+         lhs_field.section == rhs_field.section &&
+         lhs_field.is_autofilled == rhs_field.is_autofilled &&
+         lhs_field.force_override == rhs_field.force_override;
+}
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
@@ -97,13 +108,15 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // Returns the `FormData` received via mojo interface method
   // mojom::AutofillAgent::FillOrPreviewForm().
-  std::optional<std::vector<FormFieldData>> GetAutofillFillFormMessage() {
+  std::optional<std::vector<FormFieldData::FillData>>
+  GetAutofillFillFormMessage() {
     return fill_form_fields_;
   }
 
   // Returns the `FormData` received via mojo interface method
   // mojom::AutofillAgent::PreviewForm().
-  std::optional<std::vector<FormFieldData>> GetAutofillPreviewFormMessage() {
+  std::optional<std::vector<FormFieldData::FillData>>
+  GetAutofillPreviewFormMessage() {
     return preview_form_fields_;
   }
 
@@ -188,14 +201,13 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void ApplyFormAction(mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,
-                       FormRendererId form_renderer_id,
-                       const std::vector<FormFieldData>& fields) override {
+                       const FormData::FillData& form) override {
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
-        preview_form_fields_ = fields;
+        preview_form_fields_ = form.fields;
         break;
       case mojom::ActionPersistence::kFill:
-        fill_form_fields_ = fields;
+        fill_form_fields_ = form.fields;
         break;
     }
     CallDone();
@@ -285,8 +297,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   base::OnceClosure quit_closure_;
 
   // Records data received from FillOrPreviewForm() call.
-  std::optional<std::vector<FormFieldData>> fill_form_fields_;
-  std::optional<std::vector<FormFieldData>> preview_form_fields_;
+  std::optional<std::vector<FormFieldData::FillData>> fill_form_fields_;
+  std::optional<std::vector<FormFieldData::FillData>> preview_form_fields_;
   // Records data received from FieldTypePredictionsAvailable() call.
   std::optional<std::vector<FormDataPredictions>> predictions_;
   // Records whether ClearSection() got called.
@@ -723,11 +735,12 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(agent().GetAutofillPreviewFormMessage());
-  std::optional<std::vector<FormFieldData>> output_fields =
+  std::optional<std::vector<FormFieldData::FillData>> output_fields =
       agent().GetAutofillFillFormMessage();
   ASSERT_TRUE(output_fields.has_value());
-  EXPECT_THAT(test::WithoutUnserializedData(address_form()),
-              test::SameFieldsAs(*output_fields));
+  EXPECT_THAT(
+      FormData::FillData(test::WithoutUnserializedData(address_form())).fields,
+      Pointwise(EqualsFillData(), *output_fields));
 }
 
 TEST_F(ContentAutofillDriverTestWithAddressForm,
@@ -749,11 +762,12 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(agent().GetAutofillFillFormMessage());
-  std::optional<std::vector<FormFieldData>> output_fields =
+  std::optional<std::vector<FormFieldData::FillData>> output_fields =
       agent().GetAutofillPreviewFormMessage();
   ASSERT_TRUE(output_fields);
-  EXPECT_THAT(test::WithoutUnserializedData(address_form()),
-              test::SameFieldsAs(*output_fields));
+  EXPECT_THAT(
+      FormData::FillData(test::WithoutUnserializedData(address_form())).fields,
+      Pointwise(EqualsFillData(), *output_fields));
 }
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {

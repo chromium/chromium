@@ -369,8 +369,7 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 }
 
 PhoneObject::PhoneObject(const std::u16string& number,
-                         const std::string& region,
-                         bool infer_country_code) {
+                         const std::string& region) {
   DCHECK_EQ(2u, region.size());
 
   std::unique_ptr<::i18n::phonenumbers::PhoneNumber> i18n_number(
@@ -381,13 +380,6 @@ PhoneObject::PhoneObject(const std::u16string& number,
     // The formatted and normalized versions will be set on the first call to
     // the coresponding methods.
     i18n_number_ = std::move(i18n_number);
-    // `ParsePhoneNumber()` only sets `country_code_` for internationally
-    // formatted numbers. `i18n_number_`'s country_code defaults to `region` in,
-    // this case. If `infer_country_code` is true, fall back to that.
-    if (infer_country_code && country_code_.empty() &&
-        i18n_number_->has_country_code()) {
-      country_code_ = base::NumberToString16(i18n_number_->country_code());
-    }
     // Autofill doesn't support filling extensions, so we should not store them.
     i18n_number_->clear_extension();
   } else {

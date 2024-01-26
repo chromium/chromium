@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.notifications.chime;
 
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Chime related features and Finch parameters. */
 public class ChimeFeatures {
     /** Always register to push notification service. */
     public static final BooleanCachedFieldTrialParameter ALWAYS_REGISTER =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.USE_CHIME_ANDROID_SDK, "always_register", false);
 }

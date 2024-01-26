@@ -13,7 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -65,8 +67,16 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         ThreadUtils.assertOnUiThread();
         assert ptr != 0;
         mSyncServiceAndroidBridge = ptr;
-        keepSettingsOnlyForAccountManagerAccounts();
-        AccountManagerFacadeProvider.getInstance().addObserver(this);
+        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        accountManagerFacade.addObserver(this);
+        Promise<List<CoreAccountInfo>> accountsPromise =
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        if (accountsPromise.isFulfilled()) {
+            // The promise is already fulfilled - call immediately. If the promise is not fulfilled,
+            // `keepSettingsOnlyForAccountManagerAccounts` will be invoked by
+            // `onCoreAccountInfosChanged` when `AccountManagerFacade` cache gets populated.
+            keepSettingsOnlyForAccountManagerAccounts(accountsPromise.getResult());
+        }
     }
 
     /** Signals the native SyncService is being shutdown and this object mustn't be used anymore. */
@@ -441,22 +451,16 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @Override
     /* AccountsChangeObserver implementation. */
     public void onCoreAccountInfosChanged() {
-        keepSettingsOnlyForAccountManagerAccounts();
+        Promise<List<CoreAccountInfo>> accountsPromise =
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        assert accountsPromise.isFulfilled();
+        keepSettingsOnlyForAccountManagerAccounts(accountsPromise.getResult());
     }
 
-    private void keepSettingsOnlyForAccountManagerAccounts() {
-        AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
-                .then(
-                        accounts -> {
-                            String[] gaiaIds =
-                                    accounts.stream()
-                                            .map(CoreAccountInfo::getGaiaId)
-                                            .toArray(String[]::new);
-                            SyncServiceImplJni.get()
-                                    .keepAccountSettingsPrefsOnlyForUsers(
-                                            mSyncServiceAndroidBridge, gaiaIds);
-                        });
+    private void keepSettingsOnlyForAccountManagerAccounts(List<CoreAccountInfo> accounts) {
+        String[] gaiaIds = accounts.stream().map(CoreAccountInfo::getGaiaId).toArray(String[]::new);
+        SyncServiceImplJni.get()
+                .keepAccountSettingsPrefsOnlyForUsers(mSyncServiceAndroidBridge, gaiaIds);
     }
 
     /** Invokes the onResult method of the callback from native code. */

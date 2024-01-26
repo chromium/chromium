@@ -1021,8 +1021,6 @@ TEST_F(
 TEST_F(PasswordSyncBridgeTest,
        ShouldRemoveSyncMetadataToRedownloadPasswordNotes) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
 
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
@@ -1054,8 +1052,6 @@ TEST_F(
     PasswordSyncBridgeTest,
     ShouldNotRemoveSyncMetadataToRedownloadPasswordNotesWhenHasBeenAlreadyRedownloaded) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
 
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
@@ -1074,70 +1070,6 @@ TEST_F(
   EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(
                                     /*state=*/syncer::HasInitialSyncDone(),
                                     /*entities=*/testing::SizeIs(0))));
-  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
-
-  auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
-}
-
-TEST_F(
-    PasswordSyncBridgeTest,
-    ShouldNotRemoveSyncMetadataToRedownloadPasswordNotesWhenFeatureIsDisabled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
-
-  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
-      .WillByDefault([&]() {
-        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-        metadata_batch->SetModelTypeState(model_type_state);
-        return metadata_batch;
-      });
-
-  EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(
-                                    /*state=*/syncer::HasInitialSyncDone(),
-                                    /*entities=*/testing::SizeIs(0))));
-  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
-
-  auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
-}
-
-TEST_F(PasswordSyncBridgeTest,
-       ShouldClearNotesBeforeSyncFlagWhenFeatureIsDisabled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
-
-  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
-      .WillByDefault([&]() {
-        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-        model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
-            true);
-        metadata_batch->SetModelTypeState(model_type_state);
-        return metadata_batch;
-      });
-
-  EXPECT_CALL(
-      mock_processor(),
-      ModelReadyToSync(syncer::MetadataBatchContains(
-          testing::AllOf(
-              testing::Property(
-                  &sync_pb::ModelTypeState::initial_sync_state,
-                  sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE),
-              testing::Property(
-                  &sync_pb::ModelTypeState::
-                      notes_enabled_before_initial_sync_for_passwords,
-                  false)),
-          /*entities=*/testing::SizeIs(0))));
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
@@ -1283,7 +1215,7 @@ TEST_F(PasswordSyncBridgeTest,
         model_type_state.set_initial_sync_state(
             sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
-            base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+            true);
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
         metadata_batch->SetModelTypeState(model_type_state);
         metadata_batch->AddMetadata(

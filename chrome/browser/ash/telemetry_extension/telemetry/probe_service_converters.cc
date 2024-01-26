@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 
 #include <unistd.h>
+
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,7 +16,6 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::telemetry {
 
@@ -73,22 +74,22 @@ crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
                                          std::move(input->msg));
 }
 
-absl::optional<double> UncheckedConvertPtr(
+std::optional<double> UncheckedConvertPtr(
     cros_healthd::mojom::NullableDoublePtr input) {
   return input->value;
 }
 
-absl::optional<uint8_t> UncheckedConvertPtr(
+std::optional<uint8_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint8Ptr input) {
   return input->value;
 }
 
-absl::optional<uint16_t> UncheckedConvertPtr(
+std::optional<uint16_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint16Ptr input) {
   return input->value;
 }
 
-absl::optional<uint32_t> UncheckedConvertPtr(
+std::optional<uint32_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input) {
   return input->value;
 }
@@ -100,9 +101,9 @@ crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
 
 crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioInfoPtr input) {
-  absl::optional<std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>>
+  std::optional<std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>>
       output_nodes;
-  absl::optional<std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>>
+  std::optional<std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>>
       input_nodes;
 
   if (input->output_nodes) {

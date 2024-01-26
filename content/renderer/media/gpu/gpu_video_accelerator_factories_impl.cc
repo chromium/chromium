@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -32,6 +33,20 @@
 #include "third_party/skia/include/core/SkTypes.h"
 
 namespace content {
+namespace {
+
+// Kill switch for using multiplanar YV12 instead of I420 with 3x single planar.
+BASE_FEATURE(kUseYV12MultiPlanar,
+             "UseYV12MultiPlanar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool UseYV12MultiPlanar() {
+  return base::FeatureList::IsEnabled(
+             media::kUseMultiPlaneFormatForSoftwareVideo) &&
+         base::FeatureList::IsEnabled(kUseYV12MultiPlanar);
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
@@ -325,14 +340,19 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     // TODO(mcasas): remove the |bit_depth| check when libyuv supports more than
     // just x010ToAR30 conversions, https://crbug.com/libyuv/751.
     if (bit_depth == 10) {
-      if (capabilities.image_ar30)
+      if (capabilities.image_ar30) {
         return media::GpuVideoAcceleratorFactories::OutputFormat::XR30;
-      else if (capabilities.image_ab30)
+      } else if (capabilities.image_ab30) {
         return media::GpuVideoAcceleratorFactories::OutputFormat::XB30;
+      }
     }
 #endif
-    if (capabilities.texture_rg)
+    if (capabilities.texture_rg) {
+      if (UseYV12MultiPlanar()) {
+        return media::GpuVideoAcceleratorFactories::OutputFormat::YV12;
+      }
       return media::GpuVideoAcceleratorFactories::OutputFormat::I420;
+    }
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
   }
 

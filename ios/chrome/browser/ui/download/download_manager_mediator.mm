@@ -93,8 +93,7 @@ void DownloadManagerMediator::StartDownloading() {
 
 DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
   // Returns the `DownloadManagerState`, depending on the state of
-  // `download_task_` and the state of the upload to Save to Drive, if that is
-  // the destination of the downloaded file.
+  // `download_task_` and `upload_task_`.
   switch (download_task_->GetState()) {
     case web::DownloadTask::State::kNotStarted:
       return kDownloadManagerStateNotStarted;
@@ -125,40 +124,22 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
   }
 }
 
+bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
+  return drive::IsSaveToDriveAvailable(is_incognito_, identity_manager_,
+                                       drive_service_);
+}
+
 #pragma mark - Private
 
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
-        is_incognito_, identity_manager_, drive_service_);
-    [consumer_ setDownloadToDriveButtonVisible:is_save_to_drive_available];
-  }
-
-  if (state == kDownloadManagerStateSucceeded && !upload_task_) {
-    base::FilePath user_download_path;
-    GetDownloadsDirectory(&user_download_path);
-    download_path_ =
-        user_download_path.Append(download_task_->GenerateFileName());
-
-    base::FilePath task_path = download_task_->GetResponsePath();
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(base::PathExists, task_path),
-        base::BindOnce(
-            &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
-            weak_ptr_factory_.GetWeakPtr(), task_path));
-  }
-
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
-      state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
+  if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
     DownloadFileDestination destination = upload_task_ == nullptr
                                               ? DownloadFileDestination::kFiles
                                               : DownloadFileDestination::kDrive;
@@ -200,8 +181,25 @@ void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void DownloadManagerMediator::RemoveIfFileExists(base::FilePath task_path,
+                                                 bool file_exists) {
+  if (!file_exists || !download_task_) {
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::DeleteFile, task_path),
+      base::BindOnce(&DownloadManagerMediator::RemoveComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void DownloadManagerMediator::MoveComplete(bool move_completed) {
   DCHECK(move_completed);
+}
+
+void DownloadManagerMediator::RemoveComplete(bool remove_completed) {
+  DCHECK(remove_completed);
 }
 
 int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
@@ -260,6 +258,23 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
 
 void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
   UpdateConsumer();
+  // If the download succeeded and the file will not be uploaded, move it to the
+  // appropriate folder.
+  if (task->GetState() == web::DownloadTask::State::kComplete &&
+      !upload_task_) {
+    base::FilePath user_download_path;
+    GetDownloadsDirectory(&user_download_path);
+    download_path_ =
+        user_download_path.Append(download_task_->GenerateFileName());
+    base::FilePath task_path = download_task_->GetResponsePath();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(base::PathExists, task_path),
+        base::BindOnce(
+            &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
+            weak_ptr_factory_.GetWeakPtr(), task_path));
+  }
 }
 
 void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
@@ -270,6 +285,16 @@ void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
 
 void DownloadManagerMediator::OnUploadUpdated(UploadTask* task) {
   UpdateConsumer();
+  // If the upload succeeded, remove the local copy of the download.
+  if (task->GetState() == UploadTask::State::kComplete) {
+    base::FilePath task_path = download_task_->GetResponsePath();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(base::PathExists, task_path),
+        base::BindOnce(&DownloadManagerMediator::RemoveIfFileExists,
+                       weak_ptr_factory_.GetWeakPtr(), task_path));
+  }
 }
 
 void DownloadManagerMediator::OnUploadDestroyed(UploadTask* task) {

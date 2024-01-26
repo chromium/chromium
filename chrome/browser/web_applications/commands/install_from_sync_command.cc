@@ -64,8 +64,8 @@ InstallFromSyncCommand::Params::Params(
     const GURL& start_url,
     const std::string& title,
     const GURL& scope,
-    const absl::optional<SkColor>& theme_color,
-    const absl::optional<mojom::UserDisplayMode>& user_display_mode,
+    const std::optional<SkColor>& theme_color,
+    const std::optional<mojom::UserDisplayMode>& user_display_mode,
     const std::vector<apps::IconInfo>& icons)
     : app_id(app_id),
       manifest_id(manifest_id),
@@ -235,7 +235,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   // forever.
   // TODO(https://crbug.com/1328977): Allow favicons without waiting for them to
   // be updated on the page.
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
@@ -293,7 +293,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("fallback_install", true);
   GetMutableDebugValue().Set("fallback_install_reason", base::ToString(code));
 
-  base::flat_set<GURL> icon_urls =
+  IconUrlSizeSet icon_urls =
       GetValidIconUrlsToDownload(*fallback_install_info_);
 
   base::UmaHistogramEnumeration("WebApp.Install.SyncFallbackInstallInitiated",

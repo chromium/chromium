@@ -248,7 +248,8 @@ class WebTransportTest : public ::testing::Test {
     handshake_client->OnConnectionEstablished(
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
-        network::mojom::blink::HttpResponseHeaders::New());
+        network::mojom::blink::HttpResponseHeaders::New(),
+        network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
   }
 
@@ -1940,7 +1941,8 @@ TEST_F(WebTransportTest, OnClosed) {
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
   web_transport->OnClosed(
-      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"));
+      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"),
+      network::mojom::blink::WebTransportStats::New());
 
   tester.WaitUntilSettled();
 
@@ -1966,7 +1968,8 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
-  web_transport->OnClosed(nullptr);
+  web_transport->OnClosed(nullptr,
+                          network::mojom::blink::WebTransportStats::New());
 
   tester.WaitUntilSettled();
 

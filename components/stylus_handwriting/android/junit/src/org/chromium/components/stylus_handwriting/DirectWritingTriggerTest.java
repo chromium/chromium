@@ -187,15 +187,15 @@ public class DirectWritingTriggerTest {
 
     @Test
     @Feature({"Stylus Handwriting"})
-    public void testRequestStartStylusWriting() {
+    public void testShouldInitiateStylusWriting() {
         mDwTrigger.updateDWSettings(mContext);
         // requestStartStylusWriting returns false until service is connected.
         // Pass view = null as DW doesn't use the view.
-        assertFalse(mDwTrigger.requestStartStylusWriting(null));
+        assertFalse(mDwTrigger.shouldInitiateStylusWriting());
         assertFalse(mDwTrigger.stylusWritingDetected());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        assertTrue(mDwTrigger.requestStartStylusWriting(null));
+        assertTrue(mDwTrigger.shouldInitiateStylusWriting());
         assertTrue(mDwTrigger.stylusWritingDetected());
     }
 

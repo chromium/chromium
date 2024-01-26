@@ -81,7 +81,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeNameFullWithHonorificPrefix] :
+        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street"
@@ -97,7 +97,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeNameFullWithHonorificPrefix] :
+        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",

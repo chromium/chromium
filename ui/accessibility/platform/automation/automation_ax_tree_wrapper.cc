@@ -4,8 +4,10 @@
 
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 
+#include <map>
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -78,7 +80,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // there are no entries in this map for a given child tree to |this|, if this
   // is the first event from |this| tree or if |this| was destroyed and (and
   // then reset).
-  base::EraseIf(child_tree_id_reverse_map, [child_tree_ids](auto& pair) {
+  std::erase_if(child_tree_id_reverse_map, [child_tree_ids](auto& pair) {
     return child_tree_ids.count(pair.first);
   });
 
@@ -139,16 +141,17 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // Send auto-generated AXEventGenerator events.
   for (const auto& targeted_event : event_generator_) {
     if (ShouldIgnoreGeneratedEventForAutomation(
-            targeted_event.event_params.event))
+            targeted_event.event_params->event)) {
       continue;
+    }
     AXEvent generated_event;
     generated_event.id = targeted_event.node_id;
-    generated_event.event_from = targeted_event.event_params.event_from;
+    generated_event.event_from = targeted_event.event_params->event_from;
     generated_event.event_from_action =
-        targeted_event.event_params.event_from_action;
-    generated_event.event_intents = targeted_event.event_params.event_intents;
+        targeted_event.event_params->event_from_action;
+    generated_event.event_intents = targeted_event.event_params->event_intents;
     owner_->SendAutomationEvent(tree_id, mouse_location, generated_event,
-                                targeted_event.event_params.event);
+                                targeted_event.event_params->event);
   }
   event_generator_.ClearEvents();
 
@@ -420,7 +423,7 @@ void AutomationAXTreeWrapper::OnStringAttributeChanged(
     if (new_value.empty()) {
       auto it = GetAppIDToTreeNodeMap().find(old_value);
       if (it != GetAppIDToTreeNodeMap().end()) {
-        base::EraseIf(it->second, [node](const AppNodeInfo& app_node_info) {
+        std::erase_if(it->second, [node](const AppNodeInfo& app_node_info) {
           return app_node_info.node_id == node->id();
         });
         if (it->second.empty()) {
@@ -453,7 +456,7 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
         node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
     auto it = GetAppIDToTreeNodeMap().find(app_id);
     if (it != GetAppIDToTreeNodeMap().end()) {
-      base::EraseIf(it->second, [node](const AppNodeInfo& app_node_info) {
+      std::erase_if(it->second, [node](const AppNodeInfo& app_node_info) {
         return app_node_info.node_id == node->id();
       });
 

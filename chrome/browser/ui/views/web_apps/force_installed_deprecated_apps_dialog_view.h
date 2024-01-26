@@ -15,6 +15,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// Creates a dialog with one button. Clicking it opens a new tab to
+// kChromeAppsDeprecationLearnMoreURL.
 class ForceInstalledDeprecatedAppsDialogView : public views::BoxLayoutView {
   METADATA_HEADER(ForceInstalledDeprecatedAppsDialogView, views::BoxLayoutView)
 
@@ -27,8 +29,7 @@ class ForceInstalledDeprecatedAppsDialogView : public views::BoxLayoutView {
 
   // Create the dialog metadata and show it.
   static void CreateAndShowDialog(const extensions::ExtensionId& app_id,
-                                  content::WebContents* web_contents,
-                                  base::OnceClosure launch_anyways);
+                                  content::WebContents* web_contents);
 
  private:
   ForceInstalledDeprecatedAppsDialogView(const std::u16string& app_name,

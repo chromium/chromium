@@ -35,6 +35,8 @@ void ConvertKnowledgeFactorHashInfoToProto(
     user_data_auth::KnowledgeFactorHashInfo& hash_info_proto) {
   hash_info_proto.set_algorithm(ConvertHashTypeToProto(hash_info.algorithm));
   hash_info_proto.set_salt(hash_info.salt);
+  hash_info_proto.set_should_generate_key_store(
+      hash_info.should_generate_key_store);
 }
 
 PasswordMetadata ParsePasswordMetadata(
@@ -46,7 +48,11 @@ PasswordMetadata ParsePasswordMetadata(
         proto.password_metadata().hash_info();
     DCHECK_EQ(hash_info_proto.algorithm(),
               KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF);
-    return PasswordMetadata::Create(SystemSalt(hash_info_proto.salt()));
+    return hash_info_proto.should_generate_key_store()
+               ? PasswordMetadata::CreateForLocalPassword(
+                     SystemSalt(hash_info_proto.salt()))
+               : PasswordMetadata::CreateForOnlinePassword(
+                     SystemSalt(hash_info_proto.salt()));
   }
   return PasswordMetadata::CreateWithoutSalt();
 }
@@ -58,6 +64,7 @@ PinMetadata ParsePinMetadata(const user_data_auth::AuthFactor& proto) {
         proto.pin_metadata().hash_info();
     DCHECK_EQ(hash_info_proto.algorithm(),
               KnowledgeFactorHashAlgorithm::HASH_TYPE_PBKDF2_AES256_1234);
+    DCHECK(hash_info_proto.should_generate_key_store());
     return PinMetadata::Create(PinSalt(hash_info_proto.salt()));
   }
   return PinMetadata::CreateWithoutSalt();
@@ -117,10 +124,8 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
   switch (type) {
     case user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED:
       LOG(FATAL) << "Unknown factor type should be handled separately";
-      return AuthFactorType::kUnknownLegacy;
     case user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT:
       LOG(FATAL) << "Fingerprint factor type should never be returned";
-      return AuthFactorType::kUnknownLegacy;
     case user_data_auth::AUTH_FACTOR_TYPE_PASSWORD:
       return AuthFactorType::kPassword;
     case user_data_auth::AUTH_FACTOR_TYPE_PIN:
@@ -134,7 +139,6 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
     default:
       // Use `--ignore-unknown-auth-factors` to avoid this.
       LOG(FATAL) << "Unknown auth factor type " << static_cast<int>(type);
-      return AuthFactorType::kUnknownLegacy;
   }
 }
 
@@ -209,10 +213,8 @@ void SerializeAuthFactor(const AuthFactor& factor,
       break;
     case AuthFactorType::kLegacyFingerprint:
       LOG(FATAL) << "Legacy fingerprint factor type should never be serialized";
-      break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
-      break;
     default:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(factor.ref().type())
@@ -270,7 +272,6 @@ void SerializeAuthInput(const AuthFactorRef& ref,
       break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
-      break;
     default:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(auth_input.GetType())

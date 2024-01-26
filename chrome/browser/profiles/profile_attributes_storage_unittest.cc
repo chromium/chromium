@@ -1699,10 +1699,10 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   native_theme->set_use_dark_colors(false);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
-  // absl::nullopt resets the colors to default.
+  // std::nullopt resets the colors to default.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
-  entry->SetProfileThemeColors(absl::nullopt);
+  entry->SetProfileThemeColors(std::nullopt);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   VerifyAndResetCallExpectations();
 }

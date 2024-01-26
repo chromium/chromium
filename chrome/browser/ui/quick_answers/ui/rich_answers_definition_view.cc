@@ -29,13 +29,6 @@ constexpr int kDefinitionHeaderTextWidth =
     (quick_answers::kContentSingleSpacing +
      quick_answers::kRichAnswersIconContainerRadius);
 
-// Subcontent view.
-constexpr int kSubContentViewIndent = 12;
-constexpr auto kSubContentViewInsets =
-    gfx::Insets::TLBR(0, kSubContentViewIndent, 0, 0);
-constexpr int kSubContentTextWidth =
-    quick_answers::kContentTextWidth - kSubContentViewIndent;
-
 constexpr char kBulletSymbol[] = " \u2022 ";
 
 }  // namespace

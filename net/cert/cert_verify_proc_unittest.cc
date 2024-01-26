@@ -5,6 +5,7 @@
 #include "net/cert/cert_verify_proc.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -204,9 +204,9 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     CertificateList additional_untrusted_authorities) {
   CertVerifyProc::InstanceParams instance_params;
   instance_params.additional_trust_anchors =
-      net::x509_util::ParseAllCerts(additional_trust_anchors);
+      net::x509_util::ParseAllValidCerts(additional_trust_anchors);
   instance_params.additional_untrusted_authorities =
-      net::x509_util::ParseAllCerts(additional_untrusted_authorities);
+      net::x509_util::ParseAllValidCerts(additional_untrusted_authorities);
   switch (type) {
 #if BUILDFLAG(IS_ANDROID)
     case CERT_VERIFY_PROC_ANDROID:
@@ -532,7 +532,7 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
   //
   // This way CRLSet coverage will be sufficient for EV revocation checking,
   // so this test does not depend on online revocation checking.
-  base::StringPiece spki;
+  std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
       x509_util::CryptoBufferAsStringPiece(root->GetCertBuffer()), &spki));
   SHA256HashValue spki_sha256;
@@ -803,7 +803,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
   base::FilePath certs_dir =
       GetTestNetDataDirectory().AppendASCII("parse_certificate_unittest");
   bssl::UniquePtr<CRYPTO_BUFFER> bad_cert =
-      x509_util::CreateCryptoBuffer(base::StringPiece("invalid"));
+      x509_util::CreateCryptoBuffer(std::string_view("invalid"));
   ASSERT_TRUE(bad_cert);
 
   scoped_refptr<X509Certificate> ok_cert(
@@ -1132,7 +1132,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   // |algorithm|. Note this violates the constness of StringPiece.
   [[nodiscard]] static bool SetAlgorithmSequence(
       bssl::DigestAlgorithm algorithm,
-      base::StringPiece* algorithm_sequence) {
+      std::string_view* algorithm_sequence) {
     // This string of bytes is the full SEQUENCE for an AlgorithmIdentifier.
     std::vector<uint8_t> replacement_sequence;
     switch (algorithm) {
@@ -1172,16 +1172,18 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
   // Locate the serial number bytes.
   [[nodiscard]] static bool ExtractSerialNumberFromDERCert(
-      base::StringPiece der_cert,
-      base::StringPiece* serial_value) {
+      std::string_view der_cert,
+      std::string_view* serial_value) {
     bssl::der::Parser parser((bssl::der::Input(der_cert)));
     bssl::der::Parser certificate;
-    if (!parser.ReadSequence(&certificate))
+    if (!parser.ReadSequence(&certificate)) {
       return false;
+    }
 
     bssl::der::Parser tbs_certificate;
-    if (!certificate.ReadSequence(&tbs_certificate))
+    if (!certificate.ReadSequence(&tbs_certificate)) {
       return false;
+    }
 
     bool unused;
     if (!tbs_certificate.SkipOptionalTag(
@@ -1223,15 +1225,15 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
     // Parse the certificate and identify the locations of interest within
     // |cert_der|.
-    base::StringPiece cert_algorithm_sequence;
-    base::StringPiece tbs_algorithm_sequence;
+    std::string_view cert_algorithm_sequence;
+    std::string_view tbs_algorithm_sequence;
     if (!asn1::ExtractSignatureAlgorithmsFromDERCert(
             cert_der, &cert_algorithm_sequence, &tbs_algorithm_sequence)) {
       ADD_FAILURE() << "Failed parsing certificate algorithms";
       return nullptr;
     }
 
-    base::StringPiece serial_value;
+    std::string_view serial_value;
     if (!ExtractSerialNumberFromDERCert(cert_der, &serial_value)) {
       ADD_FAILURE() << "Failed parsing certificate serial number";
       return nullptr;
@@ -2816,7 +2818,7 @@ class CertVerifyProcInternalWithNetFetchingTest
   }
 
   // Returns a random URL path (starting with /) that has the given suffix.
-  static std::string MakeRandomPath(base::StringPiece suffix) {
+  static std::string MakeRandomPath(std::string_view suffix) {
     return "/" + MakeRandomHexString(12) + std::string(suffix);
   }
 

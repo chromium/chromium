@@ -40,7 +40,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -176,7 +176,8 @@ void TapMoreButtonIfVisible() {
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
+  if ([self isRunningTest:@selector
+            (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
@@ -614,7 +615,8 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the "All Set" module is shown after completing all Set Up List
 // Hero Cell modules in the Magic Stack.
-- (void)testMagicStackSetUpListCompleteAllItems {
+// TODO(crbug.com/1520954): Test is flaky, re-enable when fixed.
+- (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the default browser item.
@@ -789,9 +791,9 @@ void TapMoreButtonIfVisible() {
                                    IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  id<GREYMatcher> setUpToggle = grey_allOf(
-      grey_accessibilityID(l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE)),
-      grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> setUpToggle =
+      grey_allOf(grey_accessibilityID([NewTabPageAppInterface setUpListTitle]),
+                 grey_sufficientlyVisible(), nil);
   // Assert Set Up List toggle is on, and then turn if off.
   [[EarlGrey selectElementWithMatcher:setUpToggle]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
@@ -810,8 +812,8 @@ void TapMoreButtonIfVisible() {
 
   // Assert Set Up List is not there. If it is, it is always the first module.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
-                                   IDS_IOS_SET_UP_LIST_TITLE))]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   [NewTabPageAppInterface setUpListTitle])]
       assertWithMatcher:grey_nil()];
 }
 

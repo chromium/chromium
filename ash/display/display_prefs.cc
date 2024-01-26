@@ -600,8 +600,9 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
         property_value.Set("refresh-rate", mode.refresh_rate());
       }
     }
-    if (!info.overscan_insets_in_dip().IsEmpty())
+    if (!info.overscan_insets_in_dip().IsEmpty()) {
       InsetsToValue(info.overscan_insets_in_dip(), property_value);
+    }
 
     // Store the legacy format touch calibration data. This can be removed after
     // a couple of milestones when every device has migrated to the new format.
@@ -769,10 +770,21 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 }
 
 void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
+  // NOTE: This number must change every time we add/remove/edit any fields to
+  // force the device to resubmit a report with updated fields.
+  constexpr uint64_t kCurrentVersion = 1;
+
+  auto cached_version =
+      pref_service->GetUint64(prefs::kDisplayPopularityRevNumber);
+  if (cached_version != kCurrentVersion) {
+    pref_service->ClearPref(prefs::kDisplayPopularityUserReportedDisplays);
+    pref_service->SetUint64(prefs::kDisplayPopularityRevNumber,
+                            kCurrentVersion);
+  }
+
   base::Value::List cached_list =
       pref_service->GetList(prefs::kDisplayPopularityUserReportedDisplays)
           .Clone();
-
   for (int64_t id : GetDisplayManager()->GetConnectedDisplayIdList()) {
     const display::ManagedDisplayInfo& display =
         GetDisplayManager()->GetDisplayInfo(id);
@@ -788,9 +800,30 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
       continue;
     }
 
+    const display::ManagedDisplayInfo::ManagedDisplayModeList& modes =
+        display.display_modes();
+    CHECK(modes.size());
+    auto it = std::find_if(
+        modes.begin(), modes.end(),
+        [](const display::ManagedDisplayMode& mode) { return mode.native(); });
+    const display::ManagedDisplayMode* native_mode =
+        it == modes.end() ? nullptr : &(*it);
+    CHECK(it != modes.end());
+
+    int product_id;
+    base::StringToInt(display.product_id(), &product_id);
+
     metrics::structured::events::v2::popular_displays::MonitorInfo()
         .SetDisplayName(display.name())
-        .SetProductCode(display.product_id())
+        .SetManufacturerId(display.manufacturer_id())
+        .SetProductId(product_id)
+        .SetNativeModeSize(native_mode->size().ToString())
+        .SetNativeModeRefreshRate(native_mode->refresh_rate())
+        .SetPhysicalSize(display.physical_size().ToString())
+        .SetConnectionType(
+            display::DisplayConnectionTypeString(display.connection_type()))
+        .SetIsVrrCapable(display.variable_refresh_rate_state() <
+                         display::VariableRefreshRateState::kVrrNotCapable)
         .Record();
 
     cached_list.Append(display_id);
@@ -857,6 +890,7 @@ void DisplayPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAllowMGSToStoreDisplayProperties,
                                 false);
   registry->RegisterListPref(prefs::kDisplayPopularityUserReportedDisplays);
+  registry->RegisterUint64Pref(prefs::kDisplayPopularityRevNumber, 0);
 }
 
 DisplayPrefs::DisplayPrefs(PrefService* local_state)

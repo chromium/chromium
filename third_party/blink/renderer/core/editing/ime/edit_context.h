@@ -266,10 +266,22 @@ class CORE_EXPORT EditContext final : public EventTarget,
 
   void ClearCompositionState();
 
+  // Returns selection_start_ if selection_start_ <= selection_end_,
+  // otherwise returns selection_end_.
+  uint32_t OrderedSelectionStart() const;
+  // Returns selection_end_ if selection_end_ >= selection_start_,
+  // otherwise returns selection_start_.
+  uint32_t OrderedSelectionEnd() const;
+
   // EditContext member variables.
   String text_;
+
+  // It is possible that selection_start > selection_end_,
+  // indicating a "backwards" selection (e.g. when the user
+  // drags the selection from right to left).
   uint32_t selection_start_ = 0;
   uint32_t selection_end_ = 0;
+
   gfx::Rect control_bounds_;
   gfx::Rect selection_bounds_;
   WebVector<gfx::Rect> character_bounds_;
@@ -281,6 +293,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
   bool has_composition_ = false;
   // This is used to keep track of the active composition text range.
   // It is reset once the composition ends.
+  // composition_range_end_ should always be >= composition_range_start_.
   uint32_t composition_range_start_ = 0;
   uint32_t composition_range_end_ = 0;
   // Elements that are associated with this EditContext.

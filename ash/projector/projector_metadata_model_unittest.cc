@@ -2099,8 +2099,9 @@ std::string BuildHypothesisParts(
   ss << "[";
   for (uint i = 0; i < hypothesis_parts.text.size(); i++) {
     ss << "\"" << hypothesis_parts.text[i] << "\"";
-    if (i < hypothesis_parts.text.size() - 1)
+    if (i < hypothesis_parts.text.size() - 1) {
       ss << ", ";
+    }
   }
   ss << "]";
 
@@ -2115,8 +2116,9 @@ std::string BuildHypothesisPartsList(
   ss << "[";
   for (uint i = 0; i < hypothesis_parts_vector.size(); i++) {
     ss << BuildHypothesisParts(hypothesis_parts_vector[i]);
-    if (i < hypothesis_parts_vector.size() - 1)
+    if (i < hypothesis_parts_vector.size() - 1) {
       ss << ", ";
+    }
   }
   ss << "]";
   return ss.str();
@@ -2337,6 +2339,16 @@ class ProjectorTranscriptTest : public testing::Test {
 
   ProjectorTranscriptTest(const ProjectorTranscriptTest&) = delete;
   ProjectorTranscriptTest& operator=(const ProjectorTranscriptTest&) = delete;
+
+  void SetUp() override {
+    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{ash::features::kProjectorV2});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorTranscriptTest, ToJson) {
@@ -2367,14 +2379,18 @@ class ProjectorMetadataTest : public testing::Test {
   ProjectorMetadataTest(const ProjectorMetadataTest&) = delete;
   ProjectorMetadataTest& operator=(const ProjectorMetadataTest&) = delete;
 
+  void SetUp() override {
+    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{ash::features::kProjectorV2});
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorMetadataTest, Serialize) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kProjectorV2});
   std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
 
   metadata->SetSpeechRecognitionStatus(RecognitionStatus::kIncomplete);
@@ -2403,10 +2419,25 @@ TEST_F(ProjectorMetadataTest, Serialize) {
       metadata->Serialize());
 }
 
-TEST_F(ProjectorMetadataTest, SerializeV2) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kProjectorV2},
-      /*disabled_features=*/{});
+class ProjectorMetadataTestV2 : public testing::Test {
+ public:
+  ProjectorMetadataTestV2() = default;
+
+  ProjectorMetadataTestV2(const ProjectorMetadataTestV2&) = delete;
+  ProjectorMetadataTestV2& operator=(const ProjectorMetadataTestV2&) = delete;
+
+  void SetUp() override {
+    // TODO(b/321064048): Clean up tests when ProjectorV2 is fully launched.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kProjectorV2},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ProjectorMetadataTestV2, SerializeV2) {
   std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 
@@ -2414,10 +2445,7 @@ TEST_F(ProjectorMetadataTest, SerializeV2) {
   AssertSerializedString(kCompleteMetadataV2Template, metadata->Serialize());
 }
 
-TEST_F(ProjectorMetadataTest, AddSingleSentenceTranscriptForV2) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kProjectorV2},
-      /*disabled_features=*/{});
+TEST_F(ProjectorMetadataTestV2, AddSingleSentenceTranscriptForV2) {
   std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 
@@ -2425,10 +2453,7 @@ TEST_F(ProjectorMetadataTest, AddSingleSentenceTranscriptForV2) {
   AssertSerializedString(kCompleteMetadataV2Template, metadata->Serialize());
 }
 
-TEST_F(ProjectorMetadataTest, AddMultiSentenceTranscriptForV2) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kProjectorV2},
-      /*disabled_features=*/{});
+TEST_F(ProjectorMetadataTestV2, AddMultiSentenceTranscriptForV2) {
   std::unique_ptr<ProjectorMetadata> metadata = populateMetadataWithSentences();
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
   metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
@@ -2439,10 +2464,7 @@ TEST_F(ProjectorMetadataTest, AddMultiSentenceTranscriptForV2) {
                          metadata->Serialize());
 }
 
-TEST_F(ProjectorMetadataTest, AddMultiSentenceTranscriptWithChinese) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kProjectorV2},
-      /*disabled_features=*/{});
+TEST_F(ProjectorMetadataTestV2, AddMultiSentenceTranscriptWithChinese) {
   std::unique_ptr<ProjectorMetadata> metadata =
       populateMetadataWithLanguageWithoutSpaces();
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);

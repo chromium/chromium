@@ -10,6 +10,8 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/numerics/checked_math.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -49,7 +51,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* desc = MLOperandDescriptor::Create();
     desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
     auto* input = builder->input("input", desc, scope.GetExceptionState());
-    EXPECT_NE(input, nullptr);
+    ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
@@ -62,7 +64,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input =
         BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
-    EXPECT_NE(input, nullptr);
+    ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
@@ -75,7 +77,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input =
         BuildInput(builder, "input", {3}, V8MLOperandDataType::Enum::kInt64,
                    scope.GetExceptionState());
-    EXPECT_NE(input, nullptr);
+    ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
@@ -88,7 +90,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input = BuildInput(builder, "input", {3, 4},
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
-    EXPECT_NE(input, nullptr);
+    ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
@@ -101,7 +103,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input =
         BuildInput(builder, "", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
-    EXPECT_EQ(input, nullptr);
+    EXPECT_THAT(input, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(), "The name is empty.");
@@ -111,7 +113,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input = BuildInput(builder, "input", {3, 0},
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
-    EXPECT_EQ(input, nullptr);
+    EXPECT_THAT(input, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -123,7 +125,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input = BuildInput(
         builder, "input", {1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax},
         V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
-    EXPECT_EQ(input, nullptr);
+    EXPECT_THAT(input, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -137,7 +139,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     auto* input = BuildInput(
         builder, "input", {1, 1, kSquareRootOfSizeMax, kSquareRootOfSizeMax},
         V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
-    EXPECT_EQ(input, nullptr);
+    EXPECT_THAT(input, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -158,7 +160,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
         CreateDOMArrayBufferView(1, V8MLOperandDataType::Enum::kFloat32);
     auto* constant =
         builder->constant(desc, buffer_view, scope.GetExceptionState());
-    EXPECT_NE(constant, nullptr);
+    EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
@@ -170,7 +172,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    EXPECT_NE(constant, nullptr);
+    EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
@@ -182,7 +184,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {5}, V8MLOperandDataType::Enum::kUint64,
                       scope.GetExceptionState());
-    EXPECT_NE(constant, nullptr);
+    EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
@@ -194,7 +196,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {2, 3}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    EXPECT_NE(constant, nullptr);
+    EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
     EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
@@ -206,7 +208,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {2, 0}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    EXPECT_EQ(constant, nullptr);
+    EXPECT_THAT(constant, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -220,7 +222,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {2, 3}, V8MLOperandDataType::Enum::kInt32,
                       scope.GetExceptionState(), buffer_view);
-    EXPECT_EQ(constant, nullptr);
+    EXPECT_THAT(constant, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -233,7 +235,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     auto* constant =
         BuildConstant(builder, {2, 2}, V8MLOperandDataType::Enum::kInt32,
                       scope.GetExceptionState(), buffer_view);
-    EXPECT_EQ(constant, nullptr);
+    EXPECT_THAT(constant, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -249,7 +251,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
         builder, {1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax},
         V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState(),
         buffer_view);
-    EXPECT_EQ(constant, nullptr);
+    EXPECT_THAT(constant, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -266,7 +268,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
         builder, {1, 1, kSquareRootOfSizeMax, kSquareRootOfSizeMax},
         V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState(),
         buffer_view);
-    EXPECT_EQ(constant, nullptr);
+    EXPECT_THAT(constant, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -294,11 +296,11 @@ MLOperand* BuildArgMinMax(V8TestingScope& scope,
 void CheckArgMinMaxOutput(const MLOperand* input,
                           const MLOperand* output,
                           ArgMinMaxKind kind) {
-  EXPECT_NE(output, nullptr);
+  ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt64);
   auto* arg_max_min = output->Operator();
-  EXPECT_NE(arg_max_min, nullptr);
+  ASSERT_THAT(arg_max_min, testing::NotNull());
   switch (kind) {
     case ArgMinMaxKind::kArgMin:
       EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMin);
@@ -307,8 +309,8 @@ void CheckArgMinMaxOutput(const MLOperand* input,
       EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMax);
       break;
   }
-  EXPECT_EQ(arg_max_min->IsConnected(), true);
-  EXPECT_NE(arg_max_min->Options(), nullptr);
+  EXPECT_TRUE(arg_max_min->IsConnected());
+  EXPECT_THAT(arg_max_min->Options(), testing::NotNull());
 }
 
 String ArgMinMaxKindToString(ArgMinMaxKind kind) {
@@ -337,9 +339,9 @@ TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
       auto* options = MLArgMinMaxOptions::Create();
       EXPECT_FALSE(options->hasAxes());
       EXPECT_TRUE(options->hasKeepDimensions());
-      EXPECT_EQ(options->keepDimensions(), false);
+      EXPECT_FALSE(options->keepDimensions());
       EXPECT_TRUE(options->hasSelectLastIndex());
-      EXPECT_EQ(options->selectLastIndex(), false);
+      EXPECT_FALSE(options->selectLastIndex());
       auto* output = BuildArgMinMax(scope, builder, kind, input, options);
       CheckArgMinMaxOutput(input, output, kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
@@ -388,7 +390,7 @@ TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
       auto* options = MLArgMinMaxOptions::Create();
       options->setAxes({4});
       auto* output = BuildArgMinMax(scope, builder, kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -403,7 +405,7 @@ TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
       auto* options = MLArgMinMaxOptions::Create();
       options->setAxes({1, 1});
       auto* output = BuildArgMinMax(scope, builder, kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -420,15 +422,15 @@ MLOperand* BuildBatchNormalization(V8TestingScope& scope,
                                    const MLBatchNormalizationOptions* options) {
   auto* output = builder->batchNormalization(input, mean, variance, options,
                                              scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* batch_normalization = output->Operator();
-  EXPECT_NE(batch_normalization, nullptr);
+  EXPECT_THAT(batch_normalization, testing::NotNull());
   EXPECT_EQ(batch_normalization->Kind(),
             MLOperator::OperatorKind::kBatchNormalization);
-  EXPECT_EQ(batch_normalization->IsConnected(), true);
-  EXPECT_NE(batch_normalization->Options(), nullptr);
+  EXPECT_TRUE(batch_normalization->IsConnected());
+  EXPECT_THAT(batch_normalization->Options(), testing::NotNull());
   return output;
 }
 
@@ -492,7 +494,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -513,7 +515,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -534,7 +536,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -555,7 +557,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -577,7 +579,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -598,7 +600,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     auto* options = MLBatchNormalizationOptions::Create();
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -620,7 +622,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setAxis(2);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -646,7 +648,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -671,7 +673,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -697,7 +699,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -723,7 +725,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -748,7 +750,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -774,7 +776,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -797,7 +799,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
     options->setAxis(4);
     auto* output = builder->batchNormalization(input, mean, variance, options,
                                                scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -820,15 +822,15 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
                                scope.GetExceptionState());
     uint32_t axis = 2;
     auto* output = builder->concat({input_a}, axis, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
-    EXPECT_NE(concat, nullptr);
+    ASSERT_THAT(concat, testing::NotNull());
     EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
-    EXPECT_EQ(concat->IsConnected(), true);
-    EXPECT_EQ(concat->Options(), nullptr);
+    EXPECT_TRUE(concat->IsConnected());
+    EXPECT_THAT(concat->Options(), testing::IsNull());
   }
   {
     // Test building Concat with two inputs.
@@ -844,15 +846,15 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 1;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
-    EXPECT_NE(concat, nullptr);
+    ASSERT_THAT(concat, testing::NotNull());
     EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
-    EXPECT_EQ(concat->IsConnected(), true);
-    EXPECT_EQ(concat->Options(), nullptr);
+    EXPECT_TRUE(concat->IsConnected());
+    EXPECT_THAT(concat->Options(), testing::IsNull());
   }
   {
     // Test building Concat with three inputs.
@@ -872,15 +874,15 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 2;
     auto* output = builder->concat({input_a, input_b, input_c}, axis,
                                    scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
-    EXPECT_NE(concat, nullptr);
+    ASSERT_THAT(concat, testing::NotNull());
     EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
-    EXPECT_EQ(concat->IsConnected(), true);
-    EXPECT_EQ(concat->Options(), nullptr);
+    EXPECT_TRUE(concat->IsConnected());
+    EXPECT_THAT(concat->Options(), testing::IsNull());
   }
   {
     // Test building Concat with two 1D inputs.
@@ -896,21 +898,21 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
-    EXPECT_NE(concat, nullptr);
+    ASSERT_THAT(concat, testing::NotNull());
     EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
-    EXPECT_EQ(concat->IsConnected(), true);
-    EXPECT_EQ(concat->Options(), nullptr);
+    EXPECT_TRUE(concat->IsConnected());
+    EXPECT_THAT(concat->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when the inputs are empty.
     uint32_t axis = 0;
     auto* output = builder->concat({}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -929,7 +931,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -948,7 +950,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -968,7 +970,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 2;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -989,7 +991,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1010,7 +1012,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 1;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1026,14 +1028,14 @@ MLOperand* BuildConv2d(V8TestingScope& scope,
                        const MLConv2dOptions* options) {
   auto* output =
       builder->conv2d(input, filter, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* conv2d = output->Operator();
-  EXPECT_NE(conv2d, nullptr);
+  EXPECT_THAT(conv2d, testing::NotNull());
   EXPECT_EQ(conv2d->Kind(), MLOperator::OperatorKind::kConv2d);
-  EXPECT_EQ(conv2d->IsConnected(), true);
-  EXPECT_NE(conv2d->Options(), nullptr);
+  EXPECT_TRUE(conv2d->IsConnected());
+  EXPECT_THAT(conv2d->Options(), testing::NotNull());
   return output;
 }
 
@@ -1306,7 +1308,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
                                  scope.GetExceptionState());
     auto* output = builder->conv2d(input, filter, MLConv2dOptions::Create(),
                                    scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1326,7 +1328,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
                                  scope.GetExceptionState());
     auto* output = builder->conv2d(input, filter, MLConv2dOptions::Create(),
                                    scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1343,7 +1345,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     auto* options = MLConv2dOptions::Create();
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1360,7 +1362,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     auto* options = MLConv2dOptions::Create();
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1378,7 +1380,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     auto* options = MLConv2dOptions::Create();
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1396,7 +1398,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setPadding({2, 2});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1414,7 +1416,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setStrides({2});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1432,7 +1434,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setStrides({1, 0});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1450,7 +1452,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setDilations({1});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1468,7 +1470,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setDilations({1, 0});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1486,7 +1488,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setGroups(3);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1506,7 +1508,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setGroups(2);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1525,7 +1527,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setGroups(0);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1546,7 +1548,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1568,7 +1570,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1588,7 +1590,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setDilations({328442, 1});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -1609,7 +1611,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setDilations({2, 843452});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -1632,7 +1634,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setStrides({2, 2});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1654,7 +1656,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setStrides({2, 2});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1676,7 +1678,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setBias(bias);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1698,7 +1700,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setBias(bias);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1719,7 +1721,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     options->setBias(bias);
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -1734,15 +1736,15 @@ MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
                                 const MLConvTranspose2dOptions* options) {
   auto* output = builder->convTranspose2d(input, filter, options,
                                           scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* convTranspose2d = output->Operator();
-  EXPECT_NE(convTranspose2d, nullptr);
+  EXPECT_THAT(convTranspose2d, testing::NotNull());
   EXPECT_EQ(convTranspose2d->Kind(),
             MLOperator::OperatorKind::kConvTranspose2d);
-  EXPECT_EQ(convTranspose2d->IsConnected(), true);
-  EXPECT_NE(convTranspose2d->Options(), nullptr);
+  EXPECT_TRUE(convTranspose2d->IsConnected());
+  EXPECT_THAT(convTranspose2d->Options(), testing::NotNull());
   return output;
 }
 
@@ -2022,7 +2024,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     auto* options = MLConvTranspose2dOptions::Create();
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2043,7 +2045,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     auto* options = MLConvTranspose2dOptions::Create();
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2060,7 +2062,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     auto* options = MLConvTranspose2dOptions::Create();
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2077,7 +2079,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     auto* options = MLConvTranspose2dOptions::Create();
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2095,7 +2097,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     auto* options = MLConvTranspose2dOptions::Create();
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2113,7 +2115,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setPadding({2, 2});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2131,7 +2133,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setStrides({2});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2149,7 +2151,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setStrides({1, 0});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2167,7 +2169,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setDilations({1});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2185,7 +2187,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setDilations({1, 0});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2204,7 +2206,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setGroups(3);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2222,7 +2224,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setGroups(std::numeric_limits<uint32_t>::max());
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2240,7 +2242,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setGroups(0);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2261,7 +2263,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2283,7 +2285,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2303,7 +2305,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setDilations({328442, 1});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -2324,7 +2326,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setDilations({2, 843452});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -2347,7 +2349,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setBias(bias);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2369,7 +2371,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setBias(bias);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2390,7 +2392,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setBias(bias);
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2410,7 +2412,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputPadding({1, 1, 1, 1});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2431,7 +2433,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputPadding({0, 2});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2452,7 +2454,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputSizes({1, 2, 10, 8});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2473,7 +2475,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputPadding({1, 0});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2496,7 +2498,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputPadding({1, 1});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2518,7 +2520,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     options->setOutputPadding({1, 1});
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2547,11 +2549,11 @@ MLOperand* BuildPool2d(V8TestingScope& scope,
 void CheckPool2dOutput(const MLOperand* input,
                        const MLOperand* output,
                        Pool2dKind kind) {
-  EXPECT_NE(output, nullptr);
+  ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* pool2d = output->Operator();
-  EXPECT_NE(pool2d, nullptr);
+  ASSERT_THAT(pool2d, testing::NotNull());
   switch (kind) {
     case Pool2dKind::kAverage:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kAveragePool2d);
@@ -2560,8 +2562,8 @@ void CheckPool2dOutput(const MLOperand* input,
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kMaxPool2d);
       break;
   }
-  EXPECT_EQ(pool2d->IsConnected(), true);
-  EXPECT_NE(pool2d->Options(), nullptr);
+  EXPECT_TRUE(pool2d->IsConnected());
+  EXPECT_THAT(pool2d->Options(), testing::NotNull());
 }
 
 TEST_F(MLGraphBuilderTest, Pool2dTest) {
@@ -2787,7 +2789,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({1, 1});
       options->setPadding({2, 2, 2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2799,7 +2801,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
                                V8MLOperandDataType::Enum::kFloat32,
                                scope.GetExceptionState());
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2816,7 +2818,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setOutputSizes({3, 3});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2833,7 +2835,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setOutputSizes({1, 2, 4, 4});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2847,7 +2849,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({1, 1, 1, 1});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2862,7 +2864,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({0, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2877,7 +2879,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({8, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2893,7 +2895,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({2, 8});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2909,7 +2911,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({6, 3});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2923,7 +2925,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setPadding({2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2937,7 +2939,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setStrides({2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2951,7 +2953,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setStrides({0, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2965,7 +2967,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setDilations({1, 1, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -2979,7 +2981,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setDilations({1, 0});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3003,15 +3005,15 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {3, 2, 5}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
-    EXPECT_NE(p_relu, nullptr);
+    ASSERT_THAT(p_relu, testing::NotNull());
     EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
-    EXPECT_EQ(p_relu->IsConnected(), true);
-    EXPECT_EQ(p_relu->Options(), nullptr);
+    EXPECT_TRUE(p_relu->IsConnected());
+    EXPECT_THAT(p_relu->Options(), testing::IsNull());
   }
   {
     // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {5}.
@@ -3023,15 +3025,15 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {5}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
-    EXPECT_NE(p_relu, nullptr);
+    ASSERT_THAT(p_relu, testing::NotNull());
     EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
-    EXPECT_EQ(p_relu->IsConnected(), true);
-    EXPECT_EQ(p_relu->Options(), nullptr);
+    EXPECT_TRUE(p_relu->IsConnected());
+    EXPECT_THAT(p_relu->Options(), testing::IsNull());
   }
   {
     // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {}.
@@ -3043,15 +3045,15 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
-    EXPECT_NE(p_relu, nullptr);
+    ASSERT_THAT(p_relu, testing::NotNull());
     EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
-    EXPECT_EQ(p_relu->IsConnected(), true);
-    EXPECT_EQ(p_relu->Options(), nullptr);
+    EXPECT_TRUE(p_relu->IsConnected());
+    EXPECT_THAT(p_relu->Options(), testing::IsNull());
   }
   {
     // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {2,
@@ -3064,15 +3066,15 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {2, 5}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
-    EXPECT_NE(p_relu, nullptr);
+    ASSERT_THAT(p_relu, testing::NotNull());
     EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
-    EXPECT_EQ(p_relu->IsConnected(), true);
-    EXPECT_EQ(p_relu->Options(), nullptr);
+    EXPECT_TRUE(p_relu->IsConnected());
+    EXPECT_THAT(p_relu->Options(), testing::IsNull());
   }
   {
     // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {2}.
@@ -3084,7 +3086,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {2}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ("The shape of slope is not broadcastable to the shape of input.",
@@ -3101,7 +3103,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
         BuildConstant(builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ("The shape of slope is not broadcastable to the shape of input.",
@@ -3116,7 +3118,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
     auto* slope = BuildConstant(builder, {5}, V8MLOperandDataType::Enum::kInt32,
                                 scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ("The data type of slope doesn't match the data type of input.",
@@ -3131,7 +3133,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
     auto* slope = BuildConstant(builder, {5}, V8MLOperandDataType::Enum::kInt32,
                                 scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -3153,15 +3155,15 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->relu(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* relu = output->Operator();
-    EXPECT_NE(relu, nullptr);
+    ASSERT_THAT(relu, testing::NotNull());
     EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
-    EXPECT_EQ(relu->IsConnected(), true);
-    EXPECT_EQ(relu->Options(), nullptr);
+    EXPECT_TRUE(relu->IsConnected());
+    EXPECT_THAT(relu->Options(), testing::IsNull());
   }
   {
     // Test building relu with int32 input.
@@ -3170,24 +3172,24 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
                              V8MLOperandDataType::Enum::kInt32,
                              scope.GetExceptionState());
     auto* output = builder->relu(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* relu = output->Operator();
-    EXPECT_NE(relu, nullptr);
+    ASSERT_THAT(relu, testing::NotNull());
     EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
-    EXPECT_EQ(relu->IsConnected(), true);
-    EXPECT_EQ(relu->Options(), nullptr);
+    EXPECT_TRUE(relu->IsConnected());
+    EXPECT_THAT(relu->Options(), testing::IsNull());
   }
   {
     // Test building relu operator.
     auto* relu = builder->relu(scope.GetExceptionState());
-    EXPECT_NE(relu, nullptr);
-    EXPECT_NE(relu->Operator(), nullptr);
+    ASSERT_THAT(relu, testing::NotNull());
+    ASSERT_THAT(relu->Operator(), testing::NotNull());
     EXPECT_EQ(relu->Operator()->Kind(), MLOperator::OperatorKind::kRelu);
-    EXPECT_EQ(relu->Operator()->IsConnected(), false);
-    EXPECT_EQ(relu->Operator()->Options(), nullptr);
+    EXPECT_FALSE(relu->Operator()->IsConnected());
+    EXPECT_THAT(relu->Operator()->Options(), testing::IsNull());
   }
 }
 
@@ -3197,15 +3199,15 @@ MLOperand* BuildHardSigmoid(V8TestingScope& scope,
                             const MLHardSigmoidOptions* options) {
   auto* output =
       builder->hardSigmoid(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* hard_sigmoid = output->Operator();
-  EXPECT_NE(hard_sigmoid, nullptr);
+  EXPECT_THAT(hard_sigmoid, testing::NotNull());
   EXPECT_EQ(hard_sigmoid->Kind(), MLOperator::OperatorKind::kHardSigmoid);
   EXPECT_TRUE(hard_sigmoid->IsConnected());
-  EXPECT_NE(hard_sigmoid->Options(), nullptr);
+  EXPECT_THAT(hard_sigmoid->Options(), testing::NotNull());
   return output;
 }
 
@@ -3235,12 +3237,12 @@ TEST_F(MLGraphBuilderTest, HardSigmoidTest) {
     // Test building hardSigmoid activation.
     auto* output = builder->hardSigmoid(MLHardSigmoidOptions::Create(),
                                         scope.GetExceptionState());
-    ASSERT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     const MLOperator* hard_sigmoid = output->Operator();
-    ASSERT_NE(hard_sigmoid, nullptr);
+    ASSERT_THAT(hard_sigmoid, testing::NotNull());
     EXPECT_EQ(hard_sigmoid->Kind(), MLOperator::OperatorKind::kHardSigmoid);
     EXPECT_FALSE(hard_sigmoid->IsConnected());
-    EXPECT_NE(hard_sigmoid->Options(), nullptr);
+    ASSERT_THAT(hard_sigmoid->Options(), testing::NotNull());
   }
   {
     // Test throwing exception when building hardSigmoid with int32 input.
@@ -3250,7 +3252,7 @@ TEST_F(MLGraphBuilderTest, HardSigmoidTest) {
                              scope.GetExceptionState());
     auto* output = builder->hardSigmoid(input, MLHardSigmoidOptions::Create(),
                                         scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3263,22 +3265,22 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
   MLGraphBuilder* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  ASSERT_NE(nullptr, builder);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building hard-swish with float32 input.
     auto* input = BuildInput(builder, "input", {3, 4, 5},
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->hardSwish(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 4, 5}));
     auto* hard_swish = output->Operator();
-    EXPECT_NE(hard_swish, nullptr);
+    ASSERT_THAT(hard_swish, testing::NotNull());
     EXPECT_EQ(hard_swish->Kind(), MLOperator::OperatorKind::kHardSwish);
-    EXPECT_EQ(hard_swish->IsConnected(), true);
-    EXPECT_EQ(hard_swish->Options(), nullptr);
+    EXPECT_TRUE(hard_swish->IsConnected());
+    EXPECT_THAT(hard_swish->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when building hard-swish with int32 input.
@@ -3286,7 +3288,7 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
                              V8MLOperandDataType::Enum::kInt32,
                              scope.GetExceptionState());
     auto* output = builder->hardSwish(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ("The input data type must be one of the float32,float16 types.",
@@ -3295,12 +3297,12 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
   {
     // Test building hard-swish as a standalone operator.
     auto* hard_swish = builder->hardSwish(scope.GetExceptionState());
-    EXPECT_NE(hard_swish, nullptr);
-    EXPECT_NE(hard_swish->Operator(), nullptr);
+    ASSERT_THAT(hard_swish, testing::NotNull());
+    ASSERT_THAT(hard_swish->Operator(), testing::NotNull());
     EXPECT_EQ(hard_swish->Operator()->Kind(),
               MLOperator::OperatorKind::kHardSwish);
-    EXPECT_EQ(hard_swish->Operator()->IsConnected(), false);
-    EXPECT_EQ(hard_swish->Operator()->Options(), nullptr);
+    EXPECT_FALSE(hard_swish->Operator()->IsConnected());
+    EXPECT_THAT(hard_swish->Operator()->Options(), testing::IsNull());
   }
 }
 
@@ -3310,14 +3312,14 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* b,
                      const MLGemmOptions* options) {
   auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), a->DataType());
   auto* gemm = output->Operator();
-  EXPECT_NE(gemm, nullptr);
+  EXPECT_THAT(gemm, testing::NotNull());
   EXPECT_EQ(gemm->Kind(), MLOperator::OperatorKind::kGemm);
-  EXPECT_EQ(gemm->IsConnected(), true);
-  EXPECT_NE(gemm->Options(), nullptr);
+  EXPECT_TRUE(gemm->IsConnected());
+  EXPECT_THAT(gemm->Options(), testing::NotNull());
   return output;
 }
 
@@ -3326,7 +3328,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
   MLGraphBuilder* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  ASSERT_NE(nullptr, builder);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building gemm with default option.
     auto* a =
@@ -3342,9 +3344,9 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     EXPECT_TRUE(options->hasBeta());
     EXPECT_EQ(options->beta(), 1);
     EXPECT_TRUE(options->hasATranspose());
-    EXPECT_EQ(options->aTranspose(), false);
+    EXPECT_FALSE(options->aTranspose());
     EXPECT_TRUE(options->hasBTranspose());
-    EXPECT_EQ(options->bTranspose(), false);
+    EXPECT_FALSE(options->bTranspose());
     auto* output = BuildGemm(scope, builder, a, b, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
   }
@@ -3359,7 +3361,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
                    scope.GetExceptionState());
     auto* options = MLGemmOptions::Create();
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -3395,7 +3397,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     auto* options = MLGemmOptions::Create();
     options->setATranspose(true);
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -3431,7 +3433,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     auto* options = MLGemmOptions::Create();
     options->setBTranspose(true);
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -3450,7 +3452,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
                    scope.GetExceptionState());
     auto* options = MLGemmOptions::Create();
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3466,7 +3468,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
                    scope.GetExceptionState());
     auto* options = MLGemmOptions::Create();
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3522,7 +3524,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
                    scope.GetExceptionState());
     options->setC(c);
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3547,7 +3549,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     options->setATranspose(true);
     options->setBTranspose(true);
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -3572,7 +3574,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     options->setATranspose(true);
     options->setBTranspose(true);
     auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(
@@ -3591,7 +3593,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
                          scope.GetExceptionState());
     auto* output =
         builder->gemm(a, b, MLGemmOptions::Create(), scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3683,7 +3685,7 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   const MLOperand* b) {
   MLOperand* output =
       BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
 
   if (IsLogicalBinaryOperator(kind)) {
@@ -3693,7 +3695,7 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
   }
 
   auto* op = output->Operator();
-  EXPECT_NE(op, nullptr);
+  EXPECT_THAT(op, testing::NotNull());
   switch (kind) {
     case ElementWiseBinaryKind::kAdd:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAdd);
@@ -3732,7 +3734,7 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLesserOrEqual);
       break;
   }
-  EXPECT_EQ(op->IsConnected(), true);
+  EXPECT_TRUE(op->IsConnected());
   return output;
 }
 
@@ -3798,7 +3800,7 @@ class MLGraphBuilderElementWiseBinaryTest
           BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
                      scope.GetExceptionState());
       auto* output = BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
                 scope.GetExceptionState().Code());
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3812,7 +3814,7 @@ class MLGraphBuilderElementWiseBinaryTest
       auto* b = BuildInput(builder, "b", {1}, V8MLOperandDataType::Enum::kInt32,
                            scope.GetExceptionState());
       auto* output = BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
                 scope.GetExceptionState().Code());
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -3908,7 +3910,7 @@ struct ElementWiseUnaryTester {
     EXPECT_EQ(output->DataType(), input_info.data_type);
     EXPECT_EQ(output->Dimensions(), input_info.dimensions);
     auto* op = output->Operator();
-    EXPECT_NE(op, nullptr);
+    ASSERT_THAT(op, testing::NotNull());
     switch (kind) {
       case ElementWiseUnaryKind::kAbs:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAbs);
@@ -3953,8 +3955,8 @@ struct ElementWiseUnaryTester {
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSqrt);
         break;
     }
-    EXPECT_EQ(op->IsConnected(), true);
-    EXPECT_EQ(op->Options(), nullptr);
+    EXPECT_TRUE(op->IsConnected());
+    EXPECT_THAT(op->Options(), testing::IsNull());
   }
 };
 
@@ -4047,7 +4049,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kInt32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4060,7 +4062,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4073,7 +4075,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kInt32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4086,7 +4088,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4099,7 +4101,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4113,7 +4115,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint8,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4159,7 +4161,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4198,10 +4200,10 @@ TEST_F(MLGraphBuilderTest, Cast) {
   EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt8);
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* op = output->Operator();
-  EXPECT_NE(op, nullptr);
+  ASSERT_THAT(op, testing::NotNull());
   EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kCast);
-  EXPECT_EQ(op->IsConnected(), true);
-  EXPECT_EQ(op->Options(), nullptr);
+  EXPECT_TRUE(op->IsConnected());
+  EXPECT_THAT(op->Options(), testing::IsNull());
 }
 
 MLOperand* BuildReduce(V8TestingScope& scope,
@@ -4251,11 +4253,11 @@ MLOperand* BuildReduce(V8TestingScope& scope,
 void CheckReduceOutput(const MLOperand* input,
                        const MLOperand* output,
                        ReduceKind kind) {
-  EXPECT_NE(output, nullptr);
+  ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* reduce = output->Operator();
-  EXPECT_NE(reduce, nullptr);
+  ASSERT_THAT(reduce, testing::NotNull());
   switch (kind) {
     case ReduceKind::kL1:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceL1);
@@ -4288,8 +4290,8 @@ void CheckReduceOutput(const MLOperand* input,
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSumSquare);
       break;
   }
-  EXPECT_EQ(reduce->IsConnected(), true);
-  EXPECT_NE(reduce->Options(), nullptr);
+  EXPECT_TRUE(reduce->IsConnected());
+  ASSERT_THAT(reduce->Options(), testing::NotNull());
 }
 
 TEST_F(MLGraphBuilderTest, ReduceTest) {
@@ -4311,7 +4313,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       auto* options = MLReduceOptions::Create();
       EXPECT_FALSE(options->hasAxes());
       EXPECT_TRUE(options->hasKeepDimensions());
-      EXPECT_EQ(options->keepDimensions(), false);
+      EXPECT_FALSE(options->keepDimensions());
       auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
       CheckReduceOutput(input, output, reduce_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
@@ -4347,7 +4349,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       auto* options = MLReduceOptions::Create();
       options->setAxes({4});
       auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4361,7 +4363,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       auto* options = MLReduceOptions::Create();
       options->setAxes({0, 1, 1});
       auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
-      EXPECT_EQ(output, nullptr);
+      EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4381,7 +4383,7 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
     auto* options = MLReduceOptions::Create();
     options->setAxes({0, 1});
     auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4400,14 +4402,14 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {3, 8}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 8}));
     auto* reshape = output->Operator();
-    EXPECT_NE(reshape, nullptr);
+    ASSERT_THAT(reshape, testing::NotNull());
     EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
-    EXPECT_EQ(reshape->IsConnected(), true);
+    EXPECT_TRUE(reshape->IsConnected());
   }
   {
     // Test building reshape with new shape = {24}, src shape = {2, 3, 4}.
@@ -4415,14 +4417,14 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {24}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({24}));
     auto* reshape = output->Operator();
-    EXPECT_NE(reshape, nullptr);
+    ASSERT_THAT(reshape, testing::NotNull());
     EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
-    EXPECT_EQ(reshape->IsConnected(), true);
+    EXPECT_TRUE(reshape->IsConnected());
   }
   {
     // Test building reshape with new shape = {1}, src shape = {1}.
@@ -4430,14 +4432,14 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
         BuildInput(builder, "input", {1}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {1}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
     auto* reshape = output->Operator();
-    EXPECT_NE(reshape, nullptr);
+    ASSERT_THAT(reshape, testing::NotNull());
     EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
-    EXPECT_EQ(reshape->IsConnected(), true);
+    EXPECT_TRUE(reshape->IsConnected());
   }
   {
     // Test reshaping a 1-D 1-element tensor to scalar.
@@ -4445,14 +4447,14 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
         BuildInput(builder, "input", {1}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
     auto* reshape = output->Operator();
-    EXPECT_NE(reshape, nullptr);
+    ASSERT_THAT(reshape, testing::NotNull());
     EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
-    EXPECT_EQ(reshape->IsConnected(), true);
+    EXPECT_TRUE(reshape->IsConnected());
   }
   {
     // Test reshaping a scalar to 1-D 1-element tensor.
@@ -4460,14 +4462,14 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
         BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {1}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
     auto* reshape = output->Operator();
-    EXPECT_NE(reshape, nullptr);
+    ASSERT_THAT(reshape, testing::NotNull());
     EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
-    EXPECT_EQ(reshape->IsConnected(), true);
+    EXPECT_TRUE(reshape->IsConnected());
   }
   {
     // Test throwing error when one value of new shape is 0.
@@ -4476,7 +4478,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              scope.GetExceptionState());
     auto* output =
         builder->reshape(input, {2, 4, 0}, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4490,7 +4492,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {}, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4504,7 +4506,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {3, 9}, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4518,14 +4520,14 @@ MLOperand* BuildResample2d(V8TestingScope& scope,
                            const MLOperand* input,
                            const MLResample2dOptions* options) {
   auto* output = builder->resample2d(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* resample2d = output->Operator();
-  EXPECT_NE(resample2d, nullptr);
+  EXPECT_THAT(resample2d, testing::NotNull());
   EXPECT_EQ(resample2d->Kind(), MLOperator::OperatorKind::kResample2d);
-  EXPECT_EQ(resample2d->IsConnected(), true);
-  EXPECT_NE(resample2d->Options(), nullptr);
+  EXPECT_TRUE(resample2d->IsConnected());
+  EXPECT_THAT(resample2d->Options(), testing::NotNull());
   return output;
 }
 
@@ -4611,7 +4613,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     auto* options = MLResample2dOptions::Create();
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4626,7 +4628,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({1.0, 1.0, 2.0, 2.0});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4641,7 +4643,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({1.0, -2.0});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4656,7 +4658,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setSizes({1, 1, 4, 6});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4671,7 +4673,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({232433, 4});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4686,7 +4688,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({0.02, 0.8});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4701,7 +4703,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({20, 434324});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4716,7 +4718,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setScales({0.7, 0.1});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4731,7 +4733,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setAxes({0, 1, 2});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4746,7 +4748,7 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     options->setAxes({0, 2});
     auto* output =
         builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4759,14 +4761,14 @@ MLOperand* BuildTranspose(V8TestingScope& scope,
                           const MLOperand* input,
                           const MLTransposeOptions* options) {
   auto* output = builder->transpose(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* transpose = output->Operator();
-  EXPECT_NE(transpose, nullptr);
+  EXPECT_THAT(transpose, testing::NotNull());
   EXPECT_EQ(transpose->Kind(), MLOperator::OperatorKind::kTranspose);
-  EXPECT_EQ(transpose->IsConnected(), true);
-  EXPECT_NE(transpose->Options(), nullptr);
+  EXPECT_TRUE(transpose->IsConnected());
+  EXPECT_THAT(transpose->Options(), testing::NotNull());
   return output;
 }
 
@@ -4803,7 +4805,7 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     options->setPermutation({0, 2, 3, 1});
     auto* output =
         builder->transpose(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -4820,7 +4822,7 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     options->setPermutation({0, 2, 3, 2});
     auto* output =
         builder->transpose(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4836,7 +4838,7 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     options->setPermutation({0, 1, 2, 4});
     auto* output =
         builder->transpose(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4849,14 +4851,14 @@ MLOperand* BuildClamp(V8TestingScope& scope,
                       const MLOperand* input,
                       const MLClampOptions* options) {
   auto* output = builder->clamp(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* clamp = output->Operator();
-  EXPECT_NE(clamp, nullptr);
+  EXPECT_THAT(clamp, testing::NotNull());
   EXPECT_EQ(clamp->Kind(), MLOperator::OperatorKind::kClamp);
-  EXPECT_EQ(clamp->IsConnected(), true);
-  EXPECT_NE(clamp->Options(), nullptr);
+  EXPECT_TRUE(clamp->IsConnected());
+  EXPECT_THAT(clamp->Options(), testing::NotNull());
   return output;
 }
 
@@ -4896,7 +4898,7 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
     options->setMaxValue(-3.243432);
     options->setMinValue(4.432232);
     auto* output = builder->clamp(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4907,11 +4909,11 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
     // Test building clamp as a standalone operator.
     auto* clamp =
         builder->clamp(MLClampOptions::Create(), scope.GetExceptionState());
-    EXPECT_NE(clamp, nullptr);
-    EXPECT_NE(clamp->Operator(), nullptr);
+    ASSERT_THAT(clamp, testing::NotNull());
+    ASSERT_THAT(clamp->Operator(), testing::NotNull());
     EXPECT_EQ(clamp->Operator()->Kind(), MLOperator::OperatorKind::kClamp);
-    EXPECT_EQ(clamp->Operator()->IsConnected(), false);
-    EXPECT_NE(clamp->Operator()->Options(), nullptr);
+    EXPECT_FALSE(clamp->Operator()->IsConnected());
+    ASSERT_THAT(clamp->Operator()->Options(), testing::NotNull());
   }
 }
 
@@ -4921,15 +4923,15 @@ void TestBuildElu(V8TestingScope& scope,
                   const Vector<uint32_t>& output_shape,
                   const MLEluOptions* options) {
   auto* output = builder->elu(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), output_shape);
   auto* elu = output->Operator();
-  EXPECT_NE(elu, nullptr);
+  EXPECT_THAT(elu, testing::NotNull());
   EXPECT_EQ(elu->Kind(), MLOperator::OperatorKind::kElu);
-  EXPECT_EQ(elu->IsConnected(), true);
-  EXPECT_NE(elu->Options(), nullptr);
+  EXPECT_TRUE(elu->IsConnected());
+  EXPECT_THAT(elu->Options(), testing::NotNull());
 }
 
 TEST_F(MLGraphBuilderTest, EluTest) {
@@ -4964,7 +4966,7 @@ TEST_F(MLGraphBuilderTest, EluTest) {
     auto* options = MLEluOptions::Create();
     options->setAlpha(0);
     auto* output = builder->elu(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4978,7 +4980,7 @@ TEST_F(MLGraphBuilderTest, EluTest) {
     auto* options = MLEluOptions::Create();
     options->setAlpha(-1);
     auto* output = builder->elu(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -4991,7 +4993,7 @@ TEST_F(MLGraphBuilderTest, EluTest) {
                              scope.GetExceptionState());
     auto* output =
         builder->elu(input, MLEluOptions::Create(), scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5000,11 +5002,11 @@ TEST_F(MLGraphBuilderTest, EluTest) {
   {
     // Test building elu as a standalone operator.
     auto* elu = builder->elu(MLEluOptions::Create(), scope.GetExceptionState());
-    EXPECT_NE(elu, nullptr);
-    EXPECT_NE(elu->Operator(), nullptr);
+    ASSERT_THAT(elu, testing::NotNull());
+    ASSERT_THAT(elu->Operator(), testing::NotNull());
     EXPECT_EQ(elu->Operator()->Kind(), MLOperator::OperatorKind::kElu);
-    EXPECT_EQ(elu->Operator()->IsConnected(), false);
-    EXPECT_NE(elu->Operator()->Options(), nullptr);
+    EXPECT_FALSE(elu->Operator()->IsConnected());
+    ASSERT_THAT(elu->Operator()->Options(), testing::NotNull());
   }
 }
 
@@ -5025,15 +5027,15 @@ struct ExpandTester {
 
   void Test(V8TestingScope& scope) {
     MLOperand* output = BuildExpandOperator(scope);
-    ASSERT_NE(output, nullptr);
+    EXPECT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), input.data_type);
     EXPECT_EQ(output->Dimensions(), new_shape);
     auto* op = output->Operator();
-    EXPECT_NE(op, nullptr);
+    EXPECT_THAT(op, testing::NotNull());
     EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kExpand);
-    EXPECT_EQ(op->IsConnected(), true);
-    EXPECT_EQ(op->Options(), nullptr);
+    EXPECT_TRUE(op->IsConnected());
+    EXPECT_THAT(op->Options(), testing::IsNull());
   }
 };
 
@@ -5080,7 +5082,7 @@ TEST_F(MLGraphBuilderTest, ExpandTest) {
                   .dimensions = {3, 6, 2}},
         .new_shape = {4, 3,
                       5}}.BuildExpandOperator(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5092,7 +5094,7 @@ TEST_F(MLGraphBuilderTest, ExpandTest) {
         .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
                   .dimensions = {5, 4}},
         .new_shape = {5}}.BuildExpandOperator(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5107,7 +5109,7 @@ TEST_F(MLGraphBuilderTest, ExpandTest) {
                       .dimensions = {1, 2, 1, 1}},
             .new_shape = {1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax}}
             .BuildExpandOperator(scope);
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5123,14 +5125,14 @@ MLOperand* BuildGather(V8TestingScope& scope,
                        const MLGatherOptions* options) {
   auto* output =
       builder->gather(input, indices, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* gather = output->Operator();
-  EXPECT_NE(gather, nullptr);
+  EXPECT_THAT(gather, testing::NotNull());
   EXPECT_EQ(gather->Kind(), MLOperator::OperatorKind::kGather);
   EXPECT_TRUE(gather->IsConnected());
-  EXPECT_NE(gather->Options(), nullptr);
+  EXPECT_THAT(gather->Options(), testing::NotNull());
   return output;
 }
 
@@ -5174,7 +5176,7 @@ TEST_F(MLGraphBuilderTest, GatherTest) {
     auto* options = MLGatherOptions::Create();
     auto* output =
         builder->gather(input, indices, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5192,7 +5194,7 @@ TEST_F(MLGraphBuilderTest, GatherTest) {
     options->setAxis(4);
     auto* output =
         builder->gather(input, indices, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -5211,7 +5213,7 @@ TEST_F(MLGraphBuilderTest, GatherTest) {
     auto* options = MLGatherOptions::Create();
     auto* output =
         builder->gather(input, indices, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -5227,16 +5229,16 @@ MLOperand* BuildInstanceNormalization(
     const MLInstanceNormalizationOptions* options) {
   auto* output =
       builder->instanceNormalization(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* instance_normalization = output->Operator();
-  EXPECT_NE(instance_normalization, nullptr);
+  EXPECT_THAT(instance_normalization, testing::NotNull());
   EXPECT_EQ(instance_normalization->Kind(),
             MLOperator::OperatorKind::kInstanceNormalization);
   EXPECT_TRUE(instance_normalization->IsConnected());
-  EXPECT_NE(instance_normalization->Options(), nullptr);
+  EXPECT_THAT(instance_normalization->Options(), testing::NotNull());
   return output;
 }
 
@@ -5303,7 +5305,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     auto* options = MLInstanceNormalizationOptions::Create();
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5318,7 +5320,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     auto* options = MLInstanceNormalizationOptions::Create();
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5337,7 +5339,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -5356,7 +5358,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5376,7 +5378,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setScale(scale);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5396,7 +5398,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -5415,7 +5417,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5435,7 +5437,7 @@ TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
     options->setBias(bias);
     auto* output = builder->instanceNormalization(input, options,
                                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5450,16 +5452,16 @@ MLOperand* BuildLayerNormalization(V8TestingScope& scope,
                                    const MLLayerNormalizationOptions* options) {
   auto* output =
       builder->layerNormalization(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* layer_normalization = output->Operator();
-  EXPECT_NE(layer_normalization, nullptr);
+  EXPECT_THAT(layer_normalization, testing::NotNull());
   EXPECT_EQ(layer_normalization->Kind(),
             MLOperator::OperatorKind::kLayerNormalization);
   EXPECT_TRUE(layer_normalization->IsConnected());
-  EXPECT_NE(layer_normalization->Options(), nullptr);
+  EXPECT_THAT(layer_normalization->Options(), testing::NotNull());
   return output;
 }
 
@@ -5555,7 +5557,7 @@ TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
     auto* options = MLLayerNormalizationOptions::Create();
     auto* output =
         builder->layerNormalization(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5570,7 +5572,7 @@ TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
     options->setAxes({1, 2, 4});
     auto* output =
         builder->layerNormalization(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5585,7 +5587,7 @@ TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
     options->setAxes({3, 3});
     auto* output =
         builder->layerNormalization(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5609,7 +5611,7 @@ TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
     options->setAxes({2, 3});
     auto* output =
         builder->layerNormalization(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -5629,7 +5631,7 @@ TEST_F(MLGraphBuilderTest, LayerNormalizationTest) {
     options->setBias(bias);
     auto* output =
         builder->layerNormalization(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5643,14 +5645,14 @@ MLOperand* BuildLeakyRelu(V8TestingScope& scope,
                           const MLOperand* input,
                           const MLLeakyReluOptions* options) {
   auto* output = builder->leakyRelu(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* leaky_relu = output->Operator();
-  EXPECT_NE(leaky_relu, nullptr);
+  EXPECT_THAT(leaky_relu, testing::NotNull());
   EXPECT_EQ(leaky_relu->Kind(), MLOperator::OperatorKind::kLeakyRelu);
-  EXPECT_EQ(leaky_relu->IsConnected(), true);
-  EXPECT_NE(leaky_relu->Options(), nullptr);
+  EXPECT_TRUE(leaky_relu->IsConnected());
+  EXPECT_THAT(leaky_relu->Options(), testing::NotNull());
   return output;
 }
 
@@ -5672,12 +5674,12 @@ TEST_F(MLGraphBuilderTest, LeakyReluTest) {
     // Test building leaky_relu as a standalone operator.
     auto* leaky_relu = builder->leakyRelu(MLLeakyReluOptions::Create(),
                                           scope.GetExceptionState());
-    EXPECT_NE(leaky_relu, nullptr);
-    EXPECT_NE(leaky_relu->Operator(), nullptr);
+    ASSERT_THAT(leaky_relu, testing::NotNull());
+    ASSERT_THAT(leaky_relu->Operator(), testing::NotNull());
     EXPECT_EQ(leaky_relu->Operator()->Kind(),
               MLOperator::OperatorKind::kLeakyRelu);
-    EXPECT_EQ(leaky_relu->Operator()->IsConnected(), false);
-    EXPECT_NE(leaky_relu->Operator()->Options(), nullptr);
+    EXPECT_FALSE(leaky_relu->Operator()->IsConnected());
+    ASSERT_THAT(leaky_relu->Operator()->Options(), testing::NotNull());
   }
 }
 
@@ -5686,14 +5688,14 @@ MLOperand* BuildLinear(V8TestingScope& scope,
                        const MLOperand* input,
                        const MLLinearOptions* options) {
   auto* output = builder->linear(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* linear = output->Operator();
-  EXPECT_NE(linear, nullptr);
+  EXPECT_THAT(linear, testing::NotNull());
   EXPECT_EQ(linear->Kind(), MLOperator::OperatorKind::kLinear);
-  EXPECT_EQ(linear->IsConnected(), true);
-  EXPECT_NE(linear->Options(), nullptr);
+  EXPECT_TRUE(linear->IsConnected());
+  EXPECT_THAT(linear->Options(), testing::NotNull());
   return output;
 }
 
@@ -5718,7 +5720,7 @@ TEST_F(MLGraphBuilderTest, LinearTest) {
                              scope.GetExceptionState());
     auto* options = MLLinearOptions::Create();
     auto* output = builder->linear(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5728,11 +5730,11 @@ TEST_F(MLGraphBuilderTest, LinearTest) {
     // Test building linear as a standalone operator.
     auto* linear =
         builder->linear(MLLinearOptions::Create(), scope.GetExceptionState());
-    EXPECT_NE(linear, nullptr);
-    EXPECT_NE(linear->Operator(), nullptr);
+    ASSERT_THAT(linear, testing::NotNull());
+    ASSERT_THAT(linear->Operator(), testing::NotNull());
     EXPECT_EQ(linear->Operator()->Kind(), MLOperator::OperatorKind::kLinear);
-    EXPECT_EQ(linear->Operator()->IsConnected(), false);
-    EXPECT_NE(linear->Operator()->Options(), nullptr);
+    EXPECT_FALSE(linear->Operator()->IsConnected());
+    ASSERT_THAT(linear->Operator()->Options(), testing::NotNull());
   }
 }
 
@@ -5744,14 +5746,14 @@ MLOperand* BuildPad(V8TestingScope& scope,
                     const MLPadOptions* options) {
   auto* output = builder->pad(input, beginningPadding, endingPadding, options,
                               scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* pad = output->Operator();
-  EXPECT_NE(pad, nullptr);
+  EXPECT_THAT(pad, testing::NotNull());
   EXPECT_EQ(pad->Kind(), MLOperator::OperatorKind::kPad);
-  EXPECT_EQ(pad->IsConnected(), true);
-  EXPECT_NE(pad->Options(), nullptr);
+  EXPECT_TRUE(pad->IsConnected());
+  EXPECT_THAT(pad->Options(), testing::NotNull());
   return output;
 }
 
@@ -5782,7 +5784,7 @@ TEST_F(MLGraphBuilderTest, PadTest) {
     auto* options = MLPadOptions::Create();
     auto* output =
         builder->pad(input, {}, {}, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5798,7 +5800,7 @@ TEST_F(MLGraphBuilderTest, PadTest) {
     options->setMode(V8MLPaddingMode::Enum::kEdge);
     auto* output =
         builder->pad(input, {1}, {1, 2}, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5815,7 +5817,7 @@ TEST_F(MLGraphBuilderTest, PadTest) {
     options->setMode(V8MLPaddingMode::Enum::kReflection);
     auto* output = builder->pad(input, {1, 0}, {1, 2, 0}, options,
                                 scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5831,7 +5833,7 @@ TEST_F(MLGraphBuilderTest, PadTest) {
     options->setMode(V8MLPaddingMode::Enum::kReflection);
     auto* output = builder->pad(input, {2294967295, 0}, {3294967295, 2},
                                 options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5850,15 +5852,15 @@ TEST_F(MLGraphBuilderTest, Softmax) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->softmax(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
     auto* softmax = output->Operator();
-    EXPECT_NE(softmax, nullptr);
+    ASSERT_THAT(softmax, testing::NotNull());
     EXPECT_EQ(softmax->Kind(), MLOperator::OperatorKind::kSoftmax);
-    EXPECT_EQ(softmax->IsConnected(), true);
-    EXPECT_EQ(softmax->Options(), nullptr);
+    EXPECT_TRUE(softmax->IsConnected());
+    EXPECT_THAT(softmax->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when building softmax with 4-D input.
@@ -5866,7 +5868,7 @@ TEST_F(MLGraphBuilderTest, Softmax) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->softmax(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5878,7 +5880,7 @@ TEST_F(MLGraphBuilderTest, Softmax) {
         BuildInput(builder, "input", {3, 4}, V8MLOperandDataType::Enum::kInt32,
                    scope.GetExceptionState());
     auto* output = builder->softmax(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5891,15 +5893,15 @@ MLOperand* BuildSoftplus(V8TestingScope& scope,
                          const MLOperand* input,
                          const MLSoftplusOptions* options) {
   auto* output = builder->softplus(input, options, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* softplus = output->Operator();
-  EXPECT_NE(softplus, nullptr);
+  EXPECT_THAT(softplus, testing::NotNull());
   EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
   EXPECT_TRUE(softplus->IsConnected());
-  EXPECT_NE(softplus->Options(), nullptr);
+  EXPECT_THAT(softplus->Options(), testing::NotNull());
   return output;
 }
 
@@ -5928,12 +5930,12 @@ TEST_F(MLGraphBuilderTest, SoftPlusTest) {
     // Test building softplus activation.
     auto* output = builder->softplus(MLSoftplusOptions::Create(),
                                      scope.GetExceptionState());
-    ASSERT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     const MLOperator* softplus = output->Operator();
-    ASSERT_NE(softplus, nullptr);
+    ASSERT_THAT(softplus, testing::NotNull());
     EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
     EXPECT_FALSE(softplus->IsConnected());
-    EXPECT_NE(softplus->Options(), nullptr);
+    ASSERT_THAT(softplus->Options(), testing::NotNull());
   }
   {
     // Test throwing exception when building softplus with int32 input.
@@ -5943,7 +5945,7 @@ TEST_F(MLGraphBuilderTest, SoftPlusTest) {
                              scope.GetExceptionState());
     auto* output = builder->softplus(input, MLSoftplusOptions::Create(),
                                      scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5963,15 +5965,15 @@ TEST_F(MLGraphBuilderTest, SoftSignTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->softsign(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* softsign = output->Operator();
-    EXPECT_NE(softsign, nullptr);
+    ASSERT_THAT(softsign, testing::NotNull());
     EXPECT_EQ(softsign->Kind(), MLOperator::OperatorKind::kSoftsign);
-    EXPECT_EQ(softsign->IsConnected(), true);
-    EXPECT_EQ(softsign->Options(), nullptr);
+    EXPECT_TRUE(softsign->IsConnected());
+    EXPECT_THAT(softsign->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when building softsign with int32 input.
@@ -5980,7 +5982,7 @@ TEST_F(MLGraphBuilderTest, SoftSignTest) {
                              V8MLOperandDataType::Enum::kInt32,
                              scope.GetExceptionState());
     auto* output = builder->softsign(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -5989,12 +5991,12 @@ TEST_F(MLGraphBuilderTest, SoftSignTest) {
   {
     // Test building softsign operator.
     auto* softsign = builder->softsign(scope.GetExceptionState());
-    EXPECT_NE(softsign, nullptr);
-    EXPECT_NE(softsign->Operator(), nullptr);
+    ASSERT_THAT(softsign, testing::NotNull());
+    ASSERT_THAT(softsign->Operator(), testing::NotNull());
     EXPECT_EQ(softsign->Operator()->Kind(),
               MLOperator::OperatorKind::kSoftsign);
-    EXPECT_EQ(softsign->Operator()->IsConnected(), false);
-    EXPECT_EQ(softsign->Operator()->Options(), nullptr);
+    EXPECT_FALSE(softsign->Operator()->IsConnected());
+    EXPECT_THAT(softsign->Operator()->Options(), testing::IsNull());
   }
 }
 
@@ -6010,15 +6012,15 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->sigmoid(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* sigmoid = output->Operator();
-    EXPECT_NE(sigmoid, nullptr);
+    ASSERT_THAT(sigmoid, testing::NotNull());
     EXPECT_EQ(sigmoid->Kind(), MLOperator::OperatorKind::kSigmoid);
-    EXPECT_EQ(sigmoid->IsConnected(), true);
-    EXPECT_EQ(sigmoid->Options(), nullptr);
+    EXPECT_TRUE(sigmoid->IsConnected());
+    EXPECT_THAT(sigmoid->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when building sigmoid with int32 input.
@@ -6027,7 +6029,7 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
                              V8MLOperandDataType::Enum::kInt32,
                              scope.GetExceptionState());
     auto* output = builder->sigmoid(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6036,11 +6038,11 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
   {
     // Test building sigmoid operator.
     auto* sigmoid = builder->sigmoid(scope.GetExceptionState());
-    EXPECT_NE(sigmoid, nullptr);
-    EXPECT_NE(sigmoid->Operator(), nullptr);
+    ASSERT_THAT(sigmoid, testing::NotNull());
+    ASSERT_THAT(sigmoid->Operator(), testing::NotNull());
     EXPECT_EQ(sigmoid->Operator()->Kind(), MLOperator::OperatorKind::kSigmoid);
-    EXPECT_EQ(sigmoid->Operator()->IsConnected(), false);
-    EXPECT_EQ(sigmoid->Operator()->Options(), nullptr);
+    EXPECT_FALSE(sigmoid->Operator()->IsConnected());
+    EXPECT_THAT(sigmoid->Operator()->Options(), testing::IsNull());
   }
 }
 
@@ -6057,15 +6059,15 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
                              scope.GetExceptionState());
     auto* output =
         builder->slice(input, {0, 1, 2}, {1, 2, 3}, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
     const MLOperator* slice = output->Operator();
-    EXPECT_NE(slice, nullptr);
+    ASSERT_THAT(slice, testing::NotNull());
     EXPECT_EQ(slice->Kind(), MLOperator::OperatorKind::kSlice);
-    EXPECT_EQ(slice->IsConnected(), true);
-    EXPECT_EQ(slice->Options(), nullptr);
+    EXPECT_TRUE(slice->IsConnected());
+    EXPECT_THAT(slice->Options(), testing::IsNull());
   }
   {
     // Test building slice a scalar.
@@ -6074,7 +6076,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->slice(input, {0}, {1}, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6091,7 +6093,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     const Vector<uint32_t> sizes = {1, 1};
     auto* output =
         builder->slice(input, starts, sizes, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -6109,7 +6111,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     const Vector<uint32_t> sizes = {1, 1, 1};
     auto* output =
         builder->slice(input, starts, sizes, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -6127,7 +6129,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     const Vector<uint32_t> sizes = {1, 1, 1};
     auto* output =
         builder->slice(input, starts, sizes, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6144,7 +6146,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     const Vector<uint32_t> sizes = {1, 0, 1};
     auto* output =
         builder->slice(input, starts, sizes, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -6162,7 +6164,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     const Vector<uint32_t> sizes = {3, 4, 1};
     auto* output =
         builder->slice(input, starts, sizes, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6188,17 +6190,17 @@ TEST_F(MLGraphBuilderTest, Split) {
         builder->split(input, splits, options, scope.GetExceptionState());
     EXPECT_EQ(outputs.size(), splits);
     for (auto output : outputs) {
-      EXPECT_NE(output, nullptr);
+      ASSERT_THAT(output, testing::NotNull());
       EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
       EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 6}));
     }
     auto* split = static_cast<const MLSplitOperator*>(outputs[0]->Operator());
-    EXPECT_NE(split, nullptr);
-    EXPECT_EQ(split->IsEvenSplit(), true);
+    ASSERT_THAT(split, testing::NotNull());
+    EXPECT_TRUE(split->IsEvenSplit());
     EXPECT_EQ(split->SplitNumber(), splits);
     EXPECT_EQ(split->Kind(), MLOperator::OperatorKind::kSplit);
-    EXPECT_EQ(split->IsConnected(), true);
+    EXPECT_TRUE(split->IsConnected());
   }
   {
     // Test building split with a sequence of unsigned long splits and with
@@ -6213,17 +6215,17 @@ TEST_F(MLGraphBuilderTest, Split) {
         builder->split(input, splits, options, scope.GetExceptionState());
     EXPECT_EQ(outputs.size(), splits.size());
     for (uint32_t i = 0; i < outputs.size(); ++i) {
-      EXPECT_NE(outputs[i], nullptr);
+      ASSERT_THAT(outputs[i], testing::NotNull());
       EXPECT_EQ(outputs[i]->Kind(), MLOperand::OperandKind::kOutput);
       EXPECT_EQ(outputs[i]->DataType(), V8MLOperandDataType::Enum::kFloat32);
       EXPECT_EQ(outputs[i]->Dimensions(), Vector<uint32_t>({2, splits[i]}));
     }
     auto* split = static_cast<const MLSplitOperator*>(outputs[0]->Operator());
-    EXPECT_NE(split, nullptr);
-    EXPECT_EQ(split->IsEvenSplit(), false);
+    ASSERT_THAT(split, testing::NotNull());
+    EXPECT_FALSE(split->IsEvenSplit());
     EXPECT_EQ(split->SplitSizes(), splits);
     EXPECT_EQ(split->Kind(), MLOperator::OperatorKind::kSplit);
-    EXPECT_EQ(split->IsConnected(), true);
+    EXPECT_TRUE(split->IsConnected());
   }
   {
     // Test throwing exception when splitting a scalar.
@@ -6345,15 +6347,15 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto* output = builder->tanh(input, scope.GetExceptionState());
-    EXPECT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* tanh = output->Operator();
-    EXPECT_NE(tanh, nullptr);
+    ASSERT_THAT(tanh, testing::NotNull());
     EXPECT_EQ(tanh->Kind(), MLOperator::OperatorKind::kTanh);
-    EXPECT_EQ(tanh->IsConnected(), true);
-    EXPECT_EQ(tanh->Options(), nullptr);
+    EXPECT_TRUE(tanh->IsConnected());
+    EXPECT_THAT(tanh->Options(), testing::IsNull());
   }
   {
     // Test throwing exception when building tanh with int32 input.
@@ -6362,7 +6364,7 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
                              V8MLOperandDataType::Enum::kInt32,
                              scope.GetExceptionState());
     auto* output = builder->tanh(input, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6371,11 +6373,11 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
   {
     // Test building tanh operator.
     auto* tanh = builder->tanh(scope.GetExceptionState());
-    EXPECT_NE(tanh, nullptr);
-    EXPECT_NE(tanh->Operator(), nullptr);
+    ASSERT_THAT(tanh, testing::NotNull());
+    ASSERT_THAT(tanh->Operator(), testing::NotNull());
     EXPECT_EQ(tanh->Operator()->Kind(), MLOperator::OperatorKind::kTanh);
-    EXPECT_EQ(tanh->Operator()->IsConnected(), false);
-    EXPECT_EQ(tanh->Operator()->Options(), nullptr);
+    EXPECT_FALSE(tanh->Operator()->IsConnected());
+    EXPECT_THAT(tanh->Operator()->Options(), testing::IsNull());
   }
 }
 
@@ -6384,14 +6386,14 @@ MLOperand* BuildMatmul(V8TestingScope& scope,
                        const MLOperand* a,
                        const MLOperand* b) {
   auto* output = builder->matmul(a, b, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), a->DataType());
   auto* matmul = output->Operator();
-  EXPECT_NE(matmul, nullptr);
+  EXPECT_THAT(matmul, testing::NotNull());
   EXPECT_EQ(matmul->Kind(), MLOperator::OperatorKind::kMatmul);
-  EXPECT_EQ(matmul->IsConnected(), true);
-  EXPECT_EQ(matmul->Options(), nullptr);
+  EXPECT_TRUE(matmul->IsConnected());
+  EXPECT_THAT(matmul->Options(), testing::IsNull());
   return output;
 }
 
@@ -6407,7 +6409,7 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
     auto* b = BuildInput(builder, "b", {2}, V8MLOperandDataType::Enum::kFloat32,
                          scope.GetExceptionState());
     auto* output = builder->matmul(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6479,7 +6481,7 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
                    scope.GetExceptionState());
     auto* output = builder->matmul(a, b, scope.GetExceptionState());
     ;
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6495,7 +6497,7 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
         BuildInput(builder, "b", {2, 4}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->matmul(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6511,7 +6513,7 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
         BuildInput(builder, "b", {2, 4, 1}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->matmul(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6526,14 +6528,14 @@ MLOperand* BuildWhere(V8TestingScope& scope,
                       const MLOperand* false_value) {
   auto* output = builder->where(condition, true_value, false_value,
                                 scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), true_value->DataType());
   auto* where = output->Operator();
-  EXPECT_NE(where, nullptr);
+  EXPECT_THAT(where, testing::NotNull());
   EXPECT_EQ(where->Kind(), MLOperator::OperatorKind::kWhere);
-  EXPECT_EQ(where->IsConnected(), true);
-  EXPECT_EQ(where->Options(), nullptr);
+  EXPECT_TRUE(where->IsConnected());
+  EXPECT_THAT(where->Options(), testing::IsNull());
   return output;
 }
 
@@ -6555,7 +6557,7 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
                                    scope.GetExceptionState());
     auto* output = builder->where(condition, true_value, false_value,
                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6575,7 +6577,7 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
                                    scope.GetExceptionState());
     auto* output = builder->where(condition, true_value, false_value,
                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6595,7 +6597,7 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
                                    scope.GetExceptionState());
     auto* output = builder->where(condition, true_value, false_value,
                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(
@@ -6615,7 +6617,7 @@ TEST_F(MLGraphBuilderTest, WhereTest) {
                                    scope.GetExceptionState());
     auto* output = builder->where(condition, true_value, false_value,
                                   scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
+    EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
@@ -6802,7 +6804,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     // Test throwing exception if the named outputs is empty.
     MLNamedOperands named_outputs;
     auto [graph, exception] = BuildGraph(scope, builder, named_outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -6814,7 +6816,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", input}});
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -6827,7 +6829,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
                       scope.GetExceptionState());
     auto [graph, exception] =
         BuildGraph(scope, builder, {{"output", constant}});
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -6844,7 +6846,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
                       scope.GetExceptionState());
     auto [graph, exception] =
         BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -6859,10 +6861,10 @@ TEST_P(FakeMLGraphTest, BuildTest) {
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* c = builder->add(a, b, scope.GetExceptionState());
-    ASSERT_NE(c, nullptr);
+    ASSERT_THAT(c, testing::NotNull());
 
     auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(), "The input name \"a\" is duplicated.");
@@ -6880,9 +6882,9 @@ TEST_P(FakeMLGraphTest, BuildTest) {
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->add(a, a, scope.GetExceptionState());
-    ASSERT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
     auto [graph, exception] = BuildGraph(scope, builder, {{"b", output}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
@@ -6903,11 +6905,11 @@ TEST_P(FakeMLGraphTest, BuildTest) {
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* b = builder->relu(a, scope.GetExceptionState());
-    ASSERT_NE(b, nullptr);
+    ASSERT_THAT(b, testing::NotNull());
     auto* c = builder->sigmoid(a, scope.GetExceptionState());
-    ASSERT_NE(c, nullptr);
+    ASSERT_THAT(c, testing::NotNull());
     auto [graph, exception] = BuildGraph(scope, builder, {{"b", b}, {"c", c}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
@@ -6931,7 +6933,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     auto* c = BuildGemm(scope, builder, a, b);
 
     auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
@@ -6956,12 +6958,12 @@ TEST_P(FakeMLGraphTest, BuildTest) {
         BuildConstant(builder, {1}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
-    ASSERT_NE(add, nullptr);
+    ASSERT_THAT(add, testing::NotNull());
     auto* output = builder->relu(add, scope.GetExceptionState());
-    ASSERT_NE(output, nullptr);
+    ASSERT_THAT(output, testing::NotNull());
 
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("input").data_type, input->DataType());
@@ -6989,7 +6991,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     buffer_view->DetachForTesting();
 
     auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7043,9 +7045,9 @@ TEST_P(FakeMLGraphTest, CreateNamedArrayBufferViewsTest) {
       inputs.emplace_back("input", CreateArrayBufferViewForOperand(input));
       auto inputs_info = TransferNamedArrayBufferViews(
           scope.GetIsolate(), inputs, scope.GetExceptionState());
-      ASSERT_NE(inputs_info, nullptr);
+      ASSERT_THAT(inputs_info, testing::NotNull());
       auto* input_views = CreateNamedArrayBufferViews(std::move(inputs_info));
-      ASSERT_NE(input_views, nullptr);
+      ASSERT_THAT(input_views, testing::NotNull());
       EXPECT_EQ((*input_views)[0].first, "input");
       auto input_data_type = (*input_views)[0].second->GetType();
       switch (operand_data_type) {
@@ -7092,15 +7094,15 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
                  scope.GetExceptionState());
   auto* c = BuildGemm(scope, builder, a, b);
   auto [graph, build_exception] = BuildGraph(scope, builder, {{"c", c}});
-  DCHECK_NE(graph, nullptr);
-  DCHECK_EQ(build_exception, nullptr);
+  ASSERT_THAT(graph, testing::NotNull());
+  ASSERT_THAT(build_exception, testing::IsNull());
   {
     // Test throwing exception if the inputs is empty.
     MLNamedArrayBufferViews inputs;
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7114,7 +7116,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7128,7 +7130,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7144,7 +7146,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     outputs.emplace_back("d", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7160,7 +7162,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7176,7 +7178,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     outputs.emplace_back("invalid-output-name",
                          CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7195,7 +7197,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(
@@ -7215,7 +7217,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),
@@ -7234,7 +7236,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
                               .data_type = V8MLOperandDataType::Enum::kInt32}
             .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(
@@ -7254,7 +7256,7 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
                               .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
+    ASSERT_THAT(exception, testing::NotNull());
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
     EXPECT_EQ(exception->message(),

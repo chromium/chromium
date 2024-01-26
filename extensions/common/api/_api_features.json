@@ -354,8 +354,10 @@
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
       "chrome://welcome/*",
+      "chrome://vc-background/*",
       "chrome://app-settings/*",
-      "chrome://compose/*"
+      "chrome://compose/*",
+      "chrome://search-engine-choice/*"
     ]
   }, {
     "channel": "stable",

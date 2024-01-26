@@ -183,61 +183,32 @@ constexpr std::string_view kServerStoredCvcTable = "server_stored_cvc";
 // kValueEncrypted = "value_encrypted"
 // kLastUpdatedTimestamp = "last_updated_timestamp"
 
-constexpr std::string_view kPaymentInstrumentsTable = "payment_instruments";
+constexpr std::string_view kMaskedBankAccountsMetadataTable =
+    "masked_bank_accounts_metadata";
 // kInstrumentId = "instrument_id"
-constexpr std::string_view kInstrumentType = "instrument_type";
-// kNickname = "nickname"
-constexpr std::string_view kDisplayIconUrl = "display_icon_url";
-constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
-    kPaymentInstrumentsColumnNamesAndTypes = {
-        {kInstrumentId, "INTEGER NOT NULL"},
-        {kInstrumentType, "INTEGER NOT NULL"},
-        {kDisplayIconUrl, "VARCHAR"},
-        {kNickname, "VARCHAR"}};
-constexpr std::initializer_list<std::string_view>
-    kPaymentInstrumentsCompositePrimaryKey = {kInstrumentId, kInstrumentType};
-
-constexpr std::string_view kPaymentInstrumentsMetadataTable =
-    "payment_instruments_metadata";
-// kInstrumentId = "instrument_id"
-// kInstrumentType = "instrument_type"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
-    kPaymentInstrumentsMetadataColumnNamesAndTypes = {
+    kMaskedBankAccountsMetadataColumnNamesAndTypes = {
         {kInstrumentId, "INTEGER NOT NULL"},
-        {kInstrumentType, "INTEGER NOT NULL"},
         {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
         {kUseDate, "INTEGER NOT NULL DEFAULT 0"}};
-constexpr std::initializer_list<std::string_view>
-    kPaymentInstrumentsMetadataCompositePrimaryKey = {kInstrumentId,
-                                                      kInstrumentType};
 
-constexpr std::string_view kPaymentInstrumentSupportedRailsTable =
-    "payment_instrument_supported_rails";
-// kInstrumentId = "instrument_id"
-// kInstrumentType = "instrument_type"
-constexpr std::string_view kPaymentRail = "payment_rail";
-constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
-    kPaymentInstrumentSupportedRailsColumnNamesAndTypes = {
-        {kInstrumentId, "INTEGER NOT NULL"},
-        {kInstrumentType, "INTEGER NOT NULL"},
-        {kPaymentRail, "INTEGER NOT NULL"}};
-constexpr std::initializer_list<std::string_view>
-    kPaymentInstrumentSupportedRailsCompositePrimaryKey = {
-        kInstrumentId, kInstrumentType, kPaymentRail};
-
-constexpr std::string_view kBankAccountsTable = "bank_accounts";
+constexpr std::string_view kMaskedBankAccountsTable = "masked_bank_accounts";
 // kInstrumentId = "instrument_id"
 // kBankName = "bank_name"
 constexpr std::string_view kAccountNumberSuffix = "account_number_suffix";
 constexpr std::string_view kAccountType = "account_type";
+// kNickname = "nickname"
+constexpr std::string_view kDisplayIconUrl = "display_icon_url";
 constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
-    bank_accounts_column_names_and_types = {
+    kMaskedBankAccountsColumnNamesAndTypes = {
         {kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
         {kBankName, "VARCHAR"},
         {kAccountNumberSuffix, "VARCHAR"},
-        {kAccountType, "INTEGER DEFAULT 0"}};
+        {kAccountType, "INTEGER DEFAULT 0"},
+        {kDisplayIconUrl, "VARCHAR"},
+        {kNickname, "VARCHAR"}};
 
 constexpr std::string_view kMaskedCreditCardBenefitsTable =
     "masked_credit_card_benefits";
@@ -321,34 +292,15 @@ void BindServerCvcToStatement(const ServerCvc& server_cvc,
   s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
 }
 
-void BindPaymentInstrumentToStatement(
-    sql::Statement* s,
-    const PaymentInstrument& payment_instrument) {
-  int index = 0;
-  s->BindInt64(index++, payment_instrument.instrument_id());
-  s->BindInt(index++, static_cast<int>(payment_instrument.GetInstrumentType()));
-  s->BindString16(index++, payment_instrument.nickname());
-  s->BindString(index++, payment_instrument.display_icon_url().spec());
-}
-
-void BindPaymentInstrumentSupportedRailsToStatement(
-    sql::Statement* s,
-    int64_t instrument_id,
-    PaymentInstrument::InstrumentType instrument_type,
-    PaymentInstrument::PaymentRail payment_rail) {
-  int index = 0;
-  s->BindInt64(index++, instrument_id);
-  s->BindInt(index++, static_cast<int>(instrument_type));
-  s->BindInt(index++, static_cast<int>(payment_rail));
-}
-
-void BindBankAccountToStatement(sql::Statement* s,
-                                const BankAccount& bank_account) {
+void BindMaskedBankAccountToStatement(const BankAccount& bank_account,
+                                      sql::Statement* s) {
   int index = 0;
   s->BindInt64(index++, bank_account.instrument_id());
   s->BindString16(index++, bank_account.bank_name());
   s->BindString16(index++, bank_account.account_number_suffix());
   s->BindInt(index++, static_cast<int>(bank_account.account_type()));
+  s->BindString16(index++, bank_account.nickname());
+  s->BindString(index++, bank_account.display_icon_url().spec());
 }
 
 void BindIbanToStatement(const Iban& iban,
@@ -475,10 +427,6 @@ time_t GetEndTime(const base::Time& end) {
 
 }  // namespace
 
-PaymentInstrumentFields::PaymentInstrumentFields() = default;
-
-PaymentInstrumentFields::~PaymentInstrumentFields() = default;
-
 PaymentsAutofillTable::PaymentsAutofillTable()
     : autofill_table_encryptor_(
           AutofillTableEncryptorFactory::GetInstance()->Create()) {
@@ -503,10 +451,9 @@ bool PaymentsAutofillTable::CreateTablesIfNecessary() {
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
          InitVirtualCardUsageDataTable() && InitStoredCvcTable() &&
-         InitMaskedIbansTable() && InitMaskedIbansMetadataTable() &&
-         InitBankAccountsTable() && InitPaymentInstrumentsTable() &&
-         InitPaymentInstrumentsMetadataTable() &&
-         InitPaymentInstrumentSupportedRailsTable() &&
+         InitMaskedBankAccountsTable() &&
+         InitMaskedBankAccountsMetadataTable() && InitMaskedIbansTable() &&
+         InitMaskedIbansMetadataTable() &&
          InitMaskedCreditCardBenefitsTable() &&
          InitBenefitMerchantDomainsTable();
 }
@@ -580,223 +527,58 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 119:
       *update_compatible_version = true;
       return MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
-    case 120:
-      *update_compatible_version = false;
-      return MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
     case 123:
       *update_compatible_version = false;
       return MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
+    case 124:
+      *update_compatible_version = true;
+      return MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
   }
   return true;
 }
 
-std::unique_ptr<BankAccount> PaymentsAutofillTable::GetBankAccount(
-    const PaymentInstrumentFields& payment_instrument_fields) {
+std::unique_ptr<BankAccount> PaymentsAutofillTable::GetMaskedBankAccount(
+    int64_t instrument_id) {
   sql::Statement s;
-  SelectBuilder(db_, s, kBankAccountsTable,
-                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType},
+  SelectBuilder(db_, s, kMaskedBankAccountsTable,
+                {kBankName, kAccountNumberSuffix, kAccountType, kNickname,
+                 kDisplayIconUrl},
                 "WHERE instrument_id = ?");
-  s.BindInt64(0, payment_instrument_fields.instrument_id);
+  s.BindInt64(0, instrument_id);
 
   if (!s.Step()) {
     return nullptr;
   }
   int index = 0;
-  auto instrument_id = s.ColumnInt64(index++);
   auto bank_name = s.ColumnString16(index++);
   auto account_number_suffix = s.ColumnString16(index++);
   int account_type = s.ColumnInt(index++);
+  auto nickname = s.ColumnString16(index++);
+  auto display_icon_url = s.ColumnString16(index++);
   if (account_type >
           static_cast<int>(BankAccount::AccountType::kTransactingAccount) ||
       account_type < static_cast<int>(BankAccount::AccountType::kUnknown)) {
     return nullptr;
   }
-  auto bank_account = std::make_unique<BankAccount>(
-      instrument_id, payment_instrument_fields.nickname,
-      payment_instrument_fields.display_icon_url, bank_name,
+  return std::make_unique<BankAccount>(
+      instrument_id, nickname, GURL(display_icon_url), bank_name,
       account_number_suffix,
       static_cast<BankAccount::AccountType>(account_type));
-  for (PaymentInstrument::PaymentRail payment_rail :
-       payment_instrument_fields.payment_rails) {
-    bank_account->AddPaymentRail(payment_rail);
-  }
-  return bank_account;
 }
 
-bool PaymentsAutofillTable::AddPaymentInstrument(
-    const PaymentInstrument& payment_instrument) {
-  sql::Statement payment_instruments_insert;
-  InsertBuilder(db_, payment_instruments_insert, kPaymentInstrumentsTable,
-                {kInstrumentId, kInstrumentType, kNickname, kDisplayIconUrl});
-  BindPaymentInstrumentToStatement(&payment_instruments_insert,
-                                   payment_instrument);
-  if (!payment_instruments_insert.Run()) {
-    return false;
-  }
-
-  for (PaymentInstrument::PaymentRail payment_rail :
-       payment_instrument.supported_rails()) {
-    sql::Statement payment_instrument_supported_rails_insert;
-    InsertBuilder(db_, payment_instrument_supported_rails_insert,
-                  kPaymentInstrumentSupportedRailsTable,
-                  {kInstrumentId, kInstrumentType, kPaymentRail});
-    BindPaymentInstrumentSupportedRailsToStatement(
-        &payment_instrument_supported_rails_insert,
-        payment_instrument.instrument_id(),
-        payment_instrument.GetInstrumentType(), payment_rail);
-    if (!payment_instrument_supported_rails_insert.Run()) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool PaymentsAutofillTable::UpdatePaymentInstrument(
-    const PaymentInstrument& payment_instrument) {
-  sql::Statement payment_instruments_update;
-  UpdateBuilder(
-      db_, payment_instruments_update, kPaymentInstrumentsTable,
-      {kInstrumentId, kInstrumentType, kNickname, kDisplayIconUrl},
-      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
-  BindPaymentInstrumentToStatement(&payment_instruments_update,
-                                   payment_instrument);
-  if (!payment_instruments_update.Run()) {
-    return false;
-  }
-
-  // Delete all rails for the given instrument_id and instrument_type and then
-  // insert them back.
-  sql::Statement payment_instrument_supported_rails_delete;
-  DeleteBuilder(
-      db_, payment_instrument_supported_rails_delete,
-      kPaymentInstrumentSupportedRailsTable,
-      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
-  payment_instrument_supported_rails_delete.BindInt64(
-      0, payment_instrument.instrument_id());
-  payment_instrument_supported_rails_delete.BindInt64(
-      1, static_cast<int>(payment_instrument.GetInstrumentType()));
-  if (!payment_instrument_supported_rails_delete.Run()) {
-    return false;
-  }
-  for (PaymentInstrument::PaymentRail payment_rail :
-       payment_instrument.supported_rails()) {
-    sql::Statement payment_instrument_supported_rails_insert;
-    InsertBuilder(db_, payment_instrument_supported_rails_insert,
-                  kPaymentInstrumentSupportedRailsTable,
-                  {kInstrumentId, kInstrumentType, kPaymentRail});
-    BindPaymentInstrumentSupportedRailsToStatement(
-        &payment_instrument_supported_rails_insert,
-        payment_instrument.instrument_id(),
-        payment_instrument.GetInstrumentType(), payment_rail);
-    if (!payment_instrument_supported_rails_insert.Run()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool PaymentsAutofillTable::RemovePaymentInstrument(
-    const PaymentInstrument& payment_instrument) {
-  sql::Statement payment_instruments_delete;
-  DeleteBuilder(
-      db_, payment_instruments_delete, kPaymentInstrumentsTable,
-      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
-  payment_instruments_delete.BindInt64(0, payment_instrument.instrument_id());
-  payment_instruments_delete.BindInt64(
-      1, static_cast<int>(payment_instrument.GetInstrumentType()));
-  if (!payment_instruments_delete.Run()) {
-    return false;
-  }
-
-  sql::Statement payment_instrument_supported_rails_delete;
-  DeleteBuilder(
-      db_, payment_instrument_supported_rails_delete,
-      kPaymentInstrumentSupportedRailsTable,
-      base::StrCat({kInstrumentId, "=?1 AND ", kInstrumentType, "=?2"}));
-  payment_instrument_supported_rails_delete.BindInt64(
-      0, payment_instrument.instrument_id());
-  payment_instrument_supported_rails_delete.BindInt64(
-      1, static_cast<int>(payment_instrument.GetInstrumentType()));
-  if (!payment_instrument_supported_rails_delete.Run()) {
-    return false;
-  }
-  return true;
-}
-
-std::unique_ptr<PaymentInstrument> PaymentsAutofillTable::GetPaymentInstrument(
-    int64_t instrument_id,
-    PaymentInstrument::InstrumentType instrument_type) {
+bool PaymentsAutofillTable::AddMaskedBankAccount(
+    const BankAccount& bank_account) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
-    return nullptr;
-  }
-  sql::Statement select_payment_instrument_details;
-  SelectBuilder(db_, select_payment_instrument_details,
-                kPaymentInstrumentsTable,
-                {kInstrumentId, kNickname, kDisplayIconUrl},
-                base::StrCat({"WHERE ", kInstrumentId, " = ? AND ",
-                              kInstrumentType, " = ?"}));
-  select_payment_instrument_details.BindInt64(0, instrument_id);
-  select_payment_instrument_details.BindInt(1,
-                                            static_cast<int>(instrument_type));
-  if (!select_payment_instrument_details.Step()) {
-    return nullptr;
-  }
-  auto payment_instrument_fields = std::make_unique<PaymentInstrumentFields>();
-  int index = 0;
-  payment_instrument_fields->instrument_id =
-      select_payment_instrument_details.ColumnInt64(index++);
-  payment_instrument_fields->instrument_type = instrument_type;
-  payment_instrument_fields->nickname =
-      select_payment_instrument_details.ColumnString16(index++);
-  payment_instrument_fields->display_icon_url =
-      GURL(select_payment_instrument_details.ColumnString(index++));
-
-  sql::Statement select_payment_rails;
-  SelectBuilder(db_, select_payment_rails,
-                kPaymentInstrumentSupportedRailsTable, {kPaymentRail},
-                base::StrCat({"WHERE ", kInstrumentId, " = ? AND ",
-                              kInstrumentType, " = ?"}));
-  select_payment_rails.BindInt64(0, instrument_id);
-  select_payment_rails.BindInt(1, static_cast<int>(instrument_type));
-  constexpr int index_for_payment_rail = 0;
-  while (select_payment_rails.Step()) {
-    int payment_rail = select_payment_rails.ColumnInt(index_for_payment_rail);
-    if (payment_rail > static_cast<int>(PaymentInstrument::PaymentRail::kPix) ||
-        payment_rail <
-            static_cast<int>(PaymentInstrument::PaymentRail::kUnknown)) {
-      return nullptr;
-    }
-    payment_instrument_fields->payment_rails.insert(
-        static_cast<PaymentInstrument::PaymentRail>(payment_rail));
-  }
-  // Fetch the details from instrument type specific tables.
-  switch (instrument_type) {
-    case PaymentInstrument::InstrumentType::kBankAccount: {
-      return GetBankAccount(*payment_instrument_fields);
-    }
-    case PaymentInstrument::InstrumentType::kUnknown:
-      NOTREACHED();
-      break;
-  }
-  return nullptr;
-}
-
-bool PaymentsAutofillTable::AddBankAccount(const BankAccount& bank_account) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin()) {
-    return false;
-  }
-  if (!AddPaymentInstrument(bank_account)) {
     return false;
   }
 
   // Add bank account.
   sql::Statement insert;
-  InsertBuilder(db_, insert, kBankAccountsTable,
-                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType});
-  BindBankAccountToStatement(&insert, bank_account);
+  InsertBuilder(db_, insert, kMaskedBankAccountsTable,
+                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType,
+                 kNickname, kDisplayIconUrl});
+  BindMaskedBankAccountToStatement(bank_account, &insert);
   if (!insert.Run()) {
     return false;
   }
@@ -804,21 +586,20 @@ bool PaymentsAutofillTable::AddBankAccount(const BankAccount& bank_account) {
   return transaction.Commit();
 }
 
-bool PaymentsAutofillTable::UpdateBankAccount(const BankAccount& bank_account) {
+bool PaymentsAutofillTable::UpdateMaskedBankAccount(
+    const BankAccount& bank_account) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
     return false;
   }
 
-  if (!UpdatePaymentInstrument(bank_account)) {
-    return false;
-  }
   // Update bank account.
   sql::Statement update;
-  UpdateBuilder(db_, update, kBankAccountsTable,
-                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType},
+  UpdateBuilder(db_, update, kMaskedBankAccountsTable,
+                {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType,
+                 kNickname, kDisplayIconUrl},
                 base::StrCat({kInstrumentId, "=?1"}));
-  BindBankAccountToStatement(&update, bank_account);
+  BindMaskedBankAccountToStatement(bank_account, &update);
   if (!update.Run()) {
     return false;
   }
@@ -826,24 +607,22 @@ bool PaymentsAutofillTable::UpdateBankAccount(const BankAccount& bank_account) {
   return transaction.Commit();
 }
 
-bool PaymentsAutofillTable::RemoveBankAccount(const BankAccount& bank_account) {
+bool PaymentsAutofillTable::RemoveMaskedBankAccount(
+    const BankAccount& bank_account) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
     return false;
   }
 
-  if (!RemovePaymentInstrument(bank_account)) {
-    return false;
-  }
-
   sql::Statement bank_accounts_delete;
-  DeleteBuilder(db_, bank_accounts_delete, kBankAccountsTable,
+  DeleteBuilder(db_, bank_accounts_delete, kMaskedBankAccountsTable,
                 base::StrCat({kInstrumentId, "=?"}));
   bank_accounts_delete.BindInt64(0, bank_account.instrument_id());
   if (!bank_accounts_delete.Run()) {
     return false;
   }
-
+  // TODO(crbug.com/1475426) : Delete row from `masked_bank_accounts_metadata`
+  // table.
   return transaction.Commit();
 }
 
@@ -1834,7 +1613,8 @@ bool PaymentsAutofillTable::ClearAllServerData() {
         kServerCardCloudTokenDataTable, kOfferDataTable,
         kOfferEligibleInstrumentTable, kOfferMerchantDomainTable,
         kVirtualCardUsageDataTable, kMaskedCreditCardBenefitsTable,
-        kBenefitMerchantDomainsTable}) {
+        kBenefitMerchantDomainsTable, kMaskedBankAccountsTable,
+        kMaskedBankAccountsMetadataTable}) {
     Delete(db_, table_name);
     changed |= db_->GetLastChangeCount() > 0;
   }
@@ -2181,24 +1961,6 @@ bool PaymentsAutofillTable::
 }
 
 bool PaymentsAutofillTable::
-    MigrateToVersion120AddPaymentInstrumentAndBankAccountTables() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         CreateTable(db_, kBankAccountsTable,
-                     bank_accounts_column_names_and_types) &&
-         CreateTable(db_, kPaymentInstrumentsTable,
-                     kPaymentInstrumentsColumnNamesAndTypes,
-                     kPaymentInstrumentsCompositePrimaryKey) &&
-         CreateTable(db_, kPaymentInstrumentsMetadataTable,
-                     kPaymentInstrumentsMetadataColumnNamesAndTypes,
-                     kPaymentInstrumentsMetadataCompositePrimaryKey) &&
-         CreateTable(db_, kPaymentInstrumentSupportedRailsTable,
-                     kPaymentInstrumentSupportedRailsColumnNamesAndTypes,
-                     kPaymentInstrumentSupportedRailsCompositePrimaryKey) &&
-         transaction.Commit();
-}
-
-bool PaymentsAutofillTable::
     MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables() {
   sql::Transaction transaction(db_);
   return transaction.Begin() && db_->DoesTableExist(kMaskedCreditCardsTable) &&
@@ -2207,6 +1969,20 @@ bool PaymentsAutofillTable::
                      kMaskedCreditCardBenefitsColumnNamesAndTypes) &&
          CreateTable(db_, kBenefitMerchantDomainsTable,
                      kBenefitMerchantDomainsColumnNamesAndTypes) &&
+         transaction.Commit();
+}
+
+bool PaymentsAutofillTable::
+    MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && DropTableIfExists(db_, "payment_instruments") &&
+         DropTableIfExists(db_, "payment_instruments_metadata") &&
+         DropTableIfExists(db_, "bank_accounts") &&
+         DropTableIfExists(db_, "payment_instrument_supported_rails") &&
+         CreateTable(db_, kMaskedBankAccountsTable,
+                     kMaskedBankAccountsColumnNamesAndTypes) &&
+         CreateTable(db_, kMaskedBankAccountsMetadataTable,
+                     kMaskedBankAccountsMetadataColumnNamesAndTypes) &&
          transaction.Commit();
 }
 
@@ -2416,28 +2192,14 @@ bool PaymentsAutofillTable::InitVirtualCardUsageDataTable() {
                                  {kLastFour, "VARCHAR"}});
 }
 
-bool PaymentsAutofillTable::InitBankAccountsTable() {
-  return CreateTableIfNotExists(db_, kBankAccountsTable,
-                                bank_accounts_column_names_and_types);
+bool PaymentsAutofillTable::InitMaskedBankAccountsTable() {
+  return CreateTableIfNotExists(db_, kMaskedBankAccountsTable,
+                                kMaskedBankAccountsColumnNamesAndTypes);
 }
 
-bool PaymentsAutofillTable::InitPaymentInstrumentsTable() {
-  return CreateTableIfNotExists(db_, kPaymentInstrumentsTable,
-                                kPaymentInstrumentsColumnNamesAndTypes,
-                                kPaymentInstrumentsCompositePrimaryKey);
-}
-
-bool PaymentsAutofillTable::InitPaymentInstrumentsMetadataTable() {
-  return CreateTableIfNotExists(db_, kPaymentInstrumentsMetadataTable,
-                                kPaymentInstrumentsMetadataColumnNamesAndTypes,
-                                kPaymentInstrumentsMetadataCompositePrimaryKey);
-}
-
-bool PaymentsAutofillTable::InitPaymentInstrumentSupportedRailsTable() {
-  return CreateTableIfNotExists(
-      db_, kPaymentInstrumentSupportedRailsTable,
-      kPaymentInstrumentSupportedRailsColumnNamesAndTypes,
-      kPaymentInstrumentSupportedRailsCompositePrimaryKey);
+bool PaymentsAutofillTable::InitMaskedBankAccountsMetadataTable() {
+  return CreateTableIfNotExists(db_, kMaskedBankAccountsMetadataTable,
+                                kMaskedBankAccountsMetadataColumnNamesAndTypes);
 }
 
 bool PaymentsAutofillTable::InitMaskedCreditCardBenefitsTable() {

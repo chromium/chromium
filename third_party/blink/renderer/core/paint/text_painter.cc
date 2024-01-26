@@ -9,23 +9,16 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
-#include "third_party/blink/renderer/core/layout/unpositioned_float.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
-#include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
@@ -75,101 +68,165 @@ SelectionStyleScope::~SelectionStyleScope() {
 
 enum class SvgPaintMode { kText, kTextDecoration };
 
-const ComputedStyle& GetSvgStyleToPaint(
-    const TextPainter::SvgTextPaintState& state,
-    SvgPaintMode svg_paint_mode,
-    absl::optional<SelectionStyleScope>& selection_style_scope,
-    bool& out_has_fill,
-    bool& out_has_visible_stroke) {
+void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
+                           const ComputedStyle& style,
+                           const LayoutObject& layout_parent,
+                           SvgPaintMode svg_paint_mode,
+                           cc::PaintFlags& flags) {
+  float stroke_scale_factor = 1;
+  // The stroke geometry needs be generated based on the scaled font.
+  if (style.VectorEffect() != EVectorEffect::kNonScalingStroke) {
+    switch (svg_paint_mode) {
+      case SvgPaintMode::kText:
+        stroke_scale_factor = state.InlineText().ScalingFactor();
+        break;
+      case SvgPaintMode::kTextDecoration: {
+        Font scaled_font;
+        LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+            layout_parent, stroke_scale_factor, scaled_font);
+        DCHECK(stroke_scale_factor);
+        break;
+      }
+    }
+  }
+
+  StrokeData stroke_data;
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
+      stroke_data, style, layout_parent, stroke_scale_factor);
+  if (stroke_scale_factor != 1) {
+    stroke_data.SetThickness(stroke_data.Thickness() * stroke_scale_factor);
+  }
+  stroke_data.SetupPaint(&flags);
+}
+
+const ShadowList* GetTextShadows(const ComputedStyle& style,
+                                 const LayoutObject& layout_parent) {
+  // Text shadows are disabled when printing. http://crbug.com/258321
+  if (layout_parent.GetDocument().Printing()) {
+    return nullptr;
+  }
+  return style.TextShadow();
+}
+
+void PrepareTextShadow(const ShadowList* text_shadows,
+                       const ComputedStyle& style,
+                       cc::PaintFlags& flags) {
+  if (!text_shadows) {
+    return;
+  }
+  flags.setLooper(TextPainterBase::CreateDrawLooper(
+      text_shadows, DrawLooperBuilder::kShadowRespectsAlpha,
+      style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme(), TextPainterBase::kBothShadowsAndTextProper));
+}
+
+struct SvgPaints {
+  std::optional<cc::PaintFlags> fill;
+  std::optional<cc::PaintFlags> stroke;
+};
+
+void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
+                      SvgPaintMode paint_mode,
+                      SvgPaints& paints) {
+  if (UNLIKELY(state.IsRenderingClipPathAsMaskImage())) {
+    cc::PaintFlags& flags = paints.fill.emplace();
+    flags.setColor(SK_ColorBLACK);
+    flags.setAntiAlias(true);
+    return;
+  }
+
   // https://svgwg.org/svg2-draft/text.html#TextDecorationProperties
   // The fill and stroke of the text decoration are given by the fill and stroke
   // of the text at the point where the text decoration is declared.
-  const LayoutObject& layout_parent = svg_paint_mode == SvgPaintMode::kText
+  const LayoutObject& layout_parent = paint_mode == SvgPaintMode::kText
                                           ? *state.InlineText().Parent()
                                           : state.TextDecorationObject();
+  SVGObjectPainter object_painter(layout_parent);
+  if (UNLIKELY(state.IsPaintingTextMatch())) {
+    const ComputedStyle& style = state.Style();
 
-  const ComputedStyle* style_to_paint = layout_parent.Style();
-  out_has_fill = style_to_paint->HasFill();
-  out_has_visible_stroke = style_to_paint->HasVisibleStroke();
-  if (state.IsPaintingSelection()) {
-    if (const ComputedStyle* pseudo_selection_style =
-            layout_parent.GetSelectionStyle()) {
-      style_to_paint = pseudo_selection_style;
-      if (!out_has_fill)
-        out_has_fill = style_to_paint->HasFill();
-      if (!out_has_visible_stroke)
-        out_has_visible_stroke = style_to_paint->HasVisibleStroke();
+    cc::PaintFlags& fill_flags = paints.fill.emplace();
+    fill_flags.setColor(state.TextMatchColor().Rgb());
+    fill_flags.setAntiAlias(true);
+
+    cc::PaintFlags unused_flags;
+    if (!object_painter.PreparePaint(state.GetPaintFlags(), style,
+                                     kApplyToStrokeMode, unused_flags)) {
+      return;
     }
-
-    selection_style_scope.emplace(layout_parent, *layout_parent.Style(),
-                                  *style_to_paint);
+    cc::PaintFlags& stroke_flags = paints.stroke.emplace(fill_flags);
+    PrepareStrokeGeometry(state, style, layout_parent, paint_mode,
+                          stroke_flags);
+    return;
   }
 
-  if (state.IsRenderingClipPathAsMaskImage()) {
-    out_has_fill = true;
-    out_has_visible_stroke = false;
-  }
-
-  return *style_to_paint;
-}
-
-bool SetupPaintForSvgText(const TextPainter::SvgTextPaintState& state,
-                          const GraphicsContext& context,
-                          const ComputedStyle& style,
-                          SvgPaintMode svg_paint_mode,
-                          LayoutSVGResourceMode resource_mode,
-                          cc::PaintFlags& flags) {
-  const LayoutObject& layout_parent = svg_paint_mode == SvgPaintMode::kText
-                                          ? *state.InlineText().Parent()
-                                          : state.TextDecorationObject();
-  if (!SVGObjectPainter(layout_parent)
-           .PreparePaint(state.GetPaintFlags(), style, resource_mode, flags,
-                         state.GetShaderTransform())) {
-    return false;
-  }
-
-  flags.setAntiAlias(true);
-
-  if (style.TextShadow() &&
-      // Text shadows are disabled for clip-paths, because they are not
-      // geometry.
-      !state.IsRenderingClipPathAsMaskImage() &&
-      // Text shadows are disabled when printing. http://crbug.com/258321
-      !layout_parent.GetDocument().Printing()) {
-    flags.setLooper(TextPainterBase::CreateDrawLooper(
-        style.TextShadow(), DrawLooperBuilder::kShadowRespectsAlpha,
-        style.VisitedDependentColor(GetCSSPropertyColor()),
-        style.UsedColorScheme()));
-  }
-
-  if (resource_mode == kApplyToStrokeMode) {
-    // The stroke geometry needs be generated based on the scaled font.
-    float stroke_scale_factor = 1;
-    if (style.VectorEffect() != EVectorEffect::kNonScalingStroke) {
-      switch (svg_paint_mode) {
-        case SvgPaintMode::kText: {
-          stroke_scale_factor = state.InlineText().ScalingFactor();
-          break;
-        }
-        case SvgPaintMode::kTextDecoration: {
-          Font scaled_font;
-          LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-              layout_parent, stroke_scale_factor, scaled_font);
-          DCHECK(stroke_scale_factor);
-          break;
-        }
+  const ComputedStyle& style = [&layout_parent,
+                                &state]() -> const ComputedStyle& {
+    if (state.IsPaintingSelection()) {
+      if (const ComputedStyle* pseudo_selection_style =
+              layout_parent.GetSelectionStyle()) {
+        return *pseudo_selection_style;
       }
     }
+    return layout_parent.StyleRef();
+  }();
 
-    StrokeData stroke_data;
-    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-        stroke_data, style, layout_parent, stroke_scale_factor);
-    if (stroke_scale_factor != 1)
-      stroke_data.SetThickness(stroke_data.Thickness() * stroke_scale_factor);
-    stroke_data.SetupPaint(&flags);
+  std::optional<SelectionStyleScope> paint_resource_scope;
+  if (&style != layout_parent.Style()) {
+    paint_resource_scope.emplace(layout_parent, *layout_parent.Style(), style);
   }
 
-  return true;
+  const ShadowList* text_shadows = GetTextShadows(style, layout_parent);
+  const AffineTransform* shader_transform = state.GetShaderTransform();
+  if (style.HasFill()) {
+    if (object_painter.PreparePaint(state.GetPaintFlags(), style,
+                                    kApplyToFillMode, paints.fill.emplace(),
+                                    shader_transform)) {
+      PrepareTextShadow(text_shadows, style, *paints.fill);
+      paints.fill->setAntiAlias(true);
+    } else {
+      paints.fill.reset();
+    }
+  }
+  if (style.HasVisibleStroke()) {
+    if (object_painter.PreparePaint(state.GetPaintFlags(), style,
+                                    kApplyToStrokeMode, paints.stroke.emplace(),
+                                    shader_transform)) {
+      PrepareTextShadow(text_shadows, style, *paints.stroke);
+      paints.stroke->setAntiAlias(true);
+
+      PrepareStrokeGeometry(state, style, layout_parent, paint_mode,
+                            *paints.stroke);
+    } else {
+      paints.stroke.reset();
+    }
+  }
+}
+
+using OrderedPaints = std::array<const cc::PaintFlags*, 2>;
+
+OrderedPaints OrderPaints(const SvgPaints& paints, EPaintOrder paint_order) {
+  OrderedPaints ordered_paints = {
+      base::OptionalToPtr(paints.fill),
+      base::OptionalToPtr(paints.stroke),
+  };
+  const PaintOrderArray paint_order_array(paint_order,
+                                          PaintOrderArray::Type::kNoMarkers);
+  if (paint_order_array[0] == PT_STROKE) {
+    std::swap(ordered_paints[0], ordered_paints[1]);
+  }
+  return ordered_paints;
+}
+
+template <typename PassFunction>
+void DrawPaintOrderPasses(const OrderedPaints& ordered_paints,
+                          PassFunction pass) {
+  for (const auto* paint : ordered_paints) {
+    if (!paint) {
+      continue;
+    }
+    pass(*paint);
+  }
 }
 
 }  // namespace
@@ -268,9 +325,8 @@ void TextPainter::PaintSelectedText(
 
 void TextPainter::PaintDecorationsExceptLineThrough(
     const TextFragmentPaintInfo& fragment_paint_info,
-    const FragmentItem& text_item,
+    const TextDecorationOffset& decoration_offset,
     const PaintInfo& paint_info,
-    const ComputedStyle& style,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint) {
@@ -278,30 +334,25 @@ void TextPainter::PaintDecorationsExceptLineThrough(
                                   ~TextDecorationLine::kLineThrough))
     return;
 
-  const TextDecorationOffset decoration_offset(text_item.Style());
-
   if (svg_text_paint_state_.has_value() &&
       !decoration_info.HasDecorationOverride()) {
     GraphicsContextStateSaver state_saver(paint_info.context, false);
     if (paint_info.IsRenderingResourceSubtree()) {
       state_saver.SaveIfNeeded();
-      paint_info.context.Scale(
-          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+      paint_info.context.Scale(1, decoration_info.ScalingFactor());
     }
     PaintSvgDecorationsExceptLineThrough(fragment_paint_info, decoration_offset,
                                          decoration_info, lines_to_paint,
-                                         paint_info, text_style);
+                                         text_style);
   } else {
     TextPainterBase::PaintUnderOrOverLineDecorations(
         fragment_paint_info, decoration_offset, decoration_info, lines_to_paint,
-        paint_info, text_style, nullptr);
+        text_style, nullptr);
   }
 }
 
 void TextPainter::PaintDecorationsOnlyLineThrough(
-    const FragmentItem& text_item,
     const PaintInfo& paint_info,
-    const ComputedStyle& style,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info) {
   if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
@@ -312,13 +363,12 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
     GraphicsContextStateSaver state_saver(paint_info.context, false);
     if (paint_info.IsRenderingResourceSubtree()) {
       state_saver.SaveIfNeeded();
-      paint_info.context.Scale(
-          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+      paint_info.context.Scale(1, decoration_info.ScalingFactor());
     }
-    PaintSvgDecorationsOnlyLineThrough(decoration_info, paint_info, text_style);
+    PaintSvgDecorationsOnlyLineThrough(decoration_info, text_style);
   } else {
     TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
-                                                     paint_info, text_style);
+                                                     text_style);
   }
 }
 
@@ -338,8 +388,10 @@ void TextPainter::PaintInternalFragment(
   } else {
     DCHECK(step == kPaintText);
     if (svg_text_paint_state_.has_value()) {
-      AutoDarkMode svg_text_auto_dark_mode(DarkModeFilter::ElementRole::kSVG,
-                                           auto_dark_mode.enabled);
+      const AutoDarkMode svg_text_auto_dark_mode(
+          DarkModeFilter::ElementRole::kSVG,
+          auto_dark_mode.enabled &&
+              !svg_text_paint_state_->IsRenderingClipPathAsMaskImage());
       PaintSvgTextFragment(fragment_paint_info, node_id,
                            svg_text_auto_dark_mode);
     } else {
@@ -382,70 +434,17 @@ void TextPainter::PaintSvgTextFragment(
     const TextFragmentPaintInfo& fragment_paint_info,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
-  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
-  if (state.IsPaintingTextMatch()) {
-    cc::PaintFlags fill_flags;
-    fill_flags.setColor(state.TextMatchColor().Rgb());
-    fill_flags.setAntiAlias(true);
+  SvgPaints paints;
+  const SvgTextPaintState& state = svg_text_paint_state_.value();
+  PrepareSvgPaints(state, SvgPaintMode::kText, paints);
 
-    cc::PaintFlags stroke_flags;
-    bool should_paint_stroke = false;
-    if (SetupPaintForSvgText(state, graphics_context_, state.Style(),
-                             SvgPaintMode::kText, kApplyToStrokeMode,
-                             stroke_flags)) {
-      should_paint_stroke = true;
-      stroke_flags.setLooper(nullptr);
-      stroke_flags.setColor(state.TextMatchColor().Rgb());
-    }
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
     graphics_context_.DrawText(font_, fragment_paint_info,
-                               gfx::PointF(text_origin_), fill_flags, node_id,
+                               gfx::PointF(text_origin_), flags, node_id,
                                auto_dark_mode);
-    if (should_paint_stroke) {
-      graphics_context_.DrawText(font_, fragment_paint_info,
-                                 gfx::PointF(text_origin_), stroke_flags,
-                                 node_id, auto_dark_mode);
-    }
-    return;
-  }
-
-  absl::optional<SelectionStyleScope> selection_style_scope;
-  bool has_fill = false;
-  bool has_visible_stroke = false;
-  const ComputedStyle& style_to_paint =
-      GetSvgStyleToPaint(state, SvgPaintMode::kText, selection_style_scope,
-                         has_fill, has_visible_stroke);
-
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    absl::optional<LayoutSVGResourceMode> resource_mode;
-
-    switch (paint_order[i]) {
-      case PT_FILL:
-        if (has_fill)
-          resource_mode = kApplyToFillMode;
-        break;
-      case PT_STROKE:
-        if (has_visible_stroke)
-          resource_mode = kApplyToStrokeMode;
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-
-    if (resource_mode) {
-      cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
-                               SvgPaintMode::kText, *resource_mode, flags)) {
-        graphics_context_.DrawText(font_, fragment_paint_info,
-                                   gfx::PointF(text_origin_), flags, node_id,
-                                   auto_dark_mode);
-      }
-    }
-  }
+  });
 }
 
 void TextPainter::PaintSvgDecorationsExceptLineThrough(
@@ -453,93 +452,33 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
-    const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
-  absl::optional<SelectionStyleScope> selection_style_scope;
-  bool has_fill = false;
-  bool has_visible_stroke = false;
-  const ComputedStyle& style_to_paint =
-      GetSvgStyleToPaint(state, SvgPaintMode::kTextDecoration,
-                         selection_style_scope, has_fill, has_visible_stroke);
+  SvgPaints paints;
+  const SvgTextPaintState& state = svg_text_paint_state_.value();
+  PrepareSvgPaints(state, SvgPaintMode::kTextDecoration, paints);
 
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    absl::optional<LayoutSVGResourceMode> resource_mode;
-
-    switch (paint_order[i]) {
-      case PT_FILL:
-        if (has_fill)
-          resource_mode = kApplyToFillMode;
-        break;
-      case PT_STROKE:
-        if (has_visible_stroke)
-          resource_mode = kApplyToStrokeMode;
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text-decorations
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-
-    if (resource_mode) {
-      cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
-                               SvgPaintMode::kTextDecoration, *resource_mode,
-                               flags)) {
-        TextPainterBase::PaintUnderOrOverLineDecorations(
-            fragment_paint_info, decoration_offset, decoration_info,
-            lines_to_paint, paint_info, text_style, &flags);
-      }
-    }
-  }
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
+    TextPainterBase::PaintUnderOrOverLineDecorations(
+        fragment_paint_info, decoration_offset, decoration_info, lines_to_paint,
+        text_style, &flags);
+  });
 }
 
 void TextPainter::PaintSvgDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
-    const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
-  absl::optional<SelectionStyleScope> selection_style_scope;
-  bool has_fill = false;
-  bool has_visible_stroke = false;
-  const ComputedStyle& style_to_paint =
-      GetSvgStyleToPaint(state, SvgPaintMode::kTextDecoration,
-                         selection_style_scope, has_fill, has_visible_stroke);
+  SvgPaints paints;
+  const SvgTextPaintState& state = svg_text_paint_state_.value();
+  PrepareSvgPaints(state, SvgPaintMode::kTextDecoration, paints);
 
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    absl::optional<LayoutSVGResourceMode> resource_mode;
-
-    switch (paint_order[i]) {
-      case PT_FILL:
-        if (has_fill)
-          resource_mode = kApplyToFillMode;
-        break;
-      case PT_STROKE:
-        if (has_visible_stroke)
-          resource_mode = kApplyToStrokeMode;
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text-decorations
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-
-    if (resource_mode) {
-      cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
-                               SvgPaintMode::kTextDecoration, *resource_mode,
-                               flags)) {
-        TextPainterBase::PaintDecorationsOnlyLineThrough(
-            decoration_info, paint_info, text_style, &flags);
-      }
-    }
-  }
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
+    TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
+                                                     text_style, &flags);
+  });
 }
 
 TextPainter::SvgTextPaintState& TextPainter::SetSvgState(

@@ -203,30 +203,23 @@ bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return false;
 
-  VirtualCardEnrollmentStrikeDatabase::BlockedReason reason =
-      VirtualCardEnrollmentStrikeDatabase::kUnknown;
-  if (!GetVirtualCardEnrollmentStrikeDatabase()->ShouldBlockFeature(
-          instrument_id, &reason)) {
-    return false;
-  }
-
-  switch (reason) {
+  VirtualCardEnrollmentStrikeDatabase::StrikeDatabaseDecision decision =
+      GetVirtualCardEnrollmentStrikeDatabase()->GetStrikeDatabaseDecision(
+          instrument_id);
+  switch (decision) {
+    case VirtualCardEnrollmentStrikeDatabase::kDoNotBlock:
+      return false;
     case VirtualCardEnrollmentStrikeDatabase::kMaxStrikeLimitReached:
       LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
           virtual_card_enrollment_source);
       LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
           virtual_card_enrollment_source);
-      break;
+      return true;
     case VirtualCardEnrollmentStrikeDatabase::kRequiredDelayNotPassed:
       LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
           virtual_card_enrollment_source);
-      break;
-    case VirtualCardEnrollmentStrikeDatabase::kUnknown:
-      NOTREACHED();
-      break;
+      return true;
   }
-
-  return true;
 }
 
 void VirtualCardEnrollmentManager::

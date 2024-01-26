@@ -30,7 +30,7 @@ const tests = [
   ['FakeMethodResolver', 'fake_method_resolver_test.js'],
   ['KeyboardDiagram', 'keyboard_diagram_test.js'],
   ['NavigationSelector', 'navigation_selector_test.js'],
-  ['NavigationViewPanel', 'navigation_view_panel_test.js'],
+  ['NavigationViewPanel', 'navigation_view_panel_test.js', 'DISABLED_All'],
   ['PageToolbar', 'page_toolbar_test.js'],
 ];
 

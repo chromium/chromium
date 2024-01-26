@@ -58,6 +58,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/app_window_custom_bindings.h"
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
@@ -551,8 +552,9 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   // by extensions minimal bindings, just as we might want to give them to
   // service workers that aren't registered by extensions.
   ScriptContext* context = new ScriptContext(
-      v8_context, nullptr, extension, mojom::ContextType::kPrivilegedExtension,
-      extension, mojom::ContextType::kPrivilegedExtension);
+      v8_context, nullptr, GenerateHostIdFromExtensionId(extension->id()),
+      extension, mojom::ContextType::kPrivilegedExtension, extension,
+      mojom::ContextType::kPrivilegedExtension);
   context->set_url(script_url);
   context->set_service_worker_scope(service_worker_scope);
   context->set_service_worker_version_id(service_worker_version_id);
@@ -816,12 +818,12 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
 }
 
 void Dispatcher::DispatchEventHelper(
-    const std::string& extension_id,
+    const mojom::HostID& host_id,
     const std::string& event_name,
     const base::Value::List& event_args,
     mojom::EventFilteringInfoPtr filtering_info) const {
   script_context_set_->ForEach(
-      extension_id, nullptr,
+      host_id, nullptr,
       base::BindRepeating(
           &NativeExtensionBindingsSystem::DispatchEventInContext,
           base::Unretained(bindings_system_.get()), event_name,
@@ -834,7 +836,7 @@ void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
                                           const std::string& function_name,
                                           const base::Value::List& args) {
   script_context_set_->ForEach(
-      extension_id, render_frame,
+      GenerateHostIdFromExtensionId(extension_id), render_frame,
       base::BindRepeating(&CallModuleMethod, module_name, function_name,
                           &args));
 }
@@ -1200,7 +1202,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // to clear out context-specific data, and then remove the contexts
   // themselves.
   script_context_set_->ForEach(
-      extension_id, nullptr,
+      GenerateHostIdFromExtensionId(extension_id), nullptr,
       base::BindRepeating(
           &NativeExtensionBindingsSystem::WillReleaseScriptContext,
           base::Unretained(bindings_system_.get())));
@@ -1235,14 +1237,14 @@ void Dispatcher::SuspendExtension(
   // the browser know when we are starting and stopping the event dispatch, so
   // that it still considers the extension idle despite any activity the suspend
   // event creates.
-  DispatchEventHelper(extension_id, kOnSuspendEvent, base::Value::List(),
-                      nullptr);
+  DispatchEventHelper(GenerateHostIdFromExtensionId(extension_id),
+                      kOnSuspendEvent, base::Value::List(), nullptr);
   std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
-  DispatchEventHelper(extension_id, kOnSuspendCanceledEvent,
-                      base::Value::List(), nullptr);
+  DispatchEventHelper(GenerateHostIdFromExtensionId(extension_id),
+                      kOnSuspendCanceledEvent, base::Value::List(), nullptr);
 }
 
 void Dispatcher::SetSystemFont(const std::string& font_family,
@@ -1379,8 +1381,12 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                base::Value::List event_args,
                                DispatchEventCallback callback) {
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
-  content::RenderFrame* background_frame =
-      ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
+  CHECK(params->host_id);
+  content::RenderFrame* background_frame = nullptr;
+  if (params->host_id->type == mojom::HostID::HostType::kExtensions) {
+    background_frame = ExtensionFrameHelper::GetBackgroundPageFrame(
+        GenerateExtensionIdFromHostId(*params->host_id));
+  }
   ScriptContext* background_context = nullptr;
   if (background_frame) {
     background_context =
@@ -1405,16 +1411,15 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
         blink::mojom::UserActivationNotificationType::kExtensionEvent);
   }
 
-  DispatchEventHelper(params->extension_id, params->event_name, event_args,
+  DispatchEventHelper(*params->host_id, params->event_name, event_args,
                       std::move(params->filtering_info));
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
-    const Extension* extension =
-        RendererExtensionRegistry::Get()->GetByID(params->extension_id);
-    if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    const Extension* extension = RendererExtensionRegistry::Get()->GetByID(
+        GenerateExtensionIdFromHostID(*params->host_id));
+    if (extension && BackgroundInfo::HasBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
           background_frame->GetRoutingID(), params->event_id,
           event_has_listener_in_background_context));

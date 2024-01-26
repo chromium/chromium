@@ -347,6 +347,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
     "java/src/org/chromium/net/telemetry/CronetLoggerImpl.java",
     "java/src/org/chromium/net/telemetry/ExperimentalOptions.java",
+    "java/src/org/chromium/net/telemetry/OptionalBoolean.java",
     "java/src/org/chromium/net/telemetry/RateLimiter.java",
     "java/src/org/chromium/net/telemetry/SizeBuckets.java",
     _generated_impl_version_java,
@@ -1231,6 +1232,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
     "test/javatests/src/org/chromium/net/CronetUploadTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+    "test/javatests/src/org/chromium/net/CronetUrlRequestHTTPSTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
     "test/javatests/src/org/chromium/net/DiskStorageTest.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
@@ -1337,8 +1339,6 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
            "//third_party/netty-tcnative:netty-tcnative-so",
            "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
-
-  additional_apks = [ "//net/android:net_test_support_apk" ]
 
   data_deps = [ "//net:test_support" ]
 
@@ -1849,15 +1849,10 @@ copy("cronet_package_copy_test_assets") {
   outputs = [ "$_test_package_dir/assets/test" ]
 }
 
-copy("cronet_package_copy_test_support_apks") {
+copy("cronet_package_copy_test_resources") {
   testonly = true
-  sources = [
-    # Provides EmbeddedTestServer.
-    "$root_out_dir/apks/ChromiumNetTestSupport.apk",
-  ]
-  outputs =
-      [ "$_test_package_dir/apks/${android_app_abi}/{{source_file_part}}" ]
-  deps = [ "//net/android:net_test_support_apk" ]
+  sources = [ "//components/cronet/android/test/res" ]
+  outputs = [ "$_test_package_dir/res" ]
 }
 
 copy("cronet_package_copy_test_files") {
@@ -2009,7 +2004,7 @@ group("cronet_test_package") {
       ":cronet_package_copy_native_test_lib_unstripped",
       ":cronet_package_copy_test_assets",
       ":cronet_package_copy_test_files",
-      ":cronet_package_copy_test_support_apks",
+      ":cronet_package_copy_test_resources",
       ":cronet_sizes",
       ":repackage_test_jars",
     ]

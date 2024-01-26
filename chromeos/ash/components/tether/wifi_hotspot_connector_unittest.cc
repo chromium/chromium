@@ -325,6 +325,7 @@ class WifiHotspotConnectorTest : public testing::Test,
     successful_connection_service_paths_.clear();
     failed_connection_service_paths_.clear();
     disconnect_requested_service_paths_.clear();
+    requested_failure_count_ = 0;
   }
 
   void VerifyTimerSet() {
@@ -409,8 +410,14 @@ class WifiHotspotConnectorTest : public testing::Test,
                                                base::DoNothing());
   }
 
+  void HandleConnect() {}
+
   // NetworkConnectionObserver:
   void ConnectToNetworkRequested(const std::string& service_path) override {
+    if (requested_failure_count_ > 0) {
+      helper_.service_test()->SetErrorForNextConnectionAttempt("Failure");
+    }
+
     requested_connection_service_paths_.push_back(service_path);
   }
   void ConnectSucceeded(const std::string& service_path) override {
@@ -418,10 +425,17 @@ class WifiHotspotConnectorTest : public testing::Test,
   }
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override {
+    if (requested_failure_count_ > 0) {
+      requested_failure_count_--;
+    }
+
     failed_connection_service_paths_.push_back(service_path);
   }
   void DisconnectRequested(const std::string& service_path) override {
     disconnect_requested_service_paths_.push_back(service_path);
+  }
+  void SetNumberOfUpcomingConsecutiveFailures(int count) {
+    requested_failure_count_ = count;
   }
 
   NetworkStateHandler* network_state_handler() {
@@ -439,6 +453,7 @@ class WifiHotspotConnectorTest : public testing::Test,
   std::vector<std::string> successful_connection_service_paths_;
   std::vector<std::string> failed_connection_service_paths_;
   std::vector<std::string> disconnect_requested_service_paths_;
+  int requested_failure_count_ = 0;
 
   std::string other_wifi_service_path_;
   std::vector<std::string> connection_callback_responses_;
@@ -519,6 +534,8 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_AnotherNetworkBecomesVisible) {
 }
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_CannotConnectToNetwork) {
+  SetNumberOfUpcomingConsecutiveFailures(10);
+
   wifi_hotspot_connector_->ConnectToWifiHotspot(
       std::string(kSsid), std::string(kPassword), kTetherNetworkGuid,
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
@@ -529,16 +546,13 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_CannotConnectToNetwork) {
       VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
                              kSsid, kPassword, &wifi_guid));
 
-  // Set pending failure for network connection.
-  helper_.service_test()->SetErrorForNextConnectionAttempt("Failure");
-
   // A Wi-Fi scan occurs after the network is configured.
   VerifyWifiScanRequested();
 
   // Network becomes connectable.
   NotifyVisible(test_network_connect_->last_service_path_created());
   VerifyTetherAndWifiNetworkAssociation(
-      wifi_guid, kTetherNetworkGuid, 1u /* expected_num_connection_attempts */);
+      wifi_guid, kTetherNetworkGuid, 3u /* expected_num_connection_attempts */);
   EXPECT_EQ(GetServicePath(wifi_guid), requested_connection_service_paths_[0]);
 
   // Network connection failed.
@@ -614,6 +628,41 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_Success) {
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);
   EXPECT_TRUE(disconnect_requested_service_paths_.empty());
+}
+
+TEST_F(WifiHotspotConnectorTest, TestConnect_Success_RetryNeeded) {
+  SetNumberOfUpcomingConsecutiveFailures(2);
+
+  wifi_hotspot_connector_->ConnectToWifiHotspot(
+      std::string(kSsid), std::string(kPassword), kTetherNetworkGuid,
+      base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
+                     base::Unretained(this)));
+
+  std::string wifi_guid;
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
+
+  // A Wi-Fi scan occurs after the network is configured.
+  VerifyWifiScanRequested();
+
+  test_clock_.Advance(kConnectionToHotspotTime);
+
+  // Network becomes connectable.
+  NotifyVisible(test_network_connect_->last_service_path_created());
+  VerifyTetherAndWifiNetworkAssociation(
+      wifi_guid, kTetherNetworkGuid, 3u /* expected_num_connection_attempts */);
+
+  // Connection was successful.
+  EXPECT_EQ("service_path_for_" + wifi_guid,
+            requested_connection_service_paths_[0]);
+  EXPECT_EQ(1u, connection_callback_responses_.size());
+  EXPECT_EQ(wifi_guid, connection_callback_responses_[0]);
+  VerifyTimerStopped();
+
+  VerifyConnectionToHotspotDurationRecorded(true /* expected */);
+  EXPECT_EQ(2u, failed_connection_service_paths_.size());
+  EXPECT_EQ(0u, disconnect_requested_service_paths_.size());
 }
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_Success_EmptyPassword) {

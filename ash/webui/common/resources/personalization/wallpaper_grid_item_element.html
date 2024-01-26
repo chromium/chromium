@@ -5,6 +5,7 @@
     --personalization-app-grid-item-spacing: 20px;
     /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
     --personalization-app-second-tone-opacity: 0.3;
+    --personalization-app-grid-item-outline-width: 2px;
 
     box-sizing: border-box;
     display: block;
@@ -18,7 +19,7 @@
   }
 
   :host([data-is-promoted-tile]) {
-    padding: 0 calc(var(--personalization-app-grid-item-spacing) / 2);
+    padding: var(--personalization-app-grid-item-outline-width) calc(var(--personalization-app-grid-item-spacing) / 2);
   }
 
   @media(min-width: 720px) {
@@ -68,7 +69,7 @@
   }
 
   :host(:focus-visible) .item {
-    outline: 2px solid var(--cros-focus-ring-color);
+    outline: var(--personalization-app-grid-item-outline-width) solid var(--cros-focus-ring-color);
   }
 
   :host([placeholder]) .item {
@@ -249,7 +250,7 @@
       if="[[isTextVisible_(imageStatus_, primaryText, secondaryText)]]"
       restamp>
     <div id="textShadow" part="textShadow"></div>
-    <div id="text">
+    <div part="text" id="text">
       <slot name="text">
         <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]" restamp>
           <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>

@@ -7,6 +7,7 @@
 #import <set>
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -76,7 +77,7 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
   FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;

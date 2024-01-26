@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
 <translation id="1113057722807951993">Kryptering med passordfrase inkluderer ikke betalingsmåter og adresser fra Google Pay.
@@ -40,13 +41,13 @@ Du bør tenke på følgende:
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Legger til de angitte nettadressene i bokmerkene dine i Chrome.</translation>
+<translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Denne adressen er for øyeblikket lagret i Chrome. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Bruk Chrome automatisk når du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
-<translation id="2008357574463816229">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="2120238739383482109">Åpner Chrome-bokmerkene.</translation>
 <translation id="2147651015520127414">Chrome bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
@@ -75,6 +76,7 @@ Du bør tenke på følgende:
 <translation id="2702250627063295552">Legg til elementet på leselisten i Chrome</translation>
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
+<translation id="2789947168960170215">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Slett nettlesingsdata i Chrome</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
 <translation id="3577555362230509265">Bruk Chrome i andre apper.</translation>
-<translation id="3594076341410558780">Skjul «Få mest mulig ut av Chrome»</translation>
 <translation id="364480321352456989">Chrome er utdatert.</translation>
 <translation id="3646736009628185125">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chrome og synkronisere passordene sine. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
@@ -204,7 +205,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />administrere hvilke Chrome-data som lagres<ph name="END_LINK" /> i Google-kontoen din.
 
 For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Søk med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>

@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "components/services/screen_ai/public/mojom/screen_ai_service.mojom";
+import "ui/accessibility/ax_features.mojom";
 
 // The service runs in a sandboxed process to run Screen AI service library. The
 // library provides two AI modules:
@@ -26,11 +27,12 @@ interface ScreenAIServiceFactory {
   // |model_files| includes a map from file paths relative the the library base
   // path, to opened file handles. The list of files is downloaded with the
   // component. The file handles will be closed once the file is read.
+  [RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
   InitializeOCR(
     mojo_base.mojom.FilePath library_path,
     map<mojo_base.mojom.RelativeFilePath, mojo_base.mojom.ReadOnlyFile>
       model_files,
-    pending_receiver<OCRService> ocr_service_receiver) =>
+    pending_receiver<OCRService>? ocr_service_receiver) =>
       (bool initialized);
 
   // Triggers the service to load and initialize the Screen AI library at
@@ -39,11 +41,12 @@ interface ScreenAIServiceFactory {
   // |model_files| includes a map from file paths relative to the library base
   // path, to opened file handles. The list of files is downloaded with the
   // component. The file handles will be closed once the file is read.
+  [RuntimeFeature=ax.mojom.features.kScreenAIMainContentExtractionEnabled]
   InitializeMainContentExtraction(
     mojo_base.mojom.FilePath library_path,
     map<mojo_base.mojom.RelativeFilePath, mojo_base.mojom.ReadOnlyFile>
       model_files,
-    pending_receiver<MainContentExtractionService>
+    pending_receiver<MainContentExtractionService>?
       main_content_extractor_service) =>
       (bool initialized);
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
@@ -88,7 +89,7 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta),
               (override));
-  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (base::StringPiece), (override));
+  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (std::string_view), (override));
 };
 
 class FakeNotificationSurface : public exo::NotificationSurface {

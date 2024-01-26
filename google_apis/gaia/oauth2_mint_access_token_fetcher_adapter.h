@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
 
+  // Virtual for testing.
+  virtual void SetBindingKeyAssertion(std::string assertion);
+
   void SetOAuth2MintTokenFlowFactoryForTesting(
       OAuth2MintTokenFlowFactory factory);
 
@@ -69,6 +72,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   const std::string device_id_;
   const std::string client_version_;
   const std::string client_channel_;
+
+  std::string binding_key_assertion_;
 
   OAuth2MintTokenFlowFactory mint_token_flow_factory_for_testing_;
 

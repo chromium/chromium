@@ -18,7 +18,7 @@ source_set("history") {
     "//components/browser_sync",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",

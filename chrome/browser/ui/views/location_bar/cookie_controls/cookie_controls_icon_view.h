@@ -33,14 +33,14 @@ class CookieControlsIconView : public PageActionIconView,
   ~CookieControlsIconView() override;
 
   // CookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       CookieControlsEnforcement enforcement,
-                       CookieBlocking3pcdStatus blocking_status,
-                       base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;
+  void OnUserBypassIconStatusChanged(
+      bool icon_visible,
+      bool protections_on,
+      CookieBlocking3pcdStatus blocking_status) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void ShowCookieControlsBubble();
@@ -72,10 +72,12 @@ class CookieControlsIconView : public PageActionIconView,
   // Set confidence_changed = true to animate if the confidence level changed
   // even if the icon is already visible.
   void UpdateVisibilityAndAnimate(bool confidence_changed = false);
-  std::optional<int> GetLabelForStatus() const;
+  int GetLabelForStatus() const;
   void SetLabelAndTooltip();
 
-  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  bool icon_visible_ = false;
+  bool protections_on_ = false;
+
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
 

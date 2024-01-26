@@ -110,7 +110,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
     ui::ElementIdentifier id,
-    absl::optional<int> tab_index,
+    std::optional<int> tab_index,
     BrowserSpecifier in_browser,
     bool wait_for_ready) {
   const auto desc =
@@ -159,7 +159,7 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::AddInstrumentedTab(ui::ElementIdentifier id,
                                               GURL url,
-                                              absl::optional<int> at_index,
+                                              std::optional<int> at_index,
                                               BrowserSpecifier in_browser) {
   const auto desc = base::StringPrintf("AddInstrumentedTab( %s, %s, %d, )",
                                        id.GetName().c_str(), url.spec().c_str(),
@@ -227,7 +227,7 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsReady(
     ui::ElementIdentifier webcontents_id,
-    absl::optional<GURL> expected_url) {
+    std::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("WaitForWebContentsReady( %s )",
@@ -255,7 +255,7 @@ InteractiveBrowserTestApi::WaitForWebContentsReady(
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsNavigation(
     ui::ElementIdentifier webcontents_id,
-    absl::optional<GURL> expected_url) {
+    std::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("WaitForWebContentsNavigation( %s )",

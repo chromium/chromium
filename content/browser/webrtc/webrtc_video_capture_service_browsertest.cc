@@ -201,12 +201,16 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         continue;
       }
 
+      // This SharedImage is populated via the raster interface below and may
+      // be read via the raster interface in normal VideoFrame usage exercised
+      // by the tests.
       gpu::Mailbox mailbox =
           sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
                                  kDummyFrameCodedSize,
                                  gfx::ColorSpace::CreateSRGB(),
                                  kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_RASTER |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
                                  "TestLabel", gpu::kNullSurfaceHandle)
               ->mailbox();

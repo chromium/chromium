@@ -17,7 +17,9 @@ export const globalOobeKeyboard = new KeyboardUtils();
  * Code which is embedded inside of the enterprise enrollment webview.
  * See /screens/oobe/enterprise_enrollment.js for details.
  */
-export const KEYBOARD_UTILS_FOR_INJECTION = {};
+export const KEYBOARD_UTILS_FOR_INJECTION = {
+  DATA: '',
+};
 
 /**
  *

@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/atomic_sequence_num.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -20,6 +22,9 @@
 
 namespace gpu {
 namespace {
+
+// Generates process-unique IDs to use for tracing resources.
+base::AtomicSequenceNumber g_next_texture_owner_tracing_id;
 
 std::unique_ptr<AbstractTextureAndroid> CreateTexture(
     SharedContextState* context_state) {
@@ -43,9 +48,13 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
       binds_texture_on_update_(binds_texture_on_update),
       context_state_(std::move(context_state)),
       texture_(std::move(texture)),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      tracing_id_(g_next_texture_owner_tracing_id.GetNext()) {
   DCHECK(context_state_);
   context_state_->AddContextLostObserver(this);
+
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "TextureOwner", base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TextureOwner::TextureOwner(bool binds_texture_on_update,
@@ -54,9 +63,16 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       binds_texture_on_update_(binds_texture_on_update),
       texture_(std::move(texture)),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      tracing_id_(g_next_texture_owner_tracing_id.GetNext()) {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "TextureOwner", base::SingleThreadTaskRunner::GetCurrentDefault());
+}
 
 TextureOwner::~TextureOwner() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+
   bool have_context = true;
   std::optional<ui::ScopedMakeCurrent> scoped_make_current;
   if (!context_state_) {

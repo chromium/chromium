@@ -897,15 +897,28 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
   GetPopupRowViewAt(0)
-      .GetContentView()
       .GetViewAccessibility()
       .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            base::JoinString(
+                {address_line,
+                 l10n_util::GetStringFUTF16(
+                     IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT,
+                     l10n_util::GetStringUTF16(
+                         IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT))},
+                u". "));
+
+  ui::AXNodeData content_node_data;
+  GetPopupRowViewAt(0)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&content_node_data);
   EXPECT_EQ(
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      content_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       base::JoinString(
           {address_line,
            l10n_util::GetStringUTF16(
-               IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FULL_ADDRESS_A11Y_ADDON),
+               IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FILL_ADDRESS_A11Y_ADDON),
            l10n_util::GetStringFUTF16(
                IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT,
                l10n_util::GetStringUTF16(
@@ -1147,6 +1160,19 @@ TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
   SimulateKeyPress(ui::VKEY_DOWN);
   SimulateKeyPress(ui::VKEY_RIGHT);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOpensForNonSelectableContentSelection) {
+  Suggestion suggestion = CreateSuggestionWithChildren({Suggestion(u"Child")});
+  suggestion.is_acceptable = false;
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(), OpenSubPopup);
+
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
 }
 
 // TODO(crbug.com/1489673): Enable once the view shows itself properly.

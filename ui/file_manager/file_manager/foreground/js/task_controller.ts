@@ -35,7 +35,7 @@ import {FileManagerUI} from './ui/file_manager_ui.js';
  */
 interface ExtractingTasks {
   entries: Array<Entry|FilesAppEntry>;
-  params: chrome.fileManagerPrivate.IOTaskParams;
+  params: chrome.fileManagerPrivate.IoTaskParams;
 }
 
 export class TaskController {
@@ -569,17 +569,17 @@ export class TaskController {
     // TaskController only manages IOTasks related to zip extract that were
     // started in this window.
     if (!(this.extractTasks_.has(taskId) &&
-          event.type === chrome.fileManagerPrivate.IOTaskType.EXTRACT)) {
+          event.type === chrome.fileManagerPrivate.IoTaskType.EXTRACT)) {
       return;
     }
 
     switch (event.state) {
-      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
-      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
-      case chrome.fileManagerPrivate.IOTaskState.ERROR:
+      case chrome.fileManagerPrivate.IoTaskState.SUCCESS:
+      case chrome.fileManagerPrivate.IoTaskState.CANCELLED:
+      case chrome.fileManagerPrivate.IoTaskState.ERROR:
         this.deleteExtractTaskDetails_(taskId);
         break;
-      case chrome.fileManagerPrivate.IOTaskState.NEED_PASSWORD:
+      case chrome.fileManagerPrivate.IoTaskState.NEED_PASSWORD:
         this.handleMissingPassword_(taskId);
         break;
     }
@@ -596,7 +596,7 @@ export class TaskController {
       destination: DirectoryEntry|FilesAppDirEntry): Promise<void> {
     const params = {
       destinationFolder: destination,
-    } as chrome.fileManagerPrivate.IOTaskParams;
+    } as chrome.fileManagerPrivate.IoTaskParams;
     return this.startExtractTask_(entries, params);
   }
 
@@ -606,10 +606,10 @@ export class TaskController {
    */
   private async startExtractTask_(
       entries: Array<Entry|FilesAppEntry>,
-      params: chrome.fileManagerPrivate.IOTaskParams): Promise<void> {
+      params: chrome.fileManagerPrivate.IoTaskParams): Promise<void> {
     try {
       const taskId = await startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.EXTRACT, entries, params);
+          chrome.fileManagerPrivate.IoTaskType.EXTRACT, entries, params);
       this.extractTasks_.set(taskId, {entries, params});
     } catch (error: any) {
       console.warn('Error getting extract taskID', error);
@@ -622,7 +622,7 @@ export class TaskController {
    */
   private async startGetPasswordThenExtractTask_(
       entry: Entry|FilesAppEntry,
-      params: chrome.fileManagerPrivate.IOTaskParams) {
+      params: chrome.fileManagerPrivate.IoTaskParams) {
     let password: string|null = null;
     // Ask for password.
     try {

@@ -72,8 +72,11 @@ void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
   for (const auto& section : sections_->sections()) {
     section->AddLoadTimeData(html_source);
   }
+
+  // TODO(b/319740292) Remove this boolean once no shared UI code depends on it.
   html_source->AddBoolean("isJellyEnabled",
                           chromeos::features::IsJellyEnabled());
+
   html_source->AddBoolean("isCrosComponentsEnabled",
                           chromeos::features::IsCrosComponentsEnabled());
   html_source->AddBoolean("isSelfShareEnabled", features::IsSelfShareEnabled());

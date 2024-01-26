@@ -52,6 +52,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/follow/model:utils",
     "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:policy_util",

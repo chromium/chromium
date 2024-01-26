@@ -90,7 +90,9 @@ class CustomMockOptimizationGuideKeyedService
            optimization_types,
        optimization_guide::proto::RequestContext request_context,
        optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-           callback));
+           callback,
+       optimization_guide::proto::RequestContextMetadata*
+           request_context_metadata));
 };
 
 void RegisterMockOptimizationGuideKeyedServiceFactory(
@@ -157,7 +159,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         identity_test_env_.identity_manager(), &opt_guide());
 
     // Override un-mockable per-user checks.
-    ComposeEnabling::SkipUserEnabledCheckForTesting(true);
+    scoped_skip_user_check_ = ComposeEnabling::ScopedSkipUserCheckForTesting();
   }
 
   void TearDown() override {
@@ -169,9 +171,6 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
     MockOptimizationGuideKeyedService::ResetForTesting();
-
-    ComposeEnabling::SetEnabledForTesting(false);
-    ComposeEnabling::SkipUserEnabledCheckForTesting(false);
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
@@ -225,6 +224,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
       mock_translate_language_provider_;
 
   std::unique_ptr<ComposeEnabling> compose_enabling_;
+  ComposeEnabling::ScopedOverride scoped_skip_user_check_;
 };
 
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
@@ -246,7 +246,7 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   SignIn(signin::ConsentLevel::kSync);
 
   CheckIsEnabledError(compose_enabling_.get(),
-                      compose::ComposeShowStatus::kGenericBlocked);
+                      compose::ComposeShowStatus::kFeatureFlagDisabled);
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
@@ -293,7 +293,7 @@ TEST_F(ComposeEnablingTest, UserNotAllowedTest) {
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Cause per-user check to fail.
-  ComposeEnabling::SkipUserEnabledCheckForTesting(false);
+  scoped_skip_user_check_.reset();
 
   EXPECT_THAT(
       compose_enabling_->IsEnabled(),
@@ -329,7 +329,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
        compose::features::kEnableComposeNudge},
       {compose::features::kEnableComposeLanguageBypass});
   // Enable all base requirements.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set the mock to return a language we support (English).
   SetLanguage("en");
@@ -346,7 +347,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
@@ -365,7 +367,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLanguageTest) {
        compose::features::kEnableComposeNudge},
       {compose::features::kEnableComposeLanguageBypass});
   // Enable all base requirements.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set the mock to return the empty string, simluating that translate doesn't
   // have the answer yet.
@@ -383,7 +386,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
        compose::features::kEnableComposeNudge},
       {compose::features::kEnableComposeLanguageBypass});
   // Enable all base requirements.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set the mock to return "und", simluating that translate could not determine
   // the page language.
@@ -395,7 +399,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set ContextMenuParams to non-contenteditable and non-textarea, which we do
   // not support.
@@ -410,7 +415,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Get the rfh for the tab with the incorrect Scheme.
   auto* rfh =
@@ -423,7 +429,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
 TEST_F(ComposeEnablingTest,
        ShouldTriggerContextMenuAllEnabledContentEditableTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
@@ -432,7 +439,8 @@ TEST_F(ComposeEnablingTest,
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set ContextMenuParams to textarea, which we support.
   context_menu_params_.is_content_editable_for_autofill = false;
@@ -469,7 +477,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupLanguageTest) {
        compose::features::kEnableComposeNudge},
       {compose::features::kEnableComposeLanguageBypass});
   // Enable the feature.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
   // Note: only the saved-state nudge is currently enabled.
   bool has_saved_state = true;
@@ -489,7 +498,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupLanguageTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
   // Enable the feature.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
   bool has_saved_state = true;
 
@@ -504,7 +514,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
 
 TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   // Autocomplete is set to off for this page.
   std::string autocomplete_attribute("off");
   bool has_saved_state = false;
@@ -516,7 +527,8 @@ TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupAutocompleteOffTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   // Autocomplete is set to off for this page.
   std::string autocomplete_attribute("off");
   bool has_saved_state = true;
@@ -528,7 +540,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupAutocompleteOffTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
 
   // test all variants of: popup with, popup without state.
@@ -563,7 +576,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
       {compose::features::kEnableComposeNudge});
 
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
 
   std::vector<std::pair<bool, bool>> tests = {
@@ -592,7 +606,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
   bool has_saved_state = true;
 
@@ -604,7 +619,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   std::string autocomplete_attribute;
   bool has_saved_state = false;
 
@@ -616,7 +632,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
   base::HistogramTester histogram_tester;
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   context_menu_params_.frame_origin = url::Origin();
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
@@ -710,7 +727,8 @@ TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoComposeMetadataTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuOutOfPolicyURLTest) {
   // Enable everything.
-  ComposeEnabling::SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set ContextMenuParams to textarea, which we support.
   context_menu_params_.is_content_editable_for_autofill = false;

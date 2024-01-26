@@ -20,13 +20,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepagePolicyStateListener;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;

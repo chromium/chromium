@@ -54,13 +54,11 @@
       break;
   }
 
-  if (@available(iOS 15, *)) {
-    self.titleTextStyle = UIFontTextStyleTitle2;
-    // Icon already contains some spacing for the shadow.
-    self.customSpacingBeforeImageIfNoNavigationBar = 24;
-    self.customSpacingAfterImage = 1;
-    self.topAlignedLayout = YES;
-  }
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  // Icon already contains some spacing for the shadow.
+  self.customSpacingBeforeImageIfNoNavigationBar = 24;
+  self.customSpacingAfterImage = 1;
+  self.topAlignedLayout = YES;
 
   [super loadView];
 }

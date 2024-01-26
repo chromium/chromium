@@ -127,7 +127,7 @@ constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
 void RecordMemoryMetrics();
 
 // Gets the delay for logging memory related metrics for testing.
-absl::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
+std::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
   int test_delay_in_minutes;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -137,7 +137,7 @@ absl::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
                         &test_delay_in_minutes)) {
     return base::Minutes(test_delay_in_minutes);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Records memory metrics after a delay.
@@ -1127,7 +1127,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   // The TabStatsTracker always exists (except during unit tests), while the
   // BatteryStateSampler only exists on platform where a BatteryLevelProvider
   // implementation exists.
-  if (metrics::TabStatsTracker::GetInstance() &&
+  if (metrics::TabStatsTracker::HasInstance() &&
       base::BatteryStateSampler::Get()) {
     battery_discharge_reporter_ = std::make_unique<BatteryDischargeReporter>(
         base::BatteryStateSampler::Get());
@@ -1167,6 +1167,19 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
               total_janks_per_minute);
         }));
   }
+}
+
+void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (metrics::TabStatsTracker::HasInstance()) {
+    // responsiveness::Watcher currently outlives TabStatsTracker and
+    // RemoveObserver is never called (see UsageScenarioTracker). This should be
+    // considered/addressed if refining Watcher's lifetime or migrating
+    // TabStatsTracker away from global state, as this could lead to a dangling
+    // pointer or similar.
+    metrics::TabStatsTracker::ClearInstance();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::RegisterPrefs(

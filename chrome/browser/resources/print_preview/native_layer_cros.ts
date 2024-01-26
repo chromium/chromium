@@ -4,9 +4,9 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {Cdd} from './data/cdd.js';
-import {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
-import {PrintAttemptOutcome, PrinterStatus} from './data/printer_status_cros.js';
+import type {Cdd} from './data/cdd.js';
+import type {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
+import type {PrintAttemptOutcome, PrinterStatus} from './data/printer_status_cros.js';
 
 export interface PrinterSetupResponse {
   printerId: string;

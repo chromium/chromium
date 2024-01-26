@@ -29,6 +29,7 @@
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
+#include "chrome/browser/net/network_annotation_monitor.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
@@ -79,6 +80,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
+#include "services/network/public/mojom/network_annotation_monitor.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -103,6 +105,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -767,8 +770,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   int max_connections_per_proxy =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy != -1)
-    network_service->SetMaxConnectionsPerProxy(max_connections_per_proxy);
+  if (max_connections_per_proxy != -1) {
+    network_service->SetMaxConnectionsPerProxyChain(max_connections_per_proxy);
+  }
 
   network_service_network_context_.reset();
   content::CreateNetworkContextInNetworkService(
@@ -788,7 +792,19 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, if OSCrypt async is enabled, and DPAPI key provider is also
+    // enabled, then OSCrypt manages the encryption key, and there is no need to
+    // send the key separately to OSCrypt sync.
+    if (!base::FeatureList::IsEnabled(
+            features::kUseOsCryptAsyncForCookieEncryption) ||
+        !base::FeatureList::IsEnabled(
+            features::kEnableDPAPIEncryptionProvider)) {
+      network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
+    }
+#else
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   // Configure SCT Auditing in the NetworkService.
@@ -800,6 +816,19 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   UpdateExplicitlyAllowedNetworkPorts();
 
   UpdateIPv6ReachabilityOverrideEnabled();
+
+  if (base::FeatureList::IsEnabled(features::kNetworkAnnotationMonitoring)) {
+    // Create NetworkAnnotationMonitor.
+    if (!network_annotation_monitor_) {
+      network_annotation_monitor_ =
+          std::make_unique<NetworkAnnotationMonitor>();
+    }
+
+    // Pass NetworkAnnotationMonitor remote to NetworkService so that network
+    // calls can be reported.
+    network_service->SetNetworkAnnotationMonitor(
+        network_annotation_monitor_->GetClient());
+  }
 }
 
 void SystemNetworkContextManager::DisableQuic() {
@@ -810,6 +839,15 @@ void SystemNetworkContextManager::DisableQuic() {
   // disable QUIC.
   content::GetNetworkService()->DisableQuic();
 }
+
+#if BUILDFLAG(IS_WIN)
+void SystemNetworkContextManager::
+    AddCookieEncryptionManagerToNetworkContextParams(
+        network::mojom::NetworkContextParams* network_context_params) {
+  network_context_params->cookie_encryption_provider =
+      cookie_encryption_provider_.BindNewRemote();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
@@ -956,6 +994,12 @@ void SystemNetworkContextManager::FlushNetworkInterfaceForTesting() {
     url_loader_factory_.FlushForTesting();
 }
 
+void SystemNetworkContextManager::FlushNetworkAnnotationMonitorForTesting() {
+  if (network_annotation_monitor_) {
+    network_annotation_monitor_->FlushForTesting();  // IN-TEST
+  }
+}
+
 network::mojom::HttpAuthStaticParamsPtr
 SystemNetworkContextManager::GetHttpAuthStaticParamsForTesting() {
   return CreateHttpAuthStaticParams(g_browser_process->local_state());
@@ -967,7 +1011,7 @@ SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting() {
 }
 
 void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-    absl::optional<bool> enabled) {
+    std::optional<bool> enabled) {
   certificate_transparency_enabled_for_testing_ = enabled;
 }
 
@@ -1056,6 +1100,6 @@ StubResolverConfigReader*
     SystemNetworkContextManager::stub_resolver_config_reader_for_testing_ =
         nullptr;
 
-absl::optional<bool>
+std::optional<bool>
     SystemNetworkContextManager::certificate_transparency_enabled_for_testing_ =
-        absl::nullopt;
+        std::nullopt;

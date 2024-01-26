@@ -41,7 +41,6 @@
 
 class ChromeRenderViewTest;
 class GURL;
-class ModuleSystem;
 struct ExtensionMsg_OnConnectData;
 
 namespace blink {
@@ -68,6 +67,7 @@ class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
 class ExtensionsRendererAPIProvider;
+class ModuleSystem;
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;
@@ -181,7 +181,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
   // Dispatches the event named |event_name| to all render views.
-  void DispatchEventHelper(const std::string& extension_id,
+  void DispatchEventHelper(const mojom::HostID& extension_id,
                            const std::string& event_name,
                            const base::Value::List& event_args,
                            mojom::EventFilteringInfoPtr filtering_info) const;

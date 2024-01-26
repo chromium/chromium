@@ -96,7 +96,7 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
     return false;
   }
 
-  const absl::optional<std::string>& policy_value =
+  const std::optional<std::string>& policy_value =
       g_browser_process->browser_policy_connector()
           ->GetDeviceSettings()
           ->device_variations_restrict_parameter;

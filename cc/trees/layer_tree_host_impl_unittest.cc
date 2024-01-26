@@ -932,6 +932,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
     auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
         layer_tree_impl, ScrollbarOrientation::kVertical, false, true);
+    scrollbar->draw_properties().opacity = 1.f;
     // SetupScrollbarLayerCommon will register the scrollbar, which sets the
     // layer's opacity to 0. An effect node for the scrollbar layer object needs
     // to be registered in the EffectTree before this happens.

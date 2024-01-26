@@ -8,7 +8,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include <stddef.h>
+#include <cstddef>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/third_party/apple_apsl/malloc.h"

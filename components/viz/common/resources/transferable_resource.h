@@ -178,6 +178,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool wants_promotion_hint = false;
 #endif
 
+  // If true, we need to run a detiling image processor on the quad before we
+  // can scan it out.
+  bool needs_detiling = false;
+
   // The source that originally allocated this resource. For determining which
   // sources are maintaining lifetime after surface eviction.
   ResourceSource resource_source = ResourceSource::kUnknown;

@@ -28,11 +28,13 @@ namespace base {
 class FilePath;
 }
 
-namespace net {
-
+namespace bssl {
 namespace der {
 class Input;
-}
+}  // namespace der
+}  // namespace bssl
+
+namespace net {
 
 // CertBuilder is a helper class to dynamically create a test certificate.
 //

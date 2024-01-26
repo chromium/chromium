@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   // scheme to be able to compare them.
 
   const std::string ime_id =
-      imm->GetInputMethodUtil()->MigrateInputMethod("xkb:de:neo:ger");
+      imm->GetInputMethodUtil()->GetMigratedInputMethod("xkb:de:neo:ger");
   EXPECT_EQ(ime_id, imm->GetActiveIMEState()->GetCurrentInputMethod().id());
 
   const std::string language_code = g_browser_process->local_state()->GetString(

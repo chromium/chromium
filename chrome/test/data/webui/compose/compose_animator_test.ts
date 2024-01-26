@@ -125,4 +125,16 @@ suite('ComposeAnimator', () => {
         {delay: 10, duration: 50, easing: 'ease-in'});
     assertEquals(0, animations.length);
   });
+
+  test('RequiresConditionMet', () => {
+    const animations = animator.animate(
+        '.child',
+        [
+          {width: '50px'},
+          {width: '100px'},
+        ],
+        {duration: 100},
+        /* falsey condition should mean no animations */ false);
+    assertEquals(0, animations.length);
+  });
 });

@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -63,11 +64,15 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   url::Origin interest_group_owner;
   std::vector<blink::InterestGroupKey> bidding_groups;
   std::optional<double> score, bid;
+  std::optional<blink::AdCurrency> bid_currency;
   std::optional<url::Origin> top_level_seller;
   std::optional<std::string> ad_metadata;
 
   std::optional<std::string> error;
-  std::optional<ReportingURLs> buyer_reporting, seller_reporting;
+  // The Bidding and Auction server uses the top_level_seller_reporting field
+  // for single-level auctions.
+  std::optional<ReportingURLs> buyer_reporting, top_level_seller_reporting,
+      component_seller_reporting;
 };
 
 }  // namespace content

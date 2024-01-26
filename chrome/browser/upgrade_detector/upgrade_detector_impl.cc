@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/build_time.h"
@@ -38,7 +39,6 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
@@ -148,7 +148,7 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
-  const absl::optional<RelaunchWindow> relaunch_window =
+  const std::optional<RelaunchWindow> relaunch_window =
       GetRelaunchWindowPolicyValue();
 
   if (notification_period.is_zero() && !relaunch_window) {

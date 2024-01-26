@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('This test checks that if style sheet is removed between two inspector launches it is not reported to frontend.');
   var page = await testRunner.createPage();
   var session = await page.createSession();

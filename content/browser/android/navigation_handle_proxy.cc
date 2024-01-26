@@ -23,7 +23,8 @@ NavigationHandleProxy::NavigationHandleProxy(
     : cpp_navigation_handle_(cpp_navigation_handle) {
   JNIEnv* env = AttachCurrentThread();
 
-  java_navigation_handle_ = Java_NavigationHandle_Constructor(env);
+  java_navigation_handle_ = Java_NavigationHandle_Constructor(
+      env, reinterpret_cast<jlong>(cpp_navigation_handle));
 }
 
 void NavigationHandleProxy::DidStart() {

@@ -6,6 +6,7 @@ import("//build/config/cast.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
@@ -20,6 +21,12 @@ declare_args() {
 
   # Indicates support for Data Control rules.
   enterprise_data_controls = is_win || is_mac || is_linux || is_chromeos
+
+  # Indicates support for client certificates provisioning.
+  enterprise_client_certificates = is_win || is_mac
+
+  # The watermark is currently implemented using the views framework
+  enterprise_watermark = toolkit_views
 }
 
 declare_args() {

@@ -22,6 +22,7 @@ namespace ash {
 
 class ASH_EXPORT AuthErrorBubble : public LoginErrorBubble {
   METADATA_HEADER(AuthErrorBubble, LoginErrorBubble)
+  friend class LockContentsViewTestApi;
 
  public:
   AuthErrorBubble(const base::RepeatingClosure& on_learn_more_button_clicked,

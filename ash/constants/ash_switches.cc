@@ -23,13 +23,13 @@ namespace {
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
 constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
 
-// The hash value for the secret key of the birch feature.
-constexpr char kBirchHashKey[] =
+// The hash value for the secret key of the forest feature.
+constexpr char kForestHashKey[] =
     "\x1a\x93\x5f\x64\x0d\x7f\x0c\x2f\x88\xe8\x80\x9a\x5f\x16\xbb\xd8\x74\x06"
     "\x8a\xb1";
 
-// Whether checking the birch secret key is ignored.
-bool g_ignore_birch_secret_key = false;
+// Whether checking the forest secret key is ignored.
+bool g_ignore_forest_secret_key = false;
 
 }  // namespace
 
@@ -312,9 +312,6 @@ const char kAshUiModeTablet[] = "touch_view";
 // lock the screen or shutdown the system immediately in response to a press
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
-
-// Supply secret key for the Birch feature.
-const char kBirchFeatureKey[] = "birch-feature-key";
 
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
@@ -686,6 +683,9 @@ const char kForceShowReleaseTrack[] = "force-show-release-track";
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";
 
+// Supply secret key for the Forest feature.
+const char kForestFeatureKey[] = "forest-feature-key";
+
 // Specifies the device's form factor. If provided, this flag overrides the
 // value from the LSB release info. Possible values are: "CHROMEBASE",
 // "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
@@ -693,6 +693,12 @@ const char kFormFactor[] = "form-factor";
 
 // Sets the throttle fps for compositor frame submission.
 const char kFrameThrottleFps[] = "frame-throttle-fps";
+
+// Switch name for "glanceables-v2-key" flag and its expected hashed value.
+const char kGlanceablesKeyExpectedHash[] =
+    "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"
+    "\xe2\xcb";
+const char kGlanceablesKeySwitch[] = "glanceables-key";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -1322,19 +1328,19 @@ bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
       kAllowDefaultShelfPinLayoutIgnoringSync);
 }
 
-bool IsBirchSecretKeyMatched() {
-  if (g_ignore_birch_secret_key) {
+bool IsForestSecretKeyMatched() {
+  if (g_ignore_forest_secret_key) {
     return true;
   }
 
   // Commandline looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --birch-feature-key="INSERT KEY HERE" --enable-features=BirchFeature
+  //  --birch-feature-key="INSERT KEY HERE" --enable-features=ForestFeature
   const std::string provided_key_hash = base::SHA1HashString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kBirchFeatureKey));
+          kForestFeatureKey));
 
-  bool birch_key_matched = (provided_key_hash == kBirchHashKey);
+  bool birch_key_matched = (provided_key_hash == kForestHashKey);
   if (!birch_key_matched) {
     LOG(ERROR) << "Provided secret key does not match with the expected one.";
   }
@@ -1342,8 +1348,8 @@ bool IsBirchSecretKeyMatched() {
   return birch_key_matched;
 }
 
-void SetIgnoreBirchSecretKeyForTest(bool ignore) {
-  g_ignore_birch_secret_key = ignore;
+void SetIgnoreForestSecretKeyForTest(bool ignore) {
+  g_ignore_forest_secret_key = ignore;
 }
 
 }  // namespace switches

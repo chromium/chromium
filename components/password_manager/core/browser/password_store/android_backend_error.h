@@ -38,17 +38,13 @@ enum class AndroidBackendErrorType {
   kBackendNotAvailable = 9,
   // Failed to create FacetId to obtain affiliated matches.
   kFailedToCreateFacetId = 10,
-  kMaxValue = kFailedToCreateFacetId,
+  // The job was cancelled because the targeted password storage changed.
+  // This can happen if the user stops syncing passwords or changes accounts.
+  kCancelledPwdSyncStateChanged = 11,
+  kMaxValue = kCancelledPwdSyncStateChanged,
 };
 
 struct AndroidBackendError {
-  explicit AndroidBackendError(AndroidBackendErrorType error_type);
-
-  AndroidBackendError(const AndroidBackendError&) = delete;
-  AndroidBackendError(AndroidBackendError&&);
-  AndroidBackendError& operator=(const AndroidBackendError&) = delete;
-  AndroidBackendError& operator=(AndroidBackendError&&) = delete;
-
   // Type of the error returned by the bridge.
   AndroidBackendErrorType type;
 

@@ -91,7 +91,6 @@ class AddressEditorMediator {
     private final boolean mSaveToDisk;
     private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final PropertyModel mCountryField;
-    private final @Nullable PropertyModel mHonorificField;
     private final PropertyModel mPhoneField;
     private final PropertyModel mEmailField;
     private final @Nullable PropertyModel mNicknameField;
@@ -161,23 +160,6 @@ class AddressEditorMediator {
                         .with(VALUE, AutofillAddress.getCountryCode(mProfileToEdit))
                         .build();
 
-        // Honorific prefix is present only for autofill settings.
-        mHonorificField =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES)
-                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                .with(TEXT_FIELD_TYPE, FieldType.NAME_HONORIFIC_PREFIX)
-                                .with(
-                                        LABEL,
-                                        mContext.getString(
-                                                R.string.autofill_profile_editor_honorific_prefix))
-                                .with(IS_REQUIRED, false)
-                                .with(
-                                        VALUE,
-                                        mProfileToEdit.getInfo(FieldType.NAME_HONORIFIC_PREFIX))
-                                .build()
-                        : null;
-
         // Phone number is present for all countries.
         mPhoneField =
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
@@ -232,7 +214,6 @@ class AddressEditorMediator {
      * Builds an editor model with the following fields.
      *
      * [ country dropdown    ] <----- country dropdown is always present.
-     * [ honorific field     ] <----- above name, present if purpose is Purpose.AUTOFILL_SETTINGS.
      * [ an address field    ] \
      * [ an address field    ]  \
      *         ...                <-- field order, presence, required, and labels depend on country.
@@ -323,12 +304,6 @@ class AddressEditorMediator {
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
 
         for (AutofillAddressUiComponent component : mVisibleEditorFields) {
-            // Honorific prefix should go before name.
-            if (component.id == FieldType.NAME_FULL && mHonorificField != null) {
-                editorFields.add(
-                        new FieldItem(TEXT_INPUT, mHonorificField, /* isFullLine= */ true));
-            }
-
             PropertyModel field = getFieldForFieldType(component.id);
 
             // Labels depend on country, e.g., state is called province in some countries. These are
@@ -408,9 +383,6 @@ class AddressEditorMediator {
         }
         if (mEmailField != null) {
             profile.setInfo(FieldType.EMAIL_ADDRESS, mEmailField.get(VALUE));
-        }
-        if (mHonorificField != null) {
-            profile.setInfo(FieldType.NAME_HONORIFIC_PREFIX, mHonorificField.get(VALUE));
         }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.

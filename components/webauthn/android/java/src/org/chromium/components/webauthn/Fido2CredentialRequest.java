@@ -556,7 +556,8 @@ public class Fido2CredentialRequest
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
             Context context, IsUvpaaResponseCallback callback) {
-        if (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+        // Barrier Mode is only relevant for Chrome.
+        if (isChrome() && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(true);
             return;
         }
@@ -577,7 +578,9 @@ public class Fido2CredentialRequest
 
         Task<Boolean> task =
                 call.run(
-                        Fido2ApiCall.METHOD_BROWSER_ISUVPAA,
+                        WebauthnModeProvider.getInstance()
+                                .getFido2ApiCallParams()
+                                .mIsUserVerifyingPlatformAuthenticatorAvailableMethodId,
                         Fido2ApiCall.TRANSACTION_ISUVPAA,
                         args,
                         result);

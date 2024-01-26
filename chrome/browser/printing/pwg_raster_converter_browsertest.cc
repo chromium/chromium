@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/printing/pwg_raster_converter.h"
+
+#include <optional>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -13,13 +15,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/printing/pwg_raster_converter.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -86,7 +87,7 @@ class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {
                base::ReadOnlySharedMemoryRegion* pwg_region) {
     bool called = false;
     base::RunLoop run_loop;
-    converter_->Start(/*use_skia=*/absl::nullopt, pdf_data, conversion_settings,
+    converter_->Start(/*use_skia=*/std::nullopt, pdf_data, conversion_settings,
                       bitmap_settings,
                       base::BindOnce(&ResultCallbackImpl, &called, pwg_region,
                                      run_loop.QuitClosure()));

@@ -36,28 +36,32 @@ CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
     const CardMetadataLoggingContext&) = default;
 CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
 
-// Get histogram suffix based on given card issuer id
-std::string_view GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
-  if (card_issuer_id == kAmexCardIssuerId) {
+std::string_view GetCardIssuerIdOrNetworkSuffix(
+    const std::string& card_issuer_id_or_network) {
+  if (card_issuer_id_or_network == kAmexCardIssuerId) {
     return kAmericanExpress;
-  } else if (card_issuer_id == kAnzCardIssuerId) {
+  } else if (card_issuer_id_or_network == kAnzCardIssuerId) {
     return kAnz;
-  } else if (card_issuer_id == kCapitalOneCardIssuerId) {
+  } else if (card_issuer_id_or_network == kCapitalOneCardIssuerId) {
     return kCapitalOne;
-  } else if (card_issuer_id == kChaseCardIssuerId) {
+  } else if (card_issuer_id_or_network == kChaseCardIssuerId) {
     return kChase;
-  } else if (card_issuer_id == kCitiCardIssuerId) {
+  } else if (card_issuer_id_or_network == kCitiCardIssuerId) {
     return kCiti;
-  } else if (card_issuer_id == kDiscoverCardIssuerId) {
+  } else if (card_issuer_id_or_network == kDiscoverCardIssuerId) {
     return kDiscover;
-  } else if (card_issuer_id == kLloydsCardIssuerId) {
+  } else if (card_issuer_id_or_network == kLloydsCardIssuerId) {
     return kLloyds;
-  } else if (card_issuer_id == kMarqetaCardIssuerId) {
+  } else if (card_issuer_id_or_network == kMarqetaCardIssuerId) {
     return kMarqeta;
-  } else if (card_issuer_id == kNabCardIssuerId) {
+  } else if (card_issuer_id_or_network == kNabCardIssuerId) {
     return kNab;
-  } else if (card_issuer_id == kNatwestCardIssuerId) {
+  } else if (card_issuer_id_or_network == kNatwestCardIssuerId) {
     return kNatwest;
+  } else if (card_issuer_id_or_network == autofill::kMasterCard) {
+    return kMastercard;
+  } else if (card_issuer_id_or_network == autofill::kVisaCard) {
+    return kVisa;
   } else {
     return "";
   }
@@ -65,6 +69,8 @@ std::string_view GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards) {
+  const base::flat_set<std::string> kLoggedNetworks{autofill::kMasterCard,
+                                                    autofill::kVisaCard};
   CardMetadataLoggingContext metadata_logging_context;
   for (const CreditCard& card : cards) {
     // If there is a product description, denote in the
@@ -89,7 +95,12 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
 
     if (!card.issuer_id().empty()) {
       metadata_logging_context
-          .issuer_to_metadata_availability[card.issuer_id()] |=
+          .issuer_or_network_to_metadata_availability[card.issuer_id()] |=
+          card_has_metadata;
+    }
+    if (kLoggedNetworks.contains(card.network())) {
+      metadata_logging_context
+          .issuer_or_network_to_metadata_availability[card.network()] |=
           card_has_metadata;
     }
 
@@ -103,78 +114,88 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
   return metadata_logging_context;
 }
 
+// TODO(crbug.com/1521067): Refactor and cleanup FormEvent logging.
 void LogCardWithMetadataFormEventMetric(
     CardMetadataLoggingEvent event,
     const CardMetadataLoggingContext& context,
     HasBeenLogged has_been_logged) {
-  for (const auto& [issuer, has_metadata] :
-       context.issuer_to_metadata_availability) {
-    if (GetCardIssuerIdSuffix(issuer) == std::string()) {
+  bool selected_with_metadata_logged = false;
+  for (const auto& [issuer_or_network, has_metadata] :
+       context.issuer_or_network_to_metadata_availability) {
+    const std::string_view& histogram_issuer_or_network =
+        GetCardIssuerIdOrNetworkSuffix(issuer_or_network);
+    if (histogram_issuer_or_network.empty()) {
       continue;
     }
 
     switch (event) {
       case CardMetadataLoggingEvent::kShown:
         base::UmaHistogramBoolean(
-            base::StrCat({"Autofill.CreditCard.", GetCardIssuerIdSuffix(issuer),
+            base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
                           ".ShownWithMetadata"}),
             has_metadata);
         if (!has_been_logged.value()) {
-          base::UmaHistogramBoolean(base::StrCat({"Autofill.CreditCard.",
-                                                  GetCardIssuerIdSuffix(issuer),
-                                                  ".ShownWithMetadataOnce"}),
-                                    has_metadata);
+          base::UmaHistogramBoolean(
+              base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
+                            ".ShownWithMetadataOnce"}),
+              has_metadata);
         }
         break;
       case CardMetadataLoggingEvent::kSelected:
         base::UmaHistogramBoolean(
-            base::StrCat({"Autofill.CreditCard.", GetCardIssuerIdSuffix(issuer),
+            base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
                           ".SelectedWithMetadata"}),
             has_metadata);
         if (!has_been_logged.value()) {
-          base::UmaHistogramBoolean(base::StrCat({"Autofill.CreditCard.",
-                                                  GetCardIssuerIdSuffix(issuer),
-                                                  ".SelectedWithMetadataOnce"}),
-                                    has_metadata);
+          base::UmaHistogramBoolean(
+              base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
+                            ".SelectedWithMetadataOnce"}),
+              has_metadata);
           if (has_metadata) {
             base::UmaHistogramBoolean(
                 base::StrCat({"Autofill.CreditCard.",
-                              GetCardIssuerIdSuffix(issuer),
+                              histogram_issuer_or_network,
                               ".SelectedWithIssuerMetadataPresentOnce"}),
                 true);
           }
-          // Log which issuers were not selected.
-          for (const std::string& not_selected_issuer_id :
-               context.not_selected_issuer_ids) {
-            base::UmaHistogramBoolean(
-                base::StrCat({"Autofill.CreditCard.",
-                              GetCardIssuerIdSuffix(not_selected_issuer_id),
-                              ".SelectedWithIssuerMetadataPresentOnce"}),
-                false);
+          if (!selected_with_metadata_logged) {
+            // Only log not selected cards once per selected event.
+            selected_with_metadata_logged = true;
+
+            // Log which issuers and networks with metadata were not selected.
+            for (const std::string& not_selected_issuer_ids_and_networks :
+                 context.not_selected_issuer_ids_and_networks) {
+              base::UmaHistogramBoolean(
+                  base::StrCat({"Autofill.CreditCard.",
+                                GetCardIssuerIdOrNetworkSuffix(
+                                    not_selected_issuer_ids_and_networks),
+                                ".SelectedWithIssuerMetadataPresentOnce"}),
+                  false);
+            }
           }
         }
         break;
       case CardMetadataLoggingEvent::kFilled:
         base::UmaHistogramBoolean(
-            base::StrCat({"Autofill.CreditCard.", GetCardIssuerIdSuffix(issuer),
+            base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
                           ".FilledWithMetadata"}),
             has_metadata);
         if (!has_been_logged.value()) {
-          base::UmaHistogramBoolean(base::StrCat({"Autofill.CreditCard.",
-                                                  GetCardIssuerIdSuffix(issuer),
-                                                  ".FilledWithMetadataOnce"}),
-                                    has_metadata);
+          base::UmaHistogramBoolean(
+              base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
+                            ".FilledWithMetadataOnce"}),
+              has_metadata);
         }
         break;
       case CardMetadataLoggingEvent::kWillSubmit:
         base::UmaHistogramBoolean(
-            base::StrCat({"Autofill.CreditCard.", GetCardIssuerIdSuffix(issuer),
+            base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
                           ".WillSubmitWithMetadataOnce"}),
             has_metadata);
         break;
       case CardMetadataLoggingEvent::kSubmitted:
         base::UmaHistogramBoolean(
-            base::StrCat({"Autofill.CreditCard.", GetCardIssuerIdSuffix(issuer),
+            base::StrCat({"Autofill.CreditCard.", histogram_issuer_or_network,
                           ".SubmittedWithMetadataOnce"}),
             has_metadata);
         break;
@@ -192,18 +213,20 @@ void LogAcceptanceLatency(base::TimeDelta latency,
                     GetMetadataAvailabilitySuffix(suggestion_context)}),
       latency);
 
-  std::string_view issuer_id_suffix =
-      GetCardIssuerIdSuffix(selected_card.issuer_id());
-  if (issuer_id_suffix.empty()) {
-    return;
+  for (const std::string& issuer_or_network :
+       {selected_card.issuer_id(), selected_card.network()}) {
+    const std::string_view& issuer_or_network_suffix =
+        GetCardIssuerIdOrNetworkSuffix(issuer_or_network);
+    if (issuer_or_network_suffix.empty()) {
+      continue;
+    }
+    base::UmaHistogramMediumTimes(
+        base::StrCat({histogram_name_prefix, "CardWithIssuerId.",
+                      GetMetadataAvailabilitySuffix(GetMetadataLoggingContext(
+                          std::vector<CreditCard>{selected_card})),
+                      ".", issuer_or_network_suffix}),
+        latency);
   }
-
-  base::UmaHistogramMediumTimes(
-      base::StrCat({histogram_name_prefix, "CardWithIssuerId.",
-                    GetMetadataAvailabilitySuffix(GetMetadataLoggingContext(
-                        std::vector<CreditCard>{selected_card})),
-                    ".", issuer_id_suffix}),
-      latency);
 }
 
 }  // namespace autofill::autofill_metrics

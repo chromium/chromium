@@ -28,6 +28,8 @@ class FormFieldDataAndroid {
   // `FormFieldDataAndroid`.
   struct FieldTypes {
     FieldTypes();
+    // Sets all types to `type`.
+    explicit FieldTypes(AutofillType type);
     FieldTypes(AutofillType heuristic_type,
                AutofillType server_type,
                AutofillType computed_type,
@@ -35,6 +37,10 @@ class FormFieldDataAndroid {
     FieldTypes(FieldTypes&&);
     FieldTypes& operator=(FieldTypes&&);
     ~FieldTypes();
+
+    // Returns true iff all types (including the server predictions) have the
+    // same string representation as `type`.
+    bool operator==(const AutofillType& type) const;
 
     AutofillType heuristic_type;
     AutofillType server_type;
@@ -62,7 +68,8 @@ class FormFieldDataAndroid {
   bool SimilarFieldAs(const FormFieldData& field) const;
   void UpdateAutofillTypes(FieldTypes field_types);
 
-  FieldGlobalId global_id() { return field_.get().global_id(); }
+  const FieldTypes& field_types() const { return field_types_; }
+  FieldGlobalId global_id() const { return field_.get().global_id(); }
 
  private:
   // The C++ <-> Java bridge.

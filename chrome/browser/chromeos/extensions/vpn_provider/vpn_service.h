@@ -58,7 +58,7 @@ class VpnServiceForExtension
   void OnConfigRemoved(const std::string& configuration_name) override;
   void OnPlatformMessage(const std::string& configuration_name,
                          int32_t platform_message,
-                         const absl::optional<std::string>& error) override;
+                         const std::optional<std::string>& error) override;
   void OnPacketReceived(const std::vector<uint8_t>& data) override;
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {

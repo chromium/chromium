@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -19,7 +21,6 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -31,7 +32,7 @@ namespace {
 // position in DIP screen coordinates set to |target_position|.
 void WaitForWindowPositionInScreen(const std::string& window_id,
                                    const gfx::Point& target_position) {
-  base::test::TestFuture<const absl::optional<gfx::Point>&> future;
+  base::test::TestFuture<const std::optional<gfx::Point>&> future;
   ASSERT_TRUE(base::test::RunUntil([&]() {
     chromeos::LacrosService::Get()
         ->GetRemote<crosapi::mojom::TestController>()

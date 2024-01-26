@@ -78,7 +78,7 @@ std::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
     return std::nullopt;
   }
 
-  // If |project_name| is not of type sequence, return absl::nullopt as it
+  // If |project_name| is not of type sequence, return std::nullopt as it
   // should not have a corresponding secondary ID.
   const auto* project_validator = maybe_project_validator.value();
   if (project_validator->event_type() !=

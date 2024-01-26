@@ -46,7 +46,7 @@
 #import "ios/web/web_view/error_translation_util.h"
 #import "ios/web/web_view/wk_security_origin_util.h"
 #import "ios/web/web_view/wk_web_view_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "net/cert/x509_util_apple.h"
 #import "net/http/http_content_disposition.h"
@@ -402,9 +402,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       requestURL.SchemeIs(url::kBlobScheme);
 
   _shouldPerformDownload = NO;
-  if (@available(iOS 15, *)) {
-    _shouldPerformDownload = action.shouldPerformDownload;
-  }
+  _shouldPerformDownload = action.shouldPerformDownload;
 
   __weak CRWWKNavigationHandler* weakSelf = self;
   auto callback =
@@ -433,6 +431,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   }
 
   BOOL isUserInitiated = [self.delegate isUserInitiatedAction:action];
+  BOOL hasTappedRecently =
+      self.userInteractionState->HasUserTappedRecently(webView);
 
   BOOL isCrossOriginTargetFrame = NO;
   if (action.sourceFrame && action.targetFrame &&
@@ -454,7 +454,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   const web::WebStatePolicyDecider::RequestInfo requestInfo(
       transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
-      isUserInitiated);
+      isUserInitiated, hasTappedRecently);
 
   self.webStateImpl->ShouldAllowRequest(action.request, requestInfo,
                                         std::move(callback));
@@ -522,20 +522,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
-  if (@available(iOS 15, *)) {
-    handler(WKNavigationResponsePolicyDownload);
-    return;
-  }
-
-  if (web::UrlHasWebScheme(responseURL)) {
-    [self createDownloadTaskForResponse:WKResponse HTTPHeaders:headers.get()];
-  } else {
-    // DownloadTask only supports web schemes, so do nothing.
-  }
-  // Discard the pending item to ensure that the current URL is not different
-  // from what is displayed on the view.
-  self.navigationManagerImpl->DiscardNonCommittedItems();
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  handler(WKNavigationResponsePolicyDownload);
 }
 
 - (void)webView:(WKWebView*)webView
@@ -1482,15 +1469,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // TODO(crbug.com/1308875): Remove this when `canShowMIMEType` is fixed.
   // On iOS 15 `canShowMIMEType` returns true for AR files although WebKit is
   // not capable of displaying them natively.
-  if (@available(iOS 15, *)) {
-    NSString* MIMEType = WKResponse.response.MIMEType;
-    if ([MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
-        [MIMEType isEqualToString:@"model/usd"] ||
-        [MIMEType isEqualToString:@"model/vnd.usdz+zip"] ||
-        [MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
-        [MIMEType isEqualToString:@"model/vnd.reality"]) {
-      return NO;
-    }
+  NSString* MIMEType = WKResponse.response.MIMEType;
+  if ([MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
+      [MIMEType isEqualToString:@"model/usd"] ||
+      [MIMEType isEqualToString:@"model/vnd.usdz+zip"] ||
+      [MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
+      [MIMEType isEqualToString:@"model/vnd.reality"]) {
+    return NO;
   }
 
   GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);
@@ -2202,11 +2187,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 }
 
 - (void)loadCancelled {
-  // TODO(crbug.com/821995):  Check if this function should be removed.
   if (self.navigationState != web::WKNavigationState::FINISHED) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.NavigationStateNotFinishedInLoadCancelled",
-                          self.beingDestroyed);
-
     self.navigationState = web::WKNavigationState::FINISHED;
     if (!self.beingDestroyed) {
       self.webStateImpl->SetIsLoading(false);

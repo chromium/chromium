@@ -1528,7 +1528,10 @@ void WebRequestEventRouter::DispatchEventToListeners(
         // regular event dispatching code for this case, as well?
         EventRouter::Get(id.browser_context)
             ->DispatchEventToSender(
-                render_process, id.browser_context, listener->id.extension_id,
+                render_process, id.browser_context,
+                /*host_id=*/
+                mojom::HostID(mojom::HostID::HostType::kExtensions,
+                              listener->id.extension_id),
                 listener->histogram_value, listener->id.sub_event_name,
                 listener->id.worker_thread_id,
                 listener->id.service_worker_version_id,

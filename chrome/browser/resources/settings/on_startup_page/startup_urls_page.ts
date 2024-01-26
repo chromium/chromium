@@ -22,7 +22,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
 import {getTemplate} from './startup_urls_page.html.js';
-import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
+import type {StartupPageInfo, StartupUrlsPageBrowserProxy} from './startup_urls_page_browser_proxy.js';
+import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 
 const SettingsStartupUrlsPageElementBase =

@@ -104,7 +104,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
           script_state->GetIsolate(), "foo"));
       return;
     }
-    Controller()->Enqueue(num);
+    Controller()->Enqueue(v8::Integer::New(script_state->GetIsolate(), num));
   }
 
   const SourceType type_;
@@ -461,7 +461,8 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({5, 6}));
 
-  ScriptValue reason = ScriptValue::From(script_state, "hello");
+  ScriptValue reason(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), "hello"));
 
   ReadableStream* stream =
       CreateConcatenatedReadableStream(script_state, source1, source2);
@@ -504,7 +505,8 @@ TEST(ConcatenatedReadableStreamTest, Cancel2) {
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({5}));
 
-  ScriptValue reason = ScriptValue::From(script_state, "hello");
+  ScriptValue reason(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), "hello"));
 
   ReadableStream* stream =
       CreateConcatenatedReadableStream(script_state, source1, source2);

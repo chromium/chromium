@@ -265,6 +265,49 @@ public class PageZoomUtils {
     }
 
     /**
+     * Returns true is the user has set a choice for whether OS adjustment should be made in zoom
+     * calculation. This setting is Chrome Android specific.
+     *
+     * @return boolean
+     */
+    public static boolean hasUserSetIncludeOSAdjustmentOption() {
+        assert ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)
+                : "hasUserSetIncludeOSAdjustmentOption should only be called if the flag is"
+                      + " enabled.";
+        return ContextUtils.getAppSharedPreferences()
+                .contains(AccessibilityConstants.PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
+    }
+
+    /**
+     * Returns true is Page Zoom should include an OS level adjustment to zoom level. If no value
+     * has been set by the user, return the current value of the feature param.
+     *
+     * @return boolean
+     */
+    public static boolean shouldIncludeOSAdjustment() {
+        assert ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)
+                : "shouldIncludeOSAdjustment should only be called if the flag is enabled.";
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(
+                        AccessibilityConstants.PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT,
+                        HostZoomMap.shouldAdjustForOSLevel());
+    }
+
+    /**
+     * Set a new user choice for including an OS level adjustment in zoom level calculation.
+     *
+     * @param newValue boolean
+     */
+    public static void setShouldIncludeOSAdjustment(boolean newValue) {
+        assert ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)
+                : "setShouldIncludeOSAdjustment should only be called if the flag is enabled.";
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(AccessibilityConstants.PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT, newValue)
+                .apply();
+    }
+
+    /**
      * Get the index of the next closest zoom factor in the cached available values in the given
      * direction from the current zoom factor.
      * Current zoom factor must be within range of possible zoom factors.

@@ -52,7 +52,7 @@ class UserUninstalledPreinstalledWebAppPrefs {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   void Add(const webapps::AppId& app_id, base::flat_set<GURL> install_urls);
-  absl::optional<webapps::AppId> LookUpAppIdByInstallUrl(
+  std::optional<webapps::AppId> LookUpAppIdByInstallUrl(
       const GURL& install_url);
   bool DoesAppIdExist(const webapps::AppId& app_id);
   void AppendExistingInstallUrlsPerAppId(const webapps::AppId& app_id,

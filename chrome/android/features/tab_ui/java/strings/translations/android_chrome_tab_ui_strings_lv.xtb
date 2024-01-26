@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Saņemt paziņojumus</translation>
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
+<translation id="427987768447457592">Jauna ciļņu grupa</translation>
 <translation id="4648718555153979859">Jūsu cilnes šeit ir grupētas kopā</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsauksme)}zero{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmju)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsauksme)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmes)}}</translation>
 <translation id="4850886885716139402">Skatīt</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
 <translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
+<translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> cilne, ko pēdējā laikā neesat izmantojis.}zero{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}one{Jums ir <ph name="TABS_COUNT_MANY" /> cilne, ko pēdējā laikā neesat izmantojis.}other{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}}</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>

@@ -73,7 +73,6 @@
 <translation id="2130870084309816036">無法連線至互聯網。如果你使用防火牆，請將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="2131230230468101642">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chrome 列在興趣喜好清單中的項目。</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
-<translation id="2146761408396054429">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chrome 可為你檢查此下載項目，並將密碼保存在裝置上</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
 <translation id="2174917724755363426">安裝尚未完成。確定要取消嗎？</translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
@@ -198,6 +197,7 @@
 <translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
+<translation id="4128488089242627000">提高 Chrome 執行速度，讓使用 JavaScript 的功能正常運作 (建議)</translation>
 <translation id="4147555960264124640">您已登入受管理的帳戶，並將管理控制權授予您的 Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">安裝中…</translation>
 <translation id="4149882025268051530">安裝程式無法解壓縮封存檔案，請再次下載 Google Chrome。</translation>
@@ -220,7 +220,6 @@
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
 <translation id="4384570495110188418">由於您尚未登入帳戶，因此 Chrome 無法檢查密碼</translation>
 <translation id="4389991535395284064">使用無痕模式瀏覽時，Chrome 會在使用不安全的連線載入網站前顯示警告</translation>
-<translation id="4393248995085527349">如要取得日後的 Google Chrome 更新，您將需要 macOS 10.15 或以上版本。此電腦正在使用 macOS 10.13。</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
@@ -245,6 +244,7 @@
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">您的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
+<translation id="4873692836499071887">如要取得日後的 Google Chrome 更新，你將需要 macOS 11 或以上版本。此電腦正在使用 macOS 10.15。</translation>
 <translation id="4873783916118289636">查看 Chrome 中重要的私隱和安全控制項</translation>
 <translation id="4891791193823137474">讓 Google Chrome 在背景執行</translation>
 <translation id="4895437082222824641">在 Chrome 新分頁中開啟連結(&amp;T)</translation>
@@ -308,7 +308,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
-<translation id="6010556343189461180">如要取得日後的 Google Chrome 更新，您將需要 macOS 10.15 或以上版本。此電腦正在使用 macOS 10.14。</translation>
 <translation id="6014316319780893079">透過 <ph name="BEGIN_LINK" />Chrome 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>
@@ -354,6 +353,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
 <translation id="6794858689789885890">在 Chrome 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
+<translation id="6851981911629679515">開啟 Chrome 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6933858244219479645">Chrome OS 系統</translation>
@@ -475,6 +475,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>

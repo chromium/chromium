@@ -5,6 +5,7 @@
 #include "chrome/browser/download/android/download_manager_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
@@ -36,7 +37,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/download/network/android/network_status_listener_android.h"
-#include "components/download/public/common/auto_resumption_handler.h"
+#include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_impl.h"
@@ -49,7 +50,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_request_utils.h"
 #include "net/url_request/referrer_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
@@ -187,19 +187,6 @@ static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(service);
 }
 
-DownloadManagerService::DownloadActionParams::DownloadActionParams(
-    DownloadAction download_action)
-    : action(download_action), has_user_gesture(false) {}
-
-DownloadManagerService::DownloadActionParams::DownloadActionParams(
-    DownloadAction download_action,
-    bool user_gesture)
-    : action(download_action), has_user_gesture(user_gesture) {}
-
-DownloadManagerService::DownloadActionParams::DownloadActionParams(
-    const DownloadActionParams& other)
-    : action(other.action), has_user_gesture(other.has_user_gesture) {}
-
 DownloadManagerService::DownloadManagerService()
     : is_manager_initialized_(false), is_pending_downloads_loaded_(false) {}
 
@@ -303,32 +290,15 @@ void DownloadManagerService::ResumeDownload(
     JNIEnv* env,
     jobject obj,
     const JavaParamRef<jstring>& jdownload_guid,
-    const JavaParamRef<jobject>& j_profile_key,
-    bool has_user_gesture) {
+    const JavaParamRef<jobject>& j_profile_key) {
   std::string download_guid = ConvertJavaStringToUTF8(env, jdownload_guid);
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord()) {
-    ResumeDownloadInternal(download_guid, profile_key, has_user_gesture);
+    ResumeDownloadInternal(download_guid, profile_key);
   } else {
-    EnqueueDownloadAction(download_guid,
-                          DownloadActionParams(RESUME, has_user_gesture));
+    EnqueueDownloadAction(download_guid, RESUME);
   }
-}
-
-void DownloadManagerService::RetryDownload(
-    JNIEnv* env,
-    jobject obj,
-    const JavaParamRef<jstring>& jdownload_guid,
-    const JavaParamRef<jobject>& j_profile_key,
-    bool has_user_gesture) {
-  std::string download_guid = ConvertJavaStringToUTF8(env, jdownload_guid);
-  ProfileKey* profile_key =
-      ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
-  if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord())
-    RetryDownloadInternal(download_guid, profile_key, has_user_gesture);
-  else
-    EnqueueDownloadAction(download_guid, DownloadActionParams(RETRY));
 }
 
 void DownloadManagerService::PauseDownload(
@@ -342,7 +312,7 @@ void DownloadManagerService::PauseDownload(
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord())
     PauseDownloadInternal(download_guid, profile_key);
   else
-    EnqueueDownloadAction(download_guid, DownloadActionParams(PAUSE));
+    EnqueueDownloadAction(download_guid, PAUSE);
 }
 
 void DownloadManagerService::RemoveDownload(
@@ -356,7 +326,7 @@ void DownloadManagerService::RemoveDownload(
   if (is_manager_initialized_ || profile_key->IsOffTheRecord())
     RemoveDownloadInternal(download_guid, profile_key);
   else
-    EnqueueDownloadAction(download_guid, DownloadActionParams(REMOVE));
+    EnqueueDownloadAction(download_guid, REMOVE);
 }
 
 void DownloadManagerService::GetAllDownloads(
@@ -445,7 +415,7 @@ void DownloadManagerService::CancelDownload(
   if (is_pending_downloads_loaded_ || profile_key->IsOffTheRecord())
     CancelDownloadInternal(download_guid, profile_key);
   else
-    EnqueueDownloadAction(download_guid, DownloadActionParams(CANCEL));
+    EnqueueDownloadAction(download_guid, CANCEL);
 }
 
 void DownloadManagerService::OnDownloadsInitialized(
@@ -521,8 +491,7 @@ void DownloadManagerService::OnDownloadRemoved(
 
 void DownloadManagerService::ResumeDownloadInternal(
     const std::string& download_guid,
-    ProfileKey* profile_key,
-    bool has_user_gesture) {
+    ProfileKey* profile_key) {
   download::DownloadItem* item = GetDownload(download_guid, profile_key);
   if (!item) {
     OnResumptionFailed(download_guid);
@@ -532,76 +501,9 @@ void DownloadManagerService::ResumeDownloadInternal(
     OnResumptionFailed(download_guid);
     return;
   }
-  item->Resume(has_user_gesture);
+  item->Resume(true /* user_resume */);
   if (resume_callback_for_testing_)
     std::move(resume_callback_for_testing_).Run(true);
-}
-
-void DownloadManagerService::RetryDownloadInternal(
-    const std::string& download_guid,
-    ProfileKey* profile_key,
-    bool has_user_gesture) {
-  content::DownloadManager* manager = GetDownloadManager(profile_key);
-  if (!manager)
-    return;
-
-  download::DownloadItem* item = manager->GetDownloadByGuid(download_guid);
-  if (!item)
-    return;
-
-  // Try to resume first.
-  if (item->CanResume()) {
-    item->Resume(has_user_gesture);
-    return;
-  }
-
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("download_manager_service_retry", R"(
-        semantics {
-          sender: "DownloadManagerService"
-          description:
-            "Retry a download by creating new network request."
-          trigger:
-            "User retries a download."
-          data: "None."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "This feature cannot be disabled in settings, but it is activated "
-            "by direct user action."
-          chrome_policy {
-            DownloadRestrictions {
-              DownloadRestrictions: 3
-            }
-          }
-        })");
-  auto download_url_params = std::make_unique<download::DownloadUrlParameters>(
-      item->GetURL(), traffic_annotation);
-
-  // Retry allows redirect.
-  download_url_params->set_cross_origin_redirects(
-      network::mojom::RedirectMode::kFollow);
-
-  // Retry is triggered through user gesture, and don't have renderer
-  // associated, content initiated has to be false to avoid download being
-  // blocked.
-  download_url_params->set_content_initiated(false);
-
-  // TODO(xingliu): See if we need to persist the referrer policy. Never clear
-  // referrer potentially may result in delivering unexpected referrer to web
-  // servers.
-  download_url_params->set_referrer_policy(net::ReferrerPolicy::NEVER_CLEAR);
-  download_url_params->set_referrer(item->GetReferrerUrl());
-  download_url_params->set_download_source(download::DownloadSource::RETRY);
-
-  // Creates a new download.
-  manager->DownloadUrl(std::move(download_url_params));
-
-  // Removes the current download.
-  item->Remove();
 }
 
 void DownloadManagerService::CancelDownloadInternal(
@@ -634,26 +536,26 @@ void DownloadManagerService::RemoveDownloadInternal(
 
 void DownloadManagerService::EnqueueDownloadAction(
     const std::string& download_guid,
-    const DownloadActionParams& params) {
+    DownloadAction download_action) {
   auto iter = pending_actions_.find(download_guid);
   if (iter == pending_actions_.end()) {
-    pending_actions_.insert(std::make_pair(download_guid, params));
+    pending_actions_.insert(std::make_pair(download_guid, download_action));
     return;
   }
-  switch (params.action) {
+  switch (download_action) {
     case RESUME:
-      if (iter->second.action == PAUSE)
-        iter->second = params;
+      if (iter->second == PAUSE) {
+        iter->second = RESUME;
+      }
       break;
     case PAUSE:
-      if (iter->second.action == RESUME)
-        iter->second = params;
+      if (iter->second == RESUME) {
+        iter->second = PAUSE;
+      }
       break;
     case CANCEL:
-      iter->second = params;
-      break;
     case REMOVE:
-      iter->second = params;
+      iter->second = download_action;
       break;
     default:
       NOTREACHED();
@@ -710,12 +612,11 @@ void DownloadManagerService::OnPendingDownloadsLoaded() {
 
   for (auto iter = pending_actions_.begin(); iter != pending_actions_.end();
        ++iter) {
-    DownloadActionParams params = iter->second;
+    DownloadAction action = iter->second;
     std::string download_guid = iter->first;
-    switch (params.action) {
+    switch (action) {
       case RESUME:
-        ResumeDownloadInternal(download_guid, profile_key,
-                               params.has_user_gesture);
+        ResumeDownloadInternal(download_guid, profile_key);
         break;
       case PAUSE:
         PauseDownloadInternal(download_guid, profile_key);

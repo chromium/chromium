@@ -107,6 +107,9 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   // Returns the shelf shortcut host badge icon border size.
   int GetShelfShortcutHostBadgeBorderSize() const;
 
+  // Returns the shelf shortcut bottom right corner radius.
+  int GetShelfShortcutTeardropCornerRadiusSize() const;
+
   // Returns the hotseat height for the given hotseat density.
   // NOTE: This may not match the actual hotseat size, as hotseat may get scaled
   // down if it does not fit in available bounds within the shelf. Use
@@ -341,6 +344,9 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
 
   // Size of the shortcut host badge border.
   const int shelf_shortcut_host_badge_border_size_;
+
+  // Size of the bottom right corner radius of a shortcut.
+  const int shelf_shortcut_teardrop_corner_radius_;
 
   // Size allocated for each app button on the shelf.
   const int shelf_button_size_;

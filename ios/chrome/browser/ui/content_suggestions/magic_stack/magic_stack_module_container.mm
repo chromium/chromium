@@ -11,18 +11,20 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 
 namespace {
 
@@ -67,6 +69,7 @@ const CGFloat kSeparatorHeight = 0.5;
   UIImageView* _placeholderImage;
   UIStackView* _titleStackView;
     MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
+    NSLayoutConstraint* _containerHeightAnchor;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -182,20 +185,9 @@ const CGFloat kSeparatorHeight = 0.5;
           constraintEqualToAnchor:_stackView.trailingAnchor],
     ]];
 
-    // Ensures that the modules conforms to a height of kModuleMaxHeight. For
-    // the MVT when it lives outside of the Magic Stack to stay as close to its
-    // intrinsic size as possible, the constraint is configured to be less than
-    // or equal to.
-    if (_type == ContentSuggestionsModuleType::kMostVisited &&
-        !ShouldPutMostVisitedSitesInMagicStack()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.heightAnchor constraintLessThanOrEqualToConstant:kModuleMaxHeight]
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight]
-      ]];
-    }
+    _containerHeightAnchor =
+        [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight];
+    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
 
     [self addSubview:_stackView];
     AddSameConstraintsWithInsets(_stackView, self, [self contentMargins]);
@@ -257,6 +249,18 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
+  // Ensures that the modules conforms to a height of kModuleMaxHeight. For
+  // the MVT when it lives outside of the Magic Stack to stay as close to its
+  // intrinsic size as possible, the constraint is configured to be less than
+  // or equal to.
+  if (config.type == ContentSuggestionsModuleType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    _containerHeightAnchor.active = NO;
+    _containerHeightAnchor = [self.heightAnchor
+        constraintLessThanOrEqualToConstant:kModuleMaxHeight];
+    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+  }
+
   if (config.type == ContentSuggestionsModuleType::kPlaceholder) {
     _isPlaceholder = YES;
     _placeholderImage = [[UIImageView alloc]
@@ -278,7 +282,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _title.accessibilityIdentifier =
       [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
 
-  _seeMoreButton.hidden = ![self shouldShowSeeMore];
+  _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
   if ([self shouldShowSubtitle]) {
     // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
@@ -335,7 +339,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSetUpListContentNotification:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+      return content_suggestions::SetUpListTitleString();
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
@@ -409,20 +413,11 @@ const CGFloat kSeparatorHeight = 0.5;
                        configurationForMenuAtLocation:(CGPoint)location {
   CHECK([self allowsLongPress]);
   __weak MagicStackModuleContainer* weakSelf = self;
-  UIContextMenuActionProvider actionProvider = ^(
-      NSArray<UIMenuElement*>* suggestedActions) {
-    UIAction* hideAction = [UIAction
-        actionWithTitle:[self contextMenuHideDescription]
-                  image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  MagicStackModuleContainer* strongSelf = weakSelf;
-                  [strongSelf->_delegate neverShowModuleType:strongSelf->_type];
-                }];
-    hideAction.attributes = UIMenuElementAttributesDestructive;
-    return [UIMenu menuWithTitle:[self contextMenuTitle]
-                        children:@[ hideAction ]];
-  };
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        return [UIMenu menuWithTitle:[weakSelf contextMenuTitle]
+                            children:[weakSelf contextMenuActions]];
+      };
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
@@ -430,6 +425,46 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 #pragma mark - Helpers
+
+// Returns the list of actions for the long-press /  context menu.
+- (NSArray<UIAction*>*)contextMenuActions {
+  NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
+
+  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
+    [actions addObject:[self turnOnTipsNotificationsAction]];
+  }
+  [actions addObject:[self hideAction]];
+  return actions;
+}
+
+// Returns the menu action to hide this module type.
+- (UIAction*)hideAction {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* hideAction = [UIAction
+      actionWithTitle:[self contextMenuHideDescription]
+                image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate neverShowModuleType:weakSelf.type];
+              }];
+  hideAction.attributes = UIMenuElementAttributesDestructive;
+  return hideAction;
+}
+
+// Returns the menu action to opt-in to Tips Notifications.
+- (UIAction*)turnOnTipsNotificationsAction {
+  __weak __typeof(self) weakSelf = self;
+  NSString* title = l10n_util::GetNSStringF(
+      IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
+      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
+  return
+      [UIAction actionWithTitle:title
+                          image:DefaultSymbolWithPointSize(kBellSymbol, 18)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.delegate enableNotifications:weakSelf.type];
+                        }];
+}
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
   [_delegate seeMoreWasTappedForModuleType:_type];
@@ -539,8 +574,10 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListContentNotification:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION);
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
+          l10n_util::GetStringUTF16(
+              content_suggestions::SetUpListTitleStringID()));
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSStringF(

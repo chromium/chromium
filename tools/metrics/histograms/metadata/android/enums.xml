@@ -172,6 +172,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed: Chrome already run locally"/>
   <int value="3" label="Failed: Chrome startup failed"/>
   <int value="4" label="Failed: Cannot sign in as previous user"/>
+  <int value="5" label="Failed: Sign-in timed-out or interrupted"/>
 </enum>
 
 <enum name="AndroidSearchEngineChoiceEvents">
@@ -929,6 +930,29 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="START_STICKY"/>
 </enum>
 
+<enum name="DragDropTabResult">
+  <summary>
+    SUCCESS is recorded during ACTION_DRAG_ENDED. The rest enums are all for
+    failed drops, which are recorded in ACTION_DROP. Also see
+    Android.DragDrop.Tab.FromStrip.Result
+  </summary>
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="IGNORED_TOOLBAR"/>
+  <int value="2" label="IGNORED_DIFF_MODEL_NOT_SUPPORTED"/>
+  <int value="3" label="IGNORED_TAB_SWITCHER"/>
+  <int value="4" label="IGNORED_SAME_INSTANCE"/>
+  <int value="5" label="ERROR_TAB_NOT_FOUND"/>
+</enum>
+
+<enum name="DragDropType">
+  <summary>See Android.DragDrop.Tab.Type</summary>
+  <int value="0" label="TAB_STRIP_TO_TAB_STRIP"/>
+  <int value="1" label="TAB_STRIP_TO_CONTENT"/>
+  <int value="2" label="TAB_STRIP_TO_NEW_INSTANCE"/>
+  <int value="3" label="LINK_TO_NEW_INSTANCE"/>
+  <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
+</enum>
+
 <enum name="ExifOrientation">
   <int value="0" label="Normal"/>
   <int value="1" label="Rotate 90"/>
@@ -1149,6 +1173,12 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="CvcSave"/>
   <int value="40" label="TrackingProtectionNotice"/>
   <int value="41" label="DesktopSiteWindowSetting"/>
+  <int value="42" label="PromptHatsLocationCustomInvitation"/>
+  <int value="43" label="PromptHatsLocationGenericInvitation"/>
+  <int value="44" label="PromptHatsCameraCustomInvitation"/>
+  <int value="45" label="PromptHatsCameraGenericInvitation"/>
+  <int value="46" label="PromptHatsMicrophoneCustomInvitation"/>
+  <int value="47" label="PromptHatsMicrophoneGenericInvitation"/>
 </enum>
 
 <enum name="MinimizeAppAndCloseTabType">
@@ -1274,6 +1304,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Photo picked"/>
   <int value="2" label="New photo"/>
   <int value="3" label="Use Android picker"/>
+</enum>
+
+<enum name="PreAssignedActivityState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not in app task, is Finishing"/>
+  <int value="2" label="Not in app task, not Finishing"/>
+  <int value="3" label="In app task, same task, is Finishing"/>
+  <int value="4" label="In app task, same task, not Finishing"/>
+  <int value="5" label="In app task, different task, is Finishing"/>
+  <int value="6" label="In app task, different task, not Finishing"/>
 </enum>
 
 <enum name="PrimaryCpuAbiBitness">

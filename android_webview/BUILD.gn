@@ -513,7 +513,6 @@ generate_jni("common_jni") {
 generate_jni("browser_jni_headers") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
-    "java/src/org/chromium/android_webview/AwAutofillClient.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
     "java/src/org/chromium/android_webview/AwBrowserProcess.java",
@@ -563,7 +562,6 @@ android_library("browser_java") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
     "java/src/org/chromium/android_webview/AwActionModeCallback.java",
-    "java/src/org/chromium/android_webview/AwAutofillClient.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
     "java/src/org/chromium/android_webview/AwBrowserProcess.java",
@@ -601,6 +599,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwRenderProcess.java",
     "java/src/org/chromium/android_webview/AwRenderProcessGoneDetail.java",
     "java/src/org/chromium/android_webview/AwScrollOffsetManager.java",
+    "java/src/org/chromium/android_webview/AwSelectionDropdownMenuDelegate.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerClient.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerController.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerSettings.java",
@@ -721,6 +720,7 @@ android_library("browser_java") {
     "//mojo/public/java:system_java",
     "//mojo/public/java/system:system_impl_java",
     "//net/android:net_java",
+    "//services/data_decoder/public/cpp/android:safe_json_java",
     "//services/network/public/mojom:mojom_java",
     "//services/network/public/mojom:url_loader_base_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -871,6 +871,7 @@ android_library("common_java") {
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//gpu/config:config_java",
+    "//media/base/android:media_java",
     "//net/base:features_java",
     "//services/network/public:features_java",
     "//services/tracing/public:features_java",

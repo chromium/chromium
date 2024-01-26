@@ -79,7 +79,7 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 
     ++started_attempt_count;
     const WebApp* app = all_apps_lock.registrar().GetAppById(app_id);
-    const absl::optional<GeneratedIconFix>& generated_icon_fix =
+    const std::optional<GeneratedIconFix>& generated_icon_fix =
         app->generated_icon_fix();
     base::UmaHistogramCounts100("WebApp.GeneratedIconFix.AttemptCount",
                                 generated_icon_fix.has_value()

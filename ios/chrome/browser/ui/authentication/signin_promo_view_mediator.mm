@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -608,7 +609,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }

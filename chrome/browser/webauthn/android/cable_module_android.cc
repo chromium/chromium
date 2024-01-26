@@ -8,6 +8,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
@@ -141,7 +142,7 @@ class SystemInterface : public RegistrationState::SystemInterface {
   }
 
   void GetPrelinkFromPlayServices(
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback)
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
       override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     DCHECK(!prelink_callback_);
@@ -174,7 +175,7 @@ class SystemInterface : public RegistrationState::SystemInterface {
   // Called when the Java code has finished getting linking information from
   // Play Services.
   void OnHavePlayServicesLinkingInformation(
-      absl::optional<std::vector<uint8_t>> cbor) {
+      std::optional<std::vector<uint8_t>> cbor) {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     std::move(prelink_callback_).Run(std::move(cbor));
   }
@@ -229,7 +230,7 @@ class SystemInterface : public RegistrationState::SystemInterface {
         reinterpret_cast<uintptr_t>(this));
   }
 
-  base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+  base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
       prelink_callback_;
   base::OnceCallback<void(bool)> work_profile_callback_;
 };
@@ -248,9 +249,8 @@ using device::cbor_extract::Stop;
 
 // PreLinkInfo reflects the linking information provided by Play Services.
 struct PreLinkInfo {
-  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
-  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
-  // ref-counting mismatch.
+  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
+  // skipping an AddRef() call and causing a ref-counting mismatch.
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* contact_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* pairing_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* secret;
@@ -296,7 +296,7 @@ GetSyncDataIfRegisteredInternal() {
   }
 
   if (state->link_data_from_play_services()) {
-    absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+    std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
         internal::PaaskInfoFromCBOR(*state->link_data_from_play_services());
     if (paask_info) {
       return *paask_info;
@@ -348,11 +348,11 @@ void SetPrefIfDifferent(PrefService* state,
 
 namespace internal {
 
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
+std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
     base::span<const uint8_t> cbor) {
-  absl::optional<cbor::Value> value = cbor::Reader::Read(cbor);
+  std::optional<cbor::Value> value = cbor::Reader::Read(cbor);
   if (!value || !value->is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PreLinkInfo info;
@@ -364,7 +364,7 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
       info.pairing_id->size() != sizeof(pairing_id) ||
       info.secret->size() != secret.size() ||
       info.peer_public_key_x962->size() != peer_public_key_x962.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id));
 
@@ -376,7 +376,7 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
   paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
   paask_info.contact_id = std::move(*info.contact_id);
   if (pairing_id > std::numeric_limits<uint32_t>::max()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   paask_info.id = static_cast<uint32_t>(pairing_id);
   paask_info.secret = secret;
@@ -428,7 +428,7 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
       return result;
     }
 
-    absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+    std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
         internal::PaaskInfoFromCBOR(base::as_bytes(
             base::span<const char>(previous_result_serialized.begin(),
                                    previous_result_serialized.end())));
@@ -469,12 +469,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegistered() {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnCachePaaSK)) {
-    return internal::CacheResult(GetSyncDataIfRegisteredInternal(),
-                                 g_browser_process->local_state());
-  } else {
-    return GetSyncDataIfRegisteredInternal();
-  }
+  return internal::CacheResult(GetSyncDataIfRegisteredInternal(),
+                               g_browser_process->local_state());
 }
 
 }  // namespace authenticator
@@ -518,7 +514,7 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
     JNIEnv* env,
     jlong system_interface_pointer,
     const base::android::JavaParamRef<jbyteArray>& cbor_java) {
-  absl::optional<std::vector<uint8_t>> optional_cbor;
+  std::optional<std::vector<uint8_t>> optional_cbor;
 
   if (cbor_java) {
     std::vector<uint8_t> cbor;

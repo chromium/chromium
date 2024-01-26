@@ -150,16 +150,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
-        if (account.name.startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
-            listener.onStatusReady(true, account);
+    public void checkChildAccountStatus(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
+        if (coreAccountInfo.getEmail().startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
+            listener.onStatusReady(true, coreAccountInfo);
         } else {
             listener.onStatusReady(false, /* childAccount= */ null);
         }
     }
 
     @Override
-    public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
+    public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
         return Promise.fulfilled(new AccountCapabilities(new HashMap<>()));
     }
 

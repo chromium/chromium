@@ -66,7 +66,7 @@ class CORE_EXPORT InlineItem {
   InlineItem(const InlineItem&,
              unsigned adjusted_start,
              unsigned adjusted_end,
-             scoped_refptr<const ShapeResult>);
+             const ShapeResult*);
 
   InlineItemType Type() const { return type_; }
   const char* InlineItemTypeToString(InlineItemType val) const;
@@ -89,12 +89,14 @@ class CORE_EXPORT InlineItem {
     SetTextType(TextItemType::kSymbolMarker);
   }
 
-  const ShapeResult* TextShapeResult() const { return shape_result_.get(); }
-  const ShapeResult* TextShapeResultNotShared() {
-    return !shape_result_ || shape_result_->HasOneRef()
-               ? shape_result_.get()
-               : TextShapeResultNotSharedSlow();
+  const ShapeResult* TextShapeResult() const { return shape_result_.Get(); }
+  ShapeResult* CloneTextShapeResult() {
+    DCHECK(shape_result_);
+    ShapeResult* clone = MakeGarbageCollected<ShapeResult>(*shape_result_);
+    shape_result_ = clone;
+    return clone;
   }
+
   bool IsUnsafeToReuseShapeResult() const {
     return is_unsafe_to_reuse_shape_result_;
   }
@@ -265,12 +267,11 @@ class CORE_EXPORT InlineItem {
   void Trace(Visitor* visitor) const;
 
  private:
-  const ShapeResult* TextShapeResultNotSharedSlow();
   void ComputeBoxProperties();
 
   unsigned start_offset_;
   unsigned end_offset_;
-  scoped_refptr<const ShapeResult> shape_result_;
+  Member<const ShapeResult> shape_result_;
   Member<LayoutObject> layout_object_;
 
   InlineItemType type_;

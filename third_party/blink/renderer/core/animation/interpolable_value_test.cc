@@ -13,7 +13,11 @@
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -136,6 +140,76 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
   EXPECT_FLOAT_EQ(11, To<InterpolableNumber>(base_list->Get(0))->Value());
   EXPECT_FLOAT_EQ(22, To<InterpolableNumber>(base_list->Get(1))->Value());
   EXPECT_FLOAT_EQ(33, To<InterpolableNumber>(base_list->Get(2))->Value());
+}
+
+TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
+  const struct TestCase {
+    String input;
+    double output;
+    double add_value;
+    double scale_value;
+    String interpolation_input;
+    double interpolation_output;
+    double interpolation_fraction;
+    double interpolation_result;
+  } test_cases[] = {
+      {"progress(11em from 1rem to 110px) * 10", 10.0, 10.0, 5.0,
+       "progress(11em from 1rem to 110px) * 11", 11.0, 0.5, 10.5},
+  };
+
+  Font font;
+  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  length_resolver.SetFontSizes(
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case.input);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+
+    // Test expression evaluation.
+    const CSSMathExpressionNode* expression =
+        CSSMathExpressionNode::ParseMathFunction(
+            CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+    auto* number = MakeGarbageCollected<InterpolableNumber>(*expression);
+    EXPECT_EQ(number->Value(length_resolver), test_case.output);
+
+    // Test clone, add, scale, scale and add.
+    auto* number_copy = number->Clone();
+    number_copy->Scale(test_case.scale_value);
+    EXPECT_EQ(number_copy->Value(length_resolver),
+              test_case.scale_value * test_case.output);
+    number_copy->Add(
+        *MakeGarbageCollected<InterpolableNumber>(test_case.add_value));
+    EXPECT_EQ(number_copy->Value(length_resolver),
+              test_case.scale_value * test_case.output + test_case.add_value);
+    number_copy = number->Clone();
+    number_copy->ScaleAndAdd(
+        test_case.scale_value,
+        *MakeGarbageCollected<InterpolableNumber>(test_case.add_value));
+    EXPECT_EQ(number_copy->Value(length_resolver),
+              test_case.scale_value * test_case.output + test_case.add_value);
+
+    // Test interpolation with other expression.
+    CSSTokenizer target_tokenizer(test_case.interpolation_input);
+    const auto target_tokens = target_tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange target_range(target_tokens);
+    const CSSMathExpressionNode* target_expression =
+        CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc,
+                                                 target_range, *context, true,
+                                                 kCSSAnchorQueryTypesNone);
+    auto* target = MakeGarbageCollected<InterpolableNumber>(*target_expression);
+    EXPECT_EQ(target->Value(length_resolver), test_case.interpolation_output);
+
+    auto* interpolation_result = MakeGarbageCollected<InterpolableNumber>();
+    number->Interpolate(*target, test_case.interpolation_fraction,
+                        *interpolation_result);
+    EXPECT_EQ(interpolation_result->Value(length_resolver),
+              test_case.interpolation_result);
+  }
 }
 
 }  // namespace blink

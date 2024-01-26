@@ -62,9 +62,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                            const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion) override;
-  bool RemoveSuggestion(const std::u16string& value,
-                        PopupItemId popup_item_id,
-                        Suggestion::BackendId backend_id) override;
+  bool RemoveSuggestion(const Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to `onQuery`, or the
@@ -98,8 +96,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // to be displayed. Called when an Autofill query result is available.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions,
-      bool is_all_server_suggestions = false);
+      const std::vector<Suggestion>& suggestions);
 
   // Returns the last targeted field types to be filled. This does not
   // equate to the field types that were actually filed, but only to those
@@ -267,11 +264,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
 
-  bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;
 
-  bool should_show_cards_from_account_option_ = false;
-  bool show_cards_from_account_suggestion_added_ = false;
+  bool show_cards_from_account_suggestion_was_shown_ = false;
 
   std::vector<PopupItemId> shown_suggestion_types_;
 

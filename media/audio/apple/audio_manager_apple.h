@@ -5,17 +5,24 @@
 #ifndef MEDIA_AUDIO_APPLE_AUDIO_MANAGER_APPLE_H_
 #define MEDIA_AUDIO_APPLE_AUDIO_MANAGER_APPLE_H_
 
-#include "media/audio/apple/audio_io_stream_client.h"
+#include <AudioUnit/AudioUnit.h>
+
 #include "media/audio/audio_manager_base.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <CoreAudio/CoreAudio.h>
+#else
+#include "media/audio/ios/audio_private_api.h"
+#endif
 
 namespace media {
 
-class AudioManagerApple : public AudioManagerBase, public AudioIOStreamClient {
+class AudioManagerApple : public AudioManagerBase {
  public:
   AudioManagerApple(const AudioManagerApple&) = delete;
   AudioManagerApple& operator=(const AudioManagerApple&) = delete;
 
-  ~AudioManagerApple() override = default;
+  ~AudioManagerApple() override;
 
   // Apple platform specific implementations overridden by mac and ios.
   // Manage device capabilities for ambient noise reduction. These functionality
@@ -51,6 +58,21 @@ class AudioManagerApple : public AudioManagerBase, public AudioIOStreamClient {
   virtual OSStatus GetInputDeviceStreamFormat(
       AudioUnit audio_unit,
       AudioStreamBasicDescription* input_format) = 0;
+
+  // Changes the I/O buffer size for `device_id` if `desired_buffer_size` is
+  // lower than the current device buffer size. The buffer size can also be
+  // modified under other conditions. See comments in the corresponding cc-file
+  // for more details.
+  // Returns false if an error occurred.
+  virtual bool MaybeChangeBufferSize(AudioDeviceID device_id,
+                                     AudioUnit audio_unit,
+                                     AudioUnitElement element,
+                                     size_t desired_buffer_size) = 0;
+
+#if BUILDFLAG(IS_MAC)
+  virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;
+  virtual void StopAmplitudePeakTrace() = 0;
+#endif
 
  protected:
   AudioManagerApple(std::unique_ptr<AudioThread> audio_thread,

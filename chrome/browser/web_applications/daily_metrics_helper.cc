@@ -88,7 +88,7 @@ class DesktopWebAppUkmRecorder {
 
 namespace {
 
-using absl::optional;
+using std::optional;
 
 bool skip_origin_check_for_testing_ = false;
 
@@ -111,12 +111,12 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
                                         const base::Value::Dict& record_dict) {
   GURL gurl(url);
   if (!gurl.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
   DailyInteraction record(gurl);
 
   optional<int> installed = record_dict.FindBool(kInstalled);
   if (!installed.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   record.installed = *installed;
 
   record.install_source = record_dict.FindInt(kInstallSource);
@@ -124,14 +124,14 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   optional<int> effective_display_mode =
       record_dict.FindInt(kEffectiveDisplayMode);
   if (!effective_display_mode.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   record.effective_display_mode = *effective_display_mode;
 
   record.captures_links = record_dict.FindBool(kCapturesLinks).value_or(false);
 
   optional<bool> promotable = record_dict.FindBool(kPromotable);
   if (!promotable.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   record.promotable = *promotable;
 
   optional<int> foreground_duration_sec =

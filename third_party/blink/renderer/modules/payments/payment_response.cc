@@ -50,7 +50,7 @@ v8::Local<v8::Value> BuildDetails(
           get_assertion_authentication_response->authenticator_attachment,
           ConvertTo<AuthenticationExtensionsClientOutputs*>(
               get_assertion_authentication_response->extensions));
-      return result->ToV8(script_state).ToLocalChecked();
+      return result->ToV8(script_state);
     }
   }
   if (secure_payment_confirmation) {
@@ -69,7 +69,7 @@ v8::Local<v8::Value> BuildDetails(
         authenticator_response,
         secure_payment_confirmation->authenticator_attachment,
         AuthenticationExtensionsClientOutputs::Create());
-    return result->ToV8(script_state).ToLocalChecked();
+    return result->ToV8(script_state);
   }
 
   if (json.empty()) {
@@ -151,13 +151,15 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("requestId", requestId());
   result.AddString("methodName", methodName());
-  result.Add("details", details(script_state));
+  result.AddV8Value("details", details(script_state).V8Value());
 
-  if (shippingAddress())
-    result.Add("shippingAddress",
-               shippingAddress()->toJSONForBinding(script_state));
-  else
+  if (shippingAddress()) {
+    result.AddV8Value(
+        "shippingAddress",
+        shippingAddress()->toJSONForBinding(script_state).V8Value());
+  } else {
     result.AddNull("shippingAddress");
+  }
 
   result.AddStringOrNull("shippingOption", shippingOption())
       .AddStringOrNull("payerName", payerName())

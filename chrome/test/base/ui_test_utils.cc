@@ -880,4 +880,26 @@ bool CheckWaiter::Check() {
   return true;
 }
 
+ViewBoundsWaiter::ViewBoundsWaiter(views::View* observed_view)
+    : observed_view_(observed_view) {
+  observed_view_->AddObserver(this);
+}
+
+ViewBoundsWaiter::~ViewBoundsWaiter() {
+  observed_view_->RemoveObserver(this);
+}
+
+void ViewBoundsWaiter::WaitForNonEmptyBounds() {
+  if (!observed_view_->bounds().IsEmpty()) {
+    return;
+  }
+  run_loop_.Run();
+}
+
+void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
+  if (!observed_view_->bounds().IsEmpty()) {
+    run_loop_.Quit();
+  }
+}
+
 }  // namespace ui_test_utils

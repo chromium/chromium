@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] where float32 0D scalars / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (uint8) is not supported.
+[FAIL] where float32 1D constant tensors / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (uint8) is not supported.
 [FAIL] where float32 1D tensors / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (uint8) is not supported.
 [FAIL] where float32 2D tensors / sync
@@ -32,6 +34,8 @@ This is a testharness.js-based test.
 [FAIL] where float32 4D tensors all broadcast 4D / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (uint8) is not supported.
 [FAIL] where float32 0D scalars / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] where float32 1D constant tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] where float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

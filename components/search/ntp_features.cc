@@ -132,12 +132,6 @@ BASE_FEATURE(kNtpChromeCartModule,
              "NtpChromeCartModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Comprehensive Theming color changes will be applied to the
-// Realbox on the New Tab Page.
-BASE_FEATURE(kNtpComprehensiveThemeRealbox,
-             "NtpComprehensiveThemeRealbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
 BASE_FEATURE(kNtpDummyModules,
@@ -343,6 +337,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
              "NtpHistoryClustersMaxClusters",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set the history clusters rankers' metrics data query time
+// range in days.
+BASE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays,
+             "NtpHistoryClustersModuleRankingMetricsQueryDays",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, module headers will display an associated icon.
 BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
@@ -458,11 +458,14 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
+    "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
     "NtpHistoryClustersModuleScoreThresholdParam";
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
+const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,

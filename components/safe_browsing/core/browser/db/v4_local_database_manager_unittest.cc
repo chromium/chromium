@@ -424,7 +424,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    StopLocalDatabaseManager();
+    ShutdownLocalDatabaseManager();
 
     PlatformTest::TearDown();
   }
@@ -590,8 +590,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   const GURL url("http://example.com/a/");
   TestClient client(SB_THREAT_TYPE_SAFE, url);
   bool result = v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      CheckBrowseUrlType::kHashDatabase);
+      url, usual_threat_types_, &client, CheckBrowseUrlType::kHashDatabase);
 
   if (kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_FALSE(result);
@@ -1031,9 +1030,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   const GURL url("https://www.example.com/");
   TestClient client(SB_THREAT_TYPE_SAFE, url);
   EXPECT_TRUE(GetQueuedChecks().empty());
-  v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      CheckBrowseUrlType::kHashDatabase);
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
+                                             CheckBrowseUrlType::kHashDatabase);
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
@@ -1042,9 +1040,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   EXPECT_TRUE(GetQueuedChecks().empty());
 
   ResetV4Database();
-  v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      CheckBrowseUrlType::kHashDatabase);
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
+                                             CheckBrowseUrlType::kHashDatabase);
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
@@ -1062,9 +1059,8 @@ TEST_F(V4LocalDatabaseManagerTest, CancelWhileQueued) {
 
   ResetV4Database();
 
-  v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      CheckBrowseUrlType::kHashDatabase);
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
+                                             CheckBrowseUrlType::kHashDatabase);
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
@@ -1159,11 +1155,9 @@ TEST_F(V4LocalDatabaseManagerTest, CancelQueued) {
                      v4_local_database_manager_.get());
   TestClient client2(SB_THREAT_TYPE_SAFE, url);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client1,
-      CheckBrowseUrlType::kHashDatabase));
+      url, usual_threat_types_, &client1, CheckBrowseUrlType::kHashDatabase));
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client2,
-      CheckBrowseUrlType::kHashDatabase));
+      url, usual_threat_types_, &client2, CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(2ul, GetQueuedChecks().size());
   EXPECT_FALSE(client1.on_check_browse_url_result_called());
   EXPECT_FALSE(client2.on_check_browse_url_result_called());
@@ -1842,6 +1836,28 @@ TEST_F(V4LocalDatabaseManagerTest, DeleteAssociatedFile) {
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(base::PathExists(store_file_path));
+}
+
+TEST_F(V4LocalDatabaseManagerTest, TestQueuedChecksMatchArtificialPrefixes) {
+  const GURL url("https://www.example.com/");
+  TestClient client(SB_THREAT_TYPE_URL_MALWARE, url);
+  EXPECT_TRUE(GetQueuedChecks().empty());
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
+                                             CheckBrowseUrlType::kHashDatabase);
+  // The database is unavailable so the check should get queued.
+  EXPECT_EQ(1ul, GetQueuedChecks().size());
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "mark_as_malware", "https://example.com/");
+  WaitForTasksOnTaskRunner();
+
+  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
+    EXPECT_FALSE(client.on_check_browse_url_result_called());
+    WaitForTasksOnTaskRunner();
+  }
+
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
+  EXPECT_TRUE(GetQueuedChecks().empty());
 }
 
 }  // namespace safe_browsing

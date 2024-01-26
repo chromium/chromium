@@ -134,19 +134,20 @@ class FakeNetworkMonitor : public ash::NetworkUiController::NetworkMonitor {
   base::WeakPtrFactory<FakeNetworkMonitor> weak_ptr_factory_{this};
 };
 
-// Helper class to own `KioskController` and the Kiosk managers it depends on.
-class KioskControllerHolder {
+class FakeAcceleratorController
+    : public KioskLaunchController::AcceleratorController {
  public:
-  KioskControllerHolder()
-      : kiosk_controller(web_kiosk_app_manager_,
-                         chrome_app_manager_,
-                         arc_kiosk_app_manager_) {}
-  ~KioskControllerHolder() = default;
+  FakeAcceleratorController() = default;
+  ~FakeAcceleratorController() override = default;
 
-  WebKioskAppManager web_kiosk_app_manager_;
-  KioskChromeAppManager chrome_app_manager_;
-  ArcKioskAppManager arc_kiosk_app_manager_;
-  KioskController kiosk_controller;
+  void EnableAccelerators() override { enabled_ = true; }
+
+  void DisableAccelerators() override { enabled_ = false; }
+
+  bool enabled() { return enabled_; }
+
+ private:
+  bool enabled_ = false;
 };
 
 }  // namespace
@@ -199,12 +200,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
     network_monitor_ = network_monitor_unique->GetWeakPtr();
+    auto fake_accelerator_controller =
+        std::make_unique<FakeAcceleratorController>();
+    accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
         /*host=*/nullptr, view_.get(),
         base::BindRepeating(
             &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
             base::Unretained(this)),
-        std::move(network_monitor_unique));
+        std::move(network_monitor_unique),
+        std::move(fake_accelerator_controller));
 
     // We can't call `crash_reporter::ResetCrashKeysForTesting()` to reset crash
     // keys since it destroys the storage for static crash keys. Instead we set
@@ -221,7 +226,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
 
-    kiosk_controller_holder_.reset();
+    kiosk_controller_.reset();
 
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
   }
@@ -235,6 +240,10 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   KioskProfileLoader::Delegate& profile_controls() { return *controller_; }
 
   FakeKioskAppLauncher& launcher() { return *app_launcher_; }
+
+  FakeAcceleratorController& accelerator_controller() {
+    return *accelerator_controller_;
+  }
 
   int num_launchers_created() { return app_launchers_created_; }
 
@@ -304,7 +313,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     AccountId account_id(AccountId::FromUserEmail(email));
     kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
 
-    kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
+    kiosk_controller_ = std::make_unique<KioskController>();
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -323,7 +332,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
-  std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
+  std::unique_ptr<KioskController> kiosk_controller_;
 
   std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
@@ -340,12 +349,25 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       network_monitor_;  // owned by `controller_`.
   int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
+  raw_ptr<FakeAcceleratorController>
+      accelerator_controller_;  // owned by `controller_`.
   KioskAppId kiosk_app_id_;
 };
 
 TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   EXPECT_EQ(view().last_data().url, GURL(kInstallUrl));
+}
+
+TEST_F(KioskLaunchControllerTest, ControllerShouldDisableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  EXPECT_FALSE(accelerator_controller().enabled());
+}
+
+TEST_F(KioskLaunchControllerTest, CleanUpShouldReenableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  CleanUpController();
+  EXPECT_TRUE(accelerator_controller().enabled());
 }
 
 TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {
@@ -885,7 +907,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         base::BindRepeating(
             &KioskLaunchControllerUsingLacrosTest::BuildFakeKioskAppLauncher,
             base::Unretained(this)),
-        std::make_unique<FakeNetworkMonitor>());
+        std::make_unique<FakeNetworkMonitor>(),
+        std::make_unique<FakeAcceleratorController>());
 
     SetUpKioskAppInAppManager();
   }
@@ -948,7 +971,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   void SetUpKioskAppInAppManager() {
-    kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
+    kiosk_controller_ = std::make_unique<KioskController>();
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -977,7 +1000,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
-  std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
+  std::unique_ptr<KioskController> kiosk_controller_;
 
   std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;

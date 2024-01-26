@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -85,7 +86,7 @@ class ARQuickLookTabHelper
   // not started.
   void ConfirmOrPreviewDownload(web::DownloadTask* download_task);
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<ARQuickLookTabHelperDelegate> delegate_ = nil;
 
   // The current download task.

@@ -27,7 +27,7 @@ inline constexpr char kIconUrl[] = "iconPath";
 
 std::unique_ptr<web_app::WebAppInstallInfo> GetAppInstallInfo(
     const base::Value::Dict& entry) {
-  absl::optional<bool> launch_in_standalone_window =
+  std::optional<bool> launch_in_standalone_window =
       entry.FindBool(kLaunchInStandaloneWindow);
   auto* app_title = entry.FindString(kAppTitle);
   auto* url = entry.FindString(kUrl);
@@ -84,7 +84,7 @@ void InstallWebAppResult(growth::ActionPerformer::Callback callback,
   if (std::find(success_codes.begin(), success_codes.end(), code) !=
       success_codes.end()) {
     std::move(callback).Run(growth::ActionResult::kSuccess,
-                            /* action_result_reason= */ absl::nullopt);
+                            /* action_result_reason= */ std::nullopt);
     return;
   }
 

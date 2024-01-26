@@ -64,12 +64,17 @@ class BaseTestCase(unittest.TestCase):
             'MOCK Trusty': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                },
             },
             'MOCK Trusty Multiple Steps': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
                     'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
                     'not_site_per_process_blink_web_tests (with patch)': {
                         'flag_specific': 'disable-site-isolation-trials',
                     },
@@ -319,11 +324,14 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
     def test_builders_to_fetch_from_flag_specific(self):
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([
             ('MOCK Trusty', 'blink_web_tests (with patch)'),
+            ('MOCK Trusty', 'blink_wpt_tests (with patch)'),
+            ('MOCK Trusty Multiple Steps', 'blink_web_tests (with patch)'),
+            ('MOCK Trusty Multiple Steps', 'blink_wpt_tests (with patch)'),
         ])
-        # Ports are the same, but the fallback paths differ.
         self.assertEqual(
             build_steps_to_fetch, {
                 ('MOCK Trusty', 'blink_web_tests (with patch)'),
+                ('MOCK Trusty', 'blink_wpt_tests (with patch)'),
             })
 
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([

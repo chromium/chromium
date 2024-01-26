@@ -7,8 +7,13 @@
 #include <ui-controls-unstable-v1-client-protocol.h>
 #include <wayland-client-protocol.h>
 
+#include <cstdint>
+#include <string>
+
 #include "base/logging.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/display.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
@@ -18,8 +23,14 @@
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/manager/managed_display_info.h"
+#include "ui/display/test/display_test_util.h"
+#endif
+
 namespace {
 
+// TODO(b/302179948) Increment version once server change hits beta.
 // send_key_events() is only available since version 2.
 constexpr uint32_t kMinVersion = 2;
 
@@ -54,7 +65,7 @@ WaylandInputEmulate::WaylandInputEmulate(
   }
 
   static constexpr wl_registry_listener kRegistryListener = {
-      .global = &OnGlobal, .global_remove = nullptr};
+      .global = &OnGlobal, .global_remove = &OnGlobalRemove};
   wl_registry_add_listener(registry_, &kRegistryListener, this);
 
   // Roundtrip one time to get the ui_controls global.
@@ -225,10 +236,38 @@ void WaylandInputEmulate::EmulateTouch(int action,
   zcr_ui_controls_v1_send_touch(
       ui_controls_, action, touch_id, touch_screen_location.x(),
       touch_screen_location.y(), /*surface=*/nullptr, request_id);
-
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   wayland_proxy->FlushForTesting();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WaylandInputEmulate::EmulateUpdateDisplay(const std::string& display_specs,
+                                               uint32_t request_id) {
+  VLOG(1) << "Updating display specs to: " << display_specs;
+  if (zcr_ui_controls_v1_get_version(ui_controls_) >=
+      ZCR_UI_CONTROLS_V1_DISPLAY_INFO_LIST_DONE_SINCE_VERSION) {
+    auto info_list = display::CreateDisplayInfoListFromSpecs(
+        display_specs, std::vector<display::Display>(), false);
+
+    for (const auto& pending_display : info_list) {
+      zcr_ui_controls_v1_set_display_info_size(
+          ui_controls_, pending_display.bounds_in_native().width(),
+          pending_display.bounds_in_native().height());
+
+      float device_scale_factor = pending_display.device_scale_factor();
+      uint32_t scale_factor_value =
+          *reinterpret_cast<const uint32_t*>(&device_scale_factor);
+      zcr_ui_controls_v1_set_display_info_device_scale_factor(
+          ui_controls_, scale_factor_value);
+      zcr_ui_controls_v1_display_info_done(ui_controls_);
+    }
+
+    zcr_ui_controls_v1_display_info_list_done(ui_controls_, request_id);
+    auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+    wayland_proxy->FlushForTesting();
+  }
+}
+#endif
 
 #if BUILDFLAG(IS_LINUX)
 void WaylandInputEmulate::ForceUseScreenCoordinatesOnce() {
@@ -358,6 +397,11 @@ void WaylandInputEmulate::OnGlobal(void* data,
         wl_registry_bind(registry, name, wayland_interface, version));
   }
 }
+
+// static
+void WaylandInputEmulate::OnGlobalRemove(void* data,
+                                         wl_registry* registry,
+                                         uint32_t name) {}
 
 // static
 void WaylandInputEmulate::OnFrameDone(void* data,

@@ -366,7 +366,7 @@ TEST(CreateBidiErrorResponse, NoId) {
   Status error_status{kUnknownCommand, "this game has no name"};
   base::Value::Dict response = internal::CreateBidiErrorResponse(error_status);
   EXPECT_THAT(response.FindString("type"), Pointee(Eq("error")));
-  EXPECT_THAT(response.FindDouble("id"), Eq(absl::nullopt));
+  EXPECT_THAT(response.FindDouble("id"), Eq(std::nullopt));
   EXPECT_THAT(response.FindString("error"), Pointee(Eq("unknown command")));
   EXPECT_THAT(response.FindString("message"),
               Pointee(ContainsRegex("this game has no name")));

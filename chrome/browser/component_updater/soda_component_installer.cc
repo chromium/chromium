@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
@@ -105,7 +105,7 @@ update_client::CrxInstaller::Result
 SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
     const base::FilePath& install_dir) {
 #if BUILDFLAG(IS_WIN)
-  const absl::optional<base::win::Sid> users_sid =
+  const std::optional<base::win::Sid> users_sid =
       base::win::Sid::FromKnownSid(base::win::WellKnownSid::kBuiltinUsers);
   if (!users_sid) {
     return update_client::CrxInstaller::Result(
@@ -256,7 +256,7 @@ void RegisterSodaLanguageComponent(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (captions::IsLiveCaptionFeatureSupported()) {
-    absl::optional<speech::SodaLanguagePackComponentConfig> config =
+    std::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {
       RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,

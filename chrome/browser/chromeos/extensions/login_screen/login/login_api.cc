@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/login.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -51,18 +51,18 @@ const char kUnsupportedByAsh[] = "Unsupported by ash";
 // error, or nullopt on success.
 // |min_version| is the minimum version of the ash implementation of
 // crosapi::mojom::Login necessary to run a specific API method.
-absl::optional<std::string> ValidateCrosapi(int min_version = 0) {
+std::optional<std::string> ValidateCrosapi(int min_version = 0) {
   if (!chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Login>())
     return kUnsupportedByAsh;
 
   if (min_version == 0)
-    return absl::nullopt;
+    return std::nullopt;
   int interface_version = chromeos::LacrosService::Get()
                               ->GetInterfaceVersion<crosapi::mojom::Login>();
   if (interface_version < min_version)
     return kUnsupportedByAsh;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -72,7 +72,7 @@ ExtensionFunctionWithOptionalErrorResult::
     ~ExtensionFunctionWithOptionalErrorResult() = default;
 
 void ExtensionFunctionWithOptionalErrorResult::OnResult(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error) {
     Respond(Error(*error));
     return;
@@ -111,7 +111,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginLaunchManagedGuestSessionFunction::OnResult, this);
 
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   if (parameters->password) {
     password = std::move(*parameters->password);
   }
@@ -125,7 +125,7 @@ LoginExitCurrentSessionFunction::~LoginExitCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi();
+  std::optional<std::string> error = ValidateCrosapi();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -137,7 +137,7 @@ ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
   auto callback =
       base::BindOnce(&LoginExitCurrentSessionFunction::OnResult, this);
 
-  absl::optional<std::string> data_for_next_login_attempt;
+  std::optional<std::string> data_for_next_login_attempt;
   if (parameters->data_for_next_login_attempt) {
     data_for_next_login_attempt =
         std::move(*parameters->data_for_next_login_attempt);
@@ -155,7 +155,7 @@ LoginFetchDataForNextLoginAttemptFunction::
 ExtensionFunction::ResponseAction
 LoginFetchDataForNextLoginAttemptFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi();
+  std::optional<std::string> error = ValidateCrosapi();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -175,7 +175,7 @@ LoginLockManagedGuestSessionFunction::~LoginLockManagedGuestSessionFunction() =
 
 ExtensionFunction::ResponseAction LoginLockManagedGuestSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi();
+  std::optional<std::string> error = ValidateCrosapi();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -216,7 +216,7 @@ LoginLockCurrentSessionFunction::~LoginLockCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginLockCurrentSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       ValidateCrosapi(crosapi::mojom::Login::kLockCurrentSessionMinVersion);
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
@@ -360,7 +360,7 @@ LoginSetDataForNextLoginAttemptFunction::
 ExtensionFunction::ResponseAction
 LoginSetDataForNextLoginAttemptFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi();
+  std::optional<std::string> error = ValidateCrosapi();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }
@@ -400,7 +400,7 @@ LoginNotifyExternalLogoutDoneFunction::
 
 ExtensionFunction::ResponseAction LoginNotifyExternalLogoutDoneFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(
+  std::optional<std::string> error = ValidateCrosapi(
       crosapi::mojom::Login::kNotifyOnExternalLogoutDoneMinVersion);
   if (error.has_value()) {
     return RespondNow(Error(error.value()));

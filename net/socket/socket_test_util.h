@@ -20,7 +20,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -450,9 +449,7 @@ class StaticSocketDataProvider : public SocketDataProvider {
   void Reset() override;
 
   StaticSocketDataHelper helper_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SocketDataPrinter* printer_ = nullptr;
+  raw_ptr<SocketDataPrinter> printer_ = nullptr;
   bool paused_ = false;
 };
 
@@ -505,6 +502,7 @@ struct SSLSocketDataProvider {
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
+  absl::optional<bool> expected_early_data_enabled;
   absl::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
   absl::optional<HostPortPair> expected_host_and_port;

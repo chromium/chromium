@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/download/download_manager_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -31,7 +32,7 @@ namespace {
 
 // Matcher for "Download" button on Download Manager UI.
 id<GREYMatcher> DownloadButton() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD);
+  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
 }
 
 // Provides downloads landing page with download link.

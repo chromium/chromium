@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Meldingen krijgen</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="4212246570487010370">Verder browsen</translation>
+<translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">Weergave</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
+<translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Je hebt <ph name="TABS_COUNT_ONE" /> tabblad dat je niet recent hebt gebruikt}other{Je hebt <ph name="TABS_COUNT_MANY" /> tabbladen die je niet recent hebt gebruikt}}</translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>

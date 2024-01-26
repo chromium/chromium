@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "permission_prompt_chip_model.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

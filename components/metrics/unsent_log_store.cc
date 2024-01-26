@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -292,29 +293,35 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   // |staged_log_index_|.
   absl::optional<size_t> staged_index_distance;
 
+  const bool trimming_enabled =
+      base::FeatureList::IsEnabled(features::kMetricsLogTrimming);
+
   // Reverse order, so newest ones are prioritized.
   for (int i = list_.size() - 1; i >= 0; --i) {
     size_t log_size = list_[i]->compressed_log_data.length();
-    // Hit the caps, we can stop moving the logs.
-    if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
-        writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
-      // The rest of the logs (including the current one) are trimmed.
-      if (overwrite_in_memory_store) {
-        NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
-                            list_.begin(), list_.begin() + i + 1),
-                        MetricsLogsEventManager::LogEvent::kLogTrimmed);
+
+    if (trimming_enabled) {
+      // Hit the caps, we can stop moving the logs.
+      if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
+          writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
+        // The rest of the logs (including the current one) are trimmed.
+        if (overwrite_in_memory_store) {
+          NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
+                              list_.begin(), list_.begin() + i + 1),
+                          MetricsLogsEventManager::LogEvent::kLogTrimmed);
+        }
+        break;
       }
-      break;
-    }
-    // Omit overly large individual logs if the value is non-zero.
-    if (log_store_limits_.max_log_size_bytes != 0 &&
-        log_size > log_store_limits_.max_log_size_bytes) {
-      metrics_->RecordDroppedLogSize(log_size);
-      if (overwrite_in_memory_store) {
-        NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
-                       list_[i]->hash, "Log size too large.");
+      // Omit overly large individual logs if the value is non-zero.
+      if (log_store_limits_.max_log_size_bytes != 0 &&
+          log_size > log_store_limits_.max_log_size_bytes) {
+        metrics_->RecordDroppedLogSize(log_size);
+        if (overwrite_in_memory_store) {
+          NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
+                         list_[i]->hash, "Log size too large.");
+        }
+        continue;
       }
-      continue;
     }
 
     bytes_used += log_size;
@@ -325,8 +332,9 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
 
     // Append log to prefs.
     writer.WriteLogEntry(list_[i].get());
-    if (overwrite_in_memory_store)
+    if (overwrite_in_memory_store) {
       trimmed_list.emplace_back(std::move(list_[i]));
+    }
   }
 
   writer.Finish();

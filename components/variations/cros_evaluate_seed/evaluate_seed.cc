@@ -27,6 +27,7 @@
 #include "components/variations/cros_evaluate_seed/cros_safe_seed_manager.h"
 #include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
 #include "components/variations/cros_evaluate_seed/early_boot_enabled_state_provider.h"
+#include "components/variations/cros_evaluate_seed/early_boot_feature_visitor.h"
 #include "components/variations/cros_evaluate_seed/early_boot_safe_seed.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/proto/study.pb.h"
@@ -36,13 +37,11 @@
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
 namespace {
-// Test-only feature. TODO(b/297870545): remove.
-constexpr char kTestFeatureName[] = "CrOSEarlyBootTestFeature";
-BASE_FEATURE(kTestFeature, kTestFeatureName, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
 
@@ -122,38 +121,18 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   }
 
   // TODO(b/297870545): serialize correctly.
-  // ideally, we want:
-  // * Early-boot features that have trials associated (and have them correctly
-  //   associated)
-  // * Early-boot features that do not have trials associated (e.g. those
-  //   manually specified by --enable-features)
+  // ideally, we want to add:
   // * (Early-boot?) trials that do not have features associated (e.g. for
   //   uniformity trials)
   // We also do not want to mark the trial as active yet, but given that
   // evaluate_seed will not report anything to UMA that isn't urgent.
+  EarlyBootFeatureVisitor feature_visitor;
+  base::FeatureList::VisitFeaturesAndParams(feature_visitor);
+  google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
+      feature_visitor.release_overrides();
+  computed_state->mutable_overrides()->Assign(overrides.begin(),
+                                              overrides.end());
 
-  // The below code is placeholder and solely in place for tests to be able
-  // to verify that we're doing something.
-  // b/297870545 will address us replacing the below code with something more
-  // permanent, which will not request specific state for individual
-  // base::Feature objects, so the caching logic won't be necessary.
-  featured::FeatureOverride* feature = computed_state->add_overrides();
-  feature->set_name(kTestFeatureName);
-  feature->set_enabled(base::FeatureList::IsEnabled(kTestFeature));
-  base::FieldTrial* field_trial =
-      base::FeatureList::GetFieldTrial(kTestFeature);
-  if (field_trial) {
-    feature->set_trial_name(field_trial->trial_name());
-    feature->set_group_name(field_trial->GetGroupNameWithoutActivation());
-  }
-  std::map<std::string, std::string> params;
-  if (base::GetFieldTrialParamsByFeature(kTestFeature, &params)) {
-    for (const auto& [k, v] : params) {
-      featured::Param* param = feature->add_params();
-      param->set_key(k);
-      param->set_value(v);
-    }
-  }
   return true;
 }
 }  // namespace
@@ -326,8 +305,7 @@ int EvaluateSeedMain(FILE* in_stream,
     return EXIT_FAILURE;
   }
 
-  if (!out.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(out_str.data(), out_str.size())))) {
+  if (!out.WriteAtCurrentPosAndCheck(base::as_byte_span(out_str))) {
     LOG(ERROR) << "Failed to write to output";
     return EXIT_FAILURE;
   }

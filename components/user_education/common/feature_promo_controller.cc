@@ -24,6 +24,7 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/accessibility/ax_mode.h"
@@ -32,6 +33,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace user_education {
+
+namespace {
+DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kFeaturePromoControllerNotice);
+}
 
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
@@ -50,13 +55,26 @@ struct FeaturePromoControllerCommon::ShowPromoBubbleParams {
   bool is_critical_promo = false;
 };
 
+struct FeaturePromoControllerCommon::QueuedPromoData {
+  using PromoInfo = FeaturePromoSessionPolicy::PromoInfo;
+
+  QueuedPromoData(FeaturePromoParams params_, PromoInfo info_)
+      : params(std::move(params_)), info(info_) {}
+  QueuedPromoData(QueuedPromoData&& other) noexcept = default;
+  ~QueuedPromoData() = default;
+
+  FeaturePromoParams params;
+  PromoInfo info;
+};
+
 FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     feature_engagement::Tracker* feature_engagement_tracker,
     FeaturePromoRegistry* registry,
     HelpBubbleFactoryRegistry* help_bubble_registry,
     FeaturePromoStorageService* storage_service,
     FeaturePromoSessionPolicy* session_policy,
-    TutorialService* tutorial_service)
+    TutorialService* tutorial_service,
+    ProductMessagingController* messaging_controller)
     : in_iph_demo_mode_(
           base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)),
       registry_(registry),
@@ -64,19 +82,15 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
       bubble_factory_registry_(help_bubble_registry),
       storage_service_(storage_service),
       session_policy_(session_policy),
-      tutorial_service_(tutorial_service) {
+      tutorial_service_(tutorial_service),
+      messaging_controller_(messaging_controller) {
   DCHECK(feature_engagement_tracker_);
   DCHECK(bubble_factory_registry_);
   DCHECK(storage_service_);
 }
 
 FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
-  // Inform any pending startup promos that they were not shown.
-  for (auto& [feature, callback] : startup_promos_) {
-    if (callback) {
-      std::move(callback).Run(*feature, FeaturePromoResult::kCanceled);
-    }
-  }
+  FailQueuedPromos();
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromo(
@@ -109,15 +123,25 @@ bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
   }
 
   // If the promo is already queued, fail.
-  if (base::Contains(startup_promos_, iph_feature)) {
+  if (IsPromoQueued(*iph_feature)) {
     return false;
   }
 
   // Queue the promo.
-  startup_promos_.emplace(iph_feature, std::move(params.startup_callback));
+  const auto* spec = registry_->GetParamsForFeature(*iph_feature);
+  if (!spec) {
+    return false;
+  }
+
+  queued_promos_.emplace_back(
+      iph_feature,
+      QueuedPromoData(std::move(params),
+                      session_policy_->SpecificationToPromoInfo(*spec)));
+
+  // This will fire immediately if the tracker is initialized.
   feature_engagement_tracker_->AddOnInitializedCallback(base::BindOnce(
       &FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized,
-      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
+      weak_ptr_factory_.GetWeakPtr()));
 
   // The promo has been successfully queued. Once the FE backend is initialized,
   // MaybeShowPromo() will be called to see if the promo should actually be
@@ -251,8 +275,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
 
 FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
     const base::Feature& iph_feature) const {
-  if (base::Contains(startup_promos_, &iph_feature))
+  if (IsPromoQueued(iph_feature)) {
     return FeaturePromoStatus::kQueuedForStartup;
+  }
   if (GetCurrentPromoFeature() != &iph_feature) {
     return FeaturePromoStatus::kNotRunning;
   }
@@ -266,7 +291,7 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
     ui::ElementIdentifier menu_element_id) const {
   auto* iph_feature = current_promo_ ? current_promo_->iph_feature() : nullptr;
   if (iph_feature && registry_) {
-    auto* spec = registry_->GetParamsForFeature(*iph_feature);
+    auto* const spec = registry_->GetParamsForFeature(*iph_feature);
     if (spec->anchor_element_id() == menu_element_id) {
       return spec;
     }
@@ -277,7 +302,7 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
 bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
     const base::Feature& iph_feature,
     FeaturePromoClosedReason* last_close_reason) const {
-  const FeaturePromoSpecification* spec =
+  const FeaturePromoSpecification* const spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec) {
     return false;
@@ -318,12 +343,13 @@ bool FeaturePromoControllerCommon::EndPromo(
 bool FeaturePromoControllerCommon::EndPromo(
     const base::Feature& iph_feature,
     FeaturePromoClosedReason close_reason) {
-  const auto it = startup_promos_.find(&iph_feature);
-  if (it != startup_promos_.end()) {
-    if (it->second) {
-      std::move(it->second).Run(iph_feature, FeaturePromoResult::kCanceled);
+  const auto it = FindQueuedPromo(iph_feature);
+  if (it != queued_promos_.end()) {
+    auto& cb = it->second.params.queued_promo_callback;
+    if (cb) {
+      std::move(cb).Run(iph_feature, FeaturePromoResult::kCanceled);
     }
-    startup_promos_.erase(it);
+    queued_promos_.erase(it);
     return true;
   }
 
@@ -343,6 +369,7 @@ void FeaturePromoControllerCommon::RecordPromoEnded(
   current_promo_->OnPromoEnded(close_reason, continue_after_close);
   if (!continue_after_close) {
     current_promo_.reset();
+    MaybeShowQueuedPromo();
   }
 }
 
@@ -411,30 +438,149 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
 }
 
 void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
-    FeaturePromoParams params,
     bool tracker_initialized_successfully) {
-  const base::Feature* const iph_feature = &params.feature.get();
+  if (tracker_initialized_successfully) {
+    MaybeShowQueuedPromo();
+  } else {
+    FailQueuedPromos();
+  }
+}
 
-  // If the promo has been canceled, do not proceed.
-  const auto it = startup_promos_.find(iph_feature);
-  if (it == startup_promos_.end()) {
+void FeaturePromoControllerCommon::MaybeRequestMessagePriority() {
+  if (!messaging_controller_->IsNoticeQueued(kFeaturePromoControllerNotice)) {
+    // Queues a request to be notified when all other notices have been
+    // processed. This prevents the promo controller from immediately being
+    // given priority again.
+    messaging_controller_->QueueRequiredNotice(
+        kFeaturePromoControllerNotice,
+        base::BindOnce(&FeaturePromoControllerCommon::OnMessagePriority,
+                       weak_ptr_factory_.GetWeakPtr()),
+        {internal::kShowAfterAllNotices});
+  }
+}
+
+void FeaturePromoControllerCommon::OnMessagePriority(
+    RequiredNoticePriorityHandle notice_handle) {
+  messaging_priority_handle_ = std::move(notice_handle);
+  MaybeShowQueuedPromo();
+}
+
+FeaturePromoControllerCommon::QueuedPromos::iterator
+FeaturePromoControllerCommon::GetNextQueuedPromo() {
+  QueuedPromos::iterator result = queued_promos_.end();
+  for (auto it = queued_promos_.begin(); it != queued_promos_.end(); ++it) {
+    if (result == queued_promos_.end() ||
+        it->second.info.priority > result->second.info.priority) {
+      result = it;
+    }
+  }
+  return result;
+}
+
+void FeaturePromoControllerCommon::MaybeShowQueuedPromo() {
+  // This should only ever be called after the tracker is initialized.
+  CHECK(feature_engagement_tracker_->IsInitialized());
+
+  // Fetch the next-highest-priority promo from the queue.
+  const auto next = GetNextQueuedPromo();
+  if (next == queued_promos_.end()) {
+    messaging_priority_handle_.Release();
     return;
   }
 
-  // Store the callback and remove the promo from the pending list.
-  StartupPromoCallback callback = std::move(it->second);
-  startup_promos_.erase(it);
+  const bool is_high_priority = next->second.info.priority ==
+                                FeaturePromoSessionPolicy::PromoPriority::kHigh;
+
+  // Coordinate with the product messaging system to make sure a promo will not
+  // attempt to be shown over a non-IPH leagal notice.
+  if (messaging_controller_->has_pending_notices()) {
+    // Does the FeautrePromoController have messaging priority?
+    if (!messaging_priority_handle_) {
+      // No, which means another non-IPH promo does. Request priority and quit
+      // for now.
+      MaybeRequestMessagePriority();
+      return;
+    }
+
+    // The controller has priority. Whether it keeps it depends on whether a
+    // high-priority promo is queued; for high-priority promos, retain message
+    // priority until all such promos are shown or fail to show.
+    if (!is_high_priority) {
+      // Not high-priority. Release the handle and see if there are any
+      // additional pending non-IPH notices. This may show another notice, but
+      // it will be deferred a frame.
+      messaging_priority_handle_.Release();
+      if (messaging_controller_->has_pending_notices()) {
+        // Register again to be given priority after all remaining notices are
+        // shown. This will not cause a race because the method below queues a
+        // request that must be processed only after all other requests to show
+        // critical messages have completed.
+        MaybeRequestMessagePriority();
+        return;
+      }
+    }
+  }
+
+  // It's possible that the promo controller doesn't have messaging priority but
+  // wants to show a high-priority IPH. In that case, do not proceed until the
+  // controller receives priority.
+  if (is_high_priority && !messaging_priority_handle_) {
+    MaybeRequestMessagePriority();
+    return;
+  }
+
+  // At this point, the priority handle should be held if and only if the IPH to
+  // be shown is high-priority. (This is a DCHECK because failing to satisfy
+  // this constraint won't cause a crash, just potentially undesirable behavior
+  // in a very unlikely corner case.)
+  DCHECK_EQ(!!messaging_priority_handle_, is_high_priority);
+
+  // Store the data that is needed to show the promo and then remove it from
+  // the queue.
+  const base::Feature* const iph_feature = &next->second.params.feature.get();
+  FeaturePromoParams params = std::move(next->second.params);
+  queued_promos_.erase(next);
+  QueuedPromoCallback callback = std::move(params.queued_promo_callback);
 
   // Try to start the promo, assuming the tracker was successfully initialized.
-  FeaturePromoResult result;
-  if (tracker_initialized_successfully) {
-    result = MaybeShowPromo(std::move(params));
-  } else {
-    result = FeaturePromoResult::kError;
-  }
+  const FeaturePromoResult result = MaybeShowPromo(std::move(params));
   if (callback) {
     std::move(callback).Run(*iph_feature, result);
   }
+
+  // On failure, there may still be promos to show, so attempt to show the next
+  // one in the queue (this method exits immediately if the queue is empty).
+  if (!result) {
+    MaybeShowQueuedPromo();
+  }
+}
+
+// Returns whether `iph_feature` is queued to be shown.
+bool FeaturePromoControllerCommon::IsPromoQueued(
+    const base::Feature& iph_feature) const {
+  return std::any_of(
+      queued_promos_.begin(), queued_promos_.end(),
+      [&iph_feature](const auto& pr) { return pr.first == &iph_feature; });
+}
+
+// Returns an iterator into the queued promo list matching `iph_feature`, or
+// `queued_promos_.end()` if not found.
+FeaturePromoControllerCommon::QueuedPromos::iterator
+FeaturePromoControllerCommon::FindQueuedPromo(
+    const base::Feature& iph_feature) {
+  return std::find_if(
+      queued_promos_.begin(), queued_promos_.end(),
+      [&iph_feature](const auto& pr) { return pr.first == &iph_feature; });
+}
+
+void FeaturePromoControllerCommon::FailQueuedPromos() {
+  for (auto& [feature, data] : queued_promos_) {
+    auto& cb = data.params.queued_promo_callback;
+    if (cb) {
+      std::move(cb).Run(*feature, FeaturePromoResult::kError);
+    }
+  }
+  queued_promos_.clear();
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
@@ -448,11 +594,11 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   // Note that this check is bypassed if this is for an explicit demo, but not
   // in demo mode, as the IPH may be queued for startup specifically because it
   // is being demoed.
-  if (!for_demo && base::Contains(startup_promos_, &iph_feature)) {
+  if (!for_demo && IsPromoQueued(iph_feature)) {
     return FeaturePromoResult::kBlockedByPromo;
   }
 
-  const FeaturePromoSpecification* spec =
+  const FeaturePromoSpecification* const spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec) {
     return FeaturePromoResult::kError;
@@ -479,6 +625,12 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     current_promo = last_promo_info_;
   } else if (bubble_factory_registry_->is_any_bubble_showing()) {
     current_promo = FeaturePromoSessionPolicy::PromoInfo();
+  }
+
+  // Promos are blocked if some other critical user messaging is queued.
+  if (messaging_controller_->has_pending_notices() &&
+      !messaging_priority_handle_) {
+    return FeaturePromoResult::kBlockedByPromo;
   }
 
   // Defer to the session policy to determine if the promo can show.
@@ -632,6 +784,7 @@ void FeaturePromoControllerCommon::FinishContinuedPromo(
   if (GetCurrentPromoFeature() == &iph_feature) {
     current_promo_->OnContinuedPromoEnded(/*completed_successfully=*/true);
     current_promo_.reset();
+    MaybeShowQueuedPromo();
   }
 }
 

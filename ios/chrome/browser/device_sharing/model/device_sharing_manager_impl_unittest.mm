@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -14,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -46,7 +47,7 @@ class DeviceSharingManagerImplTest : public PlatformTest {
   __strong NSURL* test_nsurl_2_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  DeviceSharingManagerImpl* sharing_manager_;
+  raw_ptr<DeviceSharingManagerImpl> sharing_manager_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

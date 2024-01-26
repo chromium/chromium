@@ -17,8 +17,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -27,12 +28,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {MojomData} from './data.js';
-import {DangerType, PageHandlerInterface, SafeBrowsingState, State} from './downloads.mojom-webui.js';
+import type {MojomData} from './data.js';
+import type {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {DangerType, SafeBrowsingState, State} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
 import {getTemplate} from './item.html.js';
 
@@ -812,8 +814,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onCancelClick_() {
     this.restoreFocusAfterCancel_ = true;
-    this.mojoHandler_!.cancel(this.data.id);
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.cancel(this.data.id);
     if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderCanceled'));
       this.getMoreActionsMenu().close();
     }
   }
@@ -880,11 +885,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
   }
 
+  private doPause_() {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.pause(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderPaused'));
+    }
+  }
+
+  private doResume_() {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.resume(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderResumed'));
+    }
+  }
+
   private onPauseOrResumeClick_() {
     if (this.isInProgress_) {
-      this.mojoHandler_!.pause(this.data.id);
+      this.doPause_();
     } else {
-      this.mojoHandler_!.resume(this.data.id);
+      this.doResume_();
     }
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();
@@ -955,14 +978,19 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     // "Suspicious" types which show up in grey can be validated directly.
-    const SAVED_FROM_PAGE_TYPES = [
-      DisplayType.SUSPICIOUS,
-      DisplayType.UNVERIFIED,
-      DisplayType.INSECURE,
-    ];
-    assert(SAVED_FROM_PAGE_TYPES.includes(this.displayType_));
+    // This maps each such display type to its applicable screenreader
+    // announcement string id.
+    const SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS = new Map([
+      [DisplayType.SUSPICIOUS, 'screenreaderSavedSuspicious'],
+      [DisplayType.UNVERIFIED, 'screenreaderSavedUnverified'],
+      [DisplayType.INSECURE, 'screenreaderSavedInsecure'],
+    ]);
+    assert(SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.has(this.displayType_));
     assert(!!this.mojoHandler_);
     this.mojoHandler_.saveSuspiciousRequiringGesture(this.data.id);
+    const announcement = loadTimeData.getString(
+        SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.get(this.displayType_) as string);
+    getAnnouncerInstance().announce(announcement);
   }
 
   private onShowClick_() {

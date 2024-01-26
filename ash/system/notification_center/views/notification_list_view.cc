@@ -6,14 +6,16 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/metrics_utils.h"
-#include "ash/system/notification_center/views/notification_swipe_control_view.h"
+#include "ash/system/notification_center/notification_style_utils.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_swipe_control_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
@@ -77,7 +79,7 @@ void SetupThroughputTrackerForAnimationSmoothness(
   }
 
   tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
-  tracker->Start(ash::metrics_util::ForSmoothness(
+  tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
 }
 
@@ -124,6 +126,19 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     return message_view()->GetBoundsAnimationDuration(*notification);
   }
 
+  void UpdateBackground(int top_radius, int bottom_radius) {
+    message_view_->UpdateCornerRadius(top_radius, bottom_radius);
+    // Do not set background for arc notifications since they have their own
+    // custom background logic.
+    if (!features::IsRenderArcNotificationsByChromeEnabled() &&
+        !message_center_utils::IsAshNotificationView(message_view_)) {
+      return;
+    }
+    message_view_->SetBackground(
+        notification_style_utils::CreateNotificationBackground(
+            top_radius, bottom_radius, false, false));
+  }
+
   // Update the border and background corners based on if the notification is
   // at the top or the bottom. If `force_update` is true, ignore previous states
   // and always update the border.
@@ -137,7 +152,7 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     // The entire scroll view has rounded corners.
     const int top_bottom_corner_radius = kMessageCenterScrollViewCornerRadius;
     const int inner_corner_radius = kMessageCenterNotificationInnerCornerRadius;
-    message_view_->UpdateCornerRadius(
+    UpdateBackground(
         is_top ? top_bottom_corner_radius : inner_corner_radius,
         is_bottom ? top_bottom_corner_radius : inner_corner_radius);
   }
@@ -146,9 +161,8 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   void ResetCornerRadius() {
     need_update_corner_radius_ = true;
 
-    message_view_->UpdateCornerRadius(
-        kMessageCenterNotificationInnerCornerRadius,
-        kMessageCenterNotificationInnerCornerRadius);
+    UpdateBackground(kMessageCenterNotificationInnerCornerRadius,
+                     kMessageCenterNotificationInnerCornerRadius);
   }
 
   void SetExpandedBySystem(bool expanded) {
@@ -249,8 +263,7 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
     const int top_bottom_corner_radius = kMessageCenterScrollViewCornerRadius;
     const int inner_corner_radius = kMessageCenterNotificationInnerCornerRadius;
-    message_view_->UpdateCornerRadius(top_bottom_corner_radius,
-                                      top_bottom_corner_radius);
+    UpdateBackground(top_bottom_corner_radius, top_bottom_corner_radius);
 
     // Also update `above_view_`'s bottom and `below_view_`'s top corner radius
     // when sliding.
@@ -259,16 +272,16 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     if (above_view_) {
-      above_view_->message_view()->UpdateCornerRadius(inner_corner_radius,
-                                                      top_bottom_corner_radius);
+      above_view_->UpdateBackground(inner_corner_radius,
+                                    top_bottom_corner_radius);
     }
 
     below_view_ = (index == list_child_views.size() - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
     if (below_view_) {
-      below_view_->message_view()->UpdateCornerRadius(top_bottom_corner_radius,
-                                                      inner_corner_radius);
+      below_view_->UpdateBackground(top_bottom_corner_radius,
+                                    inner_corner_radius);
     }
   }
 
@@ -310,6 +323,21 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     is_slid_out_ = true;
     set_is_removed();
     list_view_->OnNotificationSlidOut();
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    // Do not try to update background when the theme changes for notifications
+    // rendered in arc since they handle theme changes separately.
+    if (!features::IsRenderArcNotificationsByChromeEnabled() &&
+        !message_center_utils::IsAshNotificationView(message_view_)) {
+      return;
+    }
+
+    UpdateBackground(is_top_ ? kMessageCenterScrollViewCornerRadius
+                             : kMessageCenterNotificationInnerCornerRadius,
+                     is_bottom_ ? kMessageCenterScrollViewCornerRadius
+                                : kMessageCenterNotificationInnerCornerRadius);
   }
 
   gfx::Rect start_bounds() const { return start_bounds_; }
@@ -388,7 +416,9 @@ NotificationListView::NotificationListView(
       message_center_view_(message_center_view),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       message_view_width_(kTrayMenuWidth - (2 * kMessageCenterPadding)) {
-  message_center_observation_.Observe(MessageCenter::Get());
+  if (!features::IsNotificationCenterControllerEnabled()) {
+    message_center_observation_.Observe(MessageCenter::Get());
+  }
   animation_->SetCurrentValue(1.0);
 }
 

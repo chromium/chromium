@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Nem lehet kapcsolódni az internethez. Tűzfal használata esetén helyezze engedélyezőlistára a következőt: <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Arra is lehetősége van, hogy eltávolítsa azokat az érdeklődési köröket, amelyeket nem szeretne, hogy a Chrome figyelembe vegyen.</translation>
 <translation id="2139300032719313227">A ChromeOS újraindítása</translation>
-<translation id="2146761408396054429">Ez a fájl veszélyes lehet<ph name="LINE_BREAK" />A Chrome ellenőrizni tudja ezt a letöltést Ön helyett, ha megadja a jelszót – a jelszó az eszközön marad</translation>
 <translation id="2151406531797534936">Indítsa újra most a Chrome-ot</translation>
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="2190166659037789668">Frissítés-ellenőrzési hiba: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -195,6 +194,7 @@
 <translation id="4053720452172726777">A Google Chrome személyre szabása és beállításai</translation>
 <translation id="4106587138345390261">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
 <translation id="4110895483821904099">Új saját Chrome-profil beállítása</translation>
+<translation id="4128488089242627000">A Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük (ajánlott)</translation>
 <translation id="4147555960264124640">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Google Chrome-profiljához. Chrome-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiókok Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Telepítés...</translation>
 <translation id="4149882025268051530">Nem sikerült a telepítőnek kibontani a tömörített állományt. Kérjük, töltse le újra a Google Chrome böngészőt.</translation>
@@ -217,7 +217,6 @@
 <translation id="4343195214584226067">A(z) <ph name="EXTENSION_NAME" /> hozzá lett adva a Chrome-hoz</translation>
 <translation id="4384570495110188418">A Chrome nem tudja ellenőrizni az Ön jelszavait, mert nincs bejelentkezve</translation>
 <translation id="4389991535395284064">Inkognitó módban való böngészéskor a Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
-<translation id="4393248995085527349">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 10.15-ös vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.13 fut.</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4450664632294415862">Chrome – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Egy másik Google Chrome-művelet is folyamatban van. Próbálkozzon újra később.</translation>
@@ -242,6 +241,7 @@
 <translation id="4793679854893018356">További információ arról, hogy miként gondoskodik a Chrome az Ön biztonságáról</translation>
 <translation id="4828579605166583682">A Google Chrome lecserélni próbálja a meglévő jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="4842397268809523050">A ChromeOS Flex nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre a domainjénél.</translation>
+<translation id="4873692836499071887">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 11-es vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.15 fut.</translation>
 <translation id="4873783916118289636">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Chrome-ban</translation>
 <translation id="4891791193823137474">A Google Chrome futhat a háttérben</translation>
 <translation id="4895437082222824641">Link megnyi&amp;tása új Chrome-lapon</translation>
@@ -301,7 +301,6 @@
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5941830788786076944">A Google Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
-<translation id="6010556343189461180">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 10.15-ös vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.14 fut.</translation>
 <translation id="6014316319780893079">A <ph name="BEGIN_LINK" />Chrome eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6025087594896450715">A Google Chrome újraindul <ph name="REMAINING_TIME" /> múlva</translation>
@@ -347,6 +346,7 @@
 <translation id="677276454032249905">Biztosan kilép a Chrome-ból?</translation>
 <translation id="6794858689789885890">Mindig törölje a webhelyadatokat az eszközről a Chrome bezárásakor</translation>
 <translation id="683440813066116847">Bejövő szabály a Google Chrome Canaryhoz az mDNS forgalom engedélyezése céljából.</translation>
+<translation id="6851981911629679515">Kiegészítő védelem bekapcsolása a Chrome JavaScript- és WebAssembly-motorjában</translation>
 <translation id="6881299373831449287">A Chrome frissítése</translation>
 <translation id="6885412569789873916">Chrome Beta-alkalmazások</translation>
 <translation id="6933858244219479645">ChromeOS rendszer</translation>
@@ -468,6 +468,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="873133009373065397">A Google Chrome problémába ütközött az alapértelmezett böngésző megállapításakor vagy beállításakor</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="878572486461146056">Telepítési hiba: A hálózati rendszergazda olyan csoportházirendet alkalmazott, amely megakadályozza a telepítést: <ph name="INSTALL_ERROR" />.</translation>
+<translation id="8801657293260363985">A V8 a Chrome JavaScript- és WebAssembly-motorja, amely a webhelyek teljesítményének javítására szolgál</translation>
 <translation id="8821043148920470810">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 7 operációs rendszer fut.</translation>
 <translation id="8823341990149967727">A Chrome elavult</translation>
 <translation id="8825634023950448068">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Ha pedig a Chrome téved, vagy ha Ön nem szeretne bizonyos típusú hirdetéseket látni, eltávolíthat érdeklődési köröket.</translation>

@@ -64,8 +64,10 @@ void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
 }
 
-TestingProfile* InstantUnitTestBase::CreateProfile() {
-  TestingProfile* profile = BrowserWithTestWindowTest::CreateProfile();
+TestingProfile* InstantUnitTestBase::CreateProfile(
+    const std::string& profile_name) {
+  TestingProfile* profile =
+      BrowserWithTestWindowTest::CreateProfile(profile_name);
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile,
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));

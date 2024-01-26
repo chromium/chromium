@@ -97,6 +97,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     self.textAlignment = NSTextAlignmentNatural;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
+    // Prevent the text from overlapping the clear text button.
+    // (crbug.com/1403031)
+    self.textInputView.clipsToBounds = YES;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -707,14 +710,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                           modifierFlags:0
                                  action:@selector(forwardKeyCommandRight)];
 
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15, *)) {
-    commandUp.wantsPriorityOverSystemBehavior = YES;
-    commandDown.wantsPriorityOverSystemBehavior = YES;
-    commandLeft.wantsPriorityOverSystemBehavior = YES;
-    commandRight.wantsPriorityOverSystemBehavior = YES;
-  }
-#endif
+  commandUp.wantsPriorityOverSystemBehavior = YES;
+  commandDown.wantsPriorityOverSystemBehavior = YES;
+  commandLeft.wantsPriorityOverSystemBehavior = YES;
+  commandRight.wantsPriorityOverSystemBehavior = YES;
   return @[ commandUp, commandDown, commandLeft, commandRight ];
 }
 

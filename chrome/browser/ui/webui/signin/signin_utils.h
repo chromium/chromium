@@ -9,8 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 
 class Browser;
+class Profile;
 
 namespace content {
 class RenderFrameHost;
@@ -56,6 +58,17 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui);
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
                                const base::Value::List& args);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Helps clear Profile info, mainly for managed accounts.
+// Idealy this function should not be used much, consider deleting the profile
+// if possible instead.
+// Undoing the management is hacky (because the management may have installed
+// extensions for example).
+// TODO(https://crbug.com/1465779): Remove this function when the FRE is
+// adapted.
+void ClearProfileWithManagedAccounts(Profile* profile);
+#endif
 
 }  // namespace signin
 

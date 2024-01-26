@@ -2624,74 +2624,6 @@
         "name": "rendering.mobile/mlb_mobile_2018"
     },
     {
-        "duration": "42.0",
-        "name": "rendering.mobile/motionmark_anim_design_15"
-    },
-    {
-        "duration": "40.0",
-        "name": "rendering.mobile/motionmark_anim_focus_25"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_anim_images_50"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_anim_leaves_250"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_anim_multiply_175"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_anim_suits_125"
-    },
-    {
-        "duration": "40.0",
-        "name": "rendering.mobile/motionmark_html_composited_transforms_125"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_blend_circles_25"
-    },
-    {
-        "duration": "41.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_circles_250"
-    },
-    {
-        "duration": "39.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_clipped_rects_100"
-    },
-    {
-        "duration": "39.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_filter_circles_15"
-    },
-    {
-        "duration": "39.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_gradient_circles_250"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_svg_images_50"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_tagged_images_225"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_html_dom_particles_svg_masks_25"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_html_focus_20_15"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_html_leaves_20_50"
-    },
-    {
         "duration": "47.0",
         "name": "rendering.mobile/motionmark_ramp_design"
     },
@@ -2714,26 +2646,6 @@
     {
         "duration": "46.0",
         "name": "rendering.mobile/motionmark_ramp_suits"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_circles_250"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_clipped_rects_100"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_gradient_circles_200"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_png_images_200"
-    },
-    {
-        "duration": "38.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_svg_images_50"
     },
     {
         "duration": "28.0",

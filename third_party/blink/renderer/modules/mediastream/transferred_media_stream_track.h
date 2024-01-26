@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -87,7 +86,10 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
 #if !BUILDFLAG(IS_ANDROID)
   void SendWheel(
-      CapturedWheelAction* action,
+      double relative_x,
+      double relative_y,
+      int wheel_delta_x,
+      int wheel_delta_y,
       base::OnceCallback<void(bool, const String&)> callback) override;
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
@@ -106,7 +108,8 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   bool HasPendingActivity() const override;
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override;
+      int context_sample_rate,
+      uint32_t context_buffer_size) override;
 
   ImageCapture* GetImageCapture() override;
   absl::optional<const MediaStreamDevice> device() const override;

@@ -62,9 +62,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_TIME_TIME_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_TIME_TIME_H_
 
-#include <stdint.h>
-#include <time.h>
-
+#include <cstdint>
+#include <ctime>
 #include <iosfwd>
 #include <limits>
 

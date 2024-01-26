@@ -14,6 +14,7 @@
     "is_component_build": false,
     "is_cronet_build": true,
     "is_debug": false,
+    "is_high_end_android": false,
     "is_official_build": true,
     "media_use_ffmpeg": false,
     "proprietary_codecs": true,

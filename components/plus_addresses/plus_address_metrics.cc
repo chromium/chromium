@@ -101,6 +101,10 @@ std::string PlusAddressMetrics::PlusAddressModalCompletionStatusToString(
       return "Canceled";
     case PlusAddressModalCompletionStatus::kModalConfirmed:
       return "Confirmed";
+    case PlusAddressModalCompletionStatus::kReservePlusAddressError:
+      return "ReserveError";
+    case PlusAddressModalCompletionStatus::kConfirmPlusAddressError:
+      return "ConfirmError";
   }
 }
 }  // namespace plus_addresses

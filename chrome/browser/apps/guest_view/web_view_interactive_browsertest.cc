@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -420,10 +419,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     }
 
     size_t initial_widget_count_ = 0;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION content::RenderWidgetHost* last_render_widget_host_ =
-        nullptr;
+    raw_ptr<content::RenderWidgetHost> last_render_widget_host_ = nullptr;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
 
@@ -1328,12 +1324,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
 
 // Flaky timeouts on Linux. https://crbug.com/709202
 // Flaky timeouts on Win. https://crbug.com/846695
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_KeyboardFocusSimple DISABLED_KeyboardFocusSimple
-#else
-#define MAYBE_KeyboardFocusSimple KeyboardFocusSimple
-#endif
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusSimple) {
+// Flaky timeouts on Mac. https://crbug.com/1520415
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_KeyboardFocusSimple) {
   TestHelper("testKeyboardFocusSimple", "web_view/focus", NO_TEST_SERVER);
 
   EXPECT_EQ(embedder_web_contents()->GetFocusedFrame(),

@@ -10,9 +10,11 @@
 
 class PrefValueMap;
 
-namespace syncer {
-
+namespace policy {
 class PolicyMap;
+}  // namespace policy
+
+namespace syncer {
 
 // ConfigurationPolicyHandler for the SyncDisabled policy.
 class SyncPolicyHandler : public policy::TypeCheckingPolicyHandler {

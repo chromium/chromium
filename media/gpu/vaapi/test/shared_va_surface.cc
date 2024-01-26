@@ -66,8 +66,7 @@ VAImageFormat GetImageFormat(unsigned int va_rt_format) {
     case VA_RT_FORMAT_YUV420_10:
       return kImageFormatP010;
     default:
-      LOG_ASSERT(false) << "Unknown VA format " << std::hex << va_rt_format;
-      return VAImageFormat{};
+      LOG(FATAL) << "Unknown VA format " << std::hex << va_rt_format;
   }
 }
 

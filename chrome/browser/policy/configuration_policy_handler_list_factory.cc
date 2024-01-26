@@ -48,7 +48,7 @@
 #include "chrome/browser/spellchecker/spellcheck_language_policy_handler.h"
 #include "chrome/browser/ssl/secure_origin_policy_handler.h"
 #include "chrome/browser/themes/theme_color_policy_handler.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -109,7 +109,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/site_search_policy_handler.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
@@ -251,6 +250,12 @@
 #include "chrome/browser/policy/battery_saver_policy_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/search_engines/site_search_policy_handler.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 namespace {
@@ -1151,6 +1156,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceLoginScreenVirtualKeyboardEnabled,
     nullptr,
     base::Value::Type::BOOLEAN },
+  { key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+    nullptr,
+    base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenDictationEnabled,
     nullptr,
     base::Value::Type::BOOLEAN },
@@ -1193,6 +1201,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kTouchVirtualKeyboardEnabled,
     prefs::kTouchVirtualKeyboardEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kVirtualKeyboardSmartVisibilityEnabled,
+    prefs::kVirtualKeyboardSmartVisibilityEnabled,
     base::Value::Type::BOOLEAN },
   { key::kEasyUnlockAllowed,
     ash::multidevice_setup::kSmartLockAllowedPrefName,
@@ -1569,9 +1580,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceSwitchFunctionKeysBehaviorEnabled,
     ash::prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kDeviceExtendedFkeysModifier,
-    ash::prefs::kExtendedFkeysModifier,
-    base::Value::Type::INTEGER },
   { key::kShowHumanPresenceSensorScreenEnabled,
     ash::prefs::kShowHumanPresenceSensorScreenEnabled,
     base::Value::Type::BOOLEAN },
@@ -1581,6 +1589,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHeartbeatEnabled,
     ash::kHeartbeatEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kF11KeyModifier,
+    ash::prefs::kF11KeyModifier,
+    base::Value::Type::INTEGER },
+  { key::kF12KeyModifier,
+    ash::prefs::kF12KeyModifier,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1942,12 +1956,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  { key::kChromeAppsWebViewPermissiveBehaviorAllowed,
-    extensions::pref_names::kChromeAppsWebViewPermissiveBehaviorAllowed,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },
@@ -2040,11 +2048,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMidiBlockedForUrls,
     prefs::kManagedMidiBlockedForUrls,
     base::Value::Type::LIST },
-#if BUILDFLAG(IS_CHROMEOS)
-  { key::kPPAPISharedImagesForVideoDecoderAllowed,
-    policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed,
-    base::Value::Type::BOOLEAN },
-#endif
   { key::kIPv6ReachabilityOverrideEnabled,
     prefs::kIPv6ReachabilityOverrideEnabled,
     base::Value::Type::BOOLEAN },
@@ -2084,6 +2087,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCAHintCertificates,
     prefs::kCAHintCertificates,
     base::Value::Type::LIST },
+  { key::kCAPlatformIntegrationEnabled,
+    prefs::kCAPlatformIntegrationEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 };
 // clang-format on
@@ -2180,10 +2186,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<performance_manager::MemorySaverPolicyHandler>());
   // Note: This needs to be created after `DefaultSearchPolicyHandler`.
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<SiteSearchPolicyHandler>(chrome_schema));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(

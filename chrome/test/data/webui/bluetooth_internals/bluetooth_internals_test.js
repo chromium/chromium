@@ -6,12 +6,14 @@ import {adapterBroker, checkSystemPermissions, devices, initializeViews, pageMan
 import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
-import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="chromeos_ash">
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+// </if>
 
 import {fakeAdapterInfo, fakeCharacteristicInfo1, fakeDeviceInfo1, fakeDeviceInfo2, fakeDeviceInfo3, fakeServiceInfo1, fakeServiceInfo2, TestAdapter, TestBluetoothInternalsHandler, TestDevice} from './test_utils.js';
 
@@ -717,6 +719,31 @@ suite('bluetooth_internals', function() {
     await internalsHandler.whenCalled('checkSystemPermissions');
     assertTrue(document.getElementById('can-not-request-permissions').open);
   });
+
+  // <if expr="chromeos_ash">
+  test('Restart system Bluetooth', async function() {
+    const getReStartBluetoothBtn = () => {
+      return document.querySelector('#restart-bluetooth-btn');
+    };
+
+    assert(getReStartBluetoothBtn());
+    assertEquals(
+        getReStartBluetoothBtn().textContent, 'Restart system Bluetooth');
+
+    getReStartBluetoothBtn().click();
+    await flushTasks();
+    await internalsHandler.whenCalled('restartSystemBluetooth');
+
+    assertEquals(
+        getReStartBluetoothBtn().textContent, 'Restarting system Bluetooth..');
+
+    internalsHandler.completeRestartSystemBluetooth();
+    await flushTasks();
+    await internalsHandler.whenCalled('completeRestartSystemBluetooth');
+    assertEquals(
+        getReStartBluetoothBtn().textContent, 'Restart system Bluetooth');
+  });
+  // </if>
 });
 
 suite('BluetoothInternalsUnitTests', function() {

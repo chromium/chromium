@@ -37,7 +37,7 @@ class ArcKioskAppManager : public KioskAppManagerBase {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Returns app that should be started for given account id.
-  const ArcKioskAppData* GetAppByAccountId(const AccountId& account_id);
+  const ArcKioskAppData* GetAppByAccountId(const AccountId& account_id) const;
 
   // KioskAppManagerBase:
   std::vector<App> GetApps() const override;

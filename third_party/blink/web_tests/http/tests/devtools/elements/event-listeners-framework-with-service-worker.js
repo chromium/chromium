@@ -50,7 +50,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
     SourcesTestRunner.selectThread(executionContext.target());
     TestRunner.addResult('Context is service worker: ' + isServiceWorker());
     TestRunner.addResult('Dumping listeners');
-    await UI.ViewManager.ViewManager.instance().showView('sources.globalListeners').then(() => {
+    await UI.ViewManager.ViewManager.instance().showView('sources.global-listeners').then(() => {
       objectEventListenersPane = UI.Context.Context.instance().flavor(BrowserDebugger.ObjectEventListenersSidebarPane.ObjectEventListenersSidebarPane);
       objectEventListenersPane.update();
       ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step3);

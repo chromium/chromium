@@ -547,20 +547,20 @@ namespace {
 
 // TODO(altimin): Add native support for pointers for nested values in
 // DebugAnnotation proto.
-std::string PointerToString(void* value) {
+std::string PointerToString(const void* value) {
   return base::StringPrintf(
       "0x%" PRIx64, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(value)));
 }
 
 }  // namespace
 
-void TracedValue::SetPointer(const char* name, void* value) {
+void TracedValue::SetPointer(const char* name, const void* value) {
   DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
   writer_->SetString(name, PointerToString(value));
 }
 
 void TracedValue::SetPointerWithCopiedName(base::StringPiece name,
-                                           void* value) {
+                                           const void* value) {
   DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
   writer_->SetStringWithCopiedName(name, PointerToString(value));
 }
@@ -609,7 +609,7 @@ void TracedValue::AppendString(base::StringPiece value) {
   writer_->AppendString(value);
 }
 
-void TracedValue::AppendPointer(void* value) {
+void TracedValue::AppendPointer(const void* value) {
   DCHECK_CURRENT_CONTAINER_IS(kStackTypeArray);
   writer_->AppendString(PointerToString(value));
 }

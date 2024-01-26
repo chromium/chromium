@@ -4,14 +4,13 @@
 
 #include "media/audio/android/aaudio_stream_wrapper.h"
 
-#include "base/android/build_info.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
-#include "media/audio/android/aaudio_stubs.h"
 
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 namespace media {
 
 // Used to circumvent issues where the AAudio thread callbacks continue
@@ -129,16 +128,15 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
 
   CHECK(!aaudio_stream_);
 
-  if (base::android::SdkVersion::SDK_VERSION_S >=
-      base::android::BuildInfo::GetInstance()->sdk_int()) {
-    // On Android S+, |destruction_helper_| can be destroyed as part of the
-    // normal class teardown.
+  // On Android S+, |destruction_helper_| can be destroyed as part of the
+  // normal class teardown.
+  if (__builtin_available(android 31, *)) {
     return;
   }
 
   // In R and earlier, it is possible for callbacks to still be running even
-  // after calling AAudioStream_close(). The code below is a mitigation to work
-  // around this issue. See crbug.com/1183255.
+  // after calling AAudioStream_close(). The code below is a mitigation to
+  // work around this issue. See crbug.com/1183255.
 
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid, until the callbacks stop.
@@ -348,3 +346,4 @@ void AAudioStreamWrapper::OnStreamError(aaudio_result_t error) {
 }
 
 }  // namespace media
+#pragma clang attribute pop

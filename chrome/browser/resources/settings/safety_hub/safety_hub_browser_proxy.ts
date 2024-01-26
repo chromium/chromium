@@ -10,7 +10,7 @@
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import type {ContentSettingsTypes} from '../site_settings/constants.js';
 // clang-format on
 
 /**

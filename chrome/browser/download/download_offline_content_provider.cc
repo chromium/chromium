@@ -267,18 +267,17 @@ void DownloadOfflineContentProvider::PauseDownload(const ContentId& id) {
     item->Pause();
 }
 
-void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id,
-                                                    bool has_user_gesture) {
+void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id) {
   if (state_ == State::UNINITIALIZED) {
     pending_actions_for_reduced_mode_.push_back(
         base::BindOnce(&DownloadOfflineContentProvider::ResumeDownload,
-                       weak_ptr_factory_.GetWeakPtr(), id, has_user_gesture));
+                       weak_ptr_factory_.GetWeakPtr(), id));
     return;
   }
 
   DownloadItem* item = GetDownload(id.id);
   if (item)
-    item->Resume(has_user_gesture);
+    item->Resume(true /* user_resume */);
 }
 
 void DownloadOfflineContentProvider::GetItemById(
@@ -517,9 +516,7 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
         item->OpenDownload();
       } else if (base::FeatureList::IsEnabled(
                      chrome::android::kOpenDownloadDialog)) {
-        content::WebContents* web_contents =
-            content::DownloadItemUtils::GetWebContents(item);
-        open_download_dialog_delegate_.CreateDialog(item, web_contents);
+        open_download_dialog_delegate_.CreateDialog(item);
       }
     }
   }
@@ -539,7 +536,7 @@ void DownloadOfflineContentProvider::GetAllDownloads(
 
 void DownloadOfflineContentProvider::UpdateObservers(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   NotifyItemUpdated(item, update_delta);
 }
 
@@ -579,9 +576,9 @@ void DownloadOfflineContentProvider::RunGetItemByIdCallback(
   DownloadItem* item = GetDownload(id.id);
   auto offline_item =
       item && ShouldShowDownloadItem(item)
-          ? absl::make_optional(
+          ? std::make_optional(
                 OfflineItemUtils::CreateOfflineItem(name_space_, item))
-          : absl::nullopt;
+          : std::nullopt;
 
   std::move(callback).Run(offline_item);
 }

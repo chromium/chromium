@@ -390,7 +390,7 @@ void Dualshock4Controller::SetVibrationBluetooth(double strong_magnitude,
   // The last four bytes of the report hold a CRC32 checksum. Compute the
   // checksum and store it in little-endian byte order.
   uint32_t crc = ComputeDualshock4Checksum(
-      base::make_span(control_report.data(), control_report.size() - 4));
+      base::span(control_report).first(control_report.size() - 4));
   control_report[control_report.size() - 4] = crc & 0xff;
   control_report[control_report.size() - 3] = (crc >> 8) & 0xff;
   control_report[control_report.size() - 2] = (crc >> 16) & 0xff;

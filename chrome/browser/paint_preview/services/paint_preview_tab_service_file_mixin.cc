@@ -16,7 +16,7 @@ PaintPreviewTabServiceFileMixin::~PaintPreviewTabServiceFileMixin() = default;
 
 void PaintPreviewTabServiceFileMixin::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
-    absl::optional<base::TimeDelta> expiry_horizon,
+    std::optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
       key,

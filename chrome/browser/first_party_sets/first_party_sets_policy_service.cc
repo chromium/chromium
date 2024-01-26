@@ -153,7 +153,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const std::optional<net::SchemefulSite>& top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_.has_value());
@@ -290,18 +290,18 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
                          weak_factory_.GetWeakPtr()));
 }
 
-absl::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
+std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
     const net::SchemefulSite& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!config_.has_value()) {
     // Track this to measure how often the First-Party Sets in the browser
     // process are queried before they are ready to answer queries.
     num_queries_before_sets_ready_++;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!is_enabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   return content::FirstPartySetsHandler::GetInstance()->FindEntry(
       site, config_.value());
@@ -313,7 +313,7 @@ bool FirstPartySetsPolicyService::IsSiteInManagedSet(
   if (!config_.has_value() || !is_enabled())
     return false;
 
-  absl::optional<net::FirstPartySetEntryOverride> maybe_override =
+  std::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);
   return maybe_override.has_value() && !maybe_override->IsDeletion();
 }

@@ -42,7 +42,8 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
   // BackgroundURLLoader, and if this says it's supported and the feature is
   // enabled, the request comes to the BackgroundURLLoader.
   static bool CanHandleRequest(const network::ResourceRequest& request,
-                               const ResourceLoaderOptions& options);
+                               const ResourceLoaderOptions& options,
+                               bool is_prefech_only_document);
 
   BackgroundURLLoader(
       scoped_refptr<WebBackgroundResourceFetchAssets>
@@ -50,7 +51,6 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
       const Vector<String>& cors_exempt_header_list,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
-      Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host);
   ~BackgroundURLLoader() override;
 

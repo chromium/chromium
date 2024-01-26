@@ -16,10 +16,10 @@ namespace base {
 class RunLoop;
 }
 
+namespace ui {
+
 class Layer;
 class LayerAnimator;
-
-namespace ui {
 
 // A class capable of waiting until a layer has stopped animating. Supports
 // animations that delete the layer on completion.

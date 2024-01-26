@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1426410128494586442">نعم</translation>
+<translation id="1434873037477293673">بطاقة انخفاض في السعر</translation>
 <translation id="1448064542941920355">تصغير</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
 <translation id="1510341833810331442">المواقع الإلكترونية غير مسموح لها بحفظ البيانات على جهازك.</translation>
@@ -109,6 +110,7 @@
 <translation id="2750481671343847896">بإمكان المواقع الإلكترونية حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات.</translation>
 <translation id="2790501146643349491">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية التي تم إغلاقها مؤخرًا إتمام إرسال البيانات واستلامها. وعند إيقافه، لا يمكن لتلك المواقع الإلكترونية إرسال البيانات أو استلامها.</translation>
 <translation id="2822354292072154809">هل تريد فعلاً إعادة ضبط جميع أذونات الموقع الإلكتروني للكائن <ph name="CHOSEN_OBJECT_NAME" />؟</translation>
+<translation id="2836978798613876756">‫<ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">طلب العرض المخصّص للجهاز الجوّال</translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
@@ -329,6 +331,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">منع المواقع الإلكترونية من استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
+<translation id="6452138246455930388">‏انخفاض في السعر ضِمن علامة التبويب المفتوحة من ‎<ph name="OLD_PRICE" /> إلى ‎<ph name="NEW_PRICE" />، للمنتج "<ph name="PRODUCT_NAME" />"، على النطاق <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">تفعيل الإعداد "العرض المخصص للجهاز الجوّال" عند صغر حجم النافذة</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="652937045869844725">جرِّب السماح باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا.</translation>
@@ -348,10 +351,12 @@
 <translation id="6746124502594467657">الانتقال إلى الأسفل</translation>
 <translation id="6749077623962119521">هل تريد إعادة ضبط الأذونات؟</translation>
 <translation id="6766622839693428701">يمكنك التمرير السريع للأسفل للإغلاق.</translation>
+<translation id="6785959295338971061">‫<ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> من <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">تحديد خيار للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6818926723028410516">اختيار عناصر</translation>
 <translation id="6864395892908308021">‏يتعذّر على هذا الجهاز قراءة NFC.</translation>
+<translation id="6867014948848323204">من <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">حظر المواقع الإلكترونية من قراءة الصور والنصوص من الحافظة</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6950072572526089586">يمكن للموقع الإلكتروني الذي تنتقل إليه حفظ معلومات عن أنشطتك التي تجريها عليه، وذلك حتى تعمل ميزاته على النحو المتوقّع، مثل إبقائك مسجَّلاً الدخول إلى الموقع الإلكتروني أو حفظ السلع في سلّة التسوّق. وغالبًا ما تحفظ المواقع الإلكترونية هذه المعلومات مؤقتًا على جهازك.</translation>
@@ -400,6 +405,7 @@
 <translation id="7667547420449112975">ساحر "أوز" العجيب</translation>
 <translation id="7684642910516280563">يمكنك منع أحد المواقع الإلكترونية من استخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
+<translation id="7770832849480336015">إخفاء "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>

@@ -234,6 +234,7 @@ namespace container_internal {
 #ifdef ABSL_SWISSTABLE_ENABLE_GENERATIONS
 #error ABSL_SWISSTABLE_ENABLE_GENERATIONS cannot be directly set
 #elif defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER)
 // When compiled in sanitizer mode, we add generation integers to the backing
 // array and iterators. In the backing array, we store the generation between
@@ -1942,7 +1943,7 @@ class raw_hash_set {
     // PRECONDITION: not an end() iterator.
     reference operator*() const {
       AssertIsFull(ctrl_, generation(), generation_ptr(), "operator*()");
-      return PolicyTraits::element(slot_);
+      return unchecked_deref();
     }
 
     // PRECONDITION: not an end() iterator.
@@ -2022,6 +2023,10 @@ class raw_hash_set {
     // Should be used when the lifetimes of the iterators are well-enough
     // understood to prove that they cannot be invalid.
     bool unchecked_equals(const iterator& b) { return ctrl_ == b.control(); }
+
+    // Dereferences the iterator without ABSL Hardening iterator invalidation
+    // checks.
+    reference unchecked_deref() const { return PolicyTraits::element(slot_); }
   };
 
   class const_iterator {
@@ -3157,6 +3162,8 @@ class raw_hash_set {
   const_iterator iterator_at(size_t i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return {control() + i, slot_array() + i, common().generation_ptr()};
   }
+
+  reference unchecked_deref(iterator it) { return it.unchecked_deref(); }
 
  private:
   friend struct RawHashSetTestOnlyAccess;

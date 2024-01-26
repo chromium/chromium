@@ -805,7 +805,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -832,7 +832,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -864,7 +864,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -897,7 +897,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -917,7 +917,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -946,7 +946,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
@@ -1098,7 +1098,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
     // retry GUID populated.
     auto function = base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), reload_args, profile());
     ASSERT_TRUE(result);
@@ -1188,7 +1188,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     auto function = base::MakeRefCounted<
         api::DeveloperPrivateNotifyDragInstallInProgressFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                          profile());
   }
@@ -1200,7 +1200,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     TestExtensionRegistryObserver observer(registry());
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), kLoadUnpackedArgs, profile());
     ASSERT_TRUE(result);
@@ -2077,7 +2077,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateGetUserSiteSettingsFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", profile());
   ASSERT_TRUE(result.has_value());

@@ -33,6 +33,42 @@ class ReadAnythingAppModel {
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
 
+  // A current segment of text that will be consumed by Read Aloud.
+  struct ReadAloudTextSegment {
+    // The AXNodeID associated with this particular text segment.
+    ui::AXNodeID id;
+
+    // The starting index for the text with the node of the given id.
+    int text_start;
+
+    // The ending index for the text with the node of the given id.
+    int text_end;
+  };
+
+  // A representation of multiple ReadAloudTextSegments that are processed
+  // by Read Aloud at a single moment. For example, when using sentence
+  // granularity, the list of ReadAloudTextSegments in a
+  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
+  // necessary to represent a single sentence.
+  struct ReadAloudCurrentGranularity {
+    ReadAloudCurrentGranularity();
+    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
+    ~ReadAloudCurrentGranularity();
+
+    // Adds a segment to the current granularity.
+    void AddSegment(ReadAloudTextSegment segment) {
+      segments[segment.id] = segment;
+      node_ids.push_back(segment.id);
+    }
+
+    // All of the ReadAloudTextSegments in the current granularity.
+    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
+
+    // Because GetNextText returns a vector of node ids to be used by
+    // TypeScript also store the node ids as a vector for easier retrieval.
+    std::vector<ui::AXNodeID> node_ids;
+  };
+
   bool requires_distillation() { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
   bool requires_post_process_selection() {
@@ -58,6 +94,7 @@ class ReadAnythingAppModel {
   // Theme
   const std::string& font_name() const { return font_name_; }
   float font_size() const { return font_size_; }
+  bool links_enabled() const { return links_enabled_; }
   float letter_spacing() const { return letter_spacing_; }
   float line_spacing() const { return line_spacing_; }
   int color_theme() const { return color_theme_; }
@@ -122,11 +159,13 @@ class ReadAnythingAppModel {
       read_anything::mojom::LetterSpacing letter_spacing,
       const std::string& font,
       double font_size,
+      bool links_enabled,
       read_anything::mojom::Colors color,
       double speech_rate,
       base::Value::Dict* voices,
       read_anything::mojom::HighlightGranularity granularity);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
+  void OnSelection(ax::mojom::EventFrom event_from);
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
   bool PostProcessSelection();
@@ -176,6 +215,16 @@ class ReadAnythingAppModel {
   void IncreaseTextSize();
   void DecreaseTextSize();
   void ResetTextSize();
+  void ToggleLinksEnabled();
+
+  std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
+
+  // Returns the index of the next sentence of the given text, such that the
+  // next sentence is equivalent to text.substr(0, <returned_index>).
+  // If the sentence exceeds the maximum text length, the sentence will be
+  // cropped to the nearest word boundary that doesn't exceed the maximum
+  // text length.
+  int GetNextSentence(const std::u16string& text, int max_text_length);
 
   // PDF handling.
   void SetIsPdf(const GURL& url);
@@ -223,6 +272,10 @@ class ReadAnythingAppModel {
                               size_t tree_size);
 
   ui::AXNode* GetParentForSelection(ui::AXNode* node);
+  std::string GetHtmlTagForPDF(ui::AXNode* ax_node, std::string html_tag) const;
+  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
+                                      std::string html_tag) const;
+  std::string GetAriaLevel(ui::AXNode* ax_node) const;
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
@@ -281,6 +334,7 @@ class ReadAnythingAppModel {
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   float font_size_ = kReadAnythingDefaultFontScale;
+  bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;

@@ -30,9 +30,10 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
+#include "services/preferences/public/cpp/dictionary_value_update.h"
+#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_content_settings_event_info.pbzero.h"
 
@@ -74,6 +75,8 @@ void PrefProvider::RegisterProfilePrefs(
   for (const WebsiteSettingsInfo* info : *website_settings) {
     registry->RegisterDictionaryPref(info->pref_name(),
                                      info->GetPrefRegistrationFlags());
+    registry->RegisterDictionaryPref(info->partitioned_pref_name(),
+                                     info->GetPrefRegistrationFlags());
   }
 
   // Obsolete prefs ----------------------------------------------------------
@@ -114,18 +117,18 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   DiscardOrMigrateObsoletePreferences();
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs_);
+  pref_change_registrar_.Init(prefs_);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
     content_settings_prefs_.insert(std::make_pair(
-        info->type(), std::make_unique<ContentSettingsPref>(
-                          info->type(), prefs_, pref_change_registrar_.get(),
-                          info->pref_name(), off_the_record_, restore_session,
-                          base::BindRepeating(&PrefProvider::Notify,
-                                              base::Unretained(this)))));
+        info->type(),
+        std::make_unique<ContentSettingsPref>(
+            info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
+            info->partitioned_pref_name(), off_the_record_, restore_session,
+            base::BindRepeating(&PrefProvider::Notify,
+                                base::Unretained(this)))));
   }
 
   size_t num_exceptions = 0;
@@ -158,7 +161,7 @@ std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     return nullptr;
   }
 
-  return GetPref(content_type)->GetRuleIterator(off_the_record);
+  return GetPref(content_type)->GetRuleIterator(off_the_record, partition_key);
 }
 
 std::unique_ptr<Rule> PrefProvider::GetRule(
@@ -172,7 +175,7 @@ std::unique_ptr<Rule> PrefProvider::GetRule(
   }
 
   return GetPref(content_type)
-      ->GetRule(primary_url, secondary_url, off_the_record);
+      ->GetRule(primary_url, secondary_url, off_the_record, partition_key);
 }
 
 // TODO(b/307193732): handle the PartitionKey in all relevant methods.
@@ -229,7 +232,7 @@ bool PrefProvider::SetWebsiteSetting(
   metadata.SetFromConstraints(constraints);
   GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
-                          std::move(in_value), metadata);
+                          std::move(in_value), metadata, partition_key);
   return true;
 }
 
@@ -237,7 +240,8 @@ bool PrefProvider::SetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const base::Time time) {
+    const base::Time time,
+    const PartitionKey& partition_key) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -252,13 +256,14 @@ bool PrefProvider::SetLastVisitTime(
         rule.metadata.set_last_visited(time);
 
         return true;
-      });
+      },
+      partition_key);
 }
 
-bool PrefProvider::UpdateSetting(
-    ContentSettingsType content_type,
-    base::FunctionRef<bool(const Rule&)> is_match,
-    base::FunctionRef<bool(Rule&)> perform_update) {
+bool PrefProvider::UpdateSetting(ContentSettingsType content_type,
+                                 base::FunctionRef<bool(const Rule&)> is_match,
+                                 base::FunctionRef<bool(Rule&)> perform_update,
+                                 const PartitionKey& partition_key) {
   if (!supports_type(content_type)) {
     return false;
   }
@@ -292,7 +297,7 @@ bool PrefProvider::UpdateSetting(
     GetPref(content_type)
         ->SetWebsiteSetting(std::move(primary_pattern),
                             std::move(secondary_pattern), std::move(value),
-                            std::move(metadata));
+                            std::move(metadata), partition_key);
     return true;
   }
   return false;
@@ -312,7 +317,8 @@ bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
       [&](Rule& rule) -> bool {
         rule.metadata.set_last_used(time);
         return true;
-      });
+      },
+      partition_key);
 }
 
 bool PrefProvider::ResetLastVisitTime(
@@ -321,7 +327,7 @@ bool PrefProvider::ResetLastVisitTime(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          base::Time());
+                          base::Time(), partition_key);
 }
 
 bool PrefProvider::UpdateLastVisitTime(
@@ -330,7 +336,7 @@ bool PrefProvider::UpdateLastVisitTime(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          GetCoarseVisitedTime(clock_->Now()));
+                          GetCoarseVisitedTime(clock_->Now()), partition_key);
 }
 
 absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
@@ -366,7 +372,8 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
                                                lifetime);
 
         return true;
-      });
+      },
+      partition_key);
   return delta_to_expiration;
 }
 
@@ -377,7 +384,7 @@ void PrefProvider::ClearAllContentSettingsRules(
   DCHECK(prefs_);
 
   if (supports_type(content_type)) {
-    GetPref(content_type)->ClearAllContentSettingsRules();
+    GetPref(content_type)->ClearAllContentSettingsRules(partition_key);
   }
 }
 
@@ -388,17 +395,8 @@ void PrefProvider::ShutdownOnUIThread() {
   for (const auto& pref : content_settings_prefs_) {
     pref.second->OnShutdown();
   }
-  pref_change_registrar_.reset();
+  pref_change_registrar_.Reset();
   prefs_ = nullptr;
-}
-
-void PrefProvider::ClearPrefs() {
-  DCHECK(CalledOnValidThread());
-  DCHECK(prefs_);
-
-  for (const auto& pref : content_settings_prefs_) {
-    pref.second->ClearPref();
-  }
 }
 
 ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
@@ -409,8 +407,10 @@ ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
 
 void PrefProvider::Notify(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type);
+                          ContentSettingsType content_type,
+                          const PartitionKey* partition_key) {
+  NotifyObservers(primary_pattern, secondary_pattern, content_type,
+                  partition_key);
 }
 
 void PrefProvider::DiscardOrMigrateObsoletePreferences() {

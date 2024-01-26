@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/renderer/autofill/fake_mojo_password_manager_driver.h"
 #include "chrome/renderer/autofill/fake_password_generation_driver.h"
@@ -608,16 +609,20 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
     // Fill the form.
-    std::vector<autofill::FormFieldData> field_data;
-    FormFieldData field;
+    std::vector<autofill::FormFieldData::FillData> field_data;
+    FormFieldData::FillData field;
     field.value = text;
     field.is_autofilled = true;
     field.unique_renderer_id = form_util::GetFieldRendererId(username_element_);
     field_data.push_back(field);
 
-    autofill_agent_->ApplyFormAction(
-        mojom::ActionType::kFill, mojom::ActionPersistence::kFill,
-        form_util::GetFormRendererId(username_element_.Form()), field_data);
+    FormData::FillData form;
+    form.fields = field_data;
+    form.unique_renderer_id =
+        form_util::GetFormRendererId(username_element_.Form());
+
+    autofill_agent_->ApplyFormAction(mojom::ActionType::kFill,
+                                     mojom::ActionPersistence::kFill, form);
   }
 
   void SimulateUsernameFieldChange(FieldChangeSource change_source) {
@@ -734,16 +739,16 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   // Checks the message sent to PasswordAutofillManager to build the suggestion
-  // list. |username| is the expected username field value, and |show_all| is
-  // the expected flag for the PasswordAutofillManager, whether to show all
-  // suggestions, or only those starting with |username|.
-  void CheckSuggestions(const std::u16string& username, bool show_all) {
+  // list. `typed_username` is the expected username field value, and `show_all`
+  // is the expected flag for the PasswordAutofillManager, whether to show all
+  // suggestions, or only those starting with `typed_username`.
+  void CheckSuggestions(const std::u16string& typed_username, bool show_all) {
     auto show_all_matches = [show_all](int options) {
       return show_all == ((options & autofill::SHOW_ALL) != 0);
     };
 
     EXPECT_CALL(fake_driver_,
-                ShowPasswordSuggestions(_, _, _, _, _, Eq(username),
+                ShowPasswordSuggestions(_, _, _, _, _, Eq(typed_username),
                                         Truly(show_all_matches), _))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
@@ -3052,6 +3057,45 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
       .Times(testing::AnyNumber());
 }
 
+// Tests the following scenario: 1) user triggers manual generation, 2) user
+// erases the generated password from the field, 3) password suggestions should
+// be displayed when available after the field is focused again.
+// Regression test for crbug/1495325.
+TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
+  // Ensure TTF isn't shown when the user focuses the password field.
+  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
+
+  // Simulate receiving credentials for filling from the browser.
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Focus `password_element_` and verify that suggestions are shown to the
+  // user.
+  SimulateElementClick(kPasswordName);
+  CheckSuggestions(/*typed_username=*/u"", true);
+
+  // Simulate manual generation triggering.
+  base::test::TestFuture<const std::optional<
+      ::autofill::password_generation::PasswordGenerationUIData>&>
+      future_for_waiting;
+  password_generation_->TriggeredGeneratePassword(
+      future_for_waiting.GetCallback());
+  EXPECT_TRUE(future_for_waiting.Wait());
+
+  const std::u16string kPassword = u"NewPass24";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(kPassword)));
+  password_generation_->GeneratedPasswordAccepted(kPassword);
+  ASSERT_EQ(password_element_.Value().Utf16(), kPassword);
+
+  // Clear the password field value.
+  password_element_.SetValue(WebString());
+  password_generation_->TextDidChangeInTextField(password_element_);
+
+  // Focus the password element again and verify that suggestions are shown to
+  // the user.
+  SimulateElementClick(kPasswordName);
+  CheckSuggestions(/*typed_username=*/u"", true);
+}
+
 // Tests that a password change form is properly filled with the username and
 // password.
 TEST_F(PasswordAutofillAgentTest, FillSuggestionPasswordChangeForms) {
@@ -3569,7 +3613,7 @@ TEST_F(PasswordAutofillAgentTest,
     blink::WebVector<WebFormElement> forms = document.Forms();
     WebFormElement form_element = forms[0];
     std::vector<blink::WebFormControlElement> control_elements =
-        form_util::ExtractAutofillableElementsInForm(form_element);
+        form_util::GetAutofillableFormControlElements(document, form_element);
     if (test_case.has_fillable_username) {
       username_element_ = control_elements[0].To<WebInputElement>();
       password_element_ = control_elements[1].To<WebInputElement>();

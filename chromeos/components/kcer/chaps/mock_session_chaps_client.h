@@ -17,6 +17,10 @@ class MockSessionChapsClient : public SessionChapsClient {
   ~MockSessionChapsClient() override;
 
   MOCK_METHOD(void,
+              GetMechanismList,
+              (SlotId slot_id, GetMechanismListCallback callback),
+              (override));
+  MOCK_METHOD(void,
               CreateObject,
               (SlotId slot_id,
                const std::vector<uint8_t>& attributes,
@@ -52,6 +56,16 @@ class MockSessionChapsClient : public SessionChapsClient {
                std::vector<uint8_t> attributes,
                int attempts_left,
                SessionChapsClient::FindObjectsCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              Sign,
+              (SessionChapsClient::SlotId slot_id,
+               uint64_t mechanism_type,
+               std::vector<uint8_t> mechanism_parameter,
+               SessionChapsClient::ObjectHandle key_handle,
+               std::vector<uint8_t> data,
+               int attempts_left,
+               SessionChapsClient::SignCallback callback),
               (override));
   MOCK_METHOD(void,
               GenerateKeyPair,

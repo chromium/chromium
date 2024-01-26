@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -47,7 +47,7 @@ struct CollectionInfo {
 
   static CollectionInfo CreateFromProto(
       const ntp::background::Collection& collection,
-      absl::optional<GURL> preview_image_url);
+      std::optional<GURL> preview_image_url);
 
   // A unique identifier for the collection.
   std::string collection_id;
@@ -136,7 +136,11 @@ struct CustomBackground {
 
   // Id for local custom background. This can be empty if it is an uploaded
   // local background, rather than from wallpaper search.
-  absl::optional<base::Token> local_background_id;
+  std::optional<base::Token> local_background_id;
+
+  // Whether the image is an inspiration image. This information is only
+  // used if local_background_id is set.
+  bool is_inspiration_image;
 
   // First attribution string for custom background.
   std::string custom_background_attribution_line_1;
@@ -151,7 +155,7 @@ struct CustomBackground {
   std::string collection_id;
 
   // Main color of the image.
-  absl::optional<SkColor> custom_background_main_color;
+  std::optional<SkColor> custom_background_main_color;
 
   // Whether daily refresh is enabled.
   bool daily_refresh_enabled;

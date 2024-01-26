@@ -704,8 +704,8 @@ class PermissionRequestManagerQuietUiBrowserTest
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     GetPermissionRequestManager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             UiDecision(quiet_ui_reason, warning_reason)));
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   bubble_factory()->WaitForPermissionBubble();
   auto* manager = GetPermissionRequestManager();
 
-  absl::optional<permissions::PermissionPromptDisposition> disposition =
+  std::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
   auto disposition_from_prompt_bubble =
       manager->view_for_testing()->GetPromptDisposition();
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  absl::optional<permissions::PermissionPromptDisposition> disposition =
+  std::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
 
   EXPECT_TRUE(disposition.has_value());
@@ -813,8 +813,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
-    absl::optional<QuietUiReason> simulated_quiet_ui_reason;
-    absl::optional<WarningReason> simulated_warning_reason;
+    std::optional<QuietUiReason> simulated_quiet_ui_reason;
+    std::optional<WarningReason> simulated_warning_reason;
     const char* expected_message;
   } kTestCases[] = {
       {UiDecision::UseNormalUi(), UiDecision::ShowNoWarning(), nullptr},

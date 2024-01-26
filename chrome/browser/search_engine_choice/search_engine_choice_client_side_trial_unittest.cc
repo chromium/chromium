@@ -89,12 +89,19 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
 
   EXPECT_EQ(GetParam().expect_feature_enabled,
             base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre));
+
+  // Using explicit checks per branch here because the value of this property
+  // depends not only on the study state set in the test, but also on the
+  // hardcoded default value, which might be subject to cherry picks on branch.
+  if (GetParam().expect_feature_enabled) {
+    // Client-side study config explicitly sets it to true.
+    EXPECT_TRUE(
+        switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
+  } else {
+    // Default value of the flag, independent from the feature state.
+    EXPECT_TRUE(
+        switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
@@ -119,45 +126,46 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     SearchEngineChoiceClientSideTrialTest,
     testing::Values(
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
         // `entropy_value` makes the group be assigned according to the
         // specified weight of each group and the order in which they are
         // declared. So for a split at 33% enabled, 33% disabled, 33% default
         // a .4 entropy value should select the "disabled" group.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+        // Today, the feature is enabled by default, never enroll clients.
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
-            // In the 50% treatment group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = true},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.6,
-            .channel = version_info::Channel::BETA,
-            // In the 50% control group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = false},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.0001,
-            .channel = version_info::Channel::STABLE,
-            // In the .5% treatment group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = true},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.009,
-            .channel = version_info::Channel::STABLE,
-            // In the .5% control group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = false},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.99,
-            .channel = version_info::Channel::STABLE,
-            // Not in the study (99%)
             .expect_study_enabled = false,
-            .expect_feature_enabled = false}
+            .expect_feature_enabled = true},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true}
+#elif BUILDFLAG(IS_CHROMEOS)
+        // Did not have a client-side field trial, so it's not bundled with the
+        // group above, but it's being enabled on a different schedule than the
+        // group below.
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::BETA,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true}
 #else
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
+            // On other platforms we never enroll clients.
+            .expect_study_enabled = false,
+            .expect_feature_enabled = false},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
             // On other platforms we never enroll clients.
             .expect_study_enabled = false,
             .expect_feature_enabled = false}
@@ -177,7 +185,7 @@ TEST_F(SearchEngineChoiceClientSideTrialTest,
     base::MockEntropyProvider low_entropy_provider{0.01};
     auto feature_list = std::make_unique<base::FeatureList>();
     feature_list->RegisterExtraFeatureOverrides(
-        {{std::cref(switches::kSearchEngineChoice),
+        {{std::cref(switches::kSearchEngineChoiceTrigger),
           base::FeatureList::OVERRIDE_ENABLE_FEATURE}});
 
     SearchEngineChoiceClientSideTrial::SetUpIfNeeded(
@@ -189,11 +197,6 @@ TEST_F(SearchEngineChoiceClientSideTrialTest,
   }
 
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
-
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kSearchEnginesStudyGroup));
 }
 

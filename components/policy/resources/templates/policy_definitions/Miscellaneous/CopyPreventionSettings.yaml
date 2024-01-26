@@ -20,8 +20,8 @@ features:
 future_on:
 - fuchsia
 owners:
-- anthonyvd@chromium.org
 - domfc@chromium.org
+- dpr-eng@google.com
 schema:
   properties:
     disable:

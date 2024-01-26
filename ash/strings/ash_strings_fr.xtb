@@ -228,7 +228,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Appareil photo aligné sur l'angle supérieur droit</translation>
@@ -267,7 +266,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2075520525463668108">Activer/Désactiver <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Balayez l'écran vers la droite avec quatre doigts pour passer au bureau suivant</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'emoji</translation>
@@ -283,7 +281,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2149229036084364364">Passer au titre précédent</translation>
 <translation id="2152895518047545149">On dirait que rien ne manque. Bien joué !</translation>
 <translation id="2161132820593978283">Essayez le cadrage de la caméra pour être au centre de l'écran lors d'appels vidéo. Activez-le dans les Réglages rapides.</translation>
-<translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
 <translation id="2185444992308415167">Parcourir les onglets 1 à 8</translation>
 <translation id="2198625180564913276">Ajout du profil… Cela peut prendre quelques minutes.</translation>
@@ -412,10 +409,12 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
+<translation id="2744221223678373668">Partagés</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Supprimer"</translation>
 <translation id="2750941250130734256">Fenêtre active détachée.</translation>
 <translation id="2761723519669354964">Ouvrir l'élément sélectionné depuis l'étagère</translation>
+<translation id="2762000892062317888">à l'instant</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> à <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+recherche+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3580650856351781466">Téléchargement des fichiers vocaux…</translation>
 <translation id="3585296979871889131">Afficher les photos, notifications, applis et contenus multimédias de votre téléphone</translation>
+<translation id="3590441166907930941">Bouton latéral</translation>
 <translation id="3593039967545720377">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers et son historique. Copiez un élément pour commencer.</translation>
 <translation id="3593646411856133110">Balayez l'écran vers le haut et appuyez de manière prolongée pour afficher les applications ouvertes</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
@@ -732,6 +732,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3990002060657467458">Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
+<translation id="4002066346123236978">Titre</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
 <translation id="4011112806063830608">Ne pas déranger activé.</translation>
 <translation id="4017989525502048489">Pointeur laser</translation>
@@ -1035,6 +1036,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5163434717504750796">Batterie à <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | <ph name="CYCLE_COUNT" /> cycles</translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
+<translation id="5168753792967365150">Modifier dans Google Tasks</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Voir les détails du point d'accès. Celui-ci est bloqué par votre administrateur.</translation>
@@ -1304,6 +1306,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6168622430237609329">Vos applis installées</translation>
 <translation id="6173151025443907148">Un second utilisateur ne peut pas se connecter si Lacros est activé. Veuillez utiliser un second profil de navigateur dans Lacros ou désactiver ce dernier, puis réessayer.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
+<translation id="6180193585172850042">Bouton Retour</translation>
+<translation id="6180651297859206670">Bouton Suivant</translation>
 <translation id="6182592640011875895">Ouvrir le bureau</translation>
 <translation id="6185696379715117369">Accéder à la page précédente</translation>
 <translation id="619335566042889110">Recharger complètement</translation>
@@ -1694,7 +1698,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7850320739366109486">Ne pas déranger</translation>
 <translation id="7851039877802112575">Passer aux pop-ups et aux boîtes de dialogue</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour accéder à l'aperçu</translation>
 <translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner "Naviguer en tant qu'invité" en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7872786842639831132">Désactivé</translation>
@@ -1805,7 +1808,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
 <translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
 <translation id="8277261673056602147">Mettre en surbrillance du texte à l'écran</translation>
-<translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>

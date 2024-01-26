@@ -240,6 +240,7 @@ source_set("policy_specific_browser_tests") {
 
   if (!is_android) {
     sources += [
+      "test/autofill_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/block_truncated_cookies_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
@@ -261,8 +262,10 @@ source_set("policy_specific_browser_tests") {
     ]
 
     deps += [
+      "//chrome/browser/autofill",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
+      "//components/autofill/content/browser:test_support",
       "//components/bookmarks/common:common",
       "//components/enterprise",
       "//components/enterprise:test_support",
@@ -368,6 +371,7 @@ source_set("browser_tests") {
       "test/system_features_policy_browsertest.cc",
       "test/unified_desktop_enabled_browsertest.cc",
       "test/user_avatar_customization_selectors_enabled_policy_browsertest.cc",
+      "test/virtual_keyboard_policy_browsertest.cc",
     ]
 
     deps += [

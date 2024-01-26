@@ -116,37 +116,37 @@ bool IsCurrentUserEvicted(PasswordManagerClient* client) {
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
 }
 
-bool IsAuthError(std::optional<PasswordStoreBackendError> error) {
-  return error.has_value() &&
-         (error.value().type ==
-              PasswordStoreBackendErrorType::kAuthErrorResolvable ||
-          error.value().type ==
-              PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
-}
-
-bool ShouldShowErrorMessage(
+std::optional<PasswordStoreBackendError> GetErrorForErrorMessage(
     std::optional<PasswordStoreBackendError> profile_store_backend_error,
     std::optional<PasswordStoreBackendError> account_store_backend_error,
     PasswordManagerClient* client) {
-  std::optional<PasswordStoreBackendError> auth_error;
-  if (IsAuthError(account_store_backend_error)) {
-    auth_error = account_store_backend_error;
-  } else if (IsAuthError(profile_store_backend_error)) {
+  if (!profile_store_backend_error && !account_store_backend_error) {
+    return std::nullopt;
+  }
+
+  if (IsCurrentUserEvicted(client)) {
+    return std::nullopt;
+  }
+
+  base::flat_set<PasswordStoreBackendErrorType> supported_error_types = {
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+      PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+  };
+
+  if (account_store_backend_error.has_value() &&
+      supported_error_types.contains(
+          account_store_backend_error.value().type)) {
+    return account_store_backend_error;
+  } else if (profile_store_backend_error.has_value() &&
+             supported_error_types.contains(
+                 profile_store_backend_error.value().type)) {
     // This is possible only before the store split. This needs to be removed
     // after the profile store starts to be used only for non-syncing passwords.
-    auth_error = profile_store_backend_error;
+    return profile_store_backend_error;
   }
 
-  if (!auth_error.has_value()) {
-    return false;
-  }
-  if (IsCurrentUserEvicted(client)) {
-    return false;
-  }
-  CHECK(auth_error.value().recovery_type !=
-        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-
-  return true;
+  return std::nullopt;
 }
 #endif
 
@@ -774,30 +774,24 @@ void PasswordFormManager::OnFetchCompleted() {
   autofills_left_ = kMaxTimesAutofill;
 
 #if BUILDFLAG(IS_ANDROID)
-  std::optional<PasswordStoreBackendError> profile_backend_error =
-      form_fetcher_->GetProfileStoreBackendError();
-  std::optional<PasswordStoreBackendError> account_backend_error =
-      form_fetcher_->GetAccountStoreBackendError();
+  std::optional<PasswordStoreBackendError> error = GetErrorForErrorMessage(
+      form_fetcher_->GetProfileStoreBackendError(),
+      form_fetcher_->GetAccountStoreBackendError(), client_);
+
   // If there is no FormData, this is an http authentication form. We don't
   // show the message for it because it would be hidden behind a sign in
   // dialog and the user could miss it.
-  if (observed_form() != nullptr &&
-      ShouldShowErrorMessage(profile_backend_error, account_backend_error,
-                             client_)) {
+  if (observed_form() != nullptr && error.has_value()) {
     std::unique_ptr<PasswordForm> password_form = parser_.Parse(
         *observed_form(), FormDataParser::Mode::kFilling, GetStoredUsernames());
-    // If ShouldShowErrorMessage returns true, at least one of the store errors
-    // is an auth error.
-    password_manager::PasswordStoreBackendErrorType error_type =
-        IsAuthError(account_backend_error) ? account_backend_error->type
-                                           : profile_backend_error->type;
+
     client_->ShowPasswordManagerErrorMessage(
         password_form && (password_form->IsLikelySignupForm() ||
                           password_form->IsLikelyChangePasswordForm() ||
                           password_form->IsLikelyResetPasswordForm())
             ? password_manager::ErrorMessageFlowType::kSaveFlow
             : password_manager::ErrorMessageFlowType::kFillFlow,
-        error_type);
+        error.value().type);
   }
 
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -124,17 +124,20 @@ void AwSafeBrowsingUIManager::SendThreatDetails(
       ->ReportThreatDetails(std::move(report));
 }
 
-safe_browsing::BaseBlockingPage*
-AwSafeBrowsingUIManager::CreateBlockingPageForSubresource(
+security_interstitials::SecurityInterstitialPage*
+AwSafeBrowsingUIManager::CreateBlockingPage(
     content::WebContents* contents,
     const GURL& blocked_url,
-    const UnsafeResource& unsafe_resource) {
+    const UnsafeResource& unsafe_resource,
+    bool forward_extension_event,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // The AwWebResourceRequest can't be provided yet, since the navigation hasn't
   // started. Once it has, it will be provided via
   // AwSafeBrowsingBlockingPage::CreatedErrorPageNavigation.
   AwSafeBrowsingBlockingPage* blocking_page =
       AwSafeBrowsingBlockingPage::CreateBlockingPage(
-          this, contents, blocked_url, unsafe_resource, nullptr);
+          this, contents, blocked_url, unsafe_resource, nullptr,
+          blocked_page_shown_timestamp);
   return blocking_page;
 }
 

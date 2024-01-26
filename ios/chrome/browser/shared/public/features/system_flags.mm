@@ -13,12 +13,12 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial.h"
 #import "base/strings/sys_string_conversions.h"
-#import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_switches.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/variations/variations_associated_data.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/memory/model/features.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -28,7 +28,6 @@ NSString* const kAlternateDiscoverFeedServerURL =
     @"AlternateDiscoverFeedServerURL";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
-NSString* const kSearchEngineForceEnabled = @"SearchEngineForceEnabled";
 NSString* const kUpgradePromoForceEnabled = @"UpgradePromoForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
@@ -63,11 +62,6 @@ namespace experimental_flags {
 bool AlwaysDisplayFirstRun() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kFirstRunForceEnabled];
-}
-
-bool AlwaysDisplaySearchEngineChoice() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kSearchEngineForceEnabled];
 }
 
 bool AlwaysDisplayUpgradePromo() {
@@ -122,14 +116,12 @@ bool ShouldAlwaysShowFollowIPH() {
 }
 
 bool IsMemoryDebuggingEnabled() {
-// Always return true for Chromium builds, but check the user default for
-// official builds because memory debugging should never be enabled on stable.
-#if BUILDFLAG(CHROMIUM_BRANDING)
+#if BUILDFLAG(IOS_ENABLE_MEMORY_DEBUGGING)
   return true;
 #else
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"EnableMemoryDebugging"];
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
+#endif
 }
 
 bool IsOmniboxDebuggingEnabled() {

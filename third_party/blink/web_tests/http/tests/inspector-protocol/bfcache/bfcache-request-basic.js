@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'http://localhost:8000/inspector-protocol/resources/test-page.html',
       'Tests that no network requests are logged for a BFCache navigation');

@@ -34,6 +34,7 @@ namespace ash {
 
 enum class HelpBubbleId;
 enum class HelpBubbleStyle;
+enum class TimeBucket;
 enum class TutorialId;
 struct UserSession;
 
@@ -110,6 +111,9 @@ ASH_EXPORT std::optional<HelpBubbleStyle> GetHelpBubbleStyle(
 ASH_EXPORT views::View* GetMatchingViewInRootWindow(
     int64_t display_id,
     ui::ElementIdentifier element_id);
+
+// Gets the appropriate `TimeBucket` for a given `time_delta`.
+ASH_EXPORT TimeBucket GetTimeBucket(base::TimeDelta time_delta);
 
 // Returns the user type associated with the specified `account_id`, or
 // `std::nullopt` if type cannot be determined.

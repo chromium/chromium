@@ -90,14 +90,6 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       mock_shopping_service_->SetIsSubscribedCallbackValue(false);
       MockCommerceUiTabHelper::CreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
-      MockCommerceUiTabHelper* mock_tab_helper =
-          static_cast<MockCommerceUiTabHelper*>(
-              MockCommerceUiTabHelper::FromWebContents(
-                  browser()->tab_strip_model()->GetActiveWebContents()));
-      EXPECT_CALL(*mock_tab_helper, GetProductImage);
-      ON_CALL(*mock_tab_helper, GetProductImage)
-          .WillByDefault(
-              testing::ReturnRef(mock_tab_helper->GetValidProductImage()));
     }
 
     const GURL url = GURL("https://www.google.com");

@@ -134,7 +134,8 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
     ui::WmDropHandler* drop_handler = ui::GetWmDropHandler(*this);
     if (!drop_handler)
       return;
-    drop_handler->OnDragEnter(point, std::move(data), operation, modifiers_);
+    drop_handler->OnDragEnter(point, operation, modifiers_);
+    drop_handler->OnDragDataAvailable(std::move(data));
   }
 
   int OnDragMotion(const gfx::PointF& point, int operation) {
@@ -145,11 +146,11 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
     return drop_handler->OnDragMotion(point, operation, modifiers_);
   }
 
-  void OnDragDrop(std::unique_ptr<OSExchangeData> data) {
+  void OnDragDrop() {
     ui::WmDropHandler* drop_handler = ui::GetWmDropHandler(*this);
     if (!drop_handler)
       return;
-    drop_handler->OnDragDrop(std::move(data), modifiers_);
+    drop_handler->OnDragDrop(modifiers_);
   }
 
   void OnDragLeave() {
@@ -167,7 +168,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void ProcessDrag(std::unique_ptr<OSExchangeData> data, int operation) {
     OnDragEnter(kStartDragLocation, std::move(data), operation);
     int updated_operation = OnDragMotion(kStartDragLocation, operation);
-    OnDragDrop(nullptr);
+    OnDragDrop();
     OnDragLeave();
     CloseDrag(ui::PreferredDragOperation(updated_operation));
   }
@@ -374,7 +375,7 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
                                 suggested_operation);
   int updated_operation =
       platform_window_->OnDragMotion(kStartDragLocation, suggested_operation);
-  platform_window_->OnDragDrop(nullptr);
+  platform_window_->OnDragDrop();
   platform_window_->OnDragLeave();
 
   // The |updated_operation| decided through negotiation should be
@@ -471,7 +472,7 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
 //
 // See more information in the bug.
 TEST_F(DesktopDragDropClientOzoneTest, Bug1151836) {
-  platform_window_->OnDragDrop(nullptr);
+  platform_window_->OnDragDrop();
 }
 
 namespace {

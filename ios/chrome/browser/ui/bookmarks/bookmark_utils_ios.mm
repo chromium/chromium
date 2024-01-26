@@ -18,6 +18,7 @@
 #import "base/containers/flat_map.h"
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -91,7 +92,11 @@ const bookmarks::BookmarkNode* FindNodeByNodeReference(
   if (!reference.bookmark_model) {
     return nullptr;
   }
-  return reference.bookmark_model->GetNodeByUuid(reference.uuid);
+  // On iOS, only `kLocalOrSyncableNodes` is relevant, given that two separate
+  // BookmarkModel instances are used.
+  return reference.bookmark_model->GetNodeByUuid(
+      reference.uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 }
 
 NodeSet FindNodesByNodeReferences(NodeReferenceSet references) {
@@ -227,16 +232,16 @@ MDCSnackbarMessage* CreateUndoToastWithWrapper(UndoManagerWrapper* wrapper,
   return message;
 }
 
-bool CreateOrUpdateBookmark(const BookmarkNode* node,
-                            NSString* title,
-                            const GURL& url,
-                            const BookmarkNode* folder,
-                            bookmarks::BookmarkModel* local_or_syncable_model,
-                            bookmarks::BookmarkModel* account_model) {
-  DCHECK(!node || node->is_url());
+bool UpdateBookmark(const BookmarkNode* node,
+                    NSString* title,
+                    const GURL& url,
+                    const BookmarkNode* folder,
+                    bookmarks::BookmarkModel* local_or_syncable_model,
+                    bookmarks::BookmarkModel* account_model) {
+  DCHECK(node);
   DCHECK(folder);
   std::u16string titleString = base::SysNSStringToUTF16(title);
-  if (node && node->GetTitle() == titleString && node->url() == url &&
+  if (node->GetTitle() == titleString && node->url() == url &&
       node->parent() == folder) {
     // Nothing to do.
     return false;
@@ -244,37 +249,29 @@ bool CreateOrUpdateBookmark(const BookmarkNode* node,
 
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
-  if (!node) {  // Create a new bookmark.
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
-    base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-    node = folder_model->AddNewURL(folder, folder->children().size(),
-                                   titleString, url);
-  } else {  // Update the existing bookmark.
-    bookmarks::BookmarkModel* node_model =
-        GetBookmarkModelForNode(node, local_or_syncable_model, account_model);
-    node_model->SetTitle(node, titleString,
-                         bookmarks::metrics::BookmarkEditSource::kUser);
-    node_model->SetURL(node, url,
+  bookmarks::BookmarkModel* node_model =
+      GetBookmarkModelForNode(node, local_or_syncable_model, account_model);
+  node_model->SetTitle(node, titleString,
                        bookmarks::metrics::BookmarkEditSource::kUser);
+  node_model->SetURL(node, url, bookmarks::metrics::BookmarkEditSource::kUser);
 
-    DCHECK(!folder->HasAncestor(node));
-    if (node->parent() != folder) {
-      if (node_model == folder_model) {
-        // In-model move.
-        node_model->Move(node, folder, folder->children().size());
-      } else {
-        // Cross-model move.
-        node_model->MoveToOtherModelWithNewNodeIdsAndUuids(node, folder_model,
-                                                           folder);
-        // Warning: calling `MoveToOtherModelWithNewNodeIdsAndUuids` invalidates
-        // `node`, so it shouldn't be used after this line.
-      }
+  DCHECK(!folder->HasAncestor(node));
+  if (node->parent() != folder) {
+    if (node_model == folder_model) {
+      // In-model move.
+      node_model->Move(node, folder, folder->children().size());
+    } else {
+      // Cross-model move.
+      node_model->MoveToOtherModelWithNewNodeIdsAndUuids(node, folder_model,
+                                                         folder);
+      // Warning: calling `MoveToOtherModelWithNewNodeIdsAndUuids` invalidates
+      // `node`, so it shouldn't be used after this line.
     }
   }
   return true;
 }
 
-MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
+MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const BookmarkNode* node,
     NSString* title,
     const GURL& url,
@@ -282,6 +279,7 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     bookmarks::BookmarkModel* local_or_syncable_model,
     bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
+  CHECK(node);
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
@@ -289,15 +287,7 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
   // Create or update the bookmark.
   [wrapper startGroupingActions];
 
-  // The code below might invalidate `node` so grab params for
-  // `CreateUndoToastWithWrapper` early.
-  NSString* text =
-      l10n_util::GetNSString((node) ? IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED
-                                    : IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
-  const char* user_action = (node)
-                                ? "MobileBookmarkManagerUpdatedBookmarkUndone"
-                                : "MobileBookmarkManagerAddedBookmarkUndone";
-  bool did_change_anything = CreateOrUpdateBookmark(
+  bool did_change_anything = UpdateBookmark(
       node, title, url, folder, local_or_syncable_model, account_model);
 
   [wrapper stopGroupingActions];
@@ -306,7 +296,9 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
   if (!did_change_anything) {
     return nil;
   }
-  return CreateUndoToastWithWrapper(wrapper, text, user_action);
+  return CreateUndoToastWithWrapper(
+      wrapper, l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED),
+      "MobileBookmarkManagerUpdatedBookmarkUndone");
 }
 
 MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
@@ -582,7 +574,7 @@ class FolderNodeComparator {
   }
 
  private:
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 bool FolderHasAncestorInBookmarkNodes(const BookmarkNode* folder,

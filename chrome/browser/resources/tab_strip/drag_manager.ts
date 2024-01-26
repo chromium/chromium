@@ -7,10 +7,14 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isTabElement, TabElement} from './tab.js';
-import {isDragHandle, isTabGroupElement, TabGroupElement} from './tab_group.js';
-import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
-import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
+import type {TabElement} from './tab.js';
+import {isTabElement} from './tab.js';
+import type {TabGroupElement} from './tab_group.js';
+import {isDragHandle, isTabGroupElement} from './tab_group.js';
+import type {Tab} from './tab_strip.mojom-webui.js';
+import {TabNetworkState} from './tab_strip.mojom-webui.js';
+import type {TabsApiProxy} from './tabs_api_proxy.js';
+import {TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 export const PLACEHOLDER_TAB_ID: number = -1;
 

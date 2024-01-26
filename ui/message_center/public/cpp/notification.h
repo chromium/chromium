@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
@@ -40,9 +39,24 @@ class ColorProvider;
 namespace message_center {
 
 // Represents an individual item in NOTIFICATION_TYPE_MULTIPLE notifications.
-struct MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
-  std::u16string title;
-  std::u16string message;
+class MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
+ public:
+  NotificationItem(const std::u16string& title,
+                   const std::u16string& message,
+                   ui::ImageModel icon = ui::ImageModel());
+  NotificationItem(const NotificationItem& other);
+  NotificationItem();
+  ~NotificationItem();
+  NotificationItem& operator=(const NotificationItem& other);
+
+  const std::u16string& title() const { return title_; }
+  const std::u16string& message() const { return message_; }
+  const std::optional<ui::ImageModel>& icon() const { return icon_; }
+
+ private:
+  std::u16string title_;
+  std::u16string message_;
+  std::optional<ui::ImageModel> icon_;
 };
 
 enum class SettingsButtonHandler {
@@ -159,16 +173,16 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // and only pass globally defined constants.
   // TODO(tetsui): Remove the pointer, after fixing VectorIconSource not to
   // retain VectorIcon reference.  https://crbug.com/760866
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+  // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
   // Vector image to display on the parent notification of this notification,
   // illustrating the source of the group notification that this notification
   // belongs to. Optional. Note that all notification belongs to the same group
   // should have the same `parent_vector_small_image`.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+  // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* parent_vector_small_image =
       &gfx::kNoneIcon;
 

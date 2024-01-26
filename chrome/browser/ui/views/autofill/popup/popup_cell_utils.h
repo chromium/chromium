@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_UTILS_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -121,11 +122,14 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
 std::unique_ptr<views::Label> CreateMinorTextLabel(
     const Suggestion::Text& minor_text);
 
+// Creates sub-text views and pass their references to `PopupRowContentView` for
+// centralized style management. If `text_style` is not provided, the default
+// style from GetSecondaryTextStyle() will be used for the label views."
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
     const Suggestion& suggestion,
     FillingProduct main_filling_product,
-    int text_style = views::style::STYLE_SECONDARY);
+    std::optional<int> text_style = std::nullopt);
 
 int GetMaxPopupAddressProfileWidth();
 

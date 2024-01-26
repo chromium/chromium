@@ -10,8 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -307,15 +309,23 @@ TEST_F(SiteSettingsCounterTest, TranslatedSitesCounting) {
 }
 
 TEST_F(SiteSettingsCounterTest, DiscardingExceptionsCounting) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append("www.google.com");
-  exclusion_list.Append("drive.google.com");
-  profile()->GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  base::Value::Dict exclusion_map;
+  exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
+  exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
+  exclusion_map.Set("b.com",
+                    base::TimeToValue(base::Time::Now() - base::Minutes(30)));
+  exclusion_map.Set("c.com",
+                    base::TimeToValue(base::Time::Now() - base::Hours(2)));
+  exclusion_map.Set("d.com",
+                    base::TimeToValue(base::Time::Now() - base::Hours(30)));
+  profile()->GetPrefs()->SetDict(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,
+      std::move(exclusion_map));
 
-  counter()->Restart();
+  SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
   EXPECT_EQ(2, GetResult());
+  SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
+  EXPECT_EQ(4, GetResult());
 }
 
 }  // namespace

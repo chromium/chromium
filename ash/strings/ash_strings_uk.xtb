@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Розблоковуйте відбитком пальця</translation>
-<translation id="1888656773939766144">Дисплей "<ph name="DISPLAY_NAME" />" не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц), тому вибрано <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
@@ -267,7 +266,6 @@
 <translation id="2064048859448024834">Попередній перегляд зображення з камери ввімкнено</translation>
 <translation id="2067602449040652523">Яскравість клавіатури</translation>
 <translation id="2075520525463668108">Увімкнути або вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Проведіть чотирма пальцями праворуч, щоб перейти до наступного робочого столу</translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2083190527011054446">Доброї ночі, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Відкрити панель смайлів</translation>
@@ -283,7 +281,6 @@
 <translation id="2149229036084364364">Перейти до попередньої композиції</translation>
 <translation id="2152895518047545149">Схоже, у вас немає робіт, які потрібно здати. Чудово!</translation>
 <translation id="2161132820593978283">Налаштуйте режим слідкування, щоб ваше обличчя завжди залишалося в центрі екрана під час відеодзвінків. Увімкніть цю функцію в меню "Швидкі налаштування".</translation>
-<translation id="2170530631236737939">Щоб вийти з режиму огляду, проведіть трьома пальцями вниз</translation>
 <translation id="2185166372312820725">Перейти на попередню вкладку</translation>
 <translation id="2185444992308415167">По черзі відкривати вкладки 1–8</translation>
 <translation id="2198625180564913276">Триває додавання профілю. Це може зайняти кілька хвилин.</translation>
@@ -392,7 +389,7 @@
 <translation id="2624588537172718173">Звук із пристрою і мікрофона</translation>
 <translation id="263399434338050016">"Вибрати все"</translation>
 <translation id="2644422758626431000">Закріпити вікно ліворуч</translation>
-<translation id="2645435784669275700">ОС Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Зйомка вікна</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
@@ -412,10 +409,12 @@
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
 <translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
+<translation id="2744221223678373668">Спільні</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
+<translation id="2762000892062317888">щойно</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + пошук + s</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
@@ -624,6 +623,7 @@
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3580650856351781466">Завантаження файлів живих субтитрів</translation>
 <translation id="3585296979871889131">Переглядайте нещодавні фотографії, медіафайли, сповіщення й додатки на телефоні</translation>
+<translation id="3590441166907930941">Бічна кнопка</translation>
 <translation id="3593039967545720377">Щоб переглянути історію буфера обміну, натисніть клавіші <ph name="SHORTCUT_KEY_NAME" /> + V. Щоб почати, скопіюйте елемент.</translation>
 <translation id="3593646411856133110">Щоб переглянути відкриті додатки, проведіть пальцем угору й утримуйте</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Відповісти</translation>
 <translation id="3990002060657467458">Елементи керування, якими ви часто користуєтесь, як-от Wi-Fi, Bluetooth і гучність, можна знайти у швидких налаштуваннях. Тут також можна робити знімки екрана.</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
+<translation id="4002066346123236978">Назва</translation>
 <translation id="40062176907008878">Рукописне введення</translation>
 <translation id="4011112806063830608">Режим "Не турбувати" ввімкнено.</translation>
 <translation id="4017989525502048489">Лазерний вказівник</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">Стан акумулятора: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Кількість циклів: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Зберегти робочий стіл як макет</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
+<translation id="5168753792967365150">Змінити в Google Завданнях</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
 <translation id="5187627942836026988">Показати відомості про точку доступу. Адміністратор заблокував точку доступу.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">Ваші встановлені додатки</translation>
 <translation id="6173151025443907148">Під час роботи Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
+<translation id="6180193585172850042">Кнопка "Назад"</translation>
+<translation id="6180651297859206670">Кнопка "Далі"</translation>
 <translation id="6182592640011875895">Відкрити робочий стіл</translation>
 <translation id="6185696379715117369">Сторінка вгору</translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
@@ -1693,7 +1697,6 @@
 <translation id="7850320739366109486">Не турбувати</translation>
 <translation id="7851039877802112575">Виділити спливаючі або діалогові вікна</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Щоб відкрити режим огляду, проведіть трьома пальцями вгору</translation>
 <translation id="7862292329216937261">Щоб використовувати пристрій як гість, вийдіть з облікового запису й унизу екрана виберіть опцію "Переглядати в режимі гостя".</translation>
 <translation id="7866482334467279021">ввімкнено</translation>
 <translation id="7872786842639831132">Вимкнено</translation>
@@ -1804,7 +1807,6 @@
 <translation id="8262312463845990408">Увімкнути або вимкнути відтворення</translation>
 <translation id="8270450402312105425">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом години}one{Поверніться до попередньої версії на пристрої протягом # години}few{Поверніться до попередньої версії на пристрої протягом # годин}many{Поверніться до попередньої версії на пристрої протягом # годин}other{Поверніться до попередньої версії на пристрої протягом # години}}</translation>
 <translation id="8277261673056602147">Виділити текст на екрані</translation>
-<translation id="8284362522226889623">Проведіть чотирма пальцями ліворуч, щоб перейти на попередній робочий стіл</translation>
 <translation id="828708037801473432">Вимкнено</translation>
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>

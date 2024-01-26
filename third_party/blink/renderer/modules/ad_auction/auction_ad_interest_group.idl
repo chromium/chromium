@@ -32,8 +32,11 @@ dictionary AuctionAdInterestGroup {
 
   double priority;
   boolean enableBiddingSignalsPrioritization;
-  record<DOMString, double> priorityVector;
-  record<DOMString, double> prioritySignalsOverrides;
+
+  // TODO(https://crbug.com/1517378): These should be DOMString, per spec, but
+  // that leads to other issues, currently.
+  record<USVString, double> priorityVector;
+  record<USVString, double> prioritySignalsOverrides;
 
   // Do not use the "enum" type for `sellerCapabilities`, since it throws on
   // unsupported enum values, making forward compatibility more difficult for
@@ -61,6 +64,7 @@ dictionary AuctionAdInterestGroup {
   USVString trustedBiddingSignalsUrl;
   sequence<USVString> trustedBiddingSignalsKeys;
   DOMString trustedBiddingSignalsSlotSizeMode;
+  long maxTrustedBiddingSignalsURLLength;
   any userBiddingSignals;
   sequence<AuctionAd> ads;
   sequence<AuctionAd> adComponents;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_WEB_SIGNIN_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
@@ -18,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {

@@ -18,8 +18,8 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Tests for {@link SimpleHandleStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)

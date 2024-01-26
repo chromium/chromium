@@ -348,7 +348,8 @@ net::CookieStore* CookieManager::GetCookieStore() {
       cookie_store_created_ = true;
     }
 
-    cookie_store_ = content::CreateCookieStore(cookie_config, nullptr);
+    cookie_store_ =
+        content::CreateCookieStore(std::move(cookie_config), nullptr);
     auto cookie_access_delegate_type =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebViewEnableModernCookieSameSite)

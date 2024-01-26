@@ -99,7 +99,8 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo()
       supports_notify_tag_(false),
       configurable_(false),
       watchable_(false),
-      source_(extensions::SOURCE_FILE) {}
+      source_(extensions::SOURCE_FILE),
+      cache_type_(CacheType::NONE) {}
 
 ProvidedFileSystemInfo::ProvidedFileSystemInfo(
     const ProviderId& provider_id,
@@ -108,7 +109,8 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
     bool configurable,
     bool watchable,
     extensions::FileSystemProviderSource source,
-    const IconSet& icon_set)
+    const IconSet& icon_set,
+    CacheType cache_type)
     : provider_id_(provider_id),
       file_system_id_(mount_options.file_system_id),
       display_name_(mount_options.display_name),
@@ -119,7 +121,8 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
       configurable_(configurable),
       watchable_(watchable),
       source_(source),
-      icon_set_(icon_set) {
+      icon_set_(icon_set),
+      cache_type_(cache_type) {
   DCHECK_LE(0, mount_options.opened_files_limit);
 }
 
@@ -130,14 +133,16 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
     bool configurable,
     bool watchable,
     extensions::FileSystemProviderSource source,
-    const IconSet& icon_set)
+    const IconSet& icon_set,
+    CacheType cache_type)
     : ProvidedFileSystemInfo(ProviderId::CreateFromExtensionId(extension_id),
                              mount_options,
                              mount_path,
                              configurable,
                              watchable,
                              source,
-                             icon_set) {}
+                             icon_set,
+                             cache_type) {}
 
 ProvidedFileSystemInfo::ProvidedFileSystemInfo(
     const ProvidedFileSystemInfo& other) = default;

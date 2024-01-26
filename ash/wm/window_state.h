@@ -63,7 +63,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Each subclass defines its own behavior and transition for each WMEvent.
   class State {
    public:
-    State() {}
+    State() = default;
 
     State(const State&) = delete;
     State& operator=(const State&) = delete;
@@ -140,6 +140,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   }
 
   std::optional<float> snap_ratio() const { return snap_ratio_; }
+
+  std::optional<WindowSnapActionSource> snap_action_source() const {
+    return snap_action_source_;
+  }
 
   // True if the window should be unminimized to the restore bounds, as
   // opposed to the window's current bounds. |unminimized_to_restore_bounds_| is
@@ -629,6 +633,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // when display or workarea changes, or decide what the window bounds should
   // be if restoring the window back to a snapped window state, etc.
   std::optional<float> snap_ratio_;
+
+  // Contains the snap action source for the most recent snap event.
+  std::optional<WindowSnapActionSource> snap_action_source_;
 
   // A property to remember the window position which was set before the
   // auto window position manager changed the window bounds, so that it can

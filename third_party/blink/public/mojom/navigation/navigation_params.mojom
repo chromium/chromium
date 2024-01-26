@@ -322,9 +322,9 @@ struct NavigationTiming {
 // page's pagehide and visibilitychange handlers are run before the new page
 // runs (which is what happens on other same-site main frame navigations).
 struct OldPageInfo {
-  // |routing_id_for_old_main_frame| contains the routing ID of the old page's
-  // main RenderFrameHost.
-  int32 routing_id_for_old_main_frame = -1;
+  // |frame_token_for_old_main_frame| contains the frame token of the old page's
+  // main WebLocalFrame.
+  blink.mojom.LocalFrameToken frame_token_for_old_main_frame;
   // |new_lifecycle_state_for_old_page| contains the latest PageLifecycleState
   // of the old page to ensure the PageVisibilityState gets properly updated,
   // the "persisted" property of the pagehide event is set correctly, and

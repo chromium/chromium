@@ -135,7 +135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-07-14">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-07-14">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
-    units="items" expires_after="2024-03-07">
+    units="items" expires_after="2024-07-07">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
-    enum="DangerousDownloadDialogEvent" expires_after="2024-03-17">
+    enum="DangerousDownloadDialogEvent" expires_after="2024-07-14">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2024-05-19">
+    enum="SBClientDownloadExtensions" expires_after="2024-07-21">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -723,6 +723,40 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Download.PartialView.RowShownTimeToOpenDownloadClick"
+    units="ms" expires_after="2024-07-19">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time interval from when the partial view was shown to when the user
+    clicked on the partial view row to open it. This is only logged for
+    downloads without a warning. This is only logged if the user clcks the main
+    button to open the download at all, and is only logged for the partial view.
+    It may be logged multiple times per download, if the user clicks to open the
+    download multiple times. It is also logged when the download does not
+    actually open, due to existing clickjacking mitigations. Only short times
+    are logged because this is intended to study clickjacking potential and
+    longer times are not relevant.
+  </summary>
+</histogram>
+
+<histogram name="Download.PartialView.StartTimeToOpenDownloadClick" units="ms"
+    expires_after="2024-07-19">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time interval from when the download started to when the user clicked on
+    the partial view row to open it. This is only logged for downloads without a
+    warning. This is only logged if the user clcks the main button to open the
+    download at all, and is only logged for the partial view. It may be logged
+    multiple times per download, if the user clicks to open the download
+    multiple times. It is also logged when the download does not actually open,
+    due to existing clickjacking mitigations. Only short times are logged
+    because this is intended to study clickjacking potential and longer times
+    are not relevant.
   </summary>
 </histogram>
 
@@ -1051,6 +1085,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.ShowedDownloadWarning.DownloadsPage"
+    enum="DownloadItem.DangerType" expires_after="2024-07-16">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    A download warning was shown on the chrome://downloads page. This is logged
+    once per dangerous or suspicious download, when it is shown for the first
+    time on chrome://downloads, once per Chrome session (i.e. may be logged
+    again after Chrome restarts). Value logs the type of danger.
+  </summary>
+</histogram>
+
 <histogram name="Download.SourcesChrome" enum="ChromeDownloadSource"
     expires_after="never">
 <!-- expires-never: Monitors download system health. -->
@@ -1107,6 +1153,17 @@ chromium-metrics-reviews@google.com.
     type of danger.
 
     This metric is used to populate a dashboard on go/crsb-site.
+  </summary>
+</histogram>
+
+<histogram name="Download.UserValidatedDangerousDownload.DownloadsPage"
+    enum="DownloadItem.DangerType" expires_after="2024-07-16">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User chose to save a download which was marked dangerous or suspicious from
+    the chrome://downloads page, or the bypass prompt triggered from there.
+    Value logs the type of danger.
   </summary>
 </histogram>
 

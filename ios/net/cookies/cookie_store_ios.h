@@ -17,6 +17,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ios/net/cookies/cookie_cache.h"
@@ -171,7 +172,7 @@ class CookieStoreIOS : public net::CookieStore,
    private:
     // Instances of this class are always members of CookieStoreIOS, so
     // |cookie_store| is guaranteed to outlive this instance.
-    CookieStoreIOS* const cookie_store_;
+    const raw_ptr<CookieStoreIOS> cookie_store_;
   };
 
   // Interface only used by CookieChangeDispatcherIOS.

@@ -43,6 +43,13 @@ source_set("blink_platform_unittests") {
   data = []
 }
 
+bundle_data("blink_platform_unittests_filters_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.blink_platform_unittests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("blink_web_tests_filter") {
   testonly = true
 
@@ -111,7 +118,7 @@ source_set("chrome_public_unit_test_apk_filters") {
 source_set("chromeos_filters") {
   data = [
     "//testing/buildbot/filters/chromeos.browser_tests.filter",
-    "//testing/buildbot/filters/chromeos.amd64-generic.gl_tests_validating.filter",
+    "//testing/buildbot/filters/chromeos.amd64-generic.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/chromeos.kevin.gl_tests_validating.filter",
     "//testing/buildbot/filters/chromeos.gl_unittests.filter",
     "//testing/buildbot/filters/chromeos.media_unittests.filter",
@@ -127,6 +134,13 @@ source_set("components_unittests_filters") {
     "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
     "//testing/buildbot/filters/rust.components_unittests.filter",
   ]
+}
+
+bundle_data("base_unittests_filters_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.base_unittests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 bundle_data("compositor_unittests_filters_bundle_data") {

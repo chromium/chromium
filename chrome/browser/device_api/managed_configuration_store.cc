@@ -68,7 +68,7 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
   return store_updated;
 }
 
-absl::optional<base::Value::Dict> ManagedConfigurationStore::Get(
+std::optional<base::Value::Dict> ManagedConfigurationStore::Get(
     const std::vector<std::string>& keys) {
   if (!store_) {
     Initialize();
@@ -77,7 +77,7 @@ absl::optional<base::Value::Dict> ManagedConfigurationStore::Get(
   auto result = store_->Get(keys);
 
   if (!result.status().ok()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result.PassSettings();

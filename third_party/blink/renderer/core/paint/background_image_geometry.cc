@@ -771,15 +771,6 @@ void BackgroundImageGeometry::Calculate(
                              unsnapped_positioning_area.size,
                              unsnapped_positioning_area.size,
                              unsnapped_box_offset, unsnapped_box_offset);
-
-  if (!paint_context.UsesZoomedCoordinates()) {
-    const float inv_zoom = 1 / paint_context.EffectiveZoom();
-    unsnapped_dest_rect_.Scale(inv_zoom);
-    snapped_dest_rect_.Scale(inv_zoom);
-    phase_.Scale(inv_zoom);
-    tile_size_.Scale(inv_zoom);
-    repeat_spacing_.Scale(inv_zoom);
-  }
 }
 
 PhysicalOffset BackgroundImageGeometry::ComputePhase() const {

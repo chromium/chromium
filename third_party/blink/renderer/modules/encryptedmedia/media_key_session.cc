@@ -997,7 +997,8 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
 
   // 7. Resolve promise.
   closed_promise_->Resolve(
-      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason)));
+      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason))
+          .AsString());
 
   // Fail any pending events, except if it's a close request.
   action_timer_.Stop();

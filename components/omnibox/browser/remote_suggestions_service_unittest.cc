@@ -98,7 +98,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(nullptr, 0);
+  TemplateURLService template_url_service(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   service.StartZeroPrefixSuggestionsRequest(
@@ -126,7 +127,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(nullptr, 0);
+  TemplateURLService template_url_service(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
@@ -148,7 +150,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 }
 
 TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
-  TemplateURLService template_url_service(nullptr, 0);
+  TemplateURLService template_url_service(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData template_url_data;
   template_url_data.suggestions_url = "https://www.example.com/suggest";
   template_url_service.SetUserSelectedDefaultSearchProvider(

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
+#include "net/test/scoped_disable_exit_on_dfatal.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"      // IWYU pragma: export
@@ -60,5 +61,8 @@ using ScopedEnvironmentForThreadsImpl =
     quiche::test::ScopedEnvironmentForThreadsImpl;
 
 std::string QuicheGetTestMemoryCachePathImpl();
+
+using QuicheScopedDisableExitOnDFatalImpl =
+    net::test::ScopedDisableExitOnDFatal;
 
 #endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_IMPL_H_

@@ -7,6 +7,7 @@
 #import <map>
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/infobars/model/badge_state.h"
@@ -155,7 +156,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   BadgeMediator* badge_mediator_ = nil;
-  OverlayPresenter* overlay_presenter_ = nullptr;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
 };
 
 // Test that the BadgeMediator responds with no displayed and fullscreen badge

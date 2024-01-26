@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="4212246570487010370">继续浏览</translation>
+<translation id="427987768447457592">新标签页分组</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">视图</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
 <translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
+<translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{您有 <ph name="TABS_COUNT_ONE" /> 个近期未使用的标签页}other{您有 <ph name="TABS_COUNT_MANY" /> 个近期未使用的标签页}}</translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>

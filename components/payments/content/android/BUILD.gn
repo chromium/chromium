@@ -10,7 +10,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 static_library("android") {
   sources = [
-    "byte_buffer_helper.cc",
     "byte_buffer_helper.h",
     "can_make_payment_query_android.cc",
     "csp_checker_android.cc",

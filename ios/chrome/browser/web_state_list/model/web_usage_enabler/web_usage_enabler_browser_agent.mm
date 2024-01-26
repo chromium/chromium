@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 BROWSER_USER_DATA_KEY_IMPL(WebUsageEnablerBrowserAgent)
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
     : browser_(browser) {
-  browser_observation_.Observe(browser_);
+  browser_observation_.Observe(browser_.get());
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   web_state_list_observation_.Observe(browser->GetWebStateList());
@@ -34,6 +35,19 @@ void WebUsageEnablerBrowserAgent::SetWebUsageEnabled(bool web_usage_enabled) {
 
   web_usage_enabled_ = web_usage_enabled;
   UpdateWebUsageForAllWebStates();
+  for (auto& observer : observers_) {
+    observer.WebUsageEnablerValueChanged(this);
+  }
+}
+
+void WebUsageEnablerBrowserAgent::AddObserver(
+    WebUsageEnablerBrowserAgentObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebUsageEnablerBrowserAgent::RemoveObserver(
+    WebUsageEnablerBrowserAgentObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void WebUsageEnablerBrowserAgent::UpdateWebUsageForAllWebStates() {

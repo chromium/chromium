@@ -246,7 +246,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
   SetBodyContent(body_content);
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
@@ -312,7 +312,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
   SetBodyContent(body_content);
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));

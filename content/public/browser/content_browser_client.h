@@ -74,6 +74,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -998,18 +999,27 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
   //
+  // If non-null, the embedder can use `out_debug_message` to relay further
+  // details about how the returned boolean result was obtained.
+  //
   // Note that `rfh` can be nullptr.
   virtual bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
                                       content::RenderFrameHost* rfh,
                                       const url::Origin& top_frame_origin,
-                                      const url::Origin& accessing_origin);
+                                      const url::Origin& accessing_origin,
+                                      std::string* out_debug_message = nullptr);
 
   // Allows the embedder to control if Shared Storage API `selectURL()` can
   // happen in a given context.
+  //
+  // If non-null, the embedder can use `out_debug_message` to relay further
+  // details about how the returned boolean result was obtained.
   virtual bool IsSharedStorageSelectURLAllowed(
       content::BrowserContext* browser_context,
+
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin);
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr);
 
   // Allows the embedder to control if Private Aggregation API operations can
   // happen in a given context.
@@ -1314,6 +1324,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // recording the background service's events is still allowed.
   virtual base::flat_map<int, base::Time>
   GetDevToolsBackgroundServiceExpirations(BrowserContext* browser_context);
+
+  // Returns the delay to create a new spare renderer after the previous spare
+  // renderer is taken by `site_url`. This is used to avoid potential resource
+  // contention.
+  // If `delay` is nullopt, the spare renderer will be created immediately.
+  // Otherwise if `delay` is base::TimeDelta::Max(), the creation is delayed
+  // until the page finishes loading.
+  virtual std::optional<base::TimeDelta> GetSpareRendererDelayForSiteURL(
+      const GURL& site_url);
 
   // Creates a new TracingDelegate. The caller owns the returned value.
   // It's valid to return nullptr.
@@ -2051,6 +2070,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
           receiver);
 
+  virtual void CreatePaymentCredential(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Allows the embedder to provide an implementation of the Serial API.
   virtual SerialDelegate* GetSerialDelegate();
@@ -2075,8 +2098,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to provide an implementation of the Web Smart Card API.
-  virtual SmartCardDelegate* GetSmartCardDelegate(
-      BrowserContext* browser_context);
+  virtual SmartCardDelegate* GetSmartCardDelegate();
 #endif
 
   // Attempt to open the Payment Handler window inside its corresponding
@@ -2761,7 +2783,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Prewarms the HTTP disk cache entries for the given URL and the
   // subresources if possible.
-  virtual void MaybePrewarmHttpDiskCache(WebContents& web_contents,
+  virtual void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
                                          const GURL& navigation_url);
 };
 

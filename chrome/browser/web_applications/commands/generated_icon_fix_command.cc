@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace web_app {
 
@@ -69,14 +70,14 @@ void GeneratedIconFixCommand::StartWithLock(
   app = lock_->registrar().GetAppById(app_id_);
 
   icon_downloader_ = lock_->web_contents_manager().CreateIconDownloader();
-  base::flat_set<GURL> icon_urls;
+  IconUrlSizeSet icon_urls;
   install_info_.manifest_icons = app->manifest_icons();
   // Set title and start_url for PopulateProductIcons() in case it tries to
   // generate icons again.
   install_info_.title = base::UTF8ToUTF16(app->untranslated_name());
   install_info_.start_url = app->start_url();
   for (const apps::IconInfo& icon_info : install_info_.manifest_icons) {
-    icon_urls.insert(icon_info.url);
+    icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
   icon_downloader_->Start(
       &lock_->shared_web_contents(), icon_urls,

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
@@ -68,7 +69,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  AuthenticationService* auth_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
 

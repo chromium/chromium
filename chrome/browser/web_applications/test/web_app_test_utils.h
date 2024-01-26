@@ -23,7 +23,6 @@
 
 class Browser;
 class Profile;
-struct WebAppInstallInfo;
 
 namespace content {
 class StoragePartition;
@@ -97,7 +96,7 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
 void SynchronizeOsIntegration(
     Profile* profile,
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> options = absl::nullopt);
+    std::optional<SynchronizeOsOptions> options = std::nullopt);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class ScopedSkipMainProfileCheck {

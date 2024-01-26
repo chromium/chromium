@@ -140,7 +140,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                const GURL& url,
                                bool user_gesture) override;
 #endif
-  void RequestToLockMouse(WebContents* web_contents,
+  void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
   void CloseContents(WebContents* source) override;

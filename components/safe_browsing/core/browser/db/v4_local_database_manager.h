@@ -67,7 +67,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CanCheckRequestDestination(
       network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
-  bool ChecksAreAlwaysAsync() const override;
   bool CheckBrowseUrl(
       const GURL& url,
       const SBThreatTypeSet& threat_types,

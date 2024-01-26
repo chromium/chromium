@@ -128,14 +128,14 @@ class BluetoothFlossTest : public testing::Test {
   // Triggers fake/simulated device discovery by FakeFlossAdapterClient.
   void DiscoverDevices() {
     ASSERT_TRUE(adapter_.get() != nullptr);
-
+    base::RunLoop loop;
     adapter_->StartDiscoverySession(
         /*client_name=*/std::string(),
         base::BindOnce(&BluetoothFlossTest::DiscoverySessionCallback,
-                       base::Unretained(this)),
-        GetErrorCallback());
+                       base::Unretained(this), loop.QuitClosure()),
+        GetErrorCallback(loop.QuitClosure()));
 
-    base::RunLoop().Run();
+    loop.Run();
   }
 
   // Simulate adapter enabled event. After adapter is enabled, there are known
@@ -198,33 +198,52 @@ class BluetoothFlossTest : public testing::Test {
   }
 
  protected:
-  void ErrorCallback() { QuitMessageLoop(); }
+  void ErrorCallback(base::OnceClosure quit_closure) {
+    std::move(quit_closure).Run();
+  }
 
-  base::OnceClosure GetErrorCallback() {
+  base::OnceClosure GetErrorCallback(base::OnceClosure quit_closure) {
     return base::BindOnce(&BluetoothFlossTest::ErrorCallback,
-                          base::Unretained(this));
+                          base::Unretained(this), std::move(quit_closure));
   }
 
   void DiscoverySessionCallback(
+      base::OnceClosure quit_closure,
       std::unique_ptr<BluetoothDiscoverySession> discovery_session) {
     discovery_sessions_.push_back(std::move(discovery_session));
-    QuitMessageLoop();
+    std::move(quit_closure).Run();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<BluetoothAdapter> adapter_;
 
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
-
- private:
-  // Some tests use a message loop since background processing is simulated;
-  // break out of those loops.
-  void QuitMessageLoop() {
-    if (base::RunLoop::IsRunningOnCurrentThread()) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-    }
-  }
 };
+
+TEST_F(BluetoothFlossTest, BondFailureTriggersCallbacks) {
+  InitializeAndEnableAdapter();
+  DiscoverDevices();
+
+  GetFakeAdapterClient()->FailNextBonding();
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+  ASSERT_FALSE(device->IsConnecting());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_TRUE(error.has_value());
+            run_loop.Quit();
+          }));
+  EXPECT_FALSE(device->IsPaired());
+  EXPECT_FALSE(device->IsConnected());
+  base::RunLoop().RunUntilIdle();
+}
 
 TEST_F(BluetoothFlossTest, PairJustWorks) {
   InitializeAndEnableAdapter();
@@ -243,6 +262,36 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
       base::BindLambdaForTesting(
           [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  EXPECT_TRUE(device->IsPaired());
+  EXPECT_TRUE(device->IsConnected());
+}
+
+TEST_F(BluetoothFlossTest, PairingTwiceRejectsSecondRequest) {
+  InitializeAndEnableAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+  ASSERT_FALSE(device->IsConnecting());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_TRUE(error.has_value());
             run_loop.Quit();
           }));
   EXPECT_TRUE(device->IsPaired());

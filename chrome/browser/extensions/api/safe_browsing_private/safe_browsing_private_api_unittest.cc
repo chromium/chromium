@@ -38,12 +38,12 @@ namespace {
 
 using testing::NiceMock;
 
-absl::optional<base::Value> RunGetReferrerChainFunction(
+std::optional<base::Value> RunGetReferrerChainFunction(
     content::BrowserContext* browser_context,
     int tab_id) {
   scoped_refptr<SafeBrowsingPrivateGetReferrerChainFunction> function(
       base::MakeRefCounted<SafeBrowsingPrivateGetReferrerChainFunction>());
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), "[" + base::NumberToString(tab_id) + "]",
           browser_context);
@@ -160,7 +160,7 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChain) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  absl::optional<base::Value> referrer_chain =
+  std::optional<base::Value> referrer_chain =
       RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_TRUE(referrer_chain);
 }
@@ -182,7 +182,7 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChainForNonSafeBrowsingUser) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  absl::optional<base::Value> referrer_chain =
+  std::optional<base::Value> referrer_chain =
       RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_FALSE(referrer_chain);
 }

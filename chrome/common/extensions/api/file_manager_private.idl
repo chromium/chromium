@@ -307,7 +307,7 @@ enum SharesheetLaunchSource {
   unknown
 };
 
-enum IOTaskState {
+enum IoTaskState {
   queued,
   scanning,
   in_progress,
@@ -318,7 +318,7 @@ enum IOTaskState {
   cancelled
 };
 
-enum IOTaskType {
+enum IoTaskType {
   copy,
   delete,
   empty_trash,
@@ -1177,10 +1177,10 @@ dictionary ResumeParams {
 dictionary ProgressStatus {
 
   // Type of the task sending the progress.
-  IOTaskType type;
+  IoTaskType type;
 
   // Current state of the task sending the progress.
-  IOTaskState state;
+  IoTaskState state;
 
   // Type of policy error that occurred, if any.
   // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
@@ -1797,8 +1797,8 @@ interface Functions {
   static void openInspector(InspectionType type);
 
   // Opens page in Settings window.
-  // |sub_page| Name of a sub_page to show.
-  static void openSettingsSubpage(DOMString sub_page);
+  // |subPage| Name of a subPage to show.
+  static void openSettingsSubpage(DOMString subPage);
 
   // Computes an MD5 checksum for the given file.
   // |entry| The entry of the file to checksum.
@@ -1981,7 +1981,7 @@ interface Functions {
   // parameters are passed via |params|.
   [nocompile, supportsPromises]
   static void startIOTask(
-      IOTaskType type,
+      IoTaskType type,
       [instanceOf=Entry] object[] entries,
       IOTaskParams params,
       optional IOTaskIdCallback callback);

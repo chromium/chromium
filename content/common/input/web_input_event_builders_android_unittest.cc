@@ -11,12 +11,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/key_event_utils.h"
-#include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

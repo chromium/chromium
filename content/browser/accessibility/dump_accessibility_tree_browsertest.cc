@@ -197,10 +197,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
     DumpAccessibilityTreeTestPassToString());
 
-// TODO(crbug.com/1428967): Flaky on asan of linux, chromeos and win.
-// This is not fixed by rebuilding the subtree when parsing is complete.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilityCSSAltText)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
+  RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSAltText) {
   RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
 }
 
@@ -350,6 +352,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSLanguage) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSPseudoElements) {
   RunCSSTest(FILE_PATH_LITERAL("pseudo-elements.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementsSeparatedByWhitespace) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-elements-separated-by-whitespace.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementsSeparatedByWhitespace) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-elements-separated-by-whitespace.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -678,6 +690,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaComboboxImplicitHasPopup) {
   RunAriaTest(FILE_PATH_LITERAL("aria-combobox-implicit-haspopup.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityComboboxAriaHaspopupChanged) {
+  RunRegressionTest(FILE_PATH_LITERAL("combobox-aria-haspopup-changed.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1832,10 +1849,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunFormControlsTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
-// This is not fixed by rebuilding the subtree when parsing is complete.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilityContenteditableDocsLi)) {
+                       AccessibilityContenteditableDocsLi) {
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDocsLi) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
@@ -1919,17 +1939,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-remove-nodes.html"));
 }
 
-// TODO(crbug.com/1485244): Fails on ASAN/LSAN bots.
-// This is not fixed by rebuilding the subtree when parsing is complete.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_AccessibilityCustomElementWithAriaOwnsOutside \
-  DISABLED_AccessibilityCustomElementWithAriaOwnsOutside
-#else
-#define MAYBE_AccessibilityCustomElementWithAriaOwnsOutside \
-  AccessibilityCustomElementWithAriaOwnsOutside
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityCustomElementWithAriaOwnsOutside) {
+                       AccessibilityCustomElementWithAriaOwnsOutside) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-outside.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCustomElementWithAriaOwnsOutside) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-outside.html"));
 }
 
@@ -1960,14 +1976,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFieldset) {
   RunHtmlTest(FILE_PATH_LITERAL("fieldset.html"));
 }
 
-// TODO(crbug.com/1307316): failing on Linux bots and flaky on Fuchsia bots.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilityFigcaption DISABLED_AccessibilityFigcaption
-#else
-#define MAYBE_AccessibilityFigcaption AccessibilityFigcaption
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityFigcaption) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFigcaption) {
+  RunHtmlTest(FILE_PATH_LITERAL("figcaption.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityFigcaption) {
   RunHtmlTest(FILE_PATH_LITERAL("figcaption.html"));
 }
 
@@ -2288,8 +2302,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
 #endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
                        MAYBE_InertAttribute) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "InertAttribute");
   RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
 }
 
@@ -2504,6 +2516,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityInsertBeforeWithWhitespace) {
+  RunHtmlTest(FILE_PATH_LITERAL("insert-before-with-whitespace.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInsertBeforeWithWhitespace) {
+  RunHtmlTest(FILE_PATH_LITERAL("insert-before-with-whitespace.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
@@ -3139,16 +3161,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("selectlist-open.html"));
 }
 
-// TODO(https://crbug.com/1309941): Flaky on Fuchsia
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilitySource DISABLED_AccessibilitySource
-#else
-#define MAYBE_AccessibilitySource AccessibilitySource
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilitySource) {
-  RunHtmlTest(FILE_PATH_LITERAL("source.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
   RunHtmlTest(FILE_PATH_LITERAL("span.html"));
 }
@@ -3555,10 +3567,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("button-with-listbox-popup.html"));
 }
 
-// TODO(https://crbug.com/1483778): Re-enable once the test is no longer flaky.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_DeleteSelectionCrash) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DeleteSelectionCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("delete-selection-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       DeleteSelectionCrash) {
+  RunHtmlTest(FILE_PATH_LITERAL("delete-selection-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReloadSelectionCrash) {
+  RunRegressionTest(FILE_PATH_LITERAL("reload-selection-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       ReloadSelectionCrash) {
+  RunRegressionTest(FILE_PATH_LITERAL("reload-selection-crash.html"));
 }
 
 //

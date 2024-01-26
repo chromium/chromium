@@ -41,7 +41,7 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
 
  private:
   // BrowserWithTestWindowTest override:
-  TestingProfile* CreateProfile() override;
+  TestingProfile* CreateProfile(const std::string& profile_name) override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_INSTANT_UNITTEST_BASE_H_

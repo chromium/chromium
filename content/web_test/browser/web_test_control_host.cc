@@ -1018,11 +1018,11 @@ std::unique_ptr<BluetoothChooser> WebTestControlHost::RunBluetoothChooser(
   return std::make_unique<WebTestFirstDeviceBluetoothChooser>(event_handler);
 }
 
-void WebTestControlHost::RequestToLockMouse(WebContents* web_contents) {
+void WebTestControlHost::RequestPointerLock(WebContents* web_contents) {
   if (next_pointer_lock_action_ == NextPointerLockAction::kTestWillRespond)
     return;
 
-  web_contents->GotResponseToLockMouseRequest(
+  web_contents->GotResponseToPointerLockRequest(
       next_pointer_lock_action_ == NextPointerLockAction::kWillSucceed
           ? blink::mojom::PointerLockResult::kSuccess
           : blink::mojom::PointerLockResult::kPermissionDenied);
@@ -1757,7 +1757,7 @@ void WebTestControlHost::RegisterIsolatedFileSystem(
 }
 
 void WebTestControlHost::DropPointerLock() {
-  main_window_->web_contents()->DropMouseLockForTesting();
+  main_window_->web_contents()->DropPointerLockForTesting();
 }
 
 void WebTestControlHost::SetPointerLockWillFail() {
@@ -1770,7 +1770,7 @@ void WebTestControlHost::SetPointerLockWillRespondAsynchronously() {
 
 void WebTestControlHost::AllowPointerLock() {
   DCHECK_EQ(next_pointer_lock_action_, NextPointerLockAction::kTestWillRespond);
-  main_window_->web_contents()->GotResponseToLockMouseRequest(
+  main_window_->web_contents()->GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult::kSuccess);
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 }

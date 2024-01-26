@@ -19,12 +19,13 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -38,6 +39,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -475,76 +477,139 @@ std::wstring GetComTypeLibRegistryPath(REFIID iid) {
       {L"Software\\Classes\\TypeLib\\", base::win::WStringFromGUID(iid)});
 }
 
+HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
+  VLOG(1) << __func__ << ": scope: " << scope
+          << ": is_internal: " << is_internal;
+
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return E_UNEXPECTED;
+  }
+  exe_path = exe_path.Append(GetExecutableRelativePath());
+
+  for (const auto& typelib_resource_index : [&]() -> std::vector<int> {
+         if (IsSystemInstall(scope)) {
+           if (is_internal) {
+             return {TYPELIB_UPDATER_INTERNAL_IDL_SYSTEM};
+           }
+           return {TYPELIB_UPDATER_IDL_SYSTEM,
+                   TYPELIB_UPDATER_LEGACY_IDL_SYSTEM};
+         }
+         if (is_internal) {
+           return {TYPELIB_UPDATER_INTERNAL_IDL_USER};
+         }
+         return {TYPELIB_UPDATER_IDL_USER, TYPELIB_UPDATER_LEGACY_IDL_USER};
+       }()) {
+    const base::FilePath typelib_path =
+        exe_path.AppendASCII(base::NumberToString(typelib_resource_index));
+
+    Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+    if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
+        FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::LoadTypeLib failed, " << typelib_path
+                 << ", " << std::hex << hr;
+      return hr;
+    }
+
+    std::wstring typelib_path_str = typelib_path.value().c_str();
+    const HRESULT hr =
+        IsSystemInstall(scope)
+            ? ::RegisterTypeLib(type_lib.Get(), &typelib_path_str[0], nullptr)
+            : ::RegisterTypeLibForUser(type_lib.Get(), &typelib_path_str[0],
+                                       nullptr);
+    if (FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "
+                 << typelib_path << ", " << std::hex << hr;
+      return hr;
+    }
+  }
+  return S_OK;
+}
+
 std::wstring GetComTypeLibResourceIndex(REFIID iid) {
   // These values must be kept in sync with the numeric typelib resource
   // indexes in the resource file.
-  static constexpr wchar_t kUpdaterIndex[] = L"1";
-  static constexpr wchar_t kUpdaterInternalIndex[] = L"2";
-  static constexpr wchar_t kUpdaterLegacyIndex[] = L"3";
+  static constexpr wchar_t kUpdaterUserIndex[] = L"1";
+  static constexpr wchar_t kUpdaterInternalUserIndex[] = L"2";
+  static constexpr wchar_t kUpdaterLegacyUserIndex[] = L"3";
+  static constexpr wchar_t kUpdaterSystemIndex[] = L"4";
+  static constexpr wchar_t kUpdaterInternalSystemIndex[] = L"5";
+  static constexpr wchar_t kUpdaterLegacySystemIndex[] = L"6";
 
-  static constexpr auto kTypeLibIndexes =
-      base::MakeFixedFlatMap<IID, const wchar_t*>(
-          {
-              // Updater typelib.
-              {__uuidof(ICompleteStatusUser), kUpdaterIndex},
-              {__uuidof(ICompleteStatusSystem), kUpdaterIndex},
-              {__uuidof(IUpdaterUser), kUpdaterIndex},
-              {__uuidof(IUpdaterSystem), kUpdaterIndex},
-              {__uuidof(IUpdaterObserverUser), kUpdaterIndex},
-              {__uuidof(IUpdaterObserverSystem), kUpdaterIndex},
-              {__uuidof(IUpdateStateUser), kUpdaterIndex},
-              {__uuidof(IUpdateStateSystem), kUpdaterIndex},
-              {__uuidof(IUpdaterCallbackUser), kUpdaterIndex},
-              {__uuidof(IUpdaterCallbackSystem), kUpdaterIndex},
-              {__uuidof(IUpdaterAppState), kUpdaterIndex},
-              {__uuidof(IUpdaterAppStateUser), kUpdaterIndex},
-              {__uuidof(IUpdaterAppStateSystem), kUpdaterIndex},
-              {__uuidof(IUpdaterAppStatesCallbackUser), kUpdaterIndex},
-              {__uuidof(IUpdaterAppStatesCallbackSystem), kUpdaterIndex},
+  const wchar_t* updater_legacy_index =
+      IsSystemInstall() ? kUpdaterLegacySystemIndex : kUpdaterLegacyUserIndex;
 
-              // Updater internal typelib.
-              {__uuidof(IUpdaterInternalUser), kUpdaterInternalIndex},
-              {__uuidof(IUpdaterInternalSystem), kUpdaterInternalIndex},
-              {__uuidof(IUpdaterInternalCallbackUser), kUpdaterInternalIndex},
-              {__uuidof(IUpdaterInternalCallbackSystem), kUpdaterInternalIndex},
+  const base::flat_map<IID, const wchar_t*, IidComparator> kTypeLibIndexes = {
+      // Updater typelib.
+      {__uuidof(IUpdaterAppState),
+       IsSystemInstall() ? kUpdaterSystemIndex : kUpdaterUserIndex},
 
-              // Updater legacy typelib.
-              {__uuidof(IAppVersionWeb), kUpdaterLegacyIndex},
-              {__uuidof(IAppVersionWebUser), kUpdaterLegacyIndex},
-              {__uuidof(IAppVersionWebSystem), kUpdaterLegacyIndex},
-              {__uuidof(ICurrentState), kUpdaterLegacyIndex},
-              {__uuidof(ICurrentStateUser), kUpdaterLegacyIndex},
-              {__uuidof(ICurrentStateSystem), kUpdaterLegacyIndex},
-              {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
-              {__uuidof(IGoogleUpdate3WebUser), kUpdaterLegacyIndex},
-              {__uuidof(IGoogleUpdate3WebSystem), kUpdaterLegacyIndex},
-              {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
-              {__uuidof(IAppBundleWebUser), kUpdaterLegacyIndex},
-              {__uuidof(IAppBundleWebSystem), kUpdaterLegacyIndex},
-              {__uuidof(IAppWeb), kUpdaterLegacyIndex},
-              {__uuidof(IAppWebUser), kUpdaterLegacyIndex},
-              {__uuidof(IAppWebSystem), kUpdaterLegacyIndex},
-              {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
-              {__uuidof(IAppCommandWebUser), kUpdaterLegacyIndex},
-              {__uuidof(IAppCommandWebSystem), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatusUser), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatusSystem), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus2), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus2User), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus2System), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus3), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus3User), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatus3System), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatusValue), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyIndex},
-              {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacyIndex},
-              {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
-              {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
-          },
-          IidComparator());
-  auto* index = kTypeLibIndexes.find(iid);
-  CHECK(index != kTypeLibIndexes.end());
+      // Updater user typelib.
+      {__uuidof(ICompleteStatusUser), kUpdaterUserIndex},
+      {__uuidof(IUpdaterUser), kUpdaterUserIndex},
+      {__uuidof(IUpdaterObserverUser), kUpdaterUserIndex},
+      {__uuidof(IUpdateStateUser), kUpdaterUserIndex},
+      {__uuidof(IUpdaterCallbackUser), kUpdaterUserIndex},
+      {__uuidof(IUpdaterAppStateUser), kUpdaterUserIndex},
+      {__uuidof(IUpdaterAppStatesCallbackUser), kUpdaterUserIndex},
+
+      // Updater system typelib.
+      {__uuidof(ICompleteStatusSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdaterSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdaterObserverSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdateStateSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdaterCallbackSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdaterAppStateSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdaterAppStatesCallbackSystem), kUpdaterSystemIndex},
+
+      // Updater internal user typelib.
+      {__uuidof(IUpdaterInternalUser), kUpdaterInternalUserIndex},
+      {__uuidof(IUpdaterInternalCallbackUser), kUpdaterInternalUserIndex},
+
+      // Updater internal system typelib.
+      {__uuidof(IUpdaterInternalSystem), kUpdaterInternalSystemIndex},
+      {__uuidof(IUpdaterInternalCallbackSystem), kUpdaterInternalSystemIndex},
+
+      // Updater legacy typelib.
+      {__uuidof(IAppVersionWeb), updater_legacy_index},
+      {__uuidof(ICurrentState), updater_legacy_index},
+      {__uuidof(IGoogleUpdate3Web), updater_legacy_index},
+      {__uuidof(IAppBundleWeb), updater_legacy_index},
+      {__uuidof(IAppWeb), updater_legacy_index},
+      {__uuidof(IAppCommandWeb), updater_legacy_index},
+      {__uuidof(IPolicyStatus), updater_legacy_index},
+      {__uuidof(IPolicyStatus2), updater_legacy_index},
+      {__uuidof(IPolicyStatus3), updater_legacy_index},
+      {__uuidof(IPolicyStatusValue), updater_legacy_index},
+      {__uuidof(IProcessLauncher), updater_legacy_index},
+      {__uuidof(IProcessLauncher2), updater_legacy_index},
+
+      // Updater legacy user typelib.
+      {__uuidof(IAppVersionWebUser), kUpdaterLegacyUserIndex},
+      {__uuidof(ICurrentStateUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IGoogleUpdate3WebUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IAppBundleWebUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IAppWebUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IAppCommandWebUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatusUser), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatus2User), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatus3User), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyUserIndex},
+
+      // Updater legacy system typelib.
+      {__uuidof(IAppVersionWebSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(ICurrentStateSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IGoogleUpdate3WebSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IAppBundleWebSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IAppWebSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IAppCommandWebSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatusSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatus2System), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatus3System), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacySystemIndex},
+  };
+  const auto index = kTypeLibIndexes.find(iid);
+  CHECK(index != kTypeLibIndexes.end()) << base::win::WStringFromGUID(iid);
   return index->second;
 }
 

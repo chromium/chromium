@@ -125,6 +125,7 @@ class ASH_EXPORT DeskButton : public views::Button,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // views::ViewObserver:
+  void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
   // ShellObserver:

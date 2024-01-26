@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/component_loader.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -51,7 +52,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -109,19 +109,19 @@ std::string GenerateId(const base::Value::Dict& manifest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<base::Value::Dict> LoadManifestOnFileThread(
+std::optional<base::Value::Dict> LoadManifestOnFileThread(
     const base::FilePath& root_directory,
     const base::FilePath::CharType* manifest_filename,
     bool localize_manifest) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   std::string error;
-  absl::optional<base::Value::Dict> manifest(
+  std::optional<base::Value::Dict> manifest(
       file_util::LoadManifest(root_directory, manifest_filename, &error));
   if (!manifest) {
     LOG(ERROR) << "Can't load "
                << root_directory.Append(manifest_filename).AsUTF8Unsafe()
                << ": " << error;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (localize_manifest) {
@@ -207,7 +207,7 @@ void ComponentLoader::LoadAll() {
   }
 }
 
-absl::optional<base::Value::Dict> ComponentLoader::ParseManifest(
+std::optional<base::Value::Dict> ComponentLoader::ParseManifest(
     base::StringPiece manifest_contents) const {
   JSONStringValueDeserializer deserializer(manifest_contents);
   std::unique_ptr<base::Value> manifest =
@@ -215,7 +215,7 @@ absl::optional<base::Value::Dict> ComponentLoader::ParseManifest(
 
   if (!manifest.get() || !manifest->is_dict()) {
     LOG(ERROR) << "Failed to parse extension manifest.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(*manifest).TakeDict();
@@ -249,7 +249,7 @@ std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
                                  bool skip_allowlist) {
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
-  absl::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
+  std::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
   if (manifest) {
     return Add(std::move(*manifest), root_directory, skip_allowlist);
   }
@@ -276,7 +276,7 @@ std::string ComponentLoader::Add(base::Value::Dict parsed_manifest,
 std::string ComponentLoader::AddOrReplace(const base::FilePath& path) {
   base::FilePath absolute_path = base::MakeAbsoluteFilePath(path);
   std::string error;
-  absl::optional<base::Value::Dict> manifest(
+  std::optional<base::Value::Dict> manifest(
       file_util::LoadManifest(absolute_path, &error));
   if (!manifest) {
     LOG(ERROR) << "Could not load extension from '" << absolute_path.value()
@@ -379,7 +379,7 @@ void ComponentLoader::AddWithNameAndDescription(
 
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
-  absl::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
+  std::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
 
   if (manifest) {
     manifest->Set(manifest_keys::kName, name_string);
@@ -633,7 +633,7 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
                      manifest_filename, true),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     absl::nullopt, absl::nullopt, std::move(done_cb)));
+                     std::nullopt, std::nullopt, std::move(done_cb)));
 }
 
 void ComponentLoader::AddWithNameAndDescriptionFromDir(
@@ -676,10 +676,10 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
 void ComponentLoader::FinishAddComponentFromDir(
     const base::FilePath& root_directory,
     const char* extension_id,
-    const absl::optional<std::string>& name_string,
-    const absl::optional<std::string>& description_string,
+    const std::optional<std::string>& name_string,
+    const std::optional<std::string>& description_string,
     base::OnceClosure done_cb,
-    absl::optional<base::Value::Dict> manifest) {
+    std::optional<base::Value::Dict> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!manifest) {
     return;  // Error already logged.

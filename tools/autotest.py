@@ -62,7 +62,8 @@ _TEST_TARGET_ALLOWLIST = [
     '//chrome/test:unit_tests',
 ]
 
-_TEST_TARGET_REGEX = re.compile(r'(_browsertests|_perftests|_wpr_tests)$')
+_TEST_TARGET_REGEX = re.compile(
+    r'(_browsertests|_perftests|_wpr_tests|_unittests)$')
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 

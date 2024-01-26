@@ -188,17 +188,4 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
   return app_id;
 }
 
-// TODO(cmfcmf): Move more test utils into this `test` namespace
-namespace test {
-
-std::string BitmapAsPng(const SkBitmap& bitmap) {
-  SkDynamicMemoryWStream stream;
-  EXPECT_TRUE(SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}));
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
-  return std::string(static_cast<const char*>(icon_skdata->data()),
-                     icon_skdata->size());
-}
-
-}  // namespace test
-
 }  // namespace web_app

@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
@@ -266,8 +266,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
       int flags,
       const CertVerifyProcTrustStore* trust_store,
-      base::StringPiece stapled_leaf_ocsp_response,
-      base::StringPiece sct_list_from_tls_extension,
+      std::string_view stapled_leaf_ocsp_response,
+      std::string_view sct_list_from_tls_extension,
       const EVRootCAMetadata* ev_metadata,
       bool* checked_revocation_for_some_path,
       base::TimeTicks deadline,
@@ -470,8 +470,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   const VerificationType verification_type_;
   const int flags_;
   raw_ptr<const CertVerifyProcTrustStore> trust_store_;
-  const base::StringPiece stapled_leaf_ocsp_response_;
-  const base::StringPiece sct_list_from_tls_extension_;
+  const std::string_view stapled_leaf_ocsp_response_;
+  const std::string_view sct_list_from_tls_extension_;
   raw_ptr<const EVRootCAMetadata> ev_metadata_;
   raw_ptr<bool> checked_revocation_for_some_path_;
   base::TimeTicks deadline_;
@@ -547,6 +547,39 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
   for (const auto& cert : instance_params.additional_trust_anchors) {
     bssl::CertErrors parsing_errors;
     additional_trust_store_.AddTrustAnchor(std::move(cert));
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(cert->cert_buffer(),
+                                  bssl::CertificateTrust::ForTrustAnchor(),
+                                  parsing_errors);
+    });
+  }
+
+  bssl::CertificateTrust anchor_trust_enforcement =
+      bssl::CertificateTrust::ForTrustAnchor()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry();
+
+  for (const auto& cert :
+       instance_params.additional_trust_anchors_with_enforced_constraints) {
+    bssl::CertErrors parsing_errors;
+    additional_trust_store_.AddCertificate(std::move(cert),
+                                           anchor_trust_enforcement);
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(cert->cert_buffer(), anchor_trust_enforcement,
+                                  parsing_errors);
+    });
+  }
+
+  for (const auto& cert : instance_params.additional_trust_anchors) {
+    bssl::CertErrors parsing_errors;
+    // Only add if it wasn't already present in `additional_trust_store_`. This
+    // is for two reasons:
+    //   (1) TrustStoreInMemory doesn't expect to contain duplicates
+    //   (2) If the same anchor is added with enforced constraints, that takes
+    //       precedence.
+    if (!additional_trust_store_.Contains(cert.get())) {
+      additional_trust_store_.AddTrustAnchor(std::move(cert));
+    }
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
       return NetLogAdditionalCert(cert->cert_buffer(),
                                   bssl::CertificateTrust::ForTrustAnchor(),
@@ -711,8 +744,8 @@ bssl::CertPathBuilder::Result TryBuildPath(
     VerificationType verification_type,
     bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
     int flags,
-    base::StringPiece ocsp_response,
-    base::StringPiece sct_list,
+    std::string_view ocsp_response,
+    std::string_view sct_list,
     const CRLSet* crl_set,
     CTVerifier* ct_verifier,
     const CTPolicyEnforcer* ct_policy_enforcer,

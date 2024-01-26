@@ -49,6 +49,7 @@ class ArcTermsOfServiceDefaultNegotiator
                      bool is_location_service_enabled) override;
   void OnTermsRejected() override;
   void OnTermsRetryClicked() override;
+  void OnTermsLoadResult(bool success) override;
 
   // ArcOptInPreferenceHandlerObserver:
   void OnMetricsModeChanged(bool enabled, bool managed) override;

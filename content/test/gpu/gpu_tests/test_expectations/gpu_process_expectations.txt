@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -107,6 +108,9 @@ crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_perfo
 [ fuchsia ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 [ fuchsia ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
+# SwiftShader is not supported on arm64.
+[ win qualcomm-0x41333430 ] GpuProcess_swiftshader_for_webgl [ Skip ]
+
 # Software Compositing is not supported on ChromeOS.
 crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
 
@@ -136,8 +140,6 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
-
-
 
 
 #######################################################################

@@ -6,10 +6,65 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+
 namespace blink {
 
+namespace {
+
+using UnitType = CSSPrimitiveValue::UnitType;
+
+CSSMathExpressionNode* NumberNode(double number) {
+  return CSSMathExpressionNumericLiteral::Create(
+      CSSNumericLiteralValue::Create(number, UnitType::kNumber));
+}
+
+}  // namespace
+
+InterpolableNumber::InterpolableNumber(double value) {
+  SetDouble(value);
+}
+
+InterpolableNumber::InterpolableNumber(
+    const CSSMathExpressionNode& expression) {
+  SetExpression(expression);
+}
+
+double InterpolableNumber::Value(
+    const CSSLengthResolver& length_resolver) const {
+  if (IsDouble()) {
+    return value_.Value();
+  }
+  return expression_->ComputeNumber(length_resolver);
+}
+
+void InterpolableNumber::SetExpression(
+    const CSSMathExpressionNode& expression) {
+  type_ = Type::kExpression;
+  expression_ = &expression;
+}
+
+void InterpolableNumber::SetDouble(double value) {
+  type_ = Type::kDouble;
+  value_.Set(value);
+}
+
+const CSSMathExpressionNode& InterpolableNumber::AsExpression() const {
+  if (IsExpression()) {
+    return *expression_;
+  }
+  return *NumberNode(value_.Value());
+}
+
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
-  return value_.Value() == To<InterpolableNumber>(other).value_.Value();
+  if (IsDouble()) {
+    return value_.Value() == To<InterpolableNumber>(other).value_.Value();
+  }
+  return expression_->CustomCSSText() ==
+         To<InterpolableNumber>(other).AsExpression().CustomCSSText();
 }
 
 bool InterpolableList::Equals(const InterpolableValue& other) const {
@@ -44,8 +99,22 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
                                      InterpolableValue& result) const {
   const auto& to_number = To<InterpolableNumber>(to);
   auto& result_number = To<InterpolableNumber>(result);
-
-  result_number.Set(value_.Interpolate(to_number.Value(), progress));
+  if (IsDouble()) {
+    result_number.SetDouble(value_.Interpolate(to_number.Value(), progress));
+    return;
+  }
+  CSSMathExpressionNode* blended_from =
+      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          &AsExpression(), NumberNode(1 - progress),
+          CSSMathOperator::kMultiply);
+  CSSMathExpressionNode* blended_to =
+      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          &to_number.AsExpression(), NumberNode(progress),
+          CSSMathOperator::kMultiply);
+  CSSMathExpressionNode* result_expression =
+      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          blended_from, blended_to, CSSMathOperator::kAdd);
+  result_number.SetExpression(*result_expression);
 }
 
 void InterpolableList::AssertCanInterpolateWith(
@@ -63,6 +132,13 @@ void InterpolableList::Interpolate(const InterpolableValue& to,
   for (wtf_size_t i = 0; i < length(); i++) {
     DCHECK(values_[i]);
     DCHECK(to_list.values_[i]);
+    if (values_[i]->IsStyleColor() || to_list.values_[i]->IsStyleColor() ||
+        result_list.values_[i]->IsStyleColor()) {
+      CSSColorInterpolationType::EnsureInterpolableStyleColor(result_list, i);
+      InterpolableStyleColor::Interpolate(*values_[i], *(to_list.values_[i]),
+                                          progress, *(result_list.values_[i]));
+      continue;
+    }
     values_[i]->Interpolate(*(to_list.values_[i]), progress,
                             *(result_list.values_[i]));
   }
@@ -77,7 +153,13 @@ InterpolableList* InterpolableList::RawCloneAndZero() const {
 }
 
 void InterpolableNumber::Scale(double scale) {
-  value_.Scale(scale);
+  if (IsDouble()) {
+    value_.Scale(scale);
+    return;
+  }
+  SetExpression(
+      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          expression_, NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
 void InterpolableList::Scale(double scale) {
@@ -86,7 +168,15 @@ void InterpolableList::Scale(double scale) {
 }
 
 void InterpolableNumber::Add(const InterpolableValue& other) {
-  value_.Add(To<InterpolableNumber>(other).value_.Value());
+  if (IsDouble()) {
+    value_.Add(To<InterpolableNumber>(other).value_.Value());
+    return;
+  }
+  const auto& other_number = To<InterpolableNumber>(other);
+  CSSMathExpressionNode* result =
+      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          &AsExpression(), &other_number.AsExpression(), CSSMathOperator::kAdd);
+  SetExpression(*result);
 }
 
 void InterpolableList::Add(const InterpolableValue& other) {

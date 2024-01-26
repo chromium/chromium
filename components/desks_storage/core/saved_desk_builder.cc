@@ -338,13 +338,9 @@ BuiltApp SavedDeskArcAppBuilder::Build() {
   if (generic_app.status != BuiltApp::Status::kOk)
     return BuiltApp(generic_app.status, nullptr, nullptr);
 
-  app_restore::WindowInfo::ArcExtraInfo arc_info_;
-  arc_info_.bounds_in_root = bounds_in_root_;
-  arc_info_.maximum_size = maximum_size_;
-  arc_info_.minimum_size = minimum_size_;
-
-  generic_app.window_info->arc_extra_info = arc_info_;
-
+  generic_app.window_info->arc_extra_info = {.maximum_size = maximum_size_,
+                                             .minimum_size = minimum_size_,
+                                             .bounds_in_root = bounds_in_root_};
   return BuiltApp(BuiltApp::Status::kOk, std::move(generic_app.window_info),
                   std::move(generic_app.launch_info));
 }

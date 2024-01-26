@@ -51,7 +51,6 @@ BASE_DECLARE_FEATURE(kNtpDriveModuleShowSixFiles);
 BASE_DECLARE_FEATURE(kNtpDummyModules);
 #endif
 BASE_DECLARE_FEATURE(kNtpComprehensiveTheming);
-BASE_DECLARE_FEATURE(kNtpComprehensiveThemeRealbox);
 BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpReducedLogoSpace);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
@@ -85,6 +84,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
@@ -190,9 +190,14 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // Parameter for setting the maximum number of candidate clusters for the
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
+// Parameter for setting the number of days to query for cluster metric data
+// that is used to compute metrics used cluster ranking.
+extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
+extern const char kWallpaperSearchHatsDelayParam[];
 
 // Parameter determining the background color of the expanded state realbox.
 extern const base::FeatureParam<bool>

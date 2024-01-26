@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/view_observer.h"

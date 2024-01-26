@@ -29,6 +29,8 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
 
     private boolean mRunSafetyCheckImmediately;
 
+    private SafetyCheckComponentUi mComponentDelegate;
+
     /** Initializes all the objects related to the preferences page. */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -53,7 +55,25 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
         mCheckButton = (ButtonCompat) bottomView.findViewById(R.id.safety_check_button);
         mTimestampTextView = (TextView) bottomView.findViewById(R.id.safety_check_timestamp);
         view.addView(bottomView);
+        setPasswordChecks();
         return view;
+    }
+
+    private void setPasswordChecks() {
+        findPreference(SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT)
+                .setVisible(mComponentDelegate.isAccountPasswordStorageUsed());
+        findPreference(SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL)
+                .setVisible(mComponentDelegate.isLocalPasswordStorageUsed());
+    }
+
+    /**
+     * Sets the delegate, which exposes the UI related logic of the safety check component to the
+     * fragment view.
+     *
+     * @param componentDelegate The {@link SafetyCheckComponentUi} delegate.
+     */
+    public void setComponentDelegate(SafetyCheckComponentUi componentDelegate) {
+        mComponentDelegate = componentDelegate;
     }
 
     /**

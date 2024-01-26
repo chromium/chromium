@@ -7,12 +7,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
@@ -179,6 +179,11 @@ class CC_PAINT_EXPORT PaintCanvas {
     drawImageRect(image, src, dst, SkSamplingOptions(), nullptr, constraint);
   }
 
+  virtual void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                            scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                            scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                            const PaintFlags& flags) = 0;
+
   // Draws the frame of the |skottie| animation specified by the normalized time
   // t [0->first frame..1->last frame] at the destination bounds given by |dst|
   // onto the canvas. |images| is a map from asset id to the corresponding image
@@ -238,9 +243,8 @@ class CC_PAINT_EXPORT PaintCanvas {
 
  private:
   raw_ptr<printing::MetafileSkia> metafile_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION paint_preview::PaintPreviewTracker* tracker_ = nullptr;
+  raw_ptr<paint_preview::PaintPreviewTracker, DanglingUntriaged> tracker_ =
+      nullptr;
 };
 
 class CC_PAINT_EXPORT PaintCanvasAutoRestore {

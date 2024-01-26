@@ -10,7 +10,6 @@ static_library("common") {
   sources = [
     "credential_manager_types.cc",
     "credential_manager_types.h",
-    "password_manager_pref_names.cc",
     "password_manager_pref_names.h",
     "password_manager_ui.h",
     "password_manager_util.cc",
@@ -41,6 +40,7 @@ static_library("common") {
 
 source_set("constants") {
   sources = [ "password_manager_constants.h" ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

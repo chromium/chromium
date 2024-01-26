@@ -10,6 +10,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -37,7 +38,6 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log_capture_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -125,12 +125,12 @@ class NET_EXPORT HostCache {
       SOURCE_CONFIG,
     };
 
-    // |ttl=absl::nullopt| for unknown TTL.
+    // |ttl=std::nullopt| for unknown TTL.
     template <typename T>
     Entry(int error,
           T&& results,
           Source source,
-          absl::optional<base::TimeDelta> ttl)
+          std::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
           ttl_(ttl ? ttl.value() : kUnknownTtl) {
@@ -141,19 +141,19 @@ class NET_EXPORT HostCache {
     // Use when |ttl| is unknown.
     template <typename T>
     Entry(int error, T&& results, Source source)
-        : Entry(error, std::forward<T>(results), source, absl::nullopt) {}
+        : Entry(error, std::forward<T>(results), source, std::nullopt) {}
 
     // Use for address entries.
     Entry(int error,
           std::vector<IPEndPoint> ip_endpoints,
           std::set<std::string> aliases,
           Source source,
-          absl::optional<base::TimeDelta> ttl = absl::nullopt);
+          std::optional<base::TimeDelta> ttl = std::nullopt);
 
     // For errors with no |results|.
     Entry(int error,
           Source source,
-          absl::optional<base::TimeDelta> ttl = absl::nullopt);
+          std::optional<base::TimeDelta> ttl = std::nullopt);
 
     // Adaptor to construct from HostResolverInternalResults. Only supports
     // results extracted from a single DnsTransaction. `empty_source` is Source
@@ -226,8 +226,8 @@ class NET_EXPORT HostCache {
         std::vector<bool> https_record_compatibility) {
       https_record_compatibility_ = std::move(https_record_compatibility);
     }
-    absl::optional<bool> pinning() const { return pinning_; }
-    void set_pinning(absl::optional<bool> pinning) { pinning_ = pinning; }
+    std::optional<bool> pinning() const { return pinning_; }
+    void set_pinning(std::optional<bool> pinning) { pinning_ = pinning; }
 
     const std::set<std::string>& canonical_names() const {
       return canonical_names_;
@@ -239,7 +239,7 @@ class NET_EXPORT HostCache {
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
     base::TimeDelta ttl() const { return ttl_; }
-    absl::optional<base::TimeDelta> GetOptionalTtl() const;
+    std::optional<base::TimeDelta> GetOptionalTtl() const;
     void set_ttl(base::TimeDelta ttl) { ttl_ = ttl; }
 
     base::TimeTicks expires() const { return expires_; }
@@ -264,7 +264,7 @@ class NET_EXPORT HostCache {
     // set to |port| if the current port is 0. Preserves any non-zero ports.
     HostCache::Entry CopyWithDefaultPort(uint16_t port) const;
 
-    static absl::optional<base::TimeDelta> TtlFromInternalResults(
+    static std::optional<base::TimeDelta> TtlFromInternalResults(
         const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
         base::Time now,
         base::TimeTicks now_ticks);
@@ -349,7 +349,7 @@ class NET_EXPORT HostCache {
     // Note: This flag is not yet used, and should be removed if the proposals
     // for followup queries after insecure/expired bootstrap are abandoned (see
     // TODO(crbug.com/1200908) in HostResolverManager).
-    absl::optional<bool> pinning_;
+    std::optional<bool> pinning_;
 
     // The final name at the end of the alias chain that was the record name for
     // the A/AAAA records.

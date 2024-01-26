@@ -179,6 +179,8 @@ class SupervisedUserNavigationObserver
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};
 
+  void RecordPageLoadUKM(content::RenderFrameHost* render_frame_host);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

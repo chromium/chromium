@@ -36,6 +36,11 @@ namespace android_webview {
 
 namespace {
 
+using autofill::AutofillAgent;
+using UsesKeyboardAccessoryForSuggestions =
+    autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
+using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
+
 const char kAddressPrefix[] = "geo:0,0?q=";
 const char kEmailPrefix[] = "mailto:";
 const char kPhoneNumberPrefix[] = "tel:";
@@ -148,8 +153,10 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
   auto password_autofill_agent =
       std::make_unique<autofill::PasswordAutofillAgent>(render_frame,
                                                         &registry_);
-  new autofill::AutofillAgent(render_frame, std::move(password_autofill_agent),
-                              nullptr, &registry_);
+  new AutofillAgent(
+      render_frame,
+      {UsesKeyboardAccessoryForSuggestions(false), ExtractAllDatalists(true)},
+      std::move(password_autofill_agent), nullptr, &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_FAKE_DIAGNOSTICS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/values.h"
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -39,7 +39,7 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
                         GetRoutineUpdateCallback callback) override;
   void RunAcPowerRoutine(
       crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-      const absl::optional<std::string>& expected_power_type,
+      const std::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
   void RunBatteryCapacityRoutine(
       RunBatteryCapacityRoutineCallback callback) override;

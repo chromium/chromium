@@ -26,8 +26,7 @@ JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
     JNIEnv* env,
     const network::ResourceRequestBody& body) {
   std::string encoded = blink::EncodeResourceRequestBody(body);
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(encoded.data()), encoded.size());
+  return base::android::ToJavaByteArray(env, encoded);
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/ranges/algorithm.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 
@@ -27,6 +28,7 @@ void ActionRunnerImpl::Run(
   if (actions.empty()) {
     return;
   }
+  actions_start_time_ = base::TimeTicks::Now();
   RunNextAction(std::move(actions));
 }
 
@@ -63,14 +65,22 @@ void ActionRunnerImpl::OnActionFinished(ActionQueue remaining_actions,
   remaining_actions.pop();
 
   if (!succeeded) {
-    // Previous action failed. Abort.
+    // Previous action failed. Log failure and abort.
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kAllActions,
+                                  false);
     return;
   }
 
   if (remaining_actions.empty()) {
-    // All done. Run callback to show bubble.
+    // All done. Run callback to show snackbar.
     // Callback can be empty in tests.
     if (actions_completed_callback_) {
+      metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kAllActions,
+                                    true);
+      metrics::RecordIdleTimeoutActionTimeTaken(
+          metrics::IdleTimeoutActionType::kAllActions,
+          base::TimeTicks::Now() - actions_start_time_);
+
       std::move(actions_completed_callback_).Run();
     }
     return;

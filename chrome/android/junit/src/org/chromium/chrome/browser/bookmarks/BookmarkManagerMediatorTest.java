@@ -64,6 +64,9 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -86,9 +89,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -367,10 +367,10 @@ public class BookmarkManagerMediatorTest {
                 .getChildIds(mFolderId1);
         doReturn(mFolderItem1).when(mBookmarkModel).getBookmarkById(mFolderId1);
         doReturn(mFolderItem2).when(mBookmarkModel).getBookmarkById(mFolderId2);
+        doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
         doReturn(mBookmarkItem21).when(mBookmarkModel).getBookmarkById(mBookmarkId21);
         doReturn(Arrays.asList(mBookmarkId21)).when(mBookmarkModel).getChildIds(mFolderId2);
         doReturn(1).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
-        doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
         doReturn(Arrays.asList(mReadingListId))
                 .when(mBookmarkModel)
                 .getChildIds(mReadingListFolderId);
@@ -520,7 +520,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     private void verifyCurrentViewTypes(int... expectedViewTypes) {
-        BookmarkModelListTestUtil.verifyModelListHaViewTypes(mModelList, expectedViewTypes);
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(mModelList, expectedViewTypes);
     }
 
     private void verifyCurrentBookmarkIds(BookmarkId... expectedBookmarkIds) {
@@ -748,16 +748,38 @@ public class BookmarkManagerMediatorTest {
     @Test
     public void testBookmarkRemoved() {
         finishLoading();
-        mMediator.openFolder(mFolderId1);
-        assertEquals(2, mModelList.size());
+        // Additional folder so that there's 3, and all the locations can be tested.
+        final BookmarkId folderId4 = new BookmarkId(mId++, BookmarkType.NORMAL);
+        final BookmarkItem folderItem4 =
+                new BookmarkItem(
+                        folderId4,
+                        "Folder4",
+                        null,
+                        true,
+                        mFolderId1,
+                        true,
+                        false,
+                        0,
+                        false,
+                        0,
+                        false);
+        doReturn(folderItem4).when(mBookmarkModel).getBookmarkById(folderId4);
+        doReturn(Arrays.asList(mFolderId2, mFolderId3, folderId4))
+                .when(mBookmarkModel)
+                .getChildIds(mFolderId1);
 
-        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIds(mFolderId1);
+        mMediator.openFolder(mFolderId1);
+        assertEquals(3, mModelList.size());
+        assertEquals(
+                Location.MIDDLE, mModelList.get(1).model.get(BookmarkManagerProperties.LOCATION));
+
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor
                 .getValue()
                 .bookmarkNodeRemoved(
                         mFolderItem1, 0, mFolderItem2, /* isDoingExtensiveChanges= */ false);
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
+        assertEquals(Location.TOP, mModelList.get(0).model.get(BookmarkManagerProperties.LOCATION));
     }
 
     @Test
@@ -1214,6 +1236,19 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId2);
 
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
+        PropertyModel model = mModelList.get(1).model;
+        ModelList menuModelList =
+                mMediator.createListMenuModelList(
+                        model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY),
+                        model.get(BookmarkManagerProperties.LOCATION));
+        verifyMenuListItemTitles(
+                menuModelList,
+                R.string.bookmark_item_select,
+                R.string.bookmark_item_edit,
+                R.string.bookmark_item_move,
+                R.string.bookmark_item_delete,
+                R.string.disable_price_tracking_menu_item);
+
         BasicListMenu menu =
                 (BasicListMenu) mMediator.createListMenuForBookmark(mModelList.get(1).model);
         assertNotNull(menu);
@@ -1842,6 +1877,13 @@ public class BookmarkManagerMediatorTest {
 
         // The price-tracked bookmark item should still be there.
         assertEquals(2, mModelList.size());
+        // The item shouldn't be reorderable because there's a power filter active.
+        assertFalse(
+                mMediator.isReorderable(
+                        mModelList
+                                .get(1)
+                                .model
+                                .get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY)));
 
         model = mModelList.get(0).model;
         try (HistogramWatcher ignored =
@@ -2147,5 +2189,19 @@ public class BookmarkManagerMediatorTest {
         // This should no-op as the folder is gone.
         onClick3.run();
         verify(mBookmarkModel, never()).getChildIds(mFolderId3);
+    }
+
+    private void verifyMenuListItemTitles(ModelList modelList, int... expectedTitleIds) {
+        assertEquals(expectedTitleIds.length, modelList.size());
+        for (int i = 0; i < expectedTitleIds.length; ++i) {
+            int expected = expectedTitleIds[i];
+            int actual = modelList.get(i).model.get(ListMenuItemProperties.TITLE_ID);
+            assertEquals(
+                    String.format(
+                            "Title ids did not match at index %d. Expected \"%s\" but got \"%s\"",
+                            i, mActivity.getString(expected), mActivity.getString(actual)),
+                    expected,
+                    actual);
+        }
     }
 }

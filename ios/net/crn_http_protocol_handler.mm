@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -27,11 +28,11 @@
 #import "ios/net/http_protocol_logging.h"
 #include "ios/net/nsurlrequest_util.h"
 #import "ios/net/protocol_handler_util.h"
+#import "net/base/apple/url_conversions.h"
 #include "net/base/auth.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
-#import "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_request_headers.h"
@@ -65,7 +66,7 @@ net::MetricsDelegate* g_metrics_delegate = nullptr;
 @interface CRWHTTPStreamDelegate : NSObject<NSStreamDelegate> {
  @private
   // The object is owned by |_core| and has a weak reference to it.
-  net::HttpProtocolHandlerCore* _core;  // weak
+  raw_ptr<net::HttpProtocolHandlerCore> _core;  // weak
 }
 - (instancetype)initWithHttpProtocolHandlerCore:
     (net::HttpProtocolHandlerCore*)core;
@@ -212,7 +213,7 @@ class HttpProtocolHandlerCore
 
   // This cannot be a scoped pointer because it must be deleted on the IO
   // thread.
-  URLRequest* net_request_ = nullptr;
+  raw_ptr<URLRequest> net_request_ = nullptr;
 
   // It is a weak pointer because the owner of the uploader is the URLRequest.
   base::WeakPtr<ChunkedDataStreamUploader> chunked_uploader_;

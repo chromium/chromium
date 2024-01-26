@@ -6,10 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/test/ambient_test_util.h"
 #include "base/check.h"
-#include "base/strings/string_piece.h"
+
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_transform_property_value.h"
@@ -43,8 +44,8 @@ class AmbientAnimationAttributionTransformerTest : public ::testing::Test {
             GenerateLottieCustomizableIdForTesting(/*unique_id=*/1),
             GenerateLottieCustomizableIdForTesting(/*unique_id=*/2)) {}
 
-  AmbientAnimationAttributionTransformerTest(base::StringPiece text_node_1_name,
-                                             base::StringPiece text_node_2_name)
+  AmbientAnimationAttributionTransformerTest(std::string_view text_node_1_name,
+                                             std::string_view text_node_2_name)
       : text_node_1_name_(text_node_1_name),
         text_node_2_name_(text_node_2_name) {
     view_.SetAnimatedImage(std::make_unique<lottie::Animation>(
@@ -55,7 +56,7 @@ class AmbientAnimationAttributionTransformerTest : public ::testing::Test {
     animation_original_size_ = view_.animated_image()->GetOriginalSize();
   }
 
-  gfx::RectF GetAbsoluteTextBoxCoordinates(base::StringPiece text_node_name) {
+  gfx::RectF GetAbsoluteTextBoxCoordinates(std::string_view text_node_name) {
     cc::SkottieResourceIdHash text_node_id =
         cc::HashSkottieResourceId(text_node_name);
     cc::SkottieTransformPropertyValueMap transform_properties =

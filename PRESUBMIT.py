@@ -980,6 +980,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       [
+        # Test base::span<> compatibility against std::span<>.
+        r'base/containers/span_unittest.cc',
         # Needed to use QUICHE API.
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
@@ -1252,8 +1254,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       [
-        # NO_UNIQUE_ADDRESS provides canonical access.
-        r'^base/compiler_specific.h',
+        # NO_UNIQUE_ADDRESS / PA_NO_UNIQUE_ADDRESS provide canonical access.
+        r'^base/compiler_specific\.h',
+        r'^base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific\.h',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK,
       ],

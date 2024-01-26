@@ -8,6 +8,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("annotations") {
   deps = [
     ":annotations_ts",
+    ":text_ts",
     "//base",
     "//components/shared_highlighting/ios",
     "//ios/web/common",
@@ -28,7 +29,7 @@ source_set("annotations") {
   ]
 }
 
-compile_ts("compile_ts") {
+compile_ts("compile_annotations_ts") {
   sources = [ "resources/annotations_constants.ts" ]
 }
 
@@ -38,7 +39,7 @@ optimize_ts("annotations_ts") {
   sources = [ "resources/annotations.ts" ]
 
   deps = [
-    ":compile_ts",
+    ":compile_annotations_ts",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -51,8 +52,69 @@ optimize_ts("annotations_test_ts") {
   sources = [ "resources/annotations_test.ts" ]
 
   deps = [
-    ":compile_ts",
+    ":compile_annotations_ts",
     "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+compile_ts("compile_text_ts") {
+  sources = [
+    "resources/text_annotation_list.ts",
+    "resources/text_click.ts",
+    "resources/text_decoration.ts",
+    "resources/text_decorator.ts",
+    "resources/text_dom_observer.ts",
+    "resources/text_dom_utils.ts",
+    "resources/text_extractor.ts",
+    "resources/text_intersection_observer.ts",
+    "resources/text_styler.ts",
+    "resources/text_tasks.ts",
+  ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+}
+
+optimize_ts("text_ts") {
+  visibility = [ ":annotations" ]
+
+  sources = [ "resources/text_main.ts" ]
+
+  deps = [
+    ":compile_text_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+compile_ts("compile_text_tests_ts") {
+  sources = [
+    "resources/text_annotation_list_test.ts",
+    "resources/text_click_test.ts",
+    "resources/text_decoration_test.ts",
+    "resources/text_decorator_test.ts",
+    "resources/text_dom_observer_test.ts",
+    "resources/text_dom_utils_test.ts",
+    "resources/text_extractor_test.ts",
+    "resources/text_intersection_observer_test.ts",
+    "resources/text_tasks_test.ts",
+    "resources/text_test_utils.ts",
+  ]
+  deps = [
+    ":compile_text_ts",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+optimize_ts("text_tests_ts") {
+  visibility = [ ":inttests" ]
+  testonly = true
+
+  sources = [ "resources/text_tests.ts" ]
+
+  deps = [
+    ":compile_text_tests_ts",
+    ":compile_text_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -61,18 +123,21 @@ source_set("inttests") {
   deps = [
     ":annotations",
     ":annotations_test_ts",
+    ":text_tests_ts",
     "//base",
     "//base/test:test_support",
     "//ios/web/common",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_manager_header",
-    "//ios/web/public",
-    "//ios/web/public:web_state_observer",
     "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
   ]
-  sources = [ "annotations_inttest.mm" ]
+  sources = [
+    "annotations_inttest.mm",
+    "text_inttest.mm",
+  ]
 }

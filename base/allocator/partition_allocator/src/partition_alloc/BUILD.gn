@@ -95,13 +95,14 @@ component("raw_ptr") {
   # actually built.
   check_includes = use_partition_alloc
   public = [
+    "pointers/instance_tracer.h",
     "pointers/raw_ptr.h",
     "pointers/raw_ptr_cast.h",
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ptr_noop_impl.h",
     "pointers/raw_ref.h",
   ]
-  sources = []
+  sources = [ "pointers/instance_tracer.cc" ]
   public_configs = [ ":public_includes" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -184,13 +185,13 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
+    "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$enable_dangling_raw_ptr_perf_experiment",
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
-    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$put_ref_count_in_previous_slot",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
     "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
@@ -315,7 +316,7 @@ if (is_clang_or_gcc) {
       # Not allocating memory, but part of the API
       "-Wl,-wrap,malloc_usable_size",
 
-      # <stdlib.h> functions
+      # <cstdlib> functions
       "-Wl,-wrap,realpath",
 
       # <string.h> functions
@@ -325,7 +326,7 @@ if (is_clang_or_gcc) {
       # <unistd.h> functions
       "-Wl,-wrap,getcwd",
 
-      # <stdio.h> functions
+      # <cstdio> functions
       "-Wl,-wrap,asprintf",
       "-Wl,-wrap,vasprintf",
     ]
@@ -385,6 +386,9 @@ if (is_clang_or_gcc) {
       "freeslot_bitmap_constants.h",
       "gwp_asan_support.cc",
       "gwp_asan_support.h",
+      "internal_allocator.cc",
+      "internal_allocator.h",
+      "internal_allocator_forward.h",
       "lightweight_quarantine.cc",
       "lightweight_quarantine.h",
       "memory_reclaimer.cc",
@@ -453,8 +457,6 @@ if (is_clang_or_gcc) {
     if (use_starscan) {
       sources += [
         "starscan/logging.h",
-        "starscan/metadata_allocator.cc",
-        "starscan/metadata_allocator.h",
         "starscan/pcscan.cc",
         "starscan/pcscan.h",
         "starscan/pcscan_internal.cc",
@@ -801,6 +803,9 @@ if (is_clang_or_gcc) {
     shim_headers += [
       "shim/allocator_shim.h",
       "shim/allocator_shim_internals.h",
+      "shim/shim_alloc_functions.h",
+      "shim/allocator_shim_functions.h",
+      "shim/allocator_dispatch.h",
     ]
     if (use_partition_alloc) {
       shim_sources += [
@@ -817,6 +822,8 @@ if (is_clang_or_gcc) {
         "shim/allocator_shim_override_cpp_symbols.h",
         "shim/allocator_shim_override_linker_wrapped_symbols.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
+      shim_sources += [ "shim/allocator_shim_android.cc" ]
       if (use_allocator_shim) {
         all_dependent_configs += [ ":wrap_malloc_symbols" ]
       }
@@ -829,8 +836,10 @@ if (is_clang_or_gcc) {
         "shim/allocator_interception_apple.h",
         "shim/malloc_zone_functions_apple.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
       shim_sources += [
         "shim/allocator_interception_apple.mm",
+        "shim/allocator_shim_apple.cc",
         "shim/malloc_zone_functions_apple.cc",
       ]
       frameworks += [ "CoreFoundation.framework" ]
@@ -855,7 +864,24 @@ if (is_clang_or_gcc) {
         "shim/allocator_shim_override_ucrt_symbols_win.h",
         "shim/winheap_stubs_win.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
       shim_sources += [ "shim/winheap_stubs_win.cc" ]
+
+      if (!is_component_build) {
+        shim_sources += [
+          "shim/allocator_shim_win_static.cc",
+          "shim/checked_multiply_win.h",
+        ]
+      } else {
+        shim_sources += [
+          "shim/allocator_shim_functions_win_component.cc",
+          "shim/allocator_shim_win_component.cc",
+        ]
+
+        # allocator_shim cannot depend on libc++ objects because they use malloc()
+        # internally.
+        no_default_deps = true
+      }
     }
 
     if (!use_partition_alloc_as_malloc) {

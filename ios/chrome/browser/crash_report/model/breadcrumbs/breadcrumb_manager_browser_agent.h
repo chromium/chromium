@@ -7,6 +7,7 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -81,7 +82,7 @@ class BreadcrumbManagerBrowserAgent
                        bool initial_presentation) override;
   void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Keeps track of WebState mutation count to avoid logging every event.
   // Created in WillBeginBatchOperation and destroyed in BatchOperationEnded.

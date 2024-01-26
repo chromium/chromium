@@ -18,9 +18,9 @@
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
@@ -226,17 +226,13 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    UrlLoadingNotifierBrowserAgent* url_loading_notifier =
-        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     bubble_presenter_ = [[BubblePresenter alloc]
         initWithDeviceSwitcherResultDispatcher:nullptr
                         hostContentSettingsMap:(HostContentSettingsMap*)
                                                    settings_map
-                               loadingNotifier:url_loading_notifier
                                    prefService:chrome_browser_state_.get()
                                                    ->GetPrefs()
-                                    sceneState:scene_state_
                        tabStripCommandsHandler:nil
                                        tracker:(feature_engagement::Tracker*)
                                                    tracker
@@ -303,6 +299,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;
 
+    UrlLoadingNotifierBrowserAgent* url_loading_notifier =
+        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_

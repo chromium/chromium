@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Получать уведомления</translation>
 <translation id="4133493477912226187">Обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="4212246570487010370">Продолжить просмотр</translation>
+<translation id="427987768447457592">Новая группа вкладок</translation>
 <translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзыв).}one{(<ph name="REVIEWS_COUNT_MANY" /> отзыв).}few{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}many{(<ph name="REVIEWS_COUNT_MANY" /> отзывов).}other{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}}</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Скрыть полноэкранную сетку с вкладками</translation>
 <translation id="5076161749301278626">Показать отзывы о магазине?</translation>
 <translation id="5082793167783849073">Сравнивайте страницы быстрее, объединяя их в группы. Чтобы начать, нажмите на ссылку и удерживайте ее.</translation>
+<translation id="5161254044473106830">Введите название</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Вы давно не открывали <ph name="TABS_COUNT_ONE" /> вкладку.}one{Вы давно не открывали <ph name="TABS_COUNT_MANY" /> вкладку.}few{Вы давно не открывали <ph name="TABS_COUNT_MANY" /> вкладки.}many{Вы давно не открывали <ph name="TABS_COUNT_MANY" /> вкладок.}other{Вы давно не открывали <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="5339733443032484186">Ваша последняя вкладка</translation>
 <translation id="5490235265819901748">Группа вкладок развернута</translation>

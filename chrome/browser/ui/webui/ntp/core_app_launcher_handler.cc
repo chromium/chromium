@@ -20,13 +20,6 @@ CoreAppLauncherHandler::CoreAppLauncherHandler() {}
 
 CoreAppLauncherHandler::~CoreAppLauncherHandler() {}
 
-// static
-void CoreAppLauncherHandler::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kNtpAppPageNames,
-                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-}
-
 void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
     const base::Value::List& args) {
   const std::string& url = args[0].GetString();

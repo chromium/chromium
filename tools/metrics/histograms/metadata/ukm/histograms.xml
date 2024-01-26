@@ -226,25 +226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.PrunedSources.{Type}" units="sources"
-    expires_after="2025-05-01">
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of sources pruned after the operation of {Type} type.
-  </summary>
-  <token key="Type">
-    <variant name="AppExpNumAppId"
-        summary="APP_ID only when not in seen/unseen experiment"/>
-    <variant name="AppExpNumNonAppId" summary="All non-APP_ID"/>
-    <variant name="NoExp" summary="Total pruned without experimentation"/>
-    <variant name="NumAppId"
-        summary="APP_ID only under seen/unseen experiment"/>
-    <variant name="NumSeen" summary="Seen only"/>
-    <variant name="NumUnseen" summary="Unseen only"/>
-  </token>
-</histogram>
-
 <histogram name="UKM.ReportSize.NonUkmPercentage" units="%"
     expires_after="2025-05-01">
   <owner>yrsun@chromium.org</owner>

@@ -647,7 +647,7 @@ export class DeleteCommand extends FilesCommand {
         shouldMoveToTrash(entries, fileManager.volumeManager) &&
         fileManager.trashEnabled) {
       startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
+          chrome.fileManagerPrivate.IoTaskType.TRASH, entries,
           /*params=*/ {});
       return;
     }
@@ -667,7 +667,7 @@ export class DeleteCommand extends FilesCommand {
       dialogDoneCallback();
       // Start the permanent delete.
       startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.DELETE, entries, /*params=*/ {});
+          chrome.fileManagerPrivate.IoTaskType.DELETE, entries, /*params=*/ {});
     };
 
     const cancelAction = () => {
@@ -811,7 +811,7 @@ export class RestoreFromTrashCommand extends FilesCommand {
       return;
     }
     startIOTask(
-        chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
+        chrome.fileManagerPrivate.IoTaskType.RESTORE, infoEntries,
         /*params=*/ {});
   }
 
@@ -866,7 +866,7 @@ export class EmptyTrashCommand extends FilesCommand {
         str('CONFIRM_EMPTY_TRASH_TITLE'), str('CONFIRM_EMPTY_TRASH_DESC'),
         () => {
           startIOTask(
-              chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
+              chrome.fileManagerPrivate.IoTaskType.EMPTY_TRASH, /*entries=*/[],
               /*params=*/ {});
         });
   }
@@ -1817,7 +1817,7 @@ export class ZipSelectionCommand extends FilesCommand {
 
     const selectionEntries = fileManager.getSelection().entries;
     startIOTask(
-        chrome.fileManagerPrivate.IOTaskType.ZIP, selectionEntries,
+        chrome.fileManagerPrivate.IoTaskType.ZIP, selectionEntries,
         {destinationFolder: dirEntry as DirectoryEntry});
   }
 

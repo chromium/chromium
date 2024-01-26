@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -57,6 +60,44 @@ class ComposeEnablingBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// PRE_ step simulates a browser restart.
+IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
+                       PRE_EnableComposeViaSettings) {
+  optimization_guide::EnableSigninAndModelExecutionCapability(
+      browser()->profile());
+  // Turn on MSBB.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  // Confirm that the required feature flags are enabled by default.
+  EXPECT_TRUE(base::FeatureList::IsEnabled(compose::features::kEnableCompose));
+
+  // Enable Compose via the Optimization Guide's pref.
+  browser()->profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  // Checks that Compose is still disabled.
+  // TODO(b/321073908): Update this test once enabling takes immediate effect.
+  EXPECT_EQ(base::unexpected(
+                compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide),
+            GetComposeEnabling().IsEnabled());
+  EXPECT_FALSE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
+// Checks that after the browser restarts required features are enabled.
+IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
+  EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
+  EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
 class ComposeEnablingWithFencedFramesBrowserTest
     : public ComposeEnablingBrowserTest {
  public:
@@ -84,50 +125,12 @@ class ComposeEnablingWithFencedFramesBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-// PRE_ step simulates a browser restart.
-IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
-                       PRE_EnableComposeViaSettings) {
-  optimization_guide::EnableSigninAndModelExecutionCapability(
-      browser()->profile());
-  // Turn on MSBB.
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-  // Checks that Compose is disabled.
-  EXPECT_NE(base::ok(), GetComposeEnabling().IsEnabled());
-  EXPECT_FALSE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
-
-  // Enable Compose and dependent features via the Optimization Guide's pref.
-  EXPECT_FALSE(about_flags::IsRestartNeededToCommitChanges());
-  browser()->profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(about_flags::IsRestartNeededToCommitChanges());
-}
-
-// Checks that after the browser restarts required features are enabled.
-IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
-  // Confirm that the required feature flags are enabled.
-  EXPECT_TRUE(base::FeatureList::IsEnabled(compose::features::kEnableCompose));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillContentEditables));
-
-  EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
-  EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
-}
-
 IN_PROC_BROWSER_TEST_F(ComposeEnablingWithFencedFramesBrowserTest,
                        DisabledInFencedFrames) {
-  // only checking the cross-fence functionality, can ignore other enablement
+  // Only checking the cross-fence functionality, can ignore other enablement
   // requirements.
-  GetComposeEnabling().SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   GURL main_url(https_server()->GetURL(
       "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})"));

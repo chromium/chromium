@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 
 namespace base {
@@ -29,9 +30,9 @@ class TabUrlProviderImpl : public optimization_guide::TabUrlProvider {
       const base::TimeDelta& duration_since_last_shown) override;
 
   // Used to get the URLs in all active tabs. Must out live this class.
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_TAB_URL_PROVIDER_IMPL_H_

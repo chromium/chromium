@@ -101,18 +101,9 @@ TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
   EXPECT_TRUE(BorealisFeatures(&profile_).IsEnabled());
 }
 
-TEST(BorealisFeaturesUtilTest, DeterministicHash) {
-  EXPECT_EQ(TokenHardwareChecker::H("token", "salt"),
-            "ZnIP7tz1bWJV7++grGG9C9lCFIQa49zw0nY0ac1bfoo=");
-}
-
 TEST(BorealisFeaturesUtilTest, TokenHardwareCheckerWorks) {
-  TokenHardwareChecker::Data d{"token", "board", "model", "cpu", 42};
+  TokenHardwareChecker::Data d{"board", "model", "cpu", 42};
   TokenHardwareChecker checker(std::move(d));
-
-  EXPECT_FALSE(checker.TokenHashMatches("foo", "bar"));
-  EXPECT_TRUE(checker.TokenHashMatches(
-      "salt", "ZnIP7tz1bWJV7++grGG9C9lCFIQa49zw0nY0ac1bfoo="));
 
   EXPECT_FALSE(checker.IsBoard("notboard"));
   EXPECT_TRUE(checker.IsBoard("board"));
@@ -151,9 +142,7 @@ TEST(BorealisFeaturesUtilTest, DataCanBeBuilt) {
 
   base::RunLoop loop;
   TokenHardwareChecker::GetData(
-      "token",
       base::BindLambdaForTesting([&loop](TokenHardwareChecker::Data data) {
-        EXPECT_EQ(data.token_hash, "token");
         EXPECT_EQ(data.board, "board");
         EXPECT_EQ(data.model, "model");
         // Faking CPU and RAM are not supported, so just assert they have some

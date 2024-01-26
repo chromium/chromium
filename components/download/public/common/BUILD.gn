@@ -17,8 +17,6 @@ config("components_download_implementation") {
 component("public") {
   sources = [
     "all_download_event_notifier.h",
-    "auto_resumption_handler.cc",
-    "auto_resumption_handler.h",
     "base_file.h",
     "download_content.h",
     "download_create_info.h",
@@ -51,10 +49,13 @@ component("public") {
     "download_source.h",
     "download_start_observer.h",
     "download_stats.h",
+    "download_target_info.cc",
+    "download_target_info.h",
     "download_task_runner.h",
     "download_ukm_helper.h",
     "download_url_parameters.cc",
     "download_url_parameters.h",
+    "download_utils.cc",
     "download_utils.h",
     "in_progress_download_manager.h",
     "input_stream.cc",
@@ -107,6 +108,13 @@ component("public") {
 
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/auto_resumption_handler.cc",
+      "android/auto_resumption_handler.h",
+    ]
   }
 
   if (is_chromeos) {
@@ -178,7 +186,11 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "auto_resumption_handler_unittest.cc" ]
+  sources = []
+
+  if (is_android) {
+    sources += [ "android/auto_resumption_handler_unittest.cc" ]
+  }
 
   deps = [
     ":public",

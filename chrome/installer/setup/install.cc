@@ -458,7 +458,7 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
 void RunShortcutCreationInChildProc(
     const InstallerState& installer_state,
     const base::FilePath& setup_path,
-    const absl::optional<const base::FilePath>& prefs_path,
+    const std::optional<const base::FilePath>& prefs_path,
     InstallShortcutLevel install_level,
     InstallShortcutOperation install_operation) {
   base::CommandLine command_line(setup_path);
@@ -546,8 +546,8 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
         installer_state.system_install() ? ALL_USERS : CURRENT_USER;
     RunShortcutCreationInChildProc(
         installer_state, setup_path,
-        use_initial_prefs ? absl::optional<base::FilePath>(prefs_path)
-                          : absl::nullopt,
+        use_initial_prefs ? std::optional<base::FilePath>(prefs_path)
+                          : std::nullopt,
         install_level, install_operation);
 
     // Register Chrome and, if requested, make Chrome the default browser.

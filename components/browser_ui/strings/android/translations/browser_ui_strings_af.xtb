@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1434873037477293673">prysverlagingkaart</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> werf}other{<ph name="SITE_COUNT" /> werwe}}</translation>
 <translation id="1510341833810331442">Werwe word nie toegelaat om data op jou toestel te stoor nie</translation>
@@ -108,6 +109,7 @@
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
@@ -328,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Keer werwe om jou virtuelerealiteittoestel en -data te gebruik</translation>
 <translation id="6447842834002726250">Webkoekies</translation>
+<translation id="6452138246455930388">Prysdaling op jou oop oortjie, van<ph name="OLD_PRICE" /> tot <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Versoek mobiele aansig wanneer die venster smal is</translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="652937045869844725">Probeer derdepartywebkoekies toelaat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk</translation>
@@ -347,10 +350,12 @@
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6749077623962119521">Stel toestemmings terug?</translation>
 <translation id="6766622839693428701">Swiep ondertoe om toe te maak</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Kies ’n opsie vir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6818926723028410516">Kies items</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
+<translation id="6867014948848323204">Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokkeer werwe om teks en prente van die knipbord af te lees</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6950072572526089586">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
@@ -399,6 +404,7 @@
 <translation id="7667547420449112975">Die Wonderlike Towenaar van Oz</translation>
 <translation id="7684642910516280563">Moenie ’n werf toelaat om derdepartywebkoekies te gebruik nie</translation>
 <translation id="7719367874908701697">Bladsyzoem:</translation>
+<translation id="7770832849480336015">Versteek “<ph name="TITLE_OF_MODULE" />”</translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="780301667611848630">Nee, dankie</translation>

@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#import "base/memory/raw_ptr.h"
 #import "remoting/ios/domain/user_info.h"
 #import "remoting/ios/facade/ios_client_runtime_delegate.h"
 #import "remoting/ios/facade/remoting_authentication.h"
@@ -22,7 +23,7 @@ NSString* const kUserInfo = @"kUserInfo";
 
   // TODO(yuweih): It's suspicious to use a raw C++ pointer here. Investigate
   // its lifetime in ChromotingRuntime and change to unique_ptr if possible.
-  remoting::IosClientRuntimeDelegate* _clientRuntimeDelegate;
+  raw_ptr<remoting::IosClientRuntimeDelegate> _clientRuntimeDelegate;
 }
 @end
 

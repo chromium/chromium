@@ -291,8 +291,9 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     assertTrue(isVisible(
         subsection.shadowRoot!.querySelector('#simulateRightClickContainer')));
     const simulateRightClickDropdown =
-        subsection.shadowRoot!.querySelector('#simulateRightClickDropdown') as
-        SettingsDropdownMenuElement;
+        subsection.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#simulateRightClickDropdown');
+    assertTrue(!!simulateRightClickDropdown);
     // Dropdown has the correct default value.
     assertEquals(
         Number(simulateRightClickDropdown.$.dropdownMenu.value),

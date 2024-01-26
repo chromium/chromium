@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/adapter.h"
@@ -53,48 +54,28 @@ void BuildAndCompute(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the dml::ContextImpl through context provider.
-  bool was_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResultPtr create_context_result) {
-            if (create_context_result->is_context_remote()) {
-              webnn_context_remote.Bind(
-                  std::move(create_context_result->get_context_remote()));
-            }
-            was_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(was_callback_called);
+      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  if (create_context_result->is_context_remote()) {
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_context_remote()));
+  }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
   // The dml::GraphImpl should be built successfully.
-  base::RunLoop run_loop_create_graph;
-  was_callback_called = false;
-  bool was_create_graph_error = true;
-  webnn_context_remote.set_disconnect_handler(
-      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
-                     &run_loop_create_graph));
-  webnn_context_remote->CreateGraph(
-      std::move(graph_info),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            if (!create_graph_result->is_error()) {
-              webnn_graph_remote.Bind(
-                  std::move(create_graph_result->get_graph_remote()));
-              was_create_graph_error = false;
-            }
-            was_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context_remote->CreateGraph(std::move(graph_info),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  if (!create_graph_result->is_error()) {
+    webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+  }
 
   if (expectation == BuildAndComputeExpectation::kCreateGraphFailure) {
-    EXPECT_TRUE(was_create_graph_error);
+    EXPECT_TRUE(create_graph_result->is_error());
     EXPECT_FALSE(webnn_graph_remote.is_bound());
     EXPECT_TRUE(webnn_context_remote.is_bound());
     webnn_graph_remote.reset();
@@ -103,23 +84,16 @@ void BuildAndCompute(
     base::RunLoop().RunUntilIdle();
     return;
   }
-  EXPECT_FALSE(was_create_graph_error);
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
   // The dml::GraphImpl should compute successfully.
-  base::RunLoop run_loop_graph_compute;
-  was_callback_called = false;
-  webnn_graph_remote->Compute(
-      std::move(named_inputs),
-      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-        EXPECT_TRUE(result->is_named_outputs());
-        EXPECT_FALSE(result->get_named_outputs().empty());
-        was_callback_called = true;
-        named_outputs = std::move(result->get_named_outputs());
-        run_loop_graph_compute.Quit();
-      }));
-  run_loop_graph_compute.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+  webnn_graph_remote->Compute(std::move(named_inputs),
+                              compute_future.GetCallback());
+  mojom::ComputeResultPtr compute_result = compute_future.Take();
+  ASSERT_TRUE(compute_result->is_named_outputs());
+  EXPECT_FALSE(compute_result->get_named_outputs().empty());
+  named_outputs = std::move(compute_result->get_named_outputs());
 
   webnn_graph_remote.reset();
   webnn_context_remote.reset();
@@ -182,18 +156,20 @@ std::vector<float> Float16ToFloat32(const std::vector<float16>& fp16_data) {
 // number.
 std::vector<float> GetFloatOutputData(mojo_base::BigBuffer big_buffer,
                                       mojom::Operand::DataType type) {
-  std::vector<float> output_data;
-  if (type == mojom::Operand::DataType::kFloat16) {
-    output_data =
-        Float16ToFloat32(BigBufferToVector<float16>(std::move(big_buffer)));
-  } else if (type == mojom::Operand::DataType::kFloat32) {
-    output_data = BigBufferToVector<float>(std::move(big_buffer));
-  } else {
-    DLOG(ERROR) << "This data type is not supported.";
-    NOTREACHED_NORETURN();
+  switch (type) {
+    case mojom::Operand_DataType::kFloat32:
+      return BigBufferToVector<float>(std::move(big_buffer));
+    case mojom::Operand_DataType::kFloat16:
+      return Float16ToFloat32(
+          BigBufferToVector<float16>(std::move(big_buffer)));
+    case mojom::Operand_DataType::kInt32:
+    case mojom::Operand_DataType::kUint32:
+    case mojom::Operand_DataType::kInt64:
+    case mojom::Operand_DataType::kUint64:
+    case mojom::Operand_DataType::kInt8:
+    case mojom::Operand_DataType::kUint8:
+      NOTREACHED_NORETURN();
   }
-
-  return output_data;
 }
 
 template <typename T>
@@ -431,7 +407,7 @@ struct BatchNormalizationTester {
     absl::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
-  OperandInfo<float> output;
+  OperandInfo<T> output;
 
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
@@ -474,9 +450,7 @@ struct BatchNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -730,7 +704,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
-    // Test throws error when scale operand is missing.
+    // Test batchNormalization with 1-D input with axis = 0 when scale operand
+    // is missing.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {2},
@@ -748,10 +723,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2},
                    .values = {0, 1}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+        .Test();
   }
   {
-    // Test throws error when bias operand is missing.
+    // Test batchNormalization with 1-D input with axis = 0 when bias operand is
+    // missing.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {2},
@@ -764,12 +740,31 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
                      .values = {1.0, 1.5}},
         .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                     .dimensions = {2},
-                                    .values = {0.5, 1, 0}},
+                                    .values = {1.0, 1.5}},
         .attributes = {.axis = 0},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2},
-                   .values = {0, 1}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = {0, 0}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 1-D input with axis = 0 and float16 data
+    // type when scale and bias operands are both missing.
+    BatchNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {2},
+                  .values = Float16FromFloat32({-1, 1})},
+        .mean = {.type = mojom::Operand::DataType::kFloat16,
+                 .dimensions = {2},
+                 .values = Float16FromFloat32({-1, 1})},
+        .variance = {.type = mojom::Operand::DataType::kFloat16,
+                     .dimensions = {2},
+                     .values = Float16FromFloat32({1.0, 1.5})},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {2},
+                   .values = Float16FromFloat32({0, 0})}}
+        .Test();
   }
 }
 
@@ -4603,41 +4598,24 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the dml::ContextImpl through context provider.
-  bool was_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResultPtr create_context_result) {
-            if (create_context_result->is_context_remote()) {
-              webnn_context_remote.Bind(
-                  std::move(create_context_result->get_context_remote()));
-            }
-            was_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(was_callback_called);
+      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  if (create_context_result->is_context_remote()) {
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_context_remote()));
+  }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
   // The dml::GraphImpl should be built successfully.
-  base::RunLoop run_loop_create_graph;
-  was_callback_called = false;
-  webnn_context_remote.set_disconnect_handler(
-      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
-                     &run_loop_create_graph));
-  webnn_context_remote->CreateGraph(
-      builder.CloneGraphInfo(),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            webnn_graph_remote.Bind(
-                std::move(create_graph_result->get_graph_remote()));
-            was_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_FALSE(create_graph_result->is_error());
+  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
   EXPECT_TRUE(webnn_graph_remote.is_bound());
   {
     // Compute for the first time.
@@ -4645,19 +4623,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({12, 14, 12, 14}));
@@ -4668,19 +4640,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({12, 14, 12, 14}));
@@ -4691,19 +4657,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({2, 2, 2, 2})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({24, 28, 24, 28}));
@@ -4763,9 +4723,7 @@ struct InstanceNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -4826,21 +4784,26 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
         .Test();
   }
   {
-    // Test graph creation failure with given scale only.
-    InstanceNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
+    // Test instanceNormalization with 4-D input with float16 data type, given
+    // scale only.
+    InstanceNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 2, 1, 3},
-                  .values = {1, 2, 3, 4, 5, 6}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {0.5, -0.5}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
+                  .values = Float16FromFloat32({1, 2, 3, 4, 5, 6})},
+        .scale =
+            OperandInfo<float16>{.type = mojom::Operand::DataType::kFloat16,
+                                 .dimensions = {2},
+                                 .values = Float16FromFloat32({0.5, -0.5})},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 1, 3},
-                   .values = {1, 2, 3, 4, 5, 6}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = Float16FromFloat32(
+                       {-0.6123678429541951, 0, 0.6123678429541951,
+                        0.6123678429541952, 0, -0.6123678429541951})}}
+        .Test();
   }
   {
-    // Test graph creation failure with given bias only.
+    // Test instanceNormalization with 4-D input with float32 data type, given
+    // bias only.
     InstanceNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 3},
@@ -4850,8 +4813,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
                                    .values = {0.5, -0.5}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
-                   .values = {1, 2, 3, 4, 5, 6}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = {-0.7247356859083902, 0.5, 1.7247356859083902,
+                              -1.7247356859083902, -0.5, 0.7247356859083902}}}
+        .Test();
   }
 }
 
@@ -4903,9 +4867,7 @@ struct LayerNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -5015,34 +4977,43 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
         .Test();
   }
   {
-    // Test graph creation failure with given scale only.
-    LayerNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1},
-                  .values = {5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {1},
-                                    .values = {0.5}},
-        .attributes = {.axes = {0}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1},
-                   .values = {0}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+    // Test layerNormalization with 4-D input with axes = [1, 2, 3], float16
+    // data type, given scale only.
+    LayerNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = Float16FromFloat32({-1, 0, 1, 2, 3, 4})},
+        .scale =
+            OperandInfo<float16>{
+                .type = mojom::Operand::DataType::kFloat16,
+                .dimensions = {2, 1, 3},
+                .values = Float16FromFloat32({1, 1, 1, 1, 1, 1})},
+        .attributes = {.axes = {1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = Float16FromFloat32(
+                       {-1.4638475999719223, -0.8783085599831534,
+                        -0.29276951999438444, 0.29276951999438444,
+                        0.8783085599831534, 1.4638475999719223})}}
+        .Test();
   }
   {
-    // Test graph creation failure with given bias only.
+    // Test layerNormalization with 4-D input with axes = [1, 2, 3], float32
+    // data type, given bias only.
     LayerNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1},
-                  .values = {5}},
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {1},
-                                   .values = {0.5}},
-        .attributes = {.axes = {0}},
+                                   .dimensions = {2, 1, 3},
+                                   .values = {0, 0.1, 0.2, 0.3, 0.4, 0.5}},
+        .attributes = {.axes = {1, 2, 3}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1},
-                   .values = {0}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-1.4638475999719223, -0.7783085599831534,
+                              -0.09276951999438444, 0.59276951999438444,
+                              1.2783085599831534, 1.9638475999719223}}}
+        .Test();
   }
 }
 

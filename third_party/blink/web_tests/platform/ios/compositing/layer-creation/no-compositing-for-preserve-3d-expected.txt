@@ -1,0 +1,131 @@
+This layer should not be composited.
+This layer should not be composited.
+This layer should be composited.
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 611],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box1' class='box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box2' class='box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='layer3' class='preserve3d'",
+      "bounds": [342, 180],
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box3' class='box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 9
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [796, 0],
+      "bounds": [4, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "renderingContext": 1
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [49, 59, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 3,
+      "renderingContext": 2
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [49, 249, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 2
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [0.984807753012208, 0.17364817766693, 0, 0],
+        [-0.17364817766693, 0.984807753012208, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [50, 50],
+      "flattenInheritedTransform": false,
+      "renderingContext": 2
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 390, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "renderingContext": 3
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [31, 49, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 3
+    },
+    {
+      "id": 9,
+      "parent": 8,
+      "transform": [
+        [0.984807753012208, 0, -0.17364817766693, 0],
+        [0, 1, 0, 0],
+        [0.17364817766693, 0, 0.984807753012208, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [50, 50],
+      "flattenInheritedTransform": false,
+      "renderingContext": 3
+    }
+  ]
+}
+

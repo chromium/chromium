@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -33,7 +33,7 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;
   void Execute(const webapps::AppId& app_id,
-               const absl::optional<SynchronizeOsOptions>& synchronize_options,
+               const std::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure execute_complete) override;

@@ -72,7 +72,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2130870084309816036">Nepodarilo sa pripojiť k internetu. Ak používate firewall, pridajte <ph name="PRODUCT_EXE_NAME" /> na zoznam povolených.</translation>
 <translation id="2131230230468101642">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chrome posudzovať.</translation>
 <translation id="2139300032719313227">Reštartovanie systému Chrome OS</translation>
-<translation id="2146761408396054429">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak zadáte heslo, Chrome môže tento stiahnutý súbor skontrolovať (vaše heslo zostane v zariadení)</translation>
 <translation id="2151406531797534936">Reštartujte Chrome</translation>
 <translation id="2174917724755363426">Inštalácia nie je dokončená. Naozaj ju chcete zrušiť?</translation>
 <translation id="2190166659037789668">Chyba kontroly aktualizácií: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -197,6 +196,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
 <translation id="4106587138345390261">Chrome skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho množstva vašich údajov</translation>
 <translation id="4110895483821904099">Nastavte si nový profil Chromu</translation>
+<translation id="4128488089242627000">Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní (odporúčané)</translation>
 <translation id="4147555960264124640">Prihlasujete sa pomocou spravovaného účtu a jeho správcovi dávate kontrolu nad vaším profilom prehliadača Chrome. Vaše údaje prehliadača Chrome, ako sú aplikácie, záložky, história, heslá a iné nastavenia, sa natrvalo priradia k účtu <ph name="USER_NAME" />. Tieto údaje budete môcť odstrániť len pomocou panela Dashboard v Účtoch Google, ale nebudete ich môcť priradiť k inému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Inštaluje sa...</translation>
 <translation id="4149882025268051530">Inštalátor pri dekomprimovaní archívu zlyhal. Stiahnite prehliadač Google Chrome znova.</translation>
@@ -219,7 +219,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4343195214584226067">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do Chromu</translation>
 <translation id="4384570495110188418">Chrome nemôže skontrolovať heslá, pretože ste sa neprihlásili</translation>
 <translation id="4389991535395284064">Pri prehliadaní v režime inkognito vás bude Chrome pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
-<translation id="4393248995085527349">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.13.</translation>
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
@@ -244,6 +243,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4828579605166583682">Google Chrome sa pokúša nahradiť existujúce heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
+<translation id="4873692836499071887">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 11 alebo novší. V tomto počítači používate macOS 10.15.</translation>
 <translation id="4873783916118289636">Pozrite si hlavné ovládacie prvky ochrany súkromia a zabezpečenia v Chrome</translation>
 <translation id="4891791193823137474">Povoliť prehliadaču Google Chrome spustenie na pozadí</translation>
 <translation id="4895437082222824641">Otvoriť odkaz na novej &amp;karte Chromu</translation>
@@ -307,7 +307,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
-<translation id="6010556343189461180">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.14.</translation>
 <translation id="6014316319780893079">Pomocou <ph name="BEGIN_LINK" />nástrojov Chromu<ph name="END_LINK" /> môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
 <translation id="6025087594896450715">Google Chrome sa reštartuje o <ph name="REMAINING_TIME" /></translation>
@@ -353,6 +352,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="677276454032249905">Chcete Chrome napriek tomu ukončiť?</translation>
 <translation id="6794858689789885890">Vždy odstraňujte dáta webov zo zariadenia po zavretí Chromu</translation>
 <translation id="683440813066116847">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome verzie Canary, ktoré povoľuje prenos dát mDNS.</translation>
+<translation id="6851981911629679515">Zapnite dodatočnú ochranu v nástroji skriptov JavaScript a WebAssembly v Chrome.</translation>
 <translation id="6881299373831449287">Aktualizuje sa Chrome</translation>
 <translation id="6885412569789873916">Aplikácie pre Chrome beta verzie</translation>
 <translation id="6933858244219479645">Systém Chrome OS</translation>
@@ -474,6 +474,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="873133009373065397">Google Chrome nedokáže určiť alebo nastaviť predvolený prehliadač</translation>
 <translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="878572486461146056">Chyba inštalácie: správca siete uplatnil skupinové pravidlá, ktoré zabraňujú inštalácii: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 je nástroj skriptov JavaScript a WebAssembly v Chrome, ktorý zlepšuje výkon webov</translation>
 <translation id="8821043148920470810">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 7.</translation>
 <translation id="8823341990149967727">Prehliadač Chrome je zastaraný</translation>
 <translation id="8825634023950448068">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. A ak sa to Chromu nepodarí správne alebo ak nechcete zobrazovať určité reklamy, môžete ľubovoľný záujem odstrániť.</translation>

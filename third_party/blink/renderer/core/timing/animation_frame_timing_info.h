@@ -19,7 +19,7 @@ class SourceLocation;
 
 class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
  public:
-  enum class Type {
+  enum class InvokerType {
     kClassicScript,
     kModuleScript,
     kUserCallback,
@@ -38,7 +38,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   };
 
   ScriptTimingInfo(ExecutionContext* context,
-                   Type type,
+                   InvokerType invoker_type,
                    base::TimeTicks start_time,
                    base::TimeTicks execution_start_time,
                    base::TimeTicks end_time,
@@ -46,7 +46,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
                    base::TimeDelta layout_duration);
 
   void Trace(Visitor* visitor) const;
-  Type GetType() const { return type_; }
+  InvokerType GetInvokerType() const { return invoker_type_; }
   base::TimeTicks StartTime() const { return start_time_; }
   base::TimeTicks ExecutionStartTime() const { return execution_start_time_; }
   base::TimeTicks EndTime() const { return end_time_; }
@@ -78,7 +78,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   }
 
  private:
-  Type type_;
+  InvokerType invoker_type_;
   AtomicString class_like_name_ = WTF::g_empty_atom;
   AtomicString property_like_name_ = WTF::g_empty_atom;
   base::TimeTicks start_time_;

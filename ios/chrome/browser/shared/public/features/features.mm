@@ -144,6 +144,10 @@ BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
              "EnableShortenedPasswordAutoFillInstruction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableStartupImprovements,
+             "EnableStartupImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableExpKitAppleCalendar,
              "EnableExpKitAppleCalendar",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -158,6 +162,22 @@ BASE_FEATURE(kTabGridNewTransitions,
 
 bool IsNewTabGridTransitionsEnabled() {
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
+}
+
+BASE_FEATURE(kContextualPanelForceShowEntrypoint,
+             "ContextualPanelForceShowEntrypoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContextualPanelForceShowEntrypointEnabled() {
+  return base::FeatureList::IsEnabled(kContextualPanelForceShowEntrypoint);
+}
+
+BASE_FEATURE(kContextualPanel,
+             "ContextualPanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContextualPanelEnabled() {
+  return base::FeatureList::IsEnabled(kContextualPanel);
 }
 
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
@@ -197,10 +217,6 @@ BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBottomOmniboxSteadyState,
-             "BottomOmniboxSteadyState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kBottomOmniboxDefaultSettingParam[] =
     "BottomOmniboxDefaultSettingParam";
 const char kBottomOmniboxDefaultSettingParamTop[] = "Top";
@@ -211,21 +227,11 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBottomOmniboxDeviceSwitcherResults,
-             "BottomOmniboxDeviceSwitcherResults",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsBottomOmniboxSteadyStateEnabled() {
   // Bottom omnibox is only available on phones.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kBottomOmniboxSteadyState);
-}
-
-bool IsBottomOmniboxDeviceSwitcherResultsEnabled() {
-  return IsBottomOmniboxSteadyStateEnabled() &&
-         base::FeatureList::IsEnabled(kBottomOmniboxDeviceSwitcherResults);
+  // TODO(crbug.com/1508532): Cleanup usage of this function as the feature flag
+  // is now enabled by default.
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 }
 
 BASE_FEATURE(kBottomOmniboxPromoFRE,
@@ -264,6 +270,10 @@ const char kBottomOmniboxPromoDefaultPositionParam[] =
     "BottomOmniboxPromoDefaultPositionParam";
 const char kBottomOmniboxPromoDefaultPositionParamTop[] = "Top";
 const char kBottomOmniboxPromoDefaultPositionParamBottom[] = "Bottom";
+
+BASE_FEATURE(kBottomOmniboxPromoRegionFilter,
+             "BottomOmniboxPromoRegionFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
@@ -576,6 +586,11 @@ bool IsContentPushNotificationsSetUpListEnabled() {
           NotificationsExperimentTypeSetUpListsEnabled);
 }
 
+bool IsContentPushNotificationsProvisionalEnabled() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeProvisional);
+}
+
 bool IsIOSLargeFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kIOSLargeFakebox);
 }
@@ -585,7 +600,8 @@ bool IsIOSHideFeedWithSearchChoiceEnabled() {
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {
-  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade);
+  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade) &&
+         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 // Feature disabled by default.

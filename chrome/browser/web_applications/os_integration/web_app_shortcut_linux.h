@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_SHORTCUT_LINUX_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_SHORTCUT_LINUX_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -78,7 +78,7 @@ ShortcutLocations GetExistingShortcutLocations(
 bool UpdateDesktopShortcuts(
     base::Environment* env,
     const ShortcutInfo& shortcut_info,
-    absl::optional<ShortcutLocations> user_specified_locations);
+    std::optional<ShortcutLocations> user_specified_locations);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
 // been added for the extension with |extension_id| in |profile_path|. Returns

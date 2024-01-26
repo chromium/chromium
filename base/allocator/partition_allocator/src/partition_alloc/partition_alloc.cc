@@ -4,9 +4,8 @@
 
 #include "partition_alloc/partition_alloc.h"
 
-#include <string.h>
-
 #include <cstdint>
+#include <cstring>
 #include <memory>
 
 #include "partition_alloc/address_pool_manager.h"

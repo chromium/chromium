@@ -129,7 +129,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
 
   void NewWindowSync(bool incognito,
                      bool should_trigger_session_restore,
-                     absl::optional<uint64_t> profile_id,
+                     std::optional<uint64_t> profile_id,
                      CreationResult expected_result) {
     base::test::TestFuture<CreationResult> new_window_future;
     browser_service()->NewWindow(
@@ -149,7 +149,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(new_tab_future.Get(), expected_result);
   }
 
-  void LaunchSync(absl::optional<uint64_t> profile_id,
+  void LaunchSync(std::optional<uint64_t> profile_id,
                   CreationResult expected_result) {
     base::test::TestFuture<CreationResult> launch_future;
     browser_service()->Launch(
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   // Create a new browser window with main profile by unset profile ID.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
   EXPECT_EQ(1u, chrome::GetBrowserCount(main_profile));
 
   // Create a new browser window with main profile by profile ID zero.
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // `NewWindow()` should create a new window if the system has only one
   // profile.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // Profile picker does _not_ open for incognito windows. Instead, the
   // incognito window for the main profile is directly opened.
   NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // Profile picker does _not_ open if Chrome already has opened windows.
   // Instead, a new browser window for the main profile is directly opened.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
   EXPECT_FALSE(ProfilePicker::IsOpen());
   // A new browser is created for the main profile.
   EXPECT_EQ(BrowserList::GetInstance()->GetLastActive()->profile()->GetPath(),
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   // `NewWindow()` should open the profile picker.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt,
+                /*profile_id=*/std::nullopt,
                 CreationResult::kBrowserWindowUnavailable);
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   // Opening a new window should suppress the profile picker and the crash
   // restore bubble should be showing.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/true,
-                /*profile_id=*/absl::nullopt, CreationResult::kUnknown);
+                /*profile_id=*/std::nullopt, CreationResult::kUnknown);
 
   EXPECT_FALSE(ProfilePicker::IsOpen());
   views::BubbleDialogDelegate* crash_bubble_delegate =
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   base::test::TestFuture<void> restore_waiter_future;
   testing::SessionsRestoredWaiter restore_waiter(
       restore_waiter_future.GetCallback(), 1);
-  LaunchSync(/*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+  LaunchSync(/*profile_id=*/std::nullopt, CreationResult::kSuccess);
   ASSERT_TRUE(restore_waiter_future.Wait())
       << "restore_waiter did not trigger the callback.";
 
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // A second call to Launch() ignores session restore and adds a new tab to the
   // existing browser.
-  LaunchSync(/*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+  LaunchSync(/*profile_id=*/std::nullopt, CreationResult::kSuccess);
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(3, new_tab_strip->count());
 }
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
       main_profile->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   // Request a new incognito window.
   NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
   // A regular window opens instead.
   EXPECT_FALSE(ProfilePicker::IsOpen());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
       display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-      /*profile_id=*/absl::nullopt,
+      /*profile_id=*/std::nullopt,
       /*callback=*/new_window_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
       display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-      /*profile_id=*/absl::nullopt,
+      /*profile_id=*/std::nullopt,
       /*callback=*/new_window_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::UI_CLOSED);
 
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
-                /*profile_id=*/absl::nullopt, CreationResult::kSuccess);
+                /*profile_id=*/std::nullopt, CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(

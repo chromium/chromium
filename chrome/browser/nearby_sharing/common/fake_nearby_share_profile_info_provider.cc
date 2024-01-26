@@ -10,12 +10,12 @@ FakeNearbyShareProfileInfoProvider::FakeNearbyShareProfileInfoProvider() =
 FakeNearbyShareProfileInfoProvider::~FakeNearbyShareProfileInfoProvider() =
     default;
 
-absl::optional<std::u16string>
-FakeNearbyShareProfileInfoProvider::GetGivenName() const {
+std::optional<std::u16string> FakeNearbyShareProfileInfoProvider::GetGivenName()
+    const {
   return given_name_;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 FakeNearbyShareProfileInfoProvider::GetProfileUserName() const {
   return profile_user_name_;
 }

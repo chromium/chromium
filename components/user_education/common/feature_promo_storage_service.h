@@ -51,7 +51,6 @@ class FeaturePromoStorageService {
 
   virtual void SaveSessionData(const FeaturePromoSessionData& session_data) = 0;
 
-  // Reset the session data.
   virtual void ResetSession() = 0;
 
   virtual FeaturePromoPolicyData ReadPolicyData() const = 0;

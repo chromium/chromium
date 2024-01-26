@@ -12,16 +12,18 @@ import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
-import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_results.html.js';
-import {Tab} from './tab_search.mojom-webui.js';
-import {TabSearchItem} from './tab_search_item.js';
+import type {Tab} from './tab_search.mojom-webui.js';
+import type {TabSearchItem} from './tab_search_item.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
@@ -58,6 +60,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
       isLastOrganization: Boolean,
 
+      organizationId: {
+        type: Number,
+        observer: 'onOrganizationIdChange_',
+      },
+
       lastFocusedIndex_: {
         type: Number,
         value: 0,
@@ -74,6 +81,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
         value: () => [],
         computed: 'computeTabDatas_(tabs.*)',
       },
+
+      feedbackSelectedOption_: {
+        type: String,
+        value: CrFeedbackOption.UNSPECIFIED,
+      },
     };
   }
 
@@ -81,10 +93,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
   name: string;
   availableHeight: number;
   isLastOrganization: boolean;
+  organizationId: number;
 
   private lastFocusedIndex_: number;
   private showRefresh_: boolean;
   private tabDatas_: TabData[];
+  private feedbackSelectedOption_: CrFeedbackOption;
 
   static get template() {
     return getTemplate();
@@ -93,6 +107,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   announceHeader() {
     this.$.header.textContent = '';
     this.$.header.textContent = this.getTitle_();
+  }
+
+  focusInput() {
+    this.$.input.focus();
   }
 
   private computeTabDatas_() {
@@ -129,6 +147,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
   }
 
+  private onOrganizationIdChange_() {
+    this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+  }
+
   private getInputAriaLabel_() {
     return loadTimeData.getStringF('inputAriaLabel', this.name);
   }
@@ -145,21 +167,29 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onListKeyDown_(event: KeyboardEvent) {
-    if (event.shiftKey) {
-      return;
-    }
-
     const selector = this.$.selector;
     if (selector.selected === undefined) {
       return;
     }
 
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+    let handled = false;
+    if (event.shiftKey && event.key === 'Tab') {
+      // Explicitly focus the element prior to the list in focus order and
+      // override the default behavior, which would be to focus the row that
+      // the currently focused close button is in.
+      this.$.input.focus();
+      handled = true;
+    } else if (!event.shiftKey) {
       if (event.key === 'ArrowUp') {
         selector.selectPrevious();
-      } else {
+        handled = true;
+      } else if (event.key === 'ArrowDown') {
         selector.selectNext();
+        handled = true;
       }
+    }
+
+    if (handled) {
       event.stopPropagation();
       event.preventDefault();
     }
@@ -255,6 +285,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   private onFeedbackSelectedOptionChanged_(
       event: CustomEvent<{value: CrFeedbackOption}>) {
+    this.feedbackSelectedOption_ = event.detail.value;
     this.dispatchEvent(new CustomEvent('feedback', {
       bubbles: true,
       composed: true,

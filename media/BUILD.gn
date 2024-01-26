@@ -56,6 +56,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_OPENH264=$media_use_openh264",
     "ENABLE_PASSTHROUGH_AUDIO_CODECS=$enable_passthrough_audio_codecs",
     "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
+    "ENABLE_PLATFORM_IAMF_AUDIO=$enable_platform_iamf_audio",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT=$platform_has_optional_hevc_support",
@@ -291,30 +292,6 @@ test("media_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
-}
-
-# The audio subset of media_unittests. This target exists for running only the
-# audio tests on the GPU bots (which have audio hardware).
-test("audio_unittests") {
-  deps = [
-    ":test_support",
-    "//base/test:test_support",
-    "//media/audio:unit_tests",
-    "//media/test:run_all_unittests",
-  ]
-  if (is_android) {
-    deps += [
-      # The test needs the java dependencies to add the java classes for their
-      # native counterparts to the test apk.
-      "//media/base/android:media_java",
-      "//ui/android:ui_java",
-    ]
-  }
-
-  if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/audio_output.shard.test-cml" ]
-  }
 }
 
 # Note: Most external components should just depend on //media unless they

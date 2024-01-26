@@ -204,8 +204,6 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
       adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
   ASSERT_TRUE(paired_device != nullptr);
 
-  base::RunLoop loop;
-
   device::BluetoothUUID fake_uuid(kFakeUuidShort);
   absl::optional<device::BluetoothUUID> fake_uuid_optional = fake_uuid;
   GattService fake_service = CreateFakeServiceFor(fake_uuid);
@@ -243,7 +241,7 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
   EXPECT_TRUE(paired_device->IsGattServicesDiscoveryComplete());
 
   // Wait for callbacks to run.
-  loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {

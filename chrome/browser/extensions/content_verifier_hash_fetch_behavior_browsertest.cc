@@ -77,7 +77,7 @@ class ContentVerifierHashTest
 
   void TearDown() override {
     ExtensionBrowserTest::TearDown();
-    ChromeContentVerifierDelegate::SetDefaultModeForTesting(absl::nullopt);
+    ChromeContentVerifierDelegate::SetDefaultModeForTesting(std::nullopt);
   }
 
   void TearDownOnMainThread() override {
@@ -245,7 +245,7 @@ class ContentVerifierHashTest
     ComputedHashes::Status computed_hashes_status;
     return ComputedHashes::CreateFromFile(
                file_util::GetComputedHashesPath(info_->extension_root),
-               &computed_hashes_status) != absl::nullopt;
+               &computed_hashes_status) != std::nullopt;
   }
 
   bool HasValidVerifiedContents() {

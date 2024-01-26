@@ -12,10 +12,6 @@ namespace metrics::structured {
 
 class StructuredMetricsService;
 
-// Converts a list of Events into Javascript values. Value format can be found
-// in structured_utils.ts.
-base::Value ConvertEventsIntoValue(const std::vector<Event>& events);
-
 // Collects summary information for Structured Metrics service. Value format can
 // be found in structured_utils.ts.
 base::Value GetStructuredMetricsSummary(StructuredMetricsService* service);

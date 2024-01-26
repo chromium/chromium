@@ -1388,7 +1388,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 
       // Variables and reverts are resolved in StyleCascade, which we don't run
       // in this path; thus, we cannot support them.
-      if (property.Value().IsVariableReferenceValue() ||
+      if (property.Value().IsUnparsedDeclaration() ||
           property.Value().IsPendingSubstitutionValue() ||
           property.Value().IsRevertValue() ||
           property.Value().IsRevertLayerValue()) {
@@ -1855,6 +1855,10 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   }
 
   return builder;
+}
+
+const ComputedStyle* StyleResolver::InitialStyleForElement() const {
+  return InitialStyleBuilderForElement().TakeStyle();
 }
 
 const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
@@ -2403,14 +2407,11 @@ const CSSValue* StyleResolver::ComputeValue(
 
 const CSSValue* StyleResolver::ResolveValue(
     Element& element,
+    const ComputedStyle& style,
     const CSSPropertyName& property_name,
     const CSSValue& value) {
-  const ComputedStyle* style = element.GetComputedStyle();
-  if (!style) {
-    return nullptr;
-  }
   StyleResolverState state(element.GetDocument(), element);
-  state.SetStyle(*style);
+  state.SetStyle(style);
   return StyleCascade::Resolve(state, property_name, value);
 }
 
@@ -2672,6 +2673,13 @@ ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
   builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
   builder.SetDisplay(display);
   return builder;
+}
+
+const ComputedStyle* StyleResolver::CreateAnonymousStyleWithDisplay(
+    const ComputedStyle& parent_style,
+    EDisplay display) {
+  return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
+      .TakeStyle();
 }
 
 const ComputedStyle* StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(

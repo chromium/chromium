@@ -108,8 +108,9 @@ WheelEvent::WheelEvent(const WebMouseWheelEvent& event, LocalDOMWindow& window)
     : MouseEvent(event_type_names::kWheel,
                  GetMouseEventInitForWheel(event, window),
                  event.TimeStamp()),
-      wheel_delta_(event.wheel_ticks_x * kTickMultiplier,
-                   event.wheel_ticks_y * kTickMultiplier),
+      wheel_delta_(
+          (event.wheel_ticks_x * kTickMultiplier) / window.devicePixelRatio(),
+          (event.wheel_ticks_y * kTickMultiplier) / window.devicePixelRatio()),
       delta_x_(-event.DeltaXInRootFrame() / window.devicePixelRatio()),
       delta_y_(-event.DeltaYInRootFrame() / window.devicePixelRatio()),
       delta_z_(0),

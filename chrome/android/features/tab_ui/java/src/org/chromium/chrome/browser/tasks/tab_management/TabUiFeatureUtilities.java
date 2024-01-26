@@ -9,10 +9,10 @@ import android.content.Context;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -23,20 +23,20 @@ public class TabUiFeatureUtilities {
     // Field trial parameters:
     private static final String SKIP_SLOW_ZOOMING_PARAM = "skip-slow-zooming";
     public static final BooleanCachedFieldTrialParameter SKIP_SLOW_ZOOMING =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, SKIP_SLOW_ZOOMING_PARAM, true);
 
     // Field trial parameter for the minimum physical memory size to enable zooming animation.
     private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
     public static final IntCachedFieldTrialParameter ZOOMING_MIN_MEMORY =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
     // Field trial parameter for animation start timeout for new Android based shrink and expand
     // animations in TabSwitcherLayout.
     private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
     public static final IntCachedFieldTrialParameter ANIMATION_START_TIMEOUT_MS =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
@@ -50,22 +50,22 @@ public class TabUiFeatureUtilities {
             "disable_drag_to_new_instance";
 
     public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_CONTENT_DD =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
                     DISABLE_STRIP_TO_CONTENT_DD_PARAM,
                     false);
     public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DD =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
                     DISABLE_STRIP_TO_STRIP_DD_PARAM,
                     false);
     public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
                     DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD_PARAM,
                     false);
     public static final BooleanCachedFieldTrialParameter DISABLE_DRAG_TO_NEW_INSTANCE_DD =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
                     DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM,
                     false);

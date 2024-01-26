@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -295,8 +296,9 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       icon_download_future;
-  base::flat_set<GURL> icon_urls;
-  icon_urls.emplace("https://www.example.com/favicon.ico");
+  IconUrlSizeSet icon_urls;
+  icon_urls.insert(IconUrlWithSize::CreateForUnspecifiedSize(
+      GURL("https://www.example.com/favicon.ico")));
   icon_downloader.Start(deleting_web_contents.get(), icon_urls,
                         icon_download_future.GetCallback(),
                         IconDownloaderOptions());
@@ -360,8 +362,9 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       icon_download_future;
-  base::flat_set<GURL> icon_urls;
-  icon_urls.emplace("https://www.example.com/favicon.ico");
+  IconUrlSizeSet icon_urls;
+  icon_urls.insert(IconUrlWithSize::CreateForUnspecifiedSize(
+      GURL("https://www.example.com/favicon.ico")));
   data_retriever.GetIcons(deleting_web_contents.get(), icon_urls,
                           /*skip_page_favicons=*/false,
                           /*fail_all_if_any_fail=*/false,

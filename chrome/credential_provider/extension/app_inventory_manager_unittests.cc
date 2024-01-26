@@ -178,7 +178,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
 
-    absl::optional<base::Value> body_value =
+    std::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
 
     base::Value::Dict request;

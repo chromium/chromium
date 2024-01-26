@@ -43,7 +43,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -53,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link ChromeDragAndDropBrowserDelegate}. */
@@ -131,7 +131,9 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Config(sdk = 30)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PostR() {
         mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL.getSpec());
+        Intent intent =
+                mDelegate.createUrlIntent(
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), UrlIntentSource.TAB_IN_STRIP);
         assertEquals(
                 "The intent flags should match.",
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
@@ -153,12 +155,18 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         assertFalse(
                 "The intent should not contain the trusted application extra.",
                 intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+        assertEquals(
+                "The UrlIntentSource extra should match.",
+                UrlIntentSource.TAB_IN_STRIP,
+                intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
     }
 
     @Test
     @Config(sdk = 29)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PreR() {
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL.getSpec());
+        Intent intent =
+                mDelegate.createUrlIntent(
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), UrlIntentSource.LINK);
         assertNull("The intent should be null on R- versions.", intent);
     }
 

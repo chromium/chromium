@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -581,35 +582,83 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
 bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   const StyleHighlightData& highlight_data = HighlightData();
   if (highlight_data.Selection() &&
-      (highlight_data.Selection()->HasFontRelativeUnits() ||
-       highlight_data.Selection()->HasContainerRelativeUnits() ||
-       highlight_data.Selection()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.Selection()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.TargetText() &&
-      (highlight_data.TargetText()->HasFontRelativeUnits() ||
-       highlight_data.TargetText()->HasContainerRelativeUnits() ||
-       highlight_data.TargetText()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.TargetText()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.SpellingError() &&
-      (highlight_data.SpellingError()->HasFontRelativeUnits() ||
-       highlight_data.SpellingError()->HasContainerRelativeUnits() ||
-       highlight_data.SpellingError()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.SpellingError()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.GrammarError() &&
-      (highlight_data.GrammarError()->HasFontRelativeUnits() ||
-       highlight_data.GrammarError()->HasContainerRelativeUnits() ||
-       highlight_data.GrammarError()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.GrammarError()->HasAnyRelativeUnits()) {
     return true;
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
   for (auto custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasFontRelativeUnits() ||
-        custom_highlight.value->HasContainerRelativeUnits() ||
-        custom_highlight.value->HasLogicalDirectionRelativeUnits()) {
+    if (custom_highlight.value->HasAnyRelativeUnits()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasContainerRelativeUnits()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ComputedStyle::HighlightPseudoElementStylesDependOnViewportUnits() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasViewportUnits()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasViewportUnits()) {
       return true;
     }
   }
@@ -971,7 +1020,7 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
   }
 
   if (PaintImagesInternal()) {
-    for (const auto& image : *PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
       DCHECK(image);
       if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
         diff.SetNeedsNormalPaintInvalidation();
@@ -1192,7 +1241,7 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
     const AtomicString& custom_property_name,
     const Document& document) const {
   if (PaintImagesInternal()) {
-    for (const auto& image : *PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
       DCHECK(image);
       // IsPaintImage is true for CSS Paint images only, please refer to the
       // constructor of StyleGeneratedImage.
@@ -1834,7 +1883,7 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-String ApplyMathAutoTransform(const String& text) {
+String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
   if (text.length() != 1) {
     return text;
   }
@@ -1847,7 +1896,11 @@ String ApplyMathAutoTransform(const String& text) {
   Vector<UChar> transformed_text(U16_LENGTH(transformed_char));
   int i = 0;
   U16_APPEND_UNSAFE(transformed_text, i, transformed_char);
-  return String(transformed_text);
+  String transformed_string = String(transformed_text);
+  if (offset_map) {
+    offset_map->Append(text.length(), transformed_string.length());
+  }
+  return transformed_string;
 }
 
 }  // namespace
@@ -1872,7 +1925,7 @@ String ComputedStyle::ApplyTextTransform(const String& text,
       return case_map.ToLower(text, offset_map);
     }
     case ETextTransform::kMathAuto:
-      return ApplyMathAutoTransform(text);
+      return ApplyMathAutoTransform(text, offset_map);
   }
   NOTREACHED();
 }

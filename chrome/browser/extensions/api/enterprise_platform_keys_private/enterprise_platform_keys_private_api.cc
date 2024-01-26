@@ -63,7 +63,7 @@ void EPKPChallengeKey::Run(::attestation::VerifiedAccessFlow type,
   impl_ = ash::attestation::TpmChallengeKeyFactory::Create();
   impl_->BuildResponse(type, profile, std::move(callback), challenge,
                        register_key, attestation::KEY_TYPE_RSA,
-                       key_name_for_spkac, /*signals=*/absl::nullopt);
+                       key_name_for_spkac, /*signals=*/std::nullopt);
 }
 
 EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::
@@ -74,7 +74,7 @@ EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::Run() {
-  absl::optional<api_epkp::ChallengeMachineKey::Params> params =
+  std::optional<api_epkp::ChallengeMachineKey::Params> params =
       api_epkp::ChallengeMachineKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::attestation::TpmChallengeKeyCallback callback =
@@ -118,7 +118,7 @@ EnterprisePlatformKeysPrivateChallengeUserKeyFunction::
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysPrivateChallengeUserKeyFunction::Run() {
-  absl::optional<api_epkp::ChallengeUserKey::Params> params =
+  std::optional<api_epkp::ChallengeUserKey::Params> params =
       api_epkp::ChallengeUserKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::attestation::TpmChallengeKeyCallback callback = base::BindOnce(

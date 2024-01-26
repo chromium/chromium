@@ -95,6 +95,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::COOKIES, "cookies"},
     {ContentSettingsType::IMAGES, "images"},
     {ContentSettingsType::JAVASCRIPT, "javascript"},
+    {ContentSettingsType::JAVASCRIPT_JIT, "javascript-jit"},
     {ContentSettingsType::POPUPS, "popups"},
     {ContentSettingsType::GEOLOCATION, "location"},
     {ContentSettingsType::NOTIFICATIONS, "notifications"},
@@ -174,7 +175,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
-    {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
     {ContentSettingsType::HTTPS_ENFORCED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},
@@ -200,7 +200,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, nullptr},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
-    {ContentSettingsType::TPCD_SUPPORT, nullptr},
+    {ContentSettingsType::TPCD_TRIAL, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
     // TODO(crbug.com/1011533): Update the name once the design is finalized
     // for the integration with Safety Hub.
@@ -210,7 +210,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/1464851): Update name once UI design is done.
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
-    {ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT, nullptr},
+    {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
@@ -525,6 +525,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MIXEDSCRIPT,
+      ContentSettingsType::JAVASCRIPT_JIT,
       ContentSettingsType::NOTIFICATIONS,
       ContentSettingsType::POPUPS,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)

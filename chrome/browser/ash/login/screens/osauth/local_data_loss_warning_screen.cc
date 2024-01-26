@@ -79,7 +79,7 @@ void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
                        weak_factory_.GetWeakPtr()));
     return;
   } else if (action_id == kUserActionPowerwash) {
-    if (isOwner(context()->user_context->GetAccountId())) {
+    if (!isOwner(context()->user_context->GetAccountId())) {
       LOG(ERROR) << "Non owner user requesting powerwash, ignoring";
       return;
     }

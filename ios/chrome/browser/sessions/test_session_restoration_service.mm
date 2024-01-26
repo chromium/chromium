@@ -71,6 +71,11 @@ void TestSessionRestorationService::LoadSession(Browser* browser) {
   }
 }
 
+void TestSessionRestorationService::AttachBackup(Browser* browser,
+                                                 Browser* backup) {
+  // Nothing to do.
+}
+
 void TestSessionRestorationService::Disconnect(Browser* browser) {
   // Nothing to do.
 }

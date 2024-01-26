@@ -90,7 +90,7 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     SetContents(CreateRestoredWebContents());
     restored_tabs_.emplace_back(web_contents(), false, false, false,
-                                absl::nullopt);
+                                std::nullopt);
   }
 
   void TearDown() override {
@@ -179,7 +179,7 @@ TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
     different_test_contents.emplace_back(CreateRestoredWebContents());
     content::WebContents* test_contents = different_test_contents.back().get();
     std::vector<RestoredTab> restored_tabs{
-        RestoredTab(test_contents, false, false, false, absl::nullopt)};
+        RestoredTab(test_contents, false, false, false, std::nullopt)};
 
     SessionRestore::NotifySessionRestoreStartedLoadingTabs();
     SessionRestore::OnWillRestoreTab(test_contents);
@@ -204,7 +204,7 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
   std::vector<RestoredTab> another_restored_tabs;
   auto test_contents = CreateRestoredWebContents();
   another_restored_tabs.emplace_back(test_contents.get(), false, false, false,
-                                     absl::nullopt);
+                                     std::nullopt);
 
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
   SessionRestore::OnWillRestoreTab(web_contents());

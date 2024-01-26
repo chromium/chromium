@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
@@ -175,7 +176,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeBaseLabelView(
 }
 
 std::unique_ptr<views::View> PasspointDialogView::MakeSubscriptionLabelView(
-    base::StringPiece friendly_name) {
+    std::string_view friendly_name) {
   std::vector<size_t> offsets;
   const std::u16string learn_more = l10n_util::GetStringUTF16(
       IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_LEARN_MORE_LABEL);
@@ -200,7 +201,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeSubscriptionLabelView(
 
 std::unique_ptr<views::View> PasspointDialogView::MakeContentsView(
     bool is_expiring,
-    base::StringPiece friendly_name) {
+    std::string_view friendly_name) {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   std::unique_ptr<views::BoxLayoutView> contents =
       views::Builder<views::BoxLayoutView>()

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -31,7 +32,7 @@ const float kMaxModuleEngagementIndex = 50;
 }
 
 @implementation ContentSuggestionsMetricsRecorder {
-  PrefService* _localState;
+  raw_ptr<PrefService> _localState;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {

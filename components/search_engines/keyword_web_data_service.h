@@ -32,10 +32,35 @@ struct WDKeywordsResult {
   // Identifies the ID of the TemplateURL that is the default search. A value of
   // 0 indicates there is no default search provider.
   int64_t default_search_provider_id = 0;
-  // Version of the built-in keywords and starter pack engines. A value of 0
-  // indicates a first run.
-  int builtin_keyword_version = 0;
-  int starter_pack_version = 0;
+
+  // Context qualifying the built-in keywords and starter pack engines data.
+  struct Metadata {
+    // Version number of the most recent prepopulate data that has been merged
+    // into the current keyword data.
+    int builtin_keyword_data_version = 0;
+
+    // Version number of Chrome milestone when the keyword data has been last
+    // merged into the database.
+    int builtin_keyword_milestone = 0;
+
+    // Country associated with the keywords data, stored as a country ID,
+    // see `country_codes::CountryStringToCountryID()`.
+    int builtin_keyword_country = 0;
+
+    // Version number of the most recent starter pack data that has been merged
+    // into the current keyword data.
+    int starter_pack_version = 0;
+
+    // Whether any metadata associated with the keywords bundle is set.
+    bool HasBuiltinKeywordData() const {
+      return builtin_keyword_data_version != 0 ||
+             builtin_keyword_milestone != 0 || builtin_keyword_country != 0;
+    }
+
+    // Whether any metadata associated with the starter pack bundle is set.
+    bool HasStarterPackData() const { return starter_pack_version != 0; }
+  };
+  Metadata metadata;
 };
 
 class WebDataServiceConsumer;
@@ -90,8 +115,14 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Sets the ID of the default search provider.
   void SetDefaultSearchProviderID(TemplateURLID id);
 
-  // Sets the version of the builtin keywords.
-  void SetBuiltinKeywordVersion(int version);
+  // Sets the version of the builtin keyword data.
+  void SetBuiltinKeywordDataVersion(int version);
+
+  // Sets the Chrome milestone associated with the builtin keyword data.
+  void SetBuiltinKeywordMilestone(int milestone_version);
+
+  // Sets the country ID associated with the builtin keyword data.
+  void SetBuiltinKeywordCountry(int country_id);
 
   // Sets the version of the starter pack keywords.
   void SetStarterPackKeywordVersion(int version);

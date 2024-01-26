@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_partition_context
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_partition_context_frame
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_partition_storage_key_source_origin
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+Harness: the test ran to completion.

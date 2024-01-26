@@ -50,7 +50,13 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
   if (!params.form_control_type) {
     return false;
   }
-  // Return true on text fields.
+  // Return true (only) on text fields.
+  //
+  // Note that this switch is over `blink::mojom::FormControlType`, not
+  // `autofill::FormControlType`. Therefore, it does not handle
+  // `autofill::FormControlType::kContentEditable`, which is covered by the
+  // above if-condition `!params.form_control_type`.
+  //
   // TODO(crbug.com/1492339): Unify with functions from form_autofill_util.cc.
   switch (*params.form_control_type) {
     case blink::mojom::FormControlType::kInputEmail:
@@ -63,9 +69,32 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
     case blink::mojom::FormControlType::kInputUrl:
     case blink::mojom::FormControlType::kTextArea:
       return true;
-    default:
+    case blink::mojom::FormControlType::kButtonButton:
+    case blink::mojom::FormControlType::kButtonSubmit:
+    case blink::mojom::FormControlType::kButtonReset:
+    case blink::mojom::FormControlType::kButtonSelectList:
+    case blink::mojom::FormControlType::kFieldset:
+    case blink::mojom::FormControlType::kInputButton:
+    case blink::mojom::FormControlType::kInputCheckbox:
+    case blink::mojom::FormControlType::kInputColor:
+    case blink::mojom::FormControlType::kInputDate:
+    case blink::mojom::FormControlType::kInputDatetimeLocal:
+    case blink::mojom::FormControlType::kInputFile:
+    case blink::mojom::FormControlType::kInputHidden:
+    case blink::mojom::FormControlType::kInputImage:
+    case blink::mojom::FormControlType::kInputRadio:
+    case blink::mojom::FormControlType::kInputRange:
+    case blink::mojom::FormControlType::kInputReset:
+    case blink::mojom::FormControlType::kInputSubmit:
+    case blink::mojom::FormControlType::kInputTime:
+    case blink::mojom::FormControlType::kInputWeek:
+    case blink::mojom::FormControlType::kOutput:
+    case blink::mojom::FormControlType::kSelectOne:
+    case blink::mojom::FormControlType::kSelectMultiple:
+    case blink::mojom::FormControlType::kSelectList:
       return false;
   }
+  NOTREACHED_NORETURN();
 }
 
 base::Value::Dict LoadTriggerFormAndFieldLogs(
@@ -305,11 +334,6 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
 bool AutofillContextMenuManager::
     ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
         ContentAutofillDriver& driver) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillFallbackForAutocompleteUnrecognized)) {
-    return false;
-  }
-
   AutofillField* field =
       GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
 
@@ -321,19 +345,10 @@ bool AutofillContextMenuManager::
   // Only show the context menu entry for address fields, which can be filled
   // with at least one of the user's profiles.
   CHECK(personal_data_manager_);
-  if (base::ranges::none_of(personal_data_manager_->GetProfiles(),
-                            [field](AutofillProfile* profile) {
-                              return profile->HasInfo(
-                                  field->Type().GetStorableType());
-                            })) {
-    return false;
-  }
-
-  // Depending on the Finch parameter, only show the context menu entry for
-  // ac=unrecognized fields.
-  return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-         features::kAutofillFallForAutocompleteUnrecognizedOnAllAddressField
-             .Get();
+  return base::ranges::any_of(
+      personal_data_manager_->GetProfiles(), [field](AutofillProfile* profile) {
+        return profile->HasInfo(field->Type().GetStorableType());
+      });
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(

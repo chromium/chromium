@@ -9,6 +9,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -341,6 +342,10 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   // animate when changing states, but not when bounds or orientation is
   // changed.
   void Layout(bool animate) {
+    if (!dragged_window_) {
+      // `Layout()` can also be called during test teardown.
+      return;
+    }
     // TODO(b/252514604): Attempt to simplify this logic.
     const bool horizontal = IsLayoutHorizontal(GetWidget()->GetNativeWindow());
     const int display_width = horizontal ? width() : height();
@@ -388,12 +393,39 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     std::optional<SplitviewAnimationType> right_highlight_animation_type;
     if (GetSnapPosition(window_dragging_state_) != SnapPosition::kNone ||
         drag_ending_in_snap) {
-      // Get the preview area bounds from the split view controller.
-      preview_area_bounds = gfx::Rect(
-          SplitViewController::Get(GetWidget()->GetNativeWindow())
-              ->GetSnappedWindowBoundsInScreen(snap_position, dragged_window_,
-                                               chromeos::kDefaultSnapRatio)
-              .size());
+      // When we drag to snap, we should attempt to preview the size of the
+      // window snapped in split view below if there is any, but respect the
+      // minimum size of `dragged_window_`. See crbug/1017464.
+      aura::Window* root_window = GetWidget()->GetNativeWindow();
+      // TODO(b/309856199): Currently we only check
+      // `SplitViewController::ShouldConsiderDivider()` because the divider is
+      // created there. Refactor this when we move the divider to
+      // `SnapGroup`.
+      const bool should_consider_divider =
+          SplitViewController::Get(root_window)->ShouldConsiderDivider();
+      int divider_position = CalculateDividerPosition(
+          snap_position, root_window, chromeos::kDefaultSnapRatio,
+          should_consider_divider);
+      // Note `dragged_window_` may not be on the same root as `root_window`.
+      // Check the partial overview session on `root_window`, the root it's
+      // being dragged to.
+      if (auto* split_view_overview_session =
+              RootWindowController::ForWindow(root_window)
+                  ->split_view_overview_session();
+          split_view_overview_session) {
+        divider_position = GetEquivalentDividerPosition(
+            split_view_overview_session->window(), should_consider_divider);
+      }
+      const int divider_width =
+          should_consider_divider ? kSplitviewDividerShortSideLength : 0;
+      preview_area_bounds =
+          gfx::Rect(CalculateSnappedWindowBoundsInScreen(
+                        snap_position,
+                        /*root_window=*/root_window,
+                        /*window_for_minimum_size=*/dragged_window_,
+                        divider_position, divider_width,
+                        /*is_resizing_with_divider=*/false)
+                        .size());
 
       if (!drag_ending_in_snap)
         preview_area_bounds.Inset(kHighlightScreenEdgePaddingDp);

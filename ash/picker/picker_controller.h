@@ -5,21 +5,32 @@
 #ifndef ASH_PICKER_PICKER_CONTROLLER_H_
 #define ASH_PICKER_PICKER_CONTROLLER_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/ash_export.h"
+#include "ash/picker/picker_feature_usage_metrics.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
+
+class GURL;
 
 namespace ash {
 
+class PickerAssetFetcher;
 class PickerClient;
 class PickerInsertMediaRequest;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController
     : public PickerViewDelegate,
-      public ash::input_method::ImeKeyboard::Observer {
+      public ash::input_method::ImeKeyboard::Observer,
+      public views::WidgetObserver {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
@@ -50,7 +61,6 @@ class ASH_EXPORT PickerController
   // PickerViewDelegate:
   std::unique_ptr<AshWebView> CreateWebView(
       const AshWebView::InitParams& params) override;
-  void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override;
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override;
   void StartSearch(const std::u16string& query,
@@ -58,19 +68,40 @@ class ASH_EXPORT PickerController
                    SearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   bool ShouldPaint() override;
+  PickerAssetFetcher* GetAssetFetcher() override;
 
   // ash::input_method::ImeKeyboard::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override {}
 
+  // views:WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
  private:
+  // Downloads a gif from `url`. If the download is successful, encoded gif data
+  // is passed to `callback`. Otherwise, `callback` is run with an empty string.
+  void DownloadGifToString(
+      const GURL& url,
+      base::OnceCallback<void(const std::string&)> callback);
+
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
   bool should_paint_ = false;
+  std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
+
+  // Periodically records usage metrics based on the Standard Feature Usage
+  // Logging (SFUL) framework.
+  PickerFeatureUsageMetrics feature_usage_metrics_;
+
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>
-      observation_{this};
+      keyboard_observation_{this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+
+  base::WeakPtrFactory<PickerController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

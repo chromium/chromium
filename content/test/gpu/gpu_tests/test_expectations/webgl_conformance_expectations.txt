@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -140,7 +141,7 @@ crbug.com/angleproject/3031 [ mac angle-opengl passthrough ] WebglExtension_KHR_
 crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 
 # Extensions not available with SwiftShader
-[ passthrough angle-swiftshader ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ passthrough angle-swiftshader ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/1099955 [ angle-swiftshader mac   ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/1099955 [ angle-swiftshader win   ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -151,7 +152,7 @@ crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_texture_compres
 crbug.com/1099955 [ angle-swiftshader win   ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 
 # Extensions not available under D3D9
-[ win passthrough angle-d3d9 ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_clip_control [ Skip ]
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -163,7 +164,7 @@ crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_time
 [ win passthrough angle-d3d9 ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 
 # Extensions only available via passthrough decoder
-[ no-passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ no-passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
@@ -178,8 +179,8 @@ crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_time
 [ android ] WebglExtension_EXT_frag_depth [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-crbug.com/1473838 [ android angle-opengles passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
-crbug.com/1473838 [ android angle-vulkan passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ android angle-opengles passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
+crbug.com/1473838 [ android angle-vulkan passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
@@ -220,7 +221,7 @@ crbug.com/1473838 [ chromeos passthrough ] WebglExtension_EXT_texture_mirror_cla
 crbug.com/1473838 [ chromeos passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 
 # Extensions not available on jacuzzi ChromeOS devices.
-crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
@@ -248,7 +249,7 @@ crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtens
 [ fuchsia web-engine-shell ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 [ fuchsia web-engine-shell passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 [ fuchsia web-engine-shell passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
-[ fuchsia web-engine-shell passthrough angle-vulkan ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ fuchsia web-engine-shell passthrough angle-vulkan ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 # Disabling as they cannot pass with protected memory.
 crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
@@ -376,7 +377,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -401,7 +402,6 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-textur
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-crbug.com/1473838 [ no-passthrough ] conformance/extensions/ext-blend-func-extended.html [ Failure ]
 # finder:enable-narrowing
 
 # Failing on most platforms. Only runs with passthrough.
@@ -443,11 +443,10 @@ crbug.com/1371306 [ fuchsia fuchsia-board-nelson web-engine-shell ] conformance/
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheck* [ Failure ]
 crbug.com/1489477 [ fuchsia web-engine-shell ] WebglExtension_EXT_float_blend [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/buffers/element-array-buffer-delete-recreate.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/state/gl-object-get-calls.html [ Failure ]
-crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/state/gl-object-get-calls.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
@@ -529,9 +528,8 @@ crbug.com/1435021 [ amd-0x67ef angle-metal mac no-clang-coverage release graphit
 ## SkiaGraphite ##
 
 crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
-crbug.com/1513193 [ amd angle-metal graphite-enabled mac release ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1513193 [ amd angle-metal graphite-enabled mac no-clang-coverage release ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
 crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
-crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
 
 ## Mac Intel ##
 
@@ -557,7 +555,6 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 
 ## Linux AMD RX 5500 XT ##
 
-crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
 ## Linux NVIDIA / VANGLE - bot NVIDIA driver is too old. ##
 
@@ -708,6 +705,9 @@ crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/mi
 crbug.com/1492234 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles passthrough arm ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1492240 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
+# Broadly flaky unsymbolized crashes on Jacuzzi
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_* [ RetryOnFailure ]
+crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
 
 #####################
 # Lacros failures #

@@ -5,10 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
 
 #include "build/build_config.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
@@ -438,7 +437,8 @@ GetPartitionRefCountIndexMultiplierShift() {
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start,
-    size_t slot_size) {
+    size_t slot_size,
+    bool ref_count_in_same_slot) {
   // In the "previous slot" mode, ref-counts that would be on a different page
   // than their corresponding slot are instead placed in the super page metadata
   // area. This is done so that they don't interfere with discarding of data
@@ -455,12 +455,9 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
   // All of the above happen have `slot_start` at the page boundary, so we can
   // reuse the "previous slot" mode code.
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    uintptr_t refcount_address = slot_start - sizeof(PartitionRefCount);
-#else
-    uintptr_t refcount_address =
-        slot_start + slot_size - sizeof(PartitionRefCount);
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+    uintptr_t refcount_address = slot_start +
+                                 (ref_count_in_same_slot ? slot_size : 0) -
+                                 sizeof(PartitionRefCount);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif

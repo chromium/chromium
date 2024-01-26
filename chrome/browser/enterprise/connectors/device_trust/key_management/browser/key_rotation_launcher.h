@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_ROTATION_LAUNCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -25,7 +25,7 @@ namespace enterprise_connectors {
 
 class KeyRotationLauncher {
  public:
-  using SynchronizationCallback = base::OnceCallback<void(absl::optional<int>)>;
+  using SynchronizationCallback = base::OnceCallback<void(std::optional<int>)>;
 
   static std::unique_ptr<KeyRotationLauncher> Create(
       policy::BrowserDMTokenStorage* dm_token_storage,

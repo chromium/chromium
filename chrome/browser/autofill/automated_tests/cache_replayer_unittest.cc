@@ -125,7 +125,7 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
     AutofillPageResourceQueryRequest request;
     request.set_serialized_request(base::Base64Encode(serialized_query));
     request.SerializeToString(&body);
-    query_for_url = absl::nullopt;
+    query_for_url = std::nullopt;
   }
 
   // Make header according to query content for URL.

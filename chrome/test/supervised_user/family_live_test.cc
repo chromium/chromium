@@ -5,6 +5,7 @@
 #include "chrome/test/supervised_user/family_live_test.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 

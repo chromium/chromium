@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.price_change;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +33,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test relating to binding for price change module. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,7 +68,7 @@ public class PriceChangeModuleBinderTest {
         mModel = new PropertyModel(PriceChangeModuleProperties.ALL_KEYS);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mView, new PriceChangeModuleViewBinder());
+                        mModel, mView, PriceChangeModuleViewBinder::bind);
     }
 
     @After
@@ -146,5 +151,34 @@ public class PriceChangeModuleBinderTest {
         mModel.set(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP, mBitmap);
 
         assertNotNull(productImageView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetOnClickListener() {
+        AtomicBoolean buttonClicked = new AtomicBoolean();
+        buttonClicked.set(false);
+        mView.performClick();
+        assertFalse(buttonClicked.get());
+
+        mModel.set(
+                PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER,
+                (View view) -> buttonClicked.set(true));
+
+        mView.performClick();
+        assertTrue(buttonClicked.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetModuleAccessibilityLabel() {
+        String accessibilityLabel = "label";
+        assertNull(mView.getContentDescription());
+
+        mModel.set(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL, accessibilityLabel);
+
+        assertEquals(
+                accessibilityLabel,
+                mModel.get(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL));
     }
 }

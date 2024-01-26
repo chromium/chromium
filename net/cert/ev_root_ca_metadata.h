@@ -28,11 +28,13 @@ template <typename T>
 struct LazyInstanceTraitsBase;
 }  // namespace base
 
-namespace net {
-
+namespace bssl {
 namespace der {
 class Input;
 }  // namespace der
+}  // namespace bssl
+
+namespace net {
 
 // A singleton.  This class stores the meta data of the root CAs that issue
 // extended-validation (EV) certificates.

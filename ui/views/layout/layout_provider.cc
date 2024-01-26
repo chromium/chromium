@@ -51,6 +51,7 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
   switch (metric) {
     case InsetsMetric::INSETS_DIALOG:
     case InsetsMetric::INSETS_DIALOG_SUBSECTION:
+    case InsetsMetric::INSETS_DIALOG_FOOTNOTE:
       return gfx::Insets(13);
     case InsetsMetric::INSETS_DIALOG_BUTTON_ROW: {
       const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);

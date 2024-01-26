@@ -102,7 +102,8 @@ void TestWebTransportCreator::Connect(
   handshake_client->OnConnectionEstablished(
       std::move(web_transport_to_pass),
       client_remote.InitWithNewPipeAndPassReceiver(),
-      network::mojom::blink::HttpResponseHeaders::New());
+      network::mojom::blink::HttpResponseHeaders::New(),
+      network::mojom::blink::WebTransportStats::New());
   client_remote_.Bind(std::move(client_remote));
 }
 

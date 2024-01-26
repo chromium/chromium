@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/subsystem.h"
@@ -42,6 +43,8 @@ namespace heap_profiling {
 
 namespace {
 
+using FeatureRef = base::test::FeatureRef;
+using FeatureRefAndParams = base::test::FeatureRefAndParams;
 using ProcessType = metrics::CallStackProfileParams::Process;
 using ProcessTypeSet =
     base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
@@ -88,12 +91,32 @@ class TestCallStackProfileCollector final
   ProfileCollectorCallback collector_callback_;
 };
 
-// Converts the given HeapProfilerControllerTest constructor parameters to
-// FieldTrialParams.
-base::FieldTrialParams FieldTrialParamsForTestParams(
-    const ProcessTypeSet& supported_processes = {},
-    double stable_probability = 1.0,
-    double nonstable_probability = 1.0) {
+// Configurations of the HeapProfiler* features to test.
+// The default parameters collect samples from stable and nonstable channels in
+// the browser process only.
+struct FeatureTestParams {
+  struct ChannelParams {
+    double probability = 1.0;
+    bool expect_browser_sample = true;
+    bool expect_child_sample = false;
+  };
+  // Whether HeapProfilerReporting is enabled.
+  bool feature_enabled = true;
+  const ProcessTypeSet supported_processes;
+  ChannelParams stable;
+  ChannelParams nonstable;
+  // Whether HeapProfilerIncludeZero is enabled.
+  bool include_zero_feature_enabled = true;
+
+  base::FieldTrialParams ToFieldTrialParams() const;
+
+  std::vector<FeatureRefAndParams> GetEnabledFeatures() const;
+  std::vector<FeatureRef> GetDisabledFeatures() const;
+};
+
+// Converts the test params to field trial parameters for the
+// HeapProfilerReporting feature.
+base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
   base::FieldTrialParams field_trial_params;
 
   // Add the default params.
@@ -103,8 +126,8 @@ base::FieldTrialParams FieldTrialParamsForTestParams(
     // given in `supported_processes` will be enabled.
     dict.Set("is-supported", false);
   }
-  dict.Set("stable-probability", stable_probability);
-  dict.Set("nonstable-probability", nonstable_probability);
+  dict.Set("stable-probability", stable.probability);
+  dict.Set("nonstable-probability", nonstable.probability);
   dict.Set("sampling-rate-bytes", static_cast<int>(kSamplingRate));
   std::string param_string;
   base::JSONWriter::WriteWithOptions(
@@ -146,11 +169,56 @@ base::FieldTrialParams FieldTrialParamsForTestParams(
   return field_trial_params;
 }
 
+std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
+  std::vector<FeatureRefAndParams> enabled_features;
+  if (feature_enabled) {
+    enabled_features.push_back(
+        FeatureRefAndParams(kHeapProfilerReporting, ToFieldTrialParams()));
+  }
+  if (include_zero_feature_enabled) {
+    enabled_features.push_back(
+        FeatureRefAndParams(kHeapProfilerIncludeZero, {}));
+  }
+  return enabled_features;
+}
+
+std::vector<FeatureRef> FeatureTestParams::GetDisabledFeatures() const {
+  std::vector<FeatureRef> disabled_features;
+  if (!feature_enabled) {
+    disabled_features.push_back(FeatureRef(kHeapProfilerReporting));
+  }
+  if (!include_zero_feature_enabled) {
+    disabled_features.push_back(FeatureRef(kHeapProfilerIncludeZero));
+  }
+  return disabled_features;
+}
+
+// Formats the test params for error messages.
+std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
+  os << "{";
+  os << "enabled:" << params.feature_enabled << ",";
+  os << "field_trial_params:{";
+  for (const auto& field_trial_param : params.ToFieldTrialParams()) {
+    os << field_trial_param.first << " : " << field_trial_param.second;
+  }
+  os << "},";
+  os << "expect_samples:{";
+  os << "stable/browser:" << params.stable.expect_browser_sample << ",";
+  os << "stable/child:" << params.stable.expect_child_sample << ",";
+  os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
+  os << "nonstable/child:" << params.stable.expect_child_sample;
+  os << "},";
+  os << "include_zero:" << params.include_zero_feature_enabled;
+  os << "}";
+  return os;
+}
+
 }  // namespace
 
 // HeapProfilerControllerTest can't be in an anonymous namespace because it is a
 // friend of SamplingHeapProfiler.
-class HeapProfilerControllerTest : public ::testing::Test {
+class HeapProfilerControllerTest
+    : public ::testing::TestWithParam<FeatureTestParams> {
  public:
   // Sets `sample_received_` to true if any sample is received. This will work
   // even without stack unwinding since it doesn't check the contents of the
@@ -171,25 +239,13 @@ class HeapProfilerControllerTest : public ::testing::Test {
   }
 
  protected:
-  // The default constructor parameters enable the HeapProfilerReporting feature
-  // on all channels. Child classes can override the constructor to create test
-  // suites that test different configurations. Empty `supported_processes` uses
-  // the default feature config, which should be browser-only.
-  explicit HeapProfilerControllerTest(
-      bool feature_enabled = true,
-      const ProcessTypeSet& supported_processes = {},
-      double stable_probability = 1.0,
-      double nonstable_probability = 1.0) {
+  HeapProfilerControllerTest() {
     // ScopedFeatureList must be initialized in the constructor, before any
     // threads are started.
-    if (feature_enabled) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          kHeapProfilerReporting,
-          FieldTrialParamsForTestParams(supported_processes, stable_probability,
-                                        nonstable_probability));
-    } else {
-      feature_list_.InitAndDisableFeature(kHeapProfilerReporting);
-      // Set the sampling rate manually since there's no param to read.
+    feature_list_.InitWithFeaturesAndParameters(
+        GetParam().GetEnabledFeatures(), GetParam().GetDisabledFeatures());
+    if (!GetParam().feature_enabled) {
+      // Set the sampling rate manually since there's no feature param to read.
       base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
     }
 
@@ -208,23 +264,37 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
   void StartHeapProfiling(version_info::Channel channel,
                           ProcessType process_type,
-                          ProfileCollectorCallback collector_callback) {
+                          ProfileCollectorCallback collector_callback,
+                          bool expect_enabled = true) {
     ASSERT_FALSE(controller_) << "StartHeapProfiling called twice";
+
+    auto first_snapshot_callback = base::BindLambdaForTesting(
+        [quit_closure = task_environment_.QuitClosure()](bool will_snapshot) {
+          // If `collector_callback` will run, it will quit the runloop.
+          // Otherwise quit now.
+          if (!will_snapshot) {
+            std::move(quit_closure).Run();
+          }
+        });
+    auto done_snapshot_callback =
+        std::move(collector_callback).Then(task_environment_.QuitClosure());
+
     switch (process_type) {
       case ProcessType::kBrowser:
         expected_process_ = metrics::Process::BROWSER_PROCESS;
         metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-            std::move(collector_callback));
+            std::move(done_snapshot_callback));
         break;
       case ProcessType::kUtility:
         expected_process_ = metrics::Process::UTILITY_PROCESS;
-        ConnectRemoteProfileCollector(std::move(collector_callback));
+        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
         break;
       default:
         // Connect up the profile collector even though we expect the heap
         // profiler not to start, so that the test environment is complete.
         expected_process_ = metrics::Process::UNKNOWN_PROCESS;
-        ConnectRemoteProfileCollector(std::move(collector_callback));
+        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
+        break;
     }
 
     ASSERT_EQ(HeapProfilerController::GetProfilingEnabled(),
@@ -233,7 +303,14 @@ class HeapProfilerControllerTest : public ::testing::Test {
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
     controller_->SuppressRandomnessForTesting();
-    controller_->StartIfEnabled();
+    controller_->SetFirstSnapshotCallbackForTesting(
+        std::move(first_snapshot_callback));
+
+    EXPECT_EQ(controller_->StartIfEnabled(), expect_enabled);
+    EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+              expect_enabled
+                  ? HeapProfilerController::ProfilingEnabled::kEnabled
+                  : HeapProfilerController::ProfilingEnabled::kDisabled);
   }
 
   void AddOneSampleAndWait() {
@@ -241,9 +318,7 @@ class HeapProfilerControllerTest : public ::testing::Test {
     sampler->OnAllocation(AllocationNotificationData(
         reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
         AllocationSubsystem::kManualForTesting));
-    // Advance several days to be sure the sample isn't scheduled right on the
-    // boundary of the fast-forward.
-    task_environment_.FastForwardBy(base::Days(2));
+    task_environment_.RunUntilQuit();
     // Free the allocation so that other tests can re-use the address.
     sampler->OnFree(
         FreeNotificationData(reinterpret_cast<void*>(0x1337),
@@ -296,22 +371,14 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
 namespace {
 
-TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-
-  // Advance several days to be sure the sample isn't scheduled right on the
-  // boundary of the fast-forward.
-  task_environment_.FastForwardBy(base::Days(2));
-
-  EXPECT_FALSE(sample_received_);
-}
+// Basic tests only use the default feature params.
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeapProfilerControllerTest,
+                         ::testing::Values(FeatureTestParams{}));
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
+TEST_P(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   constexpr int kSnapshotsToCollect = 3;
 
   std::atomic<int> profile_count{0};
@@ -362,63 +429,16 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
 }
 #endif
 
-TEST_F(HeapProfilerControllerTest, UnhandledProcess) {
+TEST_P(HeapProfilerControllerTest, UnhandledProcess) {
   // Starting the heap profiler in an unhandled process type should safely do
   // nothing.
   StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
-                     base::DoNothing());
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            HeapProfilerController::ProfilingEnabled::kDisabled);
+                     base::DoNothing(), /*expect_enabled=*/false);
   // The Enabled summary histogram should not be logged for unsupported
   // processes, because they're not included in the per-process histograms that
   // are aggregated into it.
   histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
 }
-
-// Configurations of the HeapProfilerReporting feature to test.
-// The default parameters collect samples from stable and nonstable channels in
-// the browser process only.
-struct FeatureTestParams {
-  struct ChannelParams {
-    double probability = 1.0;
-    bool expect_browser_sample = true;
-    bool expect_child_sample = false;
-  };
-  bool feature_enabled = true;
-  const ProcessTypeSet supported_processes;
-  ChannelParams stable;
-  ChannelParams nonstable;
-};
-
-std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
-  os << "{";
-  os << "enabled:" << params.feature_enabled << ",";
-  os << "field_trial_params:{";
-  for (const auto& field_trial_param : FieldTrialParamsForTestParams(
-           params.supported_processes, params.stable.probability,
-           params.nonstable.probability)) {
-    os << field_trial_param.first << " : " << field_trial_param.second;
-  }
-  os << "},";
-  os << "expect_samples:{";
-  os << "stable/browser:" << params.stable.expect_browser_sample << ",";
-  os << "stable/child:" << params.stable.expect_child_sample << ",";
-  os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
-  os << "nonstable/child:" << params.stable.expect_child_sample;
-  os << "}";
-  return os;
-}
-
-class HeapProfilerControllerFeatureTest
-    : public HeapProfilerControllerTest,
-      public ::testing::WithParamInterface<FeatureTestParams> {
- public:
-  HeapProfilerControllerFeatureTest()
-      : HeapProfilerControllerTest(GetParam().feature_enabled,
-                                   GetParam().supported_processes,
-                                   GetParam().stable.probability,
-                                   GetParam().nonstable.probability) {}
-};
 
 // Test the feature on various channels.
 constexpr FeatureTestParams kChannelConfigs[] = {
@@ -454,7 +474,7 @@ constexpr FeatureTestParams kChannelConfigs[] = {
     },
 };
 
-using HeapProfilerControllerChannelTest = HeapProfilerControllerFeatureTest;
+using HeapProfilerControllerChannelTest = HeapProfilerControllerTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerChannelTest,
@@ -464,11 +484,8 @@ TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().stable.expect_browser_sample, 1);
@@ -479,21 +496,12 @@ TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
   EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
 }
 
-// TODO(crbug.com/1302007): This test hangs on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_CanaryChannel DISABLED_CanaryChannel
-#else
-#define MAYBE_CanaryChannel CanaryChannel
-#endif
-TEST_P(HeapProfilerControllerChannelTest, MAYBE_CanaryChannel) {
+TEST_P(HeapProfilerControllerChannelTest, CanaryChannel) {
   StartHeapProfiling(
       version_info::Channel::CANARY, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().nonstable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().nonstable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().nonstable.expect_browser_sample, 1);
@@ -529,7 +537,7 @@ constexpr FeatureTestParams kProcessConfigs[] = {
     },
 };
 
-using HeapProfilerControllerProcessTest = HeapProfilerControllerFeatureTest;
+using HeapProfilerControllerProcessTest = HeapProfilerControllerTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerProcessTest,
@@ -539,11 +547,8 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().stable.expect_browser_sample, 1);
@@ -558,11 +563,8 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kUtility,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_child_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_child_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Utility",
       GetParam().stable.expect_child_sample, 1);
@@ -571,6 +573,31 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
                                        1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
+}
+
+// Test the HeapProfilerIncludeZero feature.
+constexpr FeatureTestParams kIncludeZeroConfigs[] = {
+    {
+        .include_zero_feature_enabled = true,
+    },
+    {
+        .include_zero_feature_enabled = false,
+    },
+};
+
+using HeapProfilerControllerIncludeZeroTest = HeapProfilerControllerTest;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeapProfilerControllerIncludeZeroTest,
+                         ::testing::ValuesIn(kIncludeZeroConfigs));
+
+TEST_P(HeapProfilerControllerIncludeZeroTest, EmptyProfile) {
+  StartHeapProfiling(
+      version_info::Channel::STABLE, ProcessType::kBrowser,
+      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                          base::Unretained(this)));
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
 }
 
 }  // namespace

@@ -15,10 +15,13 @@ enum WebPrintJobState {
 
 dictionary WebPrintJobAttributes {
   DOMString jobName;
+  unsigned long jobPages;
+  unsigned long jobPagesCompleted;
   WebPrintJobState jobState;
 };
 
 [
+  ActiveScriptWrappable,
   Exposed=Window,
   RuntimeEnabled=WebPrinting,
   SecureContext,

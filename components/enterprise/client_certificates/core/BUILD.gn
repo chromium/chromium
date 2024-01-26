@@ -1,0 +1,106 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_client_certificates)
+
+source_set("core") {
+  public = [
+    "certificate_store.h",
+    "client_identity.h",
+    "private_key.h",
+    "private_key_factory.h",
+    "private_key_types.h",
+  ]
+
+  sources = [
+    "certificate_store.cc",
+    "client_identity.cc",
+    "ec_private_key.cc",
+    "ec_private_key.h",
+    "ec_private_key_factory.cc",
+    "ec_private_key_factory.h",
+    "private_key.cc",
+    "private_key_factory.cc",
+    "private_key_types.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/client_certificates/proto:db_client_certs",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//crypto",
+  ]
+
+  deps = [ "//net" ]
+
+  friend = [ ":unit_tests" ]
+
+  if (is_win) {
+    sources += [
+      "unexportable_private_key.cc",
+      "unexportable_private_key.h",
+      "unexportable_private_key_factory.cc",
+      "unexportable_private_key_factory.h",
+    ]
+
+    deps += [ "//crypto" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_certificate_store.cc",
+    "mock_certificate_store.h",
+    "mock_private_key.cc",
+    "mock_private_key.h",
+    "mock_private_key_factory.cc",
+    "mock_private_key_factory.h",
+  ]
+
+  deps = [
+    ":core",
+    "//components/leveldb_proto",
+    "//net",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "certificate_store_unittest.cc",
+    "ec_private_key_factory_unittest.cc",
+    "ec_private_key_unittest.cc",
+    "private_key_factory_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/client_certificates/proto:db_client_certs",
+    "//components/leveldb_proto:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    sources += [
+      "unexportable_private_key_factory_unittest.cc",
+      "unexportable_private_key_unittest.cc",
+    ]
+
+    deps += [
+      "//crypto",
+      "//crypto:test_support",
+    ]
+  }
+}

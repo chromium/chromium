@@ -88,6 +88,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2583187216237139145">Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
 <translation id="259935314519650377">Die heruntergeladene Installationsdatei konnte nicht im Cache gespeichert werden. Fehler: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen funktionieren (empfohlen)</translation>
 <translation id="2648074677641340862">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Bitte lade Chromium erneut herunter.</translation>
 <translation id="2661879430930417727">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chromium jeweils nach ihren Wünschen einrichten</translation>
 <translation id="268602741124540128">Willkommen bei Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3258596308407688501">Chromium kann im folgenden Datenverzeichnis weder lesen noch schreiben:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 ist die JavaScript- und WebAssembly-Engine von Chromium, mit der die Websiteleistung verbessert wird</translation>
 <translation id="3283186697780795848">Chromium-Version <ph name="PRODUCT_VERSION" /> ist installiert</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
@@ -140,7 +142,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3533435340678213462">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chromium nicht berücksichtigen soll.</translation>
 <translation id="3567254597502212821">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chromium besuchten Websites.</translation>
 <translation id="3593091352817399191">Du bist bereits in einem anderen Konto angemeldet. Wenn du deine Browseraktivitäten getrennt halten möchtest, kann Chromium ein eigenes Profil für dich einrichten.</translation>
-<translation id="363078681319665186">Du benötigst macOS 10.15 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.13 ausgeführt.</translation>
 <translation id="3639635944603682591">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Wenn du die Daten wiederherstellen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest.}=1{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3651803019964686660">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chromium anmelden.</translation>
@@ -157,7 +158,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Chromium OS-Hilfe</translation>
 <translation id="3871664619793219264">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chromium-Browserinhalte zugreifen</translation>
-<translation id="387966568917439637">Du benötigst macOS 10.15 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.14 ausgeführt.</translation>
 <translation id="388648406173476553">Du kannst Chromium anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="3889543394854987837">Klicke auf deinen Namen, um Chromium zu öffnen und im Web zu surfen.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ist bereits in diesem Chromium-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kann Chromium für dich ein eigenes Profil einrichten.</translation>
@@ -218,6 +218,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4814736265800133385">Chromium ohne Konto verwenden</translation>
 <translation id="4888717733111232871">Eingangsregel für die Zulassung von mDNS-Verkehr in Chromium</translation>
 <translation id="4893347770495441059">Neu starten, um &amp;Chromium zu aktualisieren</translation>
+<translation id="4942295735032723435">Du benötigst macOS 11 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.15 ausgeführt.</translation>
 <translation id="4943838377383847465">Chromium wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
@@ -246,7 +247,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="5643865575100044307">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
-<translation id="5675598751761067447">Diese Datei könnte gefährlich sein<ph name="LINE_BREAK" />Chromium kann diesen Download für dich überprüfen, wenn du das Passwort eingibst – das Passwort bleibt auf deinem Gerät</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
@@ -406,6 +406,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8105840573057009683">Chromium benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="8133124826068723441">Chromium OS konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht verfügbar ist.</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
+<translation id="8166782796394721554">Zusätzlichen Schutz in der JavaScript- und WebAssembly-Engine von Chromium aktivieren</translation>
 <translation id="81770708095080097">Diese Datei ist schädlich und wurde von Chromium blockiert.</translation>
 <translation id="8213374284266571500">Chromium hat diese Datei blockiert, weil der Dateityp gefährlich ist</translation>
 <translation id="8248265253516264921">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chromium, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>

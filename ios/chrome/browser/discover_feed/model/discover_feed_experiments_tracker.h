@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_EXPERIMENTS_TRACKER_H_
 #define IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_EXPERIMENTS_TRACKER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/feed/core/v2/public/ios/prefs.h"
 
 class PrefService;
@@ -28,7 +29,7 @@ class DiscoverFeedExperimentsTracker final {
   void RegisterExperiments(const feed::Experiments& experiments);
 
   // Pref service used to store and retrieve experiments.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_EXPERIMENTS_TRACKER_H_

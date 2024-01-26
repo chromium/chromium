@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HELPERS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HELPERS_H_
 
+#include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -42,12 +43,11 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name);
 // This should only be used if a `Manifest` object is not available.
 //
 // TODO(b/281881755): Change the optional parameter to required, and refactor
-// calls with absl::nullopt to `GenerateManifestIdFromStartUrlOnly`.
-webapps::AppId GenerateAppId(
-    const absl::optional<std::string>& manifest_id_path,
-    const GURL& start_url,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id =
-        absl::nullopt);
+// calls with std::nullopt to `GenerateManifestIdFromStartUrlOnly`.
+webapps::AppId GenerateAppId(const std::optional<std::string>& manifest_id_path,
+                             const GURL& start_url,
+                             const std::optional<webapps::ManifestId>&
+                                 parent_manifest_id = std::nullopt);
 
 // Generates the chrome-specific `webapps::AppId` from the spec-defined
 // manifest. See the `webapps::AppId` type for more information. This will
@@ -55,16 +55,16 @@ webapps::AppId GenerateAppId(
 webapps::AppId GenerateAppIdFromManifest(
 
     const blink::mojom::Manifest& manifest,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id =
-        absl::nullopt);
+    const std::optional<webapps::ManifestId>& parent_manifest_id =
+        std::nullopt);
 
 // Generates the chrome-specific `webapps::AppId` from the spec-defined manifest
 // id. See the `webapps::AppId` type for more information.
 webapps::AppId GenerateAppIdFromManifestId(
 
     const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id =
-        absl::nullopt);
+    const std::optional<webapps::ManifestId>& parent_manifest_id =
+        std::nullopt);
 
 // Generates a manifest id by only the start_url, which matches the spec
 // algorithm in https://www.w3.org/TR/appmanifest/#id-member where the `id` json
@@ -84,13 +84,24 @@ webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url);
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url);
 
+// Same as above but does not CHECK that the resulting id is valid. Only used
+// for sync parsing to avoid crashes, and ignore bad sync data.
+webapps::ManifestId GenerateManifestIdUnsafe(
+    const std::string& manifest_id_path,
+    const GURL& start_url);
+
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
+
+// Adds chrome://`host` as an origin that IsValidWebAppUrl will consider valid.
+// The returned ScopedClosureRunner undoes this registration.
+base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(
+    const std::string& host);
 
 // Searches for the first locally installed app id in the registry for which
 // the |url| is in scope. If |window_only| is specified, only apps that
 // open in app windows will be considered.
-absl::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
+std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
     Profile* profile,
     const GURL& url,
     bool window_only = false);

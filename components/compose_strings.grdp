@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
   <!-- Nudge -->
-  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="Text a user sees in the Autofill popup or context menu as the entry point for the Help me write feature.">
+  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="Text a user sees in the Autofill popup as the entry point for the Help me write feature.">
     Help me write
   </message>
+  <if expr="is_macosx"> <!-- Title Case for Mac -->
+    <message name="IDS_COMPOSE_CONTEXT_MENU_TEXT" desc="Text a user sees in the context menu as the entry point for the Help me write feature.">
+      Help Me Write
+    </message>
+  </if>
+  <if expr="not is_macosx">
+    <message name="IDS_COMPOSE_CONTEXT_MENU_TEXT" desc="Text a user sees in the context menu as the entry point for the Help me write feature.">
+      Help me write
+    </message>
+  </if>
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element.">
     Powered by Google
   </message>
@@ -19,17 +28,17 @@
   </message>
 
   <!-- FRE dialog -->
-  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog." translateable="false">
-    Write better and with more confidence anywhere on the web
+  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
+    Write with more confidence anywhere on the web
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog." translateable="false">
-    Just start with a few words or enter a first draft to get writing and editing suggestions.
+  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog.">
+    Just start with a few words or a first draft to get writing suggestions.
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
-    Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
+  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog.">
+    Your text and the content and URL of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
   </message>
-  <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
-    Let's go
+  <message name="IDS_COMPOSE_FRE_OK_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
+    OK
   </message>
 
   <!-- MSBB consent dialog -->
@@ -69,17 +78,17 @@
     You can enter things like:
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1" desc="First bullet point example for the placeholder text in the input field.">
-    3 or more words that sum up your thoughts
+    a few words that sum up your thoughts
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2" desc="Second bullet point example for the placeholder text in the input field.">
     a first draft
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3" desc="Third bullet point example for the placeholder text in the input field.">
-    requests like "write a 5-star review for this restaurant"
+    "reply yes to this wedding invite with excitement"
   </message>
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
     Your text and page content are sent to Google and may be used to improve this feature.
-  <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
     Create
@@ -131,10 +140,10 @@
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short.">
-    This is too short. Write at least 3 words.
+    Enter 3 or more words to get writing help
   </message>
   <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long.">
-    This is too long. Shorten and try again.
+    Shorten your text to get writing help
   </message>
   <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again.">
     Something went wrong. Try again.
@@ -142,14 +151,22 @@
   <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later.">
     Something went wrong. Try again later.
   </message>
-  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled.">
-    Your request wasn't understood. Try a different request.
+  <message name="IDS_COMPOSE_ERROR_FILTERED" desc="Error indicating that the request was filtered.">
+    Couldn't help with that. Try again.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE" desc="Error that the language is not yet supported.">
+    This language is not yet supported.
+    <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
-    Something went wrong. Are you signed in?
+    <ph name="BEGIN_LINK">&lt;a href="#" id="signInLink" role="button"&gt;</ph>Sign in<ph name="END_LINK">&lt;/a&gt;</ph> 
+    again, then come back to this tab to get writing help
   </message>
-  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details.">
-    Something went wrong.
+  <message name="IDS_COMPOSE_ERROR_REQUEST_THROTTLED" desc="Error that the request was throttled.">
+    You've reached your writing help limit for now. Try again later.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_OFFLINE" desc="Error that the user is offline.">
+    Check your internet connection and try again
   </message>
 
   <!-- Cross-dialog -->

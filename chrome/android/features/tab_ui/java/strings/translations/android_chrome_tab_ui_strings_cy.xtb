@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Cael hysbysiadau</translation>
 <translation id="4133493477912226187">Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn gysylltiedig. Grwpio nhw?</translation>
 <translation id="4212246570487010370">Parhau i bori</translation>
+<translation id="427987768447457592">Grŵp tabiau newydd</translation>
 <translation id="4648718555153979859">Mae'ch tabiau wedi'u grwpio gyda'i gilydd yma</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> adolygiad)}zero{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}two{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}few{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}many{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}other{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}}</translation>
 <translation id="4850886885716139402">Gweld</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Cuddio'r grid sgrîn lawn</translation>
 <translation id="5076161749301278626">Gweld adolygiadau'r siop?</translation>
 <translation id="5082793167783849073">Cymharwch dudalennau'n gyflym drwy wneud grŵp. I ddechrau, cyffyrddwch a daliwch ddolen.</translation>
+<translation id="5161254044473106830">Mae teitl yn ofynnol</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Mae gennych <ph name="TABS_COUNT_ONE" /> tab nad ydych wedi'i ddefnyddio'n ddiweddar}zero{Mae gennych <ph name="TABS_COUNT_MANY" /> tabiau nad ydych wedi'u defnyddio'n ddiweddar}two{Mae gennych <ph name="TABS_COUNT_MANY" /> dab nad ydych wedi'u defnyddio'n ddiweddar}few{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}many{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}other{Mae gennych <ph name="TABS_COUNT_MANY" /> tab nad ydych wedi'u defnyddio'n ddiweddar}}</translation>
 <translation id="5339733443032484186">Eich tab diwethaf</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>

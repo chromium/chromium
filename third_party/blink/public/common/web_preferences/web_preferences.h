@@ -21,8 +21,6 @@
 
 namespace blink {
 
-class WebView;
-
 namespace web_pref {
 
 using blink::mojom::EffectiveConnectionType;
@@ -87,8 +85,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool privileged_webgl_extensions_enabled;
   bool webgl_errors_to_console_enabled;
   bool hide_scrollbars;
-  // If false, ignore ::-webkit-scrollbar-* CSS pseudo-elements in stylesheets.
-  bool enable_webkit_scrollbar_styling = true;
+  // If true, ignore ::-webkit-scrollbar-* CSS pseudo-elements in stylesheets
+  // and use default values for `ScrollbarWidth` and `ScrollbarColor`
+  // CSS properties.
+  bool prefers_default_scrollbar_styles = false;
   bool accelerated_2d_canvas_enabled;
   bool canvas_2d_layers_enabled = false;
   bool antialiased_2d_canvas_disabled;

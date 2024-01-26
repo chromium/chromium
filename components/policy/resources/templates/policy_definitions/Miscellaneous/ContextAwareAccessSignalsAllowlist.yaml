@@ -20,8 +20,6 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - rodmartin@google.com
 - rogerta@chromium.org

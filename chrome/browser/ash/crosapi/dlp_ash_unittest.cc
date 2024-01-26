@@ -292,7 +292,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DlpAshBlockUITest, ShowBlockedFiles) {
   auto [mojo_action, dlp_action] = GetParam();
 
-  absl::optional<uint64_t> task_id = absl::nullopt;
+  std::optional<uint64_t> task_id = std::nullopt;
   base::FilePath path(kFilePath);
 
   EXPECT_CALL(*fpnm_,

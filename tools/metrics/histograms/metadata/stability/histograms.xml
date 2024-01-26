@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
-    expires_after="2024-02-04">
+    expires_after="2025-02-04">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.RendererAbnormalTermination.HostedContentType"
+<histogram name="Stability.RendererAbnormalTermination2.HostedContentType"
     enum="RendererHostedContentType" expires_after="2024-06-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.RendererAbnormalTermination.{HostedContentType}"
+<histogram name="Stability.RendererAbnormalTermination2.{HostedContentType}"
     enum="TerminationStatus" expires_after="2024-06-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>

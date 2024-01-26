@@ -294,7 +294,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
     }
   }
 
-  manager_->MigrateInputMethods(&layouts);
+  manager_->GetMigratedInputMethodIDs(&layouts);
   enabled_input_method_ids_.swap(layouts);
 
   if (IsActive()) {
@@ -403,7 +403,7 @@ bool InputMethodManagerImpl::StateImpl::ReplaceEnabledInputMethods(
       new_enabled_input_method_ids_filtered.push_back(input_method_id);
   }
   enabled_input_method_ids_.swap(new_enabled_input_method_ids_filtered);
-  manager_->MigrateInputMethods(&enabled_input_method_ids_);
+  manager_->GetMigratedInputMethodIDs(&enabled_input_method_ids_);
 
   manager_->ReconfigureIMFramework(this);
 
@@ -426,7 +426,7 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
   allowed_keyboard_layout_input_method_ids_.clear();
   for (auto input_method_id : new_allowed_input_method_ids) {
     std::string migrated_id =
-        manager_->util_.MigrateInputMethod(input_method_id);
+        manager_->util_.GetMigratedInputMethod(input_method_id);
     if (manager_->util_.IsValidInputMethodId(migrated_id)) {
       allowed_keyboard_layout_input_method_ids_.push_back(migrated_id);
       // Kiosk users are not able to go to the settings and manually enable
@@ -459,8 +459,9 @@ bool InputMethodManagerImpl::StateImpl::IsInputMethodAllowed(
 
   return base::Contains(allowed_keyboard_layout_input_method_ids_,
                         input_method_id) ||
-         base::Contains(allowed_keyboard_layout_input_method_ids_,
-                        manager_->util_.MigrateInputMethod(input_method_id));
+         base::Contains(
+             allowed_keyboard_layout_input_method_ids_,
+             manager_->util_.GetMigratedInputMethod(input_method_id));
 }
 
 std::string
@@ -487,8 +488,8 @@ void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
   // |enabled_input_method_ids_|.
   const InputMethodDescriptor* descriptor = LookupInputMethod(input_method_id);
   if (!descriptor) {
-    descriptor =
-        LookupInputMethod(manager_->util_.MigrateInputMethod(input_method_id));
+    descriptor = LookupInputMethod(
+        manager_->util_.GetMigratedInputMethod(input_method_id));
     if (!descriptor) {
       LOG(ERROR) << "Can't find InputMethodDescriptor for \"" << input_method_id
                  << "\"";
@@ -702,7 +703,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
 
   std::vector<std::string> layouts = base::SplitString(
       layout, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  manager_->MigrateInputMethods(&layouts);
+  manager_->GetMigratedInputMethodIDs(&layouts);
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(prefs::kHardwareKeyboardLayout,
@@ -920,12 +921,12 @@ bool InputMethodManagerImpl::IsLoginKeyboard(
 
 std::string InputMethodManagerImpl::GetMigratedInputMethodID(
     const std::string& input_method_id) {
-  return util_.MigrateInputMethod(input_method_id);
+  return util_.GetMigratedInputMethod(input_method_id);
 }
 
-bool InputMethodManagerImpl::MigrateInputMethods(
+bool InputMethodManagerImpl::GetMigratedInputMethodIDs(
     std::vector<std::string>* input_method_ids) {
-  return util_.MigrateInputMethods(input_method_ids);
+  return util_.GetMigratedInputMethodIDs(input_method_ids);
 }
 
 // Starts or stops the system input method framework as needed.

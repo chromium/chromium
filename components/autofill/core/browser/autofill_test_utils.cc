@@ -972,7 +972,6 @@ BankAccount CreatePixBankAccount(int64_t instrument_id) {
   BankAccount bank_account(
       instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
       u"account_number", BankAccount::AccountType::kChecking);
-  bank_account.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
   return bank_account;
 }
 

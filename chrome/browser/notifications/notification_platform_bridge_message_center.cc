@@ -42,8 +42,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
             NotificationOperation::kSettings, notification_type_,
-            notification_.origin_url(), notification_.id(), absl::nullopt,
-            absl::nullopt, absl::nullopt /* by_user */);
+            notification_.origin_url(), notification_.id(), std::nullopt,
+            std::nullopt, std::nullopt /* by_user */);
   }
 
   void DisableNotification() override {
@@ -51,8 +51,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationOperation::kDisablePermission, notification_type_,
             notification_.origin_url(), notification_.id(),
-            absl::nullopt /* action_index */, absl::nullopt /* reply */,
-            absl::nullopt /* by_user */);
+            std::nullopt /* action_index */, std::nullopt /* reply */,
+            std::nullopt /* by_user */);
   }
 
   void Close(bool by_user) override {
@@ -60,17 +60,16 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationOperation::kClose, notification_type_,
             notification_.origin_url(), notification_.id(),
-            absl::nullopt /* action_index */, absl::nullopt /* reply */,
-            by_user);
+            std::nullopt /* action_index */, std::nullopt /* reply */, by_user);
   }
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
             NotificationOperation::kClick, notification_type_,
             notification_.origin_url(), notification_.id(), button_index, reply,
-            absl::nullopt /* by_user */);
+            std::nullopt /* by_user */);
   }
 
  protected:

@@ -102,6 +102,7 @@ class CWTRequestHandler {
   // (possibly asynchronously) with the result to be returned. When
   // `is_async_function` is false, the given script must be the body of a
   // function whose return value is the result to be returned.
+  // `args` provides the window url used by async functions.
   //
   // Examples:
   // 1) `script` is "arguments[arguments.length - 1].call(7)" and
@@ -111,7 +112,9 @@ class CWTRequestHandler {
   // 3) `script` is "document.title = 'hello world';" and `is_async_function` is
   //    false. In this case, the script's return value is "undefined" so the
   //    value returned by this method is a default-constructed base::Value.
-  base::Value ExecuteScript(const std::string* script, bool is_async_function);
+  base::Value ExecuteScript(const std::string* script,
+                            bool is_async_function,
+                            const base::Value::List* args);
 
   // Takes a snapshot of the target tab. Returns an error value if the target
   // tab is no longer open. Otherwise, returns the snapshot as a base64-encoded

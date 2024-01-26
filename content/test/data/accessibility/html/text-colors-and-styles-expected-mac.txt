@@ -6,7 +6,8 @@ AXWebArea
 ++AXHeading AXTitle='text style' AXValue=2
 ++++AXStaticText AXValue='text style'
 ++AXGroup
-++++AXStaticText AXValue='strong'
+++++AXGroup AXSubrole=AXStrongStyleGroup
+++++++AXStaticText AXValue='strong'
 ++AXStaticText AXValue='italic'
 ++AXStaticText AXValue=' '
 ++AXStaticText AXValue='bold'

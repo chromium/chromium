@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1066101356081285416">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Googlelle tämän ominaisuuden tarjoamista ja Google Shopping ‑ominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
 <translation id="1105362920864247682">Poista Chromen selausdata.</translation>
 <translation id="1113057722807951993">Tunnuslauseella ei salata Google Payn maksutapoja ja osoitteita.
@@ -40,13 +41,13 @@ Huomioitavaa:
 <translation id="1682483655351012182">Chrome-datan synkronointi</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Lisää URL-osoitteet Chromen kirjanmerkkeihin.</translation>
+<translation id="1799920918471566157">Vinkkejä Chromen käyttöön</translation>
 <translation id="1830634592642484976">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="1843217788865538014">Käytä Chromea automaattisesti, kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="1910975740091000991">Chrome iOS:lle</translation>
 <translation id="1917964099031477364">Tämä tili ja kaikki tallentamaton data poistetaan Chromesta ja muista Google-sovelluksista tällä laitteella.</translation>
 <translation id="1965935827552890526">Siirry toiseen avoimeen Chrome-ikkunaan ja viimeistele aloittamasi.</translation>
 <translation id="1987779152850321833">Näillä ehdotuksilla saat Chromesta mahdollisimman paljon irti.</translation>
-<translation id="2008357574463816229">Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Google Chromella saat enemmän aikaan.</translation>
 <translation id="2120238739383482109">Avaa Chrome-kirjanmerkit.</translation>
 <translation id="2147651015520127414">Chrome vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
@@ -75,6 +76,7 @@ Huomioitavaa:
 <translation id="2702250627063295552">Lisää lukulistakohde Chromeen</translation>
 <translation id="2736805085127235148">Chromen ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>
 <translation id="2767464022270041271">Ei tallennettuja salasanoja Google Salasanat voi tarkistaa salasanasi tallennuksen yhteydessä.</translation>
+<translation id="2789947168960170215">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Poista Chromen selausdata</translation>
 <translation id="2869959624320573933">Kirjaudu Chromeen</translation>
 <translation id="2876628302275096482">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chrome pitää datasi yksityisenä<ph name="END_LINK" /></translation>
@@ -98,7 +100,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3503014945441706099">Lisää Parannettu selaussuoja myös tälle Chrome-profiilille</translation>
 <translation id="3522659714780527202">Laita synkronointi päälle, niin voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="3577555362230509265">Käytä Chromea muissa sovelluksissa.</translation>
-<translation id="3594076341410558780">Piilota "Näin saat kaiken irti Chromesta"</translation>
 <translation id="364480321352456989">Chrome on vanhentunut.</translation>
 <translation id="3646736009628185125">Perheenjäsenesi ei voi vastaanottaa salasanoja tällä hetkellä. Pyydä häntä päivittämään Chrome ja synkronoimaan salasanat. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Tämä tarkoittaa, että Chrome pyytää aina mobiilisivustoa.</translation>
@@ -204,7 +205,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="686691656039982452">Voit <ph name="BEGIN_LINK" />valita, mitä Chrome-dataa tallennetaan<ph name="END_LINK" /> Google-tilillesi.
 
 Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos haluat nähdä lisää asetuksia, jotka käyttävät dataa Chromen käyttökokemuksen parantamiseen.</translation>
-<translation id="687586529977635009">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Datasi jaetaan Googlelle tämän ominaisuuden tarjoamiseen ja Shoppingin parantamiseen kaikille käyttäjille. Voit muuttaa tätä <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Hae puhumalla Chromesta</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>

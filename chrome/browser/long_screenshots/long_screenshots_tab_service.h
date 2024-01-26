@@ -109,7 +109,7 @@ class LongScreenshotsTabService
                           int clip_width,
                           int clip_height,
                           bool in_memory,
-                          const absl::optional<base::FilePath>& file_path);
+                          const std::optional<base::FilePath>& file_path);
 
   void OnCaptured(paint_preview::PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<paint_preview::CaptureResult> result);

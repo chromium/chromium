@@ -19,8 +19,6 @@ this build script on Mac:
 3. sudo xcode-select --switch /Applications/Xcode.app
 """
 
-from __future__ import print_function
-
 import argparse
 import glob
 import io
@@ -163,9 +161,10 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
-    # git diff-index --quiet returns success when there is no diff.
+    # git diff-index --exit-code returns 0 when there is no diff.
     # Also check that the first commit is reachable.
-    if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
+    if (RunCommand(['git', 'diff-index', '--exit-code', 'HEAD'],
+                   fail_hard=False)
         and RunCommand(['git', 'fetch'], fail_hard=False)
         and RunCommand(['git', 'checkout', commit], fail_hard=False)
         and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
@@ -700,9 +699,8 @@ def main():
                       type=gn_arg,
                       nargs='?',
                       const=True,
-                      help='build the Fuchsia runtimes (linux and mac only)',
-                      default=sys.platform.startswith('linux')
-                      or sys.platform.startswith('darwin'))
+                      help='build the Fuchsia runtimes (linux only)',
+                      default=sys.platform.startswith('linux'))
   parser.add_argument('--without-android', action='store_false',
                       help='don\'t build Android ASan runtime (linux only)',
                       dest='with_android')
@@ -721,6 +719,11 @@ def main():
   args = parser.parse_args()
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
+
+  # TODO(crbug.com/1517549): Remove in next Clang roll.
+  if args.llvm_force_head_revision:
+    global RELEASE_VERSION
+    RELEASE_VERSION = '19'
 
   if (args.pgo or args.thinlto) and not args.bootstrap:
     print('--pgo/--thinlto requires --bootstrap')

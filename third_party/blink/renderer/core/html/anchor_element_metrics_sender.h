@@ -21,11 +21,14 @@ class Document;
 class HTMLAnchorElement;
 class IntersectionObserver;
 class IntersectionObserverEntry;
-class AnchorElementMetrics;
 class PointerEvent;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
+//
+// AnchorElementMetricsSenders are created for documents in main frames. Any
+// same-origin iframes reuse the AnchorElementMetricsSender of their main frame.
+// Cross-origin iframes do not use any AnchorElementMetricsSender.
 //
 // The high level approach is:
 // 1) When HTMLAnchorElements are inserted into the DOM,
@@ -71,6 +74,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // if the given `document` may not have a AnchorElementMetricsSender.
   static AnchorElementMetricsSender* From(Document& document);
 
+  // Returns the AnchorElementMetricsSender for `frame`'s main frame's document,
+  // according to `From`. Returns nullptr if `frame` is a cross-origin subframe.
+  static AnchorElementMetricsSender* GetForFrame(LocalFrame* frame);
+
   // Report the link click to the browser process, so long as the anchor
   // is an HTTP(S) link.
   void MaybeReportClickedMetricsOnClick(
@@ -106,10 +113,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
  private:
-  // Returns true if `document` should have an associated
-  // AnchorElementMetricsSender.
-  static bool HasAnchorElementMetricsSender(Document& document);
-
   // Associates |metrics_host_| with the IPC interface if not already, so it can
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();
@@ -151,6 +154,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
 
+  const int random_anchor_sampling_period_;
+
   Member<IntersectionObserver> intersection_observer_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
@@ -162,7 +167,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
     absl::optional<base::TimeTicks> viewport_entry_time_;
     absl::optional<base::TimeTicks> pointer_over_timer_;
   };
-  WTF::HashMap<AnchorId, std::unique_ptr<AnchorElementTimingStats>>
+  WTF::HashMap<AnchorId, AnchorElementTimingStats>
       anchor_elements_timing_stats_;
 
   WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>

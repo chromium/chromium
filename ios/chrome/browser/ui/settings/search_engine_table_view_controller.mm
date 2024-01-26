@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -14,14 +15,16 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -31,10 +34,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -77,8 +81,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 @end
 
 @implementation SearchEngineTableViewController {
-  TemplateURLService* _templateURLService;  // weak
-  PrefService* _prefService;
+  raw_ptr<TemplateURLService> _templateURLService;  // weak
+  raw_ptr<PrefService> _prefService;
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -98,7 +102,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   std::vector<TemplateURL*> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
   // Determines which version of the settings UI should be displayed.
   BOOL _shouldShowUpdatedSettings;
 }
@@ -118,8 +122,13 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     _prefService = browserState->GetPrefs();
+
+    search_engines::SearchEngineChoiceService* search_engine_choice_service =
+        ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
     _shouldShowUpdatedSettings =
-        search_engines::ShouldShowUpdatedSettings(*_prefService);
+        search_engines::IsEeaChoiceCountry(
+            search_engine_choice_service->GetCountryId()) &&
+        search_engine_choice_service->ShouldShowUpdatedSettings();
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
   }
@@ -233,6 +242,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
+  self.tableView.accessibilityIdentifier = kSearchEngineTableViewControllerId;
   TableViewModel* model = self.tableViewModel;
   [self loadSearchEngines];
 
@@ -478,9 +488,19 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return item.type == ItemTypeLegacyCustomEngine ||
-         item.type == ItemTypeCustomEngine;
+  if (!_shouldShowUpdatedSettings) {
+    // With the default search engine settings, all custom search engines can
+    // be deleted, even the selected one.
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    return item.type == ItemTypeLegacyCustomEngine;
+  }
+  // Only the search engines from the second section can be removed.
+  // In the first section, search engines are either prepopulated or selected
+  // custom search engines.
+  TableViewModel* model = self.tableViewModel;
+  NSInteger sectionIdentifier =
+      [model sectionIdentifierForSectionIndex:indexPath.section];
+  return sectionIdentifier == SectionIdentifierSecondList;
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -647,13 +667,16 @@ const char kUmaSelectDefaultSearchEngine[] =
       SEARCH_ENGINE_MAX);
 }
 
-// Deletes custom search engines at `indexPaths`. If a custom engine is selected
-// as the default engine, resets default engine to the first prepopulated
-// engine.
+// Deletes custom search engines at `indexPaths`.
+// When `_shouldShowUpdatedSettings` is YES:
+// The selected custom search engine cannot be removed.
+// When `_shouldShowUpdatedSettings` is NO:
+// If a custom engine is selected as the default engine, resets default engine
+// to the first prepopulated engine.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
-  if (_settingsAreDismissed)
+  if (_settingsAreDismissed) {
     return;
-
+  }
   // Update `_templateURLService`, `_firstList` and `_secondList`.
   _updatingBackend = YES;
   size_t removedItemsInSecondList = 0;
@@ -668,20 +691,16 @@ const char kUmaSelectDefaultSearchEngine[] =
     if (path.section == firstSection) {
       TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
       // Only custom search engine can be deleted.
-      DCHECK(item.type == ItemTypeLegacyCustomEngine ||
-             item.type == ItemTypeCustomEngine);
-      if (_shouldShowUpdatedSettings) {
-        // The custom search engine in the first section should be the first
-        // one.
-        DCHECK(path.row == static_cast<int>(0));
-        engine = _firstList.front();
-        _firstList.erase(_firstList.begin());
-      } else {
-        // The custom search engine in the first section should be the last one.
-        DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
-        engine = _firstList.back();
-        _firstList.pop_back();
-      }
+      CHECK(item.type == ItemTypeLegacyCustomEngine, base::NotFatalUntil::M124);
+      // It should not be possible to remove a search engine from the first
+      // section, when showing the updated settings. The updated settings should
+      // either contains a selected custom search engine (which cannot be
+      // removed as long as it is selected), or prepopulated search engine.
+      CHECK(!_shouldShowUpdatedSettings, base::NotFatalUntil::M124);
+      // The custom search engine in the first section should be the last one.
+      DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
+      engine = _firstList.back();
+      _firstList.pop_back();
     } else {
       DCHECK(path.row < static_cast<int>(_secondList.size()));
 
@@ -693,6 +712,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     // If `engine` is selected as default search engine, reset the default
     // engine to the first prepopulated engine.
     if (engine == _templateURLService->GetDefaultSearchProvider()) {
+      CHECK(!_shouldShowUpdatedSettings, base::NotFatalUntil::M124);
       DCHECK(_firstList.size() > 0);
       _templateURLService->SetUserSelectedDefaultSearchProvider(_firstList[0]);
       resetDefaultEngine = true;
@@ -775,17 +795,11 @@ const char kUmaSelectDefaultSearchEngine[] =
 - (void)updatePrepopulatedEnginesForEditing:(BOOL)editing {
   if (_settingsAreDismissed)
     return;
-
-  NSArray<NSIndexPath*>* legacyIndexPaths = [self.tableViewModel
-      indexPathsForItemType:ItemTypeLegacyPrepopulatedEngine
-          sectionIdentifier:SectionIdentifierFirstList];
-  NSArray<NSIndexPath*>* indexPaths =
-      [self.tableViewModel indexPathsForItemType:ItemTypePrepopulatedEngine
-                               sectionIdentifier:SectionIdentifierFirstList];
-  NSArray<NSIndexPath*>* allIndexPaths =
-      [legacyIndexPaths arrayByAddingObjectsFromArray:indexPaths];
-  for (NSIndexPath* indexPath in allIndexPaths) {
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  // All items in the first section should be updated. They are either
+  // a prepopulated search engine or a selected custom search engine.
+  NSArray<TableViewItem*>* items = [self.tableViewModel
+      itemsInSectionWithIdentifier:SectionIdentifierFirstList];
+  for (TableViewItem* item in items) {
     TableViewItem<SettingsSearchEngineItem>* engineItem =
         base::apple::ObjCCastStrict<TableViewItem<SettingsSearchEngineItem>>(
             item);
@@ -798,8 +812,8 @@ const char kUmaSelectDefaultSearchEngine[] =
       engineItem.accessoryType = UITableViewCellAccessoryNone;
     }
   }
-  [self.tableView reloadRowsAtIndexPaths:allIndexPaths
-                        withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self reloadCellsForItems:items
+           withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 // Returns whether the `item` is the same as an item that would be created

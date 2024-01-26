@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -59,7 +60,7 @@ class BrowserContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayPresentationContext presentation_context_;
-  OverlayPresenter* overlay_presenter_ = nullptr;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
   BrowserContainerMediator* mediator_ = nil;
   FakeBrowserContainerConsumer* consumer_ = nil;
 };

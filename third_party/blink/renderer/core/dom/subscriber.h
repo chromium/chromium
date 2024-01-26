@@ -17,11 +17,10 @@
 namespace blink {
 
 class AbortController;
+class ObservableInternalObserver;
 class Observable;
 class ScriptState;
 class SubscribeOptions;
-class V8ObserverCallback;
-class V8ObserverCompleteCallback;
 class V8VoidFunction;
 
 class CORE_EXPORT Subscriber final : public ScriptWrappable,
@@ -31,9 +30,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
  public:
   Subscriber(base::PassKey<Observable>,
              ScriptState*,
-             V8ObserverCallback* next,
-             V8ObserverCompleteCallback* complete,
-             V8ObserverCallback* error,
+             ObservableInternalObserver*,
              SubscribeOptions*);
 
   // API methods.
@@ -55,12 +52,20 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   // constructor implementation.
   void CloseSubscription();
 
-  // Any of these may be null, since they are derived from non-required
-  // dictionary members passed into `Observable::subscribe()` used to construct
-  // `this`.
-  Member<V8ObserverCallback> next_;
-  Member<V8ObserverCompleteCallback> complete_;
-  Member<V8ObserverCallback> error_;
+  // The `ObservableInternalObserver` class encapsulates algorithms to call when
+  // `this` produces values or actions that need to be pushed to the subscriber
+  // handlers.
+  //
+  // https://wicg.github.io/observable/#subscriber-next-algorithm:
+  // "Each Subscriber has a next algorithm, which is a next steps-or-null."
+  //
+  // https://wicg.github.io/observable/#subscriber-error-algorithm:
+  // "Each Subscriber has a error algorithm, which is an error steps-or-null."
+
+  // https://wicg.github.io/observable/#subscriber-complete-algorithm:
+  // "Each Subscriber has a complete algorithm, which is a complete
+  // steps-or-null."
+  Member<ObservableInternalObserver> internal_observer_;
 
   // This starts out true, and becomes false only once `Subscriber::{complete(),
   // error()}` are called (just before the corresponding `Observer` callbacks

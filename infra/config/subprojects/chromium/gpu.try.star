@@ -99,6 +99,17 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-pixel-6-64-exp",
+    description_html = "Runs standard GPU tests on experimental Pixel 6 configs",
+    mirrors = [
+        "ci/GPU FYI Android arm64 Builder",
+        "ci/Android FYI Experimental Release (Pixel 6)",
+    ],
+    gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.pixel6.try",
+)
+
+gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
     mirrors = [
         "ci/Android Release (Nexus 5X)",

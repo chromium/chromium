@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -42,6 +43,7 @@
 #include "components/domain_reliability/monitor.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -117,6 +119,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -229,6 +232,89 @@ class WrappedTestingCertVerifier : public net::CertVerifier {
     g_cert_verifier_for_testing->RemoveObserver(observer);
   }
 };
+
+// This implementation initializes an OSCryptAsync Encryptor instance and uses
+// that.
+class CookieOSCryptAsyncDelegate : public net::CookieCryptoDelegate {
+ public:
+  explicit CookieOSCryptAsyncDelegate(
+      mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider);
+
+  CookieOSCryptAsyncDelegate(const CookieOSCryptAsyncDelegate&) = delete;
+  CookieOSCryptAsyncDelegate& operator=(const CookieOSCryptAsyncDelegate&) =
+      delete;
+
+  void Init(base::OnceClosure callback) override;
+  bool EncryptString(const std::string& plaintext,
+                     std::string* ciphertext) override;
+  bool DecryptString(const std::string& ciphertext,
+                     std::string* plaintext) override;
+
+ private:
+  void InitCallback(
+      mojo::Remote<network::mojom::CookieEncryptionProvider> lifetime,
+      os_crypt_async::Encryptor encryptor);
+
+  std::optional<os_crypt_async::Encryptor> instance_;
+  mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_initializing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CookieOSCryptAsyncDelegate> weak_ptr_factory_{this};
+};
+
+CookieOSCryptAsyncDelegate::CookieOSCryptAsyncDelegate(
+    mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider)
+    : provider_(std::move(provider)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+bool CookieOSCryptAsyncDelegate::EncryptString(const std::string& plaintext,
+                                               std::string* ciphertext) {
+  return instance_->EncryptString(plaintext, ciphertext);
+}
+
+bool CookieOSCryptAsyncDelegate::DecryptString(const std::string& ciphertext,
+                                               std::string* plaintext) {
+  return instance_->DecryptString(ciphertext, plaintext);
+}
+
+void CookieOSCryptAsyncDelegate::InitCallback(
+    mojo::Remote<network::mojom::CookieEncryptionProvider> lifetime,
+    os_crypt_async::Encryptor encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  instance_.emplace(std::move(encryptor));
+  is_initialized_ = true;
+  callbacks_.Notify();
+}
+
+void CookieOSCryptAsyncDelegate::Init(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_initialized_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // AddUnsafe is safe here because it's always called with a callback that is
+  // owned by a refcounted object. See SQLitePersistentCookieStore::Backend.
+  callbacks_.AddUnsafe(std::move(callback));
+
+  if (is_initializing_) {
+    return;
+  }
+
+  is_initializing_ = true;
+  mojo::Remote<network::mojom::CookieEncryptionProvider> remote(
+      std::move(provider_));
+  auto* raw_remote = remote.get();
+  raw_remote->GetEncryptor(
+      base::BindOnce(&CookieOSCryptAsyncDelegate::InitCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(remote)));
+}
 
 // Predicate function to determine if the given |domain| matches the
 // |filter_type| and |filter_domains| from a |mojom::ClearDataFilter|.
@@ -2638,14 +2724,12 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
           {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
-  // Network Context does not own this pointer.
-  net::CookieCryptoDelegate* crypto_delegate = nullptr;
+  std::unique_ptr<net::CookieCryptoDelegate> crypto_delegate = nullptr;
 
   if (params_->enable_encrypted_cookies) {
-    // Crypto delegate is used if `cookie_encryption_provider` was specified to
-    // the network service.
-    if (network_service_->cookie_crypto_delegate()) {
-      crypto_delegate = network_service_->cookie_crypto_delegate();
+    if (params_->cookie_encryption_provider) {
+      crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
+          std::move(params_->cookie_encryption_provider));
     } else {
       crypto_delegate = cookie_config::GetCookieCryptoDelegate();
     }
@@ -2659,7 +2743,7 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
   scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
       new net::SQLitePersistentCookieStore(
           cookie_path, client_task_runner, background_task_runner,
-          params_->restore_old_session_cookies, crypto_delegate,
+          params_->restore_old_session_cookies, std::move(crypto_delegate),
           enable_exclusive_access));
 
   return base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store);

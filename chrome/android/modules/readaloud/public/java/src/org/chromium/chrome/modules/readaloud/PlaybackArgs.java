@@ -41,7 +41,21 @@ public class PlaybackArgs {
         }
 
         /** Enum for descriptive words about voices. */
-        @IntDef({Tone.NONE, Tone.BOLD, Tone.CALM, Tone.STEADY, Tone.SMOOTH, Tone.RELAXED})
+        @IntDef({
+            Tone.NONE,
+            Tone.BOLD,
+            Tone.CALM,
+            Tone.STEADY,
+            Tone.SMOOTH,
+            Tone.RELAXED,
+            Tone.WARM,
+            Tone.SERENE,
+            Tone.GENTLE,
+            Tone.BRIGHT,
+            Tone.BREEZY,
+            Tone.SOOTHING,
+            Tone.PEACEFUL
+        })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Tone {
             int NONE = 0;
@@ -50,6 +64,13 @@ public class PlaybackArgs {
             int STEADY = 3;
             int SMOOTH = 4;
             int RELAXED = 5;
+            int WARM = 6;
+            int SERENE = 7;
+            int GENTLE = 8;
+            int BRIGHT = 9;
+            int BREEZY = 10;
+            int SOOTHING = 11;
+            int PEACEFUL = 12;
         }
 
         private final String mLanguage;

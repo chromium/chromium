@@ -79,9 +79,8 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
             RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) ||
            (feature == media_feature_names::kPrefersReducedDataMediaFeature &&
             RuntimeEnabledFeatures::PrefersReducedDataEnabled()) ||
-           (feature ==
-                media_feature_names::kPrefersReducedTransparencyMediaFeature &&
-            RuntimeEnabledFeatures::PrefersReducedTransparencyEnabled()) ||
+           feature ==
+               media_feature_names::kPrefersReducedTransparencyMediaFeature ||
            (feature == media_feature_names::kForcedColorsMediaFeature &&
             RuntimeEnabledFeatures::ForcedColorsEnabled()) ||
            (feature == media_feature_names::kNavigationControlsMediaFeature &&
@@ -104,8 +103,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            (feature == media_feature_names::kInvertedColorsMediaFeature &&
             RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
            CSSVariableParser::IsValidVariableName(feature) ||
-           (feature == media_feature_names::kScriptingMediaFeature &&
-            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled()) ||
+           feature == media_feature_names::kScriptingMediaFeature ||
            (RuntimeEnabledFeatures::
                 DesktopPWAsAdditionalWindowingControlsEnabled() &&
             feature == media_feature_names::kDisplayStateMediaFeature) ||

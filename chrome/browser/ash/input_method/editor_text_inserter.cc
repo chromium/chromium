@@ -48,17 +48,17 @@ void EditorTextInserter::OnFocus(int context_id) {
   focused_client_ = TextClientContext{context_id};
   if (pending_text_insert_) {
     InsertText(pending_text_insert_->text);
-    pending_text_insert_ = absl::nullopt;
+    pending_text_insert_ = std::nullopt;
     text_insertion_timer_.Reset();
   }
 }
 
 void EditorTextInserter::OnBlur() {
-  focused_client_ = absl::nullopt;
+  focused_client_ = std::nullopt;
 }
 
 void EditorTextInserter::CancelTextInsertion() {
-  pending_text_insert_ = absl::nullopt;
+  pending_text_insert_ = std::nullopt;
 }
 
 }  // namespace input_method

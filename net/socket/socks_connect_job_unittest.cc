@@ -57,7 +57,7 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             /*ssl_client_context=*/nullptr,
@@ -68,7 +68,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr) {}
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr) {}
 
   ~SOCKSConnectJobTest() override = default;
 
@@ -372,8 +373,9 @@ TEST_F(SOCKSConnectJobTest, Priority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       // Don't try changing priority to itself, as APIs may not allow that.
-      if (new_priority == initial_priority)
+      if (new_priority == initial_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       SOCKSConnectJob socks_connect_job(
           static_cast<RequestPriority>(initial_priority), SocketTag(),

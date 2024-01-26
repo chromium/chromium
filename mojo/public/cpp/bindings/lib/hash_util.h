@@ -7,10 +7,10 @@
 
 #include <cstring>
 #include <functional>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
-#include <optional>
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 
 namespace mojo {

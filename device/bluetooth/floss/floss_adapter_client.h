@@ -98,6 +98,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kGeneralDiscoverable = 2,
   };
 
+  enum class BtAddressType {
+    kPublic = 0,
+    kRandom,
+    kPublicId,
+    kRandomId,
+    kUnknown = 0xfe,
+    kAnonymous = 0xff,
+  };
+
   struct VendorProductInfo {
     uint8_t vendorIdSrc;
     uint16_t vendorId;
@@ -226,6 +235,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // discoverable state changes.
   uint32_t GetDiscoverableTimeout() const { return discoverable_timeout_; }
 
+  // Indicates if LE extended advertising is supported.
+  bool IsExtAdvSupported() const { return property_ext_adv_supported_.Get(); }
+
   // Start a discovery session.
   virtual void StartDiscovery(ResponseCallback<Void> callback);
 
@@ -267,9 +279,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       ResponseCallback<device::BluetoothDevice::UUIDList> callback,
       FlossDeviceId device);
 
+  // Triggers SDP to fetch UUIDs of a device.
+  virtual void FetchRemoteUuids(ResponseCallback<bool> callback,
+                                FlossDeviceId device);
+
+  // Gets the Vendor and Product Id of a device
   virtual void GetRemoteVendorProductInfo(
       ResponseCallback<VendorProductInfo> callback,
       FlossDeviceId device);
+
+  // Gets the address type of a device
+  virtual void GetRemoteAddressType(ResponseCallback<BtAddressType> callback,
+                                    FlossDeviceId device);
 
   // Get bonding state of a device.
   virtual void GetBondState(ResponseCallback<uint32_t> callback,
@@ -463,6 +484,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   FlossProperty<bool> property_discoverable_{
       kAdapterInterface, adapter::kCallbackInterface, adapter::kGetDiscoverable,
       adapter::kOnDiscoverableChanged};
+
+  FlossProperty<bool> property_ext_adv_supported_{
+      kAdapterInterface, adapter::kCallbackInterface,
+      adapter::kIsLeExtendedAdvertisingSupported, nullptr};
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];

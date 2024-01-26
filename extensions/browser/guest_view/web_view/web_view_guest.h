@@ -246,7 +246,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) final;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) final;
-  void RequestToLockMouse(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
 

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -58,7 +59,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,8 +240,7 @@ class PreinstalledWebAppWindowExperimentBrowserTest
         .WillByDefault(testing::Return(false));
 
     provider->SetSynchronizePreinstalledAppsOnStartup(true);
-
-    provider->Start();
+    provider->StartWithSubsystems();
     registrar_observation_.Observe(&provider->registrar_unsafe());
     return provider;
   }
@@ -261,11 +260,11 @@ class PreinstalledWebAppWindowExperimentBrowserTest
 };
 
 namespace {
-absl::optional<UserDisplayMode> ToDisplayMode(UserGroup user_group) {
+std::optional<UserDisplayMode> ToDisplayMode(UserGroup user_group) {
   switch (user_group) {
     case UserGroup::kUnknown:
     case UserGroup::kControl:
-      return absl::nullopt;
+      return std::nullopt;
     case UserGroup::kWindow:
       return UserDisplayMode::kStandalone;
     case UserGroup::kTab:
@@ -611,7 +610,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppWindowExperimentBrowserTestAll,
     EXPECT_THAT(recorded_link_capturing_changes_, IsEmpty());
   }
 
-  absl::optional<UserDisplayMode> expected =
+  std::optional<UserDisplayMode> expected =
       ToDisplayMode(GetUserGroupTestParam());
 
   // Check some arbitrary preinstalled apps have display mode overridden on

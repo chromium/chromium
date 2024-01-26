@@ -220,7 +220,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::string device_name;
     ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -365,7 +365,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void RemoveScannersIfUnusable(
       GetScannerNamesCallback callback,
       const std::string& scanner_name,
-      const absl::optional<lorgnette::ScannerCapabilities>& capabilities) {
+      const std::optional<lorgnette::ScannerCapabilities>& capabilities) {
     if (!capabilities)
       deduped_scanners_.erase(scanner_name);
     scanners_to_filter_.pop_back();
@@ -406,7 +406,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // GetScannerNames.
   void OnListScannerNamesResponse(
       GetScannerNamesCallback callback,
-      absl::optional<lorgnette::ListScannersResponse> response) {
+      std::optional<lorgnette::ListScannersResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     RebuildDedupedScanners(response);
     FilterScannersAndRespond(std::move(callback));
@@ -463,7 +463,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       std::vector<lorgnette::ScannerInfo> scanners_to_verify,
       lorgnette::ListScannersResponse list_response,
       GetScannerInfoListCallback callback,
-      absl::optional<lorgnette::OpenScannerResponse> open_response) {
+      std::optional<lorgnette::OpenScannerResponse> open_response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     // This should only get called when there are scanners that need to be
     // verified.
@@ -508,7 +508,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // method is called in response to that close request.
   void OnVerifyScannerClose(
       const std::string& connection_string,
-      absl::optional<lorgnette::CloseScannerResponse> response) {
+      std::optional<lorgnette::CloseScannerResponse> response) {
     if (!response ||
         response->result() != lorgnette::OPERATION_RESULT_SUCCESS) {
       LOG(WARNING) << "Unable to close scanner '" << connection_string
@@ -522,7 +522,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       GetScannerInfoListCallback callback,
       LocalScannerFilter local_only,
       SecureScannerFilter secure_only,
-      absl::optional<lorgnette::ListScannersResponse> response) {
+      std::optional<lorgnette::ListScannersResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
     // Combine zeroconf scanners and lorgnette scanners and send in callback.
@@ -544,7 +544,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       const std::string& scanner_name,
       const std::string& device_name,
       const ScanProtocol protocol,
-      absl::optional<lorgnette::ScannerCapabilities> capabilities) {
+      std::optional<lorgnette::ScannerCapabilities> capabilities) {
     if (!capabilities) {
       LOG(WARNING) << "Failed to get scanner capabilities using device name: "
                    << device_name;
@@ -562,31 +562,31 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
   void OnOpenScannerResponse(
       OpenScannerCallback callback,
-      absl::optional<lorgnette::OpenScannerResponse> response) {
+      std::optional<lorgnette::OpenScannerResponse> response) {
     std::move(callback).Run(response);
   }
 
   void OnCloseScannerResponse(
       CloseScannerCallback callback,
-      absl::optional<lorgnette::CloseScannerResponse> response) {
+      std::optional<lorgnette::CloseScannerResponse> response) {
     std::move(callback).Run(response);
   }
 
   void OnSetOptionsResponse(
       SetOptionsCallback callback,
-      absl::optional<lorgnette::SetOptionsResponse> response) {
+      std::optional<lorgnette::SetOptionsResponse> response) {
     std::move(callback).Run(response);
   }
 
   void OnGetCurrentConfigResponse(
       GetCurrentConfigCallback callback,
-      absl::optional<lorgnette::GetCurrentConfigResponse> response) {
+      std::optional<lorgnette::GetCurrentConfigResponse> response) {
     std::move(callback).Run(response);
   }
 
   void OnStartPreparedScanResponse(
       StartPreparedScanCallback callback,
-      absl::optional<lorgnette::StartPreparedScanResponse> response) {
+      std::optional<lorgnette::StartPreparedScanResponse> response) {
     std::move(callback).Run(response);
   }
 
@@ -726,19 +726,19 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
   void OnReadScanDataResponse(
       ReadScanDataCallback callback,
-      absl::optional<lorgnette::ReadScanDataResponse> response) {
+      std::optional<lorgnette::ReadScanDataResponse> response) {
     std::move(callback).Run(response);
   }
 
   void OnCancelScanResponse(
       CancelScanCallback callback,
-      absl::optional<lorgnette::CancelScanResponse> response) {
+      std::optional<lorgnette::CancelScanResponse> response) {
     std::move(callback).Run(response);
   }
 
   // Uses |response| and zeroconf_scanners_ to rebuild deduped_scanners_.
   void RebuildDedupedScanners(
-      absl::optional<lorgnette::ListScannersResponse> response) {
+      std::optional<lorgnette::ListScannersResponse> response) {
     ResetDedupedScanners();
     ResetScannersToFilter();
     if (!response || response->scanners_size() == 0)

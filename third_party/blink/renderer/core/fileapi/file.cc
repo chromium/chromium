@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -329,8 +328,7 @@ ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, absl::optional<base::Time>(LastModifiedTime()))
-          .ToLocalChecked());
+          script_state, absl::optional<base::Time>(LastModifiedTime())));
 }
 
 absl::optional<base::Time> File::LastModifiedTimeForSerialization() const {

@@ -4727,7 +4727,7 @@ Press an assigned switch or key to remove assignment.
     Hidden
   </message>
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF" desc="Description for the nearby share settings row when nearby share setting is disabled.">
-    Share files and more with nearby devices
+    Share files and more with nearby devices. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
     Connect to your phone
@@ -5509,7 +5509,7 @@ Press an assigned switch or key to remove assignment.
     Sunset to sunrise
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" translateable="false" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
-    Current schedule is set to 6am - 6pm. To automatically update the sunset and sunrise schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+    Current schedule won't be updated. To automatically update the sunset and sunrise schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
     Make it easier to look at your screen or read in dim light
@@ -5740,7 +5740,7 @@ Press an assigned switch or key to remove assignment.
     Use your IP address to determine location (default)
   </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" translateable="false" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
-    Time Zone is currently set to (UTC+/-X:XX). Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+    Time Zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location
@@ -6337,10 +6337,19 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Camera access
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the camera permission
+    Allow access for apps and websites with the camera permission and system services
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow apps and webpages to use the camera(s) connected to this device. If you still have a problem with your camera, try restart the app or refresh the webpage.
+    Allow access for apps and websites with the camera permission and system services. To use the camera, you may need to restart the app or refresh the page.
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Apps and websites with the camera permissions, and system services can use your camera
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_FALLBACK_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Apps and websites with the camera permissions, and system services can use your camera. To use the camera, you may need to restart the app or refresh the page.
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT" desc="Sub-label for the microphone access row in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Apps and websites with the microphone permissions, and system services can use your microphone
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
     No camera
@@ -6349,7 +6358,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Microphone access
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the microphone permission
+    Allow access for apps and websites with the microphone permission and system services
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no microphone is connected to the device.">
     No microphone
@@ -6384,32 +6393,44 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC" desc="The description of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" translateable="false" desc="The title of the Websites section of the privacy hub sensor subpages.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" desc="The title of the Websites section of the privacy hub sensor subpages.">
     Websites
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
     Manage site camera permissions in Chrome
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
     Manage site microphone permissions in Chrome
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" translateable="false" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
-    No website is allowed to use your camera
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the location subpage. This row is displayed when location is allowed.">
+    Manage site location permissions in Chrome
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
-    No website is allowed to use your microphone
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
+    No websites are allowed to use your camera
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Apps section of the privacy hub sensor subpages.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
+    No websites are allowed to use your microphone
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_LOCATION_TEXT" translateable="false" desc="The text displayed in the Websites section of the location subpage when location is not allowed for websites.">
+    No website is allowed to use your location
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT" translateable="false" desc="The text displayed in the Apps section of the camera subpage when camera is not allowed.">
-    No app is allowed to use your camera
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Apps section of the camera subpage when camera is not allowed.">
+    No apps are allowed use your camera
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
-    No app is allowed to use your microphone
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
+    No apps are allowed use your microphone
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_BLOCKED_FOR_ALL_TEXT" translateable="false" desc="The text displayed as a sublabel in privacy hub page and in sensor subpages when sensor access is disabled.">
-    Blocked for all
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT" translateable="false" desc="The text displayed in the Apps section of the location subpage when location is not allowed.">
+    No app is allowed to use your location
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the camera subpage when camera access is disabled.">
+    Camera access is blocked
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the microphone subpage when microphone access is disabled.">
+    Microphone access is blocked
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Encrypt URLs entered into the browser
@@ -6428,6 +6449,51 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF" desc="Text for secure DNS dialog to turn off DNS in Privacy options for ChromeOS">
     Turn off
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
+    System services
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is allowed.">
+    Allowed
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is not allowed.">
+    Blocked
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX" desc="The text displayed in the rows of the sensor (camera or microphone) list when the sensor access is blocked.">
+    <ph name="SENSOR_NAME">$1<ex>Front Camera</ex></ph> (blocked)
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub camera subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> camera permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_LOCATION_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub location subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> location permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub microphone subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> microphone permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the action buttons (toggle button or managed icon) in the app permission rows of the privacy hub subpages.">
+    Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the android settings link in the app permission rows of the privacy hub subpages.">
+    Opens in new tab, Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
+    Automatic time zone
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_NAME" desc="The name label of the 'Sunset schedule' service displayed in the System services section of the privacy hub 'Location access' subpage.">
+    Sunset schedule
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_LOCAL_WEATHER_NAME" desc="The name label of the 'Local weather' service displayed in the System services section of the privacy hub 'Location access' subpage.">
+    Local weather
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_DARK_THEME_NAME" desc="The name label of the 'Wallpaper Dark Mode' service displayed in the System services section of the privacy hub 'Location access' subpage.">
+    Dark theme
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_NO_CAMERA_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage camera toggle button tooltip when no camera is connected to the device.">
+    No camera connected
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage microphone toggle button tooltip when no microphone is connected to the device.">
+    No microphone connected
   </message>
 
   <!-- On Startup (OS settings) -->

@@ -122,7 +122,7 @@ TEST_F(WebAppProtocolHandlerManagerTest, TranslateProtocolUrl) {
   const webapps::AppId app_id = CreateWebAppWithProtocolHandlers(
       GURL("https://example.com/path"), CreateDefaultProtocolHandlerInfos());
 
-  absl::optional<GURL> translated_url =
+  std::optional<GURL> translated_url =
       protocol_handler_manager().TranslateProtocolUrl(app_id,
                                                       GURL("web+test://test"));
   ASSERT_TRUE(translated_url.has_value());

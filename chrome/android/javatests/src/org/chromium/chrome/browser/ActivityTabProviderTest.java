@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -160,6 +161,8 @@ public class ActivityTabProviderTest {
                 2,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be null.", null, mActivityTab);
+
+        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));

@@ -21,8 +21,6 @@ class GroupPolicyManager : public PolicyManager {
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
 
-  bool CloudPolicyOverridesPlatformPolicy() const;
-
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
   bool HasActiveDevicePolicies() const override;

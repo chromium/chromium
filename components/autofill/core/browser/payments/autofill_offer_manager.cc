@@ -50,7 +50,7 @@ void AutofillOfferManager::OnPersonalDataChanged() {
   UpdateEligibleMerchantDomains();
 }
 
-void AutofillOfferManager::OnDidNavigateFrame(AutofillClient* client) {
+void AutofillOfferManager::OnDidNavigateFrame(AutofillClient& client) {
   notification_handler_.UpdateOfferNotificationVisibility(client);
 }
 

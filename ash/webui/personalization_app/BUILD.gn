@@ -11,7 +11,6 @@ static_library("personalization_app") {
   sources = [
     "personalization_app_ambient_provider.h",
     "personalization_app_keyboard_backlight_provider.h",
-    "personalization_app_sea_pen_provider.h",
     "personalization_app_theme_provider.h",
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
@@ -31,6 +30,7 @@ static_library("personalization_app") {
     "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
@@ -71,6 +71,7 @@ source_set("test_support") {
   deps = [
     ":personalization_app",
     "//ash/public/cpp",
+    "//ash/webui/common:sea_pen",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",

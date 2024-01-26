@@ -113,13 +113,16 @@ source_set("first_run_provider") {
     "//components/sync/base:features",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/ui/first_run/omnibox_position:omnibox_position_ui",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",
     "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/chrome/browser/ui/search_engine_choice:ui_util",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }

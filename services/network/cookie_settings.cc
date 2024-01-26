@@ -16,6 +16,7 @@
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
@@ -24,6 +25,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -35,26 +37,14 @@
 namespace network {
 namespace {
 
-// Check whether the allowed cookie should add `WARN_THIRD_PARTY_PHASEOUT`
-// reason. `block_third_party_cookies` should be the global setting of whether
-// or not third party cookies is blocked.
-bool ShouldWarnThirdPartyCookiePhaseout(const bool block_third_party_cookies,
-                                        const bool is_third_party_request,
-                                        const bool is_cookie_partitioned,
-                                        const bool is_explicit_setting) {
-  return !block_third_party_cookies && is_third_party_request &&
-         !is_cookie_partitioned && !is_explicit_setting;
-}
-
-// Check whether the blocked cookie should add `EXCLUDE_THIRD_PARTY_PHASEOUT`
-// reason. `block_third_party_cookies` should be the global setting of whether
-// or not third party cookies is blocked.
-bool ShouldExcludeThirdPartyCookiePhaseout(const bool block_third_party_cookies,
-                                           const bool is_third_party_request,
-                                           const bool is_cookie_partitioned,
-                                           const bool is_explicit_setting) {
-  return block_third_party_cookies && is_third_party_request &&
-         !is_cookie_partitioned && !is_explicit_setting;
+bool AffectedByThirdPartyCookiePhaseout(
+    const net::CookieSameSite cookie_same_site,
+    const bool is_third_party_request,
+    const bool is_cookie_partitioned,
+    const bool is_explicit_setting) {
+  return cookie_same_site == net::CookieSameSite::NO_RESTRICTION &&
+         is_third_party_request && !is_cookie_partitioned &&
+         !is_explicit_setting;
 }
 
 bool IsValidType(ContentSettingsType type) {
@@ -72,7 +62,7 @@ bool IsValidType(ContentSettingsType type) {
 bool CookieSettings::IsCookieAllowed(const net::CanonicalCookie& cookie,
                                      const CookieSettingWithMetadata& setting) {
   return IsAllowed(setting.cookie_setting()) ||
-         (cookie.IsPartitioned() && setting.IsPartitionedStateAllowed());
+         (cookie.IsPartitioned() && setting.allow_partitioned_cookies());
 }
 
 // static
@@ -82,7 +72,7 @@ net::NetworkDelegate::PrivacySetting CookieSettings::PrivacySetting(
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
   }
 
-  if (setting.IsPartitionedStateAllowed()) {
+  if (setting.allow_partitioned_cookies()) {
     return net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
   }
 
@@ -120,12 +110,10 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard()) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
-        host_indexed_content_settings_[type]->Add(
-            ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
-                                        ContentSettingsPattern::Wildcard(),
-                                        base::Value(CONTENT_SETTING_ALLOW),
-                                        /*source=*/std::string(),
-                                        /*incognito=*/false));
+        host_indexed_content_settings_[type]->SetValue(
+            ContentSettingsPattern::Wildcard(),
+            ContentSettingsPattern::Wildcard(),
+            base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
         // TODO(b/314800700): clear content_settings_ since we only need one
         // copy of these content settings.
       }
@@ -171,30 +159,30 @@ bool CookieSettings::IsCookieAccessible(
   bool is_third_party_request = IsThirdPartyRequest(url, site_for_cookies);
   if (cookie_inclusion_status) {
     if (allowed) {
-      if (ShouldWarnThirdPartyCookiePhaseout(
-              block_third_party_cookies_, is_third_party_request,
-              cookie.IsPartitioned(),
+      // The cookie should be allowed by default to have this warning reason.
+      if (!ShouldBlockThirdPartyCookies() &&
+          AffectedByThirdPartyCookiePhaseout(
+              cookie.SameSite(), is_third_party_request, cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie_inclusion_status->AddWarningReason(
             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
       }
     } else {
-      if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-                  tracking_protection_enabled_for_3pcd_,
-              is_third_party_request, cookie.IsPartitioned(),
+      if (IsThirdPartyPhaseoutEnabled() &&
+          AffectedByThirdPartyCookiePhaseout(
+              cookie.SameSite(), is_third_party_request, cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie_inclusion_status->AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie_inclusion_status->AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         cookie_inclusion_status->AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie_inclusion_status->AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
@@ -264,8 +252,9 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     if (IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
       is_any_allowed = true;
 
-      if (ShouldWarnThirdPartyCookiePhaseout(
-              block_third_party_cookies_, is_third_party_request,
+      if (!ShouldBlockThirdPartyCookies() &&
+          AffectedByThirdPartyCookiePhaseout(
+              cookie.cookie.SameSite(), is_third_party_request,
               cookie.cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddWarningReason(
@@ -273,46 +262,46 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
       }
     } else {
       // Use a different exclusion reason when the 3pc is blocked by browser.
-      if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-                  tracking_protection_enabled_for_3pcd_,
-              is_third_party_request, cookie.cookie.IsPartitioned(),
+      if (IsThirdPartyPhaseoutEnabled() &&
+          AffectedByThirdPartyCookiePhaseout(
+              cookie.cookie.SameSite(), is_third_party_request,
+              cookie.cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie.access_result.status.AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         // User has a explicit setting to block 3pc.
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
     if (!IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
       // Use a different exclusion reason when the 3pc is blocked by browser.
-      if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-                  tracking_protection_enabled_for_3pcd_,
-              is_third_party_request, cookie.cookie.IsPartitioned(),
+      if (IsThirdPartyPhaseoutEnabled() &&
+          AffectedByThirdPartyCookiePhaseout(
+              cookie.cookie.SameSite(), is_third_party_request,
+              cookie.cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie.access_result.status.AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         // User has a explicit setting to block 3pc.
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
@@ -357,7 +346,6 @@ ContentSetting CookieSettings::GetContentSetting(
     content_settings::SettingInfo* info) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.GetContentSetting.Network.Duration");
-  const ContentSettingPatternSource* result;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
 #if DCHECK_IS_ON()
@@ -367,27 +355,36 @@ ContentSetting CookieSettings::GetContentSetting(
         << "Different result in index lookup: " << primary_url.spec() << " "
         << secondary_url.spec();
 #endif
-    result = GetHostIndexedContentSettings(content_type)
-                 .Find(primary_url, secondary_url);
-  } else {
-    result = content_settings::FindContentSetting(
-        primary_url, secondary_url, GetContentSettings(content_type));
-  }
-
-  if (!result) {
-    if (info) {
-      info->primary_pattern = ContentSettingsPattern::Wildcard();
-      info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    const content_settings::RuleEntry* result =
+        GetHostIndexedContentSettings(content_type)
+            .Find(primary_url, secondary_url);
+    if (result) {
+      if (info) {
+        info->primary_pattern = result->first.primary_pattern;
+        info->secondary_pattern = result->first.secondary_pattern;
+        info->metadata = result->second.metadata;
+      }
+      return content_settings::ValueToContentSetting(result->second.value);
     }
-    return CONTENT_SETTING_BLOCK;
+  } else {
+    const ContentSettingPatternSource* result =
+        content_settings::FindContentSetting(primary_url, secondary_url,
+                                             GetContentSettings(content_type));
+    if (result) {
+      if (info) {
+        info->primary_pattern = result->primary_pattern;
+        info->secondary_pattern = result->secondary_pattern;
+        info->metadata = result->metadata;
+      }
+      return result->GetContentSetting();
+    }
   }
-
   if (info) {
-    info->primary_pattern = result->primary_pattern;
-    info->secondary_pattern = result->secondary_pattern;
-    info->metadata = result->metadata;
+    info->primary_pattern = ContentSettingsPattern::Wildcard();
+    info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    info->metadata = {};
   }
-  return result->GetContentSetting();
+  return CONTENT_SETTING_BLOCK;
 }
 
 bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
@@ -397,6 +394,11 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
 
 bool CookieSettings::ShouldBlockThirdPartyCookies() const {
   return block_third_party_cookies_;
+}
+
+bool CookieSettings::IsThirdPartyPhaseoutEnabled() const {
+  return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+         tracking_protection_enabled_for_3pcd_;
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {

@@ -77,6 +77,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
@@ -102,8 +104,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
@@ -2831,7 +2831,7 @@ public class SiteSettingsTest {
     static class PermissionTestCase {
         protected final String mTestName;
         protected final @SiteSettingsCategory.Type int mSiteSettingsType;
-        protected final @ContentSettingsType int mContentSettingsType;
+        protected final @ContentSettingsType.EnumType int mContentSettingsType;
         protected final boolean mIsCategoryEnabled;
         protected final List<String> mExpectedPreferenceKeys;
 
@@ -2840,7 +2840,7 @@ public class SiteSettingsTest {
         PermissionTestCase(
                 final String testName,
                 @SiteSettingsCategory.Type final int siteSettingsType,
-                @ContentSettingsType final int contentSettingsType,
+                @ContentSettingsType.EnumType final int contentSettingsType,
                 final boolean enabled) {
             mTestName = testName;
             mSiteSettingsType = siteSettingsType;

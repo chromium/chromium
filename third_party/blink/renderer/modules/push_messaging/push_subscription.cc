@@ -121,7 +121,8 @@ ScriptPromise PushSubscription::unsubscribe(ScriptState* script_state) {
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
   push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<bool, DOMException*>>(resolver));
+      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
+          resolver));
   return promise;
 }
 
@@ -138,8 +139,8 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
   }
 
   V8ObjectBuilder keys(script_state);
-  keys.Add("p256dh", ToBase64URLWithoutPadding(p256dh_));
-  keys.Add("auth", ToBase64URLWithoutPadding(auth_));
+  keys.AddString("p256dh", ToBase64URLWithoutPadding(p256dh_));
+  keys.AddString("auth", ToBase64URLWithoutPadding(auth_));
 
   result.Add("keys", keys);
 

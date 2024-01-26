@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -25,9 +26,9 @@
 #import "components/sync_user_events/global_id_mapper.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -294,7 +295,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
 
-  syncer::TestSyncService* sync_service_;
+  raw_ptr<syncer::TestSyncService> sync_service_;
   sync_sessions::SyncedSession sync_session_;
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions_;

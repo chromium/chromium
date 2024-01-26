@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -27,16 +29,23 @@ namespace ash::download_status {
 namespace {
 
 // Returns the command ID corresponding to the given command type.
+// NOTE: It is fine to map both `CommandType::kOpenFile` and
+// `CommandType::kShowInBrowser` to `kOpenItem`, because `kOpenItem` is not
+// accessible from a holding space chip's context menu.
 HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
   switch (type) {
     case CommandType::kCancel:
       return HoldingSpaceCommandId::kCancelItem;
-    case CommandType::kShowInBrowser:
+    case CommandType::kOpenFile:
       return HoldingSpaceCommandId::kOpenItem;
     case CommandType::kPause:
       return HoldingSpaceCommandId::kPauseItem;
     case CommandType::kResume:
       return HoldingSpaceCommandId::kResumeItem;
+    case CommandType::kShowInBrowser:
+      return HoldingSpaceCommandId::kOpenItem;
+    case CommandType::kShowInFolder:
+      return HoldingSpaceCommandId::kShowInFolder;
   }
 }
 
@@ -57,8 +66,12 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
 
   HoldingSpaceKeyedService* const service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile());
-  const HoldingSpaceProgress progress(display_metadata.received_bytes,
-                                      display_metadata.total_bytes);
+
+  // Create a `HoldingSpaceProgress` instance from a `Progress` instance.
+  const Progress& download_progress = display_metadata.progress;
+  const HoldingSpaceProgress progress(download_progress.received_bytes(),
+                                      download_progress.total_bytes(),
+                                      download_progress.complete());
 
   if (item_id_by_guid == item_ids_by_guids_.end() ||
       !HoldingSpaceController::Get()->model()->GetItem(
@@ -82,14 +95,17 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
     return;
   }
 
-  // Generate commands from `display_metadata`.
+  // Generate in-progress commands from `display_metadata`.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   for (const auto& command_info : display_metadata.command_infos) {
-    in_progress_commands.emplace_back(
-        ConvertCommandTypeToId(command_info.type), command_info.text_id,
-        command_info.icon,
-        base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
-            command_info.command_callback));
+    if (const HoldingSpaceCommandId id =
+            ConvertCommandTypeToId(command_info.type);
+        holding_space_util::IsInProgressCommand(id)) {
+      in_progress_commands.emplace_back(
+          id, command_info.text_id, command_info.icon,
+          base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
+              command_info.command_callback));
+    }
   }
 
   // Specify the backing file.
@@ -97,8 +113,6 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile(), file_path);
 
-  // TODO(http://b/307347158): Update the holding space item specified by
-  // `holding_space_item_id` with `display_metadata`.
   service->UpdateItem(item_id_by_guid->second)
       ->SetBackingFile(HoldingSpaceFile(
           file_path,

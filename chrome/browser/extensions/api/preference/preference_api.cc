@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -48,7 +49,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -121,7 +121,7 @@ class CookieControlsModeTransformer : public PrefTransformerInterface {
   using CookieControlsMode = content_settings::CookieControlsMode;
 
  public:
-  absl::optional<base::Value> ExtensionToBrowserPref(
+  std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) override {
@@ -131,7 +131,7 @@ class CookieControlsModeTransformer : public PrefTransformerInterface {
                                     : CookieControlsMode::kBlockThirdParty));
   }
 
-  absl::optional<base::Value> BrowserToExtensionPref(
+  std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override {
     auto cookie_control_mode =
@@ -148,7 +148,7 @@ class CookieControlsModeTransformer : public PrefTransformerInterface {
 
 class NetworkPredictionTransformer : public PrefTransformerInterface {
  public:
-  absl::optional<base::Value> ExtensionToBrowserPref(
+  std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) override {
@@ -162,7 +162,7 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
         static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
   }
 
-  absl::optional<base::Value> BrowserToExtensionPref(
+  std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override {
     prefetch::NetworkPredictionOptions value =
@@ -177,7 +177,7 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
 
 class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
  public:
-  absl::optional<base::Value> ExtensionToBrowserPref(
+  std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) override {
@@ -187,7 +187,7 @@ class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
                                             : CONTENT_SETTING_BLOCK));
   }
 
-  absl::optional<base::Value> BrowserToExtensionPref(
+  std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override {
     auto protected_identifier_mode =
@@ -199,25 +199,25 @@ class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
 // Return error when extensions try to enable a Privacy Sandbox API.
 class PrivacySandboxTransformer : public PrefTransformerInterface {
  public:
-  absl::optional<base::Value> ExtensionToBrowserPref(
+  std::optional<base::Value> ExtensionToBrowserPref(
       const base::Value& extension_pref,
       std::string& error,
       bool& bad_message) override {
     if (!extension_pref.is_bool()) {
       bad_message = true;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (extension_pref.GetBool()) {
       error = "Extensions aren’t allowed to enable Privacy Sandbox APIs.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return extension_pref.Clone();
   }
 
   // Default behaviour
-  absl::optional<base::Value> BrowserToExtensionPref(
+  std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override {
     return browser_pref.Clone();
@@ -227,6 +227,35 @@ class PrivacySandboxTransformer : public PrefTransformerInterface {
 bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
   scope = extensions::api::types::ParseChromeSettingScope(s);
   return scope != ChromeSettingScope::kNone;
+}
+
+bool RegisterTransformers(PrefMapping* pref_mapping) {
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kCookieControlsMode,
+      std::make_unique<CookieControlsModeTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefetch::prefs::kNetworkPredictionOptions,
+      std::make_unique<NetworkPredictionTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kProtectedContentDefault,
+      std::make_unique<ProtectedContentEnabledTransformer>());
+
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1TopicsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1FledgeEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+
+  return true;
 }
 
 }  // namespace
@@ -342,7 +371,7 @@ void PreferenceEventRouter::OnAshPrefChanged(crosapi::mojom::PrefPath pref_path,
 
 void PreferenceEventRouter::OnAshGetSuccess(
     const std::string& browser_pref,
-    absl::optional<::base::Value> opt_value,
+    std::optional<::base::Value> opt_value,
     crosapi::mojom::PrefControlState control_state) {
   // Note: crosapi::mojom::prefs::GetExtensionPrefWithControl could be called
   // with an invalid pref path, and returns empty opt_value.
@@ -364,7 +393,7 @@ void PreferenceEventRouter::OnAshGetSuccess(
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
 
-  absl::optional<base::Value> transformed_value =
+  std::optional<base::Value> transformed_value =
       transformer->BrowserToExtensionPref(opt_value.value(), incognito);
   if (!transformed_value) {
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
@@ -400,7 +429,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   CHECK(pref);
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
-  absl::optional<base::Value> transformed_value =
+  std::optional<base::Value> transformed_value =
       transformer->BrowserToExtensionPref(*pref->GetValue(), incognito);
   if (!transformed_value) {
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
@@ -463,39 +492,9 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
   PrefMapping* pref_mapping = PrefMapping::GetInstance();
 
-  // TODO(dbertoni): Only register the transformers once. We need a better
-  // place to do this and to only do it once. This will allow getting rid of
-  // the HasPrefTransformer API. Also, the ProxyPrefTransformer needs to be
-  // registered in somewhere else. This will happen in a follow-on CL.
-  if (!pref_mapping->HasPrefTransformer(prefs::kCookieControlsMode)) {
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kCookieControlsMode,
-        std::make_unique<CookieControlsModeTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefetch::prefs::kNetworkPredictionOptions,
-        std::make_unique<NetworkPredictionTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kProtectedContentDefault,
-        std::make_unique<ProtectedContentEnabledTransformer>());
-  }
-
-  if (!pref_mapping->HasPrefTransformer(
-          prefs::kPrivacySandboxM1TopicsEnabled)) {
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1TopicsEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1FledgeEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1AdMeasurementEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-  }
+  // This serves to ensure we only register transformers once.
+  static bool transformers_registered = RegisterTransformers(pref_mapping);
+  CHECK(transformers_registered);
 
   for (const auto& pref : PrefMapping::GetMappings()) {
     std::string event_name;
@@ -507,7 +506,7 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On lacros, ensure the PreferenceEventRouter is always created to watch for
-  // and notify of any pref changes, even if there's no extension listeners.
+  // and notify of any pref changes, even if there are no extension listeners.
   // TODO(crbug.com/1334829): Abstract out lacros logic from the
   // PreferenceEventRouter so we don't needlessly dispatch extension events.
   EnsurePreferenceEventRouterCreated();
@@ -598,7 +597,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   const base::Value& details = args()[1];
 
   bool incognito = false;
-  if (absl::optional<bool> result = details.GetDict().FindBool(kIncognitoKey)) {
+  if (std::optional<bool> result = details.GetDict().FindBool(kIncognitoKey)) {
     incognito = *result;
   }
 
@@ -680,7 +679,7 @@ void GetPreferenceFunction::ProduceGetResult(
     bool incognito) {
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
-  absl::optional<base::Value> transformed_value =
+  std::optional<base::Value> transformed_value =
       transformer->BrowserToExtensionPref(*pref_value, incognito);
   if (!transformed_value) {
     // TODO(devlin): Can this happen?  When?  Should it be an error, or a bad
@@ -702,7 +701,7 @@ void GetPreferenceFunction::ProduceGetResult(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void GetPreferenceFunction::OnLacrosGetSuccess(
-    absl::optional<::base::Value> opt_value,
+    std::optional<::base::Value> opt_value,
     crosapi::mojom::PrefControlState control_state) {
   if (!browser_context()) {
     return;
@@ -720,7 +719,7 @@ void GetPreferenceFunction::OnLacrosGetSuccess(
   const base::Value& details = args()[1];
 
   bool incognito = false;
-  if (absl::optional<bool> result = details.GetDict().FindBool(kIncognitoKey)) {
+  if (std::optional<bool> result = details.GetDict().FindBool(kIncognitoKey)) {
     incognito = *result;
   }
 
@@ -824,7 +823,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
   std::string error;
   bool bad_message = false;
-  absl::optional<base::Value> browser_pref_value =
+  std::optional<base::Value> browser_pref_value =
       transformer->ExtensionToBrowserPref(*value, error, bad_message);
   if (!browser_pref_value) {
     EXTENSION_FUNCTION_VALIDATE(!bad_message);
@@ -834,7 +833,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 
   // Validate also that the stored value can be converted back by the
   // transformer.
-  absl::optional<base::Value> extension_pref_value =
+  std::optional<base::Value> extension_pref_value =
       transformer->BrowserToExtensionPref(*browser_pref_value, incognito);
   EXTENSION_FUNCTION_VALIDATE(extension_pref_value);
 

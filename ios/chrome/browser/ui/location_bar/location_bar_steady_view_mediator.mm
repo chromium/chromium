@@ -190,6 +190,10 @@
   self.webContentAreaShowingHTTPAuthDialog = NO;
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.webContentAreaOverlayPresenter = nullptr;
+}
+
 #pragma mark - private
 
 - (web::WebState*)currentWebState {

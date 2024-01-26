@@ -595,7 +595,7 @@
       type_name: "PaintImages",
       field_group: "*",
       default_value: "nullptr",
-      wrapper_pointer_name: "std::unique_ptr",
+      wrapper_pointer_name: "Member",
       custom_compare: true,
       include_paths: ["third_party/blink/renderer/core/style/paint_images.h"],
       computed_style_custom_functions: ["getter", "setter"],

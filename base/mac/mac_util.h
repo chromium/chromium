@@ -11,6 +11,7 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/base_export.h"
 
@@ -53,6 +54,10 @@ BASE_EXPORT bool WasLaunchedAsHiddenLoginItem();
 // Remove the quarantine xattr from the given file. Returns false if there was
 // an error, or true otherwise.
 BASE_EXPORT bool RemoveQuarantineAttribute(const FilePath& file_path);
+
+// Sets the tags on a given file or folder.
+BASE_EXPORT void SetFileTags(const FilePath& file_path,
+                             const std::vector<std::string>& file_tags);
 
 // The following two functions return the version of the macOS currently
 // running. MacOSVersion() returns the full trio of version numbers, packed into

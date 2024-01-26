@@ -34,7 +34,15 @@ void FakeTelemetryManagementService::SetAudioGain(
     uint64_t node_id,
     int32_t gain,
     SetAudioGainCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(true);
+}
+
+void FakeTelemetryManagementService::SetAudioVolume(
+    uint64_t node_id,
+    int32_t volume,
+    bool is_muted,
+    SetAudioVolumeCallback callback) {
+  std::move(callback).Run(true);
 }
 
 }  // namespace chromeos

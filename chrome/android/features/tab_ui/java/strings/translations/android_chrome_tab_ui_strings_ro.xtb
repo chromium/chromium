@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Primește notificări</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="4212246570487010370">Continuă navigarea</translation>
+<translation id="427987768447457592">Grup de file nou</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
 <translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
+<translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă pe care nu ai folosit-o recent}few{Ai <ph name="TABS_COUNT_MANY" /> file pe care nu le-ai folosit recent}other{Ai <ph name="TABS_COUNT_MANY" /> de file pe care nu le-ai folosit recent}}</translation>
 <translation id="5339733443032484186">Ultima filă</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>

@@ -843,6 +843,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   }
 
   SetSubtitle(model_->subtitle(DialogModelHost::GetPassKey()));
+  // This is added due to crbug.com/1518993 which adds a subtitle that needs
+  // line wrapping. If any future dialogs need the subtitle to not line wrap,
+  // this behavior will need to be configurable via the builder.
+  SetSubtitleAllowCharacterBreak(true);
 
   if (!model_->main_image(DialogModelHost::GetPassKey()).IsEmpty()) {
     SetMainImage(model_->main_image(DialogModelHost::GetPassKey()));

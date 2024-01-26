@@ -1,0 +1,25 @@
+<style include="common cros-button-style">
+  h3,
+  p {
+    margin: 0;
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach no-cancel>
+  <h3 slot="title">[[i18n('seaPenWallpaperTermsDialogTitle')]]</h3>
+  <div slot="body">
+    <!-- TODO(b/317235695): add the real content and header image. -->
+    <span id="termsOfServiceContent" inner-h-t-m-l="[[i18nAdvanced('seaPenWallpaperTermsOfServiceDesc')]]"></span>
+  </div>
+  <div slot="button-container">
+    <cr-button id="refuse" on-click="onClickRefuse_">
+      <span>[[i18n('seaPenWallpaperTermsRefuseButton')]]</span>
+    </cr-button>
+    <cr-button id="accept" on-click="onClickAccept_" class="action-button">
+      <span>[[i18n('seaPenWallpaperTermsAcceptButton')]]</span>
+    </cr-button>
+  </div>
+</cr-dialog>

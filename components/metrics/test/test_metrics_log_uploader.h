@@ -12,9 +12,7 @@
 
 namespace metrics {
 
-class TestMetricsLogUploader
-    : public MetricsLogUploader,
-      public base::SupportsWeakPtr<TestMetricsLogUploader> {
+class TestMetricsLogUploader : public MetricsLogUploader {
  public:
   explicit TestMetricsLogUploader(
       const MetricsLogUploader::UploadCallback& on_upload_complete);
@@ -32,6 +30,10 @@ class TestMetricsLogUploader
 
   const ReportingInfo& reporting_info() const { return last_reporting_info_; }
 
+  base::WeakPtr<TestMetricsLogUploader> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // MetricsLogUploader:
   void UploadLog(const std::string& compressed_log_data,
@@ -43,6 +45,7 @@ class TestMetricsLogUploader
   const MetricsLogUploader::UploadCallback on_upload_complete_;
   ReportingInfo last_reporting_info_;
   bool is_uploading_;
+  base::WeakPtrFactory<TestMetricsLogUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace metrics

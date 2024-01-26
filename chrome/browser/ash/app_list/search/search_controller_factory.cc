@@ -100,8 +100,8 @@ std::unique_ptr<SearchController> CreateSearchController(
           std::make_unique<LocalImageSearchProvider>(profile));
     }
     if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      controller->AddProvider(
-          std::make_unique<AppShortcutsSearchProvider>(profile));
+      controller->AddProvider(std::make_unique<AppShortcutsSearchProvider>(
+          profile, list_controller));
     }
   }
 
@@ -115,7 +115,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         kMaxAppShortcutResults, profile, list_controller));
   }
 
-  if (app_list_features::IsContinueSectionWithRecentsEnabled() ||
+  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled() ||
       base::GetFieldTrialParamByFeatureAsBool(
           ash::features::kProductivityLauncher, "enable_continue", false)) {
     controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
@@ -151,10 +151,8 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(
       std::make_unique<HelpAppZeroStateProvider>(profile, notifier));
 
-  if (base::FeatureList::IsEnabled(ash::features::kAppLaunchAutomation)) {
-    controller->AddProvider(
-        std::make_unique<DesksAdminTemplateProvider>(profile, list_controller));
-  }
+  controller->AddProvider(
+      std::make_unique<DesksAdminTemplateProvider>(profile, list_controller));
 
   if (search_features::IsLauncherGameSearchEnabled()) {
     controller->AddProvider(

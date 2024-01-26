@@ -2,7 +2,7 @@
 </style>
 
 <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <cr-link-row id="appNotificationsManagerRow" class="settings-box"
+  <cr-link-row id="appNotificationsManagerRow" class="settings-box first"
       label="$i18n{appNotificationsManagerLabel}"
       sub-label= "[[getNotificationsCountSublabel_(appList_)]]"
       on-click="onClickAppNotifications_">

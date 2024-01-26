@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
-#include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
+#include "ash/test/active_window_waiter.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -14,46 +12,9 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 namespace {
-
-// Waits for a window to be activated on the primary display. Returns the window
-// via the Wait() method.
-class ActiveWindowWaiter : public wm::ActivationChangeObserver {
- public:
-  ActiveWindowWaiter() {
-    auto* activation_client =
-        wm::GetActivationClient(Shell::GetPrimaryRootWindow());
-    observation_.Observe(activation_client);
-  }
-
-  ~ActiveWindowWaiter() override = default;
-
-  aura::Window* Wait() {
-    run_loop_.Run();
-    return found_window_;
-  }
-
-  // wm::ActivationChangeObserver:
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
-    if (gained_active) {
-      found_window_ = gained_active;
-      observation_.Reset();
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> found_window_ = nullptr;
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      observation_{this};
-};
 
 class WmpBrowserTest : public InProcessBrowserTest {
  public:
@@ -70,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(WmpBrowserTest, DragAndDropWindow) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   // Launch the OS Settings app.
-  ActiveWindowWaiter window_waiter;
+  ActiveWindowWaiter window_waiter(Shell::GetPrimaryRootWindow());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
   aura::Window* window = window_waiter.Wait();
   ASSERT_TRUE(window);

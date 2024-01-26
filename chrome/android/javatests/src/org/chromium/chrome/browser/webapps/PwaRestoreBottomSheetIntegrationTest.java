@@ -27,10 +27,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.PwaRestoreBottomSheetTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -40,17 +42,17 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils.DisplayStage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-import java.util.ArrayList;
-
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI})
+@EnableFeatures({
+    ChromeFeatureList.PWA_RESTORE_UI,
+    ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaRestoreBottomSheetIntegrationTest {
     @Rule
@@ -63,10 +65,12 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
+    private static final String TAG = "PwaRestoreIntegrTest";
+
     private SharedPreferencesManager mPreferences;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mPreferences = ChromeSharedPreferences.getInstance();
@@ -79,13 +83,18 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // do the same to make sure the testing environment reflects what happens during normal
         // startup.
         mPreferences.writeBoolean(ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
+    }
 
-        ArrayList<String[]> appList = new ArrayList<String[]>();
-        appList.add(new String[] {"appId1", "App name 1"});
-        appList.add(new String[] {"appId2", "App name 2"});
-        appList.add(new String[] {"appId3", "App name 3"});
-        PwaRestoreBottomSheetTestUtils.setAppListForRestoring(
-                appList.toArray(new String[appList.size()][]));
+    private boolean setTestAppsForRestoring(String[][] appList, int[] lastUsed) {
+        Assert.assertEquals(appList.length, lastUsed.length);
+        try {
+            PwaRestoreBottomSheetTestUtils.waitForWebApkDatabaseInitialization();
+            PwaRestoreBottomSheetTestUtils.setAppListForRestoring(appList, lastUsed);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "setTestAppsForRestoring failed " + e);
+            return false;
+        }
     }
 
     @After
@@ -192,7 +201,70 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    public void testOlderAppsShowSeparately() {
+        // This test is about ensuring that when an app was last used more than
+        // 30 days ago (40 specified below), it shows up in a separate ("older")
+        // list.
+        Assert.assertTrue(
+                setTestAppsForRestoring(
+                        new String[][] {
+                            {"https://example.com/app1/", "App 1"},
+                            {"https://example.com/app2/", "App 2"},
+                            {"https://example.com/app3/", "App 3"}
+                        },
+                        // Days since the apps were last used (respectively).
+                        new int[] {1, 2, 40}));
+
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        onView(withText("Older")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testNoOlderAppsShown() {
+        // This test is about ensuring that when all apps are recent,  we don't
+        // show the separate ("Older") app list.
+        Assert.assertTrue(
+                setTestAppsForRestoring(
+                        new String[][] {
+                            {"https://example.com/app1/", "App 1"},
+                            {"https://example.com/app2/", "App 2"},
+                            {"https://example.com/app3/", "App 3"}
+                        },
+                        // Days since the apps were last used (respectively).
+                        new int[] {1, 2, 3}));
+
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        onView(withText("Older")).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
     public void testClickForwarding() {
+        Assert.assertTrue(
+                setTestAppsForRestoring(
+                        new String[][] {
+                            {"https://example.com/app1/", "App 1"},
+                            {"https://example.com/app2/", "App 2"},
+                            {"https://example.com/app3/", "App 3"}
+                        },
+                        // Days since the apps were last used (respectively).
+                        new int[] {1, 2, 4}));
+
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
@@ -201,15 +273,25 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withId(R.id.review_button)).perform(click());
 
         assertIsComboCheckedAtIndex(1, false);
-        onView(withText("Foo")).check(matches(isDisplayed()));
-        onView(withText("Foo")).perform(click());
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
     }
 
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
-    public void testDeselectAll() {
+    public void testDeselectAll() throws Exception {
+        Assert.assertTrue(
+                setTestAppsForRestoring(
+                        new String[][] {
+                            {"https://example.com/app1/", "App 1"},
+                            {"https://example.com/app2/", "App 2"},
+                            {"https://example.com/app3/", "App 3"}
+                        },
+                        // Days since the apps were last used (respectively).
+                        new int[] {1, 2, 4}));
+
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
@@ -222,8 +304,8 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(2, false);
 
         // Ensure one entry is checked.
-        onView(withText("Foo")).check(matches(isDisplayed()));
-        onView(withText("Foo")).perform(click());
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
 
         // Now verify the Deselect function leaves everything in unchecked state.

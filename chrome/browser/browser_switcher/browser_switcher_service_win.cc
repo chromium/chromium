@@ -138,8 +138,8 @@ void SaveDataToFile(const std::string& data, base::FilePath path) {
 }
 
 // URL to fetch the IEEM sitelist from. Only used for testing.
-absl::optional<std::string>* IeemSitelistUrlForTesting() {
-  static base::NoDestructor<absl::optional<std::string>>
+std::optional<std::string>* IeemSitelistUrlForTesting() {
+  static base::NoDestructor<std::optional<std::string>>
       ieem_sitelist_url_for_testing;
   return ieem_sitelist_url_for_testing.get();
 }
@@ -147,8 +147,7 @@ absl::optional<std::string>* IeemSitelistUrlForTesting() {
 bool IsLBSExtensionEnabled(Profile* profile) {
   auto* reg = extensions::ExtensionRegistry::Get(profile);
   DCHECK(reg);
-  return reg->GetExtensionById(kLBSExtensionId,
-                               extensions::ExtensionRegistry::ENABLED);
+  return reg->enabled_extensions().Contains(kLBSExtensionId);
 }
 
 }  // namespace
@@ -227,8 +226,9 @@ GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
   if (!prefs().UseIeSitelist())
     return GURL();
 
-  if (*IeemSitelistUrlForTesting() != absl::nullopt)
+  if (*IeemSitelistUrlForTesting() != std::nullopt) {
     return GURL((*IeemSitelistUrlForTesting()).value());
+  }
 
   base::win::RegKey key;
   if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, kIeSiteListKey, KEY_READ) &&

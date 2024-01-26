@@ -496,6 +496,27 @@ typedef interface IPolicyStatusSystem IPolicyStatusSystem;
 #endif 	/* __IPolicyStatusSystem_FWD_DEFINED__ */
 
 
+#ifndef __IPolicyStatusValue_FWD_DEFINED__
+#define __IPolicyStatusValue_FWD_DEFINED__
+typedef interface IPolicyStatusValue IPolicyStatusValue;
+
+#endif 	/* __IPolicyStatusValue_FWD_DEFINED__ */
+
+
+#ifndef __IPolicyStatusValueUser_FWD_DEFINED__
+#define __IPolicyStatusValueUser_FWD_DEFINED__
+typedef interface IPolicyStatusValueUser IPolicyStatusValueUser;
+
+#endif 	/* __IPolicyStatusValueUser_FWD_DEFINED__ */
+
+
+#ifndef __IPolicyStatusValueSystem_FWD_DEFINED__
+#define __IPolicyStatusValueSystem_FWD_DEFINED__
+typedef interface IPolicyStatusValueSystem IPolicyStatusValueSystem;
+
+#endif 	/* __IPolicyStatusValueSystem_FWD_DEFINED__ */
+
+
 #ifndef __IPolicyStatus2_FWD_DEFINED__
 #define __IPolicyStatus2_FWD_DEFINED__
 typedef interface IPolicyStatus2 IPolicyStatus2;
@@ -536,27 +557,6 @@ typedef interface IPolicyStatus3User IPolicyStatus3User;
 typedef interface IPolicyStatus3System IPolicyStatus3System;
 
 #endif 	/* __IPolicyStatus3System_FWD_DEFINED__ */
-
-
-#ifndef __IPolicyStatusValue_FWD_DEFINED__
-#define __IPolicyStatusValue_FWD_DEFINED__
-typedef interface IPolicyStatusValue IPolicyStatusValue;
-
-#endif 	/* __IPolicyStatusValue_FWD_DEFINED__ */
-
-
-#ifndef __IPolicyStatusValueUser_FWD_DEFINED__
-#define __IPolicyStatusValueUser_FWD_DEFINED__
-typedef interface IPolicyStatusValueUser IPolicyStatusValueUser;
-
-#endif 	/* __IPolicyStatusValueUser_FWD_DEFINED__ */
-
-
-#ifndef __IPolicyStatusValueSystem_FWD_DEFINED__
-#define __IPolicyStatusValueSystem_FWD_DEFINED__
-typedef interface IPolicyStatusValueSystem IPolicyStatusValueSystem;
-
-#endif 	/* __IPolicyStatusValueSystem_FWD_DEFINED__ */
 
 
 #ifndef __IProcessLauncher_FWD_DEFINED__
@@ -7912,10 +7912,6 @@ EXTERN_C const IID IID_IProcessLauncher2;
 
 /* library UpdaterLegacyLib */
 /* [helpstring][version][uuid] */ 
-
-
-
-
 
 
 

@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -27,7 +28,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -88,10 +88,9 @@ class ContentIndexTest : public InProcessBrowserTest,
     offline_items_.erase(GetDescriptionIdFromOfflineItemKey(id.id));
   }
 
-  void OnItemUpdated(
-      const OfflineItem& item,
-      const absl::optional<offline_items_collection::UpdateDelta>& update_delta)
-      override {
+  void OnItemUpdated(const OfflineItem& item,
+                     const std::optional<offline_items_collection::UpdateDelta>&
+                         update_delta) override {
     NOTREACHED();
   }
 
@@ -109,15 +108,14 @@ class ContentIndexTest : public InProcessBrowserTest,
     wait_for_tab_change_ = std::move(closure);
   }
 
-  absl::optional<OfflineItem> GetItem(const ContentId& id) {
-    absl::optional<OfflineItem> out_item;
+  std::optional<OfflineItem> GetItem(const ContentId& id) {
+    std::optional<OfflineItem> out_item;
     base::RunLoop run_loop;
-    provider_->GetItemById(id,
-                           base::BindLambdaForTesting(
-                               [&](const absl::optional<OfflineItem>& item) {
-                                 out_item = item;
-                                 run_loop.Quit();
-                               }));
+    provider_->GetItemById(id, base::BindLambdaForTesting(
+                                   [&](const std::optional<OfflineItem>& item) {
+                                     out_item = item;
+                                     run_loop.Quit();
+                                   }));
     run_loop.Run();
     return out_item;
   }

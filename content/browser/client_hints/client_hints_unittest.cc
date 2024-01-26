@@ -222,8 +222,7 @@ TEST_F(ClientHintsTest, DownlinkRandomized) {
 TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kUserAgentClientHint,
-       blink::features::kClientHintsFormFactor,
+      {blink::features::kClientHintsFormFactor,
        blink::features::kClientHintsPrefersReducedTransparency},
       {});
 
@@ -286,10 +285,6 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
 }
 
 TEST_F(ClientHintsTest, SubFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kUserAgentClientHint},
-                                       {});
-
   GURL url = GURL(ClientHintsTest::kOriginUrl);
   contents()->NavigateAndCommit(url);
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();

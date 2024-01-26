@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Pranešti</translation>
 <translation id="4133493477912226187">Skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="4212246570487010370">Tęsti naršymą</translation>
+<translation id="427987768447457592">Nauja skirtukų grupė</translation>
 <translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsiliepimas)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimas)}few{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimai)}many{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimo)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimų)}}</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
@@ -49,6 +50,7 @@
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
 <translation id="5082793167783849073">Sparčiai palyginkite puslapius sukūrę grupę. Jei norite pradėti, palieskite ir palaikykite nuorodą.</translation>
+<translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Yra <ph name="TABS_COUNT_ONE" /> skirtukas, kurio pastaruoju metu nenaudojote}one{Yra <ph name="TABS_COUNT_MANY" /> skirtukas, kurio pastaruoju metu nenaudojote}few{Yra <ph name="TABS_COUNT_MANY" /> skirtukai, kurių pastaruoju metu nenaudojote}many{Yra <ph name="TABS_COUNT_MANY" /> skirtuko, kurių pastaruoju metu nenaudojote}other{Yra <ph name="TABS_COUNT_MANY" /> skirtukų, kurių pastaruoju metu nenaudojote}}</translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>

@@ -46,13 +46,6 @@ AutofillProfile ConstructCompleteProfile(
   profile.set_profile_label("profile_label");
 
   // Set testing values and statuses for the name.
-  profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
-                                           VerificationStatus::kObserved);
-
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                           u"Dr. John K. Doe",
-                                           VerificationStatus::kFormatted);
-
   profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
                                            VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
@@ -248,16 +241,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_profile_label("profile_label");
 
   // Set values and statuses for the names.
-  specifics.add_name_honorific("Dr.");
-  specifics.add_name_honorific_status(
-      AutofillProfileSpecifics::VerificationStatus::
-          AutofillProfileSpecifics_VerificationStatus_OBSERVED);
-
-  specifics.add_name_full_with_honorific("Dr. John K. Doe");
-  specifics.add_name_full_with_honorific_status(
-      AutofillProfileSpecifics::VerificationStatus::
-          AutofillProfileSpecifics_VerificationStatus_FORMATTED);
-
   specifics.add_name_first("John");
   specifics.add_name_first_status(
       AutofillProfileSpecifics::VerificationStatus::
@@ -658,15 +641,6 @@ class AutofillProfileSyncUtilTest
 // Ensure that all profile fields are able to be synced up from the client to
 // the server.
 TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
-  base::test::ScopedFeatureList structured_names_feature;
-  // With this feature enabled, the AutofillProfile supports all tokens
-  // and statuses assignable in the specifics. If this feature is
-  // disabled, for some tokens
-  // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
-  // identify function. The same is true for the verification status.
-  structured_names_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
   AutofillProfileSpecifics specifics =
       GetAutofillProfileSpecificsForCountry(GetParam());

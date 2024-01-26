@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -57,12 +58,14 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param paneManager The {@link PaneManager} for Hub.
      * @param hubLayoutController The controller of the {@link HubLayout}.
      * @param currentTabSupplier The supplier of the current {@link Tab}.
+     * @param menuButtonCoordinator Root component for the app menu.
      */
     public HubCoordinator(
             @NonNull FrameLayout containerView,
             @NonNull PaneManager paneManager,
             @NonNull HubLayoutController hubLayoutController,
-            @NonNull ObservableSupplier<Tab> currentTabSupplier) {
+            @NonNull ObservableSupplier<Tab> currentTabSupplier,
+            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -78,7 +81,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mContainerView.addView(mMainHubParent);
 
         HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
-        mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView, paneManager);
+        mHubToolbarCoordinator =
+                new HubToolbarCoordinator(hubToolbarView, paneManager, menuButtonCoordinator);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =
@@ -134,7 +138,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         }
 
         // TODO(crbug/1498614): Discuss with Start Surface owners and investigate removing.
-        if (startSurfaceHandlesBackpress()) {
+        if (startSurfaceHandlesBackPress()) {
             // This is based on the logic in TabSwitcherMediator where the logic is delegated to
             // ReturnToChromeBackPressHandler.
             return BackPressResult.FAILURE;
@@ -167,7 +171,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         return mPaneManager.getFocusedPaneSupplier().get();
     }
 
-    private boolean startSurfaceHandlesBackpress() {
+    private boolean startSurfaceHandlesBackPress() {
         Tab currentTab = mCurrentTabSupplier.get();
         boolean isIncognito = currentTab != null ? currentTab.isIncognito() : false;
         return !isIncognito
@@ -179,7 +183,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         boolean shouldHandleBackPress =
                 Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
                         || mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
-                        || (!startSurfaceHandlesBackpress() && mCurrentTabSupplier.get() != null);
+                        || (!startSurfaceHandlesBackPress() && mCurrentTabSupplier.get() != null);
         mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
 

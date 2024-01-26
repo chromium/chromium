@@ -9,6 +9,7 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "components/policy/core/common/policy_paths.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
@@ -47,8 +47,8 @@ constexpr int kMaxBufferSize = 2048;
 constexpr char kSigningKeyName[] = "signingKey";
 constexpr char kSigningKeyTrustLevel[] = "trustLevel";
 
-absl::optional<base::FilePath>& GetTestFilePathStorage() {
-  static base::NoDestructor<absl::optional<base::FilePath>> storage;
+std::optional<base::FilePath>& GetTestFilePathStorage() {
+  static base::NoDestructor<std::optional<base::FilePath>> storage;
   return *storage;
 }
 

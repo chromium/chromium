@@ -594,6 +594,13 @@ void FakeCentral::RegisterAdvertisement(
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool FakeCentral::IsExtendedAdvertisementsAvailable() const {
+  NOTREACHED();
+  return false;
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& min,

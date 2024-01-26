@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebappsUtils;
 
 import java.util.HashMap;
@@ -96,7 +97,6 @@ public class ShortcutHelper {
             boolean isIconAdaptive,
             @DisplayMode.EnumType final int displayMode,
             final int orientation,
-            final int source,
             final long themeColor,
             final long backgroundColor) {
         new AsyncTask<Intent>() {
@@ -124,7 +124,8 @@ public class ShortcutHelper {
                                 iconUrl.isEmpty(),
                                 isIconAdaptive);
                 shortcutIntent.putExtra(WebappConstants.EXTRA_MAC, getEncodedMac(url));
-                shortcutIntent.putExtra(WebappConstants.EXTRA_SOURCE, source);
+                shortcutIntent.putExtra(
+                        WebappConstants.EXTRA_SOURCE, ShortcutSource.ADD_TO_HOMESCREEN_STANDALONE);
                 return shortcutIntent;
             }
 
@@ -166,9 +167,9 @@ public class ShortcutHelper {
             String userTitle,
             Bitmap icon,
             boolean isIconAdaptive,
-            int source,
             String iconUrl) {
-        Intent shortcutIntent = createShortcutIntent(url, id, source);
+        Intent shortcutIntent =
+                createShortcutIntent(url, id, ShortcutSource.ADD_TO_HOMESCREEN_SHORTCUT);
         sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
     }
 

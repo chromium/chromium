@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (batchNormalization) is not supported.
+[FAIL] batchNormalization float32 2D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (batchNormalization) is not supported.
 [FAIL] batchNormalization float32 2D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (batchNormalization) is not supported.
 [FAIL] batchNormalization float32 3D tensor default options / sync
@@ -24,6 +26,8 @@ This is a testharness.js-based test.
 [FAIL] batchNormalization float32 4D NHWC tensor all options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (batchNormalization) is not supported.
 [FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] batchNormalization float32 2D constant tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] batchNormalization float32 2D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

@@ -44,6 +44,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyLacros
                            GetAndroidHwKeyDataCallback callback) override;
   void AllocateSecureBuffer(uint32_t size,
                             AllocateSecureBufferCallback callback) override;
+  void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ParseEncryptedSliceHeaderCallback callback) override;
 
  private:
   void EstablishAshConnection(base::OnceClosure callback);

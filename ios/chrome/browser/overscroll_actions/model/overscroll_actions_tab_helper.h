@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #include "ios/web/public/web_state.h"
@@ -55,7 +56,7 @@ class OverscrollActionsTabHelper
   __weak id<OverscrollActionsControllerDelegate> delegate_ = nil;
 
   // The WebState that is observer by the tab helper.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};

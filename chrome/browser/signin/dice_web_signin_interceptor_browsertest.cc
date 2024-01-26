@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
 class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
     : public DiceWebSigninInterceptorBrowserTest {
  public:
-  absl::optional<int> GetChromeSigninInterceptDeclinedCountPref(
+  std::optional<int> GetChromeSigninInterceptDeclinedCountPref(
       const AccountInfo& account_info) {
     return GetProfile()
         ->GetPrefs()
@@ -500,7 +501,7 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
             account_info.email));
   }
 
-  absl::optional<int> GetChromeSigninInterceptShownCountPref(
+  std::optional<int> GetChromeSigninInterceptShownCountPref(
       const AccountInfo& account_info) {
     return GetProfile()
         ->GetPrefs()
@@ -512,7 +513,7 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
 
   FakeDiceWebSigninInterceptorDelegate* ShowSigninBubble(
       const AccountInfo& account_info,
-      absl::optional<SigninInterceptionResult> expected_result) {
+      std::optional<SigninInterceptionResult> expected_result) {
     GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
     content::WebContents* contents = AddTab(intercepted_url);
 
@@ -821,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   // Attempts to show a 6th time. It should not show the bubble.
   // No expected result since the bubble should be not be shown.
   FakeDiceWebSigninInterceptorDelegate* delegate =
-      ShowSigninBubble(info1, /*expected_result=*/absl::nullopt);
+      ShowSigninBubble(info1, /*expected_result=*/std::nullopt);
   EXPECT_FALSE(delegate->intercept_bubble_shown());
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
@@ -1808,9 +1809,11 @@ class DiceWebSigninInterceptorParametrizedBrowserTest
  public:
   DiceWebSigninInterceptorParametrizedBrowserTest() {
     if (WithSearchEngineChoiceEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSearchEngineChoiceTrigger);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(switches::kSearchEngineChoice);
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kSearchEngineChoiceTrigger);
     }
   }
 

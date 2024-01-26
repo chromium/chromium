@@ -10,12 +10,12 @@
 namespace cryptohome {
 
 bool HasError(ErrorWrapper error) {
-  return error != ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  return error.code() != ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
 }
 
 bool ErrorMatches(ErrorWrapper value,
                   ::user_data_auth::CryptohomeErrorCode error_code) {
-  return value == error_code;
+  return value.code() == error_code;
 }
 
 }  // namespace cryptohome

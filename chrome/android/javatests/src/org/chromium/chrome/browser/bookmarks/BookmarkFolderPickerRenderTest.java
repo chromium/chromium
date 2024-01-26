@@ -41,6 +41,8 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -48,8 +50,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -90,7 +90,7 @@ public class BookmarkFolderPickerRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
@@ -264,6 +264,7 @@ public class BookmarkFolderPickerRenderTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "move_bookmark_from_root");
     }
 

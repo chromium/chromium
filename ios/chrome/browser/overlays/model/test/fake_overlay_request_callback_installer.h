@@ -7,6 +7,7 @@
 
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,8 +85,9 @@ class FakeOverlayRequestCallbackInstaller
   const OverlayRequestSupport* GetRequestSupport() const override;
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
-  FakeOverlayRequestCallbackReceiver* receiver_ = nullptr;
-  const OverlayRequestSupport* request_support_ = OverlayRequestSupport::All();
+  raw_ptr<FakeOverlayRequestCallbackReceiver> receiver_ = nullptr;
+  raw_ptr<const OverlayRequestSupport> request_support_ =
+      OverlayRequestSupport::All();
   const std::set<const OverlayResponseSupport*> dispatch_supports_;
 };
 

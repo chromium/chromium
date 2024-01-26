@@ -66,7 +66,9 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // Marks all saved credentials which have same username & password as
   // insecure.
-  void SaveInsecureCredential(const LeakCheckCredential& credential);
+  void SaveInsecureCredential(
+      const LeakCheckCredential& credential,
+      TriggerBackendNotification should_trigger_notification);
 
   // Attempts to mute |credential| from the password store.
   // Returns whether the mute succeeded.

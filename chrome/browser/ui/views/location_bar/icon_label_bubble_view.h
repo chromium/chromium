@@ -232,8 +232,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // to the suggestion text, like in the SelectedKeywordView.
   virtual int GetExtraInternalSpacing() const;
 
-  absl::optional<ui::ColorId> GetCustomBackgroundColorId();
-  absl::optional<ui::ColorId> GetCustomForegroundColorId();
+  std::optional<ui::ColorId> GetCustomBackgroundColorId();
+  std::optional<ui::ColorId> GetCustomForegroundColorId();
 
   void SetCustomBackgroundColorId(const ui::ColorId color_id);
   void SetCustomForegroundColorId(const ui::ColorId color_id);
@@ -308,8 +308,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));
 
-  absl::optional<ui::ColorId> background_color_id_;
-  absl::optional<ui::ColorId> foreground_color_id_;
+  std::optional<ui::ColorId> background_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

@@ -19,7 +19,7 @@ class BoundSessionRegistrationFetcher {
   virtual ~BoundSessionRegistrationFetcher() = default;
 
   using RegistrationCompleteCallback = base::OnceCallback<void(
-      absl::optional<bound_session_credentials::BoundSessionParams>)>;
+      std::optional<bound_session_credentials::BoundSessionParams>)>;
 
   // Starts the network request to the DBSC registration endpoint. `callback`
   // is called with the fetch results upon completion. Should be called no more

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -11,7 +12,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -118,7 +119,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   id consumer_;
-  password_manager::FakeAffiliationService* affiliation_service_;
+  raw_ptr<password_manager::FakeAffiliationService> affiliation_service_;
   ManualFillPasswordMediator* mediator_;
 };
 

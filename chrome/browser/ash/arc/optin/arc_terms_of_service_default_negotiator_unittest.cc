@@ -255,12 +255,11 @@ class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
   }
 
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    const std::string name = "test2@example.com";
-    const AccountId account_id(AccountId::FromUserEmail(name));
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
+    const AccountId account_id = AccountId::FromUserEmail(email);
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(name);
   }
 };
 

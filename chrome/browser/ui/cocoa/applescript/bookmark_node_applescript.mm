@@ -74,7 +74,9 @@ using bookmarks::BookmarkNode;
 }
 
 - (const bookmarks::BookmarkNode*)bookmarkNode {
-  return self.bookmarkModel->GetNodeByUuid(_bookmarkGUID);
+  return self.bookmarkModel->GetNodeByUuid(
+      _bookmarkGUID,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 }
 
 - (NSString*)title {

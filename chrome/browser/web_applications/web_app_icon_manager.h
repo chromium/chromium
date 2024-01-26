@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "web_app_install_info.h"
@@ -81,7 +82,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
 
   // For each of |purposes|, in the given order, looks for an icon with size at
   // least |min_icon_size|. Returns information on the first icon found.
-  absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
+  std::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size) const;
@@ -199,10 +200,9 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // See ui/base/resource/resource_scale_factor.h. Returns null image in
   // `callback` if no icons found for all supported UI scale factors (matches
   // only bigger icons, no upscaling).
-  void ReadUiScaleFactorsIcons(const webapps::AppId& app_id,
-                               IconPurpose purpose,
-                               SquareSizeDip size_in_dip,
-                               ReadImageSkiaCallback callback);
+  void ReadFavicons(const webapps::AppId& app_id,
+                    IconPurpose purpose,
+                    ReadImageSkiaCallback callback);
 
   struct IconFilesCheck {
     size_t empty = 0;
@@ -228,14 +228,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
   base::WeakPtr<WebAppIconManager> GetWeakPtr();
 
-  absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
+  std::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx max_size) const;
 
-  void OnReadUiScaleFactorsIcons(SquareSizeDip size_in_dip,
-                                 ReadImageSkiaCallback callback,
-                                 std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+  void OnReadFavicons(ReadImageSkiaCallback callback,
+                      std::map<SquareSizePx, SkBitmap> icon_bitmaps);
 
   void ReadFavicon(const webapps::AppId& app_id);
   void OnReadFavicon(const webapps::AppId& app_id, gfx::ImageSkia image_skia);

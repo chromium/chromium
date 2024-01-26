@@ -20,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,13 +44,12 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
 
   // Helper function to generate mojom metrics.
   blink::mojom::AnchorElementMetricsPtr CreateMetricsPtr(
-      absl::optional<int> anchor_id = absl::nullopt) {
+      std::optional<int> anchor_id = std::nullopt) {
     if (anchor_id.has_value()) {
       next_id_ = anchor_id.value();
     }
     auto metrics = blink::mojom::AnchorElementMetrics::New();
     metrics->anchor_id = next_id_++;
-    metrics->source_url = GURL("https://example.com");
     metrics->target_url = GURL("https://google.com");
     metrics->ratio_area = 0.1;
     return metrics;
@@ -77,6 +77,10 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     SetupFieldTrial();
 
     ChromeRenderViewHostTestHarness::SetUp();
+
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com"));
+
     NavigationPredictor::Create(
         main_rfh(), predictor_service_.BindNewPipeAndPassReceiver());
   }
@@ -522,7 +526,7 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
     return user_interactions()[index_it->second];
   }
-  absl::optional<base::TimeDelta> navigation_start_to_click() {
+  std::optional<base::TimeDelta> navigation_start_to_click() {
     return navigation_start_to_click_;
   }
   int GetAnchorIndex(AnchorId anchor_id) {
@@ -560,7 +564,7 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
 
   MockNavigationPredictorForTesting::AnchorId ReportNewAnchorElement(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
-      absl::optional<int> id = absl::nullopt) {
+      std::optional<int> id = std::nullopt) {
     std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
     metrics.push_back(CreateMetricsPtr(id));
 
@@ -573,11 +577,8 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
   MockNavigationPredictorForTesting::AnchorId ReportNewAnchorElementWithDetails(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
       float ratio_area,
-      float ratio_visible_area,
       float ratio_distance_top_to_visible_top,
-      float ratio_distance_center_to_visible_top,
       float ratio_distance_root_top,
-      float ratio_distance_root_bottom,
       bool is_in_iframe,
       bool contains_image,
       bool is_same_host,
@@ -589,13 +590,9 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
     metrics.push_back(CreateMetricsPtr());
 
     metrics[0]->ratio_area = ratio_area;
-    metrics[0]->ratio_visible_area = ratio_visible_area;
     metrics[0]->ratio_distance_top_to_visible_top =
         ratio_distance_top_to_visible_top;
-    metrics[0]->ratio_distance_center_to_visible_top =
-        ratio_distance_center_to_visible_top;
     metrics[0]->ratio_distance_root_top = ratio_distance_root_top;
-    metrics[0]->ratio_distance_root_bottom = ratio_distance_root_bottom;
     metrics[0]->is_in_iframe = is_in_iframe;
     metrics[0]->contains_image = contains_image;
     metrics[0]->is_same_host = is_same_host;
@@ -1254,11 +1251,8 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   auto anchor_id = ReportNewAnchorElementWithDetails(
       predictor_service.get(),
       /*ratio_area=*/0.1,
-      /*ratio_visible_area=*/0.1,
       /*ratio_distance_top_to_visible_top=*/0.0,
-      /*ratio_distance_center_to_visible_top=*/0.0,
       /*ratio_distance_root_top=*/0.0,
-      /*ratio_distance_root_bottom=*/0.0,
       /*is_in_iframe=*/false,
       /*contains_image=*/true,
       /*is_same_host=*/true,

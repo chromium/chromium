@@ -19,7 +19,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
-import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_child.js';
+import type {SettingsSafetyCheckChildElement} from './safety_check_child.js';
+import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_extensions.html.js';
 import {SafetyCheckExtensionsBrowserProxyImpl} from './safety_check_extensions_browser_proxy.js';
 

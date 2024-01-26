@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
+
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ml/webnn/features.mojom-features.h"
@@ -11,6 +13,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -23,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
@@ -82,8 +84,7 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
     auto& compute_result = helper_->GetComputeResult();
     HashMap<String, mojo_base::BigBuffer> mojo_outputs;
     for (const auto& [name, output_data] : compute_result.output) {
-      mojo_outputs.insert(
-          name, base::make_span(output_data.data(), output_data.size()));
+      mojo_outputs.insert(name, base::span(output_data));
     }
     std::move(callback).Run(
         blink_mojom::ComputeResult::NewNamedOutputs(std::move(mojo_outputs)));
@@ -210,7 +211,7 @@ ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
                  scope.GetExceptionState());
   auto* output =
       builder->add(lhs_operand, rhs_operand, scope.GetExceptionState());
-  EXPECT_NE(output, nullptr);
+  EXPECT_THAT(output, testing::NotNull());
   return builder->build(scope.GetScriptState(), {{"output", output}},
                         scope.GetExceptionState());
 }
@@ -243,7 +244,7 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
     auto* mojo_graph = ToMLGraphMojo(&scope, tester.Value());
-    EXPECT_NE(mojo_graph, nullptr);
+    ASSERT_THAT(mojo_graph, testing::NotNull());
     EXPECT_TRUE(scoped_setup_binder.IsWebNNContextBound());
   }
 }
@@ -276,13 +277,13 @@ struct ClampTester {
                                           scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_clamp(), true);
+    EXPECT_TRUE(operation->is_clamp());
     auto& clamp = operation->get_clamp();
     EXPECT_EQ(clamp->min_value, expected_attributes.min_value);
     EXPECT_EQ(clamp->max_value, expected_attributes.max_value);
@@ -309,7 +310,7 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test clamp operator with default options that no minimum and maximum
     // values are defined.
@@ -397,7 +398,7 @@ struct ConcatTester {
         builder->concat(input_operands, axis, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -504,6 +505,8 @@ struct Activation {
   absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> linear_alpha;
+  absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
 };
 
@@ -545,6 +548,17 @@ MLActivation* CreateActivation(V8TestingScope& scope,
         leaky_relu_options->setAlpha(activation.leaky_relu_alpha.value());
       }
       return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kLinear: {
+      auto* linear_options = MLLinearOptions::Create();
+      CHECK(linear_options);
+      if (activation.linear_alpha.has_value()) {
+        linear_options->setAlpha(activation.linear_alpha.value());
+      }
+      if (activation.linear_beta.has_value()) {
+        linear_options->setBeta(activation.linear_beta.value());
+      }
+      return builder->linear(linear_options, scope.GetExceptionState());
     }
     case MLOperator::OperatorKind::kRelu:
       return builder->relu(scope.GetExceptionState());
@@ -609,6 +623,16 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       CHECK(expected_activation.leaky_relu_alpha.has_value());
       EXPECT_EQ(leaky_relu->alpha,
                 expected_activation.leaky_relu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kLinear: {
+      ASSERT_TRUE(mojom_activation->is_linear());
+      auto& linear = mojom_activation->get_linear();
+      CHECK(linear);
+      CHECK(expected_activation.linear_alpha.has_value());
+      EXPECT_EQ(linear->alpha, expected_activation.linear_alpha.value());
+      CHECK(expected_activation.linear_beta.has_value());
+      EXPECT_EQ(linear->beta, expected_activation.linear_beta.value());
       break;
     }
     case MLOperator::OperatorKind::kRelu:
@@ -704,13 +728,13 @@ struct BatchNormalizationTester {
         batch_normalization_options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_batch_normalization(), true);
+    EXPECT_TRUE(operation->is_batch_normalization());
     auto& batch_normalization = operation->get_batch_normalization();
     EXPECT_EQ(batch_normalization->axis, expected_attributes.axis);
     EXPECT_FLOAT_EQ(batch_normalization->epsilon, expected_attributes.epsilon);
@@ -760,7 +784,7 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test batchNormalization with default options.
     BatchNormalizationTester{
@@ -1227,13 +1251,13 @@ struct Conv2dTester {
                         scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_conv2d(), true);
+    EXPECT_TRUE(operation->is_conv2d());
     auto& conv2d = operation->get_conv2d();
     // Validate explicit padding.
     auto& expected_padding = expected_attributes.padding;
@@ -1286,7 +1310,7 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test conv2d with default options.
     Conv2dTester{
@@ -1688,7 +1712,7 @@ struct ElementWiseBinaryTester {
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -1727,7 +1751,7 @@ struct ElementWiseBinaryTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_element_wise_binary(), true);
+    EXPECT_TRUE(operation->is_element_wise_binary());
     auto& binary_mojo = operation->get_element_wise_binary();
 
     blink_mojom::ElementWiseBinary::Kind binary_kind;
@@ -1787,7 +1811,7 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryLogicalTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
 
   {
     // Test element-wise operators for two 0-D scalars.
@@ -1868,7 +1892,7 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test element-wise operators for two 0-D scalars.
     ElementWiseBinaryTester{
@@ -1958,7 +1982,7 @@ struct EluTester {
         builder->elu(input_operand, ml_elu_options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo is as expected.
@@ -2012,7 +2036,7 @@ TEST_P(MLGraphTestMojo, EluTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test elu operator for 0-D tensor with default options.
     EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
@@ -2083,13 +2107,13 @@ struct ExpandTester {
         builder->expand(input_operand, new_shape, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_expand(), true);
+    EXPECT_TRUE(operation->is_expand());
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -2111,7 +2135,7 @@ TEST_P(MLGraphTestMojo, ExpandTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building expand 0-D scalar to 3-D tensor.
     ExpandTester{
@@ -2182,7 +2206,7 @@ struct GatherTester {
                         scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -2249,7 +2273,7 @@ TEST_P(MLGraphTestMojo, GatherTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building gather with default options.
     GatherTester{
@@ -2346,13 +2370,13 @@ struct GemmTester {
                                          scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_gemm(), true);
+    EXPECT_TRUE(operation->is_gemm());
     auto& gemm_mojo = operation->get_gemm();
     if (options.c) {
       auto c_operand_iter =
@@ -2392,7 +2416,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building gemm with default option.
     GemmTester{
@@ -2536,7 +2560,7 @@ struct HardSigmoidTester {
         input_operand, hard_sigmoid_options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the `mojo::Operator`.
@@ -2588,7 +2612,7 @@ TEST_P(MLGraphTestMojo, HardSigmoidTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building hardSigmoid with default options.
     HardSigmoidTester{
@@ -2667,13 +2691,13 @@ struct InstanceNormalizationTester {
         scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_instance_normalization(), true);
+    EXPECT_TRUE(operation->is_instance_normalization());
     auto& instance_normalization = operation->get_instance_normalization();
     EXPECT_EQ(instance_normalization->layout, expected_attributes.layout);
     EXPECT_FLOAT_EQ(instance_normalization->epsilon,
@@ -2720,7 +2744,7 @@ TEST_P(MLGraphTestMojo, InstanceNormalizationTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test instanceNormalization with default options.
     InstanceNormalizationTester{
@@ -2847,7 +2871,7 @@ struct LayerNormalizationTester {
         input_operand, layer_normalization_options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the `mojo::Operator`.
@@ -2921,7 +2945,7 @@ TEST_P(MLGraphTestMojo, LayerNormalizationTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test layerNormalization with default options for scalar input.
     LayerNormalizationTester{
@@ -3037,7 +3061,7 @@ struct LeakyReluTester {
         input_operand, ml_leaky_relu_options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -3091,7 +3115,7 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test leaky relu operator for 0-D scalar with default options.
     LeakyReluTester{
@@ -3151,6 +3175,150 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   }
 }
 
+struct LinearTester {
+  OperandInfoBlink input;
+  struct LinearOptions {
+    absl::optional<float> alpha;
+    absl::optional<float> beta;
+  };
+  LinearOptions options;
+  OperandInfoMojo expected_operand;
+  LinearOptions expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    MLLinearOptions* ml_linear_options = MLLinearOptions::Create();
+    if (options.alpha) {
+      ml_linear_options->setAlpha(options.alpha.value());
+    }
+    if (options.beta) {
+      ml_linear_options->setBeta(options.beta.value());
+    }
+    auto* output_operand = builder->linear(input_operand, ml_linear_options,
+                                           scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->id_to_operand_map.size(), 2u);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_linear());
+    auto& linear = operation->get_linear();
+    EXPECT_EQ(linear->input_operand_id, input_operand_id);
+    EXPECT_EQ(linear->output_operand_id, output_operand_id);
+    EXPECT_EQ(linear->alpha, expected_attributes.alpha);
+    EXPECT_EQ(linear->beta, expected_attributes.beta);
+  }
+};
+
+TEST_P(MLGraphTestMojo, LinearTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test linear operator for 0-D scalar with default options.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 1-D tensor with default options.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 2-D tensor with given alpha.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {3, 7}},
+        .options = {.alpha = 0.05},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {3, 7}},
+        .expected_attributes = {.alpha = 0.05, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 3-D tensor with given beta.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 5, 3}},
+        .options = {.beta = 0.07},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 5, 3}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0.07}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 4-D tensor with given beta and beta.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 2, 2, 1}},
+        .options = {.alpha = 0.05, .beta = 0.07},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 2, 2, 1}},
+        .expected_attributes = {.alpha = 0.05, .beta = 0.07}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct MatmulTester {
   OperandInfoBlink a;
   OperandInfoBlink b;
@@ -3168,7 +3336,7 @@ struct MatmulTester {
         builder->matmul(a_operand, b_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -3206,7 +3374,7 @@ struct MatmulTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_matmul(), true);
+    EXPECT_TRUE(operation->is_matmul());
   }
 };
 
@@ -3221,7 +3389,7 @@ TEST_P(MLGraphTestMojo, MatmulTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building matmul with 2-D * 2-D.
     MatmulTester{
@@ -3283,13 +3451,13 @@ struct PadTester {
                  ending_padding, ml_pad_options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_pad(), true);
+    EXPECT_TRUE(operation->is_pad());
     auto& pad_mojo = operation->get_pad();
 
     // Validate the beginning padding and the ending padding.
@@ -3326,7 +3494,7 @@ TEST_P(MLGraphTestMojo, PadTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test pad with default options, beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
@@ -3466,13 +3634,13 @@ struct Pool2dTester {
         BuildPool2d(scope, builder, kind, input_operand, ml_pool2d_options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_pool2d(), true);
+    EXPECT_TRUE(operation->is_pool2d());
     auto& poo2d_mojo = operation->get_pool2d();
     switch (kind) {
       case Pool2dKind::kAverage:
@@ -3525,7 +3693,7 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test pool2d with default options.
     Pool2dTester{
@@ -3686,7 +3854,7 @@ struct PreluTester {
         builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -3746,7 +3914,7 @@ TEST_P(MLGraphTestMojo, PreluTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test prelu operator when input shape is the same as slope shape.
     PreluTester{
@@ -3798,7 +3966,7 @@ struct ReluTester {
         builder->relu(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -3827,7 +3995,7 @@ struct ReluTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_relu(), true);
+    EXPECT_TRUE(operation->is_relu());
     auto& relu = operation->get_relu();
     EXPECT_EQ(relu->input_operand_id, input_operand_id);
     EXPECT_EQ(relu->output_operand_id, output_operand_id);
@@ -3845,7 +4013,7 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test relu operator for 0-D scalar.
     ReluTester{
@@ -3928,7 +4096,7 @@ struct Resample2dTester {
         BuildResample2d(scope, builder, input_operand, ml_resample2d_options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -3938,7 +4106,7 @@ struct Resample2dTester {
     ASSERT_EQ(graph_info->id_to_operand_map.size(), 2u);
     ASSERT_EQ(graph_info->constant_id_to_buffer_map.size(), 0u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_resample2d(), true);
+    EXPECT_TRUE(operation->is_resample2d());
     auto& resample2d_mojo = operation->get_resample2d();
     // Validate the mode.
     EXPECT_EQ(resample2d_mojo->mode, expected_mode);
@@ -4086,13 +4254,13 @@ struct ReshapeTester {
         builder->reshape(input_operand, new_shape, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_reshape(), true);
+    EXPECT_TRUE(operation->is_reshape());
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -4114,7 +4282,7 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test reshaping 1-D tensor to 0-D scalar.
     ReshapeTester{
@@ -4189,10 +4357,10 @@ struct FloatingPointUnaryTester {
             builder->tanh(input_operand, scope.GetExceptionState());
         break;
     }
-    ASSERT_NE(output_operand, nullptr);
+    ASSERT_THAT(output_operand, testing::NotNull());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -4255,7 +4423,7 @@ TEST_P(MLGraphTestMojo, FloatingPointUnaryTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test unary operator for 0-D scalar.
     FloatingPointUnaryTester{
@@ -4324,13 +4492,13 @@ struct SliceTester {
                        scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_slice(), true);
+    EXPECT_TRUE(operation->is_slice());
     auto& slice_mojo = operation->get_slice();
 
     for (uint32_t i = 0; i < slice_mojo->starts_and_sizes.size(); ++i) {
@@ -4403,13 +4571,13 @@ struct SoftmaxTester {
         builder->softmax(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_softmax(), true);
+    EXPECT_TRUE(operation->is_softmax());
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -4431,7 +4599,7 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building softmax with float32 input.
     SoftmaxTester{
@@ -4473,7 +4641,7 @@ struct SoftplusTester {
                                              scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the `mojo::Operator`.
@@ -4524,7 +4692,7 @@ TEST_P(MLGraphTestMojo, SoftplusTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building softplus with default options.
     SoftplusTester{
@@ -4565,7 +4733,7 @@ struct SoftsignTester {
         builder->softsign(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the `mojo::Operator`.
@@ -4612,7 +4780,7 @@ TEST_P(MLGraphTestMojo, SoftsignTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building softsign with float32 input.
     SoftsignTester{
@@ -4656,7 +4824,7 @@ struct TransposeTester {
         builder->transpose(input_operand, options, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -4752,7 +4920,7 @@ struct WhereTester {
                        false_value_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -4813,7 +4981,7 @@ struct WhereTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_where(), true);
+    EXPECT_TRUE(operation->is_where());
   }
 };
 
@@ -4828,7 +4996,7 @@ TEST_P(MLGraphTestMojo, WhereTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building where with 2-D condition, 2-D true_value and 2-D
     // false_value using broadcast.
@@ -4933,7 +5101,7 @@ struct ReduceTester {
         BuildReduce(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -5016,7 +5184,7 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test reduce operator with default options.
     ReduceTester{
@@ -5061,7 +5229,7 @@ struct ConstantTester {
         builder->relu(constant_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -5077,7 +5245,7 @@ struct ConstantTester {
                 blink_mojom::Operand::Kind::kConstant);
       EXPECT_EQ(constant_operand_iter->value->data_type, expected.data_type);
       EXPECT_EQ(constant_operand_iter->value->dimensions, expected.dimensions);
-      EXPECT_EQ(constant_operand_iter->value->name.empty(), true);
+      EXPECT_TRUE(constant_operand_iter->value->name.empty());
       // Verify the constant data in the mojo.
       const wtf_size_t constant_size =
           base::checked_cast<wtf_size_t>(constant_buffer.size() / sizeof(T));
@@ -5100,7 +5268,7 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test scalar constant operand.
     ConstantTester<float>{
@@ -5213,7 +5381,7 @@ struct SplitTester {
     }
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, output_named_operand);
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -5290,13 +5458,13 @@ struct CastTester {
                       scope.GetExceptionState());
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_element_wise_unary(), true);
+    EXPECT_TRUE(operation->is_element_wise_unary());
     webnn::mojom::blink::ElementWiseUnaryPtr& element_wise_unary =
         operation->get_element_wise_unary();
     EXPECT_EQ(element_wise_unary->kind,
@@ -5588,7 +5756,7 @@ struct ArgMinMaxTester {
         BuildArgMinMax(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
@@ -5648,7 +5816,7 @@ TEST_P(MLGraphTestMojo, ArgMinMaxTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   {
     // Test argMinMax with default options.
     ArgMinMaxTester{
@@ -5745,7 +5913,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  ASSERT_NE(builder, nullptr);
+  ASSERT_THAT(builder, testing::NotNull());
   const Vector<uint32_t> dimensions = {3, 5};
   const wtf_size_t number_of_elements = base::checked_cast<wtf_size_t>(
       webnn::ValidateAndCalculateElementsNumber(dimensions).value());
@@ -5761,7 +5929,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
       scope, builder, ElementWiseBinaryKind::kAdd, lhs_operand, rhs_operand);
   auto [graph, build_exception] =
       BuildGraph(scope, builder, {{"output", output_operand}});
-  ASSERT_NE(graph, nullptr);
+  ASSERT_THAT(graph, testing::NotNull());
 
   MLNamedArrayBufferViews inputs(
       {{"lhs", CreateArrayBufferViewForOperand(lhs_operand)},
@@ -5774,7 +5942,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     SetComputeResult(ComputeResult{
         .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 2));
 
@@ -5782,7 +5950,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     SetComputeResult(ComputeResult{
         .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 7));
 
@@ -5799,7 +5967,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     // Unknown error.
     SetComputeResult(ComputeResult{});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(compute_exception, nullptr);
+    ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "OperationError");
     EXPECT_EQ(
         compute_exception->message(),
@@ -5815,7 +5983,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
         ComputeResult{.output = {{"a_different_out_name",
                                   Vector<uint8_t>(number_of_elements)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(compute_exception, nullptr);
+    ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "OperationError");
     EXPECT_EQ(
         compute_exception->message(),
@@ -5830,7 +5998,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     SetComputeResult(
         ComputeResult{.output = {{"output", Vector<uint8_t>(20)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(compute_exception, nullptr);
+    ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "UnknownError");
     EXPECT_EQ(
         compute_exception->message(),

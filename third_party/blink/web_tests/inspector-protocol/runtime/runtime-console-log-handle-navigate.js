@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`This tests how navigation is handled from inside debugger code (console.log).`);
   setTimeout(()=>testRunner.completeTest(), 3000);
   await dp.Runtime.enable();

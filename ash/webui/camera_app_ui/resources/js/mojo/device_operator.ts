@@ -232,7 +232,7 @@ export class DeviceOperator {
         assert(this.deviceProvider !== null);
         const {device, status} =
             await this.deviceProvider.getCameraAppDevice(deviceId);
-        if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
+        if (status === GetCameraAppDeviceStatus.kErrorInvalidId) {
           throw new Error(`Invalid device id`);
         }
         if (device === null) {
@@ -620,8 +620,8 @@ export class DeviceOperator {
     const normalCapture = new CancelableEvent<Blob>();
     const portraitCapture = new CancelableEvent<Blob>();
     const portraitEvents = new Map([
-      [Effect.NO_EFFECT, normalCapture],
-      [Effect.PORTRAIT_MODE, portraitCapture],
+      [Effect.kNoEffect, normalCapture],
+      [Effect.kPortraitMode, portraitCapture],
     ]);
     const callbacks = [normalCapture.wait(), portraitCapture.wait()];
 
@@ -634,7 +634,7 @@ export class DeviceOperator {
             event.signalError(new Error(`Capture failed.`));
             return;
           }
-          if (effect === Effect.PORTRAIT_MODE &&
+          if (effect === Effect.kPortraitMode &&
               status !== PortraitModeSegResult.kSuccess) {
             // We only appends the blob result to the output when the status
             // code is `kSuccess`. For any other status code, the blob

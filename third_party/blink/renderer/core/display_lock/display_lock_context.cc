@@ -1004,12 +1004,10 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
   // table element other than display: table-cell, if the element is an
   // internal ruby element, or if the element’s principal box is a
   // non-atomic inline-level box, layout containment has no effect.
-  // (Note we're allowing display:none for display locked elements, and a bit
-  // more restrictive on ruby - banning <ruby> elements entirely).
-  auto* html_element = DynamicTo<HTMLElement>(element_.Get());
+  // (Note we're allowing display:none for display locked elements).
   if ((style->IsDisplayTableType() &&
        style->Display() != EDisplay::kTableCell) ||
-      (!html_element || IsA<HTMLRubyElement>(html_element)) ||
+      style->Display() == EDisplay::kRubyText ||
       (style->IsDisplayInlineType() && !style->IsDisplayReplacedType())) {
     return rejection_names::kContainmentNotSatisfied;
   }
@@ -1134,6 +1132,11 @@ bool DisplayLockContext::SubtreeHasTopLayerElement() const {
 void DisplayLockContext::DetachDescendantTopLayerElements() {
   if (!ConnectedToView() || !SubtreeHasTopLayerElement())
     return;
+
+  std::optional<StyleEngine::DetachLayoutTreeScope> detach_scope;
+  if (!document_->InStyleRecalc()) {
+    detach_scope.emplace(document_->GetStyleEngine());
+  }
 
   // Detach all top layer elements contained by the element inducing this
   // display lock.

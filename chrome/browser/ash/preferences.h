@@ -132,7 +132,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
 
   // UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
-  void OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled);
+  void OnIsConsumerAutoUpdateEnabled(std::optional<bool> enabled);
 
   raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 

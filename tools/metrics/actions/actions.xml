@@ -6818,6 +6818,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.IOS.Track.Failure"
+    not_user_triggered="true">
+  <owner>danieltwhite@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a users attempts to price track an item through the UI, but is
+    unsuccessful due to an error. (iOS only)
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.IOS.Untrack.Failure"
+    not_user_triggered="true">
+  <owner>danieltwhite@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a users attempts to untrack an item through the UI, but is
+    unsuccessful due to an error. (iOS only)
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.OmniboxChip.Tracked">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -7180,6 +7200,15 @@ should be able to be added at any place in this file.
     Records when a Compose session ends because a dialog was opened with a text
     selection from the same page field. This is emitted at most once per
     session.
+  </description>
+</action>
+
+<action name="Compose.SessionPaused.MSBBSettingsShown">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session pauses because the user opened the MSBB
+    settings from inside the compose dialog.
   </description>
 </action>
 
@@ -9456,6 +9485,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotificationV2.Button_Cancel">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Cancel&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_Pause">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Pause&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_Resume">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Resume&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_ShowInFolder">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Show in folder&quot; button on a download notification
+    with the downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Click_Completed">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks a completed download notification's body with the downloads
+    integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Click_InProgress">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks an in-progress download notification's body with the downloads
+    integration V2 feature enabled.
+  </description>
+</action>
+
 <action name="Downloads_OpenUrlOfDownloadedItem">
   <owner>chrome-analysis-team@google.com</owner>
   <description>
@@ -9635,6 +9718,15 @@ should be able to be added at any place in this file.
   <description>
     User exited browser/API fullscreen mode by clicking on the pop up close
     button on the top of the screen.
+  </description>
+</action>
+
+<action name="ExpandSearchEngineDescription">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Action indicating that the user expanded the chevron in the search engine
+    choice page to view the search engine description.
   </description>
 </action>
 
@@ -10883,6 +10975,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glanceables_Classroom_UserAction">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User performed an actoin in the classroom glanceables. This aggregates all
+    user actions that the user can perform in the classroom glanceable.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_ActiveTaskListChanged">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -10895,20 +10997,43 @@ should be able to be added at any place in this file.
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
-    The add task button is shown for an empty tasks list.
+    The add task button is shown for an empty tasks list - used in the first
+    version of the glanceables UI (used for trusted tester program), where the
+    add task button was shown only for an empty task list.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_AddTaskStarted">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the button to add a new task. Not recorded for Trusted
+    Tester Glanceables UI, which has its own add task button, but with different
+    semantics.
   </description>
 </action>
 
 <action name="Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
-    User clicked on the add new task button on the tasks glanceable.
+    User clicked on the add new task button on the tasks glanceable. Recoreded
+    for Trusted Tester Glanceables UI only.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton">
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the Edit In Google Tasks label button in the task view of
+    the tasks glanceable.
   </description>
 </action>
 
 <action name="Glanceables_Tasks_LaunchTasksApp_FooterButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the see all button in the footer of the tasks glanceable.
@@ -10916,10 +11041,30 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glanceables_Tasks_LaunchTasksApp_HeaderButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the tasks icon in the header of the tasks glanceable.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_ModifyTaskStarted">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the task title, and entered UI to modify the task title.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_NewUserNavigatedToTasks">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User that has a single empty task lists in Google Tasks performed an action
+    in tasks time management glanceables UI that opened tasks web UI in another
+    window.
   </description>
 </action>
 
@@ -10936,6 +11081,16 @@ should be able to be added at any place in this file.
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User marks a task in the tasks glanceable as incomplete.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_UserAction">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User performed an action in the tasks glanceables. This aggregates all user
+    actions that the user can perform intaskss glanceable.
   </description>
 </action>
 
@@ -30880,6 +31035,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SeaPen_FeedbackPressed">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <description>
+    Records that the user pressed the Sea Pen feedback button.
+  </description>
+</action>
+
 <action name="Search.ContextualSearch.All.ResultsSeen.true">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
@@ -30997,6 +31160,16 @@ should be able to be added at any place in this file.
     disables search engine auto switch feature in special locale. This is
     recorded on Android for every locale, but is currently only meaningful for
     studying special locales.
+  </description>
+</action>
+
+<action name="SearchEngineChoiceScreenShown">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Recorded when the search engine choice screen is displayed. The screen could
+    be displayed in the modal dialog (or promo) and the first run experience on
+    iOS and Desktop and the profile creation flow on Desktop.
   </description>
 </action>
 
@@ -39317,6 +39490,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="UniversalInstallFromMenu">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="Unlink">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -39705,6 +39883,14 @@ should be able to be added at any place in this file.
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <description>A Tutorial IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.Session.ActivePeriodStart">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    Records the starting point of an Active Period in a User Education Session.
+  </description>
 </action>
 
 <action name="UserManager_Cleared_Legacy_User_Prefs">
@@ -41100,6 +41286,8 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>
+  <suffix name="iOSSwipeBackForwardFeature"
+      label="For iOSSwipeBackForwardFeature feature"/>
   <suffix name="iOSTabGridSwipeLeftForIncognito"
       label="For iOSTabGridSwipeLeftForIncognito feature"/>
   <suffix name="iOSTabGridToolbarItemFeature"

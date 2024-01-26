@@ -40,9 +40,12 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/widget/widget.h"
 
+namespace {
 constexpr int kMemorySavingsKilobytes = 100 * 1024;
 constexpr int kSmallMemorySavingsKilobytes = 10;
+}  // namespace
 
 class MemorySaverBubbleViewTest
     : public MemorySaverUnitTestMixin<TestWithBrowserView> {
@@ -107,6 +110,18 @@ TEST_F(MemorySaverBubbleViewTest, ShouldLogMetricsOnDialogDismiss) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.MemorySaver.BubbleAction",
       MemorySaverBubbleActionType::kDismiss, 1);
+}
+
+// A the domain of the current site should be rendered as a subtitle.
+TEST_F(MemorySaverBubbleViewTest, ShouldRenderDomainInDialogSubtitle) {
+  SetTabDiscardState(0, true);
+
+  ClickPageActionChip();
+
+  views::Widget* widget = GetPageActionIconView()->GetBubble()->GetWidget();
+  views::BubbleDialogDelegate* const bubble_delegate =
+      widget->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(bubble_delegate->GetSubtitle(), u"foo.com");
 }
 
 // A link should be rendered within the dialog.

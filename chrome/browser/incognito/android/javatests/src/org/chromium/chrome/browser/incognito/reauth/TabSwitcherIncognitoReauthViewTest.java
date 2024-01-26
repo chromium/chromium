@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,7 +53,10 @@ import java.io.IOException;
 /** Tests for Incognito reauth view layout in Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
+    ChromeFeatureList.INCOGNITO_SCREENSHOT
+})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherIncognitoReauthViewTest {
     @Rule
@@ -130,6 +134,7 @@ public class TabSwitcherIncognitoReauthViewTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testIncognitoReauthView_TabSwitcherRenderTest() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         openIncognitoReauth(cta);
@@ -156,6 +161,31 @@ public class TabSwitcherIncognitoReauthViewTest {
 
         mRenderTestRule.render(
                 cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher_v2");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void testIncognitoReauthView_HubRenderTest() throws IOException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        openIncognitoReauth(cta);
+
+        onView(withId(R.id.hub_toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar_action_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.incognito_reauth_menu_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.incognito_reauth_see_other_tabs_label))
+                .check(matches(not(isDisplayed())));
+        onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
+                .check(matches(not(isDisplayed())));
+
+        mRenderTestRule.render(
+                cta.findViewById(org.chromium.chrome.R.id.tab_switcher_view_holder),
+                "incognito_reauth_view_hub");
     }
 
     @Test

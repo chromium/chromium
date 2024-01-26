@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 
+#include <optional>
+
 #include "base/strings/string_piece.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Representation of a complete Secure DNS configuration.
 class SecureDnsConfig {
@@ -42,7 +43,7 @@ class SecureDnsConfig {
 
   // Identifies the SecureDnsMode corresponding to one of the above names, or
   // returns nullopt if the name is unrecognized.
-  static absl::optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
+  static std::optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
   // Converts a secure DNS mode to one of the above names.
   static const char* ModeToString(net::SecureDnsMode mode);
 

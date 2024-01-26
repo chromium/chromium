@@ -14,6 +14,7 @@ namespace cc {
 ScrollJankUkmReporter::ScrollJankUkmReporter() = default;
 ScrollJankUkmReporter::~ScrollJankUkmReporter() {
   EmitScrollJankUkm();
+  ResetPredictorMetrics();
   ukm_manager_ = nullptr;
 }
 
@@ -61,6 +62,29 @@ void ScrollJankUkmReporter::EmitScrollJankUkm() {
   max_missed_vsyncs_ = 0;
   num_delayed_frames_ = 0;
   predictor_jank_frames_ = 0;
+}
+
+void ScrollJankUkmReporter::EmitPredictorJankUkm() {
+  bool should_report =
+      frame_with_missed_vsync_ != 0 || frame_with_no_missed_vsync_ != 0;
+  if (ukm_manager_ && should_report) {
+    ukm::builders::Event_ScrollJank_PredictorJank builder(
+        ukm_manager_->source_id());
+    builder.SetMaxDelta(ukm::GetExponentialBucketMinForCounts1000(max_delta_));
+    builder.SetScrollUpdate_MissedVsync_FrameAboveJankyThreshold2(
+        ukm::GetExponentialBucketMinForCounts1000(frame_with_missed_vsync_));
+    builder.SetScrollUpdate_NoMissedVsync_FrameAboveJankyThreshold2(
+        ukm::GetExponentialBucketMinForCounts1000(frame_with_no_missed_vsync_));
+    builder.Record(ukm_manager_->recorder());
+  }
+
+  ResetPredictorMetrics();
+}
+
+void ScrollJankUkmReporter::ResetPredictorMetrics() {
+  max_delta_ = 0;
+  frame_with_missed_vsync_ = 0;
+  frame_with_no_missed_vsync_ = 0;
 }
 
 }  // namespace cc

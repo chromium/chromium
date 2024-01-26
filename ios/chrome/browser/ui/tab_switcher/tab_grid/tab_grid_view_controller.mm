@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -26,6 +27,8 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
@@ -42,7 +45,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_collection_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_activity_observer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -150,6 +152,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
 
+// The in-product help view to instruct the user to swipe to incognito, and its
+// bottom constraint.
+@property(nonatomic, strong) GestureInProductHelpView* swipeToIncognitoIPH;
+@property(nonatomic, strong)
+    NSLayoutConstraint* swipeToIncognitoIPHBottomConstraint;
+
 @end
 
 @implementation TabGridViewController {
@@ -254,6 +262,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     [self updatePinnedTabsViewControllerConstraints];
   }
+  if ([self.swipeToIncognitoIPH superview] == self.view) {
+    self.swipeToIncognitoIPHBottomConstraint.active = NO;
+    self.swipeToIncognitoIPHBottomConstraint =
+        [self.swipeToIncognitoIPH.bottomAnchor
+            constraintEqualToAnchor:[self shouldUseCompactLayout]
+                                        ? self.bottomToolbar.topAnchor
+                                        : self.regularTabsViewController.view
+                                              .bottomAnchor];
+
+    self.swipeToIncognitoIPHBottomConstraint.active = YES;
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -272,11 +291,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
     TabGridPage page = GetPageFromScrollView(scrollView);
     if (page != self.currentPage) {
-      self.currentPage = page;
-      [self broadcastIncognitoContentVisibility];
       // Records when the user drags the scrollView to switch pages.
       [self.mutator pageChanged:page
                     interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
+      self.currentPage = page;
+      [self broadcastIncognitoContentVisibility];
     }
   }
 }
@@ -321,6 +340,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.currentPage = currentPage;
   self.scrollViewAnimatingContentOffset = NO;
   [self broadcastIncognitoContentVisibility];
+  if (!self.isDragSessionInProgress) {
+    [self maybeShowSwipeToIncognitoIPH];
+  }
+}
+
+#pragma mark - Accessibility
+
+- (BOOL)accessibilityPerformEscape {
+  [self doneButtonTapped:self];
+  return YES;
 }
 
 #pragma mark - UIScrollViewAccessibilityDelegate
@@ -427,6 +456,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (self.remoteTabsViewController) {
     [self setInsetForRemoteTabs];
   }
+  [self maybeShowSwipeToIncognitoIPH];
 }
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
@@ -440,6 +470,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   [self.regularTabsDelegate discardSavedClosedItems];
   [self.inactiveTabsDelegate discardSavedClosedItems];
+
+  [self.swipeToIncognitoIPH
+      dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
+
   // When the view disappears, the toolbar alpha should be set to 0; either as
   // part of the animation, or directly with -hideToolbars.
   if (animated && self.transitionCoordinator) {
@@ -1457,6 +1491,86 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.tabGridMode = TabGridModeNormal;
 }
 
+// Optionally presents a full screen IPH that instructs the user to right swipe
+// to view the incognito tab grid. If the delegate determines that the user
+// supposed to see this tip, and the IPH fits on the current screen both
+// contextually and visually, then it initializes `swipeToIncognitoIPH` and
+// presents a GestureInProductHelpView. Otherwise, it keeps
+// `swipeToIncognitoIPH` to `nil` and no gestural tip is shown.
+- (void)maybeShowSwipeToIncognitoIPH {
+  // Return if the regular tabs are visible.
+  if (!self.viewVisible || self.currentPage != TabGridPageRegularTabs) {
+    return;
+  }
+
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    // TODO(crbug.com/1467873): Add a voiceover announcement to the IPH view
+    // instead of returning.
+    return;
+  }
+  // Check whether the user should see the IPH.
+  if (![self.delegate tabGridIsUserEligibleForSwipeToIncognitoIPH]) {
+    return;
+  }
+  // Return if the IPH has already been presented.
+  if (self.swipeToIncognitoIPH) {
+    return;
+  }
+
+  // Create the view.
+  UIView* regularGridView = self.regularTabsViewController.view;
+  CGSize expectedSize = CGSize();
+  expectedSize.height =
+      regularGridView.bounds.size.height - self.topToolbar.bounds.size.height;
+  if ([self shouldUseCompactLayout]) {
+    expectedSize.height -= self.bottomToolbar.bounds.size.height;
+  }
+  expectedSize.width = regularGridView.bounds.size.width;
+  GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
+            initWithText:l10n_util::GetNSString(
+                             UseRTLLayout()
+                                 ? IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH
+                                 : IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH)
+      bubbleBoundingSize:expectedSize
+          arrowDirection:BubbleArrowDirectionLeading];
+  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+  // Return if the view does NOT fit in the regular tab grid.
+  CGSize smallestPossibleSizeOfIPH = [gestureIPHView
+      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  if (smallestPossibleSizeOfIPH.width > expectedSize.width ||
+      smallestPossibleSizeOfIPH.height > expectedSize.height) {
+    return;
+  }
+
+  // Coast is clear. Show the message!
+  id<TabGridViewControllerDelegate> delegate = self.delegate;
+  gestureIPHView.dismissCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [delegate tabGridDidDismissSwipeToIncognitoIPH];
+      };
+  if (![delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
+    return;
+  }
+  self.swipeToIncognitoIPH = gestureIPHView;
+  [self.view addSubview:self.swipeToIncognitoIPH];
+  self.swipeToIncognitoIPHBottomConstraint = [gestureIPHView.bottomAnchor
+      constraintEqualToAnchor:[self shouldUseCompactLayout]
+                                  ? self.bottomToolbar.topAnchor
+                                  : regularGridView.bottomAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    [gestureIPHView.leadingAnchor
+        constraintEqualToAnchor:regularGridView.leadingAnchor],
+    [gestureIPHView.trailingAnchor
+        constraintEqualToAnchor:regularGridView.trailingAnchor],
+    [gestureIPHView.topAnchor
+        constraintEqualToAnchor:self.topToolbar.bottomAnchor],
+    self.swipeToIncognitoIPHBottomConstraint
+  ]];
+  [self.swipeToIncognitoIPH startAnimation];
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -1606,10 +1720,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)pinnedTabsViewController:
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(web::WebStateID)itemID {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
+  LogPinnedTabsUsedForDefaultBrowserPromo();
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 
-  [self.pinnedTabsDelegate selectItemWithID:itemID];
+  [self.regularTabsDelegate selectItemWithID:itemID pinned:YES];
 
   self.activePage = self.currentPage;
   [self setCurrentIdlePageStatus:NO];
@@ -1717,7 +1833,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self setCurrentIdlePageStatus:NO];
   }
 
-  [tabsDelegate selectItemWithID:itemID];
+  [tabsDelegate selectItemWithID:itemID pinned:NO];
 
   // TODO(crbug.com/1501837): Change the condition to verify if the given item
   // ID is a group or not.

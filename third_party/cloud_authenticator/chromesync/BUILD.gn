@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("chromesync") {
+  crate_name = "chromesync"
+  sources = [ "src/lib.rs" ]
+  inputs = [ "sync_pb.rs" ]
+  deps = [ "//third_party/rust/prost/v0_12:lib" ]
+  no_chromium_prelude = true
+  testonly = true
+}

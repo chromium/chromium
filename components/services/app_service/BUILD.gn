@@ -12,6 +12,7 @@ source_set("app_service") {
   public_deps = [
     "//components/services/app_service/public/cpp:app_file_handling",
     "//components/services/app_service/public/cpp:app_share_target",
+    "//components/services/app_service/public/cpp:app_shortcut_image",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:app_url_handling",

@@ -8,9 +8,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -49,7 +49,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -72,7 +70,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@EnableFeatures(ChromeFeatureList.RESTORE_TABS_ON_FRE)
 @DoNotBatch(reason = "Tests startup behaviors that trigger per-session")
 public class RestoreTabsTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
@@ -94,7 +91,6 @@ public class RestoreTabsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
         TrackerFactory.setTrackerForTests(mMockTracker);
 
         mForeignSessionHelperJniSpy = Mockito.spy(ForeignSessionHelperJni.get());
@@ -110,7 +106,6 @@ public class RestoreTabsTest {
 
     @After
     public void tearDown() {
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -121,9 +116,6 @@ public class RestoreTabsTest {
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Flaky only on test-n-phone, crbug.com/1469008")
     public void testRestoreTabsPromo_triggerBottomSheetView() {
-        // Test using triggerHelpUI methods instead of skip_feature_engagement param
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
-
         // Setup mock data
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
@@ -161,7 +153,6 @@ public class RestoreTabsTest {
 
         pressBack();
         verify(mMockTracker, times(1)).dismissed(eq(RESTORE_TABS_FEATURE));
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
     }
 
     @Test
@@ -221,13 +212,13 @@ public class RestoreTabsTest {
         Assert.assertEquals(7, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(mBottomSheetController.isSheetOpen());
 
-        int tabSwitcherParentViewId =
-                TabUiTestHelper.getTabSwitcherParentId(mActivityTestRule.getActivity());
+        int tabSwitcherAncestorViewId =
+                TabUiTestHelper.getTabSwitcherAncestorId(mActivityTestRule.getActivity());
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         onView(
                         allOf(
                                 withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                                withParent(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorViewId))))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;

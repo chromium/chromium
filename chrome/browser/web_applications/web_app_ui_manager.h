@@ -57,11 +57,11 @@ using FirstRunServiceCompletedCallback = base::OnceCallback<void(bool success)>;
 
 // Overrides the app identity update dialog's behavior for testing, allowing the
 // test to auto-accept or auto-skip the dialog.
-base::AutoReset<absl::optional<AppIdentityUpdate>>
+base::AutoReset<std::optional<AppIdentityUpdate>>
 SetIdentityUpdateDialogActionForTesting(
-    absl::optional<AppIdentityUpdate> auto_accept_action);
+    std::optional<AppIdentityUpdate> auto_accept_action);
 
-absl::optional<AppIdentityUpdate> GetIdentityUpdateDialogActionForTesting();
+std::optional<AppIdentityUpdate> GetIdentityUpdateDialogActionForTesting();
 
 class WebAppUiManagerObserver : public base::CheckedObserver {
  public:
@@ -101,6 +101,11 @@ enum class LaunchWebAppWindowSetting {
 // events from WebAppTabHelpers.
 class WebAppUiManager {
  public:
+  struct RoolNotificationBehavior {
+    bool is_rool_enabled = false;
+    bool is_prevent_close_enabled = false;
+  };
+
   static std::unique_ptr<WebAppUiManager> Create(Profile* profile);
 
   // The returned params are populated except for the disposition and container,
@@ -110,9 +115,9 @@ class WebAppUiManager {
       const webapps::AppId& app_id,
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
-      const absl::optional<GURL>& url_handler_launch_url,
-      const absl::optional<GURL>& protocol_handler_launch_url,
-      const absl::optional<GURL>& file_launch_url,
+      const std::optional<GURL>& url_handler_launch_url,
+      const std::optional<GURL>& protocol_handler_launch_url,
+      const std::optional<GURL>& file_launch_url,
       const std::vector<base::FilePath>& launch_files);
 
   WebAppUiManager();
@@ -151,8 +156,8 @@ class WebAppUiManager {
       const content::WebContents* web_contents) const = 0;
   virtual void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<webapps::AppId>& previous_app_id,
-      const absl::optional<webapps::AppId>& new_app_id) const = 0;
+      const std::optional<webapps::AppId>& previous_app_id,
+      const std::optional<webapps::AppId>& new_app_id) const = 0;
 
   virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                          bool shortcut_created) const = 0;
@@ -214,7 +219,7 @@ class WebAppUiManager {
   // Displays a notification for web apps launched on login via the RunOnOsLogin
   // feature on the provided |profile|.
   virtual void DisplayRunOnOsLoginNotification(
-      const std::vector<std::string>& app_names,
+      const base::flat_map<webapps::AppId, RoolNotificationBehavior>& apps,
       base::WeakPtr<Profile> profile) = 0;
 #endif
 

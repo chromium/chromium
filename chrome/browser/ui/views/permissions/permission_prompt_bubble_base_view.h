@@ -45,6 +45,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowOnceButtonElementId);
   PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
@@ -102,6 +103,12 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
       const std::vector<raw_ptr<permissions::PermissionRequest,
                                 VectorExperimental>>& visible_requests);
 
+  PermissionDialogButton GetPermissionDialogButton(int button_id) {
+    return static_cast<PermissionDialogButton>(button_id);
+  }
+
+  const raw_ptr<Browser> browser_;
+
  private:
   void SetPromptStyle(PermissionPromptStyle prompt_style);
 
@@ -115,11 +122,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   static int GetViewId(PermissionDialogButton button) {
     return static_cast<int>(button);
   }
-  PermissionDialogButton GetPermissionDialogButton(int button_id) {
-    return static_cast<PermissionDialogButton>(button_id);
-  }
 
-  const raw_ptr<Browser> browser_;
   base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
 
   base::TimeTicks permission_requested_time_;

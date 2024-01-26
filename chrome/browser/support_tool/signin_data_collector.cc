@@ -87,7 +87,7 @@ void SigninDataCollector::OnPIIDetected(
     PIIMap piiMap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pii_map_ = piiMap;
-  std::move(on_data_collected_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_data_collected_callback).Run(/*error=*/std::nullopt);
 }
 
 void SigninDataCollector::ExportCollectedDataWithPII(
@@ -130,5 +130,5 @@ void SigninDataCollector::OnFileWritten(
     std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }

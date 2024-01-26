@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <list>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
@@ -28,7 +29,6 @@
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -52,7 +52,7 @@ bool ParseCommand(const base::Value::Dict& command,
                   std::string* method,
                   base::Value::Dict* params,
                   std::string* session_id) {
-  absl::optional<int> maybe_id = command.FindInt("id");
+  std::optional<int> maybe_id = command.FindInt("id");
   EXPECT_TRUE(maybe_id);
   if (!maybe_id)
     return false;
@@ -87,7 +87,7 @@ bool ParseMessage(const std::string& message,
                   std::string* method,
                   base::Value::Dict* params,
                   std::string* session_id) {
-  absl::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value = base::JSONReader::Read(message);
   EXPECT_TRUE(value);
   EXPECT_TRUE(value && value->is_dict());
   if (!value || !value->is_dict()) {
@@ -310,7 +310,7 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
                                   std::string session_id,
                                   base::Value::Dict* response) {
     base::Value::Dict result;
-    absl::optional<int> ping = params.FindInt("ping");
+    std::optional<int> ping = params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
     } else {
@@ -1011,7 +1011,7 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   base::Value::Dict params;
   base::Value::Dict result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  absl::optional<int> key = result.FindInt("key");
+  std::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -1540,7 +1540,7 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
   params.Set("param", 1);
   base::Value::Dict result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  absl::optional<int> key = result.FindInt("key");
+  std::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -2008,7 +2008,7 @@ class PingingListener : public DevToolsEventListener {
     if (!status.IsOk()) {
       return status;
     }
-    absl::optional<int> pong = result.FindInt("pong");
+    std::optional<int> pong = result.FindInt("pong");
     EXPECT_TRUE(pong);
     if (pong) {
       pong_ = *pong;
@@ -2172,7 +2172,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
                                    const std::string* channel,
                                    base::Value::Dict* response) {
     base::Value::Dict result;
-    absl::optional<int> ping = params.FindInt("ping");
+    std::optional<int> ping = params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
     } else {
@@ -2206,7 +2206,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
                                            const std::string* channel,
                                            base::Value::Dict* response) {
     base::Value::Dict result;
-    absl::optional<int> ping = cdp_params.FindInt("ping");
+    std::optional<int> ping = cdp_params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
     } else {
@@ -2358,13 +2358,13 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     size_t count = expression->size() - expected_exression_start.size() - 1;
     std::string bidi_arg_str =
         expression->substr(expected_exression_start.size(), count);
-    absl::optional<base::Value> bidi_arg = base::JSONReader::Read(bidi_arg_str);
+    std::optional<base::Value> bidi_arg = base::JSONReader::Read(bidi_arg_str);
     EXPECT_TRUE(bidi_arg->is_string()) << bidi_arg_str;
     if (!bidi_arg->is_string()) {
       return false;
     }
     const std::string& bidi_expr_msg = bidi_arg->GetString();
-    absl::optional<base::Value> bidi_expr =
+    std::optional<base::Value> bidi_expr =
         base::JSONReader::Read(bidi_expr_msg);
 
     EXPECT_TRUE(bidi_expr) << bidi_expr_msg;
@@ -2375,7 +2375,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
 
     const base::Value::Dict& bidi_dict = bidi_expr->GetDict();
 
-    absl::optional<int> bidi_cmd_id = bidi_dict.FindInt("id");
+    std::optional<int> bidi_cmd_id = bidi_dict.FindInt("id");
     const std::string* bidi_method = bidi_dict.FindString("method");
     const base::Value::Dict* bidi_params = bidi_dict.FindDict("params");
     const std::string* bidi_channel = bidi_dict.FindString("channel");
@@ -2427,7 +2427,7 @@ class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
                                    const std::string* channel,
                                    base::Value::Dict* response) override {
     base::Value::Dict result;
-    absl::optional<int> ping = cdp_params.FindInt("wrapped-ping");
+    std::optional<int> ping = cdp_params.FindInt("wrapped-ping");
     EXPECT_TRUE(ping);
     if (!ping) {
       return Status{kUnknownError, "wrapped-ping is missing"};

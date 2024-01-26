@@ -91,7 +91,7 @@ bool DawnServiceSerializer::Flush() {
       header->return_data_header.trace_id = trace_id;
     }
 
-    client_->HandleReturnData(base::make_span(buffer_.data(), put_offset_));
+    client_->HandleReturnData(base::span(buffer_).first(put_offset_));
     put_offset_ = kDawnReturnCmdsOffset;
   }
   return true;

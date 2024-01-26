@@ -19,8 +19,7 @@ class ClientHintsPreferencesTest : public testing::Test {
   ClientHintsPreferencesTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kUserAgentClientHint,
-         blink::features::kClientHintsPrefersReducedTransparency},
+        {blink::features::kClientHintsPrefersReducedTransparency},
         /*disabled_features=*/{});
   }
 

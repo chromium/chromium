@@ -104,7 +104,7 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
     return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
   }
 
-  absl::optional<api::identity::LaunchWebAuthFlow::Params> params =
+  std::optional<api::identity::LaunchWebAuthFlow::Params> params =
       api::identity::LaunchWebAuthFlow::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -122,7 +122,7 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
           : WebAuthFlow::SILENT;
 
   auto abort_on_load_for_non_interactive = WebAuthFlow::AbortOnLoad::kYes;
-  absl::optional<base::TimeDelta> timeout_for_non_interactive = absl::nullopt;
+  std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt;
   if (base::FeatureList::IsEnabled(kNonInteractiveTimeoutForWebAuthFlow)) {
     abort_on_load_for_non_interactive =
         params->details.abort_on_load_for_non_interactive.value_or(true)
@@ -157,7 +157,7 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   }
 
   StartAuthFlow(profile, auth_url, mode, abort_on_load_for_non_interactive,
-                timeout_for_non_interactive, absl::nullopt);
+                timeout_for_non_interactive, std::nullopt);
   return RespondLater();
 }
 
@@ -166,8 +166,8 @@ void IdentityLaunchWebAuthFlowFunction::StartAuthFlow(
     GURL auth_url,
     WebAuthFlow::Mode mode,
     WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
-    absl::optional<base::TimeDelta> timeout_for_non_interactive,
-    absl::optional<gfx::Rect> popup_bounds) {
+    std::optional<base::TimeDelta> timeout_for_non_interactive,
+    std::optional<gfx::Rect> popup_bounds) {
   auth_flow_ = std::make_unique<WebAuthFlow>(
       this, profile, auth_url, mode, user_gesture(),
       abort_on_load_for_non_interactive, timeout_for_non_interactive,

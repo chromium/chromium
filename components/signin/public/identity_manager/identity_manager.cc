@@ -436,22 +436,29 @@ IdentityManager::GetIdentityMutatorJavaObject() {
       identity_mutator_->GetJavaObject());
 }
 
-void IdentityManager::RefreshAccountInfoIfStale() {
-  std::vector<CoreAccountInfo> accounts = GetAccountsWithRefreshTokens();
-  for (const CoreAccountInfo& account : accounts) {
-    DCHECK(HasAccountWithRefreshToken(account.account_id));
-    AccountInfo account_info =
-        account_tracker_service_->GetAccountInfo(account.account_id);
-    if (account_info.account_image.IsEmpty()) {
-      account_info_fetch_start_times_[account.account_id] =
-          base::TimeTicks::Now();
-    }
-    account_fetcher_service_->RefreshAccountInfoIfStale(account.account_id);
+void IdentityManager::RefreshAccountInfoIfStale(
+    const CoreAccountId& account_id) {
+  DCHECK(HasAccountWithRefreshToken(account_id));
+  AccountInfo account_info =
+      account_tracker_service_->GetAccountInfo(account_id);
+  if (account_info.account_image.IsEmpty()) {
+    account_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
   }
+  account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
 }
 
-void IdentityManager::RefreshAccountInfoIfStale(JNIEnv* env) {
-  RefreshAccountInfoIfStale();
+void IdentityManager::RefreshAccountInfoIfStale(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_core_account_id) {
+  if (j_core_account_id) {
+    RefreshAccountInfoIfStale(
+        ConvertFromJavaCoreAccountId(env, j_core_account_id));
+  } else {
+    std::vector<CoreAccountInfo> accounts = GetAccountsWithRefreshTokens();
+    for (const CoreAccountInfo& account : accounts) {
+      RefreshAccountInfoIfStale(account.account_id);
+    }
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

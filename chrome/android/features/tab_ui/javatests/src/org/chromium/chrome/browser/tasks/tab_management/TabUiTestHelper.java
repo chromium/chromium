@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -37,6 +38,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,6 +66,8 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -195,13 +199,13 @@ public class TabUiTestHelper {
      * @param index The index of the target card.
      */
     public static void clickNthCardFromTabSwitcher(ChromeTabbedActivity cta, int index) {
-        clickTabSwitcherCardWithParent(cta, index, getTabSwitcherParentId(cta));
+        clickTabSwitcherCardWithParent(cta, index, getTabSwitcherAncestorId(cta));
     }
 
     private static void clickTabSwitcherCardWithParent(
             ChromeTabbedActivity cta, int index, int parentId) {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_recycler_view)))
+        onView(allOf(isDescendantOfA(withId(parentId)), withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
     }
 
@@ -280,7 +284,7 @@ public class TabUiTestHelper {
     static void closeNthTabInTabSwitcher(Context context, int index) {
         onView(
                         allOf(
-                                withParent(withId(getTabSwitcherParentId(context))),
+                                isDescendantOfA(withId(getTabSwitcherAncestorId(context))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(
                         new ViewAction() {
@@ -423,17 +427,23 @@ public class TabUiTestHelper {
      */
     public static void verifyTabSwitcherCardCount(ChromeTabbedActivity cta, int count) {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        int viewHolder = getTabSwitcherParentId(cta);
-        onView(allOf(withParent(withId(viewHolder)), withId(R.id.tab_list_recycler_view)))
+        int viewHolder = getTabSwitcherAncestorId(cta);
+        onView(allOf(isDescendantOfA(withId(viewHolder)), withId(R.id.tab_list_recycler_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
     }
 
     /**
-     * Returns parentId of GridTabSwitcher based on form factor and feature enabled.
+     * Returns an ancestor View ID for the tab switcher based on form factor and feature enabled.
+     * Should be used with the {@link isDescendantOfA} view matcher.
+     *
      * @param context The activity context.
-     * @return View Id of GTS parent view.
+     * @return View ID of the a nearby ancestor view.
      */
-    public static int getTabSwitcherParentId(Context context) {
+    public static int getTabSwitcherAncestorId(Context context) {
+        if (HubFieldTrial.isHubEnabled()) {
+            return org.chromium.chrome.browser.hub.R.id.hub_pane_host;
+        }
+
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return R.id.tab_switcher_view_holder;
         }
@@ -747,12 +757,23 @@ public class TabUiTestHelper {
         assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
-        onView(
-                        withContentDescription(
-                                isIncognito
-                                        ? R.string.accessibility_tab_switcher_incognito_stack
-                                        : R.string.accessibility_tab_switcher_standard_stack))
-                .perform(click());
+        @StringRes
+        int contentDescription =
+                isIncognito
+                        ? R.string.accessibility_tab_switcher_incognito_stack
+                        : R.string.accessibility_tab_switcher_standard_stack;
+        if (HubFieldTrial.isHubEnabled()) {
+            onView(
+                            allOf(
+                                    isDescendantOfA(
+                                            withId(
+                                                    org.chromium.chrome.browser.hub.R.id
+                                                            .hub_toolbar)),
+                                    withContentDescription(contentDescription)))
+                    .perform(click());
+        } else {
+            onView(withContentDescription(contentDescription)).perform(click());
+        }
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -760,7 +781,13 @@ public class TabUiTestHelper {
                             cta.getTabModelSelector().isIncognitoSelected(), is(isIncognito));
                 });
         // Wait for tab list recyclerView to finish animation after tab model switch.
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        RecyclerView recyclerView;
+        if (HubFieldTrial.isHubEnabled()) {
+            ViewGroup viewGroup = cta.findViewById(getTabSwitcherAncestorId(cta));
+            recyclerView = viewGroup.findViewById(R.id.tab_list_recycler_view);
+        } else {
+            recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        }
         waitForStableRecyclerView(recyclerView);
     }
 
@@ -889,7 +916,11 @@ public class TabUiTestHelper {
                         });
             }
             layout = layoutManager.getTabSwitcherLayoutForTesting();
-            assertTrue(layout instanceof TabSwitcherLayout);
+            if (HubFieldTrial.isHubEnabled()) {
+                assertTrue(layout instanceof HubLayout);
+            } else {
+                assertTrue(layout instanceof TabSwitcherLayout);
+            }
         } else {
             layout = layoutManager.getOverviewLayout();
             assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);

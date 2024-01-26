@@ -81,30 +81,30 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   void ToggleTabFullscreenNoRetries(bool enter_fullscreen);
   void ToggleBrowserFullscreen(bool enter_fullscreen);
 
-  // IsMouseLocked verifies that the FullscreenController state believes
-  // the mouse is locked. This is possible only for tests that initiate
-  // mouse lock from a renderer process, and uses logic that tests that the
+  // IsPointerLocked verifies that the FullscreenController state believes
+  // the pointer is locked. This is possible only for tests that initiate
+  // pointer lock from a renderer process, and uses logic that tests that the
   // browser has focus. Thus, this can only be used in interactive ui tests
   // and not on sharded tests.
-  bool IsMouseLocked() {
-    // Verify that IsMouseLocked is consistent between the
+  bool IsPointerLocked() {
+    // Verify that IsPointerLocked is consistent between the
     // Fullscreen Controller and the Render View Host View.
-    EXPECT_TRUE(browser()->IsMouseLocked() == browser()
-                                                  ->tab_strip_model()
-                                                  ->GetActiveWebContents()
-                                                  ->GetPrimaryMainFrame()
-                                                  ->GetRenderViewHost()
-                                                  ->GetWidget()
-                                                  ->GetView()
-                                                  ->IsMouseLocked());
-    return browser()->IsMouseLocked();
+    EXPECT_TRUE(browser()->IsPointerLocked() == browser()
+                                                    ->tab_strip_model()
+                                                    ->GetActiveWebContents()
+                                                    ->GetPrimaryMainFrame()
+                                                    ->GetRenderViewHost()
+                                                    ->GetWidget()
+                                                    ->GetView()
+                                                    ->IsPointerLocked());
+    return browser()->IsPointerLocked();
   }
 
-  void PressKeyAndWaitForMouseLockRequest(ui::KeyboardCode key_code) {
+  void PressKeyAndWaitForPointerLockRequest(ui::KeyboardCode key_code) {
     base::RunLoop run_loop;
     browser()
         ->exclusive_access_manager()
-        ->mouse_lock_controller()
+        ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key_code, false,
                                                 false, false, false));
@@ -376,41 +376,42 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   }
 }
 
-// Tests mouse lock can be escaped with ESC key.
-IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
+// Tests pointer lock can be escaped with ESC key.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       EscapingPointerLock) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Request to lock the mouse.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Request to lock the pointer.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
 
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 
-  // Escape, confirm we are out of mouse lock with no prompts.
+  // Escape, confirm we are out of pointer lock with no prompts.
   SendEscapeToExclusiveAccessManager();
-  ASSERT_FALSE(IsMouseLocked());
+  ASSERT_FALSE(IsPointerLocked());
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// Tests mouse lock and fullscreen modes can be escaped with ESC key.
+// Tests pointer lock and fullscreen modes can be escaped with ESC key.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       EscapingMouseLockAndFullscreen) {
+                       EscapingPointerLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Request to lock the mouse and enter fullscreen.
+  // Request to lock the pointer and enter fullscreen.
   {
     FullscreenNotificationObserver fullscreen_observer(browser());
-    PressKeyAndWaitForMouseLockRequest(ui::VKEY_B);
+    PressKeyAndWaitForPointerLockRequest(ui::VKEY_B);
     fullscreen_observer.Wait();
   }
 
@@ -420,46 +421,46 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
     SendEscapeToExclusiveAccessManager();
     fullscreen_observer.Wait();
   }
-  ASSERT_FALSE(IsMouseLocked());
+  ASSERT_FALSE(IsPointerLocked());
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// Tests mouse lock then fullscreen.
+// Tests pointer lock then fullscreen.
 // TODO(crbug.com/1318638): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MouseLockThenFullscreen DISABLED_MouseLockThenFullscreen
+#define MAYBE_PointerLockThenFullscreen DISABLED_PointerLockThenFullscreen
 #else
-#define MAYBE_MouseLockThenFullscreen MouseLockThenFullscreen
+#define MAYBE_PointerLockThenFullscreen PointerLockThenFullscreen
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_MouseLockThenFullscreen) {
+                       MAYBE_PointerLockThenFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
 #if !defined(MEMORY_SANITIZER)
-  // Lock the mouse without a user gesture, expect no response.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_D);
+  // Lock the pointer without a user gesture, expect no response.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_D);
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_FALSE(IsMouseLocked());
+  ASSERT_FALSE(IsPointerLocked());
 #else
   // MSan builds change the timing of user gestures, which this part of the test
-  // depends upon.  See `fullscreen_mouselock.html` for more details, but the
+  // depends upon.  See `fullscreen_pointerlock.html` for more details, but the
   // main idea is that it waits ~5 seconds after the keypress and assumes that
   // the user gesture has expired.
 #endif
 
-  // Lock the mouse with a user gesture.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
 
-  // Enter fullscreen mode, mouse should remain locked.
+  // Enter fullscreen mode, pointer should remain locked.
   ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
@@ -468,115 +469,115 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // Was also disabled on platforms before:
 // Times out sometimes on Linux. http://crbug.com/135115
 // Mac: http://crbug.com/103912
-// Tests mouse lock then fullscreen in same request.
+// Tests pointer lock then fullscreen in same request.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_MouseLockAndFullscreen) {
+                       DISABLED_PointerLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Request to lock the mouse and enter fullscreen.
+  // Request to lock the pointer and enter fullscreen.
   {
     FullscreenNotificationObserver fullscreen_observer(browser());
-    PressKeyAndWaitForMouseLockRequest(ui::VKEY_B);
+    PressKeyAndWaitForPointerLockRequest(ui::VKEY_B);
     fullscreen_observer.Wait();
   }
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-// Tests mouse lock can be exited and re-entered by an application silently
+// Tests pointer lock can be exited and re-entered by an application silently
 // with no UI distraction for users.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MouseLockSilentAfterTargetUnlock) {
-  SetWebContentsGrantedSilentMouseLockPermission();
+                       PointerLockSilentAfterTargetUnlock) {
+  SetWebContentsGrantedSilentPointerLockPermission();
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Lock the mouse with a user gesture.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
-  // Unlock the mouse from target, make sure it's unlocked.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_U);
-  ASSERT_FALSE(IsMouseLocked());
+  // Unlock the pointer from target, make sure it's unlocked.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
+  ASSERT_FALSE(IsPointerLocked());
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Lock mouse again, make sure it works with no bubble.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
-  ASSERT_TRUE(IsMouseLocked());
+  // Lock pointer again, make sure it works with no bubble.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
-  // Unlock the mouse again by target.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_U);
-  ASSERT_FALSE(IsMouseLocked());
+  // Unlock the pointer again by target.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
+  ASSERT_FALSE(IsPointerLocked());
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 }
 
-// Tests mouse lock is exited on page navigation.
+// Tests pointer lock is exited on page navigation.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
 // https://crbug.com/1191964
-#define MAYBE_TestTabExitsMouseLockOnNavigation \
-    DISABLED_TestTabExitsMouseLockOnNavigation
+#define MAYBE_TestTabExitsPointerLockOnNavigation \
+  DISABLED_TestTabExitsPointerLockOnNavigation
 #else
-#define MAYBE_TestTabExitsMouseLockOnNavigation \
-    TestTabExitsMouseLockOnNavigation
+#define MAYBE_TestTabExitsPointerLockOnNavigation \
+  TestTabExitsPointerLockOnNavigation
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_TestTabExitsMouseLockOnNavigation) {
+                       MAYBE_TestTabExitsPointerLockOnNavigation) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
-  // Lock the mouse with a user gesture.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
 
-  ASSERT_FALSE(IsMouseLocked());
+  ASSERT_FALSE(IsPointerLocked());
 }
 
-// Tests mouse lock is exited when navigating back.
+// Tests pointer lock is exited when navigating back.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
 // https://crbug.com/1192097
-#define MAYBE_TestTabExitsMouseLockOnGoBack \
-  DISABLED_TestTabExitsMouseLockOnGoBack
+#define MAYBE_TestTabExitsPointerLockOnGoBack \
+  DISABLED_TestTabExitsPointerLockOnGoBack
 #else
-#define MAYBE_TestTabExitsMouseLockOnGoBack TestTabExitsMouseLockOnGoBack
+#define MAYBE_TestTabExitsPointerLockOnGoBack TestTabExitsPointerLockOnGoBack
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_TestTabExitsMouseLockOnGoBack) {
+                       MAYBE_TestTabExitsPointerLockOnGoBack) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
 
   // Navigate twice to provide a place to go back to.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
-  // Lock the mouse with a user gesture.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
 
   GoBack();
 
-  ASSERT_FALSE(IsMouseLocked());
+  ASSERT_FALSE(IsPointerLocked());
 }
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
@@ -584,77 +585,77 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
     BUILDFLAG(IS_WIN) && defined(NDEBUG)
 // TODO(erg): linux_aura bringup: http://crbug.com/163931
 // Test is flaky on Windows: https://crbug.com/1124492
-#define MAYBE_TestTabDoesntExitMouseLockOnSubFrameNavigation \
-  DISABLED_TestTabDoesntExitMouseLockOnSubFrameNavigation
+#define MAYBE_TestTabDoesntExitPointerLockOnSubFrameNavigation \
+  DISABLED_TestTabDoesntExitPointerLockOnSubFrameNavigation
 #else
-#define MAYBE_TestTabDoesntExitMouseLockOnSubFrameNavigation \
-  TestTabDoesntExitMouseLockOnSubFrameNavigation
+#define MAYBE_TestTabDoesntExitPointerLockOnSubFrameNavigation \
+  TestTabDoesntExitPointerLockOnSubFrameNavigation
 #endif
 
-// Tests mouse lock is not exited on sub frame navigation.
+// Tests pointer lock is not exited on sub frame navigation.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_TestTabDoesntExitMouseLockOnSubFrameNavigation) {
+                       MAYBE_TestTabDoesntExitPointerLockOnSubFrameNavigation) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
 
   // Create URLs for test page and test page with #fragment.
-  GURL url(embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
+  GURL url(embedded_test_server()->GetURL(kFullscreenPointerLockHTML));
   GURL url_with_fragment(url.spec() + "#fragment");
 
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Lock the mouse with a user gesture.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
 
-  // Navigate to url with fragment. Mouse lock should persist.
+  // Navigate to url with fragment. Pointer lock should persist.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_fragment));
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       ReloadExitsMouseLockAndFullscreen) {
+                       ReloadExitsPointerLockAndFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML)));
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
 
-  // Request mouse lock.
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
+  // Request pointer lock.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
 
-  ASSERT_TRUE(IsMouseLocked());
+  ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
-  // Reload. Mouse lock request should be cleared.
+  // Reload. Pointer lock request should be cleared.
   {
     base::RunLoop run_loop;
     browser()
         ->exclusive_access_manager()
-        ->mouse_lock_controller()
+        ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     Reload();
     run_loop.Run();
   }
 
-  // Request to lock the mouse and enter fullscreen.
+  // Request to lock the pointer and enter fullscreen.
   {
     FullscreenNotificationObserver fullscreen_observer(browser());
-    PressKeyAndWaitForMouseLockRequest(ui::VKEY_B);
+    PressKeyAndWaitForPointerLockRequest(ui::VKEY_B);
     fullscreen_observer.Wait();
   }
 
   // We are fullscreen.
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 
-  // Reload. Mouse should be unlocked and fullscreen exited.
+  // Reload. Pointer should be unlocked and fullscreen exited.
   {
     FullscreenNotificationObserver fullscreen_observer(browser());
     Reload();
     fullscreen_observer.Wait();
-    ASSERT_FALSE(IsMouseLocked());
+    ASSERT_FALSE(IsPointerLocked());
     ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
   }
 }

@@ -102,6 +102,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case SECURITY_EVENTS:
     case WIFI_CONFIGURATIONS:
     case WEB_APPS:
+    case WEB_APKS:
     case OS_PREFERENCES:
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
@@ -161,6 +162,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SECURITY_EVENTS:
     case WIFI_CONFIGURATIONS:
     case WEB_APPS:
+    case WEB_APKS:
     case OS_PREFERENCES:
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:

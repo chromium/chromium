@@ -195,7 +195,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
   ErrorEvent* event = ErrorEvent::Create(
       ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
-      ScriptValue::From(script_state, data), &script_state->World());
+      ScriptValue(isolate, data), &script_state->World());
 
   String message_for_console = ExtractMessageForConsole(isolate, data);
   if (!message_for_console.empty())
@@ -232,7 +232,7 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
 
   ErrorEvent* event = ErrorEvent::Create(
       ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
-      ScriptValue::From(script_state, data), &script_state->World());
+      ScriptValue(isolate, data), &script_state->World());
 
   const auto sanitize_script_errors = message->IsSharedCrossOrigin()
                                           ? SanitizeScriptErrors::kDoNotSanitize
@@ -597,14 +597,6 @@ bool WasmInstanceOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
   return false;
 }
 
-bool WasmGCEnabledCallback(v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context) {
-    return false;
-  }
-  return RuntimeEnabledFeatures::WebAssemblyGCEnabled(execution_context);
-}
-
 bool WasmJSStringBuiltinsEnabledCallback(v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
   if (!execution_context) {
@@ -762,7 +754,6 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetUseCounterCallback(&UseCounterCallback);
   isolate->SetWasmModuleCallback(WasmModuleOverride);
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
-  isolate->SetWasmGCEnabledCallback(WasmGCEnabledCallback);
   isolate->SetWasmImportedStringsEnabledCallback(
       WasmJSStringBuiltinsEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(

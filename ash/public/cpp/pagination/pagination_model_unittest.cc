@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -104,9 +104,7 @@ class TestPaginationModelObserver : public PaginationModelObserver {
 
   void TransitionEnded() override { ++transition_ended_call_count_; }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION PaginationModel* model_ = nullptr;
+  raw_ptr<PaginationModel, DanglingUntriaged> model_ = nullptr;
 
   int expected_page_selection_ = 0;
   int expected_transition_start_ = 0;
@@ -124,9 +122,7 @@ class TestPaginationModelObserver : public PaginationModelObserver {
 
   int transition_start_call_count_ = 0;
   int transition_ended_call_count_ = 0;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION base::RunLoop* wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop, DanglingUntriaged> wait_loop_ = nullptr;
 };
 
 class PaginationModelTest : public views::test::WidgetTest {

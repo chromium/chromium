@@ -1239,6 +1239,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self updateTabsSectionHeaderType];
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -1248,6 +1249,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didUndoCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self updateTabsSectionHeaderType];
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -1573,11 +1575,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       return TabsSectionHeaderType::kNone;
     case TabGridModeSearch:
       if (_searchText.length == 0) {
-        // The Normal mode grid shows behind the search overlay, so use the same
-        // header as normal mode. Subclasses can have changed it from
-        // TabsSectionHeaderType::kNone, so call this method again with
-        // TabGridModeNormal.
-        return [self tabsSectionHeaderTypeForMode:TabGridModeNormal];
+        return TabsSectionHeaderType::kNone;
       }
       return TabsSectionHeaderType::kSearch;
     case TabGridModeInactive:

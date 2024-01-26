@@ -11,6 +11,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_shared_memory.h"
 #include "build/build_config.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
@@ -21,6 +22,8 @@ namespace content {
 void InitializeFieldTrialAndFeatureList() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  base::HistogramSharedMemory::InitFromLaunchParameters(command_line);
 
   // Initialize statistical testing infrastructure.
   //

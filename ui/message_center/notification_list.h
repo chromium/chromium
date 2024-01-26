@@ -28,10 +28,6 @@ class Image;
 
 namespace message_center {
 
-namespace test {
-class NotificationListTest;
-}
-
 class Notification;
 class NotificationDelegate;
 struct NotifierId;

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -85,6 +84,10 @@ class CORE_EXPORT LargestTextPaintManager final
     count_candidates_ = 0;
     largest_text_.Clear();
     largest_ignored_text_.Clear();
+  }
+  bool IsUnrelatedSoftNavigationPaint(const Node& node) {
+    CHECK(paint_timing_detector_);
+    return paint_timing_detector_->IsUnrelatedSoftNavigationPaint(node);
   }
 
   void Trace(Visitor*) const;

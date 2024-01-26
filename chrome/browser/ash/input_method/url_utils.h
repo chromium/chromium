@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_
 
-#include "url/gurl.h"
+#include <optional>
 
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {

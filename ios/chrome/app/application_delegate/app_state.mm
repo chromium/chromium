@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -397,8 +398,12 @@ void FlushCookieStoreOnIOThread(
   // provider (and no tabs).
   if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
-      sceneState.browserProviderInterface.currentBrowserProvider
-          .userInteractionEnabled = NO;
+      Browser* browser =
+          sceneState.browserProviderInterface.currentBrowserProvider.browser;
+      if (browser && WebUsageEnablerBrowserAgent::FromBrowser(browser)) {
+        WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
+            false);
+      }
     }
   }
 

@@ -338,6 +338,25 @@ void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
     intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
+bool AwWebContentsDelegate::IsBackForwardCacheSupported() {
+  return base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
+}
+
+content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
+    content::WebContents& web_contents) {
+  if (base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+    return content::PreloadingEligibility::kEligible;
+  }
+  return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
+content::NavigationController::UserAgentOverrideOption
+AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+  // For WebView, always use the user agent override, which is set every time
+  // the user agent in AwSettings is modified.
+  return content::NavigationController::UA_OVERRIDE_TRUE;
+}
+
 scoped_refptr<content::FileSelectListener>
 AwWebContentsDelegate::TakeFileSelectListener() {
   return std::move(file_select_listener_);

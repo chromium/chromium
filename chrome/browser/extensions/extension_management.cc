@@ -343,7 +343,7 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
   // Current publish status may not available if the policy setting just changed
   // to |kDisableUnpublished|. The actual publish status will be retrieved
   // by CWSInfoService separately and will trigger this same policy check.
-  absl::optional<CWSInfoServiceInterface::CWSInfo> cws_info =
+  std::optional<CWSInfoServiceInterface::CWSInfo> cws_info =
       cws_info_service_->GetCWSInfo(*extension);
   if (cws_info.has_value() && cws_info->is_present &&
       cws_info->violation_type !=

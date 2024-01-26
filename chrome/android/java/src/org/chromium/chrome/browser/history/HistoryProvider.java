@@ -43,9 +43,12 @@ public interface HistoryProvider {
     /**
      * Query browsing history. Only one query may be in-flight at any time. See
      * BrowsingHistoryService::QueryHistory.
+     *
      * @param query The query search text. May be empty.
+     * @param appId The package name of the app to filter the query result visited by CCT. Can be
+     *     null for the results visited by BrApp.
      */
-    void queryHistory(String query);
+    void queryHistory(String query, String appId);
 
     /**
      * Query browsing history for a particular host. Only one query may be in-flight at any time.

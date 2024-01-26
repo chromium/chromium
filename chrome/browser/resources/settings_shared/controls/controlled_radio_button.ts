@@ -10,22 +10,17 @@ import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 // </if>
 
-import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {CrRadioButtonMixin} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {prefToString} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
-import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
+import {PrefControlMixin} from './pref_control_mixin.js';
 
 const ControlledRadioButtonElementBase =
-    mixinBehaviors(
-        [PaperRippleBehavior],
-        CrRadioButtonMixin(PrefControlMixin(PolymerElement))) as {
-      new (): PolymerElement & CrRadioButtonMixinInterface &
-          PrefControlMixinInterface & PaperRippleBehavior,
-    };
+    PaperRippleMixin(CrRadioButtonMixin(PrefControlMixin(PolymerElement)));
 
 export class ControlledRadioButtonElement extends
     ControlledRadioButtonElementBase {
@@ -48,7 +43,7 @@ export class ControlledRadioButtonElement extends
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleBehavior
+  // Overridden from PaperRippleMixin
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {
     this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');

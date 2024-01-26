@@ -33,6 +33,10 @@
 #include "ui/base/buildflags.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
+#endif
+
 struct AccountInfo;
 class PrefChangeRegistrar;
 class PrefService;
@@ -517,10 +521,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   void MaybeLogPasswordCapture(bool did_log_in);
   void SetLogPasswordCaptureTimer(const base::TimeDelta& delay);
 
-  // Open the page where the user can checks their saved passwords
-  // or change their phished url depending on the the |password_type|.
-  void OpenChangePasswordUrl(content::WebContents* web_contents,
-                             ReusedPasswordAccountType password_type);
+  // Open the page where the user can check their saved passwords
+  // or change their phished credential, depending on the the |password_type|.
+  void OpenPasswordCheck(content::WebContents* web_contents,
+                         ReusedPasswordAccountType password_type);
 
   // Log user dialog interaction when the user clicks on the "Change Password"
   // or "Check Passwords" button.
@@ -540,7 +544,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   gfx::Size GetCurrentContentAreaSize() const override;
 #endif
 
-  // Constructor used for tests only.
+  // Constructors used for tests only.
   ChromePasswordProtectionService(
       Profile* profile,
       scoped_refptr<SafeBrowsingUIManager> ui_manager,
@@ -548,6 +552,16 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       VerdictCacheManager* cache_manager,
       ChangePhishedCredentialsCallback add_phished_credentials,
       ChangePhishedCredentialsCallback remove_phished_credentials);
+#if BUILDFLAG(IS_ANDROID)
+  ChromePasswordProtectionService(
+      Profile* profile,
+      scoped_refptr<SafeBrowsingUIManager> ui_manager,
+      StringProvider sync_password_hash_provider,
+      VerdictCacheManager* cache_manager,
+      ChangePhishedCredentialsCallback add_phished_credentials,
+      ChangePhishedCredentialsCallback remove_phished_credentials,
+      std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher);
+#endif
 
   // Code shared by both ctors.
   void Init();
@@ -594,6 +608,11 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // member callback rather than a virtual function because it's needed in the
   // constructor.
   StringProvider sync_password_hash_provider_for_testing_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Used on android to launch Password Checkup.
+  std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher_;
+#endif
 };
 
 }  // namespace safe_browsing

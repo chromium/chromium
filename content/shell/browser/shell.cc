@@ -552,14 +552,14 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
 }
 #endif
 
-void Shell::RequestToLockMouse(WebContents* web_contents,
+void Shell::RequestPointerLock(WebContents* web_contents,
                                bool user_gesture,
                                bool last_unlocked_by_target) {
   // Give the platform a chance to handle the lock request, if it doesn't
   // indicate it handled it, allow the request.
-  if (!g_platform->HandleRequestToLockMouse(this, web_contents, user_gesture,
+  if (!g_platform->HandlePointerLockRequest(this, web_contents, user_gesture,
                                             last_unlocked_by_target)) {
-    web_contents->GotResponseToLockMouseRequest(
+    web_contents->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kSuccess);
   }
 }

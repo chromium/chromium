@@ -20,7 +20,9 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/port_util.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/session_usage.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -37,6 +39,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/bidirectional_stream_quic_impl.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
@@ -47,6 +50,7 @@
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -87,8 +91,9 @@ base::Value::Dict NetLogHttpStreamJobParams(const NetLogSource& source,
                                             HttpStreamFactory::JobType job_type,
                                             RequestPriority priority) {
   base::Value::Dict dict;
-  if (source.IsValid())
+  if (source.IsValid()) {
     source.AddToEventParameters(dict);
+  }
   dict.Set("original_url", original_url.DeprecatedGetOriginAsURL().spec());
   dict.Set("url", url.DeprecatedGetOriginAsURL().spec());
   dict.Set("expect_spdy", expect_spdy);
@@ -157,7 +162,7 @@ HttpStreamFactory::Job::Job(
                   job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
-      quic_request_(session_->quic_stream_factory()),
+      quic_request_(session_->quic_session_pool()),
       spdy_session_key_(
           using_quic_
               ? SpdySessionKey()
@@ -244,8 +249,9 @@ HttpStreamFactory::Job::~Job() {
   }
 
   // The stream could be in a partial state.  It is not reusable.
-  if (stream_.get() && next_state_ != STATE_DONE)
+  if (stream_.get() && next_state_ != STATE_DONE) {
     stream_->Close(true /* not reusable */);
+  }
 }
 
 void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
@@ -320,8 +326,9 @@ void HttpStreamFactory::Job::SetPriority(RequestPriority priority) {
   // and it is up to the consumer to set their priority via
   // HttpStream::InitializeStream().  So there is no need for this code
   // to propagate priority changes to the newly created stream.
-  if (connection_ && connection_->is_initialized())
+  if (connection_ && connection_->is_initialized()) {
     connection_->SetPriority(priority);
+  }
   // TODO(akalin): Maybe Propagate this to the preconnect state.
 }
 
@@ -332,14 +339,32 @@ bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
 }
 
 bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
-  if (!using_quic_)
+  if (!using_quic_) {
     return false;
+  }
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
+  SessionUsage session_usage;
+  ProxyChain proxy_chain;
+  // TODO(https://crbug.com/1520929): Remove support for sending GET requests to
+  // the proxy server when proxying HTTP requests and instead always tunnel
+  // them.
+  CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
+  if (IsGetToProxy(proxy_info_.proxy_chain(), origin_url_)) {
+    session_usage = SessionUsage::kProxy;
+    proxy_chain = ProxyChain::Direct();
+  } else {
+    session_usage = SessionUsage::kDestination;
+    proxy_chain = proxy_info_.proxy_chain();
+    // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
+    // supported, but when it is we can remove this CHECK.
+    CHECK(proxy_chain.is_direct());
+  }
+
   return quic_request_.CanUseExistingSession(
-      origin_url_, request_info_.privacy_mode, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      require_dns_https_alpn, destination_);
+      origin_url_, proxy_chain, request_info_.privacy_mode, session_usage,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn, destination_);
 }
 
 bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
@@ -350,7 +375,8 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   DCHECK(pool);
   ClientSocketPool::GroupId connection_group(
       destination_, request_info_.privacy_mode,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy);
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
+      disable_cert_verification_network_fetches());
   return pool->HasActiveSocket(connection_group);
 }
 
@@ -360,6 +386,10 @@ NextProto HttpStreamFactory::Job::negotiated_protocol() const {
 
 bool HttpStreamFactory::Job::using_spdy() const {
   return negotiated_protocol_ == kProtoHTTP2;
+}
+
+bool HttpStreamFactory::Job::disable_cert_verification_network_fetches() const {
+  return !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
 }
 
 const ProxyInfo& HttpStreamFactory::Job::proxy_info() const {
@@ -401,15 +431,18 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
     const ProxyInfo& proxy_info,
     bool using_ssl,
     bool is_websocket) {
-  if (!session->IsQuicEnabled())
+  if (!session->IsQuicEnabled()) {
     return false;
-  if (is_websocket)
+  }
+  if (is_websocket) {
     return false;
+  }
   // If this is going through a QUIC proxy, only force QUIC for insecure
   // requests. If the request is secure, a tunnel will be needed, and those are
   // handled by the socket pools, using an HttpProxyConnectJob.
-  if (proxy_info.is_quic())
+  if (proxy_info.is_quic()) {
     return !using_ssl;
+  }
   return OriginToForceQuicOn(*session->context().quic_context->params(),
                              destination) &&
          proxy_info.is_direct() &&
@@ -432,29 +465,30 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
   // SpdySession pool, and uses it directly (completely ignoring the result of
   // the ConnectJob, and in fact cancelling it). So we need to create the same
   // key used by the HttpProxyConnectJob for the last proxy in the chain.
-  if (proxy_chain.is_get_to_proxy_allowed() &&
-      proxy_chain.GetProxyServer(proxy_chain.length() - 1).is_https() &&
-      origin_url.SchemeIs(url::kHttpScheme)) {
+  if (IsGetToProxy(proxy_chain, origin_url)) {
     // For this to work as expected, the whole chain should be HTTPS.
     for (const auto& proxy_server : proxy_chain.proxy_servers()) {
       CHECK(proxy_server.is_https());
     }
-    const auto& last_proxy_host_port_pair =
-        proxy_chain.GetProxyServer(proxy_chain.length() - 1).host_port_pair();
-    ProxyChain last_proxy_partial_chain(
-        {proxy_chain.proxy_servers().begin(),
-         proxy_chain.proxy_servers().end() - 1});
-    // If `proxy_chain` only contains one proxy server, then
-    // `last_proxy_partial_chain` will be a direct proxy chain.
+    auto [last_proxy_partial_chain, last_proxy_server] =
+        proxy_chain.SplitLast();
+    const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
     return SpdySessionKey(last_proxy_host_port_pair, last_proxy_partial_chain,
-                          PRIVACY_MODE_DISABLED,
-                          SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                          network_anonymization_key, secure_dns_policy);
+                          PRIVACY_MODE_DISABLED, SessionUsage::kProxy,
+                          socket_tag, network_anonymization_key,
+                          secure_dns_policy);
   }
   return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_chain,
-                        privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-                        socket_tag, network_anonymization_key,
-                        secure_dns_policy);
+                        privacy_mode, SessionUsage::kDestination, socket_tag,
+                        network_anonymization_key, secure_dns_policy);
+}
+
+// static
+bool HttpStreamFactory::Job::IsGetToProxy(const ProxyChain& proxy_chain,
+                                          const GURL& origin_url) {
+  return proxy_chain.is_get_to_proxy_allowed() &&
+         proxy_chain.Last().is_secure_http_like() &&
+         origin_url.SchemeIs(url::kHttpScheme);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
@@ -467,8 +501,9 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
     return false;
   }
 
-  if (is_websocket_)
+  if (is_websocket_) {
     return try_websocket_over_http2_;
+  }
 
   DCHECK(origin_url_.SchemeIsHTTPOrHTTPS());
 
@@ -578,8 +613,9 @@ void HttpStreamFactory::Job::OnIOComplete(int result) {
 void HttpStreamFactory::Job::RunLoop(int result) {
   result = DoLoop(result);
 
-  if (result == ERR_IO_PENDING)
+  if (result == ERR_IO_PENDING) {
     return;
+  }
 
   // Stop watching for new SpdySessions, to avoid receiving a new SPDY session
   // while doing anything other than waiting to establish a connection.
@@ -723,8 +759,9 @@ int HttpStreamFactory::Job::DoWait() {
   net_log_.AddEntryWithBoolParams(NetLogEventType::HTTP_STREAM_JOB_WAITING,
                                   NetLogEventPhase::BEGIN, "should_wait",
                                   should_wait);
-  if (should_wait)
+  if (should_wait) {
     return ERR_IO_PENDING;
+  }
 
   return OK;
 }
@@ -737,8 +774,9 @@ int HttpStreamFactory::Job::DoWaitComplete(int result) {
 }
 
 void HttpStreamFactory::Job::ResumeInitConnection() {
-  if (init_connection_already_resumed_)
+  if (init_connection_already_resumed_) {
     return;
+  }
   DCHECK_EQ(next_state_, STATE_INIT_CONNECTION);
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_JOB_RESUME_INIT_CONNECTION);
   init_connection_already_resumed_ = true;
@@ -766,36 +804,15 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
-  SSLConfig server_ssl_config;
-  // TODO(https://crbug.com/1498285):  Remove this and move
-  // `disable_cert_verification_network_fetches` handling down to the socket
-  // layer.
-  bool disable_cert_verification_network_fetches =
-      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  server_ssl_config.disable_cert_verification_network_fetches =
-      disable_cert_verification_network_fetches;
-
-  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
-
-  if (using_ssl_) {
-    // Prior to HTTP/2 and SPDY, some servers use TLS renegotiation to request
-    // TLS client authentication after the HTTP request was sent. Allow
-    // renegotiation for only those connections.
-    //
-    // Note that this does NOT implement the provision in
-    // https://http2.github.io/http2-spec/#rfc.section.9.2.1 which allows the
-    // server to request a renegotiation immediately before sending the
-    // connection preface as waiting for the preface would cost the round trip
-    // that False Start otherwise saves.
-    server_ssl_config.renego_allowed_default = true;
-    server_ssl_config.renego_allowed_for_protos.push_back(kProtoHTTP11);
-  }
-
-  // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
-  server_ssl_config.early_data_enabled = session_->params().enable_early_data;
-
-  if (using_quic_)
+  if (using_quic_) {
+    // TODO(mmenke): Clean this up. `disable_cert_verification_network_fetches`
+    // is enabled in ConnectJobFactory for H1/H2 connections. Also need to add
+    // it to the SpdySessionKey for H2 connections.
+    SSLConfig server_ssl_config;
+    server_ssl_config.disable_cert_verification_network_fetches =
+        disable_cert_verification_network_fetches();
     return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
+  }
 
   // Check first if there is a pushed stream matching the request, or an HTTP/2
   // connection this request can pool to.  If so, then go straight to using
@@ -846,8 +863,9 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
       // If we're preconnecting, but we already have a SpdySession, we don't
       // actually need to preconnect any sockets, so we're done.
-      if (job_type_ == PRECONNECT)
+      if (job_type_ == PRECONNECT) {
         return OK;
+      }
       negotiated_protocol_ = kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
@@ -870,7 +888,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
@@ -884,14 +902,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key, net_log_, connection_.get(),
         io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config, request_info_.privacy_mode,
+      allowed_bad_certs_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);
@@ -902,7 +920,10 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
   int cert_verifier_flags;
+  SessionUsage session_usage;
+
   if (proxy_info_.is_quic()) {
+    DCHECK(url.SchemeIs(url::kHttpScheme));
     // Disable network fetches for QUIC proxies, since the network requests
     // are probably going to need to go through the proxy chain too.
     //
@@ -910,31 +931,33 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     // proxies in ConnectJobFactory.
     cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
 
-    // TODO(https://crbug.com/1491092): Update this to support proxy chains with
-    // multiple proxies and add tests.
+    // TODO(https://crbug.com/1520929): Remove support for sending GET requests
+    // to the proxy server when proxying HTTP requests and instead always tunnel
+    // them.
     CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
     const HostPortPair& proxy_endpoint =
-        proxy_info_.proxy_chain()
-            .GetProxyServer(proxy_info_.proxy_chain().length() - 1)
-            .host_port_pair();
+        proxy_info_.proxy_chain().Last().host_port_pair();
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
                                       proxy_endpoint.port());
     url = destination.GetURL();
+    session_usage = SessionUsage::kProxy;
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
     cert_verifier_flags = server_cert_verifier_flags;
+    // This connection is to the destination and not to an intermediate proxy.
+    session_usage = SessionUsage::kDestination;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
   int rv = quic_request_.Request(
-      std::move(destination), quic_version_, request_info_.privacy_mode,
-      priority_, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      proxy_info_.is_direct(), require_dns_https_alpn, cert_verifier_flags, url,
-      net_log_, &net_error_details_,
+      std::move(destination), quic_version_, ProxyChain::Direct(),
+      session_usage, request_info_.privacy_mode, priority_,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn,
+      cert_verifier_flags, url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -982,8 +1005,9 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   spdy_session_request_.reset();
 
   if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
-    if (using_quic_)
+    if (using_quic_) {
       return result;
+    }
     DCHECK_EQ(OK, result);
     return OK;
   }
@@ -1035,8 +1059,9 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     }
   }
 
-  if (proxy_info_.is_quic() && using_quic_ && result < 0)
+  if (proxy_info_.is_quic() && using_quic_ && result < 0) {
     return ReconsiderProxyAfterError(result);
+  }
 
   if (expect_spdy_ && !using_spdy()) {
     return ERR_ALPN_NEGOTIATION_FAILED;
@@ -1052,12 +1077,14 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   //   otherwise, the error came from one of the other protocols.
   bool ssl_started = using_ssl_ && (result == OK || connection_->socket() ||
                                     connection_->is_ssl_error());
-  if (!ssl_started && result < 0 && (expect_spdy_ || using_quic_))
+  if (!ssl_started && result < 0 && (expect_spdy_ || using_quic_)) {
     return result;
+  }
 
   if (using_quic_) {
-    if (result < 0)
+    if (result < 0) {
       return result;
+    }
 
     if (stream_type_ == HttpStreamRequest::BIDIRECTIONAL_STREAM) {
       std::unique_ptr<QuicChromiumClientSession::Handle> session =
@@ -1187,8 +1214,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
   }
   if (existing_spdy_session_) {
     // We picked up an existing session, so we don't need our socket.
-    if (connection_->socket())
+    if (connection_->socket()) {
       connection_->socket()->Disconnect();
+    }
     connection_->Reset();
 
     int set_result =
@@ -1199,8 +1227,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
 
   // Close idle sockets in this group, since subsequent requests will go over
   // |spdy_session|.
-  if (connection_->socket()->IsConnected())
+  if (connection_->socket()->IsConnected()) {
     connection_->CloseIdleSocketsInGroup("Switching to HTTP2 session");
+  }
 
   base::WeakPtr<SpdySession> spdy_session;
   int rv =
@@ -1230,8 +1259,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
 }
 
 int HttpStreamFactory::Job::DoCreateStreamComplete(int result) {
-  if (result < 0)
+  if (result < 0) {
     return result;
+  }
 
   session_->proxy_resolution_service()->ReportSuccess(proxy_info_);
   next_state_ = STATE_NONE;
@@ -1245,8 +1275,9 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
   // No need for the connection any more, since |spdy_session| can be used
   // instead, and there's no benefit from keeping the old ConnectJob in the
   // socket pool.
-  if (connection_)
+  if (connection_) {
     connection_->ResetAndCloseSocket();
+  }
 
   // Once a connection is initialized, or if there's any out-of-band callback,
   // like proxy auth challenge, the SpdySessionRequest is cancelled.
@@ -1284,8 +1315,9 @@ int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {
 }
 
 void HttpStreamFactory::Job::MaybeCopyConnectionAttemptsFromHandle() {
-  if (!connection_)
+  if (!connection_) {
     return;
+  }
 
   delegate_->AddConnectionAttemptsToRequest(this,
                                             connection_->connection_attempts());
@@ -1323,8 +1355,9 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
   DCHECK(!spdy_session_request_);
 
   // If the job has previously been throttled, don't throttle it again.
-  if (init_connection_already_resumed_)
+  if (init_connection_already_resumed_) {
     return false;
+  }
 
   url::SchemeHostPort scheme_host_port(
       using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,

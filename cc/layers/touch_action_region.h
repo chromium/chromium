@@ -12,8 +12,6 @@
 
 namespace cc {
 
-class Rect;
-
 class CC_EXPORT TouchActionRegion {
  public:
   TouchActionRegion();

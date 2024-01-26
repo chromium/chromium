@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <type_traits>
-
 #include "chrome/browser/compose/compose_enabling.h"
 
+#include <functional>
+#include <memory>
+#include <type_traits>
+
 #include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -31,35 +35,22 @@ bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
 
 }  // namespace
 
-bool ComposeEnabling::enabled_for_testing_{false};
-bool ComposeEnabling::skip_user_check_for_testing_{false};
+int ComposeEnabling::enabled_for_testing_{0};
+int ComposeEnabling::skip_user_check_for_testing_{0};
 
 ComposeEnabling::ComposeEnabling(
     TranslateLanguageProvider* translate_language_provider,
     Profile* profile,
     signin::IdentityManager* identity_manager,
     OptimizationGuideKeyedService* opt_guide)
-    : optimization_guide::SettingsEnabledObserver(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE),
-      profile_(profile),
+    : profile_(profile),
       opt_guide_(opt_guide),
       identity_manager_(identity_manager) {
   DCHECK(profile_);
   translate_language_provider_ = translate_language_provider;
-  if (opt_guide_) {
-    // TODO(b/314199871): Add test when this call becomes mock-able.
-    opt_guide_->AddModelExecutionSettingsEnabledObserver(this);
-  } else {
-    LOG(WARNING) << "ComposeEnabling not monitoring for settings change. This "
-                    "is expected when running unrelated tests.";
-  }
 }
 
 ComposeEnabling::~ComposeEnabling() {
-  if (opt_guide_) {
-    opt_guide_->RemoveModelExecutionSettingsEnabledObserver(this);
-  }
-
   opt_guide_ = nullptr;
   identity_manager_ = nullptr;
   translate_language_provider_ = nullptr;
@@ -67,13 +58,27 @@ ComposeEnabling::~ComposeEnabling() {
 }
 
 // Static.
-void ComposeEnabling::SetEnabledForTesting(bool enabled) {
-  enabled_for_testing_ = enabled;
+ComposeEnabling::ScopedOverride
+ComposeEnabling::ScopedEnableComposeForTesting() {
+  enabled_for_testing_++;
+  return std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+      [](int& enabled_for_testing) {
+        enabled_for_testing--;
+        DCHECK(enabled_for_testing >= 0);
+      },
+      std::ref(enabled_for_testing_)));
 }
 
 // Static.
-void ComposeEnabling::SkipUserEnabledCheckForTesting(bool skip) {
-  skip_user_check_for_testing_ = skip;
+ComposeEnabling::ScopedOverride
+ComposeEnabling::ScopedSkipUserCheckForTesting() {
+  skip_user_check_for_testing_++;
+  return std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+      [](int& skip_user_check_for_testing) {
+        skip_user_check_for_testing--;
+        DCHECK(skip_user_check_for_testing >= 0);
+      },
+      std::ref(skip_user_check_for_testing_)));
 }
 
 compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
@@ -95,7 +100,7 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  absl::optional<compose::ComposeHintMetadata> compose_metadata;
+  std::optional<compose::ComposeHintMetadata> compose_metadata;
   if (metadata.any_metadata().has_value()) {
     compose_metadata =
         optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
@@ -113,7 +118,7 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
 
 // Member function public entry point.
 base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled() {
-  return CheckEnabling(profile_, opt_guide_, identity_manager_);
+  return CheckEnabling(opt_guide_, identity_manager_);
 }
 
 // Static public entry point.
@@ -122,12 +127,11 @@ bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
-  return CheckEnabling(profile, opt_guide, identity_manager).has_value();
+  return CheckEnabling(opt_guide, identity_manager).has_value();
 }
 
-// Internal static.
+// Private static.
 base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
-    Profile* profile,
     OptimizationGuideKeyedService* opt_guide,
     signin::IdentityManager* identity_manager) {
   if (enabled_for_testing_) {
@@ -135,7 +139,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     return base::ok();
   }
 
-  if (profile == nullptr || identity_manager == nullptr) {
+  if (identity_manager == nullptr || opt_guide == nullptr) {
     DVLOG(2) << "feature not reachable, a required pointer is nullptr";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
   }
@@ -149,7 +153,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   // Check that the feature flag is enabled.
   if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     DVLOG(2) << "feature not enabled ";
-    return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
+    return base::unexpected(compose::ComposeShowStatus::kFeatureFlagDisabled);
   }
 
   // Check signin status.
@@ -242,6 +246,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
              blink::mojom::FormControlType::kTextArea))) {
     compose::LogComposeContextMenuShowStatus(
         compose::ComposeShowStatus::kIncompatibleFieldType);
+    DVLOG(2) << "not a supported text field";
     return false;
   }
 
@@ -255,6 +260,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
       compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED) {
     compose::LogComposeContextMenuShowStatus(
         compose::ComposeShowStatus::kPerUrlChecksFailed);
+    DVLOG(2) << "disabled for the main frame URL";
     return false;
   }
 
@@ -267,36 +273,8 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
     return true;
   }
   compose::LogComposeContextMenuShowStatus(show_status.error());
+  DVLOG(2) << "page level checks failed";
   return false;
-}
-
-// TODO(b/314327112): add a browser test to confirm correct enabling.
-void ComposeEnabling::PrepareToEnableOnRestart() {
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage;
-  about_flags::GetStorage(
-      profile_, base::BindOnce(
-                    [](std::unique_ptr<flags_ui::FlagsStorage>* final_storage,
-                       std::unique_ptr<flags_ui::FlagsStorage> storage,
-                       flags_ui::FlagAccess access) {
-                      CHECK(access == flags_ui::FlagAccess::kOwnerAccessToFlags)
-                          << "ChromeOS is not yet supported";
-                      *final_storage = std::move(storage);
-                    },
-                    base::Unretained(&flags_storage)));
-  CHECK(flags_storage) << "Flags storage must be set synchronously; ChromeOS "
-                          "(Ash) is not yet supported";
-
-  // Enable required features.
-  const std::string enabled_suffix =
-      std::string({flags_ui::kMultiSeparatorChar, '1'});
-  const std::string compose_enabled_name =
-      flag_descriptions::kComposeId + enabled_suffix;
-  about_flags::SetFeatureEntryEnabled(flags_storage.get(), compose_enabled_name,
-                                      true);
-  const std::string autofill_ce_enabled_name =
-      flag_descriptions::kAutofillContentEditablesId + enabled_suffix;
-  about_flags::SetFeatureEntryEnabled(flags_storage.get(),
-                                      autofill_ce_enabled_name, true);
 }
 
 base::expected<void, compose::ComposeShowStatus>
@@ -339,9 +317,6 @@ ComposeEnabling::PageLevelChecks(translate::TranslateManager* translate_manager,
     DVLOG(2) << "language not supported";
     return base::unexpected(compose::ComposeShowStatus::kUnsupportedLanguage);
   }
-
-  // TODO(b/316628813): Check that we have enough space in the browser window to
-  // show the dialog.
 
   return base::ok();
 }

@@ -84,7 +84,8 @@ class TestImageBacking : public SharedImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

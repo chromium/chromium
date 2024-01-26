@@ -226,7 +226,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     return;
   }
 
-  absl::optional<policy::DlpFileDestination> destination;
+  std::optional<policy::DlpFileDestination> destination;
   if (request.has_destination_component()) {
     destination.emplace(
         MapProtoToPolicyComponent(request.destination_component()));
@@ -239,7 +239,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     files_action = MapProtoToFileAction(request.file_action());
   }
 
-  absl::optional<file_manager::io_task::IOTaskId> task_id = absl::nullopt;
+  std::optional<file_manager::io_task::IOTaskId> task_id = std::nullopt;
   if (request.has_io_task_id()) {
     task_id = request.io_task_id();
   }

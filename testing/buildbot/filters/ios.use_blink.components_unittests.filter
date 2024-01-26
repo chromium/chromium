@@ -6,6 +6,8 @@
 -AutofillAcrossIframesTest.NoChildFrames
 -AutofillAcrossIframesTest.WithChildFrames
 -AutofillAcrossIframesTest.Resolve
+-AutofillAcrossIframesTest.SetAndGetParent
+-AutofillAcrossIframesTest.TriggerExtractionInFrame
 
 # TODO(crbug.com/1505321): Test currently fails on iOS blink.
 -AutofillAgentTests.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
@@ -123,10 +125,6 @@
 -AccountConsistencyServiceTest.SetGaiaCookieUpdateBeforeDelay
 -AccountConsistencyServiceTest.SignInSignOut
 -AccountConsistencyServiceTest.SignOutWithoutDomains
-
-# TODO(crbug.com/1505343): Test currently fails on iOS blink.
--ActiveStateManagerImplTest.ActiveState
--ActiveStateManagerImplTest.ObserverMethod
 
 # TODO(crbug.com/1505345): Test currently fails on iOS blink.
 -JsTranslateWebFrameManagerTest.Inject

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 
 #include <stddef.h>
-
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -795,6 +795,34 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
 
   EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
+}
+
+TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
+       MaybeRegisterAttributionHeadersNonKeepAlive_ResponseProcessed) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetKeepalive(false);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
 }
 
 }  // namespace

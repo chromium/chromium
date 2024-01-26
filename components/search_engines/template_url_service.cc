@@ -41,6 +41,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -374,9 +376,9 @@ class TemplateURLService::PreLoadingProviders {
 };
 
 // TemplateURLService ---------------------------------------------------------
-
 TemplateURLService::TemplateURLService(
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     std::unique_ptr<SearchTermsData> search_terms_data,
     const scoped_refptr<KeywordWebDataService>& web_data_service,
     std::unique_ptr<TemplateURLServiceClient> client,
@@ -387,6 +389,7 @@ TemplateURLService::TemplateURLService(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     )
     : prefs_(prefs),
+      search_engine_choice_service_(search_engine_choice_service),
       search_terms_data_(std::move(search_terms_data)),
       web_data_service_(web_data_service),
       client_(std::move(client)),
@@ -394,6 +397,7 @@ TemplateURLService::TemplateURLService(
       pre_loading_providers_(std::make_unique<PreLoadingProviders>()),
       default_search_manager_(
           prefs,
+          search_engine_choice_service,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
                               base::Unretained(this))
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -402,15 +406,21 @@ TemplateURLService::TemplateURLService(
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
           ),
       enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs)) {
+  if (!search_engine_choice_service_) {
+    CHECK_IS_TEST();
+    CHECK(!prefs);
+  }
   DCHECK(search_terms_data_);
   Init();
 }
 
 TemplateURLService::TemplateURLService(
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     base::span<const TemplateURLService::Initializer> initializers)
     : TemplateURLService(
           prefs,
+          search_engine_choice_service,
           /*search_terms_data=*/std::make_unique<SearchTermsData>(),
           /*web_data_service=*/nullptr,
           /*client=*/nullptr,
@@ -422,6 +432,7 @@ TemplateURLService::TemplateURLService(
       ) {
   // This constructor is not intended to be used outside of tests.
   CHECK_IS_TEST();
+  CHECK(search_engine_choice_service_ || !prefs);
   ApplyInitializersForTesting(initializers);  // IN-TEST
 }
 
@@ -430,6 +441,7 @@ TemplateURLService::TemplateURLService(const Initializer* initializers,
     : pre_loading_providers_(std::make_unique<PreLoadingProviders>()),
       default_search_manager_(
           /*pref_service=*/nullptr,
+          /*search_engine_choice_service=*/nullptr,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
                               base::Unretained(this))
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -795,7 +807,8 @@ TemplateURLService::GetTemplateURLsForChoiceScreen() {
   // handled by `generate_search_engine_icons.py`.
   std::vector<std::unique_ptr<TemplateURLData>> engines =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          prefs_, /*default_search_provider_index=*/nullptr,
+          prefs_, search_engine_choice_service_,
+          /*default_search_provider_index=*/nullptr,
           /*include_current_default=*/true, /*template_url_service=*/this);
   for (const auto& engine : engines) {
     result.push_back(std::make_unique<TemplateURL>(*engine));
@@ -987,8 +1000,12 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
     }
   }
 
-  if (selection_added) {
-    search_engines::RecordChoiceMade(prefs_, choice_made_location, this);
+  if (selection_added &&
+      // The choice record below should only be done when called from a path
+      // associated with a fully featured search engine choice screen.
+      choice_made_location != search_engines::ChoiceMadeLocation::kOther) {
+    CHECK(search_engine_choice_service_);  // See b/321280848.
+    search_engine_choice_service_->RecordChoiceMade(choice_made_location, this);
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1121,7 +1138,8 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
   }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs_, nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs_, search_engine_choice_service_, nullptr);
   DCHECK(!prepopulated_urls.empty());
   ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
       &prepopulated_urls, template_urls_, default_search_provider_));
@@ -1270,16 +1288,15 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 
   std::unique_ptr<OwnedTemplateURLVector> template_urls =
       std::make_unique<OwnedTemplateURLVector>();
-  int new_resource_keyword_version = 0;
-  int new_resource_starter_pack_version = 0;
+  WDKeywordsResult::Metadata updated_keywords_metadata;
   {
     GetSearchProvidersUsingKeywordResult(
-        *result, web_data_service_.get(), prefs_, template_urls.get(),
+        *result, web_data_service_.get(), prefs_, search_engine_choice_service_,
+        template_urls.get(),
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? pre_loading_providers_->default_search_provider()
             : nullptr,
-        search_terms_data(), &new_resource_keyword_version,
-        &new_resource_starter_pack_version, &pre_sync_deletes_);
+        search_terms_data(), updated_keywords_metadata, &pre_sync_deletes_);
   }
 
   Scoper scoper(this);
@@ -1299,12 +1316,19 @@ void TemplateURLService::OnWebDataServiceRequestDone(
       UpdateKeywordSearchTermsForURL(visits_to_add_[i]);
     visits_to_add_.clear();
 
-    if (new_resource_keyword_version)
-      web_data_service_->SetBuiltinKeywordVersion(new_resource_keyword_version);
+    if (updated_keywords_metadata.HasBuiltinKeywordData()) {
+      web_data_service_->SetBuiltinKeywordDataVersion(
+          updated_keywords_metadata.builtin_keyword_data_version);
+      web_data_service_->SetBuiltinKeywordMilestone(
+          updated_keywords_metadata.builtin_keyword_milestone);
+      web_data_service_->SetBuiltinKeywordCountry(
+          updated_keywords_metadata.builtin_keyword_country);
+    }
 
-    if (new_resource_starter_pack_version)
+    if (updated_keywords_metadata.HasStarterPackData()) {
       web_data_service_->SetStarterPackKeywordVersion(
-          new_resource_starter_pack_version);
+          updated_keywords_metadata.starter_pack_version);
+    }
   }
 
   if (default_search_provider_) {
@@ -1420,8 +1444,9 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         iter->sync_data().GetSpecifics().search_engine().sync_guid());
     std::unique_ptr<TemplateURL> turl =
         CreateTemplateURLFromTemplateURLAndSyncData(
-            client_.get(), prefs_, search_terms_data(), existing_turl,
-            iter->sync_data(), &new_changes);
+            client_.get(), prefs_, search_engine_choice_service_,
+            search_terms_data(), existing_turl, iter->sync_data(),
+            &new_changes);
     if (!turl)
       continue;
 
@@ -1537,8 +1562,8 @@ absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     TemplateURL* local_turl = GetTemplateURLForGUID(iter->first);
     std::unique_ptr<TemplateURL> sync_turl(
         CreateTemplateURLFromTemplateURLAndSyncData(
-            client_.get(), prefs_, search_terms_data(), local_turl,
-            iter->second, &new_changes));
+            client_.get(), prefs_, search_engine_choice_service_,
+            search_terms_data(), local_turl, iter->second, &new_changes));
     if (!sync_turl)
       continue;
 
@@ -1652,12 +1677,12 @@ void TemplateURLService::ProcessTemplateURLChange(
 
 bool TemplateURLService::IsEeaChoiceCountry() {
   return search_engines::IsEeaChoiceCountry(
-      search_engines::GetSearchEngineChoiceCountryId(prefs_));
+      search_engine_choice_service_->GetCountryId());
 }
 
 #if BUILDFLAG(IS_ANDROID)
 bool TemplateURLService::ShouldShowUpdatedSettings() {
-  return search_engines::ShouldShowUpdatedSettings(*prefs_);
+  return search_engine_choice_service_->ShouldShowUpdatedSettings();
 }
 #endif
 
@@ -1760,6 +1785,7 @@ std::unique_ptr<TemplateURL>
 TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
     TemplateURLServiceClient* client,
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const SearchTermsData& search_terms_data,
     const TemplateURL* existing_turl,
     const syncer::SyncData& sync_data,
@@ -1827,7 +1853,8 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   // If this TemplateURL matches a built-in prepopulated template URL, it's
   // possible that sync is trying to modify fields that should not be touched.
   // Revert these fields to the built-in values.
-  UpdateTemplateURLIfPrepopulated(turl.get(), prefs);
+  UpdateTemplateURLIfPrepopulated(turl.get(), prefs,
+                                  search_engine_choice_service);
 
   DCHECK_EQ(TemplateURL::NORMAL, turl->type());
   if (reset_keyword || deduped) {
@@ -2051,7 +2078,6 @@ bool TemplateURLService::CanAddAutogeneratedKeywordForHost(
 bool TemplateURLService::Update(TemplateURL* existing_turl,
                                 const TemplateURL& new_values) {
   DCHECK(existing_turl);
-  DCHECK(!IsCreatedByExtension(existing_turl));
   if (!Contains(&template_urls_, existing_turl))
     return false;
 
@@ -2091,13 +2117,15 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
 // static
 void TemplateURLService::UpdateTemplateURLIfPrepopulated(
     TemplateURL* template_url,
-    PrefService* prefs) {
+    PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service) {
   int prepopulate_id = template_url->prepopulate_id();
   if (template_url->prepopulate_id() == 0)
     return;
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs, nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs, search_engine_choice_service, nullptr);
 
   for (const auto& url : prepopulated_urls) {
     if (url->prepopulate_id == prepopulate_id) {
@@ -2879,7 +2907,7 @@ bool TemplateURLService::MatchesDefaultSearchProvider(TemplateURL* turl) const {
 std::unique_ptr<EnterpriseSiteSearchManager>
 TemplateURLService::GetEnterpriseSiteSearchManager(PrefService* prefs) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy)
              ? std::make_unique<EnterpriseSiteSearchManager>(
                    prefs, base::BindRepeating(

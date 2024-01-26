@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_SYSTEM_DYNAMIC_LIBRARY_SUPPORT_H_
 
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/system_export.h"

@@ -141,10 +141,12 @@ DragOperation DragDropController::StartDragAndDrop(
   weak_factory_.InvalidateWeakPtrs();
 
   const ui::OSExchangeDataProvider* provider = &data->provider();
+
   // We do not support touch drag/drop without a drag image, unless it is a tab
   // drag/drop.
   if (source == ui::mojom::DragEventSource::kTouch &&
-      provider->GetDragImage().size().IsEmpty() &&
+      (!allow_no_image_touch_drag_for_test_ &&
+       provider->GetDragImage().size().IsEmpty()) &&
       !toplevel_window_drag_delegate_) {
     return DragOperation::kNone;
   }

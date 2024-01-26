@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_update_service.h"
 
 #include <iterator>
+#include <optional>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -38,7 +39,6 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/download_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -548,7 +548,7 @@ void DownloadBubbleUpdateService::CacheManager::UpdateDisplayInfo(
           std::ref(info)),
       base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
                               UpdateDisplayInfoForOfflineItem,
-                          base::Unretained(this), absl::nullopt, cutoff_time,
+                          base::Unretained(this), std::nullopt, cutoff_time,
                           std::ref(info)),
       base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
                               ShouldStopUpdatingDisplayInfo,
@@ -574,7 +574,7 @@ void DownloadBubbleUpdateService::CacheManager::UpdateDisplayInfo(
   IterateOverMergedCaches(
       base::BindRepeating(&DownloadBubbleUpdateService::CacheManager::
                               UpdateDisplayInfoForDownloadItem,
-                          base::Unretained(this), absl::nullopt, cutoff_time,
+                          base::Unretained(this), std::nullopt, cutoff_time,
                           std::ref(info)),
       base::BindRepeating(
           &DownloadBubbleUpdateService::CacheManager::
@@ -936,7 +936,7 @@ void DownloadBubbleUpdateService::CacheManager::OnOfflineItemRemoved(
 
 void DownloadBubbleUpdateService::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<offline_items_collection::UpdateDelta>& update_delta) {
+    const std::optional<offline_items_collection::UpdateDelta>& update_delta) {
   if (IsShutDown()) {
     return;
   }

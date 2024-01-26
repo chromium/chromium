@@ -68,17 +68,16 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   // Returns information about a running guest. Returns nullopt if the guest
   // isn't recognised e.g. it's not running. If you just want to check if a
   // guest is running or not and don't need the info, use `IsRunning` instead
-  absl::optional<GuestInfo> GetInfo(const GuestId& id);
+  std::optional<GuestInfo> GetInfo(const GuestId& id);
 
   // Returns information about a running VM. Returns nullopt if the VM
   // isn't recognised e.g. it's not running.
-  absl::optional<vm_tools::concierge::VmInfo> GetVmInfo(
+  std::optional<vm_tools::concierge::VmInfo> GetVmInfo(
       const std::string& vm_name);
 
   // Given a container_token for a running guest, returns its GuestId. Returns
   // nullopt if the token isn't recognised.
-  absl::optional<GuestId> GetGuestIdForToken(
-      const std::string& container_token);
+  std::optional<GuestId> GetGuestIdForToken(const std::string& container_token);
 
   // Returns true if a guest is running, false otherwise.
   bool IsRunning(const GuestId& id);
@@ -113,16 +112,15 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
       const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
 
  private:
-  void OnListVms(absl::optional<vm_tools::concierge::ListVmsResponse> response);
+  void OnListVms(std::optional<vm_tools::concierge::ListVmsResponse> response);
   void OnListRunningContainers(
-      absl::optional<vm_tools::cicerone::ListRunningContainersResponse>
+      std::optional<vm_tools::cicerone::ListRunningContainersResponse>
           response);
   void OnGetGarconSessionInfo(
       std::string vm_name,
       std::string container_name,
       std::string container_token,
-      absl::optional<vm_tools::cicerone::GetGarconSessionInfoResponse>
-          response);
+      std::optional<vm_tools::cicerone::GetGarconSessionInfoResponse> response);
   void HandleNewGuest(const std::string& vm_name,
                       const std::string& container_name,
                       const std::string& container_token,

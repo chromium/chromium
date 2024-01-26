@@ -87,13 +87,13 @@
           on-focus="onInputFocus_"
           on-keydown="onInputKeyDown_">
       </cr-input>
-      <iron-selector id="selector" role="list"
+      <iron-selector id="selector" role="listbox"
           on-keydown="onListKeyDown_"
           selected-class="selected"
           on-iron-select="onSelectedChanged_">
         <template is="dom-repeat" items="[[tabDatas_]]">
           <tab-search-item class="mwb-list-item" data="[[item]]"
-              role="listitem"
+              role="option"
               tabindex$="[[getTabIndex_(index, lastFocusedIndex_)]]"
               on-close="onTabRemove_"
               on-focus="onTabFocus_"
@@ -128,6 +128,7 @@
     </div>
     <cr-feedback-buttons id="feedbackButtons"
         tabindex="-1"
+        selected-option="[[feedbackSelectedOption_]]"
         on-selected-option-changed="onFeedbackSelectedOptionChanged_">
     </cr-feedback-buttons>
   </div>

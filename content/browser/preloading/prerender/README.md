@@ -124,6 +124,20 @@ which demonstrates how to trigger it.
   memory, and it should be able to stop prerender2 from triggering on (almost)
   all devices (Change `10000000` to a bigger value if needed).
 
+### Force-disable specific prerender triggers
+
+Use feature param `PreloadingConfig:preloading_config`.
+
+Example:
+
+1. Make preloading config JSON. Default value is [here](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/preloading/preloading_config.cc?q=kPreloadingConfigParam).
+   You can disable starting preloadings by putting `holdback: true` for each entry.
+2. Minify and URL-encode it. E.g. `cat - | jq -c . | jq -sRr @uri | sed 's/%0A//g'`.
+3. Use an option `--enable-features="PreloadingConfig:preloading_config/<url_encoded_preloading_config>`.
+
+Note that `FeatureParam` doesn't decode `%20` and `+` [[cs](https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/field_trial_params.cc?q=UnescapeValue)].
+Minification is recommended.
+
 ## Tell whether prerender has started
 - For speculationrules-triggered ones, refer to [Debugging speculation rules](https://developer.chrome.com/blog/debugging-speculation-rules/).
 - For embedder-triggered ones:

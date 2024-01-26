@@ -1941,7 +1941,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   // ImageOrientation of the UnacceleratedStaticBitmapImage.
   ImageDrawOptions draw_options;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
+  image->Draw(&resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
               gfx::RectF(src_rect), draw_options);
   return true;
 }
@@ -2290,6 +2290,12 @@ void WebGLRenderingContextBase::blendFuncSeparate(GLenum src_rgb,
   if (isContextLost() ||
       !ValidateBlendFuncFactors("blendFuncSeparate", src_rgb, dst_rgb))
     return;
+
+  if (!ValidateBlendFuncExtendedFactors("blendFuncSeparate", src_alpha,
+                                        dst_alpha)) {
+    return;
+  }
+
   ContextGL()->BlendFuncSeparate(src_rgb, dst_rgb, src_alpha, dst_alpha);
 }
 
@@ -3936,13 +3942,13 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
                         "invalid parameter name, EXT_clip_control not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
-    case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:  // EXT_blend_func_extended
-      if (ExtensionEnabled(kEXTBlendFuncExtendedName)) {
+    case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:  // WEBGL_blend_func_extended
+      if (ExtensionEnabled(kWebGLBlendFuncExtendedName)) {
         return GetUnsignedIntParameter(script_state, pname);
       }
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
-          "invalid parameter name, EXT_blend_func_extended not enabled");
+          "invalid parameter name, WEBGL_blend_func_extended not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_COLOR_ATTACHMENTS_EXT:  // EXT_draw_buffers BEGIN
       if (ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2())
@@ -5579,7 +5585,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   }
 
   if (!image->CurrentFrameKnownToBeOpaque())
-    resource_provider->Canvas()->clear(SkColors::kTransparent);
+    resource_provider->Canvas().clear(SkColors::kTransparent);
 
   gfx::Rect src_rect(image->Size());
   gfx::Rect dest_rect(0, 0, width, height);
@@ -5588,7 +5594,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   // https://crbug.com/672299
   ImageDrawOptions draw_options;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
+  image->Draw(&resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
               gfx::RectF(src_rect), draw_options);
   return resource_provider->Snapshot(FlushReason::kWebGLTexImage);
 }
@@ -8471,6 +8477,31 @@ bool WebGLRenderingContextBase::ValidateBlendFuncFactors(
                       "incompatible src and dst");
     return false;
   }
+
+  return ValidateBlendFuncExtendedFactors(function_name, src, dst);
+}
+
+bool WebGLRenderingContextBase::ValidateBlendFuncExtendedFactors(
+    const char* function_name,
+    GLenum src,
+    GLenum dst) {
+  // TODO(crbug.com/882580): this validation is done in the
+  // passthrough command decoder; this helper can be removed once the
+  // validating command decoder is completely unshipped.
+  if (src == GL_SRC1_COLOR_EXT || dst == GL_SRC1_COLOR_EXT ||
+      src == GL_SRC1_ALPHA_EXT || dst == GL_SRC1_ALPHA_EXT ||
+      src == GL_ONE_MINUS_SRC1_COLOR_EXT ||
+      dst == GL_ONE_MINUS_SRC1_COLOR_EXT ||
+      src == GL_ONE_MINUS_SRC1_ALPHA_EXT ||
+      dst == GL_ONE_MINUS_SRC1_ALPHA_EXT ||
+      (dst == GL_SRC_ALPHA_SATURATE && !IsWebGL2())) {
+    if (!ExtensionEnabled(kWebGLBlendFuncExtendedName)) {
+      SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                        "invalid value, WEBGL_blend_func_extended not enabled");
+      return false;
+    }
+  }
+
   return true;
 }
 
